@@ -925,12 +925,31 @@ out of saga2.js so a retune cannot quietly undo them.
   `font-size` were quietly beaten by the base rules.
 
 ## The Atlas is a journey on scenery, not a painting with pins
-- The painted map is held at **`opacity:.6`** (dusk `.5`, high-contrast `.34`) and
-  desaturated; the route SVG and the pins are SIBLINGS above it and keep full contrast, so
-  dimming the art lifts the journey without touching anything that must stay legible.
+- **THE PAINTING RUNS NEAR FULL AND THE FOG MEANS SOMETHING.** (Reversed Aug 2026 after
+  play-testing.) The map used to be held at `opacity:.6` / `saturate(.78)` — dusk `.5`,
+  high-contrast `.34` — so the route and pins could read over it. Testers named exactly
+  what that produced: regions "fading away", "an unwanted translucent layer", "weird fog"
+  on art that is already painted misty. It was the right problem solved in the wrong
+  place: dimming a whole picture to make two things on top of it legible.
+  Now `opacity:.97 / saturate(1.08) contrast(1.05)` (dusk `.92`), and **legibility lives on
+  the things that need it** — the route paths carry their own `drop-shadow(var(--rt-sh))`
+  on the overview as well as the act board, and every `.atlas-pin` sits on a radial scrim
+  ring (`::before`, theme-aware). **High contrast bolds the route rather than dimming the
+  art** — taking the picture to 34% was the fog complaint applied hardest to the people
+  who need it least.
+  **Fog is reserved for a region you have NOT REACHED**, and it goes on the PIN
+  (`.atlas-pin.locked`), not the board — a board is never wholly locked, its stops are.
 - **`.atlas-board`'s own background is load-bearing.** It was a near-black `#241E33`, so
   lowering the image's opacity *darkened* the map instead of calming it. It is a paper tone
   now; only dusk keeps a dark ground.
+- **Ambient motion is per REGION, keyed to what the place is** (`ACT_AMB` + `ambLayer()` in
+  trail.js, `.atlas-amb` in index.html): bees over the Meadow, dust in the Library and the
+  Forum, driven rain in the Storm, spores off the Root Kingdoms, spray on the Strait,
+  sparks off the Junkyard. Pure CSS — two gradient layers drifting on long loops, nothing
+  added to the boot budget and no video. It sits at `z-index:1`, BELOW the route and pins,
+  takes no pointer, and **disappears entirely** under Reduce motion (`display:none`, not
+  merely slower). A region with no `ACT_AMB` entry gets nothing: a wrong motif reads worse
+  than none. Guard: `tests/atlas-contrast.cjs`.
 - **Route ink is theme-tokened** (`--rt-guide` / `--rt-walk` / `--rt-sh` on `.atlas-board`).
   The strokes were white-on-dark, correct over a full-strength painting and the faintest
   marks on screen over a dimmed one. Light and white get a drawn-road brown; dusk keeps the
