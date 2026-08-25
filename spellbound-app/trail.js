@@ -1011,19 +1011,48 @@
     cell[i] = 1; save();
     addCoins(TRE_PAY[i] || 20);
     try { sfx('win'); burstConfetti(40); } catch (e) {}
-    flash('Cache found — ' + (TRE_PAY[i] || 20) + ' coins');
+    /* The message names WHAT you found and where you are, not "cache found" — the whole
+       point of nine painted regions is that they are different places. */
+    const k = treKit(act);
+    flash(k.g + ' ' + k.n[0].toUpperCase() + k.n.slice(1) + ' — ' + k.l + ' +' + (TRE_PAY[i] || 20) + ' coins');
     render(); };
 
   /* One cache marker: a shut chest you cannot reach yet reads as a faint
      glimmer, so the map has something to walk towards without giving it away. */
+  /* EACH REGION'S CACHE IS ITS OWN OBJECT.
+     Three caches sit on every map and they were the same golden chest everywhere, on maps
+     whose whole point is that the Roman Forum is not the Meadow. Same mechanic, same
+     payout, same gating — but the thing you find belongs to the place, and says so when
+     you open it. The glyph is drawn type, not an emoji, so it takes the region's ink and
+     stays crisp at any board width.
+     A region with no entry falls back to the chest: a wrong object is worse than a plain
+     one. Keys are act ids (see ACT_MAP). */
+  const TRE_KIT = {
+    meadow:   { g:'✿', n:'a wild honeycomb',      l:'Tucked in the clover — still warm.' },
+    library:  { g:'❦', n:'a pressed bookmark',    l:'Someone left their place in a very old book.' },
+    forum:    { g:'⚱', n:'a buried amphora',      l:'Roman clay, Roman coins — sealed since the Forum stood.' },
+    storm:    { g:'⚡', n:'a bottled charge',      l:'Caught mid-strike and corked. It still hums.' },
+    roots:    { g:'❉', n:'a seed vault',          l:'Every word here grew from something older.' },
+    strait:   { g:'⚓', n:'a message in a bottle', l:'Carried across on the current, sealed with wax.' },
+    junkyard: { g:'⚙', n:'a tinker\'s tin',       l:'Odds, ends and a handful of coins nobody missed.' },
+    sprints:  { g:'✦', n:'a runner\'s cache',      l:'Left at the trackside for whoever gets here next.' },
+    stage:    { g:'★', n:'a dressing-room box',   l:'Left behind after the last curtain call.' },
+    greysea:  { g:'⚓', n:'a salvage crate',       l:'Hauled up from the grey water.' },
+    liars:    { g:'❋', n:'a conjurer\'s purse',    l:'It was empty a moment ago. Probably.' },
+    farflung: { g:'☼', n:'a traveller\'s pouch',   l:'Coins from four countries and none of them here.' },
+    factory:  { g:'⚙', n:'a spare-parts drawer',  l:'Stamped, sorted and forgotten.' },
+    proving:  { g:'✦', n:'an examiner\'s tin',     l:'Left for whoever passes this way.' },
+  };
+  const treKit = (actId) => TRE_KIT[String(actId||'').replace(/^map-/,'')] || { g:'✦', n:'a cache', l:'Someone left this for whoever came next.' };
   function treMark(c, actId, i, x, y, cleared, n) {
     const open = treGot(c, actId, i), ready = cleared >= treGate(n, i);
     const pay = TRE_PAY[i] || 20;
+    const kit = treKit(actId);
     if (!ready) return `<span class="atlas-tre glim" style="left:${x}%;top:${y}%" aria-hidden="true"></span>`;
     return `<button class="atlas-tre ${open ? 'got' : 'ready'}" data-act="${open ? '' : 'trailTre'}" data-arg="${escA(actId + ':' + i)}"
-      style="left:${x}%;top:${y}%" title="${open ? 'Cache found · ' + pay + ' coins' : 'A cache! Tap to open — ' + pay + ' coins'}"
-      aria-label="${open ? 'Cache already found' : 'Open the cache for ' + pay + ' coins'}">
-      <span>${open ? '⌣' : '✦'}</span></button>`;
+      style="left:${x}%;top:${y}%" title="${open ? kit.n[0].toUpperCase() + kit.n.slice(1) + ' — found · ' + pay + ' coins' : 'You spot ' + kit.n + '. Tap to open — ' + pay + ' coins'}"
+      aria-label="${open ? 'Already found: ' + kit.n : 'Open ' + kit.n + ' for ' + pay + ' coins'}">
+      <span>${open ? '⌣' : kit.g}</span></button>`;
   }
   /* If the board grew past its container, centre the stop the card is showing. */
   function panTo(sel, pts) {

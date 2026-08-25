@@ -106,6 +106,40 @@ const root = require('path').resolve(__dirname, '..');
   if (fog.art !== null && fog.art < 0.88) errs.push('the overview painting is dimmed to ' + fog.art + ' — fog belongs on the pins');
   console.log('  overview: ' + fog.locked + '/' + fog.pins + ' regions unreached and receding, art at ' + fog.art);
 
+  /* Each region's cache is its OWN object, not the same golden chest on nine painted maps.
+     Same mechanic and payout; the thing you find belongs to the place and says so. */
+  const kit = await pg.evaluate(async () => {
+    const out = {};
+    /* Caches gate on cleared stops, so a fresh profile only shows faint glimmers. Mark
+       every honey unit done on lap 1 — the caches are then all reachable and comparable. */
+    try { const c = state.children[0]; c.trail = c.trail || {}; c.trail.lap = 1; c.trail.done = {};
+      (SB_TRAIL.honey.units || []).forEach(u => { c.trail.done[u.id] = { 1: 1 }; });
+      state.devUnlock = true; } catch (e) { out.seedErr = String(e); }
+    for (const act of ['meadow', 'forum', 'library', 'storm']) {
+      app.trailAct('honey|' + act);
+      await new Promise(r => setTimeout(r, 700));
+      const t = [...document.querySelectorAll('.atlas-tre')];
+      out[act] = { n: t.length,
+        glyphs: [...new Set(t.map(e => (e.textContent || '').trim()).filter(Boolean))],
+        titles: [...new Set(t.map(e => e.title || '').filter(Boolean))].slice(0, 1) };
+    }
+    // and opening one names what it is
+    app.trailAct('honey|forum');
+    await new Promise(r => setTimeout(r, 700));
+    const btn = document.querySelector('.atlas-tre.ready');
+    if (btn) { btn.click(); await new Promise(r => setTimeout(r, 400)); out.flash = state.toast || ''; }
+    return out;
+  });
+  const gl = k => (kit[k] && kit[k].glyphs.filter(g => g !== '⌣')) || [];
+  if (!kit.meadow || !kit.meadow.n) errs.push('no caches rendered on the Meadow');
+  const m = gl('meadow')[0], f = gl('forum')[0], l = gl('library')[0], st2 = gl('storm')[0];
+  const seen = [m, f, l, st2].filter(Boolean);
+  if (seen.length < 2) errs.push('caches are not reachable enough to compare regions (' + JSON.stringify(seen) + ')');
+  else if (new Set(seen).size === 1) errs.push('every region shows the same cache glyph "' + seen[0] + '"');
+  if (kit.flash != null && kit.flash && /^Cache found/.test(kit.flash)) errs.push('opening a cache still says the generic "Cache found"');
+  console.log('  caches: meadow ' + (m||'—') + '  forum ' + (f||'—') + '  library ' + (l||'—') + '  storm ' + (st2||'—')
+    + (kit.flash ? '\n  opened: ' + kit.flash.slice(0, 78) : ''));
+
   const ow = await pg.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
   if (ow) errs.push('H-OVERFLOW on the Atlas');
   await b.close();

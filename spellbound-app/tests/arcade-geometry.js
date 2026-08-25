@@ -51,6 +51,27 @@ for (const [k, c] of Object.entries(FLY)) {
   prevSpacing = spacing;
 }
 
+/* ---------------- Bee Grand Prix ---------------- */
+console.log('\nBEE GRAND PRIX');
+const CENTRI = +src.match(/centri=([\d.]+);/)[1];
+const STEER  = +src.match(/const dxs=dt\*([\d.]+)\*Math\.max/)[1];
+// the centrifugal force must actually be USED, not merely declared
+ok(/playerX-=\(seg\.curve\|\|0\)\*Math\.pow\(v\/maxV,2\)\*dt\*centri/.test(src),
+   'the bend pushes the kart via centri, scaled by the SQUARE of speed');
+ok((src.match(/centri/g) || []).length >= 2, 'centri is applied somewhere, not just declared');
+ok(!/hill=0; curve\*=0\.7;/.test(src), 'the authored curves are no longer softened 30%');   // anchored to the CODE, not my comment about it
+// the hardest authored bend
+const CURVE_MAX = Math.max(...[...src.matchAll(/road\(\d+,\d+,\d+,(-?\d+(?:\.\d+)?),/g)].map(m => Math.abs(+m[1])));
+const driftFlat = CURVE_MAX * CENTRI, driftHalf = CURVE_MAX * 0.25 * CENTRI;
+ok(CURVE_MAX >= 4, `hardest authored bend is ${CURVE_MAX}`);
+ok(driftFlat / STEER > 0.6, `flat out the hardest bend takes ${(driftFlat / STEER * 100).toFixed(0)}% of the wheel — the road fights back`);
+ok(driftFlat / STEER < 0.95, `and it is still holdable: ${driftFlat.toFixed(2)} u/s drift vs ${STEER.toFixed(2)} u/s steer`);
+ok(driftHalf / STEER < 0.3, `lifting off makes it easy — ${(driftHalf / STEER * 100).toFixed(0)}% of the wheel at half throttle`);
+ok(2 / STEER < 1.2, `a full road crossing takes ${(2 / STEER).toFixed(2)}s of holding (self-driving territory is >1.5s)`);
+// the item box is swept, not sampled
+ok(/const crossed=_wrapped \? \(iz>_prevPm \|\| iz<=_pm2\) : \(iz>_prevPm && iz<=_pm2\)/.test(src),
+   'the item box is picked up by a swept test, immune to frame length');
+
 /* ---------------- Honeycomb Run ---------------- */
 console.log('\nHONEYCOMB RUN');
 const hcLine = src.match(/const CFG=\{easy:\{moths:[\s\S]*?\}\[diff\];/)[0];
@@ -70,8 +91,12 @@ ok(/moths\.some\(m=>Math\.abs\(Math\.round\(m\.px\)-c\)\+Math\.abs\(Math\.round\
 const reseed = +src.match(/if\(flowerT<=0&&!flower\)\{ flowerT=(\d+); placeFlower\(\); \}/)[1];
 ok(reseed <= 4, `a new flower every ${reseed}s (was 9)`);
 ok(/finish\(score>=CFG\.target && spelled>=2\)/.test(src), 'a timed-out round needs words spelled, not just dots eaten');
+// movement is per SECOND, on the display's clock — it used to be a fixed step per frame
+ok(/function step\(ent,sp,dt\)/.test(src), 'step takes dt: movement is time-based, not frame-based');
+ok(/const spd=sp\*Math\.max\(0\.001,Math\.min\(0\.05,dt\|\|1\/60\)\)/.test(src), 'and dt is clamped so a hitch cannot teleport through a wall');
+ok(!/loop=setInterval\(frame, 1000\/60\)/.test(src), 'the maze runs on requestAnimationFrame like every other engine, not setInterval');
 // the bee is paced like an arcade maze game, not a racing game
-const BEE_MULT = +src.match(/step\(bee,CFG\.speed\*([\d.]+)\)/)[1];
+const BEE_MULT = +src.match(/step\(bee,CFG\.speed\*([\d.]+),/)[1];
 for (const [k, c] of Object.entries(HC)) {
   const cps = c.speed * BEE_MULT;
   ok(cps <= 3.5, `${k.padEnd(6)} bee runs at ${cps.toFixed(2)} cells/s (arcade maze pace is ~1.5-2.0; was ${(c.speed / 0.75 * BEE_MULT).toFixed(2)})`);
