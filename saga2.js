@@ -437,11 +437,21 @@
        far more pressure than a slower bee adds. */
     const CFG={easy:{moths:2,speed:1.5,target:900,time:150},medium:{moths:3,speed:1.95,target:1200,time:180},
                hard:{moths:4,speed:2.35,target:1500,time:180},champ:{moths:5,speed:2.75,target:1800,time:180}}[diff];
+    /* how often a moth at a junction turns toward the bee instead of wandering — and
+       only within CHASE_R cells, so pressure means "that moth noticed you", never the
+       whole pack converging from across the board. First cut (0.45 at medium, no range)
+       wiped a random-walking test bee out in EIGHT seconds. */
+    const CHASE={easy:0.22,medium:0.32,hard:0.4,champ:0.45}[diff]||0.32;
+    const CHASE_R=8;
+    /* at most this many moths HUNT at once (the nearest ones) — five converging
+       chasers gang-wiped a play-tested evader in half a minute at champ. The rest
+       wander: crowd pressure without the pincer. */
+    const HUNTERS={easy:1,medium:2,hard:2,champ:2}[diff]||2;
     // bee starts on the centre corridor row (odd row = always open)
     let scr=Math.floor(ROWS/2); if(scr%2===0) scr=Math.max(1,scr-1); let scc=Math.floor(COLS/2);
     try{ if(MAZE[scr][scc]===0) scc=Math.max(1,scc-1); MAZE[scr][scc]=2; }catch(e){}
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
-    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, flower=null, flowerT=2, card=null, over=false, fx=[];
+    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, grace=0, flower=null, flowerT=2, card=null, over=false, fx=[];
     let lateMoth=false, spelled=0;
     /* A flower is the ONLY way to spell in this game, so it is placed within reach and
        there is always one on the board. It used to pick a uniformly random open cell —
@@ -542,8 +552,21 @@
         if(!open(ent.px+ent.dir[0], ent.py+ent.dir[1])){ if(ent===bee) ent.dir=[0,0]; else {
           const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
           ent.dir=ops[Math.floor(Math.random()*ops.length)]||[-ent.dir[0],-ent.dir[1]]; } }
-        if(ent!==bee && Math.random()<0.25){ const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
-          if(ops.length) ent.dir=ops[Math.floor(Math.random()*ops.length)]; } }
+        /* MOTHS HUNT, THEY DO NOT WANDER. With the swarm gone, a purely random moth at
+           80% of the bee's speed effectively never catches anyone — the game's only
+           danger was your own cornering. The Pac-Man answer: at a junction a moth turns
+           TOWARD the bee (away from her while she has royal jelly) with a per-difficulty
+           probability, and wanders the rest of the time so it never becomes a perfect
+           shadow that parks on your tail. Danger scales with the level, count does not. */
+        if(ent!==bee){ const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
+          if(ops.length){
+            const near=ent._hunt && Math.abs(ent.px-bee.px)+Math.abs(ent.py-bee.py)<=CHASE_R;
+            if(near && Math.random()<CHASE){
+              const dHome=d=>Math.abs(ent.px+d[0]-bee.px)+Math.abs(ent.py+d[1]-bee.py);
+              ops.sort((a,b)=>flee>0 ? dHome(b)-dHome(a) : dHome(a)-dHome(b));
+              ent.dir=ops[0].slice();
+            } else if(Math.random()<0.25) ent.dir=ops[Math.floor(Math.random()*ops.length)];
+          } } }
       ent.px+=ent.dir[0]*spd; ent.py+=ent.dir[1]*spd;
       /* cornering glide: after an early turn the bee sits a little off the new
          corridor's centreline. Slide onto it at the SAME speed it runs at — a short
@@ -588,8 +611,11 @@
         const now=(ts!==undefined?ts:performance.now()), dt=Math.min(34, now-last); last=now;
         if(!card){                                   // paused during a spell card
           const ds=dt/1000;
+          // the HUNTERS nearest moths get the chase brain this frame; the rest wander
+          moths.map(m=>({m,d:Math.abs(m.px-bee.px)+Math.abs(m.py-bee.py)})).sort((a,b)=>a.d-b.d)
+            .forEach((x,i)=>{ x.m._hunt = i<HUNTERS; });
           step(bee,CFG.speed*1.25,ds); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed, ds));
-          flee=Math.max(0,flee-dt/1000);
+          flee=Math.max(0,flee-dt/1000); grace=Math.max(0,grace-dt/1000);
           const bc=Math.round(bee.px), br=Math.round(bee.py);
           if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
             SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6});
@@ -598,7 +624,9 @@
           if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; spellCard(); }
           moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
             if(flee>0){ score+=50; m.px=6;m.py=1; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
-            else { lives--; shake.hit(11); trail.clear();
+            // two seconds of grace after a hit — a moth camped near the respawn point
+            // used to chain three deaths in eight seconds
+            else if(grace<=0){ grace=2; lives--; shake.hit(11); trail.clear();
               SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
               bee.px=6;bee.py=5;bee.dir=[0,0];
               if(lives<=0){ over=true; finish(false); } } } });
@@ -686,7 +714,7 @@
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; honeycombRun(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
-    if(window.SB_DEBUG) window._maze={ state:()=>({px:bee.px,py:bee.py,dir:bee.dir.slice(),lives,cell:CELL,cols:COLS,rows:ROWS}),
+    if(window.SB_DEBUG) window._maze={ state:()=>({px:bee.px,py:bee.py,dir:bee.dir.slice(),lives,cell:CELL,cols:COLS,rows:ROWS,moths:moths.map(m=>({px:m.px,py:m.py}))}),
       want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r) };   // capture tooling: watch the bee glide
     (function pump(){ raf=requestAnimationFrame(ts=>{ frame(ts); if(!over) pump(); }); })();
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
