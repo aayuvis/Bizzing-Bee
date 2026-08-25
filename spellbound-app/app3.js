@@ -1720,6 +1720,12 @@ const app = {
     if(N && state.gi>=N-1){ state.sessionOver=true;
       try{ const k=state.sessionListKey; if(k&&k[0]!=='_') getList(active(),k).gi=0; }catch(e){}
       if((state.sessionDone||0)>0){ try{ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, (state.sessionWrong||[]).map(x=>x.w)); }catch(e){} }
+      /* An Atlas session reports its score the moment it COMPLETES. It used to report
+         only in exitTrain — so a child who finished every word and then left through
+         the nav bar (or Practice again) was never recorded, and the stop card went on
+         saying "practice and get 70%" forever. Best-of semantics make the exitTrain
+         call below harmless double cover for early exits. */
+      if(state.trailReturn){ try{ if(window.SB_TRAIL_PRACTICED) SB_TRAIL_PRACTICED(state.trailReturn, state.sessionRight||0, state.sessionDone||0); }catch(e){} }
       set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); return; }
     state.gi+=1; try{ const k=state.sessionListKey; if(k&&k[0]!=='_'){ getList(active(),k).gi=state.gi; save(); } }catch(e){}
     set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,250); },
@@ -6546,6 +6552,13 @@ function sessionResults(){
       <div style="font-size:15px;color:var(--muted);font-weight:700">${esc((S.sessionLabel||'Practice').split(' · ')[0])} — you spelled <b style="color:var(--good)">${ok.length}</b> of <b style="color:var(--text)">${total}</b> right (${pct}%)</div></div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">${col('Spelled correctly',ok,true)}${col('Misspelt',bad,false)}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${(()=>{ /* an Atlas session says what the score MEANT, right here — reading the
+           RECORDED best, so a 3-word redo round cannot claim an unlock it did not earn */
+        try{ if(S.trailReturn && typeof window.SB_TRAIL_BEST==='function'){ const tb=SB_TRAIL_BEST(S.trailReturn);
+          if(tb) return tb.p>=tb.gate
+            ? `<button data-act="exitTrain" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">⭐ Best ${tb.p}% — the next Atlas stop is open · back to your stop →</button>`
+            : `<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--treasure,#FFD24D) 22%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 50%,var(--line));border-radius:14px;padding:12px 16px;text-align:left"><span style="font-size:16px">👉</span><span style="font-size:13px;font-weight:700;line-height:1.45">Best so far ${tb.p}% — reach ${tb.gate}% on a full round to open the next Atlas stop.${bad.length?' The misspelt words below are the gap.':''}</span></div>`;
+        } }catch(e){} return ''; })()}
       ${advBtn}
       ${bad.length?`<button data-act="drillMisspelt" style="flex:1;min-width:200px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Spell the ${bad.length} misspelt word${bad.length>1?'s':''} →</button>`:''}
       <button data-act="restartSession" style="flex:1;min-width:160px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${iconSVG('arrow',16)} Restart the list</button>

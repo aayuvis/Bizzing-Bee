@@ -59,6 +59,21 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     await new Promise(res => setTimeout(res, 200));
     // legacy 87%: practice star (quiz pass proves the words) + quiz-pass star, not the 90% ace
     out.legacyStars = /★★/.test(document.body.innerHTML);
+
+    // THE BUG THAT PROMPTED ALL THIS: finishing the last word must record BY ITSELF —
+    // the child who then leaves via the nav bar (never tapping Done) was never
+    // recorded, and the stop card sent them back to Practice forever.
+    const fresh = SB_TRAIL_NEXT();
+    if (fresh && fresh.kind === 'unit') {
+      state.trailReturn = fresh.arg; state.trailCourse = 'honey';
+      state.sessionWords = Array.from({ length: 10 }, (_, i) => ({ w: 'w' + i }));
+      state.gi = 9; state.sessionRight = 9; state.sessionDone = 10;
+      state.sessionOver = false; state.nav = 'train';
+      app.next();                                   // last word answered -> session over
+      out.completionRecords = ((c.trail.st || {})[fresh.arg + ':1'] || {}).p === 90;
+      out.summaryBanner = /next Atlas stop is open/.test(document.body.innerHTML);
+      state.trailReturn = null;
+    } else { out.completionRecords = out.summaryBanner = 'skipped(checkpoint)'; }
     return out;
   });
   ok(r.firstStop, 'the Atlas serves a first stop (' + r.firstStop + ')');
@@ -72,6 +87,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.nextIsQuiz, 'once unlocked, the card points at the quiz for the next star');
   ok(r.legacyUnlocks, 'an old save with only a quiz % still counts as passed');
   ok(r.legacyStars, 'and still shows its earned stars');
+  ok(r.completionRecords === true || r.completionRecords === 'skipped(checkpoint)',
+     'finishing the last word records the score by itself — no Done tap needed (' + r.completionRecords + ')');
+  ok(r.summaryBanner === true || r.summaryBanner === 'skipped(checkpoint)',
+     'the finish screen says the next Atlas stop is open');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);
