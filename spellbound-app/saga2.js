@@ -1076,7 +1076,6 @@
        scene, used by both the per-segment fog and the haze band, so the road and the sky
        agree about how far away "far" looks. */
     const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
-    const FOG_DENSITY=4.2;   // exponential falloff; higher = the road disappears sooner
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
     const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
                medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
@@ -1324,15 +1323,14 @@
           cx.fillStyle=ng; cx.fillRect(0,hz-30,Wd,150);
         }
         // atmospheric haze across the join, so the painting and our ground read as one distance
-        /* The join is a GRADIENT, not an edge. Same colour the segments fog toward, and
-           three times as tall as it was — 60px could not hide a seam the eye reads as a
-           cut. Weighted below the horizon, because that is where the road arrives. */
-        const hb=cx.createLinearGradient(0,hz-52,0,hz+118);
+        /* A whisper of haze at the join and nothing more — the painting is meant to be
+           SEEN, not washed out. The road reaching a true vanishing point (the wedge in
+           draw()) is what removes the cut; haze was never the right tool for it. */
+        const hb=cx.createLinearGradient(0,hz-14,0,hz+26);
         hb.addColorStop(0,'rgba('+FOG_RGB+',0)');
-        hb.addColorStop(.30,'rgba('+FOG_RGB+',.85)');
-        hb.addColorStop(.52,'rgba('+FOG_RGB+',.70)');
+        hb.addColorStop(.5,'rgba('+FOG_RGB+',.22)');
         hb.addColorStop(1,'rgba('+FOG_RGB+',0)');
-        cx.fillStyle=hb; cx.fillRect(0,hz-52,Wd,170);
+        cx.fillStyle=hb; cx.fillRect(0,hz-14,Wd,40);
         return;
       }
       const sway=Math.sin(pos/2600)*34 - playerX*26;
@@ -1353,11 +1351,13 @@
       const hg=cx.createLinearGradient(0,hz-18,0,hz+18); hg.addColorStop(0,'rgba(233,246,255,0)'); hg.addColorStop(.5,'rgba(233,246,255,.6)'); hg.addColorStop(1,'rgba(233,246,255,0)');
       cx.fillStyle=hg; cx.fillRect(0,hz-18,Wd,36);
     }
+    const hzY=()=>horizonY;
     function draw(){
       drawBG();
       const posm=pos%trackLen;
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
+      let _lastSeg=null;                  // the furthest road band actually drawn
       const camX=0;                    // camera fixed on the (straight) road centre; the KART slides across, the world does not pan
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
@@ -1375,19 +1375,30 @@
         poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.rumble);
         poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.road);
         if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, c.lane); }
-        /* DISTANCE FOG, per segment. Every segment used to be drawn at full colour right up
-           to the horizon, so the furthest one was as saturated as the nearest and the road
-           simply STOPPED at a hard line where the backdrop began — "the flat background
-           image cuts the road off". Fogging each band toward the horizon colour is how
-           every pseudo-3D racer since OutRun has handled this: the road dissolves into the
-           distance instead of terminating. Exponential in the squared distance, which is
-           what atmospheric scattering actually looks like. */
-        const _f=1/Math.exp(Math.pow(n/drawDist,2)*FOG_DENSITY);
-        if(_f<0.995){ cx.fillStyle='rgba('+FOG_RGB+','+(1-_f).toFixed(3)+')';
-          cx.fillRect(0, s2.y, Wd, Math.max(1, s1.y-s2.y+1)); }
         // checkered finish strip
         if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
+        _lastSeg={x:s2.x,y:s2.y,w:s2.w,c:c};
+      }
+      /* THE ROAD MEETS THE HORIZON AT A POINT.
+         It did not. drawDist segments end at a finite width — measured on a 900px canvas
+         the furthest drawn band was 108 pixels SHORT of the horizon and still 165 pixels
+         WIDE, so the road stopped in mid-air and the backdrop began. That is the cut.
+         Drawing enough segments to converge honestly would take about 5,400 of them
+         (the projection falls off as 1/z, so the last stretch is enormously long), which
+         is not sensible per frame. Instead the far field is closed with ONE wedge: the
+         road, its rumble strips and the verge, carried from the last real band to the
+         true vanishing point on the horizon. It is the same geometry the segments would
+         have drawn, in three polygons instead of five thousand. */
+      if(_lastSeg){
+        const vx=_lastSeg.x, vy=hzY(), c=_lastSeg.c;
+        const L=_lastSeg.x-_lastSeg.w, R=_lastSeg.x+_lastSeg.w, Y=_lastSeg.y;
+        const rw=_lastSeg.w*0.18;
+        // verge first, then rumble, then road — same painter's order as a segment
+        poly(0,Y, 0,vy, Wd,vy, Wd,Y, c.grass);
+        poly(L-rw,Y, vx,vy, vx,vy, L,Y, c.rumble);
+        poly(R+rw,Y, vx,vy, vx,vy, R,Y, c.rumble);
+        poly(L,Y, vx,vy, vx,vy, R,Y, c.road);
       }
       const order=[];
       for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
