@@ -928,6 +928,30 @@ out of saga2.js so a retune cannot quietly undo them.
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
 
+## The in-app book reader (`reader.js`) — the shelf opens HERE now
+- A spine opens `SB_READER` (nav `'reader'`, lazy group `'reader'`), not the books site:
+  living cards with tappable word chips (each opens the existing `state.wordCard` overlay
+  with audio), a **Try-it** pop-up (4 meaning→word MCQs from that chapter's words, a coin
+  per correct, deliberately NO spelling-progress writes), per-child per-chapter **notes**
+  (`c.readerNotes`), read-ticks (`c.readerRead`) with a finish celebration, world ambience
+  (`.atlas-amb` motifs) and the volume's mascot. The **printed site edition survives as
+  the "Print edition" pill** — that is the one families can print or buy; never delete
+  the books repo or the pill.
+- `VOLS` in reader.js mirrors mkbooks.js's volume plan (mkbooks stays the print
+  authority): vols 1–10 filter `SB_CONCEPTS.chapters` by category, 11–13/15–16 slice
+  `SB_ADV_CONCEPTS` (orthography slices 0-5/5-12/12+), 14 = `SB_SOUTHASIA`, 17 =
+  `SB_EPONYMS`, 18/19 = `SB_ULTRA.mind/.method`, companions from `SB_FIG` / `SB_QUOTES`
+  (themed by `q.c`) / `SB_POEMS`. **If mkbooks' volume plan changes, change VOLS too.**
+  The three authored chapter files load lazily from `books/*.js` (they set window
+  globals), so the gh-pages deploy MUST copy `books/eponym-chapters.js`,
+  `books/ultra-chapters.js` and `books/poem-chapters.js` beside the redirect stubs.
+- Cover art streams from the books site (`…/books/art/<prefix>-cover.jpg`, art prefixes
+  quirky: 17→b19, 18→b20, 19→b21) with `onerror` hide — offline, the tinted band alone
+  carries the header. Advanced volumes (11–19) gate on the Advanced Pack exactly like
+  the Concepts library; the print edition stays open to everyone. The Long Quiz renders
+  as an honest "this is a paper book" card (print pill + Arcade button) — do not fake it
+  on screen. Guard: `tests/reader.cjs` (19 asserts, all 24 volumes resolve chapters).
+
 ## The Library's book shelf, and the drawn spines
 - The books are a **shelf of 23 spines above the tiles** (`libShelf()` in app3.js), not a
   tile among tiles. `SB_SHELF` is the ordered list; **`s` (the file name) is the ONLY one
