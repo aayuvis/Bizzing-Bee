@@ -35,7 +35,7 @@
     SB_QUOTES: [], SB_FIG: null, SB_LESSONS: null, SB_VOCAB26: null,
     SB_NSF500: null, SB_SCRIPPS: null, SB_WVOICE: null, SB_STORY_ARCS: null,
     SB_ADV_SHOTS: null, SB_VOICE_FRENCH: null, SB_THEME_LORE: null,
-    SB_SOUTHASIA: []
+    SB_SOUTHASIA: [], SB_EPONYMS: [], SB_ULTRA: null, SB_POEMS: null
   };
   for (var k in STUB) if (!(k in window)) window[k] = STUB[k];
 
@@ -69,7 +69,14 @@
        family that never makes an account must never pay for this file at all. It
        is fetched on the idle queue, last, and its own guards keep it inert until
        a parent has signed in AND consented. */
-    sync: 'supabase-sync.js'
+    sync: 'supabase-sync.js',
+    /* The in-app book reader and the three authored chapter files that only the
+       book volumes use. The books/ path is real on gh-pages (the deploy copies
+       them beside the redirect stubs) and in the repo alike. */
+    reader: 'reader.js',
+    eponbk: 'books/eponym-chapters.js',
+    ultrabk: 'books/ultra-chapters.js',
+    poems: 'books/poem-chapters.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -86,7 +93,9 @@
     themes: ['words2', 'themeLore'],
     sounds: ['sounds', 'pron'],
     coach: ['coachRules', 'concepts', 'words2'],
-    cloud: ['sync']
+    cloud: ['sync'],
+    /* everything any volume of the in-app reader can render */
+    reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes']
   };
 
   var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
