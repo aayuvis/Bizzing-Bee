@@ -235,9 +235,6 @@
         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${plate ? '50% 30%' : ((i * 29) % 78 + 8) + '% ' + (28 + (i * 17) % 44) + '%'}">
       <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,10,26,.06) 34%,rgba(14,10,26,${tall ? '.6' : '.5'}))"></span>
     </div>`; };
-  /* the mascot WALKS the foot of every spread — small, alive, and gone under Reduce motion */
-  const walker = v => { try { return window.SB_AVATAR
-    ? `<span class="rd-walk" aria-hidden="true"><span class="w4-flutter" style="display:block;width:38px;height:38px">${SB_AVATAR(v.av, 38)}</span></span>` : ''; } catch (e) { return ''; } };
   function spreadsOf(ch) {
     if (!ch) return [{ k: 'notes' }];
     const S = [{ k: 'open' }];
@@ -322,8 +319,7 @@
         <div style="position:relative;z-index:2;padding:clamp(16px,3.5vw,24px) clamp(38px,6vw,46px) 54px">
           ${sp.k !== 'open' ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)"><span style="color:${v.a}">${esc(wordsClampT(ch.title, 38))}</span>${pgLabel ? `<span>· ${pgLabel}</span>` : ''}</div>` : ''}
           ${spreadBody(v, ch, sp, slug, i)}
-        </div>
-        ${walker(v)}</div>
+        </div></div>
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:8px">
         <button data-act="readerPg" data-arg="prev" style="flex:none;padding:12px 18px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px;${p <= 0 ? 'opacity:.4;pointer-events:none' : ''}">← Back</button>
         <div style="flex:1;min-width:0">
