@@ -1042,6 +1042,12 @@
   .rd-method .trick{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin:9px 0}
   .rd-method b{color:var(--accent)}
   .rd-method ul,.rd-method ol{padding-left:1.2em;margin:.5em 0}
+  /* the volume's mascot walks the foot of every reader spread */
+  .rd-walk{position:absolute;bottom:6px;left:-48px;z-index:3;pointer-events:none;animation:rd-walk 26s linear infinite}
+  @keyframes rd-walk{0%{left:-48px;transform:scaleX(1)}49.6%{left:calc(100% + 10px);transform:scaleX(1)}
+    50%{left:calc(100% + 10px);transform:scaleX(-1)}99.6%{left:-48px;transform:scaleX(-1)}100%{left:-48px;transform:scaleX(1)}}
+  :root[data-motion="off"] .rd-walk{display:none}
+  @media (prefers-reduced-motion:reduce){ .rd-walk{display:none} }
   /* Fog belongs to a region you have not REACHED yet — on the pin, because a board is
      never wholly locked (its stops are). An unreached region recedes; a reached one is
      bold; the painting behind them both stays at full strength. */
@@ -1673,7 +1679,7 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
      carries a project URL and anon key, so shipping them changes nothing yet. -->
 <script defer src="sb-config.js?v=20260824q"></script>
 <script defer src="voice-cdn.js?v=20260824q"></script>
-<script>window.SB_ASSET_V="?v=20260828c";</script>
+<script>window.SB_ASSET_V="?v=20260828d";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->

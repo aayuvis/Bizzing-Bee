@@ -4,9 +4,17 @@
 // and advanced volumes honour the Advanced Pack gate.
 const { chromium } = require('playwright');
 const SRC = process.env.SRC || __dirname + '/..';
+const fs = require('fs');
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 (async () => {
+  // the books' OWN art leads the pages: chapter opener plates, per-poem plates,
+  // the volume divider — with the world banner as the never-a-hole fallback
+  const rsrc = fs.readFileSync(SRC + '/reader.js', 'utf8');
+  ok(/-ch' \+ pad2\(i \+ 1\) \+ '-opener\.jpg'/.test(rsrc), 'chapter spreads ask for their own painted opener plate');
+  ok(/'pp-' \+ String/.test(rsrc), 'poem pages ask for their own bespoke plate (pp-<slug>)');
+  ok(/-divider\.jpg'/.test(rsrc), 'the notes page wears the volume divider');
+  ok(/this\.dataset\.f=1;this\.src=/.test(rsrc), 'a missing plate falls back to the world banner, never a hole');
   const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const pg = await b.newPage({ viewport: { width: 1100, height: 900 } });
   const errs = []; pg.on('pageerror', e => errs.push(String(e.message)));
@@ -32,7 +40,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     // ---- a chapter is PAGED spreads: one at a time, art-led, never a wall ----
     app.readerCh(0); await W(300);
     out.spread = /Chapter 1 of/.test(document.body.textContent) && /page 1 of \d+/.test(document.body.textContent);
-    out.banner = !!document.querySelector('img[src*="app-art/w-"]');
+    out.banner = !!document.querySelector('img[src*="-opener"], img[src*="app-art/w-"]');
+    out.chrome = !!document.querySelector('.coach-card .coach-glimmer') && document.querySelectorAll('.coach-card [data-act="readerPg"]').length >= 2;
+    out.walker = !!document.querySelector('.rd-walk');
     out.paced = !document.querySelector('[data-act="readerWord"]');   // words wait on their own page
     const pg0 = state.readerPg || 0;
     app.readerPg('next'); await W(200);
@@ -95,7 +105,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.printPill, 'the print edition stays one pill away');
   ok(r.cover, 'the cover art comes from the books repo artwork');
   ok(r.spread, 'a chapter opens on its first SPREAD with a page count');
-  ok(r.banner, 'every spread leads with painted world art');
+  ok(r.banner, 'every spread leads with painted art');
+  ok(r.chrome, 'the spread wears the practice deck\'s coach-card chrome with edge rails');
+  ok(r.walker, 'the volume mascot walks the foot of the page');
   ok(r.paced, 'the opener is paced — the words wait on their own page');
   ok(r.turns && r.keysTurn, 'Next and the arrow keys turn the pages');
   ok(r.chips, 'the words page holds 4-10 tappable word tiles, never a wall');

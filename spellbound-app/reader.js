@@ -80,8 +80,12 @@
     else if (v.kind === 'poems') { const P = window.SB_POEMS || {};
       Object.keys(P).forEach(k => { const s = P[k]; if (s && s.pieces) out.push({ title: s.title || k, sub: s.blurb || '', pieces: s.pieces }); }); }
     else if (v.kind === 'similes') { const F = window.SB_FIG || {};
-      if (F.similes) out.push({ title: 'The similes', sub: 'as ___ as a ___ — pictures that stuck', figs: F.similes.filter(x => x.kid !== false) });
-      if (F.idioms) out.push({ title: 'The idiom hall of fame', sub: 'phrases that stopped meaning their words', figs: F.idioms.filter(x => x.kid !== false) }); }
+      /* the whole simile shelf, chaptered — a single "chapter" of 350 was a wall */
+      const parts = (list, name, sub) => { for (let i = 0; i < list.length; i += 36)
+        out.push({ title: name + (list.length > 36 ? ' · part ' + (i / 36 + 1) : ''), sub, figs: list.slice(i, i + 36) }); };
+      if (F.similes) parts(F.similes.filter(x => x.kid !== false), 'The similes', 'as ___ as a ___ — pictures that stuck');
+      if (F.idioms) { const id = F.idioms.filter(x => x.kid !== false).sort((a, b2) => (b2.freq || 0) - (a.freq || 0)).slice(0, 288);
+        parts(id, 'The idiom hall of fame', 'phrases that stopped meaning their words'); } }
     else if (v.kind === 'quotes') { const Q = window.SB_QUOTES || [];
       QUOTE_CH.forEach(([c, t, sub]) => { const qs = Q.filter(q => q && q.c === c); if (qs.length) out.push({ title: t, sub, quotes: qs.slice(0, 24) }); }); }
     return out;
@@ -126,7 +130,7 @@
     r[k][state.readerCh] = 1; save();
     const total = chapters(k).length; const done = Object.keys(r[k]).length;
     if (done >= total) { try { sfx('win'); burstConfetti(120); } catch (e) {} flash('🏁 ' + VOLS[k].t + ' — read cover to cover!'); set({ readerCh: null }); }
-    else if (state.readerCh + 1 < total) { try { sfx('correct'); } catch (e) {} set({ readerCh: state.readerCh + 1, readerPg: 0, readerQuiz: null }); }
+    else if (state.readerCh + 1 < total) { try { sfx('correct'); burstConfetti(70); } catch (e) {} flash('📖 Chapter done — on you go!'); set({ readerCh: state.readerCh + 1, readerPg: 0, readerQuiz: null }); }
     else set({ readerCh: null, readerPg: 0 }); };
   /* Try it: four meaning→word questions from THIS chapter. A coin per correct,
      and — deliberately — no spelling-progress writes: reading is not drilling. */
@@ -142,7 +146,9 @@
     if (ok) { z.right++; try { addCoins(1); sfx('correct'); } catch (e) {} } else { try { sfx('wrong'); say(q.ok); } catch (e) {} }
     render();
     setTimeout(() => { const n = state.readerQuiz; if (n !== z) return;
-      if (z.i + 1 < z.qs.length) { z.i++; z.picked = null; } else z.over = true; render(); }, ok ? 900 : 2400); };
+      if (z.i + 1 < z.qs.length) { z.i++; z.picked = null; }
+      else { z.over = true; if (z.right >= 3) { try { sfx('win'); burstConfetti(100); } catch (e) {} } }
+      render(); }, ok ? 900 : 2400); };
   app2.readerTryClose = () => set({ readerQuiz: null });
   app2.readerPrint = () => { try { const w = window.open(SITE + state.readerBook + '.html', '_blank', 'noopener');
     if (!w) flash('Pop-up blocked — allow pop-ups to open the print edition'); } catch (e) {} };
@@ -214,13 +220,24 @@
      capped per page, and the mascot rides along. ---- */
   const BANNERS = ['elements','engine','forum','grandtrunk','greysea','junkyard','library','meadow','origami','stage','strait','vibe','warfield'];
   const bWorld = v => BANNERS.indexOf(v.world) >= 0 ? v.world : (v.world === 'night' ? 'greysea' : 'stage');
-  const bnr = (v, i, tall) => {
+  const pad2 = n => String(n).padStart(2, '0');
+  /* the books' OWN plates: a painted opener per chapter (b01-ch03-opener.jpg), a
+     bespoke plate per poem (pp-<slug>.jpg), the volume divider for the notes page.
+     A plate that is not on the shelf falls back to the world banner — never a hole. */
+  const chArt = (slug, i) => ART + artOf(slug) + '-ch' + pad2(i + 1) + '-opener.jpg';
+  const ppArt = t => ART + 'pp-' + String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 44) + '.jpg';
+  const dvArt = slug => ART + artOf(slug) + '-divider.jpg';
+  const bnr = (v, i, tall, plate) => {
     const w = bWorld(v); const r = (i % 2) ? 3 : 2;
-    return `<div style="position:relative;height:${tall ? 172 : 96}px;overflow:hidden;flex:none">
-      <img src="app-art/w-${w}-r${r}.jpg" alt="" decoding="async" onerror="this.style.display='none'"
-        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${(i * 29) % 78 + 8}% ${28 + (i * 17) % 44}%">
-      <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,10,26,.08) 30%,rgba(14,10,26,${tall ? '.66' : '.5'}))"></span>
+    const fall = `app-art/w-${w}-r${r}.jpg`;
+    return `<div style="position:relative;height:${tall ? (plate ? 210 : 172) : 96}px;overflow:hidden;flex:none">
+      <img src="${plate || fall}" alt="" decoding="async" onerror="if(this.dataset.f){this.style.display='none'}else{this.dataset.f=1;this.src='${fall}'}"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${plate ? '50% 30%' : ((i * 29) % 78 + 8) + '% ' + (28 + (i * 17) % 44) + '%'}">
+      <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,10,26,.06) 34%,rgba(14,10,26,${tall ? '.6' : '.5'}))"></span>
     </div>`; };
+  /* the mascot WALKS the foot of every spread — small, alive, and gone under Reduce motion */
+  const walker = v => { try { return window.SB_AVATAR
+    ? `<span class="rd-walk" aria-hidden="true"><span class="w4-flutter" style="display:block;width:38px;height:38px">${SB_AVATAR(v.av, 38)}</span></span>` : ''; } catch (e) { return ''; } };
   function spreadsOf(ch) {
     if (!ch) return [{ k: 'notes' }];
     const S = [{ k: 'open' }];
@@ -285,17 +302,28 @@
     const S = spreadsOf(ch); const p = Math.max(0, Math.min(S.length - 1, state.readerPg || 0)); const sp = S[p];
     const last = p + 1 >= S.length; const lastCh = i + 1 >= chs.length;
     const pgLabel = sp.k === 'open' ? 'the opener' : sp.k === 'notes' ? 'your page' : sp.k === 'words' ? 'the words' : sp.k === 'method' ? 'the trick' : '';
+    /* which painting leads this page: the chapter's own opener plate, the poem's own
+       plate, the volume divider on the notes page — the world banner otherwise */
+    const plate = sp.k === 'open' ? chArt(slug, i) : sp.k === 'piece' ? ppArt(sp.p.t) : sp.k === 'notes' ? dvArt(slug) : null;
     return `<div style="max-width:680px;margin:0 auto;animation:sb-rise .3s ease both">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <button data-act="readerCh" data-arg="" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← ${esc(v.t)}</button>
         <span style="margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)">Chapter ${i + 1} of ${chs.length}</span></div>
-      <div class="sb-card" style="position:relative;overflow:hidden;padding:0;border-radius:22px;margin-bottom:12px">
+      ${/* the SAME card the practice deck wears — holo border, glow, glimmer, and the
+            d-pad edge rails: ‹ page · page ›, ↑ back to the contents. The reader must
+            render like the rest of the app, not like a website inside it. */''}
+      <div class="coach-card" style="position:relative;overflow:hidden;padding:0;border-radius:24px;margin-bottom:12px;touch-action:pan-y;-webkit-user-select:none;user-select:none">
+        <div class="coach-glimmer"></div>
         ${amb(v)}
-        ${bnr(v, p * 7 + i, sp.k === 'open')}
-        <div style="position:relative;z-index:2;padding:clamp(16px,3.5vw,24px)">
+        ${bnr(v, p * 7 + i, sp.k === 'open' || sp.k === 'piece', plate)}
+        <button data-act="readerCh" data-arg="" title="Back to the contents (↑)" aria-label="Back to the contents" style="position:absolute;left:0;right:0;top:0;height:30px;z-index:4;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:linear-gradient(180deg,rgba(14,10,26,.42),transparent);color:#FFF6DE;font-size:9.5px;font-weight:800;letter-spacing:.09em">↑ CONTENTS</button>
+        <button data-act="readerPg" data-arg="prev" ${p <= 0 ? 'disabled' : ''} title="Previous page (← key)" aria-label="Previous page" style="position:absolute;left:0;top:30px;bottom:0;width:32px;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) ${p > 0 ? '20' : '7'}%,transparent),transparent);color:${p > 0 ? 'var(--accent)' : 'var(--muted)'};${p > 0 ? '' : 'opacity:.45'}"><span style="font-size:15px;font-weight:900">‹</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.08em">PAGE</span></button>
+        <button data-act="readerPg" data-arg="next" title="Next page (→ key)" aria-label="Next page" style="position:absolute;right:0;top:30px;bottom:0;width:32px;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;background:linear-gradient(270deg,color-mix(in srgb,var(--good) 22%,transparent),transparent);color:var(--good)"><span style="font-size:15px;font-weight:900">›</span><span style="font-size:9px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.08em">${last ? 'DONE' : 'PAGE'}</span></button>
+        <div style="position:relative;z-index:2;padding:clamp(16px,3.5vw,24px) clamp(38px,6vw,46px) 54px">
           ${sp.k !== 'open' ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)"><span style="color:${v.a}">${esc(wordsClampT(ch.title, 38))}</span>${pgLabel ? `<span>· ${pgLabel}</span>` : ''}</div>` : ''}
           ${spreadBody(v, ch, sp, slug, i)}
-        </div></div>
+        </div>
+        ${walker(v)}</div>
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:8px">
         <button data-act="readerPg" data-arg="prev" style="flex:none;padding:12px 18px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px;${p <= 0 ? 'opacity:.4;pointer-events:none' : ''}">← Back</button>
         <div style="flex:1;min-width:0">
