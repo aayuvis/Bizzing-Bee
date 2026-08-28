@@ -133,7 +133,7 @@ const log = (persona, type, sev, step, msg) => { F.push({ persona, type, sev, st
       // Meet the words → flip to the last card
       await click(pg, 'trailWords'); await pg.waitForTimeout(500); await probe(pg, 'word deck');
       const nDeck = await pg.evaluate(() => state.trailWordsN || 0);
-      for (let i = 0; i < nDeck + 1; i++) { await click(pg, 'trailWordNav', '1'); await pg.waitForTimeout(60); }
+      for (let i = 0; i < nDeck + 1; i++) { await click(pg, 'trailWordNav', 'next'); await pg.waitForTimeout(60); }
       const wStar = await pg.evaluate(() => { const c = state.children[0]; const k = Object.keys(c.trail.st || {})[0]; return k ? !!c.trail.st[k].w : false; });
       log(pg._persona, wStar ? 'POS' : 'ISSUE', wStar ? '' : 'MED', 'word deck', wStar ? 'reaching the last card earns the words star' : 'flipping to the last card did NOT earn the words star');
       await pg.evaluate(a => app.trailUnit(a), first.arg); await pg.waitForTimeout(300);

@@ -6771,7 +6771,8 @@ function wordFlash(words, idx, navAct, opts){
     </div>
     ${selfMark?`<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
       <button data-act="${navAct}" data-arg="prev" style="padding:12px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
-      <span style="margin-left:auto;font-size:12px;color:var(--muted);font-weight:700;text-align:right">Pick <b style="color:var(--good)">Complete</b> or <b style="color:var(--treasure-deep,#8A5B00)">Mark for revision</b> above to continue</span>
+      <span style="flex:1;font-size:12px;color:var(--muted);font-weight:700;text-align:center"><b style="color:var(--good)">✓ Complete</b> or <b style="color:var(--treasure-deep,#8A5B00)">⚑</b> records the word — Next just moves on</span>
+      <button data-act="${navAct}" data-arg="next" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
     </div>`:`<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
       <button data-act="${navAct}" data-arg="prev" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
       <button data-act="${navAct}" data-arg="next" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>

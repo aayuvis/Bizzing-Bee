@@ -671,9 +671,6 @@
     return `<div style="${RISE(".3s")}max-width:640px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><button data-act="trailUnit" data-arg="${escA(u.id)}" style="color:var(--muted);font-weight:700;font-size:13px">← ${esc(u.title.split('—')[0].trim())}</button></div>
       ${wordFlash(ws, state.trailWordIdx || 0, 'trailWordNav', { selfMark: true })}
-      <div style="display:flex;justify-content:center;gap:10px;margin-top:12px">
-        <button data-act="trailWordNav" data-arg="-1" style="padding:11px 22px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">← Back</button>
-        <button data-act="trailWordNav" data-arg="1" style="padding:11px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800">Next →</button></div>
       <p style="text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:8px">✓ Complete marks it mastered · ⚑ sends it to your Revisions — same as Practice.</p>
     </div>`;
   }
