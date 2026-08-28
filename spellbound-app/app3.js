@@ -2522,14 +2522,17 @@ const app = {
      must not be able to reach two different answers about whether they own this.
      The slug is checked against SB_SHELF rather than pasted into a URL, so a stray
      data-arg cannot navigate anywhere we did not publish. */
+  /* A spine opens the IN-APP reader — living cards with word taps, audio,
+     Try-it exercises and notes. The printed site edition survives as the
+     "Print edition" pill inside the reader (that is the one people can buy). */
   openBook:(slug)=>{
     const v = SB_SHELF.find(b=>b.s===slug); if(!v) return;
     if(!gateFeature('books','The book series','regional')) return;
-    if(typeof navigator!=='undefined' && navigator.onLine===false){
-      flash('The books live on the web — reconnect to open them'); return; }
-    try{ const w=window.open(SB_BOOKS_URL+v.s+'.html','_blank','noopener');
-      if(!w) flash('Pop-up blocked — allow pop-ups to open the book'); }
-    catch(e){ flash('Could not open that book'); } },
+    SB_LAZY.need('reader', ()=>{
+      if(window.SB_READER && SB_READER.vols && SB_READER.vols[slug]){ SB_READER.open(slug); return; }
+      try{ const w=window.open(SB_BOOKS_URL+v.s+'.html','_blank','noopener');
+        if(!w) flash('Pop-up blocked — allow pop-ups to open the book'); }
+      catch(e){ flash('Could not open that book'); } }); },
   landPlans:()=>{ try{ const el=document.getElementById('land-plans');
     if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); return; } }catch(e){}
     render(); },
@@ -5027,6 +5030,7 @@ function viewApp(){
   else if(S.nav==='beeband') content=viewBeeBand();
   else if(S.nav==='coachdesk') content=viewCoachDesk();
   else if(S.nav==='traps') content=viewTraps();
+  else if(S.nav==='reader') content=(window.SB_READER?SB_READER.view():'<div class="sb-cn">The reader is loading…</div>');
   else if(S.nav==='revisions') content=viewRevisions();
   else if(S.nav==='evolution') content=viewEvolution();
   else if(S.nav==='collection') content=viewCollection();
@@ -10131,7 +10135,8 @@ function viewKey(){
      identity; this key keeps the body-level mechanism telling the same story. */
   try{ return [state.screen, state.nav, state.view, state.coachTab, state.vocTab,
     state.vocDeck, state.mb && state.mb.view, state.trailView, state.trailAct,
-    state.trailUnit, state.trailChk, state.trailStop, state.chapter].join('|'); }
+    state.trailUnit, state.trailChk, state.trailStop, state.chapter,
+    state.readerBook, state.readerCh, !!state.readerQuiz].join('|'); }
   catch(e){ return ''; }
 }
 var _lastViewKey = null;
