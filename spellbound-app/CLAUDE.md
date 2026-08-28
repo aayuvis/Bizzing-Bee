@@ -710,6 +710,12 @@ out of saga2.js so a retune cannot quietly undo them.
   at a different random height. Three precise manoeuvres for one word. The bee's real path
   is the line between the two gaps, so the pickup sits on it. That is why a pickup is placed
   when tower N+1 spawns, not tower N — only then are both ends known (`prevTower`).
+  **And `prevTower` must be the LIVE tower object, never a snapshot.** It was `{x:o.x,mid}`
+  taken at spawn time — but towers drift left every frame, so at the next spawn the stored
+  x was still `Wd+30` and "the midpoint" `(Wd+30+Wd+30)/2` sat EXACTLY on the new tower's
+  pillar: the pot-in-the-wall bug back a third time with the formula "correct". Hold the
+  object and its x has drifted with the world when it is read. The geometry guard now pins
+  `prevTower=o` and forbids `prevTower={x:`.
 - **Everything a tower places MUST drift at `CFG.speed`.** Hearts were on `CFG.speed*0.8`
   while the geometry that placed them moved at 1x, so a heart laid on the lane slid off it.
   The comment above the placement code claimed "everything drifts at CFG.speed"; hearts did
@@ -991,6 +997,25 @@ out of saga2.js so a retune cannot quietly undo them.
   sits after the base `.lib-*` rules, because declared above them its `display:none` and
   `font-size` were quietly beaten by the base rules.
 
+## The Champion's Expedition — bright boards, visible secrets (NO fog)
+- The expedition layer (trail.js, `fogLayer`/`uSpots`/`uP`) puts three per-child seeded
+  secrets on EVERY board — a word-wisp tap-gift (+8), a rival best-of-3 duel (+25), and a
+  gate: the **Hidden Pass** on Ultra (its 3-word chain opens the NEXT landmark early) or
+  the **Cartographer's Gate** on the teaching road (+20). Ultra also runs the non-linear
+  spine: two open stops at once, 3-of-4 opens the next landmark, a stop is EARNED at 70%+
+  in a real session (never on Train tap), and all four stops + all three secrets = the 🏅
+  emblem. Guard: `tests/champion-expedition.cjs`.
+- **The fog of war is DELETED and must not return.** It shipped for three days as a dark
+  veil with scout-to-clear cells; the play-test verdict was immediate ("why is the map so
+  dark and just a focal point?" — Ahana, with the parent asking for its removal). The
+  boards stay bright; surprise lives in the visible markers, the chests, the ambush and
+  the trivia — never in hiding the painting. `fogLayer` now returns only the marker layer.
+- **Quiz items serve themselves** (`tqAutoSay`/`tqAutoNext` in trail.js): a spell item
+  says its word 450ms after arriving, and an answered item advances itself — 1.1s on a
+  right answer, 3.2s on a wrong one so the correct spelling can actually be read. The
+  child was pressing the speaker button and then Enter twice per word. Guard:
+  `tests/ux-826.cjs`.
+
 ## The Atlas is a journey on scenery, not a painting with pins
 - **THE PAINTING RUNS NEAR FULL AND THE FOG MEANS SOMETHING.** (Reversed Aug 2026 after
   play-testing.) The map used to be held at `opacity:.6` / `saturate(.78)` — dusk `.5`,
@@ -1060,6 +1085,14 @@ out of saga2.js so a retune cannot quietly undo them.
   the browser (incognito showing the old build is the tell that it is not cache).
   Site weight today: **183MB** — voice 53MB, avatars 33MB, app-art 7.6MB. It was 256MB,
   over the line, until the books moved off it (below).
+- **Every book image is `loading="lazy"`** — `lazyImgs()` in mkbooks.js stamps it at emit,
+  one choke point for ~100 `<img>` per volume. Eager, a tapped spine downloaded every
+  plate in the book at once, which read as "the shelf takes a long time to load". The
+  newer generator draws mascots INLINE, so the deploy script's used-avatars grep can
+  legitimately match nothing — it is wrapped `|| true` because `pipefail` + an empty grep
+  killed the publish silently at "assembling". A session that publishes needs
+  `aayuvis/bizzing-bee-books` attached with push access (add_repo), or the git proxy
+  refuses the credential at the final push.
 - **The books are NOT on this site any more.** They are published from
   `aayuvis/bizzing-bee-books` → https://aayuvis.github.io/bizzing-bee-books/ , by
   `books/deploy-books-repo.sh` run from `spellbound-app/`. This branch keeps 24 redirect
