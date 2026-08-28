@@ -29,12 +29,21 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     out.printPill = !!document.querySelector('[data-act="readerPrint"]');
     out.cover = !!document.querySelector('img[src*="b01-cover"]');
 
-    // ---- a chapter spread: prose cards, tappable words, audio card ----
+    // ---- a chapter is PAGED spreads: one at a time, art-led, never a wall ----
     app.readerCh(0); await W(300);
-    out.spread = /Chapter 1 of/.test(document.body.textContent) && /The idea/.test(document.body.textContent);
+    out.spread = /Chapter 1 of/.test(document.body.textContent) && /page 1 of \d+/.test(document.body.textContent);
+    out.banner = !!document.querySelector('img[src*="app-art/w-"]');
+    out.paced = !document.querySelector('[data-act="readerWord"]');   // words wait on their own page
+    const pg0 = state.readerPg || 0;
+    app.readerPg('next'); await W(200);
+    out.turns = (state.readerPg || 0) === pg0 + 1;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })); await W(150);
+    out.keysTurn = (state.readerPg || 0) === pg0;
+    let guard = 0;
+    while (!document.querySelector('[data-act="readerWord"]') && guard++ < 14) { app.readerPg('next'); await W(120); }
     const chips = document.querySelectorAll('[data-act="readerWord"]');
-    out.chips = chips.length >= 4;
-    app.readerWord('0'); await W(250);
+    out.chips = chips.length >= 4 && chips.length <= 10;   // capped per page
+    app.readerWord(chips[0].getAttribute('data-arg')); await W(250);
     out.wordCard = !!state.wordCard && !!document.querySelector('[data-act="wordCardClose"]');
     app.wordCardClose ? app.wordCardClose() : (state.wordCard = null, render()); await W(150);
 
@@ -58,10 +67,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     app.readerCh(''); await W(250);
     out.tocNote = document.body.innerHTML.indexOf('📝') >= 0 && /✓/.test(document.body.textContent);
 
-    // ---- the poems companion renders whole pieces with their hard words ----
+    // ---- the poems companion: one whole piece per page, with its hard words ----
     app.openBook('book-lines'); await W(600);
     app.readerCh(0); await W(300);
-    out.poems = /Shakespeare|Wordsworth|Dickinson|Frost/i.test(document.body.textContent) && !!document.querySelector('[data-act="readerSayHard"]');
+    app.readerPg('next'); await W(250);
+    out.poems = /Shakespeare|Wordsworth|Dickinson|Frost|Henley|Kipling/i.test(document.body.textContent) && !!document.querySelector('[data-act="readerSayHard"]');
     // ---- the quiz companion says honestly: paper book, print it / play trivia ----
     app.openBook('book-quiz'); await W(300);
     out.quizBook = /paper/.test(document.body.textContent) && !!document.querySelector('[data-act="readerPrint"]') && !!document.querySelector('[data-act="openGames"]');
@@ -84,8 +94,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.home, 'the volume home shows the title and a real table of chapters');
   ok(r.printPill, 'the print edition stays one pill away');
   ok(r.cover, 'the cover art comes from the books repo artwork');
-  ok(r.spread, 'a chapter renders as cards');
-  ok(r.chips, 'the chapter words are tappable chips');
+  ok(r.spread, 'a chapter opens on its first SPREAD with a page count');
+  ok(r.banner, 'every spread leads with painted world art');
+  ok(r.paced, 'the opener is paced — the words wait on their own page');
+  ok(r.turns && r.keysTurn, 'Next and the arrow keys turn the pages');
+  ok(r.chips, 'the words page holds 4-10 tappable word tiles, never a wall');
   ok(r.wordCard, 'tapping a word opens the full word card (with audio)');
   ok(r.tryUp, 'Try it pops four meaning questions from this chapter');
   ok(r.tryPays, 'right answers pay a coin each and the round completes');
