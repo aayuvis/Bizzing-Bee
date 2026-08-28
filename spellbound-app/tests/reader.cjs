@@ -42,7 +42,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     out.spread = /Chapter 1 of/.test(document.body.textContent) && /page 1 of \d+/.test(document.body.textContent);
     out.banner = !!document.querySelector('img[src*="-opener"], img[src*="app-art/w-"]');
     out.chrome = !!document.querySelector('.coach-card .coach-glimmer') && document.querySelectorAll('.coach-card [data-act="readerPg"]').length >= 2;
-    out.walker = !!document.querySelector('.rd-walk');
+    out.walker = !document.querySelector('.rd-walk');   // the walking mascot was cut: too distracting
     out.paced = !document.querySelector('[data-act="readerWord"]');   // words wait on their own page
     const pg0 = state.readerPg || 0;
     app.readerPg('next'); await W(200);
@@ -107,7 +107,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.spread, 'a chapter opens on its first SPREAD with a page count');
   ok(r.banner, 'every spread leads with painted art');
   ok(r.chrome, 'the spread wears the practice deck\'s coach-card chrome with edge rails');
-  ok(r.walker, 'the volume mascot walks the foot of the page');
+  ok(r.walker, 'NO mascot walks the page (play-tested as too distracting)');
   ok(r.paced, 'the opener is paced — the words wait on their own page');
   ok(r.turns && r.keysTurn, 'Next and the arrow keys turn the pages');
   ok(r.chips, 'the words page holds 4-10 tappable word tiles, never a wall');
