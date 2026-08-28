@@ -1505,9 +1505,15 @@ const POEM_FIT = `<script>
 })();
 <\/script>`;
 
+/* Every plate below the first viewport loads only as the reader nears it. A volume
+   carries ~100 <img> tags; eager, they all downloaded the moment a spine was tapped —
+   "the book shelf takes a long time to load" was really this. loading="lazy" is safe
+   on the cover too: an image already in the viewport is fetched immediately anyway. */
+function lazyImgs(html) { return html.replace(/<img (?![^>]*\bloading=)/g, '<img loading="lazy" decoding="async" '); }
+
 /* verso marking + emit */
 function finish(vol, pages, meta) {
-  const html = pages.map((p, i) => i > 0 && i % 2 === 0 ? p.replace('<div class="page"', '<div class="page" data-verso') : p).join('\n');
+  const html = lazyImgs(pages.map((p, i) => i > 0 && i % 2 === 0 ? p.replace('<div class="page"', '<div class="page" data-verso') : p).join('\n'));
   const doc = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(vol.title)} — Bizzing Bee Library Vol. ${vol.n}</title>
@@ -2483,7 +2489,7 @@ footer{max-width:1180px;margin:38px auto 0;padding:0 22px;font-size:12px;color:#
 </main>
 <footer>Bizzing Bee &middot; independent study material &middot; not affiliated with Scripps, the North South Foundation, or Merriam-Webster.</footer>
 </body></html>`;
-fs.writeFileSync('books/index.html', hub);
+fs.writeFileSync('books/index.html', lazyImgs(hub));
 series.forEach(m => console.log(`Vol.${String(m.vol.n).padStart(2)} ${m.vol.title.padEnd(24)} ${String(m.pages).padStart(4)} pages`));
 companions.forEach(m => console.log(`  comp. ${m.vol.title.padEnd(24)} ${String(m.pages).padStart(4)} pages  (${slugOf(m.vol)}.html)`));
 console.log('total pages:', made.reduce((a, m) => a + m.pages, 0));

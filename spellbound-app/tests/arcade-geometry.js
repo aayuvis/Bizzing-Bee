@@ -31,6 +31,10 @@ const LIFT = +src.match(/if\(holding\) bee\.vy-=([\d.]+);/)[1];
 // the pickup must be ON the line between the two gaps, not pinned to one of them
 ok(/px=\(prevTower\.x\+o\.x\)\/2/.test(src) && /py=\(prevTower\.mid\+mid\)\/2/.test(src),
    'pickups are placed at the midpoint between two consecutive gaps');
+// and prevTower must be the LIVE tower object: a snapshot {x:Wd+30} goes stale as towers
+// drift, which put the "midpoint" exactly ON the next pillar (the pot-in-the-wall bug, twice)
+ok(/prevTower=o; \}/.test(src) && !/prevTower=\{x:/.test(src),
+   'prevTower holds the live tower object, so its x drifts with the world');
 ok(!/const TRAIL=/.test(src), 'the old fixed TRAIL offset is gone');
 // hearts MUST drift at the tower speed or a placed heart slides off its lane
 ok(/hearts\.forEach\(h=>\{ h\.x-=CFG\.speed;/.test(src),

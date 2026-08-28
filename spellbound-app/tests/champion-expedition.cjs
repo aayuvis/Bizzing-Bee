@@ -1,7 +1,8 @@
-// The Champion's Expedition: fog of war on EVERY board, scouting by spelling,
-// per-child seeded secrets (wisp / rival duel / gate), the Hidden Pass that skips
-// a landmark, the Cartographer's Gate on the teaching road, two open Ultra stops,
-// 3-of-4 progression, stops EARNED at 70%, and the fully-mapped emblem.
+// The Champion's Expedition, post-fog: the boards stay BRIGHT (play-testing killed
+// the mist — "why is the map so dark?"), and the three per-child seeded secrets sit
+// visibly on every board as tappable surprises: the word-wisp gift, the rival duel,
+// and the gate (Hidden Pass on Ultra / Cartographer's Gate on the teaching road).
+// Plus the non-linear spine: two open stops, 3-of-4, stops EARNED at 70%, the emblem.
 const { chromium } = require('playwright');
 const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
@@ -21,31 +22,22 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     const c = state.children[0];
     const R = Math.random; Math.random = () => 0.5;   // no ambushes/chest rolls underfoot
 
-    // ---- ULTRA LANDMARK: fog, two open stops, hidden pins ----
+    // ---- ULTRA LANDMARK: bright board, two open stops, secrets in the open ----
     app.ultraAct(0); await W(300);
-    out.fog = document.querySelectorAll('svg mask rect').length > 0 && /rgba\(20,15,42/.test(document.body.innerHTML);
-    out.cells = document.querySelectorAll('[data-act="uScout"]').length;
+    out.noFog = !/rgba\(20,15,42/.test(document.body.innerHTML) && !document.querySelector('[data-act="uScout"]');
     out.twoOpen = document.querySelectorAll('.atlas-stop.now').length === 2;
-    const pins = document.querySelectorAll('[data-act="ultraPick"]').length;
-    out.hiddenPins = pins < 4;                       // stops 3-4 still under the mist
+    out.allPins = document.querySelectorAll('[data-act="ultraPick"]').length === 4;
+    out.secretsVisible = !!document.querySelector('[data-act="uWisp"]') && !!document.querySelector('[data-act="uDuel"]') && !!document.querySelector('[data-act="uGate"]');
     out.secretsLine = /0\/3 secrets/.test(document.body.textContent);
 
-    // ---- scouting: spell to clear; the wisp claims itself ----
-    const spots = SB_EXPED.spots('u0');
-    const wisp = spots.find(s => s.k === 'wisp');
-    app.uScout(wisp.x + ',' + wisp.y); await W(200);
-    out.scoutCard = state.uq && state.uq.kind === 'scout' && /Scout the mist/.test(document.body.innerHTML);
-    app.uqType('zz'); app.uqGo(); await W(100);
-    out.scoutWrongHolds = !!state.uq;
+    // ---- the wisp is a tap-gift ----
     const coins0 = c.coins;
-    app.uqType(state.uq.w); app.uqGo(); await W(150);
-    out.wispFound = !state.uq && (SB_EXPED.prog().finds.u0 || {}).wisp === 1 && c.coins === coins0 + 8;
+    app.uWisp(); await W(150);
+    out.wispGift = c.coins === coins0 + 8 && (SB_EXPED.prog().finds.u0 || {}).wisp === 1;
+    app.ultraAct(0); await W(200);
+    out.wispGone = !document.querySelector('[data-act="uWisp"]');
 
     // ---- the rival duel: best of three ----
-    const duel = spots.find(s => s.k === 'duel');
-    app.uScout(duel.x + ',' + duel.y); await W(150);
-    app.uqType(state.uq.w); app.uqGo(); await W(150);
-    out.duelMarker = !!document.querySelector('[data-act="uDuel"]');
     app.uDuel(); await W(150);
     out.duelCard = state.uq && state.uq.kind === 'duel' && !!state.uq.rival;
     const cW = c.coins;
@@ -54,9 +46,6 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     out.duelWon = !state.uq && c.coins === cW + 25 && (SB_EXPED.prog().finds.u0 || {}).duel === 1;
 
     // ---- the Hidden Pass: 3-word chain, next landmark opens EARLY ----
-    const gate = spots.find(s => s.k === 'gate');
-    app.uScout(gate.x + ',' + gate.y); await W(150);
-    app.uqType(state.uq.w); app.uqGo(); await W(150);
     app.uGate(); await W(150);
     out.gateCard = state.uq && state.uq.kind === 'gate';
     app.uqType('zz'); app.uqGo(); await W(100);
@@ -78,8 +67,6 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
     // ---- 3 of 4 opens the next landmark by the road too ----
     SB_TRAIL_PRACTICED('ul1', 9, 10); SB_TRAIL_PRACTICED('ul2', 9, 10);
-    const openByRoad = (function () { try { return !!(state.devUnlock) && true; } catch (e) { return false; } })();
-    out.roadRule = SB_EXPED.prog().gates[1] === 1 || openByRoad;   // gate already open; road rule visible on pin sub
     app.trailToMap(); await W(300);
     out.overview = /3\/4 stops|by the Hidden Pass|fully mapped|all four cleared/.test(document.body.textContent);
 
@@ -87,31 +74,27 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     SB_TRAIL_PRACTICED('ul3', 9, 10);
     out.emblem = SB_EXPED.prog().emb.u0 === 1;
     app.ultraAct(0); await W(250);
-    out.fogLifts = !/rgba\(20,15,42/.test(document.body.innerHTML);   // fully mapped board wears no mist
+    out.mappedClean = !document.querySelector('[data-act="uWisp"],[data-act="uDuel"],[data-act="uGate"]');
 
-    // ---- the teaching road: fog + scouting + the CARTOGRAPHER'S gate ----
+    // ---- the teaching road: same visible secrets; the gate is the CARTOGRAPHER'S ----
     app.trailAct('honey|meadow'); await W(300);
-    out.honeyFog = /rgba\(20,15,42/.test(document.body.innerHTML) && document.querySelectorAll('[data-act="uScout"]').length > 0;
-    const hs = SB_EXPED.spots('meadow'); const hGate = hs.find(s => s.k === 'gate');
-    app.uScout(hGate.x + ',' + hGate.y); await W(150);
-    app.uqType(state.uq.w); app.uqGo(); await W(150);
+    out.honeyBright = !/rgba\(20,15,42/.test(document.body.innerHTML) && !document.querySelector('[data-act="uScout"]');
+    out.honeySecrets = !!document.querySelector('[data-act="uWisp"]') && !!document.querySelector('[data-act="uDuel"]') && !!document.querySelector('[data-act="uGate"]');
     app.uGate(); await W(150);
     const cG = c.coins;
     for (let i = 0; i < 3; i++) { app.uqType(state.uq.words[i].w); app.uqGo(); await W(100); }
-    const rev = SB_EXPED.prog().rev.meadow || [];
-    out.cartographer = c.coins === cG + 20 && rev.some(cc => cc[2] >= 100);
+    out.cartographer = !state.uq && c.coins === cG + 20 && (SB_EXPED.prog().finds.meadow || {}).gate === 1;
     Math.random = R;
     return out;
   });
-  ok(r.fog, 'the Ultra board opens under the mist');
-  ok(r.cells > 10, 'the mist is scoutable — ' + r.cells + ' tap-cells over the unknown');
+  ok(r.noFog, 'the Ultra board is BRIGHT — no mist, no scout cells');
   ok(r.twoOpen, 'TWO spine stops are open at once — pick your order');
-  ok(r.hiddenPins, 'stops beyond the open pair wait unseen under the fog');
-  ok(r.secretsLine, 'the header counts the secrets still hidden (0/3)');
-  ok(r.scoutCard, 'tapping the mist asks for one spelled word');
-  ok(r.scoutWrongHolds, 'a wrong spelling keeps the mist closed');
-  ok(r.wispFound, 'scouting the right patch uncovers the word-wisp (+8)');
-  ok(r.duelMarker && r.duelCard, 'a revealed rival waits with a named challenge');
+  ok(r.allPins, 'all four stops are visible on the road');
+  ok(r.secretsVisible, 'the three seeded secrets sit visibly on the board');
+  ok(r.secretsLine, 'the header counts the secrets still unfound (0/3)');
+  ok(r.wispGift, 'tapping the word-wisp is a surprise gift (+8)');
+  ok(r.wispGone, 'a claimed wisp leaves the board');
+  ok(r.duelCard, 'the rival waits with a named challenge');
   ok(r.duelWon, 'winning the best-of-3 duel pays 25 coins');
   ok(r.gateCard, 'the Hidden Pass demands a 3-word chain');
   ok(r.chainResets, 'a miss breaks the chain back to the start');
@@ -119,11 +102,12 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.notDoneOnTap, 'tapping Train no longer stamps a stop done');
   ok(r.fiftyFails, '50% in a session records the best but does not clear');
   ok(r.ninetyClears, '90% in a session EARNS the stop');
-  ok(r.overview, 'the overview pins tell the new story (x/4, passes, mapped)');
+  ok(r.overview, 'the overview pins tell the story (x/4, passes, mapped)');
   ok(r.emblem, 'all four stops + all three secrets = the 🏅 emblem');
-  ok(r.fogLifts, 'a fully-mapped board wears no mist at all');
-  ok(r.honeyFog, 'the TEACHING road boards carry the same mist and scouting');
-  ok(r.cartographer, "there the gate is the Cartographer's: the chain unveils the whole map (+20)");
+  ok(r.mappedClean, 'a fully-mapped board carries no leftover markers');
+  ok(r.honeyBright, 'the TEACHING road boards are bright too');
+  ok(r.honeySecrets, 'and carry the same three visible secrets');
+  ok(r.cartographer, "there the gate is the Cartographer's: the chain pays +20");
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);

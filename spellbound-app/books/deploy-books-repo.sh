@@ -64,7 +64,9 @@ cp "$SRC"/fonts/*.woff2     "$R/fonts/"
 
 # only the avatars the books actually reference — all of them is 33MB, the
 # books use about 19MB of it
-grep -ohE "\.\./avatars/[A-Za-z0-9._-]+" "$R"/books/*.html \
+# (the newer generator draws its mascots inline, so this list can be EMPTY —
+# grep exits 1 on zero matches and pipefail would kill the whole script)
+{ grep -ohE "\.\./avatars/[A-Za-z0-9._-]+" "$R"/books/*.html || true; } \
   | sed 's|\.\./avatars/||' | sort -u > "$R/.used-avatars"
 while read -r f; do
   [ -f "$SRC/avatars/$f" ] && cp "$SRC/avatars/$f" "$R/avatars/"

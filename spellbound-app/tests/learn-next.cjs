@@ -30,12 +30,14 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     document.querySelector('[data-act="reviseNav"][data-arg="prev"]').click(); await W(150);
     out.backs = (state.reviseIdx || 0) === 0;
 
-    // ---- last card: Next becomes a disabled "All done" instead of vanishing ----
+    // ---- last card: a LIVE "Finish 🎉" that celebrates and hands over to practice ----
     const N = (state.sessionWords && state.sessionWords.length) || (typeof LEVEL_WORDS !== 'undefined' ? LEVEL_WORDS.length : 1);
     state.reviseIdx = N - 1; render(); await W(150);
-    const last = document.querySelector('[data-act="reviseNav"][data-arg="next"]');
-    out.lastDone = !!last && /All done/.test(last.textContent) && /pointer-events:none/.test(last.getAttribute('style') || '');
-    state.reviseIdx = 0;
+    const fin = document.querySelector('[data-act="deckFinish"]');
+    out.lastFinish = !!fin && /Finish/.test(fin.textContent);
+    if (fin) fin.click(); await W(200);
+    out.finishHandsOver = state.luTab === 'practice';
+    state.luTab = 'revise'; state.reviseIdx = 0;
 
     // ---- the Atlas "Meet the words" screen: exactly ONE Back and ONE Next ----
     await new Promise(res => SB_LAZY.need('atlas', res)); await W(300);
@@ -59,7 +61,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.advances, 'Next advances the card');
   ok(r.noWrites, 'and records NOTHING — no mastery, no revise entry');
   ok(r.backs, 'Back returns to the previous card');
-  ok(r.lastDone, 'the last card wears a disabled "All done ✓"');
+  ok(r.lastFinish, 'the last card wears a live "Finish 🎉"');
+  ok(r.finishHandsOver, 'finishing the deck celebrates and hands over to Practice Spelling');
   ok(r.atlasView, 'the Atlas Meet-the-words screen opens');
   ok(r.atlasNext && r.atlasBack, 'it has exactly ONE Next and ONE Back (no doubled row)');
   ok(r.atlasAdvances, 'and its Next walks the deck');
