@@ -1031,6 +1031,12 @@
   /* Reduce motion means REDUCE MOTION: the layer goes entirely, not merely slower. */
   :root[data-motion="off"] .atlas-amb{display:none}
   @media (prefers-reduced-motion:reduce){ .atlas-amb{display:none} }
+  /* the three seeded secrets sit in the open now (the fog is gone for good) —
+     a slow twinkle says "tap me" without stealing the board */
+  .atlas-secret{animation:sb-secret 2.8s ease-in-out infinite}
+  @keyframes sb-secret{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.18)}}
+  :root[data-motion="off"] .atlas-secret{animation:none}
+  @media (prefers-reduced-motion:reduce){ .atlas-secret{animation:none} }
   /* Fog belongs to a region you have not REACHED yet — on the pin, because a board is
      never wholly locked (its stops are). An unreached region recedes; a reached one is
      bold; the painting behind them both stays at full strength. */
@@ -1689,17 +1695,17 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="pricing.js?v=20260824q"></script>
 <script defer src="auth.js?v=20260824q"></script>
 <script defer src="supabase-auth.js?v=20260824q"></script>
-<script defer src="app3.js?v=20260825k"></script>
-<script defer src="worlds4.js?v=20260824q"></script>
+<script defer src="app3.js?v=20260828a"></script>
+<script defer src="worlds4.js?v=20260828a"></script>
 <script defer src="mockbee.js?v=20260824q"></script>
   <script defer src="games-daily.js?v=20260824q"></script>
   <script defer src="saga-art/saga-art.js?v=20260824q"></script>
   <script defer src="saga-art/saga-map.js?v=20260824q"></script>
   <script defer src="saga-art/worlds-art.js?v=20260824q"></script>
   <script defer src="saga-art-dom.js?v=20260824q"></script>
-  <script defer src="saga2.js?v=20260825g"></script>
+  <script defer src="saga2.js?v=20260828a"></script>
 <script defer src="trivia.js?v=20260824q"></script>
 <script defer src="advanced.js?v=20260824q"></script>
-<script defer src="trail.js?v=20260825k"></script>
+<script defer src="trail.js?v=20260828a"></script>
 </body>
 </html>

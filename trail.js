@@ -336,7 +336,7 @@
     const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
     if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
-    set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); };
+    set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); tqAutoSay(); };
   /* "Next stop →" from a cleared stop: the node AFTER this one on the route — a unit
      or a checkpoint. trailUnit/trailChk still enforce the frontier, so this can never
      jump a lock; at the end of the tier it says so and returns to the map. */
@@ -408,18 +408,27 @@
       state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
       state.sessionLabel = u.title.split('—')[0].trim(); state.gi = 0; app2.startTrain(); }); };
   app2.trailQuiz = () => { const u = unit(state.trailUnit);
-    needMap(() => set({ trailView: 'quiz', trailChk: null, tq: { items: buildQuiz(u), i: 0, score: 0, picked: null, typed: '', missed: [], over: false } })); };
+    needMap(() => { set({ trailView: 'quiz', trailChk: null, tq: { items: buildQuiz(u), i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); tqAutoSay(); }); };
+  /* Play-tested (Amrita 8.25/8.26): a spell item must SAY its word on arrival, and an
+     answered item must move on BY ITSELF — the child was pressing the speaker, then
+     Enter twice. A wrong answer lingers longer so the correct spelling can be read;
+     the Next button stays for anyone faster than the timer. */
+  const tqAutoSay = () => setTimeout(() => { try { const q2 = state.tq;
+    if (q2 && !q2.over && q2.picked == null) { const it = q2.items[q2.i]; if (it && it.ty === 'spell' && it.w) say(it.w); } } catch (e) {} }, 450);
+  const tqAutoNext = ok2 => { const q2 = state.tq; const at = q2.i;
+    setTimeout(() => { try { const n = state.tq;
+      if (n === q2 && !n.over && n.picked != null && n.i === at) app2.tqNext(); } catch (e) {} }, ok2 ? 1100 : 3200); };
   app2.tqPick = i => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
-    q2.picked = +i; if (+i === it.ans) q2.score++; else q2.missed.push(it);
-    render(); };
+    q2.picked = +i; const ok2 = +i === it.ans; if (ok2) q2.score++; else q2.missed.push(it);
+    render(); tqAutoNext(ok2); };
   app2.tqSpell = () => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
     const ok = nkey(state.tqTyped || '') === nkey(it.w); q2.picked = ok ? 1 : 0; q2.right = ok;
     if (ok) q2.score++; else q2.missed.push(it);
-    render(); };
+    render(); tqAutoNext(ok); };
   app2.tqSay = () => { const it = state.tq && state.tq.items[state.tq.i]; if (it && it.w) say(it.w); };
   app2.tqNext = () => { const q2 = state.tq; if (!q2 || q2.picked == null) return;
     state.tqTyped = '';
-    if (q2.i + 1 >= q2.items.length) { q2.over = true; finishQuiz(); } else { q2.i++; q2.picked = null; }
+    if (q2.i + 1 >= q2.items.length) { q2.over = true; finishQuiz(); } else { q2.i++; q2.picked = null; tqAutoSay(); }
     render(); };
   function finishQuiz() { const c = active(); const q2 = state.tq; const pct = q2.items.length ? q2.score / q2.items.length : 0;
     q2.pct = pct; q2.pass = pct >= gate();
@@ -435,7 +444,7 @@
       save(); }
   }
   app2.tqRevise = () => { const q2 = state.tq; if (!q2) return;
-    set({ tq: { items: shuffle(q2.missed.slice()), i: 0, score: 0, picked: null, typed: '', missed: [], over: false, revising: true } }); };
+    set({ tq: { items: shuffle(q2.missed.slice()), i: 0, score: 0, picked: null, typed: '', missed: [], over: false, revising: true } }); tqAutoSay(); };
   app2.tqInput = v => { state.tqTyped = String(v == null ? '' : v); };
 
   /* ---- views ---- */
@@ -859,7 +868,7 @@
           font-family:var(--display);font-weight:800;font-size:${cur ? 17 : 15}px;box-shadow:0 4px 12px rgba(6,4,18,.5)">${emb ? '🏅' : isDone ? '✓' : (i + 1)}</span>
         <span class="atlas-chip"><b>${esc(label)}</b>${sub}</span></button>`;
     }).join('');
-    const line = 'Five landmarks under the mist. Clear 3 of 4 stops to move on — or scout out the Hidden Pass and skip ahead.';
+    const line = 'Five landmarks, each hiding secrets. Clear 3 of 4 stops to move on — or find the Hidden Pass ⛩️ and skip ahead.';
     return `<div class="atlas-board">
       <img src="app-art/atlas-ultra.jpg" alt="" loading="lazy" decoding="async">
       ${pins}
@@ -903,22 +912,22 @@
   }
   const ultraDone = (c, id) => !!(uProg(c).done || {})[id];
   /* ---------------------------------------------------------------
-     THE CHAMPION'S EXPEDITION — the journey was linear and fully lit:
-     twenty stops in a fixed line, everything visible from the first
-     second, and a stop marked done the moment Train was TAPPED. Now:
-       FOG OF WAR   the board starts veiled; the golden road and your
-                    open stops show through, everything else is mist.
-       SCOUTING     tap the mist, spell ONE word, clear that patch —
-                    exploration always costs a word, never a chore.
-       SURPRISES    three secrets seeded PER CHILD under each board's
-                    fog: a word-wisp (coins), a rival champion (a
-                    best-of-3 spell-duel), and the HIDDEN PASS — spell
-                    its 3-word chain and the NEXT landmark opens early.
+     THE CHAMPION'S EXPEDITION — the journey was linear: twenty stops
+     in a fixed line and a stop marked done the moment Train was TAPPED.
+     It briefly wore a fog-of-war veil; play-testing killed the fog
+     ("why is the map so dark?" — Ahana, 8.25) while keeping the rest:
+       SURPRISES    three secrets seeded PER CHILD sit VISIBLY on each
+                    board: a word-wisp (a tap-gift of coins), a rival
+                    champion (a best-of-3 spell-duel), and the HIDDEN
+                    PASS — spell its 3-word chain and the NEXT landmark
+                    opens early (the Cartographer's Gate pays coins on
+                    the teaching road).
        NON-LINEAR   two spine stops open at once (pick your order);
                     3 of 4 opens the next landmark; a stop is done at
                     70%+ in a REAL session, not on tap; all four stops
                     plus all three secrets earn the landmark's emblem.
      No XP from any of it — rank still comes from spelling sessions.
+     The mist may not return: the board must stay bright.
      --------------------------------------------------------------- */
   const U_SPOTS = [[18, 26], [34, 64], [50, 22], [64, 72], [78, 38], [86, 62], [26, 80], [70, 14], [44, 44], [58, 52]];
   const U_RIVALS = ['Sable the Moth-Knight', 'The Grey Archivist', 'Cinder, Forge-Champion', 'The Star-Reader', "Vex's Own Champion"];
@@ -978,32 +987,12 @@
     state.sessionLabel = 'Ultra · ' + st.title; state.gi = 0;
     state.trailReturn = st.id; app2.startTrain(); };
 
-  /* ---- scouting the mist, and what it uncovers ---- */
-  const uRevHas = (rev, x, y) => rev.some(cc => (x - cc[0]) * (x - cc[0]) + (y - cc[1]) * (y - cc[1]) <= cc[2] * cc[2]);
-  app2.uScout = arg => { if (state.uq || state.villain) return;
-    const [x, y] = String(arg).split(',').map(Number);
-    const w = uWordPick(uKey(), 1)[0];
-    state.uq = { kind: 'scout', x, y, w: w.w, d: w.d || '', typed: '', wrong: 0 };
-    render(); setTimeout(() => { try { state.uq && say(state.uq.w); } catch (e) {} }, 350); };
+  /* ---- the secret quest cards ---- */
   app2.uqType = v => { if (state.uq) state.uq.typed = String(v == null ? '' : v); };
   app2.uqKey = e => { if (e.key === 'Enter') { e.preventDefault(); app2.uqGo(); } };
   app2.uqSay = () => { try { const q = state.uq; q && say(q.kind === 'duel' || q.kind === 'gate' ? q.words[q.i].w : q.w); } catch (e) {} };
   app2.uqClose = () => { state.uq = null; render(); };
-  app2.uqGo = () => { const q = state.uq; if (!q) return; const c = active(); const key = uKey(); const u = uP(c);
-    if (q.kind === 'scout') {
-      if (nkey(q.typed || '') !== nkey(q.w)) { q.wrong++; q.typed = ''; try { sfx('wrong'); say(q.w); } catch (e) {} flash('The mist holds — listen again!'); render(); return; }
-      const rev = u.rev[key] = u.rev[key] || [];
-      rev.push([q.x, q.y, 15]); state.uq = null;
-      try { sfx('correct'); } catch (e) {}
-      /* did the cleared patch uncover a secret? */
-      const f = u.finds[key] = u.finds[key] || {};
-      const hit = uSpots(c, key).find(s => !f[s.k] && (s.x - q.x) * (s.x - q.x) + (s.y - q.y) * (s.y - q.y) <= 15 * 15);
-      if (hit && hit.k === 'wisp') { f.wisp = 1; addCoins(8); try { burstConfetti(50); } catch (e) {} flash('💫 A word-wisp curls out of the mist — +8 coins!'); uCheckEmblem(c, key); }
-      else if (hit && hit.k === 'duel') { flash('🎭 Someone is waiting in the clearing…'); }
-      else if (hit && hit.k === 'gate') { flash('⛩️ An old gate stands in the mist — the Hidden Pass!'); }
-      else flash('🌫️ The mist clears… keep exploring.');
-      save(); render(); return;
-    }
+  app2.uqGo = () => { const q = state.uq; if (!q) return; const c = active(); const key = uKey();
     const cur = q.words[q.i]; const okW = nkey(q.typed || '') === nkey(cur.w); q.typed = '';
     if (q.kind === 'duel') {
       if (okW) { q.me++; try { sfx('correct'); } catch (e) {} } else { q.riv++; try { sfx('wrong'); } catch (e) {} flash('It was “' + cur.w + '” — ' + q.rival + ' takes the point.'); }
@@ -1025,10 +1014,9 @@
         const ai = uAiOf(key);
         if (ai >= 0 && ai < ULTRA_PINS.length - 1) { uP(c).gates[ai + 1] = 1; flash('⛩️ The Hidden Pass opens — ' + ULTRA_PINS[ai + 1][0] + ' is yours to enter!'); }
         else if (ai === ULTRA_PINS.length - 1) { addCoins(40); flash('👑 The last gate holds a crown relic — +40 coins!'); }
-        else { /* the teaching road keeps its order — here the gate is the CARTOGRAPHER'S,
-                  and spelling its chain unveils the whole board at once */
-          (uP(c).rev[key] = uP(c).rev[key] || []).push([50, 50, 200]); addCoins(20);
-          flash('🗺️ The Cartographer\'s Gate — the whole map unveils! +20 coins'); }
+        else { /* the teaching road keeps its order — here the gate is the CARTOGRAPHER'S */
+          addCoins(20);
+          flash('🗺️ The Cartographer\'s Gate swings open — +20 coins!'); }
         try { sfx('win'); burstConfetti(140); } catch (e) {} save(); uCheckEmblem(c, key);
       } else setTimeout(() => { try { state.uq && say(state.uq.words[state.uq.i].w); } catch (e) {} }, 400);
       render(); return;
@@ -1045,33 +1033,21 @@
   app2.uWisp = () => { const key = uKey(); const c = active();
     const f = uP(c).finds[key] = uP(c).finds[key] || {}; if (f.wisp) return;
     f.wisp = 1; addCoins(8); save(); try { burstConfetti(50); } catch (e) {} flash('💫 A word-wisp — +8 coins!'); uCheckEmblem(c, key); render(); };
-  /* the mist itself: a dark veil over the whole board with soft holes punched at
-     every revealed circle; a grid of invisible tap-cells over what is still hidden
-     (a data-act element cannot read click coordinates, so the mist is ADDRESSED in
-     cells); and the secret markers, drawn only where the mist has lifted */
-  function fogLayer(c, key, autoRev) {
+  /* the secrets layer: NO fog — the painting stays bright (that is a play-tested
+     rule, see the block comment above). The three seeded secrets sit visibly on
+     the board as tappable surprise markers; a claimed one leaves either nothing
+     (wisp, duel) or the open gate. */
+  function fogLayer(c, key) {
     const u = uP(c);
     if (u.emb[key]) return { fog: '', cells: '', marks: '' };
-    const rev = (u.rev[key] || []).concat(autoRev || []);
-    const has = (x, y) => uRevHas(rev, x, y);
     const f = u.finds[key] || {};
-    const mk = (act, x, y, g, tt) => `<button data-act="${act}" class="sb-lift" style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);z-index:3;font-size:26px;line-height:1;background:none;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="${tt}">${g}</button>`;
-    const marks = uSpots(c, key).filter(s => has(s.x, s.y)).map(s => {
+    const mk = (act, x, y, g, tt) => `<button data-act="${act}" class="sb-lift atlas-secret" style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);z-index:3;font-size:26px;line-height:1;background:none;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="${tt}">${g}</button>`;
+    const marks = uSpots(c, key).map(s => {
       if (s.k === 'wisp') return f.wisp ? '' : mk('uWisp', s.x, s.y, '💫', 'A word-wisp!');
       if (s.k === 'duel') return f.duel ? '' : mk('uDuel', s.x, s.y, '🎭', 'A rival waits…');
       return f.gate ? `<span style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:3;font-size:26px;opacity:.75;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="The pass stands open">⛩️</span>` : mk('uGate', s.x, s.y, '⛩️', 'The Hidden Pass');
     }).join('');
-    let cells = '';
-    for (let gy = 10; gy <= 90; gy += 16) for (let gx = 7; gx <= 95; gx += 12) {
-      if (has(gx, gy)) continue;
-      cells += `<button data-act="uScout" data-arg="${gx},${gy}" aria-label="Scout the mist" title="Scout the mist" style="position:absolute;left:${gx}%;top:${gy}%;width:12%;height:16%;transform:translate(-50%,-50%);z-index:3;background:transparent;border:0;cursor:crosshair"></button>`;
-    }
-    const holes = rev.map(cc => `<circle cx="${cc[0]}" cy="${cc[1]}" r="${cc[2]}" fill="url(#ufade)"/>`).join('');
-    const fog = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none">
-      <defs><radialGradient id="ufade"><stop offset="55%" stop-color="#000"/><stop offset="100%" stop-color="#fff"/></radialGradient>
-      <mask id="um-${escA(String(key))}"><rect x="-5" y="-5" width="110" height="110" fill="#fff"/>${holes}</mask></defs>
-      <rect x="-5" y="-5" width="110" height="110" fill="rgba(20,15,42,.9)" mask="url(#um-${escA(String(key))})"/></svg>`;
-    return { fog, cells, marks, has };
+    return { fog: '', cells: '', marks };
   }
   function uQuestCard() {
     const q = state.uq; if (!q) return '';
@@ -1079,13 +1055,6 @@
     const hear = `<button data-act="uqSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">🔊 Hear the word</button>`;
     const frame = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(14,10,26,.62)">
       <div style="width:min(440px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">${inner}</div></div>`;
-    if (q.kind === 'scout') return frame(`<div style="font-size:40px">🔭</div>
-      <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">Scout the mist</h3>
-      <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">Spell the word you hear and Bizzy clears this patch of fog.${q.d ? '<br><i>' + esc(maskTxt(q.d.slice(0, 90), q.w)) + '</i>' : ''}</p>
-      ${hear}${input}
-      ${q.wrong >= 2 ? `<p style="font-size:12.5px;font-weight:700;color:var(--muted);margin:0 0 10px">Hint: “${esc(q.w.slice(0, 2))}…”, ${q.w.length} letters.</p>` : ''}
-      <div style="display:flex;gap:9px;justify-content:center"><button data-act="uqGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">🔭 Clear the mist</button>
-      <button data-act="uqClose" style="padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13.5px">Not now</button></div>`);
     if (q.kind === 'duel') return frame(`<div style="font-size:40px">🎭</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">${esc(q.rival)} challenges you!</h3>
       <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Best of three words. Win two and the clearing is yours.</p>
@@ -1115,12 +1084,9 @@
     const pts = mapPoints(m.d, stops.length);
     /* NON-LINEAR SPINE: the next TWO undone stops are open at once — pick your order */
     const isOpen = i => !ultraDone(c, stops[i].id) && i <= dn + 1;
-    const autoRev = pts.map((p, i) => ({ p, i })).filter(o => ultraDone(c, stops[o.i].id) || isOpen(o.i)).map(o => [o.p.x, o.p.y, 12]);
-    const FL = fogLayer(c, 'u' + ai, autoRev);
-    const vis = (x, y) => !FL.has || FL.has(x, y);
+    const FL = fogLayer(c, 'u' + ai);
     const marks = pts.map((p, i) => {
       const done = ultraDone(c, stops[i].id), now = isOpen(i), on = i === sel;
-      if (!done && !now && !vis(p.x, p.y)) return '';   // still under the mist
       const size = now ? 42 : 34;
       const bg = done ? 'linear-gradient(160deg,#FFD24D,#C8791B)' : now ? 'linear-gradient(160deg,#FFFBEF,#FFE9AE)' : 'rgba(246,242,232,.90)';
       const ink = done ? '#4A3306' : now ? '#7A5300' : 'rgba(58,44,22,.78)';
@@ -1131,7 +1097,7 @@
           box-shadow:${on ? '0 0 0 3px #F0B429,0 5px 14px rgba(6,4,18,.6)' : '0 4px 11px rgba(6,4,18,.55)'}">${done ? '✓' : (i + 1)}</span>
       </button>`;
     }).join('');
-    const caches = (m.t || []).map((xy, i) => vis(xy[0], xy[1]) ? treMark(c, slug, i, xy[0], xy[1], dn, stops.length) : '').join('');
+    const caches = (m.t || []).map((xy, i) => treMark(c, slug, i, xy[0], xy[1], dn, stops.length)).join('');
     const popNew = _popK !== ('u:' + slug + ':' + sel); if (popNew) _popK = 'u:' + slug + ':' + sel;
     if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
     return `<div style="${RISE()}max-width:900px;margin:0 auto">
@@ -1473,9 +1439,18 @@
   }
 
   /* ---- world music, one pill on every board ---- */
+  /* the pill must never lie ("Music on off didnt work" — Amrita 8.25): turning music ON
+     also lifts an app-level mute (asking for music IS asking for sound), and if something
+     else still holds the tune back — Focus mode — the flash says so instead of 🎵. */
   app2.atlasMusic = () => { try {
-    const on = SB_W4_MUSIC.toggle(); SB_W4_MUSIC.sync();
-    flash(on ? '🎵 Music on — every world hums its own tune' : '🔇 Music off');
+    const on = SB_W4_MUSIC.toggle();
+    if (on && state.sound === false) { state.sound = true; try { save(); } catch (e) {} }
+    SB_W4_MUSIC.sync();
+    const playing = (() => { try { return SB_W4_MUSIC.playing(); } catch (e) { return false; } })();
+    flash(!on ? '🔇 Music off'
+      : playing ? '🎵 Music on — every world hums its own tune'
+      : (window.SB_W4_FOCUS && SB_W4_FOCUS.on()) ? '🎵 Music is set to play — turn Focus off to hear it'
+      : '🎵 Music on');
   } catch (e) { flash('Music is still tuning up — one moment'); } render(); };
   function musicPill() {
     let on = false; try { on = !!(window.SB_W4_MUSIC && SB_W4_MUSIC.on()); } catch (e) {}
@@ -1624,14 +1599,10 @@
     /* Stops are HTML pins over the painting, not SVG inside it: they keep a real
        size at every board width instead of scaling with the picture, and the
        guide avatar rides one without a foreignObject. */
-    /* the mist: cleared stops and the frontier stay lit; the road ahead — and every
-       cache and secret — waits under fog until the speller scouts it out */
-    const autoRev = pts.map((p, i) => ({ p, i })).filter(o => st(o.i) !== 'next').map(o => [o.p.x, o.p.y, 12]);
-    const FL = fogLayer(c, act.id, autoRev);
-    const vis = (x, y) => !FL.has || FL.has(x, y);
+    /* the secrets ride the board in the open — the painting stays bright */
+    const FL = fogLayer(c, act.id);
     const marks = pts.map((p, i) => {
       const kind = st(i), on = i === sel, node = nodes[i].n;
-      if (kind === 'next' && !vis(p.x, p.y)) return '';   // a pin under the mist does not exist yet
       const size = kind === 'now' ? 42 : 34;
       const bg = kind === 'done' ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
         : kind === 'now' ? 'linear-gradient(160deg,#FFFBEF,#FFE9AE)' : 'rgba(250,246,236,.90)';
@@ -1646,7 +1617,7 @@
           box-shadow:${on ? `0 0 0 3px ${a},0 5px 14px rgba(10,6,26,.5)` : '0 4px 11px rgba(10,6,26,.45)'}">${kind === 'done' ? '✓' : (i + 1)}</span>
       </button>`;
     }).join('');
-    const caches = (m.t || []).map((xy, i) => vis(xy[0], xy[1]) ? treMark(c, act.id, i, xy[0], xy[1], dn, n) : '').join('');
+    const caches = (m.t || []).map((xy, i) => treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
     const popNew = _popK !== ('a:' + act.id + ':' + sel); if (popNew) _popK = 'a:' + act.id + ':' + sel;
     if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
 

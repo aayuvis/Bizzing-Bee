@@ -1543,7 +1543,10 @@ const app = {
   goConcepts:()=>app.setNav('concepts'),
   journey:(i)=>{ i=+i; if(i===0) app.openCoach(); else if(i===1) app.setNav('concepts'); else if(i===2) app.openGames(); else app.openJourneys(); },
   // train
-  startTrain:()=>{ lazyNeed(['card','audio']); state.sessionRight=0; state.sessionDone=0; state.sessionListKey=null; state.gi=0; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; set({nav:'train', screen:'app', status:'idle', typed:'', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,350); },
+  /* cardIdx MUST reset with gi: a stale Card-view index left the flashcard showing
+     word 7 of the new session while speak() said word 0 — "shows psychopharmacologically
+     but says asphyxiated" (Amrita 8.26). */
+  startTrain:()=>{ lazyNeed(['card','audio']); state.sessionRight=0; state.sessionDone=0; state.sessionListKey=null; state.gi=0; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; set({nav:'train', screen:'app', status:'idle', typed:'', mood:'happy', showDef:false, showSent:false, showOrigin:false, cardIdx:0, cardDone:false, reviseIdx:0}); setTimeout(speak,350); },
   newBatch:()=>{ newCoachBatch(); flash('Fresh set of words ✨'); },
   startLevelUp:()=>{ const c=active(); ensureLists(c); c.activeList='default'; app.openCoach(); },
   reviseNav:(dir)=>{ const N=(state.sessionWords&&state.sessionWords.length)||LEVEL_WORDS.length; let i=(state.reviseIdx||0)+(dir==='next'?1:-1); set({reviseIdx:Math.max(0,Math.min(N-1,i))}); },
@@ -1552,6 +1555,13 @@ const app = {
     if(kind==='done'){ if(w){ markMastered(w.toLowerCase()); clearMiss(w.toLowerCase()); } }
     else { const ws=state.sessionWords||[]; const obj=ws.find(x=>nkey(x.w)===nkey(w))||{w:w,d:'',s:''}; addMiss(obj); flash('Marked for revision ⚑'); }
     if(nav && typeof app[nav]==='function') app[nav]('next'); else render(); },
+  /* The last card's Next used to be a dead button ("nothing happens" — Amrita 8.26).
+     Finishing a deck is a MOMENT: confetti, a high five, and a real next step. */
+  deckFinish:(navAct)=>{ try{ sfx('win'); burstConfetti(120); }catch(e){}
+    if(navAct==='trailWordNav'){ flash('🙌 High five — you met every word! Now practise them.');
+      try{ app.trailUnit(state.trailUnit); return; }catch(e){} }
+    else flash('🙌 High five — all cards met! Time to spell them.');
+    set({luTab:'practice', reviseIdx:0}); },
   conceptWordNav:(dir)=>{ const ws=((state.conceptSel&&state.conceptSel.words)||[]).filter(x=>x&&x.w); const N=ws.length||1; let i=(state.conceptWordIdx||0)+(dir==='next'?1:-1); set({conceptWordIdx:Math.max(0,Math.min(N-1,i))}); },
   exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; try{ if(window.SB_TRAIL_PRACTICED) SB_TRAIL_PRACTICED(u, state.sessionRight||0, state.sessionDone||0); }catch(e){} if(/^ul\d+$/.test(u)){ state.trailReturn=null; state.coachSession=false; try{ app.ultraAct(Math.floor(parseInt(u.slice(2),10)/4)); }catch(e){ app.setNav('trail'); } return; } state.trailReturn=null; state.coachSession=false; state.nav='trail'; app.trailUnit(u); return; } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='revisions'){ state.trainBack=null; app.openRevisions(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
   // Revisions — the words you flagged to revise; complete them or drill them again
@@ -2221,13 +2231,19 @@ const app = {
       setTimeout(()=>{ const G=state.game; if(G!==g) return; if(fin){ fin(); } else { advance(); render(); } }, ms); };
     if(g.type==='buzz'){ g.ans.push({w,val:state.typed,ok}); if(ok){ g.right++; addCoins(1); gainXp(); }
       const last=!(g.i+1<g.list.length);
-      if(!ok){ missPause(last?gFinishBuzz:null, 2200); } else if(last){ gFinishBuzz(); } else { advance(); render(); } }
+      /* 2200ms read as a flash (Amrita 8.26) — a child needs time to LOOK at the
+         correct spelling before it moves on. Daily Buzz is untimed, so linger. */
+      if(!ok){ missPause(last?gFinishBuzz:null, 3600); } else if(last){ gFinishBuzz(); } else { advance(); render(); } }
     else if(g.type==='beat'){ if(ok){ g.right++; addCoins(1); gainXp(); advance(); render(); } else { g.wrong++; missPause(null, 1400); } }
     else if(g.type==='boss'){ if(ok){ g.hp=Math.max(0,g.hp-1); g.right++; addCoins(1); gainXp(); g.last={ok:true,word:w.w}; if(g.hp<=0){ gFinishBoss(true); return; } advance(); render(); }
       else { const cc=active(); if(((cc.pow||{}).shield||0)>0){ cc.pow.shield--; save(); g.last={ok:false,word:w.w,shielded:true}; flash('🛡️ Boss Shield absorbed the miss!'); advance(); render(); }
         else { g.lives--; g.last={ok:false,word:w.w}; if(g.lives<=0){ missPause(()=>gFinishBoss(false), 2000); return; } missPause(null, 2000); } } }
     else if(g.type==='champ'){ g.ans.push({w,ok}); if(ok){ g.right++; addCoins(1); } else g.wrong++;
-      if(g.fmt==='count' && (g.i+1>=g.total || g.i+1>=g.list.length)){ gFinishChamp(); return; } advance(); render(); }
+      /* a Challenge miss shows the word like every other game — "just a sound" left the
+         child not knowing what was correct (Amrita 8.26). Timed runs get a shorter look. */
+      const chLast=g.fmt==='count' && (g.i+1>=g.total || g.i+1>=g.list.length);
+      if(!ok){ missPause(chLast?gFinishChamp:null, g.fmt==='time'?1600:2400); return; }
+      if(chLast){ gFinishChamp(); return; } advance(); render(); }
   },
   gPick:(idx)=>{ const g=state.game; if(!g||!g.qs||g.picked!=null) return; idx=+idx; const q=g.qs[g.i]; g.picked=idx; const ok=q.choices[idx]===q.answer; logGameWord(nkey(q.word));
     const spellingGame = ['origin','idiom','simile2','vocab'].indexOf(q.kind)<0; // knowledge rounds don't count as spelling mastery
@@ -6772,7 +6788,9 @@ function wordFlash(words, idx, navAct, opts){
     ${selfMark?`<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
       <button data-act="${navAct}" data-arg="prev" style="padding:12px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:14px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
       <span style="flex:1;font-size:12px;color:var(--muted);font-weight:700;text-align:center"><b style="color:var(--good)">✓ Complete</b> or <b style="color:var(--treasure-deep,#8A5B00)">⚑</b> records the word — Next just moves on</span>
-      <button data-act="${navAct}" data-arg="next" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
+      ${i>=N-1
+        ?`<button data-act="deckFinish" data-arg="${navAct}" style="padding:12px 20px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Finish 🎉</button>`
+        :`<button data-act="${navAct}" data-arg="next" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Next →</button>`}
     </div>`:`<div style="display:flex;align-items:center;gap:10px;margin-top:14px">
       <button data-act="${navAct}" data-arg="prev" style="padding:13px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;${i<=0?'opacity:.4;pointer-events:none':''}">← Back</button>
       <button data-act="${navAct}" data-arg="next" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);${i>=N-1?'opacity:.5;pointer-events:none':''}">${i>=N-1?'All done ✓':'Next →'}</button>
@@ -8341,8 +8359,11 @@ function coachTrain(){
       : S.luTab==='vocab' ? vocabPracticeCard()
       : learnCardsBtn+wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true}));
   const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
+  /* Play-tested (Amrita 8.26): Daily Buzz / Written / Oral round all read as the same
+     "hear it, type it" to a child — problem of plenty — and "Setup" read as a settings
+     tab. Two ways to practise plus one clearly-named door to the word lists. */
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startWritten','pencil','Written','#7C5CFF')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','sliders','Setup','#C8901B')}</div>`;
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','list','Pick your words','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Stages to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   /* The Ultra banner moved into the Practice header as a pill (see topBar above):
      a full-width card for a pack most spellers do not own was pushing Practice itself
@@ -9513,7 +9534,8 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
   if(g.fb&&!g.fb.ok){ bossFb=`<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-pop .3s ease both">
       <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--fix,#C4453C)">Look &amp; listen — it's spelled</div>
-      <div style="font-family:var(--entry);font-weight:800;color:var(--text);margin-top:4px;${hwSpell(g.fb.word,32)}">${esc(g.fb.word)}</div></div>`; }
+      <div style="font-family:var(--entry);font-weight:800;color:var(--text);margin-top:4px;${hwSpell(g.fb.word,32)}">${esc(g.fb.word)}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:6px">⚑ Saved for revision</div></div>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>

@@ -327,7 +327,10 @@
       var hidden=(typeof document!=='undefined'&&document.visibilityState!=='visible');
       var w=(typeof state!=='undefined'&&state&&state.screen==='app')?state.theme:null;
       var muted=(typeof state!=='undefined'&&state&&state.sound===false);
-      if(!enabled||calm||hidden||muted||!w||!CFG[w]){ stop(); return; }
+      /* a world with no authored tune hums the house one — a pill that says ON
+         while a themeless world stays silent reads as "music didn't work" */
+      if(w&&!CFG[w]) w='spellbound';
+      if(!enabled||calm||hidden||muted||!w){ stop(); return; }
       start(w); }catch(e){} }
   };
   document.addEventListener('visibilitychange',function(){ try{ window.SB_W4_MUSIC.sync(); }catch(e){} });

@@ -774,16 +774,21 @@
        and everything drifts left at one speed so the geometry never moves.
        That is why a pickup is placed when tower N+1 spawns, not tower N: only then are both
        ends of the line known. */
+    /* prevTower is the LIVE tower object, never a snapshot. It was {x:o.x,mid} taken at
+       spawn time — but towers drift left every frame, so by the next spawn that stored x
+       was still Wd+30 and the "midpoint" (Wd+30 + Wd+30)/2 sat EXACTLY on the new
+       tower's pillar: the honey pot in the wall, again ("do or die" — Amrita 8.26).
+       Holding the object means prevTower.x has drifted with the world when it is read. */
     let pending=[], prevTower=null;
-    function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); const o={x:Wd+30,y,g}; obs.push(o);
-      const mid=y+g/2, k=pending.shift();
+    function spawn(){ const g=CFG.gap, y=60+Math.random()*(Ht-120-g); const o={x:Wd+30,y,g,mid:y+g/2}; obs.push(o);
+      const mid=o.mid, k=pending.shift();
       if(k && prevTower){
         const px=(prevTower.x+o.x)/2, py=(prevTower.mid+mid)/2;
         if(k==='pot'&&!pot) pot={x:px,y:py-18};                 // pickup tests pot.y+18
         else if(k==='coins') spawnCoins(px,py,prevTower.mid,mid,g);
         else if(k==='heart') hearts.push({x:px,y:py-16,ph:0});
       } else if(k) pending.unshift(k);        // no previous tower yet — wait one spawn
-      prevTower={x:o.x,mid}; }
+      prevTower=o; }
     function spawnMoth(){ const big=Math.random()<0.14;
       moths.push({x:Wd+40,y:60+Math.random()*(Ht-140),ph:Math.random()*7,amp:14+Math.random()*26,sp:CFG.speed*(0.9+Math.random()*0.5),s:big?54:38,big}); }
     /* A coin run is laid ALONG the path between the two gaps, five coins strung on that
