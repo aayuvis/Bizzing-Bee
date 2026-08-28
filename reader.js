@@ -94,14 +94,30 @@
 
   /* ---- actions ---- */
   app2.readerOpen = slug => { if (!VOLS[slug]) return;
-    set({ nav: 'reader', screen: 'app', readerBook: slug, readerCh: null, readerQuiz: null, wordCard: null }); };
-  app2.readerCh = i => set({ readerCh: i === '' || i == null ? null : +i, readerQuiz: null });
+    set({ nav: 'reader', screen: 'app', readerBook: slug, readerCh: null, readerPg: 0, readerQuiz: null, wordCard: null }); };
+  app2.readerCh = i => set({ readerCh: i === '' || i == null ? null : +i, readerPg: 0, readerQuiz: null });
+  /* page turns: one spread on screen at a time — Next past the last spread is Done */
+  app2.readerPg = d => { const S = spreadsOf(chapters(state.readerBook)[state.readerCh]); const n = S.length;
+    let p = state.readerPg || 0;
+    if (d === 'next') { if (p + 1 >= n) { app2.readerDone(); return; } p++; }
+    else if (d === 'prev') p = Math.max(0, p - 1);
+    else p = Math.max(0, Math.min(n - 1, +d || 0));
+    set({ readerPg: p, readerQuiz: null });
+    try { const sc = document.scrollingElement; if (sc) sc.scrollTop = 0; } catch (e) {} };
   app2.readerBack = () => { if (state.readerQuiz) { set({ readerQuiz: null }); return; }
     if (state.readerCh != null) { set({ readerCh: null }); return; }
     set({ nav: 'explore', readerBook: null }); };
   app2.readerWord = i => { const chs = chapters(state.readerBook); const ch = chs[state.readerCh]; if (!ch) return;
     const w = (ch.words || [])[+i]; if (!w) return;
     set({ wordCard: w }); try { say(w.w); } catch (e) {} };
+  /* arrow keys turn the pages (never while typing a note) */
+  window.addEventListener('keydown', e => { try {
+    if (state.nav !== 'reader' || state.readerCh == null || state.readerQuiz || state.wordCard) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const t2 = e.target; if (t2 && (t2.tagName === 'INPUT' || t2.tagName === 'TEXTAREA')) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); app2.readerPg('next'); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); app2.readerPg('prev'); }
+  } catch (_) {} });
   app2.readerSayHard = w => { try { say(String(w)); } catch (e) {}
     try { const idx = (typeof wordIndex === 'function' && wordIndex()) || {}; const rec = idx[nkey(String(w))];
       if (rec) { set({ wordCard: wNorm(rec) }); } } catch (e) {} };
@@ -110,8 +126,8 @@
     r[k][state.readerCh] = 1; save();
     const total = chapters(k).length; const done = Object.keys(r[k]).length;
     if (done >= total) { try { sfx('win'); burstConfetti(120); } catch (e) {} flash('🏁 ' + VOLS[k].t + ' — read cover to cover!'); set({ readerCh: null }); }
-    else if (state.readerCh + 1 < total) { try { sfx('correct'); } catch (e) {} set({ readerCh: state.readerCh + 1, readerQuiz: null }); }
-    else set({ readerCh: null }); };
+    else if (state.readerCh + 1 < total) { try { sfx('correct'); } catch (e) {} set({ readerCh: state.readerCh + 1, readerPg: 0, readerQuiz: null }); }
+    else set({ readerCh: null, readerPg: 0 }); };
   /* Try it: four meaning→word questions from THIS chapter. A coin per correct,
      and — deliberately — no spelling-progress writes: reading is not drilling. */
   app2.readerTry = () => { const ch = chapters(state.readerBook)[state.readerCh]; if (!ch) return;
@@ -191,53 +207,106 @@
       <button data-act="readerTryClose" style="margin-top:12px;color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:2px">Close</button>`);
   }
 
+  /* ---- SPREADS: a chapter is a sequence of pages, ONE on screen at a time.
+     Play-tested verdict on the first cut: "boring... too many at a time... no
+     visuals". So every spread leads with the world's own painted banner (the
+     app-art/w-*.jpg set the Atlas and the printed books share), content is
+     capped per page, and the mascot rides along. ---- */
+  const BANNERS = ['elements','engine','forum','grandtrunk','greysea','junkyard','library','meadow','origami','stage','strait','vibe','warfield'];
+  const bWorld = v => BANNERS.indexOf(v.world) >= 0 ? v.world : (v.world === 'night' ? 'greysea' : 'stage');
+  const bnr = (v, i, tall) => {
+    const w = bWorld(v); const r = (i % 2) ? 3 : 2;
+    return `<div style="position:relative;height:${tall ? 172 : 96}px;overflow:hidden;flex:none">
+      <img src="app-art/w-${w}-r${r}.jpg" alt="" decoding="async" onerror="this.style.display='none'"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${(i * 29) % 78 + 8}% ${28 + (i * 17) % 44}%">
+      <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,10,26,.08) 30%,rgba(14,10,26,${tall ? '.66' : '.5'}))"></span>
+    </div>`; };
+  function spreadsOf(ch) {
+    if (!ch) return [{ k: 'notes' }];
+    const S = [{ k: 'open' }];
+    if (ch.pieces) ch.pieces.forEach(p => S.push({ k: 'piece', p }));
+    else if (ch.figs) { const F = ch.figs.slice(0, 72); for (let i = 0; i < F.length; i += 6) S.push({ k: 'figs', list: F.slice(i, i + 6) }); }
+    else if (ch.quotes) { for (let i = 0; i < ch.quotes.length; i += 6) S.push({ k: 'quotes', list: ch.quotes.slice(i, i + 6) }); }
+    else {
+      (ch.cards || []).forEach(c2 => S.push({ k: 'card', c: c2 }));
+      if (ch.method) S.push({ k: 'method' });
+      const ws = ch.words || [];
+      for (let i = 0; i < ws.length; i += 10) S.push({ k: 'words', from: i, list: ws.slice(i, i + 10) });
+    }
+    S.push({ k: 'notes' });
+    return S;
+  }
+  function spreadBody(v, ch, sp, slug, i) {
+    const H = (t) => `<div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.2;margin-bottom:10px;color:${v.a}">${esc(t)}</div>`;
+    if (sp.k === 'open') return `
+      <div style="display:flex;align-items:flex-start;gap:14px">
+        <div style="min-width:0;flex:1">
+          ${ch.sub ? `<div style="font-size:11px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:${v.a};margin-bottom:6px">${esc(ch.sub)}</div>` : ''}
+          <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,4vw,26px);line-height:1.15;text-wrap:balance">${esc(ch.title)}</div>
+        </div>${mascot(v, 62)}</div>
+      ${ch.prose ? `<p style="font-size:15.5px;line-height:1.7;margin:14px 0 0">${esc(ch.prose)}</p>` : ''}
+      ${ch.pieces ? `<p style="font-size:13px;color:var(--muted);font-weight:700;margin:14px 0 0">${ch.pieces.length} pieces — turn the page.</p>` : ''}
+      ${(ch.words && ch.words.length) ? `<p style="font-size:13px;color:var(--muted);font-weight:700;margin:14px 0 0">${ch.words.length} words wait at the end of this chapter — tap any of them for the full card.</p>` : ''}`;
+    if (sp.k === 'card') return H(sp.c.title || '') + `<p style="font-size:15.5px;line-height:1.75;margin:0">${esc(sp.c.body || '')}</p>`;
+    if (sp.k === 'method') return H('The trick') + `<div class="rd-method" style="font-size:14.5px;line-height:1.7">${ch.method}</div>`;
+    if (sp.k === 'words') return `
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">${H('Meet the words').replace('margin-bottom:10px', 'margin-bottom:0')}
+        <button data-act="readerTry" style="margin-left:auto;flex:none;padding:9px 16px;border-radius:999px;background:${v.a};color:#fff;font-weight:800;font-size:12.5px;box-shadow:var(--edge)">⚡ Try it</button></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:8px">
+        ${sp.list.map((w, k) => `<button data-act="readerWord" data-arg="${sp.from + k}" title="Open the word card" style="display:flex;align-items:center;gap:9px;text-align:left;padding:10px 12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line)">
+          <span style="flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:${v.a};color:#fff">${iconSVG('volume', 14)}</span>
+          <span style="min-width:0"><span style="display:block;font-family:var(--mono);font-weight:800;font-size:13.5px;color:var(--text)">${esc(w.w)}</span>
+          ${w.d ? `<span style="display:block;font-size:11.5px;color:var(--muted);line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical">${esc(w.d)}</span>` : ''}</span>
+        </button>`).join('')}</div>`;
+    if (sp.k === 'piece') { const p = sp.p; return `
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.2">${esc(p.t)}</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700;margin:3px 0 12px">${esc(p.a || '')}${p.src ? ' · ' + esc(p.src) : ''}${p.y ? ' · ' + esc(p.y) : ''}</div>
+      <div style="font-family:var(--display);font-size:15px;line-height:1.85;white-space:pre-wrap;border-left:3px solid ${v.a};padding-left:14px">${(p.lines || []).map(esc).join('\n')}</div>
+      ${p.note ? `<div style="margin-top:12px;padding:11px 13px;border-radius:11px;background:var(--surface2);font-size:12.5px;line-height:1.6;color:var(--muted)">${esc(p.note)}</div>` : ''}
+      ${(p.hard && p.hard.length) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">${p.hard.map(w => `<button data-act="readerSayHard" data-arg="${escA(w)}" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:999px;background:var(--chip);color:var(--accent);font-family:var(--mono);font-weight:800;font-size:12.5px">🔊 ${esc(w)}</button>`).join('')}</div>` : ''}`; }
+    if (sp.k === 'figs') return sp.list.map(x => `<div style="padding:11px 0;border-bottom:1px solid var(--line)">
+        <button data-act="say" data-arg="${escA(x.p)}" style="font-family:var(--display);font-weight:800;font-size:16px;color:${v.a};text-align:left">🔊 ${esc(x.p)}</button>
+        <div style="font-size:13.5px;line-height:1.55;margin-top:3px">${esc(x.m)}</div>
+        ${x.os ? `<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px">${esc(x.os)}</div>` : ''}
+      </div>`).join('');
+    if (sp.k === 'quotes') return sp.list.map(q => `<div style="padding:12px 0;border-bottom:1px solid var(--line)">
+        <div style="font-family:var(--display);font-size:15.5px;line-height:1.6">“${esc(q.q)}”</div>
+        <div style="font-size:12.5px;font-weight:800;color:${v.a};margin-top:5px">— ${esc(q.a)}${q.who ? `<span style="color:var(--muted);font-weight:600"> · ${esc(q.who)}</span>` : ''}</div>
+      </div>`).join('');
+    // notes
+    const note = notes()[slug + ':' + i] || '';
+    return H('📝 My notes') + `
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 10px">What do you want to remember from “${esc(ch.title)}”? Saved on this device, just for you.</p>
+      <textarea data-inp="readerNote" data-fkey="readerNote" placeholder="Write it your way…" style="width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:11px 13px;font-size:14px;line-height:1.6;font-family:inherit;color:var(--text);resize:vertical">${esc(note)}</textarea>`;
+  }
   function chView(slug) {
     const v = VOLS[slug]; const chs = chapters(slug); const i = Math.max(0, Math.min(chs.length - 1, state.readerCh || 0)); const ch = chs[i];
     if (!ch) return volHome(slug);
-    const note = notes()[slug + ':' + i] || '';
-    const card = (title, body) => `<div class="sb-card" style="padding:16px 18px;margin-bottom:11px">
-        ${title ? `<div style="font-family:var(--display);font-weight:800;font-size:14.5px;margin-bottom:6px;color:${v.a}">${esc(title)}</div>` : ''}
-        <div style="font-size:14px;line-height:1.65">${body}</div></div>`;
-    let body = '';
-    if (ch.pieces) body = ch.pieces.map(p => card('', `<div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:2px">${esc(p.t)}</div>
-        <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px">${esc(p.a || '')}${p.src ? ' · ' + esc(p.src) : ''}${p.y ? ' · ' + esc(p.y) : ''}</div>
-        <div style="font-family:var(--display);font-size:14.5px;line-height:1.75;white-space:pre-wrap">${(p.lines || []).map(esc).join('\n')}</div>
-        ${p.note ? `<div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--surface2);font-size:12.5px;line-height:1.55;color:var(--muted)">${esc(p.note)}</div>` : ''}
-        ${(p.hard && p.hard.length) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${p.hard.map(w => `<button data-act="readerSayHard" data-arg="${escA(w)}" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-family:var(--mono);font-weight:800;font-size:12px">🔊 ${esc(w)}</button>`).join('')}</div>` : ''}`)).join('');
-    else if (ch.figs) body = ch.figs.slice(0, 60).map(x => card('', `<div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap"><button data-act="say" data-arg="${escA(x.p)}" style="font-family:var(--display);font-weight:800;font-size:15px;color:${v.a};text-align:left">🔊 ${esc(x.p)}</button></div>
-        <div style="font-size:13.5px;margin-top:4px">${esc(x.m)}</div>
-        ${x.os ? `<div style="font-size:12.5px;color:var(--muted);margin-top:6px">${esc(x.os)}</div>` : ''}
-        ${x.ex ? `<div style="font-size:12.5px;color:var(--muted);font-style:italic;margin-top:4px">“${esc(x.ex)}”</div>` : ''}`)).join('');
-    else if (ch.quotes) body = ch.quotes.map(q => card('', `<div style="font-family:var(--display);font-size:15.5px;line-height:1.6">“${esc(q.q)}”</div>
-        <div style="font-size:12.5px;font-weight:800;color:${v.a};margin-top:6px">— ${esc(q.a)}${q.who ? `<span style="color:var(--muted);font-weight:600"> · ${esc(q.who)}</span>` : ''}</div>
-        ${q.m ? `<div style="font-size:12.5px;color:var(--muted);margin-top:5px">${esc(q.m)}</div>` : ''}`)).join('');
-    else {
-      body = (ch.prose ? card('The idea', esc(ch.prose)) : '')
-        + (ch.cards || []).map(c2 => card(c2.title, esc(c2.body))).join('')
-        + (ch.method ? card('The trick', ch.method) : '')
-        + ((ch.words && ch.words.length) ? `<div class="sb-card" style="padding:16px 18px;margin-bottom:11px">
-            <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px"><span style="font-family:var(--display);font-weight:800;font-size:14.5px;color:${v.a}">The words</span>
-              <span style="font-size:11.5px;color:var(--muted);font-weight:700">tap one for its card</span>
-              <button data-act="readerTry" style="margin-left:auto;padding:8px 14px;border-radius:999px;background:${v.a};color:#fff;font-weight:800;font-size:12px">⚡ Try it</button></div>
-            <div style="display:flex;gap:7px;flex-wrap:wrap">${ch.words.map((w, wi) => chip(w, wi)).join('')}</div></div>` : '');
-    }
-    return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .3s ease both">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    const S = spreadsOf(ch); const p = Math.max(0, Math.min(S.length - 1, state.readerPg || 0)); const sp = S[p];
+    const last = p + 1 >= S.length; const lastCh = i + 1 >= chs.length;
+    const pgLabel = sp.k === 'open' ? 'the opener' : sp.k === 'notes' ? 'your page' : sp.k === 'words' ? 'the words' : sp.k === 'method' ? 'the trick' : '';
+    return `<div style="max-width:680px;margin:0 auto;animation:sb-rise .3s ease both">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <button data-act="readerCh" data-arg="" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← ${esc(v.t)}</button>
-        <span style="margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)">Chapter ${i + 1} of ${chs.length}</span>${mascot(v, 34)}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1.2;margin-bottom:3px">${esc(ch.title)}</div>
-      ${ch.sub ? `<div style="font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:12px">${esc(ch.sub)}</div>` : '<div style="height:10px"></div>'}
-      ${body}
-      <div class="sb-card" style="padding:14px 16px;margin-bottom:12px">
-        <div style="font-family:var(--display);font-weight:800;font-size:13.5px;margin-bottom:7px">📝 My notes</div>
-        <textarea data-inp="readerNote" data-fkey="readerNote" placeholder="What do you want to remember from this chapter?" style="width:100%;min-height:64px;border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:10px 12px;font-size:13.5px;line-height:1.5;font-family:inherit;color:var(--text);resize:vertical">${esc(note)}</textarea>
-        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:4px">Saved on this device, just for you.</div></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-        ${i > 0 ? `<button data-act="readerCh" data-arg="${i - 1}" style="padding:12px 18px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px">← Back</button>` : ''}
-        <button data-act="readerDone" style="flex:1;padding:13px;border-radius:13px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">${i + 1 >= chs.length ? 'Finish the book 🎉' : 'Done — next chapter →'}</button></div>
+        <span style="margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)">Chapter ${i + 1} of ${chs.length}</span></div>
+      <div class="sb-card" style="position:relative;overflow:hidden;padding:0;border-radius:22px;margin-bottom:12px">
+        ${amb(v)}
+        ${bnr(v, p * 7 + i, sp.k === 'open')}
+        <div style="position:relative;z-index:2;padding:clamp(16px,3.5vw,24px)">
+          ${sp.k !== 'open' ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)"><span style="color:${v.a}">${esc(wordsClampT(ch.title, 38))}</span>${pgLabel ? `<span>· ${pgLabel}</span>` : ''}</div>` : ''}
+          ${spreadBody(v, ch, sp, slug, i)}
+        </div></div>
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:8px">
+        <button data-act="readerPg" data-arg="prev" style="flex:none;padding:12px 18px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13.5px;${p <= 0 ? 'opacity:.4;pointer-events:none' : ''}">← Back</button>
+        <div style="flex:1;min-width:0">
+          <div style="height:6px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:${v.a};width:${Math.round((p + 1) / S.length * 100)}%;transition:width .3s"></div></div>
+          <div style="font-size:10.5px;color:var(--muted);font-weight:700;text-align:center;margin-top:3px">page ${p + 1} of ${S.length}</div></div>
+        <button data-act="readerPg" data-arg="next" style="flex:none;padding:12px 20px;border-radius:13px;background:${last ? 'var(--good)' : 'var(--accent)'};color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">${last ? (lastCh ? 'Finish the book 🎉' : 'Chapter done ✓') : 'Next →'}</button></div>
+      <div style="text-align:center;font-size:10.5px;color:var(--muted);font-weight:600;margin-bottom:18px">← → keys turn the pages too</div>
       ${tryOverlay()}
     </div>`;
   }
+  const wordsClampT = (s, n) => { s = String(s || ''); return s.length <= n ? s : s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…'; };
 
   window.SB_READER = {
     open: slug => app2.readerOpen(slug),

@@ -1037,6 +1037,11 @@
   @keyframes sb-secret{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.18)}}
   :root[data-motion="off"] .atlas-secret{animation:none}
   @media (prefers-reduced-motion:reduce){ .atlas-secret{animation:none} }
+  /* the in-app reader: the authored chapter HTML carries .trick blocks — give
+     them the tinted-card look the printed page gives them */
+  .rd-method .trick{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin:9px 0}
+  .rd-method b{color:var(--accent)}
+  .rd-method ul,.rd-method ol{padding-left:1.2em;margin:.5em 0}
   /* Fog belongs to a region you have not REACHED yet — on the pin, because a board is
      never wholly locked (its stops are). An unreached region recedes; a reached one is
      bold; the painting behind them both stays at full strength. */
@@ -1668,7 +1673,7 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
      carries a project URL and anon key, so shipping them changes nothing yet. -->
 <script defer src="sb-config.js?v=20260824q"></script>
 <script defer src="voice-cdn.js?v=20260824q"></script>
-<script>window.SB_ASSET_V="?v=20260828b";</script>
+<script>window.SB_ASSET_V="?v=20260828c";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
@@ -1695,7 +1700,7 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="pricing.js?v=20260824q"></script>
 <script defer src="auth.js?v=20260824q"></script>
 <script defer src="supabase-auth.js?v=20260824q"></script>
-<script defer src="app3.js?v=20260828b"></script>
+<script defer src="app3.js?v=20260828c"></script>
 <script defer src="worlds4.js?v=20260828a"></script>
 <script defer src="mockbee.js?v=20260824q"></script>
   <script defer src="games-daily.js?v=20260824q"></script>

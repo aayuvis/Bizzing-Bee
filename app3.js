@@ -2674,6 +2674,15 @@ const SB_SHELF = [
   { s:'book-lines',    t:'Lines Worth Keeping',   a:'#4A6FA5', co:1 },
   { s:'book-quiz',     t:'The Long Quiz',         a:'#B5893C', co:1 },
 ];
+/* Warm the shelf art once, during idle time after boot: 23 spine PNGs, ~400KB,
+   same-origin. By the time the child opens the Library the whole row is usually
+   in cache and every book draws at once — Pages caps these at max-age=600, so a
+   cold visit otherwise re-fetched them and the shelf filled in book by book. */
+let _spinesWarm=false;
+function warmSpines(){ if(_spinesWarm) return; _spinesWarm=true;
+  try{ SB_SHELF.forEach(b=>{ const im=new Image(); im.decoding='async'; im.src='app-art/spines/'+b.s+'.png'; }); }catch(e){} }
+try{ if('requestIdleCallback' in window) requestIdleCallback(warmSpines,{timeout:9000});
+  else setTimeout(warmSpines,3500); }catch(e){}
 
 const SB_FACTS = {
   clips: 128491,        // voice/w/*.mp3, every word in both libraries
@@ -4486,7 +4495,11 @@ function libShelf(){
   };
   const title=(b,i)=>{ const k=ink(b.a);
     return `<span class="bk-t" style="--fs:${fs(b.t,b.s)}px;color:${k.c};text-shadow:${k.sh}">${esc(b.t)}</span>`; };
-  const img=(b)=>`<img src="app-art/spines/${b.s}.png" alt="" loading="lazy" decoding="async">`;
+  /* NOT lazy: the browser deprioritizes lazy images and trickles them in one at a
+     time, which is exactly how the shelf read — books popping in one by one. The
+     whole row is ~400KB; load it eagerly (and warmSpines() below fetches it during
+     idle time on Home, so the Library usually opens with every book already drawn). */
+  const img=(b)=>`<img src="app-art/spines/${b.s}.png" alt="" loading="eager" fetchpriority="high" decoding="async">`;
   const attrs=(b)=>`data-act="openBook" data-arg="${escA(b.s)}" title="${escA(b.t)}${ok?'':' — Regional Speller'}"`;
 
   const upright=(b,i)=>`<button class="bk-sp" ${attrs(b)}
@@ -10136,7 +10149,7 @@ function viewKey(){
   try{ return [state.screen, state.nav, state.view, state.coachTab, state.vocTab,
     state.vocDeck, state.mb && state.mb.view, state.trailView, state.trailAct,
     state.trailUnit, state.trailChk, state.trailStop, state.chapter,
-    state.readerBook, state.readerCh, !!state.readerQuiz].join('|'); }
+    state.readerBook, state.readerCh, state.readerPg, !!state.readerQuiz].join('|'); }
   catch(e){ return ''; }
 }
 var _lastViewKey = null;
