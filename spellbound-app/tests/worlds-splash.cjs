@@ -51,8 +51,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     letters: d ? d.querySelectorAll('.spl-logo b').length : 0,
     comet: d && !!d.querySelector('.spl-comet'), trail: d && !!d.querySelector('.spl-trail path'),
     sheen: d && !!d.querySelector('.spl-sheen'), bars: d && !!d.querySelector('.spl-bars'),
-    starring: d && /STARRING/.test(d.textContent) && !!d.querySelector('#spl-star svg,#spl-star img'),
-    cast: d ? d.querySelectorAll('#spl-cast > span').length : 0,
+    noAvatars: d && !d.querySelector('#spl-star') && !d.querySelector('#spl-cast'),
+    tagline: d && /prehistoric/i.test(d.textContent),
     tune: d && /createOscillator/.test(document.body.innerHTML) === false }; });
   ok(s1.up, 'the title sequence rises on open for a returning child');
   ok(s1.world, 'the episode card names the child\'s own world (Dino Era)');
@@ -60,8 +60,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(s1.letters >= 10, 'the title pops in letter by letter (' + s1.letters + ' letters)');
   ok(s1.comet && s1.trail, 'a light-streak traces the arc with its luminous trail (the cartoon bee is retired)');
   ok(s1.sheen && s1.bars, 'the wordmark carries a sheen pass and the frame wears letterbox bars');
-  ok(s1.starring, 'the child takes the STARRING credit with their own avatar');
-  ok(s1.cast >= 4, 'the cast bobs along the bottom (' + s1.cast + ' of them)');
+  ok(s1.noAvatars, 'NO avatar cast or starring block — the painted world is the star');
+  ok(s1.tagline, 'the world speaks in its own words (the tagline)');
   ok(s1.noBar && s1.tap, 'no loading bar — just tap-to-skip (the bar was cut on request)');
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');

@@ -1090,17 +1090,9 @@
   #sb-splash .spl-world::after{transform:scaleX(-1)}
   #sb-splash.kb .spl-world{opacity:0;animation:spl-fadeup 1s cubic-bezier(.16,1,.3,1) 3.5s both}
   @keyframes spl-fadeup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  #sb-splash .spl-star{display:flex;align-items:center;justify-content:center;gap:13px;margin-top:22px;min-height:64px}
-  #sb-splash.kb .spl-star{opacity:0;animation:spl-fadeup 1.1s cubic-bezier(.16,1,.3,1) 4.2s both}
-  #sb-splash .spl-starav{width:60px;height:60px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.1);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--spl-acc,#FFD24D) 80%,transparent),0 0 0 6px rgba(255,255,255,.07),0 10px 26px rgba(0,0,0,.5);display:grid;place-items:center}
-  #sb-splash .spl-starlab{text-align:left}
-  #sb-splash .spl-starlab small{display:block;font-size:9.5px;font-weight:700;letter-spacing:.3em;color:rgba(255,255,255,.62)}
-  #sb-splash .spl-starlab b{font-family:'Baloo 2',var(--display,system-ui);font-size:19px;text-shadow:0 2px 10px rgba(0,0,0,.55)}
-  /* the cast: a slow rise and a four-second drift — presence, not bouncing */
-  #sb-splash .spl-cast{position:absolute;left:0;right:0;bottom:9.5vh;display:flex;justify-content:center;gap:clamp(16px,4.5vw,38px);z-index:4}
-  #sb-splash .spl-cast>span{width:48px;height:48px;display:inline-block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));opacity:0;animation:spl-castin 1.2s cubic-bezier(.16,1,.3,1) both,spl-float 4.2s ease-in-out infinite}
-  @keyframes spl-castin{from{opacity:0;transform:translateY(26px)}to{opacity:.92;transform:none}}
-  @keyframes spl-float{0%,100%{margin-top:0}50%{margin-top:-5px}}
+  /* the tagline: the world's own two words, quieter than the credit above it */
+  #sb-splash .spl-sub{margin-top:10px;font-size:clamp(12px,2.4vw,14px);font-style:italic;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.66);text-shadow:0 1px 8px rgba(0,0,0,.55)}
+  #sb-splash.kb .spl-sub{opacity:0;animation:spl-fadeup 1.1s cubic-bezier(.16,1,.3,1) 4.2s both}
   #sb-splash .spl-tap{margin-top:26px;font-size:10.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.55)}
   #sb-splash.kb .spl-tap{opacity:0;animation:spl-fadeup 1.2s ease 4.8s both}
   /* dust motes, not sparks: fine, slow, barely-there */
@@ -1651,12 +1643,12 @@
     var st={}; try{ st=JSON.parse(localStorage.getItem('sb_saas_v2')||'{}')||{}; }catch(e){}
     if(!st.children || !st.children.length) return;
     var rm=false; try{ rm=(st.am===1)||(st.cm===1)||matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
-    var T={ spellbound:['Bizzing Bee','#FFD24D','#241E4E','🐝','hive'], marquee:['Spotlight','#F6DC8A','#2A1608','🎭','stage'],
-      aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos'], anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo'],
-      science:['Lab','#3BC0AA','#062A24','🧪','lab'], origami:['Origami','#F0C9A2','#2A1408','🪁','lotus'],
-      pixel:['Arcade','#36C6E0','#0A122E','👾','arcade'], avatar:['Elements','#8FD0EC','#0A2430','🌊','pond'],
-      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky'], serpent:["Serpent's Lair",'#7FD98C','#0A2014','🐍','forest'],
-      race:['Race Zone','#7BA3F5','#0A1430','🏎️','carnival'], dino:['Dino Era','#B8D96A','#141E08','🦖','meadow'] };
+    var T={ spellbound:['Bizzing Bee','#FFD24D','#241E4E','🐝','hive','the bee'], marquee:['Spotlight','#F6DC8A','#2A1608','🎭','stage','on stage'],
+      aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos','cosmic'], anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo','the dojo'],
+      science:['Lab','#3BC0AA','#062A24','🧪','lab','field notes'], origami:['Origami','#F0C9A2','#2A1408','🪁','lotus','paper'],
+      pixel:['Arcade','#36C6E0','#0A122E','👾','arcade','game on'], avatar:['Elements','#8FD0EC','#0A2430','🌊','pond','elemental'],
+      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky','divine'], serpent:["Serpent's Lair",'#7FD98C','#0A2014','🐍','forest','the lair'],
+      race:['Race Zone','#7BA3F5','#0A1430','🏎️','carnival','full throttle'], dino:['Dino Era','#B8D96A','#141E08','🦖','meadow','prehistoric'] };
     var t=T[st.theme]||T.spellbound, dur=rm?2200:7200;
     var kid=(st.children[st.activeIdx||0]||st.children[0])||{};
     var d=document.createElement('div'); d.id='sb-splash'; if(!rm) d.className='kb';
@@ -1674,24 +1666,9 @@
       +'<div class="spl-in">'
       +'<div class="spl-logo">'+letters+'<span class="spl-sheen"></span></div>'
       +'<div class="spl-world"><span>'+(rm?'':'today entering · ')+t[0]+'</span></div>'
-      +'<div class="spl-star" id="spl-star"></div>'
-      +'<div class="spl-tap">tap anywhere to fly in</div></div>'
-      +'<div class="spl-cast" id="spl-cast"></div>';
+      +'<div class="spl-sub">'+(t[5]||'')+'</div>'
+      +'<div class="spl-tap">tap anywhere to fly in</div></div>';
     document.body.appendChild(d);
-    /* the starring credit + cast use the app's real painted avatars, which exist
-       once the deferred scripts have run — DOMContentLoaded lands ~1s into a 7s
-       sequence, right on cue for the credits beat */
-    function credits(){ try{ if(rm || !document.getElementById('spl-star') || !window.SB_AVATAR) return;
-      var star=document.getElementById('spl-star');
-      var av=null; try{ av=kid.avatar&&SB_AVATAR(kid.avatar,56); }catch(e){}
-      if(!av) av=SB_AVATAR('bizzy',56)||'🐝';
-      star.innerHTML='<span class="spl-starav">'+av+'</span>'
-        +'<span class="spl-starlab"><small>STARRING</small><b>'+String(kid.name||'you').replace(/[<>&"]/g,'')+'</b></span>';
-      var cast=document.getElementById('spl-cast'), ids=['bizzy','honeypot','waggle','bumble','clover'];
-      for(var ci=0;ci<ids.length;ci++){ var a=SB_AVATAR(ids[ci],52); if(!a) continue;
-        cast.innerHTML+='<span style="animation-delay:'+(4.4+ci*0.22).toFixed(2)+'s,'+(4.4+ci*0.22).toFixed(2)+'s">'+a+'</span>'; }
-    }catch(e){} }
-    if(document.readyState!=='loading') credits(); else document.addEventListener('DOMContentLoaded',credits);
     var done=false, ac=null;
     function out(){ if(done) return; done=true; d.classList.add('out');
       setTimeout(function(){ try{ d.remove(); }catch(e){} if(ac){ try{ ac.close(); }catch(e){} } },600); }
