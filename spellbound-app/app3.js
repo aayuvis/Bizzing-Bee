@@ -787,6 +787,39 @@ function quoteOfHour(){
   const all=(window.SB_QUOTES||[]);
   let i=all.indexOf(q); if(i<0) i=all.findIndex(x=>x&&x.q===q.q);
   return {q, i:i<0?0:i}; }
+/* ---- 🐞 bug reports live in localStorage, device-level (not on a child) ---- */
+function _bugList(){ try{ return JSON.parse(localStorage.getItem('sb_bugs')||'[]')||[]; }catch(e){ return []; } }
+function _bugSave(list){ try{ localStorage.setItem('sb_bugs', JSON.stringify(list)); }catch(e){} }
+function bugUI(){
+  if(state.screen!=='app') return '';
+  const tab=`<button data-act="bugToggle" class="sb-bug-tab" title="Report a bug or share an idea" aria-label="Report a bug">🐞<span>BUG?</span></button>`;
+  if(!state.bugOpen) return tab;
+  const cats=[['bug','💥 Something broke'],['looks','🎨 Looks wrong'],['audio','🔊 Audio'],['words','📖 A word or fact'],['idea','💡 An idea']];
+  const list=_bugList();
+  const rows=list.slice(0,20).map((r,i)=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)">
+      <span style="flex:none;font-size:14px">${(cats.find(c2=>c2[0]===r.cat)||['','🐞'])[1].slice(0,2)}</span>
+      <span style="min-width:0;flex:1"><span style="display:block;font-size:12.5px;line-height:1.5;overflow-wrap:anywhere">${esc(r.txt)}</span>
+        <span style="display:block;font-size:10.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(r.ts)} · ${esc(r.nav)} · v${esc(r.v||'?')}</span></span>
+      <button data-act="bugDel" data-arg="${i}" title="Delete this report" style="flex:none;color:var(--muted);font-weight:800;font-size:13px">✕</button></div>`).join('');
+  return tab+`<div data-act="bugToggle" style="position:fixed;inset:0;z-index:128;background:rgba(10,8,20,.45)"></div>
+    <aside class="sb-bug-panel" role="dialog" aria-label="Report a bug">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span style="font-family:var(--display);font-weight:800;font-size:18px">🐞 Report a bug</span>
+        <button data-act="bugToggle" aria-label="Close" style="margin-left:auto;width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:900;font-size:15px">✕</button></div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 12px">Everything stays <b>on this device</b> — the app never sends anything. Export your reports below and share the file with us yourself.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${cats.map(([k,l])=>`<button data-act="bugCat" data-arg="${k}" style="padding:7px 12px;border-radius:999px;font-weight:800;font-size:12px;border:1.5px solid ${(state.bugCat||'bug')===k?'var(--accent)':'var(--line)'};background:${(state.bugCat||'bug')===k?'color-mix(in srgb,var(--accent) 14%,transparent)':'var(--surface2)'};color:var(--text)">${l}</button>`).join('')}</div>
+      <textarea data-inp="bugType" data-fkey="bugType" placeholder="What happened? What did you expect instead?" style="width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:11px 13px;font-size:13.5px;line-height:1.55;font-family:inherit;color:var(--text);resize:vertical">${esc(state.bugTxt||'')}</textarea>
+      <div style="font-size:10.5px;color:var(--muted);font-weight:600;margin:5px 0 10px">Included automatically: this screen (${esc(String(state.nav||''))}), app version, window size — never a name or age.</div>
+      <button data-act="bugSave" style="width:100%;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Save the report</button>
+      ${list.length?`<div style="display:flex;align-items:center;gap:8px;margin:16px 0 4px">
+          <span style="font-family:var(--display);font-weight:800;font-size:13.5px">Saved on this device · ${list.length}</span>
+          <span style="margin-left:auto;display:inline-flex;gap:6px">
+            <button data-act="bugCopy" style="padding:7px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px">📋 Copy</button>
+            <button data-act="bugExport" style="padding:7px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px">💾 Export</button></span></div>
+        ${rows}${list.length>20?`<div style="font-size:11px;color:var(--muted);font-weight:700;padding-top:8px">+${list.length-20} older in the export</div>`:''}`
+        :'<p style="font-size:12px;color:var(--muted);margin-top:14px">Nothing reported yet — spotted something odd? You are the QA team now. 🕵️</p>'}
+    </aside>`;
+}
 function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
   const pr=pronFor(w.w)||{p:w.p||'',sy:w.sy||'',ps:w.ps||'',o:w.o||''};
   const OLAB={Latin:'Latin',Greek:'Greek',French:'French',Spanish:'Spanish',Italian:'Italian',German:'German',Arabic:'Arabic',Japanese:'Japanese','Old English':'Old English',Norse:'Old Norse',Hindi:'Hindi/Sanskrit'};
@@ -1613,6 +1646,29 @@ const app = {
     flash('New list “'+name+'” created with “'+w.w+'” — find it in Practice ✓'); render(); },
   reportWord:(w)=>set({reportW:w}),
   reportClose:()=>set({reportW:null}),
+  /* ---- 🐞 the bug sidebar. OFFLINE by design (COPPA: the app transmits nothing):
+     reports save to localStorage on THIS device, with only technical context
+     (screen, version, viewport, theme — never a name or age), and the panel
+     exports them as bug-reports.json / copies them for the parent to send. ---- */
+  bugToggle:()=>set({bugOpen:!state.bugOpen}),
+  bugCat:(c2)=>set({bugCat:c2}),
+  bugType:(v)=>{ state.bugTxt=String(v==null?'':v).slice(0,1200); },
+  bugSave:()=>{ const txt=(state.bugTxt||'').trim();
+    if(!txt){ flash('Say a few words about what happened first'); return; }
+    const list=_bugList();
+    list.unshift({ ts:new Date().toISOString().slice(0,16).replace('T',' '), cat:state.bugCat||'bug', txt,
+      nav:String(state.nav||''), v:String(window.SB_ASSET_V||'').replace('?v=',''),
+      sz:window.innerWidth+'x'+window.innerHeight, mode:String(state.mode||'light'), theme:String(state.theme||'') });
+    _bugSave(list.slice(0,100));
+    state.bugTxt=''; try{ sfx('correct'); }catch(e){} flash('🐞 Saved on this device — thank you!'); render(); },
+  bugDel:(i)=>{ const list=_bugList(); list.splice(+i,1); _bugSave(list); render(); },
+  bugExport:()=>{ const list=_bugList(); if(!list.length){ flash('No reports yet'); return; }
+    const txt=JSON.stringify(list,null,2);
+    try{ const blob=new Blob([txt],{type:'application/json'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='bug-reports.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); flash('💾 bug-reports.json saved — send it to us!'); }catch(e){ flash('Couldn’t save the file — try Copy instead'); } },
+  bugCopy:()=>{ const list=_bugList(); if(!list.length){ flash('No reports yet'); return; }
+    const txt=list.map(r=>`${r.ts} · [${r.cat}] ${r.txt} (screen: ${r.nav} · v${r.v} · ${r.sz})`).join('\n');
+    try{ navigator.clipboard.writeText(txt).then(()=>flash('Copied '+list.length+' report'+(list.length>1?'s':'')+' 📋')); }
+    catch(e){ try{ const t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); flash('Copied 📋'); }catch(e2){ flash('Couldn’t copy'); } } },
   reportIssue:(issue)=>{ const w=state.reportW; if(!w) return; const r=wordDB().get(nkey(w))||{w};
     state.wordReports=[...(state.wordReports||[]), { w:r.w||w, issue, d:r.d||'', s:r.s||'', when:new Date().toISOString().slice(0,10) }];
     save(); set({reportW:null}); flash('Thanks — logged for review. Parents can export it from the Parent tab. ⚑'); },
@@ -9691,6 +9747,7 @@ function overlays(){
   if(S.showTiers) h+=viewTiersSheet();
   if(S.authSheet) h+=viewAuthSheet();
   if(S.cloudSheet) h+=viewCloudSheet();
+  h+=bugUI();
   if(S.settingsOpen){
     h+=`<div id="sb-set-ov" data-act="closeSettings" style="position:fixed;inset:0;z-index:76;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:start center;padding:18px;overflow:auto">
       <div data-act="noop" style="position:relative;width:100%;max-width:660px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;${state._setOpened?'':'animation:sb-pop .3s ease both'}">
