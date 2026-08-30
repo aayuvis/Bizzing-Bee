@@ -1089,12 +1089,7 @@
   #sb-splash .spl-cast>span{width:52px;height:52px;display:inline-block;filter:drop-shadow(0 5px 12px rgba(0,0,0,.4));opacity:0;animation:spl-castin .5s cubic-bezier(.2,1.5,.4,1) both,spl-castbob 1.4s ease-in-out infinite}
   @keyframes spl-castin{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
   @keyframes spl-castbob{0%,100%{margin-top:0}50%{margin-top:-9px}}
-  #sb-splash .spl-bar{width:min(60vw,300px);height:9px;border-radius:99px;background:rgba(255,255,255,.18);margin:20px auto 9px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.3)}
-  #sb-splash .spl-bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--spl-acc,#FFD24D),#FFF0B8)}
-  #sb-splash.kb .spl-bar i{animation:spl-fill var(--spl-dur,7s) linear both}
-  #sb-splash:not(.kb) .spl-bar i{width:100%}
-  @keyframes spl-fill{from{width:2%}to{width:100%}}
-  #sb-splash .spl-tap{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.75)}
+  #sb-splash .spl-tap{margin-top:22px;font-size:11.5px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.75)}
   #sb-splash .spl-spark{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--spl-acc,#FFD24D);box-shadow:0 0 8px 2px rgba(255,210,77,.5);animation:spl-rise 3.4s linear infinite;bottom:-8px}
   @keyframes spl-rise{from{transform:translateY(0);opacity:.9}to{transform:translateY(-105vh);opacity:0}}
   /* 🐞 the report-a-bug sidebar: a quiet tab on the right edge, a slide-in panel.
@@ -1679,7 +1674,6 @@
       +'<div class="spl-logo">'+letters+'</div>'
       +'<div class="spl-world">'+(rm?'':'today entering · ')+t[0]+' '+t[3]+'</div>'
       +'<div class="spl-star" id="spl-star"></div>'
-      +'<div class="spl-bar"><i></i></div>'
       +'<div class="spl-tap">tap anywhere to fly in</div></div>'
       +'<div class="spl-cast" id="spl-cast"></div>';
     document.body.appendChild(d);
