@@ -37,7 +37,7 @@ const root = require('path').resolve(__dirname, '..');
       backPill: !!document.querySelector('button[aria-label^="Back to"]'),
     }));
     if (!r.grid) errs.push(vp.n + ': no tile grid');
-    if (r.tiles !== 10) errs.push(vp.n + ': ' + r.tiles + ' tiles (want 10)');
+    if (r.tiles !== 11) errs.push(vp.n + ': ' + r.tiles + ' tiles (want 11 — the Opening-splash toggle joined the grid Aug-30)');
     if (r.ow) errs.push(vp.n + ': H-OVERFLOW');
     if (r.advInAccount !== true) errs.push(vp.n + ': Advanced Pack ' + r.advInAccount);
     if (r.ageSlider) errs.push(vp.n + ': the exact-age slider is still there');

@@ -621,6 +621,7 @@ window.SB_W4_FOCUS={
       layer.appendChild(el('w4-kerb','right:0;transform:scaleX(-1)'));
       for(var c2=0;c2<2;c2++) layer.appendChild(el('w4-car','bottom:'+rnd(24,34).toFixed(1)+'vh;width:'+rnd(56,80).toFixed(0)+'px;animation-duration:'+rnd(3.4,5).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s;opacity:.35', carSVG(c2?'#E0453A':'#2FD08C')));
       layer.appendChild(el('w4-shimmer',''));
+    } else if(world==='dino'){
       layer.appendChild(el('w4-haze'));
       // a treeline of tall conifers, back row hazier than the front
       [['4vw','30vh',.30,'-2s'],['16vw','24vh',.22,'-4s'],['70vw','34vh',.34,'-1s'],['84vw','26vh',.24,'-5s'],['92vw','20vh',.18,'-3s']]

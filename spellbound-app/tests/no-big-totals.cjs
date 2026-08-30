@@ -2,7 +2,7 @@
    The Word Atlas said "0/102 stops" on Home, in the drawer and above the map. 102 is a
    mountain, not a map, and the bar beside it already carried the same information. This
    sweeps every child-facing screen for an "X / BIG" counter.
-   COLLECTIONS ARE EXEMPT: "24/217 avatars" and "3/80 badges" are the pleasure of a
+   COLLECTIONS ARE EXEMPT: "20/142 avatars", "3/80 badges" and "2/8 worlds" are the pleasure of a
    sticker album, not a workload — the count is the point, and hiding it would make the
    Hive worse. Only progress-through-work counters are barred.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/no-big-totals.cjs */
@@ -37,7 +37,7 @@ const root=require('path').resolve(__dirname,'..');
   const m=[...t.matchAll(/(\d[\d,]*)\s*(?:\/|of)\s*(\d[\d,]*)/g)].filter(x=>parseInt(x[2].replace(/,/g,''),10)>=40).map(x=>x[0]);
   if(m.length) hits['concepts']=[...new Set(m)];
   // collections keep their counts; everything else must not show a big total
-  const COLLECTION=/^(24|\d+)\s*\/\s*(217|80)$/;
+  const COLLECTION=/^(24|\d+)\s*\/\s*(142|80|8)$/;
   const bad={}; for(const k of Object.keys(hits)){
     const left=hits[k].filter(x=>!COLLECTION.test(x.replace(/\s+/g,''))); if(left.length) bad[k]=left; }
   await b.close();
