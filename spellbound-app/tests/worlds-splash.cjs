@@ -115,6 +115,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     honey: d ? d.querySelectorAll('.spl-honey').length : 0,
     top: d && !!d.querySelector('.spl-honeytop img[src$="hive-honey-top.svg"]'),
     bot: d && !!d.querySelector('.spl-honeybot img[src$="hive-honey-bot.svg"]'),
+    bees: d ? d.querySelectorAll('.spl-bee').length : 0,
+    fly: d && !!d.querySelector('.spl-bee img.b-fly[src$="hive-bee-fly.svg"]'),
+    sit: d && !!d.querySelector('.spl-bee img.b-sit[src$="hive-bee-sit.svg"]'),
+    comb: d && !!d.querySelector('.spl-combzoom img[src$="hive-comb-wall.webp"]'),
+    cell: d && !!d.querySelector('.spl-cellin img[src$="hive-cell.webp"]'),
     bloom: d && !!d.querySelector('.spl-goldflash'), amb: d && !!d.querySelector('.spl-ambveil'),
     hex: d ? d.querySelectorAll('.spl-hexcell').length : 0,
     swarm: d ? d.querySelectorAll('.spl-swarmdot').length : 0,
@@ -122,20 +127,25 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     world: d && /The Hive/.test(d.textContent), tag: d && /home sweet hive/.test(d.textContent) }; });
   ok(hv.up && hv.marked, 'the Hive wears its own staging class (w-hive)');
   ok(hv.world && hv.tag, 'the episode card says The Hive, not a duplicate of the wordmark');
-  ok(hv.honey === 2 && hv.top && hv.bot, 'painted honey closes over the frame — drip curtain above, rising pool below');
-  ok(hv.bloom && hv.amb, 'the amber bloom and the closing amber vignette are staged');
+  ok(hv.honey === 2 && hv.top && hv.bot, 'painted honey DRIPS over the world — curtain hanging above, pool holding low');
+  ok(/translateY\(-26%\)/.test(idx0) && /spl-hang/.test(idx0), 'the pot never closes — the curtain descends to a hang and sways there');
+  ok(hv.bees === 3 && hv.fly && hv.sit, 'three painted honeybees fly in and land, wings swapping from mid-beat to folded');
+  ok(hv.comb && hv.cell, 'the honey-filled hexagon wall and the cell interior are staged for the dive');
+  ok(hv.bloom && hv.amb, 'the arrival bloom and the amber vignette are staged');
   ok(hv.hex >= 12, 'the comb crystallizes cell by cell (' + hv.hex + ' cells)');
   ok(hv.swarm >= 10, 'the swarm streams through as the buzz peaks (' + hv.swarm + ' bees)');
   const hvCast = await pgH.evaluate(() => { const c = document.querySelector('#spl-cast2'); return c ? {
     comb: !!c.querySelector('.w4o-comb'), glow: !!c.querySelector('.w4o-hiveglow'),
-    bees: c.querySelectorAll('.w4o-bee').length, rise: c.querySelectorAll('.w4o-rise').length } : null; });
+    bees: c.querySelectorAll('.w4o-bee img[src$="hive-bee-fly.svg"]').length,
+    rise: c.querySelectorAll('.w4o-rise').length } : null; });
   ok(hvCast && hvCast.comb && hvCast.glow && hvCast.bees >= 2 && hvCast.rise >= 6,
-    'the cast is the HIVE\'S OWN art — its comb, its glow, its rising gold, its drawn bee on the beeline');
+    'the cast keeps the world\'s comb, glow and rising gold — crossed by the painted bee on the beeline');
   ok(fs.existsSync(SRC + '/app-art/hive-honey-top.svg') && fs.existsSync(SRC + '/app-art/hive-honey-bot.svg')
-    && /image\/webp/.test(fs.readFileSync(SRC + '/app-art/hive-honey-top.svg', 'utf8').slice(0, 400)),
-    'both honey plates ship as alpha-keyed SVGs in app-art');
-  ok(/HIVE SWARM/.test(idx0) && /honey MEET/.test(idx0) && /spl-goldshift/.test(idx0),
-    'the swarm buzz and the honey gloop are wired into the score, and the day turns to gold');
+    && /image\/webp/.test(fs.readFileSync(SRC + '/app-art/hive-bee-fly.svg', 'utf8').slice(0, 400))
+    && fs.existsSync(SRC + '/app-art/hive-comb-wall.webp') && fs.existsSync(SRC + '/app-art/hive-cell.webp'),
+    'honey plates, bee sprites and both comb plates all ship in app-art');
+  ok(/HIVE SWARM/.test(idx0) && /bees LAND/.test(idx0) && /the DIVE/.test(idx0) && /spl-goldshift/.test(idx0),
+    'the swarm, the landings and the dive are wired into the score, and the day turns to gold');
   await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(1000);
   ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses the hive opening at once');
 
