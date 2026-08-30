@@ -14,6 +14,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'the pouring flask tilts mouth-DOWN (the pour-from-the-bottom bug stays dead)');
   ok(/M80 16 q-4 40 -7 80/.test(w4), 'and the stream falls from the lip, into the catch beaker');
 
+  const idx0 = fs.readFileSync(SRC + '/index.html', 'utf8');
   const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 
   // ---- scene richness: count real elements in every world layer ----
@@ -88,6 +89,15 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(bite.eyes, 'predator eyes flare in the dark before the roar');
   ok(bite.teeth, 'the jaws carry rows of IVORY teeth that read against the dusk');
   ok(bite.flash, 'the SNAP lands with a blink of white');
+  const plates = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
+    top: d && !!d.querySelector('.spl-jawtop img[src*="dino-jaw-top"]'),
+    bot: d && !!d.querySelector('.spl-jawbot img[src*="dino-jaw-bot"]') }; });
+  ok(plates.top && plates.bot, 'the Gemini-painted jaw plates ride the bite (drawn teeth stay as fallback)');
+  ok(fs.existsSync(SRC + '/app-art/dino-jaw-top.jpg') && fs.existsSync(SRC + '/app-art/dino-jaw-bot.jpg'),
+    'both painted plates ship in app-art');
+  ok(/spl-veildim/.test(idx0) && /brightness\(1\.6\)/.test(idx0), 'the day opens BRIGHT before dusk takes it');
+  ok(await pg2.evaluate(() => document.querySelectorAll('#sb-splash .spl-dino').length >= 4),
+    'the herd grew: raptors, triceratops, stegosaurus');
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
