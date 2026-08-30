@@ -1039,59 +1039,73 @@
   @media (prefers-reduced-motion:reduce){ .atlas-secret{animation:none} }
   /* the in-app reader: the authored chapter HTML carries .trick blocks — give
      them the tinted-card look the printed page gives them */
-  /* ✨ the OPENING TITLES — a choreographed ~7s sequence, not a loading screen:
-     the world fades up, Bizzy swoops across leaving a honey trail, the title pops
-     in letter by letter under her, the world gets its "today entering" card, the
-     child's avatar takes the starring credit and the cast bobs along the bottom,
-     all over an eight-bar theme tune. Reduced motion gets a still 2.2s card. */
-  #sb-splash{position:fixed;inset:0;z-index:400;display:grid;place-items:center;overflow:hidden;color:#fff;transition:opacity .55s ease;cursor:pointer}
+  /* ✨ the OPENING TITLES — a ~7s cinematic sequence. The motion language is
+     film-title, not picture-book: a light-streak traces the sky instead of a
+     cartoon, letters resolve from blur with a single sheen pass, credits sit
+     between hairline rules in tracked small caps, everything floats — nothing
+     bounces. Reduced motion gets a still 2.2s card. */
+  #sb-splash{position:fixed;inset:0;z-index:400;display:grid;place-items:center;overflow:hidden;color:#fff;transition:opacity .7s ease;cursor:pointer}
   #sb-splash.out{opacity:0;pointer-events:none}
   #sb-splash .spl-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
-  #sb-splash.kb .spl-art{animation:spl-artin 1.1s ease .1s both,spl-kb 8s ease-out both}
-  #sb-splash:not(.kb) .spl-art{opacity:.6}
-  @keyframes spl-artin{from{opacity:0}to{opacity:.6}}
-  @keyframes spl-kb{from{transform:scale(1.15)}to{transform:scale(1.02)}}
-  #sb-splash .spl-veil{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 30%,transparent 20%,var(--spl-deep,#120E24) 92%),linear-gradient(180deg,rgba(10,8,20,.25),rgba(10,8,20,.55))}
-  /* Bizzy's flight: a swoop from off-left to off-right with two dips, wings abuzz */
-  #sb-splash .spl-flyer{position:absolute;left:0;top:26vh;width:74px;z-index:3;filter:drop-shadow(0 8px 16px rgba(0,0,0,.4))}
-  #sb-splash.kb .spl-flyer{animation:spl-swoop 3.4s cubic-bezier(.45,.05,.55,.95) .4s both}
-  #sb-splash:not(.kb) .spl-flyer{display:none}
-  @keyframes spl-swoop{0%{transform:translate(-90px,0) rotate(8deg)}25%{transform:translate(24vw,7vh) rotate(-6deg)}
-    50%{transform:translate(48vw,-3vh) rotate(7deg)}75%{transform:translate(72vw,5vh) rotate(-5deg)}
-    100%{transform:translate(105vw,-2vh) rotate(6deg)}}
-  #sb-splash .spl-wing{transform-origin:50% 80%;animation:spl-buzz .12s linear infinite alternate}
-  @keyframes spl-buzz{from{transform:rotate(-24deg)}to{transform:rotate(14deg)}}
-  /* the honey trail Bizzy leaves behind, drawn in as she crosses */
-  #sb-splash .spl-trail{position:absolute;left:0;top:20vh;width:100vw;height:20vh;z-index:2;opacity:0}
-  #sb-splash.kb .spl-trail{animation:spl-trailin .3s ease .5s both}
-  @keyframes spl-trailin{to{opacity:.7}}
-  #sb-splash.kb .spl-trail path{stroke-dasharray:6 12;stroke-dashoffset:1160;animation:spl-traildraw 3.4s cubic-bezier(.45,.05,.55,.95) .4s both}
+  #sb-splash.kb .spl-art{animation:spl-artin 1.6s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both}
+  #sb-splash:not(.kb) .spl-art{opacity:.55}
+  @keyframes spl-artin{from{opacity:0}to{opacity:.55}}
+  @keyframes spl-kb{from{transform:scale(1.09)}to{transform:scale(1.01)}}
+  #sb-splash .spl-veil{position:absolute;inset:0;background:radial-gradient(130% 100% at 50% 32%,transparent 24%,var(--spl-deep,#120E24) 96%),linear-gradient(180deg,rgba(8,6,16,.35),rgba(8,6,16,.6))}
+  /* cinematic letterbox bars that lift as the sequence ends */
+  #sb-splash .spl-bars::before,#sb-splash .spl-bars::after{content:'';position:absolute;left:0;right:0;height:7vh;background:#05040A;z-index:5}
+  #sb-splash .spl-bars::before{top:0}
+  #sb-splash .spl-bars::after{bottom:0}
+  #sb-splash.kb .spl-bars::before{animation:spl-barup 1s cubic-bezier(.7,0,.84,0) 6s both}
+  #sb-splash.kb .spl-bars::after{animation:spl-bardn 1s cubic-bezier(.7,0,.84,0) 6s both}
+  @keyframes spl-barup{to{transform:translateY(-100%)}}
+  @keyframes spl-bardn{to{transform:translateY(100%)}}
+  /* the light-streak: a glowing head tracing a long arc, its trail drawn behind it */
+  #sb-splash .spl-comet{position:absolute;left:0;top:24vh;width:16px;height:16px;z-index:3;border-radius:50%;
+    background:radial-gradient(circle at 40% 40%,#FFFDF4,var(--spl-acc,#FFD24D) 55%,transparent 72%);
+    box-shadow:0 0 18px 6px color-mix(in srgb,var(--spl-acc,#FFD24D) 55%,transparent),0 0 44px 16px color-mix(in srgb,var(--spl-acc,#FFD24D) 22%,transparent)}
+  #sb-splash.kb .spl-comet{animation:spl-arc 3.2s cubic-bezier(.45,.05,.55,.95) .5s both}
+  #sb-splash:not(.kb) .spl-comet{display:none}
+  @keyframes spl-arc{0%{transform:translate(-30px,2vh);opacity:0}8%{opacity:1}
+    30%{transform:translate(28vw,5.5vh)}55%{transform:translate(52vw,-1.5vh)}80%{transform:translate(78vw,3.5vh)}
+    96%{opacity:1}100%{transform:translate(106vw,-1vh);opacity:0}}
+  #sb-splash .spl-trail{position:absolute;left:0;top:20vh;width:100vw;height:18vh;z-index:2;opacity:0}
+  #sb-splash.kb .spl-trail{animation:spl-trailin .4s ease .6s both,spl-trailout 1.4s ease 4.4s both}
+  @keyframes spl-trailin{to{opacity:.55}}
+  @keyframes spl-trailout{to{opacity:0}}
+  #sb-splash.kb .spl-trail path{stroke-dasharray:1160;stroke-dashoffset:1160;animation:spl-traildraw 3.2s cubic-bezier(.45,.05,.55,.95) .5s both}
   @keyframes spl-traildraw{to{stroke-dashoffset:0}}
-  #sb-splash .spl-in{position:relative;z-index:4;text-align:center;padding:20px;max-width:min(92vw,600px)}
-  /* the title, one letter at a time, each popping in with a little overshoot */
-  #sb-splash .spl-logo{font-family:'Baloo 2',var(--display,system-ui);font-weight:800;font-size:clamp(34px,8vw,56px);letter-spacing:.01em;margin:2px 0 4px;text-shadow:0 3px 16px rgba(0,0,0,.55);white-space:nowrap}
-  #sb-splash .spl-logo b{display:inline-block;font-weight:800}
-  #sb-splash.kb .spl-logo b{opacity:0;animation:spl-pop .5s cubic-bezier(.2,1.6,.4,1) both}
-  @keyframes spl-pop{from{opacity:0;transform:scale(.2) translateY(26px) rotate(-14deg)}60%{opacity:1;transform:scale(1.18) translateY(-4px) rotate(3deg)}to{opacity:1;transform:none}}
-  /* the world card slides up like an episode title */
-  #sb-splash .spl-world{display:inline-block;font-weight:800;font-size:clamp(14px,3.2vw,18px);letter-spacing:.16em;text-transform:uppercase;color:var(--spl-deep,#241E4E);background:var(--spl-acc,#FFD24D);border-radius:999px;padding:8px 22px;box-shadow:0 4px 16px rgba(0,0,0,.4);margin-top:12px}
-  #sb-splash.kb .spl-world{opacity:0;animation:spl-cardup .6s cubic-bezier(.2,1.4,.4,1) 3.4s both}
-  @keyframes spl-cardup{from{opacity:0;transform:translateY(30px) scale(.8)}to{opacity:1;transform:none}}
-  /* starring: the child's own avatar, ringed like a poster credit */
-  #sb-splash .spl-star{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:18px;min-height:64px}
-  #sb-splash.kb .spl-star{opacity:0;animation:spl-cardup .6s cubic-bezier(.2,1.4,.4,1) 4s both}
-  #sb-splash .spl-starav{width:62px;height:62px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.14);box-shadow:0 0 0 3px var(--spl-acc,#FFD24D),0 6px 18px rgba(0,0,0,.45);display:grid;place-items:center}
+  #sb-splash .spl-in{position:relative;z-index:4;text-align:center;padding:20px;max-width:min(92vw,620px)}
+  /* the wordmark: letters resolve from soft blur, then one sheen pass crosses it */
+  #sb-splash .spl-logo{font-family:'Baloo 2',var(--display,system-ui);font-weight:800;font-size:clamp(34px,8vw,58px);letter-spacing:.02em;margin:2px 0 4px;white-space:nowrap;position:relative}
+  #sb-splash .spl-logo b{display:inline-block;font-weight:800;background:linear-gradient(175deg,#FFFEFA 30%,#EFE6CF 68%,#D9C89E);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 10px rgba(0,0,0,.45))}
+  #sb-splash.kb .spl-logo b{opacity:0;animation:spl-resolve 1.1s cubic-bezier(.16,1,.3,1) both}
+  @keyframes spl-resolve{from{opacity:0;transform:translateY(16px);filter:blur(7px) drop-shadow(0 2px 10px rgba(0,0,0,0))}to{opacity:1;transform:none;filter:blur(0) drop-shadow(0 2px 10px rgba(0,0,0,.45))}}
+  #sb-splash .spl-sheen{position:absolute;inset:-8px -20px;pointer-events:none;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.34) 50%,transparent 58%);opacity:0;mix-blend-mode:screen}
+  #sb-splash.kb .spl-sheen{animation:spl-sheenpass 1.1s cubic-bezier(.4,0,.2,1) 3s both}
+  @keyframes spl-sheenpass{0%{opacity:0;transform:translateX(-60%)}25%{opacity:1}100%{opacity:0;transform:translateX(60%)}}
+  /* the episode credit: tracked small caps between hairline rules — no pill */
+  #sb-splash .spl-world{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px;font-weight:700;font-size:clamp(11px,2.4vw,13.5px);letter-spacing:.34em;text-transform:uppercase;color:var(--spl-acc,#FFD24D);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  #sb-splash .spl-world::before,#sb-splash .spl-world::after{content:'';height:1px;width:clamp(28px,7vw,64px);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--spl-acc,#FFD24D) 65%,transparent));flex:none}
+  #sb-splash .spl-world::after{transform:scaleX(-1)}
+  #sb-splash.kb .spl-world{opacity:0;animation:spl-fadeup 1s cubic-bezier(.16,1,.3,1) 3.5s both}
+  @keyframes spl-fadeup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  #sb-splash .spl-star{display:flex;align-items:center;justify-content:center;gap:13px;margin-top:22px;min-height:64px}
+  #sb-splash.kb .spl-star{opacity:0;animation:spl-fadeup 1.1s cubic-bezier(.16,1,.3,1) 4.2s both}
+  #sb-splash .spl-starav{width:60px;height:60px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.1);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--spl-acc,#FFD24D) 80%,transparent),0 0 0 6px rgba(255,255,255,.07),0 10px 26px rgba(0,0,0,.5);display:grid;place-items:center}
   #sb-splash .spl-starlab{text-align:left}
-  #sb-splash .spl-starlab small{display:block;font-size:10px;font-weight:800;letter-spacing:.18em;color:rgba(255,255,255,.7)}
-  #sb-splash .spl-starlab b{font-family:'Baloo 2',var(--display,system-ui);font-size:20px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
-  /* the cast, bobbing along the bottom like end credits */
-  #sb-splash .spl-cast{position:absolute;left:0;right:0;bottom:8vh;display:flex;justify-content:center;gap:clamp(14px,4vw,34px);z-index:3}
-  #sb-splash .spl-cast>span{width:52px;height:52px;display:inline-block;filter:drop-shadow(0 5px 12px rgba(0,0,0,.4));opacity:0;animation:spl-castin .5s cubic-bezier(.2,1.5,.4,1) both,spl-castbob 1.4s ease-in-out infinite}
-  @keyframes spl-castin{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
-  @keyframes spl-castbob{0%,100%{margin-top:0}50%{margin-top:-9px}}
-  #sb-splash .spl-tap{margin-top:22px;font-size:11.5px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.75)}
-  #sb-splash .spl-spark{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--spl-acc,#FFD24D);box-shadow:0 0 8px 2px rgba(255,210,77,.5);animation:spl-rise 3.4s linear infinite;bottom:-8px}
-  @keyframes spl-rise{from{transform:translateY(0);opacity:.9}to{transform:translateY(-105vh);opacity:0}}
+  #sb-splash .spl-starlab small{display:block;font-size:9.5px;font-weight:700;letter-spacing:.3em;color:rgba(255,255,255,.62)}
+  #sb-splash .spl-starlab b{font-family:'Baloo 2',var(--display,system-ui);font-size:19px;text-shadow:0 2px 10px rgba(0,0,0,.55)}
+  /* the cast: a slow rise and a four-second drift — presence, not bouncing */
+  #sb-splash .spl-cast{position:absolute;left:0;right:0;bottom:9.5vh;display:flex;justify-content:center;gap:clamp(16px,4.5vw,38px);z-index:4}
+  #sb-splash .spl-cast>span{width:48px;height:48px;display:inline-block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));opacity:0;animation:spl-castin 1.2s cubic-bezier(.16,1,.3,1) both,spl-float 4.2s ease-in-out infinite}
+  @keyframes spl-castin{from{opacity:0;transform:translateY(26px)}to{opacity:.92;transform:none}}
+  @keyframes spl-float{0%,100%{margin-top:0}50%{margin-top:-5px}}
+  #sb-splash .spl-tap{margin-top:26px;font-size:10.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+  #sb-splash.kb .spl-tap{opacity:0;animation:spl-fadeup 1.2s ease 4.8s both}
+  /* dust motes, not sparks: fine, slow, barely-there */
+  #sb-splash .spl-spark{position:absolute;width:3px;height:3px;border-radius:50%;background:color-mix(in srgb,var(--spl-acc,#FFD24D) 75%,#fff);opacity:0;box-shadow:0 0 5px 1px color-mix(in srgb,var(--spl-acc,#FFD24D) 35%,transparent);animation:spl-rise 7s linear infinite;bottom:-8px}
+  @keyframes spl-rise{0%{transform:translateY(0);opacity:0}12%{opacity:.55}88%{opacity:.4}100%{transform:translateY(-105vh);opacity:0}}
   /* 🐞 the report-a-bug sidebar: a quiet tab on the right edge, a slide-in panel.
      The tab sits at z-index 40 so game overlays (.arc-play etc.) cover it. */
   .sb-bug-tab{position:fixed;right:0;top:58%;z-index:40;display:flex;flex-direction:column;align-items:center;gap:2px;
@@ -1647,32 +1661,19 @@
     var kid=(st.children[st.activeIdx||0]||st.children[0])||{};
     var d=document.createElement('div'); d.id='sb-splash'; if(!rm) d.className='kb';
     d.style.cssText='--spl-acc:'+t[1]+';--spl-deep:'+t[2]+';--spl-dur:'+(dur/1000)+'s;background:'+t[2];
-    /* Bizzy, self-contained (the app's SVG kit has not parsed yet at this point) */
-    var BEE='<svg viewBox="0 0 90 74" width="100%" height="100%">'
-      +'<g class="spl-wing"><ellipse cx="38" cy="16" rx="15" ry="10" fill="#CFE6FF" opacity=".85" transform="rotate(-24 38 16)"/></g>'
-      +'<g class="spl-wing" style="animation-delay:.06s"><ellipse cx="56" cy="15" rx="13" ry="9" fill="#E4F0FF" opacity=".8" transform="rotate(-10 56 15)"/></g>'
-      +'<ellipse cx="46" cy="44" rx="28" ry="22" fill="#FFC83D"/>'
-      +'<path d="M30 24 q-4 18 0 38 M46 22 q-5 20 0 44 M62 25 q4 18 0 37" stroke="#3A2B10" stroke-width="7" fill="none" stroke-linecap="round"/>'
-      +'<ellipse cx="46" cy="44" rx="28" ry="22" fill="none" stroke="#3A2B10" stroke-width="2.4"/>'
-      +'<path d="M73 40 q10 2 12 6 q-4 3 -12 2z" fill="#3A2B10"/>'
-      +'<circle cx="34" cy="38" r="4.4" fill="#fff"/><circle cx="35.4" cy="39" r="2.2" fill="#241A08"/>'
-      +'<circle cx="50" cy="37" r="4.4" fill="#fff"/><circle cx="51.4" cy="38" r="2.2" fill="#241A08"/>'
-      +'<path d="M38 50 q6 5 12 0" stroke="#241A08" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
-      +'<circle cx="29" cy="46" r="3.4" fill="#F08A9B" opacity=".65"/><circle cx="56" cy="45" r="3.4" fill="#F08A9B" opacity=".65"/>'
-      +'<path d="M28 22 q-4 -8 -9 -10 M52 20 q3 -9 8 -12" stroke="#3A2B10" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
-      +'<circle cx="19" cy="12" r="3" fill="#3A2B10"/><circle cx="60" cy="8" r="3" fill="#3A2B10"/></svg>';
-    var sparks=''; if(!rm) for(var i=0;i<10;i++) sparks+='<span class="spl-spark" style="left:'+(4+i*9.6)+'vw;animation-delay:-'+(i*0.37).toFixed(2)+'s"></span>';
-    /* the title pops in letter by letter, timed to Bizzy's fly-past */
+    var sparks=''; if(!rm) for(var i=0;i<14;i++) sparks+='<span class="spl-spark" style="left:'+(3+i*7.1)+'vw;animation-delay:-'+(i*0.53).toFixed(2)+'s;animation-duration:'+(6+(i%5)*0.8)+'s"></span>';
+    /* the title resolves letter by letter in the light-streak's wake */
     var word='Bizzing Bee', letters='';
     for(var li=0;li<word.length;li++) letters+= word[li]===' ' ? '<b>&nbsp;</b>'
-      : '<b style="animation-delay:'+(0.9+li*0.17).toFixed(2)+'s">'+word[li]+'</b>';
+      : '<b style="animation-delay:'+(1.1+li*0.14).toFixed(2)+'s">'+word[li]+'</b>';
     d.innerHTML='<img class="spl-art" alt="" src="app-art/sgw-'+t[4]+'.jpg" onerror="this.remove()">'
       +'<div class="spl-veil"></div>'+sparks
-      +'<svg class="spl-trail" viewBox="0 0 1000 200" preserveAspectRatio="none"><path d="M-20 60 Q 240 130 480 40 T 1020 40" fill="none" stroke="'+t[1]+'" stroke-width="5" stroke-linecap="round" pathLength="1160"/></svg>'
-      +'<div class="spl-flyer">'+BEE+'</div>'
+      +'<div class="spl-bars"></div>'
+      +'<svg class="spl-trail" viewBox="0 0 1000 200" preserveAspectRatio="none"><defs><linearGradient id="splg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+t[1]+'" stop-opacity="0"/><stop offset=".55" stop-color="'+t[1]+'" stop-opacity=".5"/><stop offset="1" stop-color="#FFFDF4"/></linearGradient></defs><path d="M-20 62 Q 240 128 480 42 T 1020 44" fill="none" stroke="url(#splg)" stroke-width="2.4" stroke-linecap="round" pathLength="1160"/></svg>'
+      +'<div class="spl-comet"></div>'
       +'<div class="spl-in">'
-      +'<div class="spl-logo">'+letters+'</div>'
-      +'<div class="spl-world">'+(rm?'':'today entering · ')+t[0]+' '+t[3]+'</div>'
+      +'<div class="spl-logo">'+letters+'<span class="spl-sheen"></span></div>'
+      +'<div class="spl-world"><span>'+(rm?'':'today entering · ')+t[0]+'</span></div>'
       +'<div class="spl-star" id="spl-star"></div>'
       +'<div class="spl-tap">tap anywhere to fly in</div></div>'
       +'<div class="spl-cast" id="spl-cast"></div>';
@@ -1695,24 +1696,29 @@
     function out(){ if(done) return; done=true; d.classList.add('out');
       setTimeout(function(){ try{ d.remove(); }catch(e){} if(ac){ try{ ac.close(); }catch(e){} } },600); }
     var tm=setTimeout(out,dur);
-    /* the theme tune: eight bouncy bars of melody over a walking bass, ~6.5s */
+    /* the score: eight bouncy bars grew up into a warm four-chord pad (detuned
+       sine pairs, slow attack) under a sparse five-note bell motif — an opening-
+       titles cue, not a chiptune. ~6.5s. */
     function tune(){ try{ var A=window.AudioContext||window.webkitAudioContext; if(!A||ac) return;
       ac=new A(); if(ac.state==='suspended') ac.resume();
-      var mg=ac.createGain(); mg.gain.value=0.11; mg.connect(ac.destination);
-      var t0=ac.currentTime+0.05, Q=0.21;   // ~143bpm eighth
-      function n(f,at,len,type,vol){ var o=ac.createOscillator(),g=ac.createGain();
-        o.type=type||'triangle'; o.frequency.value=f;
-        g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(vol||0.5,at+0.025);
-        g.gain.exponentialRampToValueAtTime(0.0001,at+len);
-        o.connect(g); g.connect(mg); o.start(at); o.stop(at+len+0.05); }
-      var C4=261.6,D4=293.7,E4=329.6,G4=392,A4=440,C5=523.3,D5=587.3,E5=659.3,G5=784,A5=880,C6=1046.5;
-      /* melody: a question, its answer, and a little flourish to land the title */
-      var mel=[[E5,1],[G5,1],[A5,2],[G5,1],[E5,1],[C5,2],  [D5,1],[E5,1],[G5,2],[E5,1],[D5,1],[C5,2],
-               [E5,1],[G5,1],[C6,2],[A5,1],[G5,1],[E5,2],  [G5,1],[A5,1],[C6,1],[A5,1],[G5,4]];
-      var at=t0; for(var mi=0;mi<mel.length;mi++){ n(mel[mi][0],at,mel[mi][1]*Q*0.92,'triangle',0.5); at+=mel[mi][1]*Q; }
-      var bass=[C4,C4,G4,G4,A4,A4,E4,G4,C4,C4,G4,G4,A4,G4,E4,C4]; at=t0;
-      for(var bi=0;bi<bass.length;bi++){ n(bass[bi]/2,at,Q*1.6,'sine',0.4); at+=Q*2; }
-      for(var hi=0;hi<16;hi++) if(hi%2===0) n(6200,t0+hi*Q*2+Q,0.04,'square',0.05);
+      var mg=ac.createGain(); mg.gain.value=0.16; mg.connect(ac.destination);
+      var t0=ac.currentTime+0.05;
+      function pad(f,at,len){ [-5,5].forEach(function(det){ var o=ac.createOscillator(),g=ac.createGain();
+        o.type='sine'; o.frequency.value=f; o.detune.value=det;
+        g.gain.setValueAtTime(0.0001,at); g.gain.linearRampToValueAtTime(0.16,at+len*0.35);
+        g.gain.setValueAtTime(0.16,at+len*0.7); g.gain.exponentialRampToValueAtTime(0.0001,at+len+0.35);
+        o.connect(g); g.connect(mg); o.start(at); o.stop(at+len+0.4); }); }
+      function bell(f,at){ [[1,0.22],[2.76,0.06]].forEach(function(h2){ var o=ac.createOscillator(),g=ac.createGain();
+        o.type='sine'; o.frequency.value=f*h2[0];
+        g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(h2[1],at+0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001,at+1.5);
+        o.connect(g); g.connect(mg); o.start(at); o.stop(at+1.6); }); }
+      /* Cmaj7 · Am9 · Fmaj7 · G(add9), 1.6s a bar */
+      var bars=[[130.8,261.6,329.6,392,493.9],[110,220,329.6,440,493.9],[87.3,174.6,261.6,329.6,440],[98,196,293.7,392,440]];
+      for(var bi=0;bi<4;bi++){ var at=t0+bi*1.6; for(var ni=0;ni<bars[bi].length;ni++) pad(bars[bi][ni],at,1.7); }
+      /* the motif rides above: G5 E5 . C6 B5 . G5 — placed, not marched */
+      var E5=659.3,G5=784,B5=987.8,C6=1046.5;
+      bell(G5,t0+0.5); bell(E5,t0+1.35); bell(C6,t0+2.7); bell(B5,t0+3.6); bell(G5,t0+5.1);
     }catch(e){} }
     d.addEventListener('pointerdown',function(){ clearTimeout(tm); tune(); setTimeout(out,120); },{once:true});
     if(!rm) tune();   /* plays where the browser already trusts us; silently ignored elsewhere */
