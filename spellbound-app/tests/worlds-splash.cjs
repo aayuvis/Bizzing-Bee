@@ -49,7 +49,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     up: !!d, world: d && /Dino Era/.test(d.textContent), art: d && !!d.querySelector('img[src*="sgw-meadow"]'),
     noBar: d && !d.querySelector('.spl-bar'), tap: d && /tap anywhere/.test(d.textContent),
     letters: d ? d.querySelectorAll('.spl-logo b').length : 0,
-    flyer: d && !!d.querySelector('.spl-flyer .spl-wing'), trail: d && !!d.querySelector('.spl-trail path'),
+    comet: d && !!d.querySelector('.spl-comet'), trail: d && !!d.querySelector('.spl-trail path'),
+    sheen: d && !!d.querySelector('.spl-sheen'), bars: d && !!d.querySelector('.spl-bars'),
     starring: d && /STARRING/.test(d.textContent) && !!d.querySelector('#spl-star svg,#spl-star img'),
     cast: d ? d.querySelectorAll('#spl-cast > span').length : 0,
     tune: d && /createOscillator/.test(document.body.innerHTML) === false }; });
@@ -57,15 +58,16 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(s1.world, 'the episode card names the child\'s own world (Dino Era)');
   ok(s1.art, 'it plays over the world\'s painted play-field');
   ok(s1.letters >= 10, 'the title pops in letter by letter (' + s1.letters + ' letters)');
-  ok(s1.flyer && s1.trail, 'Bizzy swoops the screen with buzzing wings and a honey trail');
+  ok(s1.comet && s1.trail, 'a light-streak traces the arc with its luminous trail (the cartoon bee is retired)');
+  ok(s1.sheen && s1.bars, 'the wordmark carries a sheen pass and the frame wears letterbox bars');
   ok(s1.starring, 'the child takes the STARRING credit with their own avatar');
   ok(s1.cast >= 4, 'the cast bobs along the bottom (' + s1.cast + ' of them)');
   ok(s1.noBar && s1.tap, 'no loading bar — just tap-to-skip (the bar was cut on request)');
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
-  ok(/theme tune: eight bouncy bars/.test(idx) && /createOscillator/.test(idx.slice(0, idx.indexOf('id="root"'))),
-    'a real theme tune (melody + bass) is wired into the sequence');
+  ok(/four-chord pad/.test(idx) && /bell\(/.test(idx) && /createOscillator/.test(idx.slice(0, idx.indexOf('id="root"'))),
+    'a real score (warm pad + bell motif) is wired into the sequence');
 
   // auto-dismiss on its own clock
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
