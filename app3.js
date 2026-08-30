@@ -1650,6 +1650,16 @@ const app = {
      reports save to localStorage on THIS device, with only technical context
      (screen, version, viewport, theme — never a name or age), and the panel
      exports them as bug-reports.json / copies them for the parent to send. ---- */
+  /* ---- research capture (SB_TM): grown-up switch, on-device only ---- */
+  toggleResearch:()=>{ pinGate(()=>{ const v=!(window.SB_TM&&SB_TM.on());
+    if(window.SB_TM) SB_TM.arm(v);
+    flash(v?'🔬 Research capture ON — this device only, export it from here':'🔬 Research capture off'); render();
+  },'Research capture — grown-ups only'); },
+  tmExport:()=>{ const txt=window.SB_TM&&SB_TM.export(); if(!txt){ flash('Nothing recorded yet'); return; }
+    try{ const blob=new Blob([txt],{type:'application/json'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='sb-research.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); flash('💾 sb-research.json saved — open it in the operator console'); }catch(e){ flash('Couldn’t save the file'); } },
+  tmClear:()=>{ if(window.SB_TM) SB_TM.clear(); flash('Research log cleared'); render(); },
+  tmReact:(v)=>{ try{ if(window.SB_TM) SB_TM.rec({k:'react', v:String(v)}); }catch(e){}
+    state.tmReacted=true; try{ sfx('coin'); }catch(e){} flash('Thanks for telling us! 🐝'); render(); },
   bugToggle:()=>set({bugOpen:!state.bugOpen}),
   bugCat:(c2)=>set({bugCat:c2}),
   bugType:(v)=>{ state.bugTxt=String(v==null?'':v).slice(0,1200); },
@@ -1792,6 +1802,8 @@ const app = {
          saying "practice and get 70%" forever. Best-of semantics make the exitTrain
          call below harmless double cover for early exits. */
       if(state.trailReturn){ try{ if(window.SB_TRAIL_PRACTICED) SB_TRAIL_PRACTICED(state.trailReturn, state.sessionRight||0, state.sessionDone||0); }catch(e){} }
+      try{ if(window.SB_TM) SB_TM.rec({k:'sess', r:state.sessionRight||0, d:state.sessionDone||0, lbl:String(state.sessionLabel||'').slice(0,40)}); }catch(e){}
+      state.tmReacted=false;
       set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); return; }
     state.gi+=1; try{ const k=state.sessionListKey; if(k&&k[0]!=='_'){ getList(active(),k).gi=state.gi; save(); } }catch(e){}
     set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,250); },
@@ -6640,6 +6652,10 @@ function sessionResults(){
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Test complete!</h2>
       <div style="font-size:15px;color:var(--muted);font-weight:700">${esc((S.sessionLabel||'Practice').split(' · ')[0])} — you spelled <b style="color:var(--good)">${ok.length}</b> of <b style="color:var(--text)">${total}</b> right (${pct}%)</div></div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">${col('Spelled correctly',ok,true)}${col('Misspelt',bad,false)}</div>
+    ${(window.SB_TM&&SB_TM.on()&&!S.tmReacted)?`<div style="display:flex;align-items:center;gap:10px;justify-content:center;margin:0 0 14px;padding:12px;border-radius:14px;background:var(--surface2)">
+      <span style="font-size:13px;font-weight:800;color:var(--muted)">How did that feel?</span>
+      ${['love|😍','ok|🙂','meh|😕'].map(o=>{const[v,g]=o.split('|');return `<button data-act="tmReact" data-arg="${v}" aria-label="${v}" style="font-size:24px;line-height:1;background:none;padding:4px 7px;border-radius:10px">${g}</button>`;}).join('')}
+    </div>`:''}
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       ${(()=>{ /* an Atlas session says what the score MEANT, right here — reading the
            RECORDED best, so a 3-word redo round cannot claim an unlock it did not earn */
@@ -8287,6 +8303,11 @@ function viewSettings(){
       <div class="sb-card" style="padding:4px 0;margin-top:8px">
         ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
         ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(c&&c.devCoins),'On','Off'))}
+        ${line('Research capture','Logs taps, screens and errors on THIS device only — nothing is ever sent anywhere. For play-testing; read it with the operator console.',tog('toggleResearch',!!(window.SB_TM&&SB_TM.on()),'On','Off'))}
+        ${(window.SB_TM&&SB_TM.on())?`<div style="display:flex;gap:8px;align-items:center;padding:10px 16px 14px">
+          <span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(SB_TM.count())} events on this device</span>
+          <button data-act="tmExport" style="margin-left:auto;padding:8px 14px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12px">💾 Export</button>
+          <button data-act="tmClear" style="padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12px">Clear</button></div>`:''}
       </div>
     </details>
     <button data-act="signOut" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 18px;border-radius:13px;background:var(--surface2);border:1px solid var(--bad,#D6453A);color:var(--bad,#D6453A);font-weight:800;font-size:14.5px">
