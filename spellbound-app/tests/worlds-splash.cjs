@@ -95,8 +95,17 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(cast2 && cast2.raptors >= 2 && cast2.brach >= 2 && cast2.pteros >= 2 && cast2.trees >= 3 && cast2.ferns >= 2,
     'the cast is the WORLD\'S OWN art, borrowed verbatim (raptors, brachios, pteros, trees, ferns)');
   ok(cast2 && cast2.recreated === 0, 'no recreated stand-in dinos remain');
+  // the GATE: the show holds silent until the invitation is answered
+  const hold = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate');
+    return { kb: d && d.classList.contains('kb'), gate: g ? g.textContent : '', shown: g && getComputedStyle(g).display !== 'none' }; });
+  ok(!hold.kb && hold.shown, 'the show HOLDS on the gate — no .kb, no cinematic, until the tap');
+  ok(/100 million years/.test(hold.gate), 'the gate speaks the world\'s own invitation (' + hold.gate + ')');
+  await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(500);
+  const going = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash');
+    return { up: !!d, kb: d && d.classList.contains('kb'), gateGone: d && getComputedStyle(d.querySelector('.spl-gate')).display === 'none' }; });
+  ok(going.up && going.kb && going.gateGone, 'the gate tap STARTS the show — .kb lands, the gate bows out, the splash stays up');
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
-  ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
+  ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a second tap skips straight in');
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
   ok(/brand-open\.mp3/.test(idx) && /BIZZING BEE brand sound/.test(idx),
     'the Bizzing Bee BRAND CUE opens every world\'s load');
@@ -104,8 +113,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'the world stingers take over at the close — the roar at the jaw SNAP, the buzz as the cell seals');
   ok(fs.existsSync(SRC + '/app-art/brand-open.mp3') && fs.existsSync(SRC + '/app-art/dino-roar.mp3')
     && fs.existsSync(SRC + '/app-art/hive-buzz.mp3'), 'all three pre-rendered sounds ship in app-art');
-  ok(/tap again to fly in/.test(idx) && /the resume a first tap grants/.test(idx),
-    'an autoplay-blocked load gets its sound on the first tap, which does not skip');
+  ok(/starts clock, cinematic and sound together/.test(idx) && /born=Date\.now\(\); d\.classList\.add\('kb'\)/.test(idx),
+    'the gate tap starts clock, cinematic and sound together — autoplay policy can never mute the show');
   ok(/spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
     'the frame still slams and the maw pulses at the snap');
 
@@ -154,26 +163,55 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     return { up: d && !!d.querySelector('.spl-brand'), text: !!(t && /Bizzing/.test(t.textContent) && / Bee/.test(t.textContent)),
       ico: !!document.querySelector('#spl-bico svg') }; });
   ok(bug.up && bug.text && bug.ico, 'the brand lockup — the mascot + the wordmark in the brand face — sits top right');
+  await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(400);
   await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(1000);
-  ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses the hive opening at once');
+  ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'gate tap then skip tap dismisses the hive opening');
 
-  // auto-dismiss on its own clock
+  // ---- the OTHER SIX worlds each own their opening: world class, staging,
+  //      close gesture, and a stinger of their own wired to the close ----
+  const SIX = {
+    aurora: { cls: 'w-aur', sting: 'aurora-shimmer', probes: { curtains: ['.spl-aurcurt', 2], bloom: ['.spl-aurbloom', 1], stars: ['.spl-twinkle', 20] } },
+    anime: { cls: 'w-blade', sting: 'blade-shing', probes: { slash: ['.spl-slash', 1], shutters: ['.spl-shut', 2], petals: ['.spl-petal', 10], pagoda: ['.spl-pagsil', 1] } },
+    science: { cls: 'w-lab', sting: 'lab-zap', probes: { liquid: ['.spl-liquid', 1], flash: ['.spl-labflash', 1], bubbles: ['.spl-lbub', 10], big: ['.spl-lbig', 5] } },
+    avatar: { cls: 'w-elem', sting: 'elements-fuse', probes: { orbs: ['.spl-orb', 4], fuse: ['.spl-fuse', 1], auras: ['.spl-aura', 4] } },
+    godly: { cls: 'w-gods', sting: 'gods-thunder', probes: { doors: ['.spl-door', 2], seam: ['.spl-doorseam', 1], flash: ['.spl-godflash', 1], cast: ['#spl-cast2', 1] } },
+    race: { cls: 'w-race', sting: 'race-rev', probes: { gantry: ['.spl-gantry', 1], lamps: ['.spl-glamp', 4], wall: ['.spl-speedwall', 1], cars: ['.spl-racecar', 2] } },
+  };
+  for (const [theme, spec] of Object.entries(SIX)) {
+    const pgW = await b.newPage({ viewport: { width: 1100, height: 900 } });
+    await pgW.addInitScript(t => localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: t, children: [{ name: 'T' }] })), theme);
+    await pgW.goto('file://' + SRC + '/index.html'); await pgW.waitForTimeout(900);
+    const got = await pgW.evaluate(ps => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate'); return {
+      cls: d ? d.className : '', gate: g ? g.textContent : '', counts: Object.fromEntries(Object.entries(ps).map(([k, [sel]]) =>
+        [k, d ? d.querySelectorAll(sel).length : 0])) }; }, spec.probes);
+    const short = Object.entries(spec.probes).filter(([k, [, n]]) => got.counts[k] < n).map(([k, [, n]]) => k + '=' + got.counts[k] + '<' + n);
+    ok(got.cls.includes(spec.cls), theme.padEnd(8) + ' wears its own cut (' + spec.cls + ')');
+    ok(/^tap to /.test(got.gate), theme.padEnd(8) + ' gate invites in its own words (' + got.gate + ')');
+    ok(!short.length, theme.padEnd(8) + ' staging is fully cast' + (short.length ? ' — MISSING ' + short.join(', ') : ''));
+    ok(fs.existsSync(SRC + '/app-art/' + spec.sting + '.mp3'), theme.padEnd(8) + ' stinger ships (' + spec.sting + '.mp3)');
+    await pgW.close();
+  }
+  ok(/aurora:6\.75/.test(idx0) && /science:5\.55/.test(idx0) && /race:6\.35/.test(idx0),
+    'every world has its CLOSE on the audio clock — the stinger lands on the fold, the boil-over, the green light');
+
+  // ignored entirely, the gate falls through to the app on its own (~10s)
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
   await pg3.addInitScript(s => localStorage.setItem('sb_saas_v2', s), seed);
   await pg3.goto('file://' + SRC + '/index.html');
   await pg3.waitForTimeout(400);
   const upEarly = await pg3.evaluate(() => !!document.querySelector('#sb-splash'));
-  await pg3.waitForTimeout(8200);
-  ok(upEarly && await pg3.evaluate(() => !document.querySelector('#sb-splash')), 'left alone, it bows out by itself (~7s)');
+  await pg3.waitForTimeout(10800);
+  ok(upEarly && await pg3.evaluate(() => !document.querySelector('#sb-splash')), 'left alone, the unanswered gate falls through by itself (~10s)');
 
-  // another world stays on the plain cut — no borrowed jaws
+  // no world borrows another's close — the lab gets no jaws, no honey
   const pgS = await b.newPage();
   await pgS.addInitScript(() => localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'science', children: [{ name: 'T' }] })));
   await pgS.goto('file://' + SRC + '/index.html'); await pgS.waitForTimeout(600);
   ok(await pgS.evaluate(() => { const d = document.querySelector('#sb-splash');
     return !!d && !d.classList.contains('w-dino') && !d.querySelector('.spl-jaw')
-      && !d.classList.contains('w-hive') && !d.querySelector('.spl-honey'); }),
-    'other worlds keep the plain cut — no jaws, no honey outside their own worlds');
+      && !d.classList.contains('w-hive') && !d.querySelector('.spl-honey')
+      && !d.querySelector('.spl-door') && !d.querySelector('.spl-gantry'); }),
+    'no world borrows another\'s close — jaws, honey, doors, gantry stay home');
 
   // silenced by the Settings switch, and never over onboarding
   const pg4 = await b.newPage();

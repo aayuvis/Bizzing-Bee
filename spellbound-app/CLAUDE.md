@@ -1043,6 +1043,42 @@ out of saga2.js so a retune cannot quietly undo them.
 - The splash `T` table in index.html carries only the eight; a stale saved theme falls
   back to the Hive there AND in the boot migration.
 
+## The opening splash: ALL EIGHT worlds have bespoke load-ups (Aug-31)
+- **The GATE (the autoplay answer)**: the show does NOT start by itself. The splash
+  paints the world and HOLDS on one glowing invitation in the world's own words
+  ("tap to open the Hive", "tap to travel back 100 million years" — index 6 of the
+  `T` table). That tap is the user gesture autoplay policy wants: it resets `born`,
+  adds `.kb` (the class every one-shot animation hangs off) and calls `tune()` in
+  the same beat, so cue + cinematic run in lockstep from zero, always audible. A
+  second tap skips; an unanswered gate falls through to the app at ~10s; reduced
+  motion keeps the still card (no gate phase). CONSEQUENCE: any one-shot element's
+  PARKED state must live in its BASE rule, not only in the `.kb` rule — the jaws
+  and honey plates park via base transforms for exactly this reason (during the
+  hold, a `.kb`-only park leaves them covering the frame).
+- Every world's splash lives ENTIRELY in the inline `<script>` after `<body>` in
+  index.html (parse-time paint). Each has a marker class + staging branch + a CLOSE
+  gesture + its own stinger mp3 in app-art: dino `w-dino` (jaws snap, dino-roar),
+  spellbound `w-hive` (cell seals, hive-buzz), aurora `w-aur` (aurora curtains fold,
+  aurora-shimmer), anime `w-blade` (katana streak + diagonal shutters, blade-shing),
+  science `w-lab` (liquid boil-over floods the frame, lab-zap), avatar `w-elem`
+  (four orbs orbit + fuse, elements-fuse), godly `w-gods` (marble temple doors boom
+  shut, gods-thunder), race `w-race` (light tree counts to GREEN, launch speed-wall,
+  race-rev).
+- **The audio clock**: `CLOSE` map (seconds) in that script — dino 6.6, spellbound
+  7.45, aurora 6.75, anime 6.28, science 5.55, avatar 5.35, godly 6.7, race 6.35 —
+  the brand cue (brand-open.mp3) plays to CLOSE, then the world's stinger fires.
+  Science/avatar close early ON PURPOSE: their stingers carry a build (bubbles,
+  whooshes) that rides the visual before the payoff. Change a gesture's timing and
+  the CLOSE map + `tests/worlds-splash.cjs` pins must move with it.
+- The stingers are SYNTHESIZED (scratchpad stinggen.py lineage) — safe territory
+  (bells, steel, thunder, engines), unlike creature roars which needed Veo. Lessons
+  baked in: convolution reverb on everything (dry synth reads as arcade), RMS-matched
+  wet mix, gentle soft-knee limiting (hot tanh reads as crushed), no naked sine tones.
+- After ANY edit to the inline script: extract via the `<body>\n<script>` regex,
+  `node --check`, confirm `document.body.appendChild(d);` survived. Guard:
+  `tests/worlds-splash.cjs` (per-world class, staging census, stinger files, CLOSE
+  pins).
+
 ## The Champion's Expedition — bright boards, visible secrets (NO fog)
 - The expedition layer (trail.js, `fogLayer`/`uSpots`/`uP`) puts three per-child seeded
   secrets on EVERY board — a word-wisp tap-gift (+8), a rival best-of-3 duel (+25), and a
