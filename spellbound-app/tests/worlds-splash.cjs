@@ -63,11 +63,22 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(s1.noAvatars, 'NO avatar cast or starring block — the painted world is the star');
   ok(s1.tagline, 'the world speaks in its own words (the tagline)');
   ok(s1.noBar && s1.tap, 'no loading bar — just tap-to-skip (the bar was cut on request)');
+  const dino = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
+    marked: d && d.classList.contains('w-dino'),
+    jaws: d ? d.querySelectorAll('.spl-jaw').length : 0,
+    maw: d && !!d.querySelector('.spl-maw'), dusk: d && !!d.querySelector('.spl-duskveil'),
+    stars: d ? d.querySelectorAll('.spl-nightstar').length : 0,
+    scene: d && !!d.querySelector('.spl-treeline') && !!d.querySelector('.spl-brach') && d.querySelectorAll('.spl-ptero').length >= 2 && d.querySelectorAll('.spl-fern').length >= 2 }; });
+  ok(dino.marked, 'Dino Era wears its own staging class');
+  ok(dino.jaws === 2 && dino.maw, 'the T-rex jaws close around the frame over the deep-red maw');
+  ok(dino.dusk && dino.stars >= 12, 'day falls to dark — dusk veil + ' + dino.stars + ' stars coming out');
+  ok(dino.scene, 'the dino scenery is staged: treeline, brachiosaurus, pteranodons, ferns');
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
   ok(/four-chord pad/.test(idx) && /bell\(/.test(idx) && /createOscillator/.test(idx.slice(0, idx.indexOf('id="root"'))),
     'a real score (warm pad + bell motif) is wired into the sequence');
+  ok(/T-rex ROAR/.test(idx) && /createBufferSource/.test(idx), 'the roar is synthesized and timed to the jaws');
 
   // auto-dismiss on its own clock
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
@@ -77,6 +88,14 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   const upEarly = await pg3.evaluate(() => !!document.querySelector('#sb-splash'));
   await pg3.waitForTimeout(8200);
   ok(upEarly && await pg3.evaluate(() => !document.querySelector('#sb-splash')), 'left alone, it bows out by itself (~7s)');
+
+  // another world stays on the plain cut — no borrowed jaws
+  const pgS = await b.newPage();
+  await pgS.addInitScript(() => localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'science', children: [{ name: 'T' }] })));
+  await pgS.goto('file://' + SRC + '/index.html'); await pgS.waitForTimeout(600);
+  ok(await pgS.evaluate(() => { const d = document.querySelector('#sb-splash');
+    return !!d && !d.classList.contains('w-dino') && !d.querySelector('.spl-jaw'); }),
+    'other worlds keep the plain cut — no jaws outside Dino Era');
 
   // silenced by the Settings switch, and never over onboarding
   const pg4 = await b.newPage();

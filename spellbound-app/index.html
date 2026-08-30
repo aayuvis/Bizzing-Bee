@@ -1095,6 +1095,41 @@
   #sb-splash.kb .spl-sub{opacity:0;animation:spl-fadeup 1.1s cubic-bezier(.16,1,.3,1) 4.2s both}
   #sb-splash .spl-tap{margin-top:26px;font-size:10.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.55)}
   #sb-splash.kb .spl-tap{opacity:0;animation:spl-fadeup 1.2s ease 4.8s both}
+  /* ── DINO ERA's own opening (only #sb-splash.w-dino, only with motion on):
+     day falls to dusk across the painted meadow, its creatures cross the frame,
+     a roar lands, and the exit is THROUGH the closing jaws of a T-rex. ── */
+  #sb-splash.w-dino.kb .spl-art{animation:spl-artin 1.6s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-day2dark 7.2s linear both}
+  @keyframes spl-day2dark{0%,18%{filter:brightness(1.28) saturate(1.15)}60%{filter:brightness(.92) saturate(1)}100%{filter:brightness(.5) saturate(.8) hue-rotate(-14deg)}}
+  #sb-splash .spl-duskveil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(10,14,40,.72) 0%,rgba(10,12,34,.4) 42%,rgba(6,8,22,.66) 100%);opacity:0}
+  #sb-splash.kb .spl-duskveil{animation:spl-duskin 5.4s linear 1.6s both}
+  @keyframes spl-duskin{from{opacity:0}to{opacity:.9}}
+  #sb-splash .spl-nightstar{position:absolute;width:2.5px;height:2.5px;border-radius:50%;background:#EAF2FF;z-index:2;opacity:0;animation:spl-starout 2.4s ease both}
+  @keyframes spl-starout{to{opacity:.85}}
+  #sb-splash .spl-ptero{position:absolute;left:-140px;width:120px;z-index:2;opacity:.85;animation:spl-glide 4.6s cubic-bezier(.4,.1,.6,.9) both}
+  @keyframes spl-glide{0%{transform:translate(0,0) scale(.55)}100%{transform:translate(118vw,-9vh) scale(1.05)}}
+  #sb-splash .spl-flap{transform-origin:50% 45%;animation:spl-flapw 1.1s ease-in-out infinite}
+  @keyframes spl-flapw{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.62)}}
+  #sb-splash .spl-treeline{position:absolute;left:0;right:0;bottom:0;height:24vh;z-index:2;opacity:.9}
+  #sb-splash .spl-fern{position:absolute;bottom:-8px;width:min(24vw,220px);z-index:3;transform-origin:50% 100%;animation:spl-fernsway 5.5s ease-in-out infinite}
+  @keyframes spl-fernsway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(2deg)}}
+  #sb-splash .spl-brach{position:absolute;right:2vw;bottom:10vh;width:min(30vw,300px);z-index:2;opacity:.85;transform-origin:70% 90%;animation:spl-brachbob 6.5s ease-in-out infinite}
+  @keyframes spl-brachbob{0%,100%{transform:rotate(0)}50%{transform:rotate(-1.8deg)}}
+  /* the roar shakes the frame, once */
+  #sb-splash.kb.w-dino .spl-in{animation:spl-fright .5s linear 4.75s 1}
+  @keyframes spl-fright{0%,100%{transform:none}20%{transform:translate(-4px,3px)}40%{transform:translate(4px,-3px)}60%{transform:translate(-3px,-2px)}80%{transform:translate(3px,2px)}}
+  /* the maw: a deep-red glow swells as the jaws close around the viewport */
+  #sb-splash .spl-maw{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,rgba(96,14,14,.0) 30%,rgba(66,8,10,.85) 78%,#170305 100%);opacity:0}
+  #sb-splash.kb .spl-maw{animation:spl-mawin 1.7s cubic-bezier(.5,0,.8,.4) 5.3s both}
+  @keyframes spl-mawin{to{opacity:1}}
+  #sb-splash .spl-jaw{position:absolute;left:-6vw;right:-6vw;z-index:6;pointer-events:none;filter:drop-shadow(0 0 22px rgba(0,0,0,.8))}
+  #sb-splash .spl-jawtop{top:0;height:46vh}
+  #sb-splash .spl-jawbot{bottom:0;height:42vh}
+  #sb-splash.kb .spl-jawtop{transform:translateY(-105%);animation:spl-bitetop 1.9s cubic-bezier(.6,.02,.7,.4) 5.1s both}
+  #sb-splash.kb .spl-jawbot{transform:translateY(105%);animation:spl-bitebot 1.9s cubic-bezier(.6,.02,.7,.4) 5.1s both}
+  @keyframes spl-bitetop{0%{transform:translateY(-105%) scale(.9)}55%{transform:translateY(-34%) scale(1.05)}100%{transform:translateY(4%) scale(1.5)}}
+  @keyframes spl-bitebot{0%{transform:translateY(105%) scale(.9)}55%{transform:translateY(30%) scale(1.05)}100%{transform:translateY(-2%) scale(1.5)}}
+  /* the jaws own the dino exit: hold the letterbox bars in place */
+  #sb-splash.w-dino.kb .spl-bars::before,#sb-splash.w-dino.kb .spl-bars::after{animation:none}
   /* dust motes, not sparks: fine, slow, barely-there */
   #sb-splash .spl-spark{position:absolute;width:3px;height:3px;border-radius:50%;background:color-mix(in srgb,var(--spl-acc,#FFD24D) 75%,#fff);opacity:0;box-shadow:0 0 5px 1px color-mix(in srgb,var(--spl-acc,#FFD24D) 35%,transparent);animation:spl-rise 7s linear infinite;bottom:-8px}
   @keyframes spl-rise{0%{transform:translateY(0);opacity:0}12%{opacity:.55}88%{opacity:.4}100%{transform:translateY(-105vh);opacity:0}}
@@ -1669,6 +1704,34 @@
       +'<div class="spl-sub">'+(t[5]||'')+'</div>'
       +'<div class="spl-tap">tap anywhere to fly in</div></div>';
     document.body.appendChild(d);
+    /* DINO ERA gets its own staging: treeline, ferns, a browsing brachiosaurus,
+       gliding pteranodons, stars as the day falls — and the T-rex jaws that close
+       around the viewport on the way in. Other worlds keep the plain cut until
+       they earn their own. */
+    if(st.theme==='dino' && !rm){ d.classList.add('w-dino');
+      var JAWT='<svg viewBox="0 0 1000 300" width="100%" height="100%" preserveAspectRatio="none"><path d="M0 0 H1000 V178 L974 170 L948 238 L918 172 L884 168 L856 252 L824 170 L788 166 L762 232 L730 168 L692 164 L664 258 L630 166 L594 162 L566 226 L534 164 L498 162 L470 248 L438 164 L402 160 L374 222 L342 162 L306 160 L278 244 L246 162 L212 158 L186 218 L154 160 L120 158 L92 236 L62 160 L28 158 L0 170 Z" fill="#0A0508"/><path d="M0 0 H1000 V120 Q760 96 500 104 Q240 112 0 92 Z" fill="#140A0E"/></svg>';
+      var JAWB='<svg viewBox="0 0 1000 280" width="100%" height="100%" preserveAspectRatio="none"><path d="M0 280 H1000 V96 L968 104 L944 30 L916 102 L882 108 L858 44 L828 106 L792 112 L766 22 L736 108 L700 114 L674 40 L644 110 L608 116 L582 28 L552 112 L516 118 L490 46 L460 112 L424 118 L398 24 L368 112 L332 118 L306 42 L276 114 L240 118 L214 30 L184 114 L150 120 L124 48 L94 116 L60 120 L34 36 L0 108 Z" fill="#0A0508"/></svg>';
+      var TREES=(function(){ var o='<svg viewBox="0 0 1000 180" width="100%" height="100%" preserveAspectRatio="none"><g fill="#0E1A10">';
+        for(var tx=0;tx<1000;tx+=64){ var th=70+((tx*7)%80);
+          o+='<path d="M'+tx+' 180 L'+(tx+26)+' '+(180-th)+' L'+(tx+52)+' 180 Z"/>'
+            +'<path d="M'+(tx+6)+' 180 L'+(tx+26)+' '+(180-th*0.72)+' L'+(tx+46)+' 180 Z" fill="#132414"/>'; }
+        return o+'</g></svg>'; })();
+      var FERN2='<svg viewBox="0 0 200 140" width="100%" height="100%"><g fill="none" stroke="#12240F" stroke-width="10" stroke-linecap="round"><path d="M100 140 q-4 -60 -66 -96"/><path d="M100 140 q2 -66 10 -110"/><path d="M100 140 q6 -56 72 -84"/></g><g fill="#183018"><path d="M38 46 q-20 -14 -34 -10 q10 16 30 18z M62 66 q-22 -10 -36 -4 q12 14 32 12z M106 30 q-6 -22 -20 -30 q-2 18 12 32z M168 60 q20 -12 32 -8 q-8 16 -28 16z"/></g></svg>';
+      var BRACH='<svg viewBox="0 0 300 240" width="100%" height="100%"><g fill="#0F1E14"><path d="M20 236 q6 -60 58 -78 q40 -14 74 4 q30 16 36 -6 q8 -30 14 -92 q3 -32 22 -34 q20 -2 24 18 q3 16 -12 18 q-10 1 -12 14 q-8 60 -12 96 q-4 34 -40 40 q-16 3 -18 20z"/><path d="M52 236 v-22 M96 236 v-26 M138 236 v-20"/><rect x="46" y="212" width="12" height="26"/><rect x="92" y="208" width="12" height="30"/><rect x="134" y="214" width="12" height="24"/></g></svg>';
+      var PTERO2='<svg viewBox="0 0 140 70" width="100%" height="100%"><g class="spl-flap"><path d="M4 34 Q40 4 70 30 Q100 4 136 30 L120 38 Q96 24 72 42 Q48 24 20 42 Z" fill="#101A22"/></g><path d="M64 32 L84 36 L104 44 L84 42 Z" fill="#101A22"/></svg>';
+      var extra='<div class="spl-duskveil"></div>';
+      for(var ns=0;ns<16;ns++) extra+='<span class="spl-nightstar" style="left:'+(3+ns*6.1)+'vw;top:'+(3+(ns*13)%26)+'vh;animation-delay:'+(4.3+ns*0.12).toFixed(2)+'s"></span>';
+      extra+='<div class="spl-treeline">'+TREES+'</div>'
+        +'<div class="spl-fern" style="left:-30px">'+FERN2+'</div>'
+        +'<div class="spl-fern" style="right:-36px;animation-delay:-2.6s;transform:scaleX(-1)">'+FERN2+'</div>'
+        +'<div class="spl-brach">'+BRACH+'</div>'
+        +'<div class="spl-ptero" style="top:20vh;animation-delay:1.1s">'+PTERO2+'</div>'
+        +'<div class="spl-ptero" style="top:9vh;width:74px;animation-delay:2.1s;animation-duration:5.4s;opacity:.6">'+PTERO2+'</div>'
+        +'<div class="spl-maw"></div>'
+        +'<div class="spl-jaw spl-jawtop">'+JAWT+'</div>'
+        +'<div class="spl-jaw spl-jawbot">'+JAWB+'</div>';
+      d.insertAdjacentHTML('beforeend', extra);
+    }
     var done=false, ac=null;
     function out(){ if(done) return; done=true; d.classList.add('out');
       setTimeout(function(){ try{ d.remove(); }catch(e){} if(ac){ try{ ac.close(); }catch(e){} } },600); }
@@ -1696,6 +1759,25 @@
       /* the motif rides above: G5 E5 . C6 B5 . G5 — placed, not marched */
       var E5=659.3,G5=784,B5=987.8,C6=1046.5;
       bell(G5,t0+0.5); bell(E5,t0+1.35); bell(C6,t0+2.7); bell(B5,t0+3.6); bell(G5,t0+5.1);
+      /* the T-rex ROAR: pitch-diving filtered noise over a sawtooth sub, growled by a
+         26Hz tremolo — timed to the jaws (4.7s in) */
+      if(st.theme==='dino'){ var rAt=t0+4.65, rDur=1.7;
+        var nb=ac.createBuffer(1,Math.ceil(ac.sampleRate*rDur),ac.sampleRate), ch2=nb.getChannelData(0);
+        for(var si=0;si<ch2.length;si++) ch2[si]=Math.random()*2-1;
+        var src=ac.createBufferSource(); src.buffer=nb;
+        var lp2=ac.createBiquadFilter(); lp2.type='lowpass'; lp2.Q.value=3;
+        lp2.frequency.setValueAtTime(640,rAt); lp2.frequency.exponentialRampToValueAtTime(95,rAt+rDur*0.85);
+        var rg=ac.createGain(); rg.gain.setValueAtTime(0.0001,rAt);
+        rg.gain.exponentialRampToValueAtTime(0.5,rAt+0.09); rg.gain.setValueAtTime(0.42,rAt+rDur*0.55);
+        rg.gain.exponentialRampToValueAtTime(0.0001,rAt+rDur);
+        var lfo=ac.createOscillator(),lg=ac.createGain(); lfo.frequency.value=26; lg.gain.value=0.16;
+        lfo.connect(lg); lg.connect(rg.gain); lfo.start(rAt); lfo.stop(rAt+rDur);
+        var sub=ac.createOscillator(); sub.type='sawtooth';
+        sub.frequency.setValueAtTime(92,rAt); sub.frequency.exponentialRampToValueAtTime(34,rAt+rDur*0.8);
+        var sg=ac.createGain(); sg.gain.setValueAtTime(0.0001,rAt);
+        sg.gain.exponentialRampToValueAtTime(0.3,rAt+0.12); sg.gain.exponentialRampToValueAtTime(0.0001,rAt+rDur);
+        src.connect(lp2); lp2.connect(rg); sub.connect(sg); sg.connect(lp2);
+        rg.connect(ac.destination); src.start(rAt); src.stop(rAt+rDur); sub.start(rAt); sub.stop(rAt+rDur); }
     }catch(e){} }
     d.addEventListener('pointerdown',function(){ clearTimeout(tm); tune(); setTimeout(out,120); },{once:true});
     if(!rm) tune();   /* plays where the browser already trusts us; silently ignored elsewhere */
