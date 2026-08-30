@@ -44,15 +44,28 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   const pg2 = await b.newPage({ viewport: { width: 1100, height: 900 } });
   await pg2.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.removeItem('sb_splash'); }, seed);
   await pg2.goto('file://' + SRC + '/index.html'); await pg2.waitForTimeout(700);
+  await pg2.waitForTimeout(1300);   // past DOMContentLoaded, so the credits beat has landed
   const s1 = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
     up: !!d, world: d && /Dino Era/.test(d.textContent), art: d && !!d.querySelector('img[src*="sgw-meadow"]'),
-    bar: d && !!d.querySelector('.spl-bar i'), tap: d && /tap anywhere/.test(d.textContent) }; });
-  ok(s1.up, 'the splash rises on open for a returning child');
-  ok(s1.world, 'it names the child\'s own world (Dino Era)');
-  ok(s1.art, 'it wears the world\'s painted play-field');
+    bar: d && !!d.querySelector('.spl-bar i'), tap: d && /tap anywhere/.test(d.textContent),
+    letters: d ? d.querySelectorAll('.spl-logo b').length : 0,
+    flyer: d && !!d.querySelector('.spl-flyer .spl-wing'), trail: d && !!d.querySelector('.spl-trail path'),
+    starring: d && /STARRING/.test(d.textContent) && !!d.querySelector('#spl-star svg,#spl-star img'),
+    cast: d ? d.querySelectorAll('#spl-cast > span').length : 0,
+    tune: d && /createOscillator/.test(document.body.innerHTML) === false }; });
+  ok(s1.up, 'the title sequence rises on open for a returning child');
+  ok(s1.world, 'the episode card names the child\'s own world (Dino Era)');
+  ok(s1.art, 'it plays over the world\'s painted play-field');
+  ok(s1.letters >= 10, 'the title pops in letter by letter (' + s1.letters + ' letters)');
+  ok(s1.flyer && s1.trail, 'Bizzy swoops the screen with buzzing wings and a honey trail');
+  ok(s1.starring, 'the child takes the STARRING credit with their own avatar');
+  ok(s1.cast >= 4, 'the cast bobs along the bottom (' + s1.cast + ' of them)');
   ok(s1.bar && s1.tap, 'honey bar + tap-to-skip are there');
-  await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(900);
+  await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
+  const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
+  ok(/theme tune: eight bouncy bars/.test(idx) && /createOscillator/.test(idx.slice(0, idx.indexOf('id="root"'))),
+    'a real theme tune (melody + bass) is wired into the sequence');
 
   // auto-dismiss on its own clock
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
@@ -60,8 +73,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pg3.goto('file://' + SRC + '/index.html');
   await pg3.waitForTimeout(400);
   const upEarly = await pg3.evaluate(() => !!document.querySelector('#sb-splash'));
-  await pg3.waitForTimeout(6600);
-  ok(upEarly && await pg3.evaluate(() => !document.querySelector('#sb-splash')), 'left alone, it bows out by itself (~6s)');
+  await pg3.waitForTimeout(8200);
+  ok(upEarly && await pg3.evaluate(() => !document.querySelector('#sb-splash')), 'left alone, it bows out by itself (~7s)');
 
   // silenced by the Settings switch, and never over onboarding
   const pg4 = await b.newPage();
