@@ -1226,6 +1226,18 @@
   @keyframes spl-goldbloom{0%{opacity:0}18%{opacity:.7}100%{opacity:0}}
   /* honey owns the hive exit too: hold the letterbox bars in place */
   #sb-splash.w-hive.kb .spl-bars::before,#sb-splash.w-hive.kb .spl-bars::after{animation:none}
+  /* the BRAND LOCKUP: the mascot + the wordmark in the brand face, pinned top
+     right through the whole load — above every layer, jaws and honey included */
+  #sb-splash .spl-brand{position:absolute;top:calc(7vh + 12px);right:20px;z-index:11;display:flex;align-items:center;gap:8px;
+    pointer-events:none;opacity:0;filter:drop-shadow(0 2px 8px rgba(10,6,2,.6))}
+  #sb-splash.kb .spl-brand{animation:spl-brandin .7s ease .55s both}
+  #sb-splash:not(.kb) .spl-brand{opacity:1}
+  @keyframes spl-brandin{to{opacity:1}}
+  #sb-splash .spl-brand-ico{width:30px;height:34px;display:block}
+  #sb-splash .spl-brand-ico svg{width:100%;height:100%;display:block}
+  #sb-splash .spl-brand-t{font-family:'Baloo 2',var(--display,system-ui);font-weight:800;font-size:17px;letter-spacing:.01em;color:#FFFDF4;white-space:nowrap}
+  #sb-splash .spl-brand-t i{font-style:italic}
+  #sb-splash .spl-brand-t sup{font-size:8px;vertical-align:super;opacity:.8}
   /* dust motes, not sparks: fine, slow, barely-there */
   #sb-splash .spl-spark{position:absolute;width:3px;height:3px;border-radius:50%;background:color-mix(in srgb,var(--spl-acc,#FFD24D) 75%,#fff);opacity:0;box-shadow:0 0 5px 1px color-mix(in srgb,var(--spl-acc,#FFD24D) 35%,transparent);animation:spl-rise 7s linear infinite;bottom:-8px}
   @keyframes spl-rise{0%{transform:translateY(0);opacity:0}12%{opacity:.55}88%{opacity:.4}100%{transform:translateY(-105vh);opacity:0}}
@@ -1800,8 +1812,14 @@
       +'<div class="spl-logo">'+letters+'<span class="spl-sheen"></span></div>'
       +'<div class="spl-world"><span>'+(rm?'':'today entering · ')+t[0]+'</span></div>'
       +'<div class="spl-sub">'+(t[5]||'')+'</div>'
-      +'<div class="spl-tap">tap anywhere to fly in</div></div>';
+      +'<div class="spl-tap">tap anywhere to fly in</div></div>'
+      +'<div class="spl-brand"><span class="spl-brand-ico" id="spl-bico"></span>'
+      +'<span class="spl-brand-t"><i>Bizzing</i><sup>™</sup> Bee</span></div>';
     document.body.appendChild(d);
+    /* the lockup borrows the app's own mascot the moment app.js has landed */
+    var brandIn=function(){ try{ var h=document.getElementById('spl-bico'),
+      M=window.mascotSVG||window.SB_MASCOT; if(h&&M) h.innerHTML=M('happy'); }catch(e){} };
+    if(document.readyState!=='loading') brandIn(); else document.addEventListener('DOMContentLoaded',brandIn);
     /* DINO ERA gets its own staging: treeline, ferns, a browsing brachiosaurus,
        gliding pteranodons, stars as the day falls — and the T-rex jaws that close
        around the viewport on the way in. Other worlds keep the plain cut until
@@ -1884,134 +1902,56 @@
       }catch(e){} };
       if(document.readyState!=='loading') castHive(); else document.addEventListener('DOMContentLoaded',castHive);
     }
-    var done=false, ac=null, sched=false, born=Date.now();
-    function out(){ if(done) return; done=true; d.classList.add('out');
-      setTimeout(function(){ try{ d.remove(); }catch(e){} if(ac){ try{ ac.close(); }catch(e){} } },600); }
-    var tm=setTimeout(out,dur);
-    /* the score: eight bouncy bars grew up into a warm four-chord pad (detuned
-       sine pairs, slow attack) under a sparse five-note bell motif — an opening-
-       titles cue, not a chiptune. ~6.5s. */
-    /* the score builds only when the audio CLOCK actually runs. Autoplay policy
-       leaves a fresh AudioContext 'suspended' until a real gesture, and a score
-       scheduled on a frozen clock never sounds — which is what "the load sound is
-       not building" was. So: try silently at load (plays where the browser already
-       trusts us), and otherwise schedule on the resume a first tap grants — every
-       beat offset by the visual time already elapsed, passed beats dropped, so the
-       roar still lands on the jaws and the gloop on the honey. */
-    function sk(){ try{ if(sched||done||!ac) return; sched=true;
+    var done=false;
+    /* ── the BIZZING BEE brand sound + the world stingers ──
+       One pre-rendered cue (app-art/brand-open.mp3 — the bee fly-by signature,
+       the warm pad, the five-note bell motif) opens EVERY world and runs up to
+       the world's CLOSE — the jaw SNAP on Dino Era, the honey cell sealing on
+       The Hive — where the world's own stinger takes over (dino-roar.mp3 /
+       hive-buzz.mp3). Media elements still obey autoplay policy: play() is
+       tried silently at load (it succeeds where the browser already trusts
+       us) and otherwise waits for the resume a first tap grants — the cue
+       then joins IN PROGRESS at the elapsed visual time, so the stinger still
+       lands exactly on the close. */
+    var sched=false, born=Date.now();
+    var CLOSE = st.theme==='dino' ? 6.6 : (st.theme==='spellbound' ? 7.45 : -1);
+    var brand=null, sting=null, stTm=null;
+    try{
+      brand=new Audio('app-art/brand-open.mp3'); brand.preload='auto';
+      if(st.theme==='dino'){ sting=new Audio('app-art/dino-roar.mp3'); sting.preload='auto'; }
+      else if(st.theme==='spellbound'){ sting=new Audio('app-art/hive-buzz.mp3'); sting.preload='auto'; }
+    }catch(e){}
+    function fadeStop(a){ if(!a) return; try{ var iv=setInterval(function(){
+      a.volume=Math.max(0,a.volume-0.14); if(a.volume<=0.01){ clearInterval(iv); a.pause(); } },50); }catch(e){} }
+    function armSting(el){ if(sched) return; sched=true;
+      if(sting && CLOSE>0 && CLOSE>el){
+        stTm=setTimeout(function(){ if(done) return;
+          fadeStop(brand); try{ sting.play(); }catch(e){} }, (CLOSE-el)*1000); } }
+    function sk(){ if(sched||done||!brand) return;
       var el=(Date.now()-born)/1000; if(el<0.35) el=0;
-      var mg=ac.createGain(); mg.gain.value=0.16; mg.connect(ac.destination);
-      var t0=ac.currentTime+0.08, T=function(x){ return t0+x-el; };
-      function pad(f,at,len){ if(at<t0-0.01) return; [-5,5].forEach(function(det){ var o=ac.createOscillator(),g=ac.createGain();
-        o.type='sine'; o.frequency.value=f; o.detune.value=det;
-        g.gain.setValueAtTime(0.0001,at); g.gain.linearRampToValueAtTime(0.16,at+len*0.35);
-        g.gain.setValueAtTime(0.16,at+len*0.7); g.gain.exponentialRampToValueAtTime(0.0001,at+len+0.35);
-        o.connect(g); g.connect(mg); o.start(at); o.stop(at+len+0.4); }); }
-      function bell(f,at){ if(at<t0-0.01) return; [[1,0.22],[2.76,0.06]].forEach(function(h2){ var o=ac.createOscillator(),g=ac.createGain();
-        o.type='sine'; o.frequency.value=f*h2[0];
-        g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(h2[1],at+0.015);
-        g.gain.exponentialRampToValueAtTime(0.0001,at+1.5);
-        o.connect(g); g.connect(mg); o.start(at); o.stop(at+1.6); }); }
-      /* Cmaj7 · Am9 · Fmaj7 · G(add9), 1.6s a bar */
-      var bars=[[130.8,261.6,329.6,392,493.9],[110,220,329.6,440,493.9],[87.3,174.6,261.6,329.6,440],[98,196,293.7,392,440]];
-      for(var bi=0;bi<4;bi++){ var at2=T(bi*1.6); for(var ni=0;ni<bars[bi].length;ni++) pad(bars[bi][ni],at2,1.7); }
-      /* the motif rides above: G5 E5 . C6 B5 . G5 — placed, not marched */
-      var E5=659.3,G5=784,B5=987.8,C6=1046.5;
-      bell(G5,T(0.5)); bell(E5,T(1.35)); bell(C6,T(2.7)); bell(B5,T(3.6)); bell(G5,T(5.1));
-      /* the T-rex ROAR: pitch-diving filtered noise over a sawtooth sub, growled by a
-         26Hz tremolo — timed to the jaws (4.7s in) */
-      if(st.theme==='dino'){ var rAt=T(4.65), rDur=1.7;
-        var nb=ac.createBuffer(1,Math.ceil(ac.sampleRate*rDur),ac.sampleRate), ch2=nb.getChannelData(0);
-        for(var si=0;si<ch2.length;si++) ch2[si]=Math.random()*2-1;
-        var src=ac.createBufferSource(); src.buffer=nb;
-        var lp2=ac.createBiquadFilter(); lp2.type='lowpass'; lp2.Q.value=3;
-        lp2.frequency.setValueAtTime(640,rAt); lp2.frequency.exponentialRampToValueAtTime(95,rAt+rDur*0.85);
-        var rg=ac.createGain(); rg.gain.setValueAtTime(0.0001,rAt);
-        rg.gain.exponentialRampToValueAtTime(0.5,rAt+0.09); rg.gain.setValueAtTime(0.42,rAt+rDur*0.55);
-        rg.gain.exponentialRampToValueAtTime(0.0001,rAt+rDur);
-        var lfo=ac.createOscillator(),lg=ac.createGain(); lfo.frequency.value=26; lg.gain.value=0.16;
-        lfo.connect(lg); lg.connect(rg.gain); lfo.start(rAt); lfo.stop(rAt+rDur);
-        var sub=ac.createOscillator(); sub.type='sawtooth';
-        sub.frequency.setValueAtTime(92,rAt); sub.frequency.exponentialRampToValueAtTime(34,rAt+rDur*0.8);
-        var sg=ac.createGain(); sg.gain.setValueAtTime(0.0001,rAt);
-        sg.gain.exponentialRampToValueAtTime(0.3,rAt+0.12); sg.gain.exponentialRampToValueAtTime(0.0001,rAt+rDur);
-        src.connect(lp2); lp2.connect(rg); sub.connect(sg); sg.connect(lp2);
-        rg.connect(ac.destination); src.start(rAt); src.stop(rAt+rDur); sub.start(rAt); sub.stop(rAt+rDur);
-        /* the SNAP: a deep thud plus a bone click, timed to the teeth meeting (6.6s) */
-        var sAt=T(6.58);
-        var th=ac.createOscillator(); th.type='sine';
-        th.frequency.setValueAtTime(88,sAt); th.frequency.exponentialRampToValueAtTime(30,sAt+0.28);
-        var tg=ac.createGain(); tg.gain.setValueAtTime(0.0001,sAt);
-        tg.gain.exponentialRampToValueAtTime(0.85,sAt+0.02); tg.gain.exponentialRampToValueAtTime(0.0001,sAt+0.4);
-        th.connect(tg); tg.connect(ac.destination); th.start(sAt); th.stop(sAt+0.45);
-        var cb=ac.createBuffer(1,Math.ceil(ac.sampleRate*0.06),ac.sampleRate), cd=cb.getChannelData(0);
-        for(var ci2=0;ci2<cd.length;ci2++) cd[ci2]=(Math.random()*2-1)*(1-ci2/cd.length);
-        var cs=ac.createBufferSource(); cs.buffer=cb;
-        var hp=ac.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=1400;
-        var cg=ac.createGain(); cg.gain.value=0.35;
-        cs.connect(hp); hp.connect(cg); cg.connect(ac.destination); cs.start(sAt); }
-      /* the HIVE SWARM: a detuned sawtooth cluster through a bandpass, its gain
-         jittered at wingbeat rate — a buzz swelling from a whisper to a roar */
-      if(st.theme==='spellbound'){ var hAt=T(2.7), hDur=4.3;
-        var bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=420; bp.Q.value=1.6;
-        var bgn=ac.createGain(); bgn.gain.setValueAtTime(0.0001,hAt);
-        bgn.gain.exponentialRampToValueAtTime(0.05,hAt+1.2);
-        bgn.gain.exponentialRampToValueAtTime(0.28,hAt+hDur*0.65);
-        bgn.gain.setValueAtTime(0.28,hAt+hDur*0.8); bgn.gain.exponentialRampToValueAtTime(0.0001,hAt+hDur+0.6);
-        [164,171.5,158.6].forEach(function(f){ var o=ac.createOscillator(); o.type='sawtooth';
-          o.frequency.setValueAtTime(f,hAt); o.frequency.linearRampToValueAtTime(f*1.16,hAt+hDur);
-          o.connect(bp); o.start(hAt); o.stop(hAt+hDur+0.6); });
-        var jit=ac.createOscillator(), jg=ac.createGain(); jit.frequency.value=23; jg.gain.value=0.08;
-        jit.connect(jg); jg.connect(bgn.gain); jit.start(hAt); jit.stop(hAt+hDur+0.6);
-        bp.connect(bgn); bgn.connect(ac.destination);
-        /* the bees LAND: each touchdown is a little buzz blip settling to rest */
-        [5.75,6.25,6.65].forEach(function(bt){ var lAt=T(bt); if(lAt<t0) return;
-          var o=ac.createOscillator(); o.type='sawtooth';
-          o.frequency.setValueAtTime(215,lAt); o.frequency.exponentialRampToValueAtTime(120,lAt+0.2);
-          var lp3=ac.createBiquadFilter(); lp3.type='lowpass'; lp3.frequency.value=900;
-          var g3=ac.createGain(); g3.gain.setValueAtTime(0.0001,lAt);
-          g3.gain.exponentialRampToValueAtTime(0.11,lAt+0.03); g3.gain.exponentialRampToValueAtTime(0.0001,lAt+0.24);
-          o.connect(lp3); lp3.connect(g3); g3.connect(ac.destination); o.start(lAt); o.stop(lAt+0.28); });
-        /* the DIVE: a rising whoosh into the comb, a soft honey seal as the cell
-           takes the frame, and a golden chord blooming inside it */
-        var dAt=T(6.5), dDur=1.6;
-        var nb2=ac.createBuffer(1,Math.ceil(ac.sampleRate*dDur),ac.sampleRate), nd2=nb2.getChannelData(0);
-        for(var ni2=0;ni2<nd2.length;ni2++) nd2[ni2]=Math.random()*2-1;
-        var ns2=ac.createBufferSource(); ns2.buffer=nb2;
-        var bp2=ac.createBiquadFilter(); bp2.type='bandpass'; bp2.Q.value=1.1;
-        bp2.frequency.setValueAtTime(260,dAt); bp2.frequency.exponentialRampToValueAtTime(2300,dAt+dDur);
-        var ng2=ac.createGain(); ng2.gain.setValueAtTime(0.0001,dAt);
-        ng2.gain.exponentialRampToValueAtTime(0.32,dAt+dDur*0.7); ng2.gain.exponentialRampToValueAtTime(0.0001,dAt+dDur+0.15);
-        ns2.connect(bp2); bp2.connect(ng2); ng2.connect(ac.destination); ns2.start(dAt); ns2.stop(dAt+dDur+0.2);
-        var sub2=ac.createOscillator(); sub2.type='sine';
-        sub2.frequency.setValueAtTime(42,dAt); sub2.frequency.exponentialRampToValueAtTime(105,dAt+dDur);
-        var sg2=ac.createGain(); sg2.gain.setValueAtTime(0.0001,dAt);
-        sg2.gain.exponentialRampToValueAtTime(0.22,dAt+dDur*0.6); sg2.gain.exponentialRampToValueAtTime(0.0001,dAt+dDur+0.1);
-        sub2.connect(sg2); sg2.connect(ac.destination); sub2.start(dAt); sub2.stop(dAt+dDur+0.15);
-        var gAt=T(7.55);
-        var gl=ac.createOscillator(); gl.type='sine';
-        gl.frequency.setValueAtTime(300,gAt); gl.frequency.exponentialRampToValueAtTime(56,gAt+0.32);
-        var glp=ac.createBiquadFilter(); glp.type='lowpass'; glp.Q.value=6;
-        glp.frequency.setValueAtTime(900,gAt); glp.frequency.exponentialRampToValueAtTime(130,gAt+0.34);
-        var gg=ac.createGain(); gg.gain.setValueAtTime(0.0001,gAt);
-        gg.gain.exponentialRampToValueAtTime(0.42,gAt+0.03); gg.gain.exponentialRampToValueAtTime(0.0001,gAt+0.46);
-        gl.connect(glp); glp.connect(gg); gg.connect(ac.destination); gl.start(gAt); gl.stop(gAt+0.5);
-        bell(523.25,gAt+0.15); bell(659.3,gAt+0.21); bell(784,gAt+0.27); bell(1174.7,gAt+0.39); }
-    }catch(e){} }
-    function tune(){ try{ var A=window.AudioContext||window.webkitAudioContext; if(!A) return;
-      if(!ac) ac=new A();
-      if(ac.state==='running'){ sk(); return; }
-      ac.resume().then(function(){ if(ac&&ac.state==='running') sk(); }).catch(function(){});
-    }catch(e){} }
-    /* an EARLY first tap on a still-silent splash turns the sound on and lets the
-       show run (the hint flips to say so); any other tap flies straight in */
+      try{ if(el>0.4) brand.currentTime=el; }catch(e){}
+      var p; try{ p=brand.play(); }catch(e){ return; }
+      if(!p||!p.then){ armSting(el); return; }
+      p.then(function(){ armSting((Date.now()-born)/1000); }).catch(function(){});
+    }
+    var tune=sk;
+    /* a TAPPED exit kills the audio at once; the natural end lets the world
+       stinger ring a moment over the app before fading it away */
+    function out(tapped){ if(done) return; done=true; d.classList.add('out');
+      if(stTm) clearTimeout(stTm);
+      if(tapped){ fadeStop(brand); fadeStop(sting); }
+      else { fadeStop(brand); if(sting) setTimeout(function(){ fadeStop(sting); },1400); }
+      setTimeout(function(){ try{ d.remove(); }catch(e){} },600); }
+    var tm=setTimeout(out,dur);
+    /* an EARLY first tap on a still-silent splash turns the sound on and lets
+       the show run (the hint flips to say so); any other tap flies straight in */
     d.addEventListener('pointerdown',function(){
-      var blocked=(!ac||ac.state!=='running'), early=(Date.now()-born)<1500;
+      var blocked=!sched, early=(Date.now()-born)<1500;
       tune();
       if(blocked && early && !rm){
         var tp=d.querySelector('.spl-tap'); if(tp) tp.textContent='tap again to fly in';
-        d.addEventListener('pointerdown',function(){ clearTimeout(tm); setTimeout(out,120); },{once:true});
-      } else { clearTimeout(tm); setTimeout(out,120); }
+        d.addEventListener('pointerdown',function(){ clearTimeout(tm); setTimeout(function(){ out(true); },120); },{once:true});
+      } else { clearTimeout(tm); setTimeout(function(){ out(true); },120); }
     },{once:true});
     if(!rm) tune();   /* plays where the browser already trusts us; silently ignored elsewhere */
   }catch(e){}
