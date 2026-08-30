@@ -1021,6 +1021,28 @@ out of saga2.js so a retune cannot quietly undo them.
   sits after the base `.lib-*` rules, because declared above them its `display:none` and
   `font-size` were quietly beaten by the base rules.
 
+## The store cut (Aug-31): 8 worlds, packs of 8
+- **EIGHT worlds** on a strict 4x2 grid (`.wh-grid`): spellbound (the Hive — the free
+  default) plus aurora / anime / science / avatar (app2.js `THEMES`) and godly / race /
+  dino (pushed by worlds4.js). Spotlight (marquee), Serpent's Lair, Origami and Arcade
+  (pixel) left the store; their scenes, ladders, CSS and music configs stay in the
+  codebase as an archive — `archive/store-cut-2026-08.md` is the ledger and the revival
+  manual. `FREE_THEMES=['spellbound']`; everything else is coins (Premium still includes
+  aurora+anime). A boot migration in app3 (`GONEW`) refunds coin-bought removed worlds
+  once, clears them from `unlockedThemes`, and re-homes a save whose theme was removed.
+- **Avatar packs hold exactly EIGHT and render as ONE ROW** (`.av-row`). 18 packs / 142
+  live avatars. Stage, Arcade and Wildhearts packs retired (popcorn→Vibe, rainbow→Turbo,
+  hoppy+fawn→Critter, pegasus→Legends); Dino+Serpent merged into the Reptilian Pack;
+  the Gods Pack split into European Gods (godseu) and Indian Gods (godsin) — the five
+  gods outside both are archived. **The mechanism**: avatars.js applies a `MOVE` map
+  (re-homes) and an `ARCH` set (75 retired ids) over the full 217-tuple roster;
+  `SB_AVATARS.list` is the 142 LIVE avatars (store, drops, collection count) while
+  `.all`/`.byId` still carry everyone — so owned retired avatars keep rendering, and so
+  do the book/reader mascots and mock-bee rivals that use Stage Pack faces. Revive an
+  avatar by deleting it from `ARCH`; Spelling Champions stays at 6 (real people).
+- The splash `T` table in index.html carries only the eight; a stale saved theme falls
+  back to the Hive there AND in the boot migration.
+
 ## The Champion's Expedition — bright boards, visible secrets (NO fog)
 - The expedition layer (trail.js, `fogLayer`/`uSpots`/`uP`) puts three per-child seeded
   secrets on EVERY board — a word-wisp tap-gift (+8), a rival best-of-3 duel (+25), and a

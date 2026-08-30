@@ -6,27 +6,31 @@
                 rare:{label:'Rare', c:'#3D7DF0', price:120, sell:60},
                 epic:{label:'Epic', c:'#B14FC4', price:250, sell:125},
                 legendary:{label:'Legendary', c:'#F0B429', price:500, sell:250} };
+  /* Aug-31 store cut: every pack holds EIGHT avatars and renders as ONE ROW.
+     Stage, Arcade and Wildhearts packs are retired (their cutest residents were
+     re-homed — see MOVE below); Dino + Serpent merged into the Reptilian Pack;
+     the Gods Pack split into European Gods and Indian Gods. Retired avatars keep
+     their art and byId entry (owned ones still render everywhere, and so do the
+     book/reader mascots and mock-bee rivals that use them) but leave the store,
+     the packs and the drops. archive/store-cut-2026-08.md is the ledger. */
   const PACKS = [
     { id:'hive',   label:'Hive Pack',   world:'spellbound', c1:'#6C4FE0', c2:'#FFC23D' },
-    { id:'stage',  label:'Stage Pack',  world:'spotlight',  c1:'#9C6A08', c2:'#F7E9C8' },
     { id:'cosmos', label:'Cosmos Pack', world:'galaxy',     c1:'#4A5BD4', c2:'#36D1FF' },
     { id:'dojo',   label:'Dojo Pack',   world:'blade',      c1:'#C43D5A', c2:'#FFD23F' },
     { id:'lab',    label:'Lab Pack',    world:'lab',        c1:'#0E8A78', c2:'#9BE34D' },
-    { id:'arcade', label:'Arcade Pack', world:'arcade',     c1:'#3B6FE0', c2:'#FF5D9E' },
     { id:'origami',label:'Origami Pack',world:'origami',    c1:'#C25A2E', c2:'#F2E9DA' },
     { id:'elements',label:'Elements Pack',world:'elements', c1:'#2E8FB8', c2:'#9BD3B4' },
     { id:'critter', label:'Critter Crew',  world:'spellbound', c1:'#E8845C', c2:'#FFD9A8' },
     { id:'vibe',    label:'Vibe Pack',     world:'galaxy',     c1:'#8A5CE8', c2:'#FF7FBE' },
-    { id:'dino',    label:'Dino Pack',     world:'lab',        c1:'#6CB454', c2:'#F0A82A' },
+    { id:'reptilian',label:'Reptilian Pack',world:'lab',       c1:'#2E7D52', c2:'#B6E34D' },
     { id:'enchanted',label:'Enchanted Pack',world:'spellbound',c1:'#A05CC8', c2:'#FF9EC4' },
-    { id:'wildhearts',label:'Wildhearts Pack',world:'blade',   c1:'#E86A9A', c2:'#FFC0D8' },
     { id:'legends', label:'Legends Pack',  world:'blade',      c1:'#4A7A5C', c2:'#7CFFB2' },
     { id:'turbo',   label:'Turbo Pack',    world:'arcade',     c1:'#E05C3A', c2:'#FFC23D' },
     { id:'villains',label:'Villains Pack', world:'greysea',    c1:'#8B857B', c2:'#C43D5A' },
-    { id:'serpent', label:'Serpent Pack',  world:'blade',      c1:'#2E8F5B', c2:'#B6E34D' },
     { id:'bigbeasts',label:'Big Beasts Pack',world:'lab',      c1:'#5E7F9E', c2:'#A4C4E0' },
     { id:'worldchangers',label:'World Changers Pack',world:'library', c1:'#B8862E', c2:'#E7D4A0' },
-    { id:'gods',   label:'Gods Pack',    world:'galaxy',     c1:'#C9A23A', c2:'#8FB8E8' },
+    { id:'godseu', label:'European Gods', world:'galaxy',     c1:'#C9A23A', c2:'#8FB8E8' },
+    { id:'godsin', label:'Indian Gods',   world:'galaxy',     c1:'#E07A2E', c2:'#FFD9A0' },
     { id:'champions',label:'Spelling Champions',world:'stage', c1:'#B8862E', c2:'#F0D9A0' },
   ];
   // shared drawing kit — every avatar is a 120x120 squircle character
@@ -206,14 +210,53 @@
     ['neuhauser','Frank Neuhauser','champions','free'],['pbell','Pauline Bell','champions','rare'],['lucas','Dean Lucas','champions','rare'],['brobinson','Betty Robinson','champions','epic'],['stover','Edna Stover','champions','rare'],['bolden','Marie C. Bolden','champions','legendary'],
     ['thor','Thor','gods','free'],['poseidon','Poseidon','gods','epic'],['ra','Ra','gods','epic'],['athena','Athena','gods','epic'],['hades','Hades','gods','epic'],['anubis','Anubis','gods','epic'],['freya','Freya','gods','epic'],['loki','Loki','gods','epic'],['apollo','Apollo','gods','epic'],['isis','Isis','gods','epic'],['hanuman','Hanuman','gods','epic'],['lakshmi','Lakshmi','gods','epic'],['amaterasu','Amaterasu','gods','epic'],['zeus','Zeus','gods','legendary'],['rama','Rama','gods','legendary'],['odin','Odin','gods','legendary'],['krishna','Krishna','gods','legendary'],['shiva','Shiva','gods','legendary'],['ganesha','Ganesha','gods','legendary'],['durga','Durga','gods','legendary'],['saraswati','Saraswati','gods','legendary'],
   ].map(([id,name,pack,rarity])=>({ id, name, pack, rarity, price:RAR[rarity].price, sell:RAR[rarity].sell }));
-  window.SB_AVATARS = { list:AV, packs:PACKS, rarities:RAR, byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
+  /* The Aug-31 cut, applied over the full roster above so every definition (and its
+     art) survives. MOVE re-homes the keepers of merged/split/retired packs; ARCH
+     lists the ids retired from the store — they stay in byId (references all over
+     the app keep rendering, and a child who owns one keeps it) but leave `list`,
+     which is what the store, the collection count and the pack drops read.
+     To revive one later: delete it from ARCH (and re-home it via MOVE if needed). */
+  const MOVE = {
+    hoppy:'critter', fawn:'critter', pegasus:'legends', popcorn:'vibe', rainbow:'turbo',
+    trice:'reptilian', noodle:'reptilian', raptor:'reptilian', stego:'reptilian',
+    bronto:'reptilian', cobra:'reptilian', rexking:'reptilian', naga:'reptilian',
+    thor:'godseu', poseidon:'godseu', athena:'godseu', hades:'godseu',
+    apollo:'godseu', loki:'godseu', zeus:'godseu', odin:'godseu',
+    hanuman:'godsin', lakshmi:'godsin', rama:'godsin', krishna:'godsin',
+    shiva:'godsin', ganesha:'godsin', durga:'godsin', saraswati:'godsin' };
+  const ARCH = new Set([
+    'drone','propolis',                                  // hive -> 8
+    'star','mic','maestro','jester','lumen','diva','melody','encore','goldlegend',   // Stage Pack retired (popcorn re-homed)
+    'blackhole','ufo',                                   // cosmos -> 8
+    'bamboo','starsteel',                                // dojo -> 8
+    'magnet','scopey',                                   // lab -> 8
+    'pixel','joy','ghost','dpad','tokeny','bossbot','glitch','hiscore','neonking',   // Arcade Pack retired (rainbow re-homed)
+    'boatfold','koifold',                                // origami -> 8
+    'cloudy','boulder',                                  // elements -> 8
+    'sharky','slowmo','narly','rexy',                    // critter -> 8 (hoppy + fawn arrive)
+    'slimey','djbot','sprinkle',                         // vibe -> 8 (popcorn arrives; Frost keeps the legendary slot)
+    'ptero','spino','ankylo','mosa','fossil',            // dino half of the Reptilian merge
+    'briar','wish',                                      // enchanted -> 8
+    'monarch','ottie','echo','pounce','swan','howl','blaze',  // Wildhearts retired (hoppy/fawn/pegasus re-homed)
+    'cyclo','fang','phantom',                            // legends -> 8 (pegasus arrives)
+    'airtime','striker','hover',                         // turbo -> 8 (rainbow arrives)
+    'vstatic','glitchv',                                 // villains -> 8
+    'sunny','python','rattler','viper','boa','mamba','seasnake',  // serpent half of the merge
+    'megatherium','gigantopithecus',                     // bigbeasts -> 8
+    'gutenberg','qinshihuang',                           // worldchangers -> 8
+    'freya','ra','anubis','isis','amaterasu' ]);         // gods outside the two new packs
+  AV.forEach(a=>{ if(MOVE[a.id]) a.pack=MOVE[a.id]; });
+  const LIVE = AV.filter(a=>!ARCH.has(a.id));
+  window.SB_AVATARS = { list:LIVE, all:AV, archived:ARCH, packs:PACKS, rarities:RAR,
+    byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
 
   /* Per-pack ink colour for the sticker outline (matches the design Contact Sheet). */
   const INK = {
     hive:'#7A4A08', dino:'#2B4A1E', cosmos:'#1E2A5C', stage:'#5C3A08', dojo:'#6E1F30',
     lab:'#0F3A34', arcade:'#12234A', origami:'#6E3418', elements:'#123A52',
     critter:'#5C2A10', vibe:'#2E1B52', enchanted:'#44205C', wildhearts:'#5C1F38',
-    legends:'#14402A', turbo:'#5A1410', villains:'#2A1620', serpent:'#154A32', bigbeasts:'#2E455C', worldchangers:'#4A3A16', gods:'#2A2440', champions:'#5C3A08'
+    legends:'#14402A', turbo:'#5A1410', villains:'#2A1620', serpent:'#154A32', bigbeasts:'#2E455C', worldchangers:'#4A3A16', gods:'#2A2440', champions:'#5C3A08',
+    reptilian:'#154A32', godseu:'#2A2440', godsin:'#5C2A08'
   };
   window.SB_AVATAR_INK = id => INK[(window.SB_AVATARS.byId[id]||{}).pack] || '#3A2A5C';
 

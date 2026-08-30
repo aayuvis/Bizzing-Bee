@@ -9,8 +9,9 @@
    Load AFTER app.js / app2.js / cover-art.js and BEFORE app3.js. */
 (function(){
   var W = [
+    /* Serpent's Lair left the store in the Aug-31 cut (archive/store-cut-2026-08.md);
+       its scene, ladder and CSS stay below for revival. */
     { id:'godly',   label:"God's Abode", sub:'Divine',   c1:'#B8860B', c2:'#FBF3DC' },
-    { id:'serpent', label:"Serpent's Lair", sub:'Creepy', c1:'#2E7D52', c2:'#EEF6EE' },
     { id:'race',    label:'Race Zone',   sub:'Full throttle', c1:'#2456D6', c2:'#EEF3FA' },
     { id:'dino',    label:'Dino Era',    sub:'Prehistoric',   c1:'#5E7A2E', c2:'#F3F2E4' }
   ];
@@ -612,7 +613,14 @@ window.SB_W4_FOCUS={
       var cols=['#3B6FE0','#FFC83D','#2456D6','#2FA35C'];
       for(var ci=0;ci<4;ci++) layer.appendChild(el('w4-car','bottom:'+rnd(3,20).toFixed(1)+'vh;width:'+rnd(90,180).toFixed(0)+'px;animation-duration:'+rnd(4.5,9).toFixed(1)+'s;animation-delay:-'+rnd(0,8).toFixed(1)+'s;opacity:'+rnd(.4,.72).toFixed(2), carSVG(cols[ci%cols.length])));
       for(var li=0;li<10;li++) layer.appendChild(el('w4-line','top:'+rnd(6,92).toFixed(1)+'vh;width:'+rnd(60,190).toFixed(0)+'px;animation-duration:'+rnd(1.1,2.6).toFixed(2)+'s;animation-delay:-'+rnd(0,2).toFixed(2)+'s'));
-    } else if(world==='dino'){
+      /* Aug-31 strengthening: the start gantry and its light tree, kerb stripes
+         at both walls, two more cars in the far lane, heat shimmer off the track */
+      var GANTRY='<svg viewBox="0 0 300 90" width="100%" height="100%" preserveAspectRatio="none"><rect x="6" y="0" width="10" height="90" fill="#25304A"/><rect x="284" y="0" width="10" height="90" fill="#25304A"/><rect x="0" y="6" width="300" height="22" rx="5" fill="#31405E"/><g class="w4-golight"><circle cx="110" cy="17" r="6" fill="#E0453A"/><circle cx="130" cy="17" r="6" fill="#F0A93C"/><circle cx="150" cy="17" r="6" fill="#2FD08C"/><circle cx="170" cy="17" r="6" fill="#2FD08C"/><circle cx="190" cy="17" r="6" fill="#2FD08C"/></g></svg>';
+      layer.appendChild(el('w4-gantry','', GANTRY));
+      layer.appendChild(el('w4-kerb','left:0'));
+      layer.appendChild(el('w4-kerb','right:0;transform:scaleX(-1)'));
+      for(var c2=0;c2<2;c2++) layer.appendChild(el('w4-car','bottom:'+rnd(24,34).toFixed(1)+'vh;width:'+rnd(56,80).toFixed(0)+'px;animation-duration:'+rnd(3.4,5).toFixed(1)+'s;animation-delay:-'+rnd(0,4).toFixed(1)+'s;opacity:.35', carSVG(c2?'#E0453A':'#2FD08C')));
+      layer.appendChild(el('w4-shimmer',''));
       layer.appendChild(el('w4-haze'));
       // a treeline of tall conifers, back row hazier than the front
       [['4vw','30vh',.30,'-2s'],['16vw','24vh',.22,'-4s'],['70vw','34vh',.34,'-1s'],['84vw','26vh',.24,'-5s'],['92vw','20vh',.18,'-3s']]
@@ -713,6 +721,15 @@ window.SB_W4_FOCUS={
       layer.appendChild(el('w4-bough','', '<svg viewBox="0 0 240 120" width="100%" height="100%"><path d="M240 8 q-70 4 -120 34 q-36 22 -56 58" fill="none" stroke="#5A3A2E" stroke-width="9" stroke-linecap="round"/><path d="M150 34 q-16 -2 -26 10 M196 20 q-14 4 -18 16" fill="none" stroke="#5A3A2E" stroke-width="5" stroke-linecap="round"/><g fill="#F3B2C0"><circle cx="122" cy="46" r="9"/><circle cx="146" cy="30" r="8"/><circle cx="172" cy="40" r="7"/><circle cx="196" cy="18" r="8"/><circle cx="98" cy="66" r="8"/><circle cx="76" cy="88" r="7"/></g><g fill="#E88AA0"><circle cx="134" cy="38" r="4"/><circle cx="184" cy="30" r="4"/><circle cx="88" cy="76" r="4"/></g></svg>'));
       layer.appendChild(el('','right:3vw;bottom:0;width:min(20vw,180px);height:auto;aspect-ratio:160/110;opacity:.45', TORII));
       for(var pt=0;pt<15;pt++) layer.appendChild(el('w4o-fall','left:'+rnd(2,98).toFixed(1)+'vw;width:'+rnd(10,17).toFixed(0)+'px;height:'+rnd(10,17).toFixed(0)+'px;opacity:.7;animation-duration:'+rnd(9,17).toFixed(1)+'s,'+rnd(2.4,4).toFixed(1)+'s;animation-delay:-'+rnd(0,14).toFixed(1)+'s,-'+rnd(0,3).toFixed(1)+'s', PETAL));
+      /* Aug-31 strengthening: a pagoda on the ridge, low mist drifting through
+         the valley, and a wing of birds crossing under the sun */
+      var PAGODA='<svg viewBox="0 0 140 160" width="100%" height="100%"><g fill="#6E4A62"><path d="M70 6 l6 14 h-12 z"/><path d="M34 34 q36 -18 72 0 l-10 8 h-52 z"/><rect x="52" y="42" width="36" height="16"/><path d="M22 72 q48 -22 96 0 l-12 9 h-72 z"/><rect x="46" y="81" width="48" height="18"/><path d="M10 116 q60 -26 120 0 l-14 10 h-92 z"/><rect x="40" y="126" width="60" height="34"/></g></svg>';
+      layer.appendChild(el('w4-pagoda','', PAGODA));
+      layer.appendChild(el('w4-mist','top:58vh;animation-duration:75s'));
+      layer.appendChild(el('w4-mist','top:71vh;animation-duration:105s;animation-delay:-48s;opacity:.45'));
+      var BIRD='<svg viewBox="0 0 40 16" width="100%" height="100%"><path d="M2 12 q9 -10 18 0 q9 -10 18 0" fill="none" stroke="#5A3A50" stroke-width="2.6" stroke-linecap="round"/></svg>';
+      [['7vh',26,'64s','-8s',.6],['10vh',18,'80s','-30s',.45],['12vh',22,'72s','-52s',.5]].forEach(function(bd){
+        layer.appendChild(el('w4o-across','top:'+bd[0]+';width:'+bd[1]+'px;aspect-ratio:40/16;animation-duration:'+bd[2]+';animation-delay:'+bd[3]+';opacity:'+bd[4], BIRD)); });
     } else if(world==='science'){
       layer.appendChild(el('w4o-pour','right:8vw;bottom:2vh;width:min(17vw,180px);aspect-ratio:1', POUR));
       [['8vw','#3BC0AA',34,74],['20vw','#B14FC4',26,58],['46vw','#F0A93C',38,66],['68vw','#2E8FB8',22,52]]
@@ -730,6 +747,17 @@ window.SB_W4_FOCUS={
         return o+'</svg>'; })()));
       layer.appendChild(el('w4-atom','', '<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow:visible"><g fill="none" stroke="#3BC0AA" stroke-width="1.8" opacity=".75"><ellipse cx="50" cy="50" rx="40" ry="15"/><ellipse cx="50" cy="50" rx="40" ry="15" transform="rotate(60 50 50)"/><ellipse cx="50" cy="50" rx="40" ry="15" transform="rotate(120 50 50)"/></g><circle cx="50" cy="50" r="7" fill="#F0A93C"/><g class="w4-orbit"><circle cx="90" cy="50" r="3.4" fill="#2E8FB8"/></g><g class="w4-orbit w4-orbit2"><circle cx="10" cy="50" r="3.4" fill="#B14FC4"/></g></svg>'));
       for(var bu=0;bu<11;bu++) layer.appendChild(el('w4o-rise','left:'+rnd(2,98).toFixed(1)+'vw;width:'+rnd(5,11).toFixed(0)+'px;height:'+rnd(5,11).toFixed(0)+'px;background:transparent;border:2px solid rgba(59,192,170,.55);animation-duration:'+rnd(9,18).toFixed(1)+'s;animation-delay:-'+rnd(0,16).toFixed(1)+'s'));
+      /* Aug-31 strengthening: a tesla coil throwing live arcs, a benzene ring
+         drifting through, steam curling off the benches, a microscope on watch */
+      var TESLA='<svg viewBox="0 0 80 140" width="100%" height="100%"><rect x="34" y="60" width="12" height="70" rx="4" fill="#4A5A68"/><rect x="30" y="54" width="20" height="10" rx="4" fill="#5E7080"/><circle cx="40" cy="34" r="20" fill="#8FA6B8"/><circle cx="34" cy="28" r="6" fill="#C4D4E0" opacity=".8"/><g class="w4-arcflash" stroke="#7FE0FF" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M40 16 l-6 -10 l8 4 l-4 -10"/><path d="M56 24 l10 -6 l-6 8 l12 -2"/><path d="M24 26 l-11 -4 l7 7 l-12 1"/></g></svg>';
+      layer.appendChild(el('w4-tesla','', TESLA));
+      var BENZ='<svg viewBox="0 0 80 80" width="100%" height="100%"><polygon points="40,8 68,24 68,56 40,72 12,56 12,24" fill="none" stroke="#B14FC4" stroke-width="3"/><circle cx="40" cy="40" r="17" fill="none" stroke="#B14FC4" stroke-width="2.2" opacity=".7"/><g fill="#0E8A78"><circle cx="40" cy="8" r="4.4"/><circle cx="68" cy="24" r="4.4"/><circle cx="68" cy="56" r="4.4"/><circle cx="40" cy="72" r="4.4"/><circle cx="12" cy="56" r="4.4"/><circle cx="12" cy="24" r="4.4"/></g></svg>';
+      layer.appendChild(el('w4-benzene','', BENZ));
+      var STEAM='<svg viewBox="0 0 40 90" width="100%" height="100%" preserveAspectRatio="none"><path d="M20 90 q-12 -18 2 -34 q12 -14 -2 -30 q-10 -12 4 -26" fill="none" stroke="rgba(230,244,240,.55)" stroke-width="7" stroke-linecap="round"/></svg>';
+      [['9vw','-1s'],['22vw','-4s'],['47vw','-2.5s'],['69vw','-5.5s']].forEach(function(sm){
+        layer.appendChild(el('w4-steam','left:'+sm[0]+';animation-delay:'+sm[1], STEAM)); });
+      var MICRO='<svg viewBox="0 0 70 80" width="100%" height="100%"><path d="M14 74 h44 l-6 -8 h-32 z" fill="#4A5A68"/><path d="M30 66 q-8 -14 4 -24 l10 -12 q6 -6 12 0 l-8 10 q10 6 6 18 l-4 8z" fill="#5E7080"/><rect x="40" y="18" width="10" height="18" rx="3" transform="rotate(40 45 27)" fill="#8FA6B8"/><circle cx="34" cy="58" r="5" fill="#7FE0FF" opacity=".8"/></svg>';
+      layer.appendChild(el('','left:38vw;bottom:-4px;width:74px;height:auto;aspect-ratio:70/80;opacity:.45', MICRO));
     } else if(world==='origami'){
       layer.appendChild(el('w4o-facets'));
       /* the centrepiece: a sheet of paper folds itself — four corners in sequence, the

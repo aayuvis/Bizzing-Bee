@@ -163,14 +163,17 @@ function worldEmblemSVG(id, size){
 }
 
 /* ---- constants ---- */
+/* Aug-31 store cut: EIGHT worlds, a 4x2 grid. The Hive (spellbound) is the free
+   default; everything else is bought with coins. Spotlight (marquee), Origami,
+   Arcade (pixel) and Serpent's Lair left the store — their scenes, ladders and
+   CSS stay in the codebase as an archive (see archive/store-cut-2026-08.md);
+   a boot migration in app3 refunds owners and re-homes stale saves. The other
+   three of the eight (godly, race, dino) are pushed by worlds4.js. */
 const THEMES = [
   { id:'spellbound', label:'Bizzing Bee', sub:'The bee',   c1:'#6C4FE0', c2:'#F6F4FC' },
-  { id:'marquee',    label:'Spotlight',  sub:'On stage',  c1:'#9C6A08', c2:'#F7F1E2' },
   { id:'aurora',     label:'Galaxy',     sub:'Cosmic',    c1:'#4A5BD4', c2:'#F2F4FB' },
   { id:'anime',      label:'Blade',      sub:'Dojo',      c1:'#C43D5A', c2:'#FAF1F3' },
   { id:'science',    label:'Lab',        sub:'Field notes',c1:'#0E8A78', c2:'#EFF6F3' },
-  { id:'origami',    label:'Origami',    sub:'Paper',     c1:'#C25A2E', c2:'#F8F2E8' },
-  { id:'pixel',      label:'Arcade',     sub:'Game on',   c1:'#3B6FE0', c2:'#EFF3FA' },
   { id:'avatar',     label:'Elements',   sub:'Elemental', c1:'#2E8FB8', c2:'#EDF5F7' },
 ];
 const THEME_LABEL = { spellbound:'Bizzing Bee', marquee:'Spotlight', aurora:'Galaxy', anime:'Blade', science:'Lab', origami:'Origami', pixel:'Arcade', avatar:'Elements' };

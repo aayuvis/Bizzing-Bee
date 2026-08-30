@@ -28,7 +28,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       trail: { lap: 1, done: {}, chk: {}, seen: {}, elap: 1, edone: {}, echk: {} } }];
     state.activeIdx = 0; state.screen = 'app'; state.nav = 'home';
     const out = {};
-    for (const w of ['godly', 'serpent', 'race', 'dino', 'anime', 'marquee', 'science', 'spellbound', 'aurora', 'origami', 'pixel', 'avatar']) {
+    for (const w of ['godly', 'race', 'dino', 'anime', 'science', 'spellbound', 'aurora', 'avatar']) {
       state.theme = w; SB_W4_SYNC(); await W(120);
       const bg = document.querySelector('.w4-bg');
       out[w] = bg ? bg.children.length : 0;
@@ -36,7 +36,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     state.theme = 'spellbound'; SB_W4_SYNC();
     return out;
   });
-  const MIN = { godly: 25, serpent: 20, race: 17, dino: 30, anime: 22, marquee: 40, science: 22, spellbound: 20, aurora: 30, origami: 10, pixel: 12, avatar: 25 };
+  // the Aug-31 EIGHT, with Blade/Race/Lab held to their strengthened bar
+  const MIN = { godly: 25, race: 23, dino: 30, anime: 28, science: 28, spellbound: 20, aurora: 30, avatar: 25 };
   Object.entries(MIN).forEach(([w, n]) =>
     ok(counts[w] >= n, w.padEnd(10) + ' backdrop carries ' + counts[w] + ' elements (>= ' + n + ')'));
 
