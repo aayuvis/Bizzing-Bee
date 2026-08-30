@@ -344,7 +344,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 <link rel="stylesheet" href="fonts/fonts.css?v=20260824q">
 <link rel="stylesheet" href="tokens.css?v=20260824q">
-<link rel="stylesheet" href="worlds4.css?v=20260824q">
+<link rel="stylesheet" href="worlds4.css?v=20260830c">
 
 <style>
   *{box-sizing:border-box}
@@ -1039,6 +1039,29 @@
   @media (prefers-reduced-motion:reduce){ .atlas-secret{animation:none} }
   /* the in-app reader: the authored chapter HTML carries .trick blocks — give
      them the tinted-card look the printed page gives them */
+  /* ✨ the opening splash: 6 seconds of the child's own world before the app —
+     painted backdrop, the world's name, the bee, a honey loading bar and (on tap)
+     a little fanfare. Skipped on reduced motion (2.2s, still) and by sb_splash=0. */
+  #sb-splash{position:fixed;inset:0;z-index:400;display:grid;place-items:center;overflow:hidden;color:#fff;transition:opacity .55s ease;cursor:pointer}
+  #sb-splash.out{opacity:0;pointer-events:none}
+  #sb-splash .spl-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6}
+  #sb-splash.kb .spl-art{animation:spl-kb 7s ease-out both}
+  @keyframes spl-kb{from{transform:scale(1.14)}to{transform:scale(1.02)}}
+  #sb-splash .spl-veil{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 30%,transparent 20%,var(--spl-deep,#120E24) 92%),linear-gradient(180deg,rgba(10,8,20,.25),rgba(10,8,20,.55))}
+  #sb-splash .spl-in{position:relative;z-index:2;text-align:center;padding:20px;max-width:min(88vw,520px)}
+  #sb-splash .spl-bee{font-size:64px;line-height:1;display:inline-block;filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
+  #sb-splash.kb .spl-bee{animation:spl-bob 1.6s ease-in-out infinite}
+  @keyframes spl-bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+  #sb-splash .spl-logo{font-family:'Baloo 2',var(--display,system-ui);font-weight:800;font-size:clamp(30px,7vw,44px);letter-spacing:.01em;margin:10px 0 2px;text-shadow:0 3px 14px rgba(0,0,0,.5)}
+  #sb-splash .spl-world{font-weight:800;font-size:clamp(14px,3vw,17px);letter-spacing:.14em;text-transform:uppercase;color:var(--spl-acc,#FFD24D);text-shadow:0 2px 8px rgba(0,0,0,.5)}
+  #sb-splash .spl-bar{width:min(60vw,300px);height:10px;border-radius:99px;background:rgba(255,255,255,.18);margin:26px auto 10px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.3)}
+  #sb-splash .spl-bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--spl-acc,#FFD24D),#FFF0B8)}
+  #sb-splash.kb .spl-bar i{animation:spl-fill var(--spl-dur,6s) linear both}
+  #sb-splash:not(.kb) .spl-bar i{width:100%}
+  @keyframes spl-fill{from{width:2%}to{width:100%}}
+  #sb-splash .spl-tap{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.75)}
+  #sb-splash .spl-spark{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--spl-acc,#FFD24D);box-shadow:0 0 8px 2px rgba(255,210,77,.5);animation:spl-rise 3.4s linear infinite;bottom:-8px}
+  @keyframes spl-rise{from{transform:translateY(0);opacity:.9}to{transform:translateY(-105vh);opacity:0}}
   /* 🐞 the report-a-bug sidebar: a quiet tab on the right edge, a slide-in panel.
      The tab sits at z-index 40 so game overlays (.arc-play etc.) cover it. */
   .sb-bug-tab{position:fixed;right:0;top:58%;z-index:40;display:flex;flex-direction:column;align-items:center;gap:2px;
@@ -1572,6 +1595,52 @@
   <link rel="stylesheet" href="saga2.css?v=20260824q">
 </head>
 <body>
+<script>
+/* ✨ THE OPENING SPLASH — inline and parse-time so it paints before any deferred
+   script runs. Reads the saved state raw (theme, motion pref) and the sb_splash
+   switch; skipped entirely on first run so onboarding is never hidden behind it.
+   Music: a four-note fanfare that plays when the child taps (a real gesture) —
+   the silent auto-attempt is harmless where autoplay is blocked. */
+(function(){
+  try{
+    if(localStorage.getItem('sb_splash')==='0') return;
+    var st={}; try{ st=JSON.parse(localStorage.getItem('sb_saas_v2')||'{}')||{}; }catch(e){}
+    if(!st.children || !st.children.length) return;
+    var rm=false; try{ rm=(st.am===1)||(st.cm===1)||matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+    var T={ spellbound:['Bizzing Bee','#FFD24D','#241E4E','🐝','hive'], marquee:['Spotlight','#F6DC8A','#2A1608','🎭','stage'],
+      aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos'], anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo'],
+      science:['Lab','#3BC0AA','#062A24','🧪','lab'], origami:['Origami','#F0C9A2','#2A1408','🪁','lotus'],
+      pixel:['Arcade','#36C6E0','#0A122E','👾','arcade'], avatar:['Elements','#8FD0EC','#0A2430','🌊','pond'],
+      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky'], serpent:["Serpent's Lair",'#7FD98C','#0A2014','🐍','forest'],
+      race:['Race Zone','#7BA3F5','#0A1430','🏎️','carnival'], dino:['Dino Era','#B8D96A','#141E08','🦖','meadow'] };
+    var t=T[st.theme]||T.spellbound, dur=rm?2200:6000;
+    var d=document.createElement('div'); d.id='sb-splash'; if(!rm) d.className='kb';
+    d.style.cssText='--spl-acc:'+t[1]+';--spl-deep:'+t[2]+';--spl-dur:'+(dur/1000)+'s;background:'+t[2];
+    var sparks=''; if(!rm) for(var i=0;i<10;i++) sparks+='<span class="spl-spark" style="left:'+(4+i*9.6)+'vw;animation-delay:-'+(i*0.37).toFixed(2)+'s"></span>';
+    d.innerHTML='<img class="spl-art" alt="" src="app-art/sgw-'+t[4]+'.jpg" onerror="this.remove()">'
+      +'<div class="spl-veil"></div>'+sparks
+      +'<div class="spl-in"><span class="spl-bee">'+t[3]+'</span>'
+      +'<div class="spl-logo">Bizzing Bee</div>'
+      +'<div class="spl-world">entering '+t[0]+'</div>'
+      +'<div class="spl-bar"><i></i></div>'
+      +'<div class="spl-tap">tap anywhere to fly in</div></div>';
+    document.body.appendChild(d);
+    var done=false;
+    function out(){ if(done) return; done=true; d.classList.add('out'); setTimeout(function(){ try{ d.remove(); }catch(e){} },600); }
+    var tm=setTimeout(out,dur);
+    function sting(){ try{ var A=window.AudioContext||window.webkitAudioContext; if(!A) return;
+      var ac=new A(); if(ac.state==='suspended') ac.resume(); var t0=ac.currentTime+0.02;
+      [523.25,659.25,783.99,1046.5].forEach(function(f,i){ var o=ac.createOscillator(),g=ac.createGain();
+        o.type='triangle'; o.frequency.value=f;
+        g.gain.setValueAtTime(0.0001,t0+i*0.09); g.gain.exponentialRampToValueAtTime(0.14,t0+i*0.09+0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001,t0+i*0.09+0.55);
+        o.connect(g); g.connect(ac.destination); o.start(t0+i*0.09); o.stop(t0+i*0.09+0.6); });
+      setTimeout(function(){ try{ ac.close(); }catch(e){} },1700); }catch(e){} }
+    d.addEventListener('pointerdown',function(){ clearTimeout(tm); sting(); out(); },{once:true});
+    if(!rm) sting();   /* plays where the browser already trusts us; silently ignored elsewhere */
+  }catch(e){}
+})();
+</script>
 <div id="root">
 <!-- ============================================================================
      THE CRAWLABLE FIRST PAINT.
@@ -1713,8 +1782,8 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="auth.js?v=20260824q"></script>
 <script defer src="supabase-auth.js?v=20260824q"></script>
 <script defer src="telemetry.js?v=20260830a"></script>
-<script defer src="app3.js?v=20260830b"></script>
-<script defer src="worlds4.js?v=20260828a"></script>
+<script defer src="app3.js?v=20260830c"></script>
+<script defer src="worlds4.js?v=20260830c"></script>
 <script defer src="mockbee.js?v=20260824q"></script>
   <script defer src="games-daily.js?v=20260824q"></script>
   <script defer src="saga-art/saga-art.js?v=20260824q"></script>

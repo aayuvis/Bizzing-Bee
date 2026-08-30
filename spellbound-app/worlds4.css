@@ -487,3 +487,41 @@
 [data-theme="avatar"][data-mode="dusk"] .w4o-temple{opacity:.8;filter:brightness(.72)}
 [data-theme="avatar"][data-mode="dusk"] .temple-win{opacity:1;filter:drop-shadow(0 0 6px rgba(246,220,138,.9));animation:w4-gleam 4s ease-in-out infinite}
 [data-theme="avatar"][data-mode="dusk"] .w4o-bendfire{filter:brightness(1.15) drop-shadow(0 0 5px rgba(243,161,60,.3))}
+
+/* ═══ Aug-30 world enrichment: Olympus architecture, jungle temple, race day,
+   Japan postcard, opening-night stage, the lab's physics wing. All children of
+   .w4-bg, so calm / white / motion-off rules above govern them for free. ═══ */
+.w4-column{position:absolute;top:-2vh;height:104vh;width:min(5.5vw,58px);opacity:.5;animation:w4-breathe4 12s ease-in-out infinite}
+.w4-cloudshelf{position:absolute;aspect-ratio:200/60;opacity:.75;animation:w4-shelfdrift 26s ease-in-out infinite}
+@keyframes w4-shelfdrift{0%,100%{transform:translateX(0)}50%{transform:translateX(2.4vw)}}
+.w4-boltglint{position:absolute;width:10px;height:26px;background:linear-gradient(170deg,#FFF6D8,#FFD34D);clip-path:polygon(60% 0,100% 0,45% 55%,70% 55%,20% 100%,40% 52%,10% 52%);opacity:0;animation:w4-bolt 11s ease-in-out infinite}
+@keyframes w4-bolt{0%,92%,100%{opacity:0}93%,95%{opacity:.9}94%{opacity:.3}}
+.w4-vine{position:absolute;top:0;height:28vh;width:34px;opacity:.65;transform-origin:50% 0;animation:w4-sway4 8s ease-in-out infinite}
+.w4-stone{position:absolute}
+.w4-eyes{position:absolute;opacity:.8}
+.w4-eyeblink{animation:w4-blink 6s ease-in-out infinite}
+@keyframes w4-blink{0%,7%,100%{opacity:1}3%,5%{opacity:0}}
+.w4-firefly{position:absolute;width:5px;height:5px;border-radius:50%;background:#D8F27A;box-shadow:0 0 8px 3px rgba(216,242,122,.55);animation-name:w4-fireglow,w4-firewander;animation-timing-function:ease-in-out,ease-in-out;animation-iteration-count:infinite,infinite}
+@keyframes w4-fireglow{0%,100%{opacity:.1}50%{opacity:.95}}
+@keyframes w4-firewander{0%,100%{transform:translate(0,0)}33%{transform:translate(3vw,-4vh)}66%{transform:translate(-2vw,3vh)}}
+.w4-stand{position:absolute;left:0;right:0;top:30vh;height:8vh;opacity:.35}
+.w4-rflag{position:absolute;opacity:.75}
+.w4-flagwave{transform-origin:6px 2px;animation:w4-flagwv 1.6s ease-in-out infinite}
+@keyframes w4-flagwv{0%,100%{transform:skewY(0deg)}50%{transform:skewY(-6deg)}}
+.w4-fuji{position:absolute;left:8vw;bottom:22vh;width:min(44vw,480px);aspect-ratio:300/160;opacity:.8}
+.w4-cloudband{position:absolute;left:-50vw;aspect-ratio:200/60;opacity:.7;animation:w4-bandacross linear infinite}
+@keyframes w4-bandacross{from{transform:translateX(0)}to{transform:translateX(200vw)}}
+.w4-lantern{position:absolute;bottom:-70px;aspect-ratio:40/60;opacity:.85;filter:drop-shadow(0 0 12px rgba(246,194,90,.55));animation:w4-lanternup linear infinite}
+@keyframes w4-lanternup{from{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-58vh) rotate(2.5deg)}to{transform:translateY(-118vh) rotate(-2deg)}}
+.w4-bough{position:absolute;right:-8px;top:-6px;width:min(26vw,260px);aspect-ratio:240/120;opacity:.85;transform-origin:100% 0;animation:w4-sway4 9s ease-in-out infinite}
+.w4-curtainstar{position:absolute;width:4px;height:4px;border-radius:50%;background:#F6DC8A;box-shadow:0 0 6px 2px rgba(246,220,138,.45);animation:w4-twinkstar ease-in-out infinite}
+@keyframes w4-twinkstar{0%,100%{opacity:.15}50%{opacity:.9}}
+.w4-mirrorball{position:absolute;left:50%;top:-6px;width:52px;aspect-ratio:60/72;transform:translateX(-50%);opacity:.8;animation:w4-ballspin 7s ease-in-out infinite}
+@keyframes w4-ballspin{0%,100%{transform:translateX(-50%) rotate(-5deg)}50%{transform:translateX(-50%) rotate(5deg)}}
+.w4-note{position:absolute;bottom:-46px;opacity:.7;animation-name:w4-motes,w4-notesway;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite}
+@keyframes w4-notesway{0%,100%{margin-left:0}50%{margin-left:3vw}}
+.w4-helix{position:absolute;left:1.5vw;top:12vh;width:44px;height:36vh;opacity:.4;animation:w4-breathe4 10s ease-in-out infinite}
+.w4-atom{position:absolute;right:4vw;top:9vh;width:min(9vw,92px);aspect-ratio:1;opacity:.6}
+.w4-orbit{transform-origin:50px 50px;animation:w4-orbitspin 5s linear infinite}
+.w4-orbit2{animation-duration:8s;animation-direction:reverse}
+@keyframes w4-orbitspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}

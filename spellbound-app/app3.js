@@ -2127,6 +2127,11 @@ const app = {
     try{ document.querySelector('[data-fkey="gType"],[data-inp="gType"]')?.focus(); }catch(e){} },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
+  /* the 6-second world splash on app open — a localStorage switch, because the
+     splash runs from an inline script long before this file has parsed */
+  toggleSplash:()=>{ let on=true; try{ on=localStorage.getItem('sb_splash')!=='0'; }catch(e){}
+    try{ localStorage.setItem('sb_splash',on?'0':'1'); }catch(e){}
+    flash(on?'Opening splash off — straight to the app':'✨ Opening splash on — see you at the next launch'); render(); },
   toggleFocus:()=>{ clearTimeout(app._modeT); try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
@@ -8199,6 +8204,7 @@ function viewSettings(){
     toggle('toggleSound',S.sound?'speaker':'mute','Sound effects',!!S.sound),
     choice('setVoiceRate','timer','Voice speed',[['normal','Normal'],['slow','Slow']],((S.voiceRate||1)<1)?'slow':'normal'),
     toggle('toggleReadAloud','mic','Read cards aloud',!!S.readAloud),
+    toggle('toggleSplash','spark','Opening splash',(function(){try{return localStorage.getItem('sb_splash')!=='0';}catch(e){return true;}})()),
   ].join('');
 
   /* ---------- Account: the plan, the parent, and the Advanced Pack, in one place ----------
