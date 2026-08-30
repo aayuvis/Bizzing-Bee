@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bizzing Bee — Operator Console</title>
+<!-- ══════════════════════════════════════════════════════════════════════
+     THE OPERATOR CONSOLE. This file is DELIBERATELY NEVER DEPLOYED to
+     www.bizzingbee.com (or anywhere): there is no hosted backend, and the
+     privacy policy's "nothing is transmitted" is load-bearing. It runs from
+     the repo (file:// or localhost) and reads sb-research.json files exported
+     from a device's Settings → Testing tools → Research capture, or — when
+     opened from the same origin as the app — the device's own local log.
+     Never copy this file to gh-pages. See CLAUDE.md → "The research rig".
+     ══════════════════════════════════════════════════════════════════════ -->
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box;margin:0}
+  body{background:#12101d;color:#E8E4F2;font:14px/1.55 ui-sans-serif,system-ui,sans-serif;padding:0 0 60px}
+  header{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid #2A2540;background:#171425;position:sticky;top:0;z-index:5}
+  h1{font-size:16px;font-weight:800} h1 small{color:#8B84A8;font-weight:600;font-size:12px;margin-left:8px}
+  .tag{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.08em;color:#C9B8E8;border:1px solid #3A3355;border-radius:999px;padding:5px 12px}
+  nav{display:flex;gap:4px;padding:10px 22px;border-bottom:1px solid #2A2540;background:#171425;flex-wrap:wrap}
+  nav button{background:none;border:0;color:#8B84A8;font-weight:800;font-size:13px;padding:8px 14px;border-radius:9px;cursor:pointer}
+  nav button.on{background:#2A2545;color:#FFD24D}
+  main{max-width:1060px;margin:0 auto;padding:22px}
+  .drop{border:2px dashed #3A3355;border-radius:16px;padding:34px;text-align:center;color:#8B84A8;margin-bottom:18px;cursor:pointer}
+  .drop.hot{border-color:#FFD24D;color:#FFD24D}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+  .stat{background:#1C1830;border:1px solid #2A2540;border-radius:14px;padding:14px 16px}
+  .stat b{display:block;font-size:24px;font-variant-numeric:tabular-nums;color:#FFD24D}
+  .stat span{font-size:11.5px;color:#8B84A8;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+  .card{background:#1C1830;border:1px solid #2A2540;border-radius:14px;padding:16px 18px;margin-bottom:14px}
+  .card h2{font-size:13px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#C9B8E8;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  td,th{text-align:left;padding:6px 8px;border-bottom:1px solid #262040;font-size:13px}
+  th{color:#8B84A8;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  td.n{text-align:right;color:#FFD24D;font-weight:700}
+  .bar{height:8px;border-radius:99px;background:#262040;overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#7C5CFF,#FFD24D)}
+  select,button.act{background:#262040;color:#E8E4F2;border:1px solid #3A3355;border-radius:9px;padding:7px 12px;font-weight:700;font-size:13px}
+  canvas{width:100%;border-radius:12px;background:#0D0B16;display:block}
+  .muted{color:#8B84A8;font-size:12.5px}
+  code{background:#262040;border-radius:6px;padding:2px 7px;font-size:12px;color:#FFD24D}
+  .hidden{display:none}
+  ul.play{padding-left:1.1em}  ul.play li{margin:7px 0}
+</style></head><body>
+<header><span style="font-size:20px">🐝</span><h1>Bizzing Bee · Operator Console<small>local only — never hosted</small></h1><span class="tag" id="src">no data loaded</span></header>
+<nav id="tabs"></nav>
+<main>
+  <div class="drop" id="drop">Drop <b>sb-research.json</b> here (or click to pick) — exported from Settings → Testing tools → Research capture.<br><span class="muted" id="lsNote"></span></div>
+  <input type="file" id="file" accept=".json,application/json" style="display:none">
+  <div id="views"></div>
+</main>
+<script>
+'use strict';
+const BK = { events: [], meta: {}, tab: 'overview' };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n => Number(n || 0).toLocaleString();
+const TABS = [['overview','Overview'],['heatmap','Heatmap'],['screens','Screens'],['actions','Actions'],['sessions','Sessions'],['reactions','Reactions'],['errors','Errors'],['testing','Testing']];
+
+BK.load = function (json) {
+  try { const d = typeof json === 'string' ? JSON.parse(json) : json;
+    BK.events = Array.isArray(d) ? d : (d.events || []);
+    BK.meta = Array.isArray(d) ? {} : d;
+    $('#src').textContent = fmt(BK.events.length) + ' events · ' + (BK.meta.exported ? BK.meta.exported.slice(0, 16).replace('T', ' ') : 'local log');
+    render();
+  } catch (e) { alert('That file did not parse as research JSON: ' + e.message); } };
+
+/* same-origin convenience: opened beside the app, read the device's own log */
+try { const raw = localStorage.getItem('sb_tm_log');
+  if (raw && JSON.parse(raw).length) { $('#lsNote').textContent = 'This browser holds a local log of ' + fmt(JSON.parse(raw).length) + ' events — click here to load it instead.';
+    $('#lsNote').style.cursor = 'pointer';
+    $('#lsNote').addEventListener('click', e => { e.stopPropagation(); BK.load(localStorage.getItem('sb_tm_log')); }); } } catch (e) {}
+
+const drop = $('#drop'), file = $('#file');
+drop.addEventListener('click', () => file.click());
+file.addEventListener('change', () => { const f = file.files[0]; if (f) f.text().then(BK.load); });
+['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('hot'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('hot'); }));
+drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) f.text().then(BK.load); });
+
+const by = (evts, k) => evts.filter(e => e.k === k);
+const tally = (evts, key) => { const m = {}; evts.forEach(e => { const v = e[key] || '(none)'; m[v] = (m[v] || 0) + 1; });
+  return Object.entries(m).sort((a, b) => b[1] - a[1]); };
+const rows = (pairs, cap, label) => { const max = pairs.length ? pairs[0][1] : 1;
+  return '<table><tr><th>' + label + '</th><th style="width:44%"></th><th style="text-align:right">events</th></tr>' +
+    pairs.slice(0, cap).map(([k, n]) => '<tr><td>' + esc(k) + '</td><td><div class="bar"><i style="width:' + Math.round(n / max * 100) + '%"></i></div></td><td class="n">' + fmt(n) + '</td></tr>').join('') + '</table>'; };
+
+function vOverview () { const E = BK.events;
+  const sess = new Set(E.map(e => e.s)).size, days = new Set(E.map(e => new Date(e.t).toISOString().slice(0, 10))).size;
+  const vers = tally(by(E, 'open'), 'v').map(x => x[0]).join(' · ') || '—';
+  const hb = by(E, 'hb').length;
+  return '<div class="grid">'
+    + '<div class="stat"><b>' + fmt(E.length) + '</b><span>events</span></div>'
+    + '<div class="stat"><b>' + fmt(sess) + '</b><span>app sessions</span></div>'
+    + '<div class="stat"><b>' + fmt(days) + '</b><span>active days</span></div>'
+    + '<div class="stat"><b>' + fmt(by(E, 'tap').length) + '</b><span>taps</span></div>'
+    + '<div class="stat"><b>' + (Math.round(hb * 5 / 60) || 0) + 'm</b><span>screen time seen</span></div>'
+    + '<div class="stat"><b>' + fmt(by(E, 'err').length) + '</b><span>js errors</span></div></div>'
+    + '<div class="card"><h2>App versions in this log</h2><div>' + esc(vers) + '</div></div>'
+    + '<div class="card"><h2>Where the time goes</h2>' + rows(tally(by(BK.events, 'hb'), 'nav').map(([k, n]) => [k, n]), 12, 'screen (5s beats)') + '</div>'; }
+
+function vHeatmap () { const navs = ['(all)'].concat(tally(by(BK.events, 'tap'), 'nav').map(x => x[0]));
+  return '<div class="card"><h2>Tap heatmap</h2>'
+    + '<div style="display:flex;gap:9px;align-items:center;margin-bottom:12px"><span class="muted">screen</span>'
+    + '<select id="hmNav" onchange="drawHeat()">' + navs.map(n => '<option>' + esc(n) + '</option>').join('') + '</select>'
+    + '<span class="muted" id="hmN"></span></div>'
+    + '<canvas id="hm" width="1000" height="640"></canvas>'
+    + '<p class="muted" style="margin-top:9px">Coordinates are viewport-percent, so every device size lands on one map. Hot = many taps.</p></div>'; }
+window.drawHeat = function () { const cv = $('#hm'); if (!cv) return; const cx = cv.getContext('2d');
+  cx.fillStyle = '#0D0B16'; cx.fillRect(0, 0, cv.width, cv.height);
+  const pick = ($('#hmNav') || {}).value || '(all)';
+  const taps = by(BK.events, 'tap').filter(e => pick === '(all)' || e.nav === pick);
+  $('#hmN').textContent = fmt(taps.length) + ' taps';
+  cx.strokeStyle = '#262040'; for (let gx = 0; gx <= 10; gx++) { cx.beginPath(); cx.moveTo(gx * cv.width / 10, 0); cx.lineTo(gx * cv.width / 10, cv.height); cx.stroke(); }
+  for (let gy = 0; gy <= 10; gy++) { cx.beginPath(); cx.moveTo(0, gy * cv.height / 10); cx.lineTo(cv.width, gy * cv.height / 10); cx.stroke(); }
+  cx.globalCompositeOperation = 'lighter';
+  taps.forEach(e => { const g = cx.createRadialGradient(e.x * cv.width / 100, e.y * cv.height / 100, 2, e.x * cv.width / 100, e.y * cv.height / 100, 34);
+    g.addColorStop(0, 'rgba(255,150,60,.5)'); g.addColorStop(.5, 'rgba(200,60,160,.16)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    cx.fillStyle = g; cx.beginPath(); cx.arc(e.x * cv.width / 100, e.y * cv.height / 100, 34, 0, 7); cx.fill(); });
+  cx.globalCompositeOperation = 'source-over'; };
+
+function vScreens () { const E = BK.events;
+  const time = tally(by(E, 'hb'), 'nav').map(([k, n]) => [k, n * 5]);
+  return '<div class="card"><h2>Seconds on each screen</h2>' + rows(time, 20, 'screen') + '</div>'
+    + '<div class="card"><h2>Taps per screen</h2>' + rows(tally(by(E, 'tap'), 'nav'), 20, 'screen') + '</div>'; }
+function vActions () { const taps = by(BK.events, 'tap');
+  const dead = taps.filter(e => !e.act).length;
+  return '<div class="grid"><div class="stat"><b>' + fmt(taps.length - dead) + '</b><span>taps that hit a control</span></div>'
+    + '<div class="stat"><b>' + fmt(dead) + '</b><span>dead taps (hit nothing)</span></div></div>'
+    + '<div class="card"><h2>Most-used controls (data-act)</h2>' + rows(tally(taps.filter(e => e.act), 'act'), 40, 'control') + '</div>'; }
+function vSessions () { const ss = by(BK.events, 'sess');
+  if (!ss.length) return '<div class="card"><h2>Practice sessions</h2><p class="muted">No completed practice sessions in this log yet.</p></div>';
+  const acc = ss.map(s => s.d ? s.r / s.d : 0), avg = Math.round(acc.reduce((a, b) => a + b, 0) / acc.length * 100);
+  return '<div class="grid"><div class="stat"><b>' + fmt(ss.length) + '</b><span>practice sessions</span></div>'
+    + '<div class="stat"><b>' + avg + '%</b><span>mean accuracy</span></div></div>'
+    + '<div class="card"><h2>Each session</h2><table><tr><th>when</th><th>list</th><th style="text-align:right">right / done</th></tr>'
+    + ss.slice(-60).reverse().map(s => '<tr><td>' + new Date(s.t).toISOString().slice(0, 16).replace('T', ' ') + '</td><td>' + esc(s.lbl) + '</td><td class="n">' + s.r + ' / ' + s.d + '</td></tr>').join('') + '</table></div>'; }
+function vReactions () { const rs = by(BK.events, 'react'); const map = { love: '😍 loved it', ok: '🙂 it was ok', meh: '😕 not fun' };
+  return '<div class="card"><h2>How sessions felt (the end-of-session pulse)</h2>'
+    + (rs.length ? rows(tally(rs, 'v').map(([k, n]) => [map[k] || k, n]), 5, 'reaction') : '<p class="muted">No reactions yet — they appear on the session summary while capture is armed.</p>') + '</div>'; }
+function vErrors () { const es = by(BK.events, 'err');
+  return '<div class="card"><h2>JavaScript errors seen on device</h2>'
+    + (es.length ? '<table><tr><th>when</th><th>file:line</th><th>message</th></tr>' + es.slice(-80).reverse().map(e =>
+      '<tr><td>' + new Date(e.t).toISOString().slice(5, 16).replace('T', ' ') + '</td><td>' + esc(e.f) + ':' + e.l + '</td><td>' + esc(e.m) + '</td></tr>').join('') + '</table>'
+      : '<p class="muted">None. 🎉</p>') + '</div>'; }
+function vTesting () {
+  return '<div class="card"><h2>The play-test rig</h2><ul class="play">'
+    + '<li><b>Arm a device</b>: Settings → tap the footer 7× → Testing tools → <code>Research capture</code> (PIN-gated). From then on the device logs taps, screens, heartbeats, errors, session outcomes and the 😍🙂😕 pulse — locally.</li>'
+    + '<li><b>Unlock everything</b> / <code>Test coins</code> live in the same drawer for feature testing.</li>'
+    + '<li><b>Collect</b>: Export writes <code>sb-research.json</code>; drop it on this console. Multiple devices = multiple files; load one at a time.</li>'
+    + '<li><b>Bug reports</b> ride separately: the 🐞 sidebar exports <code>bug-reports.json</code>.</li>'
+    + '<li><b>Word-data flags</b>: the Word Voice Tester exports <code>voice-flags.json</code>.</li>'
+    + '<li><b>Headless guards</b> (run in the repo): <code>tests/reader.cjs · ux-826 · champion-expedition · atlas-alive · atlas-stars · learn-next · bug-sidebar · telemetry · arcade-geometry</code> and the full persona sweep <code>ux-personas.cjs</code>.</li>'
+    + '</ul></div>'
+    + '<div class="card"><h2>The rules this console lives by</h2><ul class="play">'
+    + '<li>This file is <b>never deployed</b>. There is no hosted backend, and no event ever leaves a device by itself.</li>'
+    + '<li>The log contains <b>no name, no age, no typed words</b> — screens, controls, coordinates, timings, errors only.</li>'
+    + '<li>Capture is <b>off by default</b>, PIN-gated, and a parent can clear it on the device at any time.</li></ul></div>'; }
+
+function render () {
+  $('#tabs').innerHTML = TABS.map(([k, l]) => '<button class="' + (BK.tab === k ? 'on' : '') + '" onclick="BK.tab=\'' + k + '\';render()">' + l + '</button>').join('');
+  const has = BK.events.length;
+  $('#views').innerHTML = !has && BK.tab !== 'testing' ? '<p class="muted">Load a research file to light the dashboards. The Testing tab works without one.</p>'
+    : { overview: vOverview, heatmap: vHeatmap, screens: vScreens, actions: vActions, sessions: vSessions, reactions: vReactions, errors: vErrors, testing: vTesting }[BK.tab]();
+  if (BK.tab === 'heatmap' && has) drawHeat();
+}
+render();
+window.BK = BK;
+</script></body></html>

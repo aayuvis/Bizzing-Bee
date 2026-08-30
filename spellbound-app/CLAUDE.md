@@ -1040,6 +1040,27 @@ out of saga2.js so a retune cannot quietly undo them.
   child was pressing the speaker button and then Enter twice per word. Guard:
   `tests/ux-826.cjs`.
 
+## The research rig — there is NO hosted backend, and there must never be one
+- "The backend" is a LOCAL rig, deliberately: privacy.html promises nothing is ever
+  transmitted, and that claim is load-bearing. Three pieces:
+  - **`telemetry.js` (`SB_TM`)** ships in index.html but records NOTHING until a
+    grown-up arms **Settings → Testing tools → Research capture** (PIN-gated). Armed,
+    it logs taps as viewport-% coordinates (heatmaps survive any screen size), the
+    screen + `data-act` hit, 5s screen-time heartbeats, JS errors, session outcomes
+    (`k:'sess'`) and the end-of-session 😍🙂😕 pulse (`k:'react'`, shown only while
+    armed) — to localStorage `sb_tm_log`, capped 12k events, NO name/age/typed words.
+    Export = `sb-research.json` from the same drawer.
+  - **`backend.html` is the operator console and is NEVER DEPLOYED** — not to
+    gh-pages, not anywhere. It runs from the repo, ingests dropped `sb-research.json`
+    files (or the same-origin local log), and renders Overview / tap Heatmap /
+    Screens / Actions (incl. dead taps) / Sessions / Reactions / Errors / Testing.
+    `BK.load(json)` is the test hook. Do not add it to any deploy copy list.
+  - **privacy.html §5 documents the capture** (opt-in, on-device, parent-erasable) —
+    updated 30 Aug 2026 with the effective date moved, per the policy-first rule.
+  Guard: `tests/telemetry.cjs` (unarmed silence, armed shapes, no-child-data export,
+  console ingestion). Bug reports (`sb_bugs` + the 🐞 sidebar, `tests/bug-sidebar.cjs`)
+  and voice flags are separate exports that ride the same philosophy.
+
 ## The Atlas is a journey on scenery, not a painting with pins
 - **THE PAINTING RUNS NEAR FULL AND THE FOG MEANS SOMETHING.** (Reversed Aug 2026 after
   play-testing.) The map used to be held at `opacity:.6` / `saturate(.78)` — dusk `.5`,
