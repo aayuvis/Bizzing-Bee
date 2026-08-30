@@ -97,13 +97,16 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
-  ok(/four-chord pad/.test(idx) && /bell\(/.test(idx) && /createOscillator/.test(idx.slice(0, idx.indexOf('id="root"'))),
-    'a real score (warm pad + bell motif) is wired into the sequence');
-  ok(/T-rex ROAR/.test(idx) && /createBufferSource/.test(idx), 'the roar is synthesized and timed to the jaws');
-  ok(/frozen clock never sounds/.test(idx) && /tap again to fly in/.test(idx) && /ac\.resume\(\)\.then/.test(idx),
-    'the score waits for a RUNNING audio clock — an early tap unlocks the sound instead of skipping');
-  ok(/the SNAP: a deep thud/.test(idx) && /spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
-    'the snap carries its thud, the frame slams, the maw pulses — a real jump-scare beat');
+  ok(/brand-open\.mp3/.test(idx) && /BIZZING BEE brand sound/.test(idx),
+    'the Bizzing Bee BRAND CUE opens every world\'s load');
+  ok(/dino-roar\.mp3/.test(idx) && /hive-buzz\.mp3/.test(idx) && /armSting/.test(idx),
+    'the world stingers take over at the close — the roar at the jaw SNAP, the buzz as the cell seals');
+  ok(fs.existsSync(SRC + '/app-art/brand-open.mp3') && fs.existsSync(SRC + '/app-art/dino-roar.mp3')
+    && fs.existsSync(SRC + '/app-art/hive-buzz.mp3'), 'all three pre-rendered sounds ship in app-art');
+  ok(/tap again to fly in/.test(idx) && /the resume a first tap grants/.test(idx),
+    'an autoplay-blocked load gets its sound on the first tap, which does not skip');
+  ok(/spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
+    'the frame still slams and the maw pulses at the snap');
 
   // ---- THE HIVE's own opening: comb, swarm, and the honey that takes the frame ----
   const seedH = JSON.stringify({ theme: 'spellbound', children: [{ name: 'T' }] });
@@ -144,8 +147,12 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     && /image\/webp/.test(fs.readFileSync(SRC + '/app-art/hive-bee-fly.svg', 'utf8').slice(0, 400))
     && fs.existsSync(SRC + '/app-art/hive-comb-wall.webp') && fs.existsSync(SRC + '/app-art/hive-cell.webp'),
     'honey plates, bee sprites and both comb plates all ship in app-art');
-  ok(/HIVE SWARM/.test(idx0) && /bees LAND/.test(idx0) && /the DIVE/.test(idx0) && /spl-goldshift/.test(idx0),
-    'the swarm, the landings and the dive are wired into the score, and the day turns to gold');
+  ok(/spl-goldshift/.test(idx0) && /honey cell sealing/.test(idx0),
+    'the day turns to gold, and the buzz stinger is timed to the honey cell sealing');
+  const bug = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); const t = d && d.querySelector('.spl-brand-t');
+    return { up: d && !!d.querySelector('.spl-brand'), text: !!(t && /Bizzing/.test(t.textContent) && / Bee/.test(t.textContent)),
+      ico: !!document.querySelector('#spl-bico svg') }; });
+  ok(bug.up && bug.text && bug.ico, 'the brand lockup — the mascot + the wordmark in the brand face — sits top right');
   await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(1000);
   ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses the hive opening at once');
 
