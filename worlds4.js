@@ -499,11 +499,14 @@ window.SB_W4_FOCUS={
       +'<ellipse cx="31" cy="'+(68-lv)+'" rx="11" ry="2.6" fill="#fff" opacity=".35"/>'
       +'<g class="fizz" fill="'+c+'"><circle cx="26" cy="'+(64-lv)+'" r="2.2"/><circle cx="34" cy="'+(66-lv)+'" r="1.7"/><circle cx="30" cy="'+(62-lv)+'" r="1.4"/></g>'
       +'</svg>'; }
-  /* the pouring rig: a tilted flask streaming into a catch beaker, reaction bubbles at the join */
+  /* the pouring rig: a tilted flask streaming into a catch beaker, reaction bubbles at
+     the join. The tilt is NEGATIVE: rotate(+38) swung the flask the other way, so its
+     MOUTH pointed up-right while the stream left from beside its base — "the beaker is
+     pouring chemicals from its bottom" (Amrita). Mouth down-left, stream from the lip. */
   var POUR='<svg viewBox="0 0 150 150" width="100%" height="100%">'
-    +'<g transform="rotate(38 96 30)"><path d="M88 6 h16 v14 l10 24 q2 7 -5 7 h-26 q-7 0 -5 -7 l10 -24 z" fill="none" stroke="#0E8A78" stroke-width="3"/>'
+    +'<g transform="rotate(-38 96 30)"><path d="M88 6 h16 v14 l10 24 q2 7 -5 7 h-26 q-7 0 -5 -7 l10 -24 z" fill="none" stroke="#0E8A78" stroke-width="3"/>'
     +'<path d="M84 38 h24 l3 7 q1 5 -4 5 h-22 q-5 0 -4 -5 z" fill="#B14FC4" opacity=".75"/></g>'
-    +'<path class="stream" d="M78 52 q-2 26 -4 44" stroke="#B14FC4" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
+    +'<path class="stream" d="M80 16 q-4 40 -7 80" stroke="#B14FC4" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
     +'<path d="M52 96 h44 M56 96 v28 q0 12 16 12 q16 0 16 -12 v-28" fill="none" stroke="#5E7A8A" stroke-width="3" stroke-linecap="round"/>'
     +'<path d="M58 112 h28 v12 q0 10 -14 10 q-14 0 -14 -10 z" fill="#3BC0AA" opacity=".8" transform="translate(1 0)"/>'
     +'<g class="fizz" fill="#B14FC4"><circle cx="68" cy="108" r="2.4"/><circle cx="78" cy="104" r="1.8"/><circle cx="73" cy="100" r="1.5"/></g>'
@@ -551,19 +554,58 @@ window.SB_W4_FOCUS={
   var FLAME_E='<svg viewBox="0 0 26 34" width="100%" height="100%"><path d="M13 2 q8 10 6 20 a7 7 0 0 1 -12 0 q-2 -10 6 -20z" fill="#F3A13C"/><path d="M13 14 q4 6 2 10 a3.5 3.5 0 0 1 -4 0 q-2 -4 2 -10z" fill="#FFE07A"/></svg>';
   var DROP_E='<svg viewBox="0 0 22 30" width="100%" height="100%"><path d="M11 2 q9 12 7 19 a7 7 0 0 1 -14 0 q-2 -7 7 -19z" fill="#2FA7D8"/><circle cx="8" cy="20" r="2.4" fill="#BFE3F5"/></svg>';
   function SPOT(col){ return '<svg viewBox="0 0 200 300" width="100%" height="100%" preserveAspectRatio="none"><polygon points="96,0 104,0 176,300 24,300" fill="'+col+'" opacity=".3"/></svg>'; }
+  /* Mount Olympus proper: marble columns framing the stage, a cloud shelf under them,
+     laurel leaves adrift, and now and then a soft lightning glint high in the sky. */
+  var COLUMN='<svg viewBox="0 0 60 300" width="100%" height="100%" preserveAspectRatio="none"><g fill="#EDE6D2"><rect x="4" y="0" width="52" height="14" rx="3"/><rect x="10" y="14" width="40" height="10"/><rect x="14" y="24" width="32" height="252"/><rect x="10" y="276" width="40" height="10"/><rect x="4" y="286" width="52" height="14" rx="3"/></g><g fill="#CFC4A6"><rect x="19" y="24" width="4" height="252"/><rect x="28" y="24" width="4" height="252"/><rect x="37" y="24" width="4" height="252"/></g></svg>';
+  var LAUREL='<svg viewBox="0 0 26 26" width="100%" height="100%"><path d="M3 23 q1 -16 20 -20 q-4 18 -20 20z" fill="#B9A94F"/><path d="M3 23 q8 -9 15 -14" stroke="#8F7F2E" stroke-width="1.4" fill="none"/></svg>';
+  var CLOUD='<svg viewBox="0 0 200 60" width="100%" height="100%"><g fill="#F4EFE2" opacity=".9"><ellipse cx="50" cy="42" rx="48" ry="17"/><ellipse cx="105" cy="34" rx="42" ry="20"/><ellipse cx="155" cy="44" rx="44" ry="15"/></g></svg>';
+  /* the serpent temple: hanging vines, paired eyes blinking in the gloom, carved stones */
+  var VINE='<svg viewBox="0 0 60 220" width="100%" height="100%" preserveAspectRatio="none"><path d="M30 0 q-12 40 4 78 q14 34 -6 70 q-12 24 2 72" fill="none" stroke="#2E6B3E" stroke-width="7" stroke-linecap="round"/><path d="M24 44 q-14 -4 -18 -16 q14 -2 18 16z M36 120 q14 -4 18 -16 q-14 -2 -18 16z M26 188 q-14 -4 -18 -16 q14 -2 18 16z" fill="#3C8455"/></svg>';
+  var EYES='<svg viewBox="0 0 60 24" width="100%" height="100%"><g class="w4-eyeblink"><ellipse cx="16" cy="12" rx="9" ry="7" fill="#FFD34D"/><ellipse cx="44" cy="12" rx="9" ry="7" fill="#FFD34D"/><rect x="14" y="5" width="4" height="14" rx="2" fill="#1A2B18"/><rect x="42" y="5" width="4" height="14" rx="2" fill="#1A2B18"/></g></svg>';
+  var GLYPHSTONE='<svg viewBox="0 0 90 110" width="100%" height="100%"><path d="M8 110 v-84 q0 -18 37 -18 q37 0 37 18 v84z" fill="#4A5A47"/><g stroke="#7FA37A" stroke-width="3" fill="none" opacity=".8"><circle cx="45" cy="34" r="10"/><path d="M28 58 h34 M28 72 h34 M28 86 h22"/><path d="M45 24 v20"/></g></svg>';
+  /* race day: waving chequered flags and a grandstand full of colour along the horizon */
+  var RFLAG='<svg viewBox="0 0 70 60" width="100%" height="100%"><rect x="2" y="0" width="4" height="60" rx="2" fill="#8A8A96"/><g class="w4-flagwave"><rect x="6" y="2" width="44" height="30" fill="#fff"/><g fill="#1A2438"><rect x="6" y="2" width="11" height="10"/><rect x="28" y="2" width="11" height="10"/><rect x="17" y="12" width="11" height="10"/><rect x="39" y="12" width="11" height="10"/><rect x="6" y="22" width="11" height="10"/><rect x="28" y="22" width="11" height="10"/></g></g></svg>';
+  var STAND=(function(){ var o='<svg viewBox="0 0 400 70" width="100%" height="100%" preserveAspectRatio="none"><rect x="0" y="0" width="400" height="70" fill="#25304A"/>';
+    var cols=['#E0453A','#FFC83D','#3B6FE0','#2FD08C','#B14FC4','#F0A93C','#fff'];
+    for(var r=0;r<3;r++) for(var c=0;c<33;c++){ if((c*7+r*3)%5===4) continue;
+      o+='<circle cx="'+(8+c*12)+'" cy="'+(14+r*20)+'" r="4.2" fill="'+cols[(c*3+r)%7]+'" opacity=".85"/>'; }
+    return o+'<rect x="0" y="62" width="400" height="8" fill="#1A2438"/></svg>'; })();
   function build(world){
     layer=el('w4-bg');
     if(world==='godly'){
       layer.appendChild(el('w4-godrays'));
       layer.appendChild(el('w4-glow'));
+      /* Olympus was rays + motes and read as "no background" beside Dino Era.
+         Give it its architecture: columns, the cloud shelf, laurel, lightning. */
+      layer.appendChild(el('w4-column','left:1.5vw', COLUMN));
+      layer.appendChild(el('w4-column','right:1.5vw;animation-delay:-3s', COLUMN));
+      layer.appendChild(el('w4-cloudshelf','left:-4vw;bottom:-2vh;width:44vw', CLOUD));
+      layer.appendChild(el('w4-cloudshelf','right:-6vw;bottom:-3vh;width:52vw;animation-delay:-9s', CLOUD));
+      layer.appendChild(el('w4-cloudshelf','left:30vw;bottom:-5vh;width:34vw;animation-delay:-16s;opacity:.5', CLOUD));
+      layer.appendChild(el('w4-boltglint','left:22vw;top:8vh'));
+      layer.appendChild(el('w4-boltglint','right:18vw;top:14vh;animation-delay:-7s'));
+      for(var la=0;la<6;la++) layer.appendChild(el('w4o-fall','left:'+rnd(6,94).toFixed(1)+'vw;width:'+rnd(14,20).toFixed(0)+'px;height:'+rnd(14,20).toFixed(0)+'px;opacity:.6;animation-duration:'+rnd(13,22).toFixed(1)+'s,'+rnd(3,5).toFixed(1)+'s;animation-delay:-'+rnd(0,18).toFixed(1)+'s,-'+rnd(0,4).toFixed(1)+'s', LAUREL));
       for(var i=0;i<16;i++){ var m=el('w4-mote','left:'+rnd(2,98).toFixed(1)+'vw;animation-duration:'+rnd(11,22).toFixed(1)+'s;animation-delay:-'+rnd(0,20).toFixed(1)+'s;width:'+rnd(3,7).toFixed(1)+'px;height:'+rnd(3,7).toFixed(1)+'px'); layer.appendChild(m); }
     } else if(world==='serpent'){
       layer.appendChild(el('w4-fog'));
+      /* the jungle closes in: vines off the top, a carved stone, eyes in the dark */
+      layer.appendChild(el('w4-vine','left:2vw', VINE));
+      layer.appendChild(el('w4-vine','right:3vw;height:34vh;animation-delay:-2.4s', VINE));
+      layer.appendChild(el('w4-vine','left:26vw;height:22vh;animation-delay:-4s;opacity:.5', VINE));
+      layer.appendChild(el('w4-stone','left:4vw;bottom:-8px;width:86px;aspect-ratio:90/110;opacity:.5', GLYPHSTONE));
+      layer.appendChild(el('w4-stone','right:6vw;bottom:-12px;width:64px;aspect-ratio:90/110;opacity:.35;transform:scaleX(-1)', GLYPHSTONE));
+      layer.appendChild(el('w4-eyes','left:9vw;top:64vh;width:44px;aspect-ratio:60/24', EYES));
+      layer.appendChild(el('w4-eyes','right:12vw;top:30vh;width:34px;aspect-ratio:60/24;animation-delay:-5.2s', EYES));
+      for(var ff=0;ff<9;ff++) layer.appendChild(el('w4-firefly','left:'+rnd(4,96).toFixed(1)+'vw;top:'+rnd(20,90).toFixed(1)+'vh;animation-duration:'+rnd(3,6).toFixed(1)+'s,'+rnd(9,16).toFixed(1)+'s;animation-delay:-'+rnd(0,5).toFixed(1)+'s,-'+rnd(0,12).toFixed(1)+'s'));
       for(var s=0;s<3;s++) layer.appendChild(el('w4-snake','top:'+rnd(12,80).toFixed(1)+'vh;animation-duration:'+rnd(26,44).toFixed(1)+'s;animation-delay:-'+rnd(0,30).toFixed(1)+'s;opacity:'+rnd(.28,.5).toFixed(2), SNAKE));
       for(var bgi=0;bgi<7;bgi++) layer.appendChild(el('w4-bug','top:'+rnd(8,92).toFixed(1)+'vh;animation-duration:'+rnd(18,34).toFixed(1)+'s;animation-delay:-'+rnd(0,26).toFixed(1)+'s;width:'+rnd(16,30).toFixed(0)+'px;height:'+rnd(16,30).toFixed(0)+'px', BUG));
     } else if(world==='race'){
       layer.appendChild(el('w4-chequer'));
       layer.appendChild(el('w4-asphalt'));
+      /* race DAY, not an empty track: a grandstand of colour and flags at both walls */
+      layer.appendChild(el('w4-stand','', STAND));
+      layer.appendChild(el('w4-rflag','left:2vw;bottom:24vh;width:58px;aspect-ratio:70/60', RFLAG));
+      layer.appendChild(el('w4-rflag','right:2vw;bottom:26vh;width:48px;aspect-ratio:70/60;animation-delay:-1.1s;transform:scaleX(-1)', RFLAG));
       var cols=['#3B6FE0','#FFC83D','#2456D6','#2FA35C'];
       for(var ci=0;ci<4;ci++) layer.appendChild(el('w4-car','bottom:'+rnd(3,20).toFixed(1)+'vh;width:'+rnd(90,180).toFixed(0)+'px;animation-duration:'+rnd(4.5,9).toFixed(1)+'s;animation-delay:-'+rnd(0,8).toFixed(1)+'s;opacity:'+rnd(.4,.72).toFixed(2), carSVG(cols[ci%cols.length])));
       for(var li=0;li<10;li++) layer.appendChild(el('w4-line','top:'+rnd(6,92).toFixed(1)+'vh;width:'+rnd(60,190).toFixed(0)+'px;animation-duration:'+rnd(1.1,2.6).toFixed(2)+'s;animation-delay:-'+rnd(0,2).toFixed(2)+'s'));
@@ -614,6 +656,12 @@ window.SB_W4_FOCUS={
     } else if(world==='marquee'){
       layer.appendChild(el('w4o-drape w4o-drapeL')); layer.appendChild(el('w4o-drape w4o-drapeR'));
       layer.appendChild(el('w4o-stagefloor')); layer.appendChild(el('w4o-bulbs'));
+      /* opening night, not an empty stage: the star curtain glitters behind the drapes,
+         music drifts up from the pit, and a mirror ball throws its slow sparkle */
+      for(var sc2=0;sc2<26;sc2++) layer.appendChild(el('w4-curtainstar','left:'+rnd(4,96).toFixed(1)+'vw;top:'+rnd(4,66).toFixed(1)+'vh;animation-delay:-'+rnd(0,5).toFixed(1)+'s;animation-duration:'+rnd(2.2,5).toFixed(1)+'s'));
+      layer.appendChild(el('w4-mirrorball','', '<svg viewBox="0 0 60 72" width="100%" height="100%"><rect x="28" y="0" width="4" height="10" fill="#8A8A96"/><circle cx="30" cy="38" r="28" fill="#C8CCD8"/><g fill="#EEF0F6" opacity=".8"><rect x="10" y="22" width="9" height="9"/><rect x="26" y="18" width="9" height="9"/><rect x="42" y="24" width="9" height="9"/><rect x="16" y="38" width="9" height="9"/><rect x="34" y="36" width="9" height="9"/><rect x="24" y="52" width="9" height="9"/></g></svg>'));
+      var NOTE='<svg viewBox="0 0 30 40" width="100%" height="100%"><path d="M22 4 v22 a6 5 0 1 1 -3 -4.4 V8 l-8 2 v18 a6 5 0 1 1 -3 -4.4 V7 z" fill="#F6DC8A"/></svg>';
+      for(var nt=0;nt<5;nt++) layer.appendChild(el('w4-note','left:'+rnd(10,88).toFixed(1)+'vw;width:'+rnd(16,26).toFixed(0)+'px;animation-duration:'+rnd(11,19).toFixed(1)+'s;animation-delay:-'+rnd(0,15).toFixed(1)+'s', NOTE));
       layer.appendChild(el('w4o-swing','left:12vw;top:-4vh;width:26vw;height:70vh', SPOT('#F0B429')));
       layer.appendChild(el('w4o-swing','right:12vw;top:-4vh;width:26vw;height:70vh;animation-delay:-4.5s', SPOT('#F7E9C8')));
       for(var m2=0;m2<9;m2++) layer.appendChild(el('w4o-rise','left:'+rnd(8,92).toFixed(1)+'vw;width:4px;height:4px;background:#F6DC8A;box-shadow:0 0 6px 2px rgba(246,220,138,.55);animation-duration:'+rnd(13,24).toFixed(1)+'s;animation-delay:-'+rnd(0,20).toFixed(1)+'s'));
@@ -652,6 +700,14 @@ window.SB_W4_FOCUS={
       .forEach(function(pl){ layer.appendChild(el('w4o-across','top:'+pl[1]+';width:'+pl[2]+'px;animation-duration:'+pl[3]+';opacity:'+pl[4]+';animation-delay:'+pl[5], pl[0])); });
     } else if(world==='anime'){
       layer.appendChild(el('w4o-sun')); layer.appendChild(el('w4o-ridge'));
+      /* sun + ridge + petals read as empty next to Dino Era. The full postcard:
+         the mountain, drifting cloud bands, glowing lanterns, a bough of blossom. */
+      layer.appendChild(el('w4-fuji','', '<svg viewBox="0 0 300 160" width="100%" height="100%" preserveAspectRatio="none"><path d="M0 160 L104 26 q10 -12 20 -12 q10 0 20 12 L300 160z" fill="#8B7FA8" opacity=".55"/><path d="M96 52 q14 10 26 0 q12 -10 24 0 q10 8 22 0 L124 14 q-10 -12 -20 0z" fill="#F5F2EC" opacity=".9"/></svg>'));
+      layer.appendChild(el('w4-cloudband','top:16vh;width:46vw;animation-duration:90s', CLOUD));
+      layer.appendChild(el('w4-cloudband','top:32vh;width:30vw;animation-duration:130s;animation-delay:-60s;opacity:.5', CLOUD));
+      var LANTERN='<svg viewBox="0 0 40 60" width="100%" height="100%"><path d="M18 0 h4 v6 h-4z" fill="#8E2C44"/><ellipse cx="20" cy="28" rx="15" ry="22" fill="#F6C25A"/><ellipse cx="20" cy="28" rx="15" ry="22" fill="none" stroke="#C8791B" stroke-width="2"/><path d="M8 20 h24 M6 28 h28 M8 36 h24" stroke="#C8791B" stroke-width="1.2" opacity=".7"/><rect x="14" y="49" width="12" height="5" rx="2" fill="#8E2C44"/></svg>';
+      for(var ln=0;ln<3;ln++) layer.appendChild(el('w4-lantern','left:'+(14+ln*32)+'vw;width:'+rnd(24,36).toFixed(0)+'px;animation-duration:'+rnd(22,34).toFixed(1)+'s;animation-delay:-'+rnd(0,26).toFixed(1)+'s', LANTERN));
+      layer.appendChild(el('w4-bough','', '<svg viewBox="0 0 240 120" width="100%" height="100%"><path d="M240 8 q-70 4 -120 34 q-36 22 -56 58" fill="none" stroke="#5A3A2E" stroke-width="9" stroke-linecap="round"/><path d="M150 34 q-16 -2 -26 10 M196 20 q-14 4 -18 16" fill="none" stroke="#5A3A2E" stroke-width="5" stroke-linecap="round"/><g fill="#F3B2C0"><circle cx="122" cy="46" r="9"/><circle cx="146" cy="30" r="8"/><circle cx="172" cy="40" r="7"/><circle cx="196" cy="18" r="8"/><circle cx="98" cy="66" r="8"/><circle cx="76" cy="88" r="7"/></g><g fill="#E88AA0"><circle cx="134" cy="38" r="4"/><circle cx="184" cy="30" r="4"/><circle cx="88" cy="76" r="4"/></g></svg>'));
       layer.appendChild(el('','right:3vw;bottom:0;width:min(20vw,180px);height:auto;aspect-ratio:160/110;opacity:.45', TORII));
       for(var pt=0;pt<15;pt++) layer.appendChild(el('w4o-fall','left:'+rnd(2,98).toFixed(1)+'vw;width:'+rnd(10,17).toFixed(0)+'px;height:'+rnd(10,17).toFixed(0)+'px;opacity:.7;animation-duration:'+rnd(9,17).toFixed(1)+'s,'+rnd(2.4,4).toFixed(1)+'s;animation-delay:-'+rnd(0,14).toFixed(1)+'s,-'+rnd(0,3).toFixed(1)+'s', PETAL));
     } else if(world==='science'){
@@ -663,6 +719,13 @@ window.SB_W4_FOCUS={
       layer.appendChild(el('w4o-graph')); layer.appendChild(el('w4o-mol','', '<svg viewBox="0 0 100 100" width="100%" height="100%"><g stroke="#3BC0AA" stroke-width="2.4" fill="none"><line x1="50" y1="50" x2="18" y2="30"/><line x1="50" y1="50" x2="82" y2="30"/><line x1="50" y1="50" x2="50" y2="86"/></g><circle cx="50" cy="50" r="9" fill="#0E8A78"/><circle cx="18" cy="30" r="7" fill="#3BC0AA"/><circle cx="82" cy="30" r="7" fill="#3BC0AA"/><circle cx="50" cy="86" r="7" fill="#7FD9C4"/></svg>'));
       layer.appendChild(el('','left:2vw;bottom:-6px;width:84px;height:auto;aspect-ratio:60/70;opacity:.5', FLASK));
       layer.appendChild(el('','right:3vw;bottom:-6px;width:52px;height:auto;aspect-ratio:60/70;opacity:.3;transform:scaleX(-1)', FLASK));
+      /* the lab grows a physics wing: a slow DNA helix and an atom with live electrons */
+      layer.appendChild(el('w4-helix','', (function(){ var o='<svg viewBox="0 0 60 240" width="100%" height="100%">';
+        for(var hy=0;hy<8;hy++){ var ph=hy*0.9, x1=30+22*Math.sin(ph), x2=30-22*Math.sin(ph), y=14+hy*28;
+          o+='<line x1="'+x1.toFixed(0)+'" y1="'+y+'" x2="'+x2.toFixed(0)+'" y2="'+y+'" stroke="#7FD9C4" stroke-width="2.4" opacity=".6"/>'
+            +'<circle cx="'+x1.toFixed(0)+'" cy="'+y+'" r="4.4" fill="#0E8A78"/><circle cx="'+x2.toFixed(0)+'" cy="'+y+'" r="4.4" fill="#B14FC4"/>'; }
+        return o+'</svg>'; })()));
+      layer.appendChild(el('w4-atom','', '<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow:visible"><g fill="none" stroke="#3BC0AA" stroke-width="1.8" opacity=".75"><ellipse cx="50" cy="50" rx="40" ry="15"/><ellipse cx="50" cy="50" rx="40" ry="15" transform="rotate(60 50 50)"/><ellipse cx="50" cy="50" rx="40" ry="15" transform="rotate(120 50 50)"/></g><circle cx="50" cy="50" r="7" fill="#F0A93C"/><g class="w4-orbit"><circle cx="90" cy="50" r="3.4" fill="#2E8FB8"/></g><g class="w4-orbit w4-orbit2"><circle cx="10" cy="50" r="3.4" fill="#B14FC4"/></g></svg>'));
       for(var bu=0;bu<11;bu++) layer.appendChild(el('w4o-rise','left:'+rnd(2,98).toFixed(1)+'vw;width:'+rnd(5,11).toFixed(0)+'px;height:'+rnd(5,11).toFixed(0)+'px;background:transparent;border:2px solid rgba(59,192,170,.55);animation-duration:'+rnd(9,18).toFixed(1)+'s;animation-delay:-'+rnd(0,16).toFixed(1)+'s'));
     } else if(world==='origami'){
       layer.appendChild(el('w4o-facets'));
