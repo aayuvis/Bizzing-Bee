@@ -1093,8 +1093,17 @@
   /* the tagline: the world's own two words, quieter than the credit above it */
   #sb-splash .spl-sub{margin-top:10px;font-size:clamp(12px,2.4vw,14px);font-style:italic;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.66);text-shadow:0 1px 8px rgba(0,0,0,.55)}
   #sb-splash.kb .spl-sub{opacity:0;animation:spl-fadeup 1.1s cubic-bezier(.16,1,.3,1) 4.2s both}
-  #sb-splash .spl-tap{margin-top:26px;font-size:10.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.55)}
-  #sb-splash.kb .spl-tap{opacity:0;animation:spl-fadeup 1.2s ease 4.8s both}
+  #sb-splash .spl-tap{margin-top:26px;font-size:10.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.55);display:none}
+  #sb-splash.kb .spl-tap{display:block;opacity:0;animation:spl-fadeup 1.2s ease 1.4s both}
+  /* the GATE: the show HOLDS on this one glowing invitation — the tap that answers
+     it is the user gesture that unlocks the sound, so the cinematic always runs
+     with its music. Gone the moment the show starts. */
+  #sb-splash .spl-gate{margin-top:28px;display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:999px;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--spl-acc,#FFD24D) 82%,#FFF),var(--spl-acc,#FFD24D));
+    color:var(--spl-deep,#120E24);font-weight:800;font-size:clamp(14px,3vw,17px);letter-spacing:.04em;cursor:pointer;
+    box-shadow:0 6px 28px color-mix(in srgb,var(--spl-acc,#FFD24D) 50%,transparent);animation:spl-gatepulse 1.6s ease-in-out infinite}
+  @keyframes spl-gatepulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  #sb-splash.kb .spl-gate{display:none}
   /* ── DINO ERA's own opening (only #sb-splash.w-dino, only with motion on):
      day falls to dusk across the painted meadow, its creatures cross the frame,
      a roar lands, and the exit is THROUGH the closing jaws of a T-rex. ── */
@@ -1143,8 +1152,8 @@
   @keyframes spl-mawpulse{50%{opacity:1;filter:brightness(1.9)}}
   /* the jaws: enter with menace, TREMBLE holding half-open, then SNAP shut fast */
   #sb-splash .spl-jaw{position:absolute;left:-8vw;right:-8vw;z-index:6;pointer-events:none;filter:drop-shadow(0 0 26px rgba(0,0,0,.9))}
-  #sb-splash .spl-jawtop{top:0;height:52vh}
-  #sb-splash .spl-jawbot{bottom:0;height:48vh}
+  #sb-splash .spl-jawtop{top:0;height:52vh;transform:translateY(-105%)}
+  #sb-splash .spl-jawbot{bottom:0;height:48vh;transform:translateY(105%)}
   #sb-splash.kb .spl-jawtop{transform:translateY(-105%);animation:spl-bitetop 2.1s cubic-bezier(.55,0,.6,1) 4.9s both}
   #sb-splash.kb .spl-jawbot{transform:translateY(105%);animation:spl-bitebot 2.1s cubic-bezier(.55,0,.6,1) 4.9s both}
   @keyframes spl-bitetop{0%{transform:translateY(-105%) scale(.92)}24%{transform:translateY(-44%) scale(1)}40%{transform:translateY(-42%) scale(1.02)}62%{transform:translateY(-45%) scale(1.04)}74%{transform:translateY(-43%) scale(1.06)}88%{transform:translateY(6%) scale(1.3)}100%{transform:translateY(8%) scale(1.65)}}
@@ -1187,8 +1196,8 @@
      the drip curtain descends to a HANG and sways there; the pool holds low. */
   #sb-splash .spl-honey{position:absolute;left:-3vw;right:-3vw;z-index:6;pointer-events:none;
     filter:drop-shadow(0 6px 26px rgba(110,62,0,.5))}
-  #sb-splash .spl-honeytop{top:0;height:57vh}
-  #sb-splash .spl-honeybot{bottom:0;height:44vh}
+  #sb-splash .spl-honeytop{top:0;height:57vh;transform:translateY(-104%)}
+  #sb-splash .spl-honeybot{bottom:0;height:44vh;transform:translateY(104%)}
   #sb-splash.kb .spl-honeytop{transform:translateY(-104%);animation:spl-pourtop 1.9s cubic-bezier(.5,.05,.3,1) 2.6s both,spl-hang 4.6s ease-in-out 4.5s infinite}
   #sb-splash.kb .spl-honeybot{transform:translateY(104%);animation:spl-pourbot 1.9s cubic-bezier(.5,.05,.3,1) 2.6s both,spl-hangb 5.2s ease-in-out 4.5s infinite}
   @keyframes spl-pourtop{0%{transform:translateY(-104%)}70%{transform:translateY(-31%)}100%{transform:translateY(-26%)}}
@@ -1226,6 +1235,166 @@
   @keyframes spl-goldbloom{0%{opacity:0}18%{opacity:.7}100%{opacity:0}}
   /* honey owns the hive exit too: hold the letterbox bars in place */
   #sb-splash.w-hive.kb .spl-bars::before,#sb-splash.w-hive.kb .spl-bars::after{animation:none}
+  /* ── every bespoke close owns its own exit: all six hold the bars too ── */
+  #sb-splash.w-aur.kb .spl-bars::before,#sb-splash.w-aur.kb .spl-bars::after,
+  #sb-splash.w-blade.kb .spl-bars::before,#sb-splash.w-blade.kb .spl-bars::after,
+  #sb-splash.w-lab.kb .spl-bars::before,#sb-splash.w-lab.kb .spl-bars::after,
+  #sb-splash.w-elem.kb .spl-bars::before,#sb-splash.w-elem.kb .spl-bars::after,
+  #sb-splash.w-gods.kb .spl-bars::before,#sb-splash.w-gods.kb .spl-bars::after,
+  #sb-splash.w-race.kb .spl-bars::before,#sb-splash.w-race.kb .spl-bars::after{animation:none}
+  /* ── GALAXY's own opening (w-aur): the night deepens while the stars wake,
+     comets cross — then two aurora curtains ripple in from the wings and FOLD
+     over the frame in one soft violet bloom. ── */
+  #sb-splash.w-aur.kb .spl-art{opacity:0;animation:spl-artin-aur 1.4s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-deepnight 7.2s linear both}
+  @keyframes spl-artin-aur{from{opacity:0}to{opacity:.9}}
+  @keyframes spl-deepnight{0%,40%{filter:brightness(1.16) saturate(1.08)}100%{filter:brightness(.6) saturate(1.35) hue-rotate(10deg)}}
+  #sb-splash.w-aur.kb .spl-veil{opacity:.16}
+  #sb-splash .spl-twinkle{position:absolute;border-radius:50%;background:#EAF2FF;z-index:2;pointer-events:none;opacity:0;animation:spl-twk ease-in-out infinite}
+  @keyframes spl-twk{0%,100%{opacity:.15}50%{opacity:.95}}
+  #sb-splash .spl-shoot{position:absolute;width:130px;height:2.5px;z-index:2;border-radius:2px;opacity:0;pointer-events:none;background:linear-gradient(90deg,transparent,#FFF)}
+  #sb-splash.kb .spl-shoot{animation:spl-shootby 1.2s ease-out both}
+  @keyframes spl-shootby{0%{opacity:0;transform:translate(0,0) rotate(16deg)}12%{opacity:1}100%{opacity:0;transform:translate(-44vw,15vh) rotate(16deg)}}
+  #sb-splash .spl-moonglow{position:absolute;border-radius:50%;z-index:1;opacity:0;pointer-events:none}
+  #sb-splash.kb .spl-moonglow{animation:spl-moonup 2.2s ease 1s both}
+  @keyframes spl-moonup{from{opacity:0;transform:translateY(6vh)}to{opacity:.9;transform:none}}
+  #sb-splash .spl-aurcurt{position:absolute;top:-8vh;bottom:-8vh;width:66vw;z-index:6;opacity:0;pointer-events:none;filter:blur(11px) saturate(1.3);mix-blend-mode:screen}
+  #sb-splash .spl-aurcurt.cL{left:-70vw;background:linear-gradient(100deg,transparent 6%,rgba(64,224,170,.6) 30%,rgba(143,160,245,.7) 55%,rgba(196,120,255,.55) 78%,transparent 96%)}
+  #sb-splash .spl-aurcurt.cR{right:-70vw;background:linear-gradient(-100deg,transparent 6%,rgba(64,224,170,.6) 30%,rgba(143,160,245,.7) 55%,rgba(196,120,255,.55) 78%,transparent 96%)}
+  #sb-splash.kb .spl-aurcurt.cL{animation:spl-aurL 2.65s cubic-bezier(.4,.1,.4,1) 4.3s both}
+  #sb-splash.kb .spl-aurcurt.cR{animation:spl-aurR 2.65s cubic-bezier(.4,.1,.4,1) 4.3s both}
+  @keyframes spl-aurL{0%{opacity:0;transform:translateX(0) skewX(-6deg)}22%{opacity:.9;transform:translateX(34vw) skewX(4deg)}55%{opacity:.95;transform:translateX(30vw) skewX(-5deg)}76%{transform:translateX(38vw) skewX(3deg)}100%{opacity:1;transform:translateX(80vw) skewX(0deg)}}
+  @keyframes spl-aurR{0%{opacity:0;transform:translateX(0) skewX(6deg)}22%{opacity:.9;transform:translateX(-34vw) skewX(-4deg)}55%{opacity:.95;transform:translateX(-30vw) skewX(5deg)}76%{transform:translateX(-38vw) skewX(-3deg)}100%{opacity:1;transform:translateX(-80vw) skewX(0deg)}}
+  #sb-splash .spl-aurbloom{position:absolute;inset:0;z-index:7;opacity:0;pointer-events:none;
+    background:radial-gradient(circle at 50% 46%,#EAF6FF 0%,rgba(143,160,245,.9) 42%,rgba(16,23,54,.98) 100%)}
+  #sb-splash.kb .spl-aurbloom{animation:spl-aurbloomin 1s ease 6.75s both}
+  @keyframes spl-aurbloomin{0%{opacity:0}45%{opacity:.98}100%{opacity:.9}}
+  /* ── BLADE's own opening (w-blade): the moon climbs over the pagoda, petals
+     and mist drift the valley — then ONE katana streak crosses the diagonal and
+     the frame closes along the cut. ── */
+  #sb-splash.w-blade.kb .spl-art{opacity:0;animation:spl-artin-bl 1.4s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-dusksak 7.2s linear both}
+  @keyframes spl-artin-bl{from{opacity:0}to{opacity:.92}}
+  @keyframes spl-dusksak{0%,45%{filter:brightness(1.24) saturate(1.05)}100%{filter:brightness(.72) saturate(1.18) hue-rotate(-8deg)}}
+  #sb-splash.w-blade.kb .spl-veil{opacity:.16}
+  #sb-splash .spl-petal{position:absolute;top:-4vh;width:13px;height:11px;z-index:2;opacity:0;pointer-events:none;
+    background:radial-gradient(circle at 40% 35%,#FBD5DE,#F3B2C0 70%);border-radius:64% 36% 60% 40%;
+    animation:spl-petfall linear infinite,spl-petsway 2.8s ease-in-out infinite alternate}
+  @keyframes spl-petfall{0%{opacity:0;transform:translateY(0) rotate(0deg)}8%{opacity:.85}100%{opacity:.5;transform:translateY(110vh) rotate(310deg)}}
+  @keyframes spl-petsway{from{margin-left:0}to{margin-left:3.4vw}}
+  #sb-splash .spl-mistband{position:absolute;left:-32vw;width:82vw;height:10vh;z-index:2;opacity:0;pointer-events:none;
+    background:radial-gradient(ellipse,rgba(243,224,231,.42),transparent 70%);animation:spl-mistgo linear infinite}
+  @keyframes spl-mistgo{0%{opacity:0;transform:translateX(0)}12%{opacity:.75}86%{opacity:.75}100%{opacity:0;transform:translateX(155vw)}}
+  #sb-splash .spl-pagsil{position:absolute;left:6vw;bottom:0;width:min(24vw,220px);aspect-ratio:140/160;z-index:2;opacity:0;pointer-events:none;filter:drop-shadow(0 0 14px rgba(42,14,24,.6))}
+  #sb-splash.kb .spl-pagsil{animation:spl-fadeup 1.6s cubic-bezier(.16,1,.3,1) .8s both}
+  #sb-splash .spl-slash{position:absolute;left:-20vw;top:49%;width:140vw;height:4px;z-index:8;opacity:0;pointer-events:none;
+    background:linear-gradient(90deg,transparent,#FFF 28%,#FFF 72%,transparent);box-shadow:0 0 26px 7px rgba(255,255,255,.85)}
+  #sb-splash.kb .spl-slash{animation:spl-slashgo .36s cubic-bezier(.2,0,.2,1) 6.28s both}
+  @keyframes spl-slashgo{0%{opacity:0;transform:rotate(-24deg) scaleX(0)}16%{opacity:1}60%{opacity:1;transform:rotate(-24deg) scaleX(1)}100%{opacity:0;transform:rotate(-24deg) scaleX(1)}}
+  #sb-splash .spl-shut{position:absolute;left:50%;top:50%;width:250vmax;height:122vmax;z-index:7;pointer-events:none;
+    background:linear-gradient(180deg,#1E0A13,#2A0E18);box-shadow:0 0 40px rgba(0,0,0,.8)}
+  #sb-splash .spl-shutA{transform:translate(-50%,-50%) rotate(-24deg) translateY(-125vmax)}
+  #sb-splash .spl-shutB{transform:translate(-50%,-50%) rotate(-24deg) translateY(125vmax)}
+  #sb-splash.kb .spl-shutA{animation:spl-shutupA .52s cubic-bezier(.6,0,.8,.4) 6.42s both}
+  #sb-splash.kb .spl-shutB{animation:spl-shutupB .52s cubic-bezier(.6,0,.8,.4) 6.42s both}
+  @keyframes spl-shutupA{to{transform:translate(-50%,-50%) rotate(-24deg) translateY(-61vmax)}}
+  @keyframes spl-shutupB{to{transform:translate(-50%,-50%) rotate(-24deg) translateY(61vmax)}}
+  #sb-splash .spl-blflash{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none;background:#FFE9F0}
+  #sb-splash.kb .spl-blflash{animation:spl-snap .32s linear 6.9s 1}
+  #sb-splash.kb.w-blade{animation:spl-slam .45s linear 6.9s 1}
+  /* ── LAB's own opening (w-lab): bubbles climb, arcs flicker — then the
+     experiment BOILS OVER: glowing liquid takes the frame from below and the
+     reaction flashes as it seals. ── */
+  #sb-splash.w-lab.kb .spl-art{opacity:0;animation:spl-artin-lab 1.4s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-labglow 7.2s linear both}
+  @keyframes spl-artin-lab{from{opacity:0}to{opacity:.92}}
+  @keyframes spl-labglow{0%,50%{filter:brightness(1.18) saturate(1.05)}100%{filter:brightness(.7) saturate(1.35) hue-rotate(6deg)}}
+  #sb-splash.w-lab.kb .spl-veil{opacity:.16}
+  #sb-splash .spl-lbub{position:absolute;bottom:-16px;border:2px solid rgba(63,224,196,.6);border-radius:50%;z-index:2;opacity:0;pointer-events:none;animation:spl-lbubup linear infinite}
+  @keyframes spl-lbubup{0%{opacity:0;transform:translateY(0)}10%{opacity:.8}100%{opacity:0;transform:translateY(-105vh)}}
+  #sb-splash .spl-arcflick{position:absolute;width:3px;height:36px;z-index:2;opacity:0;pointer-events:none;
+    background:linear-gradient(#7FE0FF,transparent);box-shadow:0 0 9px 2px rgba(127,224,255,.7);animation:spl-arcflk 2.7s linear infinite}
+  @keyframes spl-arcflk{0%,86%,100%{opacity:0}89%,95%{opacity:1}}
+  #sb-splash .spl-liquid{position:absolute;left:-4vw;right:-4vw;top:100%;height:132vh;z-index:7;pointer-events:none;overflow:hidden;
+    background:linear-gradient(180deg,rgba(63,224,196,.88),rgba(14,138,120,.97) 30%,#062A24 100%);box-shadow:0 -20px 48px rgba(63,224,196,.8)}
+  #sb-splash .spl-liquid::before{content:'';position:absolute;left:0;right:0;top:-3.2vh;height:3.4vh;
+    background:radial-gradient(9vw 3.4vh at 50% 100%,rgba(63,224,196,.88) 0 96%,transparent 100%);background-size:18vw 3.4vh;background-repeat:repeat-x}
+  #sb-splash.kb .spl-liquid{animation:spl-labrise 1.55s cubic-bezier(.5,.05,.5,.95) 5.55s both}
+  @keyframes spl-labrise{to{transform:translateY(-132vh)}}
+  #sb-splash .spl-lbig{position:absolute;border:3px solid rgba(232,255,248,.5);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.25),transparent 60%);border-radius:50%;animation:spl-lbigup 2.6s ease-in infinite}
+  @keyframes spl-lbigup{0%{transform:translateY(0)}100%{transform:translateY(-60vh)}}
+  #sb-splash .spl-labflash{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none;background:#E9FFF8}
+  #sb-splash.kb .spl-labflash{animation:spl-snap .4s linear 7.02s 1}
+  /* ── ELEMENTS' own opening (w-elem): the four nations glow in their corners,
+     their orbs orbit the title, spiral inward and FUSE in one bright bloom. ── */
+  #sb-splash.w-elem.kb .spl-art{opacity:0;animation:spl-artin-el 1.4s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-elemdeep 7.2s linear both}
+  @keyframes spl-artin-el{from{opacity:0}to{opacity:.92}}
+  @keyframes spl-elemdeep{0%,45%{filter:brightness(1.18) saturate(1.08)}100%{filter:brightness(.66) saturate(1.28)}}
+  #sb-splash.w-elem.kb .spl-veil{opacity:.16}
+  #sb-splash .spl-aura{position:absolute;width:54vmin;height:54vmin;border-radius:50%;z-index:1;opacity:0;pointer-events:none;filter:blur(4px);animation:spl-aurain 1.8s ease both,spl-aurapulse 4.2s ease-in-out infinite}
+  @keyframes spl-aurain{to{opacity:.8}}
+  @keyframes spl-aurapulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  #sb-splash .spl-orbwrap{position:absolute;left:50%;top:44%;width:0;height:0;z-index:6;pointer-events:none}
+  #sb-splash .spl-orb{position:absolute;left:0;top:0;width:9vmin;height:9vmin;margin:-4.5vmin;border-radius:50%;opacity:0;filter:drop-shadow(0 0 16px rgba(255,255,255,.5))}
+  #sb-splash.kb .spl-orb{animation:spl-orbgo 4.5s cubic-bezier(.45,.05,.6,1) 2.1s both}
+  @keyframes spl-orbgo{0%{opacity:0;transform:rotate(0deg) translateX(34vmin) scale(.6)}8%{opacity:1}70%{transform:rotate(540deg) translateX(24vmin) scale(1)}100%{opacity:1;transform:rotate(900deg) translateX(0) scale(1.15)}}
+  #sb-splash .spl-fuse{position:absolute;left:50%;top:44%;width:12vmin;height:12vmin;margin:-6vmin;border-radius:50%;z-index:7;opacity:0;pointer-events:none;
+    background:radial-gradient(circle,#FFF 0 28%,rgba(143,208,236,.92) 58%,rgba(10,36,48,.9) 82%,rgba(10,36,48,.96) 100%)}
+  #sb-splash.kb .spl-fuse{animation:spl-fusego 1s cubic-bezier(.2,.6,.3,1) 6.55s both}
+  @keyframes spl-fusego{0%{opacity:0;transform:scale(.2)}30%{opacity:1}100%{opacity:.97;transform:scale(17)}}
+  /* ── GOD'S ABODE's own opening (w-gods): rays through the cloud shelf, bolts
+     glinting — then the marble TEMPLE DOORS grind in from the wings and BOOM
+     shut on a seam of golden light. ── */
+  #sb-splash.w-gods.kb .spl-art{opacity:0;animation:spl-artin-gd 1.4s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-godsdim 7.2s linear both}
+  @keyframes spl-artin-gd{from{opacity:0}to{opacity:.92}}
+  @keyframes spl-godsdim{0%,46%{filter:brightness(1.3) saturate(1.06)}100%{filter:brightness(.78) saturate(1.12) sepia(.14)}}
+  #sb-splash.w-gods.kb .spl-veil{opacity:.14}
+  #sb-splash .spl-cloudshelf{position:absolute;z-index:2;opacity:0;pointer-events:none;animation:spl-shelfin 1.8s ease both,spl-shelfdrift 24s ease-in-out infinite}
+  @keyframes spl-shelfin{to{opacity:.85}}
+  @keyframes spl-shelfdrift{0%,100%{transform:translateX(0)}50%{transform:translateX(3vw)}}
+  #sb-splash .spl-doorseam{position:absolute;left:50%;top:0;bottom:0;width:10px;margin-left:-5px;z-index:6;opacity:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,246,216,.1),#FFE9A8 40%,#FFD24D 60%,rgba(255,246,216,.1));box-shadow:0 0 34px 10px rgba(255,210,77,.75)}
+  #sb-splash.kb .spl-doorseam{animation:spl-seamin 1.9s ease 4.9s both}
+  @keyframes spl-seamin{0%{opacity:0}45%{opacity:1}100%{opacity:1}}
+  #sb-splash .spl-door{position:absolute;top:-2vh;bottom:-2vh;width:56vw;z-index:7;pointer-events:none;filter:drop-shadow(0 0 32px rgba(20,12,0,.8))}
+  #sb-splash .spl-door svg{position:absolute;inset:0;width:100%;height:100%}
+  #sb-splash .spl-doorL{left:0;transform:translateX(-108%)}
+  #sb-splash .spl-doorR{right:0;transform:translateX(108%)}
+  #sb-splash.kb .spl-doorL{animation:spl-doorgoL 1.85s cubic-bezier(.5,.05,.62,1) 4.9s both}
+  #sb-splash.kb .spl-doorR{animation:spl-doorgoR 1.85s cubic-bezier(.5,.05,.62,1) 4.9s both}
+  @keyframes spl-doorgoL{0%{transform:translateX(-108%)}52%{transform:translateX(-16%)}72%{transform:translateX(-14%)}100%{transform:translateX(3%)}}
+  @keyframes spl-doorgoR{0%{transform:translateX(108%)}52%{transform:translateX(16%)}72%{transform:translateX(14%)}100%{transform:translateX(-3%)}}
+  #sb-splash .spl-godflash{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none;background:#FFF6D8}
+  #sb-splash.kb .spl-godflash{animation:spl-snap .34s linear 6.72s 1}
+  #sb-splash.kb.w-gods{animation:spl-slam .5s linear 6.7s 1}
+  /* ── RACE ZONE's own opening (w-race): the start gantry drops in, its lights
+     count red - red - red … GREEN, and the frame LAUNCHES through a wall of
+     speed. ── */
+  #sb-splash.w-race.kb .spl-art{opacity:0;animation:spl-artin-rc 1.4s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-racenight 7.2s linear both}
+  @keyframes spl-artin-rc{from{opacity:0}to{opacity:.92}}
+  @keyframes spl-racenight{0%,48%{filter:brightness(1.2) saturate(1.1)}100%{filter:brightness(.74) saturate(1.3)}}
+  #sb-splash.w-race.kb .spl-veil{opacity:.16}
+  #sb-splash .spl-gantry{position:absolute;left:50%;top:7.5vh;width:min(56vw,430px);height:58px;z-index:6;opacity:0;pointer-events:none;
+    transform:translateX(-50%);background:#25304A;border:3px solid #31405E;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:5%;box-shadow:0 8px 26px rgba(0,0,0,.55)}
+  #sb-splash.kb .spl-gantry{animation:spl-gantdrop .9s cubic-bezier(.2,.7,.3,1.15) 3.3s both}
+  @keyframes spl-gantdrop{0%{opacity:0;transform:translate(-50%,-160%)}100%{opacity:1;transform:translate(-50%,0)}}
+  #sb-splash .spl-glamp{width:27px;height:27px;border-radius:50%;background:#101726;box-shadow:inset 0 0 7px #000;flex:none}
+  @keyframes spl-lampred{to{background:#E0453A;box-shadow:0 0 20px 6px rgba(224,69,58,.85)}}
+  @keyframes spl-lampoff{to{background:#101726;box-shadow:inset 0 0 7px #000}}
+  @keyframes spl-lampgreen{to{background:#2FD08C;box-shadow:0 0 26px 9px rgba(47,208,140,.95)}}
+  #sb-splash.kb .spl-glamp.r1{animation:spl-lampred .18s linear 4.5s both,spl-lampoff .1s linear 6.32s both}
+  #sb-splash.kb .spl-glamp.r2{animation:spl-lampred .18s linear 5.1s both,spl-lampoff .1s linear 6.32s both}
+  #sb-splash.kb .spl-glamp.r3{animation:spl-lampred .18s linear 5.7s both,spl-lampoff .1s linear 6.32s both}
+  #sb-splash.kb .spl-glamp.gg{animation:spl-lampgreen .14s linear 6.35s both}
+  #sb-splash .spl-sline{position:absolute;right:0;height:3px;border-radius:2px;z-index:2;opacity:0;pointer-events:none;
+    background:linear-gradient(90deg,transparent,#4A8CFF);animation:spl-slinego linear infinite}
+  @keyframes spl-slinego{0%{opacity:0;transform:translateX(30vw)}14%{opacity:.8}100%{opacity:0;transform:translateX(-130vw)}}
+  #sb-splash .spl-racecar{position:absolute;z-index:3;opacity:0;pointer-events:none;animation:spl-cargo linear infinite}
+  @keyframes spl-cargo{0%{opacity:0;transform:translateX(-22vw)}8%{opacity:.75}92%{opacity:.75}100%{opacity:0;transform:translateX(122vw)}}
+  #sb-splash .spl-speedwall{position:absolute;inset:-12%;z-index:7;opacity:0;pointer-events:none;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,0) 0 11px,rgba(205,225,255,.6) 12px 16px,rgba(255,255,255,0) 17px 34px),linear-gradient(90deg,rgba(10,20,48,.6),rgba(123,163,245,.92))}
+  #sb-splash.kb .spl-speedwall{animation:spl-launch .9s cubic-bezier(.7,0,.9,.6) 6.4s both}
+  @keyframes spl-launch{0%{opacity:0;transform:translateX(-28%) skewX(-8deg)}30%{opacity:1}100%{opacity:1;transform:translateX(0) skewX(-14deg)}}
+  #sb-splash .spl-goflash{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none;background:#E9FFF3}
+  #sb-splash.kb .spl-goflash{animation:spl-snap .3s linear 6.4s 1}
+  #sb-splash.kb.w-race{animation:spl-slam .5s linear 6.42s 1}
   /* the BRAND LOCKUP: the mascot + the wordmark in the brand face, pinned top
      right through the whole load — above every layer, jaws and honey included */
   #sb-splash .spl-brand{position:absolute;top:calc(7vh + 12px);right:20px;z-index:11;display:flex;align-items:center;gap:8px;
@@ -1784,8 +1953,10 @@
 /* ✨ THE OPENING SPLASH — inline and parse-time so it paints before any deferred
    script runs. Reads the saved state raw (theme, motion pref) and the sb_splash
    switch; skipped entirely on first run so onboarding is never hidden behind it.
-   Music: a four-note fanfare that plays when the child taps (a real gesture) —
-   the silent auto-attempt is harmless where autoplay is blocked. */
+   The show opens on a GATE — one glowing world invitation ("tap to open the
+   Hive", "tap to travel back 100 million years") — and the tap that answers it
+   starts clock, cinematic and sound together, so the audio is never lost to
+   autoplay policy. */
 (function(){
   try{
     if(localStorage.getItem('sb_splash')==='0') return;
@@ -1793,16 +1964,23 @@
     if(!st.children || !st.children.length) return;
     var rm=false; try{ rm=(st.am===1)||(st.cm===1)||matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
     /* the EIGHT worlds of the Aug-31 store cut; a stale saved theme falls back to the Hive */
-    var T={ spellbound:['The Hive','#FFD24D','#241E4E','🐝','hive','home sweet hive'],
-      aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos','cosmic'], anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo','the dojo'],
-      science:['Lab','#3BC0AA','#062A24','🧪','lab','field notes'], avatar:['Elements','#8FD0EC','#0A2430','🌊','pond','elemental'],
-      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky','divine'],
-      race:['Race Zone','#7BA3F5','#0A1430','🏎️','carnival','full throttle'], dino:['Dino Era','#B8D96A','#141E08','🦖','meadow','prehistoric'] };
+    var T={ spellbound:['The Hive','#FFD24D','#241E4E','🐝','hive','home sweet hive','tap to open the Hive'],
+      aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos','cosmic','tap to ride the northern lights'],
+      anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo','the dojo','tap to enter the dojo'],
+      science:['Lab','#3BC0AA','#062A24','🧪','lab','field notes','tap to start the experiment'],
+      avatar:['Elements','#8FD0EC','#0A2430','🌊','pond','elemental','tap to bend the elements'],
+      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky','divine','tap to knock on the temple doors'],
+      race:['Race Zone','#7BA3F5','#0A1430','🏎️','carnival','full throttle','tap to start your engine'],
+      dino:['Dino Era','#B8D96A','#141E08','🦖','meadow','prehistoric','tap to travel back 100 million years'] };
     /* the Hive's cut runs longer: the bees need their landing beat before the
        dive into the honey cell */
     var t=T[st.theme]||T.spellbound, dur=rm?2200:(st.theme==='spellbound'?8400:7200);
     var kid=(st.children[st.activeIdx||0]||st.children[0])||{};
-    var d=document.createElement('div'); d.id='sb-splash'; if(!rm) d.className='kb';
+    /* the show does NOT start by itself: it paints the world and HOLDS on the
+       gate. The tap that answers the gate is a real user gesture, so the audio
+       is unlocked and the cinematic always runs WITH its sound. .kb (the class
+       every one-shot animation hangs off) is only added at that tap. */
+    var d=document.createElement('div'); d.id='sb-splash';
     d.style.cssText='--spl-acc:'+t[1]+';--spl-deep:'+t[2]+';--spl-dur:'+(dur/1000)+'s;background:'+t[2];
     var sparks=''; if(!rm) for(var i=0;i<14;i++) sparks+='<span class="spl-spark" style="left:'+(3+i*7.1)+'vw;animation-delay:-'+(i*0.53).toFixed(2)+'s;animation-duration:'+(6+(i%5)*0.8)+'s"></span>';
     /* the title resolves letter by letter in the light-streak's wake */
@@ -1818,7 +1996,8 @@
       +'<div class="spl-logo">'+letters+'<span class="spl-sheen"></span></div>'
       +'<div class="spl-world"><span>'+(rm?'':'today entering · ')+t[0]+'</span></div>'
       +'<div class="spl-sub">'+(t[5]||'')+'</div>'
-      +'<div class="spl-tap">tap anywhere to fly in</div></div>'
+      +'<div class="spl-gate">'+(t[6]||'tap to fly in')+'</div>'
+      +'<div class="spl-tap">tap anywhere to skip</div></div>'
       +'<div class="spl-brand"><span class="spl-brand-ico" id="spl-bico"></span>'
       +'<span class="spl-brand-t"><i>Bizzing</i><sup>™</sup> Bee</span></div>';
     document.body.appendChild(d);
@@ -1908,6 +2087,107 @@
       }catch(e){} };
       if(document.readyState!=='loading') castHive(); else document.addEventListener('DOMContentLoaded',castHive);
     }
+    /* GALAXY: the stars wake as the night deepens, comets cross — and the exit
+       is the aurora itself folding over the frame. */
+    else if(st.theme==='aurora' && !rm){ d.classList.add('w-aur');
+      var ax='';
+      for(var tw=0;tw<26;tw++){ var twz=2+(tw%3);
+        ax+='<span class="spl-twinkle" style="left:'+((tw*37+11)%96)+'vw;top:'+((tw*23+5)%62)+'vh;width:'+twz+'px;height:'+twz+'px;animation-duration:'+(2.2+(tw%5)*0.6).toFixed(1)+'s;animation-delay:-'+((tw*0.7)%4).toFixed(1)+'s"></span>'; }
+      ax+='<span class="spl-shoot" style="right:14vw;top:11vh;animation-delay:2.1s"></span>'
+        +'<span class="spl-shoot" style="right:40vw;top:24vh;animation-delay:4.3s"></span>'
+        +'<div class="spl-moonglow" style="left:9vw;top:9vh;width:20vmin;height:20vmin;background:radial-gradient(circle,#FFF6E0 0 50%,rgba(246,220,138,.5) 66%,transparent 74%)"></div>'
+        +'<div class="spl-aurcurt cL"></div><div class="spl-aurcurt cR"></div>'
+        +'<div class="spl-aurbloom"></div>';
+      d.insertAdjacentHTML('beforeend', ax);
+    }
+    /* BLADE: moonrise over the pagoda, petals and mist on the valley wind —
+       and the exit is ONE katana streak, the frame closing along the cut. */
+    else if(st.theme==='anime' && !rm){ d.classList.add('w-blade');
+      var PAGS='<svg viewBox="0 0 140 160" width="100%" height="100%"><g fill="#3A1622"><path d="M70 6 l6 14 h-12 z"/><path d="M34 34 q36 -18 72 0 l-10 8 h-52 z"/><rect x="52" y="42" width="36" height="16"/><path d="M22 72 q48 -22 96 0 l-12 9 h-72 z"/><rect x="46" y="81" width="48" height="18"/><path d="M10 116 q60 -26 120 0 l-14 10 h-92 z"/><rect x="40" y="126" width="60" height="34"/></g></svg>';
+      var bx='<div class="spl-moonglow" style="right:24vw;top:10vh;width:23vmin;height:23vmin;background:radial-gradient(circle,#FFF3F6 0 52%,rgba(255,220,230,.5) 68%,transparent 75%)"></div>'
+        +'<div class="spl-pagsil">'+PAGS+'</div>'
+        +'<div class="spl-mistband" style="top:60vh;animation-duration:13s;animation-delay:-3s"></div>'
+        +'<div class="spl-mistband" style="top:74vh;animation-duration:18s;animation-delay:-11s;opacity:.5"></div>';
+      for(var pe=0;pe<15;pe++)
+        bx+='<span class="spl-petal" style="left:'+((pe*31+7)%96)+'vw;animation-duration:'+(7+(pe%5)*1.7).toFixed(1)+'s,'+(2.2+(pe%3)*0.5).toFixed(1)+'s;animation-delay:-'+((pe*1.3)%9).toFixed(1)+'s,-'+((pe*0.4)%2.4).toFixed(1)+'s"></span>';
+      bx+='<div class="spl-shut spl-shutA"></div><div class="spl-shut spl-shutB"></div>'
+        +'<div class="spl-slash"></div><div class="spl-blflash"></div>';
+      d.insertAdjacentHTML('beforeend', bx);
+    }
+    /* LAB: bubbles climb and arcs flicker until the experiment BOILS OVER —
+       the glowing liquid takes the frame and the reaction flashes. */
+    else if(st.theme==='science' && !rm){ d.classList.add('w-lab');
+      var lx='';
+      for(var lb=0;lb<12;lb++){ var lbz=6+(lb%4)*3;
+        lx+='<span class="spl-lbub" style="left:'+((lb*29+9)%94)+'vw;width:'+lbz+'px;height:'+lbz+'px;animation-duration:'+(6+(lb%5)*1.6).toFixed(1)+'s;animation-delay:-'+((lb*1.7)%8).toFixed(1)+'s"></span>'; }
+      lx+='<span class="spl-arcflick" style="left:12vw;top:22vh;animation-delay:-.6s"></span>'
+        +'<span class="spl-arcflick" style="right:14vw;top:30vh;animation-delay:-1.8s"></span>'
+        +'<span class="spl-arcflick" style="left:30vw;top:12vh;animation-delay:-1.1s"></span>';
+      var lbig='';
+      for(var lg=0;lg<7;lg++){ var lgz=(26+(lg%4)*16);
+        lbig+='<span class="spl-lbig" style="left:'+((lg*33+4)%88)+'%;top:'+(24+(lg*17)%62)+'%;width:'+lgz+'px;height:'+lgz+'px;animation-delay:'+(5.6+lg*0.24).toFixed(2)+'s"></span>'; }
+      lx+='<div class="spl-liquid">'+lbig+'</div><div class="spl-labflash"></div>';
+      d.insertAdjacentHTML('beforeend', lx);
+    }
+    /* ELEMENTS: the four nations glow in their corners while their orbs orbit
+       the title, spiral inward and FUSE — the bloom carries the frame in. */
+    else if(st.theme==='avatar' && !rm){ d.classList.add('w-elem');
+      var ORBS=[['#CFF0FF','#3B9FD8'],['#FFD9B8','#E0672E'],['#D6F2C8','#4E9A44'],['#F2F2F2','#8FA6B8']];
+      var ex='<div class="spl-aura" style="left:-16vmin;bottom:-16vmin;background:radial-gradient(circle,rgba(95,184,122,.34),transparent 62%)"></div>'
+        +'<div class="spl-aura" style="right:-16vmin;bottom:-16vmin;background:radial-gradient(circle,rgba(224,103,46,.3),transparent 62%);animation-delay:.3s,1s"></div>'
+        +'<div class="spl-aura" style="left:-16vmin;top:-16vmin;background:radial-gradient(circle,rgba(89,159,216,.32),transparent 62%);animation-delay:.5s,2s"></div>'
+        +'<div class="spl-aura" style="right:-16vmin;top:-16vmin;background:radial-gradient(circle,rgba(160,176,192,.3),transparent 62%);animation-delay:.7s,3s"></div>';
+      for(var ob=0;ob<4;ob++)
+        ex+='<div class="spl-orbwrap" style="transform:rotate('+(ob*90)+'deg)"><span class="spl-orb" style="background:radial-gradient(circle at 35% 30%,'+ORBS[ob][0]+','+ORBS[ob][1]+' 72%)"></span></div>';
+      ex+='<div class="spl-fuse"></div>';
+      d.insertAdjacentHTML('beforeend', ex);
+    }
+    /* GOD'S ABODE: rays through the cloud shelf, bolts glinting — and the
+       marble temple doors grind in and BOOM shut on a seam of golden light. */
+    else if(st.theme==='godly' && !rm){ d.classList.add('w-gods');
+      var CLD='<svg viewBox="0 0 200 60" width="100%" height="100%"><g fill="#F4EFE2" opacity=".9"><ellipse cx="50" cy="42" rx="48" ry="17"/><ellipse cx="105" cy="34" rx="42" ry="20"/><ellipse cx="155" cy="44" rx="44" ry="15"/></g></svg>';
+      var DOORP='<svg viewBox="0 0 400 700" width="100%" height="100%" preserveAspectRatio="none">'
+        +'<defs><linearGradient id="splmarb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#B8AA84"/><stop offset=".25" stop-color="#DCD2B0"/><stop offset=".8" stop-color="#CEC29A"/><stop offset="1" stop-color="#A89A72"/></linearGradient></defs>'
+        +'<rect width="400" height="700" fill="url(#splmarb)"/>'
+        +'<rect x="0" y="0" width="400" height="30" fill="#8F8158"/><rect x="0" y="670" width="400" height="30" fill="#8F8158"/>'
+        +'<g stroke="#B4A67E" stroke-width="9"><line x1="34" y1="30" x2="34" y2="670"/><line x1="366" y1="30" x2="366" y2="670"/></g>'
+        +'<rect x="70" y="70" width="260" height="250" rx="12" fill="#C4B78E" stroke="#8F8158" stroke-width="12"/>'
+        +'<rect x="70" y="384" width="260" height="250" rx="12" fill="#C4B78E" stroke="#8F8158" stroke-width="12"/>'
+        +'<path d="M200 130 l14 30 33 4 -24 23 6 33 -29 -16 -29 16 6 -33 -24 -23 33 -4z" fill="#D9A93C" stroke="#9A7218" stroke-width="4"/>'
+        +'<path d="M200 444 l14 30 33 4 -24 23 6 33 -29 -16 -29 16 6 -33 -24 -23 33 -4z" fill="#D9A93C" stroke="#9A7218" stroke-width="4" opacity=".85"/>'
+        +'<circle cx="348" cy="352" r="26" fill="none" stroke="#9A7218" stroke-width="10"/>'
+        +'<rect x="386" y="0" width="14" height="700" fill="#FFD24D"/><rect x="380" y="0" width="6" height="700" fill="#B98A2A"/></svg>';
+      var gx='<div class="spl-worldcast" id="spl-cast2"></div>'
+        +'<div class="spl-cloudshelf" style="left:-5vw;bottom:-3vh;width:46vw;aspect-ratio:200/60">'+CLD+'</div>'
+        +'<div class="spl-cloudshelf" style="right:-7vw;bottom:-4vh;width:54vw;aspect-ratio:200/60;animation-delay:0s,-9s">'+CLD+'</div>'
+        +'<div class="spl-doorseam"></div>'
+        +'<div class="spl-door spl-doorL">'+DOORP+'</div>'
+        +'<div class="spl-door spl-doorR" style="transform:translateX(108%) scaleX(-1)">'+DOORP+'</div>'
+        +'<div class="spl-godflash"></div>';
+      d.insertAdjacentHTML('beforeend', gx);
+      /* the borrowed sky: the world's own god-rays and glow via its theme styles */
+      var castGods=function(){ try{
+        var host=document.getElementById('spl-cast2'); if(!host||done) return;
+        if(!document.documentElement.getAttribute('data-theme')) document.documentElement.setAttribute('data-theme','godly');
+        host.innerHTML='<div class="w4-godrays" style="position:absolute;pointer-events:none"></div>'
+          +'<div class="w4-glow" style="position:absolute;pointer-events:none"></div>'
+          +'<div class="w4-boltglint" style="position:absolute;pointer-events:none;left:22vw;top:9vh"></div>'
+          +'<div class="w4-boltglint" style="position:absolute;pointer-events:none;right:18vw;top:15vh;animation-delay:-7s"></div>';
+      }catch(e){} };
+      if(document.readyState!=='loading') castGods(); else document.addEventListener('DOMContentLoaded',castGods);
+    }
+    /* RACE ZONE: the start gantry drops in and counts red - red - red … GREEN —
+       and the frame LAUNCHES through a wall of speed. */
+    else if(st.theme==='race' && !rm){ d.classList.add('w-race');
+      var CARS=function(c){ return '<svg viewBox="0 0 120 44" width="100%" height="100%"><path d="M8 30 q2 -12 18 -14 l10 -8 q16 -4 34 0 l10 8 q22 2 28 12 l2 10 h-14 a10 10 0 1 1 -20 0 h-30 a10 10 0 1 1 -20 0 h-16z" fill="'+c+'"/><rect x="40" y="10" width="26" height="10" rx="4" fill="#BFE0FF" opacity=".8"/><circle cx="38" cy="36" r="8" fill="#1A2438"/><circle cx="88" cy="36" r="8" fill="#1A2438"/></svg>'; };
+      var rx='<div class="spl-gantry"><span class="spl-glamp r1"></span><span class="spl-glamp r2"></span><span class="spl-glamp r3"></span><span class="spl-glamp gg"></span></div>';
+      for(var sl=0;sl<9;sl++)
+        rx+='<span class="spl-sline" style="top:'+((sl*23+8)%88)+'vh;width:'+(60+(sl%4)*40)+'px;animation-duration:'+(1.2+(sl%4)*0.4).toFixed(1)+'s;animation-delay:-'+((sl*0.5)%2).toFixed(1)+'s"></span>';
+      rx+='<div class="spl-racecar" style="bottom:6vh;width:150px;aspect-ratio:120/44;animation-duration:5.5s;animation-delay:-2s">'+CARS('#3B6FE0')+'</div>'
+        +'<div class="spl-racecar" style="bottom:14vh;width:100px;aspect-ratio:120/44;animation-duration:7.5s;animation-delay:-5.6s;opacity:.6">'+CARS('#E0453A')+'</div>'
+        +'<div class="spl-speedwall"></div><div class="spl-goflash"></div>';
+      d.insertAdjacentHTML('beforeend', rx);
+    }
     var done=false;
     /* ── the BIZZING BEE brand sound + the world stingers ──
        One pre-rendered cue (app-art/brand-open.mp3 — a sparkling pentatonic
@@ -1915,20 +2195,26 @@
        glissando run into a bright resolve) opens EVERY world and runs up to
        the world's CLOSE — the jaw SNAP on Dino Era, the honey cell sealing on
        The Hive — where the world's own stinger takes over (dino-roar.mp3 /
-       hive-buzz.mp3). Media elements still obey autoplay policy: play() is
-       tried silently at load (it succeeds where the browser already trusts
-       us) and otherwise waits for the resume a first tap grants — the cue
-       then joins IN PROGRESS at the elapsed visual time, so the stinger still
-       lands exactly on the close. */
+       hive-buzz.mp3). The GATE makes autoplay policy a non-issue: sound only
+       starts on the gate tap, a real user gesture, with the clock reset to
+       zero at the same instant — cue and cinematic in lockstep from the top.
+       (The elapsed-offset re-sync in sk() stays as a belt-and-braces for a
+       slow fetch delaying the actual start.) */
     var sched=false, born=Date.now();
-    var CLOSE = st.theme==='dino' ? 6.6 : (st.theme==='spellbound' ? 7.45 : -1);
+    /* every world's CLOSE — the beat its own stinger takes over from the brand
+       cue: the jaw snap, the cell seal, the aurora fold, the katana streak, the
+       boil-over, the orb fusion, the door boom, the green light */
+    var CLOSE=({dino:6.6, spellbound:7.45, aurora:6.75, anime:6.28, science:5.55,
+      avatar:5.35, godly:6.7, race:6.35})[st.theme]; if(CLOSE==null) CLOSE=-1;
+    var STING=({dino:'dino-roar', spellbound:'hive-buzz', aurora:'aurora-shimmer',
+      anime:'blade-shing', science:'lab-zap', avatar:'elements-fuse',
+      godly:'gods-thunder', race:'race-rev'})[st.theme];
     var brand=null, sting=null, stTm=null;
     try{
       /* start FETCHING the sound the instant the splash exists — load() makes the
          preload explicit so a refresh has the cue buffered before play() fires */
       brand=new Audio('app-art/brand-open.mp3'); brand.preload='auto'; brand.load();
-      if(st.theme==='dino'){ sting=new Audio('app-art/dino-roar.mp3'); sting.preload='auto'; sting.load(); }
-      else if(st.theme==='spellbound'){ sting=new Audio('app-art/hive-buzz.mp3'); sting.preload='auto'; sting.load(); }
+      if(STING){ sting=new Audio('app-art/'+STING+'.mp3'); sting.preload='auto'; sting.load(); }
     }catch(e){}
     function fadeStop(a){ if(!a) return; try{ var iv=setInterval(function(){
       a.volume=Math.max(0,a.volume-0.14); if(a.volume<=0.01){ clearInterval(iv); a.pause(); } },50); }catch(e){} }
@@ -1956,18 +2242,23 @@
       if(tapped){ fadeStop(brand); fadeStop(sting); }
       else { fadeStop(brand); if(sting) setTimeout(function(){ fadeStop(sting); },1400); }
       setTimeout(function(){ try{ d.remove(); }catch(e){} },600); }
-    var tm=setTimeout(out,dur);
-    /* an EARLY first tap on a still-silent splash turns the sound on and lets
-       the show run (the hint flips to say so); any other tap flies straight in */
-    d.addEventListener('pointerdown',function(){
-      var blocked=!sched, early=(Date.now()-born)<1500;
-      tune();
-      if(blocked && early && !rm){
-        var tp=d.querySelector('.spl-tap'); if(tp) tp.textContent='tap again to fly in';
-        d.addEventListener('pointerdown',function(){ clearTimeout(tm); setTimeout(function(){ out(true); },120); },{once:true});
-      } else { clearTimeout(tm); setTimeout(function(){ out(true); },120); }
-    },{once:true});
-    if(!rm) tune();   /* plays where the browser already trusts us; silently ignored elsewhere */
+    /* the GATE: the first tap ANSWERS THE INVITATION — it starts the clock, the
+       cinematic and the sound together (the tap is the user gesture autoplay
+       policy wants, so the cue and the stinger always actually play). Any tap
+       after that skips. Reduced motion keeps its quiet still card: no gate
+       phase, the first tap simply flies in. Left alone, the gate falls through
+       to the app on its own. */
+    var started=rm;
+    var tm=setTimeout(out, rm?dur:10000);
+    d.addEventListener('pointerdown',function ev(){
+      if(!started){ started=true;
+        born=Date.now(); d.classList.add('kb');
+        clearTimeout(tm); tm=setTimeout(out,dur);
+        tune();
+        return; }
+      d.removeEventListener('pointerdown',ev);
+      clearTimeout(tm); setTimeout(function(){ out(true); },120);
+    });
   }catch(e){}
 })();
 </script>
