@@ -100,8 +100,44 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(/four-chord pad/.test(idx) && /bell\(/.test(idx) && /createOscillator/.test(idx.slice(0, idx.indexOf('id="root"'))),
     'a real score (warm pad + bell motif) is wired into the sequence');
   ok(/T-rex ROAR/.test(idx) && /createBufferSource/.test(idx), 'the roar is synthesized and timed to the jaws');
+  ok(/frozen clock never sounds/.test(idx) && /tap again to fly in/.test(idx) && /ac\.resume\(\)\.then/.test(idx),
+    'the score waits for a RUNNING audio clock — an early tap unlocks the sound instead of skipping');
   ok(/the SNAP: a deep thud/.test(idx) && /spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
     'the snap carries its thud, the frame slams, the maw pulses — a real jump-scare beat');
+
+  // ---- THE HIVE's own opening: comb, swarm, and the honey that takes the frame ----
+  const seedH = JSON.stringify({ theme: 'spellbound', children: [{ name: 'T' }] });
+  const pgH = await b.newPage({ viewport: { width: 1100, height: 900 } });
+  await pgH.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.removeItem('sb_splash'); }, seedH);
+  await pgH.goto('file://' + SRC + '/index.html'); await pgH.waitForTimeout(2000);
+  const hv = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
+    up: !!d, marked: d && d.classList.contains('w-hive'),
+    honey: d ? d.querySelectorAll('.spl-honey').length : 0,
+    top: d && !!d.querySelector('.spl-honeytop img[src$="hive-honey-top.svg"]'),
+    bot: d && !!d.querySelector('.spl-honeybot img[src$="hive-honey-bot.svg"]'),
+    bloom: d && !!d.querySelector('.spl-goldflash'), amb: d && !!d.querySelector('.spl-ambveil'),
+    hex: d ? d.querySelectorAll('.spl-hexcell').length : 0,
+    swarm: d ? d.querySelectorAll('.spl-swarmdot').length : 0,
+    cast: d && !!d.querySelector('#spl-cast2'),
+    world: d && /The Hive/.test(d.textContent), tag: d && /home sweet hive/.test(d.textContent) }; });
+  ok(hv.up && hv.marked, 'the Hive wears its own staging class (w-hive)');
+  ok(hv.world && hv.tag, 'the episode card says The Hive, not a duplicate of the wordmark');
+  ok(hv.honey === 2 && hv.top && hv.bot, 'painted honey closes over the frame — drip curtain above, rising pool below');
+  ok(hv.bloom && hv.amb, 'the amber bloom and the closing amber vignette are staged');
+  ok(hv.hex >= 12, 'the comb crystallizes cell by cell (' + hv.hex + ' cells)');
+  ok(hv.swarm >= 10, 'the swarm streams through as the buzz peaks (' + hv.swarm + ' bees)');
+  const hvCast = await pgH.evaluate(() => { const c = document.querySelector('#spl-cast2'); return c ? {
+    comb: !!c.querySelector('.w4o-comb'), glow: !!c.querySelector('.w4o-hiveglow'),
+    bees: c.querySelectorAll('.w4o-bee').length, rise: c.querySelectorAll('.w4o-rise').length } : null; });
+  ok(hvCast && hvCast.comb && hvCast.glow && hvCast.bees >= 2 && hvCast.rise >= 6,
+    'the cast is the HIVE\'S OWN art — its comb, its glow, its rising gold, its drawn bee on the beeline');
+  ok(fs.existsSync(SRC + '/app-art/hive-honey-top.svg') && fs.existsSync(SRC + '/app-art/hive-honey-bot.svg')
+    && /image\/webp/.test(fs.readFileSync(SRC + '/app-art/hive-honey-top.svg', 'utf8').slice(0, 400)),
+    'both honey plates ship as alpha-keyed SVGs in app-art');
+  ok(/HIVE SWARM/.test(idx0) && /honey MEET/.test(idx0) && /spl-goldshift/.test(idx0),
+    'the swarm buzz and the honey gloop are wired into the score, and the day turns to gold');
+  await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(1000);
+  ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses the hive opening at once');
 
   // auto-dismiss on its own clock
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
@@ -117,8 +153,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pgS.addInitScript(() => localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'science', children: [{ name: 'T' }] })));
   await pgS.goto('file://' + SRC + '/index.html'); await pgS.waitForTimeout(600);
   ok(await pgS.evaluate(() => { const d = document.querySelector('#sb-splash');
-    return !!d && !d.classList.contains('w-dino') && !d.querySelector('.spl-jaw'); }),
-    'other worlds keep the plain cut — no jaws outside Dino Era');
+    return !!d && !d.classList.contains('w-dino') && !d.querySelector('.spl-jaw')
+      && !d.classList.contains('w-hive') && !d.querySelector('.spl-honey'); }),
+    'other worlds keep the plain cut — no jaws, no honey outside their own worlds');
 
   // silenced by the Settings switch, and never over onboarding
   const pg4 = await b.newPage();

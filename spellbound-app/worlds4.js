@@ -572,7 +572,7 @@ window.SB_W4_FOCUS={
     return o+'<rect x="0" y="62" width="400" height="8" fill="#1A2438"/></svg>'; })();
   /* the opening splash borrows the dino cast VERBATIM — same SVGs, same classes,
      same gaits — so the load-up shows the world itself, never a recreation */
-  window.SB_W4_ART = { BRACHIO: BRACHIO, RAPTOR: RAPTOR, PTERO: PTERO, TREE: TREE, FERN: FERN };
+  window.SB_W4_ART = { BRACHIO: BRACHIO, RAPTOR: RAPTOR, PTERO: PTERO, TREE: TREE, FERN: FERN, BEE: BEE_S };
   function build(world){
     layer=el('w4-bg');
     if(world==='godly'){
