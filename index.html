@@ -344,7 +344,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 <link rel="stylesheet" href="fonts/fonts.css?v=20260824q">
 <link rel="stylesheet" href="tokens.css?v=20260824q">
-<link rel="stylesheet" href="worlds4.css?v=20260830c">
+<link rel="stylesheet" href="worlds4.css?v=20260831a">
 
 <style>
   *{box-sizing:border-box}
@@ -1722,6 +1722,12 @@
     .lib-h{font-size:13px;line-height:1.1}
     .lib-body{padding:7px 9px 9px}
   }
+  /* the Worlds store: EIGHT worlds on a strict 4x2 grid (2 across on a phone) */
+  .wh-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  @media(max-width:900px){.wh-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  /* an avatar pack is ONE ROW of eight (two rows of four on a phone) */
+  .av-row{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:9px}
+  @media(max-width:700px){.av-row{grid-template-columns:repeat(4,minmax(0,1fr))}}
   /* ---- Legendary avatars: a living, animated treatment ---- */
   .sb-av-legend{transform-origin:50% 54%;animation:sb-avbreathe 3.6s ease-in-out infinite;overflow:visible}
   @keyframes sb-avbreathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.024) translateY(-1px)}}
@@ -1786,11 +1792,11 @@
     var st={}; try{ st=JSON.parse(localStorage.getItem('sb_saas_v2')||'{}')||{}; }catch(e){}
     if(!st.children || !st.children.length) return;
     var rm=false; try{ rm=(st.am===1)||(st.cm===1)||matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
-    var T={ spellbound:['The Hive','#FFD24D','#241E4E','🐝','hive','home sweet hive'], marquee:['Spotlight','#F6DC8A','#2A1608','🎭','stage','on stage'],
+    /* the EIGHT worlds of the Aug-31 store cut; a stale saved theme falls back to the Hive */
+    var T={ spellbound:['The Hive','#FFD24D','#241E4E','🐝','hive','home sweet hive'],
       aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos','cosmic'], anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo','the dojo'],
-      science:['Lab','#3BC0AA','#062A24','🧪','lab','field notes'], origami:['Origami','#F0C9A2','#2A1408','🪁','lotus','paper'],
-      pixel:['Arcade','#36C6E0','#0A122E','👾','arcade','game on'], avatar:['Elements','#8FD0EC','#0A2430','🌊','pond','elemental'],
-      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky','divine'], serpent:["Serpent's Lair",'#7FD98C','#0A2014','🐍','forest','the lair'],
+      science:['Lab','#3BC0AA','#062A24','🧪','lab','field notes'], avatar:['Elements','#8FD0EC','#0A2430','🌊','pond','elemental'],
+      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky','divine'],
       race:['Race Zone','#7BA3F5','#0A1430','🏎️','carnival','full throttle'], dino:['Dino Era','#B8D96A','#141E08','🦖','meadow','prehistoric'] };
     /* the Hive's cut runs longer: the bees need their landing beat before the
        dive into the honey cell */
@@ -1918,9 +1924,11 @@
     var CLOSE = st.theme==='dino' ? 6.6 : (st.theme==='spellbound' ? 7.45 : -1);
     var brand=null, sting=null, stTm=null;
     try{
-      brand=new Audio('app-art/brand-open.mp3'); brand.preload='auto';
-      if(st.theme==='dino'){ sting=new Audio('app-art/dino-roar.mp3'); sting.preload='auto'; }
-      else if(st.theme==='spellbound'){ sting=new Audio('app-art/hive-buzz.mp3'); sting.preload='auto'; }
+      /* start FETCHING the sound the instant the splash exists — load() makes the
+         preload explicit so a refresh has the cue buffered before play() fires */
+      brand=new Audio('app-art/brand-open.mp3'); brand.preload='auto'; brand.load();
+      if(st.theme==='dino'){ sting=new Audio('app-art/dino-roar.mp3'); sting.preload='auto'; sting.load(); }
+      else if(st.theme==='spellbound'){ sting=new Audio('app-art/hive-buzz.mp3'); sting.preload='auto'; sting.load(); }
     }catch(e){}
     function fadeStop(a){ if(!a) return; try{ var iv=setInterval(function(){
       a.volume=Math.max(0,a.volume-0.14); if(a.volume<=0.01){ clearInterval(iv); a.pause(); } },50); }catch(e){} }
@@ -1933,7 +1941,12 @@
       try{ if(el>0.4) brand.currentTime=el; }catch(e){}
       var p; try{ p=brand.play(); }catch(e){ return; }
       if(!p||!p.then){ armSting(el); return; }
-      p.then(function(){ armSting((Date.now()-born)/1000); }).catch(function(){});
+      p.then(function(){
+        /* a slow fetch can delay the actual start — re-sync the cue to the TRUE
+           elapsed time so the stinger still lands exactly on the world's close */
+        try{ var el2=(Date.now()-born)/1000;
+          if(el2>0.4 && Math.abs(brand.currentTime-el2)>0.3) brand.currentTime=el2; }catch(e){}
+        armSting((Date.now()-born)/1000); }).catch(function(){});
     }
     var tune=sk;
     /* a TAPPED exit kills the audio at once; the natural end lets the world
@@ -2091,16 +2104,16 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="avatars-art.js?v=20260824q"></script>
 <script defer src="avatar-png.js?v=20260824q"></script>
 <script defer src="game-art.js?v=20260824q"></script>
-<script defer src="avatars.js?v=20260824q"></script>
+<script defer src="avatars.js?v=20260831a"></script>
 <script defer src="avatar-greetings.js?v=20260824q"></script>
 <script defer src="avatar-cards.js?v=20260824q"></script>
-<script defer src="app2.js?v=20260824q"></script>
+<script defer src="app2.js?v=20260831a"></script>
 <script defer src="pricing.js?v=20260824q"></script>
 <script defer src="auth.js?v=20260824q"></script>
 <script defer src="supabase-auth.js?v=20260824q"></script>
 <script defer src="telemetry.js?v=20260830a"></script>
-<script defer src="app3.js?v=20260830c"></script>
-<script defer src="worlds4.js?v=20260830e"></script>
+<script defer src="app3.js?v=20260831a"></script>
+<script defer src="worlds4.js?v=20260831a"></script>
 <script defer src="mockbee.js?v=20260824q"></script>
   <script defer src="games-daily.js?v=20260824q"></script>
   <script defer src="saga-art/saga-art.js?v=20260824q"></script>

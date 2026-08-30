@@ -410,7 +410,7 @@ function grantArt(k,n){ const c=active(); n=n||1; if(!ART_BY[k]) return;
    rather than a pile of one — keyed off total words right, which only ever climbs. */
 function grantStageArt(){ const rot=['shield','reveal','time']; const k=rot[(rankXp()|0)%3]; grantArt(k,1); return ART_BY[k]; }
 /* Theme tiers: 2 open free, +2 with Premium, the rest are earn-with-coins for everyone. */
-const FREE_THEMES = ['spellbound','marquee'];          // open from the start
+const FREE_THEMES = ['spellbound'];                    // the Hive is the default; the rest are bought
 const PREMIUM_THEMES = ['aurora','anime'];             // included with Premium
 function coinsOf(){ return active().coins||0; }
 function addCoins(n){ if(!n) return; const c=active(); c.coins=(c.coins||0)+n; sfx('coin'); }
@@ -1170,7 +1170,7 @@ const app = {
   onbBeeDate:(v)=>{ state.draft.beeDate=v||null; },
   onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'auth'}); } else set({onbStep:state.onbStep-1}); },
   pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' unlocks with coins — find it in your Collection later!'); return; } state.draft.avatar=id; render(); },
-  onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('🔒 Locked — start in Bizzing Bee or Spotlight, then unlock this world for '+COST.theme+' 🪙'); return; } state.draft.theme=id; state.theme=id; render(); },
+  onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('🔒 Locked — start in the Hive, then unlock this world for '+COST.theme+' 🪙'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
     if(S.onbStep===1 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
@@ -6018,7 +6018,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
           :(ownedN<avs.length?`<button data-act="buyPack" data-arg="${p.id}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">🎁 Open pack · ${coinAmt(packCost(p.id),11)}</button>`:'')}</div>
         <div style="height:5px;border-radius:99px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:11px"><div style="height:100%;background:linear-gradient(90deg,${p.c1},${p.c2});width:${Math.round(ownedN/(avs.length||1)*100)}%"></div></div>
         ${S.oddsOpen===p.id?oddsPanel(p.id,c):''}
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px">${tiles}</div></div>`; }).join('');
+        <div class="av-row">${tiles}</div></div>`; }).join('');
   } else if(tab==='worlds'){
     /* The painted hero cards, moved here from the standalone picker. A locked world is
        greyed and carries its coin price under the tile — a price belongs with the thing,
@@ -6029,7 +6029,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
     body=`<div class="sb-card">
       <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:4px"><span class="sb-ct" style="font-size:15px">Worlds</span><span class="sb-cn">${unc}/${THEMES.length} unlocked — switch any time</span></div>
       <p class="sb-cn" style="margin:0 0 13px;line-height:1.5">Each world repaints the app — its colours, its type and its motif — and brings its own cast. Your bee keeps its ten forms and their names in every one of them.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${cards}</div>
+      <div class="wh-grid">${cards}</div>
       ${lockedN?`<div class="sb-cn" style="padding-top:12px">🔒 ${lockedN} more ${lockedN===1?'world is':'worlds are'} waiting — tap one to unlock it.</div>`:''}</div>`;
   } else {
     /* Artifacts live here now, not in a tab of their own. Both are proof of play — a badge
@@ -10439,6 +10439,20 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
       if(back){ ch.coins=(ch.coins||0)+back; ch.accRefund=back; }
       delete ch.beeAcc; delete ch.accOn; });
   }catch(e){}
+  /* Aug-31 world cut: Spotlight, Origami, Arcade and Serpent's Lair left the store
+     (EIGHT worlds now, the Hive free and the rest bought). Anyone who spent coins on
+     a removed world gets the full price back — we withdrew it, they did not sell it.
+     Spotlight was free, so it is simply re-homed. A save pointing at a removed world
+     falls back to the Hive. Scenes/ladders stay in the codebase as an archive
+     (archive/store-cut-2026-08.md). Self-clearing: the filtered list cannot pay twice. */
+  try{ const GONEW={marquee:1,serpent:1,origami:1,pixel:1}, PAIDW={serpent:1,origami:1,pixel:1};
+    (state.children||[]).forEach(ch=>{ const un=ch.unlockedThemes||[];
+      if(un.some(t=>GONEW[t])){ let back=0; un.forEach(t=>{ if(PAIDW[t]) back+=COST.theme; });
+        ch.unlockedThemes=un.filter(t=>!GONEW[t]);
+        if(back){ ch.coins=(ch.coins||0)+back; ch.worldRefund=(ch.worldRefund||0)+back; } }
+      if(GONEW[ch.theme]) ch.theme='spellbound'; });
+    if(GONEW[state.theme]) state.theme='spellbound';
+  }catch(e){}
   try{ loadVoiceCfg(); }catch(e){}
   try{ loadEvoFB(); }catch(e){}
   try{ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }catch(e){}
@@ -10456,6 +10470,8 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
   try{ const _c=state.children&&state.children[state.activeIdx];
     if(_c && _c.accRefund){ const _n=_c.accRefund; delete _c.accRefund; save();
       setTimeout(()=>{ try{ flash('Bee style has been retired — '+_n+' 🪙 refunded to your purse'); }catch(e){} }, 1400); }
+    if(_c && _c.worldRefund){ const _w=_c.worldRefund; delete _c.worldRefund; save();
+      setTimeout(()=>{ try{ flash('Some worlds have been retired — '+_w+' 🪙 refunded to your purse'); }catch(e){} }, 1800); }
   }catch(e){}
   render();
 })();
