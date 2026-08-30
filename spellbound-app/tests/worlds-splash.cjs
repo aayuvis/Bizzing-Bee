@@ -73,12 +73,29 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(dino.jaws === 2 && dino.maw, 'the T-rex jaws close around the frame over the deep-red maw');
   ok(dino.dusk && dino.stars >= 12, 'day falls to dark — dusk veil + ' + dino.stars + ' stars coming out');
   ok(dino.scene, 'the dino scenery is staged: treeline, brachiosaurus, pteranodons, ferns');
+  const herd = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
+    dinos: d ? d.querySelectorAll('.spl-dino').length : 0,
+    moving: d && [...d.querySelectorAll('.spl-dino')].every(x => /spl-walk/.test(x.className)),
+    beam: d && !!d.querySelector('.spl-sunbeam'),
+    flies: d ? d.querySelectorAll('.spl-firefly').length : 0 }; });
+  ok(herd.dinos >= 3 && herd.moving, herd.dinos + ' dinosaurs WALK the meadow — the middle ground is never blank');
+  ok(herd.beam, 'the golden sunbeam of day fades as dusk takes it');
+  ok(herd.flies >= 6, herd.flies + ' fireflies wake as the light goes');
+  const bite = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
+    eyes: d && !!d.querySelector('.spl-eyes'),
+    teeth: d && (d.querySelector('.spl-jawtop').innerHTML.match(/#E9DFC2/g) || []).length >= 10,
+    flash: d && !!d.querySelector('.spl-snapflash') }; });
+  ok(bite.eyes, 'predator eyes flare in the dark before the roar');
+  ok(bite.teeth, 'the jaws carry rows of IVORY teeth that read against the dusk');
+  ok(bite.flash, 'the SNAP lands with a blink of white');
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
   ok(/four-chord pad/.test(idx) && /bell\(/.test(idx) && /createOscillator/.test(idx.slice(0, idx.indexOf('id="root"'))),
     'a real score (warm pad + bell motif) is wired into the sequence');
   ok(/T-rex ROAR/.test(idx) && /createBufferSource/.test(idx), 'the roar is synthesized and timed to the jaws');
+  ok(/the SNAP: a deep thud/.test(idx) && /spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
+    'the snap carries its thud, the frame slams, the maw pulses — a real jump-scare beat');
 
   // auto-dismiss on its own clock
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
