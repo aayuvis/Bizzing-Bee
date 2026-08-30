@@ -69,35 +69,31 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     jaws: d ? d.querySelectorAll('.spl-jaw').length : 0,
     maw: d && !!d.querySelector('.spl-maw'), dusk: d && !!d.querySelector('.spl-duskveil'),
     stars: d ? d.querySelectorAll('.spl-nightstar').length : 0,
-    scene: d && !!d.querySelector('.spl-treeline') && !!d.querySelector('.spl-brach') && d.querySelectorAll('.spl-ptero').length >= 2 && d.querySelectorAll('.spl-fern').length >= 2 }; });
+    scene: d && !!d.querySelector('#spl-cast2') }; });
   ok(dino.marked, 'Dino Era wears its own staging class');
   ok(dino.jaws === 2 && dino.maw, 'the T-rex jaws close around the frame over the deep-red maw');
   ok(dino.dusk && dino.stars >= 12, 'day falls to dark — dusk veil + ' + dino.stars + ' stars coming out');
-  ok(dino.scene, 'the dino scenery is staged: treeline, brachiosaurus, pteranodons, ferns');
-  const herd = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
-    dinos: d ? d.querySelectorAll('.spl-dino').length : 0,
-    moving: d && [...d.querySelectorAll('.spl-dino')].every(x => /spl-walk/.test(x.className)),
-    beam: d && !!d.querySelector('.spl-sunbeam'),
-    flies: d ? d.querySelectorAll('.spl-firefly').length : 0 }; });
-  ok(herd.dinos >= 3 && herd.moving, herd.dinos + ' dinosaurs WALK the meadow — the middle ground is never blank');
-  ok(herd.beam, 'the golden sunbeam of day fades as dusk takes it');
-  ok(herd.flies >= 6, herd.flies + ' fireflies wake as the light goes');
+  ok(dino.scene, 'the world-cast stage is mounted for the borrowed scenery');
   const bite = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
     eyes: d && !!d.querySelector('.spl-eyes'),
-    teeth: d && (d.querySelector('.spl-jawtop').innerHTML.match(/#E9DFC2/g) || []).length >= 10,
     flash: d && !!d.querySelector('.spl-snapflash') }; });
   ok(bite.eyes, 'predator eyes flare in the dark before the roar');
-  ok(bite.teeth, 'the jaws carry rows of IVORY teeth that read against the dusk');
   ok(bite.flash, 'the SNAP lands with a blink of white');
   const plates = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
-    top: d && !!d.querySelector('.spl-jawtop img[src*="dino-jaw-top"]'),
-    bot: d && !!d.querySelector('.spl-jawbot img[src*="dino-jaw-bot"]') }; });
-  ok(plates.top && plates.bot, 'the Gemini-painted jaw plates ride the bite (drawn teeth stay as fallback)');
-  ok(fs.existsSync(SRC + '/app-art/dino-jaw-top.jpg') && fs.existsSync(SRC + '/app-art/dino-jaw-bot.jpg'),
-    'both painted plates ship in app-art');
+    top: d && !!d.querySelector('.spl-jawtop img[src$="dino-jaw-top.svg"]'),
+    bot: d && !!d.querySelector('.spl-jawbot img[src$="dino-jaw-bot.svg"]') }; });
+  ok(plates.top && plates.bot, 'the painted jaws are transparent SVGs closing OVER the world');
+  ok(fs.existsSync(SRC + '/app-art/dino-jaw-top.svg') && fs.existsSync(SRC + '/app-art/dino-jaw-bot.svg')
+    && /image\/webp/.test(fs.readFileSync(SRC + '/app-art/dino-jaw-top.svg', 'utf8').slice(0, 400)),
+    'both plates ship as alpha-keyed SVGs in app-art');
   ok(/spl-veildim/.test(idx0) && /brightness\(1\.6\)/.test(idx0), 'the day opens BRIGHT before dusk takes it');
-  ok(await pg2.evaluate(() => document.querySelectorAll('#sb-splash .spl-dino').length >= 4),
-    'the herd grew: raptors, triceratops, stegosaurus');
+  const cast2 = await pg2.evaluate(() => { const c = document.querySelector('#spl-cast2'); return c ? {
+    raptors: c.querySelectorAll('.w4-raptor').length, brach: c.querySelectorAll('.w4-brachio,.w4-brachstill').length,
+    pteros: c.querySelectorAll('.w4-ptero').length, trees: c.querySelectorAll('.w4-tree').length,
+    ferns: c.querySelectorAll('.w4-fern').length, recreated: document.querySelectorAll('#sb-splash .spl-dino').length } : null; });
+  ok(cast2 && cast2.raptors >= 2 && cast2.brach >= 2 && cast2.pteros >= 2 && cast2.trees >= 3 && cast2.ferns >= 2,
+    'the cast is the WORLD\'S OWN art, borrowed verbatim (raptors, brachios, pteros, trees, ferns)');
+  ok(cast2 && cast2.recreated === 0, 'no recreated stand-in dinos remain');
   await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
   ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a tap dismisses it at once');
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');

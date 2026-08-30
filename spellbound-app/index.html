@@ -1110,26 +1110,12 @@
   @keyframes spl-duskin{from{opacity:0}to{opacity:.9}}
   #sb-splash .spl-nightstar{position:absolute;width:2.5px;height:2.5px;border-radius:50%;background:#EAF2FF;z-index:2;opacity:0;animation:spl-starout 2.4s ease both}
   @keyframes spl-starout{to{opacity:.85}}
-  #sb-splash .spl-ptero{position:absolute;left:-140px;width:120px;z-index:2;opacity:.85;animation:spl-glide 4.6s cubic-bezier(.4,.1,.6,.9) both}
-  @keyframes spl-glide{0%{transform:translate(0,0) scale(.55)}100%{transform:translate(118vw,-9vh) scale(1.05)}}
-  #sb-splash .spl-flap{transform-origin:50% 45%;animation:spl-flapw 1.1s ease-in-out infinite}
   @keyframes spl-flapw{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.62)}}
-  #sb-splash .spl-treeline{position:absolute;left:0;right:0;bottom:0;height:24vh;z-index:2;opacity:.9}
-  #sb-splash .spl-fern{position:absolute;bottom:-8px;width:min(24vw,220px);z-index:3;transform-origin:50% 100%;animation:spl-fernsway 5.5s ease-in-out infinite}
-  @keyframes spl-fernsway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(2deg)}}
-  #sb-splash .spl-brach{position:absolute;right:2vw;bottom:10vh;width:min(30vw,300px);z-index:2;opacity:.85;transform-origin:70% 90%;animation:spl-brachbob 6.5s ease-in-out infinite}
   @keyframes spl-brachbob{0%,100%{transform:rotate(0)}50%{transform:rotate(-1.8deg)}}
   /* the herd: the world's creatures cross the frame exactly as they do in the
      live world layer — negative delays mean the meadow is already inhabited at
      first light, never blank */
-  #sb-splash .spl-dino{position:absolute;z-index:2;pointer-events:none}
-  #sb-splash .spl-walk{animation:spl-walk linear infinite}
-  @keyframes spl-walk{from{transform:translateX(-24vw)}to{transform:translateX(122vw)}}
-  #sb-splash .spl-walkb{animation:spl-walkb linear infinite}
   @keyframes spl-walkb{from{transform:translateX(122vw) scaleX(-1)}to{transform:translateX(-24vw) scaleX(-1)}}
-  #sb-splash .spl-gait{animation:spl-gait .55s ease-in-out infinite;transform-origin:50% 88%}
-  @keyframes spl-gait{0%,100%{transform:translateY(0) rotate(-1.4deg)}50%{transform:translateY(-3px) rotate(1.4deg)}}
-  #sb-splash .spl-graze{animation:spl-graze 4.6s ease-in-out infinite;transform-origin:34% 78%}
   @keyframes spl-graze{0%,55%,100%{transform:rotate(0)}72%,86%{transform:rotate(5deg)}}
   /* the wide golden sunbeam of the day phase, gone as dusk takes the meadow */
   #sb-splash .spl-sunbeam{position:absolute;left:14vw;top:-12vh;width:44vw;height:86vh;z-index:1;pointer-events:none;
@@ -1146,12 +1132,13 @@
   #sb-splash.kb.w-dino .spl-in{animation:spl-fright .5s linear 4.75s 1}
   @keyframes spl-fright{0%,100%{transform:none}20%{transform:translate(-4px,3px)}40%{transform:translate(4px,-3px)}60%{transform:translate(-3px,-2px)}80%{transform:translate(3px,2px)}}
   /* the maw: a deep-red glow swells as the jaws close around the viewport */
+  #sb-splash .spl-worldcast{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
   /* predator eyes flare in the dark an instant before the roar */
   #sb-splash .spl-eyes{position:absolute;left:50%;top:16vh;width:min(30vw,280px);transform:translateX(-50%);z-index:5;opacity:0;pointer-events:none;filter:drop-shadow(0 0 18px rgba(255,170,40,.8))}
   #sb-splash.kb .spl-eyes{animation:spl-eyesflare 1.2s ease 4.25s both}
   @keyframes spl-eyesflare{0%{opacity:0;transform:translateX(-50%) scale(.7)}30%,70%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(1.35)}}
   #sb-splash .spl-maw{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,rgba(140,18,18,.15) 26%,rgba(96,10,12,.9) 74%,#1C0406 100%);opacity:0}
-  #sb-splash.kb .spl-maw{animation:spl-mawin .9s cubic-bezier(.5,0,.8,.4) 5s both,spl-mawpulse .5s ease 6.2s 1}
+  #sb-splash.kb .spl-maw{animation:spl-mawin .6s cubic-bezier(.5,0,.8,.4) 6.25s both,spl-mawpulse .5s ease 6.55s 1}
   @keyframes spl-mawin{to{opacity:1}}
   @keyframes spl-mawpulse{50%{opacity:1;filter:brightness(1.9)}}
   /* the jaws: enter with menace, TREMBLE holding half-open, then SNAP shut fast */
@@ -1162,7 +1149,7 @@
   #sb-splash.kb .spl-jawbot{transform:translateY(105%);animation:spl-bitebot 2.1s cubic-bezier(.55,0,.6,1) 4.9s both}
   @keyframes spl-bitetop{0%{transform:translateY(-105%) scale(.92)}24%{transform:translateY(-44%) scale(1)}40%{transform:translateY(-42%) scale(1.02)}62%{transform:translateY(-45%) scale(1.04)}74%{transform:translateY(-43%) scale(1.06)}88%{transform:translateY(6%) scale(1.3)}100%{transform:translateY(8%) scale(1.65)}}
   @keyframes spl-bitebot{0%{transform:translateY(105%) scale(.92)}24%{transform:translateY(40%) scale(1)}40%{transform:translateY(38%) scale(1.02)}62%{transform:translateY(41%) scale(1.04)}74%{transform:translateY(39%) scale(1.06)}88%{transform:translateY(-4%) scale(1.3)}100%{transform:translateY(-6%) scale(1.65)}}
-  #sb-splash .spl-jawimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #sb-splash .spl-jawimg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
   /* the SNAP: a blink of white at the moment the teeth meet, and the whole frame slams */
   #sb-splash .spl-snapflash{position:absolute;inset:0;z-index:7;pointer-events:none;background:#FFF7E8;opacity:0}
   #sb-splash.kb .spl-snapflash{animation:spl-snap .3s linear 6.62s 1}
@@ -1750,55 +1737,42 @@
        around the viewport on the way in. Other worlds keep the plain cut until
        they earn their own. */
     if(st.theme==='dino' && !rm){ d.classList.add('w-dino');
-      /* the jaws are BUILT TO READ in the dark: scaled hide with a moss rim-light,
-         dark-red gums, and rows of big IVORY teeth that catch the maw's glow */
-      function TEETH(up){ var o='', xs=[[0,86,52],[86,74,64],[160,92,46],[252,80,70],[332,88,50],[420,96,74],[516,84,52],[600,90,66],[690,86,48],[776,94,72],[870,82,50],[952,78,62]];
-        for(var ti=0;ti<xs.length;ti++){ var x=xs[ti][0],w=xs[ti][1],dp=xs[ti][2];
-          var tip=up? (150+dp) : (130-dp);
-          o+='<path d="M'+x+' '+(up?118:158)+' L'+(x+w*0.5)+' '+tip+' L'+(x+w)+' '+(up?118:158)+' Z" fill="#E9DFC2" stroke="#B9A97C" stroke-width="3"/>'
-            +'<path d="M'+(x+w*0.18)+' '+(up?120:156)+' L'+(x+w*0.42)+' '+(up?(150+dp*0.8):(130-dp*0.8))+'" stroke="#FFF8E2" stroke-width="4" stroke-linecap="round" opacity=".7"/>'; }
-        return o; }
-      var JAWT='<svg viewBox="0 0 1000 300" width="100%" height="100%" preserveAspectRatio="none">'
-        +'<path d="M0 0 H1000 V128 Q750 108 500 116 Q250 124 0 100 Z" fill="#101B0E"/>'
-        +'<path d="M0 96 Q250 122 500 114 Q750 106 1000 124 V132 Q750 116 500 124 Q250 132 0 106 Z" fill="#2E4224" opacity=".9"/>'
-        +'<path d="M0 100 H1000 V150 Q740 132 500 140 Q260 148 0 128 Z" fill="#4A1014"/>'
-        +TEETH(true)+'</svg>';
-      var JAWB='<svg viewBox="0 0 1000 300" width="100%" height="100%" preserveAspectRatio="none">'
-        +'<path d="M0 300 H1000 V172 Q750 190 500 182 Q250 174 0 196 Z" fill="#101B0E"/>'
-        +'<path d="M0 190 Q250 168 500 176 Q750 184 1000 166 V158 Q750 176 500 168 Q250 160 0 182 Z" fill="#2E4224" opacity=".9"/>'
-        +'<path d="M0 196 H1000 V152 Q740 168 500 160 Q260 152 0 172 Z" fill="#4A1014"/>'
-        +TEETH(false)+'</svg>';
       var EYES2='<svg viewBox="0 0 280 80" width="100%" height="100%"><g fill="#FFB63C"><path d="M40 40 q28 -22 64 -8 q-26 26 -64 8z"/><path d="M240 40 q-28 -22 -64 -8 q26 26 64 8z"/></g><g fill="#2A1204"><ellipse cx="74" cy="38" rx="6" ry="14" transform="rotate(-12 74 38)"/><ellipse cx="206" cy="38" rx="6" ry="14" transform="rotate(12 206 38)"/></g></svg>';
-      var TREES=(function(){ var o='<svg viewBox="0 0 1000 180" width="100%" height="100%" preserveAspectRatio="none"><g fill="#0E1A10">';
-        for(var tx=0;tx<1000;tx+=64){ var th=70+((tx*7)%80);
-          o+='<path d="M'+tx+' 180 L'+(tx+26)+' '+(180-th)+' L'+(tx+52)+' 180 Z"/>'
-            +'<path d="M'+(tx+6)+' 180 L'+(tx+26)+' '+(180-th*0.72)+' L'+(tx+46)+' 180 Z" fill="#132414"/>'; }
-        return o+'</g></svg>'; })();
-      var FERN2='<svg viewBox="0 0 200 140" width="100%" height="100%"><g fill="none" stroke="#12240F" stroke-width="10" stroke-linecap="round"><path d="M100 140 q-4 -60 -66 -96"/><path d="M100 140 q2 -66 10 -110"/><path d="M100 140 q6 -56 72 -84"/></g><g fill="#183018"><path d="M38 46 q-20 -14 -34 -10 q10 16 30 18z M62 66 q-22 -10 -36 -4 q12 14 32 12z M106 30 q-6 -22 -20 -30 q-2 18 12 32z M168 60 q20 -12 32 -8 q-8 16 -28 16z"/></g></svg>';
-      var BRACH='<svg viewBox="0 0 300 240" width="100%" height="100%"><g fill="#0F1E14"><path d="M20 236 q6 -60 58 -78 q40 -14 74 4 q30 16 36 -6 q8 -30 14 -92 q3 -32 22 -34 q20 -2 24 18 q3 16 -12 18 q-10 1 -12 14 q-8 60 -12 96 q-4 34 -40 40 q-16 3 -18 20z"/><path d="M52 236 v-22 M96 236 v-26 M138 236 v-20"/><rect x="46" y="212" width="12" height="26"/><rect x="92" y="208" width="12" height="30"/><rect x="134" y="214" width="12" height="24"/></g></svg>';
-      var PTERO2='<svg viewBox="0 0 140 70" width="100%" height="100%"><g class="spl-flap"><path d="M4 34 Q40 4 70 30 Q100 4 136 30 L120 38 Q96 24 72 42 Q48 24 20 42 Z" fill="#101A22"/></g><path d="M64 32 L84 36 L104 44 L84 42 Z" fill="#101A22"/></svg>';
       var extra='<div class="spl-duskveil"></div>';
       for(var ns=0;ns<16;ns++) extra+='<span class="spl-nightstar" style="left:'+(3+ns*6.1)+'vw;top:'+(3+(ns*13)%26)+'vh;animation-delay:'+(4.3+ns*0.12).toFixed(2)+'s"></span>';
       var RAPT='<svg viewBox="0 0 180 100" width="100%" height="100%"><g class="spl-gait"><path d="M4 46 Q30 30 58 40 L84 34 Q104 18 118 22 Q112 34 100 40 L96 52 Q120 56 148 50 L176 44 Q160 62 128 66 L106 64 L98 82 L106 96 L94 96 L86 78 L74 66 L60 80 L66 96 L54 96 L48 76 L52 62 Q22 60 4 46z" fill="#0D1B10"/><path d="M112 26 l6 -2" stroke="#0D1B10" stroke-width="3"/></g></svg>';
       var TRIKE='<svg viewBox="0 0 220 120" width="100%" height="100%"><g class="spl-graze"><path d="M10 74 Q4 52 22 46 Q34 42 44 50 L54 44 Q50 30 62 24 Q78 16 92 28 L100 40 Q140 28 176 44 Q210 58 208 84 Q206 104 184 108 L176 116 L164 116 L162 106 L138 110 L132 118 L120 118 L118 108 Q80 108 58 96 L52 114 L40 114 L42 92 Q18 90 10 74z" fill="#10200F"/><path d="M40 48 L30 30 M56 42 L52 22 M70 40 L74 24" stroke="#10200F" stroke-width="6" stroke-linecap="round"/></g></svg>';
-      extra+='<div class="spl-sunbeam"></div>'
-        +'<div class="spl-dino spl-walkb" style="bottom:15vh;width:min(17vw,168px);aspect-ratio:180/100;opacity:.85;animation-duration:26s;animation-delay:-9s"><div class="spl-gaitwrap" style="width:100%;height:100%">'+RAPT+'</div></div>'
-        +'<div class="spl-dino spl-walk" style="bottom:20vh;width:min(11vw,104px);aspect-ratio:180/100;opacity:.55;animation-duration:34s;animation-delay:-22s">'+RAPT+'</div>'
-        +'<div class="spl-dino spl-walk" style="bottom:16.5vh;width:min(24vw,240px);aspect-ratio:220/120;opacity:.8;animation-duration:52s;animation-delay:-31s">'+TRIKE+'</div>'
-        +'<div class="spl-dino spl-walkb" style="bottom:22vh;width:min(19vw,190px);aspect-ratio:220/120;opacity:.6;animation-duration:44s;animation-delay:-16s"><svg viewBox="0 0 220 120" width="100%" height="100%"><g class="spl-graze" style="animation-delay:-2s"><path d="M8 88 Q2 70 16 62 L28 58 Q22 44 36 40 Q52 34 66 44 Q96 30 132 40 Q170 50 186 72 Q198 86 192 100 L184 116 L172 116 L170 104 L146 110 L140 118 L128 118 L126 106 Q92 108 68 98 L62 116 L50 116 L52 96 Q22 98 8 88z" fill="#14230F"/><path d="M56 40 L62 18 L74 38 M88 34 L98 8 L110 32 M120 32 L132 6 L144 32 M152 38 L164 16 L172 42" fill="#1C3014"/><path d="M186 74 L206 66 M190 84 L212 80" stroke="#14230F" stroke-width="5" stroke-linecap="round"/></g></svg></div>';
+      extra+='<div class="spl-sunbeam"></div>';
       for(var fy=0;fy<8;fy++) extra+='<span class="spl-firefly" style="left:'+(6+fy*11.7)+'vw;bottom:'+(14+(fy*9)%22)+'vh;animation-delay:'+(4+fy*0.3).toFixed(1)+'s,'+(4+fy*0.5).toFixed(1)+'s,-'+(fy*1.3).toFixed(1)+'s"></span>';
-      extra+='<div class="spl-treeline">'+TREES+'</div>'
-        +'<div class="spl-fern" style="left:-30px">'+FERN2+'</div>'
-        +'<div class="spl-fern" style="right:-36px;animation-delay:-2.6s;transform:scaleX(-1)">'+FERN2+'</div>'
-        +'<div class="spl-brach" style="right:6vw;width:min(36vw,360px);opacity:.95">'+BRACH+'</div>'
-        +'<div class="spl-ptero" style="top:20vh;animation-delay:-1.6s;animation-iteration-count:infinite;animation-duration:7.5s">'+PTERO2+'</div>'
-        +'<div class="spl-ptero" style="top:9vh;width:74px;animation-delay:-4.2s;animation-duration:9.4s;animation-iteration-count:infinite;opacity:.6">'+PTERO2+'</div>'
+      extra+='<div class="spl-worldcast" id="spl-cast2"></div>'
         +'<div class="spl-eyes">'+EYES2+'</div>'
         +'<div class="spl-maw"></div>'
-        +'<div class="spl-jaw spl-jawtop">'+JAWT+'<img class="spl-jawimg" src="app-art/dino-jaw-top.jpg" alt="" style="object-position:center top" onerror="this.remove()"></div>'
-        +'<div class="spl-jaw spl-jawbot">'+JAWB+'<img class="spl-jawimg" src="app-art/dino-jaw-bot.jpg" alt="" style="object-position:center bottom" onerror="this.remove()"></div>'
+        +'<div class="spl-jaw spl-jawtop"><img class="spl-jawimg" src="app-art/dino-jaw-top.svg" alt=""></div>'
+        +'<div class="spl-jaw spl-jawbot"><img class="spl-jawimg" src="app-art/dino-jaw-bot.svg" alt=""></div>'
         +'<div class="spl-snapflash"></div>';
       d.insertAdjacentHTML('beforeend', extra);
+      /* the cast is the WORLD'S OWN — same SVGs, same classes, same gaits, exported
+         by worlds4.js (SB_W4_ART). It lands at DOMContentLoaded, a second into the
+         daylight, walking exactly as it does on the live meadow. */
+      var castIn=function(){ try{
+        var K=window.SB_W4_ART, host=document.getElementById('spl-cast2');
+        if(!K||!host||done) return;
+        if(!document.documentElement.getAttribute('data-theme')) document.documentElement.setAttribute('data-theme','dino');
+        var el2=function(cls,sty,inner){ return '<div class="'+cls+'" style="position:absolute;pointer-events:none;'+(sty||'')+'">'+(inner||'')+'</div>'; };
+        var cast='';
+        [['4vw','26vh',.3,'-2s'],['70vw','30vh',.34,'-1s'],['88vw','22vh',.2,'-4s']].forEach(function(tr){
+          cast+=el2('w4-tree','left:'+tr[0]+';height:'+tr[1]+';width:calc('+tr[1]+' * .42);opacity:'+tr[2]+';animation-delay:'+tr[3], K.TREE(240)); });
+        cast+=el2('w4-fern','left:-14px;animation-delay:-1s;bottom:0;width:130px;height:170px', K.FERN);
+        cast+=el2('w4-fern','right:-18px;animation-delay:-3s;bottom:0;width:150px;height:190px', K.FERN);
+        cast+=el2('w4-brachio','', K.BRACHIO);
+        cast+=el2('w4-brachstill','', K.BRACHIO);
+        cast+=el2('w4-raptor','bottom:2vh;width:120px;animation-duration:52s;animation-delay:-14s', K.RAPTOR);
+        cast+=el2('w4-raptor w4-raptor-b','bottom:8vh;width:88px;animation-duration:64s;animation-delay:-34s', K.RAPTOR);
+        cast+=el2('w4-ptero','animation-delay:-12s;width:120px', K.PTERO);
+        cast+=el2('w4-ptero','top:4vh;width:132px;animation-duration:56s;animation-delay:-33s;opacity:.65', K.PTERO);
+        host.innerHTML=cast;
+      }catch(e){} };
+      if(document.readyState!=='loading') castIn(); else document.addEventListener('DOMContentLoaded',castIn);
     }
     var done=false, ac=null;
     function out(){ if(done) return; done=true; d.classList.add('out');
