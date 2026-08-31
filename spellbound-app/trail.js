@@ -1347,6 +1347,15 @@
        seeded spot a day hides a petal shower and a little honey */
     pokes: [[7, 55], [13, 34], [19, 74], [30, 56], [36, 30], [44, 66],
       [55, 42], [62, 72], [70, 34], [80, 50], [88, 34], [94, 66]],
+    /* HERO set-pieces: one or two INTEGRATED living things per country — they
+       belong to the painting and they MOVE (sway, breathe, flutter), and a tap
+       answers with something (petals, spores, bees). Kids find them themselves. */
+    heroes: [
+      { x: 15,   y: 56, w: 170, img: 'mw-hero-tree',   anim: 'sway',    burst: '🌸', name: 'the whispering cherry' },
+      { x: 46.5, y: 46, w: 120, img: 'mw-hero-lolly',  anim: 'sway2',   burst: '✨', name: 'the great lollipop' },
+      { x: 57,   y: 93, w: 130, img: 'mw-hero-shroom', anim: 'breathe', burst: '🟢', name: 'the grand toadstool' },
+      { x: 90,   y: 44, w: 95,  img: 'mw-hero-flag',   anim: 'flutter', burst: '🐝', name: 'the hive banner' },
+    ],
   };
   const mwOn = () => state.trailAct === 'meadow' && state.trailCourse !== 'exp';
   const mwP = c => (tr(c).mw = tr(c).mw || {});
@@ -1356,25 +1365,41 @@
     return (h >>> 0) / 4294967296; }
   const mwDay = () => { const d2 = new Date(); return d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate(); };
   const mwLegOfX = x => { for (let i = 0; i < MW.legEdge.length; i++) if (x <= MW.legEdge[i] + 0.01) return i; return 3; };
-  /* how far the child has EARNED the camera: the leg their frontier stop sits on */
-  function mwReveal(c, pts, nodes, fr) {
-    if (devOn()) return 3;
+  /* how far the child has EARNED the camera: a SLIDING WINDOW — everything
+     behind them forever, plus TWO stops ahead of the frontier, plus a little
+     road into the bend. (Leg boundaries remain only as the unroll celebration.) */
+  function mwEdge(c, pts, nodes, fr) {
+    if (devOn()) return 100;
     let idx = nodes.findIndex(x => x.i === fr);
     if (idx < 0) idx = nodes.length - 1;
-    return mwLegOfX((pts[idx] || { x: 0 }).x);
+    const ahead = Math.min(nodes.length - 1, idx + 2);
+    if (ahead >= nodes.length - 1) return 100;
+    return Math.min(100, Math.max((pts[ahead] || { x: 20 }).x + 7, 24));
   }
   /* the camera clamp IS the reveal: #sb-pan can never scroll past the earned
-     edge, so the future is simply off the canvas — no veil, no fog */
+     edge, so the future is simply off the canvas — no veil, no fog. The clamp
+     is only trusted once the panorama has real layout: a not-yet-loaded image
+     reports a tiny width, and clamping against THAT dragged every scroll back
+     to the far left (the "snaps to level 1" bug). */
   let _mwMax = Infinity;
   document.addEventListener('scroll', e => { try {
     const el = e.target; if (!el || el.id !== 'sb-pan' || _mwMax === Infinity) return;
     if (el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
   } catch (_) {} }, true);
-  function mwClamp(rv) { setTimeout(() => { try {
+  function mwClamp(edge, homeX) { setTimeout(() => { try {
     const el = document.getElementById('sb-pan'); if (!el) { _mwMax = Infinity; return; }
-    const bd = el.firstElementChild; if (!bd) return;
-    _mwMax = Math.max(0, bd.clientWidth * (MW.legEdge[rv] / 100) - el.clientWidth);
-    if (el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
+    const bd = el.firstElementChild, img = bd && bd.querySelector('img');
+    const apply = () => { try {
+      const el2 = document.getElementById('sb-pan'); if (!el2) return;
+      const bd2 = el2.firstElementChild; if (!bd2) return;
+      if (bd2.clientWidth < el2.clientWidth * 1.2) { _mwMax = Infinity; return; }  // no real layout yet
+      _mwMax = Math.max(0, bd2.clientWidth * (edge / 100) - el2.clientWidth);
+      if (el2.scrollLeft > _mwMax) el2.scrollLeft = _mwMax;
+      /* open the camera AT the child's stop, not at the west end of the world */
+      if (homeX != null) el2.scrollLeft = Math.max(0, Math.min(_mwMax, bd2.clientWidth * homeX / 100 - el2.clientWidth / 2));
+    } catch (_) {} };
+    if (img && !img.complete) { _mwMax = Infinity; img.addEventListener('load', apply, { once: true }); }
+    else apply();
   } catch (_) {} }, 0); }
   /* the unroll: when a new leg is earned, glide the camera to the new country */
   function mwUnroll(c, rv) { const p = mwP(c); const seen = p.rv || 0;
@@ -1390,17 +1415,15 @@
     } catch (_) {} }, 350);
     return true; }
   /* ---- the daily seed's gifts ---- */
-  function mwBloomIdx(c, pts, nodes) { // today's 2x-honey stop, always in earned country
-    const rv = mwReveal(c, pts, nodes, frontier(c));
-    const open = pts.map((p, i) => i).filter(i => mwLegOfX(pts[i].x) <= rv && !passedNode(c, nodes[i].n));
+  function mwBloomIdx(c, pts, nodes, edge) { // today's 2x-honey stop, always in earned country
+    const open = pts.map((p, i) => i).filter(i => pts[i].x <= edge && !passedNode(c, nodes[i].n));
     if (!open.length) return -1;
     return open[Math.floor(mwSeed(c, 'bloom') * open.length) % open.length]; }
   const MW_VARS = ['rainbow', 'mist', 'gold'];
   const mwVariant = c => MW_VARS[Math.floor(mwSeed(c, 'wx') * MW_VARS.length) % MW_VARS.length];
-  function mwWander(c, pts, nodes) { // where the wanderer stands today
-    const rv = mwReveal(c, pts, nodes, frontier(c));
+  function mwWander(c, edge) { // where the wanderer stands today
     const f = mwSeed(c, 'wander');
-    const x = 4 + f * (MW.legEdge[rv] - 12), y = 24 + ((f * 7919) % 1) * 55;
+    const x = 4 + f * (edge - 12), y = 24 + ((f * 7919) % 1) * 55;
     return { x, y, done: (mwP(c).wd || '') === mwDay() }; }
   app2.mwWander = () => { const c = active(); const p = mwP(c); if (p.wd === mwDay()) return;
     needMap(() => { try {
@@ -1427,6 +1450,20 @@
     if (i === lucky && p.pk !== mwDay()) { p.pk = mwDay(); addCoins(2); save();
       try { sfx('coin'); burstConfetti(40); } catch (_) {}
       flash('🌸 A petal shower! +2 honey'); render(); }
+  } catch (e) {} };
+  /* a HERO answers a tap in its own voice: the cherry sheds petals, the
+     lollipop rings sparkles, the toadstool puffs spores, the banner sends
+     two bees zipping out. Pure DOM, pure delight — no economy. */
+  app2.mwHero = i => { try { const h = MW.heroes[+i]; if (!h) return;
+    const el = document.querySelector('.mw-hero[data-arg="' + i + '"]'); if (!el) return;
+    el.classList.remove('stir'); void el.offsetWidth; el.classList.add('stir');
+    const burst = document.createElement('span'); burst.className = 'mw-burst';
+    for (let k = 0; k < 8; k++) { const s2 = document.createElement('span');
+      s2.textContent = h.burst === '🟢' ? (k % 2 ? '✨' : '💚') : (k % 3 === 2 ? '✨' : h.burst);
+      s2.style.setProperty('--ba', (k * 45) + 'deg');
+      s2.style.setProperty('--bd2', (0.55 + (k % 4) * 0.13) + 's'); burst.appendChild(s2); }
+    el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 1100);
+    try { sfx('tick'); } catch (_) {}
   } catch (e) {} };
   /* ---- landmarks: place-true side rounds, one honey trickle per day each ---- */
   const MW_LM_ART = {
@@ -1860,9 +1897,15 @@
     const walked = Math.min(dn, n - 1);
     const st = i => { const x = nodes[i]; return passedNode(c, x.n) ? 'done'
       : (x.i === fr || (isMW && mwPairOpen(c, nodes, fr, i))) ? 'now' : 'next'; };
-    /* how much of the world the camera has earned, and today's seeded gifts */
-    const rv = isMW ? mwReveal(c, pts, nodes, fr) : 3;
-    const bloomI = isMW ? mwBloomIdx(c, pts, nodes) : -1;
+    /* how much of the world the camera has earned (the sliding window: all of
+       the past + two stops ahead), and today's seeded gifts. The unroll BEAT
+       keys off the country the CHILD stands in — never the window's margin,
+       which can peek over a plate boundary without anyone arriving there. */
+    const edge = isMW ? mwEdge(c, pts, nodes, fr) : 100;
+    let frIdx = isMW ? nodes.findIndex(x => x.i === fr) : 0;
+    if (frIdx < 0) frIdx = nodes.length - 1;
+    const rv = isMW ? mwLegOfX((pts[frIdx] || { x: 0 }).x) : 3;
+    const bloomI = isMW ? mwBloomIdx(c, pts, nodes, edge) : -1;
     state.mwBloomU = (isMW && bloomI >= 0 && nodes[bloomI].n.kind === 'unit') ? nodes[bloomI].n.u.id : null;
 
     /* Stops are HTML pins over the painting, not SVG inside it: they keep a real
@@ -1873,7 +1916,7 @@
     const marks = pts.map((p, i) => {
       /* the reveal law: a stop beyond the earned edge is OFF THE CANVAS — it is
          not rendered at all, never veiled */
-      if (isMW && p.x > MW.legEdge[rv] + 0.5) return '';
+      if (isMW && p.x > edge + 0.5) return '';
       const kind = st(i), on = i === sel, node = nodes[i].n;
       const size = kind === 'now' ? 42 : 34;
       const bg = kind === 'done' ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
@@ -1897,56 +1940,68 @@
     let mwHTML = '', mwExtra = '';
     if (isMW) {
       const glowLm = Math.floor(mwSeed(c, 'lmglow') * MW.lms.length) % MW.lms.length;
-      mwHTML += MW.lms.map((lm, i) => { if (lm.leg > rv) return '';
+      mwHTML += MW.lms.map((lm, i) => { if (lm.x > edge) return '';
         const done2 = mwLmDone(c, i);
         return `<button class="mw-lm${done2 ? ' done' : ''}${i === glowLm && !done2 ? ' glow' : ''}" data-act="mwLmk" data-arg="${i}"
           style="left:${lm.x}%;top:${lm.y}%" title="${escA(lm.name + (done2 ? ' — visited today' : ' — a side round of words, +12 honey'))}">
           <span class="mw-lm-a">${MW_LM_ART[lm.g] || ''}</span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span></button>`; }).join('');
-      const wd = mwWander(c, pts, nodes);
+      const wd = mwWander(c, edge);
       if (!wd.done) mwHTML += `<button class="mw-wander" data-act="mwWander" style="left:${wd.x.toFixed(1)}%;top:${wd.y.toFixed(1)}%"
         title="Barnaby Bear has a word for you — +8 honey">🐻<span class="mw-lm-n">Barnaby</span></button>`;
-      if (rv < 3) mwHTML += `<span class="mw-sign" style="left:${(MW.legEdge[rv] - 1.2).toFixed(1)}%">
-        <span>→ ${esc(MW.legName[rv + 1])}</span><i>clear the road to open the way</i></span>`;
+      if (edge < 99) { /* the sign teases what the bend hides: the rest of this
+        country if most of it is still unseen, else the next one */
+        const remaining = MW.legEdge[rv] - edge;
+        const nl = Math.min(3, remaining > 10 ? rv : rv + 1);
+        mwHTML += `<span class="mw-sign" style="left:${(edge - 1.2).toFixed(1)}%">
+        <span>→ ${esc(MW.legName[nl])}</span><i>clear the road to open the way</i></span>`; }
       /* THE LIFE LAYER: butterflies wander, petals fall, glints twinkle — and a
          dozen painted things are POKEABLE (one hides today's petal shower) */
       const BCOL = ['#F3B2C0', '#8FD0EC', '#FFD24D', '#C8A2F0', '#A8E0B0'];
-      for (let bf2 = 0; bf2 < 5; bf2++) { const bx = (6 + bf2 * 19 + mwSeed(c, 'bf' + bf2) * 8) % (MW.legEdge[rv] - 4);
+      for (let bf2 = 0; bf2 < 5; bf2++) { const bx = (6 + bf2 * 19 + mwSeed(c, 'bf' + bf2) * 8) % Math.max(20, edge - 4);
         mwHTML += `<span class="mw-butter" style="left:${bx.toFixed(1)}%;top:${(14 + (bf2 * 29) % 52)}%;--bd:${(bf2 * 2.3).toFixed(1)}s">
           <span style="display:block;width:34px;height:26px">${BFLY(BCOL[bf2])}</span></span>`; }
       for (let pf = 0; pf < 14; pf++) { const px2 = (pf * 7.3 + mwSeed(c, 'pf' + pf) * 5) % 98;
-        if (px2 > MW.legEdge[rv]) continue;
+        if (px2 > edge) continue;
         mwHTML += `<span class="mw-petalfall" style="left:${px2.toFixed(1)}%;--pd:${((pf * 1.9) % 11).toFixed(1)}s;--pw:${(7 + pf % 5)}s"></span>`; }
-      for (let tw = 0; tw < 9; tw++) { const tx2 = (4 + tw * 11.2) % 96; if (tx2 > MW.legEdge[rv]) continue;
+      for (let tw = 0; tw < 9; tw++) { const tx2 = (4 + tw * 11.2) % 96; if (tx2 > edge) continue;
         mwHTML += `<span class="mw-twink" style="left:${tx2.toFixed(1)}%;top:${(20 + (tw * 31) % 62)}%;--td:${(tw * 0.9).toFixed(1)}s"></span>`; }
-      MW.pokes.forEach((pk, i) => { if (pk[0] > MW.legEdge[rv]) return;
+      MW.pokes.forEach((pk, i) => { if (pk[0] > edge) return;
         mwHTML += `<button class="mw-poke" data-act="mwPoke" data-arg="${i}" style="left:${pk[0]}%;top:${pk[1]}%;--td:${((i * 1.3) % 8).toFixed(1)}s" aria-label="something wiggles here"></button>`; });
       /* CREATURES WITH BEHAVIOUR — not decorations. Worker bees fly flower to
          flower and PAUSE to gather (keyframe holds); birds cross the whole sky;
          dandelion seeds drift; mist wisps roll through; the brook sparkles. */
       const BEEIMG = '<img src="app-art/hive-bee-fly.svg" alt="" style="width:100%;height:100%;object-fit:contain">';
       [[6, 60, '17s', '0s'], [33, 66, '21s', '-8s'], [58, 56, '19s', '-14s'], [84, 60, '23s', '-4s']]
-      .forEach(bw => { if (bw[0] > MW.legEdge[rv]) return;
+      .forEach(bw => { if (bw[0] > edge) return;
         mwHTML += `<span class="mw-workbee" style="left:${bw[0]}%;top:${bw[1]}%;--wd:${bw[2]};--wdl:${bw[3]}"><span>${BEEIMG}</span></span>`; });
       const BIRD = '<svg viewBox="0 0 40 16" width="100%" height="100%"><path d="M2 12 q9 -10 18 0 q9 -10 18 0" fill="none" stroke="#6B4E42" stroke-width="2.6" stroke-linecap="round"/></svg>';
       [['5%', '34s', '0s', 22], ['9%', '46s', '-20s', 17], ['13%', '40s', '-33s', 19]].forEach(bd2 => {
         mwHTML += `<span class="mw-bird" style="top:${bd2[0]};--fd2:${bd2[1]};--fdl:${bd2[2]};width:${bd2[3]}px">${BIRD}</span>`; });
-      for (let sd = 0; sd < 8; sd++) { const sx = (3 + sd * 12.3) % 96; if (sx > MW.legEdge[rv]) continue;
+      for (let sd = 0; sd < 8; sd++) { const sx = (3 + sd * 12.3) % 96; if (sx > edge) continue;
         mwHTML += `<span class="mw-seed" style="left:${sx.toFixed(1)}%;top:${(30 + (sd * 27) % 48)}%;--sd2:${((sd * 2.7) % 12).toFixed(1)}s"></span>`; }
       [[14, 62, '26s', '0s'], [42, 70, '32s', '-12s'], [68, 58, '28s', '-20s'], [88, 66, '30s', '-6s']]
-      .forEach(mi => { if (mi[0] > MW.legEdge[rv]) return;
+      .forEach(mi => { if (mi[0] > edge) return;
         mwHTML += `<span class="mw-wisp" style="left:${mi[0]}%;top:${mi[1]}%;--md2:${mi[2]};--mdl:${mi[3]}"></span>`; });
       /* the brook glitters where the painter put it (plate two) */
-      if (rv >= 1) [[30.5, 62], [31.5, 72], [33, 80], [35.5, 58], [37, 68]].forEach((bk, i) =>
+      if (edge >= 38) [[30.5, 62], [31.5, 72], [33, 80], [35.5, 58], [37, 68]].forEach((bk, i) =>
         mwHTML += `<span class="mw-twink mw-water" style="left:${bk[0]}%;top:${bk[1]}%;--td:${(i * 0.7).toFixed(1)}s"></span>`);
+      /* the HERO set-pieces: integrated living things, anchored by their feet */
+      MW.heroes.forEach((h, i) => { if (h.x > edge) return;
+        mwHTML += `<button class="mw-hero mw-${h.anim}" data-act="mwHero" data-arg="${i}"
+          style="left:${h.x}%;top:${h.y}%;width:${h.w}px" title="${escA(h.name)}" aria-label="${escA(h.name)}">
+          <img src="app-art/${h.img}.svg" alt=""></button>`; });
       const wx = mwVariant(c);
       mwExtra = wx === 'rainbow' ? '<span class="mw-wx mw-rainbow" aria-hidden="true"></span>'
         : wx === 'mist' ? '<span class="mw-wx mw-mist" aria-hidden="true"></span>'
         : '<span class="mw-wx mw-gold" aria-hidden="true"></span>';
-      mwUnroll(c, rv); mwClamp(rv);
+      mwUnroll(c, rv);
     } else _mwMax = Infinity;
     const caches = (m.t || []).map((xy, i) => treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
     const popNew = _popK !== ('a:' + act.id + ':' + sel); if (popNew) _popK = 'a:' + act.id + ':' + sel;
     if ((popNew || _fresh) && !shut) panTo(sel, pts);   // never yank a hand-scrolled board on a background render — nor on a card dismiss
+    /* the meadow's clamp waits for the panorama's real layout, then homes the
+       camera on the child's stop — only on a fresh view or a new pick */
+    if (isMW) mwClamp(edge, (popNew || _fresh) && !shut ? (pts[sel] || pts[0]).x : null);
 
     const cur = nodes[sel], node = cur.n,
       locked = cur.i > fr && !devOn() && !(isMW && mwPairOpen(c, nodes, fr, sel));
@@ -1967,7 +2022,7 @@
     const _P = pts[sel] || { x: 50, y: 50 };
     /* on the panorama the card must also duck the CAMERA CLAMP: a pin near the
        earned edge anchors its card leftward, or half of it lives off-canvas */
-    const _edge = isMW ? MW.legEdge[rv] : 100;
+    const _edge = isMW ? edge : 100;
     const _cardW = isMW ? 15 : 27;   // the card's rough width in board %
     const _side = _P.x < (isMW ? 7 : 27) ? 'l' : _P.x > _edge - _cardW ? 'r' : 'c';
     const _below = _P.y < 44;

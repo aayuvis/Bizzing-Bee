@@ -1669,6 +1669,23 @@
     82%{opacity:.8}100%{opacity:0;transform:translateX(14vw)}}
   .mw-water{--td:0s;background:radial-gradient(circle,#F2FDFF 0 26%,rgba(160,225,255,.95) 46%,transparent 70%);
     animation-duration:2.1s}
+  /* HERO set-pieces: integrated living things — anchored by their feet, they
+     sway / breathe / flutter with the world, and answer a tap with a stir */
+  .mw-hero{position:absolute;z-index:3;transform:translate(-50%,-100%);transform-origin:50% 100%;
+    background:none;border:0;padding:0;cursor:pointer;filter:drop-shadow(0 6px 12px rgba(40,24,4,.3))}
+  .mw-hero img{width:100%;height:auto;display:block;pointer-events:none}
+  .mw-sway{animation:mw-hsway 5.5s ease-in-out infinite alternate}
+  @keyframes mw-hsway{from{transform:translate(-50%,-100%) rotate(-1.6deg)}to{transform:translate(-50%,-100%) rotate(1.8deg)}}
+  .mw-sway2{animation:mw-hsway2 3.8s ease-in-out infinite alternate}
+  @keyframes mw-hsway2{from{transform:translate(-50%,-100%) rotate(-2.6deg)}to{transform:translate(-50%,-100%) rotate(2.6deg)}}
+  .mw-breathe{animation:mw-hbreathe 3.2s ease-in-out infinite}
+  @keyframes mw-hbreathe{0%,100%{transform:translate(-50%,-100%) scale(1)}50%{transform:translate(-50%,-100%) scale(1.04,1.06)}}
+  .mw-flutter{animation:mw-hflut 1.7s ease-in-out infinite alternate}
+  @keyframes mw-hflut{from{transform:translate(-50%,-100%) skewX(-2.5deg)}to{transform:translate(-50%,-100%) skewX(3deg)}}
+  .mw-hero.stir{animation:mw-hstir .8s cubic-bezier(.3,1.5,.4,1)}
+  @keyframes mw-hstir{0%{transform:translate(-50%,-100%) rotate(0)}25%{transform:translate(-50%,-100%) rotate(-4deg) scale(1.04)}
+    55%{transform:translate(-50%,-100%) rotate(3.4deg)}80%{transform:translate(-50%,-100%) rotate(-1.6deg)}100%{transform:translate(-50%,-100%)}}
+  .mw-hero .mw-burst{left:50%;top:26%}
   /* the stop you stand on BREATHES */
   .atlas-stop.now .atlas-sd{animation:mw-nowpulse 2.2s ease-in-out infinite}
   @keyframes mw-nowpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
@@ -1678,10 +1695,13 @@
   :root[data-motion="off"] .mw-twink,:root[data-motion="off"] .mw-poke::after,
   :root[data-motion="off"] .mw-workbee,:root[data-motion="off"] .mw-workbee>span,
   :root[data-motion="off"] .mw-bird,:root[data-motion="off"] .mw-seed,
-  :root[data-motion="off"] .mw-wisp,:root[data-motion="off"] .atlas-stop.now .atlas-sd{animation:none}
+  :root[data-motion="off"] .mw-wisp,:root[data-motion="off"] .atlas-stop.now .atlas-sd,
+  :root[data-motion="off"] .mw-sway,:root[data-motion="off"] .mw-sway2,
+  :root[data-motion="off"] .mw-breathe,:root[data-motion="off"] .mw-flutter{animation:none}
   @media (prefers-reduced-motion:reduce){ .kit-fly,.kit-petal,.mw-wander,.mw-bloom,.mw-lm.glow .mw-lm-a,
     .mw-butter,.mw-petalfall,.mw-twink,.mw-poke::after,.mw-workbee,.mw-workbee>span,
-    .mw-bird,.mw-seed,.mw-wisp,.atlas-stop.now .atlas-sd{animation:none} }
+    .mw-bird,.mw-seed,.mw-wisp,.atlas-stop.now .atlas-sd,
+    .mw-sway,.mw-sway2,.mw-breathe,.mw-flutter{animation:none} }
   .act-pan{overflow-x:auto;overflow-y:hidden;border-radius:22px;-webkit-overflow-scrolling:touch;
     box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2)}
   .act-pan::-webkit-scrollbar{height:6px}
@@ -2616,6 +2636,6 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
   <script defer src="saga2.js?v=20260828a"></script>
 <script defer src="trivia.js?v=20260824q"></script>
 <script defer src="advanced.js?v=20260824q"></script>
-<script defer src="trail.js?v=20260831d"></script>
+<script defer src="trail.js?v=20260831e"></script>
 </body>
 </html>

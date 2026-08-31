@@ -89,9 +89,17 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       rv: ((c.trail || {}).mw || {}).rv || 0,
       sign: (document.querySelector('.mw-sign span') || {}).textContent || '' };
   });
-  ok(unroll.stops > fresh.stops, 'clearing the leg UNROLLS the road — ' + unroll.stops + ' stops now stand');
+  ok(unroll.stops > fresh.stops, 'clearing stops SLIDES the window forward — ' + unroll.stops + ' stops now stand');
   ok(unroll.rv >= 1, 'the reveal is remembered (rv=' + unroll.rv + ')');
-  ok(/Mushroom Hollow|Hive Gates/.test(unroll.sign), 'and the NEXT bend is teased (' + unroll.sign.trim() + ')');
+  ok(/Mushroom Hollow|Hive Gates|Lollipop/.test(unroll.sign), 'and the bend is teased (' + unroll.sign.trim() + ')');
+  // the camera OPENS at the child's stop, not at the west end of the world
+  const home = await pg.evaluate(async () => {
+    app.trailBack(); await new Promise(r => setTimeout(r, 200));
+    app.trailAct('honey|meadow'); await new Promise(r => setTimeout(r, 1200));
+    const el = document.getElementById('sb-pan');
+    return { sl: el ? el.scrollLeft : -1 };
+  });
+  ok(home.sl > 120, 'the camera opens AT the child\'s stop (scroll=' + Math.round(home.sl) + '), no snap to the west end');
 
   // ---- the kit rounds: place-true mechanics inside the real quiz ----
   const kits = await pg.evaluate(async () => {
@@ -259,6 +267,18 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'creatures with BEHAVIOUR: ' + crit.workbees + ' worker bees on gather loops, ' + crit.birds + ' birds crossing, '
     + crit.seeds + ' seeds drifting, ' + crit.wisps + ' mist wisps');
   ok(crit.water >= 4, 'the brook glitters along its painted course (' + crit.water + ' water glints)');
+  const hero = await pg.evaluate(async () => {
+    state.devUnlock = 1; render(); await new Promise(r => setTimeout(r, 500));
+    const n = document.querySelectorAll('.mw-hero img[src*="mw-hero-"]').length;
+    app.mwHero('0');
+    const stir = !!document.querySelector('.mw-hero.stir'), burst = !!document.querySelector('.mw-hero .mw-burst');
+    state.devUnlock = 0;
+    return { n, stir, burst };
+  });
+  ok(hero.n === 4, 'each country keeps an INTEGRATED hero set-piece — the cherry, the lollipop, the toadstool, the banner (' + hero.n + ')');
+  ok(hero.stir && hero.burst, 'a tapped hero STIRS and answers in its own voice (petals / spores / bees)');
+  ['mw-hero-tree', 'mw-hero-lolly', 'mw-hero-shroom', 'mw-hero-flag'].forEach(f =>
+    ok(fs.existsSync(SRC + '/app-art/' + f + '.svg'), f + '.svg ships'));
   ['mw-lm-beehive', 'mw-lm-well', 'mw-lm-arch', 'mw-lm-oak'].forEach(f =>
     ok(fs.existsSync(SRC + '/app-art/' + f + '.svg'), f + '.svg ships'));
 
