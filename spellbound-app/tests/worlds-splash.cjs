@@ -123,6 +123,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(/presses ITSELF one second in/.test(idx) && /born=Date\.now\(\); d\.classList\.remove\('hold'\); d\.classList\.add\('kb'\)/.test(idx)
     && /sk joins the cue at the elapsed clock/.test(idx),
     'the auto-press starts clock, cinematic and sound together — and a blocked cue joins on the first real tap');
+  ok(/spl-snd\b/.test(idx) && /tap for sound/.test(idx) && /sndBadge\(true\)/.test(idx),
+    'a refused auto-press shows the loud 🔊 tap-for-sound chip (one tap joins the music, nothing skips)');
   ok(/spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
     'the frame still slams and the maw pulses at the snap');
 
