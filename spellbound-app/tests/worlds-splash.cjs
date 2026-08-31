@@ -110,8 +110,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(going.up && going.kb && going.pressed && going.gateGone,
     'at ~1s the gate presses ITSELF — the click plays, .kb lands, the show runs');
   await pgG.mouse.down(); await pgG.mouse.up(); await pgG.waitForTimeout(300);
-  await pgG.mouse.down(); await pgG.mouse.up(); await pgG.waitForTimeout(1000);
-  ok(await pgG.evaluate(() => !document.querySelector('#sb-splash')), 'tapping the running show skips straight in');
+  await pgG.mouse.down(); await pgG.mouse.up();
+  // the skip fades the splash out — poll rather than race the fade
+  let gGone = false; for (let t2 = 0; t2 < 12 && !gGone; t2++) { await pgG.waitForTimeout(300);
+    gGone = await pgG.evaluate(() => !document.querySelector('#sb-splash')); }
+  ok(gGone, 'tapping the running show skips straight in');
   await pgG.close();
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
   ok(/brand-open\.mp3/.test(idx) && /BIZZING BEE brand sound/.test(idx),
@@ -173,8 +176,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(bug.text && bug.ico, 'the centre wordmark IS the brand lockup — mascot + italic Bizzing™ Bee at title size');
   ok(bug.noCorner, 'the duplicate top-right corner lockup is retired');
   await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(300);
-  await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(1000);
-  ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'tapping the hive show skips straight in');
+  await pgH.mouse.down(); await pgH.mouse.up();
+  let hGone = false; for (let t2 = 0; t2 < 12 && !hGone; t2++) { await pgH.waitForTimeout(300);
+    hGone = await pgH.evaluate(() => !document.querySelector('#sb-splash')); }
+  ok(hGone, 'tapping the hive show skips straight in');
 
   // ---- the OTHER SIX worlds each own their opening: world class, staging,
   //      close gesture, and a stinger of their own wired to the close ----
