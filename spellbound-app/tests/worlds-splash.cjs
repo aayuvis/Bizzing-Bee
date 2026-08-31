@@ -159,10 +159,12 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'honey plates, bee sprites and both comb plates all ship in app-art');
   ok(/spl-goldshift/.test(idx0) && /honey cell sealing/.test(idx0),
     'the day turns to gold, and the buzz stinger is timed to the honey cell sealing');
-  const bug = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); const t = d && d.querySelector('.spl-brand-t');
-    return { up: d && !!d.querySelector('.spl-brand'), text: !!(t && /Bizzing/.test(t.textContent) && / Bee/.test(t.textContent)),
-      ico: !!document.querySelector('#spl-bico svg') }; });
-  ok(bug.up && bug.text && bug.ico, 'the brand lockup — the mascot + the wordmark in the brand face — sits top right');
+  const bug = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); const t = d && d.querySelector('.spl-logo-t');
+    return { text: !!(t && /Bizzing/.test(t.textContent) && /Bee/.test(t.textContent) && /™/.test(t.textContent)),
+      ico: !!document.querySelector('#spl-bico2 svg'),
+      noCorner: d && !d.querySelector('.spl-brand') }; });
+  ok(bug.text && bug.ico, 'the centre wordmark IS the brand lockup — mascot + italic Bizzing™ Bee at title size');
+  ok(bug.noCorner, 'the duplicate top-right corner lockup is retired');
   await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(400);
   await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(1000);
   ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'gate tap then skip tap dismisses the hive opening');
