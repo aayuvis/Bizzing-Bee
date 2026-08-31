@@ -1111,7 +1111,11 @@
     color:var(--spl-deep,#120E24);font-weight:800;font-size:clamp(14px,3vw,17px);letter-spacing:.04em;cursor:pointer;
     box-shadow:0 6px 28px color-mix(in srgb,var(--spl-acc,#FFD24D) 50%,transparent);animation:spl-gatepulse 1.6s ease-in-out infinite}
   @keyframes spl-gatepulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  #sb-splash .spl-gate-e{font-size:1.35em;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.25))}
   #sb-splash.kb .spl-gate{display:none}
+  /* during the HOLD the gate is the ONLY call — the episode credit and tagline
+     are film beats, they belong to the show and enter with it */
+  #sb-splash.hold .spl-world,#sb-splash.hold .spl-sub{display:none}
   /* ── DINO ERA's own opening (only #sb-splash.w-dino, only with motion on):
      day falls to dusk across the painted meadow, its creatures cross the frame,
      a roar lands, and the exit is THROUGH the closing jaws of a T-rex. ── */
@@ -1154,7 +1158,9 @@
   #sb-splash .spl-eyes{position:absolute;left:50%;top:16vh;width:min(30vw,280px);transform:translateX(-50%);z-index:5;opacity:0;pointer-events:none;filter:drop-shadow(0 0 18px rgba(255,170,40,.8))}
   #sb-splash.kb .spl-eyes{animation:spl-eyesflare 1.2s ease 4.25s both}
   @keyframes spl-eyesflare{0%{opacity:0;transform:translateX(-50%) scale(.7)}30%,70%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(1.35)}}
-  #sb-splash .spl-maw{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,rgba(140,18,18,.15) 26%,rgba(96,10,12,.9) 74%,#1C0406 100%);opacity:0}
+  /* the mouth-glow behind the chomp: warm plum dusk, not a blood-red maw —
+     it matches the friendly cartoon jaws (rounded teeth, pink tongue) */
+  #sb-splash .spl-maw{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,rgba(90,52,80,.12) 26%,rgba(62,34,58,.85) 74%,#1A1022 100%);opacity:0}
   #sb-splash.kb .spl-maw{animation:spl-mawin .6s cubic-bezier(.5,0,.8,.4) 6.25s both,spl-mawpulse .5s ease 6.55s 1}
   @keyframes spl-mawin{to{opacity:1}}
   @keyframes spl-mawpulse{50%{opacity:1;filter:brightness(1.9)}}
@@ -1348,30 +1354,33 @@
   #sb-splash.kb .spl-fuse{animation:spl-fusego 1s cubic-bezier(.2,.6,.3,1) 6.55s both}
   @keyframes spl-fusego{0%{opacity:0;transform:scale(.2)}30%{opacity:1}100%{opacity:.97;transform:scale(17)}}
   /* ── GOD'S ABODE's own opening (w-gods): rays through the cloud shelf, bolts
-     glinting — then the marble TEMPLE DOORS grind in from the wings and BOOM
-     shut on a seam of golden light. ── */
+     glinting — then the ASCENSION: the camera climbs, clouds rush down past the
+     frame, the rays flare, one soft bolt cracks, and the arrival is a bloom of
+     golden light. (The stone temple doors were cut — too heavy for a sky.) ── */
   #sb-splash.w-gods.kb .spl-art{opacity:0;animation:spl-artin-gd 1.4s cubic-bezier(.16,1,.3,1) .1s both,spl-kb 9s cubic-bezier(.16,1,.3,1) both,spl-godsdim 7.2s linear both}
   @keyframes spl-artin-gd{from{opacity:0}to{opacity:.92}}
-  @keyframes spl-godsdim{0%,46%{filter:brightness(1.3) saturate(1.06)}100%{filter:brightness(.78) saturate(1.12) sepia(.14)}}
+  @keyframes spl-godsdim{0%,46%{filter:brightness(1.3) saturate(1.06)}100%{filter:brightness(1.14) saturate(1.12) sepia(.1)}}
   #sb-splash.w-gods.kb .spl-veil{opacity:.14}
   #sb-splash .spl-cloudshelf{position:absolute;z-index:2;opacity:0;pointer-events:none;animation:spl-shelfin 1.8s ease both,spl-shelfdrift 24s ease-in-out infinite}
   @keyframes spl-shelfin{to{opacity:.85}}
   @keyframes spl-shelfdrift{0%,100%{transform:translateX(0)}50%{transform:translateX(3vw)}}
-  #sb-splash .spl-doorseam{position:absolute;left:50%;top:0;bottom:0;width:10px;margin-left:-5px;z-index:6;opacity:0;pointer-events:none;
-    background:linear-gradient(180deg,rgba(255,246,216,.1),#FFE9A8 40%,#FFD24D 60%,rgba(255,246,216,.1));box-shadow:0 0 34px 10px rgba(255,210,77,.75)}
-  #sb-splash.kb .spl-doorseam{animation:spl-seamin 1.9s ease 4.9s both}
-  @keyframes spl-seamin{0%{opacity:0}45%{opacity:1}100%{opacity:1}}
-  #sb-splash .spl-door{position:absolute;top:-2vh;bottom:-2vh;width:56vw;z-index:7;pointer-events:none;filter:drop-shadow(0 0 32px rgba(20,12,0,.8))}
-  #sb-splash .spl-door svg{position:absolute;inset:0;width:100%;height:100%}
-  #sb-splash .spl-doorL{left:0;transform:translateX(-108%)}
-  #sb-splash .spl-doorR{right:0;transform:translateX(108%)}
-  #sb-splash.kb .spl-doorL{animation:spl-doorgoL 1.85s cubic-bezier(.5,.05,.62,1) 4.9s both}
-  #sb-splash.kb .spl-doorR{animation:spl-doorgoR 1.85s cubic-bezier(.5,.05,.62,1) 4.9s both}
-  @keyframes spl-doorgoL{0%{transform:translateX(-108%)}52%{transform:translateX(-16%)}72%{transform:translateX(-14%)}100%{transform:translateX(3%)}}
-  @keyframes spl-doorgoR{0%{transform:translateX(108%)}52%{transform:translateX(16%)}72%{transform:translateX(14%)}100%{transform:translateX(-3%)}}
+  /* the climb: clouds enter high, rush down past the frame and swell as they go */
+  #sb-splash .spl-cloudrush{position:absolute;z-index:6;opacity:0;pointer-events:none;filter:drop-shadow(0 4px 18px rgba(120,90,20,.25))}
+  #sb-splash.kb .spl-cloudrush{animation:spl-cloudup 2.3s cubic-bezier(.45,.08,.7,.5) var(--cd,4.6s) both}
+  @keyframes spl-cloudup{0%{opacity:0;transform:translateY(-16vh) scale(.72)}14%{opacity:.96}
+    100%{opacity:.92;transform:translateY(125vh) scale(1.55)}}
+  /* the rays flare from above as the summit nears */
+  #sb-splash .spl-raybloom{position:absolute;inset:-4%;z-index:5;opacity:0;pointer-events:none;mix-blend-mode:screen;
+    background:radial-gradient(90% 80% at 50% -10%,rgba(255,238,180,.95) 0%,rgba(255,214,110,.5) 42%,transparent 72%)}
+  #sb-splash.kb .spl-raybloom{animation:spl-rayup 1.7s ease 5.3s both}
+  @keyframes spl-rayup{0%{opacity:0}100%{opacity:.85}}
+  /* one soft bolt, and the golden arrival that takes the frame */
   #sb-splash .spl-godflash{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none;background:#FFF6D8}
-  #sb-splash.kb .spl-godflash{animation:spl-snap .34s linear 6.72s 1}
-  #sb-splash.kb.w-gods{animation:spl-slam .5s linear 6.7s 1}
+  #sb-splash.kb .spl-godflash{animation:spl-snap .4s linear 6.55s 1}
+  #sb-splash .spl-godbloom{position:absolute;inset:0;z-index:8;opacity:0;pointer-events:none;
+    background:radial-gradient(circle at 50% 38%,#FFFDF0 0%,rgba(255,233,168,.96) 44%,rgba(217,169,60,.92) 78%,rgba(120,84,10,.94) 100%)}
+  #sb-splash.kb .spl-godbloom{animation:spl-godarrive 1.15s cubic-bezier(.2,.5,.3,1) 6.7s both}
+  @keyframes spl-godarrive{0%{opacity:0;transform:scale(1.12)}55%{opacity:.96}100%{opacity:.94;transform:scale(1)}}
   /* ── RACE ZONE's own opening (w-race): the start gantry drops in, its lights
      count red - red - red … GREEN, and the frame LAUNCHES through a wall of
      speed. ── */
@@ -1963,14 +1972,14 @@
     if(!st.children || !st.children.length) return;
     var rm=false; try{ rm=(st.am===1)||(st.cm===1)||matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
     /* the EIGHT worlds of the Aug-31 store cut; a stale saved theme falls back to the Hive */
-    var T={ spellbound:['The Hive','#FFD24D','#241E4E','🐝','hive','home sweet hive','tap to open the Hive'],
-      aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos','cosmic','tap to ride the northern lights'],
-      anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo','the dojo','tap to enter the dojo'],
-      science:['Lab','#3BC0AA','#062A24','🧪','lab','field notes','tap to start the experiment'],
-      avatar:['Elements','#8FD0EC','#0A2430','🌊','pond','elemental','tap to bend the elements'],
-      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky','divine','tap to knock on the temple doors'],
-      race:['Race Zone','#7BA3F5','#0A1430','🏎️','carnival','full throttle','tap to start your engine'],
-      dino:['Dino Era','#B8D96A','#141E08','🦖','meadow','prehistoric','tap to travel back 100 million years'] };
+    var T={ spellbound:['The Hive','#FFD24D','#241E4E','🐝','hive','home sweet hive','Open the Hive'],
+      aurora:['Galaxy','#8FA0F5','#101736','🌠','cosmos','cosmic','Ride the northern lights'],
+      anime:['Blade','#F3B2C0','#2A0E18','🌸','dojo','the dojo','Enter the dojo'],
+      science:['Lab','#3BC0AA','#062A24','🧪','lab','field notes','Start the experiment'],
+      avatar:['Elements','#8FD0EC','#0A2430','🌊','pond','elemental','Bend the elements'],
+      godly:["God's Abode",'#F6DC8A','#2A1E04','⚡','sky','divine',"Rise to God's Abode"],
+      race:['Race Zone','#7BA3F5','#0A1430','🏎️','track','full throttle','Start your engine'],
+      dino:['Dino Era','#B8D96A','#141E08','🦖','meadow','prehistoric','Travel back 100 million years'] };
     /* the Hive's cut runs longer: the bees need their landing beat before the
        dive into the honey cell */
     var t=T[st.theme]||T.spellbound, dur=rm?2200:(st.theme==='spellbound'?8400:7200);
@@ -1979,7 +1988,7 @@
        gate. The tap that answers the gate is a real user gesture, so the audio
        is unlocked and the cinematic always runs WITH its sound. .kb (the class
        every one-shot animation hangs off) is only added at that tap. */
-    var d=document.createElement('div'); d.id='sb-splash';
+    var d=document.createElement('div'); d.id='sb-splash'; if(!rm) d.className='hold';
     d.style.cssText='--spl-acc:'+t[1]+';--spl-deep:'+t[2]+';--spl-dur:'+(dur/1000)+'s;background:'+t[2];
     var sparks=''; if(!rm) for(var i=0;i<14;i++) sparks+='<span class="spl-spark" style="left:'+(3+i*7.1)+'vw;animation-delay:-'+(i*0.53).toFixed(2)+'s;animation-duration:'+(6+(i%5)*0.8)+'s"></span>';
     /* the title resolves letter by letter in the light-streak's wake — the
@@ -1998,7 +2007,7 @@
       +'<span class="spl-logo-t">'+letters+'</span><span class="spl-sheen"></span></div>'
       +'<div class="spl-world"><span>'+(rm?'':'today entering · ')+t[0]+'</span></div>'
       +'<div class="spl-sub">'+(t[5]||'')+'</div>'
-      +'<div class="spl-gate">'+(t[6]||'tap to fly in')+'</div>'
+      +'<div class="spl-gate"><span class="spl-gate-e">'+t[3]+'</span>'+(t[6]||'Fly in')+'</div>'
       +'<div class="spl-tap">tap anywhere to skip</div></div>';
     document.body.appendChild(d);
     /* the lockup borrows the app's own mascot the moment app.js has landed */
@@ -2142,27 +2151,19 @@
       ex+='<div class="spl-fuse"></div>';
       d.insertAdjacentHTML('beforeend', ex);
     }
-    /* GOD'S ABODE: rays through the cloud shelf, bolts glinting — and the
-       marble temple doors grind in and BOOM shut on a seam of golden light. */
+    /* GOD'S ABODE: rays through the cloud shelf, bolts glinting — then the
+       ASCENSION: clouds rush down past the climbing frame, the rays flare, one
+       soft bolt cracks, and the arrival is a bloom of golden light. */
     else if(st.theme==='godly' && !rm){ d.classList.add('w-gods');
       var CLD='<svg viewBox="0 0 200 60" width="100%" height="100%"><g fill="#F4EFE2" opacity=".9"><ellipse cx="50" cy="42" rx="48" ry="17"/><ellipse cx="105" cy="34" rx="42" ry="20"/><ellipse cx="155" cy="44" rx="44" ry="15"/></g></svg>';
-      var DOORP='<svg viewBox="0 0 400 700" width="100%" height="100%" preserveAspectRatio="none">'
-        +'<defs><linearGradient id="splmarb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#B8AA84"/><stop offset=".25" stop-color="#DCD2B0"/><stop offset=".8" stop-color="#CEC29A"/><stop offset="1" stop-color="#A89A72"/></linearGradient></defs>'
-        +'<rect width="400" height="700" fill="url(#splmarb)"/>'
-        +'<rect x="0" y="0" width="400" height="30" fill="#8F8158"/><rect x="0" y="670" width="400" height="30" fill="#8F8158"/>'
-        +'<g stroke="#B4A67E" stroke-width="9"><line x1="34" y1="30" x2="34" y2="670"/><line x1="366" y1="30" x2="366" y2="670"/></g>'
-        +'<rect x="70" y="70" width="260" height="250" rx="12" fill="#C4B78E" stroke="#8F8158" stroke-width="12"/>'
-        +'<rect x="70" y="384" width="260" height="250" rx="12" fill="#C4B78E" stroke="#8F8158" stroke-width="12"/>'
-        +'<path d="M200 130 l14 30 33 4 -24 23 6 33 -29 -16 -29 16 6 -33 -24 -23 33 -4z" fill="#D9A93C" stroke="#9A7218" stroke-width="4"/>'
-        +'<path d="M200 444 l14 30 33 4 -24 23 6 33 -29 -16 -29 16 6 -33 -24 -23 33 -4z" fill="#D9A93C" stroke="#9A7218" stroke-width="4" opacity=".85"/>'
-        +'<circle cx="348" cy="352" r="26" fill="none" stroke="#9A7218" stroke-width="10"/>'
-        +'<rect x="386" y="0" width="14" height="700" fill="#FFD24D"/><rect x="380" y="0" width="6" height="700" fill="#B98A2A"/></svg>';
       var gx='<div class="spl-worldcast" id="spl-cast2"></div>'
         +'<div class="spl-cloudshelf" style="left:-5vw;bottom:-3vh;width:46vw;aspect-ratio:200/60">'+CLD+'</div>'
-        +'<div class="spl-cloudshelf" style="right:-7vw;bottom:-4vh;width:54vw;aspect-ratio:200/60;animation-delay:0s,-9s">'+CLD+'</div>'
-        +'<div class="spl-doorseam"></div>'
-        +'<div class="spl-door spl-doorL">'+DOORP+'</div>'
-        +'<div class="spl-door spl-doorR" style="transform:translateX(108%) scaleX(-1)">'+DOORP+'</div>'
+        +'<div class="spl-cloudshelf" style="right:-7vw;bottom:-4vh;width:54vw;aspect-ratio:200/60;animation-delay:0s,-9s">'+CLD+'</div>';
+      [['-6vw','44vw','4.55s',.95],['62vw','52vw','4.8s',.9],['24vw','38vw',
+        '5.05s',.85],['74vw','40vw','5.35s',.8],['-10vw','50vw','5.6s',.85],['38vw','46vw','5.85s',.8]]
+      .forEach(function(cr){ gx+='<div class="spl-cloudrush" style="left:'+cr[0]+';top:-8vh;width:'+cr[1]+';aspect-ratio:200/60;--cd:'+cr[2]+';opacity:0;filter:opacity('+cr[3]+')">'+CLD+'</div>'; });
+      gx+='<div class="spl-raybloom"></div>'
+        +'<div class="spl-godbloom"></div>'
         +'<div class="spl-godflash"></div>';
       d.insertAdjacentHTML('beforeend', gx);
       /* the borrowed sky: the world's own god-rays and glow via its theme styles */
@@ -2205,10 +2206,10 @@
        cue: the jaw snap, the cell seal, the aurora fold, the katana streak, the
        boil-over, the orb fusion, the door boom, the green light */
     var CLOSE=({dino:6.6, spellbound:7.45, aurora:6.75, anime:6.28, science:5.55,
-      avatar:5.35, godly:6.7, race:6.35})[st.theme]; if(CLOSE==null) CLOSE=-1;
+      avatar:5.35, godly:5.45, race:6.35})[st.theme]; if(CLOSE==null) CLOSE=-1;
     var STING=({dino:'dino-roar', spellbound:'hive-buzz', aurora:'aurora-shimmer',
       anime:'blade-shing', science:'lab-zap', avatar:'elements-fuse',
-      godly:'gods-thunder', race:'race-rev'})[st.theme];
+      godly:'gods-ascend', race:'race-rev'})[st.theme];
     var brand=null, sting=null, stTm=null;
     try{
       /* start FETCHING the sound the instant the splash exists — load() makes the
@@ -2252,7 +2253,7 @@
     var tm=setTimeout(out, rm?dur:10000);
     d.addEventListener('pointerdown',function ev(){
       if(!started){ started=true;
-        born=Date.now(); d.classList.add('kb');
+        born=Date.now(); d.classList.remove('hold'); d.classList.add('kb');
         clearTimeout(tm); tm=setTimeout(out,dur);
         tune();
         return; }
@@ -2403,7 +2404,7 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="auth.js?v=20260824q"></script>
 <script defer src="supabase-auth.js?v=20260824q"></script>
 <script defer src="telemetry.js?v=20260830a"></script>
-<script defer src="app3.js?v=20260831a"></script>
+<script defer src="app3.js?v=20260831b"></script>
 <script defer src="worlds4.js?v=20260831a"></script>
 <script defer src="mockbee.js?v=20260824q"></script>
   <script defer src="games-daily.js?v=20260824q"></script>

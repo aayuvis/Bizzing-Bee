@@ -5993,7 +5993,11 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
        worked on the bee and collided with everything else. The gods already wear crowns
        and haloes of their own, and the real people are drawn as people. An overlay that
        only suits one of 217 avatars is not a feature. */
-    body=printBar+howPacks+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
+    /* each pack's row reads left to right up the ladder: Starter → Rare →
+       Epic → Legendary (roster order breaks ties) */
+    const RARO={free:0,rare:1,epic:2,legendary:3};
+    body=printBar+howPacks+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id)
+        .sort((x,y)=>(RARO[x.rarity]||0)-(RARO[y.rarity]||0)); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
       const inPlan=avPackUnlocked(p.id);
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
         const n=avCount(c,a.id); const dup=Math.max(0,n-1);
