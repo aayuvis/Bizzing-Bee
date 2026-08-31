@@ -353,6 +353,9 @@
     if (!nx) { flash('That was the last stop of this tier — the route returns tougher!'); app2.trailBack(); return; }
     if (nx.kind === 'unit') app2.trailUnit(nx.u.id); else app2.trailChk(course() + '|' + nx.id); };
   app2.trailPick = i => set({ trailStop: +i });
+  /* tapping the open map (not a pin, not the card) folds the stop card away —
+     the painting is the point; the card returns on the next pin tap */
+  app2.trailShut = () => { if (state.trailStop === -9) return; set({ trailStop: -9 }); };
   /* Ultra is a map now, but its words are still the Ultra Champions Journey list —
      the map is the way in, the list is the training ground behind it. */
   app2.openUltra = (i) => { if (!advOn() && !devOn()) { app2.openAdvanced && app2.openAdvanced(); return; }
@@ -1786,7 +1789,7 @@
        than the floor so nothing moves. */
     const minW = Math.max(1, pts.length) * 42;
     const pano = opts && opts.pano;
-    return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board${pano ? ' mw-board' : ''}" style="${pano ? '' : `min-width:min(${minW}px,190vw)`}">
+    return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board${pano ? ' mw-board' : ''}" data-act="trailShut" style="${pano ? '' : `min-width:min(${minW}px,190vw)`}">
       <img src="app-art/${pano ? pano.img : slug + '.jpg'}" alt="" loading="lazy" decoding="async">
       ${ambLayer(slug)}${pano && pano.extra || ''}
       ${/* The advanced half reads darker on sight. That used to be a near-black wash,
@@ -1825,10 +1828,12 @@
     let pts = mapPoints(m.d, n);
     if (isMW) pts = pts.map((p, i) => MW.pairPos[i]
       ? { x: p.x, y: Math.min(88, Math.max(10, p.y + MW.pairPos[i].y)), f: p.f } : p);
-    /* which stop the card is showing: the speller's own frontier unless they tapped */
+    /* which stop the card is showing: the speller's own frontier unless they tapped;
+       a tap on the open map folds the card away entirely (trailStop === -9) */
+    const shut = state.trailStop === -9;
     let sel = nodes.findIndex(x => x.i === fr);
     if (sel < 0) sel = dn >= n ? n - 1 : 0;
-    const picked = nodes.findIndex(x => x.i === state.trailStop);
+    const picked = shut ? -1 : nodes.findIndex(x => x.i === state.trailStop);
     if (picked >= 0) sel = picked;
     const walked = Math.min(dn, n - 1);
     const st = i => { const x = nodes[i]; return passedNode(c, x.n) ? 'done'
@@ -1888,7 +1893,7 @@
     } else _mwMax = Infinity;
     const caches = (m.t || []).map((xy, i) => treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
     const popNew = _popK !== ('a:' + act.id + ':' + sel); if (popNew) _popK = 'a:' + act.id + ':' + sel;
-    if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
+    if ((popNew || _fresh) && !shut) panTo(sel, pts);   // never yank a hand-scrolled board on a background render — nor on a card dismiss
 
     const cur = nodes[sel], node = cur.n,
       locked = cur.i > fr && !devOn() && !(isMW && mwPairOpen(c, nodes, fr, sel));
@@ -1907,12 +1912,16 @@
        the pin in the top half so it cannot run off the top, and edge-anchored near the
        margins because the board clips (overflow:hidden). */
     const _P = pts[sel] || { x: 50, y: 50 };
-    const _side = _P.x < 27 ? 'l' : _P.x > 73 ? 'r' : 'c';
+    /* on the panorama the card must also duck the CAMERA CLAMP: a pin near the
+       earned edge anchors its card leftward, or half of it lives off-canvas */
+    const _edge = isMW ? MW.legEdge[rv] : 100;
+    const _cardW = isMW ? 15 : 27;   // the card's rough width in board %
+    const _side = _P.x < (isMW ? 7 : 27) ? 'l' : _P.x > _edge - _cardW ? 'r' : 'c';
     const _below = _P.y < 44;
     const _tx = _side === 'l' ? '-16px' : _side === 'r' ? 'calc(-100% + 16px)' : '-50%';
     const _ty = _below ? '24px' : 'calc(-100% - 24px)';
     const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
-    const stopPop = `<div class="atlas-pop${_below ? ' below' : ''}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
+    const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}" data-act="popKeep" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
       <div class="atlas-pop-in">
         <div style="display:flex;align-items:flex-start;gap:13px">
           <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
