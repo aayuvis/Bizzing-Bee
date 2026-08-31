@@ -95,17 +95,24 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(cast2 && cast2.raptors >= 2 && cast2.brach >= 2 && cast2.pteros >= 2 && cast2.trees >= 3 && cast2.ferns >= 2,
     'the cast is the WORLD\'S OWN art, borrowed verbatim (raptors, brachios, pteros, trees, ferns)');
   ok(cast2 && cast2.recreated === 0, 'no recreated stand-in dinos remain');
-  // the GATE: the show holds silent until the invitation is answered
-  const hold = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate');
+  // the GATE: paints the world, holds ~1s, then presses ITSELF with a visible click
+  const pgG = await b.newPage({ viewport: { width: 1100, height: 900 } });
+  await pgG.addInitScript(s => localStorage.setItem('sb_saas_v2', s), seed);
+  await pgG.goto('file://' + SRC + '/index.html'); await pgG.waitForTimeout(400);
+  const hold = await pgG.evaluate(() => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate');
     return { kb: d && d.classList.contains('kb'), gate: g ? g.textContent : '', shown: g && getComputedStyle(g).display !== 'none' }; });
-  ok(!hold.kb && hold.shown, 'the show HOLDS on the gate — no .kb, no cinematic, until the tap');
+  ok(hold && !hold.kb && hold.shown, 'the show opens HOLDING on the gate — no .kb, no cinematic yet');
   ok(/100 million years/.test(hold.gate), 'the gate speaks the world\'s own invitation (' + hold.gate + ')');
-  await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(500);
-  const going = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash');
-    return { up: !!d, kb: d && d.classList.contains('kb'), gateGone: d && getComputedStyle(d.querySelector('.spl-gate')).display === 'none' }; });
-  ok(going.up && going.kb && going.gateGone, 'the gate tap STARTS the show — .kb lands, the gate bows out, the splash stays up');
-  await pg2.mouse.down(); await pg2.mouse.up(); await pg2.waitForTimeout(1000);
-  ok(await pg2.evaluate(() => !document.querySelector('#sb-splash')), 'a second tap skips straight in');
+  await pgG.waitForTimeout(1500);
+  const going = await pgG.evaluate(() => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate');
+    return { up: !!d, kb: d && d.classList.contains('kb'), pressed: g && g.classList.contains('pressed'),
+      gateGone: g && getComputedStyle(g).display === 'none' }; });
+  ok(going.up && going.kb && going.pressed && going.gateGone,
+    'at ~1s the gate presses ITSELF — the click plays, .kb lands, the show runs');
+  await pgG.mouse.down(); await pgG.mouse.up(); await pgG.waitForTimeout(300);
+  await pgG.mouse.down(); await pgG.mouse.up(); await pgG.waitForTimeout(1000);
+  ok(await pgG.evaluate(() => !document.querySelector('#sb-splash')), 'tapping the running show skips straight in');
+  await pgG.close();
   const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
   ok(/brand-open\.mp3/.test(idx) && /BIZZING BEE brand sound/.test(idx),
     'the Bizzing Bee BRAND CUE opens every world\'s load');
@@ -113,8 +120,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'the world stingers take over at the close — the roar at the jaw SNAP, the buzz as the cell seals');
   ok(fs.existsSync(SRC + '/app-art/brand-open.mp3') && fs.existsSync(SRC + '/app-art/dino-roar.mp3')
     && fs.existsSync(SRC + '/app-art/hive-buzz.mp3'), 'all three pre-rendered sounds ship in app-art');
-  ok(/starts clock, cinematic and sound together/.test(idx) && /born=Date\.now\(\); d\.classList\.remove\('hold'\); d\.classList\.add\('kb'\)/.test(idx),
-    'the gate tap starts clock, cinematic and sound together — autoplay policy can never mute the show');
+  ok(/presses ITSELF one second in/.test(idx) && /born=Date\.now\(\); d\.classList\.remove\('hold'\); d\.classList\.add\('kb'\)/.test(idx)
+    && /sk joins the cue at the elapsed clock/.test(idx),
+    'the auto-press starts clock, cinematic and sound together — and a blocked cue joins on the first real tap');
   ok(/spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
     'the frame still slams and the maw pulses at the snap');
 
@@ -125,12 +133,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pgH.goto('file://' + SRC + '/index.html'); await pgH.waitForTimeout(2000);
   const hv = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
     up: !!d, marked: d && d.classList.contains('w-hive'),
-    honey: d ? d.querySelectorAll('.spl-honey').length : 0,
-    top: d && !!d.querySelector('.spl-honeytop img[src$="hive-honey-top.svg"]'),
-    bot: d && !!d.querySelector('.spl-honeybot img[src$="hive-honey-bot.svg"]'),
-    bees: d ? d.querySelectorAll('.spl-bee').length : 0,
-    fly: d && !!d.querySelector('.spl-bee img.b-fly[src$="hive-bee-fly.svg"]'),
-    sit: d && !!d.querySelector('.spl-bee img.b-sit[src$="hive-bee-sit.svg"]'),
+    swb: d ? d.querySelectorAll('.spl-swb img[src$="hive-bee-fly.svg"]').length : 0,
     comb: d && !!d.querySelector('.spl-combzoom img[src$="hive-comb-wall.webp"]'),
     cell: d && !!d.querySelector('.spl-cellin img[src$="hive-cell.webp"]'),
     bloom: d && !!d.querySelector('.spl-goldflash'), amb: d && !!d.querySelector('.spl-ambveil'),
@@ -140,9 +143,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     world: d && /The Hive/.test(d.textContent), tag: d && /home sweet hive/.test(d.textContent) }; });
   ok(hv.up && hv.marked, 'the Hive wears its own staging class (w-hive)');
   ok(hv.world && hv.tag, 'the episode card says The Hive, not a duplicate of the wordmark');
-  ok(hv.honey === 2 && hv.top && hv.bot, 'painted honey DRIPS over the world — curtain hanging above, pool holding low');
-  ok(/translateY\(-26%\)/.test(idx0) && /spl-hang/.test(idx0), 'the pot never closes — the curtain descends to a hang and sways there');
-  ok(hv.bees === 3 && hv.fly && hv.sit, 'three painted honeybees fly in and land, wings swapping from mid-beat to folded');
+  ok(hv.swb >= 8, 'the painted SWARM streams home into the comb\'s centre (' + hv.swb + ' bees converging)');
+  ok(/spl-swbin/.test(idx0) && !/spl-pourtop/.test(idx0) && !/spl-honeytop/.test(idx0),
+    'the honey-drip curtain and the landing trio stay cut — the Hive is a simple homecoming now');
   ok(hv.comb && hv.cell, 'the honey-filled hexagon wall and the cell interior are staged for the dive');
   ok(hv.bloom && hv.amb, 'the arrival bloom and the amber vignette are staged');
   ok(hv.hex >= 12, 'the comb crystallizes cell by cell (' + hv.hex + ' cells)');
@@ -153,10 +156,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     rise: c.querySelectorAll('.w4o-rise').length } : null; });
   ok(hvCast && hvCast.comb && hvCast.glow && hvCast.bees >= 2 && hvCast.rise >= 6,
     'the cast keeps the world\'s comb, glow and rising gold — crossed by the painted bee on the beeline');
-  ok(fs.existsSync(SRC + '/app-art/hive-honey-top.svg') && fs.existsSync(SRC + '/app-art/hive-honey-bot.svg')
-    && /image\/webp/.test(fs.readFileSync(SRC + '/app-art/hive-bee-fly.svg', 'utf8').slice(0, 400))
+  ok(/image\/webp/.test(fs.readFileSync(SRC + '/app-art/hive-bee-fly.svg', 'utf8').slice(0, 400))
     && fs.existsSync(SRC + '/app-art/hive-comb-wall.webp') && fs.existsSync(SRC + '/app-art/hive-cell.webp'),
-    'honey plates, bee sprites and both comb plates all ship in app-art');
+    'the bee sprite and both comb plates ship in app-art');
   ok(/spl-goldshift/.test(idx0) && /honey cell sealing/.test(idx0),
     'the day turns to gold, and the buzz stinger is timed to the honey cell sealing');
   const bug = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); const t = d && d.querySelector('.spl-logo-t');
@@ -165,9 +167,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       noCorner: d && !d.querySelector('.spl-brand') }; });
   ok(bug.text && bug.ico, 'the centre wordmark IS the brand lockup — mascot + italic Bizzing™ Bee at title size');
   ok(bug.noCorner, 'the duplicate top-right corner lockup is retired');
-  await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(400);
+  await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(300);
   await pgH.mouse.down(); await pgH.mouse.up(); await pgH.waitForTimeout(1000);
-  ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'gate tap then skip tap dismisses the hive opening');
+  ok(await pgH.evaluate(() => !document.querySelector('#sb-splash')), 'tapping the hive show skips straight in');
 
   // ---- the OTHER SIX worlds each own their opening: world class, staging,
   //      close gesture, and a stinger of their own wired to the close ----
@@ -196,14 +198,14 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(/aurora:6\.75/.test(idx0) && /science:5\.55/.test(idx0) && /race:6\.35/.test(idx0),
     'every world has its CLOSE on the audio clock — the stinger lands on the fold, the boil-over, the green light');
 
-  // ignored entirely, the gate falls through to the app on its own (~10s)
+  // never touched at all: the auto-press runs the show and it bows out on its own
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
   await pg3.addInitScript(s => localStorage.setItem('sb_saas_v2', s), seed);
   await pg3.goto('file://' + SRC + '/index.html');
   await pg3.waitForTimeout(400);
   const upEarly = await pg3.evaluate(() => !!document.querySelector('#sb-splash'));
-  await pg3.waitForTimeout(10800);
-  ok(upEarly && await pg3.evaluate(() => !document.querySelector('#sb-splash')), 'left alone, the unanswered gate falls through by itself (~10s)');
+  await pg3.waitForTimeout(9600);
+  ok(upEarly && await pg3.evaluate(() => !document.querySelector('#sb-splash')), 'left alone, the auto-pressed show bows out by itself (~9s)');
 
   // no world borrows another's close — the lab gets no jaws, no honey
   const pgS = await b.newPage();

@@ -1044,28 +1044,32 @@ out of saga2.js so a retune cannot quietly undo them.
   back to the Hive there AND in the boot migration.
 
 ## The opening splash: ALL EIGHT worlds have bespoke load-ups (Aug-31)
-- **The GATE (the autoplay answer)**: the show does NOT start by itself. The splash
-  paints the world and HOLDS on one glowing invitation in the world's own words
-  ("tap to open the Hive", "tap to travel back 100 million years" — index 6 of the
-  `T` table). That tap is the user gesture autoplay policy wants: it resets `born`,
-  adds `.kb` (the class every one-shot animation hangs off) and calls `tune()` in
-  the same beat, so cue + cinematic run in lockstep from zero, always audible. A
-  second tap skips; an unanswered gate falls through to the app at ~10s; reduced
-  motion keeps the still card (no gate phase). CONSEQUENCE: any one-shot element's
-  PARKED state must live in its BASE rule, not only in the `.kb` rule — the jaws
-  and honey plates park via base transforms for exactly this reason (during the
-  hold, a `.kb`-only park leaves them covering the frame).
+- **The GATE (the autoplay answer)**: the splash paints the world and HOLDS on one
+  glowing action button (world emoji + verb, index 6 of the `T` table — "Open the
+  Hive", "Travel back 100 million years"); the episode credit/tagline are hidden
+  during the hold (`.hold` class) so the button is the single CTA. At ~1s the gate
+  **presses ITSELF** (`.pressed` — visible click + ring), then `startShow()` resets
+  `born`, swaps `.hold`→`.kb` and calls `tune()` in one beat. A real tap before
+  that starts it with guaranteed sound; if the auto-press's audio was blocked, the
+  first tap during the show JOINS the cue at the elapsed clock (doesn't skip — the
+  `!sched` branch), and the next tap skips. Reduced motion keeps the still card.
+  CONSEQUENCE: any one-shot element's PARKED state must live in its BASE rule, not
+  only in the `.kb` rule — the jaws park via base transforms for exactly this
+  reason (during the hold, a `.kb`-only park leaves them covering the frame).
 - Every world's splash lives ENTIRELY in the inline `<script>` after `<body>` in
   index.html (parse-time paint). Each has a marker class + staging branch + a CLOSE
   gesture + its own stinger mp3 in app-art: dino `w-dino` (jaws snap, dino-roar),
-  spellbound `w-hive` (cell seals, hive-buzz), aurora `w-aur` (aurora curtains fold,
+  spellbound `w-hive` (the SWARM streams home into the comb centre, dive into the
+  cell that seals — the honey-drip curtain + landing trio were cut for simplicity,
+  hive-buzz), aurora `w-aur` (aurora curtains fold,
   aurora-shimmer), anime `w-blade` (katana streak + diagonal shutters, blade-shing),
   science `w-lab` (liquid boil-over floods the frame, lab-zap), avatar `w-elem`
   (four orbs orbit + fuse, elements-fuse), godly `w-gods` (marble temple doors boom
   shut, gods-thunder), race `w-race` (light tree counts to GREEN, launch speed-wall,
   race-rev).
 - **The audio clock**: `CLOSE` map (seconds) in that script — dino 6.6, spellbound
-  7.45, aurora 6.75, anime 6.28, science 5.55, avatar 5.35, godly 6.7, race 6.35 —
+  6.9, aurora 6.75, anime 6.28, science 5.55, avatar 5.35, godly 5.45
+  (gods-ascend — the doors were recut to the ascension), race 6.35 —
   the brand cue (brand-open.mp3) plays to CLOSE, then the world's stinger fires.
   Science/avatar close early ON PURPOSE: their stingers carry a build (bubbles,
   whooshes) that rides the visual before the payoff. Change a gesture's timing and

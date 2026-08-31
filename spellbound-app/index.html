@@ -1112,6 +1112,13 @@
     box-shadow:0 6px 28px color-mix(in srgb,var(--spl-acc,#FFD24D) 50%,transparent);animation:spl-gatepulse 1.6s ease-in-out infinite}
   @keyframes spl-gatepulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
   #sb-splash .spl-gate-e{font-size:1.35em;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.25))}
+  /* the visible CLICK: the button presses in, flashes, and throws a ring —
+     played by the 1s auto-press and by a real tap alike */
+  #sb-splash .spl-gate{position:relative}
+  #sb-splash .spl-gate.pressed{animation:spl-gatepress .32s cubic-bezier(.3,.7,.4,1) both}
+  @keyframes spl-gatepress{0%{transform:scale(1)}40%{transform:scale(.88);filter:brightness(1.3)}100%{transform:scale(1.04);filter:brightness(1.08)}}
+  #sb-splash .spl-gate.pressed::after{content:'';position:absolute;inset:-5px;border-radius:999px;border:3px solid #FFF;opacity:0;animation:spl-gatering .5s ease .05s 1}
+  @keyframes spl-gatering{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
   #sb-splash.kb .spl-gate{display:none}
   /* during the HOLD the gate is the ONLY call — the episode credit and tagline
      are film beats, they belong to the show and enter with it */
@@ -1206,46 +1213,29 @@
   @keyframes spl-swarm{0%{opacity:0;transform:translate(-8vw,4vh)}10%{opacity:.95}
     36%{transform:translate(30vw,-3.4vh)}64%{transform:translate(66vw,1.8vh)}88%{opacity:.9}
     100%{opacity:0;transform:translate(112vw,-2vh)}}
-  /* the honey plates: painted, alpha-keyed transparent SVGs. The pot never closes —
-     the drip curtain descends to a HANG and sways there; the pool holds low. */
-  #sb-splash .spl-honey{position:absolute;left:-3vw;right:-3vw;z-index:6;pointer-events:none;
-    filter:drop-shadow(0 6px 26px rgba(110,62,0,.5))}
-  #sb-splash .spl-honeytop{top:0;height:57vh;transform:translateY(-104%)}
-  #sb-splash .spl-honeybot{bottom:0;height:44vh;transform:translateY(104%)}
-  #sb-splash.kb .spl-honeytop{transform:translateY(-104%);animation:spl-pourtop 1.9s cubic-bezier(.5,.05,.3,1) 2.6s both,spl-hang 4.6s ease-in-out 4.5s infinite}
-  #sb-splash.kb .spl-honeybot{transform:translateY(104%);animation:spl-pourbot 1.9s cubic-bezier(.5,.05,.3,1) 2.6s both,spl-hangb 5.2s ease-in-out 4.5s infinite}
-  @keyframes spl-pourtop{0%{transform:translateY(-104%)}70%{transform:translateY(-31%)}100%{transform:translateY(-26%)}}
-  @keyframes spl-pourbot{0%{transform:translateY(104%)}70%{transform:translateY(64%)}100%{transform:translateY(58%)}}
-  @keyframes spl-hang{0%,100%{transform:translateY(-26%)}50%{transform:translateY(-24.6%)}}
-  @keyframes spl-hangb{0%,100%{transform:translateY(58%)}50%{transform:translateY(56.4%)}}
-  #sb-splash .spl-honeyimg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
-  /* the bees LAND on the honey: painted honeybees fly in on a decelerating arc,
-     wings swap from mid-beat to folded a blink before touchdown, then a soft bob */
-  #sb-splash .spl-bee{position:absolute;z-index:7;pointer-events:none;opacity:0;
-    filter:drop-shadow(0 4px 9px rgba(60,30,0,.45))}
-  #sb-splash .spl-bee img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-  #sb-splash .spl-bee .b-sit{opacity:0}
-  #sb-splash.kb .spl-bee{animation:spl-beein var(--fd,2s) cubic-bezier(.25,.1,.3,1) var(--dl,3.8s) both,spl-beebob 2.8s ease-in-out calc(var(--dl,3.8s) + var(--fd,2s)) infinite}
-  #sb-splash.kb .spl-bee .b-fly{animation:spl-wingjit .09s linear infinite alternate,spl-flyout .22s ease calc(var(--dl,3.8s) + var(--fd,2s) - .26s) both}
-  #sb-splash.kb .spl-bee .b-sit{animation:spl-sitin .22s ease calc(var(--dl,3.8s) + var(--fd,2s) - .26s) both}
-  @keyframes spl-beein{0%{opacity:0;transform:translate(var(--fx,44vw),var(--fy,-24vh)) rotate(-16deg) scale(.6)}10%{opacity:1}72%{transform:translate(calc(var(--fx,44vw)*.1),calc(var(--fy,-24vh)*.1)) rotate(-7deg) scale(1)}100%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1)}}
-  @keyframes spl-beebob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-  @keyframes spl-wingjit{from{transform:rotate(-2deg)}to{transform:rotate(2deg)}}
-  @keyframes spl-sitin{to{opacity:1}}
-  @keyframes spl-flyout{to{opacity:0}}
-  /* the DIVE: a wall of honey-filled hexagons rises, the camera plunges into the
+  /* the SWARM COMES HOME: painted honeybees stream in from every edge and
+     shrink into the comb's glowing centre — the point the dive then enters.
+     (The honey-drip curtain and the landing trio were cut on request: the Hive
+     is a simple homecoming now, like Dino Era's chomp.) */
+  #sb-splash .spl-swb{position:absolute;left:50%;top:44%;z-index:6;opacity:0;pointer-events:none;
+    filter:drop-shadow(0 3px 7px rgba(60,30,0,.4))}
+  #sb-splash .spl-swb img{width:100%;height:100%;object-fit:contain;transform:scaleX(var(--fl,1))}
+  #sb-splash.kb .spl-swb{animation:spl-swbin var(--fd,2.2s) cubic-bezier(.4,.1,.72,.62) var(--dl,3.6s) both}
+  @keyframes spl-swbin{0%{opacity:0;transform:translate(var(--fx,-46vw),var(--fy,-28vh)) scale(1)}
+    8%{opacity:1}82%{opacity:1}100%{opacity:0;transform:translate(0,2.5vh) scale(.16)}}
+  /* the DIVE: the honey-filled comb wall rises, the camera plunges into the
      glowing centre cell, and the frame arrives INSIDE the honey-filled hexagon */
   #sb-splash .spl-combzoom{position:absolute;inset:0;z-index:8;opacity:0;pointer-events:none}
   #sb-splash .spl-combzoom img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  #sb-splash.kb .spl-combzoom{animation:spl-dive 1.75s cubic-bezier(.6,.03,.75,.45) 6.45s both}
+  #sb-splash.kb .spl-combzoom{animation:spl-dive 1.75s cubic-bezier(.6,.03,.75,.45) 5.6s both}
   @keyframes spl-dive{0%{opacity:0;transform:scale(1.02)}16%{opacity:1}100%{opacity:1;transform:scale(7.6)}}
   #sb-splash .spl-cellin{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none}
   #sb-splash .spl-cellin img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  #sb-splash.kb .spl-cellin{animation:spl-cellset 1s cubic-bezier(.2,.7,.3,1) 7.45s both}
+  #sb-splash.kb .spl-cellin{animation:spl-cellset 1s cubic-bezier(.2,.7,.3,1) 6.9s both}
   @keyframes spl-cellset{0%{opacity:0;transform:scale(1.45)}40%{opacity:1}100%{opacity:1;transform:scale(1)}}
   #sb-splash .spl-goldflash{position:absolute;inset:0;z-index:10;opacity:0;pointer-events:none;
     background:radial-gradient(circle,#FFE9B0 0%,rgba(255,194,61,.8) 42%,rgba(120,60,0,0) 100%)}
-  #sb-splash.kb .spl-goldflash{animation:spl-goldbloom 1.2s ease-out 7.5s 1}
+  #sb-splash.kb .spl-goldflash{animation:spl-goldbloom 1.2s ease-out 6.95s 1}
   @keyframes spl-goldbloom{0%{opacity:0}18%{opacity:.7}100%{opacity:0}}
   /* honey owns the hive exit too: hold the letterbox bars in place */
   #sb-splash.w-hive.kb .spl-bars::before,#sb-splash.w-hive.kb .spl-bars::after{animation:none}
@@ -1982,7 +1972,7 @@
       dino:['Dino Era','#B8D96A','#141E08','🦖','meadow','prehistoric','Travel back 100 million years'] };
     /* the Hive's cut runs longer: the bees need their landing beat before the
        dive into the honey cell */
-    var t=T[st.theme]||T.spellbound, dur=rm?2200:(st.theme==='spellbound'?8400:7200);
+    var t=T[st.theme]||T.spellbound, dur=rm?2200:(st.theme==='spellbound'?7800:7200);
     var kid=(st.children[st.activeIdx||0]||st.children[0])||{};
     /* the show does NOT start by itself: it paints the world and HOLDS on the
        gate. The tap that answers the gate is a real user gesture, so the audio
@@ -2056,24 +2046,26 @@
       }catch(e){} };
       if(document.readyState!=='loading') castIn(); else document.addEventListener('DOMContentLoaded',castIn);
     }
-    /* THE HIVE gets its own staging: the comb lighting cell by cell, the swarm
-       streaming home while the buzz swells — and the honey that takes the frame
-       on the way in, painted drips meeting the rising pool in a bloom of amber. */
+    /* THE HIVE gets its own staging, simple like Dino Era's: the comb lighting
+       cell by cell, the SWARM streaming home into its glowing centre — and the
+       dive into the honey-filled cell that seals in a bloom of amber. */
     else if(st.theme==='spellbound' && !rm){ d.classList.add('w-hive');
       var HEXC='<svg viewBox="0 0 68 59" width="100%" height="100%"><polygon points="17,0 51,0 68,29.5 51,59 17,59 0,29.5" fill="rgba(255,211,77,.16)" stroke="#F0B429" stroke-width="2.4"/></svg>';
       var hx2='<div class="spl-ambveil"></div>';
       for(var hc=0;hc<18;hc++){ var hcol=hc%9;
         hx2+='<span class="spl-hexcell" style="left:'+(1.5+hcol*11.1)+'vw;'+(hc<9?('top:'+(1+(hcol%3)*4.5)+'vh'):('bottom:'+(1+(hcol%3)*4.5)+'vh'))+';animation-delay:'+(1.8+hc*0.13).toFixed(2)+'s">'+HEXC+'</span>'; }
       for(var sw=0;sw<16;sw++) hx2+='<span class="spl-swarmdot" style="top:'+(10+(sw*37)%64)+'vh;animation-delay:'+(3.3+sw*0.12).toFixed(2)+'s;animation-duration:'+(2+(sw%5)*0.24).toFixed(2)+'s"></span>';
-      hx2+='<div class="spl-worldcast" id="spl-cast2"></div>'
-        +'<div class="spl-honey spl-honeytop"><img class="spl-honeyimg" src="app-art/hive-honey-top.svg" alt=""></div>'
-        +'<div class="spl-honey spl-honeybot"><img class="spl-honeyimg" src="app-art/hive-honey-bot.svg" alt=""></div>';
-      /* three painted bees, each with its own arc and touchdown moment: one on a
-         long drip, the big one on a pool peak, a small one high on the curtain */
-      var BEEIMGS='<img class="b-fly" src="app-art/hive-bee-fly.svg" alt=""><img class="b-sit" src="app-art/hive-bee-sit.svg" alt="">';
-      hx2+='<div class="spl-bee" style="left:22vw;top:33vh;width:64px;height:52px;--dl:3.8s;--fd:2s;--fx:52vw;--fy:-24vh">'+BEEIMGS+'</div>'
-        +'<div class="spl-bee" style="left:55vw;bottom:12vh;width:90px;height:72px;--dl:4.3s;--fd:2s;--fx:40vw;--fy:-38vh">'+BEEIMGS+'</div>'
-        +'<div class="spl-bee" style="right:15vw;top:24vh;width:50px;height:40px;--dl:4.9s;--fd:1.8s;--fx:32vw;--fy:28vh">'+BEEIMGS+'</div>';
+      hx2+='<div class="spl-worldcast" id="spl-cast2"></div>';
+      /* the swarm comes home: painted bees stream in from every edge and shrink
+         into the comb's glowing centre — the exact point the dive then enters */
+      var FLYB='<img src="app-art/hive-bee-fly.svg" alt="">';
+      [['-46vw','-30vh','1.9s','3.2s',54,-1],['50vw','-26vh','2.2s','3.4s',44,1],
+       ['-52vw','18vh','2.4s','3.6s',60,-1],['44vw','32vh','2s','3.9s',40,1],
+       ['-38vw','36vh','2.2s','4.2s',50,-1],['54vw','-6vh','2.5s','4.4s',64,1],
+       ['-50vw','-8vh','2.1s','4.7s',38,-1],['40vw','-34vh','2.3s','4.9s',56,1],
+       ['-30vw','32vh','1.9s','5.2s',46,-1],['48vw','20vh','2.1s','5.4s',52,1]]
+      .forEach(function(bz){ hx2+='<div class="spl-swb" style="--fx:'+bz[0]+';--fy:'+bz[1]
+        +';--fd:'+bz[2]+';--dl:'+bz[3]+';width:'+bz[4]+'px;aspect-ratio:5/4;margin:-'+(bz[4]/2)+'px;--fl:'+bz[5]+'">'+FLYB+'</div>'; });
       hx2+='<div class="spl-combzoom"><img src="app-art/hive-comb-wall.webp" alt=""></div>'
         +'<div class="spl-cellin"><img src="app-art/hive-cell.webp" alt=""></div>'
         +'<div class="spl-goldflash"></div>';
@@ -2205,7 +2197,7 @@
     /* every world's CLOSE — the beat its own stinger takes over from the brand
        cue: the jaw snap, the cell seal, the aurora fold, the katana streak, the
        boil-over, the orb fusion, the door boom, the green light */
-    var CLOSE=({dino:6.6, spellbound:7.45, aurora:6.75, anime:6.28, science:5.55,
+    var CLOSE=({dino:6.6, spellbound:6.9, aurora:6.75, anime:6.28, science:5.55,
       avatar:5.35, godly:5.45, race:6.35})[st.theme]; if(CLOSE==null) CLOSE=-1;
     var STING=({dino:'dino-roar', spellbound:'hive-buzz', aurora:'aurora-shimmer',
       anime:'blade-shing', science:'lab-zap', avatar:'elements-fuse',
@@ -2243,19 +2235,30 @@
       if(tapped){ fadeStop(brand); fadeStop(sting); }
       else { fadeStop(brand); if(sting) setTimeout(function(){ fadeStop(sting); },1400); }
       setTimeout(function(){ try{ d.remove(); }catch(e){} },600); }
-    /* the GATE: the first tap ANSWERS THE INVITATION — it starts the clock, the
-       cinematic and the sound together (the tap is the user gesture autoplay
-       policy wants, so the cue and the stinger always actually play). Any tap
-       after that skips. Reduced motion keeps its quiet still card: no gate
-       phase, the first tap simply flies in. Left alone, the gate falls through
-       to the app on its own. */
-    var started=rm;
-    var tm=setTimeout(out, rm?dur:10000);
-    d.addEventListener('pointerdown',function ev(){
-      if(!started){ started=true;
+    /* the GATE presses ITSELF one second in — the show never waits on a
+       hesitant reader. The button visibly clicks (press + ring), then clock,
+       cinematic and sound start together. A HUMAN tap any time before that is
+       a real gesture, so its sound is guaranteed; where the browser blocked
+       the auto-press's audio, the first tap during the show turns the sound on
+       IN PROGRESS (sk joins the cue at the elapsed clock) instead of skipping,
+       and the next tap skips. Reduced motion keeps its quiet still card. */
+    var started=rm, autoTm=null;
+    var tm=setTimeout(out, rm?dur:12000);   /* safety net only — the auto-press restarts this */
+    function startShow(){ if(started||done) return; started=true;
+      if(autoTm) clearTimeout(autoTm);
+      var g=d.querySelector('.spl-gate'); if(g) g.classList.add('pressed');
+      setTimeout(function(){ if(done) return;
         born=Date.now(); d.classList.remove('hold'); d.classList.add('kb');
         clearTimeout(tm); tm=setTimeout(out,dur);
         tune();
+      }, 300);
+    }
+    if(!rm) autoTm=setTimeout(startShow, 1000);
+    d.addEventListener('pointerdown',function ev(){
+      if(!started){ startShow(); return; }
+      if(!rm && !d.classList.contains('kb')) return;   /* the press beat — the show is about to start */
+      if(!sched && !rm){ tune();
+        var tp=d.querySelector('.spl-tap'); if(tp) tp.textContent='sound on — tap again to skip';
         return; }
       d.removeEventListener('pointerdown',ev);
       clearTimeout(tm); setTimeout(function(){ out(true); },120);
