@@ -191,6 +191,34 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'the fork wears its two spur tags — the dark mushroom knoll and the petal bridge');
   ok(fork.nows >= 1, 'the road stays walkable around the fork (' + fork.nows + ' open)');
 
+  // ---- the stop card folds on a map tap, returns on a pin tap, and never
+  //      hangs off the camera's earned edge ----
+  const card = await pg.evaluate(async () => {
+    app.trailAct('honey|meadow'); await new Promise(r => setTimeout(r, 500));
+    const bt = [...document.querySelectorAll('button')].find(x => /Run away/i.test(x.textContent));
+    if (bt) { bt.click(); await new Promise(r => setTimeout(r, 300)); }
+    const had = !!document.querySelector('.atlas-pop');
+    app.trailShut(); await new Promise(r => setTimeout(r, 300));
+    const folded = !document.querySelector('.atlas-pop');
+    const pin = document.querySelector('.atlas-stop'); if (pin) pin.click();
+    await new Promise(r => setTimeout(r, 300));
+    const backAgain = !!document.querySelector('.atlas-pop');
+    // pick the stop nearest the earned edge: its card must anchor leftward
+    const pins = [...document.querySelectorAll('.atlas-stop')];
+    const last = pins[pins.length - 1]; last.click();
+    await new Promise(r => setTimeout(r, 300));
+    const pop = document.querySelector('.atlas-pop');
+    const anchored = pop && /calc\(-100%/.test(pop.style.getPropertyValue('--tx'));
+    // and the card's box actually fits inside the reachable world
+    const el = document.getElementById('sb-pan'); el.scrollLeft = 999999;
+    await new Promise(r => setTimeout(r, 250));
+    const pr = pop.getBoundingClientRect(), er = el.getBoundingClientRect();
+    return { had, folded, backAgain, anchored, fits: pr.right <= er.right + 2 };
+  });
+  ok(card.had && card.folded, 'a tap on the open map FOLDS the stop card away');
+  ok(card.backAgain, 'a pin tap brings it back');
+  ok(card.anchored && card.fits, 'the card near the earned edge anchors leftward and fits on the reachable canvas');
+
   // ---- source pins ----
   const tj = fs.readFileSync(SRC + '/trail.js', 'utf8');
   ok(/THE LIVING MEADOW/.test(tj) && /reveal law/i.test(tj), 'the Living Meadow section and its reveal law are documented in trail.js');
