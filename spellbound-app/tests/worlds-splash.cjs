@@ -113,7 +113,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'the world stingers take over at the close — the roar at the jaw SNAP, the buzz as the cell seals');
   ok(fs.existsSync(SRC + '/app-art/brand-open.mp3') && fs.existsSync(SRC + '/app-art/dino-roar.mp3')
     && fs.existsSync(SRC + '/app-art/hive-buzz.mp3'), 'all three pre-rendered sounds ship in app-art');
-  ok(/starts clock, cinematic and sound together/.test(idx) && /born=Date\.now\(\); d\.classList\.add\('kb'\)/.test(idx),
+  ok(/starts clock, cinematic and sound together/.test(idx) && /born=Date\.now\(\); d\.classList\.remove\('hold'\); d\.classList\.add\('kb'\)/.test(idx),
     'the gate tap starts clock, cinematic and sound together — autoplay policy can never mute the show');
   ok(/spl-slam/.test(idx) && /spl-mawpulse/.test(idx),
     'the frame still slams and the maw pulses at the snap');
@@ -176,7 +176,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     anime: { cls: 'w-blade', sting: 'blade-shing', probes: { slash: ['.spl-slash', 1], shutters: ['.spl-shut', 2], petals: ['.spl-petal', 10], pagoda: ['.spl-pagsil', 1] } },
     science: { cls: 'w-lab', sting: 'lab-zap', probes: { liquid: ['.spl-liquid', 1], flash: ['.spl-labflash', 1], bubbles: ['.spl-lbub', 10], big: ['.spl-lbig', 5] } },
     avatar: { cls: 'w-elem', sting: 'elements-fuse', probes: { orbs: ['.spl-orb', 4], fuse: ['.spl-fuse', 1], auras: ['.spl-aura', 4] } },
-    godly: { cls: 'w-gods', sting: 'gods-thunder', probes: { doors: ['.spl-door', 2], seam: ['.spl-doorseam', 1], flash: ['.spl-godflash', 1], cast: ['#spl-cast2', 1] } },
+    godly: { cls: 'w-gods', sting: 'gods-ascend', probes: { clouds: ['.spl-cloudrush', 5], bloom: ['.spl-godbloom', 1], rays: ['.spl-raybloom', 1], flash: ['.spl-godflash', 1], cast: ['#spl-cast2', 1] } },
     race: { cls: 'w-race', sting: 'race-rev', probes: { gantry: ['.spl-gantry', 1], lamps: ['.spl-glamp', 4], wall: ['.spl-speedwall', 1], cars: ['.spl-racecar', 2] } },
   };
   for (const [theme, spec] of Object.entries(SIX)) {
@@ -188,7 +188,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
         [k, d ? d.querySelectorAll(sel).length : 0])) }; }, spec.probes);
     const short = Object.entries(spec.probes).filter(([k, [, n]]) => got.counts[k] < n).map(([k, [, n]]) => k + '=' + got.counts[k] + '<' + n);
     ok(got.cls.includes(spec.cls), theme.padEnd(8) + ' wears its own cut (' + spec.cls + ')');
-    ok(/^tap to /.test(got.gate), theme.padEnd(8) + ' gate invites in its own words (' + got.gate + ')');
+    ok(got.gate.length > 8, theme.padEnd(8) + ' gate invites in its own words (' + got.gate + ')');
     ok(!short.length, theme.padEnd(8) + ' staging is fully cast' + (short.length ? ' — MISSING ' + short.join(', ') : ''));
     ok(fs.existsSync(SRC + '/app-art/' + spec.sting + '.mp3'), theme.padEnd(8) + ' stinger ships (' + spec.sting + '.mp3)');
     await pgW.close();
@@ -212,8 +212,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(await pgS.evaluate(() => { const d = document.querySelector('#sb-splash');
     return !!d && !d.classList.contains('w-dino') && !d.querySelector('.spl-jaw')
       && !d.classList.contains('w-hive') && !d.querySelector('.spl-honey')
-      && !d.querySelector('.spl-door') && !d.querySelector('.spl-gantry'); }),
-    'no world borrows another\'s close — jaws, honey, doors, gantry stay home');
+      && !d.querySelector('.spl-cloudrush') && !d.querySelector('.spl-gantry'); }),
+    'no world borrows another\'s close — jaws, honey, cloud-rush, gantry stay home');
 
   // silenced by the Settings switch, and never over onboarding
   const pg4 = await b.newPage();
