@@ -258,6 +258,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       twinks: document.querySelectorAll('.mw-twink').length,
       pokes: document.querySelectorAll('.mw-poke').length,
       lmImgs: document.querySelectorAll('.mw-lm-a img[src*="mw-lm-"]').length,
+      lmAnch: document.querySelectorAll('.mw-lm.anch .mw-lm-halo').length,
+      lmAll: document.querySelectorAll('.mw-lm').length,
       ghostless: !document.querySelector('.mw-lm.done[style*="grayscale"]') };
     /* the boing class lands synchronously inside mwPoke; a deferred render can
        rebuild the pin after, so the check is immediate */
@@ -272,7 +274,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     'the meadow LIVES — ' + life.butter + ' butterflies, ' + life.petals + ' falling petals, ' + life.twinks + ' glints');
   ok(life.pokes >= 10, life.pokes + ' painted things are POKEABLE');
   ok(life.boing && life.burst, 'a poke boings and sheds a sparkle burst');
-  ok(life.lmImgs === 4, 'all four landmarks wear their PAINTED sprites (no more flat icons)');
+  ok(life.lmAll === 4 && life.lmImgs === 2 && life.lmAnch === 2,
+    'four landmarks: two sprites (Beehive, Oak Door) and two ANCHORED to painted features (Well, Arch) — no duplicates on the road');
   const crit = await pg.evaluate(async () => {
     state.devUnlock = 1; render(); await new Promise(r => setTimeout(r, 500));
     const out = { workbees: document.querySelectorAll('.mw-workbee img[src*="hive-bee-fly"]').length,

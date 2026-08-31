@@ -1357,11 +1357,14 @@
     legName: ['the Meadow Gate', 'the Lollipop Grove', 'the Mushroom Hollow', 'the Hive Gates'],
     pair: [7, 8],                       // the half-blind fork: both open together
     pairPos: { 7: { y: -15, tag: 'the dark mushroom knoll' }, 8: { y: 13, tag: 'the petal bridge' } },
+    /* a landmark is ANCHORED (anch:1) when the painter already put it in the
+       plate — the hotspot + glint + label ride the PAINTED feature, no sprite
+       duplicate. Sprites are only for features the painting does not have. */
     lms: [
-      { x: 9,  y: 30, leg: 0, name: 'the Beehive',       kit: 'comb',      g: '🐝' },
-      { x: 40, y: 80, leg: 1, name: 'the Wishing Well',  kit: 'petal',     g: '🪙' },
-      { x: 63, y: 24, leg: 2, name: 'the Blossom Arch',  kit: 'butterfly', g: '🦋' },
-      { x: 88, y: 74, leg: 3, name: 'the Old Oak Door',  kit: 'comb',      g: '🚪' },
+      { x: 9,    y: 30, leg: 0, name: 'the Beehive',      kit: 'comb',      g: '🐝' },
+      { x: 40,   y: 62, leg: 1, name: 'the Wishing Well', kit: 'petal',     g: '🪙', anch: 1 },
+      { x: 63,   y: 47, leg: 2, name: 'the Blossom Arch', kit: 'butterfly', g: '🦋', anch: 1 },
+      { x: 88,   y: 74, leg: 3, name: 'the Old Oak Door', kit: 'comb',      g: '🚪' },
     ],
     /* pokeable painted things — a tap makes them boing and shed sparkles; one
        seeded spot a day hides a petal shower and a little honey */
@@ -1984,9 +1987,12 @@
       const glowLm = Math.floor(mwSeed(c, 'lmglow') * MW.lms.length) % MW.lms.length;
       mwHTML += MW.lms.map((lm, i) => { if (lm.x > edge) return '';
         const done2 = mwLmDone(c, i);
-        return `<button class="mw-lm${done2 ? ' done' : ''}${i === glowLm && !done2 ? ' glow' : ''}" data-act="mwLmk" data-arg="${i}"
+        const body2 = lm.anch
+          ? `<span class="mw-lm-halo"></span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`
+          : `<span class="mw-lm-a">${MW_LM_ART[lm.g] || ''}</span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`;
+        return `<button class="mw-lm${lm.anch ? ' anch' : ''}${done2 ? ' done' : ''}${i === glowLm && !done2 ? ' glow' : ''}" data-act="mwLmk" data-arg="${i}"
           style="left:${lm.x}%;top:${lm.y}%" title="${escA(lm.name + (done2 ? ' — visited today' : ' — a side round of words, +12 honey'))}">
-          <span class="mw-lm-a">${MW_LM_ART[lm.g] || ''}</span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span></button>`; }).join('');
+          ${body2}</button>`; }).join('');
       const wd = mwWander(c, edge);
       if (!wd.done) mwHTML += `<button class="mw-wander" data-act="mwWander" style="left:${wd.x.toFixed(1)}%;top:${wd.y.toFixed(1)}%"
         title="Barnaby Bear has a word for you — +8 honey">🐻<span class="mw-lm-n">Barnaby</span></button>`;
