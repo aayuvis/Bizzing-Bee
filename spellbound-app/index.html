@@ -1558,10 +1558,14 @@
   .mw-lm{position:absolute;z-index:4;transform:translate(-50%,-50%);width:56px;text-align:center;
     background:none;border:0;padding:0;cursor:pointer;transition:transform .15s}
   .mw-lm:hover{transform:translate(-50%,-50%) scale(1.1)}
-  .mw-lm-a{display:block;width:52px;height:56px;margin:0 auto;filter:drop-shadow(0 3px 7px rgba(40,24,4,.4))}
+  .mw-lm-a{display:block;width:64px;height:66px;margin:0 auto;filter:drop-shadow(0 4px 9px rgba(40,24,4,.42))}
+  .mw-lm-a img{width:100%;height:100%;object-fit:contain}
   .mw-lm-n{display:block;margin-top:2px;font-size:10px;font-weight:800;color:#FFF;white-space:nowrap;
     background:rgba(40,24,4,.55);border-radius:99px;padding:2px 8px;backdrop-filter:blur(2px)}
-  .mw-lm.done{opacity:.6;filter:saturate(.6)}
+  /* a visited landmark keeps its colour — the ✓ on its label says the rest
+     (the grey-ghost done state read as broken art) */
+  .mw-lm.done{opacity:.95}
+  .mw-lm.done .mw-lm-n{background:rgba(42,122,58,.72)}
   .mw-lm.glow .mw-lm-a{animation:mw-lmglow 1.6s ease-in-out infinite}
   @keyframes mw-lmglow{0%,100%{filter:drop-shadow(0 3px 7px rgba(40,24,4,.4))}
     50%{filter:drop-shadow(0 0 14px rgba(255,210,77,.95))}}
@@ -1602,9 +1606,46 @@
     animation:kit-sway 2.6s ease-in-out var(--kd,0s) infinite}
   .kit-petal.used{opacity:.3}
   @keyframes kit-sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg) translateY(-4px)}}
+  /* THE LIFE LAYER: butterflies wander the board, petals fall, glints twinkle,
+     and a dozen painted things are POKEABLE — a tap boings them and sheds
+     sparkles; one seeded spot a day hides the petal shower */
+  .mw-butter{position:absolute;z-index:3;pointer-events:none;transform:translate(-50%,-50%);
+    animation:mw-flyabout 13s ease-in-out var(--bd,0s) infinite}
+  .mw-butter .kb-wl{transform-origin:28px 22px;animation:kit-flap .4s ease-in-out infinite alternate}
+  .mw-butter .kb-wr{transform-origin:32px 22px;animation:kit-flap .4s ease-in-out infinite alternate-reverse}
+  @keyframes mw-flyabout{0%,100%{transform:translate(-50%,-50%) rotate(-5deg)}
+    22%{transform:translate(calc(-50% + 4vw),calc(-50% - 6vh)) rotate(6deg)}
+    50%{transform:translate(calc(-50% + 1vw),calc(-50% + 5vh)) rotate(-4deg)}
+    74%{transform:translate(calc(-50% - 3vw),calc(-50% - 3vh)) rotate(5deg)}}
+  .mw-petalfall{position:absolute;top:-4%;width:11px;height:9px;z-index:2;pointer-events:none;opacity:0;
+    background:radial-gradient(circle at 40% 35%,#FBD5DE,#F3B2C0 70%);border-radius:64% 36% 60% 40%;
+    animation:mw-pfall var(--pw,9s) linear var(--pd,0s) infinite}
+  @keyframes mw-pfall{0%{opacity:0;transform:translate(0,0) rotate(0)}6%{opacity:.85}
+    100%{opacity:.4;transform:translate(3vw,58vh) rotate(300deg)}}
+  .mw-twink{position:absolute;width:7px;height:7px;z-index:2;pointer-events:none;opacity:0;
+    background:radial-gradient(circle,#FFFDF0 0 28%,rgba(255,230,140,.9) 45%,transparent 70%);
+    clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);
+    animation:mw-twinkle 3.4s ease-in-out var(--td,0s) infinite}
+  @keyframes mw-twinkle{0%,100%{opacity:0;transform:scale(.5) rotate(0)}50%{opacity:1;transform:scale(1.5) rotate(40deg)}}
+  .mw-poke{position:absolute;z-index:3;width:44px;height:44px;transform:translate(-50%,-50%);
+    background:none;border:0;padding:0;cursor:pointer}
+  .mw-poke::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;transform:translate(-50%,-50%);
+    background:radial-gradient(circle,#FFFDF0 0 30%,rgba(255,220,120,.85) 50%,transparent 72%);border-radius:50%;
+    opacity:0;animation:mw-pokeglint 7s ease-in-out var(--td,0s) infinite}
+  @keyframes mw-pokeglint{0%,88%,100%{opacity:0}92%,96%{opacity:.95}}
+  .mw-poke.boing{animation:mw-boing .5s cubic-bezier(.3,1.6,.4,1)}
+  @keyframes mw-boing{0%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-58%) scale(1.25)}70%{transform:translate(-50%,-47%) scale(.92)}100%{transform:translate(-50%,-50%) scale(1)}}
+  .mw-burst{position:absolute;left:50%;top:50%;pointer-events:none}
+  .mw-burst span{position:absolute;left:0;top:0;font-size:15px;opacity:0;
+    animation:mw-burstfly var(--bd2,.6s) ease-out both}
+  @keyframes mw-burstfly{0%{opacity:1;transform:rotate(var(--ba,0deg)) translateY(0) scale(.6)}
+    100%{opacity:0;transform:rotate(var(--ba,0deg)) translateY(-40px) scale(1.2)}}
   :root[data-motion="off"] .kit-fly,:root[data-motion="off"] .kit-petal,:root[data-motion="off"] .mw-wander,
-  :root[data-motion="off"] .mw-bloom,:root[data-motion="off"] .mw-lm.glow .mw-lm-a{animation:none}
-  @media (prefers-reduced-motion:reduce){ .kit-fly,.kit-petal,.mw-wander,.mw-bloom,.mw-lm.glow .mw-lm-a{animation:none} }
+  :root[data-motion="off"] .mw-bloom,:root[data-motion="off"] .mw-lm.glow .mw-lm-a,
+  :root[data-motion="off"] .mw-butter,:root[data-motion="off"] .mw-petalfall,
+  :root[data-motion="off"] .mw-twink,:root[data-motion="off"] .mw-poke::after{animation:none}
+  @media (prefers-reduced-motion:reduce){ .kit-fly,.kit-petal,.mw-wander,.mw-bloom,.mw-lm.glow .mw-lm-a,
+    .mw-butter,.mw-petalfall,.mw-twink,.mw-poke::after{animation:none} }
   .act-pan{overflow-x:auto;overflow-y:hidden;border-radius:22px;-webkit-overflow-scrolling:touch;
     box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2)}
   .act-pan::-webkit-scrollbar{height:6px}
@@ -2539,6 +2580,6 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
   <script defer src="saga2.js?v=20260828a"></script>
 <script defer src="trivia.js?v=20260824q"></script>
 <script defer src="advanced.js?v=20260824q"></script>
-<script defer src="trail.js?v=20260831b"></script>
+<script defer src="trail.js?v=20260831c"></script>
 </body>
 </html>

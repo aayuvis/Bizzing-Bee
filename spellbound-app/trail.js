@@ -1343,6 +1343,10 @@
       { x: 63, y: 24, leg: 2, name: 'the Blossom Arch',  kit: 'butterfly', g: '🦋' },
       { x: 88, y: 74, leg: 3, name: 'the Old Oak Door',  kit: 'comb',      g: '🚪' },
     ],
+    /* pokeable painted things — a tap makes them boing and shed sparkles; one
+       seeded spot a day hides a petal shower and a little honey */
+    pokes: [[7, 55], [13, 34], [19, 74], [30, 56], [36, 30], [44, 66],
+      [55, 42], [62, 72], [70, 34], [80, 50], [88, 34], [94, 66]],
   };
   const mwOn = () => state.trailAct === 'meadow' && state.trailCourse !== 'exp';
   const mwP = c => (tr(c).mw = tr(c).mw || {});
@@ -1406,12 +1410,30 @@
       p.wd = mwDay(); addCoins(8); save();
       flash('🐻 Barnaby: “' + (w ? w.w + '! A fine word. ' : '') + 'For your kindness — 8 honey.”'); render();
     } catch (e) {} }); };
+  /* ---- pokes: tap a painted thing, it boings and sheds sparkles. One seeded
+     spot per day hides the petal shower (+2 honey, once). Pure DOM — a poke
+     must feel instant, so no full render unless the lucky one pays. ---- */
+  app2.mwPoke = i => { try { const c = active(); i = +i;
+    const el = document.querySelector('.mw-poke[data-arg="' + i + '"]'); if (!el) return;
+    el.classList.remove('boing'); void el.offsetWidth; el.classList.add('boing');
+    const burst = document.createElement('span'); burst.className = 'mw-burst';
+    for (let k = 0; k < 6; k++) { const s2 = document.createElement('span');
+      s2.textContent = k % 2 ? '✨' : '🌸'; s2.style.setProperty('--ba', (k * 60) + 'deg');
+      s2.style.setProperty('--bd2', (0.5 + (k % 3) * 0.14) + 's'); burst.appendChild(s2); }
+    el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 900);
+    try { sfx('tick'); } catch (_) {}
+    const lucky = Math.floor(mwSeed(c, 'poke') * MW.pokes.length) % MW.pokes.length;
+    const p = mwP(c);
+    if (i === lucky && p.pk !== mwDay()) { p.pk = mwDay(); addCoins(2); save();
+      try { sfx('coin'); burstConfetti(40); } catch (_) {}
+      flash('🌸 A petal shower! +2 honey'); render(); }
+  } catch (e) {} };
   /* ---- landmarks: place-true side rounds, one honey trickle per day each ---- */
   const MW_LM_ART = {
-    '🐝': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M30 4 C16 4 10 12 10 20 c0 4 2 7 5 9 c-4 2 -7 6 -7 11 c0 5 3 9 8 11 c-2 2 -3 4 -3 7 h34 c0 -3 -1 -5 -3 -7 c5 -2 8 -6 8 -11 c0 -5 -3 -9 -7 -11 c3 -2 5 -5 5 -9 C50 12 44 4 30 4z" fill="#E8A81C" stroke="#8A5510" stroke-width="3"/><path d="M14 22 h32 M12 36 h36 M14 50 h32" stroke="#8A5510" stroke-width="3"/><ellipse cx="30" cy="38" rx="6" ry="8" fill="#3A1D02"/></svg>',
-    '🪙': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M8 30 l22 -16 l22 16 v6 h-6 l-16 -12 l-16 12 h-6z" fill="#B4552E" stroke="#6E3418" stroke-width="3"/><rect x="14" y="34" width="32" height="22" fill="#B9B4A8" stroke="#6B665C" stroke-width="3"/><path d="M14 40 h32 M14 48 h32 M22 34 v22 M38 34 v22" stroke="#8C877B" stroke-width="2"/><rect x="24" y="10" width="3" height="24" fill="#6E3418"/><circle cx="30" cy="42" r="6" fill="#2E566E"/></svg>',
-    '🦋': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M10 58 C 8 34, 16 16, 30 10 C 44 16, 52 34, 50 58" fill="none" stroke="#8C7A5C" stroke-width="5" stroke-linecap="round"/><g fill="#F3B2C0"><circle cx="14" cy="34" r="5"/><circle cx="22" cy="18" r="5"/><circle cx="38" cy="18" r="5"/><circle cx="46" cy="34" r="5"/><circle cx="30" cy="10" r="5"/></g><g fill="#E88AA0"><circle cx="18" cy="26" r="3"/><circle cx="30" cy="13" r="3"/><circle cx="42" cy="26" r="3"/></g></svg>',
-    '🚪': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M6 64 C6 30 16 10 30 10 C44 10 54 30 54 64z" fill="#7A5230" stroke="#4A2E12" stroke-width="3"/><path d="M14 64 C14 36 21 20 30 20 C39 20 46 36 46 64z" fill="#A8763E" stroke="#4A2E12" stroke-width="3"/><path d="M30 20 v44 M14 44 h32" stroke="#4A2E12" stroke-width="2.4"/><circle cx="24" cy="46" r="3" fill="#F0B429"/></svg>',
+    '🐝': '<img src="app-art/mw-lm-beehive.svg" alt="">',
+    '🪙': '<img src="app-art/mw-lm-well.svg" alt="">',
+    '🦋': '<img src="app-art/mw-lm-arch.svg" alt="">',
+    '🚪': '<img src="app-art/mw-lm-oak.svg" alt="">',
   };
   const mwLmDone = (c, i) => ((mwP(c).lm || {})[i] || '') === mwDay();
   app2.mwLmk = i => { const c = active(); i = +i;
@@ -1463,7 +1485,7 @@
   /* butterfly tap resolves like a normal pick; comb + petal build then resolve */
   app2.kitPick = i => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
     const ok = +i === it.ans; q2.picked = +i; q2.right = ok; if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
-    try { sfx(ok ? 'coin' : 'thud'); } catch (e) {} render(); tqAutoNext(ok); };
+    try { sfx(ok ? 'coin' : 'wrong'); } catch (e) {} render(); tqAutoNext(ok); };
   app2.kitTile = k => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
     const buf = state.kitBuf = state.kitBuf || [];
     if (buf.includes(+k)) return;
@@ -1474,7 +1496,7 @@
       const ok = nkey(made) === nkey(it.w);
       q2.picked = 1; q2.right = ok; if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
       state.kitBuf = null;
-      try { sfx(ok ? 'coin' : 'thud'); } catch (e) {} render(); tqAutoNext(ok); return; }
+      try { sfx(ok ? 'coin' : 'wrong'); } catch (e) {} render(); tqAutoNext(ok); return; }
     render(); };
   app2.kitReset = () => { state.kitBuf = null; render(); };
   const BFLY = col => `<svg viewBox="0 0 60 44" width="100%" height="100%"><g class="kb-wl"><path d="M28 22 C 16 4, 2 4, 3 16 C 4 26, 16 28, 28 24z" fill="${col}" stroke="#5A3A50" stroke-width="2"/><path d="M28 24 C 18 40, 5 40, 6 31 C 7 25, 18 24, 28 26z" fill="${col}" opacity=".8" stroke="#5A3A50" stroke-width="2"/></g><g class="kb-wr"><path d="M32 22 C 44 4, 58 4, 57 16 C 56 26, 44 28, 32 24z" fill="${col}" stroke="#5A3A50" stroke-width="2"/><path d="M32 24 C 42 40, 55 40, 54 31 C 53 25, 42 24, 32 26z" fill="${col}" opacity=".8" stroke="#5A3A50" stroke-width="2"/></g><ellipse cx="30" cy="23" rx="3.4" ry="12" fill="#5A3A50"/><path d="M28 12 q-3 -7 -7 -9 M32 12 q3 -7 7 -9" stroke="#5A3A50" stroke-width="2" fill="none"/></svg>`;
@@ -1885,6 +1907,19 @@
         title="Barnaby Bear has a word for you — +8 honey">🐻<span class="mw-lm-n">Barnaby</span></button>`;
       if (rv < 3) mwHTML += `<span class="mw-sign" style="left:${(MW.legEdge[rv] - 1.2).toFixed(1)}%">
         <span>→ ${esc(MW.legName[rv + 1])}</span><i>clear the road to open the way</i></span>`;
+      /* THE LIFE LAYER: butterflies wander, petals fall, glints twinkle — and a
+         dozen painted things are POKEABLE (one hides today's petal shower) */
+      const BCOL = ['#F3B2C0', '#8FD0EC', '#FFD24D', '#C8A2F0', '#A8E0B0'];
+      for (let bf2 = 0; bf2 < 5; bf2++) { const bx = (6 + bf2 * 19 + mwSeed(c, 'bf' + bf2) * 8) % (MW.legEdge[rv] - 4);
+        mwHTML += `<span class="mw-butter" style="left:${bx.toFixed(1)}%;top:${(14 + (bf2 * 29) % 52)}%;--bd:${(bf2 * 2.3).toFixed(1)}s">
+          <span style="display:block;width:34px;height:26px">${BFLY(BCOL[bf2])}</span></span>`; }
+      for (let pf = 0; pf < 14; pf++) { const px2 = (pf * 7.3 + mwSeed(c, 'pf' + pf) * 5) % 98;
+        if (px2 > MW.legEdge[rv]) continue;
+        mwHTML += `<span class="mw-petalfall" style="left:${px2.toFixed(1)}%;--pd:${((pf * 1.9) % 11).toFixed(1)}s;--pw:${(7 + pf % 5)}s"></span>`; }
+      for (let tw = 0; tw < 9; tw++) { const tx2 = (4 + tw * 11.2) % 96; if (tx2 > MW.legEdge[rv]) continue;
+        mwHTML += `<span class="mw-twink" style="left:${tx2.toFixed(1)}%;top:${(20 + (tw * 31) % 62)}%;--td:${(tw * 0.9).toFixed(1)}s"></span>`; }
+      MW.pokes.forEach((pk, i) => { if (pk[0] > MW.legEdge[rv]) return;
+        mwHTML += `<button class="mw-poke" data-act="mwPoke" data-arg="${i}" style="left:${pk[0]}%;top:${pk[1]}%;--td:${((i * 1.3) % 8).toFixed(1)}s" aria-label="something wiggles here"></button>`; });
       const wx = mwVariant(c);
       mwExtra = wx === 'rainbow' ? '<span class="mw-wx mw-rainbow" aria-hidden="true"></span>'
         : wx === 'mist' ? '<span class="mw-wx mw-mist" aria-hidden="true"></span>'

@@ -219,6 +219,32 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(card.backAgain, 'a pin tap brings it back');
   ok(card.anchored && card.fits, 'the card near the earned edge anchors leftward and fits on the reachable canvas');
 
+  // ---- the LIFE layer: butterflies, petals, glints, painted landmark art,
+  //      and a dozen pokeable painted things ----
+  const life = await pg.evaluate(async () => {
+    state.devUnlock = 1; render(); await new Promise(r => setTimeout(r, 500));
+    const out = {
+      butter: document.querySelectorAll('.mw-butter').length,
+      petals: document.querySelectorAll('.mw-petalfall').length,
+      twinks: document.querySelectorAll('.mw-twink').length,
+      pokes: document.querySelectorAll('.mw-poke').length,
+      lmImgs: document.querySelectorAll('.mw-lm-a img[src*="mw-lm-"]').length,
+      ghostless: !document.querySelector('.mw-lm.done[style*="grayscale"]') };
+    app.mwPoke('3'); await new Promise(r => setTimeout(r, 200));
+    const el = document.querySelector('.mw-poke[data-arg="3"]');
+    out.boing = el && el.classList.contains('boing');
+    out.burst = !!document.querySelector('.mw-burst');
+    state.devUnlock = 0;
+    return out;
+  });
+  ok(life.butter >= 4 && life.petals >= 10 && life.twinks >= 6,
+    'the meadow LIVES — ' + life.butter + ' butterflies, ' + life.petals + ' falling petals, ' + life.twinks + ' glints');
+  ok(life.pokes >= 10, life.pokes + ' painted things are POKEABLE');
+  ok(life.boing && life.burst, 'a poke boings and sheds a sparkle burst');
+  ok(life.lmImgs === 4, 'all four landmarks wear their PAINTED sprites (no more flat icons)');
+  ['mw-lm-beehive', 'mw-lm-well', 'mw-lm-arch', 'mw-lm-oak'].forEach(f =>
+    ok(fs.existsSync(SRC + '/app-art/' + f + '.svg'), f + '.svg ships'));
+
   // ---- source pins ----
   const tj = fs.readFileSync(SRC + '/trail.js', 'utf8');
   ok(/THE LIVING MEADOW/.test(tj) && /reveal law/i.test(tj), 'the Living Meadow section and its reveal law are documented in trail.js');
