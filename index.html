@@ -1120,6 +1120,11 @@
   #sb-splash .spl-gate.pressed::after{content:'';position:absolute;inset:-5px;border-radius:999px;border:3px solid #FFF;opacity:0;animation:spl-gatering .5s ease .05s 1}
   @keyframes spl-gatering{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
   #sb-splash.kb .spl-gate{display:none}
+  /* the browser refused the auto-press's sound: one loud chip, one tap fixes it */
+  #sb-splash .spl-snd{position:absolute;left:50%;bottom:calc(7vh + 18px);transform:translateX(-50%);z-index:12;
+    padding:11px 22px;border-radius:999px;background:#FFFDF4;color:#241E33;font-weight:800;font-size:14.5px;
+    box-shadow:0 6px 24px rgba(0,0,0,.45);animation:spl-sndpulse 1.1s ease-in-out infinite;pointer-events:none;white-space:nowrap}
+  @keyframes spl-sndpulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.09)}}
   /* during the HOLD the gate is the ONLY call — the episode credit and tagline
      are film beats, they belong to the show and enter with it */
   #sb-splash.hold .spl-world,#sb-splash.hold .spl-sub{display:none}
@@ -2215,17 +2220,24 @@
       if(sting && CLOSE>0 && CLOSE>el){
         stTm=setTimeout(function(){ if(done) return;
           fadeStop(brand); try{ sting.play(); }catch(e){} }, (CLOSE-el)*1000); } }
+    /* when the browser refuses the auto-press's audio (no trusted gesture yet),
+       say so LOUDLY: a pulsing sound chip that one tap answers. The tap lands in
+       the !sched branch below — sound joins mid-show, nothing skips. */
+    function sndBadge(on){ try{ var s=d.querySelector('.spl-snd');
+      if(on && !s){ var e=document.createElement('div'); e.className='spl-snd'; e.textContent='🔊 tap for sound'; d.appendChild(e); }
+      else if(!on && s) s.remove(); }catch(e){} }
     function sk(){ if(sched||done||!brand) return;
       var el=(Date.now()-born)/1000; if(el<0.35) el=0;
       try{ if(el>0.4) brand.currentTime=el; }catch(e){}
-      var p; try{ p=brand.play(); }catch(e){ return; }
+      var p; try{ p=brand.play(); }catch(e){ sndBadge(true); return; }
       if(!p||!p.then){ armSting(el); return; }
       p.then(function(){
         /* a slow fetch can delay the actual start — re-sync the cue to the TRUE
            elapsed time so the stinger still lands exactly on the world's close */
         try{ var el2=(Date.now()-born)/1000;
           if(el2>0.4 && Math.abs(brand.currentTime-el2)>0.3) brand.currentTime=el2; }catch(e){}
-        armSting((Date.now()-born)/1000); }).catch(function(){});
+        sndBadge(false);
+        armSting((Date.now()-born)/1000); }).catch(function(){ sndBadge(true); });
     }
     var tune=sk;
     /* a TAPPED exit kills the audio at once; the natural end lets the world
@@ -2257,7 +2269,7 @@
     d.addEventListener('pointerdown',function ev(){
       if(!started){ startShow(); return; }
       if(!rm && !d.classList.contains('kb')) return;   /* the press beat — the show is about to start */
-      if(!sched && !rm){ tune();
+      if(!sched && !rm){ tune(); sndBadge(false);
         var tp=d.querySelector('.spl-tap'); if(tp) tp.textContent='sound on — tap again to skip';
         return; }
       d.removeEventListener('pointerdown',ev);
