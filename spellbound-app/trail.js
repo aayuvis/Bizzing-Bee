@@ -441,6 +441,13 @@
     if (q2.i + 1 >= q2.items.length) { q2.over = true; finishQuiz(); } else { q2.i++; q2.picked = null; tqAutoSay(); }
     render(); };
   function finishQuiz() { const c = active(); const q2 = state.tq; const pct = q2.items.length ? q2.score / q2.items.length : 0;
+    /* a HERO challenge is one word, the hero's way: win = +5 honey the first
+       time each day; replays pay nothing. Touches nothing else. */
+    if (q2.hero != null) { q2.pct = pct; q2.pass = pct >= 1;
+      if (q2.pass) { const hr = mwP(c).hr = mwP(c).hr || {};
+        if (hr[q2.hero] !== mwDay()) { hr[q2.hero] = mwDay(); addCoins(5); q2.heroPaid = true; }
+        try { sfx('win'); burstConfetti(40); } catch (e) {} save(); }
+      return; }
     /* a LANDMARK side round pays a honey trickle and touches nothing else:
        no stars, no doneMap, no lap — rank still comes from the road itself */
     if (q2.side != null) { q2.pct = pct; q2.pass = pct >= 0.5;
@@ -713,6 +720,18 @@
   function viewQuiz() {
     const c = active(); const q2 = state.tq; if (!q2) return viewMap();
     const back = state.trailChk ? 'trailBack' : 'trailUnit';
+    if (q2.over && q2.hero != null) {
+      const h = MW.heroes[q2.hero] || {};
+      return `<div style="${RISE()}max-width:420px;margin:0 auto;text-align:center">
+        <div style="background:var(--bg2);border-radius:20px;padding:26px;box-shadow:0 0 0 1px var(--line),var(--glow)">
+          <span style="width:84px;height:84px;display:inline-block"><img src="app-art/${h.img}.svg" alt="" style="width:100%;height:100%;object-fit:contain"></span>
+          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(h.name) + ' is delighted!' + (q2.heroPaid ? ' · +5 🪙' : '') : 'Almost — try again!'}</h2>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.pass ? (q2.heroPaid ? 'First win of the day.' : 'Already thanked you today — but always happy to play.') : 'The word got away. The ' + esc(h.name.replace(/^the /, '')) + ' will wait.'}</p>
+          <div style="display:flex;gap:9px;justify-content:center">
+          ${!q2.pass ? `<button data-act="mwHero" data-arg="${q2.hero}" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">Once more!</button>` : ''}
+          <button data-act="trailBack" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">Back to the Meadow →</button></div>
+        </div></div>`;
+    }
     if (q2.over && q2.side != null) {
       const pct = Math.round((q2.pct || 0) * 100);
       const lm = MW.lms[q2.side] || {};
@@ -763,6 +782,7 @@
         <span style="font-size:12px;font-weight:800;color:var(--muted)">${q2.i + 1}/${q2.items.length}</span></div>
       <div style="background:var(--bg2);border-radius:18px;padding:clamp(16px,4vw,24px);box-shadow:0 0 0 1px var(--line),var(--glow)">
         <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px">${it.ty === 'kit' ? (it.kit === 'butterfly' ? '🦋 Butterfly catch' : it.kit === 'comb' ? '🍯 Comb builder' : '🌸 Petal trail') : it.ty === 'spell' ? '🔊 Spell it' : it.ty === 'mean' ? '📖 Meaning' : '💡 Concept'}${state.trailChk ? ' · checkpoint' : ''}${q2.sideName ? ' · ' + esc(q2.sideName) : ''}</div>
+        ${q2.heroLine ? `<p style="font-size:13.5px;font-weight:700;color:var(--text);margin:0 0 12px;line-height:1.5">${esc(q2.heroLine)}</p>` : ''}
         ${body}
         ${picked != null ? `<div style="text-align:center;margin-top:14px"><button data-act="tqNext" style="padding:11px 26px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">${q2.i + 1 >= q2.items.length ? 'Finish' : 'Next →'}</button></div>` : ''}
       </div>
@@ -1351,10 +1371,14 @@
        belong to the painting and they MOVE (sway, breathe, flutter), and a tap
        answers with something (petals, spores, bees). Kids find them themselves. */
     heroes: [
-      { x: 15,   y: 56, w: 170, img: 'mw-hero-tree',   anim: 'sway',    burst: '🌸', name: 'the whispering cherry' },
-      { x: 46.5, y: 46, w: 120, img: 'mw-hero-lolly',  anim: 'sway2',   burst: '✨', name: 'the great lollipop' },
-      { x: 57,   y: 93, w: 130, img: 'mw-hero-shroom', anim: 'breathe', burst: '🟢', name: 'the grand toadstool' },
-      { x: 90,   y: 44, w: 95,  img: 'mw-hero-flag',   anim: 'flutter', burst: '🐝', name: 'the hive banner' },
+      { x: 15,   y: 56, w: 170, img: 'mw-hero-tree',   anim: 'sway',    burst: '🌸', name: 'the whispering cherry',
+        kit: 'petal',     line: 'The cherry whispers a word on the wind — hop its petals!' },
+      { x: 46.5, y: 46, w: 120, img: 'mw-hero-lolly',  anim: 'sway2',   burst: '✨', name: 'the great lollipop',
+        kit: 'butterfly', line: 'Three butterflies circle the lollipop — only one spells it sweetly!' },
+      { x: 57,   y: 93, w: 130, img: 'mw-hero-shroom', anim: 'breathe', burst: '🟢', name: 'the grand toadstool',
+        kit: 'comb',      line: 'The toadstool hums a word in pieces — build it back!' },
+      { x: 90,   y: 44, w: 95,  img: 'mw-hero-flag',   anim: 'flutter', burst: '🐝', name: 'the hive banner',
+        kit: 'spell',     line: 'A bee lands with a message — hear it and spell it true!' },
     ],
   };
   const mwOn = () => state.trailAct === 'meadow' && state.trailCourse !== 'exp';
@@ -1381,10 +1405,11 @@
      is only trusted once the panorama has real layout: a not-yet-loaded image
      reports a tiny width, and clamping against THAT dragged every scroll back
      to the far left (the "snaps to level 1" bug). */
-  let _mwMax = Infinity;
+  let _mwMax = Infinity, _mwScroll = null;
   document.addEventListener('scroll', e => { try {
-    const el = e.target; if (!el || el.id !== 'sb-pan' || _mwMax === Infinity) return;
-    if (el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
+    const el = e.target; if (!el || el.id !== 'sb-pan') return;
+    if (_mwMax !== Infinity && el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
+    _mwScroll = el.scrollLeft;   // the camera position SURVIVES re-renders
   } catch (_) {} }, true);
   function mwClamp(edge, homeX) { setTimeout(() => { try {
     const el = document.getElementById('sb-pan'); if (!el) { _mwMax = Infinity; return; }
@@ -1394,9 +1419,11 @@
       const bd2 = el2.firstElementChild; if (!bd2) return;
       if (bd2.clientWidth < el2.clientWidth * 1.2) { _mwMax = Infinity; return; }  // no real layout yet
       _mwMax = Math.max(0, bd2.clientWidth * (edge / 100) - el2.clientWidth);
-      if (el2.scrollLeft > _mwMax) el2.scrollLeft = _mwMax;
-      /* open the camera AT the child's stop, not at the west end of the world */
-      if (homeX != null) el2.scrollLeft = Math.max(0, Math.min(_mwMax, bd2.clientWidth * homeX / 100 - el2.clientWidth / 2));
+      /* open the camera AT the child's stop on a fresh view; on every OTHER
+         render (a coin flash, a save, a toast) RESTORE where they were — a
+         re-render must never send the camera back to the west end */
+      if (homeX != null) _mwScroll = Math.max(0, Math.min(_mwMax, bd2.clientWidth * homeX / 100 - el2.clientWidth / 2));
+      el2.scrollLeft = Math.max(0, Math.min(_mwMax, _mwScroll == null ? el2.scrollLeft : _mwScroll));
     } catch (_) {} };
     if (img && !img.complete) { _mwMax = Infinity; img.addEventListener('load', apply, { once: true }); }
     else apply();
@@ -1451,20 +1478,31 @@
       try { sfx('coin'); burstConfetti(40); } catch (_) {}
       flash('🌸 A petal shower! +2 honey'); render(); }
   } catch (e) {} };
-  /* a HERO answers a tap in its own voice: the cherry sheds petals, the
-     lollipop rings sparkles, the toadstool puffs spores, the banner sends
-     two bees zipping out. Pure DOM, pure delight — no economy. */
-  app2.mwHero = i => { try { const h = MW.heroes[+i]; if (!h) return;
-    const el = document.querySelector('.mw-hero[data-arg="' + i + '"]'); if (!el) return;
-    el.classList.remove('stir'); void el.offsetWidth; el.classList.add('stir');
-    const burst = document.createElement('span'); burst.className = 'mw-burst';
-    for (let k = 0; k < 8; k++) { const s2 = document.createElement('span');
-      s2.textContent = h.burst === '🟢' ? (k % 2 ? '✨' : '💚') : (k % 3 === 2 ? '✨' : h.burst);
-      s2.style.setProperty('--ba', (k * 45) + 'deg');
-      s2.style.setProperty('--bd2', (0.55 + (k % 4) * 0.13) + 's'); burst.appendChild(s2); }
-    el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 1100);
+  /* a HERO answers a tap in its own voice — a stir, a burst, and then a FUN
+     CHALLENGE: one word, played the hero's own way (petal-hop for the cherry,
+     butterfly catch at the lollipop, comb-build under the toadstool, a bee's
+     message at the banner). +5 honey the first win each day; replays are free. */
+  app2.mwHero = i => { try { const c = active(); const h = MW.heroes[+i]; if (!h) return;
+    const el = document.querySelector('.mw-hero[data-arg="' + i + '"]');
+    if (el) { el.classList.remove('stir'); void el.offsetWidth; el.classList.add('stir');
+      const burst = document.createElement('span'); burst.className = 'mw-burst';
+      for (let k = 0; k < 8; k++) { const s2 = document.createElement('span');
+        s2.textContent = h.burst === '🟢' ? (k % 2 ? '✨' : '💚') : (k % 3 === 2 ? '✨' : h.burst);
+        s2.style.setProperty('--ba', (k * 45) + 'deg');
+        s2.style.setProperty('--bd2', (0.55 + (k % 4) * 0.13) + 's'); burst.appendChild(s2); }
+      el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 1100); }
     try { sfx('tick'); } catch (_) {}
-  } catch (e) {} };
+    const hi = +i;
+    setTimeout(() => { needMap(() => { try {
+      const u = (seq(c).find(n => n.kind === 'unit' && !passedNode(c, n)) || seq(c).filter(n => n.kind === 'unit').slice(-1)[0]).u;
+      const ws = shuffle(lapWords(u, lapOf(c), 20).slice()).filter(w => w.w.length >= 3);
+      const w = ws[0]; if (!w) return;
+      const item = h.kit === 'spell' ? { ty: 'spell', w: w.w, d: w.d } : kitItem(w, h.kit);
+      set({ trailView: 'quiz', trailChk: null, trailUnit: u.id,
+        tq: { items: [item], i: 0, score: 0, picked: null, typed: '', missed: [], over: false,
+          hero: hi, sideName: h.name, heroLine: h.line } });
+      tqAutoSay();
+    } catch (e) {} }); }, 650); } catch (e) {} };
   /* ---- landmarks: place-true side rounds, one honey trickle per day each ---- */
   const MW_LM_ART = {
     '🐝': '<img src="app-art/mw-lm-beehive.svg" alt="">',
@@ -1642,8 +1680,12 @@
     render(); };
   function treGiftCard() {
     const g = state.treG; if (!g) return '';
+    /* the card swallows its own clicks with an INERT data-act (popKeep) — the
+       old stopPropagation also stopped them reaching the app's delegated click
+       handler, which left every button in the card dead (the "can't pick a
+       trivia answer" bug) */
     const shell = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(20,12,30,.5)" data-act="treClose">
-      <div style="width:min(430px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:sb-rise .3s ease both" onclick="event.stopPropagation()">
+      <div data-act="popKeep" style="width:min(430px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:sb-rise .3s ease both">
         ${inner}
         <button data-act="treClose" style="position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:8px;background:var(--surface2);color:var(--muted);font-weight:800">✕</button>
       </div></div>`;

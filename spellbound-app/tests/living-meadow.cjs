@@ -100,6 +100,27 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     return { sl: el ? el.scrollLeft : -1 };
   });
   ok(home.sl > 120, 'the camera opens AT the child\'s stop (scroll=' + Math.round(home.sl) + '), no snap to the west end');
+  // …and a background render must NOT send the camera home
+  const stay = await pg.evaluate(async () => {
+    const el = document.getElementById('sb-pan'); const before = el.scrollLeft;
+    render(); await new Promise(r => setTimeout(r, 500));
+    const el2 = document.getElementById('sb-pan');
+    return { before, after: el2 ? el2.scrollLeft : -1 };
+  });
+  ok(Math.abs(stay.after - stay.before) < 40, 'the camera SURVIVES background renders (' + Math.round(stay.before) + ' → ' + Math.round(stay.after) + ')');
+  // the chest trivia card: its answers must actually be clickable
+  const triv = await pg.evaluate(async () => {
+    state.treG = { kind: 'trivia', act: 'meadow', q: { q: 'Which of these is a home?', f: 'A bungalow is a house.',
+      opts: [{ c: 'bungalow', ok: true }, { c: 'bungaloop', ok: false }], picked: null } };
+    render(); await new Promise(r => setTimeout(r, 400));
+    const btn = document.querySelector('[data-act="treTrivAns"]'); if (!btn) return { there: false };
+    btn.click(); await new Promise(r => setTimeout(r, 300));
+    const picked = state.treG && state.treG.q.picked != null;
+    const closer = !!document.querySelector('[data-act="treClose"]');
+    state.treG = null; render(); await new Promise(r => setTimeout(r, 200));
+    return { there: true, picked, closer };
+  });
+  ok(triv.there && triv.picked, 'a chest-trivia answer CLICKS again (the stopPropagation shell ate every button)');
 
   // ---- the kit rounds: place-true mechanics inside the real quiz ----
   const kits = await pg.evaluate(async () => {
@@ -277,6 +298,23 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   });
   ok(hero.n === 4, 'each country keeps an INTEGRATED hero set-piece — the cherry, the lollipop, the toadstool, the banner (' + hero.n + ')');
   ok(hero.stir && hero.burst, 'a tapped hero STIRS and answers in its own voice (petals / spores / bees)');
+  const hq = await pg.evaluate(async () => {
+    await new Promise(r => setTimeout(r, 1400));   // the stir hands over to the challenge
+    const q = state.tq; if (!q || q.hero !== 0) return { open: false };
+    const coins0 = state.children[0].coins || 0;
+    const it = q.items[0];
+    if (it.ty === 'kit' && it.kit === 'petal') { for (const L of it.w.split('')) {
+      const k = it.pool.findIndex((p, j) => p.L === L && !(state.kitBuf || []).includes(j));
+      app.kitTile(String(k)); await new Promise(r => setTimeout(r, 40)); } }
+    else if (it.ty === 'kit') app.kitPick(String(it.ans));
+    else { app.tqInput(it.w); app.tqSpell(); }
+    await new Promise(r => setTimeout(r, 1600));
+    return { open: true, one: q.items.length === 1, line: !!q.heroLine,
+      over: state.tq.over, paid: (state.children[0].coins || 0) - coins0 };
+  });
+  ok(hq.open && hq.one && hq.line, 'the tap hands over to the hero\'s CHALLENGE — one word, the hero\'s way, with its own story line');
+  ok(hq.over && hq.paid === 5, 'winning it pays +5 honey, first time today (' + hq.paid + ')');
+  await pg.evaluate(async () => { app.trailBack(); await new Promise(r => setTimeout(r, 300)); });
   ['mw-hero-tree', 'mw-hero-lolly', 'mw-hero-shroom', 'mw-hero-flag'].forEach(f =>
     ok(fs.existsSync(SRC + '/app-art/' + f + '.svg'), f + '.svg ships'));
   ['mw-lm-beehive', 'mw-lm-well', 'mw-lm-arch', 'mw-lm-oak'].forEach(f =>
