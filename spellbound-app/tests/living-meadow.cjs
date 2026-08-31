@@ -230,10 +230,12 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       pokes: document.querySelectorAll('.mw-poke').length,
       lmImgs: document.querySelectorAll('.mw-lm-a img[src*="mw-lm-"]').length,
       ghostless: !document.querySelector('.mw-lm.done[style*="grayscale"]') };
-    app.mwPoke('3'); await new Promise(r => setTimeout(r, 200));
-    const el = document.querySelector('.mw-poke[data-arg="3"]');
-    out.boing = el && el.classList.contains('boing');
+    /* the boing class lands synchronously inside mwPoke; a deferred render can
+       rebuild the pin after, so the check is immediate */
+    app.mwPoke('5');
+    out.boing = !!document.querySelector('.mw-poke.boing');
     out.burst = !!document.querySelector('.mw-burst');
+    await new Promise(r => setTimeout(r, 250));
     state.devUnlock = 0;
     return out;
   });
@@ -242,6 +244,21 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(life.pokes >= 10, life.pokes + ' painted things are POKEABLE');
   ok(life.boing && life.burst, 'a poke boings and sheds a sparkle burst');
   ok(life.lmImgs === 4, 'all four landmarks wear their PAINTED sprites (no more flat icons)');
+  const crit = await pg.evaluate(async () => {
+    state.devUnlock = 1; render(); await new Promise(r => setTimeout(r, 500));
+    const out = { workbees: document.querySelectorAll('.mw-workbee img[src*="hive-bee-fly"]').length,
+      birds: document.querySelectorAll('.mw-bird').length,
+      seeds: document.querySelectorAll('.mw-seed').length,
+      wisps: document.querySelectorAll('.mw-wisp').length,
+      water: document.querySelectorAll('.mw-water').length,
+      pulse: !!document.querySelector('.atlas-stop.now .atlas-sd') };
+    state.devUnlock = 0;
+    return out;
+  });
+  ok(crit.workbees >= 3 && crit.birds >= 2 && crit.seeds >= 5 && crit.wisps >= 3,
+    'creatures with BEHAVIOUR: ' + crit.workbees + ' worker bees on gather loops, ' + crit.birds + ' birds crossing, '
+    + crit.seeds + ' seeds drifting, ' + crit.wisps + ' mist wisps');
+  ok(crit.water >= 4, 'the brook glitters along its painted course (' + crit.water + ' water glints)');
   ['mw-lm-beehive', 'mw-lm-well', 'mw-lm-arch', 'mw-lm-oak'].forEach(f =>
     ok(fs.existsSync(SRC + '/app-art/' + f + '.svg'), f + '.svg ships'));
 
