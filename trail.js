@@ -1920,6 +1920,24 @@
         mwHTML += `<span class="mw-twink" style="left:${tx2.toFixed(1)}%;top:${(20 + (tw * 31) % 62)}%;--td:${(tw * 0.9).toFixed(1)}s"></span>`; }
       MW.pokes.forEach((pk, i) => { if (pk[0] > MW.legEdge[rv]) return;
         mwHTML += `<button class="mw-poke" data-act="mwPoke" data-arg="${i}" style="left:${pk[0]}%;top:${pk[1]}%;--td:${((i * 1.3) % 8).toFixed(1)}s" aria-label="something wiggles here"></button>`; });
+      /* CREATURES WITH BEHAVIOUR — not decorations. Worker bees fly flower to
+         flower and PAUSE to gather (keyframe holds); birds cross the whole sky;
+         dandelion seeds drift; mist wisps roll through; the brook sparkles. */
+      const BEEIMG = '<img src="app-art/hive-bee-fly.svg" alt="" style="width:100%;height:100%;object-fit:contain">';
+      [[6, 60, '17s', '0s'], [33, 66, '21s', '-8s'], [58, 56, '19s', '-14s'], [84, 60, '23s', '-4s']]
+      .forEach(bw => { if (bw[0] > MW.legEdge[rv]) return;
+        mwHTML += `<span class="mw-workbee" style="left:${bw[0]}%;top:${bw[1]}%;--wd:${bw[2]};--wdl:${bw[3]}"><span>${BEEIMG}</span></span>`; });
+      const BIRD = '<svg viewBox="0 0 40 16" width="100%" height="100%"><path d="M2 12 q9 -10 18 0 q9 -10 18 0" fill="none" stroke="#6B4E42" stroke-width="2.6" stroke-linecap="round"/></svg>';
+      [['5%', '34s', '0s', 22], ['9%', '46s', '-20s', 17], ['13%', '40s', '-33s', 19]].forEach(bd2 => {
+        mwHTML += `<span class="mw-bird" style="top:${bd2[0]};--fd2:${bd2[1]};--fdl:${bd2[2]};width:${bd2[3]}px">${BIRD}</span>`; });
+      for (let sd = 0; sd < 8; sd++) { const sx = (3 + sd * 12.3) % 96; if (sx > MW.legEdge[rv]) continue;
+        mwHTML += `<span class="mw-seed" style="left:${sx.toFixed(1)}%;top:${(30 + (sd * 27) % 48)}%;--sd2:${((sd * 2.7) % 12).toFixed(1)}s"></span>`; }
+      [[14, 62, '26s', '0s'], [42, 70, '32s', '-12s'], [68, 58, '28s', '-20s'], [88, 66, '30s', '-6s']]
+      .forEach(mi => { if (mi[0] > MW.legEdge[rv]) return;
+        mwHTML += `<span class="mw-wisp" style="left:${mi[0]}%;top:${mi[1]}%;--md2:${mi[2]};--mdl:${mi[3]}"></span>`; });
+      /* the brook glitters where the painter put it (plate two) */
+      if (rv >= 1) [[30.5, 62], [31.5, 72], [33, 80], [35.5, 58], [37, 68]].forEach((bk, i) =>
+        mwHTML += `<span class="mw-twink mw-water" style="left:${bk[0]}%;top:${bk[1]}%;--td:${(i * 0.7).toFixed(1)}s"></span>`);
       const wx = mwVariant(c);
       mwExtra = wx === 'rainbow' ? '<span class="mw-wx mw-rainbow" aria-hidden="true"></span>'
         : wx === 'mist' ? '<span class="mw-wx mw-mist" aria-hidden="true"></span>'

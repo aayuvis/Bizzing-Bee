@@ -1640,12 +1640,48 @@
     animation:mw-burstfly var(--bd2,.6s) ease-out both}
   @keyframes mw-burstfly{0%{opacity:1;transform:rotate(var(--ba,0deg)) translateY(0) scale(.6)}
     100%{opacity:0;transform:rotate(var(--ba,0deg)) translateY(-40px) scale(1.2)}}
+  /* creatures with BEHAVIOUR: the worker bee flies flower to flower and pauses
+     to gather (the holds in the keyframes ARE the behaviour) */
+  .mw-workbee{position:absolute;z-index:3;pointer-events:none;width:30px;height:24px;
+    animation:mw-beework var(--wd,18s) ease-in-out var(--wdl,0s) infinite}
+  .mw-workbee>span{display:block;width:100%;height:100%;animation:mw-beebob2 .6s ease-in-out infinite alternate}
+  @keyframes mw-beework{0%,10%{transform:translate(0,0) scaleX(-1)}
+    22%{transform:translate(3.2vw,-5vh) scaleX(-1)}30%,40%{transform:translate(4.6vw,-1.5vh) scaleX(-1)}
+    52%{transform:translate(2vw,-6.5vh) scaleX(1)}60%,70%{transform:translate(-1.8vw,-2.5vh) scaleX(1)}
+    84%{transform:translate(-2.6vw,-6vh) scaleX(1)}96%,100%{transform:translate(0,0) scaleX(-1)}}
+  @keyframes mw-beebob2{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+  .mw-bird{position:absolute;left:-4%;z-index:2;pointer-events:none;opacity:0;aspect-ratio:40/16;
+    animation:mw-birdcross var(--fd2,38s) linear var(--fdl,0s) infinite}
+  @keyframes mw-birdcross{0%{opacity:0;transform:translateX(0) translateY(0)}4%{opacity:.75}
+    30%{transform:translateX(30vw) translateY(1.6vh)}60%{transform:translateX(62vw) translateY(-1.2vh)}
+    92%{opacity:.75}100%{opacity:0;transform:translateX(104vw) translateY(.6vh)}}
+  .mw-seed{position:absolute;z-index:2;pointer-events:none;width:7px;height:7px;opacity:0;border-radius:50%;
+    background:radial-gradient(circle,#FFFDF4 0 30%,rgba(255,253,244,.6) 55%,transparent 75%);
+    box-shadow:0 0 5px 1px rgba(255,253,244,.5);
+    animation:mw-seeddrift 15s ease-in-out var(--sd2,0s) infinite}
+  @keyframes mw-seeddrift{0%{opacity:0;transform:translate(0,0)}10%{opacity:.9}
+    50%{transform:translate(4.5vw,-4vh) rotate(20deg)}90%{opacity:.7}
+    100%{opacity:0;transform:translate(9vw,-1.5vh)}}
+  .mw-wisp{position:absolute;z-index:2;pointer-events:none;width:220px;height:44px;opacity:0;
+    background:radial-gradient(ellipse,rgba(255,252,244,.3),transparent 68%);filter:blur(3px);
+    animation:mw-wisproll var(--md2,28s) linear var(--mdl,0s) infinite}
+  @keyframes mw-wisproll{0%{opacity:0;transform:translateX(-4vw)}12%{opacity:.8}
+    82%{opacity:.8}100%{opacity:0;transform:translateX(14vw)}}
+  .mw-water{--td:0s;background:radial-gradient(circle,#F2FDFF 0 26%,rgba(160,225,255,.95) 46%,transparent 70%);
+    animation-duration:2.1s}
+  /* the stop you stand on BREATHES */
+  .atlas-stop.now .atlas-sd{animation:mw-nowpulse 2.2s ease-in-out infinite}
+  @keyframes mw-nowpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
   :root[data-motion="off"] .kit-fly,:root[data-motion="off"] .kit-petal,:root[data-motion="off"] .mw-wander,
   :root[data-motion="off"] .mw-bloom,:root[data-motion="off"] .mw-lm.glow .mw-lm-a,
   :root[data-motion="off"] .mw-butter,:root[data-motion="off"] .mw-petalfall,
-  :root[data-motion="off"] .mw-twink,:root[data-motion="off"] .mw-poke::after{animation:none}
+  :root[data-motion="off"] .mw-twink,:root[data-motion="off"] .mw-poke::after,
+  :root[data-motion="off"] .mw-workbee,:root[data-motion="off"] .mw-workbee>span,
+  :root[data-motion="off"] .mw-bird,:root[data-motion="off"] .mw-seed,
+  :root[data-motion="off"] .mw-wisp,:root[data-motion="off"] .atlas-stop.now .atlas-sd{animation:none}
   @media (prefers-reduced-motion:reduce){ .kit-fly,.kit-petal,.mw-wander,.mw-bloom,.mw-lm.glow .mw-lm-a,
-    .mw-butter,.mw-petalfall,.mw-twink,.mw-poke::after{animation:none} }
+    .mw-butter,.mw-petalfall,.mw-twink,.mw-poke::after,.mw-workbee,.mw-workbee>span,
+    .mw-bird,.mw-seed,.mw-wisp,.atlas-stop.now .atlas-sd{animation:none} }
   .act-pan{overflow-x:auto;overflow-y:hidden;border-radius:22px;-webkit-overflow-scrolling:touch;
     box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2)}
   .act-pan::-webkit-scrollbar{height:6px}
@@ -2580,6 +2616,6 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
   <script defer src="saga2.js?v=20260828a"></script>
 <script defer src="trivia.js?v=20260824q"></script>
 <script defer src="advanced.js?v=20260824q"></script>
-<script defer src="trail.js?v=20260831c"></script>
+<script defer src="trail.js?v=20260831d"></script>
 </body>
 </html>
