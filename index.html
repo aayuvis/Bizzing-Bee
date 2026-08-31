@@ -1220,8 +1220,8 @@
     100%{opacity:0;transform:translate(112vw,-2vh)}}
   /* the SWARM COMES HOME: the PAINTED honeybees stream in from every edge and
      shrink into the comb's centre — they go in ahead of us. */
-  #sb-splash .spl-swb{position:absolute;left:50%;top:44%;z-index:6;opacity:0;pointer-events:none;
-    filter:drop-shadow(0 3px 7px rgba(60,30,0,.4))}
+  /* no per-bee shadow filter: a hundred of these must stay smooth on a tablet */
+  #sb-splash .spl-swb{position:absolute;left:50%;top:44%;z-index:6;opacity:0;pointer-events:none;will-change:transform,opacity}
   #sb-splash .spl-swb img{width:100%;height:100%;object-fit:contain;transform:scaleX(var(--fl,1));
     animation:spl-bjit .1s linear infinite alternate}
   #sb-splash.kb .spl-swb{animation:spl-swbin var(--fd,2.2s) cubic-bezier(.4,.1,.72,.62) var(--dl,3.6s) both}
@@ -2078,19 +2078,17 @@
       hx2+='<div class="spl-worldcast" id="spl-cast2"></div>';
       /* the PAINTED bee (faces left; --fl:-1 turns it to fly right) */
       var FLYB='<img src="app-art/hive-bee-fly.svg" alt="">';
-      /* the swarm goes in ahead of us — a real CROWD of them, waves from every
-         edge (left-starters fly right, flipped) */
-      [['-46vw','-30vh','1.9s','2.7s',54,-1],['50vw','-26vh','2.2s','2.9s',44,1],
-       ['-52vw','18vh','2.4s','3.1s',60,-1],['44vw','32vh','2s','3.3s',40,1],
-       ['-38vw','36vh','2.2s','3.5s',50,-1],['54vw','-6vh','2.5s','3.7s',64,1],
-       ['-50vw','-8vh','2.1s','3.9s',38,-1],['40vw','-34vh','2.3s','4.1s',56,1],
-       ['-30vw','32vh','1.9s','4.3s',46,-1],['48vw','20vh','2.1s','4.5s',52,1],
-       ['-44vw','6vh','2s','4.65s',34,-1],['52vw','12vh','2.3s','4.8s',48,1],
-       ['-34vw','-24vh','1.8s','4.95s',42,-1],['36vw','-18vh','2.1s','5.1s',36,1],
-       ['-48vw','28vh','2.2s','5.2s',58,-1],['46vw','-30vh','1.9s','5.3s',44,1],
-       ['-40vw','-12vh','2s','5.4s',50,-1],['42vw','24vh','1.8s','5.5s',40,1]]
-      .forEach(function(bz){ hx2+='<div class="spl-swb" style="--fx:'+bz[0]+';--fy:'+bz[1]
-        +';--fd:'+bz[2]+';--dl:'+bz[3]+';width:'+bz[4]+'px;aspect-ratio:5/4;margin:-'+(bz[4]/2)+'px;--fl:'+bz[5]+'">'+FLYB+'</div>'; });
+      /* the swarm goes in ahead of us — ONE HUNDRED bees, golden-angle spread
+         around the whole sky, arriving in waves until the dive covers them */
+      for(var sb=0;sb<96;sb++){
+        var ang=(sb*137.5)%360, rad=ang*Math.PI/180;
+        var dist=38+(sb*29)%24;
+        var fx=(Math.cos(rad)*dist).toFixed(1), fy=(Math.sin(rad)*dist*0.72).toFixed(1);
+        var sz=18+(sb*53)%46;
+        var dl=(2.4+(sb%80)*0.038).toFixed(2), fd=(1.7+((sb*31)%9)*0.1).toFixed(1);
+        hx2+='<div class="spl-swb" style="--fx:'+fx+'vw;--fy:'+fy+'vh;--fd:'+fd+'s;--dl:'+dl
+          +'s;width:'+sz+'px;aspect-ratio:5/4;margin:-'+(sz/2)+'px;--fl:'+(Math.cos(rad)<0?-1:1)+'">'+FLYB+'</div>';
+      }
       /* the drawn comb we fly into, refined: waxy walls with depth rims, honey
          cells at different fills (some capped in pale wax, some deep), a soft
          vignette, and the OPEN centre door wearing a warm blurred glow */
@@ -2124,7 +2122,9 @@
       hx2+='<div class="spl-combfly">'+comb+'</div>';
       /* our wing-mates, riding the dive with us (bee POV) — facing the comb */
       [['6vw','62vh',150,'5.05s','-34vw','16vh',-1],['72vw','66vh',126,'5.2s','34vw','20vh',1],
-       ['12vw','10vh',108,'5.35s','-30vw','-22vh',-1],['76vw','16vh',92,'5.5s','30vw','-18vh',1]]
+       ['12vw','10vh',108,'5.35s','-30vw','-22vh',-1],['76vw','16vh',92,'5.5s','30vw','-18vh',1],
+       ['28vw','76vh',84,'5.3s','-16vw','26vh',-1],['58vw','6vh',76,'5.45s','18vw','-24vh',1],
+       ['2vw','30vh',70,'5.55s','-30vw','-4vh',-1],['84vw','42vh',66,'5.6s','30vw','4vh',1]]
       .forEach(function(mt){ hx2+='<div class="spl-mate" style="left:'+mt[0]+';top:'+mt[1]+';width:'+mt[2]+'px;aspect-ratio:5/4;--md:'+mt[3]+';--gx:'+mt[4]+';--gy:'+mt[5]+';--fl:'+mt[6]+'">'+FLYB+'</div>'; });
       hx2+='<div class="spl-cellglow"><svg viewBox="0 0 100 100"><polygon points="93,50 71.5,87.2 28.5,87.2 7,50 28.5,12.8 71.5,12.8" fill="none" stroke="rgba(255,233,168,.5)" stroke-width="3"/></svg></div>'
         +'<div class="spl-goldflash"></div>';
