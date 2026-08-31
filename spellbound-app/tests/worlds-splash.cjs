@@ -146,7 +146,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     world: d && /The Hive/.test(d.textContent), tag: d && /home sweet hive/.test(d.textContent) }; });
   ok(hv.up && hv.marked, 'the Hive wears its own staging class (w-hive)');
   ok(hv.world && hv.tag, 'the episode card says The Hive, not a duplicate of the wordmark');
-  ok(hv.swb >= 14, 'the painted SWARM streams home into the comb\'s centre, a real crowd (' + hv.swb + ' bees)');
+  ok(hv.swb + hv.mates >= 100, 'ONE HUNDRED bees enter the hive (' + hv.swb + ' swarm + ' + hv.mates + ' wing-mates)');
   ok(/spl-swbin/.test(idx0) && !/spl-pourtop/.test(idx0) && !/spl-honeytop/.test(idx0),
     'the honey-drip curtain and the landing trio stay cut — the Hive is a simple homecoming now');
   ok(hv.comb >= 40 && hv.cell, 'the DRAWN SVG comb (' + hv.comb + ' hex polygons) and the amber cell arrival replace the photo plates');
