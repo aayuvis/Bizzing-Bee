@@ -1083,6 +1083,38 @@ out of saga2.js so a retune cannot quietly undo them.
   `tests/worlds-splash.cjs` (per-world class, staging census, stinger files, CLOSE
   pins).
 
+## The Living Meadow — Act I pilot of the Living Atlas (Aug-31)
+- The Meadow act rides a four-plate PANORAMA (`app-art/map-meadow-pano.jpg`,
+  5234×768: meadow gate → lollipop grove → mushroom hollow → the hive gates,
+  Gemini plates crossfade-stitched by scratchpad/panogen.py). Everything lives in
+  trail.js under the `MW` config + the `isMW` branch of viewAct.
+- **The reveal law**: the road is revealed by the CAMERA, never by fog. `_mwMax`
+  clamps `#sb-pan`'s scroll at the earned leg edge (`MW.legEdge`), stops beyond
+  the edge are simply NOT RENDERED (off the canvas), and a signpost teases the
+  next leg by name. Clearing a leg fires `mwUnroll` — a smooth camera glide +
+  flash — remembered in `tr(c).mw.rv`. devUnlock (Settings → Testing tools)
+  reveals everything WITHOUT spending the reveal.
+- **The daily seed** (`mwSeed`: child name + date, deterministic, offline) picks:
+  the bonus-bloom stop (🌸 = double honey on pass, `state.mwBloomU`), the glowing
+  landmark, Barnaby the wanderer's spot (+8 honey once a day), and the day's
+  weather overlay (rainbow / mist / gold).
+- **KIT rounds** — place-true mechanics INSIDE the real quiz (`buildQuiz` swaps
+  ~every 4th spell item for meadow units): Butterfly Catch (net the true spelling
+  of three), Comb Builder (assemble syllable-ish chunks into comb cells), Petal
+  Trail (tap letters in order on swaying petals, two decoys). They score through
+  the same `state.tq` machinery — the 70% gate is untouched. Handlers: kitPick /
+  kitTile / kitReset.
+- **Landmarks** (4, one per leg: Beehive, Wishing Well, Blossom Arch, Old Oak
+  Door — inline-SVG art in `MW_LM_ART`): tap → a kit-only SIDE round (`tq.side`)
+  worth +12 honey once a day; finishQuiz's side branch touches no stars, no
+  doneMap, no lap.
+- **The fork pair** (`MW.pair` = stop idx 7/8, spur tags "the dark mushroom
+  knoll" / "the petal bridge"): both open together at the frontier; walking the
+  dared knoll FIRST pays a +25 chest when the pair closes (`tr(c).mw.fk`).
+- The child's OWN avatar rides the meadow road (other acts keep their guide).
+  Guard: `tests/living-meadow.cjs` (27 asserts). To pilot another act: give it a
+  pano + an `MW`-like config; the machinery is deliberately act-agnostic.
+
 ## The Champion's Expedition — bright boards, visible secrets (NO fog)
 - The expedition layer (trail.js, `fogLayer`/`uSpots`/`uP`) puts three per-child seeded
   secrets on EVERY board — a word-wisp tap-gift (+8), a rival best-of-3 duel (+25), and a

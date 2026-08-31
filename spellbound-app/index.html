@@ -1550,6 +1550,61 @@
   .atlas-pop .atlas-pop-in>div:last-child{margin-top:10px !important;gap:7px !important}
   .atlas-pop .atlas-pop-in>div:last-child>*{padding:9px 12px !important;font-size:12.5px !important}
   @media (prefers-reduced-motion:reduce){ .atlas-pop{animation:none} }
+  /* ── THE LIVING MEADOW (Act I pilot): the four-plate panorama the camera
+     unrolls. The board is as wide as the painting; the scroll clamp does the
+     revealing — nothing on screen is ever veiled. ── */
+  .mw-board{width:max-content;max-width:none}
+  .mw-board>img{width:auto;height:min(60vh,470px);min-height:330px}
+  .mw-lm{position:absolute;z-index:4;transform:translate(-50%,-50%);width:56px;text-align:center;
+    background:none;border:0;padding:0;cursor:pointer;transition:transform .15s}
+  .mw-lm:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .mw-lm-a{display:block;width:52px;height:56px;margin:0 auto;filter:drop-shadow(0 3px 7px rgba(40,24,4,.4))}
+  .mw-lm-n{display:block;margin-top:2px;font-size:10px;font-weight:800;color:#FFF;white-space:nowrap;
+    background:rgba(40,24,4,.55);border-radius:99px;padding:2px 8px;backdrop-filter:blur(2px)}
+  .mw-lm.done{opacity:.6;filter:saturate(.6)}
+  .mw-lm.glow .mw-lm-a{animation:mw-lmglow 1.6s ease-in-out infinite}
+  @keyframes mw-lmglow{0%,100%{filter:drop-shadow(0 3px 7px rgba(40,24,4,.4))}
+    50%{filter:drop-shadow(0 0 14px rgba(255,210,77,.95))}}
+  .mw-wander{position:absolute;z-index:4;transform:translate(-50%,-50%);font-size:30px;line-height:1;
+    background:none;border:0;padding:0;cursor:pointer;filter:drop-shadow(0 3px 6px rgba(40,24,4,.45));
+    animation:mw-bob 2s ease-in-out infinite}
+  @keyframes mw-bob{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-56%)}}
+  .mw-sign{position:absolute;top:8%;z-index:4;transform:translateX(-100%);text-align:right;pointer-events:none}
+  .mw-sign span{display:block;font-size:12.5px;font-weight:800;color:#4A2E08;
+    background:linear-gradient(180deg,#F3E4C2,#E2C998);border:2px solid #8A5B22;border-radius:8px;padding:5px 11px;
+    box-shadow:0 3px 8px rgba(40,24,4,.35);white-space:nowrap}
+  .mw-sign i{display:block;margin-top:3px;font-size:10px;font-weight:700;font-style:normal;color:#FFF;
+    background:rgba(40,24,4,.5);border-radius:99px;padding:2px 8px;white-space:nowrap}
+  .mw-bloom{position:absolute;left:50%;top:-24px;transform:translateX(-50%);font-size:19px;z-index:2;
+    animation:mw-bob 1.8s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(255,150,200,.9))}
+  .mw-spurtag{position:absolute;left:50%;bottom:-20px;transform:translateX(-50%);font-size:9.5px;font-weight:800;
+    color:#FFF;background:rgba(40,24,4,.55);border-radius:99px;padding:2px 8px;white-space:nowrap;z-index:2}
+  .mw-wx{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .mw-rainbow{background:radial-gradient(58% 90% at 34% 108%,transparent 62%,rgba(255,80,80,.16) 63.5%,rgba(255,190,60,.16) 66%,rgba(120,220,120,.15) 68.5%,rgba(90,150,255,.15) 71%,rgba(170,110,255,.14) 73.5%,transparent 75.5%)}
+  .mw-mist{background:repeating-linear-gradient(178deg,transparent 0 90px,rgba(255,252,244,.14) 110px 150px,transparent 170px 260px)}
+  .mw-gold{background:linear-gradient(180deg,rgba(255,214,120,.12),transparent 55%,rgba(255,190,80,.1))}
+  /* the KIT rounds: butterflies drift, comb cells fill, petals sway */
+  .kit-fly{background:none;border:0;padding:6px;cursor:pointer;animation:kit-drift 3.2s ease-in-out var(--kd,0s) infinite}
+  @keyframes kit-drift{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2.5deg)}}
+  .kit-fly .kb-wl{transform-origin:28px 22px;animation:kit-flap .5s ease-in-out infinite alternate}
+  .kit-fly .kb-wr{transform-origin:32px 22px;animation:kit-flap .5s ease-in-out infinite alternate-reverse}
+  @keyframes kit-flap{from{transform:scaleX(1)}to{transform:scaleX(.72)}}
+  .kit-cell{width:56px;height:50px;display:inline-grid;place-items:center;font-weight:800;font-size:15px;color:#5A3A00;
+    background:rgba(255,211,77,.25);border:2.5px solid #E0A33C;
+    clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+  .kit-cell.full{background:linear-gradient(160deg,#FFE49B,#F2B23C);animation:kit-pop .25s ease}
+  @keyframes kit-pop{from{transform:scale(.7)}}
+  .kit-tile{padding:10px 16px;border-radius:12px;background:var(--surface2);border:1.5px solid var(--line);
+    font-weight:800;font-size:15px;letter-spacing:.04em;cursor:pointer}
+  .kit-tile.used{opacity:.35}
+  .kit-petal{width:46px;height:46px;border-radius:60% 40% 62% 38%;background:radial-gradient(circle at 38% 32%,#FBD5DE,#F3B2C0 72%);
+    border:2px solid #E88AA0;font-weight:800;font-size:16px;color:#7A2440;cursor:pointer;
+    animation:kit-sway 2.6s ease-in-out var(--kd,0s) infinite}
+  .kit-petal.used{opacity:.3}
+  @keyframes kit-sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg) translateY(-4px)}}
+  :root[data-motion="off"] .kit-fly,:root[data-motion="off"] .kit-petal,:root[data-motion="off"] .mw-wander,
+  :root[data-motion="off"] .mw-bloom,:root[data-motion="off"] .mw-lm.glow .mw-lm-a{animation:none}
+  @media (prefers-reduced-motion:reduce){ .kit-fly,.kit-petal,.mw-wander,.mw-bloom,.mw-lm.glow .mw-lm-a{animation:none} }
   .act-pan{overflow-x:auto;overflow-y:hidden;border-radius:22px;-webkit-overflow-scrolling:touch;
     box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2)}
   .act-pan::-webkit-scrollbar{height:6px}
@@ -2484,6 +2539,6 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
   <script defer src="saga2.js?v=20260828a"></script>
 <script defer src="trivia.js?v=20260824q"></script>
 <script defer src="advanced.js?v=20260824q"></script>
-<script defer src="trail.js?v=20260828a"></script>
+<script defer src="trail.js?v=20260831a"></script>
 </body>
 </html>

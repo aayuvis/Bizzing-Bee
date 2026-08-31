@@ -229,7 +229,14 @@
     withDef.slice(0, 3).forEach(w => { const dec = shuffle(withDef.filter(x => x.w !== w.w).slice()).slice(0, 3).map(x => (x.d || '').slice(0, 110));
       if (dec.length >= 2) { const opts = [{ c: (w.d || '').slice(0, 110), ok: true }].concat(dec.map(d2 => ({ c: d2, ok: false }))); shuffle(opts);
         items.push({ ty: 'mean', q: 'Which meaning fits “' + w.w + '”?', opts, ans: opts.findIndex(o => o.ok) }); } });
-    return shuffle(items).slice(0, 15);
+    const out = shuffle(items).slice(0, 15);
+    /* the Living Meadow: every 4th item is a KIT round — the same word, a
+       meadow verb (Butterfly Catch / Comb Builder / Petal Trail) */
+    if (u.act === 'meadow') { let k = 0;
+      for (let want = 3; want < out.length && k < 3; want += 4) {
+        let j = want; while (j < out.length && (out[j].ty !== 'spell' || out[j].w.length < 3)) j++;
+        if (j < out.length) out[j] = kitItem({ w: out[j].w, d: out[j].d }, KIT_OF[k++ % KIT_OF.length]); } }
+    return out;
   }
   function buildCheckpoint(c, node) {
     const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === node.id);
@@ -407,7 +414,7 @@
       state.trailReturn = u.id;
       state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
       state.sessionLabel = u.title.split('—')[0].trim(); state.gi = 0; app2.startTrain(); }); };
-  app2.trailQuiz = () => { const u = unit(state.trailUnit);
+  app2.trailQuiz = () => { const u = unit(state.trailUnit); if (!u) return;
     needMap(() => { set({ trailView: 'quiz', trailChk: null, tq: { items: buildQuiz(u), i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); tqAutoSay(); }); };
   /* Play-tested (Amrita 8.25/8.26): a spell item must SAY its word on arrival, and an
      answered item must move on BY ITSELF — the child was pressing the speaker, then
@@ -431,14 +438,31 @@
     if (q2.i + 1 >= q2.items.length) { q2.over = true; finishQuiz(); } else { q2.i++; q2.picked = null; tqAutoSay(); }
     render(); };
   function finishQuiz() { const c = active(); const q2 = state.tq; const pct = q2.items.length ? q2.score / q2.items.length : 0;
+    /* a LANDMARK side round pays a honey trickle and touches nothing else:
+       no stars, no doneMap, no lap — rank still comes from the road itself */
+    if (q2.side != null) { q2.pct = pct; q2.pass = pct >= 0.5;
+      if (q2.pass) { addCoins(12); (mwP(c).lm = mwP(c).lm || {})[q2.side] = mwDay(); try { sfx('win'); } catch (e) {} save(); }
+      return; }
     q2.pct = pct; q2.pass = pct >= gate();
     /* the best full-quiz score sticks even on a fail — it feeds the quiz stars;
        a revise round is missed-items-only, so its score proves nothing */
     if (!state.trailChk && !q2.revising) { try { const u = unit(state.trailUnit);
       const r = stRec(c, u, lapOf(c)); r.q = Math.max(r.q || 0, Math.round(pct * 100)); save(); } catch (e) {} }
-    if (q2.pass) { addCoins(15); try { sfx('win'); burstConfetti(60); } catch (e) {}
+    if (q2.pass) { addCoins(15);
+      /* today's bonus bloom: passing the bloomed stop pays double honey */
+      try { if (state.trailUnit && state.trailUnit === state.mwBloomU) { addCoins(15); q2.bloom = true; } } catch (e) {}
+      try { sfx('win'); burstConfetti(60); } catch (e) {}
       if (state.trailChk) chkMap(c)[lapOf(c) + ':' + state.trailChk] = Math.round(pct * 100);
-      else { const u = unit(state.trailUnit); (doneMap(c)[u.id] = doneMap(c)[u.id] || {})[lapOf(c)] = Math.round(pct * 100); }
+      else { const u = unit(state.trailUnit); (doneMap(c)[u.id] = doneMap(c)[u.id] || {})[lapOf(c)] = Math.round(pct * 100);
+        /* the Meadow fork: remember which spur was walked first; when the pair
+           closes, the dared road (the dark mushroom knoll) pays its chest */
+        try { if (u.act === 'meadow') { const ns = seq(c).map((n2, i2) => ({ n: n2, i: i2 })).filter(x => x.n.act === 'meadow');
+          const pi = ns.findIndex(x => x.n.kind === 'unit' && x.n.u && x.n.u.id === u.id);
+          if (pi === MW.pair[0] || pi === MW.pair[1]) { const p = mwP(c);
+            const other = ns[pi === MW.pair[0] ? MW.pair[1] : MW.pair[0]];
+            if (!p.fk) p.fk = pi === MW.pair[0] ? 'hi' : 'lo';
+            if (other && passedNode(c, other.n) && !p.fkPaid) { p.fkPaid = 1;
+              if (p.fk === 'hi') { addCoins(25); q2.chest = true; } } } } } catch (e) {} }
       // lap complete?
       const s = seq(c); if (s.every(n => passedNode(c, n))) { if (course() === 'exp') tr(c).elap = Math.min(3, tr(c).elap + 1); else tr(c).lap = Math.min(3, tr(c).lap + 1); q2.lapUp = true; try { burstConfetti(140); } catch (e) {} }
       save(); }
@@ -686,13 +710,24 @@
   function viewQuiz() {
     const c = active(); const q2 = state.tq; if (!q2) return viewMap();
     const back = state.trailChk ? 'trailBack' : 'trailUnit';
+    if (q2.over && q2.side != null) {
+      const pct = Math.round((q2.pct || 0) * 100);
+      const lm = MW.lms[q2.side] || {};
+      return `<div style="${RISE()}max-width:420px;margin:0 auto;text-align:center">
+        <div style="background:var(--bg2);border-radius:20px;padding:26px;box-shadow:0 0 0 1px var(--line),var(--glow)">
+          <span style="width:64px;height:70px;display:inline-block">${MW_LM_ART[lm.g] || ''}</span>
+          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(lm.name) + ' says thanks · +12 🪙' : 'The words wriggled away'}</h2>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.pass ? 'Come back tomorrow — there will be more.' : 'No harm done (' + pct + '%). The road is right there.'}</p>
+          <button data-act="trailBack" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">Back to the Meadow →</button>
+        </div></div>`;
+    }
     if (q2.over) {
       const pct = Math.round((q2.pct || 0) * 100);
       return `<div style="${RISE()}max-width:460px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:28px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <div style="width:92px;height:92px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(${q2.pass ? 'var(--good)' : 'var(--bad)'} ${pct}%,var(--surface2) 0)"><div style="width:72px;height:72px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:21px">${pct}%</div></div>
           ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">TIER ${lapOf(c)} UNLOCKED</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole route returns — tougher words, same ideas. That is how it sticks.</p>`
-          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared · +15 🪙</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
+          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared · +15 🪙${q2.bloom ? ' · 🌸 bloom ×2 +15' : ''}${q2.chest ? ' · 🎁 the dared road +25' : ''}</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.chest ? 'You took the dark mushroom knoll first — the chest at the reunion is yours.' : q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
           : `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">${pct}% — so close</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">You need ${Math.round(gate() * 100)}%. Win back the ${q2.missed.length} you missed, then take it again.</p>`}
           <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
             ${!q2.pass && q2.missed.length ? `<button data-act="tqRevise" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">⚑ Revise the missed ones</button>` : ''}
@@ -702,7 +737,9 @@
     }
     const it = q2.items[q2.i]; const picked = q2.picked;
     let body = '';
-    if (it.ty === 'spell') {
+    if (it.ty === 'kit') {
+      body = kitBody(it, q2, picked);
+    } else if (it.ty === 'spell') {
       body = `<div style="text-align:center">
         <button data-act="tqSay" style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${iconSVG('volume', 20)} Hear the word</button>
         <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 0 4px">${esc(maskTxt((it.d || '').slice(0, 120), it.w))}</p>
@@ -722,7 +759,7 @@
         <div style="flex:1;height:8px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${Math.round(q2.i / q2.items.length * 100)}%"></div></div>
         <span style="font-size:12px;font-weight:800;color:var(--muted)">${q2.i + 1}/${q2.items.length}</span></div>
       <div style="background:var(--bg2);border-radius:18px;padding:clamp(16px,4vw,24px);box-shadow:0 0 0 1px var(--line),var(--glow)">
-        <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px">${it.ty === 'spell' ? '🔊 Spell it' : it.ty === 'mean' ? '📖 Meaning' : '💡 Concept'}${state.trailChk ? ' · checkpoint' : ''}</div>
+        <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px">${it.ty === 'kit' ? (it.kit === 'butterfly' ? '🦋 Butterfly catch' : it.kit === 'comb' ? '🍯 Comb builder' : '🌸 Petal trail') : it.ty === 'spell' ? '🔊 Spell it' : it.ty === 'mean' ? '📖 Meaning' : '💡 Concept'}${state.trailChk ? ' · checkpoint' : ''}${q2.sideName ? ' · ' + esc(q2.sideName) : ''}</div>
         ${body}
         ${picked != null ? `<div style="text-align:center;margin-top:14px"><button data-act="tqNext" style="padding:11px 26px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">${q2.i + 1 >= q2.items.length ? 'Finish' : 'Next →'}</button></div>` : ''}
       </div>
@@ -1278,6 +1315,200 @@
     return out;
   }
 
+  /* ================= THE LIVING MEADOW (Act I pilot) =================
+     The Meadow is the pilot of the Living Atlas: a four-plate PANORAMA
+     (app-art/map-meadow-pano.jpg) the camera unrolls leg by leg. The reveal law:
+     the future is hidden by the CAMERA (scroll clamp — it lies off the canvas),
+     never by fog; everything on screen is always fully painted and bright.
+     Pieces: the unrolling camera + teased bend · a daily seed (bonus bloom,
+     wanderer, cosmetic weather) · four landmarks with side kit-rounds · a
+     half-blind fork pair · the child's own avatar riding the road · and three
+     place-true KIT mechanics woven into the stop quizzes (Butterfly Catch,
+     Comb Builder, Petal Trail). devUnlock (Testing tools) reveals everything. */
+  const MW = {
+    img: 'map-meadow-pano.jpg',
+    aspect: 6.815,                    // pano is 5234x768
+    // the route across the full pano (x 0-100 spans all four plates)
+    d: 'M 1 62 C 5 74, 11 80, 17 76 C 22 72, 22 60, 26 56 C 30 52, 34 58, 38 62 C 42 66, 46 62, 48 54 C 50 46, 54 44, 58 50 C 62 56, 66 58, 70 52 C 74 46, 78 44, 82 48 C 86 52, 90 50, 93 42 C 95 36, 97 30, 98 24',
+    legEdge: [26.5, 50.5, 75.5, 100],   // right edge of each leg, in pano %
+    legName: ['the Meadow Gate', 'the Lollipop Grove', 'the Mushroom Hollow', 'the Hive Gates'],
+    pair: [7, 8],                       // the half-blind fork: both open together
+    pairPos: { 7: { y: -15, tag: 'the dark mushroom knoll' }, 8: { y: 13, tag: 'the petal bridge' } },
+    lms: [
+      { x: 9,  y: 30, leg: 0, name: 'the Beehive',       kit: 'comb',      g: '🐝' },
+      { x: 40, y: 80, leg: 1, name: 'the Wishing Well',  kit: 'petal',     g: '🪙' },
+      { x: 63, y: 24, leg: 2, name: 'the Blossom Arch',  kit: 'butterfly', g: '🦋' },
+      { x: 88, y: 74, leg: 3, name: 'the Old Oak Door',  kit: 'comb',      g: '🚪' },
+    ],
+  };
+  const mwOn = () => state.trailAct === 'meadow' && state.trailCourse !== 'exp';
+  const mwP = c => (tr(c).mw = tr(c).mw || {});
+  /* deterministic daily seed: child name + date; three rolls per day */
+  function mwSeed(c, k) { const d2 = new Date(); const s2 = String(c.name || 'bee') + '|' + d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate() + '|' + k;
+    let h = 2166136261; for (let i = 0; i < s2.length; i++) { h ^= s2.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return (h >>> 0) / 4294967296; }
+  const mwDay = () => { const d2 = new Date(); return d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate(); };
+  const mwLegOfX = x => { for (let i = 0; i < MW.legEdge.length; i++) if (x <= MW.legEdge[i] + 0.01) return i; return 3; };
+  /* how far the child has EARNED the camera: the leg their frontier stop sits on */
+  function mwReveal(c, pts, nodes, fr) {
+    if (devOn()) return 3;
+    let idx = nodes.findIndex(x => x.i === fr);
+    if (idx < 0) idx = nodes.length - 1;
+    return mwLegOfX((pts[idx] || { x: 0 }).x);
+  }
+  /* the camera clamp IS the reveal: #sb-pan can never scroll past the earned
+     edge, so the future is simply off the canvas — no veil, no fog */
+  let _mwMax = Infinity;
+  document.addEventListener('scroll', e => { try {
+    const el = e.target; if (!el || el.id !== 'sb-pan' || _mwMax === Infinity) return;
+    if (el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
+  } catch (_) {} }, true);
+  function mwClamp(rv) { setTimeout(() => { try {
+    const el = document.getElementById('sb-pan'); if (!el) { _mwMax = Infinity; return; }
+    const bd = el.firstElementChild; if (!bd) return;
+    _mwMax = Math.max(0, bd.clientWidth * (MW.legEdge[rv] / 100) - el.clientWidth);
+    if (el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
+  } catch (_) {} }, 0); }
+  /* the unroll: when a new leg is earned, glide the camera to the new country */
+  function mwUnroll(c, rv) { const p = mwP(c); const seen = p.rv || 0;
+    if (rv <= seen || devOn()) return false;   // test mode peeks; it never spends the reveal
+    p.rv = rv; save();
+    setTimeout(() => { try {
+      const el = document.getElementById('sb-pan'); if (!el) return;
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches || state.am === 1;
+      const to = Math.min(_mwMax, Math.max(0, el.firstElementChild.clientWidth * (MW.legEdge[rv] / 100) - el.clientWidth * 0.9));
+      if (rm) el.scrollLeft = to; else el.scrollTo({ left: to, behavior: 'smooth' });
+      try { sfx('win'); } catch (_) {}
+      flash('🌼 The road unrolls — ' + MW.legName[rv] + ' opens!');
+    } catch (_) {} }, 350);
+    return true; }
+  /* ---- the daily seed's gifts ---- */
+  function mwBloomIdx(c, pts, nodes) { // today's 2x-honey stop, always in earned country
+    const rv = mwReveal(c, pts, nodes, frontier(c));
+    const open = pts.map((p, i) => i).filter(i => mwLegOfX(pts[i].x) <= rv && !passedNode(c, nodes[i].n));
+    if (!open.length) return -1;
+    return open[Math.floor(mwSeed(c, 'bloom') * open.length) % open.length]; }
+  const MW_VARS = ['rainbow', 'mist', 'gold'];
+  const mwVariant = c => MW_VARS[Math.floor(mwSeed(c, 'wx') * MW_VARS.length) % MW_VARS.length];
+  function mwWander(c, pts, nodes) { // where the wanderer stands today
+    const rv = mwReveal(c, pts, nodes, frontier(c));
+    const f = mwSeed(c, 'wander');
+    const x = 4 + f * (MW.legEdge[rv] - 12), y = 24 + ((f * 7919) % 1) * 55;
+    return { x, y, done: (mwP(c).wd || '') === mwDay() }; }
+  app2.mwWander = () => { const c = active(); const p = mwP(c); if (p.wd === mwDay()) return;
+    needMap(() => { try {
+      const u = unit(state.trailUnit) || (seq(c).find(n => n.kind === 'unit' && !passedNode(c, n)) || {}).u || seq(c).find(n => n.kind === 'unit').u;
+      const ws = lapWords(u, lapOf(c), 8); const w = ws[Math.floor(mwSeed(c, 'ww') * ws.length) % ws.length];
+      if (w) say(w.w);
+      p.wd = mwDay(); addCoins(8); save();
+      flash('🐻 Barnaby: “' + (w ? w.w + '! A fine word. ' : '') + 'For your kindness — 8 honey.”'); render();
+    } catch (e) {} }); };
+  /* ---- landmarks: place-true side rounds, one honey trickle per day each ---- */
+  const MW_LM_ART = {
+    '🐝': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M30 4 C16 4 10 12 10 20 c0 4 2 7 5 9 c-4 2 -7 6 -7 11 c0 5 3 9 8 11 c-2 2 -3 4 -3 7 h34 c0 -3 -1 -5 -3 -7 c5 -2 8 -6 8 -11 c0 -5 -3 -9 -7 -11 c3 -2 5 -5 5 -9 C50 12 44 4 30 4z" fill="#E8A81C" stroke="#8A5510" stroke-width="3"/><path d="M14 22 h32 M12 36 h36 M14 50 h32" stroke="#8A5510" stroke-width="3"/><ellipse cx="30" cy="38" rx="6" ry="8" fill="#3A1D02"/></svg>',
+    '🪙': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M8 30 l22 -16 l22 16 v6 h-6 l-16 -12 l-16 12 h-6z" fill="#B4552E" stroke="#6E3418" stroke-width="3"/><rect x="14" y="34" width="32" height="22" fill="#B9B4A8" stroke="#6B665C" stroke-width="3"/><path d="M14 40 h32 M14 48 h32 M22 34 v22 M38 34 v22" stroke="#8C877B" stroke-width="2"/><rect x="24" y="10" width="3" height="24" fill="#6E3418"/><circle cx="30" cy="42" r="6" fill="#2E566E"/></svg>',
+    '🦋': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M10 58 C 8 34, 16 16, 30 10 C 44 16, 52 34, 50 58" fill="none" stroke="#8C7A5C" stroke-width="5" stroke-linecap="round"/><g fill="#F3B2C0"><circle cx="14" cy="34" r="5"/><circle cx="22" cy="18" r="5"/><circle cx="38" cy="18" r="5"/><circle cx="46" cy="34" r="5"/><circle cx="30" cy="10" r="5"/></g><g fill="#E88AA0"><circle cx="18" cy="26" r="3"/><circle cx="30" cy="13" r="3"/><circle cx="42" cy="26" r="3"/></g></svg>',
+    '🚪': '<svg viewBox="0 0 60 64" width="100%" height="100%"><path d="M6 64 C6 30 16 10 30 10 C44 10 54 30 54 64z" fill="#7A5230" stroke="#4A2E12" stroke-width="3"/><path d="M14 64 C14 36 21 20 30 20 C39 20 46 36 46 64z" fill="#A8763E" stroke="#4A2E12" stroke-width="3"/><path d="M30 20 v44 M14 44 h32" stroke="#4A2E12" stroke-width="2.4"/><circle cx="24" cy="46" r="3" fill="#F0B429"/></svg>',
+  };
+  const mwLmDone = (c, i) => ((mwP(c).lm || {})[i] || '') === mwDay();
+  app2.mwLmk = i => { const c = active(); i = +i;
+    const lm = MW.lms[i]; if (!lm || mwLmDone(c, i)) return;
+    needMap(() => { try {
+      const u = (seq(c).find(n => n.kind === 'unit' && !passedNode(c, n)) || seq(c).filter(n => n.kind === 'unit').slice(-1)[0]).u;
+      const ws = shuffle(lapWords(u, lapOf(c), 20).slice()).slice(0, 4);
+      if (!ws.length) { flash('The words are still on their way…'); return; }
+      const items = ws.map(w => kitItem(w, lm.kit));
+      set({ trailView: 'quiz', trailChk: null, trailUnit: u.id,
+        tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false, side: i, sideName: lm.name } });
+      tqAutoSay();
+    } catch (e) {} }); };
+  /* ---- the fork pair: both spur stops open together; the dared one pays ---- */
+  const mwPairOpen = (c, nodes, fr, i) => { if (!mwOn()) return false;
+    const a2 = nodes[MW.pair[0]], b2 = nodes[MW.pair[1]]; if (!a2 || !b2) return false;
+    return (i === MW.pair[0] || i === MW.pair[1]) && fr >= a2.i && fr <= b2.i; };
+  /* ================= THE KIT ROUNDS =================
+     Three meadow mechanics that RESKIN the drill, never replace it: the same
+     words, the same score, a different verb. ~1 kit round per 4 classic items. */
+  function misspells(w) { // two kid-plausible wrong spellings, deterministic
+    const v = 'aeiou'; const out = []; const s2 = String(w);
+    let h = 0; for (let i = 0; i < s2.length; i++) h = (h * 31 + s2.charCodeAt(i)) >>> 0;
+    const swapAt = s2.length > 3 ? 1 + (h % (s2.length - 2)) : 0;
+    if (s2.length > 3) out.push(s2.slice(0, swapAt) + s2[swapAt + 1] + s2[swapAt] + s2.slice(swapAt + 2));
+    for (let i = 0; i < s2.length; i++) { const j = (i + (h >> 3)) % s2.length;
+      if (v.includes(s2[j])) { const r = v[(v.indexOf(s2[j]) + 1 + (h % 3)) % 5];
+        const m = s2.slice(0, j) + r + s2.slice(j + 1); if (m !== s2 && !out.includes(m)) { out.push(m); break; } } }
+    if (out.length < 2) { const j = h % s2.length; out.push(s2.slice(0, j) + s2[j] + s2.slice(j)); }
+    return out.filter(m => m !== s2).slice(0, 2); }
+  function chunks(w) { // syllable-ish pieces for the comb: split after vowel groups
+    const s2 = String(w); const out = []; let cur = '';
+    for (let i = 0; i < s2.length; i++) { cur += s2[i];
+      const isV = 'aeiouy'.includes(s2[i]), nx = s2[i + 1];
+      if (isV && nx && !'aeiouy'.includes(nx) && s2[i + 2] && cur.length >= 2) { out.push(cur); cur = ''; } }
+    if (cur) out.push(cur);
+    while (out.length > 4) { const j = out.length - 2; out[j] += out.pop(); }
+    if (out.length < 2 && s2.length > 3) { const m = Math.ceil(s2.length / 2); return [s2.slice(0, m), s2.slice(m)]; }
+    return out; }
+  function kitItem(w, kind) {
+    if (kind === 'butterfly') { const opts = [{ c: w.w, ok: true }].concat(misspells(w.w).map(m => ({ c: m, ok: false })));
+      shuffle(opts); return { ty: 'kit', kit: 'butterfly', w: w.w, d: w.d, opts, ans: opts.findIndex(o => o.ok) }; }
+    if (kind === 'comb') { const ch = chunks(w.w); const tiles = shuffle(ch.map((t2, i) => ({ t: t2, i })));
+      return { ty: 'kit', kit: 'comb', w: w.w, d: w.d, ch, tiles }; }
+    const need = w.w.split(''); const pool = shuffle(need.map((L, i) => ({ L, i })).concat(
+      misspells(w.w).join('').split('').filter(L => !need.includes(L)).slice(0, 2).map((L, i) => ({ L, i: -1 - i }))));
+    return { ty: 'kit', kit: 'petal', w: w.w, d: w.d, pool }; }
+  const KIT_OF = ['butterfly', 'comb', 'petal'];
+  /* butterfly tap resolves like a normal pick; comb + petal build then resolve */
+  app2.kitPick = i => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
+    const ok = +i === it.ans; q2.picked = +i; q2.right = ok; if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
+    try { sfx(ok ? 'coin' : 'thud'); } catch (e) {} render(); tqAutoNext(ok); };
+  app2.kitTile = k => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
+    const buf = state.kitBuf = state.kitBuf || [];
+    if (buf.includes(+k)) return;
+    buf.push(+k);
+    const want = it.kit === 'comb' ? it.ch.length : it.w.length;
+    if (buf.length >= want) {
+      const made = it.kit === 'comb' ? buf.map(j => it.tiles[j].t).join('') : buf.map(j => it.pool[j].L).join('');
+      const ok = nkey(made) === nkey(it.w);
+      q2.picked = 1; q2.right = ok; if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
+      state.kitBuf = null;
+      try { sfx(ok ? 'coin' : 'thud'); } catch (e) {} render(); tqAutoNext(ok); return; }
+    render(); };
+  app2.kitReset = () => { state.kitBuf = null; render(); };
+  const BFLY = col => `<svg viewBox="0 0 60 44" width="100%" height="100%"><g class="kb-wl"><path d="M28 22 C 16 4, 2 4, 3 16 C 4 26, 16 28, 28 24z" fill="${col}" stroke="#5A3A50" stroke-width="2"/><path d="M28 24 C 18 40, 5 40, 6 31 C 7 25, 18 24, 28 26z" fill="${col}" opacity=".8" stroke="#5A3A50" stroke-width="2"/></g><g class="kb-wr"><path d="M32 22 C 44 4, 58 4, 57 16 C 56 26, 44 28, 32 24z" fill="${col}" stroke="#5A3A50" stroke-width="2"/><path d="M32 24 C 42 40, 55 40, 54 31 C 53 25, 42 24, 32 26z" fill="${col}" opacity=".8" stroke="#5A3A50" stroke-width="2"/></g><ellipse cx="30" cy="23" rx="3.4" ry="12" fill="#5A3A50"/><path d="M28 12 q-3 -7 -7 -9 M32 12 q3 -7 7 -9" stroke="#5A3A50" stroke-width="2" fill="none"/></svg>`;
+  const BFLY_COLS = ['#F3B2C0', '#8FD0EC', '#FFD24D'];
+  function kitBody(it, q2, picked) {
+    if (it.kit === 'butterfly') {
+      return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">One butterfly wears the TRUE spelling — net it!</p>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))}</p>
+        <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;padding:6px 0 2px">
+        ${it.opts.map((o, i) => { const st = picked == null ? '' : i === it.ans ? 'outline:3px solid var(--good);outline-offset:3px;border-radius:14px' : +picked === i ? 'opacity:.4;filter:grayscale(.6)' : 'opacity:.55';
+          return `<button data-act="kitPick" data-arg="${i}" ${picked != null ? 'disabled' : ''} class="kit-fly" style="--kd:${(i * 0.7).toFixed(1)}s;${st}">
+            <span style="width:76px;height:56px;display:block">${BFLY(BFLY_COLS[i % 3])}</span>
+            <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.04em;margin-top:2px">${esc(o.c)}</span></button>`; }).join('')}</div>
+        ${picked != null ? `<p style="margin-top:8px;font-weight:800;color:${q2.right ? 'var(--good)' : 'var(--bad)'}">${q2.right ? 'Caught it! 🦋' : 'It flew off — it’s “' + esc(it.w) + '”'}</p>` : ''}</div>`;
+    }
+    const buf = state.kitBuf || [];
+    if (it.kit === 'comb') {
+      const cells = it.ch.map((_, i) => { const j = buf[i];
+        return `<span class="kit-cell${j != null ? ' full' : ''}">${j != null ? esc(it.tiles[j].t) : ''}</span>`; }).join('');
+      return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">Build the word into the comb, piece by piece 🍯</p>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))} <button data-act="tqSay" style="font-weight:800;color:var(--accent)">🔊 hear it</button></p>
+        <div style="display:flex;justify-content:center;gap:6px;margin-bottom:14px">${cells}</div>
+        <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
+        ${it.tiles.map((t2, k) => `<button data-act="kitTile" data-arg="${k}" ${picked != null || buf.includes(k) ? 'disabled' : ''} class="kit-tile${buf.includes(k) ? ' used' : ''}">${esc(t2.t)}</button>`).join('')}</div>
+        ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="font-size:12px;font-weight:800;color:var(--muted)">↺ start over</button></div>` : ''}
+        ${picked != null ? `<p style="margin-top:10px;font-weight:800;color:${q2.right ? 'var(--good)' : 'var(--bad)'}">${q2.right ? 'The comb is full! 🍯' : 'It’s “' + esc(it.w) + '”'}</p>` : ''}</div>`;
+    }
+    const done2 = buf.map(j => it.pool[j].L).join('');
+    return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">Hop the petals in order and spell it 🌸</p>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))} <button data-act="tqSay" style="font-weight:800;color:var(--accent)">🔊 hear it</button></p>
+      <div style="min-height:30px;font-weight:800;font-size:19px;letter-spacing:.14em;margin-bottom:10px">${esc(done2)}<span style="opacity:.3">${'·'.repeat(Math.max(0, it.w.length - done2.length))}</span></div>
+      <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+      ${it.pool.map((p, k) => `<button data-act="kitTile" data-arg="${k}" ${picked != null || buf.includes(k) ? 'disabled' : ''} class="kit-petal${buf.includes(k) ? ' used' : ''}" style="--kd:${((k * 37) % 10) / 6}s">${esc(p.L)}</button>`).join('')}</div>
+      ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="font-size:12px;font-weight:800;color:var(--muted)">↺ start over</button></div>` : ''}
+      ${picked != null ? `<p style="margin-top:10px;font-weight:800;color:${q2.right ? 'var(--good)' : 'var(--bad)'}">${q2.right ? 'Petal-perfect! 🌸' : 'The breeze took it — it’s “' + esc(it.w) + '”'}</p>` : ''}</div>`;
+  }
+
   /* ---- hidden caches ----
      Three per map, at the spots the painter tucked them into. They are shut
      while the stops ahead of them are, open the moment the speller reaches
@@ -1547,16 +1778,17 @@
     const a = ACT_AMB[key]; if (!a) return '';
     return `<span class="atlas-amb amb-${a[0]}" style="--ac:${a[1]}" aria-hidden="true"></span>`;
   }
-  function actBoard(slug, m, pts, walked, marks, caches, dark) {
+  function actBoard(slug, m, pts, walked, marks, caches, dark, opts) {
     const f = (pts[walked] ? pts[walked].f * 100 : 0).toFixed(1);
     /* 42px of board per stop is the least that keeps two markers apart. On a
        phone a long act therefore grows past the screen and the map pans, which
        is how a map should behave anyway; on a desktop the board is already wider
        than the floor so nothing moves. */
     const minW = Math.max(1, pts.length) * 42;
-    return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board" style="min-width:min(${minW}px,190vw)">
-      <img src="app-art/${slug}.jpg" alt="" loading="lazy" decoding="async">
-      ${ambLayer(slug)}
+    const pano = opts && opts.pano;
+    return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board${pano ? ' mw-board' : ''}" style="${pano ? '' : `min-width:min(${minW}px,190vw)`}">
+      <img src="app-art/${pano ? pano.img : slug + '.jpg'}" alt="" loading="lazy" decoding="async">
+      ${ambLayer(slug)}${pano && pano.extra || ''}
       ${/* The advanced half reads darker on sight. That used to be a near-black wash,
             which was right when the painting underneath was at full strength; over a
             painting deliberately taken down to 42% it just makes mud. A violet tint at
@@ -1586,15 +1818,25 @@
     const [a] = ACCENT[world] || ACCENT.meadow;
     const dn = nodes.filter(x => passedNode(c, x.n)).length;
     const n = nodes.length;
-    const m = mapOf(act.id);
-    const pts = mapPoints(m.d, n);
+    /* the Living Meadow rides its four-plate panorama; every other act keeps
+       its single painting until it earns its own pilot */
+    const isMW = act.id === 'meadow' && crs !== 'exp';
+    const m = isMW ? { d: MW.d, t: [[4, 12], [46, 16], [95, 66]] } : mapOf(act.id);
+    let pts = mapPoints(m.d, n);
+    if (isMW) pts = pts.map((p, i) => MW.pairPos[i]
+      ? { x: p.x, y: Math.min(88, Math.max(10, p.y + MW.pairPos[i].y)), f: p.f } : p);
     /* which stop the card is showing: the speller's own frontier unless they tapped */
     let sel = nodes.findIndex(x => x.i === fr);
     if (sel < 0) sel = dn >= n ? n - 1 : 0;
     const picked = nodes.findIndex(x => x.i === state.trailStop);
     if (picked >= 0) sel = picked;
     const walked = Math.min(dn, n - 1);
-    const st = i => { const x = nodes[i]; return passedNode(c, x.n) ? 'done' : x.i === fr ? 'now' : 'next'; };
+    const st = i => { const x = nodes[i]; return passedNode(c, x.n) ? 'done'
+      : (x.i === fr || (isMW && mwPairOpen(c, nodes, fr, i))) ? 'now' : 'next'; };
+    /* how much of the world the camera has earned, and today's seeded gifts */
+    const rv = isMW ? mwReveal(c, pts, nodes, fr) : 3;
+    const bloomI = isMW ? mwBloomIdx(c, pts, nodes) : -1;
+    state.mwBloomU = (isMW && bloomI >= 0 && nodes[bloomI].n.kind === 'unit') ? nodes[bloomI].n.u.id : null;
 
     /* Stops are HTML pins over the painting, not SVG inside it: they keep a real
        size at every board width instead of scaling with the picture, and the
@@ -1602,26 +1844,54 @@
     /* the secrets ride the board in the open — the painting stays bright */
     const FL = fogLayer(c, act.id);
     const marks = pts.map((p, i) => {
+      /* the reveal law: a stop beyond the earned edge is OFF THE CANVAS — it is
+         not rendered at all, never veiled */
+      if (isMW && p.x > MW.legEdge[rv] + 0.5) return '';
       const kind = st(i), on = i === sel, node = nodes[i].n;
       const size = kind === 'now' ? 42 : 34;
       const bg = kind === 'done' ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
         : kind === 'now' ? 'linear-gradient(160deg,#FFFBEF,#FFE9AE)' : 'rgba(250,246,236,.90)';
       const ink = kind === 'done' ? '#4A3306' : kind === 'now' ? '#7A5300' : 'rgba(58,44,22,.78)';
+      /* the child's OWN avatar walks the Living Meadow; other acts keep the guide */
       const rider = kind === 'now' && window.SB_AVATAR
-        ? `<span class="atlas-rider">${SB_AVATAR(guide, 34, { dark: true })}</span>` : '';
+        ? `<span class="atlas-rider">${SB_AVATAR(isMW ? (c.avatar || 'bizzy') : guide, 34, { dark: true })}</span>` : '';
+      const bloom = isMW && i === bloomI ? '<span class="mw-bloom" title="Today’s bonus bloom — clear this stop for DOUBLE honey">🌸</span>' : '';
+      const spur = isMW && MW.pairPos[i] && kind !== 'done' ? `<span class="mw-spurtag">${esc(MW.pairPos[i].tag)}</span>` : '';
       return `<button class="atlas-stop${kind === 'now' ? ' now' : ''}${on ? ' on' : ''}${node.kind === 'chk' ? ' chk' : ''}"
           data-act="trailPick" data-arg="${nodes[i].i}" style="left:${p.x.toFixed(2)}%;top:${p.y.toFixed(2)}%;--pz:${on ? 5 : kind === 'now' ? 4 : 3}"
           title="Stop ${i + 1} of ${n}" aria-label="Stop ${i + 1} of ${n}">
-        ${rider}
+        ${rider}${bloom}${spur}
         <span class="atlas-sd" style="width:${size}px;height:${size}px;background:${bg};color:${ink};
           box-shadow:${on ? `0 0 0 3px ${a},0 5px 14px rgba(10,6,26,.5)` : '0 4px 11px rgba(10,6,26,.45)'}">${kind === 'done' ? '✓' : (i + 1)}</span>
       </button>`;
     }).join('');
+    /* the Living Meadow's own layer: landmarks, the wanderer, the teased bend,
+       and today's weather */
+    let mwHTML = '', mwExtra = '';
+    if (isMW) {
+      const glowLm = Math.floor(mwSeed(c, 'lmglow') * MW.lms.length) % MW.lms.length;
+      mwHTML += MW.lms.map((lm, i) => { if (lm.leg > rv) return '';
+        const done2 = mwLmDone(c, i);
+        return `<button class="mw-lm${done2 ? ' done' : ''}${i === glowLm && !done2 ? ' glow' : ''}" data-act="mwLmk" data-arg="${i}"
+          style="left:${lm.x}%;top:${lm.y}%" title="${escA(lm.name + (done2 ? ' — visited today' : ' — a side round of words, +12 honey'))}">
+          <span class="mw-lm-a">${MW_LM_ART[lm.g] || ''}</span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span></button>`; }).join('');
+      const wd = mwWander(c, pts, nodes);
+      if (!wd.done) mwHTML += `<button class="mw-wander" data-act="mwWander" style="left:${wd.x.toFixed(1)}%;top:${wd.y.toFixed(1)}%"
+        title="Barnaby Bear has a word for you — +8 honey">🐻<span class="mw-lm-n">Barnaby</span></button>`;
+      if (rv < 3) mwHTML += `<span class="mw-sign" style="left:${(MW.legEdge[rv] - 1.2).toFixed(1)}%">
+        <span>→ ${esc(MW.legName[rv + 1])}</span><i>clear the road to open the way</i></span>`;
+      const wx = mwVariant(c);
+      mwExtra = wx === 'rainbow' ? '<span class="mw-wx mw-rainbow" aria-hidden="true"></span>'
+        : wx === 'mist' ? '<span class="mw-wx mw-mist" aria-hidden="true"></span>'
+        : '<span class="mw-wx mw-gold" aria-hidden="true"></span>';
+      mwUnroll(c, rv); mwClamp(rv);
+    } else _mwMax = Infinity;
     const caches = (m.t || []).map((xy, i) => treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
     const popNew = _popK !== ('a:' + act.id + ':' + sel); if (popNew) _popK = 'a:' + act.id + ':' + sel;
     if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
 
-    const cur = nodes[sel], node = cur.n, locked = cur.i > fr && !devOn();
+    const cur = nodes[sel], node = cur.n,
+      locked = cur.i > fr && !devOn() && !(isMW && mwPairOpen(c, nodes, fr, sel));
     const u = node.kind === 'unit' ? node.u : null;
     const raw = u ? String(u.title || '') : 'Checkpoint';
     const cut = raw.indexOf(' — ');
@@ -1688,7 +1958,8 @@
             the road and left a wide empty stripe beside two small buttons. It goes in with
             `marks` so it lives inside the board and pans with the pins, anchored off the
             selected pin's own percentage coordinates. */''}
-      ${actBoard('map-' + act.id, m, pts, walked, FL.fog + marks + FL.cells + FL.marks + stopPop, caches, crs === 'exp')}
+      ${actBoard('map-' + act.id, m, pts, walked, FL.fog + marks + mwHTML + FL.cells + FL.marks + stopPop, caches, crs === 'exp',
+        isMW ? { pano: { img: MW.img, extra: mwExtra } } : null)}
       ${villainCard(c)}${treGiftCard()}${uQuestCard()}
     </div>`;
   }
