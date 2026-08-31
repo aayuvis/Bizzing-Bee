@@ -1218,26 +1218,41 @@
   @keyframes spl-swarm{0%{opacity:0;transform:translate(-8vw,4vh)}10%{opacity:.95}
     36%{transform:translate(30vw,-3.4vh)}64%{transform:translate(66vw,1.8vh)}88%{opacity:.9}
     100%{opacity:0;transform:translate(112vw,-2vh)}}
-  /* the SWARM COMES HOME: painted honeybees stream in from every edge and
-     shrink into the comb's glowing centre — the point the dive then enters.
-     (The honey-drip curtain and the landing trio were cut on request: the Hive
-     is a simple homecoming now, like Dino Era's chomp.) */
+  /* the SWARM COMES HOME: cute drawn honeybees (wings a-flutter) stream in from
+     every edge and shrink into the comb's centre — they go in ahead of us. */
   #sb-splash .spl-swb{position:absolute;left:50%;top:44%;z-index:6;opacity:0;pointer-events:none;
     filter:drop-shadow(0 3px 7px rgba(60,30,0,.4))}
-  #sb-splash .spl-swb img{width:100%;height:100%;object-fit:contain;transform:scaleX(var(--fl,1))}
+  #sb-splash .spl-swb svg{width:100%;height:100%;transform:scaleX(var(--fl,1))}
   #sb-splash.kb .spl-swb{animation:spl-swbin var(--fd,2.2s) cubic-bezier(.4,.1,.72,.62) var(--dl,3.6s) both}
   @keyframes spl-swbin{0%{opacity:0;transform:translate(var(--fx,-46vw),var(--fy,-28vh)) scale(1)}
     8%{opacity:1}82%{opacity:1}100%{opacity:0;transform:translate(0,2.5vh) scale(.16)}}
-  /* the DIVE: the honey-filled comb wall rises, the camera plunges into the
-     glowing centre cell, and the frame arrives INSIDE the honey-filled hexagon */
-  #sb-splash .spl-combzoom{position:absolute;inset:0;z-index:8;opacity:0;pointer-events:none}
-  #sb-splash .spl-combzoom img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  #sb-splash.kb .spl-combzoom{animation:spl-dive 1.75s cubic-bezier(.6,.03,.75,.45) 5.6s both}
-  @keyframes spl-dive{0%{opacity:0;transform:scale(1.02)}16%{opacity:1}100%{opacity:1;transform:scale(7.6)}}
-  #sb-splash .spl-cellin{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none}
-  #sb-splash .spl-cellin img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  #sb-splash.kb .spl-cellin{animation:spl-cellset 1s cubic-bezier(.2,.7,.3,1) 6.9s both}
-  @keyframes spl-cellset{0%{opacity:0;transform:scale(1.45)}40%{opacity:1}100%{opacity:1;transform:scale(1)}}
+  /* every drawn bee's wings beat (the .nbw group inside the inline SVG) */
+  #sb-splash .nbw{transform-origin:46px 30px;animation:spl-wflut .11s linear infinite alternate}
+  @keyframes spl-wflut{from{transform:rotate(-9deg)}to{transform:rotate(11deg)}}
+  /* the BEE'S-EYE DIVE: then WE fly in too — a drawn SVG honeycomb swells
+     toward the camera, wing-mates riding alongside, until its open centre cell
+     swallows the frame and the arrival is a warm amber interior. */
+  #sb-splash .spl-combfly{position:absolute;inset:-6%;z-index:8;opacity:0;pointer-events:none;transform-origin:50% 50%}
+  #sb-splash .spl-combfly svg{width:100%;height:100%}
+  #sb-splash.kb .spl-combfly{animation:spl-combin 1.7s cubic-bezier(.55,.05,.8,.4) 5.35s both}
+  @keyframes spl-combin{0%{opacity:0;transform:scale(.5)}14%{opacity:1}100%{opacity:1;transform:scale(8.4)}}
+  /* the wing-mates: big cute bees at the frame's edges, bobbing with us on the
+     approach, then surging PAST the camera as we thread the cell */
+  #sb-splash .spl-mate{position:absolute;z-index:8;opacity:0;pointer-events:none;filter:drop-shadow(0 4px 10px rgba(60,30,0,.4))}
+  #sb-splash .spl-mate svg{width:100%;height:100%;transform:scaleX(var(--fl,1))}
+  #sb-splash.kb .spl-mate{animation:spl-matein .7s ease var(--md,5.1s) both,
+    spl-matebob 1.5s ease-in-out var(--md,5.1s) infinite,
+    spl-matego .6s cubic-bezier(.5,.05,.8,.4) 6.72s forwards}
+  @keyframes spl-matein{from{opacity:0}to{opacity:1}}
+  @keyframes spl-matebob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.2vh)}}
+  @keyframes spl-matego{0%{opacity:1;transform:translate(0,0) scale(1)}
+    100%{opacity:0;transform:translate(var(--gx,-30vw),var(--gy,-20vh)) scale(2.1)}}
+  /* the arrival: inside the honey cell — warm amber walls, one soft hex halo */
+  #sb-splash .spl-cellglow{position:absolute;inset:0;z-index:9;opacity:0;pointer-events:none;
+    background:radial-gradient(circle at 50% 46%,#FFE9B0 0%,rgba(242,169,59,.94) 46%,rgba(150,86,12,.96) 82%,rgba(74,40,4,.98) 100%)}
+  #sb-splash .spl-cellglow svg{position:absolute;left:50%;top:50%;width:120vmin;height:120vmin;transform:translate(-50%,-50%)}
+  #sb-splash.kb .spl-cellglow{animation:spl-cellset 1s cubic-bezier(.2,.7,.3,1) 6.9s both}
+  @keyframes spl-cellset{0%{opacity:0}45%{opacity:1}100%{opacity:1}}
   #sb-splash .spl-goldflash{position:absolute;inset:0;z-index:10;opacity:0;pointer-events:none;
     background:radial-gradient(circle,#FFE9B0 0%,rgba(255,194,61,.8) 42%,rgba(120,60,0,0) 100%)}
   #sb-splash.kb .spl-goldflash{animation:spl-goldbloom 1.2s ease-out 6.95s 1}
@@ -2061,18 +2076,50 @@
         hx2+='<span class="spl-hexcell" style="left:'+(1.5+hcol*11.1)+'vw;'+(hc<9?('top:'+(1+(hcol%3)*4.5)+'vh'):('bottom:'+(1+(hcol%3)*4.5)+'vh'))+';animation-delay:'+(1.8+hc*0.13).toFixed(2)+'s">'+HEXC+'</span>'; }
       for(var sw=0;sw<16;sw++) hx2+='<span class="spl-swarmdot" style="top:'+(10+(sw*37)%64)+'vh;animation-delay:'+(3.3+sw*0.12).toFixed(2)+'s;animation-duration:'+(2+(sw%5)*0.24).toFixed(2)+'s"></span>';
       hx2+='<div class="spl-worldcast" id="spl-cast2"></div>';
-      /* the swarm comes home: painted bees stream in from every edge and shrink
-         into the comb's glowing centre — the exact point the dive then enters */
-      var FLYB='<img src="app-art/hive-bee-fly.svg" alt="">';
-      [['-46vw','-30vh','1.9s','3.2s',54,-1],['50vw','-26vh','2.2s','3.4s',44,1],
-       ['-52vw','18vh','2.4s','3.6s',60,-1],['44vw','32vh','2s','3.9s',40,1],
-       ['-38vw','36vh','2.2s','4.2s',50,-1],['54vw','-6vh','2.5s','4.4s',64,1],
-       ['-50vw','-8vh','2.1s','4.7s',38,-1],['40vw','-34vh','2.3s','4.9s',56,1],
-       ['-30vw','32vh','1.9s','5.2s',46,-1],['48vw','20vh','2.1s','5.4s',52,1]]
+      /* the NICE bee: a cute drawn honeybee, round and smiling, wings in the
+         .nbw group so CSS can beat them. Faces right; --fl flips it. */
+      var NB='<svg viewBox="0 0 110 90" width="100%" height="100%">'
+        +'<g class="nbw"><ellipse cx="40" cy="21" rx="21" ry="12" fill="rgba(216,236,255,.85)" stroke="#9DBFDF" stroke-width="2.4" transform="rotate(-26 40 21)"/>'
+        +'<ellipse cx="60" cy="19" rx="16" ry="10" fill="rgba(232,245,255,.75)" stroke="#9DBFDF" stroke-width="2.2" transform="rotate(-8 60 19)"/></g>'
+        +'<ellipse cx="50" cy="53" rx="33" ry="23" fill="#FFC93C" stroke="#3A2508" stroke-width="3.6"/>'
+        +'<path d="M38 32 q-9 21 0 42" stroke="#3A2508" stroke-width="9.5" fill="none" stroke-linecap="round"/>'
+        +'<path d="M56 31 q-8 22 0 44" stroke="#3A2508" stroke-width="9.5" fill="none" stroke-linecap="round"/>'
+        +'<circle cx="84" cy="47" r="15.5" fill="#FFC93C" stroke="#3A2508" stroke-width="3.6"/>'
+        +'<circle cx="88.5" cy="43.5" r="4.4" fill="#2A1A05"/><circle cx="90" cy="42" r="1.5" fill="#FFF"/>'
+        +'<path d="M84 54 q5.5 4.5 11 .5" stroke="#3A2508" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
+        +'<path d="M88 32 q1 -9 9 -12" stroke="#3A2508" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="98" cy="19" r="3.4" fill="#3A2508"/>'
+        +'<path d="M76 30 q-2 -9 4 -14" stroke="#3A2508" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="81" cy="14" r="3.4" fill="#3A2508"/></svg>';
+      /* the swarm goes in ahead of us */
+      [['-46vw','-30vh','1.9s','3.2s',54,1],['50vw','-26vh','2.2s','3.4s',44,-1],
+       ['-52vw','18vh','2.4s','3.6s',60,1],['44vw','32vh','2s','3.9s',40,-1],
+       ['-38vw','36vh','2.2s','4.2s',50,1],['54vw','-6vh','2.5s','4.4s',64,-1],
+       ['-50vw','-8vh','2.1s','4.7s',38,1],['40vw','-34vh','2.3s','4.9s',56,-1],
+       ['-30vw','32vh','1.9s','5.2s',46,1],['48vw','20vh','2.1s','5.4s',52,-1]]
       .forEach(function(bz){ hx2+='<div class="spl-swb" style="--fx:'+bz[0]+';--fy:'+bz[1]
-        +';--fd:'+bz[2]+';--dl:'+bz[3]+';width:'+bz[4]+'px;aspect-ratio:5/4;margin:-'+(bz[4]/2)+'px;--fl:'+bz[5]+'">'+FLYB+'</div>'; });
-      hx2+='<div class="spl-combzoom"><img src="app-art/hive-comb-wall.webp" alt=""></div>'
-        +'<div class="spl-cellin"><img src="app-art/hive-cell.webp" alt=""></div>'
+        +';--fd:'+bz[2]+';--dl:'+bz[3]+';width:'+bz[4]+'px;aspect-ratio:11/9;margin:-'+(bz[4]/2)+'px;--fl:'+bz[5]+'">'+NB+'</div>'; });
+      /* the drawn comb we fly into: hand-built hexagons of honey around one
+         OPEN centre cell, the whole wall swelling toward the camera */
+      var comb=(function(){ var r=62, dx=1.5*r, dy=Math.sqrt(3)*r;
+        var o='<svg viewBox="0 0 1000 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">'
+          +'<defs><radialGradient id="splhy" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#FFDF7E"/><stop offset=".68" stop-color="#F2A93B"/><stop offset="1" stop-color="#D9891E"/></radialGradient>'
+          +'<radialGradient id="splcore" cx="50%" cy="50%" r="60%"><stop offset="0" stop-color="#FFEFC4"/><stop offset=".4" stop-color="#E8A83E"/><stop offset="1" stop-color="#63350A"/></radialGradient></defs>'
+          +'<rect width="1000" height="700" fill="#8A5510"/>';
+        function hex(cx,cy,rr){ var p=[]; for(var k=0;k<6;k++){ var a=Math.PI/180*(60*k);
+          p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1)); } return p.join(' '); }
+        for(var ci=-1;ci<12;ci++) for(var ri=-1;ri<8;ri++){
+          var cx=ci*dx, cy=ri*dy+((ci%2+2)%2?dy/2:0);
+          if(Math.abs(cx-500)<r*0.8 && Math.abs(cy-350)<r*0.8) continue;   // the open door
+          o+='<polygon points="'+hex(cx,cy,r-3)+'" fill="url(#splhy)" fill-opacity="'+(0.82+((ci*3+ri*5)%4)*0.06).toFixed(2)+'" stroke="#8A5510" stroke-width="7"/>'
+            +'<ellipse cx="'+(cx-r*0.28).toFixed(0)+'" cy="'+(cy-r*0.34).toFixed(0)+'" rx="'+(r*0.3).toFixed(0)+'" ry="'+(r*0.17).toFixed(0)+'" fill="#FFF3C4" opacity=".4"/>'; }
+        o+='<polygon points="'+hex(500,350,r+4)+'" fill="url(#splcore)" stroke="#FFD86E" stroke-width="9"/>'
+          +'<polygon points="'+hex(500,350,r-14)+'" fill="#3A1D02" opacity=".85"/>';
+        return o+'</svg>'; })();
+      hx2+='<div class="spl-combfly">'+comb+'</div>';
+      /* our wing-mates, riding the dive with us (bee POV) */
+      [['6vw','62vh',150,'5.05s','-34vw','16vh',1],['72vw','66vh',126,'5.2s','34vw','20vh',-1],
+       ['12vw','10vh',108,'5.35s','-30vw','-22vh',1],['76vw','16vh',92,'5.5s','30vw','-18vh',-1]]
+      .forEach(function(mt){ hx2+='<div class="spl-mate" style="left:'+mt[0]+';top:'+mt[1]+';width:'+mt[2]+'px;aspect-ratio:11/9;--md:'+mt[3]+';--gx:'+mt[4]+';--gy:'+mt[5]+';--fl:'+mt[6]+'">'+NB+'</div>'; });
+      hx2+='<div class="spl-cellglow"><svg viewBox="0 0 100 100"><polygon points="93,50 71.5,87.2 28.5,87.2 7,50 28.5,12.8 71.5,12.8" fill="none" stroke="rgba(255,233,168,.5)" stroke-width="3"/></svg></div>'
         +'<div class="spl-goldflash"></div>';
       d.insertAdjacentHTML('beforeend', hx2);
       /* the borrowed hive: the world's comb texture, its glow and its rising gold
@@ -2084,11 +2131,10 @@
         if(!host||done) return;
         if(!document.documentElement.getAttribute('data-theme')) document.documentElement.setAttribute('data-theme','spellbound');
         var el2=function(cls,sty,inner){ return '<div class="'+cls+'" style="position:absolute;pointer-events:none;'+(sty||'')+'">'+(inner||'')+'</div>'; };
-        var FLYR='<img src="app-art/hive-bee-fly.svg" alt="" style="width:100%;height:100%;object-fit:contain;transform:scaleX(-1)">';
         var cast=el2('w4o-comb','','')+el2('w4o-hiveglow','','');
         for(var m=0;m<9;m++) cast+=el2('w4o-rise','left:'+(3+m*11)+'vw;width:5px;height:5px;background:#FFD34D;box-shadow:0 0 7px 2px rgba(255,211,77,.6);animation-duration:'+(12+m*1.3).toFixed(1)+'s;animation-delay:-'+(m*2.1).toFixed(1)+'s','');
         [['18vh',56,'11s','-1s',1],['30vh',42,'14s','-6s',.85],['48vh',34,'17s','-10s',.7]].forEach(function(bz){
-          cast+=el2('w4o-across w4o-bee','top:'+bz[0]+';width:'+bz[1]+'px;aspect-ratio:5/4;animation-duration:'+bz[2]+';animation-delay:'+bz[3]+';opacity:'+bz[4], FLYR); });
+          cast+=el2('w4o-across w4o-bee','top:'+bz[0]+';width:'+bz[1]+'px;aspect-ratio:11/9;animation-duration:'+bz[2]+';animation-delay:'+bz[3]+';opacity:'+bz[4], NB); });
         host.innerHTML=cast;
       }catch(e){} };
       if(document.readyState!=='loading') castHive(); else document.addEventListener('DOMContentLoaded',castHive);

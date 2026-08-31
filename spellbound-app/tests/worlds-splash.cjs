@@ -135,9 +135,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pgH.goto('file://' + SRC + '/index.html'); await pgH.waitForTimeout(2000);
   const hv = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
     up: !!d, marked: d && d.classList.contains('w-hive'),
-    swb: d ? d.querySelectorAll('.spl-swb img[src$="hive-bee-fly.svg"]').length : 0,
-    comb: d && !!d.querySelector('.spl-combzoom img[src$="hive-comb-wall.webp"]'),
-    cell: d && !!d.querySelector('.spl-cellin img[src$="hive-cell.webp"]'),
+    swb: d ? d.querySelectorAll('.spl-swb svg').length : 0,
+    mates: d ? d.querySelectorAll('.spl-mate svg').length : 0,
+    comb: d ? d.querySelectorAll('.spl-combfly svg polygon').length : 0,
+    cell: d && !!d.querySelector('.spl-cellglow svg polygon'),
     bloom: d && !!d.querySelector('.spl-goldflash'), amb: d && !!d.querySelector('.spl-ambveil'),
     hex: d ? d.querySelectorAll('.spl-hexcell').length : 0,
     swarm: d ? d.querySelectorAll('.spl-swarmdot').length : 0,
@@ -145,22 +146,23 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     world: d && /The Hive/.test(d.textContent), tag: d && /home sweet hive/.test(d.textContent) }; });
   ok(hv.up && hv.marked, 'the Hive wears its own staging class (w-hive)');
   ok(hv.world && hv.tag, 'the episode card says The Hive, not a duplicate of the wordmark');
-  ok(hv.swb >= 8, 'the painted SWARM streams home into the comb\'s centre (' + hv.swb + ' bees converging)');
+  ok(hv.swb >= 8, 'the cute drawn SWARM streams home into the comb\'s centre (' + hv.swb + ' bees converging)');
   ok(/spl-swbin/.test(idx0) && !/spl-pourtop/.test(idx0) && !/spl-honeytop/.test(idx0),
     'the honey-drip curtain and the landing trio stay cut — the Hive is a simple homecoming now');
-  ok(hv.comb && hv.cell, 'the honey-filled hexagon wall and the cell interior are staged for the dive');
+  ok(hv.comb >= 40 && hv.cell, 'the DRAWN SVG comb (' + hv.comb + ' hex polygons) and the amber cell arrival replace the photo plates');
+  ok(hv.mates >= 3, 'wing-mates ride the bee\'s-eye dive with us (' + hv.mates + ' alongside)');
+  ok(!/hive-comb-wall\.webp/.test(idx0) && !/hive-cell\.webp/.test(idx0) && !/hive-bee-fly\.svg/.test(idx0),
+    'no photo plates left in the splash — comb, cell and bees are all drawn SVG now');
+  ok(/spl-wflut/.test(idx0) && /class="nbw"/.test(idx0), 'the nice bee\'s wings actually beat (.nbw flutter)');
   ok(hv.bloom && hv.amb, 'the arrival bloom and the amber vignette are staged');
   ok(hv.hex >= 12, 'the comb crystallizes cell by cell (' + hv.hex + ' cells)');
   ok(hv.swarm >= 10, 'the swarm streams through as the buzz peaks (' + hv.swarm + ' bees)');
   const hvCast = await pgH.evaluate(() => { const c = document.querySelector('#spl-cast2'); return c ? {
     comb: !!c.querySelector('.w4o-comb'), glow: !!c.querySelector('.w4o-hiveglow'),
-    bees: c.querySelectorAll('.w4o-bee img[src$="hive-bee-fly.svg"]').length,
+    bees: c.querySelectorAll('.w4o-bee svg').length,
     rise: c.querySelectorAll('.w4o-rise').length } : null; });
   ok(hvCast && hvCast.comb && hvCast.glow && hvCast.bees >= 2 && hvCast.rise >= 6,
-    'the cast keeps the world\'s comb, glow and rising gold — crossed by the painted bee on the beeline');
-  ok(/image\/webp/.test(fs.readFileSync(SRC + '/app-art/hive-bee-fly.svg', 'utf8').slice(0, 400))
-    && fs.existsSync(SRC + '/app-art/hive-comb-wall.webp') && fs.existsSync(SRC + '/app-art/hive-cell.webp'),
-    'the bee sprite and both comb plates ship in app-art');
+    'the cast keeps the world\'s comb, glow and rising gold — crossed by the nice bee on the beeline');
   ok(/spl-goldshift/.test(idx0) && /honey cell sealing/.test(idx0),
     'the day turns to gold, and the buzz stinger is timed to the honey cell sealing');
   const bug = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); const t = d && d.querySelector('.spl-logo-t');
