@@ -1116,6 +1116,35 @@ out of saga2.js so a retune cannot quietly undo them.
   feature the painter already drew (halo + label, `.mw-hero.anch`, no sprite) —
   the strait's lighthouse is the exemplar; its sprite still fronts the result
   card via `img`. Never plant a sprite duplicate of a painted feature.
+- **Each country fields its OWN cast** (`LV.amb`). The meadow's butterflies,
+  worker bees and cherry petals belong to the meadow and must not appear
+  anywhere else. Fourteen further systems exist, each a plain CSS animation
+  driven by two custom properties (`--gd` duration, `--gl` delay), so the
+  render code only ever picks a cast: `mw-page` (paper on the air — library,
+  ulibrary, factory), `mw-leaf` (forum, roots, grandtrunk), `mw-rain` +
+  `mw-bolt` (storm, greysea), `mw-glow` (spores/heat), `mw-steam`, `mw-spark`
+  (forges), `mw-beam` (a sweeping lamp or spotlight), `mw-spin` (pinwheels —
+  blades with GAPS, a filled disc reads as a blemish on the painting),
+  `mw-conf` (the finish line), `mw-note` (the orchestra pit), `mw-sail`,
+  `mw-pennant`, `mw-star` (the observatory). Scatter comes off the daily seed
+  via the local `spread()` helper, so a country looks like itself without
+  looking identical two days running. The flashing systems (bolt, rain, conf,
+  page, leaf) must `display:none` under both motion guards, not merely stop —
+  a bolt frozen mid-flash is a bright smear across the plate.
+- **Pokes shed the country's own stuff** (`POKE_SKIN`, one entry per LIV key —
+  all 20): gears in the junkyard, pages in the library, spray on the strait,
+  and each names its own daily prize. Poking is the one thing a child can do
+  on a board with no words attached, so it has to feel native.
+- **The buried trove**: one poke per country hides a one-time +30 find, seeded
+  by `mwFixed(c,'trove')` — the same hash as `mwSeed` but **without the date**,
+  so it sits still until found instead of re-rolling each morning. Recorded at
+  `mwP(c).tv`. It is the only find on the board that does not come back, which
+  is what makes it worth hunting.
+- **`mwEdge` decides by where the frontier ACTUALLY sits.** The frontier is not
+  always inside the country being drawn; falling through to "the last stop"
+  meant every country the child had not reached yet opened FULLY — whole road,
+  every landmark, every hidden thing. Behind this country → show only the road
+  in; past it → it has been walked and may show all of itself.
 - **The fork pair stays Meadow-only** (`pair` absent elsewhere; `mwPairOpen`
   guards on it). The child's own avatar rides every LIV road.
   Guards: `tests/living-meadow.cjs` (the pilot, 55 asserts) +

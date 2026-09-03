@@ -1201,6 +1201,45 @@
     /* water glitters where the painter put it */
     (AMB.water || []).forEach((bk, i) => { if (bk[0] > edge) return;
       H += `<span class="mw-twink mw-water" style="left:${bk[0]}%;top:${bk[1]}%;--td:${(i * 0.7).toFixed(1)}s"></span>`; });
+    /* ---- each country's OWN cast. Every system below is driven off the daily
+       seed for its scatter, so a country looks like itself on any given day
+       without ever looking identical two days running. All of them respect the
+       camera: nothing is drawn past the earned edge. ---- */
+    const spread = (n, k, band) => { const out = [];
+      for (let i = 0; i < n; i++) { const x = (2.5 + i * (95 / n) + mwSeed(c, k + i) * (70 / n)) % 97;
+        if (x > edge) continue;
+        out.push([x, band[0] + ((i * 37 + Math.floor(mwSeed(c, k + 'y' + i) * 60)) % (band[1] - band[0]))]); }
+      return out; };
+    if (AMB.pages) spread(9, 'pg', [24, 72]).forEach(([x, y], i) =>
+      H += `<span class="mw-page" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(15 + i % 7)}s;--gl:${((i * 2.4) % 13).toFixed(1)}s"></span>`);
+    if (AMB.leaves) spread(12, 'lf', [0, 6]).forEach(([x], i) =>
+      H += `<span class="mw-leaf" style="left:${x.toFixed(1)}%;--pw:${(9 + i % 6)}s;--pd:${((i * 1.7) % 12).toFixed(1)}s"></span>`);
+    if (AMB.rain) spread(26, 'rn', [0, 5]).forEach(([x], i) =>
+      H += `<span class="mw-rain" style="left:${x.toFixed(1)}%;--rd:${(1.2 + (i % 5) * 0.16).toFixed(2)}s;--rl:${((i * 0.21) % 2).toFixed(2)}s"></span>`);
+    if (AMB.bolts) spread(4, 'bt', [4, 30]).forEach(([x, y], i) =>
+      H += `<span class="mw-bolt" style="left:${x.toFixed(1)}%;top:${y}%;--fd3:${(7 + i * 2.5)}s;--fl3:${(i * 3.1).toFixed(1)}s"></span>`);
+    if (AMB.glow) spread(11, 'gw', [44, 84]).forEach(([x, y], i) =>
+      H += `<span class="mw-glow" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(11 + i % 6)}s;--gl:${((i * 1.6) % 12).toFixed(1)}s"></span>`);
+    if (AMB.steam) spread(7, 'st', [50, 80]).forEach(([x, y], i) =>
+      H += `<span class="mw-steam" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(6 + i % 4)}s;--gl:${((i * 1.9) % 8).toFixed(1)}s"></span>`);
+    if (AMB.sparks) spread(14, 'sk', [52, 82]).forEach(([x, y], i) =>
+      H += `<span class="mw-spark" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(4.5 + (i % 5) * 0.7).toFixed(1)}s;--gl:${((i * 0.9) % 6).toFixed(1)}s"></span>`);
+    (AMB.beams || []).forEach((bm, i) => { if (bm[0] > edge) return;
+      H += `<span class="mw-beam" style="left:${bm[0]}%;top:${bm[1]}%;--gd:${(9 + i * 2)}s;--gl:${(i * 1.4).toFixed(1)}s"></span>`; });
+    (AMB.spins || []).forEach((sp, i) => { if (sp[0] > edge) return;
+      H += `<span class="mw-spin" style="left:${sp[0]}%;top:${sp[1]}%;--gd:${(2.6 + (i % 4) * 0.6).toFixed(1)}s;--gl:${(i * 0.4).toFixed(1)}s"></span>`; });
+    const CONF = ['#F3B2C0', '#8FD0EC', '#FFD24D', '#C8A2F0', '#A8E0B0', '#FF9C6E'];
+    if (AMB.conf) spread(18, 'cf', [0, 5]).forEach(([x], i) =>
+      H += `<span class="mw-conf" style="left:${x.toFixed(1)}%;--cc:${CONF[i % 6]};--pw:${(6 + i % 5)}s;--pd:${((i * 1.3) % 9).toFixed(1)}s"></span>`);
+    const NOTES = ['♪', '♫', '♩', '♬'];
+    if (AMB.notes) spread(8, 'nt', [46, 78]).forEach(([x, y], i) =>
+      H += `<span class="mw-note" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(9 + i % 5)}s;--gl:${((i * 2.1) % 11).toFixed(1)}s">${NOTES[i % 4]}</span>`);
+    (AMB.sails || []).forEach((sl, i) => { if (sl[0] > edge) return;
+      H += `<span class="mw-sail" style="left:${sl[0]}%;top:${sl[1]}%;--gd:${(4.2 + (i % 4) * 0.8).toFixed(1)}s;--gl:${(i * 0.7).toFixed(1)}s">${sl[2] || '⛵'}</span>`; });
+    (AMB.pennants || []).forEach((pn, i) => { if (pn[0] > edge) return;
+      H += `<span class="mw-pennant" style="left:${pn[0]}%;top:${pn[1]}%;--cc:${pn[2] || '#E06A3C'};--gd:${(2.2 + (i % 5) * 0.4).toFixed(1)}s;--gl:${(i * 0.3).toFixed(1)}s"></span>`; });
+    if (AMB.stars) spread(14, 'sr', [6, 40]).forEach(([x, y], i) =>
+      H += `<span class="mw-twink mw-star" style="left:${x.toFixed(1)}%;top:${y}%;--td:${(i * 0.8).toFixed(1)}s"></span>`);
     /* the HERO set-pieces: integrated living things, anchored by their feet.
        An anch:1 hero rides a feature the painter already drew — halo + label
        on the painting itself, no sprite duplicate (the wishing-well law). */
@@ -1520,35 +1559,35 @@
       legEdge: LEGS4, legName: ['the Front Steps', 'the Reading Halls', 'the Ink Gardens', 'the Grand Archive'],
       wander: { g: '🦉', name: 'Sage the Owl' },
       lms: [{ x: 40, y: 64, leg: 1, name: 'the Card Catalogue', kit: 'comb', g: '🗂️', art: 'lv-lm-library' }],
-      pokes: PK_B, amb: { seeds: 1, wisps: 1 },
+      pokes: PK_B, amb: { pages: 1, glow: 1, wisps: 1, beams: [[47, 16], [78, 12]] },
       heroes: [{ x: 30, y: 55, w: 120, img: 'lv-hero-library', anim: 'sway2', burst: '📖', name: 'the wobbling book stack',
         kit: 'comb', line: 'The owl drops a word in pieces — shelve it back together!' }] },
     forum: { img: 'map-forum-pano.jpg', aspect: 6.815, d: RD_C, t: [[4, 10], [52, 12], [93, 80]],
       legEdge: LEGS4, legName: ['the Forum Gates', 'the Market', 'the Aqueduct', 'the Colosseum'],
       wander: { g: '🐢', name: 'Tullia the Tortoise' },
       lms: [{ x: 63, y: 62, leg: 2, name: 'the Oracle Fountain', kit: 'petal', g: '⛲', art: 'lv-lm-forum' }],
-      pokes: PK_A, amb: { birds: 1, seeds: 1 },
+      pokes: PK_A, amb: { leaves: 1, birds: 1, seeds: 1, pennants: [[24, 36, '#C8341F'], [58, 30, '#E0A33C'], [86, 26, '#8E1D26']] },
       heroes: [{ x: 16, y: 52, w: 130, img: 'lv-hero-forum', anim: 'sway', burst: '🍃', name: 'the laurel tree',
         kit: 'petal', line: 'The laurel rustles a word — step its stones and spell it!' }] },
     storm: { img: 'map-storm-pano.jpg', aspect: 6.815, d: RD_B, t: [[6, 12], [45, 10], [94, 78]],
       legEdge: LEGS4, legName: ['the Windward Path', 'the Windward Cliffs', 'the Thunder Fields', 'the Eye of the Storm'],
       wander: { g: '🐏', name: 'Bolt the Ram' },
       lms: [{ x: 40, y: 42, leg: 1, name: 'the Lightning Rod', kit: 'butterfly', g: '⚡', art: 'lv-lm-storm' }],
-      pokes: PK_B, amb: { wisps: 1, seeds: 1 },
+      pokes: PK_B, amb: { rain: 1, bolts: 1, wisps: 1, glow: 1 },
       heroes: [{ x: 22, y: 50, w: 140, img: 'lv-hero-storm', anim: 'sway', burst: '⚡', name: 'the storm pine',
         kit: 'butterfly', line: 'The pine crackles a word — only one orb spells it true!' }] },
     roots: { img: 'map-roots-pano.jpg', aspect: 6.815, d: RD_C, t: [[5, 14], [49, 12], [92, 80]],
       legEdge: LEGS4, legName: ['the Overgrowth', 'the Root Halls', 'the Seed Vaults', 'the Root Throne'],
       wander: { g: '🦔', name: 'Hazel the Hedgehog' },
       lms: [{ x: 63, y: 60, leg: 2, name: 'the Seed Vault', kit: 'comb', g: '🌰', art: 'lv-lm-roots' }],
-      pokes: PK_A, amb: { butter: 1, seeds: 1, wisps: 1 },
+      pokes: PK_A, amb: { glow: 1, leaves: 1, wisps: 1, steam: 1 },
       heroes: [{ x: 28, y: 58, w: 130, img: 'lv-hero-roots', anim: 'breathe', burst: '✨', name: 'the great stump',
         kit: 'comb', line: 'The stump hums a word through its rings — grow it back!' }] },
     strait: { img: 'map-strait-pano.jpg', aspect: 6.815, d: RD_B, t: [[5, 10], [50, 12], [94, 80]],
       legEdge: LEGS4, legName: ['the Shore Road', 'the Harbour', 'the Buoy Line', 'the Far Shore'],
       wander: { g: '🦭', name: 'Salty the Seal' },
       lms: [{ x: 40, y: 70, leg: 1, name: 'the Message Buoy', kit: 'butterfly', g: '🛟', art: 'lv-lm-strait' }],
-      pokes: PK_B, amb: { birds: 1, wisps: 1, water: [[30, 66], [35, 74], [41, 60], [52, 70], [60, 64], [66, 72], [80, 68]] },
+      pokes: PK_B, amb: { birds: 1, sails: [[22, 62, '⛵'], [48, 70, '⛵'], [76, 64, '🚤']], beams: [[64, 22]], water: [[30, 66], [35, 74], [41, 60], [52, 70], [60, 64], [66, 72], [80, 68]] },
       /* the painter already put a lighthouse on the buoy line — the hero is
          ANCHORED to it (halo + label on the painting, sprite only on the card) */
       heroes: [{ x: 66.5, y: 24, w: 110, anch: 1, img: 'lv-hero-strait', anim: 'breathe', burst: '🌊', name: 'the little lighthouse',
@@ -1557,21 +1596,21 @@
       legEdge: LEGS4, legName: ['the Rust Road', 'Scrap Row', 'the Contraption Fields', 'the Trickster’s Gate'],
       wander: { g: '🦝', name: 'Ratchet the Raccoon' },
       lms: [{ x: 63, y: 66, leg: 2, name: 'the Tinker Bench', kit: 'comb', g: '🔧', art: 'lv-lm-junkyard' }],
-      pokes: PK_A, amb: { seeds: 1, wisps: 1 },
+      pokes: PK_A, amb: { steam: 1, sparks: 1, spins: [[18, 40], [44, 34], [67, 44], [88, 36]], seeds: 1 },
       heroes: [{ x: 30, y: 50, w: 110, img: 'lv-hero-junkyard', anim: 'sway2', burst: '⚙️', name: 'the teetering scrap tower',
         kit: 'comb', line: 'The tower rattles a word apart — bolt it back together!' }] },
     sprints: { img: 'map-sprints-pano.jpg', aspect: 6.815, d: RD_B, t: [[5, 12], [46, 14], [92, 80]],
       legEdge: LEGS4, legName: ['the Starting Line', 'the Warm-Up Track', 'the Stadium Bend', 'the Finish Arch'],
       wander: { g: '🐇', name: 'Dash the Hare' },
       lms: [{ x: 40, y: 62, leg: 1, name: 'the Water Station', kit: 'petal', g: '🥤', art: 'lv-lm-sprints' }],
-      pokes: PK_B, amb: { birds: 1, seeds: 1 },
+      pokes: PK_B, amb: { conf: 1, birds: 1, pennants: [[16, 30, '#3E63D6'], [42, 26, '#E8458C'], [70, 24, '#FFD24D'], [92, 28, '#2E8FB8']] },
       heroes: [{ x: 88, y: 52, w: 110, img: 'lv-hero-sprints', anim: 'flutter', burst: '🎉', name: 'the finish flags',
         kit: 'petal', line: 'The flags wave a word — hop the hurdles and spell it!' }] },
     stage: { img: 'map-stage-pano.jpg', aspect: 6.815, d: RD_C, t: [[5, 10], [51, 12], [93, 78]],
       legEdge: LEGS4, legName: ['the Stage Door', 'the Prop Loft', 'the Orchestra Pit', 'the Grand Marquee'],
       wander: { g: '🐈', name: 'Duchess the Cat' },
       lms: [{ x: 40, y: 68, leg: 1, name: 'the Costume Trunk', kit: 'comb', g: '🎭', art: 'lv-lm-stage' }],
-      pokes: PK_A, amb: { wisps: 1, seeds: 1 },
+      pokes: PK_A, amb: { notes: 1, conf: 1, beams: [[30, 18], [62, 14], [88, 20]], glow: 1 },
       heroes: [{ x: 30, y: 52, w: 120, img: 'lv-hero-stage', anim: 'breathe', burst: '⭐', name: 'the velvet curtain',
         kit: 'spell', line: 'The curtain parts on a word — hear it and spell it true!' }] },
 
@@ -1584,42 +1623,42 @@
       legEdge: LEGS4, legName: ['the Muster Field', 'the Tilt Yard', 'the Trial Runs', 'the Champion’s Ring'],
       wander: { g: '🐎', name: 'Pennant the Courser' },
       lms: [{ x: 40, y: 62, leg: 1, name: 'the Weapon Rack', kit: 'comb', g: '🛡️', art: 'lv-lm-proving' }],
-      pokes: PK_C, amb: { seeds: 1, wisps: 1 },
+      pokes: PK_C, amb: { sparks: 1, steam: 1, pennants: [[20, 34, '#D6353F'], [52, 28, '#8E1D26'], [84, 32, '#C8791B']] },
       heroes: [{ x: 22, y: 48, w: 120, img: 'lv-hero-proving', anim: 'flutter', burst: '🏳️', name: 'the champion’s banner',
         kit: 'petal', line: 'The banner snaps out a word — march the pegs and spell it!' }] },
     greysea: { img: 'map-greysea-pano.jpg', aspect: 6.815, d: RD_C, t: [[9, 70], [52, 24], [92, 66]],
       legEdge: LEGS4, legName: ['the Grey Shallows', 'the Fog Bank', 'the Wreck Reach', 'the Lighthouse'],
       wander: { g: '🦢', name: 'Pale the Heron' },
       lms: [{ x: 63, y: 60, leg: 2, name: 'the Wreck Bell', kit: 'butterfly', g: '🔔', art: 'lv-lm-greysea' }],
-      pokes: PK_B, amb: { birds: 1, wisps: 1, water: [[30, 66], [36, 74], [44, 62], [56, 70], [64, 60], [72, 72], [84, 64]] },
+      pokes: PK_B, amb: { rain: 1, wisps: 1, birds: 1, sails: [[26, 64, '⛵'], [58, 70, '🚢']], beams: [[40, 24]], water: [[30, 66], [36, 74], [44, 62], [56, 70], [64, 60], [72, 72], [84, 64]] },
       heroes: [{ x: 33, y: 58, w: 100, img: 'lv-hero-greysea', anim: 'sway2', burst: '🌫️', name: 'the lantern buoy',
         kit: 'butterfly', line: 'The buoy tolls a word into the fog — ring the true one!' }] },
     liars: { img: 'map-liars-pano.jpg', aspect: 6.815, d: RD_B, t: [[12, 30], [47, 74], [91, 34]],
       legEdge: LEGS4, legName: ['the Gate of Lies', 'the Scrap Mounds', 'the Crooked Signposts', 'the Liars’ Court'],
       wander: { g: '🐀', name: 'Fable the Rat' },
       lms: [{ x: 40, y: 66, leg: 1, name: 'the Rusted Scale', kit: 'butterfly', g: '⚖️', art: 'lv-lm-liars' }],
-      pokes: PK_A, amb: { wisps: 1, seeds: 1 },
+      pokes: PK_A, amb: { wisps: 1, spins: [[27, 38], [61, 42]], seeds: 1, steam: 1 },
       heroes: [{ x: 62, y: 50, w: 115, img: 'lv-hero-liars', anim: 'sway', burst: '❓', name: 'the crooked signpost',
         kit: 'butterfly', line: 'Three boards, three spellings, one honest post — pick it!' }] },
     grandtrunk: { img: 'map-grandtrunk-pano.jpg', aspect: 6.815, d: RD_C, t: [[10, 24], [50, 70], [93, 28]],
       legEdge: LEGS4, legName: ['the First Milestone', 'the Banyan Avenue', 'the Caravanserai', 'the Great Gate'],
       wander: { g: '🐘', name: 'Mira the Elephant' },
       lms: [{ x: 63, y: 64, leg: 2, name: 'the Milestone Pillar', kit: 'comb', g: '🪧', art: 'lv-lm-grandtrunk' }],
-      pokes: PK_C, amb: { birds: 1, seeds: 1 },
+      pokes: PK_C, amb: { leaves: 1, birds: 1, seeds: 1, pennants: [[22, 32, '#E0A33C'], [56, 28, '#C8341F'], [88, 30, '#93551A']] },
       heroes: [{ x: 34, y: 52, w: 150, img: 'lv-hero-grandtrunk', anim: 'sway', burst: '🍃', name: 'the great banyan',
         kit: 'petal', line: 'The banyan drops a word root by root — walk it back up!' }] },
     farflung: { img: 'map-farflung-pano.jpg', aspect: 6.815, d: RD_B, t: [[8, 68], [51, 26], [94, 70]],
       legEdge: LEGS4, legName: ['the Home Shore', 'the Harbour Wall', 'the Open Water', 'the Far Shore'],
       wander: { g: '🐬', name: 'Tide the Dolphin' },
       lms: [{ x: 40, y: 70, leg: 1, name: 'the Crab-Pot Stack', kit: 'petal', g: '🦀', art: 'lv-lm-farflung' }],
-      pokes: PK_B, amb: { birds: 1, wisps: 1, water: [[28, 68], [34, 76], [42, 64], [55, 72], [63, 66], [70, 74], [82, 68]] },
+      pokes: PK_B, amb: { birds: 1, sails: [[24, 60, '⛵'], [52, 68, '⛵'], [80, 62, '🛥️']], water: [[28, 68], [34, 76], [42, 64], [55, 72], [63, 66], [70, 74], [82, 68]] },
       heroes: [{ x: 30, y: 46, w: 140, img: 'lv-hero-farflung', anim: 'sway2', burst: '⛵', name: 'the tall ship',
         kit: 'comb', line: 'The ship signals a word in flags — read it plank by plank!' }] },
     factory: { img: 'map-factory-pano.jpg', aspect: 6.815, d: RD_C, t: [[11, 28], [48, 72], [90, 32]],
       legEdge: LEGS4, legName: ['the Loading Yard', 'the Gear Floor', 'the Foundry', 'the Word Press'],
       wander: { g: '🐦', name: 'Rivet the Tin Bird' },
       lms: [{ x: 63, y: 62, leg: 2, name: 'the Tile Press', kit: 'comb', g: '🗜️', art: 'lv-lm-factory' }],
-      pokes: PK_A, amb: { seeds: 1, wisps: 1 },
+      pokes: PK_A, amb: { steam: 1, sparks: 1, spins: [[20, 42], [46, 36], [72, 44], [92, 38]], pages: 1 },
       heroes: [{ x: 32, y: 50, w: 115, img: 'lv-hero-factory', anim: 'breathe', burst: '⚙️', name: 'the great gear',
         kit: 'comb', line: 'The great gear grinds a word into teeth — mesh them back!' }] },
 
@@ -1631,35 +1670,35 @@
       legEdge: LEGS4, legName: ['the Standing Stones', 'the Torch Rings', 'the Weight Yard', 'the Champion’s Circle'],
       wander: { g: '🦉', name: 'the Watcher' },
       lms: [{ x: 63, y: 60, leg: 2, name: 'the Whetstone Wheel', kit: 'comb', g: '🪨', art: 'lv-lm-uproving' }],
-      pokes: PK_C, amb: { seeds: 1, wisps: 1 },
+      pokes: PK_C, amb: { sparks: 1, steam: 1, glow: 1, pennants: [[24, 30, '#D6353F'], [64, 26, '#C8791B']] },
       heroes: [{ x: 30, y: 50, w: 95, img: 'lv-hero-uproving', anim: 'breathe', burst: '🔥', name: 'the great torch',
         kit: 'comb', line: 'The torch throws a word in sparks — forge it whole again!' }] },
     ulibrary: { img: 'map-ulibrary-pano.jpg', aspect: 6.815, d: RD_C, t: [[10, 26], [49, 74], [92, 30]], ultra: 1,
       legEdge: LEGS4, legName: ['the Black Steps', 'the Stacks', 'the Forbidden Shelves', 'the Tower Summit'],
       wander: { g: '🐈‍⬛', name: 'the Marginalia Cat' },
       lms: [{ x: 40, y: 64, leg: 1, name: 'the Iron Book Cart', kit: 'comb', g: '📚', art: 'lv-lm-ulibrary' }],
-      pokes: PK_B, amb: { seeds: 1, wisps: 1 },
+      pokes: PK_B, amb: { pages: 1, glow: 1, wisps: 1, beams: [[38, 16], [74, 14]] },
       heroes: [{ x: 62, y: 46, w: 125, img: 'lv-hero-ulibrary', anim: 'sway2', burst: '📄', name: 'the page storm',
         kit: 'butterfly', line: 'Three pages turn in the updraught — only one is spelled true!' }] },
     ucrucible: { img: 'map-ucrucible-pano.jpg', aspect: 6.815, d: RD_B, t: [[11, 70], [51, 26], [90, 68]], ultra: 1,
       legEdge: LEGS4, legName: ['the Cooling Channels', 'the Slag Fields', 'the Molten Basin', 'the Crucible Heart'],
       wander: { g: '🦎', name: 'the Ember Salamander' },
       lms: [{ x: 63, y: 62, leg: 2, name: 'the Mould Rack', kit: 'comb', g: '🧱', art: 'lv-lm-ucrucible' }],
-      pokes: PK_A, amb: { wisps: 1, seeds: 1 },
+      pokes: PK_A, amb: { sparks: 1, steam: 1, glow: 1, spins: [[30, 40], [70, 42]] },
       heroes: [{ x: 32, y: 52, w: 110, img: 'lv-hero-ucrucible', anim: 'breathe', burst: '✨', name: 'the golden crucible',
         kit: 'petal', line: 'The gold runs a word letter by letter — pour it in order!' }] },
     uobservatory: { img: 'map-uobservatory-pano.jpg', aspect: 6.815, d: RD_C, t: [[9, 28], [48, 70], [93, 32]], ultra: 1,
       legEdge: LEGS4, legName: ['the Cliff Path', 'the Orrery Terrace', 'the Great Telescope', 'the Star Dome'],
       wander: { g: '🦇', name: 'the Night Cartographer' },
       lms: [{ x: 63, y: 58, leg: 2, name: 'the Great Telescope', kit: 'butterfly', g: '🔭', art: 'lv-lm-uobservatory' }],
-      pokes: PK_C, amb: { wisps: 1, seeds: 1 },
+      pokes: PK_C, amb: { stars: 1, glow: 1, wisps: 1, beams: [[52, 22]] },
       heroes: [{ x: 34, y: 50, w: 115, img: 'lv-hero-uobservatory', anim: 'sway2', burst: '⭐', name: 'the brass orrery',
         kit: 'petal', line: 'The orrery turns a word ring by ring — set the stars in order!' }] },
     uchampionship: { img: 'map-uchampionship-pano.jpg', aspect: 6.815, d: RD_B, t: [[12, 26], [50, 72], [91, 28]], ultra: 1,
       legEdge: LEGS4, legName: ['the Approach', 'the Tunnel', 'the Floodlit Tiers', 'the Grand Lectern'],
       wander: { g: '🕊️', name: 'the Laurel Dove' },
       lms: [{ x: 40, y: 66, leg: 1, name: 'the Spotlit Lectern', kit: 'spell', g: '🎤', art: 'lv-lm-uchampionship' }],
-      pokes: PK_B, amb: { seeds: 1, wisps: 1 },
+      pokes: PK_B, amb: { conf: 1, notes: 1, beams: [[34, 18], [72, 16]], pennants: [[18, 28, '#FFD24D'], [88, 26, '#E8458C']] },
       heroes: [{ x: 88, y: 48, w: 120, img: 'lv-hero-uchampionship', anim: 'flutter', burst: '🎊', name: 'the laurel arch',
         kit: 'spell', line: 'The arch calls one word down the beam — hear it and spell it true!' }] },
   };
@@ -1692,6 +1731,11 @@
     let h = 2166136261; for (let i = 0; i < s2.length; i++) { h ^= s2.charCodeAt(i); h = Math.imul(h, 16777619); }
     return (h >>> 0) / 4294967296; }
   const mwDay = () => { const d2 = new Date(); return d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate(); };
+  /* the same hash WITHOUT the date: for the things that must stay put until
+     they are found (the buried trove), rather than re-rolling every morning */
+  function mwFixed(c, k) { const s2 = String(c.name || 'bee') + '|' + livKey() + '|' + k;
+    let h = 2166136261; for (let i = 0; i < s2.length; i++) { h ^= s2.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return (h >>> 0) / 4294967296; }
   const mwLegOfX = x => { const le = lvCfg().legEdge; for (let i = 0; i < le.length; i++) if (x <= le[i] + 0.01) return i; return 3; };
   /* how far the child has EARNED the camera: a SLIDING WINDOW — everything
      behind them forever, plus TWO stops ahead of the frontier, plus a little
@@ -1699,7 +1743,13 @@
   function mwEdge(c, pts, nodes, fr) {
     if (devOn()) return 100;
     let idx = nodes.findIndex(x => x.i === fr);
-    if (idx < 0) idx = nodes.length - 1;
+    /* the frontier is not always IN this country. Falling through to "the last
+       stop" meant any country the child had not reached yet opened FULLY — tap
+       a later act and its whole road, every landmark and every hidden thing
+       stood revealed. Decide by where the frontier actually sits: behind this
+       country, it has not been walked into yet and shows only the road in;
+       past it, it has been walked through and may show all of itself. */
+    if (idx < 0) idx = fr > nodes[nodes.length - 1].i ? nodes.length - 1 : 0;
     const ahead = Math.min(nodes.length - 1, idx + 2);
     if (ahead >= nodes.length - 1) return 100;
     return Math.min(100, Math.max((pts[ahead] || { x: 20 }).x + 7, 24));
@@ -1775,23 +1825,60 @@
       const wn = lvCfg().wander || MW.wander;
       flash(wn.g + ' ' + wn.name + ': “' + (w ? w.w + '! A fine word. ' : '') + 'For your kindness — 8 honey.”'); render();
     } catch (e) {} }); };
+  /* what a poke SHEDS in each country, and what its daily prize is called —
+     a petal shower in the meadow, a shower of sparks in the junkyard. Poking
+     is the one thing a child can do on the board with no words attached, so
+     it has to feel native to the place. */
+  const POKE_SKIN = {
+    meadow:   { g: ['🌸', '✨'], win: '🌸 A petal shower! +2 honey' },
+    library:  { g: ['📄', '✨'], win: '📄 A loose page, and a coin pressed in it! +2 honey' },
+    forum:    { g: ['🍃', '✨'], win: '🪙 A coin under the flagstones! +2 honey' },
+    storm:    { g: ['💧', '⚡'], win: '⚡ The charge earths through you! +2 honey' },
+    roots:    { g: ['🍄', '✨'], win: '🌱 A seed purse in the moss! +2 honey' },
+    strait:   { g: ['💧', '🐚'], win: '🐚 A shell with something in it! +2 honey' },
+    junkyard: { g: ['⚙️', '✨'], win: '⚙️ A shower of sparks — and a bolt of gold! +2 honey' },
+    sprints:  { g: ['🎉', '✨'], win: '🎉 The crowd throws you something! +2 honey' },
+    stage:    { g: ['⭐', '✨'], win: '🌟 A coin lands at your feet! +2 honey' },
+    proving:  { g: ['🔥', '✨'], win: '🔥 A token from the ashes! +2 honey' },
+    greysea:  { g: ['🌫️', '💧'], win: '🔔 Something chimes in the fog! +2 honey' },
+    liars:    { g: ['❓', '✨'], win: '🪙 One honest coin in all this! +2 honey' },
+    grandtrunk: { g: ['🍃', '✨'], win: '🪙 A traveller dropped this! +2 honey' },
+    farflung: { g: ['🐚', '💧'], win: '🪙 Washed up from a long way off! +2 honey' },
+    factory:  { g: ['⚙️', '✨'], win: '⚙️ A tile falls off the press — gold! +2 honey' },
+    uproving: { g: ['🔥', '✨'], win: '🔥 A relic in the cinders! +2 honey' },
+    ulibrary: { g: ['📄', '✨'], win: '📄 A page nobody has read. +2 honey' },
+    ucrucible: { g: ['✨', '🔥'], win: '🥇 A bead of gold from the pour! +2 honey' },
+    uobservatory: { g: ['⭐', '✨'], win: '🔭 A star nobody had charted! +2 honey' },
+    uchampionship: { g: ['🎊', '✨'], win: '🏅 A medal ribbon, dropped. +2 honey' },
+  };
+  const pokeSkin = () => POKE_SKIN[livKey()] || POKE_SKIN.meadow;
   /* ---- pokes: tap a painted thing, it boings and sheds sparkles. One seeded
-     spot per day hides the petal shower (+2 honey, once). Pure DOM — a poke
-     must feel instant, so no full render unless the lucky one pays. ---- */
+     spot per day hides that country's little prize (+2 honey, once) — and ONE
+     spot per country hides a TROVE that pays once ever. Pure DOM — a poke must
+     feel instant, so no full render unless something actually pays. ---- */
   app2.mwPoke = i => { try { const c = active(); i = +i;
     const el = document.querySelector('.mw-poke[data-arg="' + i + '"]'); if (!el) return;
+    const sk = pokeSkin();
     el.classList.remove('boing'); void el.offsetWidth; el.classList.add('boing');
     const burst = document.createElement('span'); burst.className = 'mw-burst';
     for (let k = 0; k < 6; k++) { const s2 = document.createElement('span');
-      s2.textContent = k % 2 ? '✨' : '🌸'; s2.style.setProperty('--ba', (k * 60) + 'deg');
+      s2.textContent = sk.g[k % sk.g.length]; s2.style.setProperty('--ba', (k * 60) + 'deg');
       s2.style.setProperty('--bd2', (0.5 + (k % 3) * 0.14) + 's'); burst.appendChild(s2); }
     el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 900);
     try { sfx('tick'); } catch (_) {}
-    const lucky = Math.floor(mwSeed(c, 'poke') * lvCfg().pokes.length) % lvCfg().pokes.length;
-    const p = mwP(c);
+    const pk = lvCfg().pokes, p = mwP(c);
+    /* THE TROVE: one spot in each country, seeded off the CHILD alone (never
+       the date), so it sits in the same place until they find it — and then it
+       is found for good. This is the only find on the board that does not come
+       back tomorrow, which is exactly what makes it worth hunting. */
+    const trove = Math.floor(mwFixed(c, 'trove') * pk.length) % pk.length;
+    if (i === trove && !p.tv) { p.tv = 1; addCoins(30); save();
+      try { sfx('win'); burstConfetti(150); } catch (_) {}
+      flash('🗝️ A BURIED TROVE — nobody had touched it. +30 honey!'); render(); return; }
+    const lucky = Math.floor(mwSeed(c, 'poke') * pk.length) % pk.length;
     if (i === lucky && p.pk !== mwDay()) { p.pk = mwDay(); addCoins(2); save();
       try { sfx('coin'); burstConfetti(40); } catch (_) {}
-      flash('🌸 A petal shower! +2 honey'); render(); }
+      flash(sk.win); render(); }
   } catch (e) {} };
   /* a HERO answers a tap in its own voice — a stir, a burst, and then a FUN
      CHALLENGE: one word, played the hero's own way (petal-hop for the cherry,
