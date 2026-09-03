@@ -1121,6 +1121,31 @@ out of saga2.js so a retune cannot quietly undo them.
   Guards: `tests/living-meadow.cjs` (the pilot, 55 asserts) +
   `tests/living-atlas.cjs` (all 8 new acts: panos, casts, per-act buckets,
   themed kit copy, the anchored hero, the windowed arrival off-meadow).
+- **ALL TWENTY JOURNEYS ARE PANORAMIC** (Aug-31): the 9 Honey acts, the 6
+  Advanced expeditions and the 5 Ultra landmarks each have their own
+  `map-<id>-pano.jpg` (5234×768). Expedition and Ultra plates are the anime /
+  Ghibli register of `voice/pipeline/act-maps.py` (dusk for expeditions, night
+  for Ultra), built by scratchpad/advpano.py + advbuild.py.
+  - `livKey()` is the ONE key for config and save bucket: `state.tq.jk` if a
+    side round is in flight, else the Ultra slug when `trailView==='ultra'`,
+    else `trailAct`. Ultra has no trailAct, and a quiz leaves the ultra view —
+    without jk a champion's win banks against whatever act was last walked.
+  - `livLayer(c, LV, edge, rv)` builds the whole living layer and is SHARED by
+    `viewAct` and `viewUltraAct`; `livWords(c, n)` picks the side-play words —
+    the current unit on the teaching roads, `uWordPick` (the hardest words in
+    the library) on the Ultra road, where there are no units at all.
+  - **Hidden treasures obey the reveal law**: the three caches (`LV.t`) and the
+    three seeded secrets (`fogLayer(c, key, edge)`) are spread across the whole
+    panorama, and anything past the earned bend is NOT RENDERED. Ultra's window
+    reaches past the furthest OPEN stop, because its spine is non-linear (two
+    stops stand open at once) — not merely past the last one cleared.
+  - `uOpen` now honours devUnlock, so test mode opens all five landmarks.
+  - Guard: `tests/living-advanced.cjs` (panos, casts, caches, the paying-champion
+    reveal check, the jk bucket, and Back returning to the champions' road).
+- **Splash skip bug fixed** (Aug-31): `sched` only flips once `brand.play()`'s
+  promise RESOLVES, so a second tap arriving before that resolution fell into
+  the "turn the sound on" branch again and the show refused to skip (~1 in 4).
+  `soundTap` records synchronously that one tap has been spent there.
 
 ## The Champion's Expedition — bright boards, visible secrets (NO fog)
 - The expedition layer (trail.js, `fogLayer`/`uSpots`/`uP`) puts three per-child seeded

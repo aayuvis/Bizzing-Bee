@@ -380,6 +380,9 @@
   /* Back retraces the route: a stop returns to its region, and the region returns to the
      map. It used to stop at the region because trailAct was never cleared. */
   app2.trailBack = () => {
+    /* a side round taken ON the Ultra road goes back to the Ultra road — the
+       champions' landmark is not an act, so the act path would strand it */
+    if (state.tq && state.tq.ult != null) { set({ trailView: 'ultra', ultraAct: state.tq.ult, tq: null }); return; }
     if (state.trailView === 'act') { set({ trailView: 'map', trailAct: null, trailStop: null, tq: null }); return; }
     if (state.trailAct) { set({ trailView: 'act', trailUnit: null, tq: null }); return; }
     set({ trailView: 'map', trailUnit: null, tq: null }); };
@@ -1008,7 +1011,10 @@
   const uAiOf = key => /^u\d$/.test(String(key)) ? +String(key).slice(1) : -1;
   const uDnCount = (c, ai) => { let n = 0; for (let k = 0; k < ULTRA_STOPS; k++) if (uP(c).done['ul' + (ai * ULTRA_STOPS + k)]) n++; return n; };
   /* a landmark opens by the ROAD (3 of 4 behind it) or by the HIDDEN PASS */
-  const uOpen = (c, ai) => ai === 0 || uDnCount(c, ai - 1) >= 3 || !!uP(c).gates[ai];
+  /* devUnlock (Settings → Testing tools) opens every landmark, the same way it
+     opens every act — a grown-up checking the champions' road should not have
+     to clear fifteen stops to see landmark five */
+  const uOpen = (c, ai) => ai === 0 || devOn() || uDnCount(c, ai - 1) >= 3 || !!uP(c).gates[ai];
   function uWordPick(key, n, longOk) {
     const out = []; try {
       const ai = uAiOf(key);
@@ -1097,12 +1103,18 @@
      rule, see the block comment above). The three seeded secrets sit visibly on
      the board as tappable surprise markers; a claimed one leaves either nothing
      (wisp, duel) or the open gate. */
-  function fogLayer(c, key) {
+  /* `edge` is the camera's earned limit on a panoramic journey: a secret that
+     lies past the bend is NOT rendered, exactly like a stop past the bend. The
+     three secrets are seeded across the whole panorama, so on a long road they
+     are genuinely spread out — one to stumble on per country. */
+  function fogLayer(c, key, edge) {
     const u = uP(c);
     if (u.emb[key]) return { fog: '', cells: '', marks: '' };
+    const lim = edge == null ? 100 : edge;
     const f = u.finds[key] || {};
     const mk = (act, x, y, g, tt) => `<button data-act="${act}" class="sb-lift atlas-secret" style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);z-index:3;font-size:26px;line-height:1;background:none;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="${tt}">${g}</button>`;
     const marks = uSpots(c, key).map(s => {
+      if (s.x > lim) return '';
       if (s.k === 'wisp') return f.wisp ? '' : mk('uWisp', s.x, s.y, '💫', 'A word-wisp!');
       if (s.k === 'duel') return f.duel ? '' : mk('uDuel', s.x, s.y, '🎭', 'A rival waits…');
       return f.gate ? `<span style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:3;font-size:26px;opacity:.75;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="The pass stands open">⛩️</span>` : mk('uGate', s.x, s.y, '⛩️', 'The Hidden Pass');
@@ -1131,6 +1143,82 @@
       <button data-act="uqClose" style="padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13.5px">Step back</button></div>`);
   }
 
+  /* THE LIVING LAYER, built once and shared by every panoramic journey —
+     the nine Honey acts, the six Advanced expeditions and the five Ultra
+     landmarks all render the same living world from their own LV config:
+     landmarks, the wanderer, the teased bend, the ecology, the pokes and the
+     hero set-pieces, every one of them clipped to the earned camera edge. */
+  function livLayer(c, LV, edge, rv) {
+    let H = '', X = '';
+
+    const glowLm = Math.floor(mwSeed(c, 'lmglow') * LV.lms.length) % LV.lms.length;
+    H += LV.lms.map((lm, i) => { if (lm.x > edge) return '';
+      const done2 = mwLmDone(c, i);
+      const body2 = lm.anch
+        ? `<span class="mw-lm-halo"></span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`
+        : `<span class="mw-lm-a">${lmArt(lm)}</span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`;
+      return `<button class="mw-lm${lm.anch ? ' anch' : ''}${done2 ? ' done' : ''}${i === glowLm && !done2 ? ' glow' : ''}" data-act="mwLmk" data-arg="${i}"
+        style="left:${lm.x}%;top:${lm.y}%" title="${escA(lm.name + (done2 ? ' — visited today' : ' — a side round of words, +12 honey'))}">
+        ${body2}</button>`; }).join('');
+    const wd = mwWander(c, edge), wdr = LV.wander || MW.wander;
+    if (!wd.done) H += `<button class="mw-wander" data-act="mwWander" style="left:${wd.x.toFixed(1)}%;top:${wd.y.toFixed(1)}%"
+      title="${escA(wdr.name + ' has a word for you — +8 honey')}">${wdr.g}<span class="mw-lm-n">${esc(livShort(wdr.name))}</span></button>`;
+    if (edge < 99) { /* the sign teases what the bend hides: the rest of this
+      country if most of it is still unseen, else the next one */
+      const remaining = LV.legEdge[rv] - edge;
+      const nl = Math.min(3, remaining > 10 ? rv : rv + 1);
+      H += `<span class="mw-sign" style="left:${(edge - 1.2).toFixed(1)}%">
+      <span>→ ${esc(LV.legName[nl])}</span><i>clear the road to open the way</i></span>`; }
+    /* THE LIFE LAYER: each country fields its own cast (LV.amb) — the same
+       creature systems, a different ecology per act */
+    const AMB = LV.amb || {};
+    const BCOL = ['#F3B2C0', '#8FD0EC', '#FFD24D', '#C8A2F0', '#A8E0B0'];
+    if (AMB.butter) for (let bf2 = 0; bf2 < 5; bf2++) { const bx = (6 + bf2 * 19 + mwSeed(c, 'bf' + bf2) * 8) % Math.max(20, edge - 4);
+      H += `<span class="mw-butter" style="left:${bx.toFixed(1)}%;top:${(14 + (bf2 * 29) % 52)}%;--bd:${(bf2 * 2.3).toFixed(1)}s">
+        <span style="display:block;width:34px;height:26px">${BFLY(BCOL[bf2])}</span></span>`; }
+    if (AMB.petals) for (let pf = 0; pf < 14; pf++) { const px2 = (pf * 7.3 + mwSeed(c, 'pf' + pf) * 5) % 98;
+      if (px2 > edge) continue;
+      H += `<span class="mw-petalfall" style="left:${px2.toFixed(1)}%;--pd:${((pf * 1.9) % 11).toFixed(1)}s;--pw:${(7 + pf % 5)}s"></span>`; }
+    for (let tw = 0; tw < 9; tw++) { const tx2 = (4 + tw * 11.2) % 96; if (tx2 > edge) continue;
+      H += `<span class="mw-twink" style="left:${tx2.toFixed(1)}%;top:${(20 + (tw * 31) % 62)}%;--td:${(tw * 0.9).toFixed(1)}s"></span>`; }
+    LV.pokes.forEach((pk, i) => { if (pk[0] > edge) return;
+      H += `<button class="mw-poke" data-act="mwPoke" data-arg="${i}" style="left:${pk[0]}%;top:${pk[1]}%;--td:${((i * 1.3) % 8).toFixed(1)}s" aria-label="something wiggles here"></button>`; });
+    /* CREATURES WITH BEHAVIOUR — not decorations. Worker bees fly flower to
+       flower and PAUSE to gather (keyframe holds); birds cross the whole sky;
+       seeds and dust motes drift; mist wisps roll through; water sparkles. */
+    const BEEIMG = '<img src="app-art/hive-bee-fly.svg" alt="" style="width:100%;height:100%;object-fit:contain">';
+    if (AMB.bees) [[6, 60, '17s', '0s'], [33, 66, '21s', '-8s'], [58, 56, '19s', '-14s'], [84, 60, '23s', '-4s']]
+    .forEach(bw => { if (bw[0] > edge) return;
+      H += `<span class="mw-workbee" style="left:${bw[0]}%;top:${bw[1]}%;--wd:${bw[2]};--wdl:${bw[3]}"><span>${BEEIMG}</span></span>`; });
+    const BIRD = '<svg viewBox="0 0 40 16" width="100%" height="100%"><path d="M2 12 q9 -10 18 0 q9 -10 18 0" fill="none" stroke="#6B4E42" stroke-width="2.6" stroke-linecap="round"/></svg>';
+    if (AMB.birds) [['5%', '34s', '0s', 22], ['9%', '46s', '-20s', 17], ['13%', '40s', '-33s', 19]].forEach(bd2 => {
+      H += `<span class="mw-bird" style="top:${bd2[0]};--fd2:${bd2[1]};--fdl:${bd2[2]};width:${bd2[3]}px">${BIRD}</span>`; });
+    if (AMB.seeds) for (let sd = 0; sd < 8; sd++) { const sx = (3 + sd * 12.3) % 96; if (sx > edge) continue;
+      H += `<span class="mw-seed" style="left:${sx.toFixed(1)}%;top:${(30 + (sd * 27) % 48)}%;--sd2:${((sd * 2.7) % 12).toFixed(1)}s"></span>`; }
+    if (AMB.wisps) [[14, 62, '26s', '0s'], [42, 70, '32s', '-12s'], [68, 58, '28s', '-20s'], [88, 66, '30s', '-6s']]
+    .forEach(mi => { if (mi[0] > edge) return;
+      H += `<span class="mw-wisp" style="left:${mi[0]}%;top:${mi[1]}%;--md2:${mi[2]};--mdl:${mi[3]}"></span>`; });
+    /* water glitters where the painter put it */
+    (AMB.water || []).forEach((bk, i) => { if (bk[0] > edge) return;
+      H += `<span class="mw-twink mw-water" style="left:${bk[0]}%;top:${bk[1]}%;--td:${(i * 0.7).toFixed(1)}s"></span>`; });
+    /* the HERO set-pieces: integrated living things, anchored by their feet.
+       An anch:1 hero rides a feature the painter already drew — halo + label
+       on the painting itself, no sprite duplicate (the wishing-well law). */
+    LV.heroes.forEach((h, i) => { if (h.x > edge) return;
+      H += h.anch
+        ? `<button class="mw-hero anch" data-act="mwHero" data-arg="${i}"
+            style="left:${h.x}%;top:${h.y}%" title="${escA(h.name)}" aria-label="${escA(h.name)}">
+            <span class="mw-lm-halo"></span><span class="mw-lm-n">${esc(h.name)}</span></button>`
+        : `<button class="mw-hero mw-${h.anim}" data-act="mwHero" data-arg="${i}"
+            style="left:${h.x}%;top:${h.y}%;width:${h.w}px" title="${escA(h.name)}" aria-label="${escA(h.name)}">
+            <img src="app-art/${h.img}.svg" alt=""></button>`; });
+    const wx = mwVariant(c);
+    X = wx === 'rainbow' ? '<span class="mw-wx mw-rainbow" aria-hidden="true"></span>'
+      : wx === 'mist' ? '<span class="mw-wx mw-mist" aria-hidden="true"></span>'
+      : '<span class="mw-wx mw-gold" aria-hidden="true"></span>';
+    return { html: H, extra: X };
+  }
+
   function viewUltraAct() {
     const c = active(); const ai = state.ultraAct || 0;
     const [name] = ULTRA_PINS[ai];
@@ -1140,12 +1228,24 @@
     if (state.ultraStop != null) sel = Math.max(0, Math.min(stops.length - 1, state.ultraStop));
     const cur = stops[sel], tip = cur.tip;
     const slug = ULTRA_SLUG[ai] || ULTRA_SLUG[0];
-    const m = mapOf(slug);
+    /* the champions' road is a PANORAMA too: four stops, four countries, one
+       per plate. The camera law is the same, but Ultra's spine is non-linear —
+       two stops stand open at once — so the window reaches past the furthest
+       OPEN stop, never merely past the last one cleared. */
+    const LV = LIV[slug] || null;
+    const isMW = !!LV;
+    const m = isMW ? { d: LV.d, t: LV.t } : mapOf(slug);
     const pts = mapPoints(m.d, stops.length);
     /* NON-LINEAR SPINE: the next TWO undone stops are open at once — pick your order */
     const isOpen = i => !ultraDone(c, stops[i].id) && i <= dn + 1;
-    const FL = fogLayer(c, 'u' + ai);
+    const lastOpen = Math.min(stops.length - 1, dn + 1);
+    const edge = !isMW ? 100 : devOn() ? 100
+      : lastOpen >= stops.length - 1 ? 100
+      : Math.min(100, Math.max((pts[lastOpen] || { x: 20 }).x + 8, 26));
+    const rv = isMW ? mwLegOfX((pts[Math.min(dn, stops.length - 1)] || { x: 0 }).x) : 3;
+    const FL = fogLayer(c, 'u' + ai, edge);
     const marks = pts.map((p, i) => {
+      if (isMW && p.x > edge + 0.5) return '';   // past the bend: off the canvas, never veiled
       const done = ultraDone(c, stops[i].id), now = isOpen(i), on = i === sel;
       const size = now ? 42 : 34;
       const bg = done ? 'linear-gradient(160deg,#FFD24D,#C8791B)' : now ? 'linear-gradient(160deg,#FFFBEF,#FFE9AE)' : 'rgba(246,242,232,.90)';
@@ -1157,9 +1257,16 @@
           box-shadow:${on ? '0 0 0 3px #F0B429,0 5px 14px rgba(6,4,18,.6)' : '0 4px 11px rgba(6,4,18,.55)'}">${done ? '✓' : (i + 1)}</span>
       </button>`;
     }).join('');
-    const caches = (m.t || []).map((xy, i) => treMark(c, slug, i, xy[0], xy[1], dn, stops.length)).join('');
+    /* the champions' hidden treasures: three caches strung across the whole
+       journey, each one clipped to the earned camera edge like everything else */
+    const caches = (m.t || []).map((xy, i) => (isMW && xy[0] > edge) ? ''
+      : treMark(c, slug, i, xy[0], xy[1], dn, stops.length)).join('');
+    let mwHTML = '', mwExtra = '';
+    if (isMW) { const _L = livLayer(c, LV, edge, rv); mwHTML = _L.html; mwExtra = _L.extra; mwUnroll(c, rv); }
+    else _mwMax = Infinity;
     const popNew = _popK !== ('u:' + slug + ':' + sel); if (popNew) _popK = 'u:' + slug + ':' + sel;
     if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
+    if (isMW) mwClamp(edge, (popNew || _fresh) ? (pts[sel] || pts[0]).x : null);
     return `<div style="${RISE()}max-width:900px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailToMap" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
@@ -1170,7 +1277,8 @@
         <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(name)}</span>
         <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">Landmark ${ai + 1} of ${ULTRA_PINS.length} · ${dn} of ${stops.length} stops · ${Object.keys(uP(c).finds['u' + ai] || {}).length}/3 secrets · the hardest words in the library</span>
       </div>
-      ${actBoard('map-' + slug, m, pts, Math.max(0, Math.min(stops.length - 1, dn)), FL.fog + marks + FL.cells + FL.marks, caches, true)}
+      ${actBoard('map-' + slug, m, pts, Math.max(0, Math.min(stops.length - 1, dn)), FL.fog + marks + mwHTML + FL.cells + FL.marks, caches, true,
+        isMW ? { pano: { img: LV.img, extra: mwExtra } } : null)}
       ${villainCard(c)}${treGiftCard()}${uQuestCard()}
       <div class="sb-card" style="margin-top:14px;padding:16px 18px 18px">
         <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Stop ${sel + 1} of ${stops.length}${tip ? ' · ' + esc(tip.cat) : ''}${ultraDone(c, cur.id) ? ' · done' : ''}</div>
@@ -1404,6 +1512,8 @@
   const PK_A = MW.pokes;
   const PK_B = [[6, 40], [14, 68], [22, 36], [31, 62], [38, 44], [47, 70],
     [54, 36], [61, 60], [71, 44], [79, 68], [87, 40], [94, 60]];
+  const PK_C = [[9, 66], [16, 38], [24, 70], [33, 44], [41, 68], [50, 38],
+    [58, 66], [66, 42], [74, 70], [82, 44], [89, 64], [96, 40]];
   const LIV = {
     meadow: MW,
     library: { img: 'map-library-pano.jpg', aspect: 6.815, d: RD_B, t: [[5, 12], [48, 14], [94, 82]],
@@ -1464,20 +1574,121 @@
       pokes: PK_A, amb: { wisps: 1, seeds: 1 },
       heroes: [{ x: 30, y: 52, w: 120, img: 'lv-hero-stage', anim: 'breathe', burst: '⭐', name: 'the velvet curtain',
         kit: 'spell', line: 'The curtain parts on a word — hear it and spell it true!' }] },
+
+    /* ---- the six expeditions of the Advanced Rounds ----
+       The same living machinery at national level: dusk-lit anime panoramas,
+       the same camera law, one landmark and one hero each, and the hidden
+       treasures (three caches + the three seeded secrets) strung across the
+       WHOLE journey instead of crowded onto one screen. */
+    proving: { img: 'map-proving-pano.jpg', aspect: 6.815, d: RD_B, t: [[11, 26], [49, 72], [90, 30]],
+      legEdge: LEGS4, legName: ['the Muster Field', 'the Tilt Yard', 'the Trial Runs', 'the Champion’s Ring'],
+      wander: { g: '🐎', name: 'Pennant the Courser' },
+      lms: [{ x: 40, y: 62, leg: 1, name: 'the Weapon Rack', kit: 'comb', g: '🛡️', art: 'lv-lm-proving' }],
+      pokes: PK_C, amb: { seeds: 1, wisps: 1 },
+      heroes: [{ x: 22, y: 48, w: 120, img: 'lv-hero-proving', anim: 'flutter', burst: '🏳️', name: 'the champion’s banner',
+        kit: 'petal', line: 'The banner snaps out a word — march the pegs and spell it!' }] },
+    greysea: { img: 'map-greysea-pano.jpg', aspect: 6.815, d: RD_C, t: [[9, 70], [52, 24], [92, 66]],
+      legEdge: LEGS4, legName: ['the Grey Shallows', 'the Fog Bank', 'the Wreck Reach', 'the Lighthouse'],
+      wander: { g: '🦢', name: 'Pale the Heron' },
+      lms: [{ x: 63, y: 60, leg: 2, name: 'the Wreck Bell', kit: 'butterfly', g: '🔔', art: 'lv-lm-greysea' }],
+      pokes: PK_B, amb: { birds: 1, wisps: 1, water: [[30, 66], [36, 74], [44, 62], [56, 70], [64, 60], [72, 72], [84, 64]] },
+      heroes: [{ x: 33, y: 58, w: 100, img: 'lv-hero-greysea', anim: 'sway2', burst: '🌫️', name: 'the lantern buoy',
+        kit: 'butterfly', line: 'The buoy tolls a word into the fog — ring the true one!' }] },
+    liars: { img: 'map-liars-pano.jpg', aspect: 6.815, d: RD_B, t: [[12, 30], [47, 74], [91, 34]],
+      legEdge: LEGS4, legName: ['the Gate of Lies', 'the Scrap Mounds', 'the Crooked Signposts', 'the Liars’ Court'],
+      wander: { g: '🐀', name: 'Fable the Rat' },
+      lms: [{ x: 40, y: 66, leg: 1, name: 'the Rusted Scale', kit: 'butterfly', g: '⚖️', art: 'lv-lm-liars' }],
+      pokes: PK_A, amb: { wisps: 1, seeds: 1 },
+      heroes: [{ x: 62, y: 50, w: 115, img: 'lv-hero-liars', anim: 'sway', burst: '❓', name: 'the crooked signpost',
+        kit: 'butterfly', line: 'Three boards, three spellings, one honest post — pick it!' }] },
+    grandtrunk: { img: 'map-grandtrunk-pano.jpg', aspect: 6.815, d: RD_C, t: [[10, 24], [50, 70], [93, 28]],
+      legEdge: LEGS4, legName: ['the First Milestone', 'the Banyan Avenue', 'the Caravanserai', 'the Great Gate'],
+      wander: { g: '🐘', name: 'Mira the Elephant' },
+      lms: [{ x: 63, y: 64, leg: 2, name: 'the Milestone Pillar', kit: 'comb', g: '🪧', art: 'lv-lm-grandtrunk' }],
+      pokes: PK_C, amb: { birds: 1, seeds: 1 },
+      heroes: [{ x: 34, y: 52, w: 150, img: 'lv-hero-grandtrunk', anim: 'sway', burst: '🍃', name: 'the great banyan',
+        kit: 'petal', line: 'The banyan drops a word root by root — walk it back up!' }] },
+    farflung: { img: 'map-farflung-pano.jpg', aspect: 6.815, d: RD_B, t: [[8, 68], [51, 26], [94, 70]],
+      legEdge: LEGS4, legName: ['the Home Shore', 'the Harbour Wall', 'the Open Water', 'the Far Shore'],
+      wander: { g: '🐬', name: 'Tide the Dolphin' },
+      lms: [{ x: 40, y: 70, leg: 1, name: 'the Crab-Pot Stack', kit: 'petal', g: '🦀', art: 'lv-lm-farflung' }],
+      pokes: PK_B, amb: { birds: 1, wisps: 1, water: [[28, 68], [34, 76], [42, 64], [55, 72], [63, 66], [70, 74], [82, 68]] },
+      heroes: [{ x: 30, y: 46, w: 140, img: 'lv-hero-farflung', anim: 'sway2', burst: '⛵', name: 'the tall ship',
+        kit: 'comb', line: 'The ship signals a word in flags — read it plank by plank!' }] },
+    factory: { img: 'map-factory-pano.jpg', aspect: 6.815, d: RD_C, t: [[11, 28], [48, 72], [90, 32]],
+      legEdge: LEGS4, legName: ['the Loading Yard', 'the Gear Floor', 'the Foundry', 'the Word Press'],
+      wander: { g: '🐦', name: 'Rivet the Tin Bird' },
+      lms: [{ x: 63, y: 62, leg: 2, name: 'the Tile Press', kit: 'comb', g: '🗜️', art: 'lv-lm-factory' }],
+      pokes: PK_A, amb: { seeds: 1, wisps: 1 },
+      heroes: [{ x: 32, y: 50, w: 115, img: 'lv-hero-factory', anim: 'breathe', burst: '⚙️', name: 'the great gear',
+        kit: 'comb', line: 'The great gear grinds a word into teeth — mesh them back!' }] },
+
+    /* ---- the five Ultra landmarks ----
+       Four stops, four plates: one country per stop. The champions' road is
+       where the treasures matter most, so every Ultra journey carries all
+       three caches AND its three seeded secrets across the panorama. */
+    uproving: { img: 'map-uproving-pano.jpg', aspect: 6.815, d: RD_B, t: [[12, 28], [50, 72], [89, 30]], ultra: 1,
+      legEdge: LEGS4, legName: ['the Standing Stones', 'the Torch Rings', 'the Weight Yard', 'the Champion’s Circle'],
+      wander: { g: '🦉', name: 'the Watcher' },
+      lms: [{ x: 63, y: 60, leg: 2, name: 'the Whetstone Wheel', kit: 'comb', g: '🪨', art: 'lv-lm-uproving' }],
+      pokes: PK_C, amb: { seeds: 1, wisps: 1 },
+      heroes: [{ x: 30, y: 50, w: 95, img: 'lv-hero-uproving', anim: 'breathe', burst: '🔥', name: 'the great torch',
+        kit: 'comb', line: 'The torch throws a word in sparks — forge it whole again!' }] },
+    ulibrary: { img: 'map-ulibrary-pano.jpg', aspect: 6.815, d: RD_C, t: [[10, 26], [49, 74], [92, 30]], ultra: 1,
+      legEdge: LEGS4, legName: ['the Black Steps', 'the Stacks', 'the Forbidden Shelves', 'the Tower Summit'],
+      wander: { g: '🐈‍⬛', name: 'the Marginalia Cat' },
+      lms: [{ x: 40, y: 64, leg: 1, name: 'the Iron Book Cart', kit: 'comb', g: '📚', art: 'lv-lm-ulibrary' }],
+      pokes: PK_B, amb: { seeds: 1, wisps: 1 },
+      heroes: [{ x: 62, y: 46, w: 125, img: 'lv-hero-ulibrary', anim: 'sway2', burst: '📄', name: 'the page storm',
+        kit: 'butterfly', line: 'Three pages turn in the updraught — only one is spelled true!' }] },
+    ucrucible: { img: 'map-ucrucible-pano.jpg', aspect: 6.815, d: RD_B, t: [[11, 70], [51, 26], [90, 68]], ultra: 1,
+      legEdge: LEGS4, legName: ['the Cooling Channels', 'the Slag Fields', 'the Molten Basin', 'the Crucible Heart'],
+      wander: { g: '🦎', name: 'the Ember Salamander' },
+      lms: [{ x: 63, y: 62, leg: 2, name: 'the Mould Rack', kit: 'comb', g: '🧱', art: 'lv-lm-ucrucible' }],
+      pokes: PK_A, amb: { wisps: 1, seeds: 1 },
+      heroes: [{ x: 32, y: 52, w: 110, img: 'lv-hero-ucrucible', anim: 'breathe', burst: '✨', name: 'the golden crucible',
+        kit: 'petal', line: 'The gold runs a word letter by letter — pour it in order!' }] },
+    uobservatory: { img: 'map-uobservatory-pano.jpg', aspect: 6.815, d: RD_C, t: [[9, 28], [48, 70], [93, 32]], ultra: 1,
+      legEdge: LEGS4, legName: ['the Cliff Path', 'the Orrery Terrace', 'the Great Telescope', 'the Star Dome'],
+      wander: { g: '🦇', name: 'the Night Cartographer' },
+      lms: [{ x: 63, y: 58, leg: 2, name: 'the Great Telescope', kit: 'butterfly', g: '🔭', art: 'lv-lm-uobservatory' }],
+      pokes: PK_C, amb: { wisps: 1, seeds: 1 },
+      heroes: [{ x: 34, y: 50, w: 115, img: 'lv-hero-uobservatory', anim: 'sway2', burst: '⭐', name: 'the brass orrery',
+        kit: 'petal', line: 'The orrery turns a word ring by ring — set the stars in order!' }] },
+    uchampionship: { img: 'map-uchampionship-pano.jpg', aspect: 6.815, d: RD_B, t: [[12, 26], [50, 72], [91, 28]], ultra: 1,
+      legEdge: LEGS4, legName: ['the Approach', 'the Tunnel', 'the Floodlit Tiers', 'the Grand Lectern'],
+      wander: { g: '🕊️', name: 'the Laurel Dove' },
+      lms: [{ x: 40, y: 66, leg: 1, name: 'the Spotlit Lectern', kit: 'spell', g: '🎤', art: 'lv-lm-uchampionship' }],
+      pokes: PK_B, amb: { seeds: 1, wisps: 1 },
+      heroes: [{ x: 88, y: 48, w: 120, img: 'lv-hero-uchampionship', anim: 'flutter', burst: '🎊', name: 'the laurel arch',
+        kit: 'spell', line: 'The arch calls one word down the beam — hear it and spell it true!' }] },
   };
-  /* the config for wherever the child is standing right now */
-  const lvCfg = () => LIV[state.trailAct] || MW;
+  /* WHERE THE CHILD IS STANDING — one key for the config AND the save bucket.
+     The Ultra road has no trailAct: it is addressed by landmark index, so its
+     key is the landmark's own slug. Everything downstream (lvCfg, mwP, the
+     daily seed's salt) reads this, which is what keeps eleven journeys from
+     spending each other's landmarks, heroes and reveals. */
+  const livKey = () => (state.tq && state.tq.jk) ? state.tq.jk
+    : state.trailView === 'ultra'
+    ? (ULTRA_SLUG[state.ultraAct || 0] || ULTRA_SLUG[0])
+    : (state.trailAct || 'meadow');
+  const lvCfg = () => LIV[livKey()] || MW;
   const lmArt = lm => lm && lm.art ? '<img src="app-art/' + lm.art + '.svg" alt="">' : '';
+  /* the name that fits on a map chip. "Barnaby the Bear" wants its first word;
+     "the Laurel Dove" emphatically does not — that chip just read "the". */
+  const livShort = n => { const s2 = String(n || '').replace(/^the\s+/i, '');
+    return /\bthe\b/i.test(n) && !/^the\s/i.test(n) ? s2.split(/\s+the\s+/i)[0] : s2; };
+  /* the fork is the Meadow's alone, so this stays honey-side */
   const mwOn = () => !!LIV[state.trailAct] && state.trailCourse !== 'exp';
-  /* per-act progress bucket: the Meadow keeps its historical tr(c).mw home;
-     every other country lives under tr(c).lv[actId] — landmark days, hero
-     days, the unroll beat and the fork must never collide across acts */
-  const mwP = c => { const t2 = tr(c); const id = state.trailAct || 'meadow';
+  /* per-journey progress bucket: the Meadow keeps its historical tr(c).mw
+     home; every other country lives under tr(c).lv[key] — landmark days, hero
+     days, the unroll beat and the fork must never collide across journeys */
+  const mwP = c => { const t2 = tr(c); const id = livKey();
     if (id === 'meadow') return t2.mw = t2.mw || {};
     const lv = t2.lv = t2.lv || {}; return lv[id] = lv[id] || {}; };
   /* deterministic daily seed: child name + date + COUNTRY; three rolls per day
      (the act is part of the salt so each country rolls its own gifts) */
-  function mwSeed(c, k) { const d2 = new Date(); const s2 = String(c.name || 'bee') + '|' + d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate() + '|' + (state.trailAct || '') + '|' + k;
+  function mwSeed(c, k) { const d2 = new Date(); const s2 = String(c.name || 'bee') + '|' + d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate() + '|' + livKey() + '|' + k;
     let h = 2166136261; for (let i = 0; i < s2.length; i++) { h ^= s2.charCodeAt(i); h = Math.imul(h, 16777619); }
     return (h >>> 0) / 4294967296; }
   const mwDay = () => { const d2 = new Date(); return d2.getFullYear() + '-' + d2.getMonth() + '-' + d2.getDate(); };
@@ -1546,10 +1757,19 @@
     const f = mwSeed(c, 'wander');
     const x = 4 + f * (edge - 12), y = 24 + ((f * 7919) % 1) * 55;
     return { x, y, done: (mwP(c).wd || '') === mwDay() }; }
+  /* the words a journey's side-play draws on. On the teaching roads that is the
+     stop the child is standing on; on the Ultra road there are no units at all,
+     so it is the landmark's own block of the hardest words in the library. */
+  function livWords(c, n) {
+    if (state.trailView === 'ultra') return uWordPick('u' + (state.ultraAct || 0), n, true);
+    try {
+      const u = (seq(c).find(x => x.kind === 'unit' && !passedNode(c, x)) || seq(c).filter(x => x.kind === 'unit').slice(-1)[0]).u;
+      return shuffle(lapWords(u, lapOf(c), 24).slice()).slice(0, n);
+    } catch (e) { return uWordPick(livKey(), n, true); }
+  }
   app2.mwWander = () => { const c = active(); const p = mwP(c); if (p.wd === mwDay()) return;
     needMap(() => { try {
-      const u = unit(state.trailUnit) || (seq(c).find(n => n.kind === 'unit' && !passedNode(c, n)) || {}).u || seq(c).find(n => n.kind === 'unit').u;
-      const ws = lapWords(u, lapOf(c), 8); const w = ws[Math.floor(mwSeed(c, 'ww') * ws.length) % ws.length];
+      const ws = livWords(c, 8); const w = ws[Math.floor(mwSeed(c, 'ww') * ws.length) % ws.length];
       if (w) say(w.w);
       p.wd = mwDay(); addCoins(8); save();
       const wn = lvCfg().wander || MW.wander;
@@ -1587,28 +1807,30 @@
         s2.style.setProperty('--bd2', (0.55 + (k % 4) * 0.13) + 's'); burst.appendChild(s2); }
       el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 1100); }
     try { sfx('tick'); } catch (_) {}
-    const hi = +i;
+    const hi = +i, jk = livKey(), fromUltra = state.trailView === 'ultra';
     setTimeout(() => { needMap(() => { try {
-      const u = (seq(c).find(n => n.kind === 'unit' && !passedNode(c, n)) || seq(c).filter(n => n.kind === 'unit').slice(-1)[0]).u;
-      const ws = shuffle(lapWords(u, lapOf(c), 20).slice()).filter(w => w.w.length >= 3);
+      const ws = livWords(c, 20).filter(w => w && w.w.length >= 3);
       const w = ws[0]; if (!w) return;
-      const item = h.kit === 'spell' ? { ty: 'spell', w: w.w, d: w.d } : kitItem(w, h.kit, state.trailAct);
-      set({ trailView: 'quiz', trailChk: null, trailUnit: u.id,
+      const item = h.kit === 'spell' ? { ty: 'spell', w: w.w, d: w.d } : kitItem(w, h.kit, jk);
+      /* jk pins the journey to the QUIZ: the view is about to stop being 'ultra',
+         and without it the win would be banked against the wrong road */
+      set({ trailView: 'quiz', trailChk: null,
         tq: { items: [item], i: 0, score: 0, picked: null, typed: '', missed: [], over: false,
-          hero: hi, sideName: h.name, heroLine: h.line } });
+          hero: hi, sideName: h.name, heroLine: h.line, jk, ult: fromUltra ? (state.ultraAct || 0) : null } });
       tqAutoSay();
     } catch (e) {} }); }, 650); } catch (e) {} };
   /* ---- landmarks: place-true side rounds, one honey trickle per day each ---- */
   const mwLmDone = (c, i) => ((mwP(c).lm || {})[i] || '') === mwDay();
   app2.mwLmk = i => { const c = active(); i = +i;
     const lm = lvCfg().lms[i]; if (!lm || mwLmDone(c, i)) return;
+    const jk = livKey(), fromUltra = state.trailView === 'ultra';
     needMap(() => { try {
-      const u = (seq(c).find(n => n.kind === 'unit' && !passedNode(c, n)) || seq(c).filter(n => n.kind === 'unit').slice(-1)[0]).u;
-      const ws = shuffle(lapWords(u, lapOf(c), 20).slice()).slice(0, 4);
+      const ws = livWords(c, 4);
       if (!ws.length) { flash('The words are still on their way…'); return; }
-      const items = ws.map(w => kitItem(w, lm.kit, state.trailAct));
-      set({ trailView: 'quiz', trailChk: null, trailUnit: u.id,
-        tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false, side: i, sideName: lm.name } });
+      const items = ws.map(w => lm.kit === 'spell' ? { ty: 'spell', w: w.w, d: w.d } : kitItem(w, lm.kit, jk));
+      set({ trailView: 'quiz', trailChk: null,
+        tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false, side: i, sideName: lm.name,
+          jk, ult: fromUltra ? (state.ultraAct || 0) : null } });
       tqAutoSay();
     } catch (e) {} }); };
   /* ---- the fork pair: both spur stops open together; the dared one pays ---- */
@@ -1677,6 +1899,41 @@
     stage: { glyph: '🎭', fly: ['One mask sings the TRUE spelling!', 'Bravo! 🎭', 'It missed its cue'],
       comb: ['Stage the word, scene by scene 🎬', 'Standing ovation! 👏'],
       petal: ['Step the spotlight marks in order and spell it 🎬', 'Encore! 🌟', 'The curtain fell'] },
+    /* the Advanced Rounds */
+    proving: { glyph: '🛡️', fly: ['One shield bears the TRUE spelling — take it!', 'Well struck! 🛡️', 'That shield split'],
+      comb: ['Forge the word, piece by piece ⚒️', 'Battle-ready! ⚒️'],
+      petal: ['March the pegs in order and spell it 🏳️', 'A clean run! 🏅', 'You broke stride'] },
+    greysea: { glyph: '🔔', fly: ['One buoy tolls the TRUE spelling — ring it!', 'Rung true! 🔔', 'It sank in the fog'],
+      comb: ['Sound the word, bell by bell 🔔', 'The fog lifts! 🌤️'],
+      petal: ['Step the stones through the fog and spell it 🌫️', 'Safe through! 🌫️', 'The fog closed in'] },
+    liars: { glyph: '⚖️', fly: ['Two boards lie, one tells the TRUTH — pick it!', 'Truth wins! ⚖️', 'That one lied'],
+      comb: ['Weld the word from honest scrap 🔩', 'It holds! 🔩'],
+      petal: ['Step the true planks in order and spell it 🪵', 'Not fooled! ⚖️', 'A rotten plank gave'] },
+    grandtrunk: { glyph: '🪧', fly: ['One milestone is cut with the TRUE spelling!', 'On the road! 🪧', 'A false turning'],
+      comb: ['Lay the word, stone by stone 🧱', 'The road runs on! 🛣️'],
+      petal: ['Walk the milestones in order and spell it 🐘', 'Journey made! 🐘', 'You lost the road'] },
+    farflung: { glyph: '⛵', fly: ['One sail is stitched with the TRUE spelling!', 'Fair winds! ⛵', 'It slipped its mooring'],
+      comb: ['Build the word, plank by plank 🪵', 'Seaworthy! ⛵'],
+      petal: ['Step the sandbar in order and spell it 🏝️', 'Landfall! 🏝️', 'The tide took it'] },
+    factory: { glyph: '⚙️', fly: ['One tile is stamped with the TRUE spelling!', 'Stamped! ⚙️', 'A misprint'],
+      comb: ['Mesh the word, tooth by tooth ⚙️', 'The press runs! 🗜️'],
+      petal: ['Press the levers in order and spell it 🕹️', 'Perfectly machined! ⚙️', 'The line jammed'] },
+    /* the Ultra Champions — the same three verbs at champion pitch */
+    uproving: { glyph: '🔥', fly: ['One brand burns the TRUE spelling — seize it!', 'Champion’s mark! 🔥', 'It burned out'],
+      comb: ['Forge the word in the fire, piece by piece 🔥', 'Tempered! ⚒️'],
+      petal: ['Cross the stone rings in order and spell it 🪨', 'Unbroken! 🏅', 'The circle closed'] },
+    ulibrary: { glyph: '📄', fly: ['One page holds the TRUE spelling — catch it!', 'Caught mid-air! 📄', 'It blew away'],
+      comb: ['Rebind the word, leaf by leaf 📖', 'Rebound! 📖'],
+      petal: ['Climb the shelves in order and spell it 🕯️', 'Shelved perfectly! 🕯️', 'The stack gave way'] },
+    ucrucible: { glyph: '✨', fly: ['One ingot is cast with the TRUE spelling!', 'Pure gold! ✨', 'That one was dross'],
+      comb: ['Pour the word, mould by mould 🧱', 'Cast clean! 🏆'],
+      petal: ['Pour the gold in order and spell it 🔥', 'Flawless cast! 🏆', 'The pour broke'] },
+    uobservatory: { glyph: '⭐', fly: ['One constellation spells it TRUE — read it!', 'Charted! ⭐', 'A false star'],
+      comb: ['Chart the word, ring by ring 🔭', 'The heavens align! 🔭'],
+      petal: ['Set the stars in order and spell it 🌌', 'The sky reads true! 🌌', 'The alignment slipped'] },
+    uchampionship: { glyph: '🏆', fly: ['One card carries the TRUE spelling — call it!', 'CORRECT! 🏆', 'The bell rings'],
+      comb: ['Say the word, syllable by syllable 🎤', 'The judges nod! 🏆'],
+      petal: ['Spell it out letter by letter at the microphone 🎤', 'CHAMPION! 🏆', 'A letter went astray'] },
   };
   const kitSkin = it => KIT_SKIN[it && it.a] || KIT_SKIN.meadow;
   const KIT_OF = ['butterfly', 'comb', 'petal'];
@@ -2052,9 +2309,9 @@
     const [a] = ACCENT[world] || ACCENT.meadow;
     const dn = nodes.filter(x => passedNode(c, x.n)).length;
     const n = nodes.length;
-    /* every Honey act rides its own four-plate panorama now; expeditions and
-       anything without a LIV entry keep their single painting */
-    const LV = crs !== 'exp' ? LIV[act.id] : null;
+    /* every Honey act AND every Advanced expedition rides its own four-plate
+       panorama now; anything without a LIV entry keeps its single painting */
+    const LV = LIV[act.id] || null;
     const isMW = !!LV;
     const m = isMW ? { d: LV.d, t: LV.t } : mapOf(act.id);
     let pts = mapPoints(m.d, n);
@@ -2085,7 +2342,7 @@
        size at every board width instead of scaling with the picture, and the
        guide avatar rides one without a foreignObject. */
     /* the secrets ride the board in the open — the painting stays bright */
-    const FL = fogLayer(c, act.id);
+    const FL = fogLayer(c, act.id, edge);
     const marks = pts.map((p, i) => {
       /* the reveal law: a stop beyond the earned edge is OFF THE CANVAS — it is
          not rendered at all, never veiled */
@@ -2108,78 +2365,17 @@
           box-shadow:${on ? `0 0 0 3px ${a},0 5px 14px rgba(10,6,26,.5)` : '0 4px 11px rgba(10,6,26,.45)'}">${kind === 'done' ? '✓' : (i + 1)}</span>
       </button>`;
     }).join('');
-    /* the Living Meadow's own layer: landmarks, the wanderer, the teased bend,
-       and today's weather */
+    /* the journey's living layer: landmarks, the wanderer, the teased bend,
+       the ecology and today's weather — all of it from this journey's config */
     let mwHTML = '', mwExtra = '';
-    if (isMW) {
-      const glowLm = Math.floor(mwSeed(c, 'lmglow') * LV.lms.length) % LV.lms.length;
-      mwHTML += LV.lms.map((lm, i) => { if (lm.x > edge) return '';
-        const done2 = mwLmDone(c, i);
-        const body2 = lm.anch
-          ? `<span class="mw-lm-halo"></span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`
-          : `<span class="mw-lm-a">${lmArt(lm)}</span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`;
-        return `<button class="mw-lm${lm.anch ? ' anch' : ''}${done2 ? ' done' : ''}${i === glowLm && !done2 ? ' glow' : ''}" data-act="mwLmk" data-arg="${i}"
-          style="left:${lm.x}%;top:${lm.y}%" title="${escA(lm.name + (done2 ? ' — visited today' : ' — a side round of words, +12 honey'))}">
-          ${body2}</button>`; }).join('');
-      const wd = mwWander(c, edge), wdr = LV.wander || MW.wander;
-      if (!wd.done) mwHTML += `<button class="mw-wander" data-act="mwWander" style="left:${wd.x.toFixed(1)}%;top:${wd.y.toFixed(1)}%"
-        title="${escA(wdr.name + ' has a word for you — +8 honey')}">${wdr.g}<span class="mw-lm-n">${esc(wdr.name.split(' ')[0])}</span></button>`;
-      if (edge < 99) { /* the sign teases what the bend hides: the rest of this
-        country if most of it is still unseen, else the next one */
-        const remaining = LV.legEdge[rv] - edge;
-        const nl = Math.min(3, remaining > 10 ? rv : rv + 1);
-        mwHTML += `<span class="mw-sign" style="left:${(edge - 1.2).toFixed(1)}%">
-        <span>→ ${esc(LV.legName[nl])}</span><i>clear the road to open the way</i></span>`; }
-      /* THE LIFE LAYER: each country fields its own cast (LV.amb) — the same
-         creature systems, a different ecology per act */
-      const AMB = LV.amb || {};
-      const BCOL = ['#F3B2C0', '#8FD0EC', '#FFD24D', '#C8A2F0', '#A8E0B0'];
-      if (AMB.butter) for (let bf2 = 0; bf2 < 5; bf2++) { const bx = (6 + bf2 * 19 + mwSeed(c, 'bf' + bf2) * 8) % Math.max(20, edge - 4);
-        mwHTML += `<span class="mw-butter" style="left:${bx.toFixed(1)}%;top:${(14 + (bf2 * 29) % 52)}%;--bd:${(bf2 * 2.3).toFixed(1)}s">
-          <span style="display:block;width:34px;height:26px">${BFLY(BCOL[bf2])}</span></span>`; }
-      if (AMB.petals) for (let pf = 0; pf < 14; pf++) { const px2 = (pf * 7.3 + mwSeed(c, 'pf' + pf) * 5) % 98;
-        if (px2 > edge) continue;
-        mwHTML += `<span class="mw-petalfall" style="left:${px2.toFixed(1)}%;--pd:${((pf * 1.9) % 11).toFixed(1)}s;--pw:${(7 + pf % 5)}s"></span>`; }
-      for (let tw = 0; tw < 9; tw++) { const tx2 = (4 + tw * 11.2) % 96; if (tx2 > edge) continue;
-        mwHTML += `<span class="mw-twink" style="left:${tx2.toFixed(1)}%;top:${(20 + (tw * 31) % 62)}%;--td:${(tw * 0.9).toFixed(1)}s"></span>`; }
-      LV.pokes.forEach((pk, i) => { if (pk[0] > edge) return;
-        mwHTML += `<button class="mw-poke" data-act="mwPoke" data-arg="${i}" style="left:${pk[0]}%;top:${pk[1]}%;--td:${((i * 1.3) % 8).toFixed(1)}s" aria-label="something wiggles here"></button>`; });
-      /* CREATURES WITH BEHAVIOUR — not decorations. Worker bees fly flower to
-         flower and PAUSE to gather (keyframe holds); birds cross the whole sky;
-         seeds and dust motes drift; mist wisps roll through; water sparkles. */
-      const BEEIMG = '<img src="app-art/hive-bee-fly.svg" alt="" style="width:100%;height:100%;object-fit:contain">';
-      if (AMB.bees) [[6, 60, '17s', '0s'], [33, 66, '21s', '-8s'], [58, 56, '19s', '-14s'], [84, 60, '23s', '-4s']]
-      .forEach(bw => { if (bw[0] > edge) return;
-        mwHTML += `<span class="mw-workbee" style="left:${bw[0]}%;top:${bw[1]}%;--wd:${bw[2]};--wdl:${bw[3]}"><span>${BEEIMG}</span></span>`; });
-      const BIRD = '<svg viewBox="0 0 40 16" width="100%" height="100%"><path d="M2 12 q9 -10 18 0 q9 -10 18 0" fill="none" stroke="#6B4E42" stroke-width="2.6" stroke-linecap="round"/></svg>';
-      if (AMB.birds) [['5%', '34s', '0s', 22], ['9%', '46s', '-20s', 17], ['13%', '40s', '-33s', 19]].forEach(bd2 => {
-        mwHTML += `<span class="mw-bird" style="top:${bd2[0]};--fd2:${bd2[1]};--fdl:${bd2[2]};width:${bd2[3]}px">${BIRD}</span>`; });
-      if (AMB.seeds) for (let sd = 0; sd < 8; sd++) { const sx = (3 + sd * 12.3) % 96; if (sx > edge) continue;
-        mwHTML += `<span class="mw-seed" style="left:${sx.toFixed(1)}%;top:${(30 + (sd * 27) % 48)}%;--sd2:${((sd * 2.7) % 12).toFixed(1)}s"></span>`; }
-      if (AMB.wisps) [[14, 62, '26s', '0s'], [42, 70, '32s', '-12s'], [68, 58, '28s', '-20s'], [88, 66, '30s', '-6s']]
-      .forEach(mi => { if (mi[0] > edge) return;
-        mwHTML += `<span class="mw-wisp" style="left:${mi[0]}%;top:${mi[1]}%;--md2:${mi[2]};--mdl:${mi[3]}"></span>`; });
-      /* water glitters where the painter put it */
-      (AMB.water || []).forEach((bk, i) => { if (bk[0] > edge) return;
-        mwHTML += `<span class="mw-twink mw-water" style="left:${bk[0]}%;top:${bk[1]}%;--td:${(i * 0.7).toFixed(1)}s"></span>`; });
-      /* the HERO set-pieces: integrated living things, anchored by their feet.
-         An anch:1 hero rides a feature the painter already drew — halo + label
-         on the painting itself, no sprite duplicate (the wishing-well law). */
-      LV.heroes.forEach((h, i) => { if (h.x > edge) return;
-        mwHTML += h.anch
-          ? `<button class="mw-hero anch" data-act="mwHero" data-arg="${i}"
-              style="left:${h.x}%;top:${h.y}%" title="${escA(h.name)}" aria-label="${escA(h.name)}">
-              <span class="mw-lm-halo"></span><span class="mw-lm-n">${esc(h.name)}</span></button>`
-          : `<button class="mw-hero mw-${h.anim}" data-act="mwHero" data-arg="${i}"
-              style="left:${h.x}%;top:${h.y}%;width:${h.w}px" title="${escA(h.name)}" aria-label="${escA(h.name)}">
-              <img src="app-art/${h.img}.svg" alt=""></button>`; });
-      const wx = mwVariant(c);
-      mwExtra = wx === 'rainbow' ? '<span class="mw-wx mw-rainbow" aria-hidden="true"></span>'
-        : wx === 'mist' ? '<span class="mw-wx mw-mist" aria-hidden="true"></span>'
-        : '<span class="mw-wx mw-gold" aria-hidden="true"></span>';
-      mwUnroll(c, rv);
-    } else _mwMax = Infinity;
-    const caches = (m.t || []).map((xy, i) => treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
+    if (isMW) { const _L = livLayer(c, LV, edge, rv); mwHTML = _L.html; mwExtra = _L.extra; mwUnroll(c, rv); }
+    else _mwMax = Infinity;
+    /* HIDDEN TREASURES: the three caches are strung along the WHOLE journey,
+       so one waits in each country rather than three crowding one screen. A
+       cache beyond the earned camera edge is simply not rendered — the same
+       reveal law the stops obey, so no chest is ever a spoiler. */
+    const caches = (m.t || []).map((xy, i) => (isMW && xy[0] > edge) ? ''
+      : treMark(c, act.id, i, xy[0], xy[1], dn, n)).join('');
     const popNew = _popK !== ('a:' + act.id + ':' + sel); if (popNew) _popK = 'a:' + act.id + ':' + sel;
     if ((popNew || _fresh) && !shut) panTo(sel, pts);   // never yank a hand-scrolled board on a background render — nor on a card dismiss
     /* the meadow's clamp waits for the panorama's real layout, then homes the
