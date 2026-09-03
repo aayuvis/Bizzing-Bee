@@ -135,6 +135,25 @@ const ULTRA = ['uproving', 'ulibrary', 'ucrucible', 'uobservatory', 'uchampionsh
   });
   ok(back.view === 'ultra' && back.ai === 1, 'Back from a champion\'s side round returns to the champion\'s road');
 
+  // ---- an expedition STOP QUIZ serves its kit rounds in its own verbs ----
+  const kit = await pg.evaluate(async () => {
+    app.trailToMap(); await new Promise(r => setTimeout(r, 300));
+    app.trailAct('exp|greysea'); await new Promise(r => setTimeout(r, 900));
+    const bt = [...document.querySelectorAll('button')].find(x => /Run away/i.test(x.textContent));
+    if (bt) { bt.click(); await new Promise(r => setTimeout(r, 300)); }
+    const btn = [...document.querySelectorAll('[data-act="trailUnit"]')][0];
+    const uid = btn && btn.getAttribute('data-arg');
+    if (!uid) return { ok: false };
+    app.trailUnit(uid); await new Promise(r => setTimeout(r, 800));
+    app.trailQuiz(); await new Promise(r => setTimeout(r, 1400));
+    const q = state.tq; if (!q) return { ok: false };
+    const kits = q.items.filter(i => i.ty === 'kit');
+    return { ok: true, total: q.items.length, kits: kits.length, acts: [...new Set(kits.map(k => k.a))] };
+  });
+  ok(kit.ok && kit.kits >= 2, 'a Grey Sea stop quiz weaves in its kit rounds (' + kit.kits + ' of ' + kit.total + ' items)');
+  ok(kit.ok && kit.acts.length === 1 && kit.acts[0] === 'greysea',
+    'and they are tagged to the expedition, so they speak ITS verbs (bells and fog, not combs)');
+
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);
