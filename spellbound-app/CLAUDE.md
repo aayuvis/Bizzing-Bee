@@ -1125,8 +1125,11 @@ out of saga2.js so a retune cannot quietly undo them.
   `mw-bolt` (storm, greysea), `mw-glow` (spores/heat), `mw-steam`, `mw-spark`
   (forges), `mw-beam` (a sweeping lamp or spotlight), `mw-spin` (pinwheels —
   blades with GAPS, a filled disc reads as a blemish on the painting),
-  `mw-conf` (the finish line), `mw-note` (the orchestra pit), `mw-sail`,
-  `mw-pennant`, `mw-star` (the observatory). Scatter comes off the daily seed
+  `mw-conf` (the finish line), `mw-note` (the orchestra pit), `mw-pennant`,
+  `mw-star` (the observatory). There is no boat system: the strait, the Grey
+  Sea and the Far Shores all have boats PAINTED IN, and an emoji hull among
+  them read as a toy — the wishing-well law applies to ambient life too, so
+  those countries field gulls, water glints and a lamp instead. Scatter comes off the daily seed
   via the local `spread()` helper, so a country looks like itself without
   looking identical two days running. The flashing systems (bolt, rain, conf,
   page, leaf) must `display:none` under both motion guards, not merely stop —

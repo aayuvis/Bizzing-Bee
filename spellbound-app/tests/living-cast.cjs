@@ -18,15 +18,15 @@ const CAST = {
   forum:         { nav: ['honey', 'forum'],    want: ['mw-leaf', 'mw-pennant', 'mw-bird'] },
   storm:         { nav: ['honey', 'storm'],    want: ['mw-rain', 'mw-bolt', 'mw-glow'] },
   roots:         { nav: ['honey', 'roots'],    want: ['mw-glow', 'mw-leaf', 'mw-steam'] },
-  strait:        { nav: ['honey', 'strait'],   want: ['mw-sail', 'mw-beam', 'mw-water'] },
+  strait:        { nav: ['honey', 'strait'],   want: ['mw-bird', 'mw-beam', 'mw-water'] },
   junkyard:      { nav: ['honey', 'junkyard'], want: ['mw-steam', 'mw-spark', 'mw-spin'] },
   sprints:       { nav: ['honey', 'sprints'],  want: ['mw-conf', 'mw-pennant', 'mw-bird'] },
   stage:         { nav: ['honey', 'stage'],    want: ['mw-note', 'mw-conf', 'mw-beam'] },
   proving:       { nav: ['exp', 'proving'],    want: ['mw-spark', 'mw-steam', 'mw-pennant'] },
-  greysea:       { nav: ['exp', 'greysea'],    want: ['mw-rain', 'mw-sail', 'mw-beam'] },
+  greysea:       { nav: ['exp', 'greysea'],    want: ['mw-rain', 'mw-beam', 'mw-water'] },
   liars:         { nav: ['exp', 'liars'],      want: ['mw-spin', 'mw-steam', 'mw-wisp'] },
   grandtrunk:    { nav: ['exp', 'grandtrunk'], want: ['mw-leaf', 'mw-pennant', 'mw-bird'] },
-  farflung:      { nav: ['exp', 'farflung'],   want: ['mw-sail', 'mw-water', 'mw-bird'] },
+  farflung:      { nav: ['exp', 'farflung'],   want: ['mw-glow', 'mw-water', 'mw-bird'] },
   factory:       { nav: ['exp', 'factory'],    want: ['mw-steam', 'mw-spark', 'mw-spin'] },
   uproving:      { nav: ['ultra', 0],          want: ['mw-spark', 'mw-steam', 'mw-pennant'] },
   ulibrary:      { nav: ['ultra', 1],          want: ['mw-page', 'mw-glow', 'mw-beam'] },
@@ -66,7 +66,7 @@ const CAST = {
       // how many DISTINCT life systems stand on this board at all
       const all = ['mw-butter', 'mw-petalfall', 'mw-workbee', 'mw-bird', 'mw-seed', 'mw-wisp',
         'mw-page', 'mw-leaf', 'mw-rain', 'mw-bolt', 'mw-glow', 'mw-steam', 'mw-spark',
-        'mw-beam', 'mw-spin', 'mw-conf', 'mw-note', 'mw-sail', 'mw-pennant', 'mw-star', 'mw-water'];
+        'mw-beam', 'mw-spin', 'mw-conf', 'mw-note', 'mw-pennant', 'mw-star', 'mw-water'];
       out._systems = all.filter(cl => document.querySelectorAll('.' + cl).length).length;
       out._pokes = document.querySelectorAll('.mw-poke').length;
       return out;
@@ -140,7 +140,7 @@ const CAST = {
     app.trailAct('honey|storm'); await new Promise(r => setTimeout(r, 1100));
     const bd = document.querySelector('.mw-board');
     const w = bd ? bd.clientWidth : 1;
-    const far = [...document.querySelectorAll('.mw-poke, .mw-spin, .mw-sail, .mw-beam, .mw-pennant')]
+    const far = [...document.querySelectorAll('.mw-poke, .mw-spin, .mw-beam, .mw-pennant')]
       .filter(el => parseFloat(el.style.left) > 90).length;
     state.devUnlock = true;
     return { far, w };
@@ -150,7 +150,7 @@ const CAST = {
   // ---- both motion guards cover every new system ----
   const idx = require('fs').readFileSync(SRC + '/index.html', 'utf8');
   const NEW = ['mw-page', 'mw-leaf', 'mw-rain', 'mw-bolt', 'mw-glow', 'mw-steam', 'mw-spark',
-    'mw-beam', 'mw-spin', 'mw-conf', 'mw-note', 'mw-sail', 'mw-pennant'];
+    'mw-beam', 'mw-spin', 'mw-conf', 'mw-note', 'mw-pennant'];
   ok(NEW.every(cl => idx.includes('.' + cl + '{')), 'every new system is a real CSS system');
   ok(NEW.every(cl => new RegExp('data-motion="off"\\][^{]*\\.' + cl + '\\b').test(idx)
       || idx.includes(':root[data-motion="off"] .' + cl)), 'motion-off names every new system');

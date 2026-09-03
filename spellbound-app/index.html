@@ -1765,11 +1765,6 @@
   @keyframes mw-notefloat{0%{opacity:0;transform:translate(0,0) rotate(-8deg)}
     16%{opacity:.95}52%{transform:translate(3vw,-16vh) rotate(9deg)}
     100%{opacity:0;transform:translate(6vw,-31vh) rotate(-6deg)}}
-  /* a hull rocking at its mooring */
-  .mw-sail{position:absolute;z-index:2;pointer-events:none;font-size:22px;line-height:1;
-    transform-origin:50% 90%;filter:drop-shadow(0 2px 5px rgba(10,30,50,.4));
-    animation:mw-bobrock var(--gd,5s) ease-in-out var(--gl,0s) infinite alternate}
-  @keyframes mw-bobrock{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-4px) rotate(4.5deg)}}
   /* a pennant snapping on its pole */
   .mw-pennant{position:absolute;z-index:2;pointer-events:none;width:30px;height:19px;
     transform-origin:0 50%;background:linear-gradient(120deg,var(--cc,#E06A3C),#8E1D26);
@@ -1815,7 +1810,7 @@
   :root[data-motion="off"] .mw-glow,:root[data-motion="off"] .mw-steam,
   :root[data-motion="off"] .mw-spark,:root[data-motion="off"] .mw-beam,
   :root[data-motion="off"] .mw-spin,:root[data-motion="off"] .mw-conf,
-  :root[data-motion="off"] .mw-note,:root[data-motion="off"] .mw-sail,
+  :root[data-motion="off"] .mw-note,
   :root[data-motion="off"] .mw-pennant{animation:none}
   /* the flashing ones must not merely stop — a bolt or a rain streak frozen
      mid-animation would sit on the painting as a bright smear */
@@ -1827,7 +1822,7 @@
     .mw-bird,.mw-seed,.mw-wisp,.atlas-stop.now .atlas-sd,
     .mw-sway,.mw-sway2,.mw-breathe,.mw-flutter,
     .mw-page,.mw-leaf,.mw-rain,.mw-bolt,.mw-glow,.mw-steam,.mw-spark,
-    .mw-beam,.mw-spin,.mw-conf,.mw-note,.mw-sail,.mw-pennant{animation:none}
+    .mw-beam,.mw-spin,.mw-conf,.mw-note,.mw-pennant{animation:none}
     .mw-bolt,.mw-rain,.mw-conf,.mw-page,.mw-leaf{display:none} }
   .act-pan{overflow-x:auto;overflow-y:hidden;border-radius:22px;-webkit-overflow-scrolling:touch;
     box-shadow:0 0 0 1px var(--line),0 14px 32px rgba(26,18,54,.2)}
@@ -2768,6 +2763,6 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
   <script defer src="saga2.js?v=20260828a"></script>
 <script defer src="trivia.js?v=20260824q"></script>
 <script defer src="advanced.js?v=20260824q"></script>
-<script defer src="trail.js?v=20260903a"></script>
+<script defer src="trail.js?v=20260903b"></script>
 </body>
 </html>
