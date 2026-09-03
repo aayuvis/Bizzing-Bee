@@ -2471,7 +2471,7 @@
        the auto-press's audio, the first tap during the show turns the sound on
        IN PROGRESS (sk joins the cue at the elapsed clock) instead of skipping,
        and the next tap skips. Reduced motion keeps its quiet still card. */
-    var started=rm, autoTm=null;
+    var started=rm, autoTm=null, soundTap=false;
     var tm=setTimeout(out, rm?dur:12000);   /* safety net only — the auto-press restarts this */
     function startShow(){ if(started||done) return; started=true;
       if(autoTm) clearTimeout(autoTm);
@@ -2486,7 +2486,12 @@
     d.addEventListener('pointerdown',function ev(){
       if(!started){ startShow(); return; }
       if(!rm && !d.classList.contains('kb')) return;   /* the press beat — the show is about to start */
-      if(!sched && !rm){ tune(); sndBadge(false);
+      /* ONE tap may be spent turning the sound on — never two. `sched` only
+         becomes true once brand.play()'s promise RESOLVES, so a second tap
+         arriving before that resolution used to fall into this branch again
+         and the show refused to skip. soundTap is the honest record of "a tap
+         has already been spent here", and it is set synchronously. */
+      if(!sched && !rm && !soundTap){ soundTap=true; tune(); sndBadge(false);
         var tp=d.querySelector('.spl-tap'); if(tp) tp.textContent='sound on — tap again to skip';
         return; }
       d.removeEventListener('pointerdown',ev);
@@ -2647,6 +2652,6 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
   <script defer src="saga2.js?v=20260828a"></script>
 <script defer src="trivia.js?v=20260824q"></script>
 <script defer src="advanced.js?v=20260824q"></script>
-<script defer src="trail.js?v=20260831h"></script>
+<script defer src="trail.js?v=20260831i"></script>
 </body>
 </html>
