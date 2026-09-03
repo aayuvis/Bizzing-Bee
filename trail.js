@@ -1234,8 +1234,6 @@
     const NOTES = ['♪', '♫', '♩', '♬'];
     if (AMB.notes) spread(8, 'nt', [46, 78]).forEach(([x, y], i) =>
       H += `<span class="mw-note" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(9 + i % 5)}s;--gl:${((i * 2.1) % 11).toFixed(1)}s">${NOTES[i % 4]}</span>`);
-    (AMB.sails || []).forEach((sl, i) => { if (sl[0] > edge) return;
-      H += `<span class="mw-sail" style="left:${sl[0]}%;top:${sl[1]}%;--gd:${(4.2 + (i % 4) * 0.8).toFixed(1)}s;--gl:${(i * 0.7).toFixed(1)}s">${sl[2] || '⛵'}</span>`; });
     (AMB.pennants || []).forEach((pn, i) => { if (pn[0] > edge) return;
       H += `<span class="mw-pennant" style="left:${pn[0]}%;top:${pn[1]}%;--cc:${pn[2] || '#E06A3C'};--gd:${(2.2 + (i % 5) * 0.4).toFixed(1)}s;--gl:${(i * 0.3).toFixed(1)}s"></span>`; });
     if (AMB.stars) spread(14, 'sr', [6, 40]).forEach(([x, y], i) =>
@@ -1587,7 +1585,7 @@
       legEdge: LEGS4, legName: ['the Shore Road', 'the Harbour', 'the Buoy Line', 'the Far Shore'],
       wander: { g: '🦭', name: 'Salty the Seal' },
       lms: [{ x: 40, y: 70, leg: 1, name: 'the Message Buoy', kit: 'butterfly', g: '🛟', art: 'lv-lm-strait' }],
-      pokes: PK_B, amb: { birds: 1, sails: [[22, 62, '⛵'], [48, 70, '⛵'], [76, 64, '🚤']], beams: [[64, 22]], water: [[30, 66], [35, 74], [41, 60], [52, 70], [60, 64], [66, 72], [80, 68]] },
+      pokes: PK_B, amb: { birds: 1, beams: [[64, 22]], water: [[30, 66], [35, 74], [41, 60], [52, 70], [60, 64], [66, 72], [80, 68]] },
       /* the painter already put a lighthouse on the buoy line — the hero is
          ANCHORED to it (halo + label on the painting, sprite only on the card) */
       heroes: [{ x: 66.5, y: 24, w: 110, anch: 1, img: 'lv-hero-strait', anim: 'breathe', burst: '🌊', name: 'the little lighthouse',
@@ -1630,7 +1628,7 @@
       legEdge: LEGS4, legName: ['the Grey Shallows', 'the Fog Bank', 'the Wreck Reach', 'the Lighthouse'],
       wander: { g: '🦢', name: 'Pale the Heron' },
       lms: [{ x: 63, y: 60, leg: 2, name: 'the Wreck Bell', kit: 'butterfly', g: '🔔', art: 'lv-lm-greysea' }],
-      pokes: PK_B, amb: { rain: 1, wisps: 1, birds: 1, sails: [[26, 64, '⛵'], [58, 70, '🚢']], beams: [[40, 24]], water: [[30, 66], [36, 74], [44, 62], [56, 70], [64, 60], [72, 72], [84, 64]] },
+      pokes: PK_B, amb: { rain: 1, wisps: 1, birds: 1, beams: [[40, 24]], water: [[30, 66], [36, 74], [44, 62], [56, 70], [64, 60], [72, 72], [84, 64]] },
       heroes: [{ x: 33, y: 58, w: 100, img: 'lv-hero-greysea', anim: 'sway2', burst: '🌫️', name: 'the lantern buoy',
         kit: 'butterfly', line: 'The buoy tolls a word into the fog — ring the true one!' }] },
     liars: { img: 'map-liars-pano.jpg', aspect: 6.815, d: RD_B, t: [[12, 30], [47, 74], [91, 34]],
@@ -1651,7 +1649,7 @@
       legEdge: LEGS4, legName: ['the Home Shore', 'the Harbour Wall', 'the Open Water', 'the Far Shore'],
       wander: { g: '🐬', name: 'Tide the Dolphin' },
       lms: [{ x: 40, y: 70, leg: 1, name: 'the Crab-Pot Stack', kit: 'petal', g: '🦀', art: 'lv-lm-farflung' }],
-      pokes: PK_B, amb: { birds: 1, sails: [[24, 60, '⛵'], [52, 68, '⛵'], [80, 62, '🛥️']], water: [[28, 68], [34, 76], [42, 64], [55, 72], [63, 66], [70, 74], [82, 68]] },
+      pokes: PK_B, amb: { birds: 1, glow: 1, wisps: 1, water: [[28, 68], [34, 76], [42, 64], [55, 72], [63, 66], [70, 74], [82, 68]] },
       heroes: [{ x: 30, y: 46, w: 140, img: 'lv-hero-farflung', anim: 'sway2', burst: '⛵', name: 'the tall ship',
         kit: 'comb', line: 'The ship signals a word in flags — read it plank by plank!' }] },
     factory: { img: 'map-factory-pano.jpg', aspect: 6.815, d: RD_C, t: [[11, 28], [48, 72], [90, 32]],
