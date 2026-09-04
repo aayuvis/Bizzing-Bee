@@ -721,8 +721,42 @@ let _fullState='idle'; // idle | loading | loaded | error
    the correction reviewable in one place. */
 const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'abbr','abbrev','abd','abdom','mis']);
-/* and one record simply lost its definition in generation */
-const CORE_FIX = { constructor: 'a person or company that builds something, especially one who puts up buildings' };
+/* Words are NOT struck here by judgement call. A sweep found 41 more — slurs and
+   obscenities whose generated definitions are neutral or invented, so no pattern
+   can see them ("squaw: an American Indian woman", "cocklicker: a person who
+   tends cockle shells") — and they are in the review sheet for the owner to
+   decide on, not in this set. Only two things belong in CORE_STRIKE: records
+   whose own definition admits they are a misspelling or an abbreviation, and
+   whatever the owner has signed off. */
+/* ---- definitions we replace rather than delete ----
+   One record simply lost its definition in generation. The rest are ORDINARY
+   WORDS a speller should meet — shrimp, runt, ragtag, riffraff, madhouse — whose
+   generated gloss happens to be the disparaging SENSE of the spelling ("shrimp:
+   disparaging terms for small people"). Dropping the word to be rid of the gloss
+   would take a perfectly good bee word out of the library, so the gloss is
+   replaced with the everyday meaning and the word stays. The replacement runs
+   BEFORE the slur test below, so a repaired record is judged on its new
+   definition — which is why no exemption list is needed for any of these. */
+const CORE_FIX = {
+  constructor: 'a person or company that builds something, especially one who puts up buildings',
+  shrimp: 'a small shellfish with a long tail, eaten as food',
+  shrimps: 'small shellfish with long tails, eaten as food',
+  peewee: 'someone or something unusually small',
+  peewees: 'people or things that are unusually small',
+  ragtag: 'untidy and made up of an odd mixture of things',
+  ragtags: 'untidy groups made up of an odd mixture of people',
+  riffraff: 'a disorderly crowd of people',
+  runt: 'the smallest and weakest animal in a litter',
+  runts: 'the smallest and weakest animals in a litter',
+  madhouse: 'a place full of noise and wild confusion',
+  madhouses: 'places full of noise and wild confusion',
+  nuthouse: 'a scene of complete uproar and confusion',
+  nuthouses: 'scenes of complete uproar and confusion',
+  /* the generated gloss was the noun sense, which is a slur for a disabled
+     person; the verb is an ordinary word and the spelling is worth knowing */
+  retard: 'to slow something down or hold back its progress',
+  retards: 'slows something down or holds back its progress'
+};
 /* ---- slurs ----
    SB_UNSAFE_RE is a list of specific strings, so it caught 22 of the 210 entries
    whose OWN definition identifies them as an offensive term — it had no entry
@@ -732,16 +766,34 @@ const CORE_FIX = { constructor: 'a person or company that builds something, espe
    playing whack-a-mole with a word list, and keeps catching new ones. Words that
    merely MENTION offence in passing — affront, euphemism, rude, obnoxious — are
    untouched, because the pattern requires the definition to call the headword
-   itself a term/word/slang/epithet/slur. */
-const SLUR_DEF = /\b(offensive|derogatory|disparaging|vulgar|contemptuous|insulting|racial|ethnic)\b[^.]{0,30}\b(term|word|name|slang|epithet|slur)\b/i;
+   itself a term/word/slang/epithet/slur.
+
+   THE NOUN MUST BE ALLOWED ITS PLURAL. The first cut of this pattern required a
+   singular ("offensive term"), and the generated glosses are written almost
+   entirely in the plural — "offensive terms for", "disparaging terms for",
+   "(slang) offensive names for". It matched 210 records and missed 35 more,
+   among them motherfucker, assholes, honky, whitey and Zionazi, all of which a
+   child could still be asked to spell. Adding the plurals and a few further
+   markers (pejorative, racist, obscene, taboo) takes it to 245. When adding a
+   marker, add its plural in the same edit. */
+const SLUR_DEF = /\b(offensive|derogatory|disparaging|pejorative|vulgar|contemptuous|insulting|racist|racial|ethnic|obscene|taboo)\b[^.]{0,40}\b(terms?|words?|names?|slang|epithets?|slurs?|expression|reference)\b/i;
+/* Words the pattern catches whose definitions merely DESCRIBE offence rather
+   than commit it: improperation and insultment are archaic words FOR insulting,
+   nefandous means unspeakably wicked, multiracialize is about racial identity.
+   Each is a real word with a real meaning, so each is named here rather than
+   losing the whole class by weakening the pattern. */
+const SLUR_OK = new Set(['improperation','insultment','nefandous','multiracialize',
+  'affront','euphemism','rude','obnoxious','innuendo']);
 function fixCore(v){ try{
     const out = [];
     for(const r of v){
       if(!r || !r.w) continue;
       const k = String(r.w).toLowerCase();
       if(CORE_STRIKE.has(k)) continue;
-      if(r.d && SLUR_DEF.test(r.d)) continue;
-      if(!r.d && Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
+      /* repair first, then judge — a record whose gloss we have replaced is
+         judged on the replacement, not on the sense we just removed */
+      if(Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
+      if(r.d && !SLUR_OK.has(k) && SLUR_DEF.test(r.d)) continue;
       out.push(r);
     }
     return out; }catch(e){ return v; } }

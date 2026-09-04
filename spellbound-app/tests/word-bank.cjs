@@ -118,18 +118,83 @@ ok(echoes.length === 0, 'no shard word is merely the plural of a core word'
 // words. The filter now matches what the data says ABOUT ITSELF.
 ok(/SLUR_DEF/.test(app3pre) && /fixCore/.test(app3pre),
   'the library filters entries their own definitions call an offensive term');
-const SLUR_DEF = /\b(offensive|derogatory|disparaging|vulgar|contemptuous|insulting|racial|ethnic)\b[^.]{0,30}\b(term|word|name|slang|epithet|slur)\b/i;
-let slurs = 0; const slurEg = [];
-for (const r of coreArr) if (r && r.d && SLUR_DEF.test(r.d)) { slurs++; if (slurEg.length < 5) slurEg.push(r.w); }
+/* Read the REAL pattern and the REAL tables out of app3.js rather than copying
+   them here. A copy is what let the plural bug live: the suite asserted a
+   pattern it had been given, not the one that ships. */
+const SLUR_DEF = new RegExp(/const SLUR_DEF = \/(.+?)\/i;/.exec(app3pre)[1], 'i');
+const tbl = (from, to) => app3pre.slice(app3pre.indexOf(from), app3pre.indexOf(to));
+const STRIKE = new Set(tbl('const CORE_STRIKE', '/* ---- definitions').match(/'([a-z]+)'/g).map(s => s.slice(1, -1)));
+const OKSET = new Set(tbl('const SLUR_OK', 'function fixCore').match(/'([a-z]+)'/g).map(s => s.slice(1, -1)));
+const FIXD = {};
+for (const m of tbl('const CORE_FIX', '/* ---- slurs').matchAll(/^ {2}([a-z]+): '([^']+)'/gm)) FIXD[m[1]] = m[2];
+
+let slurs = 0;
+for (const r of coreArr) if (r && r.d && SLUR_DEF.test(r.d)) slurs++;
 ok(slurs > 0, 'the raw core still contains them (' + slurs + ') — so the filter is doing real work');
-// and the pattern must not swallow ordinary words that merely mention offence
-const innocent = ['affront', 'euphemism', 'rude', 'obnoxious', 'innuendo'];
-const wrongly = innocent.filter(w => {
-  const r = coreArr.find(x => x && x.w === w);
-  return r && r.d && SLUR_DEF.test(r.d);
-});
-ok(wrongly.length === 0, 'and it spares words that merely mention offence'
-  + (wrongly.length ? ' — WRONGLY CAUGHT ' + wrongly.join(', ') : ''));
+
+/* THE PLURAL BUG. The first pattern required a singular noun after the marker
+   ("offensive term"), and the generated glosses are written in the plural
+   ("offensive terms for", "(slang) offensive names for"). It let motherfucker,
+   assholes, honky, whitey and Zionazi through. Assert the plural directly, so
+   tightening the noun list back to singulars fails here. */
+for (const t of ['(slang) offensive names for a White man', 'offensive terms for a person',
+                 'derogatory terms for women', 'pejorative terms for an insane asylum'])
+  ok(SLUR_DEF.test(t), 'the pattern reads the PLURAL gloss: "' + t.slice(0, 34) + '…"');
+
+// ---- run the real filter and check both directions on real records ----
+const live = new Set();
+for (const r of coreArr) {
+  if (!r || !r.w) continue;
+  const k = String(r.w).toLowerCase();
+  if (STRIKE.has(k)) continue;
+  const d = Object.prototype.hasOwnProperty.call(FIXD, k) ? FIXD[k] : r.d;
+  if (d && !OKSET.has(k) && SLUR_DEF.test(d)) continue;
+  live.add(k);
+}
+/* Every one of these has a definition that admits what the word is, so the
+   pattern is what removes them. Five of them — motherfucker, assholes, honky,
+   whitey, Zionazi — were reachable until the plural was allowed above. */
+const mustGo = ['niggers', 'motherfucker', 'assholes', 'honky', 'honkies', 'whitey',
+  'punani', 'slutbag', 'jap', 'kraut', 'chink', 'coolie', 'redskin', 'popery',
+  'niggerish', 'niggerism', 'niggerlips', 'boche', 'dyke', 'fag', 'mick', 'darkie'];
+const reach = mustGo.filter(w => live.has(w));
+ok(reach.length === 0, 'no slur whose definition admits it reaches a child'
+  + (reach.length ? ' — REACHABLE: ' + reach.join(', ') : ''));
+
+/* A SECOND CLASS EXISTS AND IS NOT YET GATED. 41 slurs and obscenities carry a
+   neutral or invented gloss — "squaw: an American Indian woman", "cocklicker: a
+   person who tends cockle shells", "encunt: enclosed within a hollow" — so no
+   pattern can reach them and only naming them would. They are not struck here
+   because striking words by judgement is the owner's call, not this suite's;
+   they are in the review sheet awaiting that decision. This assertion records
+   the size of the gap rather than hiding it, and should be replaced by a real
+   removal check once the decision comes back. */
+const PENDING = ['squaw', 'squaws', 'abo', 'abos', 'mulatto', 'niggery', 'niggerless',
+  'niggerese', 'niggerize', 'niggerlike', 'blowjob', 'boobage', 'cocklicker', 'cuntass',
+  'encunt', 'fuckity', 'kinderwhore', 'shitbag', 'shithead', 'slut', 'teledildonics',
+  'titty', 'twat', 'unfuck', 'bollocks'];
+const stillOpen = PENDING.filter(w => live.has(w));
+console.log('  ..    ' + stillOpen.length + ' of ' + PENDING.length
+  + ' neutrally-glossed entries still reachable — awaiting the owner\'s decision');
+ok(true, 'the second class is surfaced, not silently accepted');
+
+/* The other direction, and the one that matters just as much: ordinary words
+   must survive. shrimp, runt, ragtag and riffraff are glossed in the core with
+   their DISPARAGING sense ("disparaging terms for small people"), so a filter
+   that only deletes would take four good bee words out of the library. They are
+   repaired through CORE_FIX instead and must still be here — as must the
+   homographs that merely look like slurs. */
+const mustStay = ['shrimp', 'runt', 'ragtag', 'riffraff', 'madhouse', 'peewee', 'nuthouse',
+  'retard', 'spicy', 'spices', 'japes', 'faggoting', 'chinking', 'retarding', 'gooks',
+  'affront', 'euphemism', 'rude', 'obnoxious', 'innuendo', 'nefandous', 'insultment'];
+const lost = mustStay.filter(w => !live.has(w));
+ok(lost.length === 0, 'and no ordinary word is lost to it' + (lost.length ? ' — LOST: ' + lost.join(', ') : ''));
+for (const w of ['shrimp', 'runt', 'ragtag', 'retard'])
+  ok(FIXD[w] && !SLUR_DEF.test(FIXD[w]), w + ' ships the everyday meaning, not the disparaging sense');
+
+// the live total must still clear the number every surface quotes
+ok(live.size + H.length >= 130000,
+  'the FILTERED library still clears 130,000 — ' + (live.size + H.length) + ' words reach a child');
 
 // ---- the merge is idempotent and cache-aware ----
 const app3 = fs.readFileSync(SRC + '/app3.js', 'utf8');
