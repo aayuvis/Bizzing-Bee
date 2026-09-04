@@ -123,7 +123,17 @@ ok(/SLUR_DEF/.test(app3pre) && /fixCore/.test(app3pre),
    pattern it had been given, not the one that ships. */
 const SLUR_DEF = new RegExp(/const SLUR_DEF = \/(.+?)\/i;/.exec(app3pre)[1], 'i');
 const tbl = (from, to) => app3pre.slice(app3pre.indexOf(from), app3pre.indexOf(to));
-const STRIKE = new Set(tbl('const CORE_STRIKE', '/* ---- definitions').match(/'([a-z]+)'/g).map(s => s.slice(1, -1)));
+const STRIKE = new Set(tbl('const CORE_STRIKE', '/* ---- the reviewed non-words').match(/'([a-z]+)'/g).map(s => s.slice(1, -1)));
+/* the 1,762 reviewed non-words, read out of the shipped pipe-joined literal */
+const CUT = new Set(eval(/const CORE_CUT = new Set\(\(([\s\S]*?)\)\.split\('\|'\)/.exec(app3pre)[1])
+  .split('|').map(s => s.toLowerCase()));
+ok(CUT.size === 1762, 'the reviewed cut carries all 1,762 words (' + CUT.size + ')');
+for (const w of ['abgarus', 'afeefa', 'megaprofit', 'nonasterisked'])
+  ok(CUT.has(w), 'the cut includes ' + w);
+/* the four keeping rules, spot-checked on the words that made them: a prominent
+   person, a goddess, a city, and two classical formations */
+for (const w of ['adornoian', 'anahit', 'ashtarak', 'catalanophile', 'armenophilia', 'lunomancy'])
+  ok(!CUT.has(w), 'the keeping rules spared ' + w);
 const OKSET = new Set(tbl('const SLUR_OK', 'function fixCore').match(/'([a-z]+)'/g).map(s => s.slice(1, -1)));
 const FIXD = {};
 for (const m of tbl('const CORE_FIX', '/* ---- slurs').matchAll(/^ {2}([a-z]+): '([^']+)'/gm)) FIXD[m[1]] = m[2];
@@ -149,17 +159,17 @@ const live = new Set();
 for (const r of coreArr) {
   if (!r || !r.w) continue;
   const k = String(r.w).toLowerCase();
-  if (STRIKE.has(k)) continue;
+  if (STRIKE.has(k) || CUT.has(k)) continue;
   const d = Object.prototype.hasOwnProperty.call(FIXD, k) ? FIXD[k] : r.d;
   if (d && !OKSET.has(k) && SLUR_DEF.test(d)) continue;
   live.add(k);
 }
 /* mergeHard() gates the shard on safeWord(), NOT on fixCore — so a word struck
    above would still reach a child if it also sat in the shard. It must not. */
-const shardStruck = [...shardSet].filter(w => STRIKE.has(w));
+const shardStruck = [...shardSet].filter(w => STRIKE.has(w) || CUT.has(w));
 ok(shardStruck.length === 0, 'no struck word sneaks back in through the shard'
   + (shardStruck.length ? ' — ' + shardStruck.join(', ') : ''));
-for (const w of shardSet) live.add(w);
+for (const w of shardSet) if (!STRIKE.has(w) && !CUT.has(w)) live.add(w);
 /* Every one of these has a definition that admits what the word is, so the
    pattern is what removes them. Five of them — motherfucker, assholes, honky,
    whitey, Zionazi — were reachable until the plural was allowed above. */
@@ -190,7 +200,10 @@ ok(stillOpen.length === 0, 'and none of them reaches a child'
 /* The sweep that found them ran on substrings, which is why this guard exists:
    a substring rule would take a sandstorm, a seabird, a green tea and the
    f-hole of a double bass out of the library along with the real ones. */
-const LOOKALIKE = ['haboob', 'booby', 'boobies', 'booboisie', 'boobird', 'basshole',
+/* basshole is deliberately NOT in this list: it looked like collateral damage
+   from the substring sweep, but the word review judged it a coinage on its own
+   merits and cut it there. A word may leave by one route and not the other. */
+const LOOKALIKE = ['haboob', 'booby', 'boobies', 'booboisie', 'boobird',
   'twankay', 'faggoting', 'spicy', 'spices', 'japes', 'chinking', 'retarding',
   'mispickel', 'swank', 'swanky', 'pinprick', 'meltwater', 'saltwater', 'wristwatch'];
 const collateral = LOOKALIKE.filter(w => !live.has(w));
