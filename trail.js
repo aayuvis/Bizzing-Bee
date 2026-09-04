@@ -1048,7 +1048,7 @@
      the session reports back through SB_TRAIL_PRACTICED and 70%+ earns the stop. */
   app2.ultraTrain = id => { const c = active(); const ai = state.ultraAct || 0;
     const st = ultraStopsOf(ai).find(x => x.id === id); if (!st) return;
-    if (!st.words.length) { flash('The 128k library is still loading — try again in a moment'); return; }
+    if (!st.words.length) { flash('The 130k library is still loading — try again in a moment'); return; }
     state.sessionWords = st.words.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: x.o || '', r: x.r || '' }));
     state.sessionLabel = 'Ultra · ' + st.title; state.gi = 0;
     state.trailReturn = st.id; app2.startTrain(); };
@@ -1329,7 +1329,7 @@
           ${tip ? `<button data-act="ultraSteps" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:var(--r-md,10px);background:${state.ultraOpen ? 'var(--surface2)' : 'var(--action,var(--accent))'};color:${state.ultraOpen ? 'var(--muted)' : 'var(--action-ink,#fff)'};font-weight:800;font-size:14px;${state.ultraOpen ? 'border:1px solid var(--line)' : 'box-shadow:var(--edge)'}">${iconSVG('bulb', 15)} ${state.ultraOpen ? 'Hide the technique' : 'Learn the technique'}</button>` : ''}
           <button data-act="ultraTrain" data-arg="${escA(cur.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these ${cur.words.length || ULTRA_WORDS} words</button>
         </div>
-        ${cur.words.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:13px">${cur.words.slice(0, 8).map(w => `<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--surface2);color:var(--muted)">${esc(w.w)}</span>`).join('')}${cur.words.length > 8 ? `<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${cur.words.length - 8} more</span>` : ''}</div>` : `<div class="sb-cn" style="margin-top:12px">The 128,000-word library loads on first use — open this stop again in a moment.</div>`}
+        ${cur.words.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:13px">${cur.words.slice(0, 8).map(w => `<span style="font-family:var(--mono);font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--surface2);color:var(--muted)">${esc(w.w)}</span>`).join('')}${cur.words.length > 8 ? `<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${cur.words.length - 8} more</span>` : ''}</div>` : `<div class="sb-cn" style="margin-top:12px">The 130,000-word library loads on first use — open this stop again in a moment.</div>`}
       </div>
     </div>`;
   }

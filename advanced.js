@@ -1,5 +1,5 @@
 /* ===== Advanced Mode — National Spelling Bee prep =====
-   Unlocks at Level 12, Bee Band 7–8, or by unlocking. Source: the full 128k library.
+   Unlocks at Level 12, Bee Band 7–8, or by unlocking. Source: the full 130k library.
    Four segments: ① Ultra Champions Journey (2-year daily sprint), ② Mock Spelling Bee
    (benchmark rounds), ③ Advanced Tips & Tricks (memory / speed / roots / tactics),
    ④ Advanced Games (memory match, rapid dictation). Data: adv-tips-data.js. */
@@ -27,14 +27,14 @@
   function advUnlocked() { return advActive(); }
   const ADV_PRICE = (function(){ try { return SB_ADDONS.advanced.priceYr; } catch(e){ return 299; } })();
   /* Called after the add-on is purchased. Marks the mode live so the reveal card fires from
-     render(), and starts pulling the 128k library the pack pays for. */
+     render(), and starts pulling the 130k library the pack pays for. */
   function advActivate() { const c = active(); if (!c) return false;
     c.advOn = true; save();
     try { if (!window.SB_FULL && typeof loadFullLibrary === 'function') loadFullLibrary(function () { try { render(); } catch (e) {} }); } catch (e) {}
     return true; }
 
-  /* ---- the hardest-word library, built once from the 128k corpus ---- */
-  let _hard = null, _hardFull = false;
+  /* ---- the hardest-word library, built once from the 130k corpus ---- */
+  let _hard = null, _hardFull = false, _hardN = -1;
   function hardWord(w) { const L = (w.w || '').length; const rare = 100 - Math.min(100, w.bp || 0);
     const trick = (window.SB_TRICK ? SB_TRICK.score(w) : 0);
     return trick * 3 + L * 2 + rare * 0.4 + (w.y || 3) * 4; }  // tricky-to-spell first; long/rare/high-tier follow
@@ -43,8 +43,14 @@
     // Without that this iterated the string's characters and built an empty pool.
     const full = (typeof fullWords === 'function') ? fullWords() : (Array.isArray(window.SB_FULL) ? window.SB_FULL : null);
     const haveFull = !!(full && full.length);
-    if (_hard && _hardFull === haveFull) return _hard;   // rebuild once the 128k library loads in
-    _hardFull = haveFull;
+    /* Rebuild when the library GROWS, not merely when it first arrives: the
+       championship shard (words-hard.js) merges into SB_FULL after the core
+       has loaded, and keying the cache on a boolean meant those ~1,800 words —
+       the hardest in the whole bank, and the whole point of the shard — never
+       reached the Ultra road or the Daily Buzz. */
+    const srcN = haveFull ? full.length : (((window.SB_DATA && SB_DATA.nsf) || []).length);
+    if (_hard && _hardFull === haveFull && _hardN === srcN) return _hard;
+    _hardFull = haveFull; _hardN = srcN;
     const src = haveFull ? full : ((window.SB_DATA && SB_DATA.nsf) || []);
     const seen = new Set(); const pool = [];
     for (const w of src) { if (!w || !w.w) continue; if (!/^[a-z]+$/i.test(w.w)) continue; if (w.w.length < 6) continue;
@@ -267,7 +273,7 @@
           <span style="flex:1;font-weight:700;font-size:13.5px">${t}</span>
           <span style="font-size:12px;font-weight:800;color:${done ? 'var(--good,#1f9d57)' : 'var(--muted)'}">${done ? 'ready' : m}</span></div>`;
       const whatYouGet = [
-        ['quest', 'The full 128,000-word library', 'every word, with audio — up from 40,000'],
+        ['quest', 'The full 130,000-word library', 'every word, with audio — up from 40,000'],
         ['advmock', 'Mock Spelling Bee', 'written, vocabulary & lightning rounds'],
         ['advconcepts', 'Advanced Concepts', 'six narrated lessons — schwa rescue, stress shift, the origin tree'],
         ['advtips', 'Advanced Tips & Tricks', '36 champion techniques'],
@@ -309,7 +315,7 @@
       return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
         <div style="display:flex;align-items:center;gap:11px;margin:6px 0 4px"><span style="display:inline-flex;color:#5B3FA6">${SBI('advanced', 30)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Advanced Mode</h2></div>
-        <p style="color:var(--muted);font-size:13.5px;margin:0 0 18px">National-bee prep from the 128,000-word library. Master the hardest words.</p>
+        <p style="color:var(--muted);font-size:13.5px;margin:0 0 18px">National-bee prep from the 130,000-word library. Master the hardest words.</p>
         <div style="display:grid;gap:12px">
           ${seg('ucj', 'ultraJourney', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
           ${seg('mock', 'mockBee', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}
