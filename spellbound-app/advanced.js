@@ -34,7 +34,7 @@
     return true; }
 
   /* ---- the hardest-word library, built once from the 128k corpus ---- */
-  let _hard = null, _hardFull = false;
+  let _hard = null, _hardFull = false, _hardN = -1;
   function hardWord(w) { const L = (w.w || '').length; const rare = 100 - Math.min(100, w.bp || 0);
     const trick = (window.SB_TRICK ? SB_TRICK.score(w) : 0);
     return trick * 3 + L * 2 + rare * 0.4 + (w.y || 3) * 4; }  // tricky-to-spell first; long/rare/high-tier follow
@@ -43,8 +43,14 @@
     // Without that this iterated the string's characters and built an empty pool.
     const full = (typeof fullWords === 'function') ? fullWords() : (Array.isArray(window.SB_FULL) ? window.SB_FULL : null);
     const haveFull = !!(full && full.length);
-    if (_hard && _hardFull === haveFull) return _hard;   // rebuild once the 128k library loads in
-    _hardFull = haveFull;
+    /* Rebuild when the library GROWS, not merely when it first arrives: the
+       championship shard (words-hard.js) merges into SB_FULL after the core
+       has loaded, and keying the cache on a boolean meant those ~1,800 words —
+       the hardest in the whole bank, and the whole point of the shard — never
+       reached the Ultra road or the Daily Buzz. */
+    const srcN = haveFull ? full.length : (((window.SB_DATA && SB_DATA.nsf) || []).length);
+    if (_hard && _hardFull === haveFull && _hardN === srcN) return _hard;
+    _hardFull = haveFull; _hardN = srcN;
     const src = haveFull ? full : ((window.SB_DATA && SB_DATA.nsf) || []);
     const seen = new Set(); const pool = [];
     for (const w of src) { if (!w || !w.w) continue; if (!/^[a-z]+$/i.test(w.w)) continue; if (w.w.length < 6) continue;

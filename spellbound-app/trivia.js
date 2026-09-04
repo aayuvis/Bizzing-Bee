@@ -1,4 +1,4 @@
-/* ===== Bee Trivia — 5,000 questions · 20 themes · 5 levels =====
+/* ===== Bee Trivia — 31,000 questions · 29 themes · 5 levels =====
    Three formats: Classic 10-question quiz, Trivia Squares (claim the 3×3 board,
    score the lines — the Magic Squares format), and Beat the Clock (60 seconds).
    Visual questions use emoji/SVG cues; aural questions play a Kokoro clip when

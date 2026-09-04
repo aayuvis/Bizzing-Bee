@@ -685,20 +685,40 @@ let _fullState='idle'; // idle | loading | loaded | error
    every caller wants an array — loadFullLibrary called .filter() on it and threw into a
    silent catch, so it stayed a string and anything iterating it walked characters instead
    of records. Normalise once, in place, and hand back the same array afterwards. */
+/* the CHAMPIONSHIP SHARD (words-hard.js) rides in the same library: ~1,800
+   long, obscure and foreign-origin words that the generated core never had.
+   It is a plain array rather than a JSON string because it is small, and it is
+   merged exactly once — mergeHard is idempotent so a second load is harmless. */
+function mergeHard(){ try{
+    const H=window.SB_HARD; if(!Array.isArray(H)||!H.length) return;
+    if(!Array.isArray(window.SB_FULL)) return;
+    if(window.SB_FULL._hard) return;                 // already in
+    const seen=new Set(window.SB_FULL.map(r=>String(r&&r.w||'').toLowerCase()));
+    let n=0; for(const r of H){ const k=String(r&&r.w||'').toLowerCase();
+      if(!k||seen.has(k)||!safeWord(r)) continue; seen.add(k); window.SB_FULL.push(r); n++; }
+    try{ Object.defineProperty(window.SB_FULL,'_hard',{value:n,enumerable:false}); }catch(e){}
+    _wdb=null; }catch(e){} }
 function fullWords(){ try{
-    if(Array.isArray(window.SB_FULL)) return window.SB_FULL;
+    if(Array.isArray(window.SB_FULL)){ mergeHard(); return window.SB_FULL; }
     if(typeof window.SB_FULL!=='string' || !window.SB_FULL) return null;
     let v=JSON.parse(window.SB_FULL);
     if(!Array.isArray(v)) return null;
     try{ v=v.filter(safeWord); }catch(e){}
     window.SB_FULL=v; _wdb=null;                     // drop any index built off the string
+    mergeHard();
     return v; }catch(e){ return null; } }
 function loadFullLibrary(then){ if(window.SB_FULL){ fullWords(); _fullState='loaded'; state.fullLoaded=true; if(then) then(); return; }
   if(_fullState==='loading') return; _fullState='loading'; state.fullLoading=true; render();
   const s=document.createElement('script'); s.src='words-full.js';
   s.onload=()=>{ _fullState='loaded'; _wdb=null; state.fullLoading=false; state.fullLoaded=true;
     fullWords();                                     // JSON string -> filtered array
-    if(then) then(); render(); flash('Full library ready — 128,000 words 📚'); };
+    /* the championship shard follows; the library is usable either way, so a
+       missing or slow shard must never hold up the door */
+    const h=document.createElement('script'); h.src='words-hard.js';
+    h.onload=()=>{ fullWords(); _wdb=null; render(); };
+    h.onerror=()=>{};
+    document.head.appendChild(h);
+    if(then) then(); render(); flash('Full library ready — 130,000 words 📚'); };
   s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
   document.head.appendChild(s); }
 /* ---- Word Finder: search the whole library, open a learn card, add to lists ---- */
@@ -5089,7 +5109,7 @@ function viewApp(){
      door, and it heads the drawer. (It briefly had a tab; a sixth crowded the phone bar
      and put a collection beside the five things a speller actually does.) Progress is not
      a tab either — it opens from Settings and the drawer. */
-  const navTabs=[['home','Home','home'],['trail','World Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
+  const navTabs=[['home','Home','home'],['trail','Word Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -5301,12 +5321,12 @@ function viewDrawer(){
         ${wayRow("vocab","vocab","Vocabulary","word → meaning, bee-style")}
         ${kick('Play')}
         ${row('games','joystick','Arcade','eight games plus the Mock Bee',state.nav==='games')}
-        ${row('trivia','bulb','Bee Trivia','25,000 questions · 32 chapters',state.nav==='trivia')}
+        ${row('trivia','bulb','Bee Trivia',(window.SB_TRIVIA?fmtN(triviaTotal())+' questions · '+SB_TRIVIA.themes.length+' themes':'31,000 questions · 29 themes'),state.nav==='trivia')}
         ${kick('Revise')}
         ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
         <div class="sb-mob-only" style="display:contents">
         ${kick('Find')}
-        ${row('finder','search','Search words','find any of 129,000 words',state.nav==='finder')}
+        ${row('finder','search','Search words','find any of 128,000 words',state.nav==='finder')}
         </div>
         ${kick('')}
         <details style="margin:0 2px 2px">
@@ -6828,11 +6848,11 @@ function coachFlashCard(){
 function viewTrain(){
   const S=state; const goalTarget=active().goal||S.draft.goal||10; const goalDoneN=goalToday(); const goalPctNum=Math.min(100,Math.round((goalDoneN/goalTarget)*100));
   /* The Practice side of the two-way link: when these words came from a stop on the
-     World Atlas, the drill says which stop and offers the way back. */
+     Word Atlas, the drill says which stop and offers the way back. */
   const from=(()=>{ try{ if(!S.trailReturn||typeof window.SB_TRAIL_WHERE!=='function') return '';
       const w=SB_TRAIL_WHERE(S.trailReturn); if(!w) return '';
       return `<button data-act="trailUnit" data-arg="${escA(w.unit)}" style="display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 13px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">
-        ${iconSVG('steps',14)} From the World Atlas · ${esc(w.act)} · stop ${w.stop} of ${w.total}</button>`; }catch(e){ return ''; } })();
+        ${iconSVG('steps',14)} From the Word Atlas · ${esc(w.act)} · stop ${w.stop} of ${w.total}</button>`; }catch(e){ return ''; } })();
   return `<div style="max-width:620px;margin:0 auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">${backPill('exitTrain','Exit',null)}<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
     ${from}
@@ -7448,7 +7468,7 @@ function viewProgress(){
       </div>
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;padding-top:13px;border-top:1px solid var(--line)">
         ${cell(bnd.calibrating?'—':bnd.band, 'Word difficulty', bnd.calibrating?'take the placement test':esc(bnd.tier))}
-        ${cell(nx?('Tier '+nx.lap):'—', 'World Atlas', nx?(nx.done+' of '+nx.total+' stops'):'not started')}
+        ${cell(nx?('Tier '+nx.lap):'—', 'Word Atlas', nx?(nx.done+' of '+nx.total+' stops'):'not started')}
         ${cell(fmtN(journeyMastered(c)), 'Words mastered', 'across every list')}
       </div>
     </div>`; })();
@@ -7481,7 +7501,7 @@ function viewProgress(){
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Progress','where you stand')}
     ${rankBlock}
-    ${(()=>{ /* The World Atlas, in its own words */
+    ${(()=>{ /* The Word Atlas, in its own words */
       const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
       if(!nx) return '';
       const pct=Math.round((nx.total?nx.done/nx.total:0)*100);
@@ -7489,7 +7509,7 @@ function viewProgress(){
         <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
           <span style="width:74px;height:52px;flex-shrink:0;border-radius:12px;overflow:hidden">${paintedTileArt(nx.world,52)}</span>
           <span style="min-width:0;flex:1">
-            <span class="sb-cs">The World Atlas · Tier ${nx.lap} of 3</span>
+            <span class="sb-cs">The Word Atlas · Tier ${nx.lap} of 3</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-top:2px">${esc(nx.allDone?('Tier '+nx.lap+' complete'):nx.title)}</span>
             <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">${esc(nx.act)} · ${nx.done} of ${nx.total} stops this tier</span>
           </span>
@@ -9569,7 +9589,7 @@ function gamesHub(){ const S=state; const c=active();
         </span>
       </span></button>`; }
   if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=triviaTotal();
-    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?fmtN(nQ)+' questions · ':'')+'32 chapters · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
+    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?fmtN(nQ)+' questions · ':'')+SB_TRIVIA.themes.length+' themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
   // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
