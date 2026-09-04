@@ -723,12 +723,24 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'abbr','abbrev','abd','abdom','mis']);
 /* and one record simply lost its definition in generation */
 const CORE_FIX = { constructor: 'a person or company that builds something, especially one who puts up buildings' };
+/* ---- slurs ----
+   SB_UNSAFE_RE is a list of specific strings, so it caught 22 of the 210 entries
+   whose OWN definition identifies them as an offensive term — it had no entry
+   for boche, kraut, jap, mick, paddy, fag, dyke, redskin, coolie, caffre and 166
+   more, all of which were reachable as spelling words for a child of eight.
+   Matching on what the data SAYS ABOUT ITSELF catches the whole class instead of
+   playing whack-a-mole with a word list, and keeps catching new ones. Words that
+   merely MENTION offence in passing — affront, euphemism, rude, obnoxious — are
+   untouched, because the pattern requires the definition to call the headword
+   itself a term/word/slang/epithet/slur. */
+const SLUR_DEF = /\b(offensive|derogatory|disparaging|vulgar|contemptuous|insulting|racial|ethnic)\b[^.]{0,30}\b(term|word|name|slang|epithet|slur)\b/i;
 function fixCore(v){ try{
     const out = [];
     for(const r of v){
       if(!r || !r.w) continue;
       const k = String(r.w).toLowerCase();
       if(CORE_STRIKE.has(k)) continue;
+      if(r.d && SLUR_DEF.test(r.d)) continue;
       if(!r.d && Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
       out.push(r);
     }

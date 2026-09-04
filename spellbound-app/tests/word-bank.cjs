@@ -111,6 +111,26 @@ ok(echoes.length === 0, 'no shard word is merely the plural of a core word'
    crystalluminescence, a misspelling of crystalloluminescence in the same
    batch. That is a process guarantee, not something a regex can re-derive. */
 
+// ---- no slur reaches a child ----
+// SB_UNSAFE_RE is a list of specific strings and caught 22 of the 210 entries
+// whose own definition calls them an offensive term; boche, kraut, jap, mick,
+// paddy, fag, dyke, redskin, coolie and 179 others were reachable as spelling
+// words. The filter now matches what the data says ABOUT ITSELF.
+ok(/SLUR_DEF/.test(app3pre) && /fixCore/.test(app3pre),
+  'the library filters entries their own definitions call an offensive term');
+const SLUR_DEF = /\b(offensive|derogatory|disparaging|vulgar|contemptuous|insulting|racial|ethnic)\b[^.]{0,30}\b(term|word|name|slang|epithet|slur)\b/i;
+let slurs = 0; const slurEg = [];
+for (const r of coreArr) if (r && r.d && SLUR_DEF.test(r.d)) { slurs++; if (slurEg.length < 5) slurEg.push(r.w); }
+ok(slurs > 0, 'the raw core still contains them (' + slurs + ') — so the filter is doing real work');
+// and the pattern must not swallow ordinary words that merely mention offence
+const innocent = ['affront', 'euphemism', 'rude', 'obnoxious', 'innuendo'];
+const wrongly = innocent.filter(w => {
+  const r = coreArr.find(x => x && x.w === w);
+  return r && r.d && SLUR_DEF.test(r.d);
+});
+ok(wrongly.length === 0, 'and it spares words that merely mention offence'
+  + (wrongly.length ? ' — WRONGLY CAUGHT ' + wrongly.join(', ') : ''));
+
 // ---- the merge is idempotent and cache-aware ----
 const app3 = fs.readFileSync(SRC + '/app3.js', 'utf8');
 ok(/function mergeHard\(\)/.test(app3), 'fullWords() merges the shard through mergeHard()');
