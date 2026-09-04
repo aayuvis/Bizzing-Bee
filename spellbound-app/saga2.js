@@ -583,7 +583,7 @@
       el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase(); wlog(w,ok);
+      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok);
         if(ok){ spelled++; score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
           el.style.display='none'; card=null; spawnSplash();
           try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
@@ -802,7 +802,7 @@
       el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase(); wlog(w,ok);
+      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok);
         if(ok){ banked++;
           if(lives<MAXLIVES){ lives++; try{flash('🍯 Pot banked — ❤ Extra life! '+banked+'/'+CFG.pots);}catch(_){} }
           else { try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots+' (lives full)');}catch(_){} }
@@ -1248,7 +1248,7 @@
         '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
-      function submit(){ const ok=inp.value.trim().toLowerCase()===w.w.toLowerCase(); wlog(w,ok);
+      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok);
         el.style.display='none'; el.innerHTML='';
         if(ok){ held=p; renderHold();
           // spell combo: unbroken correct spells stack an instant extra boost
@@ -2524,7 +2524,10 @@
         return '<span class="ss-slot'+(on?' fill':'')+(flashWrong?' wrong':'')+'">'+(on?typed[ix].toUpperCase():'')+'</span>'; }).join(''); }
     function newWord(){ if(i>=words.length){ over=true; return win(); }
       typed=''; const w=words[i];
-      host.querySelector('#ss-hint').textContent=w.d?('“'+String(w.d).slice(0,88)+'”'):'Spell the word you hear';
+      /* meaningText masks the headword; using w.d raw printed the answer in the
+         hint of a game whose whole task is to spell it */
+      const _mt=meaningText(w);
+      host.querySelector('#ss-hint').textContent=_mt?('“'+_mt.slice(0,88)+'”'):'Spell the word you hear';
       renderSlots(); try{ say(w.w); }catch(e){} }
     function sparkle(){ const fx=document.createElement('div'); fx.className='ss-burst'; foeEl.appendChild(fx); setTimeout(()=>fx.remove(),720); }
     function commit(){ const w=words[i].w.toLowerCase();

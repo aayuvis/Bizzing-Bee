@@ -358,7 +358,17 @@ function scheduleToast(ms){ clearTimeout(_toastTimer); _toastTimer = setTimeout(
 
 const nkey = (w) => (w||'').toLowerCase().trim();
 const sample = (arr,n) => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i];a[i]=a[j];a[j]=t; } return n?a.slice(0,n):a; };
-const judgeWord = (val,w) => (val||'').trim().toLowerCase() === ((w&&w.w)||'').toLowerCase();
+/* Judging a TYPED spelling. Twenty-eight headwords carry diacritics — détente,
+   protégé, consommé, soupçon — and a child on an ordinary keyboard cannot type
+   them. Every one has an unaccented spelling that English dictionaries list and
+   a pronouncer would accept, so the accent must not decide the answer. This is
+   deliberately NOT folded into nkey(): nkey also builds the voice-clip
+   filenames, and changing it would point those 28 words at clips that do not
+   exist. Answer judging only. */
+const spellKey = (v) => String(v == null ? '' : v).normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+const sameSpelling = (a, b) => spellKey(a) === spellKey(b);
+const judgeWord = (val,w) => sameSpelling(val, (w&&w.w)||'');
 const demo = () => ({ name:'Speller', age:9, avatar:'bee', theme:'spellbound', level:1, streak:0, acc:0, goal:10, week:[0,0,0,0,0,0,0], xp:0 });
 const active = () => { const c = state.children[state.activeIdx] || demo(); ensureLists(c); return c; };
 const curWord = () => { const L=(state.sessionWords&&state.sessionWords.length)?state.sessionWords:WORDS; return L[state.gi % L.length]; };
@@ -689,6 +699,31 @@ let _fullState='idle'; // idle | loading | loaded | error
    long, obscure and foreign-origin words that the generated core never had.
    It is a plain array rather than a JSON string because it is small, and it is
    merged exactly once — mergeHard is idempotent so a second load is harmless. */
+/* ---- core corrections ----
+   Seven records in the generated core are not words a speller should ever be
+   asked for, and their own definitions say so: alloted ("Misspelling of
+   allotted"), commmitteth (three m's), induhvidual (a joke spelling of
+   individual), abe ("not a standard dictionary word"), and the bare
+   abbreviations abbr / abbrev / abd / abdom. In a spelling app a misspelling
+   presented as a headword is the one defect that actively teaches the wrong
+   thing, so they are struck as the library loads. 'mis' carried the definition
+   of MI, myocardial infarction — a corrupted pairing — and goes too.
+   Struck at load rather than by rewriting a 44MB generated file, which keeps
+   the correction reviewable in one place. */
+const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
+  'abbr','abbrev','abd','abdom','mis']);
+/* and one record simply lost its definition in generation */
+const CORE_FIX = { constructor: 'a person or company that builds something, especially one who puts up buildings' };
+function fixCore(v){ try{
+    const out = [];
+    for(const r of v){
+      if(!r || !r.w) continue;
+      const k = String(r.w).toLowerCase();
+      if(CORE_STRIKE.has(k)) continue;
+      if(!r.d && Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
+      out.push(r);
+    }
+    return out; }catch(e){ return v; } }
 function mergeHard(){ try{
     const H=window.SB_HARD; if(!Array.isArray(H)||!H.length) return;
     if(!Array.isArray(window.SB_FULL)) return;
@@ -704,6 +739,7 @@ function fullWords(){ try{
     let v=JSON.parse(window.SB_FULL);
     if(!Array.isArray(v)) return null;
     try{ v=v.filter(safeWord); }catch(e){}
+    try{ v=fixCore(v); }catch(e){}
     window.SB_FULL=v; _wdb=null;                     // drop any index built off the string
     mergeHard();
     return v; }catch(e){ return null; } }
@@ -1214,7 +1250,7 @@ const app = {
   ltType:(v)=>{ state.lt.typed=v; },
   ltKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.ltEnter(); } },
   ltSkip:()=>{ set({nav:'home', lt:null}); flash('No problem — starting at Level 1. You can climb fast!'); },
-  ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=nkey(lt.typed)===nkey(w.w);
+  ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=sameSpelling(lt.typed,w.w);
     logBand(w,ok);
     if(ok){ lt.ok++; sfx('correct'); } else { lt.fails++; sfx('wrong'); }
     lt.typed=''; lt.i++;
@@ -2067,7 +2103,7 @@ const app = {
   duelType:(v)=>{ state.typed=v; },
   duelKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.duelEnter(); } },
   duelEnter:()=>{ const g=state.game; const w=g.list[g.i]; if(!w) return;
-    const ok=nkey(state.typed)===nkey(w.w); if(g.turn===0) logBand(w,ok); /* only the profile owner's turn counts toward their Band */
+    const ok=sameSpelling(state.typed,w.w); if(g.turn===0) logBand(w,ok); /* only the profile owner's turn counts toward their Band */
     if(ok){ g.p[g.turn].right++; sfx('right'); } else sfx('wrong');
     state.typed=''; g.i++;
     if(g.i>=g.list.length){ if(g.turn===0){ g.phase='pass'; render(); return; }

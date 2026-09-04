@@ -73,6 +73,43 @@ ok(already === 0, 'not one of them was already in the core library (' + already 
 ok(coreArr.length + H.length >= 130000,
   'core + shard clears 130,000 — ' + (coreArr.length + H.length) + ' words in the library');
 
+// ---- no word in the shard is a plural of another word in it ----
+// A fuzzy near-miss check was tried first and rejected: it flags genuinely
+// distinct pairs (anemograph/anemography, candombe/candomble) as loudly as it
+// flags mistakes, so it cannot be a gate. Singular-and-its-own-plural is
+// objective, and it is the redundancy that actually occurred.
+const shardSet = new Set(H.map(r => String(r.w).toLowerCase()));
+const infl = [];
+for (const w of shardSet)
+  for (const suf of ['s', 'es'])
+    if (shardSet.has(w + suf)) infl.push(w + '/' + w + suf);
+ok(infl.length === 0, 'no shard word is just the plural of another'
+  + (infl.length ? ' — ' + infl.slice(0, 5).join(', ') : ''));
+
+// ---- nor merely the plural of a word the core already has ----
+// Three shard words end in s without being plurals of the core word they
+// resemble: magnetohydrodynamics and toponymics are field names standing beside
+// adjectives, and ephemerides is the plural of ephemeris while the core's
+// ephemerid is an insect. They are named here so the rule stays strict.
+const NOT_PLURALS = new Set(['magnetohydrodynamics', 'toponymics', 'ephemerides']);
+const echoes = [];
+for (const w of shardSet) {
+  if (NOT_PLURALS.has(w)) continue;
+  for (const suf of ['s', 'es'])
+    if (w.endsWith(suf) && have.has(w.slice(0, -suf.length))) { echoes.push(w); break; }
+}
+ok(echoes.length === 0, 'no shard word is merely the plural of a core word'
+  + (echoes.length ? ' — ' + echoes.slice(0, 6).join(', ') : ''));
+
+/* A fuzzy "one letter from a core headword" gate was tried and removed. Greek
+   and Latin morphology puts real words one letter apart constantly — chondrite
+   and achondrite, stomatology and somatology — so it flags good words as loudly
+   as bad ones. The real defence against a coined or misspelt entry is the
+   verification pass that produced this file: every word no lexicon recognised
+   was checked against a named dictionary, and 62 were struck out, including
+   crystalluminescence, a misspelling of crystalloluminescence in the same
+   batch. That is a process guarantee, not something a regex can re-derive. */
+
 // ---- the merge is idempotent and cache-aware ----
 const app3 = fs.readFileSync(SRC + '/app3.js', 'utf8');
 ok(/function mergeHard\(\)/.test(app3), 'fullWords() merges the shard through mergeHard()');
