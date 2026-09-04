@@ -50,6 +50,7 @@
     sounds: 'sounds-data.js',           // homophones, alt pronunciations, diacritics, IPA
     pron: 'word-pron.js',
     alts: 'word-alternates.js',         // other senses on a word card
+    syn: 'word-synonyms.js',            // 1-2 short meanings per word
     quotes: 'quotes-lib.js',
     fig: 'figurative-data.js',          // similes + idioms
     lessons: 'lessons-data.js',
@@ -82,7 +83,7 @@
   /* Groups, so a caller can ask for a feature rather than a filename. */
   var GROUP = {
     words: ['words2', 'lore'],
-    card: ['words2', 'lore', 'alts', 'sounds', 'pron'],
+    card: ['words2', 'lore', 'alts', 'syn', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
     advanced: ['advConcepts', 'advTips', 'southasia'],
     atlas: ['trail', 'concepts', 'cscript', 'southasia'],
@@ -100,7 +101,7 @@
 
   var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'coachRules', 'sync'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'sync'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]

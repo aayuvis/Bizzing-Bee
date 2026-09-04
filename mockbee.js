@@ -920,7 +920,7 @@
     const b = g.bolt;
     const w = g.words[b.i % g.words.length];
     if (!w) return endBolt();
-    const ok = nkey(b.typed || '') === nkey(w.w);
+    const ok = sameSpelling(b.typed || '', w.w);
     if (ok) b.got++; else b.miss++;
     b.done.push({ w: w.w, typed: b.typed, ok });
     try { logGameWord(nkey(w.w)); } catch (e) {}
@@ -1090,7 +1090,7 @@
   function endPractice() {
     const g = mb(); if (!g || !g.practice) return;
     const s = g.practice.forBot, typed = g.practice.typed;
-    g.lastPractice = typed ? { typed, correct: nkey(typed) === nkey(g.word.w) } : null;
+    g.lastPractice = typed ? { typed, correct: sameSpelling(typed, g.word.w) } : null;
     g.practice = null;
     g.phase = 'bot';
     botTurn(s);
@@ -1202,7 +1202,7 @@
   app2.mbSpell = () => {
     const g = mb(); if (!g || g.phase !== 'me') return;
     const me = alive().find(s => s.kind === 'me'); if (!me) return;
-    const ok = nkey(g.typed || '') === nkey(g.word.w);
+    const ok = sameSpelling(g.typed || '', g.word.w);
     g.phase = 'meDone'; g.meOk = ok;
     try { logBand(g.word, ok, 1); } catch (e) {}
     if (ok) { try { markMastered(nkey(g.word.w)); } catch (e) {} }
@@ -1493,7 +1493,11 @@
     const asked = g.asked || {};
     const askBtn = (k, label, ic) => `<button data-act="mbAsk" data-arg="${k}" class="mb-ask${asked[k] ? ' on' : ''}">${iconSVG(ic, 14)} ${label}</button>`;
     const answer = asked.def || asked.org || asked.sent || asked.ps ? `<div class="mb-answers">
-      ${asked.def ? `<div><b>Definition.</b> ${esc(w.d || '—')}</div>` : ''}
+      ${/* the sentence was masked but the definition was not, and about one core
+            definition in nine contains its own headword ("aardvarks: plural of
+            aardvark"). Asking the pronouncer what a word means then handed the
+            speller its spelling, at the microphone, in the app's own bee. */''}
+      ${asked.def ? `<div><b>Definition.</b> ${esc(maskWord(w.d || '—', w.w))}</div>` : ''}
       ${asked.org ? `<div><b>Origin.</b> ${esc(w.o || 'not recorded')}</div>` : ''}
       ${asked.sent ? `<div><b>Sentence.</b> ${esc(maskWord(w.s || '—', w.w))}</div>` : ''}
       ${asked.ps ? `<div><b>Part of speech.</b> ${esc(w.ps || 'not recorded')}</div>` : ''}</div>` : '';

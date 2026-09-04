@@ -1059,7 +1059,7 @@
   app2.uqSay = () => { try { const q = state.uq; q && say(q.kind === 'duel' || q.kind === 'gate' ? q.words[q.i].w : q.w); } catch (e) {} };
   app2.uqClose = () => { state.uq = null; render(); };
   app2.uqGo = () => { const q = state.uq; if (!q) return; const c = active(); const key = uKey();
-    const cur = q.words[q.i]; const okW = nkey(q.typed || '') === nkey(cur.w); q.typed = '';
+    const cur = q.words[q.i]; const okW = sameSpelling(q.typed || '', cur.w); q.typed = '';
     if (q.kind === 'duel') {
       if (okW) { q.me++; try { sfx('correct'); } catch (e) {} } else { q.riv++; try { sfx('wrong'); } catch (e) {} flash('It was “' + cur.w + '” — ' + q.rival + ' takes the point.'); }
       q.i++;
@@ -2213,7 +2213,7 @@
   app2.villSay = () => { try { state.villain && say(state.villain.w); } catch (e) {} };
   app2.villFlee = () => { state.villain = null; flash('The moth keeps its prize… this time. 🦇'); render(); };
   app2.villGo = () => { const V = state.villain; if (!V) return;
-    if (nkey(V.typed || '') === nkey(V.w)) {
+    if (sameSpelling(V.typed || '', V.w)) {
       state.villain = null; addCoins(12);
       try { sfx('win'); burstConfetti(90); } catch (e) {}
       flash('✂️ ' + V.w + ' — the net bursts and the moth flees! +12 🪙');

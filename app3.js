@@ -358,7 +358,17 @@ function scheduleToast(ms){ clearTimeout(_toastTimer); _toastTimer = setTimeout(
 
 const nkey = (w) => (w||'').toLowerCase().trim();
 const sample = (arr,n) => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i];a[i]=a[j];a[j]=t; } return n?a.slice(0,n):a; };
-const judgeWord = (val,w) => (val||'').trim().toLowerCase() === ((w&&w.w)||'').toLowerCase();
+/* Judging a TYPED spelling. Twenty-eight headwords carry diacritics — détente,
+   protégé, consommé, soupçon — and a child on an ordinary keyboard cannot type
+   them. Every one has an unaccented spelling that English dictionaries list and
+   a pronouncer would accept, so the accent must not decide the answer. This is
+   deliberately NOT folded into nkey(): nkey also builds the voice-clip
+   filenames, and changing it would point those 28 words at clips that do not
+   exist. Answer judging only. */
+const spellKey = (v) => String(v == null ? '' : v).normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+const sameSpelling = (a, b) => spellKey(a) === spellKey(b);
+const judgeWord = (val,w) => sameSpelling(val, (w&&w.w)||'');
 const demo = () => ({ name:'Speller', age:9, avatar:'bee', theme:'spellbound', level:1, streak:0, acc:0, goal:10, week:[0,0,0,0,0,0,0], xp:0 });
 const active = () => { const c = state.children[state.activeIdx] || demo(); ensureLists(c); return c; };
 const curWord = () => { const L=(state.sessionWords&&state.sessionWords.length)?state.sessionWords:WORDS; return L[state.gi % L.length]; };
@@ -617,6 +627,15 @@ function maskTxt(text, word){ const t=text||''; const w=(word||'').trim(); if(!w
   try{ return _applyMasks(t, w, '_____'); }catch(e){ return t; } }
 // Alternate/other senses of a word (validated WordNet layer in window.SB_ALT).
 function altsFor(word){ try{ const m=window.SB_ALT; if(!m) return []; return m[nkey(word)]||[]; }catch(e){ return []; } }
+/* 1-2 short meanings for a word (window.SB_SYN, lazy-loaded with the card).
+   Drawn against each word's own definition, so the synonym matches the sense
+   the bank teaches. Words with no honest short equivalent carry none. */
+function synsFor(word){ try{ const m=window.SB_SYN; if(!m) return [];
+  const v=m[nkey(word)]||m[String(word||'').trim()]||[]; return Array.isArray(v)?v:[]; }catch(e){ return []; } }
+function synsHTML(word){ const a=synsFor(word); if(!a.length) return '';
+  return `<div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;font-size:13px;line-height:1.5;margin-top:9px;justify-content:center">
+      <span style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--chip);padding:3px 8px;border-radius:999px;margin-top:1px">means</span>
+      <span style="color:var(--text);font-weight:700">${a.map(esc).join(' &middot; ')}</span></div>`; }
 function altsHTML(word, mask){ const a=altsFor(word); if(!a||!a.length) return '';
   const rows=a.slice(0,2).map(s=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-top:7px">
       <span style="flex-shrink:0;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:2px 7px;border-radius:999px;margin-top:2px">${esc(s.p||'also')}</span>
@@ -689,6 +708,31 @@ let _fullState='idle'; // idle | loading | loaded | error
    long, obscure and foreign-origin words that the generated core never had.
    It is a plain array rather than a JSON string because it is small, and it is
    merged exactly once — mergeHard is idempotent so a second load is harmless. */
+/* ---- core corrections ----
+   Seven records in the generated core are not words a speller should ever be
+   asked for, and their own definitions say so: alloted ("Misspelling of
+   allotted"), commmitteth (three m's), induhvidual (a joke spelling of
+   individual), abe ("not a standard dictionary word"), and the bare
+   abbreviations abbr / abbrev / abd / abdom. In a spelling app a misspelling
+   presented as a headword is the one defect that actively teaches the wrong
+   thing, so they are struck as the library loads. 'mis' carried the definition
+   of MI, myocardial infarction — a corrupted pairing — and goes too.
+   Struck at load rather than by rewriting a 44MB generated file, which keeps
+   the correction reviewable in one place. */
+const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
+  'abbr','abbrev','abd','abdom','mis']);
+/* and one record simply lost its definition in generation */
+const CORE_FIX = { constructor: 'a person or company that builds something, especially one who puts up buildings' };
+function fixCore(v){ try{
+    const out = [];
+    for(const r of v){
+      if(!r || !r.w) continue;
+      const k = String(r.w).toLowerCase();
+      if(CORE_STRIKE.has(k)) continue;
+      if(!r.d && Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
+      out.push(r);
+    }
+    return out; }catch(e){ return v; } }
 function mergeHard(){ try{
     const H=window.SB_HARD; if(!Array.isArray(H)||!H.length) return;
     if(!Array.isArray(window.SB_FULL)) return;
@@ -704,6 +748,7 @@ function fullWords(){ try{
     let v=JSON.parse(window.SB_FULL);
     if(!Array.isArray(v)) return null;
     try{ v=v.filter(safeWord); }catch(e){}
+    try{ v=fixCore(v); }catch(e){}
     window.SB_FULL=v; _wdb=null;                     // drop any index built off the string
     mergeHard();
     return v; }catch(e){ return null; } }
@@ -1214,7 +1259,7 @@ const app = {
   ltType:(v)=>{ state.lt.typed=v; },
   ltKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.ltEnter(); } },
   ltSkip:()=>{ set({nav:'home', lt:null}); flash('No problem — starting at Level 1. You can climb fast!'); },
-  ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=nkey(lt.typed)===nkey(w.w);
+  ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=sameSpelling(lt.typed,w.w);
     logBand(w,ok);
     if(ok){ lt.ok++; sfx('correct'); } else { lt.fails++; sfx('wrong'); }
     lt.typed=''; lt.i++;
@@ -2067,7 +2112,7 @@ const app = {
   duelType:(v)=>{ state.typed=v; },
   duelKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.duelEnter(); } },
   duelEnter:()=>{ const g=state.game; const w=g.list[g.i]; if(!w) return;
-    const ok=nkey(state.typed)===nkey(w.w); if(g.turn===0) logBand(w,ok); /* only the profile owner's turn counts toward their Band */
+    const ok=sameSpelling(state.typed,w.w); if(g.turn===0) logBand(w,ok); /* only the profile owner's turn counts toward their Band */
     if(ok){ g.p[g.turn].right++; sfx('right'); } else sfx('wrong');
     state.typed=''; g.i++;
     if(g.i>=g.list.length){ if(g.turn===0){ g.phase='pass'; render(); return; }
@@ -6891,6 +6936,7 @@ function wordFlash(words, idx, navAct, opts){
       ${(()=>{try{const ps=homPartners(w.w); return ps.length?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);flex-shrink:0;font-weight:800">≈</span><span>Sounds exactly like <b>${ps.map(esc).join('</b> and <b>')}</b> — a different spelling! At the bee, ask for the meaning to know which one you have.</span></div>`:'';}catch(e){return '';}})()}
       ${(()=>{try{const a=altPron(w.w); return a?`<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span>Two ways to say it: <b>/ ${esc(a.a)} /</b> and <b>/ ${esc(a.b)} /</b>${a.n?` — ${esc(a.n)}`:''}</span><button data-act="sayAlt" data-arg="${escA(w.w)}" title="Hear the other pronunciation" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12px;flex-shrink:0">${iconSVG('volume',14)} Hear it the other way</button></div>`:'';}catch(e){return '';}})()}
       ${(()=>{try{const d=diacritic(w.w); return (d&&d.m!==w.w)?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="flex-shrink:0">´</span><span>In full dress it wears its marks: <b style="font-size:15px">${esc(d.m)}</b> (${esc(d.n)}) — at the bee, spelling the plain letters is accepted.</span></div>`:'';}catch(e){return '';}})()}
+      ${synsHTML(w.w)}
       ${altsHTML(w.w,false)}
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
