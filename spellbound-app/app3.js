@@ -627,6 +627,15 @@ function maskTxt(text, word){ const t=text||''; const w=(word||'').trim(); if(!w
   try{ return _applyMasks(t, w, '_____'); }catch(e){ return t; } }
 // Alternate/other senses of a word (validated WordNet layer in window.SB_ALT).
 function altsFor(word){ try{ const m=window.SB_ALT; if(!m) return []; return m[nkey(word)]||[]; }catch(e){ return []; } }
+/* 1-2 short meanings for a word (window.SB_SYN, lazy-loaded with the card).
+   Drawn against each word's own definition, so the synonym matches the sense
+   the bank teaches. Words with no honest short equivalent carry none. */
+function synsFor(word){ try{ const m=window.SB_SYN; if(!m) return [];
+  const v=m[nkey(word)]||m[String(word||'').trim()]||[]; return Array.isArray(v)?v:[]; }catch(e){ return []; } }
+function synsHTML(word){ const a=synsFor(word); if(!a.length) return '';
+  return `<div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;font-size:13px;line-height:1.5;margin-top:9px;justify-content:center">
+      <span style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--chip);padding:3px 8px;border-radius:999px;margin-top:1px">means</span>
+      <span style="color:var(--text);font-weight:700">${a.map(esc).join(' &middot; ')}</span></div>`; }
 function altsHTML(word, mask){ const a=altsFor(word); if(!a||!a.length) return '';
   const rows=a.slice(0,2).map(s=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-top:7px">
       <span style="flex-shrink:0;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--chip);padding:2px 7px;border-radius:999px;margin-top:2px">${esc(s.p||'also')}</span>
@@ -6927,6 +6936,7 @@ function wordFlash(words, idx, navAct, opts){
       ${(()=>{try{const ps=homPartners(w.w); return ps.length?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);flex-shrink:0;font-weight:800">≈</span><span>Sounds exactly like <b>${ps.map(esc).join('</b> and <b>')}</b> — a different spelling! At the bee, ask for the meaning to know which one you have.</span></div>`:'';}catch(e){return '';}})()}
       ${(()=>{try{const a=altPron(w.w); return a?`<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span>Two ways to say it: <b>/ ${esc(a.a)} /</b> and <b>/ ${esc(a.b)} /</b>${a.n?` — ${esc(a.n)}`:''}</span><button data-act="sayAlt" data-arg="${escA(w.w)}" title="Hear the other pronunciation" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12px;flex-shrink:0">${iconSVG('volume',14)} Hear it the other way</button></div>`:'';}catch(e){return '';}})()}
       ${(()=>{try{const d=diacritic(w.w); return (d&&d.m!==w.w)?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="flex-shrink:0">´</span><span>In full dress it wears its marks: <b style="font-size:15px">${esc(d.m)}</b> (${esc(d.n)}) — at the bee, spelling the plain letters is accepted.</span></div>`:'';}catch(e){return '';}})()}
+      ${synsHTML(w.w)}
       ${altsHTML(w.w,false)}
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
