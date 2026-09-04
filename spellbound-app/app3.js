@@ -38,7 +38,7 @@ function lessonComplete(L){ const ms=state.luMastered||{}; const ws=(L.words||[]
 function lessonsDoneCount(){ return lessonsAll().filter(L=>lessonComplete(L)).length; }
 // light markdown: escape, then **bold** / *italic*
 function mdInline(t){ return esc(t||'').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\*([^*]+)\*/g,'<i>$1</i>'); }
-// map a lesson's 5 words to full word objects (enriched from the 128k DB; etymology kept as the hook)
+// map a lesson's 5 words to full word objects (enriched from the 130k DB; etymology kept as the hook)
 function lessonWordObjs(L){ const db=wordDB(); return (L.words||[]).map(w=>{ const hit=db.get(nkey(w.w));
   const etyArr=(w.ety||[]); const ety=etyArr.join(' ');
   return { w:w.w, d:(hit&&hit.d)||'', s:(hit&&hit.s)||'', p:(hit&&hit.p)||w.pron||'', o:(hit&&hit.o)||'', r:ety, etyArr, y:(hit&&hit.y)||3, sy:(hit&&hit.sy)||w.syll||'', h:ety, bp:(hit&&hit.bp) }; }); }
@@ -86,7 +86,7 @@ function themeDefs(){ return (window.SB_THEMES&&SB_THEMES.themes)||[]; }
 function themeClusters(){ return (window.SB_THEMES&&SB_THEMES.clusters)||[]; }
 function themeOf(id){ return themeDefs().find(t=>t.id===id); }
 let _themeCache={};
-// The pool themes classify over: the 40k core library normally, deepening to the full 128k
+// The pool themes classify over: the 40k core library normally, deepening to the full 130k
 // library automatically once it has been loaded (via "Entire library"). Cache keys on pool size.
 function themePool(){ const full=window.SB_FULL; return (full&&full.length)?full:((window.SB_DATA&&SB_DATA.nsf)||[]); }
 function themeWords(id){ const pool=themePool();
@@ -676,10 +676,10 @@ function loadConcepts(){
 }
 
 /* ---- kid-safety word filter — strips hate slurs & explicit sexual terms from any pool.
-   The 40k core list is cleaned at rest; this guards the premium 128k library too. ---- */
+   The 40k core list is cleaned at rest; this guards the premium 130k library too. ---- */
 const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus)/i;
 function safeWord(w){ if(!w||!w.w) return false; if(SB_UNSAFE_RE.test(w.w)) return false; if(w.d&&SB_UNSAFE_RE.test(w.d)) return false; return true; }
-/* ---- full library: 128k words live in words-full.js, loaded on demand (file too big for startup) ---- */
+/* ---- full library: 130k words live in words-full.js + words-hard.js, loaded on demand (file too big for startup) ---- */
 let _fullState='idle'; // idle | loading | loaded | error
 /* words-full.js defines SB_FULL as a JSON STRING (it always has, including on main), but
    every caller wants an array — loadFullLibrary called .filter() on it and threw into a
@@ -878,7 +878,7 @@ function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[
     hindi:nsf.filter(r=>/hindi|sanskrit|urdu|tamil|marathi|punjabi/i.test(r.o||'')).concat(HINDI_WORDS),
     eponyms:nsf.filter(r=>(r.t||[]).indexOf('eponyms')>=0) };
   return _catStatic; }
-/* the three sound lists rebuild once the 128k library loads in (hardPool pattern) */
+/* the three sound lists rebuild once the 130k library loads in (hardPool pattern) */
 let _sndCache=null,_sndFull=false;
 function soundLists(){
   const full=(typeof fullWords==='function'&&window.SB_FULL)?fullWords():null; const haveFull=!!(full&&full.length);
@@ -984,7 +984,7 @@ function coachCatalog(){
     { key:'nsf500',     label:'The Mighty 500',          sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
     { key:'vocab26',    label:'Meaning Masters',         sub:'Practice for the 2026 junior vocabulary final · 1,000 words', words:st.vocab26 },
     { key:'nsf',        label:'The Champion’s Vault',    sub:'17,000-word competition library',       words:nsf },
-    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 128,000 (loads on first use)', words:(window.SB_FULL||nsf) },
+    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 130,000 (loads on first use)', words:(window.SB_FULL||nsf) },
     { key:'hardest',    grp:'tricky', label:'Beastly Words',           sub:'Highest-difficulty spellers + championship winners', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
     { key:'trickiest',  grp:'tricky', label:'Sneaky Spellings',        sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
     { key:'latin',      grp:'origins',label:'Latin Legends',           sub:'Words with roots from Latin',           words:st.latin },
@@ -2794,7 +2794,7 @@ const SB_FACTS = {
   ipa: 805, homophones: 1452,
 };
 const sbFmt = n => n.toLocaleString('en-US');
-/* "over 128,000", not "128,491" — a round floor stays true as the library grows,
+/* "over 130,000", not "130,097" — a round floor stays true as the library grows,
    and cannot be wrong by one clip in a screenshot six months from now. */
 const sbOver = n => 'over ' + sbFmt(Math.floor(n / (n >= 10000 ? 1000 : 10)) * (n >= 10000 ? 1000 : 10));
 
@@ -2958,7 +2958,7 @@ const SB_COMPARE = [
      value of a table is that the eye can run down it. The detail that was in the
      prose now lives in the FAQ, where somebody who wants it will go looking. */
   ['Hearing the word',       'Robotic device text-to-speech',   'Over 128,000 words in one real recorded voice'],
-  ['Words available',        'A few hundred to ~4,000',         '128,000 · 40,000 graded by difficulty'],
+  ['Words available',        'A few hundred to ~4,000',         '130,000 · 40,000 graded by difficulty'],
   ['Different games',        'One or two, re-skinned',          'Eight distinct games, trivia and a mock bee'],
   ['Bee practice',           'Word lists to memorise',          'Full Scripps-format mock bee'],
   ['Roots and origins',      'Rarely covered',                  '100 journeys · 122 chapters'],
@@ -3572,7 +3572,7 @@ function advModeOn(c){ c=c||active(); if(!c) return false;
 function advReadyOn(c){ c=c||active(); if(!c) return false;
   try{ return (listStageIdx(c,'journey')+1)>=12 || beeBand(c).band>=7; }catch(e){ return false; } }
 /* The Journey is renamed once Advanced Mode is on — same ladder, but it now draws on the
-   128k library, so calling it the beginner name undersells it. */
+   130k library, so calling it the beginner name undersells it. */
 /* Headword sizing. A 58-letter word (Llanfairpwllgwyngyll...) has to shrink and wrap or it
    runs straight off the card. One helper so every headword behaves the same: step the size
    down by length, allow breaking anywhere, and report a wider container for long words. */
@@ -4640,10 +4640,10 @@ function advBanner(c){
   const price=(window.ADV&&ADV.price)?ADV.price():299;
   const unlocked=on;
   const sub=on
-    ? 'National-bee prep · 128,000-word library · 2-year plan, mock bees, champion tips & games'
+    ? 'National-bee prep · 130,000-word library · 2-year plan, mock bees, champion tips & games'
     : ready
-      ? 'You are ready for this — the Advanced Pack adds the full 128,000-word library, mock bees and narrated advanced lessons · $'+price+'/yr'
-      : 'Advanced Pack · $'+price+'/yr — the full 128,000-word library, mock bees, narrated advanced lessons and champion techniques';
+      ? 'You are ready for this — the Advanced Pack adds the full 130,000-word library, mock bees and narrated advanced lessons · $'+price+'/yr'
+      : 'Advanced Pack · $'+price+'/yr — the full 130,000-word library, mock bees, narrated advanced lessons and champion techniques';
   return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
     <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
       <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)">${SB_ICON('trophy',{size:29})}</span>
@@ -5326,7 +5326,7 @@ function viewDrawer(){
         ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
         <div class="sb-mob-only" style="display:contents">
         ${kick('Find')}
-        ${row('finder','search','Search words','find any of 128,000 words',state.nav==='finder')}
+        ${row('finder','search','Search words','find any of 130,000 words',state.nav==='finder')}
         </div>
         ${kick('')}
         <details style="margin:0 2px 2px">
@@ -7281,7 +7281,7 @@ function viewQuest(){
         <span style="display:inline-flex;align-items:center;gap:5px;margin-top:11px;font-weight:800;font-size:12.5px;color:#fff;background:${p.col};padding:9px 15px;border-radius:10px">${cur?'Continue':(qp?'Switch to this':'Choose this path')} ${SB_ICON('arrowRight',{size:14})}</span>
       </span>
     </button>`; }).join('');
-  // Advanced Mode — the fourth, gated path: National Spelling Bee prep from the 128k library.
+  // Advanced Mode — the fourth, gated path: National Spelling Bee prep from the 130k library.
   const aLvl=lvlOf('journey'); const aBand=(function(){ try{ return beeBand(c).band; }catch(e){ return 2; } })();
   const aUnlocked=advModeOn(c);                                   // owns the Advanced Pack
   const aPrice=(window.ADV&&ADV.price)?ADV.price():299;
@@ -7599,7 +7599,7 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
   </div>`; }
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
 function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
-  const total=window.SB_FULL?'128,000':'40,000';
+  const total=window.SB_FULL?'130,000':'40,000';
   const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':'📚 Load all 128,000 words'}</button>`:'';
   let body='';
   if(S.finderSel){ const w=S.finderSel;
@@ -7621,7 +7621,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
     body = q.trim().length<2
       ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="font-size:34px;margin-bottom:8px">🔎</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
       : (rs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px">${cells}</div>`
-        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 128,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
+        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 130,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
   }
   return `<div style="max-width:860px;margin:0 auto">
     ${pageHead('Word Finder','search '+total+' words','',loadBtn)}
@@ -7999,7 +7999,7 @@ function viewThemeDetail(){
     ${tabBar}
     ${thin?`<div style="background:color-mix(in srgb,${cl.c} 10%,var(--bg2));border:1px solid color-mix(in srgb,${cl.c} 35%,var(--line));border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
       <b>Only ${ws.length} ${ws.length===1?'word':'words'} here so far.</b> This family is small in the core library and deepens
-      to hundreds of words with the 128,000-word library in the Advanced Pack ($${price}/yr). Read the explanation now;
+      to hundreds of words with the 130,000-word library in the Advanced Pack ($${price}/yr). Read the explanation now;
       the level ladder opens once there are ${THEME_MIN} words to climb.</div>`:''}
     ${tab==='train' && !thin ? (()=>{ const pref=state.trainPref||'cards';
       const MODES=[['cards','Cards','book','See the word, the meaning and the story, one card at a time.'],
@@ -8241,7 +8241,7 @@ function viewSettings(){
       <span style="width:38px;height:38px;flex:none;border-radius:11px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:20}):(window.SB_ICON?SB_ICON('trophy',{size:19}):'')}</span>
       <span style="min-width:0;flex:1">
         <span style="display:block;font-weight:800;font-size:14.5px">Advanced Pack <span style="font-weight:700;font-size:12px;color:var(--muted)">add-on</span></span>
-        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 128,000-word library, mock bees, advanced concepts, tips and games are live.':'$'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</span></span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 130,000-word library, mock bees, advanced concepts, tips and games are live.':'$'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</span></span>
       ${S.devUnlock
         ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex:none;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
         : `<button data-act="toggleAdvPack" role="switch" aria-label="Advanced Pack" aria-checked="${_advOn?'true':'false'}" style="flex:none;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
@@ -8517,7 +8517,7 @@ const LIST_COVER={
   nsf_senior :{c:'#3D7DF0',c2:'#2A63D6',tex:'grid',hero:'Big',tag:'Leagues'},
   nsf_advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'grid',hero:'Boss',tag:'Level'},
   nsf        :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Vault',tag:'Champion’s'},
-  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'Hive',tag:'128k words'},
+  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'Hive',tag:'130k words'},
   hardest    :{c:'#D6453A',c2:'#B8322A',tex:'cross',hero:'Beastly',tag:'Tier 6+'},
   latin      :{c:'#7C5CFF',c2:'#6A47F5',tex:'stripes',hero:'Latin',tag:'Origin'},
   greek      :{c:'#13A892',c2:'#0E8A78',tex:'rings',hero:'Greek',tag:'Origin'},
@@ -8625,7 +8625,7 @@ function coachSetup(){
       const locked=`<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:16px;margin-bottom:16px;background:var(--surface2);border:1px dashed var(--line);padding:13px 15px;display:flex;align-items:center;gap:12px">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,#5B3FA6 13%,transparent);color:#5B3FA6;display:grid;place-items:center;opacity:.8">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:22}):''}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)">Ultra Champions Journey</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 128,000 words · Advanced Pack</span></span>
+        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 130,000 words · Advanced Pack</span></span>
         <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} $${(window.ADV&&ADV.price)?ADV.price():299}/yr</span></button>`;
       // unlocked: the advanced journey leads. locked: it sits under the standard one.
       return on ? (ultra+journeyBanner) : (journeyBanner+locked); })()}
@@ -9828,7 +9828,7 @@ function overlays(){
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:28px 30px;text-align:center;box-shadow:var(--glow);max-width:340px">
         <div style="width:64px;height:72px;margin:0 auto 12px;animation:sb-float 2.5s ease-in-out infinite">${mascotSVG('happy')}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:6px">Loading the full library…</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.5">All 128,000 words — this one-time load takes a few seconds.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5">All 130,000 words — this one-time load takes a few seconds.</div>
         <div style="width:28px;height:28px;margin:14px auto 0;border:3px solid var(--surface2);border-top-color:var(--accent);border-radius:50%;animation:sb-spin .8s linear infinite"></div>
       </div></div>`;
   if(S.pinDlg) h+=`<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgb(20 12 40 / .6)" data-act="pinCancel">

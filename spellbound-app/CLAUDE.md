@@ -1198,6 +1198,38 @@ out of saga2.js so a retune cannot quietly undo them.
   child was pressing the speaker button and then Enter twice per word. Guard:
   `tests/ux-826.cjs`.
 
+## The 130,000-word library — core plus the championship shard
+- `words-full.js` holds the generated core (128,197 records, a JSON string).
+  `words-hard.js` is the **championship shard**: 1,915 long, obscure and
+  foreign-origin words the core never had, gathered field by field across 60
+  subjects. `fullWords()` merges it via `mergeHard()` (idempotent — it stamps a
+  non-enumerable `_hard` on the array), and `loadFullLibrary` fetches it right
+  after the core. Live total: **130,030** after `safeWord` filtering, which is
+  why "130,000" is quoted as a round FLOOR, the same convention the bank has
+  always used ("over 128,000", never "128,491").
+- **Never put words-hard.js in index.html.** It rides the on-demand library
+  path; the boot budget is 5.03MB across 42 files.
+- Every shard record is checked three ways, by the generator AND again by the
+  build: the definition never contains the word (no leaked spellings), the
+  sentence always uses it, and both are safe for a ten-year-old.
+- Each record is tagged `championship`, and a word joins a Theme Journey when
+  the theme's id is in its `t` tags — so **The Championship Words** journey
+  assembles itself with no classifier at all (`themes-data.js`, cluster `mind`,
+  no `re` field).
+- **`hardPool()` keys its cache on the library's LENGTH, not a boolean.** It
+  used to rebuild only when the full library first arrived; the shard merges
+  *after* that, so ~1,900 of the hardest words in the bank would never have
+  reached the Ultra road or the Daily Buzz. 42 of them now sit in the pool's
+  top 400.
+- **The library count and the VOICE count are different numbers and must stay
+  that way.** The shard ships no recorded clips: `wordClip()` returns null for
+  a word outside the manifest and `deviceSpeak` falls back to device speech. So
+  the library is offered as 130,000 while "Over 128,000 words spoken aloud",
+  the neural-voice FAQ, the clip manifest and voice-cdn.js all stay at 128,000.
+  Raising those would misdescribe what a parent is paying for. Guard:
+  `tests/word-bank.cjs`, which checks the claim and the shard as a PAIR — the
+  failure it exists to catch is claiming 130,000 without shipping the words.
+
 ## The research rig — there is NO hosted backend, and there must never be one
 - "The backend" is a LOCAL rig, deliberately: privacy.html promises nothing is ever
   transmitted, and that claim is load-bearing. Three pieces:
