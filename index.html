@@ -1680,6 +1680,50 @@
     82%{opacity:.8}100%{opacity:0;transform:translateX(14vw)}}
   .mw-water{--td:0s;background:radial-gradient(circle,#F2FDFF 0 26%,rgba(160,225,255,.95) 46%,transparent 70%);
     animation-duration:2.1s}
+  /* On a phone the header's coin pill and the page head's sit about 110px
+     apart, so the same number is on screen twice. The header one is the live
+     one — it is also the door to My Hive — so the page-head copy stands down. */
+  @media (max-width:620px){ .sb-coinchip{display:none!important} }
+  /* The arcade hero reserves 108px for its art at every width, which on a phone
+     left about 250px — not enough for "Take the stage →" beside its stat, so the
+     CTA broke across two lines mid-phrase. Same remedy as the Daily Buzz box:
+     the decorative art gives way, the words do not. */
+  @media (max-width:620px){
+    .arc-hero-in{max-width:calc(100% - 72px)}
+    .arc-hero-art{right:-24px;bottom:-16px;transform:scale(.78);transform-origin:100% 100%;opacity:.62}
+    .arc-hero-cta{flex-wrap:wrap;gap:8px}
+  }
+  /* The bug tab is fixed at 58% of the viewport height, which on a phone is the
+     middle of whatever card is being read — it sat on top of the Daily goal
+     numbers, a revision button and a badge in turn. Tuck it down beside the
+     bottom nav, where nothing is trying to be read. */
+  @media (max-width:620px){
+    .sb-bug-tab{top:auto;bottom:calc(var(--sb-navh,68px) + 14px);opacity:.6;transform:scale(.85);
+      transform-origin:100% 100%}
+  }
+  /* ---- the Daily Buzz banner ----
+     It used to reserve 110px for the mascot on EVERY screen and give its call
+     to action `white-space:nowrap`. On a phone that left about 240px for a
+     183px button plus a streak pill, and since the button cannot shrink it ran
+     straight off the card — "Play today's word →" was sliced through the arrow
+     at 360 and 390px, sitting on top of the mascot on the way out. The art is
+     decorative, so on a narrow screen it gets out of the way instead. */
+  .sb-daily-art{position:absolute;right:16px;top:50%;transform:translateY(-50%) rotate(-7deg);
+    opacity:.95;filter:drop-shadow(0 6px 14px rgba(0,0,0,.3));pointer-events:none}
+  .sb-daily-in{position:relative;z-index:2;display:flex;align-items:center;gap:16px;
+    flex-wrap:wrap;padding:18px 20px;max-width:calc(100% - 110px)}
+  .sb-daily-cta{display:inline-flex;align-items:center;gap:10px;flex-shrink:0}
+  .sb-daily-go{padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;
+    font-weight:800;font-size:14px;white-space:nowrap}
+  @media (max-width:620px){
+    /* the mascot slides to the corner and sits UNDER the words */
+    .sb-daily-art{right:-6px;top:auto;bottom:-8px;transform:rotate(-7deg) scale(.72);
+      transform-origin:100% 100%;opacity:.5;z-index:1}
+    .sb-daily-in{max-width:100%;padding:16px 16px 15px;gap:12px}
+    /* the row goes full width and the button fills it, so nothing can be cut */
+    .sb-daily-cta{width:100%;flex-wrap:wrap;gap:8px}
+    .sb-daily-go{flex:1 1 auto;text-align:center;white-space:normal}
+  }
   /* ============ EACH COUNTRY'S OWN WEATHER AND WILDLIFE ============
      The meadow's cast (butterflies, petals, bees) belongs to the meadow. Every
      other country fields motion its OWN painting would have: paper on the air

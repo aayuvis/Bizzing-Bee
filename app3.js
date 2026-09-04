@@ -6093,7 +6093,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
           that tab is open rather than standing as a banner over the packs. */''}
     ${pageHead('My Hive', '', '',
       (tab==='avatars'?`<button data-act="printAvCards" title="Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${SB_ICON('printer',{size:15})} Print my cards</button>`:'')
-      + `<span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
+      + `<span class="sb-coinchip" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}</div>
     ${body}
   </div>`; }
@@ -9038,7 +9038,7 @@ function gFinishMC(){ const g=state.game; g.status='done'; const bonus=2+g.right
 
 function coinIc(sz){ return (window.SB_ICON_ART&&SB_ICON_ART.coin)?SB_ICON_ART('coin',{size:sz||14}):SB_ICON('coin',{size:sz||14}); }
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${coinIc(sz)} ${n}</span>`; }
-function coinChip(){ return `<span style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
+function coinChip(){ return `<span class="sb-coinchip" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();
@@ -9573,19 +9573,19 @@ function gamesHub(){ const S=state; const c=active();
   if(window.SB_DAILY){ let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
     const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
     const doneToday=st.day===today&&st.over; const streak=st.streak||0;
-    dailyBanner=`<button data-act="openDaily" class="sb-lift" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
+    dailyBanner=`<button data-act="openDaily" class="sb-lift sb-daily" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
         background:linear-gradient(110deg,#1E7D45,#2FA35C 46%,#3FBF6E);box-shadow:0 8px 22px rgba(24,96,55,.28)">
       <span aria-hidden="true" style="position:absolute;inset:0;opacity:.22;background:radial-gradient(320px 150px at 88% 30%,#FFF6D6,transparent 70%)"></span>
-      <span aria-hidden="true" style="position:absolute;right:16px;top:50%;transform:translateY(-50%) rotate(-7deg);opacity:.95;filter:drop-shadow(0 6px 14px rgba(0,0,0,.3))">${gameArtSVG('daily',92)}</span>
-      <span style="position:relative;z-index:2;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 20px;max-width:calc(100% - 110px)">
+      <span class="sb-daily-art" aria-hidden="true">${gameArtSVG('daily',92)}</span>
+      <span class="sb-daily-in">
         <span style="min-width:0;flex:1">
           <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono,monospace);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#EAFBEF;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:3px 10px">Today only</span>
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;color:#fff;margin-top:8px">Daily Buzz</span>
           <span style="display:block;font-size:13px;line-height:1.45;color:rgba(255,255,255,.92);margin-top:4px;max-width:34em">Six tries to spell today&rsquo;s mystery word, then share your grid. A new word every day at midnight.</span>
         </span>
-        <span style="display:inline-flex;align-items:center;gap:10px;flex-shrink:0">
+        <span class="sb-daily-cta">
           ${streak>0?`<span style="display:inline-flex;align-items:center;gap:5px;font-family:var(--display);font-weight:800;font-size:14px;color:#fff;background:rgba(0,0,0,.22);border-radius:999px;padding:7px 14px">🔥 ${streak}-day streak</span>`:''}
-          <span style="padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px;white-space:nowrap">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
+          <span class="sb-daily-go">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
         </span>
       </span></button>`; }
   if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=triviaTotal();
