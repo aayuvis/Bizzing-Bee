@@ -78,11 +78,19 @@ ok(coreArr.length + H.length >= 130000,
 // distinct pairs (anemograph/anemography, candombe/candomble) as loudly as it
 // flags mistakes, so it cannot be a gate. Singular-and-its-own-plural is
 // objective, and it is the redundancy that actually occurred.
+/* Field names that merely LOOK like the plural of their own adjective:
+   gnomonics is the art of making sundials, catoptrics the study of reflection,
+   toponymics the study of place names. Each stands beside gnomonic, catoptric,
+   toponymic and is not a plural of anything, so both redundancy checks below
+   have to consult this — the within-shard one as well as the core one. */
+const NOT_PLURALS = new Set(['magnetohydrodynamics', 'toponymics', 'ephemerides',
+  'synergetics', 'hydroponics', 'gnomonics', 'catoptrics']);
+
 const shardSet = new Set(H.map(r => String(r.w).toLowerCase()));
 const infl = [];
 for (const w of shardSet)
   for (const suf of ['s', 'es'])
-    if (shardSet.has(w + suf)) infl.push(w + '/' + w + suf);
+    if (shardSet.has(w + suf) && !NOT_PLURALS.has(w + suf)) infl.push(w + '/' + w + suf);
 ok(infl.length === 0, 'no shard word is just the plural of another'
   + (infl.length ? ' — ' + infl.slice(0, 5).join(', ') : ''));
 
@@ -91,8 +99,6 @@ ok(infl.length === 0, 'no shard word is just the plural of another'
 // resemble: magnetohydrodynamics and toponymics are field names standing beside
 // adjectives, and ephemerides is the plural of ephemeris while the core's
 // ephemerid is an insect. They are named here so the rule stays strict.
-const NOT_PLURALS = new Set(['magnetohydrodynamics', 'toponymics', 'ephemerides',
-  'synergetics', 'hydroponics']);   // field names standing beside adjectives
 const echoes = [];
 for (const w of shardSet) {
   if (NOT_PLURALS.has(w)) continue;
