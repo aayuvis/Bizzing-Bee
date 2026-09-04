@@ -91,7 +91,8 @@ ok(infl.length === 0, 'no shard word is just the plural of another'
 // resemble: magnetohydrodynamics and toponymics are field names standing beside
 // adjectives, and ephemerides is the plural of ephemeris while the core's
 // ephemerid is an insect. They are named here so the rule stays strict.
-const NOT_PLURALS = new Set(['magnetohydrodynamics', 'toponymics', 'ephemerides']);
+const NOT_PLURALS = new Set(['magnetohydrodynamics', 'toponymics', 'ephemerides',
+  'synergetics', 'hydroponics']);   // field names standing beside adjectives
 const echoes = [];
 for (const w of shardSet) {
   if (NOT_PLURALS.has(w)) continue;
