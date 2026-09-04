@@ -720,14 +720,36 @@ let _fullState='idle'; // idle | loading | loaded | error
    Struck at load rather than by rewriting a 44MB generated file, which keeps
    the correction reviewable in one place. */
 const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
-  'abbr','abbrev','abd','abdom','mis']);
-/* Words are NOT struck here by judgement call. A sweep found 41 more — slurs and
-   obscenities whose generated definitions are neutral or invented, so no pattern
-   can see them ("squaw: an American Indian woman", "cocklicker: a person who
-   tends cockle shells") — and they are in the review sheet for the owner to
-   decide on, not in this set. Only two things belong in CORE_STRIKE: records
-   whose own definition admits they are a misspelling or an abbreviation, and
-   whatever the owner has signed off. */
+  'abbr','abbrev','abd','abdom','mis',
+/* ---- the 37, signed off 4 Sep 2026 ----
+   The SLUR_DEF pattern below reads what a definition says about its own
+   headword, which is why it catches a whole class rather than a word list. It
+   cannot catch these: their generated definitions are neutral or plainly
+   invented, so there is nothing in the data to match on — "squaw: an American
+   Indian woman", "cocklicker: a person who cleans or tends cockle shells",
+   "encunt: enclosed within a hollow or cavity". A definition that hides what
+   the word is defeats any pattern, so the only remedy is to name them, and
+   naming them is the owner's call rather than this file's. These were reviewed
+   one by one and struck on 4 Sep 2026.
+
+   Innocent lookalikes are NOT here and must never be added on a substring:
+   haboob is a sandstorm, booby and boobies are the bird and the blunder,
+   booboisie is Mencken's coinage, boobird is a heckler, basshole is the f-hole
+   of a double bass, twankay is a green tea, and faggoting is embroidery. So are
+   spicy, japes, chinking, retarding, mispickel, swanky, pinprick, meltwater,
+   saltwater and wristwatch. Every one of them contains an unlucky run of
+   letters and nothing else, and tests/word-bank.cjs fails if one goes. */
+  'abo','abos','mulatto','mulattoes','mulattos','squaw','squaws',
+  'niggerese','niggerize','niggerless','niggerlike','niggery',
+  'blowjob','blowjobs','bollock','bollocks','boobage','cocklicker','cuntass',
+  'encunt','fuckity','kinderwhore','knobheaded','shitbag','shithead','sluts',
+  'teledildonics','titty','twats','unfuck','unfuckable','unfucked','unfuckupable',
+/* niggard, niggardly, niggards and niggardliness are NOT slurs — they come from
+   Old Norse and mean miserly, with no connection to the word they resemble.
+   They are struck for a practical reason, not an etymological one: this app
+   SPEAKS each word aloud to a child and then asks for the spelling back. If
+   that call is ever reversed, these four are the whole of it. */
+  'niggard','niggards','niggardly','niggardliness']);
 /* ---- definitions we replace rather than delete ----
    One record simply lost its definition in generation. The rest are ORDINARY
    WORDS a speller should meet — shrimp, runt, ragtag, riffraff, madhouse — whose

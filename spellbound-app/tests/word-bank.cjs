@@ -142,6 +142,9 @@ for (const t of ['(slang) offensive names for a White man', 'offensive terms for
   ok(SLUR_DEF.test(t), 'the pattern reads the PLURAL gloss: "' + t.slice(0, 34) + '…"');
 
 // ---- run the real filter and check both directions on real records ----
+/* The live library is core + shard, and this set must be built from BOTH: an
+   earlier cut read only the core and reported twankay — a green tea, and a
+   shard word — as collateral damage from a strike list it is not even on. */
 const live = new Set();
 for (const r of coreArr) {
   if (!r || !r.w) continue;
@@ -151,6 +154,12 @@ for (const r of coreArr) {
   if (d && !OKSET.has(k) && SLUR_DEF.test(d)) continue;
   live.add(k);
 }
+/* mergeHard() gates the shard on safeWord(), NOT on fixCore — so a word struck
+   above would still reach a child if it also sat in the shard. It must not. */
+const shardStruck = [...shardSet].filter(w => STRIKE.has(w));
+ok(shardStruck.length === 0, 'no struck word sneaks back in through the shard'
+  + (shardStruck.length ? ' — ' + shardStruck.join(', ') : ''));
+for (const w of shardSet) live.add(w);
 /* Every one of these has a definition that admits what the word is, so the
    pattern is what removes them. Five of them — motherfucker, assholes, honky,
    whitey, Zionazi — were reachable until the plural was allowed above. */
@@ -161,22 +170,32 @@ const reach = mustGo.filter(w => live.has(w));
 ok(reach.length === 0, 'no slur whose definition admits it reaches a child'
   + (reach.length ? ' — REACHABLE: ' + reach.join(', ') : ''));
 
-/* A SECOND CLASS EXISTS AND IS NOT YET GATED. 41 slurs and obscenities carry a
-   neutral or invented gloss — "squaw: an American Indian woman", "cocklicker: a
-   person who tends cockle shells", "encunt: enclosed within a hollow" — so no
-   pattern can reach them and only naming them would. They are not struck here
-   because striking words by judgement is the owner's call, not this suite's;
-   they are in the review sheet awaiting that decision. This assertion records
-   the size of the gap rather than hiding it, and should be replaced by a real
-   removal check once the decision comes back. */
-const PENDING = ['squaw', 'squaws', 'abo', 'abos', 'mulatto', 'niggery', 'niggerless',
-  'niggerese', 'niggerize', 'niggerlike', 'blowjob', 'boobage', 'cocklicker', 'cuntass',
-  'encunt', 'fuckity', 'kinderwhore', 'shitbag', 'shithead', 'slut', 'teledildonics',
-  'titty', 'twat', 'unfuck', 'bollocks'];
-const stillOpen = PENDING.filter(w => live.has(w));
-console.log('  ..    ' + stillOpen.length + ' of ' + PENDING.length
-  + ' neutrally-glossed entries still reachable — awaiting the owner\'s decision');
-ok(true, 'the second class is surfaced, not silently accepted');
+/* THE SECOND CLASS: 37 slurs and obscenities whose gloss is neutral or invented
+   — "squaw: an American Indian woman", "cocklicker: a person who tends cockle
+   shells", "encunt: enclosed within a hollow" — so no pattern can reach them.
+   A definition that hides what the word is defeats matching on definitions, so
+   these are named in CORE_STRIKE, signed off 4 Sep 2026. This is the assertion
+   that the naming still covers all of them. */
+const NAMED = ['abo', 'abos', 'mulatto', 'mulattoes', 'mulattos', 'squaw', 'squaws',
+  'niggerese', 'niggerize', 'niggerless', 'niggerlike', 'niggery',
+  'blowjob', 'blowjobs', 'bollock', 'bollocks', 'boobage', 'cocklicker', 'cuntass',
+  'encunt', 'fuckity', 'kinderwhore', 'knobheaded', 'shitbag', 'shithead', 'sluts',
+  'teledildonics', 'titty', 'twats', 'unfuck', 'unfuckable', 'unfucked', 'unfuckupable',
+  'niggard', 'niggards', 'niggardly', 'niggardliness'];
+ok(NAMED.length === 37, 'all 37 neutrally-glossed entries are accounted for (' + NAMED.length + ')');
+const stillOpen = NAMED.filter(w => live.has(w));
+ok(stillOpen.length === 0, 'and none of them reaches a child'
+  + (stillOpen.length ? ' — REACHABLE: ' + stillOpen.join(', ') : ''));
+
+/* The sweep that found them ran on substrings, which is why this guard exists:
+   a substring rule would take a sandstorm, a seabird, a green tea and the
+   f-hole of a double bass out of the library along with the real ones. */
+const LOOKALIKE = ['haboob', 'booby', 'boobies', 'booboisie', 'boobird', 'basshole',
+  'twankay', 'faggoting', 'spicy', 'spices', 'japes', 'chinking', 'retarding',
+  'mispickel', 'swank', 'swanky', 'pinprick', 'meltwater', 'saltwater', 'wristwatch'];
+const collateral = LOOKALIKE.filter(w => !live.has(w));
+ok(collateral.length === 0, 'and no innocent lookalike went with them'
+  + (collateral.length ? ' — LOST: ' + collateral.join(', ') : ''));
 
 /* The other direction, and the one that matters just as much: ordinary words
    must survive. shrimp, runt, ragtag and riffraff are glossed in the core with
@@ -192,9 +211,11 @@ ok(lost.length === 0, 'and no ordinary word is lost to it' + (lost.length ? ' �
 for (const w of ['shrimp', 'runt', 'ragtag', 'retard'])
   ok(FIXD[w] && !SLUR_DEF.test(FIXD[w]), w + ' ships the everyday meaning, not the disparaging sense');
 
-// the live total must still clear the number every surface quotes
-ok(live.size + H.length >= 130000,
-  'the FILTERED library still clears 130,000 — ' + (live.size + H.length) + ' words reach a child');
+/* The live total must still clear the number every surface quotes. `live` already
+   holds core + shard, so it is NOT summed with H again — doing that counted the
+   shard twice and reported 132,266 for a library of 130,094. */
+ok(live.size >= 130000,
+  'the FILTERED library still clears 130,000 — ' + live.size + ' words reach a child');
 
 // ---- the merge is idempotent and cache-aware ----
 const app3 = fs.readFileSync(SRC + '/app3.js', 'utf8');
