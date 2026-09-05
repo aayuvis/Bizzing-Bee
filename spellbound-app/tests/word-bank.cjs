@@ -238,6 +238,33 @@ ok(lost.length === 0, 'and no ordinary word is lost to it' + (lost.length ? ' �
 for (const w of ['shrimp', 'runt', 'ragtag', 'retard'])
   ok(FIXD[w] && !SLUR_DEF.test(FIXD[w]), w + ' ships the everyday meaning, not the disparaging sense');
 
+/* ETHNIC SLURS THE DEFINITION FILTER CANNOT SEE. SLUR_DEF reads what a gloss
+   SAYS about its headword, and these are glossed innocently — kaffir as a cereal
+   crop "important for human and animal food", hottentot as "any of the Khoisan
+   languages", negress as "a Black woman or girl", bushman as "a member of the
+   race of nomadic hunters". Nothing in the data matches, so they were live in
+   the served shards until 5 Sep 2026; kaffir surfaced in a Meadow round about
+   creatures. Named, like the 37. */
+const SLUR_NAMED = ['kaffir', 'kaffirs', 'hottentot', 'negress', 'pickaninny',
+  'coolie', 'redskin', 'chinaman', 'eskimo', 'bushman', 'gypsy'];
+const slurLeft = SLUR_NAMED.filter(w => live.has(w));
+ok(slurLeft.length === 0, 'no named ethnic slur reaches a child'
+  + (slurLeft.length ? ' — STILL LIVE: ' + slurLeft.join(', ') : ''));
+const wpSrc = fs.readFileSync(SRC + '/words-patch.js', 'utf8');
+ok(/kaffir/.test(wpSrc) && /hottentot/.test(wpSrc),
+  'and words-patch.js strips them from the SERVED shards too');
+ok(!live.has('kaffir') && live.has('welsh'),
+  'the Welsh nationality is untouched — only the slur senses go');
+
+/* PROTOTYPE-SAFE LOOKUPS IN words-patch.js. With a plain {}, REMOVE["constructor"]
+   answers true from Object.prototype and the word — a real library headword that
+   CORE_FIX ships a kid-safe gloss for — was spliced out of the served corpus on
+   every boot. SENT and DEF had the same flaw. */
+ok(/Object\.create\(null\)/.test(wpSrc),
+  'words-patch.js builds its lookup tables prototype-safe');
+ok(!/var REMOVE = \{\};/.test(wpSrc),
+  'and REMOVE is not a plain object — that is what deleted `constructor`');
+
 /* ROMAN NUMERALS ARE NOT WORDS TO SPELL. Sixteen of them shipped as band-1
    headwords — xiv glossed "the cardinal number that is the sum of thirteen and
    one" — so they surfaced near the front of easy lists, and "x-i-v" teaches a

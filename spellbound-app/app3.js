@@ -744,6 +744,22 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'blowjob','blowjobs','bollock','bollocks','boobage','cocklicker','cuntass',
   'encunt','fuckity','kinderwhore','knobheaded','shitbag','shithead','sluts',
   'teledildonics','titty','twats','unfuck','unfuckable','unfucked','unfuckupable',
+/* ---- the ethnic slurs, signed off 5 Sep 2026 ----
+   Found the same way and for the same reason as the 37 above: SLUR_DEF reads
+   what a definition SAYS about its headword, and every one of these is glossed
+   innocently, so nothing in the data matches. kaffir is defined as a cereal
+   crop, "important for human and animal food"; hottentot as "any of the Khoisan
+   languages"; negress as "a Black woman or girl"; bushman as "a member of the
+   race of nomadic hunters"; coolie as a labourer. All of them were reaching a
+   child's word list — kaffir surfaced in a Meadow round about creatures.
+   eskimo, bushman and gypsy are dated exonyms rather than unambiguous slurs and
+   each has an innocent sense (the gypsy moth, a gypsy cab); they are struck
+   with the rest because this app reads a word aloud to a child and asks for it
+   back, and that is not the place to litigate a contested term. */
+  'kaffir','kaffirs','kafir','kafirs','hottentot','hottentots',
+  'negress','negresses','pickaninny','pickaninnies','coolie','coolies',
+  'redskin','redskins','chinaman','chinamen','halfcaste','half-caste',
+  'eskimo','eskimos','bushman','bushmen','gypsy','gypsies',
 /* niggard, niggardly, niggards and niggardliness are NOT slurs — they come from
    Old Norse and mean miserly, with no connection to the word they resemble.
    They are struck for a practical reason, not an etymological one: this app

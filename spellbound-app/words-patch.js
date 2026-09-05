@@ -12,10 +12,30 @@ window.SB_WORDS_PATCH = function () {
   if (!D || !Array.isArray(D.nsf)) return;
   var nk = function (s) { return String(s == null ? '' : s).toLowerCase().trim(); };
 
+  /* EVERY LOOKUP HERE IS PROTOTYPE-SAFE, and it was not: with a plain {} the
+     test `REMOVE[w]` answers TRUE for "constructor", because that is a key on
+     Object.prototype. `constructor` is a real library word — app3's CORE_FIX
+     even ships it a kid-safe gloss, "a person or company that builds
+     something" — and this file has been quietly splicing it out of the served
+     corpus on every boot. SENT and DEF carry the same flaw: SENT["constructor"]
+     would have assigned the Object constructor FUNCTION as an example
+     sentence. Same trap CLAUDE.md documents for homIndex. */
   // 1) Remove: coined sexual-slang neologisms, malformed prefix fragments, a broken self-referential entry.
-  var REMOVE = {};
+  var REMOVE = Object.create(null);
   ['sexhibition', 'sex-texting', 'sexualizable', 'unsexualized', 'fauxmosexual',
    'nymphomaniacs', 'encephalize-', 'triskaideka-', 'committeth'
+  ].forEach(function (w) { REMOVE[nk(w)] = 1; });
+
+  // 1a) Ethnic slurs and dated exonyms, signed off 5 Sep 2026. These MUST be
+  // listed here as well as in app3's CORE_STRIKE: fixCore() guards the 130k
+  // library, but a child practises out of SB_DATA.nsf, and every one of these
+  // was live in the served shards. They are glossed innocently — kaffir as a
+  // cereal crop, hottentot as a Khoisan language, negress as "a Black woman or
+  // girl" — so the SLUR_DEF pattern cannot see them. Keep the two lists in step.
+  ['kaffir', 'kaffirs', 'kafir', 'kafirs', 'hottentot', 'hottentots',
+   'negress', 'negresses', 'pickaninny', 'pickaninnies', 'coolie', 'coolies',
+   'redskin', 'redskins', 'chinaman', 'chinamen', 'halfcaste', 'half-caste',
+   'eskimo', 'eskimos', 'bushman', 'bushmen', 'gypsy', 'gypsies'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
   // 1b) Remove: Roman numerals carried as headwords — xiv, xxii, lxx and 13 more,
@@ -36,16 +56,16 @@ window.SB_WORDS_PATCH = function () {
   };
 
   // 2) Rewrite graphic/adult example sentences (word kept so the fill-in-the-blank masker still works).
-  var SENT = {
+  var SENT = Object.assign(Object.create(null), {
     grotesquely: 'The old oak was grotesquely twisted into strange, gnarled shapes.',
     heinously:  'In the story the villain schemed so heinously that the whole town cheered when the hero stopped him.',
     viscerally: 'The fans reacted viscerally, gasping all at once at the last-second goal.',
     sensitively:'The teacher sensitively helped the nervous new student feel welcome.',
     allegedly:  'The puppy allegedly buried the missing sock somewhere in the garden.'
-  };
+  });
 
   // 3) Rewrite spelling-leak definitions (target word must NOT appear in the definition text).
-  var DEF = {
+  var DEF = Object.assign(Object.create(null), {
     halcyon:       'calm, peaceful and happy; often used of a golden, carefree time.',
     cuckoo:        'a grey European bird known for its two-note call and for laying eggs in other birds’ nests.',
     graham:        'a coarsely ground whole-wheat flour, or the slightly sweet cracker made from it.',
@@ -61,7 +81,7 @@ window.SB_WORDS_PATCH = function () {
     conjecture:    'an opinion or guess formed on little or no proof; to guess from scanty evidence.',
     lubricate:     'to apply oil or grease so parts slide and move smoothly with less friction.',
     empty:         'holding nothing inside; containing no contents at all.'
-  };
+  });
 
   var removed = 0, sPatched = 0, dPatched = 0;
   for (var i = D.nsf.length - 1; i >= 0; i--) {
