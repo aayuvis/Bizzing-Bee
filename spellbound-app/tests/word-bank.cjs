@@ -12,7 +12,7 @@ const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
-const CORE = 126651;   // SB_FULL as it ships, before the shard
+const CORE = 126594;   // SB_FULL as it ships, before the shard
 /* 128,197 until 5 Sep 2026, when the library sweep deleted 1,528 records and one
    (`cli`) came back. This number is not a target to hit — it is the count the
    130,000-word CLAIM was retired against, and the floor assertion further down
@@ -370,9 +370,25 @@ const numerals = ['xiv', 'xii', 'xix', 'xxii', 'lxx', 'vii', 'viii', 'xvi', 'xvi
 const numLeft = numerals.filter(w => live.has(w));
 ok(numLeft.length === 0, 'no Roman numeral reaches a child'
   + (numLeft.length ? ' — STILL LIVE: ' + numLeft.join(', ') : ''));
-const numLost = ['mix', 'dix', 'cli'].filter(w => !live.has(w));
-ok(numLost.length === 0, 'and the three real words shaped like numerals survive'
+/* `cli` left this list on 5 Sep. It had been the third witness that the numeral
+   rule tests the GLOSS and not the shape alone — and it still is not a numeral
+   casualty. It is an acronym, respelled SEE-EL-EYE, and the owner's rule is
+   that an acronym is not a word to spell: it went with cst, cia and the rest.
+   mix and dix are witnesses enough; both are real headwords the shape rule
+   would eat. */
+const numLost = ['mix', 'dix'].filter(w => !live.has(w));
+ok(numLost.length === 0, 'and the real words shaped like numerals survive'
   + (numLost.length ? ' — LOST: ' + numLost.join(', ') : ''));
+/* NOT WORDS. An acronym is respelled as letter names, one per letter, and a
+   pluralised chemical symbol carries the element's gloss. Neither is a word a
+   bee asks, and both passed the content sweep because that sweep asked whether
+   they were SAFE. */
+const NOTWORDS = ['cst', 'cfs', 'cia', 'cli', 'bes', 'dui', 'pst', 'qed', 'tnt'];
+const nwLeft = NOTWORDS.filter(w => live.has(w));
+ok(nwLeft.length === 0, 'no acronym or chemical-symbol plural reaches a child'
+  + (nwLeft.length ? ' — STILL LIVE: ' + nwLeft.join(', ') : ''));
+ok(live.has('laser') && live.has('aba') && live.has('baa'),
+  'laser, aba and baa survive — real words, not acronyms, whatever their respelling said');
 /* The served shards are filtered by words-patch.js, not by fixCore, so the same
    rule has to live in both places — a child practises out of SB_DATA.nsf. */
 const wp = fs.readFileSync(SRC + '/words-patch.js', 'utf8');

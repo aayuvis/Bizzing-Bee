@@ -945,6 +945,9 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
    SPEAKS each word aloud to a child and then asks for the spelling back. If
    that call is ever reversed, these four are the whole of it. */
   'niggard','niggards','niggardly','niggardliness',
+/* not words: acronyms respelled as letter names (cst = SEE-ES-TEE) and chemical
+   symbols with an s on them (cfs = californium). See words-patch.js. */
+  'abc','abd','acc','adp','aus','bas','bes','bis','bks','bpi','bps','btu','cfs','cgs','cia','cli','crs','cst','dbms','ddt','dui','dys','edp','emf','epa','ers','ese','esp','fps','ges','hes','iou','isn','kph','krs','las','lcd','lcm','lis','llb','mbd','msg','mss','mts','nis','pfc','pos','prs','pst','pts','qed','stm','tas','tbs','tis','tnt','vip',
 /* `dike` was never on this list. It did not need to be: its LIBRARY gloss was
    "(slang) offensive term for a lesbian", and fixCore drops any entry whose own
    definition says that — so the gloss itself was doing the work. The served
