@@ -1,13 +1,9 @@
 {
- "note": "Corpus sweep, 5 Sep 2026. Thirty-six reviewers read all 36,393 served words no reviewer had seen under the strict content brief. These removals must be re-struck and these definitions and sentences re-applied after ANY regeneration of words-data*.js by voice/pipeline/words-shard.js, or every fault below returns silently. sentencesDeleted lists example sentences removed with no replacement: an empty slot is fine (7,000+ entries already ship without one) and better than the sentence that was there.",
+ "note": "Corpus sweep, 5 Sep 2026. Thirty-six reviewers read all 36,393 served words no reviewer had seen under the strict content brief. The 1,102 scientific names listed under restored were put back; the remaining removals must be re-struck and these definitions and sentences re-applied after ANY regeneration of words-data*.js by voice/pipeline/words-shard.js, or every fault below returns silently. sentencesDeleted lists example sentences removed with no replacement: an empty slot is fine (7,000+ entries already ship without one) and better than the sentence that was there.",
  "removed": [
   {
    "w": "abacination",
    "why": "definition describes torture: blinding a person with a red-hot metal basin"
-  },
-  {
-   "w": "abama",
-   "why": "a plant genus name presented as an English word"
   },
   {
    "w": "abattue",
@@ -20,14 +16,6 @@
   {
    "w": "abdominohysterectomy",
    "why": "clinical surgical procedure for removing the uterus, contrasted with a vaginal hysterectomy"
-  },
-  {
-   "w": "abelicea",
-   "why": "an obsolete taxonomic genus name presented as an English word"
-  },
-  {
-   "w": "aberia",
-   "why": "a plant genus name presented as an English word"
   },
   {
    "w": "abhorson",
@@ -54,18 +42,6 @@
    "why": "an acronym (a plastic, acrylonitrile butadiene styrene) presented as an English word"
   },
   {
-   "w": "acalypha",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "acaridae",
-   "why": "a scientific family name (mites) presented as an English word"
-  },
-  {
-   "w": "acarina",
-   "why": "a scientific order name (mites and ticks) presented as an English word"
-  },
-  {
    "w": "acc",
    "why": "an acronym for a US Air Force combat command"
   },
@@ -74,60 +50,8 @@
    "why": "clinical definition of a headless fetus, and it calls such babies 'monsters'"
   },
   {
-   "w": "acer",
-   "why": "a scientific genus name (maples) presented as an English word"
-  },
-  {
-   "w": "aceraceae",
-   "why": "a scientific family name (maple family) presented as an English word"
-  },
-  {
-   "w": "achras",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "acipenser",
-   "why": "a scientific genus name (sturgeons) presented as an English word"
-  },
-  {
-   "w": "aconitum",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
    "w": "acorea",
    "why": "obscure clinical term for a missing pupil in an eye"
-  },
-  {
-   "w": "acorus",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "acrididae",
-   "why": "a scientific family name (grasshoppers) presented as an English word"
-  },
-  {
-   "w": "acropora",
-   "why": "a coral genus name presented as an English word"
-  },
-  {
-   "w": "actaea",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "actinia",
-   "why": "a sea anemone genus name presented as an English word"
-  },
-  {
-   "w": "actiniae",
-   "why": "a sea anemone genus name presented as an English word"
-  },
-  {
-   "w": "actinidia",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "actinozoa",
-   "why": "a scientific class name (corals and anemones) presented as an English word"
   },
   {
    "w": "ada",
@@ -142,112 +66,32 @@
    "why": "the definition is a biography of Samuel Adams, complete with dates"
   },
   {
-   "w": "adansonia",
-   "why": "a tree genus name presented as an English word"
-  },
-  {
-   "w": "adelges",
-   "why": "an insect genus name presented as an English word"
-  },
-  {
    "w": "adenosis",
    "why": "obscure clinical gland disorder; the sentence is about a breast condition"
-  },
-  {
-   "w": "adiantum",
-   "why": "a fern genus name presented as an English word"
   },
   {
    "w": "adiposis",
    "why": "defined as 'the property of excessive fatness'; an obscure clinical word about a child's body"
   },
   {
-   "w": "adlumia",
-   "why": "a plant genus name, and the gloss 'one species: climbing fumitory' is not a definition"
-  },
-  {
    "w": "adp",
    "why": "an acronym (adenosine diphosphate)"
-  },
-  {
-   "w": "aedes",
-   "why": "a mosquito genus name presented as an English word"
-  },
-  {
-   "w": "aegilops",
-   "why": "a grass genus name presented as an English word"
-  },
-  {
-   "w": "aerides",
-   "why": "an orchid genus name presented as an English word"
-  },
-  {
-   "w": "aethusa",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "aetobatus",
-   "why": "a ray genus name; the definition even reads 'a genus of Myliobatidae'"
   },
   {
    "w": "agalactia",
    "why": "clinical definition about milk not being secreted in a mother's breasts after delivery"
   },
   {
-   "w": "agalinis",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "agamidae",
-   "why": "a scientific family name (lizards) presented as an English word"
-  },
-  {
-   "w": "agapornis",
-   "why": "a bird genus name; the definition reads 'a genus of Psittacidae'"
-  },
-  {
-   "w": "agaricus",
-   "why": "a fungus genus name presented as an English word"
-  },
-  {
-   "w": "agathis",
-   "why": "a tree genus name presented as an English word"
-  },
-  {
    "w": "agee",
    "why": "the definition is a biography of the novelist James Agee"
-  },
-  {
-   "w": "agelaius",
-   "why": "a bird genus name presented as an English word"
   },
   {
    "w": "agelicism",
    "why": "not a real English word, and the definition (avoiding laughter) contradicts its own sentence about old age"
   },
   {
-   "w": "aglaonema",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
    "w": "agnatha",
    "why": "a scientific superclass name (jawless fishes) presented as an English word"
-  },
-  {
-   "w": "agrimonia",
-   "why": "the Latin genus name of the plant whose English name is already a separate entry"
-  },
-  {
-   "w": "agropyron",
-   "why": "a grass genus name presented as an English word"
-  },
-  {
-   "w": "agrostis",
-   "why": "a grass genus name presented as an English word"
-  },
-  {
-   "w": "ailurus",
-   "why": "the red panda's genus name presented as an English word"
   },
   {
    "w": "aircrafts",
@@ -258,80 +102,8 @@
    "why": "an acronym for a US Army intelligence agency"
   },
   {
-   "w": "aix",
-   "why": "a duck genus name presented as an English word"
-  },
-  {
-   "w": "aizoaceae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "alauda",
-   "why": "a bird genus name; the definition reads 'type genus of the Alaudidae'"
-  },
-  {
-   "w": "alaudidae",
-   "why": "a scientific family name (larks) presented as an English word"
-  },
-  {
    "w": "albee",
    "why": "the definition is a biography of the dramatist Edward Albee"
-  },
-  {
-   "w": "albizia",
-   "why": "a tree genus name presented as an English word"
-  },
-  {
-   "w": "albuca",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "alca",
-   "why": "a bird genus name; the definition reads 'type genus of the Alcidae'"
-  },
-  {
-   "w": "alcedo",
-   "why": "a bird genus name; the definition reads 'type genus of the Alcedinidae'"
-  },
-  {
-   "w": "alces",
-   "why": "the moose genus name presented as an English word"
-  },
-  {
-   "w": "alchemilla",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "alcidae",
-   "why": "a scientific family name (auks and puffins) presented as an English word"
-  },
-  {
-   "w": "alectoria",
-   "why": "a lichen genus name presented as an English word"
-  },
-  {
-   "w": "alectoris",
-   "why": "a bird genus name; the definition reads 'a genus of Perdicidae'"
-  },
-  {
-   "w": "aletris",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "aleurites",
-   "why": "a tree genus name presented as an English word"
-  },
-  {
-   "w": "aleyrodes",
-   "why": "an insect genus name; the definition reads 'type genus of the Aleyrodidae'"
-  },
-  {
-   "w": "alisma",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "alismales",
-   "why": "a scientific order name presented as an English word"
   },
   {
    "w": "allen",
@@ -342,32 +114,8 @@
    "why": "not an English word; the gloss given belongs to 'all'"
   },
   {
-   "w": "alliaceae",
-   "why": "Latin plant-family name presented as English"
-  },
-  {
-   "w": "alliaria",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "allionia",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "alnus",
-   "why": "Latin tree genus name presented as English; the English word is alder"
-  },
-  {
    "w": "alonso",
    "why": "definition is a biography of the Cuban dancer Alicia Alonso, not a word"
-  },
-  {
-   "w": "alopiidae",
-   "why": "Latin shark-family name presented as English"
-  },
-  {
-   "w": "alpinia",
-   "why": "Latin plant genus name presented as English"
   },
   {
    "w": "alright",
@@ -378,14 +126,6 @@
    "why": "an acronym (a nerve disease) presented as a word, with a clinical definition about muscle wasting"
   },
   {
-   "w": "alsophila",
-   "why": "Latin moth genus name presented as English"
-  },
-  {
-   "w": "alstonia",
-   "why": "Latin tree genus name presented as English"
-  },
-  {
    "w": "alt",
    "why": "an abbreviation of altitude presented as a word"
   },
@@ -394,24 +134,8 @@
    "why": "plural of an abbreviation presented as a word"
   },
   {
-   "w": "alytes",
-   "why": "Latin toad genus name presented as English"
-  },
-  {
    "w": "amastia",
    "why": "clinical definition about absent breast tissue and surgery; not for a children's corpus"
-  },
-  {
-   "w": "amazona",
-   "why": "Latin parrot genus name presented as English"
-  },
-  {
-   "w": "ambystoma",
-   "why": "Latin salamander genus name presented as English"
-  },
-  {
-   "w": "ameiurus",
-   "why": "Latin catfish genus name presented as English"
   },
   {
    "w": "amelia",
@@ -430,108 +154,24 @@
    "why": "an abbreviation for a stock exchange presented as a word"
   },
   {
-   "w": "amia",
-   "why": "Latin fish genus name presented as English"
-  },
-  {
-   "w": "amiidae",
-   "why": "Latin fish-family name presented as English"
-  },
-  {
    "w": "amniota",
    "why": "Latin taxonomic group name presented as English"
-  },
-  {
-   "w": "amoebida",
-   "why": "Latin taxonomic order name presented as English"
-  },
-  {
-   "w": "amphibia",
-   "why": "Latin taxonomic class name presented as English; the English word amphibians is already in the corpus"
-  },
-  {
-   "w": "amphipoda",
-   "why": "Latin taxonomic order name presented as English"
-  },
-  {
-   "w": "amygdalus",
-   "why": "an obsolete Latin genus name; the definition says so outright"
   },
   {
    "w": "amytal",
    "why": "a trade name for a barbiturate sedative; a prescription drug brand, not a word for children"
   },
   {
-   "w": "anabas",
-   "why": "Latin fish genus name presented as English"
-  },
-  {
    "w": "anaclisis",
    "why": "psychoanalytic term defined as a 'libidinal attachment' to a parent figure"
-  },
-  {
-   "w": "anacyclus",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "anagallis",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "anagyris",
-   "why": "Latin shrub genus name presented as English"
-  },
-  {
-   "w": "ananas",
-   "why": "Latin plant genus name presented as English; the English word is pineapple"
-  },
-  {
-   "w": "anaphalis",
-   "why": "Latin plant genus name presented as English"
   },
   {
    "w": "anapsida",
    "why": "Latin taxonomic group name presented as English"
   },
   {
-   "w": "anas",
-   "why": "Latin duck genus name presented as English"
-  },
-  {
-   "w": "anasa",
-   "why": "Latin insect genus name presented as English"
-  },
-  {
-   "w": "anaspida",
-   "why": "Latin taxonomic order name presented as English"
-  },
-  {
-   "w": "anastomus",
-   "why": "Latin stork genus name presented as English"
-  },
-  {
-   "w": "anatidae",
-   "why": "Latin bird-family name presented as English"
-  },
-  {
-   "w": "ancylus",
-   "why": "Latin limpet genus name presented as English"
-  },
-  {
    "w": "anderson",
    "why": "definition is a biography of the author Sherwood Anderson, not a word"
-  },
-  {
-   "w": "andira",
-   "why": "Latin tree genus name presented as English"
-  },
-  {
-   "w": "andreaea",
-   "why": "Latin moss genus name presented as English"
-  },
-  {
-   "w": "anemopsis",
-   "why": "Latin plant genus name presented as English"
   },
   {
    "w": "anencephalic",
@@ -542,24 +182,8 @@
    "why": "defined as a fatal brain birth defect, with an example sentence about a fetus missing its brain"
   },
   {
-   "w": "anethum",
-   "why": "Latin plant genus name presented as English; the English word is dill"
-  },
-  {
-   "w": "anguidae",
-   "why": "Latin lizard-family name presented as English"
-  },
-  {
-   "w": "anguis",
-   "why": "Latin lizard genus name presented as English"
-  },
-  {
    "w": "animalia",
    "why": "Latin taxonomic kingdom name presented as English"
-  },
-  {
-   "w": "annelida",
-   "why": "Latin taxonomic phylum name presented as English"
   },
   {
    "w": "annexa",
@@ -570,120 +194,12 @@
    "why": "clinical anatomy adjective whose own definition points at a differently spelled word, adnexa"
   },
   {
-   "w": "annona",
-   "why": "Latin tree genus name presented as English"
-  },
-  {
-   "w": "anobiidae",
-   "why": "Latin beetle-family name presented as English"
-  },
-  {
-   "w": "anodonta",
-   "why": "Latin mussel genus name presented as English"
-  },
-  {
-   "w": "anomala",
-   "why": "Latin beetle genus name presented as English"
-  },
-  {
-   "w": "anomiidae",
-   "why": "Latin mollusc-family name presented as English"
-  },
-  {
-   "w": "anoplura",
-   "why": "Latin taxonomic order name (sucking lice) presented as English"
-  },
-  {
-   "w": "anostraca",
-   "why": "Latin taxonomic order name presented as English"
-  },
-  {
    "w": "ans",
    "why": "an acronym for the autonomic nervous system presented as a word"
   },
   {
-   "w": "anser",
-   "why": "Latin goose genus name presented as English"
-  },
-  {
-   "w": "antedon",
-   "why": "Latin echinoderm genus name presented as English"
-  },
-  {
-   "w": "anthemis",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "antheraea",
-   "why": "Latin moth genus name presented as English"
-  },
-  {
-   "w": "anthidium",
-   "why": "Latin bee genus name presented as English"
-  },
-  {
    "w": "anthony",
    "why": "a common first name whose definition is a biography of a different person, the Roman general Mark Antony, including his repudiating his wife"
-  },
-  {
-   "w": "anthozoa",
-   "why": "Latin taxonomic class name presented as English"
-  },
-  {
-   "w": "anthus",
-   "why": "Latin bird genus name presented as English"
-  },
-  {
-   "w": "anthyllis",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "anura",
-   "why": "Latin taxonomic order name presented as English"
-  },
-  {
-   "w": "aphididae",
-   "why": "Latin insect-family name presented as English"
-  },
-  {
-   "w": "aphis",
-   "why": "Latin insect genus name presented as English"
-  },
-  {
-   "w": "apidae",
-   "why": "Latin bee-family name presented as English"
-  },
-  {
-   "w": "apios",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "apis",
-   "why": "Latin bee genus name presented as English"
-  },
-  {
-   "w": "apium",
-   "why": "Latin plant genus name presented as English; the English word is celery"
-  },
-  {
-   "w": "aplectrum",
-   "why": "Latin orchid genus name presented as English"
-  },
-  {
-   "w": "aplysia",
-   "why": "Latin sea-slug genus name presented as English"
-  },
-  {
-   "w": "apocynum",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "apodidae",
-   "why": "Latin bird-family name presented as English"
-  },
-  {
-   "w": "apogon",
-   "why": "Latin fish genus name presented as English"
   },
   {
    "w": "apoidea",
@@ -694,52 +210,8 @@
    "why": "an abbreviation for April presented as a word; the example sentence even prints it as 'Apr.'"
   },
   {
-   "w": "arabis",
-   "why": "Latin plant genus name presented as English"
-  },
-  {
-   "w": "araceae",
-   "why": "Latin plant-family name presented as English"
-  },
-  {
-   "w": "arachis",
-   "why": "Latin plant genus name presented as English; the English word is peanut"
-  },
-  {
-   "w": "arachnida",
-   "why": "Latin taxonomic class name presented as English"
-  },
-  {
-   "w": "arales",
-   "why": "Latin taxonomic order name presented as English"
-  },
-  {
-   "w": "aramus",
-   "why": "Latin bird genus name presented as English"
-  },
-  {
-   "w": "araneae",
-   "why": "Latin taxonomic order name presented as English"
-  },
-  {
-   "w": "araneida",
-   "why": "an obsolete Latin taxonomic order name; the definition says so outright"
-  },
-  {
-   "w": "araujia",
-   "why": "Latin vine genus name presented as English"
-  },
-  {
-   "w": "arca",
-   "why": "Latin mollusc genus name presented as English"
-  },
-  {
    "w": "arces",
    "why": "a misspelling drilled as if correct; the verb arc makes arcs, not this form"
-  },
-  {
-   "w": "arcidae",
-   "why": "a scientific family name (ark clams) presented as an English word"
   },
   {
    "w": "arcsin",
@@ -750,76 +222,8 @@
    "why": "an abbreviation of the function name, not an English word"
   },
   {
-   "w": "arctium",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "ardea",
-   "why": "a Latin bird genus name presented as an English word"
-  },
-  {
-   "w": "ardeidae",
-   "why": "a scientific family name (herons) presented as an English word"
-  },
-  {
-   "w": "ardisia",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "arecaceae",
-   "why": "a scientific family name (palms) presented as an English word"
-  },
-  {
-   "w": "arenaria",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "argasidae",
-   "why": "a scientific family name (soft ticks) presented as an English word"
-  },
-  {
-   "w": "argemone",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "argiope",
-   "why": "a Latin spider genus name presented as an English word"
-  },
-  {
-   "w": "argonauta",
-   "why": "a Latin mollusc genus name presented as an English word"
-  },
-  {
-   "w": "arisaema",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "armeria",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "armoracia",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "arnoseris",
-   "why": "a Latin plant genus name, and the gloss 'lamb succory' explains nothing"
-  },
-  {
    "w": "ars",
    "why": "not an English word; it carries argon's definition"
-  },
-  {
-   "w": "artamus",
-   "why": "a Latin bird genus name presented as an English word"
-  },
-  {
-   "w": "artemia",
-   "why": "a Latin crustacean genus name presented as an English word"
-  },
-  {
-   "w": "arvicola",
-   "why": "a Latin rodent genus name, and the gloss is only a note about classification"
   },
   {
    "w": "aryan",
@@ -834,84 +238,16 @@
    "why": "an abbreviation, not a word to spell"
   },
   {
-   "w": "ascaridae",
-   "why": "a scientific family name (parasitic roundworms) presented as an English word"
-  },
-  {
-   "w": "ascaridia",
-   "why": "a Latin parasite genus name presented as an English word"
-  },
-  {
-   "w": "ascaris",
-   "why": "a Latin parasite genus name presented as an English word"
-  },
-  {
    "w": "ascii",
    "why": "an acronym, not a word to spell"
-  },
-  {
-   "w": "asclepias",
-   "why": "a Latin plant genus name, and the definition says so outright"
-  },
-  {
-   "w": "asilidae",
-   "why": "a scientific family name (robber flies) presented as an English word"
-  },
-  {
-   "w": "asimina",
-   "why": "a Latin plant genus name, and the definition says so outright"
-  },
-  {
-   "w": "asperula",
-   "why": "a Latin plant genus name, and the definition says so outright"
-  },
-  {
-   "w": "asplenium",
-   "why": "a Latin fern genus name, and the gloss is only a note about classification"
-  },
-  {
-   "w": "astacidae",
-   "why": "a scientific family name (crayfish) presented as an English word"
-  },
-  {
-   "w": "astacus",
-   "why": "a Latin crustacean genus name, and the definition says so outright"
-  },
-  {
-   "w": "astragali",
-   "why": "the definition is the plant genus Astragalus, which has nothing to do with the headword; a Latin taxon either way"
-  },
-  {
-   "w": "ateles",
-   "why": "a Latin monkey genus name presented as an English word"
   },
   {
    "w": "ates",
    "why": "a nonsense plural invented from the name of a single Greek goddess"
   },
   {
-   "w": "atherurus",
-   "why": "a Latin porcupine genus name, and the definition says so outright"
-  },
-  {
-   "w": "athyrium",
-   "why": "a Latin fern genus name presented as an English word"
-  },
-  {
    "w": "atm",
    "why": "an abbreviation; worse, the definition is a unit of pressure while the example sentence is about computer networking"
-  },
-  {
-   "w": "atriplex",
-   "why": "a Latin plant genus name, and the gloss 'orach; saltbush' explains nothing"
-  },
-  {
-   "w": "atropa",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "atropidae",
-   "why": "a scientific family name (booklice) presented as an English word"
   },
   {
    "w": "aum",
@@ -922,68 +258,12 @@
    "why": "not a word, and the sentence teaches a false fact - the chemical symbol for gold is Au, not Aus"
   },
   {
-   "w": "avahi",
-   "why": "a Latin lemur genus name, and the definition says so outright"
-  },
-  {
-   "w": "avena",
-   "why": "a Latin grass genus name presented as an English word"
-  },
-  {
-   "w": "averrhoa",
-   "why": "a Latin tree genus name presented as an English word"
-  },
-  {
-   "w": "aves",
-   "why": "a scientific class name presented as an English word"
-  },
-  {
    "w": "awol",
    "why": "an abbreviation, not a word to spell"
   },
   {
-   "w": "aythya",
-   "why": "a Latin duck genus name, and the gloss is a bare list of other birds"
-  },
-  {
-   "w": "azolla",
-   "why": "a Latin fern genus name, and the definition says so outright"
-  },
-  {
-   "w": "balaena",
-   "why": "a Latin whale genus name, and the definition says so outright"
-  },
-  {
-   "w": "balanidae",
-   "why": "a scientific family name (barnacles) presented as an English word"
-  },
-  {
-   "w": "balanus",
-   "why": "a Latin barnacle genus name, and the definition says so outright"
-  },
-  {
-   "w": "ballota",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "bambusa",
-   "why": "a Latin bamboo genus name presented as an English word"
-  },
-  {
-   "w": "bambuseae",
-   "why": "a scientific tribe name presented as an English word"
-  },
-  {
    "w": "bams",
    "why": "a nonsense plural invented from the name of one Iranian city"
-  },
-  {
-   "w": "baphia",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "barbarea",
-   "why": "a Latin genus name presented as an English word"
   },
   {
    "w": "barbital",
@@ -1002,10 +282,6 @@
    "why": "definition is a biography of the theologian Karl Barth; a surname, not an English word"
   },
   {
-   "w": "bartonia",
-   "why": "a Latin genus name presented as an English word"
-  },
-  {
    "w": "baruch",
    "why": "definition is a biography of the adviser Bernard Baruch; a surname, not an English word"
   },
@@ -1014,20 +290,8 @@
    "why": "not a word; the definition is barium's, attached to a stray letter string"
   },
   {
-   "w": "batis",
-   "why": "a Latin genus name presented as an English word"
-  },
-  {
-   "w": "batoidei",
-   "why": "a scientific order name presented as English"
-  },
-  {
    "w": "batrachia",
    "why": "a scientific group name presented as English"
-  },
-  {
-   "w": "bauhinia",
-   "why": "a Latin genus name presented as an English word"
   },
   {
    "w": "bayard",
@@ -1074,14 +338,6 @@
    "why": "definition is a photograph of a muscular man in minimal attire; sexualised content on a child's card"
   },
   {
-   "w": "bellis",
-   "why": "the definition itself says it is a genus name"
-  },
-  {
-   "w": "belonidae",
-   "why": "a scientific family name presented as English"
-  },
-  {
    "w": "benedict",
    "why": "definition is a biography of the anthropologist Ruth Benedict"
   },
@@ -1114,28 +370,12 @@
    "why": "definition is a biography of the physiologist Claude Bernard"
   },
   {
-   "w": "beroe",
-   "why": "a Latin genus name presented as an English word"
-  },
-  {
-   "w": "berteroa",
-   "why": "a Latin genus name presented as an English word"
-  },
-  {
    "w": "bessemer",
    "why": "definition is a biography of the inventor Henry Bessemer"
   },
   {
    "w": "bhang",
    "why": "a cannabis preparation; the definition and sentence are drug-related"
-  },
-  {
-   "w": "bidens",
-   "why": "a Latin genus name presented as an English word"
-  },
-  {
-   "w": "bignonia",
-   "why": "a Latin genus name presented as an English word ('one species: cross vine')"
   },
   {
    "w": "bircher",
@@ -1162,10 +402,6 @@
    "why": "built on a vulgar insult and spoken aloud by the app"
   },
   {
-   "w": "bivalvia",
-   "why": "a scientific class name presented as English"
-  },
-  {
    "w": "biz",
    "why": "a slang clipping of business, not a spelling word"
   },
@@ -1186,34 +422,6 @@
    "why": "definition is a biography of the poet William Blake"
   },
   {
-   "w": "blarina",
-   "why": "the definition itself says it is a genus name"
-  },
-  {
-   "w": "blatta",
-   "why": "a Latin genus name ('type genus of the Blattidae') presented as English"
-  },
-  {
-   "w": "blattidae",
-   "why": "a scientific family name presented as English"
-  },
-  {
-   "w": "blattodea",
-   "why": "a scientific order name presented as English"
-  },
-  {
-   "w": "blechnum",
-   "why": "a Latin genus name presented as an English word"
-  },
-  {
-   "w": "bletia",
-   "why": "a Latin genus name presented as an English word"
-  },
-  {
-   "w": "bletilla",
-   "why": "the definition itself says it is a genus name"
-  },
-  {
    "w": "blok",
    "why": "definition is a biography of the Russian poet Alexander Blok"
   },
@@ -1230,38 +438,6 @@
    "why": "definition is 'a desire for bloodshed'"
   },
   {
-   "w": "bloomeria",
-   "why": "scientific genus name of a bulb plant presented as an English word"
-  },
-  {
-   "w": "boehmeria",
-   "why": "scientific genus name (false nettle) presented as an English word"
-  },
-  {
-   "w": "boidae",
-   "why": "scientific family name of boas and pythons, not an English word"
-  },
-  {
-   "w": "boltonia",
-   "why": "scientific genus name of a herb presented as an English word"
-  },
-  {
-   "w": "bomarea",
-   "why": "scientific genus name of a vine presented as an English word"
-  },
-  {
-   "w": "bombax",
-   "why": "scientific genus name of a tree presented as an English word"
-  },
-  {
-   "w": "bombyx",
-   "why": "scientific genus name of the silkworm moth presented as an English word"
-  },
-  {
-   "w": "bonasa",
-   "why": "scientific genus name of the ruffed grouse presented as an English word"
-  },
-  {
    "w": "boner",
    "why": "defined as 'an embarrassing mistake', but the word is widely known as crude sexual slang and the app says it aloud to children"
   },
@@ -1274,36 +450,8 @@
    "why": "a nonstandard spelling of 'bony', which is already in this corpus; a spelling app must not drill both"
   },
   {
-   "w": "borago",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "borassus",
-   "why": "scientific genus name of the palmyra palm presented as an English word"
-  },
-  {
-   "w": "bos",
-   "why": "scientific genus name of cattle presented as an English word"
-  },
-  {
    "w": "bostons",
    "why": "a plural of a city name, defined as the city itself; not an English word to spell"
-  },
-  {
-   "w": "boswellia",
-   "why": "scientific genus name of the frankincense tree presented as an English word"
-  },
-  {
-   "w": "botaurus",
-   "why": "scientific genus name of the bittern presented as an English word"
-  },
-  {
-   "w": "bothrops",
-   "why": "scientific genus name of a pit viper presented as an English word"
-  },
-  {
-   "w": "bovidae",
-   "why": "scientific family name of cattle and antelopes, not an English word"
   },
   {
    "w": "bowlder",
@@ -1318,28 +466,12 @@
    "why": "the card displays an anatomical definition of women's underwear ('to support their breasts') for a three-letter word no spelling bee would ask"
   },
   {
-   "w": "brachinus",
-   "why": "scientific genus name of bombardier beetles presented as an English word"
-  },
-  {
-   "w": "brachyura",
-   "why": "scientific order name of true crabs, not an English word"
-  },
-  {
-   "w": "bradypus",
-   "why": "scientific genus name of three-toed sloths presented as an English word"
-  },
-  {
    "w": "bras",
    "why": "plural of the same underwear entry, again glossed with 'their breasts'; not a spelling-bee word"
   },
   {
    "w": "brasil",
    "why": "the Portuguese spelling of Brazil drilled as if it were correct English; the correct spelling 'brazil' is already in this corpus"
-  },
-  {
-   "w": "brassia",
-   "why": "scientific genus name of an orchid presented as an English word"
   },
   {
    "w": "bren",
@@ -1350,80 +482,8 @@
    "why": "the definition describes circumcision performed on a male infant; no spelling bee would put this in front of a nine-year-old"
   },
   {
-   "w": "brodiaea",
-   "why": "scientific genus name of a plant presented as an English word"
-  },
-  {
-   "w": "bromus",
-   "why": "scientific genus name of a grass presented as an English word"
-  },
-  {
-   "w": "brotula",
-   "why": "scientific genus name of deep-sea fishes presented as an English word"
-  },
-  {
-   "w": "browallia",
-   "why": "scientific genus name of a garden plant presented as an English word"
-  },
-  {
-   "w": "bruchidae",
-   "why": "scientific family name of seed beetles, not an English word"
-  },
-  {
-   "w": "bruchus",
-   "why": "scientific genus name of a weevil presented as an English word"
-  },
-  {
-   "w": "bryaceae",
-   "why": "scientific family name of mosses, not an English word"
-  },
-  {
-   "w": "bryales",
-   "why": "scientific order name of mosses, not an English word"
-  },
-  {
-   "w": "bryanthus",
-   "why": "scientific genus name of a shrub presented as an English word"
-  },
-  {
    "w": "bryophyta",
    "why": "scientific division name for mosses, not an English word (bryophyte is the English word)"
-  },
-  {
-   "w": "bryozoa",
-   "why": "scientific phylum name, not an English word (bryozoan is the English word)"
-  },
-  {
-   "w": "bryum",
-   "why": "scientific genus name of a moss presented as an English word"
-  },
-  {
-   "w": "bucephala",
-   "why": "scientific genus name of ducks presented as an English word"
-  },
-  {
-   "w": "buceros",
-   "why": "scientific genus name of hornbills presented as an English word"
-  },
-  {
-   "w": "buchloe",
-   "why": "scientific genus name of buffalo grass presented as an English word"
-  },
-  {
-   "w": "buckleya",
-   "why": "scientific genus name of a shrub presented as an English word"
-  },
-  {
-   "w": "budorcas",
-   "why": "scientific genus name of the takin presented as an English word"
-  },
-  {
-   "w": "bufo",
-   "why": "scientific genus name of toads presented as an English word"
-  },
-  {
-   "w": "bufonidae",
-   "why": "scientific family name of true toads, not an English word"
   },
   {
    "w": "bulimia",
@@ -1438,192 +498,36 @@
    "why": "a nonstandard spelling of the marsh plant; 'bulrush' is already in this corpus with the identical definition"
   },
   {
-   "w": "bumelia",
-   "why": "scientific genus name of a shrub presented as an English word"
-  },
-  {
-   "w": "bungarus",
-   "why": "a Latin snake genus presented as an English word; the English word is krait"
-  },
-  {
-   "w": "burhinus",
-   "why": "scientific genus name ('type genus of the Burhinidae') presented as an English word"
-  },
-  {
    "w": "burk",
    "why": "not an English word; the entry is a garbled biography of Calamity Jane, and the sentence's claim about her surname is false"
-  },
-  {
-   "w": "burmannia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "bursera",
-   "why": "scientific genus name ('type genus of Burseraceae') presented as an English word"
   },
   {
    "w": "burtons",
    "why": "a personal surname pluralised; the definition is a biography of the explorer Richard Burton and the sentence is nonsense English"
   },
   {
-   "w": "butea",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "buxaceae",
-   "why": "scientific plant family name presented as an English word"
-  },
-  {
    "w": "buxom",
    "why": "the definition is a sexualised description of a woman's body ('having a large bosom and pleasing curves')"
-  },
-  {
-   "w": "cacajao",
-   "why": "the definition itself says it is a genus; Latin taxon, not an English word (the English word is uakari)"
-  },
-  {
-   "w": "cacalia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "cacatua",
-   "why": "scientific genus name ('a genus of Psittacidae') presented as an English word"
-  },
-  {
-   "w": "cactaceae",
-   "why": "scientific plant family name presented as an English word; the gloss is bare taxonomy"
-  },
-  {
-   "w": "cajanus",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "calcedony",
    "why": "a non-standard spelling of chalcedony drilled as if correct"
   },
   {
-   "w": "callitris",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "calopogon",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "caltha",
-   "why": "scientific genus name presented as an English word; the English name is marsh marigold"
-  },
-  {
-   "w": "calvatia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "camassia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "camelia",
    "why": "a misspelling of camellia drilled as if correct; this is a spelling app"
-  },
-  {
-   "w": "camelidae",
-   "why": "scientific animal family name presented as an English word"
-  },
-  {
-   "w": "camelina",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "camelus",
-   "why": "scientific genus name ('type genus of the Camelidae') presented as an English word"
   },
   {
    "w": "camerae",
    "why": "a bogus Latin plural; the plural of the photographic device is cameras"
   },
   {
-   "w": "cananga",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "canangium",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "canavalia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "canidae",
-   "why": "scientific animal family name presented as an English word"
-  },
-  {
-   "w": "canis",
-   "why": "scientific genus name ('type genus of the Canidae') presented as an English word"
-  },
-  {
-   "w": "cannaceae",
-   "why": "scientific plant family name presented as an English word"
-  },
-  {
-   "w": "carabidae",
-   "why": "scientific insect family name presented as an English word"
-  },
-  {
-   "w": "caranx",
-   "why": "scientific genus name ('type genus of the Carangidae') presented as an English word"
-  },
-  {
-   "w": "carapidae",
-   "why": "scientific fish family name presented as an English word"
-  },
-  {
    "w": "carcinoid",
    "why": "a clinical oncology term glossed with gastrointestinal mucosa and serotonin secretion; nothing a spelling bee would ask a child"
   },
   {
-   "w": "cardamine",
-   "why": "scientific genus name presented as an English word; the English name is bittercress"
-  },
-  {
-   "w": "cardiidae",
-   "why": "scientific mollusc family name presented as an English word"
-  },
-  {
-   "w": "cardium",
-   "why": "scientific genus name ('type genus of the family Cardiidae') presented as an English word"
-  },
-  {
-   "w": "carduelis",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "carduus",
-   "why": "scientific genus name presented as an English word; the English word is thistle"
-  },
-  {
-   "w": "caretta",
-   "why": "scientific genus name presented as an English word; the English name is loggerhead turtle"
-  },
-  {
-   "w": "carex",
-   "why": "scientific genus name presented as an English word; the English word is sedge"
-  },
-  {
-   "w": "carica",
-   "why": "scientific genus name ('type genus of the Caricaceae') presented as an English word"
-  },
-  {
    "w": "carlos",
    "why": "a common first name whose definition is a biography of a terrorist ('master terrorist... trained and worked with many terrorist groups')"
-  },
-  {
-   "w": "carnegiea",
-   "why": "scientific genus name presented as an English word; the English word is saguaro"
-  },
-  {
-   "w": "carnivora",
-   "why": "scientific order name presented as an English word; the gloss is a bare list of animals"
   },
   {
    "w": "caroli",
@@ -1634,116 +538,16 @@
    "why": "a Latin form of a personal name, not an English word for a child to spell; the definition is a biography of Charlemagne"
   },
   {
-   "w": "carpinus",
-   "why": "scientific genus name presented as an English word; the English word is hornbeam"
-  },
-  {
-   "w": "carum",
-   "why": "scientific genus name presented as an English word; the English word is caraway"
-  },
-  {
-   "w": "caryocar",
-   "why": "scientific genus name ('type genus of the Caryocaraceae') presented as an English word"
-  },
-  {
-   "w": "caryota",
-   "why": "scientific genus name presented as an English word; the English name is fishtail palm"
-  },
-  {
    "w": "casava",
    "why": "a misspelling of cassava drilled as if correct"
-  },
-  {
-   "w": "cassiope",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "castanea",
-   "why": "scientific genus name presented as an English word; the English word is chestnut"
-  },
-  {
-   "w": "casuarius",
-   "why": "scientific genus name ('type and sole genus of the Casuaridae') presented as an English word"
   },
   {
    "w": "catamite",
    "why": "the definition describes the sexual abuse of a boy by a man; no safe definition exists for a children's corpus"
   },
   {
-   "w": "cathartes",
-   "why": "scientific genus name ('type genus of the Cathartidae') presented as an English word"
-  },
-  {
-   "w": "caudata",
-   "why": "scientific order name presented as an English word; the gloss is a bare list of animals"
-  },
-  {
-   "w": "cebidae",
-   "why": "scientific animal family name presented as an English word"
-  },
-  {
-   "w": "cebus",
-   "why": "scientific genus name ('type genus of the Cebidae') presented as an English word"
-  },
-  {
-   "w": "cecropia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "cedrela",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "cedrus",
-   "why": "the definition itself says it is a genus; Latin taxon, not an English word"
-  },
-  {
-   "w": "celtis",
-   "why": "Latin genus name for hackberry trees presented as an English word"
-  },
-  {
-   "w": "cenchrus",
-   "why": "Latin genus name for a group of grasses presented as an English word"
-  },
-  {
-   "w": "centaurea",
-   "why": "Latin genus name presented as an English word; the English word is knapweed"
-  },
-  {
-   "w": "cerastium",
-   "why": "Latin genus name presented as an English word; the English name is mouse-ear chickweed"
-  },
-  {
    "w": "ceratin",
    "why": "obsolete misspelling of keratin, and it carries keratin's definition word for word; a spelling app must not drill it"
-  },
-  {
-   "w": "ceratitis",
-   "why": "Latin genus name for fruit flies presented as an English word"
-  },
-  {
-   "w": "ceratodus",
-   "why": "Latin genus name for an extinct lungfish presented as an English word"
-  },
-  {
-   "w": "cercis",
-   "why": "Latin genus name presented as an English word; the English name is redbud"
-  },
-  {
-   "w": "ceroxylon",
-   "why": "Latin genus name for wax palms presented as an English word, and the definition is cut off mid-sentence"
-  },
-  {
-   "w": "certhia",
-   "why": "Latin type-genus name presented as an English word"
-  },
-  {
-   "w": "cervidae",
-   "why": "scientific family name for deer presented as an English word"
-  },
-  {
-   "w": "cervus",
-   "why": "Latin type-genus name for deer presented as an English word"
   },
   {
    "w": "cesarian",
@@ -1754,64 +558,16 @@
    "why": "the definition given is the definition of the number one hundred, and the word itself is only an obscure variant of cestus"
   },
   {
-   "w": "cestida",
-   "why": "scientific order name presented as an English word"
-  },
-  {
-   "w": "cestidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "cestrum",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "cetacea",
-   "why": "scientific order name presented as an English word; the English word is cetacean"
-  },
-  {
-   "w": "ceterach",
-   "why": "Latin genus name for a fern presented as an English word"
-  },
-  {
-   "w": "cetonia",
-   "why": "Latin genus name for a beetle presented as an English word"
-  },
-  {
-   "w": "cetraria",
-   "why": "Latin genus name for a lichen presented as an English word"
-  },
-  {
    "w": "cgs",
    "why": "an abbreviation for a system of units, not an English word"
-  },
-  {
-   "w": "chalcis",
-   "why": "Latin type-genus name for wasps presented as an English word"
-  },
-  {
-   "w": "chamaeleo",
-   "why": "Latin type-genus name presented as an English word; the English word is chameleon"
   },
   {
    "w": "changs",
    "why": "not an English word; a plural form whose definition is the Yangtze river, so the card teaches a river as if it were a common noun"
   },
   {
-   "w": "chara",
-   "why": "Latin genus name for stonewort algae presented as an English word"
-  },
-  {
    "w": "charadrii",
    "why": "scientific suborder name for shorebirds presented as an English word"
-  },
-  {
-   "w": "charales",
-   "why": "scientific order name for algae presented as an English word"
-  },
-  {
-   "w": "charas",
-   "why": "not an English plural of anything; it is given the algae genus definition, and the word's actual meaning elsewhere is a cannabis product"
   },
   {
    "w": "chawbacon",
@@ -1822,204 +578,32 @@
    "why": "obsolete variant spelling of keloid; a spelling app must not drill a spelling that would be marked wrong"
   },
   {
-   "w": "chelone",
-   "why": "Latin genus name presented as an English word; the English name is turtlehead"
-  },
-  {
    "w": "chelonia",
    "why": "Latin taxonomic name presented as an English word"
-  },
-  {
-   "w": "chelydra",
-   "why": "Latin genus name for snapping turtles presented as an English word"
-  },
-  {
-   "w": "chen",
-   "why": "Latin genus name for snow geese presented as an English word"
-  },
-  {
-   "w": "chermidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "chilopoda",
-   "why": "scientific class name presented as an English word; the English word is centipede"
-  },
-  {
-   "w": "chilopsis",
-   "why": "Latin genus name presented as an English word; the English name is desert willow"
-  },
-  {
-   "w": "chiococca",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "choloepus",
-   "why": "Latin genus name for the two-toed sloth presented as an English word"
-  },
-  {
-   "w": "chondrus",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "chordata",
-   "why": "scientific phylum name presented as an English word; the English word is chordate"
   },
   {
    "w": "christies",
    "why": "a plural of a surname carrying a biography of the novelist Agatha Christie, and the example sentence is nonsense"
   },
   {
-   "w": "cicadidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "cicer",
-   "why": "Latin genus name presented as an English word; the English word is chickpea"
-  },
-  {
-   "w": "cichorium",
-   "why": "Latin genus name presented as an English word; the definition even says so"
-  },
-  {
-   "w": "ciconia",
-   "why": "Latin type-genus name for storks presented as an English word"
-  },
-  {
-   "w": "cicuta",
-   "why": "Latin genus name presented as an English word; the English name is water hemlock"
-  },
-  {
-   "w": "cimex",
-   "why": "Latin type-genus name for bedbugs presented as an English word"
-  },
-  {
-   "w": "cinclidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "cinclus",
-   "why": "Latin type-genus name presented as an English word; the English word is dipper"
-  },
-  {
-   "w": "circaea",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "circaetus",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "cirsium",
-   "why": "Latin genus name presented as an English word; the English name is plume thistle"
-  },
-  {
    "w": "cis",
    "why": "an abbreviation for the Commonwealth of Independent States, not an English word"
-  },
-  {
-   "w": "cistaceae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "citellus",
-   "why": "Latin genus name for ground squirrels presented as an English word"
-  },
-  {
-   "w": "citrullus",
-   "why": "Latin genus name presented as an English word; the English word is watermelon"
   },
   {
    "w": "cive",
    "why": "obsolete variant spelling of chive; a spelling app must not drill a spelling that would be marked wrong"
   },
   {
-   "w": "cladonia",
-   "why": "Latin type-genus name for a lichen presented as an English word"
-  },
-  {
-   "w": "clangula",
-   "why": "Latin genus name for ducks presented as an English word"
-  },
-  {
-   "w": "claytonia",
-   "why": "Latin genus name presented as an English word; the English name is spring beauty"
-  },
-  {
-   "w": "cleridae",
-   "why": "scientific family name for beetles presented as an English word"
-  },
-  {
-   "w": "clethra",
-   "why": "Latin genus name presented as an English word; the definition itself says genus"
-  },
-  {
    "w": "cli",
    "why": "an abbreviation for command-line interface, not an English word"
-  },
-  {
-   "w": "clianthus",
-   "why": "Latin genus name presented as an English word; the English name is parrot's beak"
-  },
-  {
-   "w": "cliftonia",
-   "why": "Latin genus name presented as an English word; the English name is titi"
-  },
-  {
-   "w": "clintonia",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "clitocybe",
-   "why": "Latin genus name for a mushroom presented as an English word"
-  },
-  {
-   "w": "clitoria",
-   "why": "Latin genus name presented as an English word, and the spelling sits one letter from an anatomical term no spelling bee would put in front of a child"
-  },
-  {
-   "w": "clupea",
-   "why": "a Latin genus name (type genus of the Clupeidae) presented as an English word"
-  },
-  {
-   "w": "clusia",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "cnicus",
-   "why": "a Latin plant genus name; the definition is literally 'one species: blessed thistle'"
-  },
-  {
-   "w": "cnidaria",
-   "why": "the Latin name of an animal phylum presented as an English word (the English form 'cnidarian' is already in the corpus)"
-  },
-  {
-   "w": "cobitidae",
-   "why": "a scientific family name; the definition even says 'the scientific family name for loaches'"
   },
   {
    "w": "cobol",
    "why": "an acronym (COmmon Business-Oriented Language), not an English word"
   },
   {
-   "w": "coccidae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "coccidia",
-   "why": "a taxonomic order name; the definition is 'an order in the subclass Telosporidia'"
-  },
-  {
    "w": "coccidium",
    "why": "a Latin taxon name for a gut parasite, presented as an English word"
-  },
-  {
-   "w": "cocculus",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "coccyzus",
-   "why": "a Latin bird genus name; the definition is 'a genus of Cuculidae'"
   },
   {
    "w": "cockfight",
@@ -2030,60 +614,12 @@
    "why": "crude British slang, spoken aloud by the app to children"
   },
   {
-   "w": "codiaeum",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "coffea",
-   "why": "a Latin plant genus name; the sentence itself says 'labeled the genus coffea'"
-  },
-  {
-   "w": "colinus",
-   "why": "a Latin bird genus name presented as an English word"
-  },
-  {
    "w": "collins",
    "why": "definition is a biography of the novelist Wilkie Collins (1824-1889), a surname presented as an English word"
   },
   {
-   "w": "collinsia",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "colocasia",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
    "w": "colones",
    "why": "an entry that teaches a falsehood: this is the Spanish plural of a currency unit, but it is defined as the human bowel (whose plural is 'colons') and the sentence uses it that way"
-  },
-  {
-   "w": "colubrina",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "colutea",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "comandra",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "comatula",
-   "why": "an obsolete Latin genus name; the definition is 'former usage synonymous with Antedon'"
-  },
-  {
-   "w": "comatulae",
-   "why": "the Latin plural of that obsolete genus name, not an English word"
-  },
-  {
-   "w": "combretum",
-   "why": "a Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "commelina",
-   "why": "a Latin plant genus name presented as an English word (the English name is dayflower)"
   },
   {
    "w": "commie",
@@ -2102,104 +638,24 @@
    "why": "the entry teaches a term for a sexual relationship of servitude; not a spelling-bee word for a nine-year-old"
   },
   {
-   "w": "condylura",
-   "why": "a Latin mammal genus name presented as an English word (the English name is star-nosed mole)"
-  },
-  {
    "w": "congreve",
    "why": "definition is a biography of the playwright William Congreve (1670-1729), a surname presented as an English word"
-  },
-  {
-   "w": "congridae",
-   "why": "a scientific family name; the definition says 'A family of marine eels'"
-  },
-  {
-   "w": "conilurus",
-   "why": "a Latin rodent genus name; the definition itself begins 'A genus of Australian rodents'"
-  },
-  {
-   "w": "conium",
-   "why": "a Latin plant genus name, defined as 'small genus of highly toxic biennials: hemlock'"
-  },
-  {
-   "w": "connarus",
-   "why": "a Latin plant genus name; the definition says 'type genus of the Connaraceae'"
   },
   {
    "w": "controled",
    "why": "misspelling of 'controlled' drilled as if correct in a spelling app"
   },
   {
-   "w": "conyza",
-   "why": "Latin genus name presented as an English word, with a near-empty gloss"
-  },
-  {
-   "w": "copepoda",
-   "why": "scientific subclass name presented as an English word"
-  },
-  {
-   "w": "coprinus",
-   "why": "'genus of black-spotted agarics' - a Latin genus name, not English"
-  },
-  {
    "w": "coprolith",
    "why": "definition is 'a hard mass of fecal matter' - clinical toilet content no spelling bee would put before a child"
-  },
-  {
-   "w": "coptis",
-   "why": "'small genus of low perennial herbs' - a Latin genus name, not English"
-  },
-  {
-   "w": "coracias",
-   "why": "'type genus of the Coraciidae' - a Latin genus name, not English"
-  },
-  {
-   "w": "cordaites",
-   "why": "Latin fossil-plant genus name presented as an English word"
-  },
-  {
-   "w": "cordia",
-   "why": "Latin genus name defined only as trees 'of the family Boraginaceae'"
   },
   {
    "w": "corditis",
    "why": "definition is 'inflammation of the spermatic cord' - clinical genital content"
   },
   {
-   "w": "coregonus",
-   "why": "'type genus of the Coregonidae' - a Latin genus name, not English"
-  },
-  {
-   "w": "coreidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "corixa",
-   "why": "'type genus of the Corixidae' - a Latin genus name, not English"
-  },
-  {
-   "w": "cornaceae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
    "w": "corp",
    "why": "abbreviation of 'corporation', not an English word"
-  },
-  {
-   "w": "corticium",
-   "why": "'genus of fungi' - a Latin genus name, not English"
-  },
-  {
-   "w": "corvidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "corylus",
-   "why": "Latin genus name; the definition itself says the English word is 'hazel'"
-  },
-  {
-   "w": "corypha",
-   "why": "Latin palm genus name presented as an English word"
   },
   {
    "w": "cos",
@@ -2222,36 +678,12 @@
    "why": "abbreviation for 'cotangent', not an English word"
   },
   {
-   "w": "cottidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "cottus",
-   "why": "'type genus of the Cottidae' - a Latin genus name, not English"
-  },
-  {
-   "w": "cotula",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
    "w": "cps",
    "why": "abbreviation for cycles per second, not an English word"
   },
   {
-   "w": "cracidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
    "w": "craniata",
    "why": "scientific taxon name presented as an English word"
-  },
-  {
-   "w": "crassula",
-   "why": "'type genus of Crassulaceae' - a Latin genus name, not English"
-  },
-  {
-   "w": "crataegus",
-   "why": "Latin genus name; the definition itself says the English word is 'hawthorn'"
   },
   {
    "w": "crazies",
@@ -2262,22 +694,6 @@
    "why": "obsolete misspelling of 'creatine', which appears correctly as the very next entry"
   },
   {
-   "w": "crepis",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "crex",
-   "why": "the definition says outright that it is 'a genus of birds in the rail family'"
-  },
-  {
-   "w": "cricetus",
-   "why": "'type genus of the Cricetidae' - a Latin genus name, not English"
-  },
-  {
-   "w": "crinoidea",
-   "why": "scientific class name presented as an English word"
-  },
-  {
    "w": "cro",
    "why": "acronym for cathode ray oscilloscope; the sentence even prints it as 'CRO'"
   },
@@ -2286,16 +702,8 @@
    "why": "derogatory term for a person with a spinal disability, and the sentence casts him as a skulking villain"
   },
   {
-   "w": "crotalus",
-   "why": "Latin rattlesnake genus name presented as an English word"
-  },
-  {
    "w": "crs",
    "why": "not a word; the definition is the chemical element chromium, whose symbol is Cr"
-  },
-  {
-   "w": "crustacea",
-   "why": "scientific class name presented as an English word"
   },
   {
    "w": "cubas",
@@ -2310,44 +718,8 @@
    "why": "definition is 'the practice of making cuckolds; sexual conquests of married women'"
   },
   {
-   "w": "cuculidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "cuculus",
-   "why": "'type genus of the Cuculidae' - a Latin genus name, not English"
-  },
-  {
-   "w": "cucurbita",
-   "why": "'type genus of the Cucurbitaceae' - a Latin genus name, not English"
-  },
-  {
    "w": "cul",
    "why": "not a standalone English word; only exists inside 'cul-de-sac', as the sentence itself shows"
-  },
-  {
-   "w": "culex",
-   "why": "'type genus of the Culicidae' - a Latin genus name, not English"
-  },
-  {
-   "w": "culices",
-   "why": "Latin plural of a mosquito genus name, not an English word"
-  },
-  {
-   "w": "culicidae",
-   "why": "the definition says outright that it is 'the scientific family name for mosquitoes'"
-  },
-  {
-   "w": "cuniculus",
-   "why": "the definition says outright that it is 'a genus of large South American rodents'"
-  },
-  {
-   "w": "cupressus",
-   "why": "'type genus of Cupressaceae' - a Latin genus name, not English"
-  },
-  {
-   "w": "curcuma",
-   "why": "Latin genus name presented as an English word"
   },
   {
    "w": "curet",
@@ -2358,10 +730,6 @@
    "why": "definition is surgery scraping tissue from a body cavity 'as the uterus' - clinical gynaecological content"
   },
   {
-   "w": "cuterebra",
-   "why": "botfly genus name (\"type genus of the Cuterebridae\") presented as an English word"
-  },
-  {
    "w": "cutlas",
    "why": "rare variant spelling that conflicts with the standard spelling of the sword, which is also in this packet; drilling it teaches a wrong spelling"
   },
@@ -2370,80 +738,12 @@
    "why": "abbreviation for hundredweight, not a word"
   },
   {
-   "w": "cyamus",
-   "why": "whale-louse genus name presented as an English word"
-  },
-  {
    "w": "cyanamid",
    "why": "truncated variant of the chemical name; the correct spelling is also in this packet, so one of the two is drilled as a misspelling"
   },
   {
-   "w": "cyathea",
-   "why": "tree-fern genus name presented as an English word"
-  },
-  {
-   "w": "cycadales",
-   "why": "scientific order name presented as an English word"
-  },
-  {
-   "w": "cycas",
-   "why": "plant genus name (\"type genus of Cycadaceae\") presented as an English word"
-  },
-  {
    "w": "cyder",
    "why": "archaic variant spelling of the apple drink, drilled as if it were the correct modern spelling"
-  },
-  {
-   "w": "cydippida",
-   "why": "scientific order name of comb jellies presented as an English word"
-  },
-  {
-   "w": "cydonia",
-   "why": "quince genus name presented as an English word"
-  },
-  {
-   "w": "cynara",
-   "why": "artichoke genus name presented as an English word"
-  },
-  {
-   "w": "cynips",
-   "why": "gall-wasp genus name (\"type genus of the Cynipidae\") presented as an English word"
-  },
-  {
-   "w": "cynodon",
-   "why": "grass genus name presented as an English word"
-  },
-  {
-   "w": "cynomys",
-   "why": "prairie-dog genus name presented as an English word"
-  },
-  {
-   "w": "cynoscion",
-   "why": "fish genus name presented as an English word"
-  },
-  {
-   "w": "cyperus",
-   "why": "sedge genus name (\"type genus of Cyperaceae\") presented as an English word"
-  },
-  {
-   "w": "cypraea",
-   "why": "cowrie genus name (\"type genus of the family Cypraeidae\") presented as an English word"
-  },
-  {
-   "w": "cyprinus",
-   "why": "carp genus name (\"type genus of the family Cyprinidae\") presented as an English word"
-  },
-  {
-   "w": "cyrtomium",
-   "why": "fern genus name presented as an English word"
-  },
-  {
-   "w": "dacelo",
-   "why": "kingfisher genus name presented as an English word"
-  },
-  {
-   "w": "dactylis",
-   "why": "grass genus name presented as an English word"
   },
   {
    "w": "dag",
@@ -2462,36 +762,12 @@
    "why": "abbreviation for decaliter, not a word"
   },
   {
-   "w": "dalbergia",
-   "why": "tree genus name presented as an English word"
-  },
-  {
-   "w": "dalea",
-   "why": "plant genus name presented as an English word"
-  },
-  {
    "w": "damn",
    "why": "a swear word, defined in its swear sense (\"something of little value\") and spoken aloud by the app"
   },
   {
-   "w": "dasyatis",
-   "why": "stingray genus name (\"type genus of the Dasyatidae\") presented as an English word"
-  },
-  {
-   "w": "dasypus",
-   "why": "armadillo genus name (\"type genus of the Dasypodidae\") presented as an English word"
-  },
-  {
-   "w": "dasyurus",
-   "why": "marsupial genus name (\"type genus of the family Dasyuridae\") presented as an English word"
-  },
-  {
    "w": "dat",
    "why": "acronym for digital audio tape, not a word"
-  },
-  {
-   "w": "daucus",
-   "why": "carrot genus name presented as an English word"
   },
   {
    "w": "davies",
@@ -2522,26 +798,6 @@
    "why": "purely clinical reproductive-anatomy gloss (\"the epithelial tissue of the endometrium\") that no spelling bee would put in front of a child"
   },
   {
-   "w": "decumaria",
-   "why": "climbing-plant genus name presented as an English word"
-  },
-  {
-   "w": "deers",
-   "why": "nonstandard plural (the plural is the same as the singular), and the definition is a scientific family gloss about antlers rather than a definition of the animal"
-  },
-  {
-   "w": "delichon",
-   "why": "bird genus name (\"a genus of Hirundinidae\") presented as an English word"
-  },
-  {
-   "w": "dendroica",
-   "why": "warbler genus name (\"a genus of Parulidae\") presented as an English word"
-  },
-  {
-   "w": "dentaria",
-   "why": "plant genus name presented as an English word"
-  },
-  {
    "w": "der",
    "why": "not an English word; the definition (\"a quantity consisting of 500 items\") belongs to nothing and looks like garbage data"
   },
@@ -2552,14 +808,6 @@
   {
    "w": "descendents",
    "why": "common misspelling of the plural of the word for a person descended from an ancestor; a spelling app must not drill it"
-  },
-  {
-   "w": "desmodium",
-   "why": "plant genus name presented as an English word"
-  },
-  {
-   "w": "desmodus",
-   "why": "vampire-bat genus name (\"type genus of the Desmodontidae\") presented as an English word"
   },
   {
    "w": "dess",
@@ -2578,32 +826,12 @@
    "why": "an abbreviation of 'diameter', not a word"
   },
   {
-   "w": "diapsida",
-   "why": "a scientific class name presented as English"
-  },
-  {
    "w": "dias",
    "why": "a biography of the Portuguese explorer Bartolomeu Dias; a surname, not an English word, and confusable with 'dais'"
   },
   {
    "w": "diazepam",
    "why": "a prescription tranquilliser (Valium); a drug entry no spelling bee would put in front of a child"
-  },
-  {
-   "w": "dicranum",
-   "why": "a scientific genus name ('type genus of Dicranaceae') presented as English"
-  },
-  {
-   "w": "dictamnus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "didelphis",
-   "why": "a scientific genus name ('type genus of the family Didelphidae') presented as English"
-  },
-  {
-   "w": "diervilla",
-   "why": "a scientific genus name presented as English"
   },
   {
    "w": "dilantin",
@@ -2618,66 +846,6 @@
    "why": "an acronym (dual income no kids) presented as a word"
   },
   {
-   "w": "dinoceras",
-   "why": "an extinct genus name, and the definition ('a variety of dinocerate') explains nothing"
-  },
-  {
-   "w": "dinornis",
-   "why": "a scientific genus name ('type genus of the Dinornithidae') presented as English"
-  },
-  {
-   "w": "diodon",
-   "why": "a scientific genus name ('type genus of the Diodontidae') presented as English"
-  },
-  {
-   "w": "dionaea",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "dioscorea",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "diospyros",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "diphylla",
-   "why": "a scientific genus name (vampire bats) presented as English"
-  },
-  {
-   "w": "diplopoda",
-   "why": "a scientific class name presented as English"
-  },
-  {
-   "w": "dipnoi",
-   "why": "a scientific order name presented as English"
-  },
-  {
-   "w": "dipodidae",
-   "why": "a scientific family name presented as English"
-  },
-  {
-   "w": "dipodomys",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "dipsacus",
-   "why": "a scientific genus name ('type genus of the Dipsacaceae') presented as English"
-  },
-  {
-   "w": "diptera",
-   "why": "a scientific order name presented as English"
-  },
-  {
-   "w": "dipteryx",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "dipus",
-   "why": "a scientific genus name ('type genus of the Dipodidae') presented as English"
-  },
-  {
    "w": "diss",
    "why": "slang for insulting someone, and the definition has been stolen from the Roman god Dis"
   },
@@ -2688,10 +856,6 @@
   {
    "w": "dod",
    "why": "an acronym for the US Department of Defense, not a word"
-  },
-  {
-   "w": "dodonaea",
-   "why": "a scientific genus name presented as English"
   },
   {
    "w": "dominus",
@@ -2706,10 +870,6 @@
    "why": "an acronym for the US Department of State, not a word"
   },
   {
-   "w": "dovyalis",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "dowery",
    "why": "a nonstandard spelling of 'dowry' drilled as if it were correct, in an app whose whole purpose is spelling"
   },
@@ -2722,16 +882,8 @@
    "why": "a trademarked brand of medicine, not an English word"
   },
   {
-   "w": "drepanis",
-   "why": "a scientific genus name ('a genus of Drepanididae') presented as English"
-  },
-  {
    "w": "duer",
    "why": "not a word; an invented comparative of 'due', propped up by a forced example sentence"
-  },
-  {
-   "w": "durio",
-   "why": "a scientific genus name (durian trees) presented as an English word"
   },
   {
    "w": "dutcher",
@@ -2746,40 +898,12 @@
    "why": "clinical: the card reads 'painful or difficult urination' to a child"
   },
   {
-   "w": "ebenaceae",
-   "why": "a scientific plant family name presented as English"
-  },
-  {
-   "w": "ebenales",
-   "why": "a scientific plant order name presented as English"
-  },
-  {
-   "w": "ecballium",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "eccyesis",
    "why": "clinical: defined as a pregnancy growing outside the uterus"
   },
   {
-   "w": "echeneis",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "echinops",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "echium",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "eclampsia",
    "why": "clinical: convulsions and coma during pregnancy"
-  },
-  {
-   "w": "edentata",
-   "why": "a scientific mammal order name presented as English"
   },
   {
    "w": "edp",
@@ -2794,56 +918,8 @@
    "why": "the definition is a judgement - 'having unsuitable feminine qualities' - shown to a child as fact"
   },
   {
-   "w": "egeria",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "egretta",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "elaeagnus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "elaeis",
-   "why": "a scientific genus name (oil palm) presented as English"
-  },
-  {
-   "w": "elanus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "elaphe",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "elaphurus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "elapidae",
-   "why": "a scientific snake family name presented as English"
-  },
-  {
-   "w": "elephas",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "elettaria",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "eleusine",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "elias",
    "why": "not a word of English; it carries the biography of Elia, the pen name of a different writer"
-  },
-  {
-   "w": "elopidae",
-   "why": "a scientific fish family name presented as English"
   },
   {
    "w": "els",
@@ -2854,32 +930,8 @@
    "why": "the definition is a street name for the drug LSD"
   },
   {
-   "w": "elymus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "emberiza",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "embiodea",
-   "why": "a scientific insect order name presented as English"
-  },
-  {
    "w": "emf",
    "why": "an acronym (electromotive force) presented as a word"
-  },
-  {
-   "w": "emilia",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "empetrum",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "encelia",
-   "why": "a scientific genus name presented as English"
   },
   {
    "w": "endometrial",
@@ -2890,20 +942,8 @@
    "why": "not a word; a pluralised language name carrying the definition of the English language"
   },
   {
-   "w": "engraulis",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "enhydra",
-   "why": "a scientific genus name (sea otter) presented as English"
-  },
-  {
    "w": "entires",
    "why": "not a standard English noun, and the definition is 'uncastrated adult male horse'"
-  },
-  {
-   "w": "entoloma",
-   "why": "a scientific genus name presented as English"
   },
   {
    "w": "enuresis",
@@ -2914,72 +954,8 @@
    "why": "an acronym (Environmental Protection Agency) presented as a word"
   },
   {
-   "w": "epacris",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "ephemeroptera",
-   "why": "a scientific insect order name presented as English"
-  },
-  {
-   "w": "ephestia",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "epi",
    "why": "an acronym (Eysenck Personality Inventory) presented as a word"
-  },
-  {
-   "w": "epilobium",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "equiseta",
-   "why": "a scientific genus name (Equisetum) presented as an English word"
-  },
-  {
-   "w": "equisetum",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "equus",
-   "why": "a scientific genus name; definition is 'type genus of the Equidae'"
-  },
-  {
-   "w": "erethizon",
-   "why": "a scientific genus name; definition is 'a genus of Erethizontidae'"
-  },
-  {
-   "w": "erianthus",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "ericaceae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "ericales",
-   "why": "a scientific order name; the definition is just a list of other family names"
-  },
-  {
-   "w": "erigeron",
-   "why": "a scientific genus name; definition begins 'cosmopolitan genus of...'"
-  },
-  {
-   "w": "erinaceus",
-   "why": "a scientific genus name; definition is 'type genus of the family Erinaceidae'"
-  },
-  {
-   "w": "eriogonum",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "eriosoma",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "erithacus",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "ernst",
@@ -2994,28 +970,8 @@
    "why": "not an English word; it carries erbium's definition, and the sentence repeats the false claim that it is a rare earth element"
   },
   {
-   "w": "eryngium",
-   "why": "a scientific genus name; definition begins 'large genus of decorative plants'"
-  },
-  {
-   "w": "erysimum",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "erysiphe",
-   "why": "a scientific genus name; definition is 'genus of powdery mildews'"
-  },
-  {
    "w": "ese",
    "why": "an abbreviation (the compass point ESE), not a word; the sentence even prints it in capitals"
-  },
-  {
-   "w": "esocidae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "esox",
-   "why": "a scientific genus name; definition is 'type and only genus of the family Esocidae'"
   },
   {
    "w": "esp",
@@ -3042,32 +998,16 @@
    "why": "clinical hormone entry, with drug trade-name debris '(trade name Estronol)' in the definition"
   },
   {
-   "w": "eudyptes",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "eugene",
    "why": "an ordinary first name whose definition has been replaced by a biography of an Austrian general, dates and all"
-  },
-  {
-   "w": "eumenes",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "eumycetes",
    "why": "a taxonomic category; definition is 'coextensive with division Eumycota'"
   },
   {
-   "w": "eunectes",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "eunuch",
    "why": "definition is 'a man who has been castrated and is incapable of reproduction' and the sentence is 'Eunuchs guarded the harem.'"
-  },
-  {
-   "w": "euproctis",
-   "why": "a scientific genus name; definition is 'a genus of Lymantriidae'"
   },
   {
    "w": "euryalida",
@@ -3090,48 +1030,16 @@
    "why": "an ordinary surname whose definition has been replaced by a biography of an anatomist, with dates"
   },
   {
-   "w": "evernia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "exacum",
-   "why": "a scientific genus name; definition begins 'genus of tropical Asiatic and African plants'"
-  },
-  {
    "w": "eyres",
    "why": "a place name wrongly pluralized: the definition is Lake Eyre and the sentence invents a nonexistent 'Lake Eyres'"
-  },
-  {
-   "w": "fabaceae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "fagaceae",
-   "why": "a scientific family name; the definition is a string of Latin genus names"
-  },
-  {
-   "w": "fagales",
-   "why": "a scientific order name presented as an English word"
   },
   {
    "w": "fagin",
    "why": "definition is 'a villainous Jew in a novel by Charles Dickens' - it makes the character's religion the point of the insult"
   },
   {
-   "w": "fagopyrum",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "fagus",
-   "why": "a scientific genus name; the definition itself says 'the scientific name for beech trees'"
-  },
-  {
    "w": "falange",
    "why": "the Spanish fascist party under Franco, defined as 'the Spanish Nazi party' - a political proper noun, not an English word"
-  },
-  {
-   "w": "falco",
-   "why": "a scientific genus name; definition is 'a genus of Falconidae'"
   },
   {
    "w": "falla",
@@ -3158,10 +1066,6 @@
    "why": "an acronym (fetal alcohol syndrome); clinical, and the definition is about a mother drinking during pregnancy"
   },
   {
-   "w": "fasciola",
-   "why": "a scientific genus name; definition is 'a genus of Fasciolidae'"
-  },
-  {
    "w": "fass",
    "why": "not a word at all - a misspelling of the acronym FAS, drilled as if it were correct spelling"
   },
@@ -3172,18 +1076,6 @@
   {
    "w": "fecalith",
    "why": "definition is 'a hard mass of fecal matter'; clinical and no spelling bee would ask it"
-  },
-  {
-   "w": "felidae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "felis",
-   "why": "a scientific genus name; definition is 'type genus of the Felidae'"
-  },
-  {
-   "w": "festuca",
-   "why": "a scientific genus name (a genus of grasses) presented as English"
   },
   {
    "w": "fet",
@@ -3210,24 +1102,8 @@
    "why": "an acronym (first in, first out) presented as a word"
   },
   {
-   "w": "filago",
-   "why": "a Latin plant genus name presented as English"
-  },
-  {
-   "w": "filariid",
-   "why": "a scientific family name (Filariidae) turned into an adjective and defined circularly by that family"
-  },
-  {
-   "w": "filicales",
-   "why": "a scientific order name (the ferns) presented as English"
-  },
-  {
    "w": "fillmore",
    "why": "the entry is a biography of US president Millard Fillmore, not an English word"
-  },
-  {
-   "w": "fistulina",
-   "why": "a scientific genus name of fungi presented as English"
   },
   {
    "w": "flapcake",
@@ -3254,14 +1130,6 @@
    "why": "a French plural used only in psychiatric phrases; defined as a psychological disorder, not an English word"
   },
   {
-   "w": "fomes",
-   "why": "a scientific genus name of bracket fungi presented as English"
-  },
-  {
-   "w": "forficula",
-   "why": "an insect genus name, defined as the type genus of Forficulidae"
-  },
-  {
    "w": "fourier",
    "why": "the entry is a biography of the French mathematician, not an English word"
   },
@@ -3282,10 +1150,6 @@
    "why": "the definition is of the country France while the headword is the personal name, so the entry is broken either way"
   },
   {
-   "w": "frasera",
-   "why": "a Latin plant genus name presented as English"
-  },
-  {
    "w": "fratricides",
    "why": "definition is about people who murder their own brother or sister"
   },
@@ -3298,10 +1162,6 @@
    "why": "definition is a biography of the economist Milton Friedman, not an English word"
   },
   {
-   "w": "fringilla",
-   "why": "scientific genus name (type genus of the Fringillidae) presented as an English word"
-  },
-  {
    "w": "fris",
    "why": "not a word; it is carrying Friday's definition, so the app drills a wrong spelling"
   },
@@ -3310,76 +1170,12 @@
    "why": "misspelling of 'frisson' drilled as if correct, with frisson's definition"
   },
   {
-   "w": "fucaceae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "fucales",
-   "why": "scientific order name presented as an English word"
-  },
-  {
-   "w": "fuci",
-   "why": "Latin plural of the genus Fucus, defined as 'any member of the genus Fucus'"
-  },
-  {
-   "w": "fucus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "fulica",
-   "why": "scientific genus name; the definition itself says 'a genus of water birds'"
-  },
-  {
-   "w": "fulmarus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "fumaria",
-   "why": "scientific genus name presented as an English word (the English word is fumitory)"
-  },
-  {
-   "w": "fundulus",
-   "why": "scientific genus name; the definition itself calls it a group of fish"
-  },
-  {
-   "w": "fungia",
-   "why": "scientific genus name; the definition itself says 'a genus'"
-  },
-  {
-   "w": "furnarius",
-   "why": "scientific genus name (type genus of the Furnariidae)"
-  },
-  {
-   "w": "gadidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "gadus",
-   "why": "scientific genus name (type genus of the Gadidae)"
-  },
-  {
-   "w": "galega",
-   "why": "scientific genus name; the definition itself says 'small genus of Eurasian herbs'"
-  },
-  {
    "w": "galen",
    "why": "definition is a biography of the Greek physician Galen, not an English word"
   },
   {
-   "w": "galeopsis",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "galium",
-   "why": "scientific genus name presented as an English word (the English word is bedstraw)"
-  },
-  {
    "w": "gallamine",
    "why": "a prescription anaesthetic muscle-relaxant drug given by trade name; not a word for a children's spelling app"
-  },
-  {
-   "w": "gallinago",
-   "why": "scientific genus name; the definition itself says 'the scientific genus of snipes'"
   },
   {
    "w": "gallowses",
@@ -3390,20 +1186,12 @@
    "why": "scientific taxonomic group name presented as an English word"
   },
   {
-   "w": "garcinia",
-   "why": "scientific genus name presented as an English word (the English word is mangosteen)"
-  },
-  {
    "w": "garrick",
    "why": "definition is a biography of the actor David Garrick, not an English word"
   },
   {
    "w": "garrotted",
    "why": "definition is 'strangle with an iron collar' and the sentence describes Inquisition executions; a method of killing spelled out for a nine-year-old"
-  },
-  {
-   "w": "garrulus",
-   "why": "scientific genus name (type genus of the Garrulinae)"
   },
   {
    "w": "gat",
@@ -3418,24 +1206,12 @@
    "why": "defined as 'a gangster's pistol'; criminal gun slang, not a spelling bee word"
   },
   {
-   "w": "gavia",
-   "why": "scientific genus name (type genus of the Gavidae)"
-  },
-  {
-   "w": "gavialis",
-   "why": "scientific genus name (type genus of the Gavialidae)"
-  },
-  {
    "w": "gayness",
    "why": "definition reads 'sexual attraction to (or sexual relations with) persons of the same sex'; explicit sexual content on a child's word card"
   },
   {
    "w": "gays",
    "why": "definition reads 'someone who practices homosexuality; having a sexual attraction to persons of the same sex'; sexual and dated-offensive phrasing"
-  },
-  {
-   "w": "gazella",
-   "why": "scientific genus name presented as an English word (the English word is gazelle)"
   },
   {
    "w": "gds",
@@ -3446,24 +1222,8 @@
    "why": "definition is 'cut off the testicles (of male animals such as horses)'; castration described on a child's word card"
   },
   {
-   "w": "gelechia",
-   "why": "scientific genus name (type genus of the Gelechiidae)"
-  },
-  {
    "w": "gelly",
    "why": "slang for dynamite, and it looks exactly like a misspelling of 'jelly' - the worst thing to drill in a spelling app"
-  },
-  {
-   "w": "genetta",
-   "why": "scientific genus name presented as an English word (the English word is genet)"
-  },
-  {
-   "w": "genista",
-   "why": "scientific genus name presented as an English word (the English word is broom)"
-  },
-  {
-   "w": "gentiana",
-   "why": "scientific genus name (type genus of the Gentianaceae)"
   },
   {
    "w": "ges",
@@ -3482,10 +1242,6 @@
    "why": "a slur for a person with a disability, defined as 'disability of walking due to crippling of the legs or feet'"
   },
   {
-   "w": "ginkgoales",
-   "why": "scientific taxonomic order name presented as an English word"
-  },
-  {
    "w": "gis",
    "why": "not a word; it carries the definition of the unit 'gilbert'"
   },
@@ -3498,52 +1254,8 @@
    "why": "definition is a biography of the British prime minister, not an English word"
   },
   {
-   "w": "glareola",
-   "why": "scientific genus name (type genus of the Glareolidae)"
-  },
-  {
-   "w": "glaucium",
-   "why": "scientific genus name presented as an English word (the English word is horned poppy)"
-  },
-  {
-   "w": "glaucomys",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "glaux",
-   "why": "scientific genus name presented as an English word (the English word is sea milkwort)"
-  },
-  {
    "w": "glenn",
    "why": "definition is a biography of the astronaut John Glenn, not an English word"
-  },
-  {
-   "w": "gliridae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "glis",
-   "why": "scientific genus name (type genus of the Gliridae)"
-  },
-  {
-   "w": "glossina",
-   "why": "scientific genus name presented as an English word (the English word is tsetse fly)"
-  },
-  {
-   "w": "glyceria",
-   "why": "scientific genus name presented as an English word (the English word is manna grass)"
-  },
-  {
-   "w": "gnetaceae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "gobiidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "gobio",
-   "why": "scientific genus name presented as an English word (the English word is gudgeon)"
   },
   {
    "w": "goddam",
@@ -3570,18 +1282,6 @@
    "why": "a racist caricature defined as 'a grotesque black doll'; must not be in a children's corpus"
   },
   {
-   "w": "gomphrena",
-   "why": "scientific genus name; the definition itself says 'genus of tropical herbs'"
-  },
-  {
-   "w": "goodenia",
-   "why": "a scientific genus name for Australian shrubs presented as an English word"
-  },
-  {
-   "w": "goodyera",
-   "why": "a scientific genus name for orchids presented as an English word"
-  },
-  {
    "w": "gos",
    "why": "not an English word; it carries the definition of 'shift' (a work period) and the sentence uses it that way"
   },
@@ -3598,20 +1298,8 @@
    "why": "an abbreviation, not a word a spelling bee would ask"
   },
   {
-   "w": "gramineae",
-   "why": "a scientific family name (the grasses) presented as an English word"
-  },
-  {
    "w": "gravida",
    "why": "clinical obstetric jargon; the definition and sentence count a woman's pregnancies"
-  },
-  {
-   "w": "grindelia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "gruidae",
-   "why": "a scientific family name (the cranes) presented as an English word"
   },
   {
    "w": "grume",
@@ -3630,14 +1318,6 @@
    "why": "not a word; it is a misspelling of the constellation Grus, which already appears correctly in this packet"
   },
   {
-   "w": "gryllidae",
-   "why": "a scientific family name (the crickets) presented as an English word"
-  },
-  {
-   "w": "gulo",
-   "why": "a scientific genus name (Mustelidae) presented as an English word"
-  },
-  {
    "w": "gunman",
    "why": "defined as 'a professional killer who uses a gun'"
   },
@@ -3650,50 +1330,6 @@
    "why": "defined as a fight with shooting 'with the intent to kill or frighten'"
   },
   {
-   "w": "gus",
-   "why": "not a word; it carries the gazetteer entry for the island of Guam, and the sentence has a class studying 'Gus' as a US territory"
-  },
-  {
-   "w": "gymnogyps",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "gymnophiona",
-   "why": "a scientific order name presented as an English word"
-  },
-  {
-   "w": "gymnura",
-   "why": "a scientific genus name (butterfly rays) presented as an English word"
-  },
-  {
-   "w": "gynura",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "gypaetus",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "gyrinidae",
-   "why": "a scientific family name (whirligig beetles) presented as an English word"
-  },
-  {
-   "w": "halenia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "haliotis",
-   "why": "a scientific genus name ('type genus of the family Haliotidae') presented as an English word"
-  },
-  {
-   "w": "hamamelis",
-   "why": "a scientific genus name (witch hazel) presented as an English word"
-  },
-  {
-   "w": "haminoea",
-   "why": "a scientific genus name for marine bubble shells presented as an English word"
-  },
-  {
    "w": "hangman",
    "why": "defined as 'an executioner who hangs the condemned person'"
   },
@@ -3704,14 +1340,6 @@
   {
    "w": "harelip",
    "why": "an offensive, outdated term for a cleft lip, given a clinical definition about a child's face"
-  },
-  {
-   "w": "harijan",
-   "why": "a deprecated caste label; the definition tells a child that a group of people 'belongs to lowest social and ritual class in India'"
-  },
-  {
-   "w": "harpullia",
-   "why": "a scientific genus name for tropical trees presented as an English word"
   },
   {
    "w": "hassel",
@@ -3738,14 +1366,6 @@
    "why": "clinical psychiatric label for a form of schizophrenia; not spelling-bee material for a child"
   },
   {
-   "w": "hedera",
-   "why": "Latin genus name (ivy) presented as an English word"
-  },
-  {
-   "w": "hedysarum",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
    "w": "heinz",
    "why": "definition is a biography of the food industrialist H. J. Heinz"
   },
@@ -3754,40 +1374,8 @@
    "why": "not an English word; it carries the definition of the Norse goddess Hel"
   },
   {
-   "w": "helenium",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "heliopsis",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "heliothis",
-   "why": "a genus of moths presented as an English word"
-  },
-  {
-   "w": "heliozoa",
-   "why": "scientific group name for a class of protozoa, not an English word"
-  },
-  {
    "w": "hellman",
    "why": "definition is a biography of the playwright Lillian Hellman"
-  },
-  {
-   "w": "heloderma",
-   "why": "type genus of lizards presented as an English word"
-  },
-  {
-   "w": "helvella",
-   "why": "Latin genus name of fungi presented as an English word"
-  },
-  {
-   "w": "hemigalus",
-   "why": "Latin genus name of civets presented as an English word"
-  },
-  {
-   "w": "hemiptera",
-   "why": "scientific order name for insects, not an English word"
   },
   {
    "w": "hepaticae",
@@ -3798,16 +1386,8 @@
    "why": "clinical term for liver cancer; not appropriate for a children's word card"
   },
   {
-   "w": "heracleum",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
    "w": "herbert",
    "why": "definition is a biography of the composer Victor Herbert"
-  },
-  {
-   "w": "heritiera",
-   "why": "Latin genus name presented as an English word"
   },
   {
    "w": "heros",
@@ -3816,10 +1396,6 @@
   {
    "w": "herpes",
    "why": "clinical viral-disease entry with strong sexual-health associations; no spelling bee would put this to a child"
-  },
-  {
-   "w": "herpestes",
-   "why": "Latin genus name of mongooses presented as an English word"
   },
   {
    "w": "hes",
@@ -3834,48 +1410,16 @@
    "why": "definition reads 'sexual attraction to (or sexual relations with) persons of the opposite sex'"
   },
   {
-   "w": "heuchera",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "hevea",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
-   "w": "hexanchus",
-   "why": "a genus of sharks presented as an English word"
-  },
-  {
    "w": "hexapoda",
    "why": "scientific group name for insects, not an English word"
-  },
-  {
-   "w": "hibbertia",
-   "why": "Latin genus name presented as an English word"
   },
   {
    "w": "hickey",
    "why": "the sentence is about hiding a love bite on the neck with a scarf before school photos"
   },
   {
-   "w": "hieracium",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
    "w": "hiper",
    "why": "a misspelling (of 'hipper'); it even carries 'hep's definition"
-  },
-  {
-   "w": "hirudinea",
-   "why": "scientific class name for leeches, not an English word"
-  },
-  {
-   "w": "hirudo",
-   "why": "type genus of leeches presented as an English word"
-  },
-  {
-   "w": "hirundo",
-   "why": "type genus of swallows presented as an English word"
   },
   {
    "w": "hitler",
@@ -3894,24 +1438,12 @@
    "why": "an archaic misspelling of 'halibut' drilled as if correct"
   },
   {
-   "w": "homaridae",
-   "why": "scientific family name for lobsters, not an English word"
-  },
-  {
-   "w": "homarus",
-   "why": "type genus of lobsters presented as an English word"
-  },
-  {
    "w": "homeless",
    "why": "example sentence reads 'A homeless was found murdered in Central Park.' - a murder, plus ungrammatical use of the word"
   },
   {
    "w": "homo",
    "why": "definition is 'someone who practices homosexuality'; the word is a slur and the app says it aloud"
-  },
-  {
-   "w": "homoptera",
-   "why": "scientific order name for insects, not an English word"
   },
   {
    "w": "homosexuality",
@@ -3962,10 +1494,6 @@
    "why": "an acronym for a US government department"
   },
   {
-   "w": "hudsonia",
-   "why": "Latin genus name presented as an English word"
-  },
-  {
    "w": "hughes",
    "why": "definition is a biography of the poet Ted Hughes"
   },
@@ -3980,10 +1508,6 @@
   {
    "w": "humping",
    "why": "crude sexual slang that the app pronounces aloud, however innocent the printed gloss looks"
-  },
-  {
-   "w": "humulus",
-   "why": "Latin genus name presented as an English word"
   },
   {
    "w": "hunchback",
@@ -4002,52 +1526,12 @@
    "why": "a derogatory sexual term for a woman, defined as 'a woman adulterer' with a sentence about running off with someone's husband"
   },
   {
-   "w": "hyaenidae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "hybanthus",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "hydnaceae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "hydnum",
-   "why": "a scientific genus name presented as an English word ('type genus of Hydnaceae')"
-  },
-  {
-   "w": "hydrastis",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "hydrolize",
    "why": "a misspelling of the chemistry verb drilled as if correct"
   },
   {
-   "w": "hyla",
-   "why": "a scientific genus name presented as an English word ('type genus of the Hylidae')"
-  },
-  {
-   "w": "hylidae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "hylobates",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "hymenaea",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "hymenal",
    "why": "definition and sentence are sexual anatomy ('a detailed diagram of hymenal anatomy for students studying reproductive health')"
-  },
-  {
-   "w": "hyssopus",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "hysterectomies",
@@ -4058,32 +1542,8 @@
    "why": "a Shakespeare character's name, defined as the villain who 'tricked Othello into murdering his wife'"
   },
   {
-   "w": "iberis",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "icteridae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "ictonyx",
-   "why": "a scientific genus name presented as an English word ('a genus of Mustelidae')"
-  },
-  {
    "w": "ida",
    "why": "an acronym: the definition is the United Nations International Development Association"
-  },
-  {
-   "w": "idesia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "ilex",
-   "why": "a scientific genus name presented as an English word ('a large genus of dicotyledonous trees')"
-  },
-  {
-   "w": "illicium",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "imu",
@@ -4100,10 +1560,6 @@
   {
    "w": "ins",
    "why": "the definition is a US government agency acronym (the Immigration and Naturalization Service), not the word"
-  },
-  {
-   "w": "insecta",
-   "why": "a scientific class name presented as an English word"
   },
   {
    "w": "inst",
@@ -4134,14 +1590,6 @@
    "why": "an abbreviation of 'intelligence quotient', not a word"
   },
   {
-   "w": "irena",
-   "why": "a scientific genus name (type genus of the Irenidae) presented as English"
-  },
-  {
-   "w": "iresine",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "irregardless",
    "why": "a nonstandard form the definition itself admits is not standard; drilling it in a spelling app teaches a mistake"
   },
@@ -4152,34 +1600,6 @@
   {
    "w": "isn",
    "why": "an acronym for a Swiss research network, not a word"
-  },
-  {
-   "w": "isoetales",
-   "why": "a scientific order name presented as English"
-  },
-  {
-   "w": "isoetes",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "isopoda",
-   "why": "a scientific order name presented as English"
-  },
-  {
-   "w": "isuridae",
-   "why": "a scientific family name presented as English"
-  },
-  {
-   "w": "isurus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "ixodes",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "ixodidae",
-   "why": "a scientific family name presented as English"
   },
   {
    "w": "jaggers",
@@ -4196,14 +1616,6 @@
   {
    "w": "jared",
    "why": "not an English word - it carries the definition of 'jarred' while the sentence uses it as a boy's name"
-  },
-  {
-   "w": "jasminum",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "jassidae",
-   "why": "a scientific family name presented as English"
   },
   {
    "w": "jem",
@@ -4228,22 +1640,6 @@
   {
    "w": "jong",
    "why": "not an English word - the entry is a biography of the novelist Erica Jong, whose best-known books are adult fiction"
-  },
-  {
-   "w": "juglans",
-   "why": "a scientific genus name (type genus of the Juglandaceae) presented as English"
-  },
-  {
-   "w": "juncaceae",
-   "why": "a scientific family name presented as English"
-  },
-  {
-   "w": "juncus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "juniperus",
-   "why": "a scientific genus name - the definition even calls it 'the scientific genus'"
   },
   {
    "w": "kaoline",
@@ -4290,60 +1686,12 @@
    "why": "not a word - a garbled chemical symbol for krypton, carrying krypton's definition"
   },
   {
-   "w": "labridae",
-   "why": "a scientific family name (wrasses) presented as an English word"
-  },
-  {
-   "w": "lacerta",
-   "why": "a scientific genus name, defined as 'type genus of the Lacertidae'"
-  },
-  {
-   "w": "lactarius",
-   "why": "a scientific genus name of mushrooms presented as an English word"
-  },
-  {
-   "w": "lagenaria",
-   "why": "a scientific genus name (bottle gourds) presented as an English word"
-  },
-  {
-   "w": "lagopus",
-   "why": "a scientific genus name (ptarmigans) presented as an English word"
-  },
-  {
-   "w": "lagothrix",
-   "why": "a scientific genus name (woolly monkeys) presented as an English word"
-  },
-  {
-   "w": "lamiaceae",
-   "why": "a scientific family name (mints) presented as an English word"
-  },
-  {
-   "w": "lamium",
-   "why": "a scientific genus name, defined as 'genus of Old World herbs'"
-  },
-  {
-   "w": "lamna",
-   "why": "a scientific genus name, defined as 'a genus of Lamnidae'"
-  },
-  {
-   "w": "lampridae",
-   "why": "a scientific family name (opahs) presented as an English word"
-  },
-  {
    "w": "lan",
    "why": "an acronym (local area network), not an English word"
   },
   {
    "w": "laniard",
    "why": "an obsolete variant spelling of the cord worn round the neck; drilling it teaches children the wrong spelling"
-  },
-  {
-   "w": "laniidae",
-   "why": "a scientific family name (shrikes) presented as an English word"
-  },
-  {
-   "w": "lanius",
-   "why": "a scientific genus name, defined as 'type genus of the Laniidae'"
   },
   {
    "w": "lapidate",
@@ -4358,24 +1706,8 @@
    "why": "an outdated exonym for the Sami people that is widely considered offensive; the definition presents it as the ordinary name for them"
   },
   {
-   "w": "lappula",
-   "why": "a scientific genus name (stickweed) presented as an English word"
-  },
-  {
-   "w": "laridae",
-   "why": "a scientific family name (gulls and terns) presented as an English word"
-  },
-  {
    "w": "larn",
    "why": "a dialect misspelling of the verb meaning to gain knowledge, drilled here as if correct"
-  },
-  {
-   "w": "larus",
-   "why": "a scientific genus name, defined as 'type genus of the Laridae'"
-  },
-  {
-   "w": "larvacea",
-   "why": "a scientific class/order name presented as an English word"
   },
   {
    "w": "las",
@@ -4390,36 +1722,12 @@
    "why": "an informal gym clipping of latissimus dorsi, not a word to spell"
   },
   {
-   "w": "lathyrus",
-   "why": "a scientific genus name, defined as 'genus of climbing herbs'"
-  },
-  {
    "w": "lati",
    "why": "not a word for the muscle - the plural of the back muscle is lats; lati is the plural of the Latvian coin"
   },
   {
-   "w": "latimeria",
-   "why": "a scientific genus name, defined as 'type genus of the Latimeridae'"
-  },
-  {
-   "w": "laurus",
-   "why": "a scientific genus name (bay laurel) presented as an English word"
-  },
-  {
    "w": "lav",
    "why": "an informal clipping of lavatory, not a spelling word"
-  },
-  {
-   "w": "lavandula",
-   "why": "explicitly 'the scientific genus name for lavender' - Latin taxonomy, not English"
-  },
-  {
-   "w": "lavatera",
-   "why": "a scientific genus name, defined as 'widespread genus of herbs'"
-  },
-  {
-   "w": "layia",
-   "why": "a scientific genus name, defined as 'genus of western United States annuals'"
   },
   {
    "w": "lcd",
@@ -4434,14 +1742,6 @@
    "why": "definition is a biography of Timothy Leary that describes his LSD experiments and his advocacy of psychedelic drug use"
   },
   {
-   "w": "lebistes",
-   "why": "a scientific genus name (guppies) presented as an English word"
-  },
-  {
-   "w": "lecanora",
-   "why": "a scientific genus name of lichens presented as an English word"
-  },
-  {
    "w": "lech",
    "why": "definition is 'man with strong sexual desires' and the sentence is about a man making inappropriate remarks"
   },
@@ -4454,56 +1754,8 @@
    "why": "definition is 'benign tumor of smooth muscle (usually in the uterus or digestive tract)'; clinical content no spelling bee would ask a child"
   },
   {
-   "w": "leitneria",
-   "why": "a scientific genus name, defined as 'one species: corkwood'"
-  },
-  {
-   "w": "lemmus",
-   "why": "explicitly 'the scientific genus name for true lemmings' - Latin taxonomy, not English"
-  },
-  {
-   "w": "lemna",
-   "why": "a scientific genus name (duckweed) presented as an English word"
-  },
-  {
-   "w": "lemnaceae",
-   "why": "a scientific family name (duckweeds) presented as an English word"
-  },
-  {
-   "w": "lemuridae",
-   "why": "a scientific family name (lemurs) presented as an English word"
-  },
-  {
    "w": "lense",
    "why": "a misspelling of the correct spelling of this optical device; in a spelling app a wrong spelling is the worst thing possible"
-  },
-  {
-   "w": "leonurus",
-   "why": "a scientific genus name, defined as 'genus of stout Old World herbs'"
-  },
-  {
-   "w": "lepadidae",
-   "why": "a scientific family name (goose barnacles) presented as an English word"
-  },
-  {
-   "w": "lepidium",
-   "why": "a scientific genus name, defined as 'cosmopolitan genus of herbs: cress'"
-  },
-  {
-   "w": "lepiota",
-   "why": "a scientific genus name of mushrooms presented as an English word"
-  },
-  {
-   "w": "lepisma",
-   "why": "a scientific genus name, defined as 'type genus of the Lepismatidae'"
-  },
-  {
-   "w": "lepomis",
-   "why": "explicitly 'a genus of freshwater fish' - Latin taxonomy, not English"
-  },
-  {
-   "w": "leporidae",
-   "why": "a scientific family name (hares and rabbits) presented as an English word"
   },
   {
    "w": "les",
@@ -4522,10 +1774,6 @@
    "why": "a jeans trademark, not an English word"
   },
   {
-   "w": "liatris",
-   "why": "a scientific genus name, defined as 'genus of perennial North American herbs'"
-  },
-  {
    "w": "libidinal",
    "why": "definition is 'belonging to the libido'; sexual-drive content on a card shown to a nine-year-old"
   },
@@ -4538,84 +1786,20 @@
    "why": "an accounting acronym (last in, first out), not an English word"
   },
   {
-   "w": "ligularia",
-   "why": "a scientific genus name, defined as 'genus of Old World herbs'"
-  },
-  {
-   "w": "ligustrum",
-   "why": "a scientific genus name, defined as 'genus of Old World shrubs: privet'"
-  },
-  {
-   "w": "liliaceae",
-   "why": "a scientific family name, and the definition trails off into a list of other family names"
-  },
-  {
-   "w": "lilium",
-   "why": "a scientific genus name, defined as 'type genus of Liliaceae'"
-  },
-  {
-   "w": "limax",
-   "why": "a scientific genus name, defined as 'a genus of Limacidae'"
-  },
-  {
    "w": "limicolae",
    "why": "a Latin classification term for shorebirds presented as an English word"
-  },
-  {
-   "w": "limnobium",
-   "why": "a scientific genus name (American frogbit) presented as an English word"
-  },
-  {
-   "w": "limosa",
-   "why": "explicitly 'the scientific genus name for godwits' - Latin taxonomy, not English"
-  },
-  {
-   "w": "limuli",
-   "why": "a Latin plural of a genus name, defined as 'type genus of the family Limulidae'"
-  },
-  {
-   "w": "limulus",
-   "why": "a scientific genus name, defined as 'type genus of the family Limulidae'"
   },
   {
    "w": "linac",
    "why": "an abbreviation of linear accelerator; the 'definition' is a stray sentence about accelerating ions, not a definition"
   },
   {
-   "w": "linaceae",
-   "why": "a scientific family name (flax family) presented as an English word"
-  },
-  {
-   "w": "linanthus",
-   "why": "a scientific genus name, defined as 'a genus of herbs of the family Polemoniaceae'"
-  },
-  {
-   "w": "linaria",
-   "why": "a scientific genus name, defined as 'genus of herbs and subshrubs'"
-  },
-  {
    "w": "lins",
    "why": "definition is a biography of the sculptor Maya Lin, attached to a plural surname"
   },
   {
-   "w": "linum",
-   "why": "plant genus name; the definition even says 'a herbaceous plant genus'"
-  },
-  {
-   "w": "liparidae",
-   "why": "scientific family name of the snailfishes presented as an English word"
-  },
-  {
-   "w": "liparis",
-   "why": "Latin orchid genus name presented as an English word"
-  },
-  {
    "w": "lis",
    "why": "definition is the chemical element lithium; this is the element's symbol, not an English word"
-  },
-  {
-   "w": "listera",
-   "why": "orchid genus name presented as an English word"
   },
   {
    "w": "listerine",
@@ -4630,44 +1814,12 @@
    "why": "abbreviation for a law degree, not a word"
   },
   {
-   "w": "loasaceae",
-   "why": "scientific plant family name presented as an English word"
-  },
-  {
-   "w": "lobata",
-   "why": "scientific name of an order of ctenophores presented as an English word"
-  },
-  {
-   "w": "lobularia",
-   "why": "Latin plant genus name; the definition is just another plant's name"
-  },
-  {
-   "w": "locusta",
-   "why": "genus name; the definition says 'a genus of Acrididae'"
-  },
-  {
    "w": "logans",
    "why": "a single Canadian mountain peak's name given as a plural common noun"
   },
   {
    "w": "loggie",
    "why": "Italian plural form; the English word is loggia, so this drills a wrong spelling"
-  },
-  {
-   "w": "lolium",
-   "why": "Latin grass genus name presented as an English word"
-  },
-  {
-   "w": "lonicera",
-   "why": "genus name; the definition says 'A genus of flowering shrubs'"
-  },
-  {
-   "w": "lophiidae",
-   "why": "scientific fish family name presented as an English word"
-  },
-  {
-   "w": "loranthus",
-   "why": "genus name; the definition says 'type genus of the Loranthaceae'"
   },
   {
    "w": "lowes",
@@ -4678,32 +1830,12 @@
    "why": "plural of the acronym LOX (liquid oxygen), not a word"
   },
   {
-   "w": "loxia",
-   "why": "genus name; the definition says 'The scientific genus name for crossbills'"
-  },
-  {
-   "w": "loxodonta",
-   "why": "genus name; the definition says 'a genus of Elephantidae'"
-  },
-  {
-   "w": "lucanidae",
-   "why": "scientific beetle family name presented as an English word"
-  },
-  {
-   "w": "lucilia",
-   "why": "Latin fly genus name, with an example sentence about estimating time of death"
-  },
-  {
    "w": "luger",
    "why": "a brand of semiautomatic pistol; a firearm entry on a child's word card"
   },
   {
    "w": "lully",
    "why": "definition is a biography of a philosopher whose name is spelled Llull; not an English word"
-  },
-  {
-   "w": "lunaria",
-   "why": "genus name; the definition says 'small genus of European herbs'"
   },
   {
    "w": "lunas",
@@ -4714,60 +1846,8 @@
    "why": "definition is a biography of the stage actor Alfred Lunt"
   },
   {
-   "w": "lupinus",
-   "why": "genus name; the English word is lupin, already in the corpus"
-  },
-  {
-   "w": "luscinia",
-   "why": "genus name; the definition says 'the scientific name for the group of songbirds'"
-  },
-  {
-   "w": "lutra",
-   "why": "genus name; the definition says 'considered a genus of the subfamily Lutrinae'"
-  },
-  {
    "w": "lutrinae",
    "why": "scientific subfamily name presented as an English word"
-  },
-  {
-   "w": "lycaena",
-   "why": "genus name; the definition says 'type genus of the Lycaenidae'"
-  },
-  {
-   "w": "lychnis",
-   "why": "Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "lycium",
-   "why": "Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "lycopsida",
-   "why": "scientific class name; the definition is a list of other taxa"
-  },
-  {
-   "w": "lycopus",
-   "why": "genus name; the definition says 'small genus of herbs of the mint family'"
-  },
-  {
-   "w": "lycosa",
-   "why": "genus name; the definition says 'type genus of the family Lycosidae'"
-  },
-  {
-   "w": "lycosidae",
-   "why": "scientific spider family name presented as an English word"
-  },
-  {
-   "w": "lygodium",
-   "why": "Latin fern genus name presented as an English word"
-  },
-  {
-   "w": "lygus",
-   "why": "Latin insect genus name presented as an English word"
-  },
-  {
-   "w": "lymantria",
-   "why": "genus name; the definition says 'a genus of destructive moths'"
   },
   {
    "w": "lymphuria",
@@ -4778,108 +1858,24 @@
    "why": "definition is mob killing without trial; racial-terror violence read aloud to a nine-year-old"
   },
   {
-   "w": "lyrurus",
-   "why": "Latin bird genus name presented as an English word"
-  },
-  {
-   "w": "lysiloma",
-   "why": "genus name; the definition says 'small genus of tropical American trees'"
-  },
-  {
-   "w": "lythrum",
-   "why": "genus name; the definition says 'A genus of flowering plants'"
-  },
-  {
-   "w": "macaca",
-   "why": "Latin monkey genus name presented as an English word"
-  },
-  {
-   "w": "macleaya",
-   "why": "Latin plant genus name presented as an English word"
-  },
-  {
-   "w": "maclura",
-   "why": "Latin tree genus name presented as an English word"
-  },
-  {
-   "w": "madia",
-   "why": "genus name; the definition says 'genus of sticky herbs'"
-  },
-  {
-   "w": "maeandra",
-   "why": "Latin coral genus name presented as an English word"
-  },
-  {
    "w": "maffia",
    "why": "misspelling of mafia drilled as correct, and the definition is about a crime syndicate"
-  },
-  {
-   "w": "maia",
-   "why": "genus name; the definition says 'type genus of the Majidae'"
-  },
-  {
-   "w": "maja",
-   "why": "genus name; the definition says 'type genus of the Majidae'"
   },
   {
    "w": "majeure",
    "why": "not an English word on its own; only half of the phrase 'force majeure'"
   },
   {
-   "w": "malaxis",
-   "why": "genus name; the definition says 'large genus of largely terrestrial orchids'"
-  },
-  {
-   "w": "malpighia",
-   "why": "genus name; the definition says 'type genus of the Malpighiaceae'"
-  },
-  {
-   "w": "malus",
-   "why": "Latin apple genus name presented as an English word"
-  },
-  {
-   "w": "malva",
-   "why": "Latin plant genus name; the English word is mallow, already in the corpus"
-  },
-  {
-   "w": "malvaceae",
-   "why": "scientific plant family name presented as an English word"
-  },
-  {
-   "w": "malvales",
-   "why": "scientific plant order name; the definition is a bare list of family names"
-  },
-  {
    "w": "mamilla",
    "why": "clinical anatomy: the definition is a euphemism for a nipple"
-  },
-  {
-   "w": "mammalia",
-   "why": "scientific class name presented as an English word"
   },
   {
    "w": "mammilla",
    "why": "clinical anatomy: the definition is a euphemism for a nipple"
   },
   {
-   "w": "mammut",
-   "why": "genus name; the definition says 'extinct type genus of the Mammutidae'"
-  },
-  {
    "w": "maness",
    "why": "not a word: a corrupted form of the name Manes, defined as the Persian prophet"
-  },
-  {
-   "w": "manidae",
-   "why": "scientific pangolin family name presented as an English word"
-  },
-  {
-   "w": "manis",
-   "why": "genus name; the definition says 'type genus of the Manidae'"
-  },
-  {
-   "w": "mantidae",
-   "why": "scientific family name; the definition says 'The scientific family of mantises'"
   },
   {
    "w": "mantrap",
@@ -4890,24 +1886,8 @@
    "why": "MAO is an acronym for the enzyme monoamine oxidase, not a word"
   },
   {
-   "w": "marasmius",
-   "why": "Latin mushroom genus name presented as an English word"
-  },
-  {
-   "w": "marattia",
-   "why": "genus name; the definition says 'type genus of the Marattiaceae'"
-  },
-  {
    "w": "maries",
    "why": "plural of a personal name, defined as one individual; not an English word"
-  },
-  {
-   "w": "marmota",
-   "why": "a scientific genus name (the marmot genus) presented as an English word"
-  },
-  {
-   "w": "martes",
-   "why": "a scientific genus name (the marten genus) presented as an English word"
   },
   {
    "w": "martials",
@@ -4938,10 +1918,6 @@
    "why": "definition is a biography of a German gun manufacturer and the sentence shows a rifle and warfare"
   },
   {
-   "w": "mazama",
-   "why": "a scientific genus name (brocket deer) presented as an English word"
-  },
-  {
    "w": "mbd",
    "why": "an initialism for a clinical behavioural and learning disorder"
   },
@@ -4970,72 +1946,20 @@
    "why": "obscure clinical jargon for rheumatic pain in the limbs"
   },
   {
-   "w": "melastoma",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "meleagris",
-   "why": "a scientific genus name (turkeys) presented as an English word"
-  },
-  {
    "w": "melena",
    "why": "clinical: dark tarry feces containing blood from internal bleeding"
-  },
-  {
-   "w": "meles",
-   "why": "a scientific genus name (badgers) presented as an English word"
-  },
-  {
-   "w": "melia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "meliaceae",
-   "why": "a scientific plant family name presented as an English word"
-  },
-  {
-   "w": "melicocca",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "melinae",
    "why": "a scientific subfamily name (badgers) presented as an English word"
   },
   {
-   "w": "melissa",
-   "why": "a scientific genus name (Old World mints) presented as an English word"
-  },
-  {
-   "w": "melursus",
-   "why": "a scientific genus name (sloth bears) presented as an English word"
-  },
-  {
    "w": "mens",
    "why": "a misspelling of 'men' drilled as if correct; the sentence uses it ungrammatically"
   },
   {
-   "w": "mentha",
-   "why": "a scientific genus name (mints) presented as an English word"
-  },
-  {
-   "w": "mentzelia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "menura",
-   "why": "a scientific genus name (lyrebirds) presented as an English word"
-  },
-  {
    "w": "menurae",
    "why": "a scientific taxonomic group name presented as an English word"
-  },
-  {
-   "w": "menuridae",
-   "why": "a scientific bird family name presented as an English word"
-  },
-  {
-   "w": "menziesia",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "mer",
@@ -5050,32 +1974,12 @@
    "why": "a scientific subfamily name presented as an English word"
   },
   {
-   "w": "mergus",
-   "why": "a scientific genus name (mergansers) presented as an English word"
-  },
-  {
-   "w": "meropidae",
-   "why": "a scientific bird family name presented as an English word"
-  },
-  {
-   "w": "merops",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "mes",
    "why": "not a word; the definition 'a state in New England' is false and the sentence calls it an abbreviation"
   },
   {
    "w": "mesothelioma",
    "why": "clinical: a form of asbestos-related cancer"
-  },
-  {
-   "w": "mespilus",
-   "why": "a scientific genus name (medlar trees) presented as an English word"
-  },
-  {
-   "w": "mesua",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "methotrexate",
@@ -5094,36 +1998,12 @@
    "why": "a trademarked drug name presented as an English word"
   },
   {
-   "w": "micrurus",
-   "why": "a scientific genus name (coral snakes) presented as an English word"
-  },
-  {
    "w": "micturate",
    "why": "clinical term defined as 'eliminate urine'"
   },
   {
    "w": "mider",
    "why": "not a word; a made-up comparative with a nonsense sentence"
-  },
-  {
-   "w": "mikania",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "miltonia",
-   "why": "a scientific genus name (orchids) presented as an English word"
-  },
-  {
-   "w": "milvus",
-   "why": "a scientific genus name (kites) presented as an English word; the definition even misspells 'kites' as 'kits'"
-  },
-  {
-   "w": "mimidae",
-   "why": "a scientific bird family name presented as an English word"
-  },
-  {
-   "w": "mimus",
-   "why": "a scientific genus name (mockingbirds) presented as an English word"
   },
   {
    "w": "min",
@@ -5142,10 +2022,6 @@
    "why": "an acronym for a computer speed measure, printed in the sentence in capitals"
   },
   {
-   "w": "miridae",
-   "why": "a scientific insect family name presented as an English word"
-  },
-  {
    "w": "mischmetall",
    "why": "nonstandard spelling; the English word is 'mischmetal'"
   },
@@ -5158,32 +2034,12 @@
    "why": "an acronym for a university, printed in capitals in the sentence"
   },
   {
-   "w": "mitchella",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "mitella",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "mitomycin",
    "why": "an anticancer/chemotherapy drug"
   },
   {
-   "w": "mnium",
-   "why": "a scientific genus name (mosses) presented as an English word"
-  },
-  {
    "w": "mobed",
    "why": "a misspelling of 'mobbed' drilled as if correct"
-  },
-  {
-   "w": "mobula",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "mobulidae",
-   "why": "a scientific ray family name presented as an English word"
   },
   {
    "w": "mol",
@@ -5194,18 +2050,6 @@
    "why": "definition is explicitly sexual abuse of women and children"
   },
   {
-   "w": "molidae",
-   "why": "scientific family name (ocean sunfishes) presented as an English word"
-  },
-  {
-   "w": "mollusca",
-   "why": "scientific phylum name presented as an English word"
-  },
-  {
-   "w": "molothrus",
-   "why": "scientific genus name (cowbirds) presented as an English word"
-  },
-  {
    "w": "mols",
    "why": "abbreviation, not a word"
   },
@@ -5214,64 +2058,20 @@
    "why": "not an English word; the gloss is the Greek god Momus"
   },
   {
-   "w": "momordica",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "momotidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
    "w": "monera",
    "why": "Latin taxonomic kingdom name presented as an English word"
-  },
-  {
-   "w": "moneses",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "monodon",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "monotropa",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "mons",
    "why": "definition is the pubic anatomy of women"
   },
   {
-   "w": "montia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "morchella",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "morone",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "morus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "mos",
    "why": "abbreviation, not a word"
   },
   {
-   "w": "moschus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "moslem",
    "why": "outdated spelling of Muslim now widely considered disrespectful; a spelling app should not drill it"
-  },
-  {
-   "w": "motacilla",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "mph",
@@ -5286,96 +2086,20 @@
    "why": "abbreviation, and the definition is multiple sclerosis, a different thing entirely"
   },
   {
-   "w": "mucor",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "mucorales",
-   "why": "scientific order name presented as an English word"
-  },
-  {
-   "w": "mucuna",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "mugilidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "mullidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "muntiacus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "muntingia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "murderess",
    "why": "violent definition, and a gendered term for a killer"
-  },
-  {
-   "w": "muridae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "mus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "musa",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "musaceae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "muscari",
-   "why": "scientific genus name, and the definition is only a taxonomic aside with no meaning in it"
   },
   {
    "w": "musci",
    "why": "scientific taxon name presented as an English word"
   },
   {
-   "w": "muscidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
    "w": "muscoidea",
    "why": "scientific superfamily name presented as an English word"
   },
   {
-   "w": "musculus",
-   "why": "Latin anatomical and genus term, not an English word"
-  },
-  {
    "w": "muskat",
    "why": "nonstandard spelling of muscat drilled as if correct, in a spelling app"
-  },
-  {
-   "w": "musophaga",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "mustela",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "mustelus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "mya",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "mycteria",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "myiases",
@@ -5386,10 +2110,6 @@
    "why": "definition is fly larvae infesting wounds in a body; gruesome and clinical"
   },
   {
-   "w": "mylodon",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "myomorpha",
    "why": "scientific taxon name presented as an English word"
   },
@@ -5398,88 +2118,16 @@
    "why": "definition belongs to a different disease entirely and the headword is not used this way"
   },
   {
-   "w": "myrcia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "myriapoda",
    "why": "scientific taxon name presented as an English word"
-  },
-  {
-   "w": "myrica",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "myricales",
-   "why": "scientific order name presented as an English word"
-  },
-  {
-   "w": "myristica",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "myrmeleon",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "myroxylon",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "myrrhis",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "myrtales",
-   "why": "scientific order name; the definition is a bare list of Latin family names"
-  },
-  {
-   "w": "myrtus",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "mysidacea",
    "why": "scientific taxon name presented as an English word"
   },
   {
-   "w": "mysidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "mysis",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "mysticeti",
    "why": "scientific taxon name presented as an English word"
-  },
-  {
-   "w": "mytilidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "mytilus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "myxine",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "myxinidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "naiadales",
-   "why": "scientific order name presented as an English word"
-  },
-  {
-   "w": "naias",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "naja",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "nanism",
@@ -5492,22 +2140,6 @@
   {
    "w": "narcist",
    "why": "misspelling of narcissist drilled as if correct"
-  },
-  {
-   "w": "nasalis",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nasua",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "naticidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "natrix",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "naturist",
@@ -5534,60 +2166,8 @@
    "why": "trade name of a sedative drug"
   },
   {
-   "w": "neophron",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "neotoma",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nepa",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nepenthes",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nepeta",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nephelium",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nephrops",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nepidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "nerita",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "neritidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "neritina",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "nerium",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "nervus",
    "why": "Latin anatomical term, not an English word"
-  },
-  {
-   "w": "nesokia",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "neter",
@@ -5602,24 +2182,12 @@
    "why": "definition is clinical embryology about a fertilized egg implanting in the uterus"
   },
   {
-   "w": "nidularia",
-   "why": "a fungal genus name presented as an English word (\"type genus of the Nidulariaceae\")"
-  },
-  {
    "w": "nis",
    "why": "not a word; it carries nickel's chemistry definition and an invented sentence"
   },
   {
    "w": "nist",
    "why": "an acronym for a US government agency, not a word to spell"
-  },
-  {
-   "w": "nitella",
-   "why": "a genus name for stoneworts presented as an English word"
-  },
-  {
-   "w": "noctuidae",
-   "why": "a moth family name presented as an English word"
   },
   {
    "w": "nocturia",
@@ -5636,18 +2204,6 @@
   {
    "w": "nonsexual",
    "why": "definition is about sex; no spelling bee would put this in front of a child"
-  },
-  {
-   "w": "notonecta",
-   "why": "an insect genus name presented as an English word"
-  },
-  {
-   "w": "notornis",
-   "why": "a bird genus name presented as an English word"
-  },
-  {
-   "w": "notropis",
-   "why": "a fish genus name presented as an English word"
   },
   {
    "w": "nov",
@@ -5678,18 +2234,6 @@
    "why": "obstetric jargon for a woman who has never given birth"
   },
   {
-   "w": "numenius",
-   "why": "a bird genus name presented as an English word"
-  },
-  {
-   "w": "numida",
-   "why": "a bird genus name presented as an English word"
-  },
-  {
-   "w": "numididae",
-   "why": "a bird family name presented as an English word"
-  },
-  {
    "w": "numidinae",
    "why": "a bird subfamily name presented as an English word"
   },
@@ -5702,44 +2246,12 @@
    "why": "definition is \"a sexually attractive young woman\" - it sexualizes a girl and must not reach a child"
   },
   {
-   "w": "ochotona",
-   "why": "a mammal genus name presented as an English word"
-  },
-  {
-   "w": "ochroma",
-   "why": "a plant genus name presented as an English word (\"one species: balsa\")"
-  },
-  {
-   "w": "ocimum",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
    "w": "oct",
    "why": "an abbreviation for October, not a word"
   },
   {
-   "w": "octopoda",
-   "why": "a taxonomic order name presented as an English word"
-  },
-  {
-   "w": "odonata",
-   "why": "a taxonomic order name presented as an English word"
-  },
-  {
    "w": "ods",
    "why": "an abbreviation (Doctor of Optometry), not a word"
-  },
-  {
-   "w": "oecanthus",
-   "why": "a cricket genus name presented as an English word"
-  },
-  {
-   "w": "oenanthe",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "oenothera",
-   "why": "a plant genus name presented as an English word"
   },
   {
    "w": "oestriol",
@@ -5758,44 +2270,12 @@
    "why": "not a standard English word; the gloss belongs to \"of old\" and the sentence (\"days of olds\") is ungrammatical"
   },
   {
-   "w": "olea",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "olearia",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
    "w": "oliguria",
    "why": "definition is clinical: abnormally small production of urine, kidney disease, urinary tract obstruction"
   },
   {
-   "w": "ondatra",
-   "why": "a rodent genus name presented as an English word"
-  },
-  {
    "w": "oni",
    "why": "an acronym for a US naval intelligence agency, not a word"
-  },
-  {
-   "w": "oniscidae",
-   "why": "a crustacean family name presented as an English word"
-  },
-  {
-   "w": "oniscus",
-   "why": "a crustacean genus name presented as an English word"
-  },
-  {
-   "w": "onoclea",
-   "why": "a fern genus name presented as an English word"
-  },
-  {
-   "w": "ononis",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "onopordon",
-   "why": "a plant genus name presented as an English word"
   },
   {
    "w": "onyxis",
@@ -5810,34 +2290,6 @@
    "why": "a taxonomic suborder name presented as an English word"
   },
   {
-   "w": "ophiurida",
-   "why": "a taxonomic order name presented as an English word"
-  },
-  {
-   "w": "opiliones",
-   "why": "a taxonomic order name presented as an English word"
-  },
-  {
-   "w": "opuntia",
-   "why": "a cactus genus name presented as an English word"
-  },
-  {
-   "w": "orchestia",
-   "why": "a crustacean genus name presented as an English word"
-  },
-  {
-   "w": "orcinus",
-   "why": "a whale genus name presented as an English word"
-  },
-  {
-   "w": "oreamnos",
-   "why": "a goat genus name presented as an English word"
-  },
-  {
-   "w": "oreortyx",
-   "why": "a quail genus name presented as an English word"
-  },
-  {
    "w": "orgies",
    "why": "the everyday meaning of this word is sexual; the sanitized gloss (\"any act of immoderate indulgence\") does not make it safe to speak aloud to a nine-year-old"
   },
@@ -5850,80 +2302,16 @@
    "why": "the definition itself states the term is regarded as offensive by Asians; it is a slur"
   },
   {
-   "w": "oriolidae",
-   "why": "a bird family name presented as an English word"
-  },
-  {
-   "w": "oriolus",
-   "why": "a bird genus name presented as an English word"
-  },
-  {
-   "w": "orontium",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "ortalis",
-   "why": "a bird genus name presented as an English word"
-  },
-  {
-   "w": "oryzopsis",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "osmeridae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "osmerus",
-   "why": "a scientific genus name ('type genus of the Osmeridae')"
-  },
-  {
-   "w": "ostreidae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "ostrya",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "oswald",
    "why": "definition is a biography of the man who assassinated President Kennedy"
-  },
-  {
-   "w": "otaria",
-   "why": "a scientific genus name ('type genus of the Otariidae')"
-  },
-  {
-   "w": "otariidae",
-   "why": "a scientific family name presented as an English word"
   },
   {
    "w": "otides",
    "why": "a scientific taxonomic group name presented as an English word"
   },
   {
-   "w": "otididae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "otus",
-   "why": "a scientific genus name ('a genus of Strigidae')"
-  },
-  {
-   "w": "ovibos",
-   "why": "a scientific genus name; the definition does not even form a sentence"
-  },
-  {
    "w": "oxytocic",
    "why": "definition is a drug that induces labour by causing contractions of the uterus; obstetric content no spelling bee would put to a child"
-  },
-  {
-   "w": "oxytropis",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "oxyuridae",
-   "why": "a scientific family name presented as an English word (pinworms infecting the human body)"
   },
   {
    "w": "ozaena",
@@ -5932,10 +2320,6 @@
   {
    "w": "ozena",
    "why": "same obsolete clinical disease term; foul nasal discharge, not a child's word"
-  },
-  {
-   "w": "ozonium",
-   "why": "a scientific form-genus of fungi presented as an English word"
   },
   {
    "w": "paba",
@@ -5950,64 +2334,8 @@
    "why": "defines a Mexican-American teenager as a member of a neighbourhood gang; an ethnic slur-adjacent stereotype"
   },
   {
-   "w": "padda",
-   "why": "a scientific genus name ('a genus of Ploceidae')"
-  },
-  {
-   "w": "paeonia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "pagrus",
-   "why": "a scientific genus name ('a genus of Sparidae')"
-  },
-  {
-   "w": "pagurus",
-   "why": "a scientific genus name ('type genus of the family Paguridae')"
-  },
-  {
-   "w": "palaemon",
-   "why": "a scientific genus name ('type genus of the family Palaemonidae')"
-  },
-  {
-   "w": "palaquium",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "palinurus",
-   "why": "a scientific genus name ('type genus of the family Palinuridae')"
-  },
-  {
-   "w": "paliurus",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "palmaceae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "palmae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
    "w": "palmature",
    "why": "a clinical deformity term (fused, webbed fingers) with a sentence about a child needing surgery"
-  },
-  {
-   "w": "panax",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "pandion",
-   "why": "a scientific genus name ('type genus of the Pandionidae')"
-  },
-  {
-   "w": "papaver",
-   "why": "a scientific genus name ('type genus of the Papaveraceae')"
-  },
-  {
-   "w": "papio",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "papistic",
@@ -6026,40 +2354,12 @@
    "why": "same obstetric abbreviation, with a sentence reading 'gravida three, paras two'"
   },
   {
-   "w": "paridae",
-   "why": "a scientific family name presented as an English word"
-  },
-  {
-   "w": "parmelia",
-   "why": "a scientific genus name ('type genus of the Parmeliaceae')"
-  },
-  {
-   "w": "parnassia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "parricide",
    "why": "definition is a person who kills his or her parent"
   },
   {
-   "w": "parus",
-   "why": "a scientific genus name ('type genus of the family Paridae')"
-  },
-  {
-   "w": "passerina",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "pastinaca",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
    "w": "patricide",
    "why": "definition is a person who murders their father, and the sentence adds 'after years of abuse'"
-  },
-  {
-   "w": "pauropoda",
-   "why": "a scientific taxonomic class name presented as an English word"
   },
   {
    "w": "payed",
@@ -6078,36 +2378,8 @@
    "why": "obscure clinical anatomy glossed only as 'of or relating to the pubis'"
   },
   {
-   "w": "pediculus",
-   "why": "a scientific genus name (human head lice) presented as an English word"
-  },
-  {
    "w": "peed",
    "why": "a crude bodily-function word glossed clinically as 'eliminate urine'; no spelling bee would ask it"
-  },
-  {
-   "w": "pelecanus",
-   "why": "scientific genus name (Pelecanidae) presented as an English word"
-  },
-  {
-   "w": "pellaea",
-   "why": "scientific genus name of ferns presented as an English word"
-  },
-  {
-   "w": "peltandra",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pennatula",
-   "why": "scientific genus name (sea pens) presented as an English word"
-  },
-  {
-   "w": "perca",
-   "why": "scientific genus name (Percidae) presented as an English word"
-  },
-  {
-   "w": "percidae",
-   "why": "scientific family name presented as an English word"
   },
   {
    "w": "percoidea",
@@ -6118,16 +2390,8 @@
    "why": "definition is a biography of the novelist Walker Percy rather than any English word"
   },
   {
-   "w": "pereskia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "perineal",
    "why": "clinical term for the private area of the body; the example sentence describes exercises for it"
-  },
-  {
-   "w": "pernis",
-   "why": "scientific genus name of a bird presented as an ordinary English bird name"
   },
   {
    "w": "pernod",
@@ -6138,60 +2402,12 @@
    "why": "ordinary word hijacked by a biography ('United States philosopher (1876-1957)'), and its own meaning is an alcoholic pear drink"
   },
   {
-   "w": "persea",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "pestis",
    "why": "half of a Latin bacterium name (Yersinia pestis), not an English word"
   },
   {
-   "w": "petaurus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "petrogale",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "petter",
    "why": "definition is sexual: 'a lover who gently fondles and caresses the loved one', and the example sentence is 'They are heavy petters.'"
-  },
-  {
-   "w": "peziza",
-   "why": "scientific genus name of a fungus presented as an English word"
-  },
-  {
-   "w": "pezizales",
-   "why": "scientific order of fungi presented as an English word"
-  },
-  {
-   "w": "pezophaps",
-   "why": "scientific genus name; the definition ('constituted by the extinct solitaire') is not even a sentence"
-  },
-  {
-   "w": "phalaris",
-   "why": "scientific genus name of grasses presented as an English word"
-  },
-  {
-   "w": "phallales",
-   "why": "scientific order of fungi; definition dwells on slimy, fetid stinkhorns"
-  },
-  {
-   "w": "phalli",
-   "why": "headword is the plural of an anatomical/sexual term, glossed here as a fungus genus"
-  },
-  {
-   "w": "phallus",
-   "why": "anatomical and sexual term disguised as a fungus genus name; not for a children's corpus"
-  },
-  {
-   "w": "phaseolus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "phasianus",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "phasmida",
@@ -6202,208 +2418,28 @@
    "why": "definition is sexual: a man who has 'short sexual relationships' with many women"
   },
   {
-   "w": "philohela",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "phoca",
-   "why": "scientific genus name (Phocidae) presented as an English word"
-  },
-  {
-   "w": "phocidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "pholas",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pholidota",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pholiota",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "phoronida",
-   "why": "scientific phylum name presented as an English word"
-  },
-  {
-   "w": "phthirius",
-   "why": "scientific genus name for crab lice, a sexually transmitted parasite; the example sentence repeats it"
-  },
-  {
-   "w": "physa",
-   "why": "scientific genus name of a snail presented as an English word"
-  },
-  {
-   "w": "physalia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "physalis",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "picariae",
    "why": "scientific taxonomic grouping presented as an English word"
-  },
-  {
-   "w": "picea",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "picidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "picumnus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "picus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pieridae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "pieris",
-   "why": "scientific genus name; the definition ('evergreen shrubs of woody vines') is also garbled"
-  },
-  {
-   "w": "pilularia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pinaceae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "pinckneya",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pinctada",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "pinealoma",
    "why": "definition is 'tumor of the pineal gland' - clinical in a way no spelling bee would ask a child"
   },
   {
-   "w": "pipa",
-   "why": "scientific genus name (Pipidae) presented as an English word"
-  },
-  {
    "w": "pipeful",
    "why": "definition and example exist only to describe a quantity of tobacco smoked in a pipe"
-  },
-  {
-   "w": "piperales",
-   "why": "scientific order of plants; the definition is just a list of family names"
-  },
-  {
-   "w": "pipidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "pipile",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pipilo",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pipra",
-   "why": "scientific genus name presented as an English word"
   },
   {
    "w": "pirana",
    "why": "misspelling of 'piranha' drilled as if correct in a spelling app; definition also dwells on fish that 'attack and destroy living animals'"
   },
   {
-   "w": "piscidia",
-   "why": "scientific genus name presented as an English word; definition centres on fish poisons"
-  },
-  {
-   "w": "pistacia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pistia",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
    "w": "pitressin",
    "why": "a trademarked prescription drug; definition is clinical (raises blood pressure, reduces urine flow)"
   },
   {
-   "w": "plantago",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "platalea",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "platanus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "plecotus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pleione",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "plethodon",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pleurotus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "ploceidae",
-   "why": "scientific family name presented as an English word"
-  },
-  {
-   "w": "ploceus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "pluteus",
-   "why": "scientific genus name presented as an English word"
-  },
-  {
-   "w": "poa",
-   "why": "a scientific genus name (the grass genus Poa) presented as an English word"
-  },
-  {
-   "w": "poaceae",
-   "why": "a scientific family name (the grass family) presented as an English word"
-  },
-  {
-   "w": "podargus",
-   "why": "a scientific genus name (type genus of the Podargidae) presented as English"
-  },
-  {
-   "w": "podiceps",
-   "why": "a scientific genus name (type genus of the grebes) presented as English"
-  },
-  {
    "w": "polack",
    "why": "an ethnic slur for a person of Polish descent; the entry's own sentence admits it is offensive"
-  },
-  {
-   "w": "polistes",
-   "why": "a scientific genus name (a genus of wasps) presented as English"
   },
   {
    "w": "pollenate",
@@ -6414,18 +2450,6 @@
    "why": "the Polish-language name for Poland, not an English word"
   },
   {
-   "w": "pomatomus",
-   "why": "a scientific genus name (type genus of the Pomatomidae) presented as English"
-  },
-  {
-   "w": "pongidae",
-   "why": "a scientific family name (the great apes) presented as English"
-  },
-  {
-   "w": "pongo",
-   "why": "a scientific genus name (type genus of the orangutans) presented as English"
-  },
-  {
    "w": "popish",
    "why": "a derogatory anti-Catholic term, and the definition uses the equally derogatory 'Romanism'"
   },
@@ -6434,28 +2458,8 @@
    "why": "the French word for pig meat, not an English word"
   },
   {
-   "w": "porifera",
-   "why": "a scientific taxon name (the sponge phylum) presented as English"
-  },
-  {
-   "w": "porphyra",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "porphyrio",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "portunus",
-   "why": "a scientific genus name (type genus of the Portunidae) presented as English"
-  },
-  {
    "w": "pos",
    "why": "not a word - an abbreviation carrying the definition of the element polonium"
-  },
-  {
-   "w": "poterium",
-   "why": "a scientific genus name presented as English"
   },
   {
    "w": "potomania",
@@ -6514,10 +2518,6 @@
    "why": "the definition is about supplying customers to prostitutes and includes a slur ('whores', 'pimp')"
   },
   {
-   "w": "progne",
-   "why": "a scientific genus name (a genus of swallows) presented as English"
-  },
-  {
    "w": "prolapse",
    "why": "a clinical definition of an organ slipping out of place, with a sentence about surgical repair"
   },
@@ -6526,20 +2526,8 @@
    "why": "a nonstandard spelling of propeller; a spelling app must not drill it as correct"
   },
   {
-   "w": "prosopis",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "prosopium",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "prostatectomy",
    "why": "a clinical definition of surgery to remove the prostate gland, with a cancer sentence"
-  },
-  {
-   "w": "proteidae",
-   "why": "a scientific family name presented as English"
   },
   {
    "w": "protista",
@@ -6570,64 +2558,8 @@
    "why": "a nonstandard spelling; a child hearing this would be marked wrong for writing the usual 'pries'"
   },
   {
-   "w": "psephurus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "psetta",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "pseudomonas",
-   "why": "a scientific genus name (type genus of a bacterial family) presented as English"
-  },
-  {
-   "w": "psidium",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "psilotum",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "psithyrus",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "psittacus",
-   "why": "a scientific genus name (type genus of the Psittacidae) presented as English"
-  },
-  {
-   "w": "psoralea",
-   "why": "a scientific genus name presented as English"
-  },
-  {
    "w": "psychopaths",
    "why": "a clinical psychiatric label; the card tells a child about people hiding dangerous impulses"
-  },
-  {
-   "w": "psylla",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "psyllidae",
-   "why": "a scientific family name presented as English"
-  },
-  {
-   "w": "pteridium",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "pteris",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "pterocles",
-   "why": "a scientific genus name presented as English"
-  },
-  {
-   "w": "pteropus",
-   "why": "a scientific genus name presented as English"
   },
   {
    "w": "ptomain",
@@ -6646,48 +2578,8 @@
    "why": "definition points to the pudendum: clinical genital anatomy"
   },
   {
-   "w": "pueraria",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "pulex",
-   "why": "a flea genus name, defined only as 'type genus of the Pulicidae'"
-  },
-  {
-   "w": "pulmonata",
-   "why": "a scientific order of gastropods presented as an English word"
-  },
-  {
-   "w": "punica",
-   "why": "a plant genus, defined as 'coextensive with the family Punicaceae' - not English"
-  },
-  {
    "w": "putz",
    "why": "Yiddish insult whose everyday meaning is vulgar; an insult word, not a bee word"
-  },
-  {
-   "w": "pygopus",
-   "why": "a lizard genus name presented as an English word"
-  },
-  {
-   "w": "pyralidae",
-   "why": "a scientific moth family name presented as an English word"
-  },
-  {
-   "w": "pyralis",
-   "why": "a moth genus, defined only as 'type genus of the Pyralidae'"
-  },
-  {
-   "w": "pyrausta",
-   "why": "a moth genus name presented as an English word"
-  },
-  {
-   "w": "pyrularia",
-   "why": "defined outright as 'small genus of chiefly Asiatic parasitic shrubs'"
-  },
-  {
-   "w": "pythium",
-   "why": "a fungus genus name presented as an English word"
   },
   {
    "w": "qats",
@@ -6710,40 +2602,12 @@
    "why": "not a word - misspelling of rammed, and the sentence drills the error too"
   },
   {
-   "w": "ramona",
-   "why": "a plant genus name presented as an English herb word"
-  },
-  {
-   "w": "rana",
-   "why": "a frog genus, defined only as 'type genus of the Ranidae'"
-  },
-  {
-   "w": "ranales",
-   "why": "a scientific plant order presented as an English word"
-  },
-  {
-   "w": "ranatra",
-   "why": "a water-scorpion genus name presented as an English word"
-  },
-  {
-   "w": "ranidae",
-   "why": "a scientific frog family name presented as an English word"
-  },
-  {
-   "w": "raphanus",
-   "why": "a plant genus name (radish) presented as an English word"
-  },
-  {
    "w": "raping",
    "why": "definition is 'force (someone) to have sex against their will' - sexual violence on a child's word card"
   },
   {
    "w": "ratitae",
    "why": "an obsolete scientific bird grouping presented as an English word"
-  },
-  {
-   "w": "rattus",
-   "why": "a rat genus name presented as an English word"
   },
   {
    "w": "recce",
@@ -6790,36 +2654,12 @@
    "why": "an abbreviation of 'representatives', not a word"
   },
   {
-   "w": "reptilia",
-   "why": "a Latin scientific class name presented as English"
-  },
-  {
    "w": "retinoblastoma",
    "why": "definition is a childhood eye cancer, 'malignant ocular tumor of retinal cells; usually occurs before the third year of life'"
   },
   {
    "w": "rfs",
    "why": "an acronym for releasing factors, presented as an English word with a dense endocrine definition"
-  },
-  {
-   "w": "rhapis",
-   "why": "a Latin plant genus name presented as English ('genus of small clump-forming fan palms')"
-  },
-  {
-   "w": "rhexia",
-   "why": "a Latin plant genus name presented as English ('A genus of flowering plants in the family Melastomataceae')"
-  },
-  {
-   "w": "rhus",
-   "why": "a Latin plant genus name (sumac) presented as English"
-  },
-  {
-   "w": "rhynia",
-   "why": "a Latin fossil-plant genus name presented as English ('type genus of the Rhyniaceae')"
-  },
-  {
-   "w": "ribes",
-   "why": "a Latin plant genus name (the currant genus) presented as English"
   },
   {
    "w": "ricin",
@@ -6846,10 +2686,6 @@
    "why": "defined as 'a murderer who slashes the victims with a knife' with the sentence 'Jack the Ripper was probably a madman'"
   },
   {
-   "w": "rivina",
-   "why": "a Latin plant genus name presented as English ('small genus of erect perennial shrubby herbs')"
-  },
-  {
    "w": "roi",
    "why": "an acronym (return on investment) with a corporate-finance definition no child could use"
   },
@@ -6866,14 +2702,6 @@
    "why": "not an English word; presented as the name of an invented international language"
   },
   {
-   "w": "rosa",
-   "why": "a Latin plant genus name presented as English; the definition even says 'large genus'"
-  },
-  {
-   "w": "rosales",
-   "why": "a Latin taxonomic order name, and the gloss is not a definition at all: 'in some classifications this category does not include Leguminosae'"
-  },
-  {
    "w": "rpm",
    "why": "an abbreviation for revolutions per minute, not an English word"
   },
@@ -6882,36 +2710,12 @@
    "why": "definition is a biography of the Flemish painter Peter Paul Rubens, with dates"
   },
   {
-   "w": "rubia",
-   "why": "a plant genus name (type genus of the Rubiaceae) presented as an English word"
-  },
-  {
-   "w": "rubus",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
    "w": "russell",
    "why": "definition is a biography of the founder of the Jehovah's Witnesses while the sentence describes a different Russell's work in philosophy and mathematics"
   },
   {
-   "w": "sagina",
-   "why": "a plant genus name presented as an English word"
-  },
-  {
-   "w": "salix",
-   "why": "a plant genus name (willows) presented as an English word"
-  },
-  {
-   "w": "salmo",
-   "why": "a fish genus name (type genus of the Salmonidae) presented as an English word"
-  },
-  {
    "w": "salomon",
    "why": "definition is a biography of the financier Haym Salomon, with dates"
-  },
-  {
-   "w": "salpa",
-   "why": "a tunicate genus name; the English form salp is already in the corpus with the same definition"
   },
   {
    "w": "sam",
@@ -6928,10 +2732,6 @@
   {
    "w": "sannup",
    "why": "a dated, demeaning label for a married Native American man"
-  },
-  {
-   "w": "sauria",
-   "why": "a taxonomic group name (order of lizards) presented as an English word"
   },
   {
    "w": "sauter",
@@ -6958,16 +2758,8 @@
    "why": "definition is a biography of the explorer Henry Schoolcraft, with dates"
   },
   {
-   "w": "sciara",
-   "why": "an insect genus name presented as an English word"
-  },
-  {
    "w": "sec",
    "why": "an abbreviation of second, not a word to spell"
-  },
-  {
-   "w": "secale",
-   "why": "a grass genus name (rye) presented as an English word"
   },
   {
    "w": "secs",
@@ -6984,10 +2776,6 @@
   {
    "w": "serra",
    "why": "definition is a biography of the missionary Junipero Serra, with dates"
-  },
-  {
-   "w": "seseli",
-   "why": "a plant genus name presented as an English word ('a rosid dicot genus')"
   },
   {
    "w": "seton",
@@ -7074,24 +2862,8 @@
    "why": "derogatory slang with antisemitic origins, defined as unscrupulous lawyers or politicians"
   },
   {
-   "w": "sialia",
-   "why": "a scientific genus name presented as an English word"
-  },
-  {
-   "w": "sialis",
-   "why": "a scientific genus name; definition is 'type genus of the Sialidae'"
-  },
-  {
-   "w": "sida",
-   "why": "a scientific genus name presented as an English word ('large genus of tropical subshrubs')"
-  },
-  {
    "w": "sider",
    "why": "not a standalone English word - a combining form; the sentence even admits it, saying the term 'is used in certain compound words'"
-  },
-  {
-   "w": "silvia",
-   "why": "a scientific genus name, and misspelled - the warbler genus is Sylvia"
   },
   {
    "w": "sise",
@@ -7100,14 +2872,6 @@
   {
    "w": "sissy",
    "why": "an insult used to bully boys; the sentence models the name-calling ('The older boys called him a sissy')"
-  },
-  {
-   "w": "sitta",
-   "why": "a scientific genus name; definition is 'type genus of the Sittidae'"
-  },
-  {
-   "w": "sium",
-   "why": "a scientific genus name presented as an English word"
   },
   {
    "w": "skinhead",
@@ -7128,10 +2892,6 @@
   {
    "w": "slivovitz",
    "why": "a plum brandy; the entry is purely about alcohol and the sentence has a host pouring glasses of it"
-  },
-  {
-   "w": "smilax",
-   "why": "a scientific genus name, and the 'definition' is a broken taxonomic fragment: 'sometimes placed in Smilacaceae'"
   },
   {
    "w": "snafu",
@@ -7158,10 +2918,6 @@
    "why": "a clinical psychiatric diagnosis - 'antisocial personality disorder', 'psychopath' - no spelling bee would put this in front of a nine-year-old"
   },
   {
-   "w": "solea",
-   "why": "genus name (type genus of Soleidae) presented as an English word"
-  },
-  {
    "w": "soler",
    "why": "not an English word; the gloss belongs to 'sole/solely'"
   },
@@ -7170,20 +2926,8 @@
    "why": "only meaning given is a US state demonym; not an English plural"
   },
   {
-   "w": "sorbus",
-   "why": "genus name presented as an English word"
-  },
-  {
-   "w": "sorex",
-   "why": "genus name (type genus of Soricidae) presented as an English word"
-  },
-  {
    "w": "sos",
    "why": "an abbreviation/radio code signal, not a word"
-  },
-  {
-   "w": "spalax",
-   "why": "genus name (type genus of Spalacidae) presented as an English word"
   },
   {
    "w": "spastic",
@@ -7210,10 +2954,6 @@
    "why": "a surname that collides with the spelling of 'star'; a spelling trap, not a word"
   },
   {
-   "w": "sterna",
-   "why": "genus name presented as an English word"
-  },
-  {
    "w": "stm",
    "why": "an acronym (short-term memory), not a word"
   },
@@ -7238,20 +2978,8 @@
    "why": "definition is 'someone who takes off all their clothes and runs naked through a public place'"
   },
   {
-   "w": "strix",
-   "why": "genus name presented as an English word"
-  },
-  {
-   "w": "suidae",
-   "why": "scientific family name (the pig family) presented as an English word"
-  },
-  {
    "w": "sumner",
    "why": "a bare surname whose definition is a biography of the obscure sociologist William Graham Sumner"
-  },
-  {
-   "w": "sus",
-   "why": "a scientific genus name, defined as 'type genus of the Suidae'; not an English word"
   },
   {
    "w": "swastika",
@@ -7282,20 +3010,12 @@
    "why": "a bare surname whose definition is a biography of the photography pioneer Fox Talbot"
   },
   {
-   "w": "tamias",
-   "why": "a scientific genus name presented as English; the sentence itself says 'The genus Tamias'"
-  },
-  {
    "w": "tampon",
    "why": "definition is a plug 'inserted into wound or body cavity to absorb exuded fluids (especially blood)' - clinical body content no spelling bee would put to a nine-year-old"
   },
   {
    "w": "tampons",
    "why": "same body-cavity/blood definition, with a sentence about the school nurse handing them out"
-  },
-  {
-   "w": "tamus",
-   "why": "scientific genus name of a vine, presented as an English word"
   },
   {
    "w": "tartars",
@@ -7308,10 +3028,6 @@
   {
    "w": "tawse",
    "why": "defined as 'a leather strap for punishing children', with a sentence about a schoolmaster keeping one on his desk"
-  },
-  {
-   "w": "taxus",
-   "why": "scientific genus name (the yews) presented as an English word"
   },
   {
    "w": "taylor",
@@ -7338,10 +3054,6 @@
    "why": "defined as '(medicine) a grossly malformed and usually nonviable fetus' - grim clinical content on a child's card"
   },
   {
-   "w": "termes",
-   "why": "scientific genus name, defined as 'type genus of the Termitidae'"
-  },
-  {
    "w": "terrorism",
    "why": "definition is 'the calculated use of violence (or the threat of violence) against civilians', read aloud to a nine-year-old"
   },
@@ -7360,10 +3072,6 @@
   {
    "w": "testicles",
    "why": "same reproductive-anatomy definition"
-  },
-  {
-   "w": "tetrao",
-   "why": "scientific genus name, defined as 'type genus of the Tetraonidae'"
   },
   {
    "w": "thalidomide",
@@ -7386,16 +3094,8 @@
    "why": "a bare surname defined as one particular person's biography (an archaeologist of the Athenian agora); not an English word"
   },
   {
-   "w": "thos",
-   "why": "not an English word; presented as 'a branch of the Tai languages' (elsewhere a jackal genus)"
-  },
-  {
    "w": "thous",
    "why": "not a standard word; carries the number definition for one thousand and an ungrammatical sentence ('thous of soldiers')"
-  },
-  {
-   "w": "tilia",
-   "why": "the genus name Tilia presented as an English word; the honest English words are lime, linden or basswood"
   },
   {
    "w": "tindal",
@@ -7426,18 +3126,6 @@
    "why": "a bare surname defined as one particular person's biography (a Scottish chemist); not an English word"
   },
   {
-   "w": "todea",
-   "why": "a scientific genus name presented as English ('a genus of delicate ferns')"
-  },
-  {
-   "w": "todus",
-   "why": "a scientific genus name presented as English ('type genus of the Todidae')"
-  },
-  {
-   "w": "toona",
-   "why": "a genus name, and the gloss is not even a definition ('formerly included in genus Cedrela')"
-  },
-  {
    "w": "tooths",
    "why": "a misspelling drilled as if correct - the plural of the headword is 'teeth' - and the sentence uses it as if it were standard"
   },
@@ -7450,32 +3138,8 @@
    "why": "a bare surname defined as one particular person's biography (the film actor Spencer Tracy); not an English word"
   },
   {
-   "w": "trema",
-   "why": "a scientific genus name presented as an ordinary English tree name"
-  },
-  {
-   "w": "tringa",
-   "why": "a scientific genus name presented as English ('a genus of Scolopacidae')"
-  },
-  {
-   "w": "triops",
-   "why": "a scientific genus name presented as English ('type genus of the family Triopidae')"
-  },
-  {
    "w": "tubmen",
    "why": "an invented plural of a surname, carrying Harriet Tubman's biography, with a nonsense sentence about 'Tubmen who followed Harriet'"
-  },
-  {
-   "w": "tulipa",
-   "why": "the genus name Tulipa presented as an English word ('Eurasian perennial bulbous herbs')"
-  },
-  {
-   "w": "tunga",
-   "why": "a scientific genus name presented as English ('a genus of Siphonaptera'), with a sentence about a parasite embedded in a patient's skin"
-  },
-  {
-   "w": "turdus",
-   "why": "a scientific genus name presented as English ('type genus of the Turdidae')"
   },
   {
    "w": "tush",
@@ -7486,20 +3150,8 @@
    "why": "not a standard word; a made-up superlative of 'twee' carrying twee's definition"
   },
   {
-   "w": "typha",
-   "why": "the genus name Typha presented as an English word; the honest English words are cattail or reed mace"
-  },
-  {
-   "w": "ulmus",
-   "why": "scientific genus name (type genus of Ulmaceae) presented as an English word"
-  },
-  {
    "w": "ult",
    "why": "an abbreviation of 'ultimo', not a word; the sentence is a dated letter-writing formula"
-  },
-  {
-   "w": "ulva",
-   "why": "scientific genus name (type genus of Ulvaceae) presented as an English word"
   },
   {
    "w": "unesco",
@@ -7518,24 +3170,8 @@
    "why": "definition is sexual ('deprive of sex or sexual powers') and the sentence is about Lady Macbeth preparing to murder"
   },
   {
-   "w": "upupa",
-   "why": "scientific genus name (type genus of Upupidae) presented as an English word"
-  },
-  {
-   "w": "uria",
-   "why": "scientific genus name for the murres presented as an English word"
-  },
-  {
    "w": "urs",
    "why": "not a word; it carries the definition of Ur, the Sumerian city"
-  },
-  {
-   "w": "ursus",
-   "why": "scientific genus name for bears presented as an English word"
-  },
-  {
-   "w": "urtica",
-   "why": "scientific genus name for nettles presented as an English word"
   },
   {
    "w": "usa",
@@ -7546,16 +3182,8 @@
    "why": "an acronym for a former country, not an English word"
   },
   {
-   "w": "utas",
-   "why": "scientific reptile genus name (Uta, Iguanidae) presented as an English word"
-  },
-  {
    "w": "valium",
    "why": "brand name of a prescription sedative drug; drug-related and not an English word a spelling bee would ask a child"
-  },
-  {
-   "w": "vanessa",
-   "why": "scientific butterfly genus name presented as an English word, with a garbled gloss ('painted beauty and red admiral')"
   },
   {
    "w": "vasectomies",
@@ -7566,20 +3194,8 @@
    "why": "not an English word, and the definition ('being one more than four') belongs to the number five"
   },
   {
-   "w": "vespa",
-   "why": "scientific genus name (type genus of Vespidae) presented as an English word"
-  },
-  {
    "w": "vibrator",
    "why": "the everyday meaning of this spoken-aloud headword is a sex toy; not appropriate for a children's corpus despite the innocent mechanical gloss"
-  },
-  {
-   "w": "vicia",
-   "why": "scientific plant genus name presented as an English word"
-  },
-  {
-   "w": "vidua",
-   "why": "scientific bird genus name (whydahs) presented as an English word"
   },
   {
    "w": "vier",
@@ -7588,10 +3204,6 @@
   {
    "w": "vip",
    "why": "an acronym (very important person), not an English word; the sentence itself prints it as 'VIP'"
-  },
-  {
-   "w": "vipera",
-   "why": "scientific genus name (type genus of Viperidae) presented as an English word"
   },
   {
    "w": "vips",
@@ -7616,10 +3228,6 @@
   {
    "w": "vis",
    "why": "not an English word, and the definition ('the sum of five and one') belongs to the number six"
-  },
-  {
-   "w": "viscum",
-   "why": "scientific genus name (type genus of Viscaceae) presented as an English word"
   },
   {
    "w": "voyeurism",
@@ -7670,14 +3278,6 @@
    "why": "not a word - the Chinese dialect is Wu; 'wus' is a made-up plural and the sentence is ungrammatical"
   },
   {
-   "w": "xiphias",
-   "why": "scientific genus name presented as English ('type genus of the Xiphiidae')"
-  },
-  {
-   "w": "xyris",
-   "why": "scientific genus name presented as English"
-  },
-  {
    "w": "yhwh",
    "why": "a four-consonant transliteration, not a spellable or pronounceable English word - the app speaks every word aloud"
   },
@@ -7688,14 +3288,6 @@
   {
    "w": "yrs",
    "why": "abbreviation for 'years' presented as a word, and the sentence uses it in place of the real word"
-  },
-  {
-   "w": "zapus",
-   "why": "scientific genus name presented as English ('type genus of the Zapodidae')"
-  },
-  {
-   "w": "zeidae",
-   "why": "scientific family name presented as English"
   }
  ],
  "definitions": [
@@ -21407,5 +16999,1112 @@
    "w": "euryale",
    "why": "killing a person"
   }
- ]
+ ],
+ "restored": {
+  "note": "Struck by the sweep as \"Latin presented as English\", then restored on 5 Sep: a spelling bee does ask genus, family and order names. Do NOT re-strike these.",
+  "words": [
+   "abama",
+   "abelicea",
+   "aberia",
+   "acalypha",
+   "acaridae",
+   "acarina",
+   "acer",
+   "aceraceae",
+   "achras",
+   "acipenser",
+   "aconitum",
+   "acorus",
+   "acrididae",
+   "acropora",
+   "actaea",
+   "actinia",
+   "actiniae",
+   "actinidia",
+   "actinozoa",
+   "adansonia",
+   "adelges",
+   "adiantum",
+   "adlumia",
+   "aedes",
+   "aegilops",
+   "aerides",
+   "aethusa",
+   "aetobatus",
+   "agalinis",
+   "agamidae",
+   "agapornis",
+   "agaricus",
+   "agathis",
+   "agelaius",
+   "aglaonema",
+   "agrimonia",
+   "agropyron",
+   "agrostis",
+   "ailurus",
+   "aix",
+   "aizoaceae",
+   "alauda",
+   "alaudidae",
+   "albizia",
+   "albuca",
+   "alca",
+   "alcedo",
+   "alces",
+   "alchemilla",
+   "alcidae",
+   "alectoria",
+   "alectoris",
+   "aletris",
+   "aleurites",
+   "aleyrodes",
+   "alisma",
+   "alismales",
+   "alliaceae",
+   "alliaria",
+   "allionia",
+   "alnus",
+   "alopiidae",
+   "alpinia",
+   "alsophila",
+   "alstonia",
+   "alytes",
+   "amazona",
+   "ambystoma",
+   "ameiurus",
+   "amia",
+   "amiidae",
+   "amoebida",
+   "amphibia",
+   "amphipoda",
+   "amygdalus",
+   "anabas",
+   "anacyclus",
+   "anagallis",
+   "anagyris",
+   "ananas",
+   "anaphalis",
+   "anas",
+   "anasa",
+   "anaspida",
+   "anastomus",
+   "anatidae",
+   "ancylus",
+   "andira",
+   "andreaea",
+   "anemopsis",
+   "anethum",
+   "anguidae",
+   "anguis",
+   "annelida",
+   "annona",
+   "anobiidae",
+   "anodonta",
+   "anomala",
+   "anomiidae",
+   "anoplura",
+   "anostraca",
+   "anser",
+   "antedon",
+   "anthemis",
+   "antheraea",
+   "anthidium",
+   "anthozoa",
+   "anthus",
+   "anthyllis",
+   "anura",
+   "aphididae",
+   "aphis",
+   "apidae",
+   "apios",
+   "apis",
+   "apium",
+   "aplectrum",
+   "aplysia",
+   "apocynum",
+   "apodidae",
+   "apogon",
+   "arabis",
+   "araceae",
+   "arachis",
+   "arachnida",
+   "arales",
+   "aramus",
+   "araneae",
+   "araneida",
+   "araujia",
+   "arca",
+   "arcidae",
+   "arctium",
+   "ardea",
+   "ardeidae",
+   "ardisia",
+   "arecaceae",
+   "arenaria",
+   "argasidae",
+   "argemone",
+   "argiope",
+   "argonauta",
+   "arisaema",
+   "armeria",
+   "armoracia",
+   "arnoseris",
+   "artamus",
+   "artemia",
+   "arvicola",
+   "ascaridae",
+   "ascaridia",
+   "ascaris",
+   "asclepias",
+   "asilidae",
+   "asimina",
+   "asperula",
+   "asplenium",
+   "astacidae",
+   "astacus",
+   "astragali",
+   "ateles",
+   "atherurus",
+   "athyrium",
+   "atriplex",
+   "atropa",
+   "atropidae",
+   "avahi",
+   "avena",
+   "averrhoa",
+   "aves",
+   "aythya",
+   "azolla",
+   "balaena",
+   "balanidae",
+   "balanus",
+   "ballota",
+   "bambusa",
+   "bambuseae",
+   "baphia",
+   "barbarea",
+   "bartonia",
+   "batis",
+   "batoidei",
+   "bauhinia",
+   "bellis",
+   "belonidae",
+   "beroe",
+   "berteroa",
+   "bidens",
+   "bignonia",
+   "bivalvia",
+   "blarina",
+   "blatta",
+   "blattidae",
+   "blattodea",
+   "blechnum",
+   "bletia",
+   "bletilla",
+   "bloomeria",
+   "boehmeria",
+   "boidae",
+   "boltonia",
+   "bomarea",
+   "bombax",
+   "bombyx",
+   "bonasa",
+   "borago",
+   "borassus",
+   "bos",
+   "boswellia",
+   "botaurus",
+   "bothrops",
+   "bovidae",
+   "brachinus",
+   "brachyura",
+   "bradypus",
+   "brassia",
+   "brodiaea",
+   "bromus",
+   "brotula",
+   "browallia",
+   "bruchidae",
+   "bruchus",
+   "bryaceae",
+   "bryales",
+   "bryanthus",
+   "bryozoa",
+   "bryum",
+   "bucephala",
+   "buceros",
+   "buchloe",
+   "buckleya",
+   "budorcas",
+   "bufo",
+   "bufonidae",
+   "bumelia",
+   "bungarus",
+   "burhinus",
+   "burmannia",
+   "bursera",
+   "butea",
+   "buxaceae",
+   "cacajao",
+   "cacalia",
+   "cacatua",
+   "cactaceae",
+   "cajanus",
+   "callitris",
+   "calopogon",
+   "caltha",
+   "calvatia",
+   "camassia",
+   "camelidae",
+   "camelina",
+   "camelus",
+   "cananga",
+   "canangium",
+   "canavalia",
+   "canidae",
+   "canis",
+   "cannaceae",
+   "carabidae",
+   "caranx",
+   "carapidae",
+   "cardamine",
+   "cardiidae",
+   "cardium",
+   "carduelis",
+   "carduus",
+   "caretta",
+   "carex",
+   "carica",
+   "carnegiea",
+   "carnivora",
+   "carpinus",
+   "carum",
+   "caryocar",
+   "caryota",
+   "cassiope",
+   "castanea",
+   "casuarius",
+   "cathartes",
+   "caudata",
+   "cebidae",
+   "cebus",
+   "cecropia",
+   "cedrela",
+   "cedrus",
+   "celtis",
+   "cenchrus",
+   "centaurea",
+   "cerastium",
+   "ceratitis",
+   "ceratodus",
+   "cercis",
+   "ceroxylon",
+   "certhia",
+   "cervidae",
+   "cervus",
+   "cestida",
+   "cestidae",
+   "cestrum",
+   "cetacea",
+   "ceterach",
+   "cetonia",
+   "cetraria",
+   "chalcis",
+   "chamaeleo",
+   "chara",
+   "charales",
+   "charas",
+   "chelone",
+   "chelydra",
+   "chen",
+   "chermidae",
+   "chilopoda",
+   "chilopsis",
+   "chiococca",
+   "choloepus",
+   "chondrus",
+   "chordata",
+   "cicadidae",
+   "cicer",
+   "cichorium",
+   "ciconia",
+   "cicuta",
+   "cimex",
+   "cinclidae",
+   "cinclus",
+   "circaea",
+   "circaetus",
+   "cirsium",
+   "cistaceae",
+   "citellus",
+   "citrullus",
+   "cladonia",
+   "clangula",
+   "claytonia",
+   "cleridae",
+   "clethra",
+   "clianthus",
+   "cliftonia",
+   "clintonia",
+   "clitocybe",
+   "clitoria",
+   "clupea",
+   "clusia",
+   "cnicus",
+   "cnidaria",
+   "cobitidae",
+   "coccidae",
+   "coccidia",
+   "cocculus",
+   "coccyzus",
+   "codiaeum",
+   "coffea",
+   "colinus",
+   "collinsia",
+   "colocasia",
+   "colubrina",
+   "colutea",
+   "comandra",
+   "comatula",
+   "comatulae",
+   "combretum",
+   "commelina",
+   "condylura",
+   "congridae",
+   "conilurus",
+   "conium",
+   "connarus",
+   "conyza",
+   "copepoda",
+   "coprinus",
+   "coptis",
+   "coracias",
+   "cordaites",
+   "cordia",
+   "coregonus",
+   "coreidae",
+   "corixa",
+   "cornaceae",
+   "corticium",
+   "corvidae",
+   "corylus",
+   "corypha",
+   "cottidae",
+   "cottus",
+   "cotula",
+   "cracidae",
+   "crassula",
+   "crataegus",
+   "crepis",
+   "crex",
+   "cricetus",
+   "crinoidea",
+   "crotalus",
+   "crustacea",
+   "cuculidae",
+   "cuculus",
+   "cucurbita",
+   "culex",
+   "culices",
+   "culicidae",
+   "cuniculus",
+   "cupressus",
+   "curcuma",
+   "cuterebra",
+   "cyamus",
+   "cyathea",
+   "cycadales",
+   "cycas",
+   "cydippida",
+   "cydonia",
+   "cynara",
+   "cynips",
+   "cynodon",
+   "cynomys",
+   "cynoscion",
+   "cyperus",
+   "cypraea",
+   "cyprinus",
+   "cyrtomium",
+   "dacelo",
+   "dactylis",
+   "dalbergia",
+   "dalea",
+   "dasyatis",
+   "dasypus",
+   "dasyurus",
+   "daucus",
+   "decumaria",
+   "deers",
+   "delichon",
+   "dendroica",
+   "dentaria",
+   "desmodium",
+   "desmodus",
+   "diapsida",
+   "dicranum",
+   "dictamnus",
+   "didelphis",
+   "diervilla",
+   "dinoceras",
+   "dinornis",
+   "diodon",
+   "dionaea",
+   "dioscorea",
+   "diospyros",
+   "diphylla",
+   "diplopoda",
+   "dipnoi",
+   "dipodidae",
+   "dipodomys",
+   "dipsacus",
+   "diptera",
+   "dipteryx",
+   "dipus",
+   "dodonaea",
+   "dovyalis",
+   "drepanis",
+   "durio",
+   "ebenaceae",
+   "ebenales",
+   "ecballium",
+   "echeneis",
+   "echinops",
+   "echium",
+   "edentata",
+   "egeria",
+   "egretta",
+   "elaeagnus",
+   "elaeis",
+   "elanus",
+   "elaphe",
+   "elaphurus",
+   "elapidae",
+   "elephas",
+   "elettaria",
+   "eleusine",
+   "elopidae",
+   "elymus",
+   "emberiza",
+   "embiodea",
+   "emilia",
+   "empetrum",
+   "encelia",
+   "engraulis",
+   "enhydra",
+   "entoloma",
+   "epacris",
+   "ephemeroptera",
+   "ephestia",
+   "epilobium",
+   "equiseta",
+   "equisetum",
+   "equus",
+   "erethizon",
+   "erianthus",
+   "ericaceae",
+   "ericales",
+   "erigeron",
+   "erinaceus",
+   "eriogonum",
+   "eriosoma",
+   "erithacus",
+   "eryngium",
+   "erysimum",
+   "erysiphe",
+   "esocidae",
+   "esox",
+   "eudyptes",
+   "eumenes",
+   "eunectes",
+   "euproctis",
+   "evernia",
+   "exacum",
+   "fabaceae",
+   "fagaceae",
+   "fagales",
+   "fagopyrum",
+   "fagus",
+   "falco",
+   "fasciola",
+   "felidae",
+   "felis",
+   "festuca",
+   "filago",
+   "filariid",
+   "filicales",
+   "fistulina",
+   "fomes",
+   "forficula",
+   "frasera",
+   "fringilla",
+   "fucaceae",
+   "fucales",
+   "fuci",
+   "fucus",
+   "fulica",
+   "fulmarus",
+   "fumaria",
+   "fundulus",
+   "fungia",
+   "furnarius",
+   "gadidae",
+   "gadus",
+   "galega",
+   "galeopsis",
+   "galium",
+   "gallinago",
+   "garcinia",
+   "garrulus",
+   "gavia",
+   "gavialis",
+   "gazella",
+   "gelechia",
+   "genetta",
+   "genista",
+   "gentiana",
+   "ginkgoales",
+   "glareola",
+   "glaucium",
+   "glaucomys",
+   "glaux",
+   "gliridae",
+   "glis",
+   "glossina",
+   "glyceria",
+   "gnetaceae",
+   "gobiidae",
+   "gobio",
+   "gomphrena",
+   "goodenia",
+   "goodyera",
+   "gramineae",
+   "grindelia",
+   "gruidae",
+   "gryllidae",
+   "gulo",
+   "gus",
+   "gymnogyps",
+   "gymnophiona",
+   "gymnura",
+   "gynura",
+   "gypaetus",
+   "gyrinidae",
+   "halenia",
+   "haliotis",
+   "hamamelis",
+   "haminoea",
+   "harijan",
+   "harpullia",
+   "hedera",
+   "hedysarum",
+   "helenium",
+   "heliopsis",
+   "heliothis",
+   "heliozoa",
+   "heloderma",
+   "helvella",
+   "hemigalus",
+   "hemiptera",
+   "heracleum",
+   "heritiera",
+   "herpestes",
+   "heuchera",
+   "hevea",
+   "hexanchus",
+   "hibbertia",
+   "hieracium",
+   "hirudinea",
+   "hirudo",
+   "hirundo",
+   "homaridae",
+   "homarus",
+   "homoptera",
+   "hudsonia",
+   "humulus",
+   "hyaenidae",
+   "hybanthus",
+   "hydnaceae",
+   "hydnum",
+   "hydrastis",
+   "hyla",
+   "hylidae",
+   "hylobates",
+   "hymenaea",
+   "hyssopus",
+   "iberis",
+   "icteridae",
+   "ictonyx",
+   "idesia",
+   "ilex",
+   "illicium",
+   "insecta",
+   "irena",
+   "iresine",
+   "isoetales",
+   "isoetes",
+   "isopoda",
+   "isuridae",
+   "isurus",
+   "ixodes",
+   "ixodidae",
+   "jasminum",
+   "jassidae",
+   "juglans",
+   "juncaceae",
+   "juncus",
+   "juniperus",
+   "labridae",
+   "lacerta",
+   "lactarius",
+   "lagenaria",
+   "lagopus",
+   "lagothrix",
+   "lamiaceae",
+   "lamium",
+   "lamna",
+   "lampridae",
+   "laniidae",
+   "lanius",
+   "lappula",
+   "laridae",
+   "larus",
+   "larvacea",
+   "lathyrus",
+   "latimeria",
+   "laurus",
+   "lavandula",
+   "lavatera",
+   "layia",
+   "lebistes",
+   "lecanora",
+   "leitneria",
+   "lemmus",
+   "lemna",
+   "lemnaceae",
+   "lemuridae",
+   "leonurus",
+   "lepadidae",
+   "lepidium",
+   "lepiota",
+   "lepisma",
+   "lepomis",
+   "leporidae",
+   "liatris",
+   "ligularia",
+   "ligustrum",
+   "liliaceae",
+   "lilium",
+   "limax",
+   "limnobium",
+   "limosa",
+   "limuli",
+   "limulus",
+   "linaceae",
+   "linanthus",
+   "linaria",
+   "linum",
+   "liparidae",
+   "liparis",
+   "listera",
+   "loasaceae",
+   "lobata",
+   "lobularia",
+   "locusta",
+   "lolium",
+   "lonicera",
+   "lophiidae",
+   "loranthus",
+   "loxia",
+   "loxodonta",
+   "lucanidae",
+   "lucilia",
+   "lunaria",
+   "lupinus",
+   "luscinia",
+   "lutra",
+   "lycaena",
+   "lychnis",
+   "lycium",
+   "lycopsida",
+   "lycopus",
+   "lycosa",
+   "lycosidae",
+   "lygodium",
+   "lygus",
+   "lymantria",
+   "lyrurus",
+   "lysiloma",
+   "lythrum",
+   "macaca",
+   "macleaya",
+   "maclura",
+   "madia",
+   "maeandra",
+   "maia",
+   "maja",
+   "malaxis",
+   "malpighia",
+   "malus",
+   "malva",
+   "malvaceae",
+   "malvales",
+   "mammalia",
+   "mammut",
+   "manidae",
+   "manis",
+   "mantidae",
+   "marasmius",
+   "marattia",
+   "marmota",
+   "martes",
+   "mazama",
+   "melastoma",
+   "meleagris",
+   "meles",
+   "melia",
+   "meliaceae",
+   "melicocca",
+   "melissa",
+   "melursus",
+   "mentha",
+   "mentzelia",
+   "menura",
+   "menuridae",
+   "menziesia",
+   "mergus",
+   "meropidae",
+   "merops",
+   "mespilus",
+   "mesua",
+   "micrurus",
+   "mikania",
+   "miltonia",
+   "milvus",
+   "mimidae",
+   "mimus",
+   "miridae",
+   "mitchella",
+   "mitella",
+   "mnium",
+   "mobula",
+   "mobulidae",
+   "molidae",
+   "mollusca",
+   "molothrus",
+   "momordica",
+   "momotidae",
+   "moneses",
+   "monodon",
+   "monotropa",
+   "montia",
+   "morchella",
+   "morone",
+   "morus",
+   "moschus",
+   "motacilla",
+   "mucor",
+   "mucorales",
+   "mucuna",
+   "mugilidae",
+   "mullidae",
+   "muntiacus",
+   "muntingia",
+   "muridae",
+   "mus",
+   "musa",
+   "musaceae",
+   "muscari",
+   "muscidae",
+   "musculus",
+   "musophaga",
+   "mustela",
+   "mustelus",
+   "mya",
+   "mycteria",
+   "mylodon",
+   "myrcia",
+   "myrica",
+   "myricales",
+   "myristica",
+   "myrmeleon",
+   "myroxylon",
+   "myrrhis",
+   "myrtales",
+   "myrtus",
+   "mysidae",
+   "mysis",
+   "mytilidae",
+   "mytilus",
+   "myxine",
+   "myxinidae",
+   "naiadales",
+   "naias",
+   "naja",
+   "nasalis",
+   "nasua",
+   "naticidae",
+   "natrix",
+   "neophron",
+   "neotoma",
+   "nepa",
+   "nepenthes",
+   "nepeta",
+   "nephelium",
+   "nephrops",
+   "nepidae",
+   "nerita",
+   "neritidae",
+   "neritina",
+   "nerium",
+   "nesokia",
+   "nidularia",
+   "nitella",
+   "noctuidae",
+   "notonecta",
+   "notornis",
+   "notropis",
+   "numenius",
+   "numida",
+   "numididae",
+   "ochotona",
+   "ochroma",
+   "ocimum",
+   "octopoda",
+   "odonata",
+   "oecanthus",
+   "oenanthe",
+   "oenothera",
+   "olea",
+   "olearia",
+   "ondatra",
+   "oniscidae",
+   "oniscus",
+   "onoclea",
+   "ononis",
+   "onopordon",
+   "ophiurida",
+   "opiliones",
+   "opuntia",
+   "orchestia",
+   "orcinus",
+   "oreamnos",
+   "oreortyx",
+   "oriolidae",
+   "oriolus",
+   "orontium",
+   "ortalis",
+   "oryzopsis",
+   "osmeridae",
+   "osmerus",
+   "ostreidae",
+   "ostrya",
+   "otaria",
+   "otariidae",
+   "otididae",
+   "otus",
+   "ovibos",
+   "oxytropis",
+   "oxyuridae",
+   "ozonium",
+   "padda",
+   "paeonia",
+   "pagrus",
+   "pagurus",
+   "palaemon",
+   "palaquium",
+   "palinurus",
+   "paliurus",
+   "palmaceae",
+   "palmae",
+   "panax",
+   "pandion",
+   "papaver",
+   "papio",
+   "paridae",
+   "parmelia",
+   "parnassia",
+   "parus",
+   "passerina",
+   "pastinaca",
+   "pauropoda",
+   "pediculus",
+   "pelecanus",
+   "pellaea",
+   "peltandra",
+   "pennatula",
+   "perca",
+   "percidae",
+   "pereskia",
+   "pernis",
+   "persea",
+   "petaurus",
+   "petrogale",
+   "peziza",
+   "pezizales",
+   "pezophaps",
+   "phalaris",
+   "phallales",
+   "phalli",
+   "phallus",
+   "phaseolus",
+   "phasianus",
+   "philohela",
+   "phoca",
+   "phocidae",
+   "pholas",
+   "pholidota",
+   "pholiota",
+   "phoronida",
+   "phthirius",
+   "physa",
+   "physalia",
+   "physalis",
+   "picea",
+   "picidae",
+   "picumnus",
+   "picus",
+   "pieridae",
+   "pieris",
+   "pilularia",
+   "pinaceae",
+   "pinckneya",
+   "pinctada",
+   "pipa",
+   "piperales",
+   "pipidae",
+   "pipile",
+   "pipilo",
+   "pipra",
+   "piscidia",
+   "pistacia",
+   "pistia",
+   "plantago",
+   "platalea",
+   "platanus",
+   "plecotus",
+   "pleione",
+   "plethodon",
+   "pleurotus",
+   "ploceidae",
+   "ploceus",
+   "pluteus",
+   "poa",
+   "poaceae",
+   "podargus",
+   "podiceps",
+   "polistes",
+   "pomatomus",
+   "pongidae",
+   "pongo",
+   "porifera",
+   "porphyra",
+   "porphyrio",
+   "portunus",
+   "poterium",
+   "progne",
+   "prosopis",
+   "prosopium",
+   "proteidae",
+   "psephurus",
+   "psetta",
+   "pseudomonas",
+   "psidium",
+   "psilotum",
+   "psithyrus",
+   "psittacus",
+   "psoralea",
+   "psylla",
+   "psyllidae",
+   "pteridium",
+   "pteris",
+   "pterocles",
+   "pteropus",
+   "pueraria",
+   "pulex",
+   "pulmonata",
+   "punica",
+   "pygopus",
+   "pyralidae",
+   "pyralis",
+   "pyrausta",
+   "pyrularia",
+   "pythium",
+   "ramona",
+   "rana",
+   "ranales",
+   "ranatra",
+   "ranidae",
+   "raphanus",
+   "rattus",
+   "reptilia",
+   "rhapis",
+   "rhexia",
+   "rhus",
+   "rhynia",
+   "ribes",
+   "rivina",
+   "rosa",
+   "rosales",
+   "rubia",
+   "rubus",
+   "sagina",
+   "salix",
+   "salmo",
+   "salpa",
+   "sauria",
+   "sciara",
+   "secale",
+   "seseli",
+   "sialia",
+   "sialis",
+   "sida",
+   "silvia",
+   "sitta",
+   "sium",
+   "smilax",
+   "solea",
+   "sorbus",
+   "sorex",
+   "spalax",
+   "sterna",
+   "strix",
+   "suidae",
+   "sus",
+   "tamias",
+   "tamus",
+   "taxus",
+   "termes",
+   "tetrao",
+   "thos",
+   "tilia",
+   "todea",
+   "todus",
+   "toona",
+   "trema",
+   "tringa",
+   "triops",
+   "tulipa",
+   "tunga",
+   "turdus",
+   "typha",
+   "ulmus",
+   "ulva",
+   "upupa",
+   "uria",
+   "ursus",
+   "urtica",
+   "utas",
+   "vanessa",
+   "vespa",
+   "vicia",
+   "vidua",
+   "vipera",
+   "viscum",
+   "xiphias",
+   "xyris",
+   "zapus",
+   "zeidae"
+  ]
+ }
 }
