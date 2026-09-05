@@ -198,11 +198,17 @@
     document.head.appendChild(s2); }
   function lapWords(u, lap, cap) { // records for this unit at this lap
     const rec = k => widx().get(k);
-    if (course() === 'exp' || u.kind === 'lesson' || u.neu || !window.SB_TRAIL_MAP) {
+    /* A chapter only OWNS the words when it actually carries some. The six
+       Trickster stops (u91-u96) are neu units whose inline chapter ships with
+       words: [] — so this branch handed them an empty array and every one of
+       them served NOTHING, while 2,628 words sat in their pools unreachable.
+       Ask whether the chapter has words rather than assuming its kind. */
+    const own = (chOf(u).words || []);
+    if (course() === 'exp' || ((u.kind === 'lesson' || u.neu) && own.length) || !window.SB_TRAIL_MAP) {
       /* The chapter's own text wins; anything it does not carry (the book chapters
          have no example sentences, some have no origin) is filled from the word
          library so a stop's cards are never half-empty. */
-      const ws = (chOf(u).words || []).map(x => { const r = rec(nkey(x.w)) || {};
+      const ws = own.map(x => { const r = rec(nkey(x.w)) || {};
         return { w: x.w, d: x.def || r.d || '', s: x.ex || r.s || '', p: x.say || r.p || '',
           o: x.o || r.o || '', h: x.hook || r.h || '' }; });
       return cap ? ws.slice(0, cap) : ws;
