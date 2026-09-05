@@ -1091,12 +1091,21 @@ function fullWords(){ try{
     return v; }catch(e){ return null; } }
 function loadFullLibrary(then){ if(window.SB_FULL){ fullWords(); _fullState='loaded'; state.fullLoaded=true; if(then) then(); return; }
   if(_fullState==='loading') return; _fullState='loading'; state.fullLoading=true; render();
-  const s=document.createElement('script'); s.src='words-full.js';
+  /* STAMP BOTH. index.html declares itself uncacheable and every asset it points
+     at carries a ?v=; these two were the exception, fetched bare, so a returning
+     child kept the library they already had however far it had moved on. That
+     went unnoticed while the file only ever grew at the end; it bites the moment
+     the words themselves change — a re-banding rewrites every record in place.
+     boot-lazy has always appended SB_ASSET_V for the files it owns (words-data-2
+     among them); this is the same stamp, applied to the two files app3 fetches
+     for itself. */
+  const AV=String(window.SB_ASSET_V||'');
+  const s=document.createElement('script'); s.src='words-full.js'+AV;
   s.onload=()=>{ _fullState='loaded'; _wdb=null; state.fullLoading=false; state.fullLoaded=true;
     fullWords();                                     // JSON string -> filtered array
     /* the championship shard follows; the library is usable either way, so a
        missing or slow shard must never hold up the door */
-    const h=document.createElement('script'); h.src='words-hard.js';
+    const h=document.createElement('script'); h.src='words-hard.js'+AV;
     h.onload=()=>{ fullWords(); _wdb=null; render(); };
     h.onerror=()=>{};
     document.head.appendChild(h);

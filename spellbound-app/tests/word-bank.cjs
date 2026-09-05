@@ -273,5 +273,14 @@ ok(/128k clip manifest/.test(fs.readFileSync(SRC + '/boot-lazy.js', 'utf8')),
 ok(/words-hard\.js/.test(app3), 'the shard is fetched alongside the core library');
 ok(!/src="words-hard\.js/.test(idx), 'and it is NOT a boot script — the library loads on demand');
 
+/* ---- the library must be cache-busted like everything else ----
+   index.html declares itself uncacheable and every asset it names carries a
+   ?v=. words-full.js and words-hard.js were the exception: app3 fetched them
+   bare, so a returning child kept the library they already had. Harmless while
+   the file only grew at the end, and not harmless at all the first time the
+   records themselves were rewritten in place by a re-banding. */
+ok(/s\.src='words-full\.js'\+AV/.test(app3pre), 'words-full.js is fetched with the asset stamp');
+ok(/h\.src='words-hard\.js'\+AV/.test(app3pre), 'words-hard.js is fetched with the asset stamp');
+
 console.log(fails ? '\n' + fails + ' FAILED' : '\nall good');
 process.exit(fails ? 1 : 0);
