@@ -83,6 +83,15 @@ window.SB_WORDS_PATCH = function () {
    'transvestites', 'vasectomy', 'wittol'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
+  /* obsolete and extremely rare variant spellings. CORE_CUT — the 1,762
+     reviewed non-words — already refuses these in the library, so a child could
+     be set a spelling in Practice that the Word Finder does not recognise as a
+     word at all. Drilling a variant nobody writes is the misspelling fault under
+     another name. */
+  [
+   'abacli', 'abilitable'
+  ].forEach(function (w) { REMOVE[nk(w)] = 1; });
+
   // drugs of abuse, and alcohol carried under a brand
   [
    'blotto', 'hollands', 'khat', 'quaalude', 'quaaludes'
@@ -185,6 +194,52 @@ window.SB_WORDS_PATCH = function () {
 
   // 3) Rewrite spelling-leak definitions (target word must NOT appear in the definition text).
   var DEF = Object.assign(Object.create(null), {
+    /* THE BIOGRAPHY CLASS, 5 Sep 2026. A person of the same name had taken the
+       ordinary word's entry: wren was Christopher Wren rather than the bird. Only
+       hijacked common words are here — a headword that is only ever a name keeps
+       its biography, because a bee asks those. */
+    balder: "having even less hair on the head than someone else",
+    begins: "starts to happen, or sets something in motion for the first time",
+    burger: "a flat round patty of cooked meat served inside a soft bun",
+    cartwright: "a worker who builds and repairs wooden wagons pulled by horses",
+    casanova: "a charming man known for falling in love again and again",
+    chesterfield: "a long padded couch with rolled arms and a matching high back",
+    drake: "a male duck, often with brightly coloured feathers",
+    fields: "open stretches of land where crops grow or animals graze",
+    fullers: "workers who clean and thicken newly woven woollen cloth",
+    genet: "a slender spotted animal like a cat, with a long ringed tail",
+    goring: "piercing or stabbing something with horns, as an angry bull does",
+    hogans: "traditional round Navajo homes built from logs and packed earth",
+    hoover: "a machine that sucks up dust and dirt from carpets and floors",
+    landau: "a four-wheeled horse-drawn carriage with a roof that folds back",
+    lee: "the sheltered side of something, away from the blowing wind",
+    loos: "toilets; the small rooms where people go to the bathroom",
+    marks: "spots, lines, or scratches left on a surface; also scores for schoolwork",
+    marquis: "a nobleman who ranks above an earl and below a duke",
+    martin: "a small bird with a forked tail that catches insects while flying",
+    mermen: "imaginary sea creatures shaped like men above the waist with fish tails",
+    nelson: "a wrestling hold in which an arm is pushed under an opponent's arm from behind",
+    nelsons: "wrestling holds in which an arm is pushed under an opponent's arm from behind",
+    newton: "the unit used to measure how strongly a force pushes or pulls",
+    pollock: "a large greenish sea fish that is caught and eaten as food",
+    sax: "a curved brass wind instrument with keys and a reed, common in jazz",
+    saxes: "curved brass wind instruments with keys and reeds, often heard in jazz bands",
+    scopes: "the ranges of subjects or areas that a plan or study covers",
+    scribe: "a person who copied books and records by hand before printing existed",
+    scribes: "people who copied books and records by hand before printing was invented",
+    sellers: "people who offer goods to others in exchange for money",
+    sexton: "a person who takes care of a church building, its grounds, and bells",
+    sitters: "people who look after children or pets while the parents are away",
+    smuts: "fungal diseases that cover grain crops with black, sooty powder",
+    sully: "to stain something clean, or to damage a good reputation",
+    vandyke: "a short, neatly trimmed beard that ends in a point at the chin",
+    warners: "people who tell others that danger or trouble is coming",
+    waters: "the sea, lakes, or rivers belonging to a particular place",
+    wellington: "a tall rubber boot that keeps your feet dry in mud",
+    whistlers: "people who make a high musical sound by blowing through their lips",
+    wiener: "a long thin sausage often served hot in a bread roll",
+    wren: "a small brown songbird with a short tail that points upward",
+    wrens: "small brown songbirds with short tails that point straight upward",
     dike: "a long wall or bank built to hold back water and stop flooding",
     dikes: "long walls or banks built to hold back water and stop flooding",
     paddy: "a flooded field where rice is grown",
