@@ -256,6 +256,58 @@ ok(/kaffir/.test(wpSrc) && /hottentot/.test(wpSrc),
 ok(!live.has('kaffir') && live.has('welsh'),
   'the Welsh nationality is untouched — only the slur senses go');
 
+/* THE TWENTY-REVIEWER SWEEP, 5 Sep 2026. Twenty reviewers read all 19,810
+   word/stop pairings in the free journey and returned 5,701 findings. The
+   content half of those was NOT a journey fault — every word here was in the
+   served corpus, so ordinary Practice served them too.
+
+   The reason this needs a NAMED list, like the slurs above, is that a pattern
+   scan over all 56,260 served words found only 315 of them: 0.6%. The glosses
+   read innocently. `dicks` was "someone who is a detective". `midget` was "a
+   person who is markedly small". `knockout` was "a very attractive or seductive
+   looking woman" — which no filter for offence would flag, and which is exactly
+   what a nine-year-old's word card would have shown. Rules cannot see these;
+   only reading finds them. */
+const SWEPT = ['dike', 'hebe', 'ponce', 'shitty', 'dicks', 'kluxer',
+  'mongolism', 'octoroon', 'mahound', 'negro', 'quadroon', 'midget', 'cripple',
+  'phallic', 'odalisque', 'casanova', 'lothario', 'coquette', 'doxy', 'minx',
+  'castration', 'circumcision', 'quaalude', 'khat', 'sarin', 'gestapo',
+  'abacinate', 'dumdum', 'filicide', 'lynching', 'proctitis', 'trepanation',
+  'idiot', 'moron', 'cretin', 'imbecile', 'tits', 'nipples', 'piss'];
+const sweptLeft = SWEPT.filter(w => live.has(w));   // the 130k library, guarded by CORE_STRIKE
+ok(sweptLeft.length === 0, 'nothing the twenty-reviewer sweep struck reaches a child'
+  + (sweptLeft.length ? ' — STILL LIVE: ' + sweptLeft.join(', ') : ''));
+
+/* A WORD WITH A GOOD SENSE AND A BAD GLOSS IS REPAIRED, NOT STRUCK. These are
+   ordinary words a speller should meet; what was wrong was the definition the
+   card put on screen. `hedgehog` carried the PORCUPINE's gloss, which teaches a
+   child something false about an animal they know; `pallet` and `broach` wore
+   palette's and brooch's meanings inside the homophones stop, where telling
+   those two pairs apart is the entire lesson. */
+/* The repairs live in words-patch.js's DEF table, which edits the SERVED
+   corpus — so this check reads SB_DATA after the patch has run, not the 130k
+   library. That is the shard a child actually practises out of. */
+const sd = {};
+new Function('window', fs.readFileSync(SRC + '/words-data.js', 'utf8'))(sd);
+new Function('window', fs.readFileSync(SRC + '/words-data-2.js', 'utf8'))(sd);
+new Function('window', fs.readFileSync(SRC + '/words-patch.js', 'utf8'))(sd);
+const liveRec = Object.create(null);
+for (const e of sd.SB_DATA.nsf) if (e && e.w) liveRec[String(e.w).toLowerCase()] = e;
+ok(Object.keys(liveRec).length >= 50000,
+  Object.keys(liveRec).length.toLocaleString() + ' words served after the QC patch');
+
+const REPAIRED = {
+  hedgehog: /spines|spiny/i, chilly: /cold/i, brownie: /chocolate|cake/i,
+  badger: /burrow|animal/i, technical: /skill|method|subject/i,
+  knockout: /boxing/i, pallet: /mattress|platform|bed/i,
+  broach: /raise|subject|pierce/i, naughty: /behav/i, ass: /donkey/i,
+};
+const unrepaired = Object.keys(REPAIRED).filter(w => {
+  const e = liveRec[w]; return !e || !REPAIRED[w].test(String(e.d || ''));
+});
+ok(unrepaired.length === 0, 'every repaired definition actually describes its own word'
+  + (unrepaired.length ? ' — STILL WRONG: ' + unrepaired.join(', ') : ''));
+
 /* PROTOTYPE-SAFE LOOKUPS IN words-patch.js. With a plain {}, REMOVE["constructor"]
    answers true from Object.prototype and the word — a real library headword that
    CORE_FIX ships a kid-safe gloss for — was spliced out of the served corpus on

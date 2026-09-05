@@ -721,6 +721,32 @@ let _fullState='idle'; // idle | loading | loaded | error
    the correction reviewable in one place. */
 const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'abbr','abbrev','abd','abdom','mis',
+/* ---- the twenty-reviewer sweep, 5 Sep 2026 ----
+   Twenty reviewers read all 19,810 free-journey placements one at a time. The
+   content they surfaced is listed here AND in words-patch.js, for the reason
+   block 1a records: fixCore guards the 130k library, but a child practises out
+   of SB_DATA.nsf, and every one of these was live in both.
+   These are here rather than left to SLUR_DEF because a pattern scan over the
+   whole served corpus found 0.6% of them — the glosses read innocently.
+   `dicks` was "someone who is a detective". Rules cannot see that; only
+   reading can, which is the lesson of the 37 learned again at scale. */
+  'abacinate','abhominable','aphrodisiac','audubon','autoloader','bacchanalia','balisong',
+  'blotto','booger','boogers','bosomy','calfs','capibara','carotin','casanova','castration',
+  'caucasoid','chancrous','chico','chicos','circumcision','codpiece','come','coonskin',
+  'coontie','coquette','crappy','cretin','cripple','cum','debauch','defecator','dicks',
+  'dike','disney','douche','doxy','dumdum','emasculate','epicanthi','erotism','estrus',
+  'evert','feticide','filicide','gamin','gestapo','gipsy','git','goodmen','goring',
+  'guinness','harpy','hausa','hebe','hermaphrodite','hollands','idiot','imbecile','iodin',
+  'ira','jackass','katharsis','khat','kluxer','limey','lothario','lubricity','lulu','lynch',
+  'lynching','mahound','masochism','mermen','midget','minx','mioses','miosis','moder',
+  'mongolism','moron','morons','myosis','naturism','nazify','negro','negroes','negroid',
+  'negros','nipple','nipples','nudists','octoroon','odalisque','oedipal','phallic','piss',
+  'pissing','poleax','poleaxe','ponce','proctitis','proctoscope','promiscuity',
+  'promiscuous','prurience','pruriency','puke','quaalude','quaaludes','quadroon','randy',
+  'risque','sadism','saki','sarin','saturnalia','satyr','satyrs','seel','semite',
+  'serail','sext','sexual','sexually','shitty','sills','sitters','snot','sonsy','sully',
+  'suttee','tawney','tits','toying','transvestite','transvestites','trepanation','turp',
+  'twit','twits','vasectomy','wittol','wuss','xis','yogi','yogin','yogis','zulu','zulus',
 /* ---- the 37, signed off 4 Sep 2026 ----
    The SLUR_DEF pattern below reads what a definition says about its own
    headword, which is why it catches a whole class rather than a word list. It
@@ -1124,8 +1150,18 @@ function mergeHard(){ try{
     if(!Array.isArray(window.SB_FULL)) return;
     if(window.SB_FULL._hard) return;                 // already in
     const seen=new Set(window.SB_FULL.map(r=>String(r&&r.w||'').toLowerCase()));
-    let n=0; for(const r of H){ const k=String(r&&r.w||'').toLowerCase();
-      if(!k||seen.has(k)||!safeWord(r)) continue; seen.add(k); window.SB_FULL.push(r); n++; }
+    /* THE SHARD GOES THROUGH fixCore TOO. It ran safeWord alone, so the 1,915
+       championship words bypassed CORE_STRIKE and CORE_FIX entirely — the
+       guard caught `balisong` (a butterfly KNIFE, sanitised in its own gloss as
+       a "folding pocket tool") re-entering the library after fixCore had struck
+       it. A strike list that covers one of two merge paths is not a strike
+       list; this is the same fault as the block list that covered one of three
+       entry points. */
+    let add=H.filter(r=>{ const k=String(r&&r.w||'').toLowerCase();
+      return k && !seen.has(k) && safeWord(r); });
+    try{ add=fixCore(add); }catch(e){}
+    let n=0; for(const r of add){ const k=String(r&&r.w||'').toLowerCase();
+      if(!k||seen.has(k)) continue; seen.add(k); window.SB_FULL.push(r); n++; }
     try{ Object.defineProperty(window.SB_FULL,'_hard',{value:n,enumerable:false}); }catch(e){}
     _wdb=null; }catch(e){} }
 function fullWords(){ try{
