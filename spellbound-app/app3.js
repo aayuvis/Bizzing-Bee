@@ -1057,6 +1057,20 @@ const SLUR_DEF = /\b(offensive|derogatory|disparaging|pejorative|vulgar|contempt
    losing the whole class by weakening the pattern. */
 const SLUR_OK = new Set(['improperation','insultment','nefandous','multiracialize',
   'affront','euphemism','rude','obnoxious','innuendo']);
+/* ROMAN NUMERALS ARE NOT WORDS TO SPELL. The bank carries xiv, xxii, lxx and
+   thirteen more as headwords, glossed "the cardinal number that is the sum of
+   thirteen and one". They are short and rated band 1, so they surfaced near the
+   FRONT of easy word lists, and "x-i-v" teaches a speller nothing.
+   The test is deliberately the SHAPE *and* the definition, never the shape
+   alone: `mix` reads as M-IX, `dix` as D-IX (it is the reformer Dorothea Dix)
+   and `cli` as C-L-I (the command-line interface). All three are real headwords
+   with real meanings, and a shape-only rule would delete all three. */
+const ROMAN_SHAPE = /^(?=[mdclxvi]{2,})m{0,4}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})$/;
+function ROMAN_NUM(k, d){
+  const g = String(d||'');
+  return ROMAN_SHAPE.test(k) && (/^the cardinal number that is\b/i.test(g)
+                              || /^being\s+\w+\s+more than\s+\w+/i.test(g));
+}
 function fixCore(v){ try{
     const out = [];
     for(const r of v){
@@ -1067,6 +1081,7 @@ function fixCore(v){ try{
          judged on the replacement, not on the sense we just removed */
       if(Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
       if(r.d && !SLUR_OK.has(k) && SLUR_DEF.test(r.d)) continue;
+      if(ROMAN_NUM(k, r.d)) continue;
       out.push(r);
     }
     return out; }catch(e){ return v; } }

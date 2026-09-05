@@ -18,6 +18,23 @@ window.SB_WORDS_PATCH = function () {
    'nymphomaniacs', 'encephalize-', 'triskaideka-', 'committeth'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
+  // 1b) Remove: Roman numerals carried as headwords — xiv, xxii, lxx and 13 more,
+  // each glossed "the cardinal number that is the sum of thirteen and one". They
+  // are two to five letters and rated band 1, so they surfaced near the FRONT of
+  // easy word lists, and "x-i-v" teaches a speller nothing. The test is the SHAPE
+  // *and* that definition, never the shape alone: `mix` reads as M-IX, `dix` as
+  // D-IX (the reformer Dorothea Dix) and `cli` as C-L-I (the command-line
+  // interface) — all three are real headwords a shape-only rule would delete.
+  var ROMAN = /^(?=[mdclxvi]{2,})m{0,4}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})$/;
+  var isNumeral = function (w, d) {
+    var g = String(d || '');
+    // two glosses in the bank, both unmistakable: the cardinal noun form
+    // ("the cardinal number that is the sum of thirteen and one") and the
+    // adjective form liv carries ("being four more than fifty").
+    return ROMAN.test(w) && (/^the cardinal number that is\b/i.test(g)
+                          || /^being\s+\w+\s+more than\s+\w+/i.test(g));
+  };
+
   // 2) Rewrite graphic/adult example sentences (word kept so the fill-in-the-blank masker still works).
   var SENT = {
     grotesquely: 'The old oak was grotesquely twisted into strange, gnarled shapes.',
@@ -49,7 +66,7 @@ window.SB_WORDS_PATCH = function () {
   var removed = 0, sPatched = 0, dPatched = 0;
   for (var i = D.nsf.length - 1; i >= 0; i--) {
     var e = D.nsf[i]; if (!e || !e.w) continue; var w = nk(e.w);
-    if (REMOVE[w]) { D.nsf.splice(i, 1); removed++; continue; }
+    if (REMOVE[w] || isNumeral(w, e.d)) { D.nsf.splice(i, 1); removed++; continue; }
     if (SENT[w]) { e.s = SENT[w]; sPatched++; }
     if (DEF[w])  { e.d = DEF[w];  dPatched++; }
   }

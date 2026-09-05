@@ -140,7 +140,14 @@ for (const w of ['abgarus', 'afeefa', 'megaprofit', 'nonasterisked'])
    person, a goddess, a city, and two classical formations */
 for (const w of ['adornoian', 'anahit', 'ashtarak', 'catalanophile', 'armenophilia', 'lunomancy'])
   ok(!CUT.has(w), 'the keeping rules spared ' + w);
-const OKSET = new Set(tbl('const SLUR_OK', 'function fixCore').match(/'([a-z]+)'/g).map(s => s.slice(1, -1)));
+const OKSET = new Set(tbl('const SLUR_OK', '/* ROMAN NUMERALS').match(/'([a-z]+)'/g).map(s => s.slice(1, -1)));
+/* The numeral test, read out of app3.js the same way — shape AND gloss. */
+const ROMAN_SHAPE = new RegExp(/const ROMAN_SHAPE = \/(.+?)\/;/.exec(app3pre)[1]);
+const ROMAN_NUM = (k, d) => {
+  const g = String(d || '');
+  return ROMAN_SHAPE.test(k) && (/^the cardinal number that is\b/i.test(g)
+                              || /^being\s+\w+\s+more than\s+\w+/i.test(g));
+};
 const FIXD = {};
 for (const m of tbl('const CORE_FIX', '/* ---- slurs').matchAll(/^ {2}([a-z]+): '([^']+)'/gm)) FIXD[m[1]] = m[2];
 
@@ -168,6 +175,7 @@ for (const r of coreArr) {
   if (STRIKE.has(k) || CUT.has(k)) continue;
   const d = Object.prototype.hasOwnProperty.call(FIXD, k) ? FIXD[k] : r.d;
   if (d && !OKSET.has(k) && SLUR_DEF.test(d)) continue;
+  if (ROMAN_NUM(k, d)) continue;
   live.add(k);
 }
 /* mergeHard() gates the shard on safeWord(), NOT on fixCore — so a word struck
@@ -229,6 +237,26 @@ const lost = mustStay.filter(w => !live.has(w));
 ok(lost.length === 0, 'and no ordinary word is lost to it' + (lost.length ? ' — LOST: ' + lost.join(', ') : ''));
 for (const w of ['shrimp', 'runt', 'ragtag', 'retard'])
   ok(FIXD[w] && !SLUR_DEF.test(FIXD[w]), w + ' ships the everyday meaning, not the disparaging sense');
+
+/* ROMAN NUMERALS ARE NOT WORDS TO SPELL. Sixteen of them shipped as band-1
+   headwords — xiv glossed "the cardinal number that is the sum of thirteen and
+   one" — so they surfaced near the front of easy lists, and "x-i-v" teaches a
+   speller nothing. The rule tests the SHAPE *and* the gloss, and these three
+   are why: mix reads as M-IX, dix as D-IX (the reformer Dorothea Dix) and cli
+   as C-L-I (the command-line interface). A shape-only rule deletes all three. */
+const numerals = ['xiv', 'xii', 'xix', 'xxii', 'lxx', 'vii', 'viii', 'xvi', 'xvii',
+  'xviii', 'xxi', 'xxiii', 'xxiv', 'xxv', 'xiii', 'liv'];
+const numLeft = numerals.filter(w => live.has(w));
+ok(numLeft.length === 0, 'no Roman numeral reaches a child'
+  + (numLeft.length ? ' — STILL LIVE: ' + numLeft.join(', ') : ''));
+const numLost = ['mix', 'dix', 'cli'].filter(w => !live.has(w));
+ok(numLost.length === 0, 'and the three real words shaped like numerals survive'
+  + (numLost.length ? ' — LOST: ' + numLost.join(', ') : ''));
+/* The served shards are filtered by words-patch.js, not by fixCore, so the same
+   rule has to live in both places — a child practises out of SB_DATA.nsf. */
+const wp = fs.readFileSync(SRC + '/words-patch.js', 'utf8');
+ok(/the cardinal number that is/.test(wp) && /isNumeral\(w, e\.d\)/.test(wp),
+  'and words-patch.js strips them from the SERVED shards too');
 
 /* The live total must still clear the number every surface quotes. `live` already
    holds core + shard, so it is NOT summed with H again — doing that counted the
