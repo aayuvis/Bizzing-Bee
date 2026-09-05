@@ -721,6 +721,235 @@ let _fullState='idle'; // idle | loading | loaded | error
    the correction reviewable in one place. */
 const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'abbr','abbrev','abd','abdom','mis',
+/* ---- the corpus sweep, 5 Sep 2026 ----
+   1,924 words read one at a time by thirty-six reviewers covering all 36,393
+   served words no reviewer had seen under the strict content brief. They must
+   be struck HERE as well as deleted from the served shards: fixCore guards the
+   130k library, which is what the Whole Hive list, the Word Finder, the Ultra
+   road and hardPool draw from, so a word deleted only from the shards is still
+   one search away.
+   Three classes dominate, and none of them is English: Latin genus and family
+   names sold as words (clupeidae, pelecanus, arachnida), acronyms (cia, ascii,
+   awol), and — worst in a spelling app — misspellings drilled as correct, with
+   `scarey` sitting eleven rows from `scary` in the same list. The rest is
+   content no bee would ask a child: catamite, beaner, hajji, golliwogg. */
+  'abacination','abama','abattue','abc','abdominohysterectomy','abelicea','aberia','abhorson',
+  'abietineae','abortions','abortus','abrachia','abs','acalypha','acaridae','acarina','acc',
+  'acephalia','acer','aceraceae','achras','acipenser','aconitum','acorea','acorus',
+  'acrididae','acropora','actaea','actinia','actiniae','actinidia','actinozoa','ada',
+  'adactylia','adams','adansonia','adelges','adenosis','adiantum','adiposis','adlumia','adp',
+  'aedes','aegilops','aerides','aethusa','aetobatus','agalactia','agalinis','agamidae',
+  'agapornis','agaricus','agathis','agee','agelaius','agelicism','aglaonema','agnatha',
+  'agrimonia','agropyron','agrostis','ailurus','aircrafts','ais','aix','aizoaceae','alauda',
+  'alaudidae','albee','albizia','albuca','alca','alcedo','alces','alchemilla','alcidae',
+  'alectoria','alectoris','aletris','aleurites','aleyrodes','alisma','alismales','allen',
+  'aller','alliaceae','alliaria','allionia','alnus','alonso','alopiidae','alpinia','alright',
+  'als','alsophila','alstonia','alt','alts','alytes','amastia','amazona','ambystoma',
+  'ameiurus','amelia','amentia','ametria','amex','amia','amiidae','amniota','amoebida',
+  'amphibia','amphipoda','amygdalus','amytal','anabas','anaclisis','anacyclus','anagallis',
+  'anagyris','ananas','anaphalis','anapsida','anas','anasa','anaspida','anastomus','anatidae',
+  'ancylus','anderson','andira','andreaea','anemopsis','anencephalic','anencephaly','anethum',
+  'anguidae','anguis','animalia','annelida','annexa','annexal','annona','anobiidae',
+  'anodonta','anomala','anomiidae','anoplura','anostraca','ans','anser','antedon','anthemis',
+  'antheraea','anthidium','anthony','anthozoa','anthus','anthyllis','anura','aphididae',
+  'aphis','apidae','apios','apis','apium','aplectrum','aplysia','apocynum','apodidae',
+  'apogon','apoidea','apr','arabis','araceae','arachis','arachnida','arales','aramus',
+  'araneae','araneida','araujia','arca','arces','arcidae','arcsin','arctan','arctium','ardea',
+  'ardeidae','ardisia','arecaceae','arenaria','argasidae','argemone','argiope','argonauta',
+  'arisaema','armeria','armoracia','arnoseris','ars','artamus','artemia','arvicola','aryan',
+  'aryans','asap','ascaridae','ascaridia','ascaris','ascii','asclepias','asilidae','asimina',
+  'asperula','asplenium','astacidae','astacus','astragali','ateles','ates','atherurus',
+  'athyrium','atm','atriplex','atropa','atropidae','aum','aus','avahi','avena','averrhoa',
+  'aves','awol','aythya','azolla','balaena','balanidae','balanus','ballota','bambusa',
+  'bambuseae','bams','baphia','barbarea','barbital','barbitone','bart','barth','bartonia',
+  'baruch','bas','batis','batoidei','batrachia','bauhinia','bayard','bayoneted','bds',
+  'beaner','beaners','beatles','beaumont','becket','beckett','bede','beefcake','bellis',
+  'belonidae','benedict','benet','bergman','bering','berith','berk','berkeley','bernard',
+  'beroe','berteroa','bessemer','bhang','bidens','bignonia','bircher','bis','bisexual',
+  'bisexuality','bisexuals','bitchiness','bivalvia','biz','bizet','bks','blackface','blake',
+  'blarina','blatta','blattidae','blattodea','blechnum','bletia','bletilla','blok',
+  'bloodbath','blooding','bloodlust','bloomeria','boehmeria','boidae','boltonia','bomarea',
+  'bombax','bombyx','bonasa','boner','boners','boney','borago','borassus','bos','bostons',
+  'boswellia','botaurus','bothrops','bovidae','bowlder','bps','bra','brachinus','brachyura',
+  'bradypus','bras','brasil','brassia','bren','brith','brodiaea','bromus','brotula',
+  'browallia','bruchidae','bruchus','bryaceae','bryales','bryanthus','bryophyta','bryozoa',
+  'bryum','bucephala','buceros','buchloe','buckleya','budorcas','bufo','bufonidae','bulimia',
+  'bulimic','bullrush','bumelia','bungarus','burhinus','burk','burmannia','bursera','burtons',
+  'butea','buxaceae','buxom','cacajao','cacalia','cacatua','cactaceae','cajanus','calcedony',
+  'callitris','calopogon','caltha','calvatia','camassia','camelia','camelidae','camelina',
+  'camelus','camerae','cananga','canangium','canavalia','canidae','canis','cannaceae',
+  'carabidae','caranx','carapidae','carcinoid','cardamine','cardiidae','cardium','carduelis',
+  'carduus','caretta','carex','carica','carlos','carnegiea','carnivora','caroli','carolus',
+  'carpinus','carum','caryocar','caryota','casava','cassiope','castanea','casuarius',
+  'catamite','cathartes','caudata','cebidae','cebus','cecropia','cedrela','cedrus','celtis',
+  'cenchrus','centaurea','cerastium','ceratin','ceratitis','ceratodus','cercis','ceroxylon',
+  'certhia','cervidae','cervus','cesarian','cest','cestida','cestidae','cestrum','cetacea',
+  'ceterach','cetonia','cetraria','cgs','chalcis','chamaeleo','changs','chara','charadrii',
+  'charales','charas','chawbacon','cheloid','chelone','chelonia','chelydra','chen',
+  'chermidae','chilopoda','chilopsis','chiococca','choloepus','chondrus','chordata',
+  'christies','cicadidae','cicer','cichorium','ciconia','cicuta','cimex','cinclidae',
+  'cinclus','circaea','circaetus','cirsium','cis','cistaceae','citellus','citrullus','cive',
+  'cladonia','clangula','claytonia','cleridae','clethra','clianthus','cliftonia',
+  'clintonia','clitocybe','clitoria','clupea','clusia','cnicus','cnidaria','cobitidae',
+  'cobol','coccidae','coccidia','coccidium','cocculus','coccyzus','cockfight','cockup',
+  'codiaeum','coffea','colinus','collins','collinsia','colocasia','colones','colubrina',
+  'colutea','comandra','comatula','comatulae','combretum','commelina','commie','comte',
+  'conceptus','concubinage','condylura','congreve','congridae','conilurus','conium',
+  'connarus','controled','conyza','copepoda','coprinus','coprolith','coptis','coracias',
+  'cordaites','cordia','corditis','coregonus','coreidae','corixa','cornaceae','corp',
+  'corticium','corvidae','corylus','corypha','cos','cosec','coses','cosh','cotan','cottidae',
+  'cottus','cotula','cps','cracidae','craniata','crassula','crataegus','crazies','creatin',
+  'crepis','crex','cricetus','crinoidea','cro','crookback','crotalus','crs','crustacea',
+  'cubas','cuckolded','cuckoldry','cuculidae','cuculus','cucurbita','cul','culex','culices',
+  'culicidae','cuniculus','cupressus','curcuma','curet','curettage','cuterebra','cutlas',
+  'cwt','cyamus','cyanamid','cyathea','cycadales','cycas','cyder','cydippida','cydonia',
+  'cynara','cynips','cynodon','cynomys','cynoscion','cyperus','cypraea','cyprinus',
+  'cyrtomium','dacelo','dactylis','dag','dagga','dags','dal','dalbergia','dalea','damn',
+  'dasyatis','dasypus','dasyurus','dat','daucus','davies','dbms','ddt','debitor','dec',
+  'decidua','deciduae','decumaria','deers','delichon','dendroica','dentaria','der','des',
+  'descendents','desmodium','desmodus','dess','dewey','diablo','diam','diapsida','dias',
+  'diazepam','dicranum','dictamnus','didelphis','diervilla','dilantin','dink','dinks',
+  'dinoceras','dinornis','diodon','dionaea','dioscorea','diospyros','diphylla','diplopoda',
+  'dipnoi','dipodidae','dipodomys','dipsacus','diptera','dipteryx','dipus','diss','dkm','dod',
+  'dodonaea','dominus','dorylinae','dos','dovyalis','dowery','downers','dramamine','drepanis',
+  'duer','durio','dutcher','dys','dysuria','ebenaceae','ebenales','ecballium','eccyesis',
+  'echeneis','echinops','echium','eclampsia','edentata','edp','eds','effeminate','egeria',
+  'egretta','elaeagnus','elaeis','elanus','elaphe','elaphurus','elapidae','elephas',
+  'elettaria','eleusine','elias','elopidae','els','elvis','elymus','emberiza','embiodea',
+  'emf','emilia','empetrum','encelia','endometrial','englishes','engraulis','enhydra',
+  'entires','entoloma','enuresis','epa','epacris','ephemeroptera','ephestia','epi',
+  'epilobium','equiseta','equisetum','equus','erethizon','erianthus','ericaceae','ericales',
+  'erigeron','erinaceus','eriogonum','eriosoma','erithacus','ernst','erogenous','ers',
+  'eryngium','erysimum','erysiphe','ese','esocidae','esox','esp','esq','est','estradiol',
+  'estriol','estrone','eudyptes','eugene','eumenes','eumycetes','eunectes','eunuch',
+  'euproctis','euryalida','eurylaimi','eutheria','evacuant','evans','evernia','exacum',
+  'eyres','fabaceae','fagaceae','fagales','fagin','fagopyrum','fagus','falange','falco',
+  'falla','falsie','fanny','faq','farer','fas','fasciola','fass','fbi','fecalith','felidae',
+  'felis','festuca','fet','fetishes','fetishist','fetometry','fica','fifo','filago',
+  'filariid','filicales','fillmore','fistulina','flapcake','flaubert','flog','flogger',
+  'flory','folies','fomes','forficula','fourier','fps','fradicin','franca','frances',
+  'frasera','fratricides','frazer','friedman','fringilla','fris','frison','fucaceae',
+  'fucales','fuci','fucus','fulica','fulmarus','fumaria','fundulus','fungia','furnarius',
+  'gadidae','gadus','galega','galen','galeopsis','galium','gallamine','gallinago','gallowses',
+  'ganoidei','garcinia','garrick','garrotted','garrulus','gat','gatling','gats','gavia',
+  'gavialis','gayness','gays','gazella','gds','geld','gelechia','gelly','genetta','genista',
+  'gentiana','ges','gied','gigolo','gimp','ginkgoales','gis','gish','gladstone','glareola',
+  'glaucium','glaucomys','glaux','glenn','gliridae','glis','glossina','glyceria','gnetaceae',
+  'gobiidae','gobio','goddam','goddamn','goddard','golder','golgi','golliwogg','gomphrena',
+  'goodenia','goodyera','gos','goy','goyim','gps','gramineae','gravida','grindelia','gruidae',
+  'grume','grumose','grumous','gruss','gryllidae','gulo','gunman','gunmen','gunplay','gus',
+  'gymnogyps','gymnophiona','gymnura','gynura','gypaetus','gyrinidae','halenia','haliotis',
+  'hamamelis','haminoea','hangman','hans','harelip','harijan','harpullia','hassel',
+  'hawthorne','hayes','hazmat','hearst','hebephrenia','hedera','hedysarum','heinz','helas',
+  'helenium','heliopsis','heliothis','heliozoa','hellman','heloderma','helvella','hemigalus',
+  'hemiptera','hepaticae','hepatoma','heracleum','herbert','heritiera','heros','herpes',
+  'herpestes','hes','heterosexual','heterosexuality','heuchera','hevea','hexanchus',
+  'hexapoda','hibbertia','hickey','hieracium','hiper','hirudinea','hirudo','hirundo','hitler',
+  'hodgkin','hogg','holibut','homaridae','homarus','homeless','homo','homoptera',
+  'homosexuality','homosexuals','hooknose','hooters','horniness','horny','houghton','howard',
+  'howes','hrs','hubble','hud','hudsonia','hughes','hugo','humous','humping','humulus',
+  'hunchback','hurted','huss','hussy','hyaenidae','hybanthus','hydnaceae','hydnum',
+  'hydrastis','hydrolize','hyla','hylidae','hylobates','hymenaea','hymenal','hyssopus',
+  'hysterectomies','iago','iberis','icteridae','ictonyx','ida','idesia','ilex','illicium',
+  'imu','inc','infos','ins','insecta','inst','interne','intersex','intrench','ios','ips',
+  'iqs','irena','iresine','irregardless','irs','isn','isoetales','isoetes','isopoda',
+  'isuridae','isurus','ixodes','ixodidae','jaggers','jai','jan','jared','jasminum','jassidae',
+  'jem','jewess','jewfish','jhvh','johns','jong','juglans','juncaceae','juncus','juniperus',
+  'kaoline','kat','katar','kats','ker','kinky','klan','klansman','klavern','kph','krs',
+  'labridae','lacerta','lactarius','lagenaria','lagopus','lagothrix','lamiaceae','lamium',
+  'lamna','lampridae','lan','laniard','laniidae','lanius','lapidate','lapidator','lapp',
+  'lappula','laridae','larn','larus','larvacea','las','laster','lat','lathyrus','lati',
+  'latimeria','laurus','lav','lavandula','lavatera','layia','lcd','leafs','leary','lebistes',
+  'lecanora','lech','leger','leiomyoma','leitneria','lemmus','lemna','lemnaceae','lemuridae',
+  'lense','leonurus','lepadidae','lepidium','lepiota','lepisma','lepomis','leporidae','les',
+  'letch','leukotomy','levis','liatris','libidinal','lier','lifo','ligularia','ligustrum',
+  'liliaceae','lilium','limax','limicolae','limnobium','limosa','limuli','limulus','linac',
+  'linaceae','linanthus','linaria','lins','linum','liparidae','liparis','lis','listera',
+  'listerine','litoral','llb','loasaceae','lobata','lobularia','locusta','logans','loggie',
+  'lolium','lonicera','lophiidae','loranthus','lowes','loxes','loxia','loxodonta','lucanidae',
+  'lucilia','luger','lully','lunaria','lunas','lunt','lupinus','luscinia','lutra','lutrinae',
+  'lycaena','lychnis','lycium','lycopsida','lycopus','lycosa','lycosidae','lygodium','lygus',
+  'lymantria','lymphuria','lynchings','lyrurus','lysiloma','lythrum','macaca','macleaya',
+  'maclura','madia','maeandra','maffia','maia','maja','majeure','malaxis','malpighia','malus',
+  'malva','malvaceae','malvales','mamilla','mammalia','mammilla','mammut','maness','manidae',
+  'manis','mantidae','mantrap','mao','marasmius','marattia','maries','marmota','martes',
+  'martials','marys','mastalgia','mastectomies','mastopexy','matricide','mauser','mazama',
+  'mbd','mcg','meconium','mediobrome','meg','melaena','melagra','melastoma','meleagris',
+  'melena','meles','melia','meliaceae','melicocca','melinae','melissa','melursus','mens',
+  'mentha','mentzelia','menura','menurae','menuridae','menziesia','mer','meralgia','merginae',
+  'mergus','meropidae','merops','mes','mesothelioma','mespilus','mesua','methotrexate',
+  'metopion','metralgia','metrazol','micrurus','micturate','mider','mikania','miltonia',
+  'milvus','mimidae','mimus','min','miniscule','mins','mips','miridae','mischmetall',
+  'misopedia','mit','mitchella','mitella','mitomycin','mnium','mobed','mobula','mobulidae',
+  'mol','molestation','molidae','mollusca','molothrus','mols','momi','momordica','momotidae',
+  'monera','moneses','monodon','monotropa','mons','montia','morchella','morone','morus','mos',
+  'moschus','moslem','motacilla','mph','msg','mss','mucor','mucorales','mucuna','mugilidae',
+  'mullidae','muntiacus','muntingia','murderess','muridae','mus','musa','musaceae','muscari',
+  'musci','muscidae','muscoidea','musculus','muskat','musophaga','mustela','mustelus','mya',
+  'mycteria','myiases','myiasis','mylodon','myomorpha','myoses','myrcia','myriapoda','myrica',
+  'myricales','myristica','myrmeleon','myroxylon','myrrhis','myrtales','myrtus','mysidacea',
+  'mysidae','mysis','mysticeti','mytilidae','mytilus','myxine','myxinidae','naiadales',
+  'naias','naja','nanism','napalm','narcist','nasalis','nasua','naticidae','natrix',
+  'naturist','nauseam','necked','necker','neer','nembutal','neophron','neotoma','nepa',
+  'nepenthes','nepeta','nephelium','nephrops','nepidae','nerita','neritidae','neritina',
+  'nerium','nervus','nesokia','neter','neuralgy','nidation','nidularia','nis','nist',
+  'nitella','noctuidae','nocturia','noded','noma','nonsexual','notonecta','notornis',
+  'notropis','nov','nubile','nuda','nudism','nudist','nudity','nullipara','numenius','numida',
+  'numididae','numidinae','nycturia','nymphet','ochotona','ochroma','ocimum','oct','octopoda',
+  'odonata','ods','oecanthus','oenanthe','oenothera','oestriol','oestrone','oestrus','olds',
+  'olea','olearia','oliguria','ondatra','oni','oniscidae','oniscus','onoclea','ononis',
+  'onopordon','onyxis','opec','ophidia','ophiurida','opiliones','opuntia','orchestia',
+  'orcinus','oreamnos','oreortyx','orgies','orgy','orientals','oriolidae','oriolus',
+  'orontium','ortalis','oryzopsis','osmeridae','osmerus','ostreidae','ostrya','oswald',
+  'otaria','otariidae','otides','otididae','otus','ovibos','oxytocic','oxytropis','oxyuridae',
+  'ozaena','ozena','ozonium','paba','pac','pachuco','padda','paeonia','pagrus','pagurus',
+  'palaemon','palaquium','palinurus','paliurus','palmaceae','palmae','palmature','panax',
+  'pandion','papaver','papio','papistic','para','paramour','paras','paridae','parmelia',
+  'parnassia','parricide','parus','passerina','pastinaca','patricide','pauropoda','payed',
+  'paynim','pdl','pectineal','pediculus','peed','pelecanus','pellaea','peltandra','pennatula',
+  'perca','percidae','percoidea','percy','pereskia','perineal','pernis','pernod','perry',
+  'persea','pestis','petaurus','petrogale','petter','peziza','pezizales','pezophaps',
+  'phalaris','phallales','phalli','phallus','phaseolus','phasianus','phasmida','philanderer',
+  'philohela','phoca','phocidae','pholas','pholidota','pholiota','phoronida','phthirius',
+  'physa','physalia','physalis','picariae','picea','picidae','picumnus','picus','pieridae',
+  'pieris','pilularia','pinaceae','pinckneya','pinctada','pinealoma','pipa','pipeful',
+  'piperales','pipidae','pipile','pipilo','pipra','pirana','piscidia','pistacia','pistia',
+  'pitressin','plantago','platalea','platanus','plecotus','pleione','plethodon','pleurotus',
+  'ploceidae','ploceus','pluteus','poa','poaceae','podargus','podiceps','polack','polistes',
+  'pollenate','polska','pomatomus','pongidae','pongo','popish','porc','porifera','porphyra',
+  'porphyrio','portunus','pos','poterium','potomania','pow','prat','pressor','priapic',
+  'priapus','prima','primipara','principes','privates','prn','probenecid','proctoscopy',
+  'procurer','progne','prolapse','propellor','prosopis','prosopium','prostatectomy',
+  'proteidae','protista','proto','prox','prs','prurigo','pruritus','prys','psephurus',
+  'psetta','pseudomonas','psidium','psilotum','psithyrus','psittacus','psoralea',
+  'psychopaths','psylla','psyllidae','pteridium','pteris','pterocles','pteropus','ptomain',
+  'pts','pubic','pudendal','pueraria','pulex','pulmonata','punica','putz','pygopus',
+  'pyralidae','pyralis','pyrausta','pyrularia','pythium','qats','qed','rachet','racoons',
+  'ramed','ramona','rana','ranales','ranatra','ranidae','raphanus','raping','ratitae',
+  'rattus','recce','reccy','recission','rectal','redneck','rednecks','reit','relaxin','rem',
+  'rep','reps','reptilia','retinoblastoma','rfs','rhapis','rhexia','rhus','rhynia','ribes',
+  'ricin','ridgel','ridgil','righter','rioja','ripper','rivina','roi','rom','roofy','ros',
+  'rosa','rosales','rpm','rubens','rubia','rubus','russell','sagina','salix','salmo',
+  'salomon','salpa','sam','sanger','sanies','sannup','sauria','sauter','saxe','scarey',
+  'scarface','schiller','schoolcraft','sciara','sec','secale','secs','seps','sept','serra',
+  'seseli','seton','sexed','sexier','sexiest','sexless','sexts','sexuality','sexy','seymour',
+  'shagging','shat','shawny','sherbert','shiv','shnook','shotgun','shotguns','shwa','shylock',
+  'shyster','shysters','sialia','sialis','sida','sider','silvia','sise','sissy','sitta',
+  'sium','skinhead','skinheads','slasher','slimer','slivovitz','smilax','snafu','snafus',
+  'sniper','snipers','snorty','sociopaths','solea','soler','sooners','sorbus','sorex','sos',
+  'spalax','spastic','speer','speers','spicae','spirt','starr','sterna','stm','stogie',
+  'stogy','stoner','stouts','streaker','strix','suidae','sumner','sus','swastika','swastikas',
+  'swob','swosh','taft','taked','talbot','tamias','tampon','tampons','tamus','tartars','tate',
+  'tawse','taxus','taylor','tbs','teasle','tec','temptress','terata','termes','terrorism',
+  'terrorist','terrorists','testicle','testicles','tetrao','thalidomide','theres','thibet',
+  'thomas','thompson','thos','thous','tilia','tindal','tis','tit','titillating','tnt',
+  'todays','todd','todea','todus','toona','tooths','torturer','tracy','trema','tringa',
+  'triops','tubmen','tulipa','tunga','turdus','tush','tweest','typha','ulmus','ult','ulva',
+  'unesco','unicef','uns','unsex','upupa','uria','urs','ursus','urtica','usa','ussr','utas',
+  'valium','vanessa','vasectomies','ver','vespa','vibrator','vicia','vidua','vier','vip',
+  'vipera','vips','virago','virginity','virgins','virtus','vis','viscum','voyeurism','wacs',
+  'wats','wees','wifes','wino','winos','wis','womanizer','womans','worser','wus','xiphias',
+  'xyris','yhwh','yis','yrs','zapus','zeidae',
 /* ---- the twenty-reviewer sweep, 5 Sep 2026 ----
    Twenty reviewers read all 19,810 free-journey placements one at a time. The
    content they surfaced is listed here AND in words-patch.js, for the reason
@@ -1194,7 +1423,7 @@ function loadFullLibrary(then){ if(window.SB_FULL){ fullWords(); _fullState='loa
     h.onload=()=>{ fullWords(); _wdb=null; render(); };
     h.onerror=()=>{};
     document.head.appendChild(h);
-    if(then) then(); render(); flash('Full library ready — 130,000 words 📚'); };
+    if(then) then(); render(); flash('Full library ready — 125,000 words 📚'); };
   s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
   document.head.appendChild(s); }
 /* ---- Word Finder: search the whole library, open a learn card, add to lists ---- */
@@ -1460,7 +1689,7 @@ function coachCatalog(){
     { key:'nsf500',     label:'The Mighty 500',          sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
     { key:'vocab26',    label:'Meaning Masters',         sub:'Practice for the 2026 junior vocabulary final · 1,000 words', words:st.vocab26 },
     { key:'nsf',        label:'The Champion’s Vault',    sub:'17,000-word competition library',       words:nsf },
-    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 130,000 (loads on first use)', words:(window.SB_FULL||nsf) },
+    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 125,000 (loads on first use)', words:(window.SB_FULL||nsf) },
     { key:'hardest',    grp:'tricky', label:'Beastly Words',           sub:'Highest-difficulty spellers + championship winners', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
     { key:'trickiest',  grp:'tricky', label:'Sneaky Spellings',        sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
     { key:'latin',      grp:'origins',label:'Latin Legends',           sub:'Words with roots from Latin',           words:st.latin },
@@ -3283,7 +3512,10 @@ const SB_FACTS = {
   ipa: 805, homophones: 1452,
 };
 const sbFmt = n => n.toLocaleString('en-US');
-/* "over 130,000", not "130,097" — a round floor stays true as the library grows,
+/* "over 125,000", not "128,079" — a round FLOOR stays true as the library grows
+   and, more to the point, as QC removes from it: the 5 Sep corpus sweep struck
+   1,924 words and took the filtered library from 130,094 to 128,079. A claim
+   pinned 79 words above the real number is one cleanup away from being false,
    and cannot be wrong by one clip in a screenshot six months from now. */
 const sbOver = n => 'over ' + sbFmt(Math.floor(n / (n >= 10000 ? 1000 : 10)) * (n >= 10000 ? 1000 : 10));
 
@@ -3447,7 +3679,7 @@ const SB_COMPARE = [
      value of a table is that the eye can run down it. The detail that was in the
      prose now lives in the FAQ, where somebody who wants it will go looking. */
   ['Hearing the word',       'Robotic device text-to-speech',   'Over 128,000 words in one real recorded voice'],
-  ['Words available',        'A few hundred to ~4,000',         '130,000 · 40,000 graded by difficulty'],
+  ['Words available',        'A few hundred to ~4,000',         '125,000 · 40,000 graded by difficulty'],
   ['Different games',        'One or two, re-skinned',          'Eight distinct games, trivia and a mock bee'],
   ['Bee practice',           'Word lists to memorise',          'Full Scripps-format mock bee'],
   ['Roots and origins',      'Rarely covered',                  '100 journeys · 122 chapters'],
@@ -5129,10 +5361,10 @@ function advBanner(c){
   const price=(window.ADV&&ADV.price)?ADV.price():299;
   const unlocked=on;
   const sub=on
-    ? 'National-bee prep · 130,000-word library · 2-year plan, mock bees, champion tips & games'
+    ? 'National-bee prep · 125,000-word library · 2-year plan, mock bees, champion tips & games'
     : ready
-      ? 'You are ready for this — the Advanced Pack adds the full 130,000-word library, mock bees and narrated advanced lessons · $'+price+'/yr'
-      : 'Advanced Pack · $'+price+'/yr — the full 130,000-word library, mock bees, narrated advanced lessons and champion techniques';
+      ? 'You are ready for this — the Advanced Pack adds the full 125,000-word library, mock bees and narrated advanced lessons · $'+price+'/yr'
+      : 'Advanced Pack · $'+price+'/yr — the full 125,000-word library, mock bees, narrated advanced lessons and champion techniques';
   return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
     <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
       <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)">${SB_ICON('trophy',{size:29})}</span>
@@ -5815,7 +6047,7 @@ function viewDrawer(){
         ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
         <div class="sb-mob-only" style="display:contents">
         ${kick('Find')}
-        ${row('finder','search','Search words','find any of 130,000 words',state.nav==='finder')}
+        ${row('finder','search','Search words','find any of 125,000 words',state.nav==='finder')}
         </div>
         ${kick('')}
         <details style="margin:0 2px 2px">
@@ -8119,7 +8351,7 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
   </div>`; }
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
 function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
-  const total=window.SB_FULL?'130,000':'40,000';
+  const total=window.SB_FULL?'125,000':'40,000';
   const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':'📚 Load all 128,000 words'}</button>`:'';
   let body='';
   if(S.finderSel){ const w=S.finderSel;
@@ -8141,7 +8373,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
     body = q.trim().length<2
       ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="font-size:34px;margin-bottom:8px">🔎</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
       : (rs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px">${cells}</div>`
-        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 130,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
+        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 125,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
   }
   return `<div style="max-width:860px;margin:0 auto">
     ${pageHead('Word Finder','search '+total+' words','',loadBtn)}
@@ -8519,7 +8751,7 @@ function viewThemeDetail(){
     ${tabBar}
     ${thin?`<div style="background:color-mix(in srgb,${cl.c} 10%,var(--bg2));border:1px solid color-mix(in srgb,${cl.c} 35%,var(--line));border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
       <b>Only ${ws.length} ${ws.length===1?'word':'words'} here so far.</b> This family is small in the core library and deepens
-      to hundreds of words with the 130,000-word library in the Advanced Pack ($${price}/yr). Read the explanation now;
+      to hundreds of words with the 125,000-word library in the Advanced Pack ($${price}/yr). Read the explanation now;
       the level ladder opens once there are ${THEME_MIN} words to climb.</div>`:''}
     ${tab==='train' && !thin ? (()=>{ const pref=state.trainPref||'cards';
       const MODES=[['cards','Cards','book','See the word, the meaning and the story, one card at a time.'],
@@ -8761,7 +8993,7 @@ function viewSettings(){
       <span style="width:38px;height:38px;flex:none;border-radius:11px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:20}):(window.SB_ICON?SB_ICON('trophy',{size:19}):'')}</span>
       <span style="min-width:0;flex:1">
         <span style="display:block;font-weight:800;font-size:14.5px">Advanced Pack <span style="font-weight:700;font-size:12px;color:var(--muted)">add-on</span></span>
-        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 130,000-word library, mock bees, advanced concepts, tips and games are live.':'$'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</span></span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 125,000-word library, mock bees, advanced concepts, tips and games are live.':'$'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</span></span>
       ${S.devUnlock
         ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex:none;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
         : `<button data-act="toggleAdvPack" role="switch" aria-label="Advanced Pack" aria-checked="${_advOn?'true':'false'}" style="flex:none;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
@@ -9145,7 +9377,7 @@ function coachSetup(){
       const locked=`<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:16px;margin-bottom:16px;background:var(--surface2);border:1px dashed var(--line);padding:13px 15px;display:flex;align-items:center;gap:12px">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,#5B3FA6 13%,transparent);color:#5B3FA6;display:grid;place-items:center;opacity:.8">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:22}):''}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)">Ultra Champions Journey</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 130,000 words · Advanced Pack</span></span>
+        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 125,000 words · Advanced Pack</span></span>
         <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} $${(window.ADV&&ADV.price)?ADV.price():299}/yr</span></button>`;
       // unlocked: the advanced journey leads. locked: it sits under the standard one.
       return on ? (ultra+journeyBanner) : (journeyBanner+locked); })()}
@@ -10348,7 +10580,7 @@ function overlays(){
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:28px 30px;text-align:center;box-shadow:var(--glow);max-width:340px">
         <div style="width:64px;height:72px;margin:0 auto 12px;animation:sb-float 2.5s ease-in-out infinite">${mascotSVG('happy')}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:6px">Loading the full library…</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.5">All 130,000 words — this one-time load takes a few seconds.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5">All 125,000 words — this one-time load takes a few seconds.</div>
         <div style="width:28px;height:28px;margin:14px auto 0;border:3px solid var(--surface2);border-top-color:var(--accent);border-radius:50%;animation:sb-spin .8s linear infinite"></div>
       </div></div>`;
   if(S.pinDlg) h+=`<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgb(20 12 40 / .6)" data-act="pinCancel">

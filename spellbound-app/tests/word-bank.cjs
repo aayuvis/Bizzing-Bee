@@ -340,8 +340,8 @@ ok(/the cardinal number that is/.test(wp) && /isNumeral\(w, e\.d\)/.test(wp),
 /* The live total must still clear the number every surface quotes. `live` already
    holds core + shard, so it is NOT summed with H again — doing that counted the
    shard twice and reported 132,266 for a library of 130,094. */
-ok(live.size >= 130000,
-  'the FILTERED library still clears 130,000 — ' + live.size + ' words reach a child');
+ok(live.size >= 125000,
+  'the FILTERED library still clears its claimed floor — ' + live.size + ' words reach a child');
 
 // ---- the merge is idempotent and cache-aware ----
 const app3 = fs.readFileSync(SRC + '/app3.js', 'utf8');
@@ -363,11 +363,18 @@ ok(tagged === H.length, 'and every word in the shard carries that tag (' + tagge
 // ---- the claims: library says 130,000, the recorded voice still says 128,000 ----
 const idx = fs.readFileSync(SRC + '/index.html', 'utf8');
 const pricing = fs.readFileSync(SRC + '/pricing.js', 'utf8');
-ok(!/128,000-word library/.test(app3 + adv + pricing + idx),
-  'no surface still offers a "128,000-word library"');
-ok(/130,000-word library/.test(app3) && /130,000-word library/.test(pricing),
-  'the library is offered as 130,000 words');
-ok(/find any of 130,000 words/.test(app3), 'and the Word Finder searches 130,000');
+/* THE FLOOR MOVED DOWN, AND THAT IS THE POINT OF THIS TEST. The 5 Sep corpus
+   sweep struck 1,924 words — Latin taxonomy, acronyms, misspellings and
+   content no bee would ask — and took the filtered library from 130,094 to
+   128,079. A claim of 130,000 was then false, so the claim moved rather than
+   the strike list: this suite exists to catch a number outliving the words
+   behind it, and weakening it to protect a round figure would have inverted
+   its whole purpose. 125,000 is a floor with room for the next cleanup. */
+ok(!/1[23]0,000-word library/.test(app3 + adv + pricing + idx),
+  'no surface still offers a "130,000-word library" the bank cannot back');
+ok(/125,000-word library/.test(app3) && /125,000-word library/.test(pricing),
+  'the library is offered as 125,000 words');
+ok(/find any of 125,000 words/.test(app3), 'and the Word Finder searches 125,000');
 // the voice is a different corpus and must not be inflated
 ok(/Over 128,000 words spoken aloud/.test(idx),
   'the RECORDED VOICE claim stays at 128,000 — the shard ships no clips');
