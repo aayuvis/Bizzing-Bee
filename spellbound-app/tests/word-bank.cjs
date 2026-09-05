@@ -230,8 +230,14 @@ ok(collateral.length === 0, 'and no innocent lookalike went with them'
    that only deletes would take four good bee words out of the library. They are
    repaired through CORE_FIX instead and must still be here — as must the
    homographs that merely look like slurs. */
+/* `gooks` came OFF this list on 5 Sep. Its library gloss is honest — "any thick,
+   viscous matter", with a sentence about wiping grease off an engine — which is
+   why an earlier pass kept it as a homograph. But the headword is also a severe
+   ethnic slur, and this app SPEAKS EVERY WORD ALOUD. That is the same reasoning
+   block 1c of words-patch.js already applies to `rape`, which is struck although
+   the bank serves only the plant sense. A child hears the slur either way. */
 const mustStay = ['shrimp', 'runt', 'ragtag', 'riffraff', 'madhouse', 'peewee', 'nuthouse',
-  'retard', 'spicy', 'spices', 'japes', 'faggoting', 'chinking', 'retarding', 'gooks',
+  'retard', 'spicy', 'spices', 'japes', 'faggoting', 'chinking', 'retarding',
   'affront', 'euphemism', 'rude', 'obnoxious', 'innuendo', 'nefandous', 'insultment'];
 const lost = mustStay.filter(w => !live.has(w));
 ok(lost.length === 0, 'and no ordinary word is lost to it' + (lost.length ? ' — LOST: ' + lost.join(', ') : ''));

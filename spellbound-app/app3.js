@@ -721,6 +721,42 @@ let _fullState='idle'; // idle | loading | loaded | error
    the correction reviewable in one place. */
 const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'abbr','abbrev','abd','abdom','mis',
+/* ---- racist and antisemitic terms, struck 5 Sep 2026 ----
+   165 headwords whose only real sense is a slur. Most were found by the
+   library sweep; the rest by their own glosses, which CONFESS — "(ethnic
+   slur)", "offensive term for a person of ...", "now considered offensive" —
+   and were served anyway. The antisemitic set is the one that says most about
+   this data: Jew-free, Jew-hatred, Jewless, Jewlessness, Jewlike, Jewman,
+   Jewspeak, Jewdar. Those are not dictionary words. No lexicographic source
+   carries `Jewlessness`; it was scraped or generated, and it reached a
+   children's library.
+   A word is struck here only when the SLUR IS THE WORD. Where the headword has
+   a real sense a bee would ask and only the DEFINITION was the slur, the word
+   stays and the gloss is repaired in CORE_FIX instead — dike is an embankment,
+   paddy a rice field, pouf a footstool, queer means strange, kraut is pickled
+   cabbage, gyp is short for gypsum. Deleting those would lose good bee words
+   to a bad dictionary, which is the mistake the genus-name deletion made. */
+  'americunt','antinegro','boche','boches','bulldyke','butches','caffre','chamar','chinaman',
+  'chinamen','chinesey','chink','chinks','christfag','cockfag','coolie','coolies','cooly',
+  'currymuncher','dagoes','dagos','darkey','darkeys','darkie','darkies','darky',
+  'deniggerization','deniggerize','dothead','dyke','dykes','dykon','fag','faggots','fagot',
+  'fagots','fags','federast','feminazi','feygele','finook','furfag','gayboy','gaywad',
+  'giaour','ginzo','gip','gipped','gipping','gips','gipsies','golliwog','golliwogs','gooks',
+  'greaser','greasers','gringo','gringos','gweilo','gweipo','gypped','gypping','homintern',
+  'homocaust','honkey','honkeys','honkie','honkies','honky','hooknoses','injun',
+  'islamonazism','jap','japanazi','jerrybag','jew-free','jew-hatred','jewdar','jewess',
+  'jewless','jewlessness','jewlike','jewman','jewspeak','jigaboo','jigaboos','kafir','kafirs',
+  'kikes','klannish','klans','klaverns','kleagle','klonvocation','krauthead','lardarse',
+  'lardass','lardball','limey','limeys','lynch','lynchings','maricon','marrano','meid',
+  'mexcrement','mick','micks','mischling','mojado','molestache','moonie','moralfag',
+  'mulattress','muzzie','n-bomb','nances','nappyhead','negroize','niggeress','niggerish',
+  'niggerishness','niggerism','niggerization','niggerless','niggerlike','niggerlips',
+  'niggerlover','niggerly','niggerness','niggerology','niggers','niggery','niggy','orientals',
+  'paleface','palefaces','papist','papists','picaninny','pickaninny','pom','pommies','pommy',
+  'poof','poove','popehead','raghead','redskin','redskins','rooinek','schvartze','sheeny',
+  'shegetz','shiksa','shikse','shitskin','soutie','spics','spik','wetback','wetbacks','wop',
+  'wops','zipperhead',
+  'niggerfaggot','niggerfucker','niggerling','niglet','nitchie',
 /* ---- the corpus sweep, 5 Sep 2026 ----
    1,924 words read one at a time by thirty-six reviewers covering all 36,393
    served words no reviewer had seen under the strict content brief. They must
@@ -836,7 +872,7 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'blotto','booger','boogers','bosomy','calfs','capibara','carotin','casanova','castration',
   'caucasoid','chancrous','chico','chicos','circumcision','codpiece','come','coonskin',
   'coontie','coquette','crappy','cretin','cripple','cum','debauch','defecator','dicks',
-  'dike','disney','douche','doxy','dumdum','emasculate','epicanthi','erotism','estrus',
+  'disney','douche','doxy','dumdum','emasculate','epicanthi','erotism','estrus',
   'evert','feticide','filicide','gamin','gestapo','gipsy','git','goodmen','goring',
   'guinness','harpy','hausa','hebe','hermaphrodite','hollands','idiot','imbecile','iodin',
   'ira','jackass','katharsis','khat','kluxer','limey','lothario','lubricity','lulu','lynch',
@@ -1170,6 +1206,33 @@ const CORE_CUT = new Set((
    BEFORE the slur test below, so a repaired record is judged on its new
    definition — which is why no exemption list is needed for any of these. */
 const CORE_FIX = {
+    dike: "a long wall or bank built to hold back water and stop flooding",
+    dikes: "long walls or banks built to hold back water and stop flooding",
+    paddy: "a flooded field where rice is grown",
+    paddies: "flooded fields where rice is grown",
+    pouf: "a soft padded footstool or low cushioned seat with no back or arms",
+    poufs: "soft padded footstools or low cushioned seats with no back or arms",
+    queer: "strange, odd or curious; not what you would expect",
+    queers: "makes something go wrong or spoils a plan",
+    mongrel: "a dog of mixed or unknown breed",
+    mickey: "to take the mickey is to tease someone or make fun of them",
+    mickeys: "playful teasing; taking the mickey out of someone",
+    hillbilly: "an old informal word for someone living in a remote mountain area",
+    hillbillies: "an old informal word for people living in remote mountain areas",
+    colored: "having colour, or having been given colour with dye or paint",
+    coloreds: "clothes or laundry that have colour, washed apart from the whites",
+    butch: "a short, tough haircut cropped close to the head",
+    oriental: "an old word for things from East Asia; the modern word is Asian",
+    jerry: "a chamber pot; also a British nickname for a jerry can",
+    jerries: "chamber pots; also jerry cans for carrying fuel or water",
+    kraut: "pickled shredded cabbage, short for sauerkraut",
+    krauts: "pickled shredded cabbage, short for sauerkraut",
+    mammy: "an old childish word for mother, used in some dialects",
+    mammies: "an old childish word for mothers, used in some dialects",
+    gyp: "a short form of gypsum, the soft mineral used to make plaster",
+    spick: "spick and span means perfectly clean and tidy",
+    nance: "a surname; also an old dialect word for a fussy manner",
+
   constructor: 'a person or company that builds something, especially one who puts up buildings',
   shrimp: 'a small shellfish with a long tail, eaten as food',
   shrimps: 'small shellfish with long tails, eaten as food',
