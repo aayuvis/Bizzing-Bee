@@ -66,7 +66,7 @@ window.SB_WORDS_PATCH = function () {
      Girl Scout. */
   // racial, ethnic and disability slurs, and dated exonyms
   [
-   'caucasoid', 'coonskin', 'coontie', 'cripple', 'dike', 'epicanthi', 'gamin', 'gipsy',
+   'caucasoid', 'coonskin', 'coontie', 'cripple', 'epicanthi', 'gamin', 'gipsy',
    'hausa', 'hebe', 'kluxer', 'limey', 'mahound', 'midget', 'mongolism', 'negro',
    'negroes', 'negroid', 'negros', 'octoroon', 'ponce', 'puke', 'quadroon', 
    'sonsy', 'wuss', 'zulu'
@@ -120,6 +120,43 @@ window.SB_WORDS_PATCH = function () {
    'snot', 'tits', 'twit', 'twits'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
+  /* 1e) RACIST AND ANTISEMITIC TERMS, struck 5 Sep 2026. Most carry glosses
+     that confess what they are — "(ethnic slur)", "now considered offensive" —
+     and were served anyway. The antisemitic compounds (Jew-free, Jewless,
+     Jewlessness, Jewspeak, Jewdar) are not dictionary words at all; no
+     lexicographic source carries them.
+     Where the headword has a real sense a bee would ask and only the DEFINITION
+     was the slur, the word is NOT here — it is repaired in DEF below. dike is
+     an embankment, paddy a rice field, pouf a footstool, kraut pickled
+     cabbage. Losing those to a bad dictionary would repeat the genus-name
+     mistake. */
+  [
+   'americunt', 'antinegro', 'boche', 'boches', 'bulldyke', 'butches', 'caffre',
+   'chamar', 'chinaman', 'chinamen', 'chinesey', 'chink', 'chinks', 'christfag',
+   'cockfag', 'coolie', 'coolies', 'cooly', 'currymuncher', 'dagoes', 'dagos', 'darkey',
+   'darkeys', 'darkie', 'darkies', 'darky', 'deniggerization', 'deniggerize', 'dothead',
+   'dyke', 'dykes', 'dykon', 'fag', 'faggots', 'fagot', 'fagots', 'fags', 'federast',
+   'feminazi', 'feygele', 'finook', 'furfag', 'gayboy', 'gaywad', 'giaour', 'ginzo',
+   'gip', 'gipped', 'gipping', 'gips', 'gipsies', 'golliwog', 'golliwogs', 'gooks',
+   'greaser', 'greasers', 'gringo', 'gringos', 'gweilo', 'gweipo', 'gypped', 'gypping',
+   'homintern', 'homocaust', 'honkey', 'honkeys', 'honkie', 'honkies', 'honky',
+   'hooknoses', 'injun', 'islamonazism', 'jap', 'japanazi', 'jerrybag', 'jew-free',
+   'jew-hatred', 'jewdar', 'jewess', 'jewless', 'jewlessness', 'jewlike', 'jewman',
+   'jewspeak', 'jigaboo', 'jigaboos', 'kafir', 'kafirs', 'kikes', 'klannish', 'klans',
+   'klaverns', 'kleagle', 'klonvocation', 'krauthead', 'lardarse', 'lardass', 'lardball',
+   'limey', 'limeys', 'lynch', 'lynchings', 'maricon', 'marrano', 'meid', 'mexcrement',
+   'mick', 'micks', 'mischling', 'mojado', 'molestache', 'moonie', 'moralfag',
+   'mulattress', 'muzzie', 'n-bomb', 'nances', 'nappyhead', 'negroize', 'niggeress',
+   'niggerfaggot', 'niggerfucker', 'niggerish', 'niggerishness', 'niggerism',
+   'niggerization', 'niggerless', 'niggerlike', 'niggerling', 'niggerlips',
+   'niggerlover', 'niggerly', 'niggerness', 'niggerology', 'niggers', 'niggery', 'niggy',
+   'niglet', 'nitchie', 'orientals', 'paleface', 'palefaces', 'papist', 'papists',
+   'picaninny', 'pickaninny', 'pom', 'pommies', 'pommy', 'poof', 'poove', 'popehead',
+   'raghead', 'redskin', 'redskins', 'rooinek', 'schvartze', 'sheeny', 'shegetz',
+   'shiksa', 'shikse', 'shitskin', 'soutie', 'spics', 'spik', 'wetback', 'wetbacks',
+   'wop', 'wops', 'zipperhead'
+  ].forEach(function (w) { REMOVE[nk(w)] = 1; });
+
   // 1b) Remove: Roman numerals carried as headwords — xiv, xxii, lxx and 13 more,
   // each glossed "the cardinal number that is the sum of thirteen and one". They
   // are two to five letters and rated band 1, so they surfaced near the FRONT of
@@ -148,6 +185,32 @@ window.SB_WORDS_PATCH = function () {
 
   // 3) Rewrite spelling-leak definitions (target word must NOT appear in the definition text).
   var DEF = Object.assign(Object.create(null), {
+    dike: "a long wall or bank built to hold back water and stop flooding",
+    dikes: "long walls or banks built to hold back water and stop flooding",
+    paddy: "a flooded field where rice is grown",
+    paddies: "flooded fields where rice is grown",
+    pouf: "a soft padded footstool or low cushioned seat with no back or arms",
+    poufs: "soft padded footstools or low cushioned seats with no back or arms",
+    queer: "strange, odd or curious; not what you would expect",
+    queers: "makes something go wrong or spoils a plan",
+    mongrel: "a dog of mixed or unknown breed",
+    mickey: "to take the mickey is to tease someone or make fun of them",
+    mickeys: "playful teasing; taking the mickey out of someone",
+    hillbilly: "an old informal word for someone living in a remote mountain area",
+    hillbillies: "an old informal word for people living in remote mountain areas",
+    colored: "having colour, or having been given colour with dye or paint",
+    coloreds: "clothes or laundry that have colour, washed apart from the whites",
+    butch: "a short, tough haircut cropped close to the head",
+    oriental: "an old word for things from East Asia; the modern word is Asian",
+    jerry: "a chamber pot; also a British nickname for a jerry can",
+    jerries: "chamber pots; also jerry cans for carrying fuel or water",
+    kraut: "pickled shredded cabbage, short for sauerkraut",
+    krauts: "pickled shredded cabbage, short for sauerkraut",
+    mammy: "an old childish word for mother, used in some dialects",
+    mammies: "an old childish word for mothers, used in some dialects",
+    gyp: "a short form of gypsum, the soft mineral used to make plaster",
+    spick: "spick and span means perfectly clean and tidy",
+    nance: "a surname; also an old dialect word for a fussy manner",
     retard: "to slow something down or hold back its progress",
     ass: "a donkey; a patient hoofed animal like a small, long-eared horse",
     butt: "the thicker or blunter end of a tool or weapon; also, the target of a joke",

@@ -721,6 +721,42 @@ let _fullState='idle'; // idle | loading | loaded | error
    the correction reviewable in one place. */
 const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'abbr','abbrev','abd','abdom','mis',
+/* ---- racist and antisemitic terms, struck 5 Sep 2026 ----
+   165 headwords whose only real sense is a slur. Most were found by the
+   library sweep; the rest by their own glosses, which CONFESS — "(ethnic
+   slur)", "offensive term for a person of ...", "now considered offensive" —
+   and were served anyway. The antisemitic set is the one that says most about
+   this data: Jew-free, Jew-hatred, Jewless, Jewlessness, Jewlike, Jewman,
+   Jewspeak, Jewdar. Those are not dictionary words. No lexicographic source
+   carries `Jewlessness`; it was scraped or generated, and it reached a
+   children's library.
+   A word is struck here only when the SLUR IS THE WORD. Where the headword has
+   a real sense a bee would ask and only the DEFINITION was the slur, the word
+   stays and the gloss is repaired in CORE_FIX instead — dike is an embankment,
+   paddy a rice field, pouf a footstool, queer means strange, kraut is pickled
+   cabbage, gyp is short for gypsum. Deleting those would lose good bee words
+   to a bad dictionary, which is the mistake the genus-name deletion made. */
+  'americunt','antinegro','boche','boches','bulldyke','butches','caffre','chamar','chinaman',
+  'chinamen','chinesey','chink','chinks','christfag','cockfag','coolie','coolies','cooly',
+  'currymuncher','dagoes','dagos','darkey','darkeys','darkie','darkies','darky',
+  'deniggerization','deniggerize','dothead','dyke','dykes','dykon','fag','faggots','fagot',
+  'fagots','fags','federast','feminazi','feygele','finook','furfag','gayboy','gaywad',
+  'giaour','ginzo','gip','gipped','gipping','gips','gipsies','golliwog','golliwogs','gooks',
+  'greaser','greasers','gringo','gringos','gweilo','gweipo','gypped','gypping','homintern',
+  'homocaust','honkey','honkeys','honkie','honkies','honky','hooknoses','injun',
+  'islamonazism','jap','japanazi','jerrybag','jew-free','jew-hatred','jewdar','jewess',
+  'jewless','jewlessness','jewlike','jewman','jewspeak','jigaboo','jigaboos','kafir','kafirs',
+  'kikes','klannish','klans','klaverns','kleagle','klonvocation','krauthead','lardarse',
+  'lardass','lardball','limey','limeys','lynch','lynchings','maricon','marrano','meid',
+  'mexcrement','mick','micks','mischling','mojado','molestache','moonie','moralfag',
+  'mulattress','muzzie','n-bomb','nances','nappyhead','negroize','niggeress','niggerish',
+  'niggerishness','niggerism','niggerization','niggerless','niggerlike','niggerlips',
+  'niggerlover','niggerly','niggerness','niggerology','niggers','niggery','niggy','orientals',
+  'paleface','palefaces','papist','papists','picaninny','pickaninny','pom','pommies','pommy',
+  'poof','poove','popehead','raghead','redskin','redskins','rooinek','schvartze','sheeny',
+  'shegetz','shiksa','shikse','shitskin','soutie','spics','spik','wetback','wetbacks','wop',
+  'wops','zipperhead',
+  'niggerfaggot','niggerfucker','niggerling','niglet','nitchie',
 /* ---- the corpus sweep, 5 Sep 2026 ----
    1,924 words read one at a time by thirty-six reviewers covering all 36,393
    served words no reviewer had seen under the strict content brief. They must
@@ -836,7 +872,7 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'blotto','booger','boogers','bosomy','calfs','capibara','carotin','casanova','castration',
   'caucasoid','chancrous','chico','chicos','circumcision','codpiece','come','coonskin',
   'coontie','coquette','crappy','cretin','cripple','cum','debauch','defecator','dicks',
-  'dike','disney','douche','doxy','dumdum','emasculate','epicanthi','erotism','estrus',
+  'disney','douche','doxy','dumdum','emasculate','epicanthi','erotism','estrus',
   'evert','feticide','filicide','gamin','gestapo','gipsy','git','goodmen','goring',
   'guinness','harpy','hausa','hebe','hermaphrodite','hollands','idiot','imbecile','iodin',
   'ira','jackass','katharsis','khat','kluxer','limey','lothario','lubricity','lulu','lynch',
@@ -863,7 +899,7 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
    Innocent lookalikes are NOT here and must never be added on a substring:
    haboob is a sandstorm, booby and boobies are the bird and the blunder,
    booboisie is Mencken's coinage, boobird is a heckler, basshole is the f-hole
-   of a double bass, twankay is a green tea, and faggoting is embroidery. So are
+   of a double bass, twankay is a green tea, and fagoting is embroidery. So are
    spicy, japes, chinking, retarding, mispickel, swanky, pinprick, meltwater,
    saltwater and wristwatch. Every one of them contains an unlucky run of
    letters and nothing else, and tests/word-bank.cjs fails if one goes. */
@@ -908,7 +944,94 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
    They are struck for a practical reason, not an etymological one: this app
    SPEAKS each word aloud to a child and then asks for the spelling back. If
    that call is ever reversed, these four are the whole of it. */
-  'niggard','niggards','niggardly','niggardliness']);
+  'niggard','niggards','niggardly','niggardliness',
+/* ---- library sweep, 5 Sep 2026 ----
+   Seventy-six reviewers read the 75,645 words that live in the 130k library but
+   never in the served corpus — reachable through the Word Finder, the Whole Hive
+   list and the Ultra road, and so read by no earlier sweep, all of which worked
+   from the SERVED shards and were therefore looking at a subset. These are the
+   harm-class findings only: slurs, sexual content, drug and self-harm glosses.
+   They are already deleted from words-full.js, so this list changes nothing a
+   child sees today — it is what stops them returning if the file is regenerated.
+   The other 757 removals were quality faults — acronyms, misspellings, bound
+   affixes — and live in qc-library-fixes.json, which must be re-applied after any
+   regeneration of words-full.js or words-hard.js. */
+  /* The partition hole: seventy-six reviewers each read a SLICE, so `catamites`
+     and `catamite` went to different readers and only the plural was struck. These
+     nineteen are the survivors of that split, each carrying the same gloss its
+     struck relative was removed for. `homo` is here because the record in this
+     library is the slur sense, not the genus — there is no Homo sapiens in it to
+     keep. `buxom` is not listed here only because the corpus sweep had already
+     struck it on 4 Sep; its records are deleted from the file to match. */
+  'butch','catamite','douche','erotism','gigolo','harelip','homo','lech','letch','molest','molested','molesting','nance','niggery','nymphet','ravisher','spick','unsex',
+  'alkies','americunt','antinegro','antiorgastic','antipaedophile','antiqueer','antirape',
+  'antisexual','antisexuality','asphyxophilia','asscheek','assclown','assholes','assholic',
+  'assish','asskisser','asslicker','assmonkey','assmunch','assmuncher','asspussy','asstastic',
+  'asswad','assward','asswards','assy','autodefenestration','autogynephilic','autosexual',
+  'badass','badassery','bardash','bareass','bartholinian','baubon','beefcakes','berdache',
+  'bimbette','bimbo','bimboes','bimboesque','bimbos','bimboy','birdshit','bitched','bitchery',
+  'bitchier','bitchiest','bitching','bitchy','boche','boches','bootylicious','brachioproctic',
+  'bremelo','brokeass','bukkake','bulldyke','bullshido','bullshittery','bullshitting',
+  'burusera','bustiest','busty','butches','buxomer','buxomest','buxomly','cack','caffre',
+  'carnography','catamites','celesbian','chamar','chinesey','christfag','circumciser',
+  'circumvaginal','cockbreath','cockfag','cocktease','conservatard','cooly','crapitalism',
+  'crapola','crapped','crapper','crappers','crapping','crappity','crapplet','craptastic',
+  'craptastical','cremasteric','cretins','cripples','crotchdropping','crotchless','cumhole',
+  'cumskin','cuntfest','currymuncher','cyberrape','cybersexuality','cybersexually','dagoes',
+  'dagos','darkey','darkeys','darkie','darkies','darky','dartoid','deball','deflour','deflower',
+  'deflowers','deniggerization','deniggerize','depucelate','derograte','desexualize','dickass',
+  'dickbag','dominatrix','dominatrixlike','donkeycock','dormcest','dothead','douchebag',
+  'douchebaggery','douchey','drug-ridden','drugger','druggy','drugster','drugtaker',
+  'drugtaking','dubcon','dumbass','dyke','dykes','dykon','eco-','ecopornography','ecosexuality',
+  'emda','empathogen','entactogenic','erogenicity','erotisms','erotopathy','erototoxin',
+  'esexual','eunuchoid','explornography','f-bomb','fag','faggoting','faggots','fagot','fagots',
+  'fags','fauxmosexual','federast','fellate','fellated','fellating','fellatrix','felo-de-se',
+  'femifascist','feminazi','feygele','finook','fondler','fondlers','fondlings','foodgasm',
+  'frotteurism','fuckton','furfag','gamahuche','gay-ass','gayboy','gaywad','genitalic','giaour',
+  'gigolos','gimped','gimping','gimps','gimpy','ginzo','gip','gipped','gipping','gips',
+  'gipsies','goddamned','gokkun','golliwog','golliwogs','gonorrhoeic','gooks','goosed',
+  'goosing','grabass','greaser','greasers','gringo','gringos','gweilo','gweipo','gynephile',
+  'gynophilia','gypped','gypping','harelips','hasbian','hebephile','hebephilia','hemipenis',
+  'hentai','homintern','homos','honkey','honkeys','honkie','honkies','honky','hooknoses',
+  'horsecock','hosebeast','hussies','hypersexed','hypersexualize','ibogaine','indevirginate',
+  'infibulation','injun','intervaginal','intracavernosal','islamonazism','ithyphallic','izmel',
+  'jap','japanazi','jerkass','jerrybag','jew-hatred','jewdar','jewless','jewlike','jewman',
+  'jewspeak','jigaboo','jigaboos','joygasm','kamasutra','kikes','kinseyan','kiss-ass','kissass',
+  'klismaphilia','knobhead','knobtwat','krauthead','lactophilia','lame-stream','lamestream',
+  'lardarse','lardass','lardball','leches','letches','lorette','lustmaking','luxuria',
+  'mahometanize','malesub','mangina','manopause','maricon','marrano','megabitch','meid','merd',
+  'mexcrement','mick','micks','mischling','mohammedan','mohammedanism','mohammedanize','mojado',
+  'molestable','molests','monstercock','moonie','moralfag','moronity','motherfucker',
+  'mulattress','muzzie','n-bomb','nances','nappyhead','narghile','negrohood','negroize',
+  'newhalf','niggeress','niggerfaggot','niggerfucker','niggerish','niggerishness','niggerism',
+  'niggerization','niggerling','niggerlips','niggerlover','niggerly','niggerness','niggerology',
+  'niggers','niggy','niglet','nitchie','nonbisexual','noncelibate','nonces','noncrippled',
+  'nongonococcal','nonincestuous','nonrape','nonretarded','nonsadomasochistic','nonsex',
+  'nonsexuality','nonsexualized','nonsexy','nymphetry','nymphets','nympho','nymphomaniacs',
+  'nymphos','nyotaimori','octoroons','olisbos','orchidectomy','orgasmatron','oversexed',
+  'oversexualize','paederastic','paedophilia','paedophiliac','paedophilophile','paleface',
+  'palefaces','pansexuality','pansexually','papist','papists','papooses','pappoose','pappooses',
+  'parahexyl','paraphillia','paraphily','pathic','paultard','pedohebephile','pedohebephilia',
+  'pendejo','penetratee','phalluses','picaninny','pindick','pissass','pissed','pissery',
+  'pisses','pissest','pisseth','pissface','pisshole','pissiness','pisspants','pissy','polansky',
+  'polyaddiction','polysubstance','pom','pommies','pommy','pomosexual','ponces','poof','poove',
+  'popehead','poperies','popery','pornocopia','postwhore','presstitute','pro-circ','prostitot',
+  'pseudovirgin','punani','pussier','pussiest','quadroons','quasirape','quasisexual','quickies',
+  'quim','raghead','randier','randiest','rapability','rapable','rapee','rapefest','rapeful',
+  'rapelike','rapey','rapophile','raunchier','raunchy','ravishers','redskirt','reffo','refujew',
+  'rerape','retarded','rooinek','roundheels','sadean','sadian','sambo','satyriasis',
+  'schizosexual','schvartze','scumbag','semens','sex-texting','sexcapade','sexhibition',
+  'sexify','sexiness','sexpert','sexploitation','sexploitational','sexpot','sexting',
+  'sexualist','sexualizable','sexualize','shebrew','sheeny','shegetz','shiksa','shikse',
+  'shitpile','shitskin','shitton','skank','skinheadism','slutbag','snus','somnophilia',
+  'sorostitute','soutie','spanko','spicks','spics','spigger','spik','spiks','squarehead',
+  'stupidshit','stuprous','subhallucinogenic','supersexual','supersexuality','teatard',
+  'technosex','technotard','teleiophile','teratophilia','tightass','tom','tomacco','toms',
+  'tonto','trental','tribade','ufo','unbepissed','uncircumcision','uncock','uncuckolded',
+  'undeflowered','unmaiden','unorgasmic','unprostituted','unretarded','unsexed','unsexualized',
+  'untermensch','unvirginal','upskirt','upskirting','uranist','urning','urophilia','vajazzle',
+  'venereous','voetsek','voyeuristic','vulvae','vulvas','wapanese','wasbian','whigger','whitey',
+  'wigger','wog','wops','yid','yids','yoni','yonic','zionazi','zoosexual']);
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
    should ever be set: bare given names and surnames, misspellings, mechanical affix
@@ -1158,8 +1281,7 @@ const CORE_CUT = new Set((
   'velcroid|videoterminal|voicemailbox|wagonbuilder|wagonbuilding|wardcorps|watchpocket|Wavoid|' +
   'weisure|wikiholic|wikilike|wikinomics|windowscreen|worksomeness|wreckreation|xcl|xenna-|' +
   'Xeroid|xeropthalmia|xylemlike|xylophonelike|xylophonically|Yaghoubian|yearnsome|yoshoku|' +
-  'zeroable|zeroary|zerogon|zerolike|Zeshan|Zionazi|zorbonaut'
-).split('|').map(function(s){ return s.toLowerCase(); }));
+  'zeroable|zeroary|zerogon|zerolike|Zeshan|Zionazi|zorbonaut').split('|').map(function(s){ return s.toLowerCase(); }));
 /* ---- definitions we replace rather than delete ----
    One record simply lost its definition in generation. The rest are ORDINARY
    WORDS a speller should meet — shrimp, runt, ragtag, riffraff, madhouse — whose
@@ -1170,6 +1292,37 @@ const CORE_CUT = new Set((
    BEFORE the slur test below, so a repaired record is judged on its new
    definition — which is why no exemption list is needed for any of these. */
 const CORE_FIX = {
+    /* served to children already under this gloss; the LIBRARY copy still said
+       "affectionate play (or foreplay without contact with the genital organs)".
+       One word must not be repaired in one bank and deleted from the other. */
+    fondling: "stroking or handling something gently and affectionately",
+    dike: "a long wall or bank built to hold back water and stop flooding",
+    dikes: "long walls or banks built to hold back water and stop flooding",
+    paddy: "a flooded field where rice is grown",
+    paddies: "flooded fields where rice is grown",
+    pouf: "a soft padded footstool or low cushioned seat with no back or arms",
+    poufs: "soft padded footstools or low cushioned seats with no back or arms",
+    queer: "strange, odd or curious; not what you would expect",
+    queers: "makes something go wrong or spoils a plan",
+    mongrel: "a dog of mixed or unknown breed",
+    mickey: "to take the mickey is to tease someone or make fun of them",
+    mickeys: "playful teasing; taking the mickey out of someone",
+    hillbilly: "an old informal word for someone living in a remote mountain area",
+    hillbillies: "an old informal word for people living in remote mountain areas",
+    colored: "having colour, or having been given colour with dye or paint",
+    coloreds: "clothes or laundry that have colour, washed apart from the whites",
+    butch: "a short, tough haircut cropped close to the head",
+    oriental: "an old word for things from East Asia; the modern word is Asian",
+    jerry: "a chamber pot; also a British nickname for a jerry can",
+    jerries: "chamber pots; also jerry cans for carrying fuel or water",
+    kraut: "pickled shredded cabbage, short for sauerkraut",
+    krauts: "pickled shredded cabbage, short for sauerkraut",
+    mammy: "an old childish word for mother, used in some dialects",
+    mammies: "an old childish word for mothers, used in some dialects",
+    gyp: "a short form of gypsum, the soft mineral used to make plaster",
+    spick: "spick and span means perfectly clean and tidy",
+    nance: "a surname; also an old dialect word for a fussy manner",
+
   constructor: 'a person or company that builds something, especially one who puts up buildings',
   shrimp: 'a small shellfish with a long tail, eaten as food',
   shrimps: 'small shellfish with long tails, eaten as food',
