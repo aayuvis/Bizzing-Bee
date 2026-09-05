@@ -38,6 +38,16 @@ window.SB_WORDS_PATCH = function () {
    'eskimo', 'eskimos', 'bushman', 'bushmen', 'gypsy', 'gypsies'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
+  // 1c) Sexual-violence and pornography glosses, signed off 5 Sep 2026. Same
+  // reason as 1a: the gloss is a plain description, so SLUR_DEF never fires.
+  // `rape` is struck although the bank serves only the plant sense — the app
+  // says every word aloud. `ravishing` is NOT here; app3's CORE_FIX repairs it.
+  ['ravish', 'ravished', 'ravisher', 'ravishment', 'ravishes',
+   'porn', 'porno', 'porns', 'pornos', 'pornography', 'pornographic',
+   'rape', 'raped', 'rapes', 'rapist', 'rapists',
+   'molest', 'molested', 'molester', 'molesting'
+  ].forEach(function (w) { REMOVE[nk(w)] = 1; });
+
   // 1b) Remove: Roman numerals carried as headwords — xiv, xxii, lxx and 13 more,
   // each glossed "the cardinal number that is the sum of thirteen and one". They
   // are two to five letters and rated band 1, so they surfaced near the FRONT of

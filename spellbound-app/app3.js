@@ -744,6 +744,21 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'blowjob','blowjobs','bollock','bollocks','boobage','cocklicker','cuntass',
   'encunt','fuckity','kinderwhore','knobheaded','shitbag','shithead','sluts',
   'teledildonics','titty','twats','unfuck','unfuckable','unfucked','unfuckupable',
+/* ---- sexual-violence and pornography glosses, signed off 5 Sep 2026 ----
+   Found by three of the twenty word-fit reviewers, independently, while checking
+   which stop each word belonged in. SLUR_DEF cannot see these either: the gloss
+   is a plain description, not "an offensive term for". `ravished` was serving in
+   Elements & Forces (its gloss contains the word "force"), `porno` in Literary &
+   Poetic Devices ("of no literary value").
+   `rape` is struck for the same practical reason as `niggard`: the bank serves
+   only the botanical sense (a forage crop), but this app SPEAKS each word aloud
+   to a child and asks for the spelling back, and that is not a word to say to a
+   nine-year-old for the sake of rapeseed.
+   `ravishing` is NOT struck — it has a common, kid-safe sense, so it is repaired
+   in CORE_FIX below instead, the way retard and shrimp were. */
+  'ravish','ravished','ravisher','ravishment','ravishes',
+  'porn','porno','porns','pornos','pornography','pornographic',
+  'rape','raped','rapes','rapist','rapists','molest','molested','molester','molesting',
 /* ---- the ethnic slurs, signed off 5 Sep 2026 ----
    Found the same way and for the same reason as the 37 above: SLUR_DEF reads
    what a definition SAYS about its headword, and every one of these is glossed
@@ -1044,6 +1059,9 @@ const CORE_FIX = {
   /* the generated gloss was the noun sense, which is a slur for a disabled
      person; the verb is an ordinary word and the spelling is worth knowing */
   retard: 'to slow something down or hold back its progress',
+  /* the bank glosses this as sexual violence; the everyday sense is the only
+     one a child needs, and repairing it keeps a real word in the library */
+  ravishing: 'delightfully beautiful; lovely enough to take your breath away',
   retards: 'slows something down or holds back its progress'
 };
 /* ---- slurs ----
