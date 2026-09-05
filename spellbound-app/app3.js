@@ -945,6 +945,15 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
    SPEAKS each word aloud to a child and then asks for the spelling back. If
    that call is ever reversed, these four are the whole of it. */
   'niggard','niggards','niggardly','niggardliness',
+/* `dike` was never on this list. It did not need to be: its LIBRARY gloss was
+   "(slang) offensive term for a lesbian", and fixCore drops any entry whose own
+   definition says that — so the gloss itself was doing the work. The served
+   corpus keeps the word under a repaired gloss (an embankment) by a separate
+   decision, and on 5 Sep the two banks were reconciled by copying served text
+   into the library, which handed this entry a clean definition and quietly
+   switched the filter off. Naming it here makes the exclusion say what it means
+   instead of depending on a harmful sentence staying in the data to trigger it. */
+  'dike',
 /* ---- library sweep, 5 Sep 2026 ----
    Seventy-six reviewers read the 75,645 words that live in the 130k library but
    never in the served corpus — reachable through the Word Finder, the Whole Hive
@@ -1782,6 +1791,14 @@ function realAcc(c){ c=c||active(); const at=(c.attempts||[]).slice(-120); const
    trivia and every other feature, so the number can't be inflated by playing games. */
 const TGT_DEF={app:30, prac:15};                       // minutes/day out of the box
 const PRACTICE_NAVS=['coach','train','levelup','revisions'];
+/* A DRILL THAT CAME FROM A STOP BELONGS TO THE ATLAS, NOT TO PRACTICE.
+   startTrain sets nav:'train', and both nav bars counted 'train' as the Practice
+   tab — so walking a stop on the Word Atlas visibly threw the child into another
+   tab mid-journey, and the only way back was the Exit pill. state.trailReturn
+   already records that a session came from a stop, so it is the whole test: the
+   Atlas keeps its tab lit and the drill stays inside the journey it belongs to.
+   Both bars read this, so they cannot disagree about which tab is on. */
+const atlasDrill=()=>state.nav==='train'&&!!state.trailReturn;
 function targets(c){ c=c||active(); c.tgt=c.tgt||{};
   return { app:Math.max(1, c.tgt.app||TGT_DEF.app), prac:Math.max(1, c.tgt.prac||TGT_DEF.prac),
            words:Math.max(1, c.goal||state.draft.goal||10) }; }
@@ -5857,7 +5874,10 @@ function viewApp(){
      and put a collection beside the five things a speller actually does.) Progress is not
      a tab either — it opens from Settings and the drawer. */
   const navTabs=[['home','Home','home'],['trail','Word Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
-    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]:key==='coach'?(S.nav==='coach'||S.nav==='train'||S.nav==='levelup'||S.nav==='quest'):S.nav===key;
+    const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
+      :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
+      :key==='trail'?(S.nav==='trail'||atlasDrill())
+      :S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
     return `<button data-act="setNav" data-arg="${key}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
@@ -6013,7 +6033,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&(S.nav==='train'||S.nav==='levelup'||S.nav==='quest')));
+      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -7423,6 +7443,11 @@ function sessionResults(){
         ${(()=>{ const miss=st.words.filter(w=>!state.luMastered[nkey(w.w)]);
           return `<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:11px 16px;text-align:left"><span style="font-size:13px;font-weight:800;flex-shrink:0">Still to master · ${miss.length}:</span>${miss.slice(0,14).map(w=>`<button data-act="say" data-arg="${escA(w.w)}" title="Tap to hear" style="font-family:var(--mono);font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;background:var(--paper,var(--bg2));border:1px solid var(--line)">${esc(w.w)}</button>`).join('')}${miss.length>14?`<span class="sb-cn">+${miss.length-14} more</span>`:''}</div>`; })()}`;
       } } }catch(e){}
+  /* The Atlas gate card carries its own Redo and Back, so the generic footer pair
+     below would offer the same two actions a second time, in different words. */
+  let atlasGate=false;
+  try{ if(S.trailReturn && typeof window.SB_TRAIL_BEST==='function'){ const tb0=SB_TRAIL_BEST(S.trailReturn);
+    atlasGate=!!(tb0 && tb0.p>=tb0.gate); } }catch(e){}
   return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="text-align:center;margin-bottom:18px"><div style="width:78px;height:86px;margin:0 auto 8px">${mascotSVG(mood)}</div>
       <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Test complete!</h2>
@@ -7437,13 +7462,42 @@ function sessionResults(){
            RECORDED best, so a 3-word redo round cannot claim an unlock it did not earn */
         try{ if(S.trailReturn && typeof window.SB_TRAIL_BEST==='function'){ const tb=SB_TRAIL_BEST(S.trailReturn);
           if(tb) return tb.p>=tb.gate
-            ? `<button data-act="exitTrain" style="flex:1;min-width:100%;padding:15px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">⭐ Best ${tb.p}% — the next Atlas stop is open · back to your stop →</button>`
+            ? (()=>{ /* CLEARING THE GATE IS A FORK, NOT A DOOR. This used to be one
+                 button back to the stop, so the moment a child earned the next stop
+                 the app chose for them. Four ways on, in the order a child is most
+                 likely to want them: go on, go deeper, go again, go back. The
+                 lesson choice only appears when the stop HAS a chapter — an Ultra
+                 landmark has none, and an option that explains nothing is worse
+                 than no option. */
+              const hasLesson=(()=>{ try{ return !!(window.SB_TRAIL_HASLESSON&&SB_TRAIL_HASLESSON(S.trailReturn)); }catch(e){ return false; } })();
+              /* One or two words on each, and the app's own icon set — an emoji
+                 renders as a different picture on every platform and reads as
+                 filler beside artwork this considered. */
+              /* The primary takes the whole first line and the rest sit four
+                 across, folding to 2x2 on a phone. Letting all five share one
+                 flex line left the last one stranded at full width on its own
+                 row, which reads as a mistake rather than as emphasis. */
+              const opt=(act,arg,ico,label,primary)=>`<button data-act="${act}"${arg?` data-arg="${escA(arg)}"`:''} style="${primary?'flex:1 1 100%':'flex:1 1 calc(25% - 7px);min-width:118px'};display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 12px;border-radius:13px;font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:.01em;white-space:nowrap;${primary?'background:var(--good);border:1px solid var(--good);color:#fff;box-shadow:var(--edge)':'background:var(--bg2);border:1px solid var(--line);color:var(--text)'}">
+                  <span style="display:inline-flex;line-height:0;flex-shrink:0;opacity:${primary?'1':'.75'}">${iconSVG(ico,17)}</span>${label}
+                </button>`;
+              return `<div style="flex:1;min-width:100%">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;padding:11px 15px;border-radius:14px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid color-mix(in srgb,var(--good) 45%,var(--line))">
+                  <span style="display:inline-flex;line-height:0;color:var(--good);flex-shrink:0">${iconSVG('star',17)}</span>
+                  <span style="font-size:13.5px;font-weight:800;color:var(--good)">Best ${tb.p}% — you passed ${tb.gate}% and the next stop is open. What next?</span></div>
+                <div style="display:flex;gap:9px;flex-wrap:wrap">
+                  ${opt('atlasNext','next','compass','Next stop',true)}
+                  ${hasLesson?opt('atlasNext','lesson','book','Learn more'):''}
+                  ${opt('atlasNext','round','sparkle','New words')}
+                  ${opt('restartSession',null,'retry','Redo list')}
+                  ${opt('atlasNext',null,'arrowLeft','Back')}
+                </div></div>`;
+            })()
             : `<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--treasure,#FFD24D) 22%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 50%,var(--line));border-radius:14px;padding:12px 16px;text-align:left"><span style="font-size:16px">👉</span><span style="font-size:13px;font-weight:700;line-height:1.45">Best so far ${tb.p}% — reach ${tb.gate}% on a full round to open the next Atlas stop.${bad.length?' The misspelt words below are the gap.':''}</span></div>`;
         } }catch(e){} return ''; })()}
       ${advBtn}
       ${bad.length?`<button data-act="drillMisspelt" style="flex:1;min-width:200px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Spell the ${bad.length} misspelt word${bad.length>1?'s':''} →</button>`:''}
-      <button data-act="restartSession" style="flex:1;min-width:160px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${iconSVG('arrow',16)} Restart the list</button>
-      <button data-act="exitTrain" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:15px">Done</button>
+      ${atlasGate?'':`<button data-act="restartSession" style="flex:1;min-width:160px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${iconSVG('arrow',16)} Restart the list</button>
+      <button data-act="exitTrain" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:15px">Done</button>`}
     </div>
   </div>`;
 }
@@ -7601,7 +7655,7 @@ function viewTrain(){
       return `<button data-act="trailUnit" data-arg="${escA(w.unit)}" style="display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 13px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">
         ${iconSVG('steps',14)} From the Word Atlas · ${esc(w.act)} · stop ${w.stop} of ${w.total}</button>`; }catch(e){ return ''; } })();
   return `<div style="max-width:620px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">${backPill('exitTrain','Exit',null)}<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">${backPill('exitTrain',S.trailReturn?'Back to the stop':'Exit',null)}<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
     ${from}
     <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${goalPctNum}%;transition:width .4s"></div></div>
     ${(S.coachCardView&&!S.sessionOver)?coachFlashCard():trainerCard()}

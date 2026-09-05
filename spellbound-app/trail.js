@@ -436,6 +436,46 @@
       state.trailReturn = u.id;
       state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
       state.sessionLabel = u.title.split('—')[0].trim(); state.gi = 0; app2.startTrain(); }); };
+  /* THE CHOICES AT THE GATE. Clearing PGATE used to offer exactly one button —
+     "back to your stop" — so the moment a child earned the next stop the app
+     took the decision away from them. These are the ways forward from a cleared
+     round, and each one keeps the child inside the Atlas.
+
+     An Ultra landmark has no chapter and no unit record, so it takes the same
+     road by a different door: ultraTrain draws the next block, and the lesson
+     option is not offered because there is nothing to open. */
+  app2.atlasNext = kind => {
+    const id = state.trailReturn || state.trailUnit; if (!id) return;
+    state.coachSession = false;
+    if (/^ul\d+$/.test(String(id))) {
+      if (kind === 'round') { state.trailReturn = null; app2.ultraTrain(id); return; }
+      state.trailReturn = null;
+      try { app2.ultraAct(Math.floor(parseInt(id.slice(2), 10) / 4)); } catch (e) { app2.setNav('trail'); }
+      return;
+    }
+    const u = unit(id); if (!u) { app2.setNav('trail'); return; }
+    state.trailUnit = u.id; state.trailCourse = courseOfId(u.id);
+    if (kind === 'lesson') { app2.trailLesson(); return; }
+    if (kind === 'round')  { app2.trailPractice(); return; }
+    /* the stop this round just opened. Walk the lap's own order rather than the
+       act's raw unit list — seq() is what the map draws and what the frontier
+       counts, so anything else would send the child to a stop the board does not
+       show them next. A checkpoint node is a legitimate destination too. */
+    if (kind === 'next') {
+      state.trailReturn = null;
+      try { const c = active(); const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === u.id);
+        const nx = i >= 0 ? s[i + 1] : null;
+        if (!nx) { flash('That is the last stop on this lap 🎉'); set({ nav: 'trail', screen: 'app', trailView: 'act' }); return; }
+        if (nx.kind === 'chk') { set({ nav: 'trail', screen: 'app' }); app2.trailChk(courseOfId(u.id) + '|' + nx.id); return; }
+        set({ nav: 'trail', screen: 'app' }); app2.trailUnit(nx.u.id); return;
+      } catch (e) { app2.setNav('trail'); return; }
+    }
+    if (kind === 'quiz')   { state.trailReturn = null; set({ nav: 'trail', screen: 'app' }); app2.trailQuiz(); return; }
+    state.trailReturn = null; set({ nav: 'trail', screen: 'app' }); app2.trailUnit(u.id);
+  };
+  /* does this stop have a chapter to go back and study? */
+  window.SB_TRAIL_HASLESSON = uid => { try { const u = unit(uid); if (!u) return false;
+      const ch = chOf(u); return !!(ch && (ch.title || (ch.cards && ch.cards.length))); } catch (e) { return false; } };
   app2.trailQuiz = () => { const u = unit(state.trailUnit); if (!u) return;
     needMap(() => { set({ trailView: 'quiz', trailChk: null, tq: { items: buildQuiz(u), i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); tqAutoSay(); }); };
   /* Play-tested (Amrita 8.25/8.26): a spell item must SAY its word on arrival, and an

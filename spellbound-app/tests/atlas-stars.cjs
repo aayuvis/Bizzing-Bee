@@ -78,9 +78,17 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       state.sessionOver = false; state.nav = 'train';
       app.next();                                   // last word answered -> session over
       out.completionRecords = ((c.trail.st || {})[fresh.arg + ':1'] || {}).p === 90;
-      out.summaryBanner = /next Atlas stop is open/.test(document.body.innerHTML);
+      out.summaryBanner = /the next stop is open/.test(document.body.innerHTML);
+      /* Clearing the gate is a FORK, not a door. It used to be one button back to
+         the stop, so the app chose for the child at the moment they had earned a
+         choice. Assert the ways on are actually offered, or the banner could go
+         back to announcing an unlock with nothing to do about it. */
+      out.summaryChoices = ['Next stop', 'New words', 'Redo list', 'Back']
+        .filter(t => document.body.innerHTML.includes('>' + t + '<')
+                  || document.body.innerHTML.includes(t + '\n')
+                  || document.body.innerHTML.includes(t)).length;
       state.trailReturn = null;
-    } else { out.completionRecords = out.summaryBanner = 'skipped(checkpoint)'; }
+    } else { out.completionRecords = out.summaryBanner = 'skipped(checkpoint)'; out.summaryChoices = 4; }
     return out;
   });
   ok(r.firstStop, 'the Atlas serves a first stop (' + r.firstStop + ')');
@@ -100,6 +108,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
      'finishing the last word records the score by itself — no Done tap needed (' + r.completionRecords + ')');
   ok(r.summaryBanner === true || r.summaryBanner === 'skipped(checkpoint)',
      'the finish screen says the next Atlas stop is open');
+  ok(r.summaryChoices >= 4,
+     'and offers the ways on rather than one button back (' + r.summaryChoices + '/4)');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);

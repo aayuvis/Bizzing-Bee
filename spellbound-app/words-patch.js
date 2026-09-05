@@ -83,6 +83,15 @@ window.SB_WORDS_PATCH = function () {
    'transvestites', 'vasectomy', 'wittol'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
+  /* obsolete and extremely rare variant spellings. CORE_CUT — the 1,762
+     reviewed non-words — already refuses these in the library, so a child could
+     be set a spelling in Practice that the Word Finder does not recognise as a
+     word at all. Drilling a variant nobody writes is the misspelling fault under
+     another name. */
+  [
+   'abacli', 'abilitable'
+  ].forEach(function (w) { REMOVE[nk(w)] = 1; });
+
   // drugs of abuse, and alcohol carried under a brand
   [
    'blotto', 'hollands', 'khat', 'quaalude', 'quaaludes'
