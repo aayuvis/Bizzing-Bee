@@ -3,8 +3,8 @@
 Names locked: base journey = **The Honey Trail**, ultra = **The Queen's Expedition**.
 Decisions: coexists with the classic ladder · hard 80% gate (90% Expedition) · checkpoint every 4th unit.
 
-**Coverage:** 40944 of 40944 words assigned — 35331 in units, 5613 in the checkpoint pool.
-**Bands:** B1 < 33.5 ≤ B2 < 42.5 ≤ B3 (global spellDiff terciles).
+**Coverage:** 8000 of 8000 words assigned — 6569 in units, 1431 in the checkpoint pool.
+**Bands:** B1 < 24 ≤ B2 < 28 ≤ B3 (global spellDiff terciles).
 **Questions:** 672 concept-quiz questions across 171 units (c[0] correct; UI shuffles).
 
 ## The Honey Trail — 9 acts, 128 units
@@ -13,174 +13,174 @@ Decisions: coexists with the classic ladder · hard 80% gate (90% Expedition) ·
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u1 | The Champion's Routine — say, spell, say | lesson | 3 | 1 | 2 | Lap 1 (once) |
-| u2 | Alphabet Sounds — cat, city, goat, giant | lesson | 2 | 1 | 0 | Lap 1 (once) |
-| u3 | Vowels & Magic E — cap, cape | lesson | 1 | 0 | 1 | Lap 1 (once) |
-| u4 | Syllables — re, mem, ber | lesson | 3 | 2 | 0 | Lap 1 (once) |
-| u5 | Sounds to Letters — stretch, spell | lesson | 0 | 0 | 0 | Lap 1 (once) |
-| u6 | Letter Teams — sh, ch, th, ph | lesson | 0 | 0 | 1 | Lap 1 (once) |
-| u7 | Vowel Teams — ai, ay, ee, oa | lesson | 2 | 0 | 0 | Lap 1 (once) |
-| u8 | Blends & Silent Letters — kn, wr, mb | lesson | 1 | 0 | 1 | Lap 1 (once) |
-| u9 | Stress — find the loud beat | lesson | 3 | 0 | 2 | Lap 1 (once) |
-| u10 | The Sneaky Schwa — the mumbled uh | lesson | 3 | 2 | 0 | Lap 1 (once) |
-| u11 | Ask the Right Questions — be a word detective | lesson | 1 | 1 | 2 | Lap 1 (once) |
+| u1 | The Champion's Routine — say, spell, say | lesson | 3 | 0 | 1 | Lap 1 (once) |
+| u2 | Alphabet Sounds — cat, city, goat, giant | lesson | 4 | 2 | 1 | Lap 1 (once) |
+| u3 | Vowels & Magic E — cap, cape | lesson | 3 | 3 | 3 | Lap 1 (once) |
+| u4 | Syllables — re, mem, ber | lesson | 5 | 0 | 3 | Lap 1 (once) |
+| u5 | Sounds to Letters — stretch, spell | lesson | 4 | 4 | 2 | Lap 1 (once) |
+| u6 | Letter Teams — sh, ch, th, ph | lesson | 3 | 2 | 3 | Lap 1 (once) |
+| u7 | Vowel Teams — ai, ay, ee, oa | lesson | 5 | 1 | 1 | Lap 1 (once) |
+| u8 | Blends & Silent Letters — kn, wr, mb | lesson | 2 | 0 | 2 | Lap 1 (once) |
+| u9 | Stress — find the loud beat | lesson | 2 | 0 | 1 | Lap 1 (once) |
+| u10 | The Sneaky Schwa — the mumbled uh | lesson | 4 | 3 | 2 | Lap 1 (once) |
+| u11 | Ask the Right Questions — be a word detective | lesson | 0 | 1 | 3 | Lap 1 (once) |
 
 ### Act II · The Great Library  *(world: library)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u12 | Silent kn- / gn- / wr- (Old English) | lesson | 0 | 0 | 4 | Lap 1 (once) |
-| u13 | Silent -gh- Patterns | lesson | 0 | 1 | 5 | Lap 1 (once) |
-| u14 | ie / ei Rule and Exceptions | lesson | 0 | 6 | 2 | Lap 1 (once) |
-| u15 | Double Consonant Rules | lesson | 0 | 0 | 11 | Lap 1 (once) |
-| u16 | c = /s/ Before e / i / y | lesson | 0 | 1 | 13 | Lap 1 (once) |
-| u17 | ph = /f/ Sound (Greek Signal) | lesson | 0 | 1 | 13 | Lap 1 (once) |
-| u18 | qu- Combination (q Always Followed by u) | lesson | 1 | 0 | 9 | Lap 1 (once) |
-| u19 | y as Vowel (Greek Words) | lesson | 0 | 0 | 10 | Lap 1 (once) |
-| u20 | -ough: Six Pronunciations | lesson | 0 | 0 | 1 | Lap 1 (once) |
-| u21 | Homophones (Same Sound, Different Spelling) | lesson | 3 | 2 | 8 | Lap 1 (once) |
-| u22 | Contronyms (Same Word, Opposite Meanings) | lesson | 1 | 1 | 3 | Lap 1 (once) |
-| u23 | Eponyms (Words from People's Names) | lesson | 0 | 1 | 15 | Lap 1 (once) |
+| u12 | Silent kn- / gn- / wr- (Old English) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u13 | Silent -gh- Patterns | lesson | 0 | 0 | 8 | Lap 1 (once) |
+| u14 | ie / ei Rule and Exceptions | lesson | 0 | 0 | 10 | Lap 1 (once) |
+| u15 | Double Consonant Rules | lesson | 0 | 0 | 7 | Lap 1 (once) |
+| u16 | c = /s/ Before e / i / y | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u17 | ph = /f/ Sound (Greek Signal) | lesson | 0 | 0 | 4 | Lap 1 (once) |
+| u18 | qu- Combination (q Always Followed by u) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u19 | y as Vowel (Greek Words) | lesson | 1 | 0 | 0 | Lap 1 (once) |
+| u20 | -ough: Six Pronunciations | lesson | 0 | 0 | 4 | Lap 1 (once) |
+| u21 | Homophones (Same Sound, Different Spelling) | lesson | 1 | 0 | 5 | Lap 1 (once) |
+| u22 | Contronyms (Same Word, Opposite Meanings) | lesson | 4 | 0 | 3 | Lap 1 (once) |
+| u23 | Eponyms (Words from People's Names) | lesson | 0 | 0 | 2 | Lap 1 (once) |
 
 ### Act III · The Roman Forum  *(world: forum)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u24 | in- / im- / il- / ir- (not / without) | family | 558 | 859 | 676 | Laps 1, 2, 3 |
-| u25 | un- (not / reverse action) | family | 721 | 525 | 573 | Laps 1, 2, 3 |
-| u26 | dis- (apart / not / opposite) | family | 129 | 249 | 167 | Laps 1, 2, 3 |
-| u27 | de- (down / away / reverse) | family | 373 | 556 | 230 | Laps 1, 2, 3 |
-| u28 | ex- / e- / ef- (out / former / thoroughly) | family | 703 | 899 | 595 | Laps 1, 2, 3 |
-| u29 | re- (again / back) | family | 310 | 724 | 384 | Laps 1, 2, 3 |
-| u30 | pre- / pro- (before / forward) | family | 215 | 465 | 237 | Laps 1, 2, 3 |
-| u31 | sub- / sur- / super- / supra- (under / above) | family | 218 | 177 | 114 | Laps 1, 2, 3 |
-| u32 | com- / con- / col- / cor- / co- (together / with) | family | 372 | 800 | 645 | Laps 1, 2, 3 |
-| u33 | mal- (bad / evil / ill) | family | 17 | 28 | 16 | Laps 1, 2, 3 |
-| u34 | mis- (wrongly / badly) | family | 42 | 76 | 52 | Laps 1, 2, 3 |
-| u35 | inter- / intra- (between / within) | lesson | 1 | 6 | 7 | Lap 2 (once) |
-| u36 | trans- / per- (across / through) | family | 128 | 207 | 111 | Laps 1, 2, 3 |
-| u37 | ab- / abs- (away from / off) | family | 112 | 159 | 288 | Laps 1, 2, 3 |
-| u38 | ad- (toward / near) — the Great Assimilator | family | 98 | 117 | 79 | Laps 1, 2, 3 |
-| u39 | -tion / -sion / -cion (action / state / result) | family | 291 | 323 | 113 | Laps 1, 2, 3 |
-| u40 | -ous / -ious / -eous / -uous (full of / having quality) | family | 132 | 99 | 227 | Laps 1, 2, 3 |
-| u41 | -able / -ible (capable of being) | family | 2 | 14 | 327 | Laps 2, 3 |
-| u42 | -ance / -ence / -ancy / -ency (state / quality) | family | 2 | 10 | 214 | Laps 3 |
-| u43 | -ity / -ness / -hood / -ship / -dom (abstract state) | family | 313 | 365 | 196 | Laps 1, 2, 3 |
-| u44 | Agent Suffixes: -er / -or / -ist / -ian / -eur / -eer | family | 790 | 564 | 365 | Laps 1, 2, 3 |
+| u24 | in- / im- / il- / ir- (not / without) | family | 30 | 41 | 91 | Laps 1, 2, 3 |
+| u25 | un- (not / reverse action) | family | 10 | 17 | 20 | Laps 2, 3 |
+| u26 | dis- (apart / not / opposite) | lesson | 7 | 4 | 19 | Lap 1 (once) |
+| u27 | de- (down / away / reverse) | family | 46 | 39 | 49 | Laps 1, 2, 3 |
+| u28 | ex- / e- / ef- (out / former / thoroughly) | family | 78 | 82 | 112 | Laps 1, 2, 3 |
+| u29 | re- (again / back) | family | 54 | 68 | 92 | Laps 1, 2, 3 |
+| u30 | pre- / pro- (before / forward) | family | 24 | 9 | 48 | Laps 1, 3 |
+| u31 | sub- / sur- / super- / supra- (under / above) | lesson | 5 | 9 | 15 | Lap 1 (once) |
+| u32 | com- / con- / col- / cor- / co- (together / with) | family | 40 | 51 | 96 | Laps 1, 2, 3 |
+| u33 | mal- (bad / evil / ill) | lesson | 0 | 0 | 1 | Lap 1 (once) |
+| u34 | mis- (wrongly / badly) | lesson | 0 | 1 | 6 | Lap 1 (once) |
+| u35 | inter- / intra- (between / within) | lesson | 0 | 1 | 0 | Lap 2 (once) |
+| u36 | trans- / per- (across / through) | lesson | 6 | 2 | 13 | Lap 1 (once) |
+| u37 | ab- / abs- (away from / off) | lesson | 4 | 9 | 9 | Lap 3 (once) |
+| u38 | ad- (toward / near) — the Great Assimilator | lesson | 9 | 8 | 16 | Lap 1 (once) |
+| u39 | -tion / -sion / -cion (action / state / result) | family | 24 | 9 | 39 | Laps 1, 3 |
+| u40 | -ous / -ious / -eous / -uous (full of / having quality) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u41 | -able / -ible (capable of being) | lesson | 0 | 0 | 5 | Lap 1 (once) |
+| u42 | -ance / -ence / -ancy / -ency (state / quality) | lesson | 0 | 0 | 17 | Lap 3 (once) |
+| u43 | -ity / -ness / -hood / -ship / -dom (abstract state) | family | 21 | 15 | 36 | Laps 1, 2, 3 |
+| u44 | Agent Suffixes: -er / -or / -ist / -ian / -eur / -eer | family | 151 | 147 | 86 | Laps 1, 2, 3 |
 
 ### Act IV · The Storm of Elements  *(world: elements)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u45 | anti- / hyper- / hypo- (against / over / under) | family | 358 | 145 | 94 | Laps 1, 2, 3 |
-| u46 | auto- / tele- / micro- / macro- / mega- | family | 187 | 100 | 100 | Laps 1, 2, 3 |
-| u47 | bio- / geo- / photo- / hydro- / thermo- | family | 90 | 67 | 105 | Laps 1, 2, 3 |
-| u48 | neuro- / cardio- / osteo- / psycho- / derm- / hem- | family | 62 | 43 | 32 | Laps 1, 2, 3 |
-| u49 | meta- / para- / epi- / syn- / peri- | family | 90 | 76 | 99 | Laps 1, 2, 3 |
-| u50 | Number Prefixes 1–10: Latin & Greek | lesson | 3 | 3 | 5 | Lap 2 (once) |
-| u51 | poly- / multi- / omni- / pan- (many / all) | family | 195 | 84 | 141 | Laps 1, 2, 3 |
-| u52 | -ism / -ist (doctrine / practitioner) | family | 117 | 97 | 53 | Laps 1, 2, 3 |
-| u53 | -ology / -ologist / -ographer (study of) | family | 52 | 37 | 53 | Laps 1, 2, 3 |
-| u54 | Medical Suffixes: -itis / -osis / -ectomy / -plasty / -scope / -meter | family | 51 | 45 | 44 | Laps 1, 2, 3 |
+| u45 | anti- / hyper- / hypo- (against / over / under) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u46 | auto- / tele- / micro- / macro- / mega- | lesson | 0 | 1 | 3 | Lap 3 (once) |
+| u47 | bio- / geo- / photo- / hydro- / thermo- | lesson | 2 | 1 | 7 | Lap 2 (once) |
+| u48 | neuro- / cardio- / osteo- / psycho- / derm- / hem- | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u49 | meta- / para- / epi- / syn- / peri- | lesson | 0 | 1 | 2 | Lap 3 (once) |
+| u50 | Number Prefixes 1–10: Latin & Greek | lesson | 0 | 2 | 1 | Lap 2 (once) |
+| u51 | poly- / multi- / omni- / pan- (many / all) | lesson | 1 | 0 | 4 | Lap 3 (once) |
+| u52 | -ism / -ist (doctrine / practitioner) | lesson | 1 | 6 | 7 | Lap 1 (once) |
+| u53 | -ology / -ologist / -ographer (study of) | lesson | 0 | 0 | 1 | Lap 1 (once) |
+| u54 | Medical Suffixes: -itis / -osis / -ectomy / -plasty / -scope / -meter | lesson | 0 | 1 | 0 | Lap 1 (once) |
 
 ### Act V · The Root Kingdoms  *(world: engine)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u55 | graph / gram (write / record) | family | 11 | 32 | 104 | Laps 2, 3 |
-| u56 | phon / phone (sound / voice) | family | 1 | 3 | 43 | Laps 3 |
-| u57 | path / pathy (suffering / feeling / disease) | family | 17 | 19 | 19 | Laps 1, 2, 3 |
-| u58 | chron (time) | lesson | 3 | 3 | 18 | Lap 3 (once) |
-| u59 | morph (form / shape) | family | 26 | 37 | 32 | Laps 1, 2, 3 |
-| u60 | scop / scope (see / examine) | lesson | 13 | 9 | 12 | Lap 2 (once) |
-| u61 | log / logy (word / reason / study) | family | 39 | 85 | 45 | Laps 1, 2, 3 |
-| u62 | phil / phile (love) | family | 0 | 3 | 62 | Laps 3 |
-| u63 | gen / genesis (birth / origin / produce) | family | 70 | 59 | 55 | Laps 1, 2, 3 |
-| u64 | dem / demo (people) | lesson | 9 | 10 | 9 | Lap 2 (once) |
-| u65 | aud (hear) | family | 23 | 12 | 9 | Laps 1, 2 |
-| u66 | dict / dic (say / speak) | family | 48 | 44 | 20 | Laps 1, 2, 3 |
-| u67 | duc / duct (lead) | lesson | 23 | 13 | 3 | Lap 2 (once) |
-| u68 | fer (carry / bear) | family | 9 | 28 | 17 | Laps 2, 3 |
-| u69 | scrib / script (write) | lesson | 11 | 10 | 2 | Lap 2 (once) |
-| u70 | port (carry) | lesson | 6 | 11 | 14 | Lap 3 (once) |
-| u71 | miss / mit (send) | family | 22 | 14 | 24 | Laps 1, 2, 3 |
-| u72 | vert / vers (turn) | family | 27 | 24 | 10 | Laps 1, 2 |
-| u73 | spec / spect / spic (see / look) | family | 19 | 38 | 9 | Laps 1, 2 |
-| u74 | ten / tain / tent (hold) | family | 34 | 46 | 51 | Laps 1, 2, 3 |
-| u75 | cred (believe) | lesson | 3 | 12 | 4 | Lap 2 (once) |
+| u55 | graph / gram (write / record) | lesson | 0 | 0 | 3 | Lap 3 (once) |
+| u56 | phon / phone (sound / voice) | lesson | 0 | 0 | 1 | Lap 1 (once) |
+| u57 | path / pathy (suffering / feeling / disease) | lesson | 0 | 1 | 1 | Lap 2 (once) |
+| u58 | chron (time) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u59 | morph (form / shape) | lesson | 4 | 0 | 0 | Lap 1 (once) |
+| u60 | scop / scope (see / examine) | lesson | 0 | 0 | 1 | Lap 1 (once) |
+| u61 | log / logy (word / reason / study) | lesson | 2 | 4 | 2 | Lap 2 (once) |
+| u62 | phil / phile (love) | lesson | 0 | 0 | 1 | Lap 3 (once) |
+| u63 | gen / genesis (birth / origin / produce) | lesson | 4 | 5 | 9 | Lap 2 (once) |
+| u64 | dem / demo (people) | lesson | 2 | 1 | 0 | Lap 2 (once) |
+| u65 | aud (hear) | lesson | 2 | 0 | 2 | Lap 2 (once) |
+| u66 | dict / dic (say / speak) | lesson | 1 | 2 | 5 | Lap 2 (once) |
+| u67 | duc / duct (lead) | lesson | 1 | 1 | 1 | Lap 2 (once) |
+| u68 | fer (carry / bear) | lesson | 2 | 2 | 3 | Lap 2 (once) |
+| u69 | scrib / script (write) | lesson | 1 | 0 | 1 | Lap 3 (once) |
+| u70 | port (carry) | lesson | 5 | 1 | 7 | Lap 2 (once) |
+| u71 | miss / mit (send) | lesson | 3 | 1 | 8 | Lap 3 (once) |
+| u72 | vert / vers (turn) | lesson | 4 | 4 | 3 | Lap 3 (once) |
+| u73 | spec / spect / spic (see / look) | lesson | 3 | 6 | 7 | Lap 2 (once) |
+| u74 | ten / tain / tent (hold) | lesson | 4 | 3 | 14 | Lap 3 (once) |
+| u75 | cred (believe) | lesson | 0 | 1 | 1 | Lap 2 (once) |
 
 ### Act VI · The Wide Strait  *(world: strait)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u76 | -eau ending (silent -x plural) | family | 1312 | 1344 | 1241 | Laps 1, 2, 3 |
-| u77 | -oir / -oire (French vowel ending) | lesson | 0 | 0 | 7 | Lap 3 (once) |
-| u78 | -ette (French diminutive) | lesson | 0 | 0 | 10 | Lap 3 (once) |
-| u79 | -esque / -ique / -que (French endings) | lesson | 0 | 1 | 8 | Lap 3 (once) |
-| u80 | French Silent Letters | lesson | 1 | 0 | 6 | Lap 3 (once) |
-| u81 | French Agent Words: -eur / -eur | lesson | 1 | 1 | 0 | Lap 2 (once) |
-| u82 | Italian Double Consonants: -zz / -cc / -ll / -pp | family | 28 | 21 | 49 | Laps 1, 2, 3 |
-| u83 | Italian Music & Art Vocabulary | lesson | 1 | 0 | 2 | Lap 3 (once) |
-| u84 | Arabic Loanwords | lesson | 8 | 9 | 12 | Lap 2 (once) |
-| u85 | Spanish Loanwords | family | 29 | 30 | 34 | Laps 1, 2, 3 |
-| u86 | Japanese Loanwords | lesson | 10 | 15 | 12 | Lap 1 (once) |
-| u87 | German Loanwords | family | 17 | 19 | 27 | Laps 1, 2, 3 |
-| u88 | Sanskrit & Hindi Loanwords | lesson | 13 | 9 | 9 | Lap 2 (once) |
-| u89 | Norse & Old Norse Loanwords | lesson | 1 | 0 | 1 | Lap 2 (once) |
-| u90 | Celtic & Gaelic Loanwords | lesson | 8 | 0 | 8 | Lap 2 (once) |
+| u76 | -eau ending (silent -x plural) | family | 369 | 358 | 225 | Laps 1, 2, 3 |
+| u77 | -oir / -oire (French vowel ending) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u78 | -ette (French diminutive) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u79 | -esque / -ique / -que (French endings) | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u80 | French Silent Letters | lesson | 1 | 1 | 1 | Lap 2 (once) |
+| u81 | French Agent Words: -eur / -eur | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u82 | Italian Double Consonants: -zz / -cc / -ll / -pp | lesson | 5 | 11 | 4 | Lap 1 (once) |
+| u83 | Italian Music & Art Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u84 | Arabic Loanwords | lesson | 11 | 21 | 6 | Lap 2 (once) |
+| u85 | Spanish Loanwords | lesson | 7 | 11 | 5 | Lap 2 (once) |
+| u86 | Japanese Loanwords | lesson | 1 | 3 | 0 | Lap 2 (once) |
+| u87 | German Loanwords | lesson | 12 | 19 | 7 | Lap 2 (once) |
+| u88 | Sanskrit & Hindi Loanwords | lesson | 0 | 14 | 1 | Lap 3 (once) |
+| u89 | Norse & Old Norse Loanwords | lesson | 3 | 0 | 3 | Lap 2 (once) |
+| u90 | Celtic & Gaelic Loanwords | lesson | 6 | 5 | 4 | Lap 2 (once) |
 
 ### Act VII · The Trickster Junkyard  *(world: junkyard)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u91 ✳ | Sound Twins — homonyms 101 | family | 16 | 27 | 0 | Laps 1, 2 |
-| u92 ✳ | Treacherous Twins — homonyms that fool champions | family | 0 | 9 | 234 | Laps 3 |
-| u93 ✳ | Named After Someone — eponyms | family | 0 | 8 | 653 | Laps 3 |
-| u94 ✳ | Two-Way Words — one spelling, two sounds | family | 227 | 515 | 292 | Laps 1, 2, 3 |
-| u95 ✳ | Words in Fancy Dress — accent marks | lesson | 7 | 6 | 5 | Lap 1 (once) |
-| u96 ✳ | Sneaky Spellings — when sound hides the letters | family | 0 | 0 | 629 | Laps 3 |
+| u91 ✳ | Sound Twins — homonyms 101 | family | 14 | 2 | 292 | Laps 1, 3 |
+| u92 ✳ | Treacherous Twins — homonyms that fool champions | family | 0 | 0 | 369 | Laps 3 |
+| u93 ✳ | Named After Someone — eponyms | family | 0 | 0 | 53 | Laps 3 |
+| u94 ✳ | Two-Way Words — one spelling, two sounds | family | 180 | 130 | 173 | Laps 1, 2, 3 |
+| u95 ✳ | Words in Fancy Dress — accent marks | lesson | 0 | 1 | 0 | Lap 1 (once) |
+| u96 ✳ | Sneaky Spellings — when sound hides the letters | lesson | 0 | 0 | 17 | Lap 1 (once) |
 
 ### Act VIII · The Subject Sprints  *(world: junkyard)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u97 | Medical Body Systems Vocabulary | family | 439 | 309 | 391 | Laps 1, 2, 3 |
-| u98 | Natural Science Vocabulary | family | 362 | 244 | 312 | Laps 1, 2, 3 |
-| u99 | Fine Arts & Music Vocabulary | family | 130 | 104 | 118 | Laps 1, 2, 3 |
-| u100 | Culinary Vocabulary | family | 151 | 123 | 134 | Laps 1, 2, 3 |
-| u101 | Geography & Place Words | family | 155 | 139 | 148 | Laps 1, 2, 3 |
-| u102 | Law & Government Vocabulary | family | 126 | 186 | 103 | Laps 1, 2, 3 |
-| u103 | Words from Greek & Roman Mythology | family | 16 | 6 | 33 | Laps 1, 3 |
-| u104 | Words About Time (Beyond chron-) | family | 124 | 124 | 103 | Laps 1, 2, 3 |
-| u105 | Words About Size & Quantity | family | 179 | 145 | 136 | Laps 1, 2, 3 |
-| u106 | Words About Knowledge & Learning | family | 49 | 70 | 35 | Laps 1, 2, 3 |
-| u107 | Words About Movement & Direction | family | 93 | 89 | 62 | Laps 1, 2, 3 |
-| u108 | Literary & Poetic Devices | family | 35 | 24 | 31 | Laps 1, 2, 3 |
-| u109 | Color, Light & Perception Words | family | 26 | 26 | 20 | Laps 1, 2, 3 |
-| u110 | Sound, Music & Language Theory | family | 49 | 43 | 38 | Laps 1, 2, 3 |
-| u111 | Architecture & Urban Vocabulary | family | 52 | 38 | 52 | Laps 1, 2, 3 |
-| u112 | The Natural World — Flora & Fauna Vocabulary | lesson | 2 | 5 | 3 | Lap 2 (once) |
-| u113 | Philosophical & Religious Vocabulary | lesson | 3 | 2 | 3 | Lap 2 (once) |
+| u97 | Medical Body Systems Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u98 | Natural Science Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u99 | Fine Arts & Music Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u100 | Culinary Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u101 | Geography & Place Words | family | 116 | 154 | 78 | Laps 1, 2, 3 |
+| u102 | Law & Government Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u103 | Words from Greek & Roman Mythology | family | 87 | 87 | 51 | Laps 1, 2, 3 |
+| u104 | Words About Time (Beyond chron-) | family | 448 | 392 | 281 | Laps 1, 2, 3 |
+| u105 | Words About Size & Quantity | family | 45 | 51 | 21 | Laps 1, 2, 3 |
+| u106 | Words About Knowledge & Learning | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u107 | Words About Movement & Direction | lesson | 0 | 0 | 1 | Lap 3 (once) |
+| u108 | Literary & Poetic Devices | lesson | 0 | 0 | 0 | Lap 3 (once) |
+| u109 | Color, Light & Perception Words | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u110 | Sound, Music & Language Theory | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u111 | Architecture & Urban Vocabulary | family | 44 | 42 | 18 | Laps 1, 2, 3 |
+| u112 | The Natural World — Flora & Fauna Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u113 | Philosophical & Religious Vocabulary | lesson | 0 | 0 | 0 | Lap 1 (once) |
 
 ### Act IX · The Big Stage  *(world: stage)*
 
 | Unit | Chapter | Kind | B1 | B2 | B3 | Runs in |
 |---|---|---|---|---|---|---|
-| u114 | Ego & Self — ego / auto / alter | family | 43 | 68 | 33 | Laps 1, 2, 3 |
-| u115 | Talking & Speaking — loqu / phon / verb | lesson | 0 | 2 | 6 | Lap 3 (once) |
-| u116 | Honesty & Deception — ver / mendax / cred / pseudo | lesson | 2 | 2 | 4 | Lap 2 (once) |
-| u117 | Feelings & Emotions — the Four Humors | family | 30 | 30 | 50 | Laps 1, 2, 3 |
-| u118 | Wisdom & Foolishness — sap / sophos / stult | lesson | 1 | 2 | 3 | Lap 3 (once) |
-| u119 | Courage & Fear — aud / fort / tim / phob | lesson | 6 | 4 | 4 | Lap 2 (once) |
-| u120 | Kindness & Cruelty — ben / mal / clem | lesson | 9 | 10 | 13 | Lap 2 (once) |
-| u121 | Social & Solitary — greg / anthrop / soci / mis | lesson | 2 | 4 | 7 | Lap 2 (once) |
-| u122 | Words About Lying & Deception (Rhetorical Terms) | lesson | 3 | 1 | 2 | Lap 2 (once) |
-| u123 | Personality: Words About Talkers, Thinkers & Liars | lesson | 2 | 4 | 3 | Lap 2 (once) |
-| u124 | The Schwa Problem & Unstressed Vowels | lesson | 4 | 4 | 6 | Lap 2 (once) |
-| u125 | The 44 Phonemes — Sound-to-Spelling Mastery | lesson | 2 | 0 | 1 | Lap 2 (once) |
-| u126 | Championship Vocabulary: The Final 10 | lesson | 0 | 0 | 1 | Lap 3 (once) |
-| u127 | Personality: Generosity & Miserliness | lesson | 0 | 0 | 6 | Lap 3 (once) |
-| u128 | Championship Loanword Patterns — Rare Languages | lesson | 2 | 0 | 4 | Lap 2 (once) |
+| u114 | Ego & Self — ego / auto / alter | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u115 | Talking & Speaking — loqu / phon / verb | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u116 | Honesty & Deception — ver / mendax / cred / pseudo | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u117 | Feelings & Emotions — the Four Humors | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u118 | Wisdom & Foolishness — sap / sophos / stult | family | 43 | 38 | 15 | Laps 1, 2, 3 |
+| u119 | Courage & Fear — aud / fort / tim / phob | lesson | 0 | 1 | 1 | Lap 3 (once) |
+| u120 | Kindness & Cruelty — ben / mal / clem | family | 43 | 41 | 17 | Laps 1, 2, 3 |
+| u121 | Social & Solitary — greg / anthrop / soci / mis | lesson | 0 | 0 | 0 | Lap 1 (once) |
+| u122 | Words About Lying & Deception (Rhetorical Terms) | lesson | 0 | 0 | 0 | Lap 2 (once) |
+| u123 | Personality: Words About Talkers, Thinkers & Liars | lesson | 0 | 0 | 0 | Lap 2 (once) |
+| u124 | The Schwa Problem & Unstressed Vowels | lesson | 0 | 1 | 10 | Lap 3 (once) |
+| u125 | The 44 Phonemes — Sound-to-Spelling Mastery | lesson | 2 | 0 | 1 | Lap 3 (once) |
+| u126 | Championship Vocabulary: The Final 10 | lesson | 0 | 0 | 0 | Lap 2 (once) |
+| u127 | Personality: Generosity & Miserliness | lesson | 0 | 0 | 0 | Lap 2 (once) |
+| u128 | Championship Loanword Patterns — Rare Languages | lesson | 0 | 1 | 0 | Lap 2 (once) |
 
 ✳ = newly authored trickster chapter (inline in trail-data.js; narration to be recorded when the engine ships).
 

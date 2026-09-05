@@ -2288,13 +2288,26 @@ const app = {
   dockRemove:(k)=>{ state.dockMenu=null; const c=active(); if(c.pausedLists) delete c.pausedLists[k];
     window.sbDelList({preventDefault(){},stopPropagation(){}},k); },
   openBuilder:()=>set({nav:'builder', screen:'app', conceptSel:null}),
-  bldSet:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); let v=kv.slice(i+1); if(k==='size') v=+v; bldState()[k]=v; render(); },
-  bldCreate:()=>{ const b=bldState(); const words=bldPick(); if(!words.length) return; const c=active(); ensureLists(c);
+  /* 'all' is a size like any other and must survive the round trip — coercing
+     every size with +v turned it into NaN, which silently emptied the pool. */
+  bldSet:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); let v=kv.slice(i+1);
+    if(k==='size' && v!=='all') v=+v;
+    bldState()[k]=v; if(state.bldNaming) state.bldNaming=false; render(); },
+  bldNameOpen:()=>{ if(!bldPick().length) return;
+    set({bldNaming:true, bldNameVal:''});
+    setTimeout(()=>{ try{ document.querySelector('[data-fkey="bldName"]')?.focus(); }catch(e){} },0); },
+  bldName:(v)=>{ state.bldNameVal=String(v||'').slice(0,48); },
+  bldNameCancel:()=>set({bldNaming:false, bldNameVal:''}),
+  bldCreate:()=>{ const words=bldPick(); if(!words.length) return; const c=active(); ensureLists(c);
     if(!c.builtLists) c.builtLists={}; const key='built_'+Date.now().toString(36);
-    const patL=b.pat!=='any'?(BLD_PATS[b.pat].label+' '):''; const diffL=b.diff!=='mixed'?(b.diff[0].toUpperCase()+b.diff.slice(1)+' '):'';
-    c.builtLists[key]={ label:(diffL+patL+'Builder list ('+words.length+')').trim(), ws:words.map(w=>w.w) };
-    save(); sfx('win'); burstConfetti(60); app.selectList(key);
-    flash('List built — '+words.length+' words · '+bldLevels(words.length)+' Level'+(bldLevels(words.length)>1?'s':'')+' to mastery 🛠️'); },
+    // the child's own name wins; the suggestion is only a fallback for an empty box
+    const label=(String(state.bldNameVal||'').trim() || bldSuggest()).slice(0,48);
+    c.builtLists[key]={ label:label, ws:words.map(w=>w.w) };
+    state.bldNaming=false; state.bldNameVal='';
+    save(); sfx('win'); burstConfetti(60);
+    app.selectList(key);                                  // lands on Practice with this list active
+    flash('“'+label+'” is ready — '+words.length+' words · '+bldLevels(words.length)
+      +' Level'+(bldLevels(words.length)>1?'s':'')+' to mastery 🛠️'); },
   printOpen:()=>{ if(!state.prn||!state.prn.inc) state.prn={inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'}; set({printOpen:true}); },
   printClose:()=>set({printOpen:false}),
   // ----- View complete word list (browsable card view for any list) -----
@@ -7471,10 +7484,26 @@ function bldPool(){ const b=bldState(); let pool;
   if(b.len!=='any'){ const t={short:w=>w.w.length<=6, medium:w=>w.w.length>=7&&w.w.length<=9, long:w=>w.w.length>=10}[b.len]; if(t) pool=pool.filter(t); }
   if(b.pat!=='any' && BLD_PATS[b.pat]) pool=pool.filter(w=>BLD_PATS[b.pat].re.test(w.w));
   return pool; }
+/* 'all' takes everything the filters allow, capped only by what actually
+   matched — the honest ceiling, since asking for 1,000 out of a pool of 300
+   cannot produce more than 300. BLD_CAP is the hard limit on any single list:
+   the words are stored on the child and re-rendered as cards, and past a few
+   thousand that is a slow screen rather than a useful list. */
+const BLD_SIZES=[24,60,120,240,480,1000], BLD_CAP=1000;
 function bldPick(){ const b=bldState(); const pool=bldPool().sort((x,y)=>((x.y||3)-(y.y||3))||(x.w.length-y.w.length));
-  const n=Math.min(b.size,pool.length); if(!n) return [];
-  if(pool.length<=b.size) return pool;
-  const out=[]; const step=pool.length/n; for(let i=0;i<n;i++){ out.push(pool[Math.floor(i*step)]); } return out; } // even spread keeps the easy→hard ramp
+  if(!pool.length) return [];
+  const want=(b.size==='all') ? Math.min(pool.length,BLD_CAP) : Math.min(b.size,pool.length);
+  if(pool.length<=want) return pool;
+  const out=[]; const step=pool.length/want; for(let i=0;i<want;i++){ out.push(pool[Math.floor(i*step)]); } return out; } // even spread keeps the easy→hard ramp
+/* the name the child sees, suggested from the choices they actually made */
+function bldSuggest(){ const b=bldState(); const n=bldPick().length;
+  const bits=[];
+  if(b.diff!=='mixed') bits.push(b.diff[0].toUpperCase()+b.diff.slice(1));
+  if(b.pat!=='any'&&BLD_PATS[b.pat]) bits.push(BLD_PATS[b.pat].label);
+  if(b.len!=='any') bits.push({short:'Short words',medium:'Medium words',long:'Long words'}[b.len]||'');
+  const src={scripps:'Champions',nsf:'The Vault',review:'Sticky Words',missed:'Comeback Words'}[b.src];
+  if(src) bits.push(src);
+  return (bits.filter(Boolean).join(' · ') || 'My word list') + ' (' + n + ')'; }
 function bldLevels(n){ return n<=WORK_MAX?1:Math.max(2,Math.min(24,Math.round(n/50))); }
 function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(); const n=picked.length; const lv=bldLevels(n); const per=n?Math.ceil(n/lv):0;
   const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--action,var(--accent))':'var(--line)'};${cur===val?'background:color-mix(in srgb,var(--action,var(--accent)) 12%,var(--paper,#fff));color:var(--action,var(--accent))':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
@@ -7485,7 +7514,9 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
     ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
     <div class="sb-card" style="margin-bottom:16px">
       ${row('1 · Difficulty','how hard the words are',['easy','medium','hard','champion','mixed'].map(d=>btn('diff',d,d[0].toUpperCase()+d.slice(1),b.diff)).join(''))}
-      ${row('2 · List size','how many words',[24,60,120,240,480].map(s=>btn('size',String(s),s+' words',String(b.size))).join(''))}
+      ${row('2 · List size','how many words — or take every one that matches',
+        BLD_SIZES.map(s=>btn('size',String(s),s+' words',String(b.size))).join('')
+        + btn('size','all', n&&b.size==='all' ? ('All '+n+' that match') : 'All that match', String(b.size)))}
       ${row('3 · Source','which word pool to draw from',srcs.map(([k,l])=>btn('src',k,l,b.src)).join(''))}
       ${row('4 · Word length','short, medium or long words',[['any','Any'],['short','Short ≤6'],['medium','Medium 7–9'],['long','Long 10+']].map(([k,l])=>btn('len',k,l,b.len)).join(''))}
       ${row('5 · Tricky pattern','focus on one spelling trap',[['any','Any'],...Object.keys(BLD_PATS).map(k=>[k,BLD_PATS[k].label])].map(([k,l])=>btn('pat',k,l,b.pat)).join(''))}
@@ -7495,7 +7526,19 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
         ${n&&n<b.size?`<div style="font-size:12px;color:var(--muted);font-weight:700">only ${n} match — loosen a filter for more</div>`:''}
       </div>
       ${n?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${preview}${n>18?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${n-18} more</span>`:''}</div>`:''}
-      <button data-act="bldCreate" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:14px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Create list & start training → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>
+      ${S.bldNaming && n ? `
+      <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--accent);background:var(--surface)">
+        <div style="font-family:var(--display);font-weight:800;font-size:14px;margin-bottom:3px">Name your list</div>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">You'll find it under this name in Practice.</p>
+        <input data-inp="bldName" data-fkey="bldName" value="${escA(S.bldNameVal||'')}" maxlength="48"
+          placeholder="${escA(bldSuggest())}"
+          style="width:100%;padding:12px 13px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;outline:none;margin-bottom:11px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button data-act="bldCreate" style="flex:1 1 200px;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Create &amp; start practising → (${n} words · ${lv} ${lv===1?'Level':'Levels'})</button>
+          <button data-act="bldNameCancel" style="padding:13px 16px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Back</button>
+        </div>
+      </div>`
+      : `<button data-act="bldNameOpen" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:14px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Name this list &amp; practise → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>`}
     </div>
     <div class="sb-card">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">…or pick a ready-made list</div>
