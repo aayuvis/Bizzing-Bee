@@ -12,7 +12,13 @@ const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
-const CORE = 128197;   // SB_FULL as generated, before the shard
+const CORE = 126651;   // SB_FULL as it ships, before the shard
+/* 128,197 until 5 Sep 2026, when the library sweep deleted 1,528 records and one
+   (`cli`) came back. This number is not a target to hit — it is the count the
+   130,000-word CLAIM was retired against, and the floor assertion further down
+   is what actually protects the bank. Update it when the bank legitimately
+   changes; never edit it to silence a failure, because the failure it is there
+   to catch is words-full.js half-loading. */
 
 /* The hazard this suite exists to prevent is not a missing file — it is a
    CLAIM without the words behind it. So the two states are checked as a pair:
@@ -217,9 +223,39 @@ ok(stillOpen.length === 0, 'and none of them reaches a child'
 /* basshole is deliberately NOT in this list: it looked like collateral damage
    from the substring sweep, but the word review judged it a coinage on its own
    merits and cut it there. A word may leave by one route and not the other. */
+/* `faggoting` came OFF this list on 5 Sep, the same way `gooks` did below. Its
+   gloss is genuinely innocent — a needlework stitch — which is why an earlier
+   pass held it here as collateral of the substring sweep. But the app SPEAKS
+   EVERY WORD ALOUD, and said aloud the double-g form is the slur with a suffix
+   on it. Two things settle it: the single-g `fagoting` survives carrying the
+   identical embroidery definition, so the SENSE loses nothing; and `faggot` and
+   `faggots` were struck earlier, so keeping only the -ing form left the bank
+   striking a base word and serving its inflection. */
 const LOOKALIKE = ['haboob', 'booby', 'boobies', 'booboisie', 'boobird',
-  'twankay', 'faggoting', 'spicy', 'spices', 'japes', 'chinking', 'retarding',
+  'twankay', 'fagoting', 'spicy', 'spices', 'japes', 'chinking', 'retarding',
   'mispickel', 'swank', 'swanky', 'pinprick', 'meltwater', 'saltwater', 'wristwatch'];
+ok(!live.has('faggoting') && !live.has('faggot') && !live.has('faggots'),
+  'no double-g form of the slur is spoken aloud');
+
+/* THE PARTITION HOLE. The library sweep divided 75,645 words among seventy-six
+   reviewers by position, so `catamites` and `catamite` were read by different
+   people: the plural was struck and the singular — "a boy who submits to a
+   sexual relationship with a man" — survived. A sweep split by slice cannot see
+   an inflection pair; only a pass over the finished result can, which is what
+   this assertion is. If a future sweep is partitioned the same way, run that
+   pass again before believing its totals. */
+const SPLIT = ['catamite', 'molest', 'molested', 'molesting', 'ravisher', 'nymphet',
+  'spick', 'nance', 'butch', 'niggery', 'homo', 'gigolo', 'lech', 'letch', 'erotism',
+  'unsex', 'douche', 'harelip'];
+const splitLeft = SPLIT.filter(w => live.has(w));
+ok(splitLeft.length === 0, 'no singular survives a struck plural'
+  + (splitLeft.length ? ' — STILL LIVE: ' + splitLeft.join(', ') : ''));
+/* buxom looked like a twentieth case and was not: the corpus sweep had struck it
+   on 4 Sep, so the filtered library never served it and only the RAW file still
+   carried a record. That is the trap in auditing a generated file instead of the
+   filtered library — REMOVE beats DEF, and a repair written for a struck word is
+   dead code. Its records are deleted so the file agrees with the strike. */
+ok(!live.has('buxom'), 'buxom stays struck, and the file agrees with the strike');
 const collateral = LOOKALIKE.filter(w => !live.has(w));
 ok(collateral.length === 0, 'and no innocent lookalike went with them'
   + (collateral.length ? ' — LOST: ' + collateral.join(', ') : ''));
@@ -237,7 +273,7 @@ ok(collateral.length === 0, 'and no innocent lookalike went with them'
    block 1c of words-patch.js already applies to `rape`, which is struck although
    the bank serves only the plant sense. A child hears the slur either way. */
 const mustStay = ['shrimp', 'runt', 'ragtag', 'riffraff', 'madhouse', 'peewee', 'nuthouse',
-  'retard', 'spicy', 'spices', 'japes', 'faggoting', 'chinking', 'retarding',
+  'retard', 'spicy', 'spices', 'japes', 'fagoting', 'chinking', 'retarding',
   'affront', 'euphemism', 'rude', 'obnoxious', 'innuendo', 'nefandous', 'insultment'];
 const lost = mustStay.filter(w => !live.has(w));
 ok(lost.length === 0, 'and no ordinary word is lost to it' + (lost.length ? ' — LOST: ' + lost.join(', ') : ''));
