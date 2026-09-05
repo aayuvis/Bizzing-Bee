@@ -721,6 +721,32 @@ let _fullState='idle'; // idle | loading | loaded | error
    the correction reviewable in one place. */
 const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'abbr','abbrev','abd','abdom','mis',
+/* ---- the twenty-reviewer sweep, 5 Sep 2026 ----
+   Twenty reviewers read all 19,810 free-journey placements one at a time. The
+   content they surfaced is listed here AND in words-patch.js, for the reason
+   block 1a records: fixCore guards the 130k library, but a child practises out
+   of SB_DATA.nsf, and every one of these was live in both.
+   These are here rather than left to SLUR_DEF because a pattern scan over the
+   whole served corpus found 0.6% of them — the glosses read innocently.
+   `dicks` was "someone who is a detective". Rules cannot see that; only
+   reading can, which is the lesson of the 37 learned again at scale. */
+  'abacinate','abhominable','aphrodisiac','audubon','autoloader','bacchanalia','balisong',
+  'blotto','booger','boogers','bosomy','calfs','capibara','carotin','casanova','castration',
+  'caucasoid','chancrous','chico','chicos','circumcision','codpiece','come','coonskin',
+  'coontie','coquette','crappy','cretin','cripple','cum','debauch','defecator','dicks',
+  'dike','disney','douche','doxy','dumdum','emasculate','epicanthi','erotism','estrus',
+  'evert','feticide','filicide','gamin','gestapo','gipsy','git','goodmen','goring',
+  'guinness','harpy','hausa','hebe','hermaphrodite','hollands','idiot','imbecile','iodin',
+  'ira','jackass','katharsis','khat','kluxer','limey','lothario','lubricity','lulu','lynch',
+  'lynching','mahound','masochism','mermen','midget','minx','mioses','miosis','moder',
+  'mongolism','moron','morons','myosis','naturism','nazify','negro','negroes','negroid',
+  'negros','nipple','nipples','nudists','octoroon','odalisque','oedipal','phallic','piss',
+  'pissing','poleax','poleaxe','ponce','proctitis','proctoscope','promiscuity',
+  'promiscuous','prurience','pruriency','puke','quaalude','quaaludes','quadroon','randy',
+  'risque','sadism','saki','sarin','saturnalia','satyr','satyrs','seel','semite',
+  'serail','sext','sexual','sexually','shitty','sills','sitters','snot','sonsy','sully',
+  'suttee','tawney','tits','toying','transvestite','transvestites','trepanation','turp',
+  'twit','twits','vasectomy','wittol','wuss','xis','yogi','yogin','yogis','zulu','zulus',
 /* ---- the 37, signed off 4 Sep 2026 ----
    The SLUR_DEF pattern below reads what a definition says about its own
    headword, which is why it catches a whole class rather than a word list. It
@@ -744,6 +770,37 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'blowjob','blowjobs','bollock','bollocks','boobage','cocklicker','cuntass',
   'encunt','fuckity','kinderwhore','knobheaded','shitbag','shithead','sluts',
   'teledildonics','titty','twats','unfuck','unfuckable','unfucked','unfuckupable',
+/* ---- sexual-violence and pornography glosses, signed off 5 Sep 2026 ----
+   Found by three of the twenty word-fit reviewers, independently, while checking
+   which stop each word belonged in. SLUR_DEF cannot see these either: the gloss
+   is a plain description, not "an offensive term for". `ravished` was serving in
+   Elements & Forces (its gloss contains the word "force"), `porno` in Literary &
+   Poetic Devices ("of no literary value").
+   `rape` is struck for the same practical reason as `niggard`: the bank serves
+   only the botanical sense (a forage crop), but this app SPEAKS each word aloud
+   to a child and asks for the spelling back, and that is not a word to say to a
+   nine-year-old for the sake of rapeseed.
+   `ravishing` is NOT struck — it has a common, kid-safe sense, so it is repaired
+   in CORE_FIX below instead, the way retard and shrimp were. */
+  'ravish','ravished','ravisher','ravishment','ravishes',
+  'porn','porno','porns','pornos','pornography','pornographic',
+  'rape','raped','rapes','rapist','rapists','molest','molested','molester','molesting',
+/* ---- the ethnic slurs, signed off 5 Sep 2026 ----
+   Found the same way and for the same reason as the 37 above: SLUR_DEF reads
+   what a definition SAYS about its headword, and every one of these is glossed
+   innocently, so nothing in the data matches. kaffir is defined as a cereal
+   crop, "important for human and animal food"; hottentot as "any of the Khoisan
+   languages"; negress as "a Black woman or girl"; bushman as "a member of the
+   race of nomadic hunters"; coolie as a labourer. All of them were reaching a
+   child's word list — kaffir surfaced in a Meadow round about creatures.
+   eskimo, bushman and gypsy are dated exonyms rather than unambiguous slurs and
+   each has an innocent sense (the gypsy moth, a gypsy cab); they are struck
+   with the rest because this app reads a word aloud to a child and asks for it
+   back, and that is not the place to litigate a contested term. */
+  'kaffir','kaffirs','kafir','kafirs','hottentot','hottentots',
+  'negress','negresses','pickaninny','pickaninnies','coolie','coolies',
+  'redskin','redskins','chinaman','chinamen','halfcaste','half-caste',
+  'eskimo','eskimos','bushman','bushmen','gypsy','gypsies',
 /* niggard, niggardly, niggards and niggardliness are NOT slurs — they come from
    Old Norse and mean miserly, with no connection to the word they resemble.
    They are struck for a practical reason, not an etymological one: this app
@@ -1028,6 +1085,9 @@ const CORE_FIX = {
   /* the generated gloss was the noun sense, which is a slur for a disabled
      person; the verb is an ordinary word and the spelling is worth knowing */
   retard: 'to slow something down or hold back its progress',
+  /* the bank glosses this as sexual violence; the everyday sense is the only
+     one a child needs, and repairing it keeps a real word in the library */
+  ravishing: 'delightfully beautiful; lovely enough to take your breath away',
   retards: 'slows something down or holds back its progress'
 };
 /* ---- slurs ----
@@ -1057,6 +1117,20 @@ const SLUR_DEF = /\b(offensive|derogatory|disparaging|pejorative|vulgar|contempt
    losing the whole class by weakening the pattern. */
 const SLUR_OK = new Set(['improperation','insultment','nefandous','multiracialize',
   'affront','euphemism','rude','obnoxious','innuendo']);
+/* ROMAN NUMERALS ARE NOT WORDS TO SPELL. The bank carries xiv, xxii, lxx and
+   thirteen more as headwords, glossed "the cardinal number that is the sum of
+   thirteen and one". They are short and rated band 1, so they surfaced near the
+   FRONT of easy word lists, and "x-i-v" teaches a speller nothing.
+   The test is deliberately the SHAPE *and* the definition, never the shape
+   alone: `mix` reads as M-IX, `dix` as D-IX (it is the reformer Dorothea Dix)
+   and `cli` as C-L-I (the command-line interface). All three are real headwords
+   with real meanings, and a shape-only rule would delete all three. */
+const ROMAN_SHAPE = /^(?=[mdclxvi]{2,})m{0,4}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})$/;
+function ROMAN_NUM(k, d){
+  const g = String(d||'');
+  return ROMAN_SHAPE.test(k) && (/^the cardinal number that is\b/i.test(g)
+                              || /^being\s+\w+\s+more than\s+\w+/i.test(g));
+}
 function fixCore(v){ try{
     const out = [];
     for(const r of v){
@@ -1067,6 +1141,7 @@ function fixCore(v){ try{
          judged on the replacement, not on the sense we just removed */
       if(Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
       if(r.d && !SLUR_OK.has(k) && SLUR_DEF.test(r.d)) continue;
+      if(ROMAN_NUM(k, r.d)) continue;
       out.push(r);
     }
     return out; }catch(e){ return v; } }
@@ -1075,8 +1150,18 @@ function mergeHard(){ try{
     if(!Array.isArray(window.SB_FULL)) return;
     if(window.SB_FULL._hard) return;                 // already in
     const seen=new Set(window.SB_FULL.map(r=>String(r&&r.w||'').toLowerCase()));
-    let n=0; for(const r of H){ const k=String(r&&r.w||'').toLowerCase();
-      if(!k||seen.has(k)||!safeWord(r)) continue; seen.add(k); window.SB_FULL.push(r); n++; }
+    /* THE SHARD GOES THROUGH fixCore TOO. It ran safeWord alone, so the 1,915
+       championship words bypassed CORE_STRIKE and CORE_FIX entirely — the
+       guard caught `balisong` (a butterfly KNIFE, sanitised in its own gloss as
+       a "folding pocket tool") re-entering the library after fixCore had struck
+       it. A strike list that covers one of two merge paths is not a strike
+       list; this is the same fault as the block list that covered one of three
+       entry points. */
+    let add=H.filter(r=>{ const k=String(r&&r.w||'').toLowerCase();
+      return k && !seen.has(k) && safeWord(r); });
+    try{ add=fixCore(add); }catch(e){}
+    let n=0; for(const r of add){ const k=String(r&&r.w||'').toLowerCase();
+      if(!k||seen.has(k)) continue; seen.add(k); window.SB_FULL.push(r); n++; }
     try{ Object.defineProperty(window.SB_FULL,'_hard',{value:n,enumerable:false}); }catch(e){}
     _wdb=null; }catch(e){} }
 function fullWords(){ try{
@@ -2288,13 +2373,26 @@ const app = {
   dockRemove:(k)=>{ state.dockMenu=null; const c=active(); if(c.pausedLists) delete c.pausedLists[k];
     window.sbDelList({preventDefault(){},stopPropagation(){}},k); },
   openBuilder:()=>set({nav:'builder', screen:'app', conceptSel:null}),
-  bldSet:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); let v=kv.slice(i+1); if(k==='size') v=+v; bldState()[k]=v; render(); },
-  bldCreate:()=>{ const b=bldState(); const words=bldPick(); if(!words.length) return; const c=active(); ensureLists(c);
+  /* 'all' is a size like any other and must survive the round trip — coercing
+     every size with +v turned it into NaN, which silently emptied the pool. */
+  bldSet:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); let v=kv.slice(i+1);
+    if(k==='size' && v!=='all') v=+v;
+    bldState()[k]=v; if(state.bldNaming) state.bldNaming=false; render(); },
+  bldNameOpen:()=>{ if(!bldPick().length) return;
+    set({bldNaming:true, bldNameVal:''});
+    setTimeout(()=>{ try{ document.querySelector('[data-fkey="bldName"]')?.focus(); }catch(e){} },0); },
+  bldName:(v)=>{ state.bldNameVal=String(v||'').slice(0,48); },
+  bldNameCancel:()=>set({bldNaming:false, bldNameVal:''}),
+  bldCreate:()=>{ const words=bldPick(); if(!words.length) return; const c=active(); ensureLists(c);
     if(!c.builtLists) c.builtLists={}; const key='built_'+Date.now().toString(36);
-    const patL=b.pat!=='any'?(BLD_PATS[b.pat].label+' '):''; const diffL=b.diff!=='mixed'?(b.diff[0].toUpperCase()+b.diff.slice(1)+' '):'';
-    c.builtLists[key]={ label:(diffL+patL+'Builder list ('+words.length+')').trim(), ws:words.map(w=>w.w) };
-    save(); sfx('win'); burstConfetti(60); app.selectList(key);
-    flash('List built — '+words.length+' words · '+bldLevels(words.length)+' Level'+(bldLevels(words.length)>1?'s':'')+' to mastery 🛠️'); },
+    // the child's own name wins; the suggestion is only a fallback for an empty box
+    const label=(String(state.bldNameVal||'').trim() || bldSuggest()).slice(0,48);
+    c.builtLists[key]={ label:label, ws:words.map(w=>w.w) };
+    state.bldNaming=false; state.bldNameVal='';
+    save(); sfx('win'); burstConfetti(60);
+    app.selectList(key);                                  // lands on Practice with this list active
+    flash('“'+label+'” is ready — '+words.length+' words · '+bldLevels(words.length)
+      +' Level'+(bldLevels(words.length)>1?'s':'')+' to mastery 🛠️'); },
   printOpen:()=>{ if(!state.prn||!state.prn.inc) state.prn={inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'}; set({printOpen:true}); },
   printClose:()=>set({printOpen:false}),
   // ----- View complete word list (browsable card view for any list) -----
@@ -7471,10 +7569,26 @@ function bldPool(){ const b=bldState(); let pool;
   if(b.len!=='any'){ const t={short:w=>w.w.length<=6, medium:w=>w.w.length>=7&&w.w.length<=9, long:w=>w.w.length>=10}[b.len]; if(t) pool=pool.filter(t); }
   if(b.pat!=='any' && BLD_PATS[b.pat]) pool=pool.filter(w=>BLD_PATS[b.pat].re.test(w.w));
   return pool; }
+/* 'all' takes everything the filters allow, capped only by what actually
+   matched — the honest ceiling, since asking for 1,000 out of a pool of 300
+   cannot produce more than 300. BLD_CAP is the hard limit on any single list:
+   the words are stored on the child and re-rendered as cards, and past a few
+   thousand that is a slow screen rather than a useful list. */
+const BLD_SIZES=[24,60,120,240,480,1000], BLD_CAP=1000;
 function bldPick(){ const b=bldState(); const pool=bldPool().sort((x,y)=>((x.y||3)-(y.y||3))||(x.w.length-y.w.length));
-  const n=Math.min(b.size,pool.length); if(!n) return [];
-  if(pool.length<=b.size) return pool;
-  const out=[]; const step=pool.length/n; for(let i=0;i<n;i++){ out.push(pool[Math.floor(i*step)]); } return out; } // even spread keeps the easy→hard ramp
+  if(!pool.length) return [];
+  const want=(b.size==='all') ? Math.min(pool.length,BLD_CAP) : Math.min(b.size,pool.length);
+  if(pool.length<=want) return pool;
+  const out=[]; const step=pool.length/want; for(let i=0;i<want;i++){ out.push(pool[Math.floor(i*step)]); } return out; } // even spread keeps the easy→hard ramp
+/* the name the child sees, suggested from the choices they actually made */
+function bldSuggest(){ const b=bldState(); const n=bldPick().length;
+  const bits=[];
+  if(b.diff!=='mixed') bits.push(b.diff[0].toUpperCase()+b.diff.slice(1));
+  if(b.pat!=='any'&&BLD_PATS[b.pat]) bits.push(BLD_PATS[b.pat].label);
+  if(b.len!=='any') bits.push({short:'Short words',medium:'Medium words',long:'Long words'}[b.len]||'');
+  const src={scripps:'Champions',nsf:'The Vault',review:'Sticky Words',missed:'Comeback Words'}[b.src];
+  if(src) bits.push(src);
+  return (bits.filter(Boolean).join(' · ') || 'My word list') + ' (' + n + ')'; }
 function bldLevels(n){ return n<=WORK_MAX?1:Math.max(2,Math.min(24,Math.round(n/50))); }
 function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(); const n=picked.length; const lv=bldLevels(n); const per=n?Math.ceil(n/lv):0;
   const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--action,var(--accent))':'var(--line)'};${cur===val?'background:color-mix(in srgb,var(--action,var(--accent)) 12%,var(--paper,#fff));color:var(--action,var(--accent))':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
@@ -7485,7 +7599,9 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
     ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
     <div class="sb-card" style="margin-bottom:16px">
       ${row('1 · Difficulty','how hard the words are',['easy','medium','hard','champion','mixed'].map(d=>btn('diff',d,d[0].toUpperCase()+d.slice(1),b.diff)).join(''))}
-      ${row('2 · List size','how many words',[24,60,120,240,480].map(s=>btn('size',String(s),s+' words',String(b.size))).join(''))}
+      ${row('2 · List size','how many words — or take every one that matches',
+        BLD_SIZES.map(s=>btn('size',String(s),s+' words',String(b.size))).join('')
+        + btn('size','all', n&&b.size==='all' ? ('All '+n+' that match') : 'All that match', String(b.size)))}
       ${row('3 · Source','which word pool to draw from',srcs.map(([k,l])=>btn('src',k,l,b.src)).join(''))}
       ${row('4 · Word length','short, medium or long words',[['any','Any'],['short','Short ≤6'],['medium','Medium 7–9'],['long','Long 10+']].map(([k,l])=>btn('len',k,l,b.len)).join(''))}
       ${row('5 · Tricky pattern','focus on one spelling trap',[['any','Any'],...Object.keys(BLD_PATS).map(k=>[k,BLD_PATS[k].label])].map(([k,l])=>btn('pat',k,l,b.pat)).join(''))}
@@ -7495,7 +7611,19 @@ function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(
         ${n&&n<b.size?`<div style="font-size:12px;color:var(--muted);font-weight:700">only ${n} match — loosen a filter for more</div>`:''}
       </div>
       ${n?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${preview}${n>18?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${n-18} more</span>`:''}</div>`:''}
-      <button data-act="bldCreate" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:14px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Create list & start training → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>
+      ${S.bldNaming && n ? `
+      <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--accent);background:var(--surface)">
+        <div style="font-family:var(--display);font-weight:800;font-size:14px;margin-bottom:3px">Name your list</div>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">You'll find it under this name in Practice.</p>
+        <input data-inp="bldName" data-fkey="bldName" value="${escA(S.bldNameVal||'')}" maxlength="48"
+          placeholder="${escA(bldSuggest())}"
+          style="width:100%;padding:12px 13px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;outline:none;margin-bottom:11px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button data-act="bldCreate" style="flex:1 1 200px;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Create &amp; start practising → (${n} words · ${lv} ${lv===1?'Level':'Levels'})</button>
+          <button data-act="bldNameCancel" style="padding:13px 16px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Back</button>
+        </div>
+      </div>`
+      : `<button data-act="bldNameOpen" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:14px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Name this list &amp; practise → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>`}
     </div>
     <div class="sb-card">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">…or pick a ready-made list</div>

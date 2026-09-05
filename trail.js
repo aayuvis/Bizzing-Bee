@@ -192,17 +192,33 @@
   function needMap(cb) { if (window.SB_TRAIL_MAP) { cb(); return; }
     if (needMap._p) { needMap._q.push(cb); return; }
     needMap._p = true; needMap._q = [cb];
-    const s2 = document.createElement('script'); s2.src = 'trail-map-data.js?v=trail1';
+    /* STAMP IT LIKE EVERY OTHER ASSET. This was a literal '?v=trail1' — a
+       constant, written once and never touched again — so every device that
+       had ever opened the Atlas held trail-map-data.js in cache under that key
+       FOREVER. The file is the word list for all 128 stops; rebuilding it
+       changed nothing for a returning child, and the day the contaminated map
+       was replaced they would have gone on practising the contaminated one
+       with no way to tell. index.html is no-store and every asset it names
+       carries SB_ASSET_V precisely so this cannot happen; this file was
+       injected by script and missed the rule. */
+    const s2 = document.createElement('script');
+    s2.src = 'trail-map-data.js' + (window.SB_ASSET_V || '?v=trail1');
     s2.onload = () => { needMap._q.forEach(f => { try { f(); } catch (e) {} }); needMap._p = false; };
     s2.onerror = () => { needMap._p = false; flash('Could not load the Word Atlas word pools'); };
     document.head.appendChild(s2); }
   function lapWords(u, lap, cap) { // records for this unit at this lap
     const rec = k => widx().get(k);
-    if (course() === 'exp' || u.kind === 'lesson' || u.neu || !window.SB_TRAIL_MAP) {
+    /* A chapter only OWNS the words when it actually carries some. The six
+       Trickster stops (u91-u96) are neu units whose inline chapter ships with
+       words: [] — so this branch handed them an empty array and every one of
+       them served NOTHING, while 2,628 words sat in their pools unreachable.
+       Ask whether the chapter has words rather than assuming its kind. */
+    const own = (chOf(u).words || []);
+    if (course() === 'exp' || ((u.kind === 'lesson' || u.neu) && own.length) || !window.SB_TRAIL_MAP) {
       /* The chapter's own text wins; anything it does not carry (the book chapters
          have no example sentences, some have no origin) is filled from the word
          library so a stop's cards are never half-empty. */
-      const ws = (chOf(u).words || []).map(x => { const r = rec(nkey(x.w)) || {};
+      const ws = own.map(x => { const r = rec(nkey(x.w)) || {};
         return { w: x.w, d: x.def || r.d || '', s: x.ex || r.s || '', p: x.say || r.p || '',
           o: x.o || r.o || '', h: x.hook || r.h || '' }; });
       return cap ? ws.slice(0, cap) : ws;
