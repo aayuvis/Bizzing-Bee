@@ -92,6 +92,17 @@ window.SB_WORDS_PATCH = function () {
    'abacli', 'abilitable'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
+  /* NOT WORDS. `cst` shipped as a headword, glossed "standard time in the 6th
+     time zone west of Greenwich" and respelled SEE-ES-TEE; `cfs` was californium
+     — the symbol Cf with an s on it — and `bes` beryllium. The content sweep read
+     these and passed them, because it asked whether they were SAFE and they are.
+     Being asked to spell C-S-T is the fault. Found by two signatures in the
+     record itself: a respelling that is nothing but letter names, one per letter,
+     or an element's gloss under a two-letter symbol plus s. */
+  [
+   'abc', 'abd', 'acc', 'adp', 'aus', 'bas', 'bes', 'bis', 'bks', 'bpi', 'bps', 'btu', 'cfs', 'cgs', 'cia', 'cli', 'crs', 'cst', 'dbms', 'ddt', 'dui', 'dys', 'edp', 'emf', 'epa', 'ers', 'ese', 'esp', 'fps', 'ges', 'hes', 'iou', 'isn', 'kph', 'krs', 'las', 'lcd', 'lcm', 'lis', 'llb', 'mbd', 'msg', 'mss', 'mts', 'nis', 'pfc', 'pos', 'prs', 'pst', 'pts', 'qed', 'stm', 'tas', 'tbs', 'tis', 'tnt', 'vip'
+  ].forEach(function (w) { REMOVE[nk(w)] = 1; });
+
   // drugs of abuse, and alcohol carried under a brand
   [
    'blotto', 'hollands', 'khat', 'quaalude', 'quaaludes'
@@ -193,6 +204,9 @@ window.SB_WORDS_PATCH = function () {
   });
 
   // 3) Rewrite spelling-leak definitions (target word must NOT appear in the definition text).
+  /* respellings that were simply wrong in the data — aba read as the letters
+     A-B-A, which is how it came to look like an acronym */
+  var PRON = Object.assign(Object.create(null), { aba: 'AH-buh', abas: 'AH-buhz', baa: 'BAH', baas: 'BAHZ' });
   var DEF = Object.assign(Object.create(null), {
     /* THE BIOGRAPHY CLASS, 5 Sep 2026. A person of the same name had taken the
        ordinary word's entry: wren was Christopher Wren rather than the bird. Only
@@ -387,6 +401,7 @@ window.SB_WORDS_PATCH = function () {
     if (REMOVE[w] || isNumeral(w, e.d)) { D.nsf.splice(i, 1); removed++; continue; }
     if (SENT[w]) { e.s = SENT[w]; sPatched++; }
     if (DEF[w])  { e.d = DEF[w];  dPatched++; }
+    if (PRON[w]) { e.p = PRON[w]; }
   }
   // (debug) window.__wordsPatch = {removed:removed, sPatched:sPatched, dPatched:dPatched};
 };
