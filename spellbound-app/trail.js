@@ -192,7 +192,17 @@
   function needMap(cb) { if (window.SB_TRAIL_MAP) { cb(); return; }
     if (needMap._p) { needMap._q.push(cb); return; }
     needMap._p = true; needMap._q = [cb];
-    const s2 = document.createElement('script'); s2.src = 'trail-map-data.js?v=trail1';
+    /* STAMP IT LIKE EVERY OTHER ASSET. This was a literal '?v=trail1' — a
+       constant, written once and never touched again — so every device that
+       had ever opened the Atlas held trail-map-data.js in cache under that key
+       FOREVER. The file is the word list for all 128 stops; rebuilding it
+       changed nothing for a returning child, and the day the contaminated map
+       was replaced they would have gone on practising the contaminated one
+       with no way to tell. index.html is no-store and every asset it names
+       carries SB_ASSET_V precisely so this cannot happen; this file was
+       injected by script and missed the rule. */
+    const s2 = document.createElement('script');
+    s2.src = 'trail-map-data.js' + (window.SB_ASSET_V || '?v=trail1');
     s2.onload = () => { needMap._q.forEach(f => { try { f(); } catch (e) {} }); needMap._p = false; };
     s2.onerror = () => { needMap._p = false; flash('Could not load the Word Atlas word pools'); };
     document.head.appendChild(s2); }
