@@ -206,6 +206,14 @@
     s2.onload = () => { needMap._q.forEach(f => { try { f(); } catch (e) {} }); needMap._p = false; };
     s2.onerror = () => { needMap._p = false; flash('Could not load the Word Atlas word pools'); };
     document.head.appendChild(s2); }
+  /* A ROUND IS THE ACT'S SIZE, NOT A FLAT 24. The word map holds five rounds of N
+     per chapter — 15 in the Meadow ramping to 50 on the Big Stage — so a practice
+     batch of 24 would cut Act I's rounds in half and Act IX's to a third, and the
+     five rounds the map was built as would never appear as five rounds on screen.
+     Anything outside the Honey acts (the expeditions, Ultra) keeps the old 24. */
+  const ACT_N = { meadow: 15, library: 19, forum: 24, storm: 28, roots: 33,
+                  strait: 37, junkyard: 41, sprints: 46, stage: 50 };
+  const roundSize = u => ACT_N[u && u.act] || 24;
   function lapWords(u, lap, cap) { // records for this unit at this lap
     const rec = k => widx().get(k);
     /* A chapter only OWNS the words when it actually carries some. The six
@@ -214,7 +222,15 @@
        them served NOTHING, while 2,628 words sat in their pools unreachable.
        Ask whether the chapter has words rather than assuming its kind. */
     const own = (chOf(u).words || []);
-    if (course() === 'exp' || ((u.kind === 'lesson' || u.neu) && own.length) || !window.SB_TRAIL_MAP) {
+    /* A LESSON STOP USED TO SERVE ONLY ITS OWN TEN AUTHORED WORDS. The test was
+       "is this a lesson unit that carries words", so 59 of the 128 stops — The
+       Champion's Routine among them — never touched their word pool at all, and no
+       amount of filling the map could reach them. The pool is the right test: where
+       a stop has one, it is used and the chapter's own words simply lead it (the
+       branch below already puts them in front); where it has none, or on the
+       expedition course, the chapter's own text is still the whole lesson. */
+    const pool = (window.SB_TRAIL_MAP && (window.SB_TRAIL_MAP[u.id] || {})[lap]) || [];
+    if (course() === 'exp' || !pool.length) {
       /* The chapter's own text wins; anything it does not carry (the book chapters
          have no example sentences, some have no origin) is filled from the word
          library so a stop's cards are never half-empty. */
@@ -223,7 +239,6 @@
           o: x.o || r.o || '', h: x.hook || r.h || '' }; });
       return cap ? ws.slice(0, cap) : ws;
     }
-    const pool = (SB_TRAIL_MAP[u.id] || {})[lap] || [];
     const c = active(); const seenK = u.id + ':' + lap; const off = (tr(c).seen[seenK] || 0);
     const slice = []; for (let i = 0; i < pool.length && slice.length < (cap || 24); i++) {
       const r = rec(pool[(off + i) % pool.length]); if (r) slice.push({ w: r.w, d: r.d || '', s: r.s || '', p: r.p || '', o: r.o || '', h: r.h || '' }); }
@@ -418,7 +433,7 @@
     try { clearAnimTimer(); } catch (e) {}
     state.conceptSel = ch; state.conceptStep = 0; state.conceptWordsOpen = false; state.animOn = false; render(); };
   app2.trailWords = () => { const u = unit(state.trailUnit);
-    needMap(() => { const c = active(); const ws = lapWords(u, lapOf(c), 24);
+    needMap(() => { const c = active(); const ws = lapWords(u, lapOf(c), roundSize(u));
       state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
       if (ws.length <= 1) { try { stRec(c, u, lapOf(c)).w = 1; save(); } catch (e) {} }
       set({ trailView: 'words', trailWordIdx: 0 }); }); };
@@ -430,7 +445,7 @@
       if (u && !stRec(c, u, lapOf(c)).w) { stRec(c, u, lapOf(c)).w = 1; save(); } } catch (e) {} }
     set({ trailWordIdx: idx }); };
   app2.trailPractice = () => { const u = unit(state.trailUnit); const c = active();
-    needMap(() => { const ws = lapWords(u, lapOf(c), 24);
+    needMap(() => { const ws = lapWords(u, lapOf(c), roundSize(u));
       if (!ws.length) { flash('No words here yet'); return; }
       tr(c).seen[u.id + ':' + lapOf(c)] = ((tr(c).seen[u.id + ':' + lapOf(c)] || 0) + ws.length) % 997; save();
       state.trailReturn = u.id;
