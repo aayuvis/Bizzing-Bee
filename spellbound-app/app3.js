@@ -7473,6 +7473,10 @@ function sessionResults(){
                  landmark has none, and an option that explains nothing is worse
                  than no option. */
               const hasLesson=(()=>{ try{ return !!(window.SB_TRAIL_HASLESSON&&SB_TRAIL_HASLESSON(S.trailReturn)); }catch(e){ return false; } })();
+              /* the stop's sets, so the round button can name the one still owed
+                 rather than the vague "New words" — a child who has just cleared
+                 set 2 of 4 should be told that set 3 is what comes next */
+              const sx=(()=>{ try{ return window.SB_TRAIL_SETS?SB_TRAIL_SETS(S.trailReturn):null; }catch(e){ return null; } })();
               /* One or two words on each, and the app's own icon set — an emoji
                  renders as a different picture on every platform and reads as
                  filler beside artwork this considered. */
@@ -7486,11 +7490,11 @@ function sessionResults(){
               return `<div style="flex:1;min-width:100%">
                 <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;padding:11px 15px;border-radius:14px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid color-mix(in srgb,var(--good) 45%,var(--line))">
                   <span style="display:inline-flex;line-height:0;color:var(--good);flex-shrink:0">${iconSVG('star',17)}</span>
-                  <span style="font-size:13.5px;font-weight:800;color:var(--good)">Best ${tb.p}% — you passed ${tb.gate}% and the next stop is open. What next?</span></div>
+                  <span style="font-size:13.5px;font-weight:800;color:var(--good)">Best ${tb.p}% — you passed ${tb.gate}% and the next stop is open.${(sx&&sx.sets>1)?` ${sx.cleared} of ${sx.sets} sets cleared.`:''} What next?</span></div>
                 <div style="display:flex;gap:9px;flex-wrap:wrap">
                   ${opt('atlasNext','next','compass','Next stop',true)}
                   ${hasLesson?opt('atlasNext','lesson','book','Learn more'):''}
-                  ${opt('atlasNext','round','sparkle','New words')}
+                  ${opt('atlasNext','round','sparkle',(sx&&sx.sets>1)?`Practise set ${sx.next}`:'New words')}
                   ${opt('restartSession',null,'retry','Redo list')}
                   ${opt('atlasNext',null,'arrowLeft','Back')}
                 </div></div>`;

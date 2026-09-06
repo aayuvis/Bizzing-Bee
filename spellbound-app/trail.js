@@ -106,22 +106,40 @@
   const PGATE = 70;                       // practice % that opens the next stop
   const stKey = (u, lap) => u.id + ':' + lap;
   const stRec = (c, u, lap) => { const st = tr(c).st = tr(c).st || {}; return st[stKey(u, lap)] = st[stKey(u, lap)] || {}; };
+  /* THE FIVE STARS: one for opening the road, then two for finishing the stop
+     (every task, every set) and two for how well it was finished. Reading a
+     chapter and browsing its cards are one star TOGETHER now rather than one
+     each — they are the same act of studying — which frees the two stars that
+     matter for the sets a child actually drills. */
   function starsOf(c, u, lap) {
     const r = (tr(c).st || {})[stKey(u, lap)] || {};
     const q = Math.max(r.q || 0, (doneMap(c)[u.id] || {})[lap] || 0);
     const p = Math.max(r.p || 0, q >= Math.round(gate() * 100) ? PGATE : 0);   // a passed quiz proves the words too
-    const s = [p >= PGATE, !!r.l, !!r.w, q >= Math.round(gate() * 100), q >= QSTAR()];
-    return { n: s.filter(Boolean).length, s, p, q };
+    const sets = setsOf(u, lap), ss = r.ss || {};
+    let played = 0, cleared = 0;
+    for (let i = 0; i < sets; i++) { const v = ss[i] || 0; if (v > 0) played++; if (v >= PGATE) cleared++; }
+    if (p >= PGATE && !played) played = cleared = 1;        // a legacy save that predates set tracking
+    const s = [
+      p >= PGATE,                                  // 1 · the road on is open
+      !!r.l && !!r.w && q > 0,                     // 2 · every task attempted
+      played >= sets,                              // 3 · every set practised
+      q >= Math.round(gate() * 100),               // 4 · how well the tasks went — the Quiz passed
+      cleared >= sets                              // 5 · how well the sets went — all of them at the gate
+    ];
+    return { n: s.filter(Boolean).length, s, p, q, sets, played, cleared, ss, l: !!r.l, w: !!r.w };
   }
   /* the single next move, in priority order: unlock first, then the course gate,
      then the completionist stars */
   function nextStar(c, u, lap) {
-    const { s, p, q } = starsOf(c, u, lap);
-    if (!s[0]) return { act: 'trailPractice', cta: 'Train', txt: p > 0 ? `Practice again — your best is ${p}%, reach ${PGATE}% to open the next stop` : `Practice and get ${PGATE}% right to open the next stop` };
-    if (!s[3]) return { act: 'trailQuiz', cta: 'Quiz', txt: `Pass the Quiz — ${Math.round(gate() * 100)}%${q ? ` (best so far ${q}%)` : ''} — for another star` };
-    if (!s[1]) return { act: 'trailLesson', cta: 'Learn', txt: 'Read the chapter for another star' };
-    if (!s[2]) return { act: 'trailWords', cta: 'Browse', txt: 'Flip through every word for another star' };
-    if (!s[4]) return { act: 'trailQuiz', cta: 'Quiz', txt: `Ace the Quiz — ${QSTAR()}% or better — for the fifth star` };
+    const st = starsOf(c, u, lap);
+    const nx = nextSet(c, u, lap) + 1;
+    if (!st.s[0]) return { act: 'trailPractice', cta: 'Train', txt: st.p > 0 ? `Practice again — your best is ${st.p}%, reach ${PGATE}% to open the next stop` : `Practice and get ${PGATE}% right to open the next stop` };
+    if (!st.s[2]) return { act: 'trailPractice', cta: 'Train', txt: `Practise set ${nx} of ${st.sets} — every set is a star` };
+    if (!st.s[3]) return { act: 'trailQuiz', cta: 'Quiz', txt: `Pass the Quiz — ${Math.round(gate() * 100)}%${st.q ? ` (best so far ${st.q}%)` : ''} — for another star` };
+    if (!st.s[1]) return st.l
+      ? { act: 'trailWords', cta: 'Browse', txt: 'Flip through every word for another star' }
+      : { act: 'trailLesson', cta: 'Learn', txt: 'Read the chapter for another star' };
+    if (!st.s[4]) return { act: 'trailPractice', cta: 'Train', txt: `Take every set to ${PGATE}% for the fifth star — set ${nx} is the gap` };
     return null;
   }
   const starHTML = (n, size) => `<span style="font-size:${size || 13}px;letter-spacing:2px;color:#E8A81C;white-space:nowrap">${'★'.repeat(n)}<span style="opacity:.32">${'★'.repeat(5 - n)}</span></span>`;
@@ -160,6 +178,10 @@
       const pct = Math.round((right / done) * 100);
       const r = stRec(c, u, lap); const had = (r.p || 0) >= PGATE;
       if (pct > (r.p || 0)) r.p = pct;
+      /* the score belongs to the SET that was just played, so a stop can show
+         which of its sets are done and which are still owed */
+      const si = r.cur | 0; const ss = (r.ss = r.ss || {});
+      if (pct > (ss[si] || 0)) ss[si] = pct;
       save();
       if (!had && r.p >= PGATE) { try { sfx('win'); burstConfetti(40); } catch (e) {} flash(`⭐ ${pct}% — the next stop is open!`); }
     } catch (e) {}
@@ -214,6 +236,40 @@
   const ACT_N = { meadow: 15, library: 19, forum: 24, storm: 28, roots: 33,
                   strait: 37, junkyard: 41, sprints: 46, stage: 50 };
   const roundSize = u => ACT_N[u && u.act] || 24;
+
+  /* ---- SETS ----------------------------------------------------------------
+     A stop's lap pool cut into rounds of the act's size: S1, S2, S3… The child
+     sees exactly as many as the pool can fill (one at a thin stop, five at a
+     rich one) — never a promised set that has no words behind it.
+
+     ONE SET AT 70% OPENS THE NEXT STOP. Finishing them all is a star, not a
+     toll: a child who wants to move on may, and a child who wants the chapter
+     whole can take it. Each set is a FIXED slice, so "set 3" is the same three
+     dozen words every time it is opened and "done" means something. */
+  const poolOf = (u, lap) => ((window.SB_TRAIL_MAP && (window.SB_TRAIL_MAP[u.id] || {})[lap]) || []);
+  function setsOf(u, lap) {
+    const n = roundSize(u);
+    const have = poolOf(u, lap).length || ((chOf(u).words || []).length);
+    return Math.max(1, Math.min(5, Math.ceil((have || n) / n)));
+  }
+  const setScores = (c, u, lap) => { const r = stRec(c, u, lap); return (r.ss = r.ss || {}); };
+  /* which set to hand over next: the first never played, else the weakest one
+     still under the gate, else simply the one after the last played */
+  function nextSet(c, u, lap) {
+    const n = setsOf(u, lap), ss = setScores(c, u, lap);
+    for (let i = 0; i < n; i++) if (!(ss[i] > 0)) return i;
+    let worst = 0; for (let i = 1; i < n; i++) if ((ss[i] || 0) < (ss[worst] || 0)) worst = i;
+    if ((ss[worst] || 0) < PGATE) return worst;
+    return (((stRec(c, u, lap).cur | 0) + 1) % n);
+  }
+  /* the public reading, for app3's end-of-round card */
+  window.SB_TRAIL_SETS = uid => { try { const c = active();
+    const u = unitsOf(courseOfId(uid)).find(x => x.id === uid); if (!c || !u) return null;
+    const lap = lapOf(c), n = setsOf(u, lap), ss = setScores(c, u, lap);
+    let played = 0, cleared = 0;
+    for (let i = 0; i < n; i++) { const v = ss[i] || 0; if (v > 0) played++; if (v >= PGATE) cleared++; }
+    return { sets: n, played, cleared, next: nextSet(c, u, lap) + 1, gate: PGATE };
+  } catch (e) { return null; } };
   function lapWords(u, lap, cap) { // records for this unit at this lap
     const rec = k => widx().get(k);
     /* A chapter only OWNS the words when it actually carries some. The six
@@ -243,7 +299,12 @@
     const slice = []; for (let i = 0; i < pool.length && slice.length < (cap || 24); i++) {
       const r = rec(pool[(off + i) % pool.length]); if (r) slice.push({ w: r.w, d: r.d || '', s: r.s || '', p: r.p || '', o: r.o || '', h: r.h || '' }); }
     // always lead with the chapter's teaching words that sit in this band
-    const teach = (chOf(u).words || []).map(x => ({ w: x.w, d: x.def || '', s: x.ex || '', p: x.say || '', o: '', h: x.hook || '' }));
+    /* The chapter's own teaching words lead the FIRST set only. Leading every set
+       with them would put the same six words in front of a child four times over
+       and leave the sets overlapping instead of distinct. */
+    const teach = off === 0
+      ? (chOf(u).words || []).map(x => ({ w: x.w, d: x.def || '', s: x.ex || '', p: x.say || '', o: '', h: x.hook || '' }))
+      : [];
     const seen2 = new Set(slice.map(x => nkey(x.w)));
     return teach.filter(x => !seen2.has(nkey(x.w))).slice(0, 6).concat(slice).slice(0, cap || 24);
   }
@@ -365,7 +426,12 @@
     if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
     /* nav is set here too: Home's "Next on your journey" card calls this from
        outside the Atlas, and a stop must open wherever it is opened from. */
-    set({ nav: 'trail', screen: 'app', trailView: 'unit', trailUnit: id, tq: null }); };
+    set({ nav: 'trail', screen: 'app', trailView: 'unit', trailUnit: id, tq: null });
+    /* The stop card counts its own sets, and that count comes from the word pool —
+       which is lazy. Opening a stop before trail-map-data.js has landed drew ONE
+       set from the chapter's ten teaching words, then never corrected itself,
+       because nothing on this screen used to need the map. Ask for it and repaint. */
+    needMap(() => { try { if (state.trailView === 'unit' && state.trailUnit === id) render(); } catch (e) {} }); };
   app2.trailChk = arg => { const c = active();
     /* checkpoint args carry their course: "honey|meadow:4" / "exp|proving:4" */
     const [crs, id] = String(arg).indexOf('|') >= 0 ? String(arg).split('|') : ['honey', String(arg)];
@@ -444,13 +510,24 @@
     if (idx === n - 1 && n > 1) { try { const u = unit(state.trailUnit); const c = active();
       if (u && !stRec(c, u, lapOf(c)).w) { stRec(c, u, lapOf(c)).w = 1; save(); } } catch (e) {} }
     set({ trailWordIdx: idx }); };
-  app2.trailPractice = () => { const u = unit(state.trailUnit); const c = active();
-    needMap(() => { const ws = lapWords(u, lapOf(c), roundSize(u));
+  /* `arg` is a set index from a tapped S-chip; with none, the stop hands over the
+     set the child still owes. The offset is SET rather than advanced, so a set is
+     a fixed slice — "set 3" is the same words every time, which is what makes
+     marking it done mean anything. The old free-running rotation drifted out of
+     alignment as soon as a pool was not an exact multiple of the round size. */
+  app2.trailPractice = arg => { const u = unit(state.trailUnit); const c = active();
+    needMap(() => { const lap = lapOf(c), n = roundSize(u), sets = setsOf(u, lap);
+      const si = (arg === undefined || arg === null || arg === '')
+        ? nextSet(c, u, lap)
+        : Math.max(0, Math.min(sets - 1, parseInt(arg, 10) || 0));
+      tr(c).seen[u.id + ':' + lap] = si * n;
+      const ws = lapWords(u, lap, n);
       if (!ws.length) { flash('No words here yet'); return; }
-      tr(c).seen[u.id + ':' + lapOf(c)] = ((tr(c).seen[u.id + ':' + lapOf(c)] || 0) + ws.length) % 997; save();
+      const rr = stRec(c, u, lap); rr.cur = si; setScores(c, u, lap); save();
       state.trailReturn = u.id;
       state.sessionWords = ws.map(x => ({ w: x.w, d: x.d, s: x.s, p: x.p, o: '', r: x.h }));
-      state.sessionLabel = u.title.split('—')[0].trim(); state.gi = 0; app2.startTrain(); }); };
+      state.sessionLabel = u.title.split('—')[0].trim() + (sets > 1 ? ' · set ' + (si + 1) + '/' + sets : '');
+      state.gi = 0; app2.startTrain(); }); };
   /* THE CHOICES AT THE GATE. Clearing PGATE used to offer exactly one button —
      "back to your stop" — so the moment a child earned the next stop the app
      took the decision away from them. These are the ways forward from a cleared
@@ -757,11 +834,33 @@
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">${gsvg}
         <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:11px 14px;font-size:13.5px;line-height:1.5;box-shadow:var(--sh-rest)">${esc(String(ch.concept || '').split(/(?<=[.!?])\s/).slice(0, 2).join(' '))}</div></div>
       <div style="display:grid;gap:10px">
-        ${stepCard(1, 'Learn the idea', 'The full chapter — cards, method' + (u.gi >= 0 ? ', narration' : '') + ' · ⭐', 'trailLesson', stars.s[1], 'Open')}
-        ${stepCard(2, 'Meet the words', 'Flip through to the last card · ⭐', 'trailWords', stars.s[2], 'Browse')}
+        ${stepCard(1, 'Learn the idea', 'The full chapter — cards, method' + (u.gi >= 0 ? ', narration' : '') + ' · ⭐', 'trailLesson', stars.l, 'Open')}
+        ${stepCard(2, 'Meet the words', 'Flip through to the last card · ⭐', 'trailWords', stars.w, 'Browse')}
         ${stepCard(3, 'Practice', stars.p > 0 ? `Best ${stars.p}% · ${PGATE}%+ opens the next stop · ⭐` : `${PGATE}%+ opens the next stop · ⭐`, 'trailPractice', stars.s[0], 'Train')}
         ${stepCard(4, 'The Quiz', `Pass at ${Math.round(gate() * 100)}% ⭐ · ace at ${QSTAR()}% ⭐${stars.q ? ` · best ${stars.q}%` : ''}`, 'trailQuiz', stars.s[3], stars.s[3] ? 'Again' : 'Go!')}
       </div>
+      ${(() => {
+        /* THE SETS, ON THE CARD. The stop's words in rounds of the act's size —
+           a filled chip is a set cleared at the gate, an outlined one was played
+           but fell short, a grey one has not been opened. Tap any of them to
+           drill that exact set; the words behind S3 are always the same words.
+           Only as many chips as the pool can actually fill, so the card never
+           promises a set that has no words behind it. */
+        const n = stars.sets, ss = stars.ss || {};
+        const chip = i => { const v = ss[i] || 0, ok = v >= PGATE, played = v > 0;
+          const bg = ok ? 'background:var(--good);border:1px solid var(--good);color:#fff'
+            : played ? 'background:color-mix(in srgb,var(--treasure,#FFD24D) 26%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 62%,var(--line));color:var(--text)'
+            : 'background:var(--bg2);border:1px dashed var(--line);color:var(--muted);opacity:.6';
+          return `<button data-act="trailPractice" data-arg="${i}" title="${played ? `Set ${i + 1} — best ${v}%` : `Set ${i + 1} — not started`}" style="${bg};flex:1 1 auto;min-width:62px;padding:9px 10px;border-radius:11px;font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.02em;display:inline-flex;align-items:center;justify-content:center;gap:6px">S${i + 1}${ok ? ' ✓' : played ? ` <span style="font-weight:700;font-size:11px;opacity:.8">${v}%</span>` : ''}</button>`; };
+        let chips = ''; for (let i = 0; i < n; i++) chips += chip(i);
+        return `<div style="margin-top:12px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px">
+            <span style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">${n > 1 ? `The ${n} sets` : 'This stop’s words'}</span>
+            <span style="font-size:11.5px;font-weight:700;color:var(--muted)">${stars.cleared}/${n} cleared · one at ${PGATE}% opens the next stop</span>
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">${chips}</div>
+        </div>`;
+      })()}
       ${stars.s[0]
         ? /* the practice gate is met: the stop offers its THREE ROADS, always —
              move on, chase the stars, or drill a fresh set of this stop's words */

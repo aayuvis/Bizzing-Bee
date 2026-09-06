@@ -48,7 +48,14 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     // the card now points at the QUIZ as the next star, and offers the THREE ROADS
     app.trailUnit(first.arg);
     await new Promise(res => setTimeout(res, 200));
-    out.nextIsQuiz = /Pass the Quiz/.test(document.body.innerHTML);
+    /* The next star after the gate is the next SET, not the quiz. A stop holds its
+       words in sets of the act's round size, and finishing them all is one of the
+       five stars, so a child who has just cleared set 1 of 4 is pointed at set 2.
+       The Quiz is still one tap away on its own step card — it is no longer the
+       thing the card nags about first. */
+    out.nextIsSet = /Practise set \d of \d/.test(document.body.innerHTML);
+    out.quizStillOffered = /data-act="trailQuiz"/.test(document.body.innerHTML);
+    out.setChips = (document.querySelectorAll('[data-act=trailPractice][data-arg]') || []).length;
     out.threeRoads = /Next stop →/.test(document.body.innerHTML)
       && /★ Gain stars/.test(document.body.innerHTML)
       && /Practice more words/.test(document.body.innerHTML);
@@ -83,12 +90,15 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
          the stop, so the app chose for the child at the moment they had earned a
          choice. Assert the ways on are actually offered, or the banner could go
          back to announcing an unlock with nothing to do about it. */
-      out.summaryChoices = ['Next stop', 'New words', 'Redo list', 'Back']
+      /* the round button now NAMES the set still owed ("Practise set 2") where a
+         stop has more than one, so the old fixed "New words" label is gone */
+      out.roundNamesSet = /Practise set \d/.test(document.body.innerHTML) || /New words/.test(document.body.innerHTML);
+      out.summaryChoices = ['Next stop', 'Redo list', 'Back']
         .filter(t => document.body.innerHTML.includes('>' + t + '<')
                   || document.body.innerHTML.includes(t + '\n')
                   || document.body.innerHTML.includes(t)).length;
       state.trailReturn = null;
-    } else { out.completionRecords = out.summaryBanner = 'skipped(checkpoint)'; out.summaryChoices = 4; }
+    } else { out.completionRecords = out.summaryBanner = 'skipped(checkpoint)'; out.summaryChoices = 3; out.roundNamesSet = true; }
     return out;
   });
   ok(r.firstStop, 'the Atlas serves a first stop (' + r.firstStop + ')');
@@ -99,7 +109,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.unlockedNext, 'a 10-word session at 80% unlocks the next stop');
   ok(r.starAfterPractice, 'best practice % is recorded on the stop (80)');
   ok(r.bestSticks, 'a worse later session never lowers the best');
-  ok(r.nextIsQuiz, 'once unlocked, the card points at the quiz for the next star');
+  ok(r.nextIsSet, 'once unlocked, the card points at the next SET for the next star');
+  ok(r.quizStillOffered, 'and the Quiz is still one tap away on its own step');
+  ok(r.setChips >= 1, 'the stop card draws a chip per set (' + r.setChips + ')');
   ok(r.threeRoads, 'a cleared stop offers the three roads: Next stop / Gain stars / Practice more words');
   ok(r.nextRoadWorks, 'and Next stop actually opens the following node');
   ok(r.legacyUnlocks, 'an old save with only a quiz % still counts as passed');
@@ -108,8 +120,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
      'finishing the last word records the score by itself — no Done tap needed (' + r.completionRecords + ')');
   ok(r.summaryBanner === true || r.summaryBanner === 'skipped(checkpoint)',
      'the finish screen says the next Atlas stop is open');
-  ok(r.summaryChoices >= 4,
-     'and offers the ways on rather than one button back (' + r.summaryChoices + '/4)');
+  ok(r.summaryChoices >= 3,
+     'and offers the ways on rather than one button back (' + r.summaryChoices + '/3)');
+  ok(r.roundNamesSet, 'the round button names the set still owed');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);
