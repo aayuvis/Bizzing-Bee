@@ -34,7 +34,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       o.chips = document.querySelectorAll('[data-act=b2Tog]').length;
       const H = document.body.innerHTML;
       o.nineSections = ['Spelling level', 'How many words', 'Word length', 'Seen in a spelling bee',
-        'Why it', 'Subject', 'Language of origin', 'Part of speech', 'Letters'].every(t => H.indexOf(t) >= 0);
+        'Why it', 'Subject', 'Language of origin', 'Part of speech', 'Letters',
+        'Draw from', 'Syllables', 'First letter', 'Must come with', 'How it sounds'].every(t => H.indexOf(t) >= 0);
 
       /* a chip's count must equal what choosing it actually yields */
       const chip = document.querySelector('[data-act=b2Tog][data-arg^="cls:"]');
@@ -50,6 +51,40 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       app.b2Size('all'); app.b2TxtStarts('ph'); await new Promise(res => setTimeout(res, 700));
       const ws = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim());
       o.startsWorks = ws.length > 3 && ws.every(x => x.indexOf('ph') === 0);
+
+      /* each new facet must really filter, not merely draw a chip */
+      app.b2Clear(); app.b2Size('all'); app.b2Tog('fl:16');       // q
+      await new Promise(res => setTimeout(res, 700));
+      const qs = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim());
+      o.firstLetter = qs.length > 3 && qs.every(x => x[0] === 'q');
+      app.b2Clear(); app.b2Size('all'); app.b2TxtEnds('tion');
+      await new Promise(res => setTimeout(res, 700));
+      const es = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim());
+      o.endsWith = es.length > 3 && es.every(x => x.slice(-4) === 'tion');
+      /* SB_HOM is an array of GROUPS, not a word-keyed map; indexing it by a word
+         set the homophone flag for nobody and the chip read 20 instead of 2,000 */
+      await new Promise(res => { try { SB_LAZY.need('sounds', res); } catch (e) { res(); } });
+      await new Promise(res => setTimeout(res, 900));
+      app.b2Clear(); app.b2Size('all'); app.b2Tog('flag:16');
+      await new Promise(res => setTimeout(res, 900));
+      const hs = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim());
+      o.homCount = hs.length;
+      o.homHonest = hs.length > 500 && hs.slice(0, 40).every(x => (homPartners(x) || []).length > 0);
+      /* the "must come with" chips AND together — each is a promise about the card */
+      app.b2Clear(); app.b2Size('all'); app.b2Tog('flag:2');
+      await new Promise(res => setTimeout(res, 800));
+      const only = document.querySelectorAll('[data-act=openWordCard]').length;
+      app.b2Tog('flag:8'); await new Promise(res => setTimeout(res, 800));
+      o.flagsAnd = document.querySelectorAll('[data-act=openWordCard]').length <= only;
+      /* Draw-from is ONE choice: my missed words and my mastered words are
+         contradictory, so the second tap must replace the first, not AND to zero */
+      state.children[0].missed = [{ w: 'phoenix' }, { w: 'rhythm' }];
+      state.luMastered = { phone: 1 };
+      app.b2Clear(); app.b2Size('all'); app.b2Pool('missed');
+      await new Promise(res => setTimeout(res, 800));
+      o.mine = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim()).sort().join(',');
+      app.b2Pool('mastered'); await new Promise(res => setTimeout(res, 800));
+      o.mastered = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim()).join(',');
 
       /* the two length sliders are ONE range and must never invert into a filter
          that can match nothing */
@@ -76,7 +111,13 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   }
   await b.close();
   const d = out.desktop, m = out.phone;
-  ok(d.nineSections, 'all nine filters are on the page');
+  ok(d.nineSections, 'all fourteen filter groups are on the page');
+  ok(d.firstLetter, 'the A–Z first-letter chips really filter');
+  ok(d.endsWith, '"ends with" really filters');
+  ok(d.homHonest, 'the homophone chip finds real homophones (' + d.homCount + ', every one with a partner)');
+  ok(d.flagsAnd, 'the "must come with" chips AND together rather than widening');
+  ok(d.mine === 'phoenix,rhythm', 'Draw from → my missed words serves exactly those');
+  ok(d.mastered === 'phone', 'and tapping mastered REPLACES it rather than ANDing to nothing');
   ok(d.chips > 20, 'the facets draw their options as chips (' + d.chips + ')');
   ok(!d.emoji && !m.emoji, 'not one emoji — the icons are the app’s own SVG set');
   ok(d.svgs >= 3, 'and the SVG icons are actually rendered (' + d.svgs + ')');

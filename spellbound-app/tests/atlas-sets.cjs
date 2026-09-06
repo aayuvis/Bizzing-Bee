@@ -38,10 +38,25 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     /* the pools are lazy — ask for them the way the stop card does */
     app.trailUnit(uid); await new Promise(res => setTimeout(res, 900));
     const S = SB_TRAIL_SETS(uid); out.sets = S.sets; out.gate = S.gate;
-    const pool = ((window.SB_TRAIL_MAP || {})[uid] || {})[1] || [];
+    /* THE SETS ARE CUT FROM THE STOP'S WHOLE LIST, NOT FROM ONE LAP'S BAND.
+       Cut from the lap-1 band, a 75-word Meadow stop offered four sets and
+       seventy-nine of the 128 stops offered exactly one. */
+    const P = (window.SB_TRAIL_MAP || {})[uid] || {};
+    const pool = (P[1] || []).concat(P[2] || [], P[3] || []);
     out.poolLoaded = pool.length > 0;
     out.countMatchesPool = S.sets === Math.max(1, Math.min(5, Math.ceil(pool.length / 15)));
     out.neverOverFive = S.sets <= 5 && S.sets >= 1;
+    out.fiveInTheMeadow = S.sets === 5;
+    /* and it is not one lucky stop: every Meadow stop that holds five rounds of
+       words must offer five sets */
+    let five = 0, meadow = 0;
+    for (const u of (SB_TRAIL.honey.units || [])) {
+      if (u.act !== 'meadow') continue;
+      const p = (window.SB_TRAIL_MAP || {})[u.id] || {};
+      const nAll = (p[1] || []).length + (p[2] || []).length + (p[3] || []).length;
+      if (nAll >= 75) { meadow++; if ((SB_TRAIL_SETS(u.id) || {}).sets === 5) five++; }
+    }
+    out.meadowRich = meadow; out.meadowFive = five;
 
     /* the card draws one chip per set, each tappable and carrying its index */
     app.trailUnit(uid); await new Promise(res => setTimeout(res, 500));
@@ -89,7 +104,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
   ok(r.poolLoaded, 'the lazy word pool is loaded before the card counts its sets');
   ok(r.sets >= 1 && r.neverOverFive, 'the first stop reports ' + r.sets + ' set(s), never more than five');
-  ok(r.countMatchesPool, 'the count is the lap pool cut by the act round size, not a guess');
+  ok(r.countMatchesPool, 'the count is the WHOLE STOP cut by the act round size, not one lap band');
+  ok(r.fiveInTheMeadow, 'the first Meadow stop offers its five sets, not four');
+  ok(r.meadowRich > 0 && r.meadowFive === r.meadowRich,
+    'and every Meadow stop holding five rounds of words offers five (' + r.meadowFive + '/' + r.meadowRich + ')');
   ok(r.chipsMatchSets, 'the card draws one chip per set (' + r.chips + ' chips / ' + r.sets + ' sets)');
   ok(r.chipArgs === [...Array(r.sets).keys()].join(','), 'each chip carries its own set index (' + r.chipArgs + ')');
   ok(r.labelsS1, 'and they are labelled S1, S2, S3…');

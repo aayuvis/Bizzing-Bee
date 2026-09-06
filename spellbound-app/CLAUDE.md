@@ -435,9 +435,21 @@ handlers. App lives in this folder; open `index.html` to run.
   fails go to a revise round; pass pays 15 coins. Checkpoints every 4th unit are mixed
   quizzes with no new words. Progress on the child at `c.trail`
   (`{lap,done,chk,seen,elap,edone,echk}`).
-- **Laps cap difficulty absolutely**: band 1/2/3 = global spellDiff terciles; family
-  units serve their lap's band slice (+ their chapter's teaching words), lesson units
-  teach once on their pinned lap. Finishing every stop advances the lap (max 3).
+- **A STOP'S SETS ARE CUT FROM ITS WHOLE WORD LIST, NOT FROM ONE LAP'S BAND.** The map
+  stores each stop's words split into three spellDiff bands, and the sets used to be cut
+  from whichever band the child's lap was on — so a Meadow stop holding 75 words (exactly
+  five rounds of fifteen) offered its lap-1 child the 48 that banded easy, which is four
+  sets. Measured, that was not an edge case: **79 of the 128 stops offered ONE set and
+  only one offered five.** Read as one list the same map gives **98 stops their five**,
+  and each of the thirty short ones has a proved ceiling (fourteen `-oir` words exist;
+  u77 can never hold more than a single set). The bands are not discarded — they are the
+  ORDER (`poolOf` concatenates 1,2,3), so S1 is the stop's easiest round and S5 its
+  hardest and the ramp runs *inside* the stop where a child can feel it, instead of being
+  a wall between three visits. `setsOf(u)` takes no lap. Progress records still key on
+  the lap, so a re-walk keeps its own S-chips. Guard: `tests/atlas-sets.cjs`.
+- **Laps still cap WHICH STOPS are open** (`availableIn`/`seq`), and band 1/2/3 = global
+  spellDiff terciles. Lesson units teach once on their pinned lap. Finishing every stop
+  advances the lap (max 3).
 - `app` is a top-level `const` (global lexical scope, **not** `window.app`) — extension
   scripts like trail.js must reference the bare identifier.
 - **`window.SB_TRAIL_NEXT()`** is the one public reading of the frontier: `{title, sub,
@@ -454,6 +466,18 @@ handlers. App lives in this folder; open `index.html` to run.
 2. **What to do next** — the Atlas's next stop beside the four "Keep going" tiles
    (`.sb-home-r2` / `.sb-home-tiles` in index.html; one column below 900px).
 3. **Today's reading** — the bee tip, Word of the hour, Quote of the hour.
+- **Practice carries a "View all N cards" button on top** (`deckOpen` -> `viewSetDeck`):
+  the whole set at once, one row per word, tap a row and it opens into the real card —
+  respelling, both speaker buttons, meaning, sentence, memory hook, IPA and origin chips
+  — with several able to stand open so two words can be read against each other. It is a
+  READING surface: nothing in it writes `luMastered` or `missed`; "Go to this card" hands
+  the child back to the drill at that index and the drill does the scoring. Guard:
+  `tests/set-deck.cjs`.
+- **`iconSVG` (app2.js) falls back to the GRID glyph for a name it does not carry, and
+  says nothing.** It is a DIFFERENT set from `SB_ICON` (icons.js): iconSVG has
+  volume/steps/close/arrow/spark, SB_ICON has speaker/x/chevronDown/arrowRight. Asking
+  iconSVG for `chevronDown` draws a little grid on every row and no test notices, which
+  is why `chevSVG()` is drawn inline in app3 and `tests/set-deck.cjs` counts stray grids.
 - The words step is the coach card view (selfMark wordFlash → flashMark writes luMastered / missed; requires state.sessionWords). exitTrain and conceptBack both honour state.trailReturn. Trickster chapters (neu units) have no narration yet — browser TTS covers them;
   when recording, append to `SB_CONCEPTS` (append-only) and switch units to `gi` refs.
 
