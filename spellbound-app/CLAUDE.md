@@ -1335,6 +1335,33 @@ out of saga2.js so a retune cannot quietly undo them.
   `file://…/index.html`, drive engines via `window.SB_SAGA_ENGINES`, assert no pageerror.
 
 ## Ship
+
+> ### PRODUCTION IS DELIBERATELY OFFLINE. SHIP TO THE INTERNAL SITE.
+>
+> **`www.bizzingbee.com` was taken down on purpose (Sep 2026)** — the owner asked for it
+> while more work is done. Production `gh-pages` now carries a holding page and **no
+> `CNAME`**, which is what releases the domain. **Do not "fix" this by redeploying
+> production or restoring a `CNAME`** — putting that file back is precisely what
+> re-publishes the site to the world.
+>
+> **Everything ships to `https://aayuvis.github.io/bizzing-bee-staging/`** via
+> **`./deploy-internal.sh`** (repo `aayuvis/bizzing-bee-staging`, branch `gh-pages`).
+> That script carries every guard below plus a reference check, and refuses to push a
+> `CNAME` of any kind — this site is a github.io project page and a `CNAME` either steals
+> the live domain or points the site at a hostname with no DNS. `deploy-staging.sh` is
+> **retired**: it wrote `CNAME=staging.bizzing.app` and rsync'd `--delete` while excluding
+> all of `voice/`, which would have killed the internal URL and wiped 903 narration clips
+> on its first run.
+>
+> **To restore production**, from a checkout of `gh-pages`:
+> `git revert cff2d486d && git push origin HEAD:gh-pages`. That reinstates all 1,698 files
+> and the `CNAME` as a fast-forward. The whole published build is preserved intact on
+> **`gh-pages-holdback-20260906`** (`63f8c1c8b`, stamp `20260906e`). Do not force-push it —
+> the git proxy refuses ref deletion here and may refuse force too. Afterwards you will
+> likely need to re-enter the custom domain under Settings → Pages, because removing the
+> file unsets it there as well. **Ask before doing any of this**: the site being down is a
+> decision, not a fault.
+
 - **The Pages site has a size budget, and blowing it is silent.** GitHub's "pages build and
   deployment" job aborts at a ten-minute deploy timeout, and when it does the site keeps
   serving the last good commit — the push succeeds, the build succeeds, nothing anywhere
@@ -1393,13 +1420,28 @@ out of saga2.js so a retune cannot quietly undo them.
 - **index.html declares itself uncacheable** (`no-store`) while every asset it points at
   carries a `?v=` stamp and caches forever. Without that, a browser holding an old
   document keeps requesting the old stamps and a shipped change stays invisible.
-- Commit to `main`. GitHub Pages serves from **`gh-pages`** (app minus `voice/`); voice is
-  served from `main` via `voice-cdn.js`. Update the changed app files onto `gh-pages` via
-  a `git worktree`; leave mp3s on `main`. Verify a raw voice URL returns 200.
+- Pages serves from **`gh-pages`** (app minus `voice/w`); the 128k word clips are served
+  from `main` via `voice-cdn.js`. Leave mp3s on `main`; verify a raw voice URL returns 200.
+  **`voice/c*`, `voice/a*` and `voice/ann/*` are bundled and served same-origin** — they are
+  the `LOCAL` set in `voice-cdn.js` and excluding all of `voice/` silently kills 903 clips.
+  `voice/tq*` is NOT local, so bundling trivia narration is dead weight.
+- **Never hand-pick the file list for a deploy.** "Update the changed app files onto
+  `gh-pages`" is how this shipped for months and it failed silently in Sep 2026: a deploy
+  copied `index.html` with a new `?v=` stamp but not three files it loads, so the site
+  served **old bytes under a new stamp** — `voice-words.js` was 2,055 word clips short
+  (every one of them fell back to speech synthesis), `SB_VOICE_VER` was a rebuild round
+  stale, and `words-full.js` was a commit behind. Nothing reported it. `deploy-internal.sh`
+  copies the whole tree by exclusion instead, and asserts source and deploy `index.html`
+  are byte-identical.
+- **`main` is not the deploy source, and assuming it is will revert the site.** As of Sep
+  2026 `main` is 25 commits behind `claude/apply-bundle-push-p0sl6r`, which is what was
+  actually published. Check what the live build was made from before deploying anything.
 - **Cache busting (do BOTH every deploy):** bump the `?v=` stamp on every asset URL in
   `index.html` (one `sed -i 's/?v=OLD/?v=NEW/g'`) so devices never run stale JS, and bump
   `SB_VOICE_VER` in `voice-review.js` whenever voice clips changed.
-- **The site is `www.bizzingbee.com`, and a `CNAME` file is what makes that true.**
+- **`CNAME` is what makes a custom domain true — which is why there is none right now.**
+  The rule below describes production *when it is live*; while it is down, the absence of
+  the file is the take-down, and the internal deploy asserts it stays absent.
   GitHub writes `CNAME` onto `gh-pages` when you set the custom domain in Settings.
   The deploy here is `git push -f origin HEAD:gh-pages` from a worktree, which replaces
   the whole branch — so a worktree without that file **silently unsets the domain** and
