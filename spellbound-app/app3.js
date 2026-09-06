@@ -2650,9 +2650,28 @@ const app = {
   openBuilder:()=>set({nav:'builder', screen:'app', conceptSel:null}),
   /* 'all' is a size like any other and must survive the round trip — coercing
      every size with +v turned it into NaN, which silently emptied the pool. */
-  bldSet:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); let v=kv.slice(i+1);
-    if(k==='size' && v!=='all') v=+v;
-    bldState()[k]=v; if(state.bldNaming) state.bldNaming=false; render(); },
+  /* ---- List Builder: nine facets, any number at once ---- */
+  b2Tog:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); const raw=kv.slice(i+1);
+    const B=b2State();
+    if(k==='starts'||k==='has'){ B[k]=''; }
+    else if(k==='wl'){ B.wlmin=3; B.wlmax=24; }
+    else { const v=+raw; const a=B[k]||[]; const at=a.indexOf(v);
+      if(at>=0) a.splice(at,1); else a.push(v); B[k]=a; }
+    state.bldNaming=false; render(); },
+  b2Size:(v)=>{ b2State().size = (v==='all')?'all':(+v||20); state.bldNaming=false; render(); },
+  /* the two sliders are one range: dragging either past the other pushes it along
+     rather than inverting the pair into a filter that can never match */
+  /* the two sliders are one range: dragging either past the other pushes it along
+     rather than inverting the pair into a filter that can never match */
+  b2WlMin:(v)=>{ const B=b2State(); B.wlmin=Math.max(3,Math.min(24,+v||3)); if(B.wlmax<B.wlmin) B.wlmax=B.wlmin; render(); },
+  b2WlMax:(v)=>{ const B=b2State(); B.wlmax=Math.max(3,Math.min(24,+v||24)); if(B.wlmin>B.wlmax) B.wlmin=B.wlmax; render(); },
+  b2TxtStarts:(v)=>{ b2State().starts=String(v||'').toLowerCase().replace(/[^a-z]/g,'').slice(0,12); render(); },
+  b2TxtHas:(v)=>{ b2State().has=String(v||'').toLowerCase().replace(/[^a-z]/g,'').slice(0,12); render(); },
+  b2QQtag:(v)=>{ b2State().qtag=String(v||'').slice(0,24); render(); },
+  b2QQorig:(v)=>{ b2State().qorig=String(v||'').slice(0,24); render(); },
+  b2Tab:(k)=>{ b2State().tab = (k==='all')?'all':'list'; render(); },
+  b2Shuffle:()=>{ const B=b2State(); B.seed=(B.seed*7919+104729)&0x7fffffff || 1; sfx('tap'); render(); },
+  b2Clear:()=>{ state.b2=null; b2State(); state.bldNaming=false; render(); },
   bldNameOpen:()=>{ if(!bldPick().length) return;
     set({bldNaming:true, bldNameVal:''});
     setTimeout(()=>{ try{ document.querySelector('[data-fkey="bldName"]')?.focus(); }catch(e){} },0); },
@@ -7875,84 +7894,271 @@ function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachRead
   </div>`; }
 /* ===================== List Builder (button-based custom lists) ===================== */
 function builtWords(key){ const bl=(active().builtLists||{})[key]; if(!bl) return []; const idx=wordIndex(); const db=wordDB(); return (bl.ws||[]).map(s=>idx[nkey(s)]||db.get(nkey(s))||{w:s}).filter(Boolean); }
-function bldState(){ const S=state; if(!S.bld) S.bld={diff:'mixed',size:120,src:'core',len:'any',pat:'any'}; return S.bld; }
-const BLD_PATS={ double:{re:/(.)\1/, label:'Double letters'}, silent:{re:/^(kn|wr|gn|ps|mn)|mb$|gh/i, label:'Silent letters'}, ieei:{re:/ie|ei/i, label:'ie / ei'}, endings:{re:/(tion|sion|ous|able|ible|ance|ence|ary|ery|ory)$/i, label:'Suffix endings'} };
-function bldPool(){ const b=bldState(); let pool;
-  if(b.src==='scripps') pool=(window.SB_SCRIPPS||[]).slice();
-  else if(b.src==='review') pool=(typeof REVIEW!=='undefined'?REVIEW:[]).slice();
-  else if(b.src==='missed') pool=((active().missed)||[]).map(m=>wordIndex()[nkey(m.w)]||{w:m.w});
-  else if(b.src==='nsf') pool=(coachCatalog().find(x=>x.key==='nsf_finals')||{words:[]}).words.slice();
-  else pool=journeySorted().slice();
-  pool=pool.filter(w=>w&&w.w);
-  if(b.diff!=='mixed'){ const t={easy:w=>(w.y||3)<=2, medium:w=>(w.y||3)===3, hard:w=>(w.y||3)===4, champion:w=>(w.y||3)>=5}[b.diff]; if(t) pool=pool.filter(t); }
-  if(b.len!=='any'){ const t={short:w=>w.w.length<=6, medium:w=>w.w.length>=7&&w.w.length<=9, long:w=>w.w.length>=10}[b.len]; if(t) pool=pool.filter(t); }
-  if(b.pat!=='any' && BLD_PATS[b.pat]) pool=pool.filter(w=>BLD_PATS[b.pat].re.test(w.w));
-  return pool; }
-/* 'all' takes everything the filters allow, capped only by what actually
-   matched — the honest ceiling, since asking for 1,000 out of a pool of 300
-   cannot produce more than 300. BLD_CAP is the hard limit on any single list:
-   the words are stored on the child and re-rendered as cards, and past a few
-   thousand that is a slow screen rather than a useful list. */
-const BLD_SIZES=[24,60,120,240,480,1000], BLD_CAP=1000;
-function bldPick(){ const b=bldState(); const pool=bldPool().sort((x,y)=>((x.y||3)-(y.y||3))||(x.w.length-y.w.length));
-  if(!pool.length) return [];
-  const want=(b.size==='all') ? Math.min(pool.length,BLD_CAP) : Math.min(b.size,pool.length);
-  if(pool.length<=want) return pool;
-  const out=[]; const step=pool.length/want; for(let i=0;i<want;i++){ out.push(pool[Math.floor(i*step)]); } return out; } // even spread keeps the easy→hard ramp
-/* the name the child sees, suggested from the choices they actually made */
-function bldSuggest(){ const b=bldState(); const n=bldPick().length;
-  const bits=[];
-  if(b.diff!=='mixed') bits.push(b.diff[0].toUpperCase()+b.diff.slice(1));
-  if(b.pat!=='any'&&BLD_PATS[b.pat]) bits.push(BLD_PATS[b.pat].label);
-  if(b.len!=='any') bits.push({short:'Short words',medium:'Medium words',long:'Long words'}[b.len]||'');
-  const src={scripps:'Champions',nsf:'The Vault',review:'Sticky Words',missed:'Comeback Words'}[b.src];
-  if(src) bits.push(src);
-  return (bits.filter(Boolean).join(' · ') || 'My word list') + ' (' + n + ')'; }
+/* ---------------------------------------------------------------------------
+   THE LIST BUILDER — a faceted search over the whole served library.
+
+   The five-tap version this replaces asked five either/or questions (difficulty,
+   size, source, length, one "tricky pattern") and handed back a slice. It could
+   not answer the questions a speller actually has — "French words I keep getting
+   wrong", "eight-letter nouns from the finals lists", "words about medicine that
+   start with ph" — because each of those is several conditions at once.
+
+   So: nine filters, any number of them at a time, and EVERY OPTION CARRIES ITS
+   OWN LIVE COUNT computed with that filter lifted out (proper faceted counting).
+   A choice that would leave nothing is greyed before it is tapped, which is the
+   whole reason to count this way rather than just filtering.
+
+   Icons are the app's own SVG set. No emoji: they render as a different picture
+   on every platform and this screen is dense enough to need one visual language.
+--------------------------------------------------------------------------- */
+
+/* the index is built once over the served corpus and dropped when a shard lands
+   (boot-lazy fires sb-lazy; app3's listener clears _b2Idx with the other pools) */
+let _b2Idx = null;
+function b2Idx(){
+  const src = (window.SB_DATA && SB_DATA.nsf) || [];
+  if (_b2Idx && _b2Idx.n === src.length) return _b2Idx;
+  const W=[], Y=[], L=[], O=[], P=[], C=[], NT=[], TG=[], REC=[];
+  const oL=[], pL=[], cL=[], nL=[], tL=[];
+  const oI=Object.create(null), pI=Object.create(null), cI=Object.create(null),
+        nI=Object.create(null), tI=Object.create(null);
+  const put=(tab,idx,v)=>{ const k=String(v==null?'':v).trim(); if(!k) return -1;
+    if(idx[k]===undefined){ idx[k]=tab.length; tab.push(k); } return idx[k]; };
+  for(const w of src){
+    if(!w || !w.w) continue;
+    const s=String(w.w);
+    if(!/^[a-z][a-z]*$/.test(s) || s.length<3) continue;   // no proper nouns, no fragments
+    W.push(s); Y.push(w.y||3); L.push(s.length); REC.push(w);
+    O.push(put(oL,oI,w.o)); P.push(put(pL,pI,w.ps));
+    let cls='plain'; try{ cls=(window.SB_TRICK?SB_TRICK.anal(w).cls:'plain')||'plain'; }catch(e){}
+    C.push(put(cL,cI,cls));
+    /* a word can sit in several bee tiers at once — "Open | North South Finals" —
+       so each carries a LIST of tiers, never one code */
+    NT.push(String(w.nt||'').split('|').map(x=>x.trim()).filter(Boolean).map(x=>put(nL,nI,x)));
+    TG.push((Array.isArray(w.t)?w.t:[]).map(x=>put(tL,tI,x)).filter(x=>x>=0));
+  }
+  return (_b2Idx={ n:src.length, N:W.length, W,Y,L,O,P,C,NT,TG,REC,
+                   oL,pL,cL,nL,tL });
+}
+
+const B2_CLS = { plain:'Spelled as it sounds', hom:'Sounds like another word',
+  silent:'Silent letters', epon:'Named after someone', dbl:'Double letters',
+  end:'Tricky ending', fr:'French pattern', gk:'Greek pattern', vow:'Vowel trap' };
+const B2_BAND = ['','Egg','Hatchling','Forager','Worker','Scout','Ranger','Guardian','Champion','Legend'];
+const B2_SIZES = [10,15,20,25,30,50,100,250];
+
+function b2State(){ const S=state;
+  if(!S.b2) S.b2={ lv:[], bee:[], cls:[], orig:[], tag:[], pos:[],
+                   size:20, wlmin:3, wlmax:24, starts:'', has:'',
+                   qtag:'', qorig:'', tab:'list', seed:1 };
+  return S.b2; }
+const b2Has=(k,v)=>b2State()[k].indexOf(v)>=0;
+
+/* does word i survive the filters, with `skip` lifted out? */
+function b2Pass(X,i,skip){
+  const S=b2State();
+  if(skip!=='lv'   && S.lv.length   && S.lv.indexOf(X.Y[i])<0) return false;
+  if(skip!=='cls'  && S.cls.length  && S.cls.indexOf(X.C[i])<0) return false;
+  if(skip!=='orig' && S.orig.length && S.orig.indexOf(X.O[i])<0) return false;
+  if(skip!=='pos'  && S.pos.length  && S.pos.indexOf(X.P[i])<0) return false;
+  if(skip!=='wl'   && (X.L[i]<S.wlmin || X.L[i]>S.wlmax)) return false;
+  if(skip!=='bee'  && S.bee.length){ const b=X.NT[i]; let h=false;
+    for(let j=0;j<b.length;j++) if(S.bee.indexOf(b[j])>=0){h=true;break;} if(!h) return false; }
+  if(skip!=='tag'  && S.tag.length){ const t=X.TG[i]; let h=false;
+    for(let j=0;j<t.length;j++) if(S.tag.indexOf(t[j])>=0){h=true;break;} if(!h) return false; }
+  if(S.starts && X.W[i].indexOf(S.starts)!==0) return false;
+  if(S.has    && X.W[i].indexOf(S.has)<0) return false;
+  return true;
+}
+function b2Hits(){ const X=b2Idx(), out=[];
+  for(let i=0;i<X.N;i++) if(b2Pass(X,i,null)) out.push(i); return out; }
+/* counts for one facet, with that facet lifted — so "Latin (412)" means
+   "412 if you add Latin to what you have already chosen" */
+function b2Counts(kind,len){
+  const X=b2Idx(), c=new Int32Array(len);
+  for(let i=0;i<X.N;i++){ if(!b2Pass(X,i,kind)) continue;
+    if(kind==='tag'){ const t=X.TG[i]; for(let j=0;j<t.length;j++) c[t[j]]++; }
+    else if(kind==='bee'){ const b=X.NT[i]; for(let j=0;j<b.length;j++) c[b[j]]++; }
+    else if(kind==='lv'){ if(X.Y[i]<len) c[X.Y[i]]++; }
+    else if(kind==='cls'){ c[X.C[i]]++; }
+    else if(kind==='orig'){ if(X.O[i]>=0) c[X.O[i]]++; }
+    else if(kind==='pos'){ if(X.P[i]>=0) c[X.P[i]]++; }
+  }
+  return c;
+}
+/* the chosen words: a deterministic shuffle of the hits, cut to size, then set
+   back into the easy->hard order the practice ramp wants */
+function b2Pick(){
+  const X=b2Idx(), S=b2State(), hits=b2Hits();
+  let seed=S.seed||1; const rnd=()=>(seed=(seed*1103515245+12345)&0x7fffffff)/0x7fffffff;
+  const a=hits.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; }
+  const cut=(S.size==='all')?a:a.slice(0,S.size);
+  return cut.map(i=>X.REC[i]).sort((p,q)=>((p.y||3)-(q.y||3))||(String(p.w).length-String(q.w).length)||String(p.w).localeCompare(String(q.w)));
+}
+/* how many Levels a list of n words becomes on the way to mastery */
 function bldLevels(n){ return n<=WORK_MAX?1:Math.max(2,Math.min(24,Math.round(n/50))); }
-function viewBuilder(){ const S=state; const b=bldState(); const picked=bldPick(); const n=picked.length; const lv=bldLevels(n); const per=n?Math.ceil(n/lv):0;
-  const btn=(group,val,label,cur)=>`<button data-act="bldSet" data-arg="${group}:${val}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur===val?'var(--action,var(--accent))':'var(--line)'};${cur===val?'background:color-mix(in srgb,var(--action,var(--accent)) 12%,var(--paper,#fff));color:var(--action,var(--accent))':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
-  const row=(title,sub,btns)=>`<div style="margin-bottom:15px"><div style="font-family:var(--display);font-weight:800;font-size:13px">${title} <span style="color:var(--muted);font-weight:700;font-size:12px">· ${sub}</span></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px">${btns}</div></div>`;
-  const srcs=[['core','Core library'],['scripps','Words of Champions'],['nsf','The Champion’s Vault'],['review','Sticky Words'],['missed','My Comeback Words']];
-  const preview=picked.slice(0,18).map(w=>`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--line)">${esc(w.w)}</span>`).join('');
-  return `<div style="animation:sb-rise .35s ease both">
-    ${pageHead('List Builder','pick · build · print','Build a custom word list with five taps — or pick a ready-made list below. Every list gets its own Level ladder.')}
-    <div class="sb-card" style="margin-bottom:16px">
-      ${row('1 · Difficulty','how hard the words are',['easy','medium','hard','champion','mixed'].map(d=>btn('diff',d,d[0].toUpperCase()+d.slice(1),b.diff)).join(''))}
-      ${row('2 · List size','how many words — or take every one that matches',
-        BLD_SIZES.map(s=>btn('size',String(s),s+' words',String(b.size))).join('')
-        + btn('size','all', n&&b.size==='all' ? ('All '+n+' that match') : 'All that match', String(b.size)))}
-      ${row('3 · Source','which word pool to draw from',srcs.map(([k,l])=>btn('src',k,l,b.src)).join(''))}
-      ${row('4 · Word length','short, medium or long words',[['any','Any'],['short','Short ≤6'],['medium','Medium 7–9'],['long','Long 10+']].map(([k,l])=>btn('len',k,l,b.len)).join(''))}
-      ${row('5 · Tricky pattern','focus on one spelling trap',[['any','Any'],...Object.keys(BLD_PATS).map(k=>[k,BLD_PATS[k].label])].map(([k,l])=>btn('pat',k,l,b.pat)).join(''))}
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border-radius:14px;background:var(--chip);margin-bottom:14px">
-        <div><div style="font-family:var(--display);font-weight:800;font-size:20px;color:var(--accent)">${n} words</div><div style="font-size:12px;color:var(--muted);font-weight:700">match your five choices</div></div>
-        <div><div style="font-family:var(--display);font-weight:800;font-size:20px;color:var(--accent)">${n?lv:0} ${lv===1?'Level':'Levels'}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${n?('to mastery · ~'+per+' words per Level, easy→hard'):'pick looser criteria'}</div></div>
-        ${n&&n<b.size?`<div style="font-size:12px;color:var(--muted);font-weight:700">only ${n} match — loosen a filter for more</div>`:''}
-      </div>
-      ${n?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${preview}${n>18?`<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center">+${n-18} more</span>`:''}</div>`:''}
-      ${S.bldNaming && n ? `
-      <div style="padding:14px 16px;border-radius:14px;border:1px solid var(--accent);background:var(--surface)">
-        <div style="font-family:var(--display);font-weight:800;font-size:14px;margin-bottom:3px">Name your list</div>
-        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">You'll find it under this name in Practice.</p>
-        <input data-inp="bldName" data-fkey="bldName" value="${escA(S.bldNameVal||'')}" maxlength="48"
-          placeholder="${escA(bldSuggest())}"
-          style="width:100%;padding:12px 13px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;outline:none;margin-bottom:11px">
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button data-act="bldCreate" style="flex:1 1 200px;padding:13px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Create &amp; start practising → (${n} words · ${lv} ${lv===1?'Level':'Levels'})</button>
-          <button data-act="bldNameCancel" style="padding:13px 16px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Back</button>
-        </div>
-      </div>`
-      : `<button data-act="bldNameOpen" ${n?'':'disabled'} style="width:100%;padding:14px;border-radius:14px;background:${n?'var(--accent)':'var(--surface2)'};color:${n?'#fff':'var(--muted)'};font-weight:800;font-size:15px;box-shadow:var(--edge)">${n?('Name this list &amp; practise → ('+n+' words · '+lv+' '+(lv===1?'Level':'Levels')+')'):'No words match yet'}</button>`}
+/* the save path (bldCreate) still asks for bldPick(), so it keeps working */
+function bldPick(){ return b2Pick(); }
+function bldSuggest(){
+  const X=b2Idx(), S=b2State(), bits=[];
+  if(S.lv.length===1) bits.push(B2_BAND[S.lv[0]]||('Level '+S.lv[0]));
+  if(S.cls.length===1) bits.push(B2_CLS[X.cL[S.cls[0]]]||'');
+  if(S.orig.length===1) bits.push(X.oL[S.orig[0]]);
+  if(S.tag.length===1) bits.push(X.tL[S.tag[0]]);
+  if(S.bee.length===1) bits.push(X.nL[S.bee[0]]);
+  if(S.pos.length===1) bits.push(X.pL[S.pos[0]]);
+  if(S.starts) bits.push('starts ' + S.starts);
+  if(S.has) bits.push('has ' + S.has);
+  return (bits.filter(Boolean).slice(0,3).join(' · ') || 'My word list'); }
+
+function viewBuilder(){
+  const S=state, B=b2State(), X=b2Idx();
+  const hits=b2Hits(), picked=b2Pick(), n=picked.length;
+  const lv=bldLevels(n), per=n?Math.ceil(n/lv):0;
+  const K=v=>v>=1000?(v/1000).toFixed(v>=10000?0:1)+'k':''+v;
+
+  /* one chip: label, live count, and dead when it would leave nothing */
+  const chip=(group,val,label,count,on)=>`<button data-act="b2Tog" data-arg="${escA(group+':'+val)}"${(!count&&!on)?' disabled':''}
+    style="display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:7px 11px;border-radius:10px;font-weight:750;font-size:12.5px;line-height:1.2;
+    border:1px solid ${on?'var(--action,var(--accent))':'var(--line)'};
+    background:${on?'color-mix(in srgb,var(--action,var(--accent)) 13%,var(--paper,#fff))':'var(--surface2)'};
+    color:${on?'var(--action,var(--accent))':(count?'var(--text)':'var(--muted)')};${(!count&&!on)?'opacity:.45;cursor:default':'cursor:pointer'}">
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${esc(label)}</span>
+    <span style="font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;opacity:.72;flex:0 0 auto">${K(count)}</span></button>`;
+
+  const sec=(title,state2,body)=>`<div style="padding:13px 14px;border-bottom:1px solid var(--line)">
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:9px">
+      <h3 style="font-size:13px;font-weight:800;margin:0">${esc(title)}</h3>
+      <span style="font-size:11.5px;font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(state2)}</span></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${body}</div></div>`;
+
+  /* 1 · spelling level */
+  const cLv=b2Counts('lv',10);
+  const lvChips=[1,2,3,4,5,6,7,8,9].filter(i=>cLv[i]||b2Has('lv',i))
+    .map(i=>chip('lv',i,(B2_BAND[i]||('Level '+i)),cLv[i],b2Has('lv',i))).join('');
+  /* 2 · how many */
+  const sizeChips=B2_SIZES.map(v=>`<button data-act="b2Size" data-arg="${v}" style="padding:7px 11px;border-radius:10px;font-weight:750;font-size:12.5px;border:1px solid ${B.size===v?'var(--action,var(--accent))':'var(--line)'};background:${B.size===v?'color-mix(in srgb,var(--action,var(--accent)) 13%,var(--paper,#fff))':'var(--surface2)'};color:${B.size===v?'var(--action,var(--accent))':'var(--text)'}">${v}</button>`).join('')
+    + `<button data-act="b2Size" data-arg="all" style="padding:7px 11px;border-radius:10px;font-weight:750;font-size:12.5px;border:1px solid ${B.size==='all'?'var(--action,var(--accent))':'var(--line)'};background:${B.size==='all'?'color-mix(in srgb,var(--action,var(--accent)) 13%,var(--paper,#fff))':'var(--surface2)'};color:${B.size==='all'?'var(--action,var(--accent))':'var(--text)'}">All ${K(hits.length)}</button>`;
+  /* 3 · word length */
+  const lenBody=`<div style="width:100%">
+    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted)"><span>Shortest</span><b style="color:var(--text);font-variant-numeric:tabular-nums">${B.wlmin}</b></div>
+    <input type="range" data-inp="b2WlMin" min="3" max="24" value="${B.wlmin}" data-fkey="b2wlmin" style="width:100%;accent-color:var(--action,var(--accent))">
+    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted);margin-top:4px"><span>Longest</span><b style="color:var(--text);font-variant-numeric:tabular-nums">${B.wlmax>=24?'24+':B.wlmax}</b></div>
+    <input type="range" data-inp="b2WlMax" min="3" max="24" value="${B.wlmax}" data-fkey="b2wlmax" style="width:100%;accent-color:var(--action,var(--accent))">
+  </div>`;
+  /* 4 · bee tier */
+  const cBee=b2Counts('bee',X.nL.length);
+  const beeChips=X.nL.map((lab,i)=>({lab,i,c:cBee[i]})).filter(x=>x.c||b2Has('bee',x.i))
+    .sort((a,b)=>b.c-a.c).slice(0,10).map(x=>chip('bee',x.i,x.lab,x.c,b2Has('bee',x.i))).join('') || `<span style="font-size:12px;color:var(--muted)">no tiers in this selection</span>`;
+  /* 5 · why it's tricky */
+  const cCls=b2Counts('cls',X.cL.length);
+  const clsChips=X.cL.map((k,i)=>({k,i,c:cCls[i]})).filter(x=>x.c||b2Has('cls',x.i))
+    .sort((a,b)=>b.c-a.c).map(x=>chip('cls',x.i,B2_CLS[x.k]||x.k,x.c,b2Has('cls',x.i))).join('');
+  /* 6 · subject */
+  const cTag=b2Counts('tag',X.tL.length);
+  const qt=(B.qtag||'').toLowerCase();
+  const tagChips=X.tL.map((lab,i)=>({lab,i,c:cTag[i]}))
+    .filter(x=>(x.c||b2Has('tag',x.i)) && (!qt || x.lab.toLowerCase().indexOf(qt)>=0))
+    .sort((a,b)=>b.c-a.c).slice(0,24).map(x=>chip('tag',x.i,x.lab,x.c,b2Has('tag',x.i))).join('')
+    || `<span style="font-size:12px;color:var(--muted)">nothing matches that</span>`;
+  /* 7 · origin */
+  const cOr=b2Counts('orig',X.oL.length);
+  const qo=(B.qorig||'').toLowerCase();
+  const origChips=X.oL.map((lab,i)=>({lab,i,c:cOr[i]}))
+    .filter(x=>(x.c||b2Has('orig',x.i)) && (!qo || x.lab.toLowerCase().indexOf(qo)>=0))
+    .sort((a,b)=>b.c-a.c).slice(0,24).map(x=>chip('orig',x.i,x.lab,x.c,b2Has('orig',x.i))).join('')
+    || `<span style="font-size:12px;color:var(--muted)">nothing matches that</span>`;
+  /* 8 · part of speech */
+  const cPos=b2Counts('pos',X.pL.length);
+  const posChips=X.pL.map((lab,i)=>({lab,i,c:cPos[i]})).filter(x=>x.c||b2Has('pos',x.i))
+    .sort((a,b)=>b.c-a.c).slice(0,12).map(x=>chip('pos',x.i,x.lab,x.c,b2Has('pos',x.i))).join('');
+
+  /* an input reports through data-inp, which hands the handler ONE value — so each
+     field gets its own action rather than a shared one with a key argument */
+  const fld=(act,key,ph,val)=>`<input type="text" data-inp="${act}${key.charAt(0).toUpperCase()+key.slice(1)}" data-fkey="b2${key}" value="${escA(val||'')}" placeholder="${escA(ph)}" maxlength="12"
+    style="flex:1 1 120px;min-width:0;padding:8px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font:inherit;font-size:13px;font-weight:700">`;
+
+  const nSel=B.lv.length+B.bee.length+B.cls.length+B.orig.length+B.tag.length+B.pos.length
+    +(B.starts?1:0)+(B.has?1:0)+((B.wlmin>3||B.wlmax<24)?1:0);
+
+  const rail=`<div style="background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;align-self:start">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface2)">
+      <div style="display:flex;align-items:center;gap:8px;min-width:0">
+        <span style="display:inline-flex;line-height:0;color:var(--action,var(--accent))">${iconSVG('sliders',16)}</span>
+        <h2 style="font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0;font-weight:800">Build from</h2></div>
+      ${nSel?`<button data-act="b2Clear" style="display:inline-flex;align-items:center;gap:5px;background:none;border:0;color:var(--action,var(--accent));font-weight:800;font-size:12px;padding:0">${iconSVG('x',13)} Clear ${nSel}</button>`:''}
     </div>
-    <div class="sb-card">
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">…or pick a ready-made list</div>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Words of Champions, the Champion’s Vault, origin lists and more — includes paste-your-own in Setup & lists.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${coachCatalog().slice(0,8).map(o=>`<button data-act="selectList" data-arg="${escA(o.key)}" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text)">${esc(o.label)} <span style="color:var(--muted);font-weight:700">${o.count}</span></button>`).join('')}
-        <button data-act="coachSetupOpen" style="padding:9px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px dashed var(--line);background:transparent;color:var(--accent)">All lists + paste your own →</button>
+    ${sec('Spelling level', B.lv.length?B.lv.length+' chosen':'any', lvChips)}
+    ${sec('How many words', B.size==='all'?'every match':B.size+' words', sizeChips)}
+    ${sec('Word length', (B.wlmin>3||B.wlmax<24)?(B.wlmin+'–'+(B.wlmax>=24?'24+':B.wlmax)+' letters'):'any', lenBody)}
+    ${sec('Seen in a spelling bee', B.bee.length?B.bee.length+' chosen':'any', beeChips)}
+    ${sec('Why it’s tricky', B.cls.length?B.cls.length+' chosen':'any', clsChips)}
+    ${sec('Subject', B.tag.length?B.tag.length+' chosen':'any',
+      `<div style="width:100%;margin-bottom:8px">${fld('b2Q','qtag','Search subjects…',B.qtag)}</div>${tagChips}`)}
+    ${sec('Language of origin', B.orig.length?B.orig.length+' chosen':'any',
+      `<div style="width:100%;margin-bottom:8px">${fld('b2Q','qorig','Search languages…',B.qorig)}</div>${origChips}`)}
+    ${sec('Part of speech', B.pos.length?B.pos.length+' chosen':'any', posChips)}
+    <div style="padding:13px 14px">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:9px"><h3 style="font-size:13px;font-weight:800;margin:0">Letters</h3></div>
+      <div style="display:flex;gap:7px">${fld('b2Txt','starts','Starts with…',B.starts)}${fld('b2Txt','has','Contains…',B.has)}</div>
+    </div>
+  </div>`;
+
+  /* the active choices, as removable pills */
+  const pill=(group,val,label)=>`<button data-act="b2Tog" data-arg="${escA(group+':'+val)}" style="display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:750;border:1px solid color-mix(in srgb,var(--action,var(--accent)) 45%,var(--line));background:color-mix(in srgb,var(--action,var(--accent)) 11%,var(--paper,#fff));color:var(--action,var(--accent))">${esc(label)} ${iconSVG('x',11)}</button>`;
+  const pills=[
+    ...B.lv.map(v=>pill('lv',v,B2_BAND[v]||('Level '+v))),
+    ...B.bee.map(v=>pill('bee',v,X.nL[v])),
+    ...B.cls.map(v=>pill('cls',v,B2_CLS[X.cL[v]]||X.cL[v])),
+    ...B.tag.map(v=>pill('tag',v,X.tL[v])),
+    ...B.orig.map(v=>pill('orig',v,X.oL[v])),
+    ...B.pos.map(v=>pill('pos',v,X.pL[v])),
+    B.starts?pill('starts',B.starts,'starts “'+B.starts+'”'):'',
+    B.has?pill('has',B.has,'contains “'+B.has+'”'):'',
+    (B.wlmin>3||B.wlmax<24)?pill('wl','reset',B.wlmin+'–'+(B.wlmax>=24?'24+':B.wlmax)+' letters'):''
+  ].filter(Boolean).join('');
+
+  const shown=(B.tab==='all')?b2Hits().slice(0,600).map(i=>X.REC[i]):picked;
+  const wordChips=shown.map(w=>`<button data-act="openWordCard" data-arg="${escA(w.w)}" title="${escA(w.d||'')}"
+      style="padding:6px 11px;border-radius:9px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-weight:700;font-size:13px">${esc(w.w)}</button>`).join('')
+    || `<div style="padding:26px 4px;text-align:center;color:var(--muted);font-size:13.5px;font-weight:700">Nothing matches all of those choices yet — clear one to widen the net.</div>`;
+
+  const tab=(k,label,count)=>`<button data-act="b2Tab" data-arg="${k}" role="tab" aria-selected="${B.tab===k}"
+    style="padding:9px 14px;border-radius:10px 10px 0 0;font-weight:800;font-size:13px;border:1px solid ${B.tab===k?'var(--line)':'transparent'};border-bottom:${B.tab===k?'1px solid var(--surface)':'1px solid var(--line)'};background:${B.tab===k?'var(--surface)':'transparent'};color:${B.tab===k?'var(--text)':'var(--muted)'}">${esc(label)} <span style="font-variant-numeric:tabular-nums;opacity:.7;font-weight:700">${K(count)}</span></button>`;
+
+  const main=`<div style="background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:15px 17px;border-bottom:1px solid var(--line)">
+      <div style="min-width:0">
+        <div style="font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--action,var(--accent))">${K(n)}</div>
+        <div style="font-size:12.5px;color:var(--muted);font-weight:700">${n?`in your list · ${lv} Level${lv>1?'s':''} to mastery · ~${per} a Level`:'nothing chosen yet'}</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+        <button data-act="b2Shuffle" style="display:inline-flex;align-items:center;gap:7px;padding:11px 15px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px">${iconSVG('retry',15)} Shuffle</button>
+        <button data-act="bldNameOpen"${n?'':' disabled'} style="display:inline-flex;align-items:center;gap:7px;padding:11px 17px;border-radius:12px;border:1px solid var(--action,var(--accent));background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13.5px;box-shadow:var(--edge);${n?'':'opacity:.45'}">${iconSVG('check',15)} Save this list</button>
       </div>
     </div>
-  </div>`; }
+    ${pills?`<div style="display:flex;gap:6px;flex-wrap:wrap;padding:11px 17px;border-bottom:1px solid var(--line);background:var(--surface2)">${pills}</div>`:''}
+    ${S.bldNaming?`<div style="padding:13px 17px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input type="text" data-fkey="bldName" value="${escA(S.bldNameVal||'')}" data-inp="bldName" placeholder="${escA(bldSuggest())}" maxlength="48"
+          style="flex:1 1 220px;min-width:0;padding:11px 13px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font:inherit;font-weight:750">
+        <button data-act="bldCreate" style="padding:11px 17px;border-radius:11px;border:1px solid var(--action,var(--accent));background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13.5px">Create &amp; practise</button>
+        <button data-act="bldNameCancel" style="padding:11px 15px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px">Cancel</button>
+      </div>`:''}
+    <div style="display:flex;gap:4px;padding:11px 17px 0;border-bottom:1px solid var(--line)">
+      ${tab('list','Your list',n)}${tab('all','Everything that matches',hits.length)}
+    </div>
+    <div style="padding:15px 17px;display:flex;gap:7px;flex-wrap:wrap;max-height:52vh;overflow:auto">${wordChips}</div>
+    ${(B.tab==='all'&&hits.length>600)?`<div style="padding:0 17px 15px;font-size:12px;color:var(--muted);font-weight:700">showing the first 600 of ${K(hits.length)} — narrow the filters or save the list to keep them all</div>`:''}
+  </div>`;
+
+  return `<div class="sb-page">
+    ${pageHead('List Builder','Any mix of nine filters','Every choice shows how many words it would leave',
+      '', 'setNav','Library','explore','sliders')}
+    <div class="b2-wrap">${rail}${main}</div>
+  </div>`;
+}
+
 /* ===================== Print a word list ===================== */
 function printDoc(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1,p:1,d:1},page:'letter',scope:'level',sort:'level',size:'normal'};
   const inc=p.inc, page=p.page||'letter', scope=p.scope||'level', sort=p.sort||'level', compact=p.size==='compact';
@@ -9471,7 +9677,18 @@ function coachSetup(){
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1;min-width:150px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Bee day</label><input data-chg="setCoachDate" type="date" value="${escA(S.coachDate||'')}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div><div style="width:120px"><label style="display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px">Daily goal</label><input data-chg="setCoachGoal" value="${escA(S.coachGoal)}" style="width:100%;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px"></div></div>
       <div style="font-size:12px;color:var(--muted);margin-top:8px">The daily goal is a target, not a limit — keep going as long as you like.</div></div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${gSel?`${backPill('catGroup','All lists','')}<span>${esc((LIST_GROUPS[gSel]||{}).label||'')}</span>`:'Choose a list'}</div><div style="${coverGrid}">${gSel?'':defCard}${others}</div></div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${gSel?`${backPill('catGroup','All lists','')}<span>${esc((LIST_GROUPS[gSel]||{}).label||'')}</span>`:'Choose a list'}</div><div style="${coverGrid}">${gSel?'':defCard}${others}</div>
+      ${gSel?'':`<!-- Pick your words is where a speller comes to choose what to drill, so it is
+           also where they should be able to BUILD what to drill. The Builder used to be
+           reachable only from the Library tile, one level away from the decision. -->
+      <button data-act="openBuilder" style="width:100%;margin-top:13px;display:flex;align-items:center;gap:13px;text-align:left;padding:15px 17px;border-radius:16px;border:1px dashed color-mix(in srgb,var(--action,var(--accent)) 55%,var(--line));background:color-mix(in srgb,var(--action,var(--accent)) 7%,var(--bg2));color:var(--text)">
+        <span style="flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff)">${iconSVG('sliders',20)}</span>
+        <span style="min-width:0;flex:1">
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">Build your own list</span>
+          <span style="display:block;font-family:var(--body);font-weight:600;font-size:12.5px;color:var(--muted);margin-top:3px">Nine filters over every word the app serves — level, origin, subject, part of speech, why it&rsquo;s tricky</span>
+        </span>
+        <span style="flex:0 0 auto;color:var(--action,var(--accent))">${iconSVG('arrowRight',18)}</span>
+      </button>`}</div>
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent)">${iconSVG('upload',18)}</span> Bring your own words</div><p style="font-size:12px;color:var(--muted);margin:0 0 10px">Paste words (commas or new lines) — we enrich them from the database.</p>
       <textarea data-inp="setCustomText" data-fkey="customText" placeholder="silhouette, bouquet, mnemonic" style="width:100%;min-height:74px;resize:vertical;padding:12px 13px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:13px;margin-bottom:10px;font-family:var(--body)">${esc(S.customText)}</textarea>
       <button data-act="enrichCustom" style="width:100%;padding:12px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px;border:1px solid var(--line)">Enrich &amp; train these →</button></div>
