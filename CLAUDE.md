@@ -435,9 +435,21 @@ handlers. App lives in this folder; open `index.html` to run.
   fails go to a revise round; pass pays 15 coins. Checkpoints every 4th unit are mixed
   quizzes with no new words. Progress on the child at `c.trail`
   (`{lap,done,chk,seen,elap,edone,echk}`).
-- **Laps cap difficulty absolutely**: band 1/2/3 = global spellDiff terciles; family
-  units serve their lap's band slice (+ their chapter's teaching words), lesson units
-  teach once on their pinned lap. Finishing every stop advances the lap (max 3).
+- **A STOP'S SETS ARE CUT FROM ITS WHOLE WORD LIST, NOT FROM ONE LAP'S BAND.** The map
+  stores each stop's words split into three spellDiff bands, and the sets used to be cut
+  from whichever band the child's lap was on — so a Meadow stop holding 75 words (exactly
+  five rounds of fifteen) offered its lap-1 child the 48 that banded easy, which is four
+  sets. Measured, that was not an edge case: **79 of the 128 stops offered ONE set and
+  only one offered five.** Read as one list the same map gives **98 stops their five**,
+  and each of the thirty short ones has a proved ceiling (fourteen `-oir` words exist;
+  u77 can never hold more than a single set). The bands are not discarded — they are the
+  ORDER (`poolOf` concatenates 1,2,3), so S1 is the stop's easiest round and S5 its
+  hardest and the ramp runs *inside* the stop where a child can feel it, instead of being
+  a wall between three visits. `setsOf(u)` takes no lap. Progress records still key on
+  the lap, so a re-walk keeps its own S-chips. Guard: `tests/atlas-sets.cjs`.
+- **Laps still cap WHICH STOPS are open** (`availableIn`/`seq`), and band 1/2/3 = global
+  spellDiff terciles. Lesson units teach once on their pinned lap. Finishing every stop
+  advances the lap (max 3).
 - `app` is a top-level `const` (global lexical scope, **not** `window.app`) — extension
   scripts like trail.js must reference the bare identifier.
 - **`window.SB_TRAIL_NEXT()`** is the one public reading of the frontier: `{title, sub,
@@ -454,6 +466,18 @@ handlers. App lives in this folder; open `index.html` to run.
 2. **What to do next** — the Atlas's next stop beside the four "Keep going" tiles
    (`.sb-home-r2` / `.sb-home-tiles` in index.html; one column below 900px).
 3. **Today's reading** — the bee tip, Word of the hour, Quote of the hour.
+- **Practice carries a "View all N cards" button on top** (`deckOpen` -> `viewSetDeck`):
+  the whole set at once, one row per word, tap a row and it opens into the real card —
+  respelling, both speaker buttons, meaning, sentence, memory hook, IPA and origin chips
+  — with several able to stand open so two words can be read against each other. It is a
+  READING surface: nothing in it writes `luMastered` or `missed`; "Go to this card" hands
+  the child back to the drill at that index and the drill does the scoring. Guard:
+  `tests/set-deck.cjs`.
+- **`iconSVG` (app2.js) falls back to the GRID glyph for a name it does not carry, and
+  says nothing.** It is a DIFFERENT set from `SB_ICON` (icons.js): iconSVG has
+  volume/steps/close/arrow/spark, SB_ICON has speaker/x/chevronDown/arrowRight. Asking
+  iconSVG for `chevronDown` draws a little grid on every row and no test notices, which
+  is why `chevSVG()` is drawn inline in app3 and `tests/set-deck.cjs` counts stray grids.
 - The words step is the coach card view (selfMark wordFlash → flashMark writes luMastered / missed; requires state.sessionWords). exitTrain and conceptBack both honour state.trailReturn. Trickster chapters (neu units) have no narration yet — browser TTS covers them;
   when recording, append to `SB_CONCEPTS` (append-only) and switch units to `gi` refs.
 
@@ -649,23 +673,47 @@ handlers. App lives in this folder; open `index.html` to run.
 - **Grand Prix steering was halved in an earlier pass and overshot.** At 1.1 a full road
   crossing took 1.8 SECONDS of holding, which is what "it's just self-driving" describes.
   2.2 crosses in 0.9s and a tap still only nudges.
-- **THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT — and for a long time it did not,
-  for three compounding reasons.** The authored curves were softened 30% (`curve*=0.7`),
-  the drift coefficient was a gentle `0.4`, and **`centri` — the centrifugal push, the
-  whole reason a bend throws a car wide — was declared on the `maxV` line and NEVER USED**
-  (one occurrence in the whole file). Measured: the hardest bend pushed 1.40 road-units/s
-  against 2.20 of steering, so 64% of the wheel held the line and the road never threatened
-  to lose you. Now the curves are unsoftened (up to 5) and the push is
-  `curve * (v/maxV)² * dt * centri` — squared, because that is what centrifugal force does:
-  the hardest bend flat out takes 77% of the wheel, the same bend at half throttle takes
-  19%, so lifting off is a real option. Guard: `tests/arcade-geometry.js` asserts centri is
-  APPLIED and not merely declared, and pins the drift-to-steer ratio.
-- **Honeycomb movement is time-based and on requestAnimationFrame.** `step()` used
-  `sp/60` — a fixed distance PER FRAME on the assumption every frame is 1/60s — while the
-  loop was the only `setInterval(1000/60)` left in saga2.js, free-running against the
-  display refresh. Uneven frames therefore moved the bee unevenly: play-tested as "not
-  moving smoothly, it's jumping". `step(ent,sp,dt)` now takes real elapsed seconds (clamped
-  so a hitch cannot teleport through a wall) and the loop is rAF like every other engine.
+- **THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT — and it took three passes to
+  make that true on screen.** Pass one: `centri` — the drift the whole mechanic depends
+  on — was declared and NEVER USED, curves were softened 30%, and the kart was on rails.
+  Pass two applied it as `curve * (v/maxV)² * dt * centri` — "centrifugal force" — which
+  was wrong physics for this feel: at half throttle v² pulls with a QUARTER strength,
+  imperceptible at real playing speeds, so it still read as self-steering. The truth is
+  a kart holding its heading slides across a turning road at **v × curvature — LINEAR**:
+  `curve * (v/maxV) * dt * centri`. Flat out the hardest bend (5) takes 77% of the wheel;
+  half throttle now pulls a felt 39% instead of 19%.
+  **And the CAMERA follows the KART, not the road** (`camX=playerX*roadW`, kart drawn at
+  `Wd/2`): with the camera welded to the road's centreline, correct physics still showed
+  up as the KART sliding sideways — "the car is steering on its own". From the chase
+  camera the kart never moves; bends and steering pan the world under it. Guard:
+  `tests/arcade-geometry.js` (linear model, v² absent, drift-to-steer ratios) and the
+  headless drive in the scratchpad's `gpdrive.cjs` (no-hands runs off the outside;
+  full lock beats the bend).
+- **The far road is PROJECTED past drawDist, never patched.** drawDist segments end
+  ~108px short of the horizon and 165px wide — a stump against the backdrop. A straight
+  wedge to the vanishing point reads as a grey pyramid the moment the road curves. The
+  fix carries on the real projection: keep accumulating the track's own curve past
+  drawDist (six additions a segment) and draw a band only when it advances a whole
+  pixel — the far ribbon bends with the track down to a sub-pixel sliver AT the horizon.
+  Three rules keep it honest: the ribbon wears ONE fixed colour set (inheriting the last
+  segment's ALTERNATING colours strobed the whole distance at speed); its x subtracts
+  the same `camX` the segment loop uses; and no grass bands out there (the ground
+  gradient owns the far field — ~110 alpha polys a frame doubled p99). The backdrop
+  painting is cropped strictly ABOVE the horizon with an opaque level ground below —
+  every painting's own ground-line sits at a different height, so letting the picture
+  run below the horizon made the ribbon ride up over its painted hills, "floating into
+  the air". Road tip, ground edge and painting base all meet on one line.
+- **Honeycomb movement is time-based, on requestAnimationFrame — and the bee GLIDES.**
+  `step()` used `sp/60` per frame on a free-running `setInterval`; that was pass one of
+  "it's jumping". Three more sources survived it: (1) an early turn TELEPORTED the bee
+  up to 0.4 cells to the junction — now it turns at once and glides onto the new
+  corridor diagonally at running speed (Pac-Man cornering); (2) the clock was
+  `Date.now()`, whole milliseconds, so 60Hz deltas alternated 16/17ms — the loop now
+  uses the sub-ms rAF timestamp, and keeps ticking while a spell card is open so
+  closing one is not a 50ms lurch; (3) dt clamps at TWO frames (34ms), so a hitched
+  frame is a shade of slowdown, never a multi-frame hop. Measured (scratchpad
+  `mazedrive.cjs`): worst single-frame hop 0.4 → 0.11 cells; true speed varies only by
+  the cornering diagonal (exactly √2). Guards in `tests/arcade-geometry.js`.
 - **Each Atlas region's cache is its OWN object** (`TRE_KIT` in trail.js): a wild honeycomb
   in the Meadow, a buried amphora in the Forum, a pressed bookmark in the Library, a
   bottled charge in the Storm. Same mechanic, same gating, same payout — but the thing you
@@ -686,6 +734,12 @@ out of saga2.js so a retune cannot quietly undo them.
   at a different random height. Three precise manoeuvres for one word. The bee's real path
   is the line between the two gaps, so the pickup sits on it. That is why a pickup is placed
   when tower N+1 spawns, not tower N — only then are both ends known (`prevTower`).
+  **And `prevTower` must be the LIVE tower object, never a snapshot.** It was `{x:o.x,mid}`
+  taken at spawn time — but towers drift left every frame, so at the next spawn the stored
+  x was still `Wd+30` and "the midpoint" `(Wd+30+Wd+30)/2` sat EXACTLY on the new tower's
+  pillar: the pot-in-the-wall bug back a third time with the formula "correct". Hold the
+  object and its x has drifted with the world when it is read. The geometry guard now pins
+  `prevTower=o` and forbids `prevTower={x:`.
 - **Everything a tower places MUST drift at `CFG.speed`.** Hearts were on `CFG.speed*0.8`
   while the geometry that placed them moved at 1x, so a heart laid on the lane slid off it.
   The comment above the placement code claimed "everything drifts at CFG.speed"; hearts did
@@ -898,6 +952,30 @@ out of saga2.js so a retune cannot quietly undo them.
   strips by `voice/pipeline/app-banners.py`. The Word Atlas, the theme pages and the
   home Atlas tile all draw from it — one visual language with the books.
 
+## The in-app book reader (`reader.js`) — the shelf opens HERE now
+- A spine opens `SB_READER` (nav `'reader'`, lazy group `'reader'`), not the books site:
+  living cards with tappable word chips (each opens the existing `state.wordCard` overlay
+  with audio), a **Try-it** pop-up (4 meaning→word MCQs from that chapter's words, a coin
+  per correct, deliberately NO spelling-progress writes), per-child per-chapter **notes**
+  (`c.readerNotes`), read-ticks (`c.readerRead`) with a finish celebration, world ambience
+  (`.atlas-amb` motifs) and the volume's mascot. The **printed site edition survives as
+  the "Print edition" pill** — that is the one families can print or buy; never delete
+  the books repo or the pill.
+- `VOLS` in reader.js mirrors mkbooks.js's volume plan (mkbooks stays the print
+  authority): vols 1–10 filter `SB_CONCEPTS.chapters` by category, 11–13/15–16 slice
+  `SB_ADV_CONCEPTS` (orthography slices 0-5/5-12/12+), 14 = `SB_SOUTHASIA`, 17 =
+  `SB_EPONYMS`, 18/19 = `SB_ULTRA.mind/.method`, companions from `SB_FIG` / `SB_QUOTES`
+  (themed by `q.c`) / `SB_POEMS`. **If mkbooks' volume plan changes, change VOLS too.**
+  The three authored chapter files load lazily from `books/*.js` (they set window
+  globals), so the gh-pages deploy MUST copy `books/eponym-chapters.js`,
+  `books/ultra-chapters.js` and `books/poem-chapters.js` beside the redirect stubs.
+- Cover art streams from the books site (`…/books/art/<prefix>-cover.jpg`, art prefixes
+  quirky: 17→b19, 18→b20, 19→b21) with `onerror` hide — offline, the tinted band alone
+  carries the header. Advanced volumes (11–19) gate on the Advanced Pack exactly like
+  the Concepts library; the print edition stays open to everyone. The Long Quiz renders
+  as an honest "this is a paper book" card (print pill + Arcade button) — do not fake it
+  on screen. Guard: `tests/reader.cjs` (19 asserts, all 24 volumes resolve chapters).
+
 ## The Library's book shelf, and the drawn spines
 - The books are a **shelf of 23 spines above the tiles** (`libShelf()` in app3.js), not a
   tile among tiles. `SB_SHELF` is the ordered list; **`s` (the file name) is the ONLY one
@@ -966,6 +1044,236 @@ out of saga2.js so a retune cannot quietly undo them.
 - A mobile override of equal specificity only wins by **source order**: the phone block
   sits after the base `.lib-*` rules, because declared above them its `display:none` and
   `font-size` were quietly beaten by the base rules.
+
+## The store cut (Aug-31): 8 worlds, packs of 8
+- **EIGHT worlds** on a strict 4x2 grid (`.wh-grid`): spellbound (the Hive — the free
+  default) plus aurora / anime / science / avatar (app2.js `THEMES`) and godly / race /
+  dino (pushed by worlds4.js). Spotlight (marquee), Serpent's Lair, Origami and Arcade
+  (pixel) left the store; their scenes, ladders, CSS and music configs stay in the
+  codebase as an archive — `archive/store-cut-2026-08.md` is the ledger and the revival
+  manual. `FREE_THEMES=['spellbound']`; everything else is coins (Premium still includes
+  aurora+anime). A boot migration in app3 (`GONEW`) refunds coin-bought removed worlds
+  once, clears them from `unlockedThemes`, and re-homes a save whose theme was removed.
+- **Avatar packs hold exactly EIGHT and render as ONE ROW** (`.av-row`). 18 packs / 142
+  live avatars. Stage, Arcade and Wildhearts packs retired (popcorn→Vibe, rainbow→Turbo,
+  hoppy+fawn→Critter, pegasus→Legends); Dino+Serpent merged into the Reptilian Pack;
+  the Gods Pack split into European Gods (godseu) and Indian Gods (godsin) — the five
+  gods outside both are archived. **The mechanism**: avatars.js applies a `MOVE` map
+  (re-homes) and an `ARCH` set (75 retired ids) over the full 217-tuple roster;
+  `SB_AVATARS.list` is the 142 LIVE avatars (store, drops, collection count) while
+  `.all`/`.byId` still carry everyone — so owned retired avatars keep rendering, and so
+  do the book/reader mascots and mock-bee rivals that use Stage Pack faces. Revive an
+  avatar by deleting it from `ARCH`; Spelling Champions stays at 6 (real people).
+- The splash `T` table in index.html carries only the eight; a stale saved theme falls
+  back to the Hive there AND in the boot migration.
+
+## The opening splash: ALL EIGHT worlds have bespoke load-ups (Aug-31)
+- **The GATE (the autoplay answer)**: the splash paints the world and HOLDS on one
+  glowing action button (world emoji + verb, index 6 of the `T` table — "Open the
+  Hive", "Travel back 100 million years"); the episode credit/tagline are hidden
+  during the hold (`.hold` class) so the button is the single CTA. At ~1s the gate
+  **presses ITSELF** (`.pressed` — visible click + ring), then `startShow()` resets
+  `born`, swaps `.hold`→`.kb` and calls `tune()` in one beat. A real tap before
+  that starts it with guaranteed sound; if the auto-press's audio was blocked, the
+  first tap during the show JOINS the cue at the elapsed clock (doesn't skip — the
+  `!sched` branch), and the next tap skips. Reduced motion keeps the still card.
+  CONSEQUENCE: any one-shot element's PARKED state must live in its BASE rule, not
+  only in the `.kb` rule — the jaws park via base transforms for exactly this
+  reason (during the hold, a `.kb`-only park leaves them covering the frame).
+- Every world's splash lives ENTIRELY in the inline `<script>` after `<body>` in
+  index.html (parse-time paint). Each has a marker class + staging branch + a CLOSE
+  gesture + its own stinger mp3 in app-art: dino `w-dino` (jaws snap, dino-roar),
+  spellbound `w-hive` (the SWARM streams home into the comb centre, dive into the
+  cell that seals — the honey-drip curtain + landing trio were cut for simplicity,
+  hive-buzz), aurora `w-aur` (aurora curtains fold,
+  aurora-shimmer), anime `w-blade` (katana streak + diagonal shutters, blade-shing),
+  science `w-lab` (liquid boil-over floods the frame, lab-zap), avatar `w-elem`
+  (four orbs orbit + fuse, elements-fuse), godly `w-gods` (marble temple doors boom
+  shut, gods-thunder), race `w-race` (light tree counts to GREEN, launch speed-wall,
+  race-rev).
+- **The audio clock**: `CLOSE` map (seconds) in that script — dino 6.6, spellbound
+  6.9, aurora 6.75, anime 6.28, science 5.55, avatar 5.35, godly 5.45
+  (gods-ascend — the doors were recut to the ascension), race 6.35 —
+  the brand cue (brand-open.mp3) plays to CLOSE, then the world's stinger fires.
+  Science/avatar close early ON PURPOSE: their stingers carry a build (bubbles,
+  whooshes) that rides the visual before the payoff. Change a gesture's timing and
+  the CLOSE map + `tests/worlds-splash.cjs` pins must move with it.
+- The stingers are SYNTHESIZED (scratchpad stinggen.py lineage) — safe territory
+  (bells, steel, thunder, engines), unlike creature roars which needed Veo. Lessons
+  baked in: convolution reverb on everything (dry synth reads as arcade), RMS-matched
+  wet mix, gentle soft-knee limiting (hot tanh reads as crushed), no naked sine tones.
+- After ANY edit to the inline script: extract via the `<body>\n<script>` regex,
+  `node --check`, confirm `document.body.appendChild(d);` survived. Guard:
+  `tests/worlds-splash.cjs` (per-world class, staging census, stinger files, CLOSE
+  pins).
+
+## The Living Atlas — every Honey act is a living country (Aug-31)
+- ALL NINE Honey acts ride four-plate PANORAMAS (`app-art/map-<act>-pano.jpg`,
+  all 5234×768 / aspect 6.815 — plate 1 is the act's original map, plates 2-4
+  are Gemini continuations, crossfade-stitched by scratchpad/atlasbuild.py).
+  Everything lives in trail.js: the per-act `LIV` config table (meadow's entry
+  IS the `MW` object), `lvCfg()` = config for `state.trailAct`, and the
+  `LV`/`isMW` branch of viewAct. Per-act config: img, d (route: MW.d / RD_B /
+  RD_C rhythms), t (cache spots), legEdge (shared `LEGS4`), themed legName,
+  wander {g,name}, lms (1 landmark off-meadow), heroes (1 off-meadow), pokes
+  (PK_A/PK_B), amb (which creature systems this country fields: butter / petals
+  / birds / seeds / wisps / bees / water[] — meadow has all, library has dust
+  and wisps, the strait gulls and water glints…).
+- **Per-act progress buckets** (`mwP(c)` keys off `state.trailAct`): the meadow
+  keeps its historical `tr(c).mw`; every other act lives in `tr(c).lv[actId]`.
+  Landmark days, hero days, rv, pokes, wanderer must NEVER collide across acts.
+  `mwSeed` salts with the act, so each country rolls its own daily gifts.
+- **The reveal law** (unchanged, now everywhere): camera clamp, no fog, stops
+  beyond the edge not rendered, signpost teases the act's OWN next leg,
+  `mwUnroll` glides on a new leg. devUnlock peeks without spending.
+- **KIT rounds speak the country's verbs** — `KIT_SKIN` per act reskins the
+  three mechanics' copy (library shelves volumes, the forum sets mosaics, the
+  storm charges sparks…); off-meadow the catch card fronts the act's `glyph`
+  emoji instead of the butterfly SVG. Items carry their act in `it.a`
+  (`kitItem(w, kind, act)`); `buildQuiz` injects kits for ANY act in `LIV`.
+- **Landmarks + heroes off-meadow**: 1 landmark (side round, +12/day) and 1
+  hero (1-word challenge, +5 first win/day) per act, art `lv-lm-<act>.svg` /
+  `lv-hero-<act>.svg` (sprites keyed from a flat #1040A0 field — but a BLUE
+  subject needs a magenta #E800E8 key, see the storm pine; interior key-colour
+  holes must be zeroed too). `lm.art`/`lmArt()` replaced the old MW_LM_ART.
+- **The wishing-well law extends to heroes**: `anch:1` on a hero rides a
+  feature the painter already drew (halo + label, `.mw-hero.anch`, no sprite) —
+  the strait's lighthouse is the exemplar; its sprite still fronts the result
+  card via `img`. Never plant a sprite duplicate of a painted feature.
+- **Each country fields its OWN cast** (`LV.amb`). The meadow's butterflies,
+  worker bees and cherry petals belong to the meadow and must not appear
+  anywhere else. Fourteen further systems exist, each a plain CSS animation
+  driven by two custom properties (`--gd` duration, `--gl` delay), so the
+  render code only ever picks a cast: `mw-page` (paper on the air — library,
+  ulibrary, factory), `mw-leaf` (forum, roots, grandtrunk), `mw-rain` +
+  `mw-bolt` (storm, greysea), `mw-glow` (spores/heat), `mw-steam`, `mw-spark`
+  (forges), `mw-beam` (a sweeping lamp or spotlight), `mw-spin` (pinwheels —
+  blades with GAPS, a filled disc reads as a blemish on the painting),
+  `mw-conf` (the finish line), `mw-note` (the orchestra pit), `mw-pennant`,
+  `mw-star` (the observatory). There is no boat system: the strait, the Grey
+  Sea and the Far Shores all have boats PAINTED IN, and an emoji hull among
+  them read as a toy — the wishing-well law applies to ambient life too, so
+  those countries field gulls, water glints and a lamp instead. Scatter comes off the daily seed
+  via the local `spread()` helper, so a country looks like itself without
+  looking identical two days running. The flashing systems (bolt, rain, conf,
+  page, leaf) must `display:none` under both motion guards, not merely stop —
+  a bolt frozen mid-flash is a bright smear across the plate.
+- **Pokes shed the country's own stuff** (`POKE_SKIN`, one entry per LIV key —
+  all 20): gears in the junkyard, pages in the library, spray on the strait,
+  and each names its own daily prize. Poking is the one thing a child can do
+  on a board with no words attached, so it has to feel native.
+- **The buried trove**: one poke per country hides a one-time +30 find, seeded
+  by `mwFixed(c,'trove')` — the same hash as `mwSeed` but **without the date**,
+  so it sits still until found instead of re-rolling each morning. Recorded at
+  `mwP(c).tv`. It is the only find on the board that does not come back, which
+  is what makes it worth hunting.
+- **`mwEdge` decides by where the frontier ACTUALLY sits.** The frontier is not
+  always inside the country being drawn; falling through to "the last stop"
+  meant every country the child had not reached yet opened FULLY — whole road,
+  every landmark, every hidden thing. Behind this country → show only the road
+  in; past it → it has been walked and may show all of itself.
+- **The fork pair stays Meadow-only** (`pair` absent elsewhere; `mwPairOpen`
+  guards on it). The child's own avatar rides every LIV road.
+  Guards: `tests/living-meadow.cjs` (the pilot, 55 asserts) +
+  `tests/living-atlas.cjs` (all 8 new acts: panos, casts, per-act buckets,
+  themed kit copy, the anchored hero, the windowed arrival off-meadow).
+- **ALL TWENTY JOURNEYS ARE PANORAMIC** (Aug-31): the 9 Honey acts, the 6
+  Advanced expeditions and the 5 Ultra landmarks each have their own
+  `map-<id>-pano.jpg` (5234×768). Expedition and Ultra plates are the anime /
+  Ghibli register of `voice/pipeline/act-maps.py` (dusk for expeditions, night
+  for Ultra), built by scratchpad/advpano.py + advbuild.py.
+  - `livKey()` is the ONE key for config and save bucket: `state.tq.jk` if a
+    side round is in flight, else the Ultra slug when `trailView==='ultra'`,
+    else `trailAct`. Ultra has no trailAct, and a quiz leaves the ultra view —
+    without jk a champion's win banks against whatever act was last walked.
+  - `livLayer(c, LV, edge, rv)` builds the whole living layer and is SHARED by
+    `viewAct` and `viewUltraAct`; `livWords(c, n)` picks the side-play words —
+    the current unit on the teaching roads, `uWordPick` (the hardest words in
+    the library) on the Ultra road, where there are no units at all.
+  - **Hidden treasures obey the reveal law**: the three caches (`LV.t`) and the
+    three seeded secrets (`fogLayer(c, key, edge)`) are spread across the whole
+    panorama, and anything past the earned bend is NOT RENDERED. Ultra's window
+    reaches past the furthest OPEN stop, because its spine is non-linear (two
+    stops stand open at once) — not merely past the last one cleared.
+  - `uOpen` now honours devUnlock, so test mode opens all five landmarks.
+  - Guard: `tests/living-advanced.cjs` (panos, casts, caches, the paying-champion
+    reveal check, the jk bucket, and Back returning to the champions' road).
+- **Splash skip bug fixed** (Aug-31): `sched` only flips once `brand.play()`'s
+  promise RESOLVES, so a second tap arriving before that resolution fell into
+  the "turn the sound on" branch again and the show refused to skip (~1 in 4).
+  `soundTap` records synchronously that one tap has been spent there.
+
+## The Champion's Expedition — bright boards, visible secrets (NO fog)
+- The expedition layer (trail.js, `fogLayer`/`uSpots`/`uP`) puts three per-child seeded
+  secrets on EVERY board — a word-wisp tap-gift (+8), a rival best-of-3 duel (+25), and a
+  gate: the **Hidden Pass** on Ultra (its 3-word chain opens the NEXT landmark early) or
+  the **Cartographer's Gate** on the teaching road (+20). Ultra also runs the non-linear
+  spine: two open stops at once, 3-of-4 opens the next landmark, a stop is EARNED at 70%+
+  in a real session (never on Train tap), and all four stops + all three secrets = the 🏅
+  emblem. Guard: `tests/champion-expedition.cjs`.
+- **The fog of war is DELETED and must not return.** It shipped for three days as a dark
+  veil with scout-to-clear cells; the play-test verdict was immediate ("why is the map so
+  dark and just a focal point?" — Ahana, with the parent asking for its removal). The
+  boards stay bright; surprise lives in the visible markers, the chests, the ambush and
+  the trivia — never in hiding the painting. `fogLayer` now returns only the marker layer.
+- **Quiz items serve themselves** (`tqAutoSay`/`tqAutoNext` in trail.js): a spell item
+  says its word 450ms after arriving, and an answered item advances itself — 1.1s on a
+  right answer, 3.2s on a wrong one so the correct spelling can actually be read. The
+  child was pressing the speaker button and then Enter twice per word. Guard:
+  `tests/ux-826.cjs`.
+
+## The 130,000-word library — core plus the championship shard
+- `words-full.js` holds the generated core (128,197 records, a JSON string).
+  `words-hard.js` is the **championship shard**: 1,915 long, obscure and
+  foreign-origin words the core never had, gathered field by field across 60
+  subjects. `fullWords()` merges it via `mergeHard()` (idempotent — it stamps a
+  non-enumerable `_hard` on the array), and `loadFullLibrary` fetches it right
+  after the core. Live total: **130,030** after `safeWord` filtering, which is
+  why "130,000" is quoted as a round FLOOR, the same convention the bank has
+  always used ("over 128,000", never "128,491").
+- **Never put words-hard.js in index.html.** It rides the on-demand library
+  path; the boot budget is 5.03MB across 42 files.
+- Every shard record is checked three ways, by the generator AND again by the
+  build: the definition never contains the word (no leaked spellings), the
+  sentence always uses it, and both are safe for a ten-year-old.
+- Each record is tagged `championship`, and a word joins a Theme Journey when
+  the theme's id is in its `t` tags — so **The Championship Words** journey
+  assembles itself with no classifier at all (`themes-data.js`, cluster `mind`,
+  no `re` field).
+- **`hardPool()` keys its cache on the library's LENGTH, not a boolean.** It
+  used to rebuild only when the full library first arrived; the shard merges
+  *after* that, so ~1,900 of the hardest words in the bank would never have
+  reached the Ultra road or the Daily Buzz. 42 of them now sit in the pool's
+  top 400.
+- **The library count and the VOICE count are different numbers and must stay
+  that way.** The shard ships no recorded clips: `wordClip()` returns null for
+  a word outside the manifest and `deviceSpeak` falls back to device speech. So
+  the library is offered as 130,000 while "Over 128,000 words spoken aloud",
+  the neural-voice FAQ, the clip manifest and voice-cdn.js all stay at 128,000.
+  Raising those would misdescribe what a parent is paying for. Guard:
+  `tests/word-bank.cjs`, which checks the claim and the shard as a PAIR — the
+  failure it exists to catch is claiming 130,000 without shipping the words.
+
+## The research rig — there is NO hosted backend, and there must never be one
+- "The backend" is a LOCAL rig, deliberately: privacy.html promises nothing is ever
+  transmitted, and that claim is load-bearing. Three pieces:
+  - **`telemetry.js` (`SB_TM`)** ships in index.html but records NOTHING until a
+    grown-up arms **Settings → Testing tools → Research capture** (PIN-gated). Armed,
+    it logs taps as viewport-% coordinates (heatmaps survive any screen size), the
+    screen + `data-act` hit, 5s screen-time heartbeats, JS errors, session outcomes
+    (`k:'sess'`) and the end-of-session 😍🙂😕 pulse (`k:'react'`, shown only while
+    armed) — to localStorage `sb_tm_log`, capped 12k events, NO name/age/typed words.
+    Export = `sb-research.json` from the same drawer.
+  - **`backend.html` is the operator console and is NEVER DEPLOYED** — not to
+    gh-pages, not anywhere. It runs from the repo, ingests dropped `sb-research.json`
+    files (or the same-origin local log), and renders Overview / tap Heatmap /
+    Screens / Actions (incl. dead taps) / Sessions / Reactions / Errors / Testing.
+    `BK.load(json)` is the test hook. Do not add it to any deploy copy list.
+  - **privacy.html §5 documents the capture** (opt-in, on-device, parent-erasable) —
+    updated 30 Aug 2026 with the effective date moved, per the policy-first rule.
+  Guard: `tests/telemetry.cjs` (unarmed silence, armed shapes, no-child-data export,
+  console ingestion). Bug reports (`sb_bugs` + the 🐞 sidebar, `tests/bug-sidebar.cjs`)
+  and voice flags are separate exports that ride the same philosophy.
 
 ## The Atlas is a journey on scenery, not a painting with pins
 - **THE PAINTING RUNS NEAR FULL AND THE FOG MEANS SOMETHING.** (Reversed Aug 2026 after
@@ -1036,6 +1344,14 @@ out of saga2.js so a retune cannot quietly undo them.
   the browser (incognito showing the old build is the tell that it is not cache).
   Site weight today: **183MB** — voice 53MB, avatars 33MB, app-art 7.6MB. It was 256MB,
   over the line, until the books moved off it (below).
+- **Every book image is `loading="lazy"`** — `lazyImgs()` in mkbooks.js stamps it at emit,
+  one choke point for ~100 `<img>` per volume. Eager, a tapped spine downloaded every
+  plate in the book at once, which read as "the shelf takes a long time to load". The
+  newer generator draws mascots INLINE, so the deploy script's used-avatars grep can
+  legitimately match nothing — it is wrapped `|| true` because `pipefail` + an empty grep
+  killed the publish silently at "assembling". A session that publishes needs
+  `aayuvis/bizzing-bee-books` attached with push access (add_repo), or the git proxy
+  refuses the credential at the final push.
 - **The books are NOT on this site any more.** They are published from
   `aayuvis/bizzing-bee-books` → https://aayuvis.github.io/bizzing-bee-books/ , by
   `books/deploy-books-repo.sh` run from `spellbound-app/`. This branch keeps 24 redirect

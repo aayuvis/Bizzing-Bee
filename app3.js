@@ -1605,6 +1605,69 @@ function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
         <button data-act="wordCardClose" style="padding:12px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px">Close</button>
       </div>
     </div></div>`; }
+/* ---- THE SET DECK -----------------------------------------------------------
+   "The Word Atlas Practice should have a view-all-cards button on top that shows
+   all cards in the set as toggled pop-up cards."
+
+   Practice hands one card at a time, which is the right way to DRILL and the
+   wrong way to get your bearings: a child part-way through set 3 had no way to
+   see what set 3 actually holds without walking every card. This is the whole
+   set at once — one row per word, tap a row and it opens into the full card the
+   deck would have shown (respelling, both speaker buttons, meaning, sentence,
+   the memory hook, IPA and part-of-speech chips). Several may stand open, so two
+   words can be read against each other.
+
+   It is a READING surface, deliberately. Nothing in here marks a word mastered
+   or missed — "Go to this card" hands the child back to the drill at that word,
+   and the drill does the scoring, exactly as it did before. */
+/* iconSVG falls back to the GRID glyph for a name it does not carry, silently —
+   so a chevron asked for by a name from the other icon set draws a little grid on
+   every row and nothing reports it. This one is drawn here, in app2's stroke
+   grammar, so it cannot go missing. */
+function chevSVG(sz,up){ sz=sz||17; return `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;transition:transform .2s;transform:rotate(${up?180:0}deg)"><path d="M6 9.5l6 6 6-6"/></svg>`; }
+function setDeckCard(w,i,open){
+  const pr=pronFor(w.w)||{}; const p=w.p||pr.p||'', sy=w.sy||pr.sy||'', ps=w.ps||pr.ps||'', o=w.o||pr.o||'';
+  const ipa=(()=>{ try{ return (typeof ipaOf==='function')?(ipaOf(w.w,p)||''):''; }catch(e){ return ''; } })();
+  const mast=state.luMastered&&state.luMastered[nkey(w.w)];
+  const chip=(t,acc)=>`<span style="font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:999px;background:var(--chip);color:${acc?'var(--accent)':'var(--muted)'};white-space:nowrap">${t}</span>`;
+  return `<div style="border:1px solid ${open?'var(--accent)':'var(--line)'};border-radius:16px;background:var(--bg2);overflow:hidden;${open?'box-shadow:var(--glow)':''}">
+    <button data-act="deckTog" data-arg="${i}" aria-expanded="${open?'true':'false'}" style="width:100%;display:flex;align-items:center;gap:10px;padding:12px 13px;text-align:left;background:transparent;border:0">
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:800;color:var(--muted);min-width:20px">${i+1}</span>
+      <span style="flex:1;min-width:0;font-family:var(--display);font-weight:800;font-size:16px;color:var(--text);overflow-wrap:anywhere;word-break:break-word;line-height:1.25">${esc(w.w)}</span>
+      ${mast?`<span style="color:var(--good);flex-shrink:0" title="Mastered">${iconSVG('check',15)}</span>`:''}
+      <span style="flex-shrink:0;color:var(--accent);display:inline-flex">${chevSVG(17,open)}</span>
+    </button>
+    ${open?`<div style="padding:0 15px 15px;border-top:1px solid var(--line)">
+      ${sy&&sy.toLowerCase()!==(w.w||'').toLowerCase()?`<div style="font-family:var(--display);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.04em;margin-top:11px;overflow-wrap:anywhere;word-break:break-word">${esc(sy)}</div>`:''}
+      <div style="display:flex;gap:9px;margin:11px 0 2px">
+        <button data-act="deckSay" data-arg="${escA(w.w)}" aria-label="Hear the word" title="Hear the word" style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',19)}</button>
+        <button data-act="deckSaySlow" data-arg="${escA(w.w)}" aria-label="Hear it slowly" title="Hear it slowly" style="width:40px;height:40px;border-radius:50%;background:var(--surface2);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center">${tortoiseSVG(21)}</button>
+      </div>
+      ${w.d?`<div style="font-size:14px;color:var(--text);line-height:1.5;margin-top:11px">${esc(w.d)}</div>`:''}
+      ${w.s?`<div style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
+      ${(w.r||w.h)?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:8px 11px"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',14)}</span><span>${esc(w.r||w.h)}</span></div>`:''}
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">${p?chip('/ '+esc(p)+' /',1):''}${ipa?chip(esc(ipa),1):''}${ps?chip(esc(ps)):''}${o?chip(esc(o)+' origin'):''}</div>
+      <button data-act="deckGo" data-arg="${i}" style="margin-top:13px;width:100%;padding:10px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:7px">${iconSVG('arrow',15)} Go to this card</button>
+    </div>`:''}
+  </div>`; }
+function viewSetDeck(){
+  const ws=learnWords(); if(!state.deckOpen) return '';
+  const op=state.deckCards||{}; const allOpen=ws.length&&ws.every((x,i)=>op[i]);
+  const label=state.sessionLabel||'This set';
+  return `<div style="position:fixed;inset:0;z-index:132;display:flex;flex-direction:column;background:rgba(20,12,4,.55)" data-act="deckClose">
+    <div data-act="noop" style="background:var(--bg);margin:auto;width:min(560px,100%);max-height:92vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -20px 60px rgba(20,10,30,.4);animation:sb-pop .3s cubic-bezier(.2,1.4,.4,1) both">
+      <div style="display:flex;align-items:center;gap:10px;padding:15px 16px 12px;border-bottom:1px solid var(--line);flex-shrink:0">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--display);font-weight:800;font-size:17px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(label)}</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:2px">${ws.length} card${ws.length===1?'':'s'} · tap one to open it</div>
+        </div>
+        <button data-act="deckAll" style="flex-shrink:0;padding:8px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${allOpen?'Close all':'Open all'}</button>
+        <button data-act="deckClose" aria-label="Close" title="Close" style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center">${iconSVG('close',17)}</button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:13px 16px 20px;display:flex;flex-direction:column;gap:9px">
+        ${ws.length?ws.map((w,i)=>setDeckCard(w,i,!!op[i])).join(''):'<div style="padding:26px;text-align:center;color:var(--muted);font-weight:600">No cards in this set yet.</div>'}
+      </div>
+    </div></div>`; }
 // memoize the heavy origin/tier filters — computed once over the core set, reused every render
 let _catStatic=null;
 function catStatic(){ if(_catStatic) return _catStatic; const nsf=SB_DATA.nsf||[];
@@ -2063,6 +2126,19 @@ const app = {
   openWordCard:()=>{ const w=wordOfHour(); if(!w){ flash('No word right now — try again soon'); return; } set({wordCard:w}); try{ say(w.w); }catch(e){} },
   wordCardSay:(w)=>{ try{ say(w); }catch(e){} },
   wordCardClose:()=>set({wordCard:null}),
+  /* the set deck — read the whole set, then go back to drilling it */
+  deckOpen:()=>set({deckOpen:true,deckCards:state.deckCards||{}}),
+  deckClose:()=>set({deckOpen:false}),
+  deckTog:(i)=>{ const o=Object.assign({},state.deckCards||{}); const k=+i;
+    if(o[k]) delete o[k]; else o[k]=1; set({deckCards:o}); },
+  deckAll:()=>{ const ws=learnWords(); const o={};
+    if(!(ws.length&&ws.every((x,i)=>(state.deckCards||{})[i]))) ws.forEach((x,i)=>{ o[i]=1; });
+    set({deckCards:o}); },
+  deckSay:(w)=>{ try{ say(w); }catch(e){} },
+  deckSaySlow:(w)=>{ try{ deviceSpeak(w,0.55); }catch(e){} },
+  /* hand the child back to the drill at the word they were reading. The deck
+     shows the same list the flashcard walks, so the index is the same index. */
+  deckGo:(i)=>set({deckOpen:false,cardIdx:Math.max(0,+i||0),cardDone:false,coachCardView:true}),
   wohPractise:(word)=>{ set({wordCard:null}); try{ app.reviseOne(word); }catch(e){ flash('Could not open practice'); } },
   // ===== Subscription tiers (PIN-gated from Settings) =====
   openTiers:()=>{ if(typeof pinGate==='function'){ pinGate(()=>set({showTiers:true}),'Account & plan'); } else set({showTiers:true}); },
@@ -2653,7 +2729,8 @@ const app = {
   /* ---- List Builder: nine facets, any number at once ---- */
   b2Tog:(kv)=>{ const i=kv.indexOf(':'); const k=kv.slice(0,i); const raw=kv.slice(i+1);
     const B=b2State();
-    if(k==='starts'||k==='has'){ B[k]=''; }
+    if(k==='starts'||k==='has'||k==='ends'){ B[k]=''; }
+    else if(k==='pool'){ B.pool=''; }
     else if(k==='wl'){ B.wlmin=3; B.wlmax=24; }
     else { const v=+raw; const a=B[k]||[]; const at=a.indexOf(v);
       if(at>=0) a.splice(at,1); else a.push(v); B[k]=a; }
@@ -2667,6 +2744,10 @@ const app = {
   b2WlMax:(v)=>{ const B=b2State(); B.wlmax=Math.max(3,Math.min(24,+v||24)); if(B.wlmin>B.wlmax) B.wlmin=B.wlmax; render(); },
   b2TxtStarts:(v)=>{ b2State().starts=String(v||'').toLowerCase().replace(/[^a-z]/g,'').slice(0,12); render(); },
   b2TxtHas:(v)=>{ b2State().has=String(v||'').toLowerCase().replace(/[^a-z]/g,'').slice(0,12); render(); },
+  b2TxtEnds:(v)=>{ b2State().ends=String(v||'').toLowerCase().replace(/[^a-z]/g,'').slice(0,12); render(); },
+  /* Draw-from is one choice, not a set — "my missed words" and "words I've mastered"
+     are contradictory, so tapping one replaces the other rather than ANDing to zero */
+  b2Pool:(v)=>{ const B=b2State(); B.pool = (B.pool===v)?'':String(v||''); state.bldNaming=false; render(); },
   b2QQtag:(v)=>{ b2State().qtag=String(v||'').slice(0,24); render(); },
   b2QQorig:(v)=>{ b2State().qorig=String(v||'').slice(0,24); render(); },
   b2Tab:(k)=>{ b2State().tab = (k==='all')?'all':'list'; render(); },
@@ -7680,8 +7761,13 @@ function viewTrain(){
       const w=SB_TRAIL_WHERE(S.trailReturn); if(!w) return '';
       return `<button data-act="trailUnit" data-arg="${escA(w.unit)}" style="display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 13px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">
         ${iconSVG('steps',14)} From the Word Atlas · ${esc(w.act)} · stop ${w.stop} of ${w.total}</button>`; }catch(e){ return ''; } })();
+  /* THE WHOLE SET, ON TOP. A drill hands one card at a time; this is the way to
+     see what the set holds without walking it. It sits with the back pill
+     because that is the row a child reads before they start. */
+  const nCards=(S.sessionWords&&S.sessionWords.length)||0;
+  const deck=nCards>1?`<button data-act="deckOpen" title="See every card in this set" style="display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:var(--r-pill,999px);background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12.5px">${iconSVG('grid',15)} View all ${nCards} cards</button>`:'';
   return `<div style="max-width:620px;margin:0 auto">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">${backPill('exitTrain',S.trailReturn?'Back to the stop':'Exit',null)}<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">${backPill('exitTrain',S.trailReturn?'Back to the stop':'Exit',null)}${deck}<div style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${S.sessionDone} done · ${S.sessionRight} correct</div></div>
     ${from}
     <div style="height:7px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-bottom:22px"><div style="height:100%;background:var(--accent);border-radius:999px;width:${goalPctNum}%;transition:width .4s"></div></div>
     ${(S.coachCardView&&!S.sessionOver)?coachFlashCard():trainerCard()}
@@ -7917,8 +8003,21 @@ function builtWords(key){ const bl=(active().builtLists||{})[key]; if(!bl) retur
 let _b2Idx = null;
 function b2Idx(){
   const src = (window.SB_DATA && SB_DATA.nsf) || [];
-  if (_b2Idx && _b2Idx.n === src.length) return _b2Idx;
-  const W=[], Y=[], L=[], O=[], P=[], C=[], NT=[], TG=[], REC=[];
+  const key = src.length + '|' + (window.SB_HOM?1:0) + (window.SB_WVOICE?1:0) + (window.SB_SCRIPPS?1:0);
+  if (_b2Idx && _b2Idx.key === key) return _b2Idx;
+  const W=[], Y=[], L=[], O=[], P=[], C=[], NT=[], TG=[], REC=[], SY=[], FL=[], F=[];
+  /* the sound tables and the voice manifest arrive on the lazy queue, so the index
+     is keyed on whether they are HERE — not just on the corpus length, or a builder
+     opened before sounds-data.js landed would show "homophone 0" for the session */
+  /* SB_HOM is an ARRAY OF GROUPS, not a word-keyed map — indexing it by a word
+     silently yields undefined, so the homophone flag was set for nobody. The app
+     already has the accessors that get this right; use them rather than the raw
+     tables. altPron/diacritic are prototype-safe for the same reason homIndex is:
+     "constructor" is a real library word. */
+  const HOM=(window.SB_HOM? homIndex() : null);
+  const ALT=(window.SB_ALT_PRON||null), DIA=(window.SB_DIACRITICS||null);
+  let VOICE=null; try{ if(window.SB_WVOICE) VOICE=new Set(String(SB_WVOICE).split('|')); }catch(e){}
+  let CHAMP=null; try{ if(window.SB_SCRIPPS) CHAMP=new Set(SB_SCRIPPS.map(x=>String(x&&x.w||x).toLowerCase())); }catch(e){}
   const oL=[], pL=[], cL=[], nL=[], tL=[];
   const oI=Object.create(null), pI=Object.create(null), cI=Object.create(null),
         nI=Object.create(null), tI=Object.create(null);
@@ -7929,6 +8028,19 @@ function b2Idx(){
     const s=String(w.w);
     if(!/^[a-z][a-z]*$/.test(s) || s.length<3) continue;   // no proper nouns, no fragments
     W.push(s); Y.push(w.y||3); L.push(s.length); REC.push(w);
+    FL.push(s.charCodeAt(0)-97);
+    /* syllables: the sy field is dot-separated ("aar.on"); the respelling's hyphens
+       are the fallback, and a word with neither counts as one */
+    const sy=String(w.sy||''); const pr=String(w.p||'');
+    SY.push(Math.min(9, sy?sy.split('.').length : (pr?pr.split('-').length:1)));
+    let f=0;
+    if(w.d) f|=1; if(w.s) f|=2; if(w.m && String(w.m).toLowerCase()!==s) f|=4;
+    if(VOICE && VOICE.has(s)) f|=8;
+    if(HOM && HOM[s]) f|=16;
+    if(ALT && altPron(s)) f|=32;
+    if(DIA && diacritic(s)) f|=64;
+    if(CHAMP && CHAMP.has(s)) f|=128;
+    F.push(f);
     O.push(put(oL,oI,w.o)); P.push(put(pL,pI,w.ps));
     let cls='plain'; try{ cls=(window.SB_TRICK?SB_TRICK.anal(w).cls:'plain')||'plain'; }catch(e){}
     C.push(put(cL,cI,cls));
@@ -7937,7 +8049,7 @@ function b2Idx(){
     NT.push(String(w.nt||'').split('|').map(x=>x.trim()).filter(Boolean).map(x=>put(nL,nI,x)));
     TG.push((Array.isArray(w.t)?w.t:[]).map(x=>put(tL,tI,x)).filter(x=>x>=0));
   }
-  return (_b2Idx={ n:src.length, N:W.length, W,Y,L,O,P,C,NT,TG,REC,
+  return (_b2Idx={ key, n:src.length, N:W.length, W,Y,L,O,P,C,NT,TG,REC,SY,FL,F,
                    oL,pL,cL,nL,tL });
 }
 
@@ -7948,8 +8060,8 @@ const B2_BAND = ['','Egg','Hatchling','Forager','Worker','Scout','Ranger','Guard
 const B2_SIZES = [10,15,20,25,30,50,100,250];
 
 function b2State(){ const S=state;
-  if(!S.b2) S.b2={ lv:[], bee:[], cls:[], orig:[], tag:[], pos:[],
-                   size:20, wlmin:3, wlmax:24, starts:'', has:'',
+  if(!S.b2) S.b2={ lv:[], bee:[], cls:[], orig:[], tag:[], pos:[], syl:[], fl:[], flag:[],
+                   pool:'', size:20, wlmin:3, wlmax:24, starts:'', has:'', ends:'',
                    qtag:'', qorig:'', tab:'list', seed:1 };
   return S.b2; }
 const b2Has=(k,v)=>b2State()[k].indexOf(v)>=0;
@@ -7966,9 +8078,32 @@ function b2Pass(X,i,skip){
     for(let j=0;j<b.length;j++) if(S.bee.indexOf(b[j])>=0){h=true;break;} if(!h) return false; }
   if(skip!=='tag'  && S.tag.length){ const t=X.TG[i]; let h=false;
     for(let j=0;j<t.length;j++) if(S.tag.indexOf(t[j])>=0){h=true;break;} if(!h) return false; }
+  if(skip!=='syl'  && S.syl.length  && S.syl.indexOf(X.SY[i])<0) return false;
+  if(skip!=='fl'   && S.fl.length   && S.fl.indexOf(X.FL[i])<0) return false;
+  /* the flag chips are ANDed, not ORed: "has a sentence" plus "has a recorded voice"
+     means both, because each one is a promise about the card a child will see */
+  if(skip!=='flag' && S.flag.length){ for(let j=0;j<S.flag.length;j++) if(!(X.F[i]&S.flag[j])) return false; }
+  if(skip!=='pool' && S.pool){
+    const w=X.W[i];
+    if(S.pool==='champ'   && !(X.F[i]&128)) return false;
+    if(S.pool==='missed'  && !b2Mine().miss[w]) return false;
+    if(S.pool==='mastered'&& !b2Mine().mast[w]) return false;
+    if(S.pool==='todo'    &&  b2Mine().mast[w]) return false;
+  }
   if(S.starts && X.W[i].indexOf(S.starts)!==0) return false;
   if(S.has    && X.W[i].indexOf(S.has)<0) return false;
+  if(S.ends   && X.W[i].slice(-S.ends.length)!==S.ends) return false;
   return true;
+}
+/* the child's own history, rebuilt per render — c.missed caps at 200 and luMastered
+   is a plain map, so this is cheap and always current */
+let _b2Mine=null, _b2MineAt=0;
+function b2Mine(){
+  const now=Date.now(); if(_b2Mine && now-_b2MineAt<400) return _b2Mine;
+  const c=active()||{}, miss=Object.create(null), mast=Object.create(null);
+  for(const m of (c.missed||[])) if(m&&m.w) miss[String(m.w).toLowerCase()]=1;
+  for(const k in (state.luMastered||{})) if(state.luMastered[k]) mast[String(k).toLowerCase()]=1;
+  _b2MineAt=now; return (_b2Mine={miss,mast});
 }
 function b2Hits(){ const X=b2Idx(), out=[];
   for(let i=0;i<X.N;i++) if(b2Pass(X,i,null)) out.push(i); return out; }
@@ -7983,6 +8118,11 @@ function b2Counts(kind,len){
     else if(kind==='cls'){ c[X.C[i]]++; }
     else if(kind==='orig'){ if(X.O[i]>=0) c[X.O[i]]++; }
     else if(kind==='pos'){ if(X.P[i]>=0) c[X.P[i]]++; }
+    else if(kind==='syl'){ if(X.SY[i]<len) c[X.SY[i]]++; }
+    else if(kind==='fl'){ if(X.FL[i]>=0 && X.FL[i]<len) c[X.FL[i]]++; }
+    else if(kind==='flag'){ for(let j=0;j<len;j++) if(X.F[i]&(1<<j)) c[j]++; }
+    else if(kind==='pool'){ const w=X.W[i], M=b2Mine();
+      c[0]++; if(X.F[i]&128) c[1]++; if(M.miss[w]) c[2]++; if(M.mast[w]) c[3]++; else c[4]++; }
   }
   return c;
 }
@@ -8079,8 +8219,38 @@ function viewBuilder(){
   const fld=(act,key,ph,val)=>`<input type="text" data-inp="${act}${key.charAt(0).toUpperCase()+key.slice(1)}" data-fkey="b2${key}" value="${escA(val||'')}" placeholder="${escA(ph)}" maxlength="12"
     style="flex:1 1 120px;min-width:0;padding:8px 11px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font:inherit;font-size:13px;font-weight:700">`;
 
+  /* 9 · which words to draw from at all */
+  const POOLS=[['','Every word'],['champ','Championship words'],['missed','Words I got wrong'],
+               ['mastered','Words I’ve mastered'],['todo','Not mastered yet']];
+  const cPool=b2Counts('pool',5);
+  const poolChips=POOLS.map(([v,lab],i)=>{ const on=(B.pool||'')===v; const cnt=cPool[i];
+    return `<button data-act="b2Pool" data-arg="${escA(v)}"${(!cnt&&!on)?' disabled':''}
+      style="display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:7px 11px;border-radius:10px;font-weight:750;font-size:12.5px;line-height:1.2;
+      border:1px solid ${on?'var(--action,var(--accent))':'var(--line)'};
+      background:${on?'color-mix(in srgb,var(--action,var(--accent)) 13%,var(--paper,#fff))':'var(--surface2)'};
+      color:${on?'var(--action,var(--accent))':(cnt?'var(--text)':'var(--muted)')};${(!cnt&&!on)?'opacity:.45;cursor:default':'cursor:pointer'}">
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${esc(lab)}</span>
+      <span style="font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;opacity:.72;flex:0 0 auto">${K(cnt)}</span></button>`; }).join('');
+  /* 10 · syllables */
+  const cSyl=b2Counts('syl',10);
+  const sylChips=[1,2,3,4,5,6,7,8,9].filter(i=>cSyl[i]||b2Has('syl',i))
+    .map(i=>chip('syl',i,(i>=6?'6+':String(i)),cSyl[i],b2Has('syl',i))).join('');
+  /* 11 · first letter */
+  const cFl=b2Counts('fl',26);
+  const flChips=Array.from({length:26},(_,i)=>i).filter(i=>cFl[i]||b2Has('fl',i))
+    .map(i=>chip('fl',i,String.fromCharCode(65+i),cFl[i],b2Has('fl',i))).join('');
+  /* 12 · what the word card will actually carry, and 13 · how it sounds */
+  const FLAGS=[[1,'A meaning'],[2,'An example sentence'],[4,'A known misspelling'],[8,'A recorded voice']];
+  const SOUND=[[16,'Sounds like another word'],[32,'Two ways to say it'],[64,'Wears an accent mark']];
+  const cFlag=b2Counts('flag',8);
+  const bit=b=>Math.round(Math.log2(b));
+  const flagChips=FLAGS.map(([b,lab])=>chip('flag',b,lab,cFlag[bit(b)],b2Has('flag',b))).join('');
+  const soundChips=SOUND.map(([b,lab])=>chip('flag',b,lab,cFlag[bit(b)],b2Has('flag',b))).join('')
+    || `<span style="font-size:12px;color:var(--muted)">sound tables still loading…</span>`;
+
   const nSel=B.lv.length+B.bee.length+B.cls.length+B.orig.length+B.tag.length+B.pos.length
-    +(B.starts?1:0)+(B.has?1:0)+((B.wlmin>3||B.wlmax<24)?1:0);
+    +B.syl.length+B.fl.length+B.flag.length+(B.pool?1:0)
+    +(B.starts?1:0)+(B.has?1:0)+(B.ends?1:0)+((B.wlmin>3||B.wlmax<24)?1:0);
 
   const rail=`<div style="background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;align-self:start">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface2)">
@@ -8099,9 +8269,15 @@ function viewBuilder(){
     ${sec('Language of origin', B.orig.length?B.orig.length+' chosen':'any',
       `<div style="width:100%;margin-bottom:8px">${fld('b2Q','qorig','Search languages…',B.qorig)}</div>${origChips}`)}
     ${sec('Part of speech', B.pos.length?B.pos.length+' chosen':'any', posChips)}
+    ${sec('Draw from', (POOLS.find(p=>p[0]===(B.pool||''))||POOLS[0])[1], poolChips)}
+    ${sec('Syllables', B.syl.length?B.syl.length+' chosen':'any', sylChips)}
+    ${sec('First letter', B.fl.length?B.fl.map(i=>String.fromCharCode(65+i)).join(' '):'any', flChips)}
+    ${sec('Must come with', B.flag.filter(f=>f<16).length?B.flag.filter(f=>f<16).length+' chosen':'anything', flagChips)}
+    ${sec('How it sounds', B.flag.filter(f=>f>=16).length?B.flag.filter(f=>f>=16).length+' chosen':'any', soundChips)}
     <div style="padding:13px 14px">
-      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:9px"><h3 style="font-size:13px;font-weight:800;margin:0">Letters</h3></div>
-      <div style="display:flex;gap:7px">${fld('b2Txt','starts','Starts with…',B.starts)}${fld('b2Txt','has','Contains…',B.has)}</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:9px"><h3 style="font-size:13px;font-weight:800;margin:0">Letters</h3>
+        <span style="font-size:11.5px;font-weight:700;color:var(--muted)">${[B.starts&&('starts '+B.starts),B.has&&('has '+B.has),B.ends&&('ends '+B.ends)].filter(Boolean).join(' · ')||'any'}</span></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">${fld('b2Txt','starts','Starts with…',B.starts)}${fld('b2Txt','has','Contains…',B.has)}${fld('b2Txt','ends','Ends with…',B.ends)}</div>
     </div>
   </div>`;
 
@@ -8114,8 +8290,13 @@ function viewBuilder(){
     ...B.tag.map(v=>pill('tag',v,X.tL[v])),
     ...B.orig.map(v=>pill('orig',v,X.oL[v])),
     ...B.pos.map(v=>pill('pos',v,X.pL[v])),
+    ...B.syl.map(v=>pill('syl',v,(v>=6?'6+':v)+' syllable'+(v>1?'s':''))),
+    ...B.fl.map(v=>pill('fl',v,'starts '+String.fromCharCode(65+v))),
+    ...B.flag.map(v=>pill('flag',v,((FLAGS.concat(SOUND)).find(f=>f[0]===v)||[0,'flag'])[1])),
+    B.pool?pill('pool',B.pool,(POOLS.find(p=>p[0]===B.pool)||[0,''])[1]):'',
     B.starts?pill('starts',B.starts,'starts “'+B.starts+'”'):'',
     B.has?pill('has',B.has,'contains “'+B.has+'”'):'',
+    B.ends?pill('ends',B.ends,'ends “'+B.ends+'”'):'',
     (B.wlmin>3||B.wlmax<24)?pill('wl','reset',B.wlmin+'–'+(B.wlmax>=24?'24+':B.wlmax)+' letters'):''
   ].filter(Boolean).join('');
 
@@ -10850,6 +11031,7 @@ function overlays(){
   // Settings → Manage plan used to open *behind* Settings.
   if(S.qWord) h+=viewQuotesWordPop();
   if(S.wordCard) h+=viewWordCardPop();
+  if(S.deckOpen) h+=viewSetDeck();
   if(S.ttList) h+=viewTtList();
   if(S.showTiers) h+=viewTiersSheet();
   if(S.authSheet) h+=viewAuthSheet();

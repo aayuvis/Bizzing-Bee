@@ -115,7 +115,7 @@
     const r = (tr(c).st || {})[stKey(u, lap)] || {};
     const q = Math.max(r.q || 0, (doneMap(c)[u.id] || {})[lap] || 0);
     const p = Math.max(r.p || 0, q >= Math.round(gate() * 100) ? PGATE : 0);   // a passed quiz proves the words too
-    const sets = setsOf(u, lap), ss = r.ss || {};
+    const sets = setsOf(u), ss = r.ss || {};
     let played = 0, cleared = 0;
     for (let i = 0; i < sets; i++) { const v = ss[i] || 0; if (v > 0) played++; if (v >= PGATE) cleared++; }
     if (p >= PGATE && !played) played = cleared = 1;        // a legacy save that predates set tracking
@@ -246,17 +246,32 @@
      toll: a child who wants to move on may, and a child who wants the chapter
      whole can take it. Each set is a FIXED slice, so "set 3" is the same three
      dozen words every time it is opened and "done" means something. */
-  const poolOf = (u, lap) => ((window.SB_TRAIL_MAP && (window.SB_TRAIL_MAP[u.id] || {})[lap]) || []);
-  function setsOf(u, lap) {
+  /* A STOP'S SETS COME FROM THE STOP'S WHOLE WORD LIST, NOT FROM ONE LAP'S BAND.
+     The map stores each stop's words split into three difficulty bands, and the
+     sets used to be cut from whichever band the child's lap was on — so a Meadow
+     stop holding 75 words (exactly five rounds of fifteen) offered its lap-1
+     child the 48 that banded easy, which is four sets, and the owner asked why.
+     Measured across the whole map that was not a rounding edge: SEVENTY-NINE of
+     the 128 stops offered ONE set, and only one offered five. Read as one list
+     the same map gives 98 stops their five, and every one of the thirty that
+     falls short has a ceiling that was measured and proved (there are fourteen
+     -oir words in English; u77 can never hold more than one set).
+     The bands are not thrown away — they are the ORDER. pool[1] then pool[2]
+     then pool[3] means S1 is the stop's easiest fifteen and S5 its hardest, so
+     the ramp now runs inside the stop where a child can feel it, instead of
+     being a wall between three visits. */
+  const poolOf = u => { const p = (window.SB_TRAIL_MAP && window.SB_TRAIL_MAP[u.id]) || {};
+    return (p[1] || []).concat(p[2] || [], p[3] || []); };
+  function setsOf(u) {
     const n = roundSize(u);
-    const have = poolOf(u, lap).length || ((chOf(u).words || []).length);
+    const have = poolOf(u).length || ((chOf(u).words || []).length);
     return Math.max(1, Math.min(5, Math.ceil((have || n) / n)));
   }
   const setScores = (c, u, lap) => { const r = stRec(c, u, lap); return (r.ss = r.ss || {}); };
   /* which set to hand over next: the first never played, else the weakest one
      still under the gate, else simply the one after the last played */
   function nextSet(c, u, lap) {
-    const n = setsOf(u, lap), ss = setScores(c, u, lap);
+    const n = setsOf(u), ss = setScores(c, u, lap);
     for (let i = 0; i < n; i++) if (!(ss[i] > 0)) return i;
     let worst = 0; for (let i = 1; i < n; i++) if ((ss[i] || 0) < (ss[worst] || 0)) worst = i;
     if ((ss[worst] || 0) < PGATE) return worst;
@@ -265,7 +280,7 @@
   /* the public reading, for app3's end-of-round card */
   window.SB_TRAIL_SETS = uid => { try { const c = active();
     const u = unitsOf(courseOfId(uid)).find(x => x.id === uid); if (!c || !u) return null;
-    const lap = lapOf(c), n = setsOf(u, lap), ss = setScores(c, u, lap);
+    const lap = lapOf(c), n = setsOf(u), ss = setScores(c, u, lap);
     let played = 0, cleared = 0;
     for (let i = 0; i < n; i++) { const v = ss[i] || 0; if (v > 0) played++; if (v >= PGATE) cleared++; }
     return { sets: n, played, cleared, next: nextSet(c, u, lap) + 1, gate: PGATE };
@@ -285,7 +300,10 @@
        a stop has one, it is used and the chapter's own words simply lead it (the
        branch below already puts them in front); where it has none, or on the
        expedition course, the chapter's own text is still the whole lesson. */
-    const pool = (window.SB_TRAIL_MAP && (window.SB_TRAIL_MAP[u.id] || {})[lap]) || [];
+    /* The stop's WHOLE list, bands in order, so it is the same list setsOf counts
+       and S3 is the third slice of it. Reading one band here is what capped a
+       75-word Meadow stop at four sets. The band order carries the ramp. */
+    const pool = poolOf(u);
     if (course() === 'exp' || !pool.length) {
       /* The chapter's own text wins; anything it does not carry (the book chapters
          have no example sentences, some have no origin) is filled from the word
@@ -516,7 +534,7 @@
      marking it done mean anything. The old free-running rotation drifted out of
      alignment as soon as a pool was not an exact multiple of the round size. */
   app2.trailPractice = arg => { const u = unit(state.trailUnit); const c = active();
-    needMap(() => { const lap = lapOf(c), n = roundSize(u), sets = setsOf(u, lap);
+    needMap(() => { const lap = lapOf(c), n = roundSize(u), sets = setsOf(u);
       const si = (arg === undefined || arg === null || arg === '')
         ? nextSet(c, u, lap)
         : Math.max(0, Math.min(sets - 1, parseInt(arg, 10) || 0));
