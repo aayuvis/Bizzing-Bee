@@ -43,7 +43,49 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       o.noRankNames = !/Hatchling|Forager|Guardian/.test(rail ? rail.innerHTML : '');
       o.noLvFacet = !document.querySelector('[data-act=b2Tog][data-arg^="lv:"]');
 
-      /* a chip's count must equal what choosing it actually yields */
+      /* THE RAIL MUST BE REACHABLE. It shipped clipped: the stylesheet gives it
+         overflow-y:auto under a max-height, but the element also carried an inline
+         overflow:hidden, which outranks any rule in the sheet — so the max-height
+         became a crop with no scrollbar and 2,798px of filters had no way to be
+         reached or even seen. Two independent guards, because either alone can be
+         satisfied while the panel is still unusable: it must SCROLL, and collapsed
+         it must be about one screen rather than five. */
+      const railEl = document.querySelector('.b2-wrap>div:first-child');
+      const rcs = getComputedStyle(railEl);
+      o.railOverflow = rcs.overflowY;
+      o.railInlineOverflow = /(^|;)\s*overflow\s*:/.test(railEl.getAttribute('style') || '');
+      o.railScrolls = rcs.overflowY === 'auto' || rcs.overflowY === 'scroll';
+      o.railH = railEl.scrollHeight;
+      o.railFitsish = railEl.scrollHeight < 1400;
+      /* every group's header is reachable by scrolling, not just present in the DOM */
+      railEl.scrollTop = railEl.scrollHeight;
+      await new Promise(res => setTimeout(res, 120));
+      const heads = [...railEl.querySelectorAll('h3')];
+      const last = heads[heads.length - 1].getBoundingClientRect();
+      const rb = railEl.getBoundingClientRect();
+      o.lastHeadVisible = last.top >= rb.top - 2 && last.bottom <= rb.bottom + 2;
+      railEl.scrollTop = 0;
+      /* a group with something chosen opens itself — a filter you cannot see is how
+         you end up wondering why the count is what it is */
+      app.b2Clear(); await new Promise(res => setTimeout(res, 400));
+      o.flClosedFirst = !document.querySelector('[data-act=b2Tog][data-arg^="fl:"]');
+      app.b2Tog('fl:16'); await new Promise(res => setTimeout(res, 600));
+      o.flOpensWhenChosen = !!document.querySelector('[data-act=b2Tog][data-arg="fl:16"]');
+      /* and the header toggles it by hand */
+      app.b2Sec('syl'); await new Promise(res => setTimeout(res, 500));
+      o.sylToggles = !!document.querySelector('[data-act=b2Tog][data-arg^="syl:"]');
+      app.b2Sec('syl'); await new Promise(res => setTimeout(res, 500));
+      o.sylTogglesBack = !document.querySelector('[data-act=b2Tog][data-arg^="syl:"]');
+      app.b2Clear(); await new Promise(res => setTimeout(res, 500));
+
+      /* a chip's count must equal what choosing it actually yields. Its group is
+         closed by default now, so open it first — the chips are rendered only when
+         their group is open, which is the whole point of the collapse. */
+      app.b2Sec('cls'); app.b2Sec('syl'); app.b2Sec('fl'); app.b2Sec('pos');
+      await new Promise(res => setTimeout(res, 700));
+      /* chips exist only inside an OPEN group, so this is counted with several open.
+         o.chips above is the collapsed default and is a different measurement. */
+      o.chipsExpanded = document.querySelectorAll('[data-act=b2Tog]').length;
       const chip = document.querySelector('[data-act=b2Tog][data-arg^="cls:"]');
       o.claimed = chip.textContent.trim().split(/\s+/).pop();
       chip.click(); await new Promise(res => setTimeout(res, 600));
@@ -117,7 +159,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       /* SUBJECT IS SUBJECTS ONLY. The flat list ranked by count put olatin, ooldeng,
          ofrench and ogreek at the top — origin families, already covered by the
          facet directly below, crowding out the subjects the facet is for. */
-      app.b2Clear(); await new Promise(res => setTimeout(res, 500));
+      app.b2Clear(); app.b2Sec('tag'); await new Promise(res => setTimeout(res, 600));
       const tagArgs = [...document.querySelectorAll('[data-act=b2Tog][data-arg^="tag:"]')]
         .map(x => x.textContent.trim().split(/\s+/)[0]);
       o.noOriginTags = !tagArgs.some(t => /^(olatin|ooldeng|ofrench|ogreek|onordic|eponyms)$/.test(t));
@@ -132,7 +174,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       o.medNarrows = medTags.length && medTags.every(t => tagArgs.indexOf(t) >= 0 || true)
         && !medTags.some(t => /^(sports|poetry|music)$/.test(t));
       /* origin families group 214 strings, including the compounds and case variants */
-      app.b2TGrp(''); app.b2OGrp('rom'); await new Promise(res => setTimeout(res, 700));
+      app.b2TGrp(''); app.b2Sec('orig'); app.b2OGrp('rom'); await new Promise(res => setTimeout(res, 800));
       const romOrig = [...document.querySelectorAll('[data-act=b2Tog][data-arg^="orig:"]')]
         .map(x => x.textContent.trim().split(/\s+\d/)[0]);
       o.romGroup = romOrig.indexOf('Latin') >= 0 && romOrig.indexOf('French') >= 0
@@ -165,6 +207,14 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await b.close();
   const d = out.desktop, m = out.phone;
   ok(d.nineSections, 'all fifteen filter groups are on the page');
+  ok(d.railScrolls, 'the filter rail actually scrolls (overflow-y: ' + d.railOverflow + ')');
+  ok(!d.railInlineOverflow, 'and carries no inline overflow to outrank the stylesheet');
+  ok(d.railFitsish, 'collapsed, the rail is about one screen not five (' + d.railH + 'px)');
+  ok(d.lastHeadVisible, 'the last group\u2019s header can be scrolled to');
+  ok(d.flClosedFirst, 'a group with nothing chosen starts closed');
+  ok(d.flOpensWhenChosen, 'and opens itself the moment something in it is chosen');
+  ok(d.sylToggles && d.sylTogglesBack, 'a group header opens and closes by hand');
+  ok(m.railScrolls && m.railFitsish, 'and the same holds on a phone (' + m.railH + 'px)');
   ok(d.noRankNames, 'the Egg/Hatchling rank names are gone from the rail');
   ok(d.noLvFacet, 'and nothing filters on `y` (rarity) under a spelling-level label');
   ok(d.diffHonest, 'every word in the Gentle band really has spellDiff < 32.5 (' + d.diffN + ' words)');
@@ -180,7 +230,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(d.flagsAnd, 'the "must come with" chips AND together rather than widening');
   ok(d.mine === 'phoenix,rhythm', 'Draw from → my missed words serves exactly those');
   ok(d.mastered === 'phone', 'and tapping mastered REPLACES it rather than ANDing to nothing');
-  ok(d.chips > 20, 'the facets draw their options as chips (' + d.chips + ')');
+  ok(d.chips >= 8, 'the groups open by default draw their chips (' + d.chips + ' collapsed)');
+  ok(d.chipsExpanded > 40, 'and opening more groups draws theirs (' + d.chipsExpanded + ')');
   ok(!d.emoji && !m.emoji, 'not one emoji — the icons are the app’s own SVG set');
   ok(d.svgs >= 3, 'and the SVG icons are actually rendered (' + d.svgs + ')');
   ok(d.claimed === d.actual, 'A CHIP\'S COUNT IS HONEST — claimed ' + d.claimed + ', got ' + d.actual);

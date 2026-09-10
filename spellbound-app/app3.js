@@ -2754,6 +2754,7 @@ const app = {
      "Medicine & the body" narrows which subject chips are offered, it does not by
      itself narrow the list. Tapping it again shows every group. Nothing about the
      current selection changes, so a chosen tag stays chosen while you browse past it. */
+  b2Sec:(k)=>{ const B=b2State(); B.open[k]=B.open[k]?0:1; render(); },
   b2TGrp:(v)=>{ const B=b2State(); B.tgrp=(B.tgrp===v)?'':String(v||''); B.qtag=''; render(); },
   b2OGrp:(v)=>{ const B=b2State(); B.ogrp=(B.ogrp===v)?'':String(v||''); B.qorig=''; render(); },
   b2Tab:(k)=>{ b2State().tab = (k==='all')?'all':'list'; render(); },
@@ -8199,7 +8200,13 @@ function b2State(){ const S=state;
   if(!S.b2 || !S.b2.diff) S.b2={ diff:[], odds:[], bee:[], cls:[], orig:[], tag:[], pos:[],
                    syl:[], fl:[], flag:[],
                    pool:'', size:20, wlmin:3, wlmax:24, starts:'', has:'', ends:'',
-                   qtag:'', qorig:'', tgrp:'', ogrp:'', tab:'list', seed:1 };
+                   qtag:'', qorig:'', tgrp:'', ogrp:'', tab:'list', seed:1,
+                   /* open by default: the two spelling bands and the size. Everything
+                      else announces its setting in the closed header, so the rail fits
+                      one screen and a child chooses what to open rather than scrolling
+                      past fourteen groups to find the one they wanted. */
+                   open:{ diff:1, odds:1, size:1 } };
+  if(!S.b2.open) S.b2.open={ diff:1, odds:1, size:1 };
   return S.b2; }
 const b2Has=(k,v)=>b2State()[k].indexOf(v)>=0;
 
@@ -8307,11 +8314,23 @@ function viewBuilder(){
     <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${esc(label)}</span>
     <span style="font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;opacity:.72;flex:0 0 auto">${K(count)}</span></button>`;
 
-  const sec=(title,state2,body)=>`<div style="padding:13px 14px;border-bottom:1px solid var(--line)">
-    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:9px">
-      <h3 style="font-size:13px;font-weight:800;margin:0">${esc(title)}</h3>
-      <span style="font-size:11.5px;font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(state2)}</span></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">${body}</div></div>`;
+  /* SECTIONS COLLAPSE, and that is not decoration — it is what makes the rail
+     usable at all. Fifteen groups open at once is 3,851px of rail against an 804px
+     window: even once it scrolls (it did not, see the rail div below), finding
+     "First letter" means five screens of a nested scroll region with no map. Closed,
+     every group is on screen at once and the summary beside each title says what it
+     is set to, so the rail reads as a list of questions rather than a wall of chips.
+     A group with something chosen forces itself open — a filter you cannot see is
+     how you end up wondering why the count is what it is. */
+  const secOpen=(k)=>B.open[k]===1;
+  const sec=(key,title,state2,body,forceOpen)=>{ const on=secOpen(key)||!!forceOpen;
+    return `<div style="border-bottom:1px solid var(--line)">
+    <button data-act="b2Sec" data-arg="${escA(key)}" style="width:100%;display:flex;align-items:center;gap:8px;padding:12px 14px;background:none;border:0;text-align:left;cursor:pointer">
+      <h3 style="font-size:13px;font-weight:800;margin:0;flex:0 0 auto">${esc(title)}</h3>
+      <span style="font-size:11.5px;font-weight:700;color:${state2==='any'||state2==='anything'?'var(--muted)':'var(--action,var(--accent))'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto">${esc(state2)}</span>
+      <span style="flex:0 0 auto;line-height:0;color:var(--muted);transform:rotate(${on?0:-90}deg);transition:transform .15s">${iconSVG('chevronDown',14)}</span>
+    </button>
+    ${on?`<div style="display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 13px">${body}</div>`:''}</div>`; };
 
   /* 1 · the two spelling bands (see B2_DIFF / B2_ODDS for why these and not `y`) */
   const cDiff=b2Counts('diff',B2_DIFF.length);
@@ -8425,36 +8444,42 @@ function viewBuilder(){
     +B.syl.length+B.fl.length+B.flag.length+(B.pool?1:0)
     +(B.starts?1:0)+(B.has?1:0)+(B.ends?1:0)+((B.wlmin>3||B.wlmax<24)?1:0);
 
-  const rail=`<div style="background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;align-self:start">
+  /* NO `overflow` IN THIS INLINE STYLE. The stylesheet gives this element
+     overflow-y:auto under a max-height so the rail scrolls beside the results —
+     but an inline declaration beats every rule in the sheet, so `overflow:hidden`
+     here won the cascade and turned that max-height into a guillotine: 2,798px of
+     filters below the cut, no scrollbar, and nothing on screen to say they were
+     there. It looked like a short rail rather than a broken one, which is why it
+     survived the faceted rebuild. The rounded corners still clip — the sheet sets
+     overflow-x:hidden alongside the auto. */
+  const rail=`<div style="background:var(--surface);border:1px solid var(--line);border-radius:16px;align-self:start">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface2)">
       <div style="display:flex;align-items:center;gap:8px;min-width:0">
         <span style="display:inline-flex;line-height:0;color:var(--action,var(--accent))">${iconSVG('sliders',16)}</span>
         <h2 style="font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0;font-weight:800">Build from</h2></div>
       ${nSel?`<button data-act="b2Clear" style="display:inline-flex;align-items:center;gap:5px;background:none;border:0;color:var(--action,var(--accent));font-weight:800;font-size:12px;padding:0">${iconSVG('x',13)} Clear ${nSel}</button>`:''}
     </div>
-    ${sec('How hard to spell', B.diff.length?B.diff.length+' chosen':'any', diffChips)}
-    ${sec('How likely at a bee', B.odds.length?B.odds.length+' chosen':'any', oddsChips)}
-    ${sec('How many words', B.size==='all'?'every match':B.size+' words', sizeChips)}
-    ${sec('Word length', (B.wlmin>3||B.wlmax<24)?(B.wlmin+'–'+(B.wlmax>=24?'24+':B.wlmax)+' letters'):'any', lenBody)}
-    ${sec('Seen in a spelling bee', B.bee.length?B.bee.length+' chosen':'any', beeChips)}
-    ${sec('Why it’s tricky', B.cls.length?B.cls.length+' chosen':'any', clsChips)}
-    ${sec('Subject', B.tag.length?B.tag.length+' chosen':'any',
+    ${sec('diff','How hard to spell', B.diff.length?B.diff.length+' chosen':'any', diffChips, B.diff.length)}
+    ${sec('odds','How likely at a bee', B.odds.length?B.odds.length+' chosen':'any', oddsChips, B.odds.length)}
+    ${sec('size','How many words', B.size==='all'?'every match':B.size+' words', sizeChips)}
+    ${sec('wl','Word length', (B.wlmin>3||B.wlmax<24)?(B.wlmin+'–'+(B.wlmax>=24?'24+':B.wlmax)+' letters'):'any', lenBody, (B.wlmin>3||B.wlmax<24))}
+    ${sec('bee','Seen in a spelling bee', B.bee.length?B.bee.length+' chosen':'any', beeChips, B.bee.length)}
+    ${sec('cls','Why it’s tricky', B.cls.length?B.cls.length+' chosen':'any', clsChips, B.cls.length)}
+    ${sec('tag','Subject', B.tag.length?B.tag.length+' chosen':'any',
       `<div style="width:100%;display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${tagTabs}</div>
        <div style="width:100%;margin-bottom:8px">${fld('b2Q','qtag','Search every subject…',B.qtag)}</div>${tagChips}`)}
-    ${sec('Language of origin', B.orig.length?B.orig.length+' chosen':'any',
+    ${sec('orig','Language of origin', B.orig.length?B.orig.length+' chosen':'any',
       `<div style="width:100%;display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${origTabs}</div>
        <div style="width:100%;margin-bottom:8px">${fld('b2Q','qorig','Search every language…',B.qorig)}</div>${origChips}`)}
-    ${sec('Part of speech', B.pos.length?B.pos.length+' chosen':'any', posChips)}
-    ${sec('Draw from', (POOLS.find(p=>p[0]===(B.pool||''))||POOLS[0])[1], poolChips)}
-    ${sec('Syllables', B.syl.length?B.syl.length+' chosen':'any', sylChips)}
-    ${sec('First letter', B.fl.length?B.fl.map(i=>String.fromCharCode(65+i)).join(' '):'any', flChips)}
-    ${sec('Must come with', B.flag.filter(f=>f<16).length?B.flag.filter(f=>f<16).length+' chosen':'anything', flagChips)}
-    ${sec('How it sounds', B.flag.filter(f=>f>=16).length?B.flag.filter(f=>f>=16).length+' chosen':'any', soundChips)}
-    <div style="padding:13px 14px">
-      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:9px"><h3 style="font-size:13px;font-weight:800;margin:0">Letters</h3>
-        <span style="font-size:11.5px;font-weight:700;color:var(--muted)">${[B.starts&&('starts '+B.starts),B.has&&('has '+B.has),B.ends&&('ends '+B.ends)].filter(Boolean).join(' · ')||'any'}</span></div>
-      <div style="display:flex;gap:7px;flex-wrap:wrap">${fld('b2Txt','starts','Starts with…',B.starts)}${fld('b2Txt','has','Contains…',B.has)}${fld('b2Txt','ends','Ends with…',B.ends)}</div>
-    </div>
+    ${sec('pos','Part of speech', B.pos.length?B.pos.length+' chosen':'any', posChips, B.pos.length)}
+    ${sec('pool','Draw from', (POOLS.find(p=>p[0]===(B.pool||''))||POOLS[0])[1], poolChips, B.pool)}
+    ${sec('syl','Syllables', B.syl.length?B.syl.length+' chosen':'any', sylChips, B.syl.length)}
+    ${sec('fl','First letter', B.fl.length?B.fl.map(i=>String.fromCharCode(65+i)).join(' '):'any', flChips, B.fl.length)}
+    ${sec('flag','Must come with', B.flag.filter(f=>f<16).length?B.flag.filter(f=>f<16).length+' chosen':'anything', flagChips, B.flag.filter(f=>f<16).length)}
+    ${sec('snd','How it sounds', B.flag.filter(f=>f>=16).length?B.flag.filter(f=>f>=16).length+' chosen':'any', soundChips, B.flag.filter(f=>f>=16).length)}
+    ${sec('ltr','Letters', [B.starts&&('starts '+B.starts),B.has&&('has '+B.has),B.ends&&('ends '+B.ends)].filter(Boolean).join(' · ')||'any',
+      `<div style="display:flex;gap:7px;flex-wrap:wrap;width:100%">${fld('b2Txt','starts','Starts with…',B.starts)}${fld('b2Txt','has','Contains…',B.has)}${fld('b2Txt','ends','Ends with…',B.ends)}</div>`,
+      B.starts||B.has||B.ends)}
   </div>`;
 
   /* the active choices, as removable pills */
