@@ -197,6 +197,38 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       o.savedLabel = keys.length ? c.builtLists[keys[0]].label : null;
       o.becomesActive = c.activeList === keys[0];
 
+      /* CLICKING A RESULT OPENS THAT WORD. openWordCard serves two callers — the
+         Word of the Hour tile, which passes nothing, and the builder, which passes
+         the word in data-arg. The handler declared no parameter, so it dropped the
+         argument and called wordOfHour() every time: every result in the builder
+         opened the SAME card, and since the button still showed the tapped word the
+         card looked wrong rather than broken. Check several, because the first one
+         happening to be the hour's word would hide it. */
+      /* bldCreate() above lands on Practice, so the builder is no longer on screen —
+         reopen it or there are no result buttons to click and the check passes
+         vacuously, which is worse than failing. */
+      app.openBuilder(); await new Promise(res => setTimeout(res, 700));
+      app.b2Clear(); app.b2Size('all'); app.b2TxtStarts('ph');
+      await new Promise(res => setTimeout(res, 900));
+      o.woh = (wordOfHour() || {}).w;
+      o.cards = [];
+      for (const i of [0, 1, 2, 5, 40]) {
+        app.wordCardClose(); await new Promise(res => setTimeout(res, 220));
+        /* set() re-renders, so a button captured before a click is detached — the
+           list must be re-queried every round or the clicks land on nothing */
+        const btns = [...document.querySelectorAll('[data-act=openWordCard][data-arg]')];
+        if (!btns[i]) continue;
+        const label = btns[i].textContent.trim();
+        btns[i].click(); await new Promise(res => setTimeout(res, 420));
+        o.cards.push({ clicked: label, got: (state.wordCard || {}).w, def: !!(state.wordCard || {}).d });
+      }
+      app.wordCardClose(); await new Promise(res => setTimeout(res, 220));
+      /* the tile that passes no argument must still get the hour's word */
+      app.openWordCard(); await new Promise(res => setTimeout(res, 300));
+      o.wohStillWorks = (state.wordCard || {}).w === o.woh;
+      app.wordCardClose(); await new Promise(res => setTimeout(res, 250));
+      app.b2Clear(); await new Promise(res => setTimeout(res, 300));
+
       /* and it is reachable from Pick your words, not only the Library tile */
       app.coachSetupOpen(); await new Promise(res => setTimeout(res, 700));
       o.inPickYourWords = /Build your own list/.test(document.body.innerHTML);
@@ -241,6 +273,12 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(d.saved, 'the builder saves a list of exactly the chosen size');
   ok(d.savedLabel === 'Guard list', 'under the name the child typed');
   ok(d.becomesActive, 'and that list becomes the active one');
+  ok(d.cards.length >= 4 && d.cards.every(c => c.got === c.clicked),
+     'clicking a result opens THAT word\u2019s card, not the word of the hour ('
+     + d.cards.map(c => c.clicked + '\u2192' + c.got).join(', ') + ')');
+  ok(d.cards.length >= 4 && d.cards.every(c => c.def), 'and each card carries the real record, not a bare stub');
+  ok(d.cards.some(c => c.clicked !== d.woh), 'the check is meaningful \u2014 results differ from the hour\u2019s word (' + d.woh + ')');
+  ok(d.wohStillWorks, 'and the Word of the Hour tile, which passes no argument, still works');
   ok(d.inPickYourWords && m.inPickYourWords, 'it is reachable from Pick your words');
   ok(!d.sideways && !m.sideways, 'no sideways scroll on desktop OR phone');
   ok(!d.errs.length && !m.errs.length, 'no page errors' + (d.errs[0] ? ' — ' + d.errs[0] : ''));

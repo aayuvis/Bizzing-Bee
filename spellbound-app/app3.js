@@ -2123,7 +2123,24 @@ const app = {
   qWordSay:(w)=>{ try{ say(w); }catch(e){} },
   qWordClose:()=>set({qWord:null}),
   // Word of the hour: open its learn card, hear it, or jump straight into practice.
-  openWordCard:()=>{ const w=wordOfHour(); if(!w){ flash('No word right now — try again soon'); return; } set({wordCard:w}); try{ say(w.w); }catch(e){} },
+  /* TWO CALLERS, AND THIS USED TO SERVE ONLY ONE. The Word of the Hour tile passes
+     nothing and wants the hour's word; the List Builder passes the word it drew, in
+     data-arg. The handler took no parameter at all, so it called wordOfHour()
+     unconditionally — every one of the builder's results opened the SAME card, and
+     because the button still showed the tapped word, the card simply looked wrong
+     rather than broken. An argument that a caller sends and the handler drops is
+     invisible from both ends: the markup looks right and the action looks right. */
+  openWordCard:(arg)=>{ let w=null;
+    const q=(arg==null?'':String(arg)).trim();
+    if(q){ const k=nkey(q);
+      try{ w=wordIndex()[k]||wordDB().get(k)||null; }catch(e){}
+      /* Never fall back to a DIFFERENT word. If the record cannot be found, show the
+         word that was tapped with whatever is known about it — a thin card is a small
+         failure, the wrong word is the bug being fixed. */
+      if(!w) w={w:q}; }
+    else w=wordOfHour();
+    if(!w){ flash('No word right now — try again soon'); return; }
+    set({wordCard:w}); try{ say(w.w); }catch(e){} },
   wordCardSay:(w)=>{ try{ say(w); }catch(e){} },
   wordCardClose:()=>set({wordCard:null}),
   /* the set deck — read the whole set, then go back to drilling it */
