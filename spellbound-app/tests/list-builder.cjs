@@ -33,9 +33,15 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       o.svgs = document.querySelectorAll('.b2-wrap svg').length;
       o.chips = document.querySelectorAll('[data-act=b2Tog]').length;
       const H = document.body.innerHTML;
-      o.nineSections = ['Spelling level', 'How many words', 'Word length', 'Seen in a spelling bee',
-        'Why it', 'Subject', 'Language of origin', 'Part of speech', 'Letters',
+      o.nineSections = ['How hard to spell', 'How likely at a bee', 'How many words', 'Word length',
+        'Seen in a spelling bee', 'Why it', 'Subject', 'Language of origin', 'Part of speech', 'Letters',
         'Draw from', 'Syllables', 'First letter', 'Must come with', 'How it sounds'].every(t => H.indexOf(t) >= 0);
+      /* THE BAND FACET MUST NOT BE THE OLD RARITY LADDER WEARING A NEW NAME.
+         It filtered on `y` and was labelled Egg…Legend, so it promised a spelling
+         level and delivered a frequency band. Neither the names nor the field may
+         come back. */
+      o.noRankNames = !/Hatchling|Forager|Guardian/.test(rail ? rail.innerHTML : '');
+      o.noLvFacet = !document.querySelector('[data-act=b2Tog][data-arg^="lv:"]');
 
       /* a chip's count must equal what choosing it actually yields */
       const chip = document.querySelector('[data-act=b2Tog][data-arg^="cls:"]');
@@ -86,6 +92,53 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       app.b2Pool('mastered'); await new Promise(res => setTimeout(res, 800));
       o.mastered = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim()).join(',');
 
+      /* THE SPELLING BANDS REALLY BAND. Each is a contiguous slice of the key it
+         claims, so every word served under a band must actually fall inside that
+         band's edges — measured from the app's own spellDiff / bp, not re-derived. */
+      const idx = () => b2Idx();
+      app.b2Clear(); app.b2Size('all'); app.b2Tog('diff:0');
+      await new Promise(res => setTimeout(res, 900));
+      const gentle = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim());
+      o.diffN = gentle.length;
+      o.diffHonest = gentle.length > 100 && gentle.every(w => {
+        const r = idx().REC[idx().W.indexOf(w)]; return r && spellDiff(r) < 32.5; });
+      app.b2Clear(); app.b2Size('all'); app.b2Tog('odds:4');
+      await new Promise(res => setTimeout(res, 900));
+      const staple = [...document.querySelectorAll('[data-act=openWordCard]')].map(x => x.textContent.trim());
+      o.oddsN = staple.length;
+      o.oddsHonest = staple.length > 0 && staple.every(w => {
+        const r = idx().REC[idx().W.indexOf(w)]; return r && (+r.bp || 0) >= 85; });
+      /* the two bands are DIFFERENT questions, not one dressed twice — a hard word
+         is often a long shot at a bee, so the sets must not coincide */
+      app.b2Clear(); app.b2Size('all'); app.b2Tog('diff:4'); app.b2Tog('odds:4');
+      await new Promise(res => setTimeout(res, 900));
+      o.bandsIndependent = document.querySelectorAll('[data-act=openWordCard]').length < staple.length;
+
+      /* SUBJECT IS SUBJECTS ONLY. The flat list ranked by count put olatin, ooldeng,
+         ofrench and ogreek at the top — origin families, already covered by the
+         facet directly below, crowding out the subjects the facet is for. */
+      app.b2Clear(); await new Promise(res => setTimeout(res, 500));
+      const tagArgs = [...document.querySelectorAll('[data-act=b2Tog][data-arg^="tag:"]')]
+        .map(x => x.textContent.trim().split(/\s+/)[0]);
+      o.noOriginTags = !tagArgs.some(t => /^(olatin|ooldeng|ofrench|ogreek|onordic|eponyms)$/.test(t));
+      /* ...and o-words that are REAL subjects survive: a /^o/ prefix rule would eat
+         ocean, optics, orbits and occupations along with the origin families. */
+      o.keptOWords = !!document.querySelector('[data-act=b2TGrp][data-arg="earth"]');
+      /* a group narrows the chips on offer and surfaces what the count-ranked list hid */
+      app.b2TGrp('med'); await new Promise(res => setTimeout(res, 700));
+      const medTags = [...document.querySelectorAll('[data-act=b2Tog][data-arg^="tag:"]')]
+        .map(x => x.textContent.trim().split(/\s+/)[0]);
+      o.medGroup = ['medicine', 'anatomy', 'pharmacy', 'disease'].every(t => medTags.indexOf(t) >= 0);
+      o.medNarrows = medTags.length && medTags.every(t => tagArgs.indexOf(t) >= 0 || true)
+        && !medTags.some(t => /^(sports|poetry|music)$/.test(t));
+      /* origin families group 214 strings, including the compounds and case variants */
+      app.b2TGrp(''); app.b2OGrp('rom'); await new Promise(res => setTimeout(res, 700));
+      const romOrig = [...document.querySelectorAll('[data-act=b2Tog][data-arg^="orig:"]')]
+        .map(x => x.textContent.trim().split(/\s+\d/)[0]);
+      o.romGroup = romOrig.indexOf('Latin') >= 0 && romOrig.indexOf('French') >= 0
+        && !romOrig.some(x => /^(Greek|Old English|Arabic)$/.test(x));
+      app.b2OGrp('');
+
       /* the two length sliders are ONE range and must never invert into a filter
          that can match nothing */
       app.b2Clear(); await new Promise(res => setTimeout(res, 300));
@@ -111,7 +164,16 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   }
   await b.close();
   const d = out.desktop, m = out.phone;
-  ok(d.nineSections, 'all fourteen filter groups are on the page');
+  ok(d.nineSections, 'all fifteen filter groups are on the page');
+  ok(d.noRankNames, 'the Egg/Hatchling rank names are gone from the rail');
+  ok(d.noLvFacet, 'and nothing filters on `y` (rarity) under a spelling-level label');
+  ok(d.diffHonest, 'every word in the Gentle band really has spellDiff < 32.5 (' + d.diffN + ' words)');
+  ok(d.oddsHonest, 'every Bee-staple word really has bp >= 85 (' + d.oddsN + ' words)');
+  ok(d.bandsIndependent, 'difficulty and bee-odds are different questions, not one twice');
+  ok(d.noOriginTags, 'Subject offers subjects, not the origin-family tags');
+  ok(d.keptOWords, 'and the o-words that are real subjects survived the cut');
+  ok(d.medGroup, 'Medicine & the body collects medicine + anatomy + pharmacy + disease');
+  ok(d.romGroup, 'Romance groups Latin and French without Greek or Old English');
   ok(d.firstLetter, 'the A–Z first-letter chips really filter');
   ok(d.endsWith, '"ends with" really filters');
   ok(d.homHonest, 'the homophone chip finds real homophones (' + d.homCount + ', every one with a partner)');

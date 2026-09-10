@@ -2750,6 +2750,12 @@ const app = {
   b2Pool:(v)=>{ const B=b2State(); B.pool = (B.pool===v)?'':String(v||''); state.bldNaming=false; render(); },
   b2QQtag:(v)=>{ b2State().qtag=String(v||'').slice(0,24); render(); },
   b2QQorig:(v)=>{ b2State().qorig=String(v||'').slice(0,24); render(); },
+  /* A group is a way of LOOKING at the chips, not a filter on the words — tapping
+     "Medicine & the body" narrows which subject chips are offered, it does not by
+     itself narrow the list. Tapping it again shows every group. Nothing about the
+     current selection changes, so a chosen tag stays chosen while you browse past it. */
+  b2TGrp:(v)=>{ const B=b2State(); B.tgrp=(B.tgrp===v)?'':String(v||''); B.qtag=''; render(); },
+  b2OGrp:(v)=>{ const B=b2State(); B.ogrp=(B.ogrp===v)?'':String(v||''); B.qorig=''; render(); },
   b2Tab:(k)=>{ b2State().tab = (k==='all')?'all':'list'; render(); },
   b2Shuffle:()=>{ const B=b2State(); B.seed=(B.seed*7919+104729)&0x7fffffff || 1; sfx('tap'); render(); },
   b2Clear:()=>{ state.b2=null; b2State(); state.bldNaming=false; render(); },
@@ -7989,10 +7995,15 @@ function builtWords(key){ const bl=(active().builtLists||{})[key]; if(!bl) retur
    wrong", "eight-letter nouns from the finals lists", "words about medicine that
    start with ph" — because each of those is several conditions at once.
 
-   So: nine filters, any number of them at a time, and EVERY OPTION CARRIES ITS
+   So: fourteen filters, any number of them at a time, and EVERY OPTION CARRIES ITS
    OWN LIVE COUNT computed with that filter lifted out (proper faceted counting).
    A choice that would leave nothing is greyed before it is tapped, which is the
    whole reason to count this way rather than just filtering.
+
+   Two of those fourteen are the spelling bands, and they replaced a facet that was
+   lying: see B2_DIFF / B2_ODDS. The subject and origin facets are grouped rather
+   than ranked flat, because 768 tags and 214 origin strings sorted by count is a
+   haystack — see B2_TAGGRP / B2_ORIGRP.
 
    Icons are the app's own SVG set. No emoji: they render as a different picture
    on every platform and this screen is dense enough to need one visual language.
@@ -8005,7 +8016,7 @@ function b2Idx(){
   const src = (window.SB_DATA && SB_DATA.nsf) || [];
   const key = src.length + '|' + (window.SB_HOM?1:0) + (window.SB_WVOICE?1:0) + (window.SB_SCRIPPS?1:0);
   if (_b2Idx && _b2Idx.key === key) return _b2Idx;
-  const W=[], Y=[], L=[], O=[], P=[], C=[], NT=[], TG=[], REC=[], SY=[], FL=[], F=[];
+  const W=[], Y=[], L=[], O=[], P=[], C=[], NT=[], TG=[], REC=[], SY=[], FL=[], F=[], DF=[], BP=[];
   /* the sound tables and the voice manifest arrive on the lazy queue, so the index
      is keyed on whether they are HERE — not just on the corpus length, or a builder
      opened before sounds-data.js landed would show "homophone 0" for the session */
@@ -8029,6 +8040,10 @@ function b2Idx(){
     if(!/^[a-z][a-z]*$/.test(s) || s.length<3) continue;   // no proper nouns, no fragments
     W.push(s); Y.push(w.y||3); L.push(s.length); REC.push(w);
     FL.push(s.charCodeAt(0)-97);
+    /* the two real bands. spellDiff memoises its trickAnal on the record (w._tk),
+       so this costs one pass here and nothing on every later re-count. */
+    DF.push(b2Band(B2_DIFF, spellDiff(w)));
+    BP.push(b2Band(B2_ODDS, +w.bp||0));
     /* syllables: the sy field is dot-separated ("aar.on"); the respelling's hyphens
        are the fallback, and a word with neither counts as one */
     const sy=String(w.sy||''); const pr=String(w.p||'');
@@ -8049,27 +8064,150 @@ function b2Idx(){
     NT.push(String(w.nt||'').split('|').map(x=>x.trim()).filter(Boolean).map(x=>put(nL,nI,x)));
     TG.push((Array.isArray(w.t)?w.t:[]).map(x=>put(tL,tI,x)).filter(x=>x>=0));
   }
-  return (_b2Idx={ key, n:src.length, N:W.length, W,Y,L,O,P,C,NT,TG,REC,SY,FL,F,
-                   oL,pL,cL,nL,tL });
+  /* Which group each tag and each origin belongs to, resolved ONCE per index
+     rather than per chip per render. tG: -2 = not a subject at all (an origin
+     family, an eponym cluster or a bare language name, all of which have their
+     own facet), -1 = a subject with no group yet, which is "Everything else". */
+  const tG=tL.map(t=>{ if(B2_NOTSUBJ.has(t)) return -2;
+    for(let g=0;g<B2_TAGGRP.length;g++) if(B2_TAGGRP[g][3].indexOf(t)>=0) return g;
+    return -1; });
+  const oG=oL.map(b2OrigFam);
+  return (_b2Idx={ key, n:src.length, N:W.length, W,Y,L,O,P,C,NT,TG,REC,SY,FL,F,DF,BP,
+                   oL,pL,cL,nL,tL,tG,oG });
 }
 
 const B2_CLS = { plain:'Spelled as it sounds', hom:'Sounds like another word',
   silent:'Silent letters', epon:'Named after someone', dbl:'Double letters',
   end:'Tricky ending', fr:'French pattern', gk:'Greek pattern', vow:'Vowel trap' };
-const B2_BAND = ['','Egg','Hatchling','Forager','Worker','Scout','Ranger','Guardian','Champion','Legend'];
 const B2_SIZES = [10,15,20,25,30,50,100,250];
 
+/* ---------------------------------------------------------------------------
+   SPELLING BANDS — what replaced the Egg→Legend ladder, and why.
+
+   The builder used to offer a "Spelling level" facet labelled with the app's own
+   rank names. It filtered on `y`, which is RARITY, not spelling difficulty —
+   this file's own header says so ("rarity `y` and length are minor terms") and
+   `corpusSlice` by `y` is what "puts dictionary tail on a championship stage".
+   So the facet promised a spelling level and delivered a frequency band under a
+   game name. Two honest facets replace it, both from data the app already trusts:
+
+     diff  spellDiff(w) — trickiness-dominant, the key this file tells every new
+           difficulty ramp to use. Edges are the measured quintiles of the served
+           corpus (32.5 / 42 / 50 / 60.5 over a 6.5–128 range), so each band is
+           about a fifth of the library rather than a guess.
+     odds  `bp`, the bee-probability score already shown on every word card as
+           beeOdds() dots — but never filterable until now. Its edges are NOT
+           quintiles: the distribution piles 88% of the corpus into 20–40, and the
+           whole point of the facet is to isolate the words that actually turn up
+           at a bee. Cross-checked against the competition tiers, which is what
+           makes it trustworthy: mean bp runs Open 30.8 → Primary 39.4 →
+           Junior 48.1 → Advanced 54.2 → Senior 65.1 → North South Finals 71.1.
+--------------------------------------------------------------------------- */
+const B2_DIFF = [
+  { lab:'Gentle',      hi:32.5 },
+  { lab:'Steady',      hi:42   },
+  { lab:'Testing',     hi:50   },
+  { lab:'Hard',        hi:60.5 },
+  { lab:'Brutal',      hi:1e9  }];
+const B2_ODDS = [
+  { lab:'Long shot',   hi:40  },
+  { lab:'Sometimes',   hi:55  },
+  { lab:'Often',       hi:70  },
+  { lab:'Very likely', hi:85  },
+  { lab:'Bee staple',  hi:1e9 }];
+const b2Band=(tab,v)=>{ for(let i=0;i<tab.length;i++) if(v<tab[i].hi) return i; return tab.length-1; };
+
+/* ---------------------------------------------------------------------------
+   TAG STRUCTURE — 768 tags in one flat list is not a filter, it is a haystack.
+
+   The `t` array mixes at least four different KINDS of tag, which is why the old
+   "Subject" facet felt arbitrary: it showed the top 24 by count, and the top four
+   were olatin, ooldeng, ofrench and ogreek — origin families, not subjects, and
+   already covered by the Language-of-origin facet next to it.
+
+   So the subject facet now shows subjects only, grouped. The origin-family and
+   eponym tags are lifted out (they belong to the facets that already exist), and
+   bare language names are too — "irish" as a subject means the word came from
+   Irish, which is an origin, not a topic.
+
+   THE TRAP: these lists are explicit and must stay that way. A prefix rule on
+   /^o/ looks tempting and is wrong — ocean, oceans, oceanography, optics, orbits,
+   ornament and occupations are all real subjects that start with o.
+--------------------------------------------------------------------------- */
+const B2_NOTSUBJ = new Set([
+  /* origin families — the Language of origin facet covers these */
+  'olatin','ooldeng','ofrench','ogreek','onordic','oiberian','osemitic','odutch',
+  'osouth','oeastasia','oslavic','opacific','oceltic','oturkic','oworld',
+  /* eponym clusters — "Why it's tricky → Named after someone" covers these */
+  'eponyms','eponym','epfrench','eplatin','epgreek','epeng','epnordic','epiber',
+  /* bare language names: an origin wearing a subject's clothes */
+  'irish','yiddish','hebrew','latin','french','italian','russian','german','greek',
+  'welsh','scottish','polish','danish','swedish','turkish','gaelic','celtic',
+  'nahuatl','tupi','mapuche','algonquian','iroquoian','brazilian','american',
+  'french origin','old']);
+
+/* Ordered groups. A tag may appear in exactly one; anything unlisted falls into
+   "Everything else", which the search box still reaches. Medicine & the body is
+   first because it is the group the flat list hid worst: `body` and `disease`
+   ranked high while `medicine`, `anatomy` and `pharmacy` sat far below the cut. */
+const B2_TAGGRP = [
+ ['med','Medicine & the body','heart',['body','anatomy','disease','pharmacy','medicine','health','biology','muscles','bones','teeth','skin','eyes','ears','brain','heart','lungs','nerves','glands','skeleton','physiology','digestion','healing','therapy','remedy','epidemiology','neurology','psychiatry','pathology','dermatology','veterinary','embryology','pharmacology','microbes','microbiology','genetics','cells','proteins','hormones','vitamins','metabolism','diet','reproduction','chest']],
+ ['life','Living world','leaf',['animals','birds','insects','marine','botany','flowers','ecology','plants','trees','fungi','mycology','zoology','herpetology','entomology','ornithology','ichthyology','mammals','reptiles','amphibians','fish','dogs','horses','spiders','worms','algae','lichens','seeds','fruit','crops','nature','creatures','arachnids','crustaceans','arthropods','invertebrates','primates','penguins','elephants','owls','seabirds','waterbirds','poultry','livestock','pets','taxonomy','evolution','extinct','dinosaurs','fossils','paleontology','palaeontology','migration','lifecycle','herbivores','shellfish','feathers','horns','tusks','beak','nests','pests','bugs','marine biology','marine life','herbs','floral','growth','life']],
+ ['earth','Earth & sky','globe',['landforms','waterways','weather','astronomy','minerals','maps','geology','geography','meteorology','mineralogy','ocean','oceans','oceanography','lakes','rocks','soil','mountains','volcanoes','magma','climate','climatology','hydrology','limnology','tides','rain','storms','clouds','wind','atmosphere','sky','stars','planets','moon','sun','galaxies','cosmos','universe','space','astrophysics','planetary science','petrology','crystallography','crystals','gemology','gemmology','gems','stratigraphy','sediment','deposits','basins','continents','stone','stones','iceage','surveying','cartography','navigation','harbor','depths','zones','earth','water','water cycle','salinity','environment','environments','mapping','space rocks','stargazing','telescopes','meteorites','winter','layers']],
+ ['sci','Science, number & logic','flask',['chemistry','physics','numbers','logic','science','math','mathematics','geometry','algebra','calculus','arithmetic','statistics','probability','measurement','biochemistry','metallurgy','materials','optics','orbits','light','sound','acoustics','heat','energy','electricity','magnetic','radiation','molecules','atoms','elements','particles','reactions','fluids','solids','dynamics','mechanics','topology','symmetry','polygons','triangles','curves','shapes','scale','sizes','speed','temperature','pressure','data','algorithms','computing','programming','technology','engineering','laboratory','lab','microscopes','research','theory','theories','discovery','microfossils','substances','processes','processing','classification','morphology','systems','networks','notation','structure','structures','techniques','testing','diagram','probability']],
+ ['arts','Arts, words & stage','music',['music','poetry','painting','stage','wordwords','instruments','art','arts','literature','rhetoric','linguistics','language','philology','phonetics','phonology','grammar','syntax','semantics','prosody','meter','typography','printing','printmaking','publishing','books','book','manuscripts','bookbinding','writing','storytelling','theatre','theater','acting','dance','ballet','singing','vocals','orchestra','organology','campanology','poetics','sculpture','drawing','engraving','photography','graphics','design','visualarts','aesthetics','literary','comedy','puppetry','performance','performer','stagecraft','tempo','symbolism','symbol','symbols','imagery','slang','vocabulary','etymology','punctuation','names','reading','classical','folklore','hymn','bibliography','style','patterns','charts','ornament','decoration','decor','metaphysics']],
+ ['food','Food, home & dress','cup',['culinary','dishes','spices','household','food','fabrics','cooking','baking','bakery','pastry','dessert','candy','cheese','pasta','salad','stew','seafood','meat','drinks','beverages','drink','dining','restaurant','gastronomy','cuisine','kitchen','appetizer','ingredients','preparation','produce','viticulture','textiles','clothing','costume','fashion','apparel','tailoring','millinery','jewelry','jewels','cosmetics','skincare','perfumery','beauty','hair','accessories','furniture','home','homes','flooring','windows','domes','glass','ceramics','pottery','crafts','craft','woodworking','dip','starch','fabric','cleaning','packaging','objects','vessels','plates','gear','supplies']],
+ ['people','People & society','users',['kinship','jobs','politics','law','economy','war','royalty','nations','character','emotions','religion','festivals','culture','society','people','family','occupations','professions','profession','careers','government','courts','jurisprudence','contracts','crime','forensics','military','infantry','cavalry','artillery','weapons','weaponry','armor','warriors','battles','strategy','tactics','defense','fortification','chivalry','feudalism','nobility','heraldry','flags','diplomacy','policy','political theory','leadership','management','organization','community','education','teaching','learning','academia','academic','academics','business','finance','banking','trade','commerce','markets','market','currency','numismatics','prices','wealth','assets','property','ownership','investment','insurance','taxes','debt','lending','leasing','trusts','estates','inheritance','industry','manufacturing','labor','logistics','travel','leisure','games','entertainment','sacrament','theology','liturgy','devotion','prayer','spirituality','mysticism','monasticism','saints','sect','doctrine','christology','eschatology','ethics','philosophy','psychology','sociology','archaeology','manners','conduct','habits','habit','tradition','traditional','ceremony','celebration','holidays','calendar','festival','places','country','location','roles','duty','security','welfare','sustainability','exchange','commodities','monopoly','corruption','collaboration','court','specialties','values','freedom','free will']],
+ ['hist','History & myth','scroll',['ancient','history','myth','mythology','legends','fairies','monsters','magic','trickery','shapeshifting','antiques','archaic','artifacts','castles','castle','heritage','chivalry']],
+ ['made','Made things & travel','tools',['tools','buildings','vehicles','seafaring','architecture','construction','hardware','equipment','instrument','boats','ships','sailing','nautical','maritime','aviation','flight','spaceflight','satellites','transportation','equestrian','coachbuilding','metalwork','metalworking','brass','glassmaking','inlay','clockmaking','horology','mining','farming','agriculture','husbandry','gardening','forestry','angling','fishing','camping','climbing','outdoors','skiing','chess','toys','puzzles','falconry','tack','trades','tool','machines','engineering','surfaces','finishes','wood','paper','landscaping','pursuits','hobbies','club','tracks','trend']],
+ ['self','Mind, feeling & time','sparkle',['time','colors','color','sports','emotion','mind','memory','cognition','thinking','reasoning','perception','awareness','attention','sleep','dreams','stress','anxiety','fears','phobia','phobias','obsessions','delusions','mood','happiness','comfort','affection','loyalty','virtue','destiny','truth','knowledge','ideas','concepts','imagination','creativity','personality','traits','behavior','movement','walking','jump','exercise','reflexes','gesture','expression','speech','voice','hearing','vision','appearance','laziness','solitude','solitary','talkative','nonsense','insults','uproar','mystery','survival','wellness','care','yoga','meditation','martial arts','skills','training','study','sleep','feeling','preferences','comparison','decision-making','continuity','change','timing','meaning','paradox','reference','evidence','errors','crisis','danger','secrecy','magic']],
+ ['bee','Bee lists','target',['championship']]];
+
+/* ---------------------------------------------------------------------------
+   ORIGIN FAMILIES — 214 origin strings, grouped by KEYWORD rather than by name.
+
+   Matching on substrings rather than an enumerated list is deliberate: the field
+   is not clean and never will be. It carries case variants (french, english,
+   greek), an abbreviation (nah), and 20-odd compounds — "Latin and Greek",
+   "Greek/Latin", "Latin + Greek", "Old English/French", "Spanish from Nahuatl".
+   A name list would silently drop every one of those into Other; a keyword match
+   lands them somewhere sensible. First match wins, so a compound goes to the
+   earliest family it names, and the order below is the order of that decision.
+--------------------------------------------------------------------------- */
+const B2_ORIGRP = [
+ ['rom','Romance',       ['latin','french','italian','spanish','portuguese','catalan','romanian','norman','mirandese','ladino','creole','galician','provencal']],
+ ['ger','Germanic',      ['english','german','dutch','norse','swedish','danish','norwegian','icelandic','afrikaans','yiddish','scots','frisian','faroese','scandinavian','gothic','austrian','british','flemish']],
+ ['gk','Greek',          ['greek']],
+ ['celt','Celtic',       ['irish','gaelic','welsh','scottish','breton','cornish','manx']],
+ ['sem','Middle East & Semitic',['arabic','hebrew','persian','turkish','aramaic','akkadian','phoenician','amharic','avestan','egyptian','pushto','georgian','armenian','somali','ottoman']],
+ ['sa','South Asian',    ['hindi','sanskrit','urdu','tamil','telugu','malayalam','marathi','gujarati','panjabi','punjabi','bengali','sinhala','pali','balti','romany','angloromani','konkomba']],
+ ['ea','East & SE Asian',['japanese','chinese','mandarin','cantonese','hakka','yue','korean','malay','indonesian','javanese','tagalog','vietnamese','thai','burmese','tibetan','khmer','lao','mongolian','palauan','chinook','pidgin']],
+ ['sl','Slavic & Baltic',['russian','polish','czech','slovak','ukrainian','serbo','bulgarian','slavic','latvian','lithuanian','hungarian','finnish','estonian','albanian']],
+ ['afr','African',       ['swahili','zulu','xhosa','bantu','tswana','wolof','shona','kongo','kimbundu','ganda','ovambo','duala','lingala','efik','akan','kanuri','bambara','khoekhoe','african','engenni','eman','fon']],
+ ['am','Indigenous American',['nahuatl','nah','quechua','taino','algonqui','cree','ojibwa','iroquoian','mapuche','mapudungun','tupi','guarequena','inuit','inuktitut','inuinnaqtun','aleut','navajo','hopi','cherokee','mohawk','seneca','powhatan','narragansett','alabama','abnaki','lushootseed','wintu','kalaallisut','yupik','gwich','wiradhuri']],
+ ['pac','Pacific & Australian',['hawaiian','maori','samoan','tonga','polynesian','fijian','gamilaraay','guguyimidjir','yagara','kaurna','adnyamathanha','austral']]];
+const b2OrigFam=(name)=>{ const s=String(name||'').toLowerCase();
+  for(let g=0;g<B2_ORIGRP.length;g++){ const keys=B2_ORIGRP[g][2];
+    for(let i=0;i<keys.length;i++) if(s.indexOf(keys[i])>=0) return g; }
+  return -1; };
+
 function b2State(){ const S=state;
-  if(!S.b2) S.b2={ lv:[], bee:[], cls:[], orig:[], tag:[], pos:[], syl:[], fl:[], flag:[],
+  /* `diff` missing means either a fresh builder or one left over from the version
+     that filtered on `lv` (rarity). Rebuild rather than migrate: the old facet has
+     no honest equivalent here — a y-band is not a difficulty band — so carrying the
+     selection across would silently mean something different from what was chosen. */
+  if(!S.b2 || !S.b2.diff) S.b2={ diff:[], odds:[], bee:[], cls:[], orig:[], tag:[], pos:[],
+                   syl:[], fl:[], flag:[],
                    pool:'', size:20, wlmin:3, wlmax:24, starts:'', has:'', ends:'',
-                   qtag:'', qorig:'', tab:'list', seed:1 };
+                   qtag:'', qorig:'', tgrp:'', ogrp:'', tab:'list', seed:1 };
   return S.b2; }
 const b2Has=(k,v)=>b2State()[k].indexOf(v)>=0;
 
 /* does word i survive the filters, with `skip` lifted out? */
 function b2Pass(X,i,skip){
   const S=b2State();
-  if(skip!=='lv'   && S.lv.length   && S.lv.indexOf(X.Y[i])<0) return false;
+  if(skip!=='diff' && S.diff.length && S.diff.indexOf(X.DF[i])<0) return false;
+  if(skip!=='odds' && S.odds.length && S.odds.indexOf(X.BP[i])<0) return false;
   if(skip!=='cls'  && S.cls.length  && S.cls.indexOf(X.C[i])<0) return false;
   if(skip!=='orig' && S.orig.length && S.orig.indexOf(X.O[i])<0) return false;
   if(skip!=='pos'  && S.pos.length  && S.pos.indexOf(X.P[i])<0) return false;
@@ -8114,7 +8252,8 @@ function b2Counts(kind,len){
   for(let i=0;i<X.N;i++){ if(!b2Pass(X,i,kind)) continue;
     if(kind==='tag'){ const t=X.TG[i]; for(let j=0;j<t.length;j++) c[t[j]]++; }
     else if(kind==='bee'){ const b=X.NT[i]; for(let j=0;j<b.length;j++) c[b[j]]++; }
-    else if(kind==='lv'){ if(X.Y[i]<len) c[X.Y[i]]++; }
+    else if(kind==='diff'){ c[X.DF[i]]++; }
+    else if(kind==='odds'){ c[X.BP[i]]++; }
     else if(kind==='cls'){ c[X.C[i]]++; }
     else if(kind==='orig'){ if(X.O[i]>=0) c[X.O[i]]++; }
     else if(kind==='pos'){ if(X.P[i]>=0) c[X.P[i]]++; }
@@ -8142,7 +8281,8 @@ function bldLevels(n){ return n<=WORK_MAX?1:Math.max(2,Math.min(24,Math.round(n/
 function bldPick(){ return b2Pick(); }
 function bldSuggest(){
   const X=b2Idx(), S=b2State(), bits=[];
-  if(S.lv.length===1) bits.push(B2_BAND[S.lv[0]]||('Level '+S.lv[0]));
+  if(S.diff.length===1) bits.push((B2_DIFF[S.diff[0]]||{}).lab||'');
+  if(S.odds.length===1) bits.push((B2_ODDS[S.odds[0]]||{}).lab||'');
   if(S.cls.length===1) bits.push(B2_CLS[X.cL[S.cls[0]]]||'');
   if(S.orig.length===1) bits.push(X.oL[S.orig[0]]);
   if(S.tag.length===1) bits.push(X.tL[S.tag[0]]);
@@ -8173,10 +8313,13 @@ function viewBuilder(){
       <span style="font-size:11.5px;font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(state2)}</span></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">${body}</div></div>`;
 
-  /* 1 · spelling level */
-  const cLv=b2Counts('lv',10);
-  const lvChips=[1,2,3,4,5,6,7,8,9].filter(i=>cLv[i]||b2Has('lv',i))
-    .map(i=>chip('lv',i,(B2_BAND[i]||('Level '+i)),cLv[i],b2Has('lv',i))).join('');
+  /* 1 · the two spelling bands (see B2_DIFF / B2_ODDS for why these and not `y`) */
+  const cDiff=b2Counts('diff',B2_DIFF.length);
+  const diffChips=B2_DIFF.map((b,i)=>({b,i,c:cDiff[i]})).filter(x=>x.c||b2Has('diff',x.i))
+    .map(x=>chip('diff',x.i,x.b.lab,x.c,b2Has('diff',x.i))).join('');
+  const cOdds=b2Counts('odds',B2_ODDS.length);
+  const oddsChips=B2_ODDS.map((b,i)=>({b,i,c:cOdds[i]})).filter(x=>x.c||b2Has('odds',x.i))
+    .map(x=>chip('odds',x.i,x.b.lab,x.c,b2Has('odds',x.i))).join('');
   /* 2 · how many */
   const sizeChips=B2_SIZES.map(v=>`<button data-act="b2Size" data-arg="${v}" style="padding:7px 11px;border-radius:10px;font-weight:750;font-size:12.5px;border:1px solid ${B.size===v?'var(--action,var(--accent))':'var(--line)'};background:${B.size===v?'color-mix(in srgb,var(--action,var(--accent)) 13%,var(--paper,#fff))':'var(--surface2)'};color:${B.size===v?'var(--action,var(--accent))':'var(--text)'}">${v}</button>`).join('')
     + `<button data-act="b2Size" data-arg="all" style="padding:7px 11px;border-radius:10px;font-weight:750;font-size:12.5px;border:1px solid ${B.size==='all'?'var(--action,var(--accent))':'var(--line)'};background:${B.size==='all'?'color-mix(in srgb,var(--action,var(--accent)) 13%,var(--paper,#fff))':'var(--surface2)'};color:${B.size==='all'?'var(--action,var(--accent))':'var(--text)'}">All ${K(hits.length)}</button>`;
@@ -8195,19 +8338,49 @@ function viewBuilder(){
   const cCls=b2Counts('cls',X.cL.length);
   const clsChips=X.cL.map((k,i)=>({k,i,c:cCls[i]})).filter(x=>x.c||b2Has('cls',x.i))
     .sort((a,b)=>b.c-a.c).map(x=>chip('cls',x.i,B2_CLS[x.k]||x.k,x.c,b2Has('cls',x.i))).join('');
-  /* 6 · subject */
+  /* a group tab: narrows which chips are offered below it, never the words */
+  const gtab=(act,val,label,count,on)=>`<button data-act="${act}" data-arg="${escA(val)}"
+    style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-weight:800;font-size:11.5px;line-height:1.2;
+    border:1px solid ${on?'var(--action,var(--accent))':'transparent'};
+    background:${on?'color-mix(in srgb,var(--action,var(--accent)) 13%,var(--paper,#fff))':'var(--chip,var(--surface2))'};
+    color:${on?'var(--action,var(--accent))':'var(--muted)'};cursor:pointer">
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${esc(label)}</span>
+    ${count!=null?`<span style="font-variant-numeric:tabular-nums;font-weight:700;font-size:10.5px;opacity:.7">${K(count)}</span>`:''}</button>`;
+
+  /* 6 · subject, grouped. Chips are limited to the chosen group; with no group
+     chosen it is the whole subject vocabulary by count, as before — but with the
+     origin-family and eponym tags lifted out, so the top of the list is finally
+     subjects rather than olatin / ooldeng / ofrench / ogreek. */
   const cTag=b2Counts('tag',X.tL.length);
   const qt=(B.qtag||'').toLowerCase();
-  const tagChips=X.tL.map((lab,i)=>({lab,i,c:cTag[i]}))
-    .filter(x=>(x.c||b2Has('tag',x.i)) && (!qt || x.lab.toLowerCase().indexOf(qt)>=0))
-    .sort((a,b)=>b.c-a.c).slice(0,24).map(x=>chip('tag',x.i,x.lab,x.c,b2Has('tag',x.i))).join('')
+  const tgSel=B.tgrp===''?null:(B.tgrp==='_'?-1:B2_TAGGRP.findIndex(g=>g[0]===B.tgrp));
+  const tagPool=X.tL.map((lab,i)=>({lab,i,c:cTag[i],g:X.tG[i]})).filter(x=>x.g!==-2);
+  /* a group's tab count is what that group would contribute, so an empty group is
+     visibly empty rather than a tab that leads to "nothing matches that" */
+  const tgCount=g=>tagPool.reduce((s,x)=>s+(x.g===g?x.c:0),0);
+  const tagTabs=B2_TAGGRP.map((g,i)=>({g,i,n:tgCount(i)})).filter(x=>x.n||tgSel===x.i)
+    .map(x=>gtab('b2TGrp',x.g[0],x.g[1],x.n,tgSel===x.i)).join('')
+    + (tagPool.some(x=>x.g===-1) ? gtab('b2TGrp','_','Everything else',tgCount(-1),tgSel===-1) : '');
+  const tagChips=tagPool
+    .filter(x=>(x.c||b2Has('tag',x.i)) && (tgSel==null||x.g===tgSel)
+               && (!qt || x.lab.toLowerCase().indexOf(qt)>=0))
+    .sort((a,b)=>b.c-a.c).slice(0,tgSel==null?28:60)
+    .map(x=>chip('tag',x.i,x.lab,x.c,b2Has('tag',x.i))).join('')
     || `<span style="font-size:12px;color:var(--muted)">nothing matches that</span>`;
-  /* 7 · origin */
+  /* 7 · origin, grouped into language families the same way */
   const cOr=b2Counts('orig',X.oL.length);
   const qo=(B.qorig||'').toLowerCase();
-  const origChips=X.oL.map((lab,i)=>({lab,i,c:cOr[i]}))
-    .filter(x=>(x.c||b2Has('orig',x.i)) && (!qo || x.lab.toLowerCase().indexOf(qo)>=0))
-    .sort((a,b)=>b.c-a.c).slice(0,24).map(x=>chip('orig',x.i,x.lab,x.c,b2Has('orig',x.i))).join('')
+  const ogSel=B.ogrp===''?null:(B.ogrp==='_'?-1:B2_ORIGRP.findIndex(g=>g[0]===B.ogrp));
+  const origPool=X.oL.map((lab,i)=>({lab,i,c:cOr[i],g:X.oG[i]}));
+  const ogCount=g=>origPool.reduce((s,x)=>s+(x.g===g?x.c:0),0);
+  const origTabs=B2_ORIGRP.map((g,i)=>({g,i,n:ogCount(i)})).filter(x=>x.n||ogSel===x.i)
+    .map(x=>gtab('b2OGrp',x.g[0],x.g[1],x.n,ogSel===x.i)).join('')
+    + (origPool.some(x=>x.g===-1) ? gtab('b2OGrp','_','Other',ogCount(-1),ogSel===-1) : '');
+  const origChips=origPool
+    .filter(x=>(x.c||b2Has('orig',x.i)) && (ogSel==null||x.g===ogSel)
+               && (!qo || x.lab.toLowerCase().indexOf(qo)>=0))
+    .sort((a,b)=>b.c-a.c).slice(0,ogSel==null?28:60)
+    .map(x=>chip('orig',x.i,x.lab,x.c,b2Has('orig',x.i))).join('')
     || `<span style="font-size:12px;color:var(--muted)">nothing matches that</span>`;
   /* 8 · part of speech */
   const cPos=b2Counts('pos',X.pL.length);
@@ -8248,7 +8421,7 @@ function viewBuilder(){
   const soundChips=SOUND.map(([b,lab])=>chip('flag',b,lab,cFlag[bit(b)],b2Has('flag',b))).join('')
     || `<span style="font-size:12px;color:var(--muted)">sound tables still loading…</span>`;
 
-  const nSel=B.lv.length+B.bee.length+B.cls.length+B.orig.length+B.tag.length+B.pos.length
+  const nSel=B.diff.length+B.odds.length+B.bee.length+B.cls.length+B.orig.length+B.tag.length+B.pos.length
     +B.syl.length+B.fl.length+B.flag.length+(B.pool?1:0)
     +(B.starts?1:0)+(B.has?1:0)+(B.ends?1:0)+((B.wlmin>3||B.wlmax<24)?1:0);
 
@@ -8259,15 +8432,18 @@ function viewBuilder(){
         <h2 style="font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0;font-weight:800">Build from</h2></div>
       ${nSel?`<button data-act="b2Clear" style="display:inline-flex;align-items:center;gap:5px;background:none;border:0;color:var(--action,var(--accent));font-weight:800;font-size:12px;padding:0">${iconSVG('x',13)} Clear ${nSel}</button>`:''}
     </div>
-    ${sec('Spelling level', B.lv.length?B.lv.length+' chosen':'any', lvChips)}
+    ${sec('How hard to spell', B.diff.length?B.diff.length+' chosen':'any', diffChips)}
+    ${sec('How likely at a bee', B.odds.length?B.odds.length+' chosen':'any', oddsChips)}
     ${sec('How many words', B.size==='all'?'every match':B.size+' words', sizeChips)}
     ${sec('Word length', (B.wlmin>3||B.wlmax<24)?(B.wlmin+'–'+(B.wlmax>=24?'24+':B.wlmax)+' letters'):'any', lenBody)}
     ${sec('Seen in a spelling bee', B.bee.length?B.bee.length+' chosen':'any', beeChips)}
     ${sec('Why it’s tricky', B.cls.length?B.cls.length+' chosen':'any', clsChips)}
     ${sec('Subject', B.tag.length?B.tag.length+' chosen':'any',
-      `<div style="width:100%;margin-bottom:8px">${fld('b2Q','qtag','Search subjects…',B.qtag)}</div>${tagChips}`)}
+      `<div style="width:100%;display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${tagTabs}</div>
+       <div style="width:100%;margin-bottom:8px">${fld('b2Q','qtag','Search every subject…',B.qtag)}</div>${tagChips}`)}
     ${sec('Language of origin', B.orig.length?B.orig.length+' chosen':'any',
-      `<div style="width:100%;margin-bottom:8px">${fld('b2Q','qorig','Search languages…',B.qorig)}</div>${origChips}`)}
+      `<div style="width:100%;display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px">${origTabs}</div>
+       <div style="width:100%;margin-bottom:8px">${fld('b2Q','qorig','Search every language…',B.qorig)}</div>${origChips}`)}
     ${sec('Part of speech', B.pos.length?B.pos.length+' chosen':'any', posChips)}
     ${sec('Draw from', (POOLS.find(p=>p[0]===(B.pool||''))||POOLS[0])[1], poolChips)}
     ${sec('Syllables', B.syl.length?B.syl.length+' chosen':'any', sylChips)}
@@ -8284,7 +8460,8 @@ function viewBuilder(){
   /* the active choices, as removable pills */
   const pill=(group,val,label)=>`<button data-act="b2Tog" data-arg="${escA(group+':'+val)}" style="display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:750;border:1px solid color-mix(in srgb,var(--action,var(--accent)) 45%,var(--line));background:color-mix(in srgb,var(--action,var(--accent)) 11%,var(--paper,#fff));color:var(--action,var(--accent))">${esc(label)} ${iconSVG('x',11)}</button>`;
   const pills=[
-    ...B.lv.map(v=>pill('lv',v,B2_BAND[v]||('Level '+v))),
+    ...B.diff.map(v=>pill('diff',v,(B2_DIFF[v]||{}).lab||('Band '+v))),
+    ...B.odds.map(v=>pill('odds',v,(B2_ODDS[v]||{}).lab||('Odds '+v))),
     ...B.bee.map(v=>pill('bee',v,X.nL[v])),
     ...B.cls.map(v=>pill('cls',v,B2_CLS[X.cL[v]]||X.cL[v])),
     ...B.tag.map(v=>pill('tag',v,X.tL[v])),
@@ -8334,7 +8511,7 @@ function viewBuilder(){
   </div>`;
 
   return `<div class="sb-page">
-    ${pageHead('List Builder','Any mix of nine filters','Every choice shows how many words it would leave',
+    ${pageHead('List Builder','Any mix of fourteen filters','Every choice shows how many words it would leave',
       '', 'setNav','Library','explore','sliders')}
     <div class="b2-wrap">${rail}${main}</div>
   </div>`;
