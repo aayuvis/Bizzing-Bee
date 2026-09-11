@@ -1336,31 +1336,40 @@ out of saga2.js so a retune cannot quietly undo them.
 
 ## Ship
 
-> ### PRODUCTION IS DELIBERATELY OFFLINE. SHIP TO THE INTERNAL SITE.
+> ### TWO SITES, TWO SCRIPTS, AND ONE RULE THAT IS INVERTED BETWEEN THEM
 >
-> **`www.bizzingbee.com` was taken down on purpose (Sep 2026)** — the owner asked for it
-> while more work is done. Production `gh-pages` now carries a holding page and **no
-> `CNAME`**, which is what releases the domain. **Do not "fix" this by redeploying
-> production or restoring a `CNAME`** — putting that file back is precisely what
-> re-publishes the site to the world.
+> **Production** — `https://www.bizzingbee.com/` — ships with **`./deploy-prod.sh`**
+> (this repo, branch `gh-pages`). It must carry **exactly** `CNAME=www.bizzingbee.com`.
 >
-> **Everything ships to `https://aayuvis.github.io/bizzing-bee-staging/`** via
+> **Internal** — `https://aayuvis.github.io/bizzing-bee-staging/` — ships with
 > **`./deploy-internal.sh`** (repo `aayuvis/bizzing-bee-staging`, branch `gh-pages`).
-> That script carries every guard below plus a reference check, and refuses to push a
-> `CNAME` of any kind — this site is a github.io project page and a `CNAME` either steals
-> the live domain or points the site at a hostname with no DNS. `deploy-staging.sh` is
-> **retired**: it wrote `CNAME=staging.bizzing.app` and rsync'd `--delete` while excluding
-> all of `voice/`, which would have killed the internal URL and wiped 903 narration clips
-> on its first run.
+> It must carry **no `CNAME` at all**.
 >
-> **To restore production**, from a checkout of `gh-pages`:
-> `git revert cff2d486d && git push origin HEAD:gh-pages`. That reinstates all 1,698 files
-> and the `CNAME` as a fast-forward. The whole published build is preserved intact on
-> **`gh-pages-holdback-20260906`** (`63f8c1c8b`, stamp `20260906e`). Do not force-push it —
-> the git proxy refuses ref deletion here and may refuse force too. Afterwards you will
-> likely need to re-enter the custom domain under Settings → Pages, because removing the
-> file unsets it there as well. **Ask before doing any of this**: the site being down is a
-> decision, not a fault.
+> That inversion is the one thing that must never break, and each script asserts its
+> own half before pushing. A `CNAME` naming the production domain on the internal repo
+> silently STEALS the live site; a `CNAME` naming anything else there points the
+> internal URL at a hostname with no DNS; and a production deploy that LOSES its
+> `CNAME` unsets the custom domain and drops the live site to github.io with nothing
+> anywhere reporting it. All three have a guard, because all three are silent.
+>
+> Neither script hand-picks files. They copy the whole tree by exclusion and then
+> assert: index.html byte-identical to source, every referenced asset present, one
+> `?v=` stamp throughout, under the ~250MB Pages budget, and (production) the 24 book
+> redirect stubs still on the branch. Hand-picking is what shipped a new stamp over
+> three uncopied files in Sep 2026.
+>
+> **`deploy-staging.sh` is retired.** It wrote `CNAME=staging.bizzing.app` — a hostname
+> with no DNS — and rsync'd `--delete` while excluding all of `voice/`, so its first run
+> would have killed the internal URL and wiped 903 bundled narration clips. Only
+> `voice/w` is streamed; `voice/c*`, `voice/a*` and `voice/ann` are served same-origin.
+>
+> **History worth keeping:** production was deliberately taken offline on 6 Sep 2026 at
+> the owner's request and restored on 10 Sep. The take-down worked by removing the
+> `CNAME` (that file IS the domain) and the whole published build was preserved on
+> **`gh-pages-holdback-20260906`** (`63f8c1c8b`). If it is ever taken down again, that
+> is the pattern: preserve the tree on a branch first, and restore with a revert rather
+> than a force-push — the git proxy here refuses ref deletion and may refuse force too.
+> Taking the site down or putting it back is the owner's call, never an inference.
 
 - **The Pages site has a size budget, and blowing it is silent.** GitHub's "pages build and
   deployment" job aborts at a ten-minute deploy timeout, and when it does the site keeps
