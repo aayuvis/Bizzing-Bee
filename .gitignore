@@ -54,3 +54,5 @@ video/cues2.json
 # generated work lists for the voice pipeline — regenerate, never commit
 spellbound-app/voice/pipeline/voice-todo.json
 spellbound-app/voice/pipeline/voice-new-keys.json
+
+build/
