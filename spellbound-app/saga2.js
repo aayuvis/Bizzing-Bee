@@ -350,6 +350,74 @@
         cx.save(); cx.translate((Math.random()-0.5)*k,(Math.random()-0.5)*k); this._on=1; },
       end(cx){ if(this._on){ cx.restore(); this._on=0; } } }; }
   };
+  /* ==========================================================================
+     SGUI — the screens AROUND the game, which is where these felt cheapest.
+
+     Every engine had grown its own start card and its own end card, or gone
+     without: keepFlying had a how-to, honeycombRun had an end card, spellShield
+     and typeBlaster had neither and dropped the child straight in and straight
+     out. Four dialects of the same two screens, and stars drawn as the text
+     glyphs ★☆.
+
+     THE THING NONE OF THEM DID: show the words. The result screen of a SPELLING
+     game listed a score and a honey count and never once told a child which words
+     they had just learned or which one beat them. That is the whole point of the
+     round, and it was the one thing missing — so `result` takes the round's word
+     log and prints it, right and wrong marked, each one tappable to hear again.
+     A child who lost gets the thing they actually needed from losing.
+     ========================================================================== */
+  const SGUI = {
+    /* Stars as drawn geometry rather than ★☆ glyphs, which render as a different
+       shape on every platform and cannot animate. Each pops in on a delay so the
+       third star lands last — the beat a child waits for. */
+    stars(n, size){ size=size||34;
+      return '<div class="sg-stars" role="img" aria-label="'+n+' of 3 stars">'+[0,1,2].map(i=>
+        '<svg class="sg-star-i'+(i<n?' won':'')+'" style="animation-delay:'+(i*0.14+0.1).toFixed(2)+'s" '+
+        'width="'+size+'" height="'+size+'" viewBox="0 0 24 24" aria-hidden="true">'+
+        '<path d="M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.7 6.1 20.8l1.2-6.6L2.5 9.6l6.6-.9z" '+
+        'fill="'+(i<n?'#F0B429':'none')+'" stroke="'+(i<n?'#C98A08':'currentColor')+'" stroke-width="1.6" '+
+        'stroke-linejoin="round" opacity="'+(i<n?1:0.28)+'"/></svg>').join('')+'</div>'; },
+
+    /* A draining ring beats a bare number: the shape reads at a glance, and the
+       last three seconds go red and pulse, so urgency is felt rather than read. */
+    ring(pct, secs){ const R=26, C=2*Math.PI*R, hot=secs<=3;
+      return '<svg class="sg-ring'+(hot?' hot':'')+'" viewBox="0 0 64 64" width="62" height="62" aria-hidden="true">'+
+        '<circle cx="32" cy="32" r="'+R+'" fill="none" stroke="currentColor" stroke-width="5" opacity=".16"/>'+
+        '<circle cx="32" cy="32" r="'+R+'" fill="none" stroke="'+(hot?'#E8458C':'#F0B429')+'" stroke-width="5" '+
+        'stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+(C*(1-Math.max(0,Math.min(1,pct)))).toFixed(1)+'" '+
+        'transform="rotate(-90 32 32)"/></svg><b class="sg-ring-n'+(hot?' hot':'')+'">'+secs+'</b>'; },
+
+    howto(o){
+      return '<div class="sg-howto"><div class="sg-howto-card">'+
+        (o.art?'<div class="sg-howto-art">'+o.art+'</div>':'')+
+        '<div class="sg-howto-h">'+o.title+'</div>'+
+        '<div class="sg-howto-sub">'+o.sub+'</div>'+
+        '<div class="sg-howto-steps">'+(o.steps||[]).map(t=>'<div class="sg-pw-legend">'+t+'</div>').join('')+'</div>'+
+        '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">'+(o.go||'Start')+' →</button></div></div>'; },
+
+    /* words: [{w, ok}] — the round, in order. Capped at 12 so a long round does
+       not push the buttons off a phone; the count in the header stays honest. */
+    result(o){ const ws=(o.words||[]), got=ws.filter(w=>w.ok).length;
+      const list = ws.length ? '<div class="sg-wordsum">'+
+        '<div class="sg-wordsum-h">'+got+' of '+ws.length+' spelled</div>'+
+        '<div class="sg-wordrow">'+ws.slice(0,12).map(w=>
+          '<button class="sg-wchip'+(w.ok?' ok':' no')+'" data-say="'+esc2(w.w)+'" title="Hear it again">'+
+          esc2(w.w)+'</button>').join('')+'</div></div>' : '';
+      return '<div class="sg-cardbox sg-endcard">'+
+        '<div class="sg-end-h">'+(o.title||(o.win?'Round clear':'Out of time'))+'</div>'+
+        SGUI.stars(o.stars||0)+
+        '<div class="sg-end-score">'+(o.score|0)+'<span>'+(o.scoreLabel||'points')+'</span></div>'+
+        list+
+        '<div class="sg-inrow sg-end-btns"><button class="sg-rbtn" id="sg-again">Play again</button>'+
+        '<button class="sg-rbtn go" id="sg-cont">'+(o.win?'Continue':'Back to map')+'</button></div></div>'; },
+
+    /* wire the word chips so tapping one says it — the reason to show them */
+    bind(el){ if(!el) return;
+      el.querySelectorAll('[data-say]').forEach(b=>{ b.onclick=()=>{ try{ say(b.dataset.say); }catch(e){} }; }); },
+  };
+  const esc2=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  W().SGUI = SGUI;
+
   function opt_size(t){ return String(t||'').length>10?20:26; }
 
   /* A polished vector moth drawn straight onto the canvas — dusty scalloped wings,
@@ -453,8 +521,9 @@
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
     let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, grace=0, flower=null, flowerT=2, card=null, over=false, fx=[];
     let lateMoth=false, spelled=0;
-    let sinceWord=0; const WORD_GAP=7;     // 7s, not 9: the how-to card and countdown eat the
-                                           // front of a run, so 9 measured out at 4/min on a 6 floor
+    let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
+                                           // 6/min floor, so the same run passed once and failed
+                                           // once. A gate that flakes teaches people to ignore it.
     /* A flower is the ONLY way to spell in this game, so it is placed within reach and
        there is always one on the board. It used to pick a uniformly random open cell —
        on a medium maze that averages a dozen cells of corridor away, often past a moth —
@@ -751,8 +820,9 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
-    let sinceWord=0; const WORD_GAP=7;     // 7s, not 9: the how-to card and countdown eat the
-                                           // front of a run, so 9 measured out at 4/min on a 6 floor
+    let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
+                                           // 6/min floor, so the same run passed once and failed
+                                           // once. A gate that flakes teaches people to ignore it.
     const feed=wordFeed(CFG.pots+6);
     sgTexPreload(['bee-fly','moth','fly-sky','honeypot','coin','pillar']);   // decode game art before first frame
     /* per-world premium palettes; anything unlisted uses its illustrated plate */
@@ -1258,8 +1328,9 @@
 
     /* ---- spelling gate: hitting a ? box pauses the race ---- */
     const feed=wordFeed(60);
-    let sinceWord=0; const WORD_GAP=7;     // 7s, not 9: the how-to card and countdown eat the
-                                           // front of a run, so 9 measured out at 4/min on a 6 floor
+    let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
+                                           // 6/min floor, so the same run passed once and failed
+                                           // once. A gate that flakes teaches people to ignore it.
     function spellGate(){
       mode='spell'; sinceWord=0;
       const w=feed.next();
@@ -1816,59 +1887,123 @@
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{hexes:6,t:14},medium:{hexes:8,t:12},hard:{hexes:9,t:10},champ:{hexes:10,t:9}}[diff]);
     const words=pool(CFG.hexes+6).filter(w=>w.w.length>=4&&w.w.length<=10);
-    let phase=1, hexes=0, broken=0, wi=0, over=false, cur=null, timer=null;
+    let phase=1, hexes=0, broken=0, wi=0, over=false, cur=null, timer=null, started=false;
+    let combo=0, best=0, tLeft=0;
+    const round=[];                       // what the child actually spelled, for the result screen
     const art=(window.SGART&&SGART.ready());
     const foe=opts.foe||'smudge-swarm';
     const plate=art?SGART.plateForWorld(opts.world||'Hive Gates'):'';
-    const bossArt=art?SGART.sprite(foe,{cls:'sg-bossimg'}):'🦋🦋🦋<br>🦋🦋🦋🦋';
+    /* The boss used to fall back to the literal string '🦋🦋🦋<br>🦋🦋🦋🦋'. Seven
+       butterfly emoji, rendered as a different picture on every platform, standing in
+       for the antagonist of the game. A drawn swarm costs nothing and is the same
+       swarm everywhere. */
+    const bossArt=art?SGART.sprite(foe,{cls:'sg-bossimg'}):SS_SWARM();
     host.innerHTML='<div class="sg-boss"><div class="sg-boss-bg">'+plate+'</div>'+
+      '<div class="sg-ss-hud"><span class="sg-ss-phase" id="sg-ssph">The wall</span>'+
+      '<span class="sg-ss-combo" id="sg-sscb"></span></div>'+
       '<div class="sg-bossface" id="sg-bf">'+bossArt+'</div>'+
       '<div class="sg-shieldwall" id="sg-sw"></div>'+
-      '<div class="sg-duel"><div id="sg-scramble" class="sg-scramble"></div>'+
+      '<div class="sg-duel"><div class="sg-ss-timer" id="sg-dt"></div>'+
+      '<div id="sg-scramble" class="sg-scramble"></div>'+
       '<div id="sg-dmean" class="sg-cardmean"></div>'+
-      '<div class="sg-inrow"><input id="sg-di" autocomplete="off" autocapitalize="off" placeholder="type the word">'+
+      '<div class="sg-inrow"><input id="sg-di" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="type the word">'+
       '<button class="sg-rbtn go" id="sg-dgo">Cast</button></div>'+
-      '<div id="sg-dt" class="sg-dtimer"></div></div></div>';
+      '</div></div><div id="sg-card"></div>';
     const sw=host.querySelector('#sg-sw');
+    /* A shield is a drawn hexagon, not the ⬡ glyph. The glyph cannot hold a colour
+       ramp, cannot crack, and lands at a different weight in every font. */
     function wall(){ sw.innerHTML=Array.from({length:CFG.hexes},(_,i)=>
-      '<span class="sg-hex'+(i<hexes?' up':'')+'">⬡</span>').join(''); }
+      '<svg class="sg-hexs'+(i<hexes?' up':'')+'" viewBox="0 0 32 36" width="30" height="34" aria-hidden="true">'+
+      '<path d="M16 1.5l12.6 7.3v14.4L16 34.5 3.4 27.2V8.8z" fill="'+(i<hexes?'#F0B429':'none')+'" '+
+      'fill-opacity="'+(i<hexes?'.92':'0')+'" stroke="'+(i<hexes?'#8A5B00':'currentColor')+'" stroke-width="2" '+
+      'stroke-linejoin="round" opacity="'+(i<hexes?1:.3)+'"/>'+
+      (i<hexes?'<path d="M16 6l8 4.6v9.2L16 24.4 8 19.8v-9.2z" fill="#FFD874" fill-opacity=".55"/>':'')+
+      '</svg>').join('');
+      sw.setAttribute('aria-label', hexes+' of '+CFG.hexes+' shields forged'); }
     function scramble(w){ const a=w.split(''); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-      const s=a.join(''); return s===w?scramble(w):s; }
+      const s2=a.join(''); return s2===w?scramble(w):s2; }
+    function paintTimer(){ const el=host.querySelector('#sg-dt');
+      if(el) el.innerHTML=SGUI.ring(tLeft/CFG.t, tLeft); }
+    function paintCombo(){ const el=host.querySelector('#sg-sscb');
+      if(el) el.textContent = combo>=2 ? (combo+' in a row') : ''; }
+    function shakeBoss(){ const bf=host.querySelector('#sg-bf'); if(!bf) return;
+      bf.classList.remove('hurt'); void bf.offsetWidth; bf.classList.add('hurt'); }
     function next(){
       if(over) return;
-      if(phase===1 && hexes>=CFG.hexes){ phase=2; host.querySelector('#sg-bf').classList.add('dive'); try{flash('⚔️ The Smudge dives! Three words by ear alone!');}catch(_){} }
-      if(phase===2 && wi>=words.length-3+3){ /* handled in check */ }
-      cur=words[wi++]; if(!cur){ over=true; done({win:true,score:hexes*100,stars:3}); return; }
-      let t=CFG.t;
+      if(phase===1 && hexes>=CFG.hexes){ phase=2; host.querySelector('#sg-bf').classList.add('dive');
+        const ph=host.querySelector('#sg-ssph'); if(ph) ph.textContent='By ear alone — 3 to win';
+        try{flash('The Smudge dives! Three words by ear alone.');}catch(_){} }
+      cur=words[wi++]; if(!cur){ finish(true); return; }
+      tLeft=CFG.t;
       const sc=host.querySelector('#sg-scramble');
-      if(phase===1){ sc.textContent=scramble(cur.w.toLowerCase()); }
-      else { sc.textContent='🔊 listen…'; }
-      const mn=host.querySelector('#sg-dmean'); if(mn){ const m=meaningText(cur); mn.textContent=m?('💡 '+m):''; }
+      if(phase===1){ sc.textContent=scramble(cur.w.toLowerCase()); sc.classList.remove('byear'); }
+      else { sc.textContent='listen'; sc.classList.add('byear'); }
+      const mn=host.querySelector('#sg-dmean'); if(mn){ const m=meaningText(cur); mn.textContent=m?m:''; }
       try{ say(cur.w); }catch(e){}
-      host.querySelector('#sg-dt').textContent=t;
+      paintTimer();
       clearInterval(timer);
-      timer=setInterval(()=>{ if(over){ clearInterval(timer); return; } t--; host.querySelector('#sg-dt').textContent=t;
-        if(t<=0){ clearInterval(timer); hit(); } },1000);
+      timer=setInterval(()=>{ if(over){ clearInterval(timer); return; } tLeft--; paintTimer();
+        if(tLeft<=0){ clearInterval(timer); hit(); } },1000);
     }
-    function hit(){ if(phase===1&&hexes>0){ hexes--; wall(); } broken++;
-      try{flash('💥 A shield hex shatters!');}catch(_){}
-      if(broken>=4){ over=true; clearInterval(timer); done({win:false,score:hexes*50,stars:0}); return; }
+    /* `logIt` false when cast() has already recorded the miss — otherwise every wrong
+       answer lands in the round twice and the result screen reads "3 of 11 spelled"
+       over a list with each miss printed side by side with itself. */
+    function hit(logIt){ if(logIt!==false && cur) round.push({w:cur.w,ok:false});
+      combo=0; paintCombo(); shakeBoss();
+      if(phase===1&&hexes>0){ hexes--; wall(); } broken++;
+      try{flash('A shield hex shatters.');}catch(_){}
+      if(broken>=4){ finish(false); return; }
       next(); }
-    const inp=host.querySelector('#sg-di'); inp.focus();
+    function finish(win){ if(over) return; over=true; clearInterval(timer);
+      const stars = win ? (broken===0?3:broken<=2?2:1) : 0;
+      const score = hexes*100 + (phase===2?300:0) + best*25;
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:round,
+        title: win ? (phase===2?'The Smudge is driven off':'The wall holds') : 'The wall is breached' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; spellShield(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
+    const inp=host.querySelector('#sg-di');
     let p2right=0;
-    function cast(){ if(over) return;
-      const ok=inp.value.trim().toLowerCase()===cur.w.toLowerCase(); wlog(cur,ok); inp.value=''; try{inp.focus();}catch(e){}
+    function cast(){ if(over||!started) return;
+      const ok=sameSpelling(inp.value,cur.w); wlog(cur,ok); round.push({w:cur.w,ok});
+      inp.value=''; try{inp.focus();}catch(e){}
       clearInterval(timer);
-      if(ok){ if(phase===1){ hexes++; wall(); try{flash('⬡ Shield hex forged!');}catch(_){} }
-        else { p2right++; try{flash('⚡ The Quill fires! '+p2right+'/3');}catch(_){}
-          if(p2right>=3){ over=true; done({win:true,score:hexes*100+300,stars:broken===0?3:broken<=2?2:1}); return; } } }
-      else hit();
+      if(ok){ combo++; best=Math.max(best,combo); paintCombo();
+        if(phase===1){ hexes++; wall(); try{flash('Shield hex forged'+(combo>=3?(' — '+combo+' in a row!'):''));}catch(_){} }
+        else { p2right++; try{flash('The Quill fires! '+p2right+'/3');}catch(_){}
+          if(p2right>=3){ finish(true); return; } } }
+      else { hit(false); return; }
       if(!over) next(); }
     inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); cast(); } };
     host.querySelector('#sg-dgo').onclick=cast;
-    wall(); next();
+    /* A start card, which this game never had — it used to drop a child straight into
+       a boss fight with no idea what the hexagons were for. */
+    function howto(){ const el=host.querySelector('#sg-card');
+      el.innerHTML=SGUI.howto({ title:'Spell Shield', art:SS_SWARM(74),
+        sub:'The Smudge is at the Hive Gates. Spell to raise the wall before it breaks through.',
+        steps:[ 'Unscramble the word and type it — every correct spelling forges one shield hex',
+                'Forge all '+CFG.hexes+' and the Smudge dives: three more words, by ear alone',
+                'Four misses and the wall is breached — the clock is '+CFG.t+' seconds a word' ],
+        go:'Raise the wall' });
+      el.style.display='grid';
+      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML='';
+        started=true; try{inp.focus();}catch(e){} wall(); next(); }; }
+    wall(); paintCombo(); howto();
     return { destroy(){ over=true; clearInterval(timer); } };
   }
+  /* The swarm, drawn: three ranks of moths closing on the gate. Used as the boss
+     fallback and as the start card's art, so both say the same thing. */
+  function SS_SWARM(size){ size=size||96;
+    const m=(x,y,sc,o)=>'<g transform="translate('+x+','+y+') scale('+sc+')" opacity="'+o+'">'+
+      '<ellipse cx="0" cy="0" rx="3.1" ry="5.2" fill="#4A4270"/>'+
+      '<path d="M-1.6-2.4C-9-8-13 0-7.4 3.4-3.6 5.6-1.6 2.6-1.6-.6z" fill="#8A83A8"/>'+
+      '<path d="M1.6-2.4C9-8 13 0 7.4 3.4 3.6 5.6 1.6 2.6 1.6-.6z" fill="#8A83A8"/>'+
+      '<path d="M-1-5.4l-2.4-3M1-5.4l2.4-3" stroke="#4A4270" stroke-width="1" stroke-linecap="round"/></g>';
+    return '<svg viewBox="0 0 120 80" width="'+size+'" height="'+(size*0.67)+'" aria-label="the Smudge swarm">'+
+      m(24,22,1.5,.55)+m(58,16,1.7,.7)+m(94,24,1.4,.5)+
+      m(16,50,1.8,.85)+m(46,44,2.2,1)+m(78,50,1.9,.9)+m(106,46,1.5,.6)+
+      '</svg>'; }
 
   /* ---------- ENGINE I · WORD SNAKE (steer Bizzy to spell in order) ---------- */
   function wordSnake(host, opts, done){

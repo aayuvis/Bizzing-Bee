@@ -503,3 +503,54 @@
 .sg-diffpick-in .sg-diff-back{margin-top:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);
   color:#FFF6E4;border-radius:99px;padding:9px 18px;font:800 13px 'Hanken',sans-serif;cursor:pointer;min-height:40px}
 .sg-diffpick-in .sg-diff-back:hover{background:rgba(255,255,255,.22)}
+
+/* ==========================================================================
+   SGUI — the screens around the game. Shared by every engine so a fix to how a
+   result reads fixes it everywhere, instead of in the one engine that grew its
+   own copy. Tokens only: these sit on world plates that range from a bright
+   meadow to a night sky, so nothing here may assume a light ground.
+   ========================================================================== */
+.sg-stars{display:flex;gap:6px;justify-content:center;margin:2px 0 6px;color:var(--muted,#7A6E5C)}
+.sg-star-i{opacity:0;transform:scale(.4) rotate(-22deg);animation:sg-star-pop .42s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes sg-star-pop{to{opacity:1;transform:none}}
+.sg-star-i.won{filter:drop-shadow(0 2px 5px rgba(240,180,41,.5))}
+
+/* the draining ring: shape first, number second, red and pulsing at the end */
+.sg-ring{display:block}
+.sg-ss-timer{position:relative;display:grid;place-items:center;width:62px;height:62px;margin:0 auto 2px;color:var(--text,#2B2117)}
+.sg-ring-n{position:absolute;font:800 20px/1 var(--display,serif);font-variant-numeric:tabular-nums;color:var(--text,#2B2117)}
+.sg-ring-n.hot{color:#E8458C}
+.sg-ring.hot{animation:sg-ring-pulse .85s ease-in-out infinite}
+@keyframes sg-ring-pulse{50%{transform:scale(1.07)}}
+
+/* the result screen's word list — the thing none of these games used to show */
+.sg-end-h{font:800 24px/1.15 var(--display,serif);margin-bottom:2px;text-wrap:balance}
+.sg-end-score{font:800 30px/1 var(--display,serif);font-variant-numeric:tabular-nums;margin:2px 0 10px}
+.sg-end-score span{font:600 12px/1 var(--sans,inherit);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted,#7A6E5C);margin-left:7px}
+.sg-wordsum{width:100%;max-width:380px;margin:0 auto 12px}
+.sg-wordsum-h{font:700 12px/1 var(--sans,inherit);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted,#7A6E5C);margin-bottom:7px}
+.sg-wordrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.sg-wchip{font:600 13px/1 var(--mono,ui-monospace,monospace);padding:6px 10px;border-radius:8px;
+  border:1px solid var(--line,#EADFC8);background:var(--panel,#fff);color:var(--text,#2B2117);cursor:pointer}
+.sg-wchip.ok{border-color:#2FB39E;background:color-mix(in srgb,#2FB39E 13%,transparent)}
+.sg-wchip.no{border-color:#E8458C;background:color-mix(in srgb,#E8458C 13%,transparent);
+  text-decoration:line-through;text-decoration-color:#E8458C}
+.sg-wchip:hover{border-color:var(--honey,#F0B429)}
+.sg-end-btns{max-width:340px;margin:0 auto}
+
+/* Spell Shield */
+.sg-ss-hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px 6px}
+.sg-ss-phase{font:700 12px/1 var(--sans,inherit);letter-spacing:.07em;text-transform:uppercase;color:var(--muted,#7A6E5C)}
+.sg-ss-combo{font:800 13px/1 var(--display,serif);color:var(--honey,#F0B429)}
+.sg-shieldwall{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;color:var(--muted,#7A6E5C)}
+.sg-hexs{transition:transform .22s cubic-bezier(.2,1.5,.4,1)}
+.sg-hexs.up{animation:sg-hex-forge .42s cubic-bezier(.2,1.6,.4,1)}
+@keyframes sg-hex-forge{0%{transform:scale(.3) rotate(-30deg);opacity:0}60%{transform:scale(1.18)}100%{transform:none;opacity:1}}
+.sg-bossface.hurt{animation:sg-boss-hurt .34s ease-out}
+@keyframes sg-boss-hurt{0%,100%{transform:none}25%{transform:translateX(-7px) rotate(-3deg)}60%{transform:translateX(6px) rotate(2deg)}}
+.sg-scramble.byear{letter-spacing:.14em;text-transform:uppercase;font-size:15px;color:var(--muted,#7A6E5C)}
+@media (prefers-reduced-motion:reduce){
+  .sg-star-i,.sg-hexs.up,.sg-bossface.hurt,.sg-ring.hot{animation:none;opacity:1;transform:none}
+}
