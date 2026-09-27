@@ -584,3 +584,4 @@
    able to read, because the scramble deliberately tells them nothing. */
 .sg-duel .sg-cardmean{color:#F3ECDF;text-shadow:0 1px 4px rgba(0,0,0,.55)}
 .sg-duel .sg-clue{color:var(--honey,#F0B429)}
+.sg-end-sub{font:600 13px 'Hanken',sans-serif;color:var(--muted,#7A6E5C);margin:-2px 0 2px;text-align:center}

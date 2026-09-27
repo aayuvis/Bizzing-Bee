@@ -416,6 +416,7 @@
           esc2(w.w)+'</button>').join('')+'</div></div>' : '';
       return '<div class="sg-cardbox sg-endcard">'+
         '<div class="sg-end-h">'+(o.title||(o.win?'Round clear':'Out of time'))+'</div>'+
+        (o.sub?'<div class="sg-end-sub">'+o.sub+'</div>':'')+
         SGUI.stars(o.stars||0)+
         '<div class="sg-end-score">'+((o.score|0).toLocaleString())+'<span>'+(o.scoreLabel||'points')+'</span></div>'+
         list+
@@ -1893,15 +1894,17 @@
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{words:6,up:1500,time:90},medium:{words:8,up:1200,time:90},hard:{words:9,up:950,time:85},champ:{words:10,up:800,time:80}}[diff]);
     const words=pool(CFG.words+2).filter(w=>w.w.length<=9); let wi=0, cur=null, li=0, t=CFG.time, doneWords=0, over=false;
+    const wmRound=[]; let wmClean=true;    // the round's words, and whether this one was swatted clean
     const art=(window.SGART&&SGART.ready());
     const mothArt=art?SGART.sprite('grey-moth',{cls:'sg-mothimg'}):'🦋';
     const plate=art?SGART.plateForWorld(opts.world||'Hive'):'';
     host.innerHTML='<div class="sg-hud"><span id="sg-w">Word 1/'+CFG.words+'</span><span id="sg-time"></span></div>'+
-      '<div class="sg-target" id="sg-target"></div><div id="sg-wmean" class="sg-cardmean"></div><div class="sg-mothstage"><div class="sg-moth-bg">'+plate+'</div><div class="sg-molegrid" id="sg-grid"></div></div>';
+      '<div class="sg-target" id="sg-target"></div><div id="sg-wmean" class="sg-cardmean"></div><div class="sg-mothstage"><div class="sg-moth-bg">'+plate+'</div><div class="sg-molegrid" id="sg-grid"></div></div>'+
+      '<div id="sg-card"></div>';   // this engine had nowhere to draw a result screen
     const grid=host.querySelector('#sg-grid');
     for(let i=0;i<12;i++){ const c=document.createElement('button'); c.className='sg-cell'; c.dataset.i=i; grid.appendChild(c); }
-    function newWord(){ if(wi>=words.length||doneWords>=CFG.words){ over=true; finish(true); return; }
-      cur=words[wi++]; li=0; renderTarget();
+    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ if(wi>=words.length||doneWords>=CFG.words){ over=true; finish(true); return; }
+      cur=words[wi++]; li=0; wmClean=true; renderTarget();
       const mn=host.querySelector('#sg-wmean'); if(mn){ const m=meaningText(cur); mn.textContent=m?('💡 '+m):''; }
       try{ say(cur.w); }catch(e){} }
     function renderTarget(){ host.querySelector('#sg-target').innerHTML=cur.w.split('').map((ch,i)=>
@@ -1923,14 +1926,22 @@
       const ch=c.dataset.ch, golden=c.dataset.g==='1';
       c.dataset.on=''; c.innerHTML='💥';setTimeout(()=>{ if(c.innerHTML==='💥') c.innerHTML=''; },260);
       if(golden){ t+=5; try{flash('★ Golden moth! +5s');}catch(_){} return; }
-      if(ch===cur.w[li]){ li++; if(li>=cur.w.length){ doneWords++; try{flash('✓ '+cur.w.toUpperCase());}catch(_){} newWord(); } else renderTarget(); }
-      else { t-=3; try{flash('Wrong moth! −3s');}catch(_){} } };
+      if(ch===cur.w[li]){ li++; if(li>=cur.w.length){ wmRound.push({w:cur.w,ok:wmClean}); doneWords++; try{flash('✓ '+cur.w.toUpperCase());}catch(_){} newWord(); } else renderTarget(); }
+      else { wmClean=false; t-=3; try{flash('Wrong moth! −3s');}catch(_){} } };
     const popT=setInterval(pop, 520);
     const tick=setInterval(()=>{ if(over){ clearInterval(tick); clearInterval(popT); return; } t--;
       host.querySelector('#sg-time').textContent='⏱ '+t+'s';
       if(t<=0){ over=true; clearInterval(tick); clearInterval(popT); finish(doneWords>=CFG.words); } },1000);
     newWord();
-    function finish(win){ done({win,score:doneWords*100+t*2,stars:win?(t>25?3:t>10?2:1):0}); }
+    /* No result screen at all: the round ended and the child was handed back to the
+       app's generic text card, with no list of what they had just spelled. */
+    function finish(win){ const score=doneWords*100+t*2, stars=win?(t>25?3:t>10?2:1):0;
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:wmRound,
+        title: win?'Every moth swatted':'Out of time' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; whackAMoth(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
        unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
@@ -1940,7 +1951,7 @@
        before this line and would hit the temporal dead zone of a `let`. */
     var sinceWord=0; var WORD_GAP=7;
     var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; newWord(); } },1000);
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(cur) wmRound.push({w:cur.w,ok:false}); newWord(); } },1000);
     return { destroy(){ over=true; clearInterval(popT); clearInterval(tick); } };
   }
 
@@ -2090,6 +2101,7 @@
     cv.style.width=BW+'px'; cv.style.height=BH+'px';
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let snake,dir,ndir,word='',spelled=0,tiles=[],wordsDone=0,score=0,lives=3,over=false,bonk=0,tick=CFG.tick,loop=null,fx=[],tongueT=0,streak=0,cleanWord=true;
+    const snRound=[];                      // the round's words, for the result screen
     /* the snake game IS a snake — coloured to the worn Serpent-pack avatar, else garden green */
     const SERP_PAL={noodle:['#5FBE5A','#86D97F','#D6F0B8','#2C6E2C'],sunny:['#E9963C','#FFC07A','#FFDFB0','#9A5410'],
       cobra:['#3E8D5C','#69B984','#DDF0BE','#1F5A38'],python:['#9A824C','#C2A972','#E9DBB4','#5A4620'],
@@ -2105,7 +2117,7 @@
     let PAL=wornSkin||tintPal||EVO_PAL[0], evo=null, snakeStage=0, unlocked=false;
     function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
       for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
-    function layoutWord(){ word=feed.next().w; spelled=0; tiles=[];
+    function layoutWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ word=feed.next().w; spelled=0; tiles=[];
       const head=snake[0], ring=[]; for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++) ring.push({x:(head.x+dx+COLS)%COLS,y:(head.y+dy+ROWS)%ROWS});
       for(let k=0;k<word.length;k++){ let x,y,tries=0; do{ x=Math.floor(Math.random()*COLS); y=Math.floor(Math.random()*ROWS); }
         while((occupied(x,y,ring)||tiles.some(t=>t.x===x&&t.y===y))&&++tries<200);
@@ -2133,7 +2145,7 @@
           SGFX.spark(fx,tiles[t].x*CELL+CELL/2,tiles[t].y*CELL+CELL/2,9,['#FFE9A8','#F0B429','#FFFFFF'],{speed:2.6,decay:0.05,rx:2.6,ry:3.4});
           SGFX.ring(fx,tiles[t].x*CELL+CELL/2,tiles[t].y*CELL+CELL/2,'255,233,168',{grow:5,decay:0.06,lw:3});
           tiles.splice(t,1);
-          if(spelled>=word.length){ wordsDone++; score+=40;
+          if(spelled>=word.length){ snRound.push({w:word,ok:cleanWord}); wordsDone++; score+=40;
             // streak: a whole word eaten in order without a wrong bite pays a rising bonus
             if(cleanWord){ streak++; if(streak>=2) score+=streak*12; } else streak=0; cleanWord=true;
             spawnSplash((streak>=2?('🔥 '+streak+'× '):'✓ ')+word.toUpperCase());
@@ -2249,13 +2261,9 @@
       const form=(SG_EVO.snake.forms[snakeStage]||[])[2]||'Grass Snake';
       const stars=win?(unlocked?3:lives>=3?3:lives===2?2:1):0; const el=host.querySelector('#sg-card');
       if(!el){ done({win,score,stars}); return; }
-      el.innerHTML='<div class="sg-cardbox sg-endcard"><div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(unlocked?'🌌 Became VASUKI!':win?'🏆 Words spelled!':'🌙 Tangled out')+'</div>'
-        +'<div style="font-size:13px;color:var(--muted,#7A6E5C);margin-bottom:2px">Evolved to '+form+' · '+wordsDone+' words</div>'
-        +'<div style="font-size:26px;letter-spacing:4px;margin:2px 0">'+('★'.repeat(stars)+'☆'.repeat(3-stars))+'</div>'
-        +'<div style="font-size:15px;color:var(--muted,#7A6E5C);margin-bottom:12px">'+wordsDone+' word'+(wordsDone===1?'':'s')+' · ⭐ '+score+'</div>'
-        +'<div class="sg-inrow" style="max-width:340px"><button class="sg-rbtn" id="sg-again">↻ Play again</button>'
-        +'<button class="sg-rbtn go" id="sg-cont">'+(win?'Continue →':'Back to map')+'</button></div></div>';
-      el.style.display='grid';
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:snRound,
+        title: unlocked?'Became VASUKI':win?'Words spelled':'Tangled out', sub:'Evolved to '+form });
+      el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; wordSnake(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
@@ -2283,7 +2291,7 @@
        before this line and would hit the temporal dead zone of a `let`. */
     var sinceWord=0; var WORD_GAP=7;
     var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; layoutWord(); } },1000);
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(word) snRound.push({w:word,ok:false}); layoutWord(); } },1000);
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
 
@@ -2305,8 +2313,9 @@
     cv.style.width=Wd+'px'; cv.style.height=Ht+'px';
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let word='',spelled=0,drops=[],basket=Wd/2,vx=0,wordsDone=0,lives=3,over=false,dropT=0,bonk=0,score=0,loop=null,last=0;
+    const ccRound=[]; let ccClean=true;    // the round's words, and whether this one was caught clean
     const BW=64;
-    function layout(){ curW=feed.next(); word=curW.w.toLowerCase(); spelled=0; drops=[];
+    function layout(){ sinceWord=0;   /* the floor is for a child who is STUCK */ curW=feed.next(); word=curW.w.toLowerCase(); spelled=0; drops=[]; ccClean=true;
       host.querySelector('#sg-cc-slots').innerHTML=word.split('').map((ch,i)=>'<span class="sg-tl'+(i<spelled?' done':i===spelled?' next':'')+'">'+(i<spelled?ch.toUpperCase():'•')+'</span>').join('');
       const mn=host.querySelector('#sg-cc-mean'); if(mn){ const m=meaningText(curW); mn.textContent=m?('💡 '+m):''; }
       try{ say(word); }catch(e){} }
@@ -2324,11 +2333,11 @@
           drops.splice(i,1);
           if(d.ch===word[spelled]){ spelled++; score+=15; renderSlots();
             SGFX.spark(fx,d.x,d.y,8,['#FFE9A8','#F0B429','#FFFFFF'],{speed:2.4,decay:0.055,rx:2.4,ry:3.2});
-            if(spelled>=word.length){ wordsDone++; score+=40; spawnSplash(); try{ if(typeof addCoins==='function') addCoins(8); }catch(e){}
+            if(spelled>=word.length){ ccRound.push({w:word,ok:ccClean}); wordsDone++; score+=40; spawnSplash(); try{ if(typeof addCoins==='function') addCoins(8); }catch(e){}
               if(wordsDone>=CFG.words){ finish(true); return; } layout(); setHud(); } }
           else { bonk=3; }                                    // wrong letter — no penalty beyond the miss
         } else if(d.y>Ht){ drops.splice(i,1);
-          if(d.ch===word[spelled]){ lives--; bonk=3; shake.hit(10);
+          if(d.ch===word[spelled]){ ccClean=false; lives--; bonk=3; shake.hit(10);
             SGFX.spark(fx,d.x,Ht-36,10,['#E0553C','#FF9C7A'],{speed:3});
             setHud(); if(lives<=0){ finish(false); return; } } }   // let the needed letter fall past → lose a heart
       }
@@ -2380,17 +2389,21 @@
     function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup);
       const stars=win?(lives>=3?3:lives===2?2:1):0; const el=host.querySelector('#sg-card');
       if(!el){ done({win,score,stars}); return; }
-      el.innerHTML='<div class="sg-cardbox sg-endcard"><div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(win?'🍯 Words caught!':'🌙 Out of catches')+'</div>'
-        +'<div style="font-size:26px;letter-spacing:4px;margin:2px 0">'+('★'.repeat(stars)+'☆'.repeat(3-stars))+'</div>'
-        +'<div style="font-size:15px;color:var(--muted,#7A6E5C);margin-bottom:12px">'+wordsDone+' word'+(wordsDone===1?'':'s')+' · ⭐ '+score+'</div>'
-        +'<div class="sg-inrow" style="max-width:340px"><button class="sg-rbtn" id="sg-again">↻ Play again</button>'
-        +'<button class="sg-rbtn go" id="sg-cont">'+(win?'Continue →':'Back to map')+'</button></div></div>';
-      el.style.display='grid';
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:ccRound,
+        title: win?'Every word caught':'Out of catches' });
+      el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; combCatcher(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
     layout(); setHud(); last=Date.now(); loop=setInterval(frame,1000/60); draw();
-    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup); } };
+    /* WORD FLOOR — see the note on whackAMoth. This engine had none: its word changes
+       only when it is finished, so a child who cannot catch the letter they need sees
+       ONE word until the hearts run out. Moving on costs no heart; the round still
+       needs CFG.words real catches to be won, so this is mercy, not a shortcut. */
+    var sinceWord=0; var WORD_GAP=7;
+    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(word) ccRound.push({w:word,ok:false}); layout(); setHud(); } },1000);
+    return { destroy(){ over=true; clearInterval(wordFloor); if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup); } };
   }
 
   /* ---------- ENGINE K · STAGE RHYTHM (letter notes on the beat) ---------- */
@@ -2409,13 +2422,14 @@
       '<div class="sg-race-mean" id="sg-rmean"></div><div id="sg-card"></div>';
     const stage=host.querySelector('#sg-rst'), laneEl=host.querySelector('#sg-rl');
     let wi=0, li=0, hearts=4, score=0, notes=[], over=false, loop=null, spawnT=0, beatT=0;
+    const srRound=[]; let srClean=true;    // the round's words, and whether this one was played clean
     function cur(){ return words[wi]; }
     function need(){ return cur().w.toLowerCase()[li]; }
     function renderSlots(){ const w=cur().w.toLowerCase();
       host.querySelector('#sg-rslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':ix===li?' next':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
       host.querySelector('#sg-rh').textContent='❤'.repeat(Math.max(0,hearts));
       host.querySelector('#sg-rs').textContent='⭐ '+score; }
-    function newWord(){ li=0; const w=cur();
+    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ li=0; srClean=true; const w=cur();
       host.querySelector('#sg-rw').textContent='🎵 '+(wi+1)+'/'+CFG.words;
       host.querySelector('#sg-rmean').innerHTML=meaningHTML(w);
       renderSlots(); try{ say(w.w); }catch(e){} }
@@ -2430,12 +2444,12 @@
       const n=zone.sort((a,b)=>b.y-a.y)[0];
       if(n.ch===need()){ n.el.classList.add('pop'); setTimeout(()=>n.el.remove(),180); notes=notes.filter(x=>x!==n);
         li++; score+=15; try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
-        if(li>=cur().w.length){ score+=40; wi++;
+        if(li>=cur().w.length){ srRound.push({w:cur().w,ok:srClean}); score+=40; wi++;
           try{ flash('🎶 '+words[wi-1].w.toUpperCase()+' — the marquee glows!'); }catch(e){}
           if(wi>=CFG.words){ finish(true); return; }
           newWord(); } else renderSlots(); }
       else { n.el.classList.add('bad'); setTimeout(()=>n.el.remove(),220); notes=notes.filter(x=>x!==n);
-        hearts--; renderSlots(); try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
+        srClean=false; hearts--; renderSlots(); try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
         if(hearts<=0) finish(false); } }
     function frame(){ if(over) return;
       const H=stage.clientHeight; spawnT+=16.7; beatT+=16.7;
@@ -2444,7 +2458,7 @@
         if(hit){ hit.classList.remove('pulse'); void hit.offsetWidth; hit.classList.add('pulse'); } }
       for(const n of [...notes]){ n.y+=CFG.fall; n.el.style.top=n.y+'px';
         if(n.y>H){ n.el.remove(); notes=notes.filter(x=>x!==n);
-          if(n.ch===need()){ hearts--; renderSlots();
+          if(n.ch===need()){ srClean=false; hearts--; renderSlots();
             try{ flash('The note slipped past — listen again!'); }catch(e){}
             if(hearts<=0){ finish(false); return; } } } } }
     const key=e=>{ if(over) return; const map={d:0,f:1,j:2,k:3,ArrowLeft:0,ArrowDown:1,ArrowUp:2,ArrowRight:3,'1':0,'2':1,'3':2,'4':3};
@@ -2452,8 +2466,16 @@
     addEventListener('keydown',key);
     laneEl.addEventListener('pointerdown',e=>{ const ln=e.target.closest('.sg-rlane'); if(ln) bopLane(+ln.dataset.l); });
     host.querySelector('#sg-rsay').onclick=()=>{ try{ say(cur().w); }catch(e){} };
+    /* No result screen at all: the marquee went dark and the child was handed back to
+       the app's generic text card, with no list of what they had just played. */
     function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key);
-      done({win, score, stars:win?(hearts>=4?3:hearts>=2?2:1):0}); }
+      const stars=win?(hearts>=4?3:hearts>=2?2:1):0;
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:srRound,
+        title: win?'The marquee is lit':'Out of hearts' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; stageRhythm(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
     newWord(); loop=setInterval(frame,1000/60);
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
@@ -2464,7 +2486,7 @@
        before this line and would hit the temporal dead zone of a `let`. */
     var sinceWord=0; var WORD_GAP=7;
     var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; wi++; newWord(); } },1000);
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(words[wi]) srRound.push({w:words[wi].w,ok:false}); wi++; newWord(); } },1000);
     return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); } };
   }
 
@@ -2577,7 +2599,7 @@
       host.querySelector('#sg-tsh').innerHTML=shieldPips();
       host.querySelector('#sg-tc').textContent=combo>=2?(combo+'x'):'';
       host.querySelector('#sg-ts').textContent=score; }
-    function newWord(){ li=0; foeY=0; wordPerfect=true; const w=cur();
+    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ li=0; foeY=0; wordPerfect=true; const w=cur();
       host.querySelector('#sg-tw').innerHTML=(wi+1)+'<i>/'+CFG.n+'</i>';
       host.querySelector('#sg-tmean').innerHTML=meaningHTML(w);
       foe.style.top='0%'; renderSlots(); try{ say(w.w); }catch(e){} }
@@ -2754,15 +2776,17 @@
     const CFG=calmCFG({easy:{n:8},medium:{n:12},hard:{n:12},champ:{n:14}}[diff]);
     const words=pool(CFG.n+4).filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length>=4&&w.w.length<=9).slice(0,CFG.n);
     let i=0, hints=3, over=false, speedBonus=0, wordStart=0;
+    const usRound=[]; let usClean=true;    // the round's words, and whether this one was solved clean
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Cosmos'):'';
     host.innerHTML='<div class="sg-hud"><span id="sg-c">⭐ 1/'+CFG.n+'</span><span id="sg-sp">⚡ 0</span><span id="sg-h">💡 ×3</span></div>'+
       '<div class="sg-sky"><div class="sg-sky-bg">'+plate+'</div><div class="sg-stars" id="sg-stars"></div><div class="sg-answer" id="sg-ans"></div></div>'+
-      '<div class="sg-simonprompt"><button class="sg-hintbtn" id="sg-hint">💡 Zib\u2019s hint</button></div>';
+      '<div class="sg-simonprompt"><button class="sg-hintbtn" id="sg-hint">💡 Zib\u2019s hint</button></div>'+
+      '<div id="sg-card"></div>';   // this engine had nowhere to draw a result screen
     function scr(w){ const a=w.split(''); do{ a.sort(()=>Math.random()-0.5); }while(a.join('')===w); return a; }
-    function newWord(){
-      if(i>=words.length){ over=true; done({win:true,score:CFG.n*100+hints*50+speedBonus,stars:hints>=2?3:hints===1?2:1}); return; }
-      const w=words[i].w.toLowerCase(); const letters=scr(w);
+    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */
+      if(i>=words.length){ usFinish(true); return; }
+      const w=words[i].w.toLowerCase(); const letters=scr(w); usClean=true;
       host.querySelector('#sg-c').textContent='⭐ '+(i+1)+'/'+CFG.n;
       const st=host.querySelector('#sg-stars'); st.innerHTML='';
       letters.forEach(ch=>{ const s=document.createElement('button'); s.className='sg-star'; s.textContent=ch.toUpperCase(); s.dataset.ch=ch; st.appendChild(s); });
@@ -2776,7 +2800,7 @@
       if(s.dataset.ch===w[picked.length]){ s.disabled=true; s.classList.add('set');
         const slot=host.querySelectorAll('.sg-slot')[picked.length]; slot.textContent=s.textContent; slot.classList.add('fill');
         picked.push(s.dataset.ch);
-        if(picked.length===w.length){
+        if(picked.length===w.length){ usRound.push({w:w,ok:usClean});
           // speed bonus: solve fast for extra stars + a shooting-star pop
           const el=Date.now()-wordStart, bonus=el<3200?30:el<6000?15:0;
           if(bonus){ speedBonus+=bonus; host.querySelector('#sg-sp').textContent='⚡ '+speedBonus;
@@ -2784,7 +2808,7 @@
             try{flash('⚡ Fast solve! +'+bonus);}catch(_){} }
           else { try{flash('🌌 Constellation restored!');}catch(_){} }
           i++; picked=[]; setTimeout(newWord,600); } }
-      else { s.classList.add('no'); setTimeout(()=>s.classList.remove('no'),300); } }
+      else { usClean=false; s.classList.add('no'); setTimeout(()=>s.classList.remove('no'),300); } }
     host.querySelector('#sg-stars').onclick=e=>{ pickStar(e.target.closest('.sg-star')); };
     // TYPE to unscramble too: a letter key picks the matching star (keyboard = first-class)
     const usKey=e=>{ if(over) return; const t=e.target;
@@ -2794,6 +2818,16 @@
       if(!star) return; e.preventDefault();
       pickStar(star); };
     addEventListener('keydown',usKey);
+    /* This engine ended INSIDE newWord() with a bare done(): the last constellation
+       lit and the child was handed straight back to the app's generic text card. */
+    function usFinish(win){ if(over && usFinish.ran) return; over=true; usFinish.ran=true;
+      const score=CFG.n*100+hints*50+speedBonus, stars=hints>=2?3:hints===1?2:1;
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:usRound,
+        title:'Every constellation restored', sub: speedBonus?('⚡ '+speedBonus+' speed bonus'):'' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; unscrambleStars(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
     host.querySelector('#sg-hint').onclick=()=>{ if(hints<=0||over) return; hints--;
       host.querySelector('#sg-h').textContent='💡 ×'+hints;
       const w=words[i].w.toLowerCase(); const need=w[picked.length];
@@ -2809,7 +2843,7 @@
        before this line and would hit the temporal dead zone of a `let`. */
     var sinceWord=0; var WORD_GAP=7;
     var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; i++; newWord(); } },1000);
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(words[i]) usRound.push({w:words[i].w,ok:false}); i++; newWord(); } },1000);
     return { destroy(){ over=true; removeEventListener('keydown',usKey); } };
   }
 
@@ -2845,8 +2879,10 @@
           '<div class="ss-slots" id="ss-slots"></div>'+
           '<div class="ss-key" id="ss-key"></div>'+
         '</div>'+
-      '</div>';
+      '</div>'+
+      '<div id="sg-card"></div>';   // this engine had nowhere to draw a result screen
     let i=0, typed='', over=false, misses=0, ssCombo=0, lives=3; const MAXLIVES=5;
+    const scRound=[]; let scClean=true;    // the round's words, and whether this one went clean
     const bg=host.querySelector('#ss-bg'), foeEl=host.querySelector('#ss-foe'), heroEl=host.querySelector('.ss-hero'),
           fill=host.querySelector('#ss-fill'), slotsEl=host.querySelector('#ss-slots'), mlbl=host.querySelector('#ss-mlbl');
     const livesEl=host.querySelector('#ss-lives');
@@ -2862,8 +2898,8 @@
     function renderSlots(flashWrong){ const w=words[i].w.toLowerCase();
       slotsEl.innerHTML=w.split('').map((ch,ix)=>{ const on=ix<typed.length;
         return '<span class="ss-slot'+(on?' fill':'')+(flashWrong?' wrong':'')+'">'+(on?typed[ix].toUpperCase():'')+'</span>'; }).join(''); }
-    function newWord(){ if(i>=words.length){ over=true; return win(); }
-      typed=''; const w=words[i];
+    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ if(i>=words.length){ over=true; return win(); }
+      typed=''; scClean=true; const w=words[i];
       /* meaningText masks the headword; using w.d raw printed the answer in the
          hint of a game whose whole task is to spell it */
       const _mt=meaningText(w);
@@ -2871,7 +2907,7 @@
       renderSlots(); try{ say(w.w); }catch(e){} }
     function sparkle(){ const fx=document.createElement('div'); fx.className='ss-burst'; foeEl.appendChild(fx); setTimeout(()=>fx.remove(),720); }
     function commit(){ const w=words[i].w.toLowerCase();
-      if(typed.toLowerCase()===w){ i++; const p=i/words.length; ssCombo++;
+      if(typed.toLowerCase()===w){ scRound.push({w:w,ok:scClean}); i++; const p=i/words.length; ssCombo++;
         fill.style.width=Math.round(p*100)+'%'; grey(p); mlbl.textContent=i+' / '+words.length;
         // the duel: the moth is driven back toward the edge and the hero advances as colour returns
         try{ if(foeEl) foeEl.style.right=(4+p*24)+'%'; if(heroEl) heroEl.style.left=(4+p*15)+'%'; }catch(_){}
@@ -2881,7 +2917,7 @@
         // milestone: every 3rd word restored wins a life back
         if(i%3===0 && i<words.length && lives<MAXLIVES){ lives++; renderLives(); try{ flash('❤ Milestone — extra life!'); }catch(e){} }
         setTimeout(newWord,700);
-      } else { misses++; typed=''; ssCombo=0; lives--; renderLives();
+      } else { scClean=false; misses++; typed=''; ssCombo=0; lives--; renderLives();
         renderSlots(true); setTimeout(()=>renderSlots(),420);
         slotsEl.classList.remove('shake'); void slotsEl.offsetWidth; slotsEl.classList.add('shake');
         foeEl.classList.remove('gloat'); void foeEl.offsetWidth; foeEl.classList.add('gloat');
@@ -2891,12 +2927,22 @@
     function skipWord(){ if(over) return;
       if(lives<=1){ try{ flash('Not enough lives to skip — spell it!'); }catch(e){} return; }
       lives--; renderLives(); ssCombo=0; typed='';
+      scRound.push({w:words[i].w,ok:false}); scClean=true;
       words.push(words.splice(i,1)[0]);   // the skipped word waits at the back — you WILL meet it again
       try{ flash('⏭ Skipped — it will come back around. −❤'); }catch(e){}
       newWord(); }
+    /* Both endings called done() and left it there: the finale played and the child
+       was handed back to the app's generic text card, never seeing the words. */
+    function scEnd(win,score,stars){
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:scRound,
+        title: win?'The scene is whole again':'The colour fades' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; spellScene(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
     function lose(){ over=true; removeEventListener('keydown',kb);
       try{ flash('🌑 The colour fades… the moth wins this round.'); }catch(e){}
-      setTimeout(()=>done({win:false, score:i*60, stars:0}), 700); }
+      setTimeout(()=>scEnd(false, i*60, 0), 700); }
     function type(ch){ if(over) return; const w=words[i].w.toLowerCase();
       if(typed.length<w.length){ typed+=ch; renderSlots(); if(typed.length===w.length) setTimeout(commit,180); } }
     function back(){ if(over) return; typed=typed.slice(0,-1); renderSlots(); }
@@ -2916,7 +2962,7 @@
         if(heroEl) heroEl.style.left='42%';
         flash('🏆 The scene is whole again — the moth is banished!');
       }catch(e){}
-      setTimeout(()=>done({win:true, score:words.length*100-misses*15, stars:misses===0?3:misses<=2?2:1}), 900); }
+      setTimeout(()=>scEnd(true, words.length*100-misses*15, misses===0?3:misses<=2?2:1), 900); }
     newWord();
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
@@ -2927,7 +2973,7 @@
        before this line and would hit the temporal dead zone of a `let`. */
     var sinceWord=0; var WORD_GAP=7;
     var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; i++; newWord(); } },1000);
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(words[i]) scRound.push({w:words[i].w,ok:false}); i++; newWord(); } },1000);
     return { destroy(){ over=true; removeEventListener('keydown',kb); } };
   }
   W().SB_SAGA_ENGINES = Object.assign(W().SB_SAGA_ENGINES||{}, { spellScene });

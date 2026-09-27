@@ -802,6 +802,24 @@ out of saga2.js so a retune cannot quietly undo them.
   a text-anchored edit landing on the first match in the file; the same class of mistake as
   the DOTALL regex that once deleted three engines. **Anchor on something inside the engine
   you mean, and count the matches before replacing.**
+- **All eleven engines now end on `SGUI.result`, and `tests/result-screen.cjs` holds it.**
+  Six had no result screen at all — whackAMoth, keepFlying, stageRhythm, unscrambleStars
+  and spellScene called `done()` and handed the child back to the app's generic text card
+  — and the five that did print a score and `★★☆` as glyphs listed no words. Each engine
+  keeps its **own** round log (`hcRound`, `kfRound`, `gpRound`, `wmRound`, `snRound`,
+  `ccRound`, `srRound`, `usRound`, `scRound`, `round`) and pushes `{w, ok}` when a word
+  RESOLVES — completed, missed, or skipped by the word floor — never on every keystroke.
+  Three engines (whackAMoth, unscrambleStars, spellScene) had **no `#sg-card` element at
+  all**, so a perfectly correct `SGUI.result` call fell through to the `done()` fallback
+  and looked exactly like the bug it was meant to fix. That is why the test mounts the
+  engine rather than reading the source: it checks the card exists AND, by reading the
+  engine's own `Function.prototype.toString`, that it calls `SGUI.result`.
+- **The word floor resets when a word is actually presented.** It did not, so it fired
+  every `WORD_GAP` seconds regardless and yanked the word away from a child who was
+  working steadily — and the rate it measured was the timer's, not the game's. Every
+  word-presenting function now sets `sinceWord=0` on the way in. combCatcher had no floor
+  at all and now has one; moving on costs no heart, and the round still needs its full
+  quota of real catches to be won.
 - **Emoji and box-drawing glyphs are out of the HUDs**: `⬡` → drawn hexagons, `🦋🦋🦋` →
   a drawn swarm, `🛡` → drawn pips, `👾`/`🐝` → drawn fallbacks, `★☆` → `SGUI.stars`,
   `🏁` → `GP_FLAG()`, `◀ ▶` → `SGUI.chev()`. Every one of them is a different picture in a
