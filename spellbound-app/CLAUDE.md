@@ -1513,9 +1513,10 @@ out of saga2.js so a retune cannot quietly undo them.
 - **Cache busting (do BOTH every deploy):** bump the `?v=` stamp on every asset URL in
   `index.html` (one `sed -i 's/?v=OLD/?v=NEW/g'`) so devices never run stale JS, and bump
   `SB_VOICE_VER` in `voice-review.js` whenever voice clips changed.
-- **`CNAME` is what makes a custom domain true — which is why there is none right now.**
-  The rule below describes production *when it is live*; while it is down, the absence of
-  the file is the take-down, and the internal deploy asserts it stays absent.
+- **`CNAME` is what makes a custom domain true.** Production is live and carries
+  `www.bizzingbee.com`; the internal repo must carry none, and each deploy script asserts
+  its own half (the inversion above). While the site was down in Sep 2026 the ABSENCE of
+  the file was the take-down — which is the same mechanism read the other way.
   GitHub writes `CNAME` onto `gh-pages` when you set the custom domain in Settings.
   The deploy here is `git push -f origin HEAD:gh-pages` from a worktree, which replaces
   the whole branch — so a worktree without that file **silently unsets the domain** and

@@ -510,10 +510,10 @@
    own copy. Tokens only: these sit on world plates that range from a bright
    meadow to a night sky, so nothing here may assume a light ground.
    ========================================================================== */
-.sg-stars{display:flex;gap:6px;justify-content:center;margin:2px 0 6px;color:var(--muted,#7A6E5C)}
-.sg-star-i{opacity:0;transform:scale(.4) rotate(-22deg);animation:sg-star-pop .42s cubic-bezier(.2,1.5,.4,1) forwards}
+.sg-rstars{display:flex;gap:6px;justify-content:center;margin:2px 0 6px}
+.sg-rstar{opacity:0;transform:scale(.4) rotate(-22deg);animation:sg-star-pop .42s cubic-bezier(.2,1.5,.4,1) forwards}
 @keyframes sg-star-pop{to{opacity:1;transform:none}}
-.sg-star-i.won{filter:drop-shadow(0 2px 5px rgba(240,180,41,.5))}
+.sg-rstar.won{filter:drop-shadow(0 2px 5px rgba(240,180,41,.5))}
 
 /* the draining ring: shape first, number second, red and pulsing at the end */
 .sg-ring{display:block}
@@ -552,7 +552,7 @@
 @keyframes sg-boss-hurt{0%,100%{transform:none}25%{transform:translateX(-7px) rotate(-3deg)}60%{transform:translateX(6px) rotate(2deg)}}
 .sg-scramble.byear{letter-spacing:.14em;text-transform:uppercase;font-size:15px;color:var(--muted,#7A6E5C)}
 @media (prefers-reduced-motion:reduce){
-  .sg-star-i,.sg-hexs.up,.sg-bossface.hurt,.sg-ring.hot{animation:none;opacity:1;transform:none}
+  .sg-rstar,.sg-hexs.up,.sg-bossface.hurt,.sg-ring.hot{animation:none;opacity:1;transform:none}
 }
 
 /* Type Blaster — HUD in drawn marks and tabular figures, not emoji */

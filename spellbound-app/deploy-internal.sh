@@ -5,12 +5,14 @@
 #
 #   →  https://aayuvis.github.io/bizzing-bee-staging/
 #
-# THIS IS THE ACTIVE PUBLICATION TARGET.
-#   www.bizzingbee.com was deliberately taken offline (Sep 2026) while more work
-#   is done: the production gh-pages branch carries a holding page and NO CNAME,
-#   and the whole published build is preserved on `gh-pages-holdback-20260906`.
-#   Until that is reversed, everything ships here. Do not "helpfully" redeploy
-#   production — putting a CNAME back is what re-publishes the site to the world.
+# THIS IS THE REVIEW TARGET. Production is live again.
+#   www.bizzingbee.com was taken offline on 6 Sep 2026 at the owner's request and
+#   RESTORED on 10 Sep; the gh-pages branch carries `CNAME=www.bizzingbee.com`
+#   again, and the take-down build is still preserved on
+#   `gh-pages-holdback-20260906`. So this script is no longer the only way out —
+#   it is where work goes to be LOOKED at before the owner says to publish it.
+#   Shipping to production is `./deploy-prod.sh`, and it is the owner's call:
+#   never infer it from "the change is finished".
 #
 # WHY A SECOND REPO AND NOT A FOLDER
 #   GitHub Pages serves ONE site per repository, so this needs its own repo. It is

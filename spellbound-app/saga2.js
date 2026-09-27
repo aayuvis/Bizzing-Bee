@@ -378,12 +378,16 @@
        shape on every platform and cannot animate. Each pops in on a delay so the
        third star lands last — the beat a child waits for. */
     stars(n, size){ size=size||34;
-      return '<div class="sg-stars" role="img" aria-label="'+n+' of 3 stars">'+[0,1,2].map(i=>
-        '<svg class="sg-star-i'+(i<n?' won':'')+'" style="animation-delay:'+(i*0.14+0.1).toFixed(2)+'s" '+
+      /* NOT `.sg-stars` — unscrambleStars already owns that class for its tray of
+         letter buttons, and its `min-height:64px` turned a 0-star result into a 64px
+         band of nothing. Two components, one class name, and the older one wins on
+         the properties the newer one does not set. */
+      return '<div class="sg-rstars" role="img" aria-label="'+n+' of 3 stars">'+[0,1,2].map(i=>
+        '<svg class="sg-rstar'+(i<n?' won':'')+'" style="animation-delay:'+(i*0.14+0.1).toFixed(2)+'s" '+
         'width="'+size+'" height="'+size+'" viewBox="0 0 24 24" aria-hidden="true">'+
         '<path d="M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.7 6.1 20.8l1.2-6.6L2.5 9.6l6.6-.9z" '+
-        'fill="'+(i<n?'#F0B429':'none')+'" stroke="'+(i<n?'#C98A08':'currentColor')+'" stroke-width="1.6" '+
-        'stroke-linejoin="round" opacity="'+(i<n?1:0.28)+'"/></svg>').join('')+'</div>'; },
+        'fill="'+(i<n?'#F0B429':'#F4EFE4')+'" stroke="'+(i<n?'#C98A08':'#C3B7A1')+'" stroke-width="1.6" '+
+        'stroke-linejoin="round"/></svg>').join('')+'</div>'; },
 
     /* A draining ring beats a bare number: the shape reads at a glance, and the
        last three seconds go red and pulse, so urgency is felt rather than read. */
@@ -835,6 +839,7 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
+    const kfRound=[];                      // the flight's words, for the result screen
     let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
                                            // 6/min floor, so the same run passed once and failed
                                            // once. A gate that flakes teaches people to ignore it.
@@ -899,7 +904,7 @@
       el.innerHTML='<div class="sg-cardbox"><b>🍯 Honey pot! Spell to bank it</b><button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bank</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok);
+      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); kfRound.push({w:w.w,ok:ok});
         if(ok){ banked++;
           if(lives<MAXLIVES){ lives++; try{flash('🍯 Pot banked — ❤ Extra life! '+banked+'/'+CFG.pots);}catch(_){} }
           else { try{flash('🍯 Pot banked! '+banked+'/'+CFG.pots+' (lives full)');}catch(_){} }
@@ -1163,9 +1168,18 @@
       el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML=''; started=true; };
     }
     function cleanup(){ removeEventListener('keydown',flap); removeEventListener('pointerup',pup); removeEventListener('pointercancel',pup); }
+    /* This engine had NO result screen at all — a child flew, was eaten, and was
+       handed straight back to the app's generic text card. No stars, no score, and
+       above all no list of the words the flight had been about. */
     function finish(win){ cleanup();
       if(coinsGot){ try{ if(typeof addCoins==='function') addCoins(coinsGot); }catch(e){} }
-      done({win,score:banked*100+coinsGot*5,stars:win?(lives>=3?3:lives===2?2:1):0}); }
+      const score=banked*100+coinsGot*5, stars=win?(lives>=3?3:lives===2?2:1):0;
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:kfRound,
+        title: win?'Home through the Hive Gates':'Out of lives' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; keepFlying(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
     howto();
     if(window.SB_DEBUG) window._fly={ state:()=>({beeY:bee.y,pot:pot&&{x:pot.x,y:pot.y},banked,lives,coins:coinsGot,gate:!!gate,moths:moths.length,over,started}), steer:(y)=>{bee.y=y;bee.vy=0;} };
     requestAnimationFrame(frame);
