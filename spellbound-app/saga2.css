@@ -67,9 +67,10 @@
 .sg-bossface.dive{animation:sg-dive .5s ease-in-out infinite}
 @keyframes sg-hover{50%{transform:translateY(-8px)}}
 @keyframes sg-dive{50%{transform:translateY(6px) scale(1.06)}}
-.sg-shieldwall{display:flex;gap:6px}
-.sg-hex{font-size:30px;opacity:.25}
-.sg-hex.up{opacity:1;color:var(--honey,#F0B429);text-shadow:0 0 8px #F0B42966}
+/* `.sg-shieldwall` is defined once, further down, with the drawn wall. The rule that
+   used to sit here was silently superseded by it, and `.sg-hex` styled the ⬡ glyph
+   the drawn `.sg-hexs` hexagon replaced — dead, and the kind of dead that gets edited
+   by mistake. */
 .sg-scramble{font:600 26px 'Sono',monospace;letter-spacing:.14em;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.55);word-break:break-word;overflow-wrap:anywhere;max-width:100%;line-height:1.25}
 .sg-duel{display:grid;gap:10px;justify-items:center;background:rgba(20,14,40,.55);padding:12px 14px;border-radius:14px;backdrop-filter:blur(3px)}
 #sg-di{font:600 20px 'Sono',monospace;text-align:center;padding:9px;border:2px solid var(--deep,#4A32A8);border-radius:12px}

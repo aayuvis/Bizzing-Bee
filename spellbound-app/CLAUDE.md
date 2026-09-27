@@ -1465,6 +1465,12 @@ out of saga2.js so a retune cannot quietly undo them.
   ships fewer files. `voice/` and `books/` are deliberately partial and are not counted.
   The general rule: an exclusion in a deploy script is a claim that nothing ships from
   that path — check what references it before adding one.
+  `tests/shelf-art.cjs` is the same check from the APP's side: it walks the real front
+  door (landing → account → onboarding → Library) and asserts all 23 spines load.
+  `SHELF_SRC=<worktree>` points it at a deploy tree, which is the habit worth keeping —
+  **test the tree you pushed, not the folder you built it from**, because the source
+  always has the file. It was proved by breaking it: with `app-art/spines` deleted it
+  fails on the first six.
 - **The Pages site has a size budget, and blowing it is silent.** GitHub's "pages build and
   deployment" job aborts at a ten-minute deploy timeout, and when it does the site keeps
   serving the last good commit — the push succeeds, the build succeeds, nothing anywhere
