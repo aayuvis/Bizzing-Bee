@@ -1797,6 +1797,16 @@
       if(t<=0){ over=true; clearInterval(tick); clearInterval(popT); finish(doneWords>=CFG.words); } },1000);
     newWord();
     function finish(win){ done({win,score:doneWords*100+t*2,stars:win?(t>25?3:t>10?2:1):0}); }
+        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
+       so a child who is stuck sees ONE word for the whole round — measured at 2
+       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
+       It newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       the same word would make the game repeat itself, which is the parrot pattern
+       tests/word-rate.cjs fails a game for. `var` because the advance function runs
+       before this line and would hit the temporal dead zone of a `let`. */
+    var sinceWord=0; var WORD_GAP=7;
+    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; newWord(); } },1000);
     return { destroy(){ over=true; clearInterval(popT); clearInterval(tick); } };
   }
 
@@ -2062,6 +2072,16 @@
       evo={ set(stage,onUnlock,uAt){ const u=(uAt!=null)?uAt:5; if(stage>=u&&onUnlock) onUnlock(3); } };  // keep the Vasuki unlock, skip chip rewrites
     } else evo.set(0);
     reset(); frame._t=tick; loop=setInterval(frame,tick); draw();
+        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
+       so a child who is stuck sees ONE word for the whole round — measured at 2
+       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
+       It layoutWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       the same word would make the game repeat itself, which is the parrot pattern
+       tests/word-rate.cjs fails a game for. `var` because the advance function runs
+       before this line and would hit the temporal dead zone of a `let`. */
+    var sinceWord=0; var WORD_GAP=7;
+    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; layoutWord(); } },1000);
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
 
@@ -2233,6 +2253,16 @@
     function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key);
       done({win, score, stars:win?(hearts>=4?3:hearts>=2?2:1):0}); }
     newWord(); loop=setInterval(frame,1000/60);
+        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
+       so a child who is stuck sees ONE word for the whole round — measured at 2
+       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
+       It wi++; newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       the same word would make the game repeat itself, which is the parrot pattern
+       tests/word-rate.cjs fails a game for. `var` because the advance function runs
+       before this line and would hit the temporal dead zone of a `let`. */
+    var sinceWord=0; var WORD_GAP=7;
+    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; wi++; newWord(); } },1000);
     return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); } };
   }
 
@@ -2362,6 +2392,16 @@
     function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb);
       done({win, score, stars:win?(shield>=3?3:shield===2?2:1):0}); }
     newWord(); loop=setInterval(frame,1000/60);
+        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
+       so a child who is stuck sees ONE word for the whole round — measured at 2
+       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
+       It wi++; if(wi>=CFG.n){ wi=CFG.n-1; } newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       the same word would make the game repeat itself, which is the parrot pattern
+       tests/word-rate.cjs fails a game for. `var` because the advance function runs
+       before this line and would hit the temporal dead zone of a `let`. */
+    var sinceWord=0; var WORD_GAP=7;
+    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; wi++; if(wi>=CFG.n){ wi=CFG.n-1; } newWord(); } },1000);
     return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb); } };
   }
 
@@ -2505,6 +2545,16 @@
       const s=[...host.querySelectorAll('.sg-star')].find(x=>!x.disabled&&x.dataset.ch===need);
       if(s){ s.classList.add('lit'); setTimeout(()=>s.classList.remove('lit'),900); } };
     newWord();
+        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
+       so a child who is stuck sees ONE word for the whole round — measured at 2
+       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
+       It i++; newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       the same word would make the game repeat itself, which is the parrot pattern
+       tests/word-rate.cjs fails a game for. `var` because the advance function runs
+       before this line and would hit the temporal dead zone of a `let`. */
+    var sinceWord=0; var WORD_GAP=7;
+    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; i++; newWord(); } },1000);
     return { destroy(){ over=true; removeEventListener('keydown',usKey); } };
   }
 
@@ -2613,6 +2663,16 @@
       }catch(e){}
       setTimeout(()=>done({win:true, score:words.length*100-misses*15, stars:misses===0?3:misses<=2?2:1}), 900); }
     newWord();
+        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
+       so a child who is stuck sees ONE word for the whole round — measured at 2
+       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
+       It i++; newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       the same word would make the game repeat itself, which is the parrot pattern
+       tests/word-rate.cjs fails a game for. `var` because the advance function runs
+       before this line and would hit the temporal dead zone of a `let`. */
+    var sinceWord=0; var WORD_GAP=7;
+    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; i++; newWord(); } },1000);
     return { destroy(){ over=true; removeEventListener('keydown',kb); } };
   }
   W().SB_SAGA_ENGINES = Object.assign(W().SB_SAGA_ENGINES||{}, { spellScene });

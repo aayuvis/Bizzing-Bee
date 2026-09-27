@@ -60,8 +60,12 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
         const card = [...host.querySelectorAll('button')].find(x => x.offsetParent !== null &&
           (/howto|rbtn/.test(x.className) || START.test(x.textContent || '')));
         if (card) { try { card.click(); } catch (e) {} return; }
+        /* NEVER CLICK THE SPEAKER. Every engine has a hear-it-again control, and a
+           driver that mashes it makes the game look like it is nagging: stageRhythm
+           read as "one word said 101 times" when 100 of those were this bot pressing
+           replay. A child presses it once, not four times a second. */
         const hit = [...host.querySelectorAll('.sg-dbtn,.sg-sbtn,.sg-cell,.ss-kb,button')]
-          .filter(x => x.offsetParent !== null && !/howto/.test(x.className));
+          .filter(x => x.offsetParent !== null && !/howto|cardw|spk|say/i.test(x.className + ' ' + x.id));
         if (hit.length) { try { hit[Math.floor(Math.random() * hit.length)].click(); } catch (e) {} }
         for (const k of ['ArrowRight', 'ArrowUp', ' ']) {
           try { document.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })); } catch (e) {}
