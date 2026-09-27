@@ -752,6 +752,71 @@ out of saga2.js so a retune cannot quietly undo them.
   moth; `placeFlower()` now puts it 2–6 cells from the BEE, never on a moth, re-seeded every
   3s. A timed-out round also needs `spelled>=2`, so a round spent dodging is not a round won.
 
+## THE FLOOR: six unique words a minute, and `tests/word-rate.cjs` holds it
+- **A spelling game has to ask for spelling, and five of them did not.** Measured over
+  forty seconds of play, `beeGrandPrix`, `keepFlying`, `honeycombRun`, `wordHive` and
+  `spotlightSimon` each asked for **zero** words. The three biggest engines in the arcade
+  — 1,292 lines between them — were racing, flying and maze-running and never once put a
+  word on screen; the word arrived only as a *reward* for driving well.
+- **Unique, not total, and that distinction is the whole test.** `stageRhythm` scored 201
+  words/minute by speaking ONE word 134 times. Counting asks rewards a game for nagging;
+  counting distinct words rewards it for teaching. The test also fails any game that says
+  eight or more asks with one distinct word.
+- **Every engine now carries a word floor** — a `WORD_GAP` timer that advances the word
+  whatever else is happening. **6 seconds, not 7**: at 7 the three arcade engines landed
+  EXACTLY on 6/min, so the same build passed one run and failed the next.
+- **Four instrument bugs in a row made games look worse than they are, and each one was
+  the driver, not the game.** Keep the list, because the fifth will look just as
+  convincing: (1) the "smart" bot scored below random, because engines render unsolved
+  letters as `•` — *never leak the answer* defeats reading the answer off the DOM;
+  (2) all scores read 0, because engines only report at their own 90s timeout;
+  (3) the bot never typed anything, because the input-finding regex matched the *word*
+  `input` and the games open on a how-to card nothing had dismissed; (4) "stageRhythm
+  says one word 101×" was the driver mashing the **speaker** button four times a second.
+  Then a fifth: (5) the start-card detector matched `/rbtn/`, and `sg-rbtn` is the shared
+  skin every engine's SUBMIT wears — so it clicked spellShield's **Cast** every 300ms with
+  an empty box, lost the game in four casts and restarted through the how-to. 1.5 words a
+  minute for a game that asks every nine seconds.
+- **The driver is an ORACLE, not a bot.** It is handed the target through the same `say()`
+  hook that does the counting, types it into the visible input and submits. There is no
+  skill in it and no variance from it — which is the line the three failed bot-scoring
+  attempts crossed. Both alternatives were measured and both are worse: mashing submit on
+  an empty box scores the bot's suicide rate, and leaving the card alone **stalls** the
+  three arcade engines dead, because their spell card is MODAL and an unanswered one is a
+  paused game.
+- **It is a floor and only a floor.** A self-paced engine reads far above it (spellShield
+  prints 123/min, which measures the driver's 300ms tick). Nothing here ranks games.
+
+## SGUI — the screens around the game
+- Every engine had grown its own start and end card or gone without: four dialects of the
+  same two screens, stars drawn as the text glyphs `★☆`, and **none of them showed the
+  words**. The result screen of a spelling game listed a score and a honey count and never
+  told a child which words they had just learned or which one beat them.
+- `SGUI` (saga2.js, beside `SGFX`) is the shared kit: `stars(n)` drawn and staggered,
+  `ring(pct,secs)` a draining SVG that goes red and pulses at ≤3s, `howto(o)`,
+  `result(o)` — **which takes the round's word log and prints it, right and wrong marked,
+  each chip tappable to hear again** — `chev(d)`, and `bind(el)` to wire the chips.
+- **An engine that keeps a round log must push to its OWN array.** `gpRound` was declared
+  and pushed in `honeycombRun` while `beeGrandPrix.finish()` read it — a latent
+  ReferenceError on the race's finish screen that no 40-second test reaches. The cause was
+  a text-anchored edit landing on the first match in the file; the same class of mistake as
+  the DOTALL regex that once deleted three engines. **Anchor on something inside the engine
+  you mean, and count the matches before replacing.**
+- **Emoji and box-drawing glyphs are out of the HUDs**: `⬡` → drawn hexagons, `🦋🦋🦋` →
+  a drawn swarm, `🛡` → drawn pips, `👾`/`🐝` → drawn fallbacks, `★☆` → `SGUI.stars`,
+  `🏁` → `GP_FLAG()`, `◀ ▶` → `SGUI.chev()`. Every one of them is a different picture in a
+  different font and several land as a flat monochrome box on Android — on controls a child
+  holds down for a whole race.
+- **A clue is only a clue if it can be read.** `.sg-cardmean` is authored for the light
+  spell card and takes `--muted`; Spell Shield draws it inside `.sg-duel`, a near-black
+  scrim, where it all but vanished. Check contrast whenever a shared card part moves onto
+  a dark panel.
+- **Bee Grand Prix's item box used to pause the race forever** — the one moment of spelling
+  in a racing game was also the only moment with no clock on it. It carries `SGUI.ring` now
+  (14/12/10/9s by difficulty); running out grades whatever is typed, which fizzles an empty
+  box exactly like a wrong answer. No life and no place lost: standing still in a race
+  already costs its own price.
+
 ## Adding a saga chapter
 1. Append to `CH_META`: `{n, act, title, world, engine, opts, script}` (sequential `n`).
 2. Add a `SB_SAGA_SCRIPT[script]` block (format above).

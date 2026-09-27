@@ -104,7 +104,14 @@
       return m;
     }catch(e){ return ''; }
   }
-  function meaningHTML(wobj){ const m=meaningText(wobj); return m?'<div class="sg-cardmean">💡 '+esc(m)+'</div>':''; }
+  /* The clue marker is drawn, not a 💡. This one helper feeds the meaning line in
+     every engine, so the emoji was on screen in all of them at once — and a bulb
+     glyph is one of the widest platform variations there is. */
+  function meaningHTML(wobj){ const m=meaningText(wobj); if(!m) return '';
+    return '<div class="sg-cardmean"><svg class="sg-clue" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">'+
+      '<path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.4.3.6.75.6 1.25h4c0-.5.2-.95.6-1.25A4.4 4.4 0 0 0 8 1.6z" '+
+      'fill="currentColor" opacity=".9"/><path d="M6.4 12.6h3.2M6.9 14.2h2.2" stroke="currentColor" '+
+      'stroke-width="1.5" stroke-linecap="round"/></svg>'+esc(m)+'</div>'; }
   function dlg(key){ // play a dialogue clip if present, else nothing (text always shows)
     try{ const a=new Audio('voice/d/'+key+'.mp3'); a.play().catch(()=>{}); return a; }catch(e){ return null; } }
 
@@ -406,10 +413,18 @@
       return '<div class="sg-cardbox sg-endcard">'+
         '<div class="sg-end-h">'+(o.title||(o.win?'Round clear':'Out of time'))+'</div>'+
         SGUI.stars(o.stars||0)+
-        '<div class="sg-end-score">'+(o.score|0)+'<span>'+(o.scoreLabel||'points')+'</span></div>'+
+        '<div class="sg-end-score">'+((o.score|0).toLocaleString())+'<span>'+(o.scoreLabel||'points')+'</span></div>'+
         list+
         '<div class="sg-inrow sg-end-btns"><button class="sg-rbtn" id="sg-again">Play again</button>'+
         '<button class="sg-rbtn go" id="sg-cont">'+(o.win?'Continue':'Back to map')+'</button></div></div>'; },
+
+    /* ◀ ▶ are typographic triangles, and they sit inside the one control a child
+       HOLDS DOWN for a whole race: different weight in every font, flat monochrome
+       boxes on some Androids, and no way to match the stroke of anything else drawn
+       here. Geometry instead, inheriting currentColor so the pressed state works. */
+    chev(d){ return '<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">'+
+      '<path d="M'+(d<0?'15 5l-7 7 7 7':'9 5l7 7-7 7')+'" fill="none" stroke="currentColor" '+
+      'stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; },
 
     /* wire the word chips so tapping one says it — the reason to show them */
     bind(el){ if(!el) return;
@@ -521,6 +536,7 @@
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
     let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, grace=0, flower=null, flowerT=2, card=null, over=false, fx=[];
     let lateMoth=false, spelled=0;
+    const hcRound=[];                      // the round's words, for the result screen
     let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
                                            // 6/min floor, so the same run passed once and failed
                                            // once. A gate that flakes teaches people to ignore it.
@@ -654,7 +670,7 @@
       el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok);
+      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); hcRound.push({w:w.w,ok:ok});
         if(ok){ spelled++; score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
           el.style.display='none'; card=null; spawnSplash();
           try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
@@ -783,13 +799,12 @@
       const stars=win?(score>=CFG.target*1.5?3:score>=CFG.target*1.2?2:1):0; endCard(win,stars); }
     function endCard(win,stars){
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
-      el.innerHTML='<div class="sg-cardbox sg-endcard">'
-        +'<div style="font:800 26px var(--display,serif);margin-bottom:4px">'+(win?'🏆 Round clear!':'🌙 Out of time')+'</div>'
-        +'<div style="font-size:26px;letter-spacing:4px;margin:2px 0">'+('★'.repeat(stars)+'☆'.repeat(3-stars))+'</div>'
-        +'<div style="font-size:15px;color:var(--muted,#7A6E5C);margin-bottom:12px">🍯 '+score+' honey collected'+(win?' — the meadow is free!':'')+'</div>'
-        +'<div class="sg-inrow" style="max-width:340px"><button class="sg-rbtn" id="sg-again">↻ Play again</button>'
-        +'<button class="sg-rbtn go" id="sg-cont">'+(win?'Continue →':'Back to map')+'</button></div></div>';
-      el.style.display='grid';
+      /* This screen used to hand back a honey count and ★★☆ typed as glyphs, and never
+         said which words the round had been about — the one thing a child needs from it.
+         SGUI.result prints the log, right and wrong marked, each chip tappable. */
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'honey', words:hcRound,
+        title: win?'The meadow is free':'Out of time' });
+      el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; honeycombRun(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
@@ -1196,6 +1211,14 @@
   }
 
 
+  /* 🏁 is a different picture in every font and lands as a flat monochrome box on
+     some Androids — on the one HUD element that tells a child where the finish is. */
+  const GP_FLAG=()=>'<svg class="sg-pbflag-i" viewBox="0 0 20 22" width="17" height="19" aria-hidden="true">'+
+    '<path d="M3 1v20" stroke="#4A4036" stroke-width="2" stroke-linecap="round"/>'+
+    '<path d="M4.5 2h13v9h-13z" fill="#FDFBF5" stroke="#4A4036" stroke-width="1.1"/>'+
+    '<path d="M4.5 2h4.3v3h-4.3zM13.2 2h4.3v3h-4.3zM8.8 5h4.4v3H8.8zM4.5 8h4.3v3H4.5zM13.2 8h4.3v3h-4.3z" fill="#2B2117"/>'+
+    '</svg>';
+
   /* ---------- ENGINE C · BEE GRAND PRIX (pseudo-3D arcade racer) ----------
      Kids race a real perspective track. Spelling words correctly earns POWER-UPS,
      each doing something different (rocket, turbo, oil slick, gust, honey, shield).
@@ -1228,11 +1251,12 @@
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
         '<span class="sg-rh-lap" id="sg-lap">Lap 1/'+CFG.laps+'</span>'+
-        '<div class="sg-posbar" id="sg-pb"><i class="sg-pb-road"></i><b class="sg-pb-flag">🏁</b></div>'+
+        '<div class="sg-posbar" id="sg-pb"><i class="sg-pb-road"></i><b class="sg-pb-flag">'+GP_FLAG()+'</b></div>'+
         '<span class="sg-rh-spd" id="sg-spd"></span></div></div>'+
       '<div class="sg-race3d"><canvas id="sg-cv"></canvas>'+
       '<button class="sg-hold" id="sg-hold" aria-label="Use power-up"><span class="sg-hold-empty">?</span></button>'+
-      '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">◀</button><button class="sg-sbtn" data-s="1" aria-label="Steer right">▶</button></div></div>'+
+      '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">'+SGUI.chev(-1)+'</button>'+
+      '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div>'+
       '<div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
     const dpr=Math.min(2,window.devicePixelRatio||1);
@@ -1328,6 +1352,7 @@
 
     /* ---- spelling gate: hitting a ? box pauses the race ---- */
     const feed=wordFeed(60);
+    const gpRound=[];                      // the race's words, read by finish()
     let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
                                            // 6/min floor, so the same run passed once and failed
                                            // once. A gate that flakes teaches people to ignore it.
@@ -1336,21 +1361,34 @@
       const w=feed.next();
       const p=POWERS[Math.floor(Math.random()*POWERS.length)];
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🎁 Item box! Spell to unlock the power-up</b>'+
+      el.innerHTML='<div class="sg-cardbox"><b>Item box — spell it to unlock the power-up</b>'+
+        '<div class="sg-ss-timer" id="sg-gt"></div>'+
         '<button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
         '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
-      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok);
-        el.style.display='none'; el.innerHTML='';
+      /* THE PAUSE USED TO BE INFINITE. A box stopped the race and then waited, so the
+         one moment of spelling in a racing game was also the one moment with no clock
+         on it — a rest stop. A draining ring gives it a shape. Running out grades
+         whatever is typed, which fizzles an empty box exactly like a wrong answer: no
+         life lost, no place lost, because standing still in a race costs its own price. */
+      const GATE_T={easy:14,medium:12,hard:10,champ:9}[diff]||12;
+      let left=GATE_T, gateT=null;
+      const gt=el.querySelector('#sg-gt');
+      const paintGate=()=>{ if(gt) gt.innerHTML=SGUI.ring(left/GATE_T,left); };
+      paintGate();
+      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); gpRound.push({w:w.w,ok:ok});
+        clearInterval(gateT); el.style.display='none'; el.innerHTML='';
         if(ok){ held=p; renderHold();
           // spell combo: unbroken correct spells stack an instant extra boost
           gpCombo++; if(gpCombo>=2){ boostT=Math.max(boostT,1.2); boostMul=Math.max(boostMul,1.22+Math.min(gpCombo,6)*0.06); }
           const uc=host.querySelector('#sg-card');
-          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[p.id]+'</span><b>'+p.name+(gpCombo>=2?(' · 🔥 '+gpCombo+'× combo'):'')+' unlocked!</b><i>tap the slot (or Space) to use it</i></div>';
+          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[p.id]+'</span><b>'+p.name+(gpCombo>=2?(' · '+gpCombo+'x combo'):'')+' unlocked!</b><i>tap the slot (or Space) to use it</i></div>';
           uc.style.display='grid';
           setTimeout(()=>{ uc.style.display='none'; uc.innerHTML=''; resume(); },1300);
         } else { gpCombo=0; try{flash('The box fizzles… next one is coming!');}catch(_){ } resume(); } }
+      gateT=setInterval(()=>{ if(over||mode!=='spell'){ clearInterval(gateT); return; }
+        left--; paintGate(); if(left<=0) submit(); },1000);
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
       el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
@@ -1699,7 +1737,7 @@
       host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,lap)+'/'+CFG.laps;
       host.querySelector('#sg-spd').textContent='💨 '+Math.round(v/maxV*180);
       const pb=host.querySelector('#sg-pb');
-      let dots='<i class="sg-pb-road"></i><b class="sg-pb-flag">🏁</b>';
+      let dots='<i class="sg-pb-road"></i><b class="sg-pb-flag">'+GP_FLAG()+'</b>';
       rivals.forEach((r,i)=>{ const pct=Math.min(99,r.z/TOTAL*100);
         dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+r.name+'">'+r.glyph+'</span>'; });
       dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/TOTAL*100).toFixed(1)+'%">'+meMark+'</span>';
@@ -1793,18 +1831,29 @@
         r.z+=Math.max(0,rs)*dt; if(r.z>=TOTAL) r.fin=true;
         r.x+= (Math.sin((r.z+r.name.length*99)/1400)*0.6 - r.x)*dt*0.6; });
     }
+    /* A race that ends by calling done() hands the child straight back to the app's
+       generic text card — no placing, no words, nothing to read. The finish IS the
+       race, and this one did not have one. */
     function finish(){ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
       const place=1+rivals.filter(r=>r.fin).length;
-      done({win:place===1, score:(6-place)*250+Math.round(pos/segLen), stars:place===1?3:place===2?2:place===3?1:0}); }
+      const win=place===1, score=(6-place)*250+Math.round(pos/segLen);
+      const stars=place===1?3:place===2?2:place===3?1:0;
+      const ORD=['','1st','2nd','3rd','4th','5th','6th'];
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:gpRound,
+        title: (ORD[place]||(place+'th'))+' across the line' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; beeGrandPrix(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
 
     /* ---- how to play ---- */
     host.style.position='relative';
     const intro=document.createElement('div'); intro.className='sg-howto';
     intro.innerHTML='<div class="sg-howto-card">'+
-      '<div class="sg-howto-h">🏁 Bee Grand Prix</div>'+
+      '<div class="sg-howto-h">Bee Grand Prix</div>'+
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li><b>Steer</b> with <b>◀ ▶</b> (arrows / tap the sides) — lean into the bends, dodge 🛢️ oil and 🚓 cops.</li>'+
+      '<li><b>Steer</b> with the two round buttons, or the <b>arrow keys</b> — lean into the bends, dodge the oil slicks and the cops.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
       '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
@@ -1871,7 +1920,7 @@
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
        unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
        the same word would make the game repeat itself, which is the parrot pattern
        tests/word-rate.cjs fails a game for. `var` because the advance function runs
        before this line and would hit the temporal dead zone of a `let`. */
@@ -1885,7 +1934,11 @@
   /* ---------- ENGINE F · SPELL-SHIELD (boss duel vs The Smudge) ---------- */
   function spellShield(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG=calmCFG({easy:{hexes:6,t:14},medium:{hexes:8,t:12},hard:{hexes:9,t:10},champ:{hexes:10,t:9}}[diff]);
+    /* The per-word clock IS this game's word rate: a child who never answers gets
+       one word every t seconds and no more. At t=12 that is 5 a minute, under the
+       6/min floor — and the floor exists precisely for the child who is stuck.
+       Shortened so the worst case still clears it with headroom. */
+    const CFG=calmCFG({easy:{hexes:6,t:10},medium:{hexes:8,t:9},hard:{hexes:9,t:8},champ:{hexes:10,t:7}}[diff]);
     const words=pool(CFG.hexes+6).filter(w=>w.w.length>=4&&w.w.length<=10);
     let phase=1, hexes=0, broken=0, wi=0, over=false, cur=null, timer=null, started=false;
     let combo=0, best=0, tLeft=0;
@@ -2210,7 +2263,7 @@
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
        unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It layoutWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
        the same word would make the game repeat itself, which is the parrot pattern
        tests/word-rate.cjs fails a game for. `var` because the advance function runs
        before this line and would hit the temporal dead zone of a `let`. */
@@ -2391,7 +2444,7 @@
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
        unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It wi++; newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
        the same word would make the game repeat itself, which is the parrot pattern
        tests/word-rate.cjs fails a game for. `var` because the advance function runs
        before this line and would hit the temporal dead zone of a `let`. */
@@ -2470,75 +2523,128 @@
     if(!words.length){ done({win:true,score:0,stars:1}); return; }
     const art=(window.SGART&&SGART.ready());
     const plate=art?SGART.plateForWorld(opts.world||'Arcade'):'';
-    // Gemini glitch-monster foe (transparent WebP); falls back to an emoji if the image is missing
+    /* Both fallbacks used to be emoji escapes — a 👾 for the foe and a 🐝 for the
+       cannon. The two things a player looks at most became a different picture on
+       every platform whenever the WebP failed to load. Drawn instead. */
     const foeSvg='<img src="app-art/gart/glitch.webp" class="sg-tbimg sg-tbglitch" alt="glitch" '
-      +"onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'sg-tbemoji',textContent:'\\uD83D\\uDC7E'}))\">";
-    let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null, combo=0, wordPerfect=true, danger=false;
-    host.innerHTML='<div class="sg-hud"><span id="sg-tw">👾 1/'+CFG.n+'</span><span id="sg-tc"></span><span id="sg-tsh"></span><span id="sg-ts">0</span></div>'+
+      +'onerror="this.outerHTML=window.TB_GLITCH();">';
+    const beeSvg='<img src="app-art/gart/bee-fly.webp" alt="bee" '
+      +'onerror="this.outerHTML=window.TB_BEE();">';
+    let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null, combo=0, best=0;
+    let wordPerfect=true, danger=false, started=false;
+    const round=[];                       // the round, for a result screen that shows the words
+    host.innerHTML='<div class="sg-hud sg-tb-hud">'+
+        '<span class="sg-tb-wave" id="sg-tw">1<i>/'+CFG.n+'</i></span>'+
+        '<span class="sg-tb-shield" id="sg-tsh"></span>'+
+        '<span class="sg-tb-combo" id="sg-tc"></span>'+
+        '<span class="sg-tb-score" id="sg-ts">0</span></div>'+
       '<div class="sg-tbstage" id="sg-tbs"><div class="sg-tbstage-bg">'+plate+'</div>'+
         '<div class="sg-tbfoe" id="sg-tbf">'+foeSvg+'<div class="sg-tbslots" id="sg-tbslots"></div></div>'+
         '<div class="sg-tbbeam" id="sg-tbbeam"></div>'+
         '<div class="sg-tbshield" id="sg-tbshieldbar"></div>'+
-        '<div class="sg-tbcannon"><img src="app-art/gart/bee-fly.webp" alt="bee" '
-          +"onerror=\"this.replaceWith(document.createTextNode('\\uD83D\\uDC1D'))\"></div></div>"+
+        '<div class="sg-tbcannon">'+beeSvg+'</div></div>'+
       '<div class="sg-rword"><button class="sg-sbtn" id="sg-tsay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="sg-race-mean" id="sg-tmean"></span></div>'+
-      '<div class="ss-key sg-tbkey" id="sg-tkey"></div>';
+      '<div class="ss-key sg-tbkey" id="sg-tkey"></div><div id="sg-card"></div>';
     const stage=host.querySelector('#sg-tbs'), foe=host.querySelector('#sg-tbf'), beam=host.querySelector('#sg-tbbeam');
     const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
     host.querySelector('#sg-tkey').innerHTML=rows.map(r=>'<div class="ss-krow">'+r.split('').map(ch=>'<button class="ss-kb" data-k="'+ch+'">'+ch+'</button>').join('')+'</div>').join('');
     function cur(){ return words[wi]||words[words.length-1]||{w:'honey'}; }   // never index past the end
+    /* Drawn shield pips, not the 🛡 glyph repeated three times. A pip can empty and
+       animate; a glyph can only be present or absent, at whatever weight the
+       platform's emoji font decides. */
+    function shieldPips(){ return [0,1,2].map(i=>
+      '<svg class="sg-pip'+(i<shield?' up':'')+'" viewBox="0 0 20 22" width="17" height="19" aria-hidden="true">'+
+      '<path d="M10 1.4l7.6 3v7.2c0 4.6-3.2 7.6-7.6 9-4.4-1.4-7.6-4.4-7.6-9V4.4z" '+
+      'fill="'+(i<shield?'#2FB39E':'none')+'" fill-opacity="'+(i<shield?'.9':'0')+'" '+
+      'stroke="'+(i<shield?'#0E8A78':'currentColor')+'" stroke-width="1.8" stroke-linejoin="round" '+
+      'opacity="'+(i<shield?1:.3)+'"/></svg>').join(''); }
     function renderSlots(){ const w=cur().w.toLowerCase();
       host.querySelector('#sg-tbslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
-      host.querySelector('#sg-tsh').textContent='🛡'.repeat(Math.max(0,shield));
-      host.querySelector('#sg-tc').textContent=combo>=2?('🔥 '+combo+'×'):'';
-      host.querySelector('#sg-ts').textContent='⭐ '+score; }
+      host.querySelector('#sg-tsh').innerHTML=shieldPips();
+      host.querySelector('#sg-tc').textContent=combo>=2?(combo+'x'):'';
+      host.querySelector('#sg-ts').textContent=score; }
     function newWord(){ li=0; foeY=0; wordPerfect=true; const w=cur();
-      host.querySelector('#sg-tw').textContent='👾 '+(wi+1)+'/'+CFG.n;
+      host.querySelector('#sg-tw').innerHTML=(wi+1)+'<i>/'+CFG.n+'</i>';
       host.querySelector('#sg-tmean').innerHTML=meaningHTML(w);
       foe.style.top='0%'; renderSlots(); try{ say(w.w); }catch(e){} }
     function zap(){ beam.classList.remove('fire'); void beam.offsetWidth; beam.classList.add('fire');
       foe.classList.remove('hitfx'); void foe.offsetWidth; foe.classList.add('hitfx'); }
-    function type(ch){ if(over) return; const w=cur().w.toLowerCase();
+    function type(ch){ if(over||!started) return; const w=cur().w.toLowerCase();
       if(ch===w[li]){ li++; score+=15; foeY=Math.max(0,foeY-7); zap(); renderSlots();
         try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
-        if(li>=w.length){ score+=50;
-          // combo: an unbroken word extends the chain and pays a rising bonus
-          if(wordPerfect){ combo++; if(combo>=2){ score+=combo*10; } } else combo=0;
+        if(li>=w.length){ score+=50; round.push({w:cur().w,ok:wordPerfect}); wlog(cur(),wordPerfect);
+          if(wordPerfect){ combo++; best=Math.max(best,combo); if(combo>=2){ score+=combo*10; } } else combo=0;
           foe.classList.add('boom'); stage.classList.remove('sg-tb-danger'); danger=false;
-          try{ flash(combo>=2?('🔥 '+combo+'× COMBO — '+w.toUpperCase()+'!'):('💥 '+w.toUpperCase()+' — glitch zapped!')); }catch(e){}
+          try{ flash(combo>=2?(combo+'x combo — '+w.toUpperCase()):(w.toUpperCase()+' — glitch zapped')); }catch(e){}
           wi++; if(wi>=CFG.n){ finish(true); return; }
           setTimeout(()=>{ foe.classList.remove('boom'); newWord(); },650); } }
       else { score=Math.max(0,score-5); foeY+=3; wordPerfect=false; combo=0; renderSlots();
         foe.classList.remove('gloatfx'); void foe.offsetWidth; foe.classList.add('gloatfx');
         try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){} } }
-    function frame(){ if(over) return;
+    function frame(){ if(over||!started) return;
       if(foe.classList.contains('boom')) return;
       foeY+=CFG.v; foe.style.top=Math.min(78,foeY)+'%';
-      // OVERLOAD: as the glitch nears the floor the stage flashes red and shudders
       const d=foeY>=58; if(d!==danger){ danger=d; stage.classList.toggle('sg-tb-danger',d); }
       if(foeY>=78){ shield--; foeY=0; foe.style.top='0%'; danger=false; stage.classList.remove('sg-tb-danger');
         stage.classList.remove('breach'); void stage.offsetWidth; stage.classList.add('breach');
-        renderSlots(); try{ flash('⚡ The firewall took a hit — keep spelling!'); }catch(e){}
-        if(shield<=0){ finish(false); return; } } }
+        renderSlots(); try{ flash('The firewall took a hit — keep spelling'); }catch(e){}
+        if(shield<=0){ round.push({w:cur().w,ok:false}); finish(false); return; } } }
     const kb=e=>{ if(over) return; if(/^[a-zA-Z]$/.test(e.key)){ type(e.key.toLowerCase()); e.preventDefault(); } };
     addEventListener('keydown',kb);
     host.querySelector('#sg-tkey').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(bt) type(bt.dataset.k); };
     host.querySelector('#sg-tsay').onclick=()=>{ try{ say(cur().w); }catch(e){} };
-    function finish(win){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb);
-      done({win, score, stars:win?(shield>=3?3:shield===2?2:1):0}); }
-    newWord(); loop=setInterval(frame,1000/60);
-        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
-       so a child who is stuck sees ONE word for the whole round — measured at 2
-       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It wi++; if(wi>=CFG.n){ wi=CFG.n-1; } newWord();S THE INDEX rather than re-calling the round setup: re-rendering
-       the same word would make the game repeat itself, which is the parrot pattern
-       tests/word-rate.cjs fails a game for. `var` because the advance function runs
-       before this line and would hit the temporal dead zone of a `let`. */
+    function finish(win){ if(over) return; over=true;
+      if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb);
+      const stars=win?(shield>=3?3:shield===2?2:1):0;
+      const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:round,
+        title: win ? (best>=3?'Firewall held — '+best+'x best combo':'Firewall held') : 'The glitch broke through' });
+      el.style.display='grid'; SGUI.bind(el);
+      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; typeBlaster(host,opts,done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
+    function howto(){ const el=host.querySelector('#sg-card');
+      el.innerHTML=SGUI.howto({ title:'Type Blaster', art:TB_GLITCH(64),
+        sub:'A glitch is falling on the hive firewall. Every letter you get right fires the cannon and drives it back.',
+        steps:[ 'Hear the word, then type it — your keyboard or the keys on screen',
+                'Each correct letter pushes the glitch back; a wrong one lets it drop',
+                'Spell a whole word with no mistakes to keep the combo alive',
+                'Three shields. Let it reach the floor three times and the firewall falls' ],
+        go:'Man the cannon' });
+      el.style.display='grid';
+      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML='';
+        started=true; newWord(); }; }
+    renderSlots(); howto(); loop=setInterval(frame,1000/60);
+    /* WORD FLOOR — see the note on the other engines. Gated on `started` so the
+       how-to card cannot burn through the word list while it is still open. */
     var sinceWord=0; var WORD_GAP=7;
     var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; wi++; if(wi>=CFG.n){ wi=CFG.n-1; } newWord(); } },1000);
-    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb); } };
+      if(!started) return;
+      if(++sinceWord>=WORD_GAP){ sinceWord=0; round.push({w:cur().w,ok:false});
+        wi++; if(wi>=CFG.n){ wi=CFG.n-1; } newWord(); } },1000);
+    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;}
+      clearInterval(wordFloor); removeEventListener('keydown',kb); } };
   }
+  /* The glitch and the cannon bee, drawn — the img fallbacks and the start card's
+     art come from here, so a child meets the same creature in both places. */
+  function TB_GLITCH(size){ size=size||90;
+    return '<svg viewBox="0 0 64 64" width="'+size+'" height="'+size+'" class="sg-tbimg" aria-label="the glitch">'+
+      '<rect x="12" y="16" width="40" height="30" rx="7" fill="#7C5CFF"/>'+
+      '<rect x="8" y="24" width="6" height="12" rx="2" fill="#5B3FD6"/><rect x="50" y="24" width="6" height="12" rx="2" fill="#5B3FD6"/>'+
+      '<rect x="18" y="8" width="4" height="9" rx="2" fill="#5B3FD6"/><rect x="42" y="8" width="4" height="9" rx="2" fill="#5B3FD6"/>'+
+      '<circle cx="24" cy="29" r="5" fill="#fff"/><circle cx="40" cy="29" r="5" fill="#fff"/>'+
+      '<circle cx="25" cy="30" r="2.4" fill="#241E4E"/><circle cx="41" cy="30" r="2.4" fill="#241E4E"/>'+
+      '<path d="M22 38h20" stroke="#241E4E" stroke-width="3" stroke-linecap="round"/>'+
+      '<rect x="14" y="44" width="36" height="3" fill="#FF6BA6" opacity=".7"/>'+
+      '<rect x="14" y="20" width="36" height="2" fill="#2FB39E" opacity=".6"/></svg>'; }
+  function TB_BEE(size){ size=size||54;
+    return '<svg viewBox="0 0 48 40" width="'+size+'" height="'+(size*0.83)+'" aria-label="the bee cannon">'+
+      '<ellipse cx="14" cy="12" rx="11" ry="7" fill="#EDE9F7" opacity=".75"/>'+
+      '<ellipse cx="34" cy="12" rx="11" ry="7" fill="#EDE9F7" opacity=".75"/>'+
+      '<ellipse cx="24" cy="24" rx="15" ry="11" fill="#F0B429"/>'+
+      '<path d="M16 15.5a15 11 0 0 0-1.2 17M26 13.6a15 11 0 0 0 0 20.8" stroke="#241E4E" stroke-width="4" fill="none"/>'+
+      '<circle cx="36" cy="21" r="2.2" fill="#241E4E"/>'+
+      '<path d="M34 6l3-4M40 9l4-3" stroke="#241E4E" stroke-width="2" stroke-linecap="round"/></svg>'; }
+  W().TB_GLITCH=TB_GLITCH; W().TB_BEE=TB_BEE;
 
   /* wordHive, spotlightSimon and constellationConnect are NOT exported. Measured at
      40s each: wordHive and spotlightSimon asked for ZERO words, constellationConnect
@@ -2683,7 +2789,7 @@
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
        unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It i++; newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
        the same word would make the game repeat itself, which is the parrot pattern
        tests/word-rate.cjs fails a game for. `var` because the advance function runs
        before this line and would hit the temporal dead zone of a `let`. */
@@ -2801,7 +2907,7 @@
         /* WORD FLOOR. Without this the word only ever changes when the child solves it,
        so a child who is stuck sees ONE word for the whole round — measured at 2
        unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It i++; newWord();S THE INDEX rather than re-calling the round setup: re-rendering
+       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
        the same word would make the game repeat itself, which is the parrot pattern
        tests/word-rate.cjs fails a game for. `var` because the advance function runs
        before this line and would hit the temporal dead zone of a `let`. */

@@ -554,3 +554,33 @@
 @media (prefers-reduced-motion:reduce){
   .sg-star-i,.sg-hexs.up,.sg-bossface.hurt,.sg-ring.hot{animation:none;opacity:1;transform:none}
 }
+
+/* Type Blaster — HUD in drawn marks and tabular figures, not emoji */
+.sg-tb-hud{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.sg-tb-wave{font:800 19px/1 var(--display,serif);font-variant-numeric:tabular-nums}
+.sg-tb-wave i{font:600 12px/1 var(--sans,inherit);font-style:normal;color:var(--muted,#7A6E5C);margin-left:1px}
+.sg-tb-shield{display:inline-flex;gap:3px;align-items:center;color:var(--muted,#7A6E5C)}
+.sg-pip{transition:transform .2s}
+.sg-pip.up{filter:drop-shadow(0 1px 3px rgba(47,179,158,.45))}
+.sg-tb-combo{font:800 14px/1 var(--display,serif);color:var(--honey,#F0B429);min-width:2.2em;text-align:center}
+.sg-tb-score{font:800 19px/1 var(--display,serif);font-variant-numeric:tabular-nums;margin-left:auto}
+@media (prefers-reduced-motion:reduce){ .sg-pip{transition:none} }
+.sg-clue{display:inline-block;vertical-align:-2px;margin-right:5px;color:var(--honey,#F0B429);flex:0 0 auto}
+
+/* ---- Bee Grand Prix: the two controls and the one HUD mark that were glyphs ----
+   The steer buttons hold a drawn chevron (SGUI.chev) and the position bar a drawn
+   chequered flag (GP_FLAG). Grid-centred with line-height:0 so an inline <svg>
+   cannot sit on a text baseline inside a 60px round button, and the chevron takes
+   the button's own currentColor so :active still flips it to honey. */
+.sg-steer .sg-sbtn{display:grid;place-items:center;line-height:0}
+.sg-steer .sg-sbtn svg{width:26px;height:26px;display:block}
+.sg-pb-flag{line-height:0}
+.sg-pbflag-i{display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+
+/* ---- the clue on a DARK panel ----
+   .sg-cardmean is authored for the light spell card and takes --muted (#7A6E5C).
+   Spell Shield draws it inside .sg-duel, a near-black scrim, where that brown is
+   barely there — and the clue is the one thing on that panel a child has to be
+   able to read, because the scramble deliberately tells them nothing. */
+.sg-duel .sg-cardmean{color:#F3ECDF;text-shadow:0 1px 4px rgba(0,0,0,.55)}
+.sg-duel .sg-clue{color:var(--honey,#F0B429)}
