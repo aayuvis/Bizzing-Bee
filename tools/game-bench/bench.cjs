@@ -85,6 +85,7 @@ const PLAY = async ({ name, policy, secs, diff }) => {
     if (ended) return; ended = true;
     R.finished = true; R.win = !!(res && res.win); R.score = (res && res.score) || 0;
   };
+  try { window.__engSrc = String(window.SB_SAGA_ENGINES[name]); } catch (e) { window.__engSrc = ''; }
   try { handle = window.SB_SAGA_ENGINES[name](host, { diff, world: 'Hive' }, done); }
   catch (e) { R.err = 'mount: ' + String(e.message).slice(0, 90); return R; }
 
@@ -106,7 +107,8 @@ const PLAY = async ({ name, policy, secs, diff }) => {
     const cells = [...host.querySelectorAll('button,.sg-cell,[data-i],[data-ch]')]
       .filter(b => b.offsetParent !== null && !b.disabled);
     const input = host.querySelector('input[type=text],input:not([type]),textarea');
-    return { nextEl, strip, doneN, word, cells, input };
+    const arrows = /Arrow/.test(window.__engSrc || '');
+    return { nextEl, strip, doneN, word, cells, input, arrows };
   };
 
   const step = () => {
@@ -154,12 +156,36 @@ const PLAY = async ({ name, policy, secs, diff }) => {
       const shown = (host.textContent.match(/\b[a-z]{3,14}\b/i) || [])[0];
       if (shown) need = shown[w.doneN] || '';
     }
+    /* THE GATE. Nine of the fourteen spell through a text box that appears when the
+       arcade layer pauses — the whole "spell at a gate" pattern. A bot that only
+       taps cells and presses single keys walks straight past the mechanic and
+       scores nothing, which reads as "no depth" and is really "never played".
+       Fill it the way a child does: the word it just heard, then commit. */
+    if (w.input && heard) {
+      const el = w.input;
+      if ((el.value || '').toLowerCase() !== heard) {
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+        try { setter && setter.set ? setter.set.call(el, heard) : (el.value = heard); } catch (e) { el.value = heard; }
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        R.inputs++;
+        return;                       /* let the engine see the value before commit */
+      }
+      el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      const go = w.cells.find(c => /check|go|submit|enter|spell|✓|done/i.test(c.textContent || ''));
+      if (go) tap(go);
+      R.inputs++;
+      return;
+    }
     if (need) {
       const cell = w.cells.find(c => (c.dataset && c.dataset.ch === need) ||
         c.textContent.trim().toLowerCase() === need.toLowerCase());
       if (cell) { tap(cell); return; }
       press(need.toLowerCase()); return;
     }
+    /* arcade layer with no gate up: keep the vehicle alive and moving, which is
+       what a player does between gates — standing still is not neutral, it dies */
+    if (w.arrows) { press(['ArrowLeft', 'ArrowRight', 'ArrowUp', ' '][Math.floor(Math.random() * 4)]); return; }
     /* nothing legible to aim at: keep the game alive the way a player would */
     if (w.cells.length) tap(w.cells[0]); else press(' ');
   };
