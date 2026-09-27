@@ -503,3 +503,85 @@
 .sg-diffpick-in .sg-diff-back{margin-top:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);
   color:#FFF6E4;border-radius:99px;padding:9px 18px;font:800 13px 'Hanken',sans-serif;cursor:pointer;min-height:40px}
 .sg-diffpick-in .sg-diff-back:hover{background:rgba(255,255,255,.22)}
+
+/* ==========================================================================
+   SGUI — the screens around the game. Shared by every engine so a fix to how a
+   result reads fixes it everywhere, instead of in the one engine that grew its
+   own copy. Tokens only: these sit on world plates that range from a bright
+   meadow to a night sky, so nothing here may assume a light ground.
+   ========================================================================== */
+.sg-rstars{display:flex;gap:6px;justify-content:center;margin:2px 0 6px}
+.sg-rstar{opacity:0;transform:scale(.4) rotate(-22deg);animation:sg-star-pop .42s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes sg-star-pop{to{opacity:1;transform:none}}
+.sg-rstar.won{filter:drop-shadow(0 2px 5px rgba(240,180,41,.5))}
+
+/* the draining ring: shape first, number second, red and pulsing at the end */
+.sg-ring{display:block}
+.sg-ss-timer{position:relative;display:grid;place-items:center;width:62px;height:62px;margin:0 auto 2px;color:var(--text,#2B2117)}
+.sg-ring-n{position:absolute;font:800 20px/1 var(--display,serif);font-variant-numeric:tabular-nums;color:var(--text,#2B2117)}
+.sg-ring-n.hot{color:#E8458C}
+.sg-ring.hot{animation:sg-ring-pulse .85s ease-in-out infinite}
+@keyframes sg-ring-pulse{50%{transform:scale(1.07)}}
+
+/* the result screen's word list — the thing none of these games used to show */
+.sg-end-h{font:800 24px/1.15 var(--display,serif);margin-bottom:2px;text-wrap:balance}
+.sg-end-score{font:800 30px/1 var(--display,serif);font-variant-numeric:tabular-nums;margin:2px 0 10px}
+.sg-end-score span{font:600 12px/1 var(--sans,inherit);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted,#7A6E5C);margin-left:7px}
+.sg-wordsum{width:100%;max-width:380px;margin:0 auto 12px}
+.sg-wordsum-h{font:700 12px/1 var(--sans,inherit);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted,#7A6E5C);margin-bottom:7px}
+.sg-wordrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.sg-wchip{font:600 13px/1 var(--mono,ui-monospace,monospace);padding:6px 10px;border-radius:8px;
+  border:1px solid var(--line,#EADFC8);background:var(--panel,#fff);color:var(--text,#2B2117);cursor:pointer}
+.sg-wchip.ok{border-color:#2FB39E;background:color-mix(in srgb,#2FB39E 13%,transparent)}
+.sg-wchip.no{border-color:#E8458C;background:color-mix(in srgb,#E8458C 13%,transparent);
+  text-decoration:line-through;text-decoration-color:#E8458C}
+.sg-wchip:hover{border-color:var(--honey,#F0B429)}
+.sg-end-btns{max-width:340px;margin:0 auto}
+
+/* Spell Shield */
+.sg-ss-hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px 6px}
+.sg-ss-phase{font:700 12px/1 var(--sans,inherit);letter-spacing:.07em;text-transform:uppercase;color:var(--muted,#7A6E5C)}
+.sg-ss-combo{font:800 13px/1 var(--display,serif);color:var(--honey,#F0B429)}
+.sg-shieldwall{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;color:var(--muted,#7A6E5C)}
+.sg-hexs{transition:transform .22s cubic-bezier(.2,1.5,.4,1)}
+.sg-hexs.up{animation:sg-hex-forge .42s cubic-bezier(.2,1.6,.4,1)}
+@keyframes sg-hex-forge{0%{transform:scale(.3) rotate(-30deg);opacity:0}60%{transform:scale(1.18)}100%{transform:none;opacity:1}}
+.sg-bossface.hurt{animation:sg-boss-hurt .34s ease-out}
+@keyframes sg-boss-hurt{0%,100%{transform:none}25%{transform:translateX(-7px) rotate(-3deg)}60%{transform:translateX(6px) rotate(2deg)}}
+.sg-scramble.byear{letter-spacing:.14em;text-transform:uppercase;font-size:15px;color:var(--muted,#7A6E5C)}
+@media (prefers-reduced-motion:reduce){
+  .sg-rstar,.sg-hexs.up,.sg-bossface.hurt,.sg-ring.hot{animation:none;opacity:1;transform:none}
+}
+
+/* Type Blaster — HUD in drawn marks and tabular figures, not emoji */
+.sg-tb-hud{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.sg-tb-wave{font:800 19px/1 var(--display,serif);font-variant-numeric:tabular-nums}
+.sg-tb-wave i{font:600 12px/1 var(--sans,inherit);font-style:normal;color:var(--muted,#7A6E5C);margin-left:1px}
+.sg-tb-shield{display:inline-flex;gap:3px;align-items:center;color:var(--muted,#7A6E5C)}
+.sg-pip{transition:transform .2s}
+.sg-pip.up{filter:drop-shadow(0 1px 3px rgba(47,179,158,.45))}
+.sg-tb-combo{font:800 14px/1 var(--display,serif);color:var(--honey,#F0B429);min-width:2.2em;text-align:center}
+.sg-tb-score{font:800 19px/1 var(--display,serif);font-variant-numeric:tabular-nums;margin-left:auto}
+@media (prefers-reduced-motion:reduce){ .sg-pip{transition:none} }
+.sg-clue{display:inline-block;vertical-align:-2px;margin-right:5px;color:var(--honey,#F0B429);flex:0 0 auto}
+
+/* ---- Bee Grand Prix: the two controls and the one HUD mark that were glyphs ----
+   The steer buttons hold a drawn chevron (SGUI.chev) and the position bar a drawn
+   chequered flag (GP_FLAG). Grid-centred with line-height:0 so an inline <svg>
+   cannot sit on a text baseline inside a 60px round button, and the chevron takes
+   the button's own currentColor so :active still flips it to honey. */
+.sg-steer .sg-sbtn{display:grid;place-items:center;line-height:0}
+.sg-steer .sg-sbtn svg{width:26px;height:26px;display:block}
+.sg-pb-flag{line-height:0}
+.sg-pbflag-i{display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+
+/* ---- the clue on a DARK panel ----
+   .sg-cardmean is authored for the light spell card and takes --muted (#7A6E5C).
+   Spell Shield draws it inside .sg-duel, a near-black scrim, where that brown is
+   barely there — and the clue is the one thing on that panel a child has to be
+   able to read, because the scramble deliberately tells them nothing. */
+.sg-duel .sg-cardmean{color:#F3ECDF;text-shadow:0 1px 4px rgba(0,0,0,.55)}
+.sg-duel .sg-clue{color:var(--honey,#F0B429)}
+.sg-end-sub{font:600 13px 'Hanken',sans-serif;color:var(--muted,#7A6E5C);margin:-2px 0 2px;text-align:center}
