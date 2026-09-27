@@ -1311,9 +1311,14 @@ out of saga2.js so a retune cannot quietly undo them.
   foreign-origin words the core never had, gathered field by field across 60
   subjects. `fullWords()` merges it via `mergeHard()` (idempotent — it stamps a
   non-enumerable `_hard` on the array), and `loadFullLibrary` fetches it right
-  after the core. Live total: **130,030** after `safeWord` filtering, which is
-  why "130,000" is quoted as a round FLOOR, the same convention the bank has
-  always used ("over 128,000", never "128,491").
+  after the core. **Core + shard is 130,601 records; `safeWord` filtering takes
+  what actually reaches a child to 127,900** — measured, not remembered. This
+  line has read 130,030 since before the 5 Sep library sweep, which is exactly
+  the drift the bank's own convention exists to survive: quote a round FLOOR
+  ("over 128,000", never "128,491") and let `tests/word-bank.cjs` hold it. That
+  test asserts the FILTERED count against a 125,000 floor and separately checks
+  that no surface still offers a "130,000-word library" the bank cannot back —
+  so the app's copy is already correct; only this line was stale.
 - **Never put words-hard.js in index.html.** It rides the on-demand library
   path; the boot budget is 5.03MB across 42 files.
 - Every shard record is checked three ways, by the generator AND again by the
