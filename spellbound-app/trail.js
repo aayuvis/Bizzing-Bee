@@ -2288,12 +2288,12 @@
      No XP from any of it: rank still comes from spelling. */
   const TRE_GAME = { meadow: 'honeycombRun', library: 'typeBlaster', forum: 'unscrambleStars',
     storm: 'keepFlying', roots: 'wordSnake', strait: 'keepFlying', junkyard: 'typeBlaster',
-    sprints: 'beeGrandPrix', stage: 'spotlightSimon', greysea: 'spellScene',
+    sprints: 'beeGrandPrix', stage: 'spellShield', greysea: 'spellScene',
     uproving: 'beeGrandPrix', ulibrary: 'typeBlaster', ucrucible: 'honeycombRun',
     uobservatory: 'unscrambleStars', uchampionship: 'beeGrandPrix' };
   const GAME_NAME = { beeGrandPrix: 'Bee Grand Prix', honeycombRun: 'Honeycomb Run', typeBlaster: 'Type Blaster',
     keepFlying: 'Keep Flying', wordSnake: 'Word Snake', unscrambleStars: 'Unscramble Stars',
-    spotlightSimon: 'Spotlight Simon', spellScene: 'Spell Scene' };
+    spellShield: 'Spell Shield', spellScene: 'Spell Scene' };
   app2.trailTre = arg => { const c = active();
     const [act, si] = String(arg).split(':'); const i = +si || 0;
     const cell = treMap(c)[act] || (treMap(c)[act] = {});

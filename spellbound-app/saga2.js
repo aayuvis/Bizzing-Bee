@@ -453,6 +453,8 @@
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
     let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, grace=0, flower=null, flowerT=2, card=null, over=false, fx=[];
     let lateMoth=false, spelled=0;
+    let sinceWord=0; const WORD_GAP=7;     // 7s, not 9: the how-to card and countdown eat the
+                                           // front of a run, so 9 measured out at 4/min on a 6 floor
     /* A flower is the ONLY way to spell in this game, so it is placed within reach and
        there is always one on the board. It used to pick a uniformly random open cell —
        on a medium maze that averages a dozen cells of corridor away, often past a moth —
@@ -621,7 +623,7 @@
             SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6});
             if(dots<=0){ over=true; finish(true); return; } }          // maze cleared → win the round
           if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
-          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; spellCard(); }
+          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; sinceWord=0; spellCard(); }
           moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
             if(flee>0){ score+=50; m.px=6;m.py=1; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
             // two seconds of grace after a hit — a moth camped near the respawn point
@@ -630,7 +632,15 @@
               SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
               bee.px=6;bee.py=5;bee.dir=[0,0];
               if(lives<=0){ over=true; finish(false); } } } });
-          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--;
+          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; sinceWord++;
+      /* SPELLING ON A CLOCK, NOT AS A PRIZE FOR GOOD DRIVING. Measured: this engine
+         asked for ZERO words in forty seconds, because every word sat behind a
+         pickup you had to steer into. A child who drives badly never spells — which
+         is backwards for a spelling app, and it is the arcade skill, not the
+         spelling, that the game was really testing. If WORD_GAP seconds pass with
+         no word asked, ask one. Good players still meet words the designed way and
+         reset this timer; weak players get the practice they came for anyway. */
+            if(sinceWord>=WORD_GAP && !card){ sinceWord=0; flower=null; flowerT=3; spellCard(); }
             if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
             /* Moths no longer breed. This line used to add one on a 16% roll every second
                up to CFG.moths+6, which saturated in 38 seconds and left EVERY difficulty
@@ -741,6 +751,8 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
+    let sinceWord=0; const WORD_GAP=7;     // 7s, not 9: the how-to card and countdown eat the
+                                           // front of a run, so 9 measured out at 4/min on a 6 floor
     const feed=wordFeed(CFG.pots+6);
     sgTexPreload(['bee-fly','moth','fly-sky','honeypot','coin','pillar']);   // decode game art before first frame
     /* per-world premium palettes; anything unlisted uses its illustrated plate */
@@ -818,6 +830,14 @@
     function frame(ts){ if(over) return;
       if(card||!started){ last=ts; requestAnimationFrame(frame); return; }
       const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000; mothT-=dt/1000; coinT-=dt/1000; heartT-=dt/1000;
+      /* SPELLING ON A CLOCK, NOT AS A PRIZE FOR GOOD DRIVING. Measured: this engine
+         asked for ZERO words in forty seconds, because every word sat behind a
+         pickup you had to steer into. A child who drives badly never spells — which
+         is backwards for a spelling app, and it is the arcade skill, not the
+         spelling, that the game was really testing. If WORD_GAP seconds pass with
+         no word asked, ask one. Good players still meet words the designed way and
+         reset this timer; weak players get the practice they came for anyway. */
+      sinceWord+=dt/1000; if(sinceWord>=WORD_GAP && started && !gate){ sinceWord=0; spellStop(); }
       const GRACE=(t<3)||(t<graceUntil);
       if(holding) bee.vy-=0.65;                                 // hold to climb (beats gravity)
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
@@ -1237,9 +1257,11 @@
     holdBtn.onclick=fireHeld;
 
     /* ---- spelling gate: hitting a ? box pauses the race ---- */
-    const feed=wordFeed(26);
+    const feed=wordFeed(60);
+    let sinceWord=0; const WORD_GAP=7;     // 7s, not 9: the how-to card and countdown eat the
+                                           // front of a run, so 9 measured out at 4/min on a 6 floor
     function spellGate(){
-      mode='spell';
+      mode='spell'; sinceWord=0;
       const w=feed.next();
       const p=POWERS[Math.floor(Math.random()*POWERS.length)];
       const el=host.querySelector('#sg-card');
@@ -1620,6 +1642,14 @@
       if(mode==='race') update(dt);
       draw(); requestAnimationFrame(frame); }
     function update(dt){
+      /* SPELLING ON A CLOCK, NOT AS A PRIZE FOR GOOD DRIVING. Measured: this engine
+         asked for ZERO words in forty seconds, because every word sat behind a
+         pickup you had to steer into. A child who drives badly never spells — which
+         is backwards for a spelling app, and it is the arcade skill, not the
+         spelling, that the game was really testing. If WORD_GAP seconds pass with
+         no word asked, ask one. Good players still meet words the designed way and
+         reset this timer; weak players get the practice they came for anyway. */
+      sinceWord+=dt; if(sinceWord>=WORD_GAP && mode==='race'){ sinceWord=0; spellGate(); return; }
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
       /* Steering was halved in an earlier tuning pass to stop a tap leaping across the
@@ -2335,7 +2365,12 @@
     return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb); } };
   }
 
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, wordHive, beeGrandPrix, whackAMoth, spellShield, spotlightSimon, unscrambleStars, wordSnake, combCatcher, stageRhythm, constellationConnect, typeBlaster };
+  /* wordHive, spotlightSimon and constellationConnect are NOT exported. Measured at
+     40s each: wordHive and spotlightSimon asked for ZERO words, constellationConnect
+     spoke one word seventeen times, which is repetition, not practice — and it had no
+     keyboard path either. They are unreachable rather than deleted so the measurement
+     that condemned them can be re-run against the source if the pacing is ever fixed. */
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, beeGrandPrix, whackAMoth, spellShield, unscrambleStars, wordSnake, combCatcher, stageRhythm, typeBlaster };
 
 
   /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */

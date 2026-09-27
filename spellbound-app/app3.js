@@ -3755,7 +3755,6 @@ function viewLanding() {
     ['game-keepFlying',     'Keep Flying',      'Fly, bank every honey pot, then home through the gates.'],
     ['game-wordSnake',      'Word Snake',       'The trail is a word — eat the letters in order and grow.'],
     ['game-unscrambleStars','Unscramble Stars', 'Pull the word back out of the scrambled constellation.'],
-    ['game-spotlightSimon', 'Spotlight Simon',  'Watch the spotlight spell it, then repeat from memory.'],
     ['game-spellScene',     'Spell Scene',      'Spell the word that finishes the scene.'],
   ].map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
       <span style="position:relative;display:block;aspect-ratio:16/11;overflow:hidden;background:#241E33">
@@ -9558,11 +9557,9 @@ function viewDebug(){
   const engines=[
     ['honeycombRun','Honeycomb Run','🌼 Pac-bee maze'],
     ['keepFlying','Keep Flying','🍯 Flappy-bee'],
-    ['wordHive','Word Hive','🐝 Anagram builder'],
     ['beeGrandPrix','Bee Grand Prix','🏁 Type-to-nitro race'],
     ['whackAMoth','Whack-a-Moth','🔨 Tap letters'],
     ['spellShield','Spell Shield','🛡️ Boss defence'],
-    ['spotlightSimon','Spotlight Simon','🌟 Memory sequence'],
     ['unscrambleStars','Unscramble Stars','⭐ Constellation'],
     ['wordSnake','Word Snake','🐍 Steer &amp; spell in order'],
     ['combCatcher','Comb Catcher','🧺 Catch falling letters'],
@@ -10640,7 +10637,6 @@ const SB_ARCADE_GAMES = [
   {k:'keepFlying',          n:'Keep Flying',      tag:'Flight', w:'sky',       blurb:'Tap to fly, bank the honey pots, spell through the gates.'},
   {k:'wordSnake',           n:'Word Snake',       tag:'Arcade', w:'forest',    blurb:'Grow the snake by eating the letters in order.'},
   {k:'unscrambleStars',     n:'Unscramble Stars', tag:'Puzzle', w:'cosmos',    blurb:'Slide the scrambled letters into the right order.'},
-  {k:'spotlightSimon',      n:'Spotlight Simon',  tag:'Memory', w:'stage',     blurb:'Watch the spotlight sequence, then repeat it.'},
   {k:'spellScene',          n:'Spell Scene',      tag:'Scene',  w:'homecoming',blurb:'Spell the word that finishes each scene.'},
 ];
 window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
@@ -10662,7 +10658,6 @@ const ARCADE_HOWTO = {
   keepFlying:     'Tap or hold to fly. Bank every honey pot by spelling it, dodge the pillars, then soar through the Hive Gates home.',
   wordSnake:      'Steer the snake to eat the letters in spelling order. Every word makes it grow — spell without crashing into yourself.',
   unscrambleStars:'Tap or TYPE the scrambled star-letters into the right order. Solve fast for ⚡ bonus stars and light up the constellation.',
-  spotlightSimon: 'Watch the spotlight sequence, tap it back in order, then spell the word from memory. Keep the marquee blazing.',
   spellScene:     'Read the clue, spell the word, and sweep colour back into the scene — drive the moth off and restore the whole world.',
 };
 const ARC_COLOURS = [
@@ -10699,7 +10694,6 @@ const ARC_CFG = {
     {key:'world',label:'World',kind:'world', opts:ARC_SWORLDS} ]},
   // puzzles of taps/typing/memory — an avatar adds nothing here
   unscrambleStars:{ noHero:true, groups:[] },
-  spotlightSimon:{ noHero:true, groups:[] },
 };
 function arcGart(img){ return 'app-art/gart/'+img+'.webp'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''); }
 function arcadeMenu(k){
