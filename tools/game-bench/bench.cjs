@@ -132,6 +132,7 @@ const PLAY = async ({ name, policy, secs, diff }) => {
     if (!actionable) R.dead++;
 
     if (policy === 'idle') return;
+    if (clearIntro()) return;                 /* a card is up: nothing else is playable */
 
     if (policy === 'random') {
       if (w.cells.length && Math.random() < 0.8) tap(w.cells[Math.floor(Math.random() * w.cells.length)]);
@@ -178,6 +179,11 @@ const PLAY = async ({ name, policy, secs, diff }) => {
       return;
     }
     if (need) {
+      /* an on-screen keyboard (.ss-kb) is how typeBlaster takes letters — it has no
+         text field at all, so "type the word" means tapping these keys in order */
+      const kb = [...host.querySelectorAll('.ss-kb,.sg-tbkey,.ss-key')]
+        .find(k => (k.textContent || '').trim().toLowerCase() === need.toLowerCase());
+      if (kb) { tap(kb); return; }
       const cell = w.cells.find(c => (c.dataset && c.dataset.ch === need) ||
         c.textContent.trim().toLowerCase() === need.toLowerCase());
       if (cell) { tap(cell); return; }
@@ -185,10 +191,31 @@ const PLAY = async ({ name, policy, secs, diff }) => {
     }
     /* arcade layer with no gate up: keep the vehicle alive and moving, which is
        what a player does between gates — standing still is not neutral, it dies */
-    if (w.arrows) { press(['ArrowLeft', 'ArrowRight', 'ArrowUp', ' '][Math.floor(Math.random() * 4)]); return; }
+    if (w.arrows) {
+      /* the engines draw their own d-pad (.sg-dbtn) and steer buttons (.sg-sbtn);
+         tapping those is the touch path a phone player uses */
+      const pad = [...host.querySelectorAll('.sg-dbtn,.sg-sbtn')].filter(b => b.offsetParent !== null);
+      if (pad.length) { tap(pad[Math.floor(Math.random() * pad.length)]); return; }
+      press(['ArrowLeft', 'ArrowRight', 'ArrowUp', ' '][Math.floor(Math.random() * 4)]); return;
+    }
     /* nothing legible to aim at: keep the game alive the way a player would */
     if (w.cells.length) tap(w.cells[0]); else press(' ');
   };
+
+  /* THESE GAMES OPEN ON A HOW-TO CARD. beeGrandPrix greets you with "To the grid!
+     →" and does not start until it is dismissed — so a bot that starts tapping
+     immediately spends the whole run reading the instructions and scores zero,
+     which is what thirteen 0x readings actually were. Clear any start gate first,
+     the way a player does, and keep clearing it: several engines show a fresh card
+     between rounds. */
+  const START = /to the grid|start|play|begin|go!|let's|→|ready/i;
+  const clearIntro = () => {
+    const b = [...host.querySelectorAll('button')].find(x =>
+      x.offsetParent !== null && (/howto|rbtn/.test(x.className) || START.test(x.textContent || '')));
+    if (b) { try { b.click(); R.inputs++; return true; } catch (e) {} }
+    return false;
+  };
+  clearIntro();
 
   const iv = setInterval(step, 250);
   await new Promise(r => setTimeout(r, secs * 1000));
