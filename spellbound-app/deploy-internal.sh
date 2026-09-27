@@ -105,7 +105,6 @@ tar -C "$SRC" \
     --exclude=./node_modules --exclude=./design-pack \
     --exclude=./eponyms --exclude=./trivia-all.json \
     --exclude='./voice/tq*.mp3' --exclude=./voice/rebuild-queue.json \
-    --exclude=./app-art/spines \
     --exclude=./CLAUDE.md --exclude=./AUDIT_BRIEF.md \
     --exclude=./TESTING-PROTOCOL.md --exclude='./TESTING-FINDINGS-*.md' \
     --exclude=./READ-ME-FIRST.md --exclude=./DESIGN-SYSTEM-HANDOVER.md \
@@ -123,7 +122,7 @@ rm -rf "$STG"/CLAUDE.md "$STG"/AUDIT_BRIEF.md "$STG"/TESTING-PROTOCOL.md \
        "$STG"/DESIGN-SYSTEM-HANDOVER.md "$STG"/UX-FEEDBACK-LOG.md \
        "$STG"/TRAIL-CURRICULUM.md "$STG"/_cut.txt "$STG"/supabase-schema.sql \
        "$STG"/pipeline "$STG"/eponyms "$STG"/trivia-all.json \
-       "$STG"/champions-pack.py "$STG"/drops.log "$STG"/app-art/spines \
+       "$STG"/champions-pack.py "$STG"/drops.log \
        "$STG"/voice/rebuild-queue.json
 # voice/tq*.mp3: trivia narration. NOT in voice-cdn.js's LOCAL set, so on any
 # hosted build every one of them is rewritten to the raw CDN and the bundled
@@ -165,6 +164,18 @@ done < <(cat "$STG/index.html" "$STG/boot-lazy.js" 2>/dev/null \
          | tr -d "'\"" | sort -u)
 [ "$MISS" -eq 0 ] || die "$MISS referenced asset(s) missing from the deploy tree"
 echo "   all referenced assets present"
+# ART TREES SHIP WHOLE. The check above greps index.html and boot-lazy.js for literal
+# paths, and `app-art/spines/<slug>.png` is BUILT in app3.js from a table, so it saw
+# nothing when a stray `--exclude=./app-art/spines` dropped all 23 book spines out of
+# the copy. They went on being referenced with loading="eager" and no onerror, so the
+# Library's shelf shipped 23 broken images and nothing anywhere reported it. Count the
+# trees instead of grepping for the names.
+for d in app-art avatars; do
+  [ -d "$SRC/$d" ] || continue
+  A="$(find "$SRC/$d" -type f | wc -l)"; B="$(find "$STG/$d" -type f 2>/dev/null | wc -l)"
+  [ "$B" -ge "$A" ] || die "$d: $B files in the deploy tree, $A in the source — the copy dropped $((A-B))"
+  echo "   $d ships whole ($B files)"
+done
 
 # ---------- 7. size budget ----------
 # GitHub's Pages job aborts at a ten-minute deploy timeout and the site then keeps

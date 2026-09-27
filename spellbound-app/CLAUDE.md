@@ -1454,6 +1454,17 @@ out of saga2.js so a retune cannot quietly undo them.
 > than a force-push — the git proxy here refuses ref deletion and may refuse force too.
 > Taking the site down or putting it back is the owner's call, never an inference.
 
+- **A WHOLE FOLDER OF SHIPPED ART CAN VANISH AND NOTHING REPORTS IT.** A stray
+  `--exclude=./app-art/spines` in the deploy scripts dropped all 23 book spines from
+  the published tree on 10 Sep 2026 and again on 27 Sep. The asset-reference step did
+  not catch it because it greps `index.html` and `boot-lazy.js` for LITERAL paths, and
+  `libShelf()` builds `app-art/spines/<slug>.png` from `SB_SHELF` at render time — so
+  there is no literal path anywhere to grep. The `<img>` carries `loading="eager"` and
+  no `onerror`, so the Library's shelf simply showed 23 broken images. Both scripts now
+  COUNT the art trees (`app-art`, `avatars`) against the source and refuse a deploy that
+  ships fewer files. `voice/` and `books/` are deliberately partial and are not counted.
+  The general rule: an exclusion in a deploy script is a claim that nothing ships from
+  that path — check what references it before adding one.
 - **The Pages site has a size budget, and blowing it is silent.** GitHub's "pages build and
   deployment" job aborts at a ten-minute deploy timeout, and when it does the site keeps
   serving the last good commit — the push succeeds, the build succeeds, nothing anywhere

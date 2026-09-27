@@ -87,7 +87,6 @@ tar -C "$SRC" \
     --exclude=./node_modules --exclude=./design-pack \
     --exclude=./eponyms --exclude=./trivia-all.json \
     --exclude='./voice/tq*.mp3' --exclude=./voice/rebuild-queue.json \
-    --exclude=./app-art/spines \
     --exclude=./CLAUDE.md --exclude=./AUDIT_BRIEF.md \
     --exclude=./TESTING-PROTOCOL.md --exclude='./TESTING-FINDINGS-*.md' \
     --exclude=./READ-ME-FIRST.md --exclude=./DESIGN-SYSTEM-HANDOVER.md \
@@ -100,7 +99,7 @@ rm -rf "$WT"/CLAUDE.md "$WT"/AUDIT_BRIEF.md "$WT"/TESTING-PROTOCOL.md \
        "$WT"/DESIGN-SYSTEM-HANDOVER.md "$WT"/UX-FEEDBACK-LOG.md \
        "$WT"/TRAIL-CURRICULUM.md "$WT"/_cut.txt "$WT"/supabase-schema.sql \
        "$WT"/pipeline "$WT"/eponyms "$WT"/trivia-all.json \
-       "$WT"/champions-pack.py "$WT"/drops.log "$WT"/app-art/spines \
+       "$WT"/champions-pack.py "$WT"/drops.log \
        "$WT"/voice/rebuild-queue.json
 rm -f "$WT"/voice/tq*.mp3
 echo "   files: $(find "$WT" -type f -not -path '*/.git/*' | wc -l)"
@@ -135,6 +134,18 @@ echo "   all referenced assets present"
 STUBS="$(ls "$WT"/books/*.html 2>/dev/null | wc -l)"
 [ "$STUBS" -ge 20 ] || die "only $STUBS book redirect stubs on the branch, expected 24 — the copy has eaten them"
 echo "   $STUBS book redirect stubs intact"
+# ART TREES SHIP WHOLE. The check above greps index.html and boot-lazy.js for literal
+# paths, and `app-art/spines/<slug>.png` is BUILT in app3.js from a table, so it saw
+# nothing when a stray `--exclude=./app-art/spines` dropped all 23 book spines out of
+# the copy. They went on being referenced with loading="eager" and no onerror, so the
+# Library's shelf shipped 23 broken images and nothing anywhere reported it. Count the
+# trees instead of grepping for the names.
+for d in app-art avatars; do
+  [ -d "$SRC/$d" ] || continue
+  A="$(find "$SRC/$d" -type f | wc -l)"; B="$(find "$WT/$d" -type f 2>/dev/null | wc -l)"
+  [ "$B" -ge "$A" ] || die "$d: $B files in the deploy tree, $A in the source — the copy dropped $((A-B))"
+  echo "   $d ships whole ($B files)"
+done
 
 # ---------- 7. size budget ----------
 say "7. Size"
