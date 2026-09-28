@@ -69,16 +69,54 @@ const STEER  = +src.match(/const dxs=dt\*([\d.]+)\*Math\.max/)[1];
 const CPUSH = +src.match(/CPUSH=([\d.]+)/)[1];
 const DRIFT_HALF = +src.match(/DRIFT_HALF=([\d.]+)/)[1];
 const GRIP_HALF = +src.match(/GRIP_HALF=([\d.]+)/)[1];
-ok(/drift\+=\(seg\.curve\|\|0\)\*\(v\/maxV\)\*dt\*CPUSH/.test(src), 'a bend BUILDS lateral drift (heading memory), scaled by speed');
+ok(/drift\+=\(seg\.curve\|\|0\)\*vf\*\(1\+SPEED_BITE\*vf\*vf\)/.test(src),
+  'a bend BUILDS lateral drift (heading memory), scaled by speed');
 ok(/playerX-=drift\*dt/.test(src), 'the kart slides on its accumulated drift — the slide outlives the bend');
 ok(!/dt\*centri/.test(src), 'both memoryless drift models are gone');
 ok(DRIFT_HALF >= 2, `a slide does not fix itself (self-decay half-life ${DRIFT_HALF}s — longer than any bend)`);
-ok(GRIP_HALF <= DRIFT_HALF / 5, `counter-steer grips: kills the slide ${(DRIFT_HALF / GRIP_HALF).toFixed(0)}x faster than doing nothing`);
+ok(GRIP_HALF <= DRIFT_HALF / 3, `counter-steer grips: kills the slide ${(DRIFT_HALF / GRIP_HALF).toFixed(1)}x faster than doing nothing`);
+/* ...BUT NOT INSTANTLY, WHICH IS THE WHOLE OF "the bends bite". At 0.22 a counter-steer
+   annihilated the slide in a fifth of a second, so any correction won outright and no
+   corner could ever threaten anyone: a bot nudging back at |x|>0.25 held the road for
+   forty seconds and never came within 0.29 of the edge. A slide has to OUTLIVE the
+   input that answers it, or the answer is free. */
+ok(GRIP_HALF >= 0.4, `and a slide takes real time to gather up (grip half-life ${GRIP_HALF}s, not a snap)`);
+
 ok(!/hill=0; curve\*=0\.7;/.test(src), 'the authored curves are no longer softened 30%');   // anchored to the CODE, not my comment about it
 const CURVE_MAX = Math.max(...[...src.matchAll(/road\(\d+,\d+,\d+,(-?\d+(?:\.\d+)?),/g)].map(m => Math.abs(+m[1])));
 ok(CURVE_MAX >= 4, `hardest authored bend is ${CURVE_MAX}`);
-const buildRate = CURVE_MAX * CPUSH;   // u/s^2 of slide, flat out on the hardest bend
-ok(buildRate >= 1.0 && buildRate <= 2.0, `hardest bend builds slide at ${buildRate.toFixed(2)} u/s² — a ~1.5s bend reaches ~steer speed (${STEER})`);
+/* SPEED HAS TO COST SOMETHING. The push was linear in v and so is the steering, so
+   their ratio was CONSTANT — flat out was exactly as easy as crawling. SPEED_BITE is
+   negligible at half throttle and dominant at the top, so the hardest bends out-pull
+   the wheel only when you refuse to lift. Per difficulty, because the ladder is the
+   product: a 300ms-reaction driver (a child, not a bot) is in the grass ~11% of the
+   time on easy and ~19% on hard, while one who brakes into the bends never leaves it. */
+const BITES = [...src.matchAll(/bite:([\d.]+)/g)].map(m => +m[1]);
+ok(BITES.length === 4, `every difficulty names its own bend bite (${BITES.join(' / ')})`);
+ok(BITES.every((b, i) => i === 0 || b > BITES[i - 1]), 'and the bite rises with the difficulty, in order');
+const topPull = CURVE_MAX * (1 + BITES[BITES.length - 1]) * CPUSH;   // u/s² flat out, champ
+ok(topPull > STEER, `flat out on the hardest bend the road out-pulls the wheel — ${topPull.toFixed(2)} vs ${STEER} of steering`);
+const easyPull = CURVE_MAX * (1 + BITES[0]) * CPUSH * 0.45;          // easy, half throttle
+ok(easyPull < STEER, `and lifting gets it back — ${easyPull.toFixed(2)} at part throttle on easy`);
+
+/* A BRAKE EXISTS, ON BOTH INPUTS. Without one a bend can only be a steering-hold test:
+   there is no way to answer a corner, so making one bite just makes it unfair. */
+ok(/ArrowDown'\|\|e\.key==='s'/.test(src), 'the brake is on the keyboard');
+ok(/class="sg-sbtn sg-brake" id="sg-brk"/.test(src), 'and under a thumb, between the two steering buttons');
+ok(/braking\?BRAKE_GRIP:1/.test(src) && /braking \? BRAKE_HALF : DRIFT_HALF/.test(src),
+  'braking BUYS GRIP — it is the answer to a corner, not merely a way to go slower');
+const buildRate = CURVE_MAX * CPUSH;   // u/s^2 of slide at LOW speed, where SPEED_BITE sleeps
+ok(buildRate >= 1.0 && buildRate <= 2.0, `at low speed the hardest bend still only builds ${buildRate.toFixed(2)} u/s² — the bite is a top-end term, not a tax on crawling`);
+
+/* THE CAMERA LAGS AND NEVER FULLY CATCHES UP. camX=playerX*roadW with the kart at Wd/2
+   drew it dead centre no matter where it was: off the road, stopped, in the grass, the
+   picture still showed clean tarmac under it. "The car drives itself with the road
+   curving." The physics was never the problem — it was that none of it was visible. */
+const CAM_FOLLOW = +src.match(/CAM_FOLLOW=([\d.]+)/)[1];
+ok(CAM_FOLLOW < 1, `the camera takes only part of the kart's offset (${CAM_FOLLOW}), so a kart on the grass is DRAWN on the grass`);
+ok(/const camX=camLag\*roadW/.test(src), 'and the camera rides camLag, not playerX');
+ok(/const px=Wd\/2 \+ \(playerX-camLag\)\*\(_nearW/.test(src),
+  'the kart is drawn at its real offset, measured in the road\'s own projection');
 // the far road is drawn by continued projection, never a straight wedge
 ok(/while\(pyD>horizonY\+1 && n<6000\)/.test(src), 'the road past drawDist is projected on, following the curve');
 ok(!/poly\(L-rw,Y, vx,vy, vx,vy, L,Y, c\.rumble\)/.test(src), 'the straight horizon wedge (the grey pyramid on curves) is gone');

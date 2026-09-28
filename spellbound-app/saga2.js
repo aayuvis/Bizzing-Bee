@@ -1206,6 +1206,14 @@
 
   /* 🏁 is a different picture in every font and lands as a flat monochrome box on
      some Androids — on the one HUD element that tells a child where the finish is. */
+  /* The brake. There wasn't one: the kart pinned itself to top speed and the only
+     input was left/right, so a bend could only ever be a steering-hold test — there
+     was no way to ANSWER a corner, and so no way to make one bite without making it
+     unfair. Keyboard AND thumb, like every control in this app. */
+  const GP_BRAKE=()=>'<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">'+
+    '<circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="2.6"/>'+
+    '<path d="M12 3.6v16.8M3.6 12h16.8" stroke="currentColor" stroke-width="2.2" '+
+    'stroke-linecap="round" transform="rotate(45 12 12)"/></svg>';
   const GP_FLAG=()=>'<svg class="sg-pbflag-i" viewBox="0 0 20 22" width="17" height="19" aria-hidden="true">'+
     '<path d="M3 1v20" stroke="#4A4036" stroke-width="2" stroke-linecap="round"/>'+
     '<path d="M4.5 2h13v9h-13z" fill="#FDFBF5" stroke="#4A4036" stroke-width="1.1"/>'+
@@ -1236,10 +1244,16 @@
        agree about how far away "far" looks. */
     const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
-    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
-               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
-               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320},
-               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340}}[diff]);
+    /* `bite` is how hard a bend pulls at TOP speed (see SPEED_BITE below). It is the
+       difficulty dial that actually changes the driving: rivals and hazards change who
+       you are racing, this changes whether the corner is a decision. Measured against a
+       driver who reacts in ~300ms with no anticipation — a child, not a bot — 3.0 put
+       them in the grass seven times in fifty seconds, which is the right shape for the
+       top of the ladder and far too much for the bottom of it. */
+    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280,bite:1.35},
+               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300,bite:2.10},
+               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320,bite:2.90},
+               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340,bite:3.60}}[diff]);
     host.innerHTML=
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
@@ -1249,7 +1263,8 @@
       '<div class="sg-race3d"><canvas id="sg-cv"></canvas>'+
       '<button class="sg-hold" id="sg-hold" aria-label="Use power-up"><span class="sg-hold-empty">?</span></button>'+
       '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">'+SGUI.chev(-1)+'</button>'+
-      '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div>'+
+      '<div class="sg-steer-r"><button class="sg-sbtn sg-brake" id="sg-brk" aria-label="Brake">'+GP_BRAKE()+'</button>'+
+      '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div></div>'+
       '<div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
     const dpr=Math.min(2,window.devicePixelRatio||1);
@@ -1304,7 +1319,8 @@
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
-    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, CPUSH=0.30, DRIFT_HALF=2.4, GRIP_HALF=0.22;
+    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, CPUSH=0.30, DRIFT_HALF=2.4, GRIP_HALF=0.55;
+    const SPEED_BITE=CFG.bite, BRAKE_GRIP=0.55, BRAKE_HALF=0.9;
     /* THE CAMERA LAGS, AND IT NEVER FULLY CATCHES UP.
        It used to sit exactly on the kart (camX=playerX*roadW) with the kart drawn at
        Wd/2, so the kart NEVER MOVED ON SCREEN. Steer and the world slid; drift off the
@@ -1389,16 +1405,25 @@
     function resume(){ countT=1.0; mode='count'; }
 
     /* ---- steering ---- */
-    let steer=0;
+    let steer=0, braking=false;
     const setSteer=s=>{ steer=s; };
-    host.querySelectorAll('.sg-sbtn').forEach(b=>{ const s=+b.dataset.s;
+    const setBrake=b=>{ braking=!!b; };
+    const brk=host.querySelector('#sg-brk');
+    if(brk){ const on=e=>{ setBrake(true); e.preventDefault&&e.preventDefault(); };
+      brk.addEventListener('pointerdown',on);
+      brk.addEventListener('pointerup',()=>setBrake(false));
+      brk.addEventListener('pointerleave',()=>setBrake(false));
+      brk.addEventListener('pointercancel',()=>setBrake(false)); }
+    host.querySelectorAll('.sg-sbtn[data-s]').forEach(b=>{ const s=+b.dataset.s;
       b.addEventListener('pointerdown',e=>{ setSteer(s); e.preventDefault&&e.preventDefault(); });
       b.addEventListener('pointerup',()=>setSteer(0)); b.addEventListener('pointerleave',()=>setSteer(0)); });
     const kd=e=>{ if(e.target&&e.target.tagName==='INPUT') return;
       if(e.key==='ArrowLeft'||e.key==='a'){ setSteer(-1); e.preventDefault(); }
       else if(e.key==='ArrowRight'||e.key==='d'){ setSteer(1); e.preventDefault(); }
+      else if(e.key==='ArrowDown'||e.key==='s'){ setBrake(true); e.preventDefault(); }
       else if(e.key===' '){ fireHeld(); e.preventDefault(); } };
-    const ku=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='ArrowRight'||e.key==='d') setSteer(0); };
+    const ku=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='ArrowRight'||e.key==='d') setSteer(0);
+      if(e.key==='ArrowDown'||e.key==='s') setBrake(false); };
     addEventListener('keydown',kd); addEventListener('keyup',ku);
     cv.addEventListener('pointerdown',e=>{ if(mode!=='race'&&mode!=='count') return; const r=cv.getBoundingClientRect(); setSteer((e.clientX-r.left)<Wd/2?-1:1); });
     cv.addEventListener('pointerup',()=>setSteer(0)); cv.addEventListener('pointerleave',()=>setSteer(0));
@@ -1782,9 +1807,23 @@
          Equilibrium on the hardest bend (curve 5, flat out) is ~1.9 u/s against 2.2 of
          steering — holdable at 89% of the wheel; and a mid bend (3) now ejects an
          unsteered kart shortly after the bend, because the slide OUTLIVES the bend. */
-      drift+=(seg.curve||0)*(v/maxV)*dt*CPUSH;
+      /* WHY SPEED HAS TO COST SOMETHING. The push was LINEAR in v and so is the
+         steering (dxs scales with v too), so their ratio was CONSTANT: going flat out
+         was exactly as easy as crawling, and a bend could never be a decision. A naive
+         driver — nudge back whenever you have drifted a quarter of the way out — held
+         the road for forty seconds and never came within 0.29 of the edge.
+         SPEED_BITE adds a term that is negligible at half throttle and dominant at the
+         top, so the ladder reads: gentle bends holdable flat out, the big ones want you
+         off the gas. It is added ON TOP of the linear term rather than replacing it,
+         because a pure v-squared model was tried once and read as self-steering at real
+         playing speeds — at half throttle it pulls with a quarter of the force.
+         And BRAKING BUYS GRIP: it cuts the build and shortens the slide's half-life, so
+         the brake is the answer to a corner and not merely a way to go slower. */
+      const vf=v/maxV;
+      drift+=(seg.curve||0)*vf*(1+SPEED_BITE*vf*vf)*(braking?BRAKE_GRIP:1)*dt*CPUSH;
       const gripping = steer!==0 && steer*drift>0;    // steering against the slide
-      drift*=Math.pow(0.5, dt/(gripping?GRIP_HALF:DRIFT_HALF));
+      const half = gripping ? GRIP_HALF : (braking ? BRAKE_HALF : DRIFT_HALF);
+      drift*=Math.pow(0.5, dt/half);
       playerX-=drift*dt;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       camLag += ((playerX*CAM_FOLLOW)-camLag)*(1-Math.pow(0.5, dt/CAM_HALF));
@@ -1794,6 +1833,12 @@
         // still works at a standstill, so you steer back on and pull away again
         v=Math.max(0, v-(maxV/0.9)*dt);
         if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('🌿 Off the track — steer back on!');}catch(_){} }
+      } else if(braking){
+        offGrass=false;
+        /* a real lift, not a tap: down to ~46% in about a second, which is what a
+           curve-5 bend wants. It never stops the kart — a brake that could park you
+           on the racing line would be a way to hide from the race. */
+        v=Math.max(maxV*0.34, v-(maxV/1.05)*dt);
       } else {
         offGrass=false;
         v=Math.min(maxV*boostMul, v+accel*dt);   // tarmac: accelerate up to top speed
@@ -1851,7 +1896,8 @@
       '<div class="sg-howto-h">Bee Grand Prix</div>'+
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li><b>Steer</b> with the two round buttons, or the <b>arrow keys</b> — lean into the bends, dodge the oil slicks and the cops.</li>'+
+      '<li><b>Steer</b> with the two round buttons, or the <b>arrow keys</b> — dodge the oil slicks and the cops.</li>'+
+      '<li><b>The middle button is the brake</b> (or <b>↓</b>). Flat out the big bends will throw you into the grass — lift for those, and you keep the road.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
       '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
@@ -1860,7 +1906,9 @@
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,drift,camLag,screenX:_kartPx,mid:Wd/2}),
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,drift,camLag,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+      curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
+        for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
       toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
         if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
