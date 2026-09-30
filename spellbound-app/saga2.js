@@ -1233,9 +1233,9 @@
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
     // three scenarios: each is its own painted sky + road/grass palette
     const SCENES={
-      meadow:{sky:'gp-sky',  prop:'tree',    light:{road:'#6C6C74',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',grass:'#72B461',rumble:'#C7413F',lane:''}},
-      sunset:{sky:'gp-sunset',prop:'cactus',  light:{road:'#6B5A63',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
-      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',grass:'#2C3452',rumble:'#C452C4',lane:''}}
+      meadow:{sky:'gp-sky',  prop:'tree',    light:{road:'#6C6C74',roadWear:'#5E5E67',verge:'#93A86B',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',roadWear:'#585860',verge:'#8B9E64',grass:'#72B461',rumble:'#C7413F',lane:''}},
+      sunset:{sky:'gp-sunset',prop:'cactus',  light:{road:'#6B5A63',roadWear:'#5D4E56',verge:'#D8A96E',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',roadWear:'#56474F',verge:'#CB9C63',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
+      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',roadWear:'#454552',verge:'#3E4870',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',roadWear:'#3E3E47',verge:'#374063',grass:'#2C3452',rumble:'#C452C4',lane:''}}
     };
     const SCN=SCENES[opts.scene]||SCENES.meadow;
     const SKY=SCN.sky, NIGHT=(opts.scene==='city');
@@ -1311,6 +1311,14 @@
     while(segs.length%rumbleLen!==0) addSeg(0,lastY());
     const trackLen=segs.length*segLen, TOTAL=trackLen*CFG.laps, FINVIS=trackLen-segLen*8;
     for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9),k:Math.random()}); }
+    /* MARKER POSTS, BOTH VERGES, EVERY 5 SEGMENTS. This is the oldest trick in pseudo-3D
+       racing and the one thing this track had nothing of: at 46 segments a second a post
+       every five is nine a second flicking past your shoulder, and THAT is what speed
+       looks like. Trees at random offsets cannot do it — they are too sparse and too
+       irregular to read as a rate. Regular spacing is the whole point: the eye counts
+       them without being asked, so lifting off is visible before the speedo confirms it. */
+    for(let n=0;n<segs.length;n+=6){ segs[n].sprites.push({kind:'post',off:-1.06,k:n});
+                                     segs[n].sprites.push({kind:'post',off:1.06,k:n}); }
     // mixed hazards + crazy distractions: oil slicks and patrol cops
     const HKINDS=['oil','oil','oil','cop'];
     const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){
@@ -1440,6 +1448,24 @@
       r=Math.max(0,Math.min(255,Math.round(r*f))); g=Math.max(0,Math.min(255,Math.round(g*f))); b=Math.max(0,Math.min(255,Math.round(b*f)));
       return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
     function rrp(x,y,w,h,rad){ cx.beginPath(); if(cx.roundRect){ cx.roundRect(x,y,w,h,rad); } else { cx.rect(x,y,w,h); } }
+    /* AERIAL PERSPECTIVE. Distance is the depth cue this road did not have: tarmac at
+       the horizon was the identical grey as tarmac under the bumper, so a kilometre of
+       track read as a flat ribbon laid on a flat field. Everything now mixes toward the
+       scene's own fog colour with distance — the same FOG_RGB the sky and the haze band
+       already use, so the road, the verge and the air agree about how far away far is.
+       Quantised to 24 buckets and cached: ~100 segments a frame would otherwise be 100
+       string builds, and the frame budget here is already spoken for. */
+    const FOGRGB=FOG_RGB.split(',').map(Number);
+    const _fogCache=new Map();
+    function fogged(col,t){
+      const b=Math.max(0,Math.min(23,Math.round(t*23)));
+      const key=col+b; let v=_fogCache.get(key); if(v) return v;
+      const n=parseInt(col.slice(1),16), f=b/23*0.82;
+      const r=Math.round(((n>>16)&255)*(1-f)+FOGRGB[0]*f);
+      const g=Math.round(((n>>8)&255)*(1-f)+FOGRGB[1]*f);
+      const bl=Math.round((n&255)*(1-f)+FOGRGB[2]*f);
+      v='#'+((1<<24)+(r<<16)+(g<<8)+bl).toString(16).slice(1);
+      _fogCache.set(key,v); return v; }
     function drawKart(px,baseY,w,col,rider,o){ o=o||{}; const h=w*0.82;
       cx.save(); cx.fillStyle='rgba(0,0,0,.32)'; cx.beginPath(); cx.ellipse(px,baseY-(o.kart?w*0.02:1),w*0.64,w*0.17,0,0,7); cx.fill(); cx.restore();
       if(o.boost){ const fl=w*(0.55+Math.random()*0.3); const fg=cx.createLinearGradient(0,baseY-h*0.2,0,baseY+fl);
@@ -1578,11 +1604,32 @@
           if(gA>0.01){ cx.globalAlpha=0.62*gA; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
         }
         else poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
+        const fogT=n/drawDist;                      // 0 at the bumper, 1 at the horizon
+        /* A VERGE. Outside the rumble a real circuit has a strip of worn ground before
+           the grass proper — run-off, dust, the bit everyone puts two wheels on. Without
+           it the tarmac met an unbroken green plane in one hard line, and a flat field is
+           the largest area of flat colour in the frame. Two small opaque polys a segment,
+           right where the eye already is. */
+        if(s1.w>6){ const v1=s1.w*0.46, v2=s2.w*0.46, R1=s1.w*1.18, R2=s2.w*1.18, vc=fogged(c.verge,fogT);
+          poly(s1.x-R1-v1,s1.y, s2.x-R2-v2,s2.y, s2.x-R2,s2.y, s1.x-R1,s1.y, vc);
+          poly(s1.x+R1+v1,s1.y, s2.x+R2+v2,s2.y, s2.x+R2,s2.y, s1.x+R1,s1.y, vc); }
         const r1=s1.w*0.18, r2=s2.w*0.18;
-        poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, c.rumble);
-        poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.rumble);
-        poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, c.road);
-        if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, c.lane); }
+        poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, fogged(c.rumble,fogT));
+        poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, fogged(c.rumble,fogT));
+        poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, fogged(c.road,fogT));
+        /* THE RACING LINE. Two strips of tarmac worn darker where every kart has been,
+           which is the detail that stops a road reading as a painted grey ribbon: it
+           gives the surface a history and the eye something to track through a bend.
+           Drawn only while the band is wide enough to be more than a smear. */
+        if(s1.w>14){ const RL=0.46, rw1=s1.w*0.115, rw2=s2.w*0.115, wl=fogged(c.roadWear,fogT);
+          poly(s1.x-s1.w*RL-rw1,s1.y, s2.x-s2.w*RL-rw2,s2.y, s2.x-s2.w*RL+rw2,s2.y, s1.x-s1.w*RL+rw1,s1.y, wl);
+          poly(s1.x+s1.w*RL-rw1,s1.y, s2.x+s2.w*RL-rw2,s2.y, s2.x+s2.w*RL+rw2,s2.y, s1.x+s1.w*RL+rw1,s1.y, wl); }
+        /* a solid white edge line inside each rumble — real tracks have one, and it is
+           what makes the road's WIDTH readable at speed instead of a grey mass */
+        if(s1.w>10){ const el=fogged('#F4F2EA',fogT), e1=s1.w*0.022, e2=s2.w*0.022, EO=0.93;
+          poly(s1.x-s1.w*EO-e1,s1.y, s2.x-s2.w*EO-e2,s2.y, s2.x-s2.w*EO+e2,s2.y, s1.x-s1.w*EO+e1,s1.y, el);
+          poly(s1.x+s1.w*EO-e1,s1.y, s2.x+s2.w*EO-e2,s2.y, s2.x+s2.w*EO+e2,s2.y, s1.x+s1.w*EO+e1,s1.y, el); }
+        if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, fogged(c.lane,fogT)); }
         // checkered finish strip
         if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
@@ -1635,6 +1682,23 @@
       order.sort((a,b)=>a.y-b.y);
       order.forEach(o=>{ if((o.far||0)>95) return;   // beyond this sprites are sub-pixel - skip instead of shimmering
         const w=Math.max(6,o.scale*roadW*Wd/2*0.11);
+        /* A POST NEEDS NO CLIP PATH. It is a few pixels wide and sits on the verge, so it
+           can never spill over nearer road the way a tree can — and there are forty of
+           them a frame. save + rect + clip + restore forty times was most of what the
+           marker posts cost: p99 27.1ms with, 18.9 without, for an identical picture. */
+        if(o.t==='post'){
+          if((o.far||0)>66) return;              // sub-pixel and shimmering out here anyway
+          cx.globalAlpha=Math.max(0,Math.min(1,(66-(o.far||0))/22));
+          /* a slim white post with a red reflector band, and a shadow thrown along the
+             ground so it is planted rather than floating */
+          const ph=w*0.58, pw2=Math.max(1,w*0.075), bx=o.sx, by=o.sy;
+          cx.fillStyle='rgba(30,40,25,.20)';
+          cx.beginPath(); cx.ellipse(bx+pw2*0.7,by,pw2*1.9,pw2*0.7,0,0,7); cx.fill();
+          cx.fillStyle=fogged('#F7F5EE',(o.far||0)/drawDist);
+          cx.fillRect(bx-pw2/2,by-ph,pw2,ph);
+          cx.fillStyle=fogged('#D8452F',(o.far||0)/drawDist);
+          cx.fillRect(bx-pw2/2,by-ph*0.86,pw2,Math.max(1,ph*0.17));
+          cx.globalAlpha=1; return; }
         cx.save(); cx.beginPath(); cx.rect(0,0,Wd,o.clip||Ht); cx.clip();
         cx.globalAlpha=Math.max(0,Math.min(1,(95-(o.far||0))/25));
         if(o.t==='flora'){
@@ -1748,9 +1812,50 @@
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
         cx.fillStyle='rgba(150,215,255,.14)'; cx.fill(); }
-      if(boostT>0){ cx.save(); cx.strokeStyle='rgba(255,255,255,.4)'; cx.lineWidth=2;
-        for(let i=0;i<12;i++){ const a=i/12*Math.PI*2, r0=Wd*0.16, r1=Wd*0.52;
-          cx.beginPath(); cx.moveTo(Wd/2+Math.cos(a)*r0, Ht*0.46+Math.sin(a)*r0*0.7); cx.lineTo(Wd/2+Math.cos(a)*r1, Ht*0.46+Math.sin(a)*r1*0.7); cx.stroke(); } cx.restore(); }
+      /* SPEED YOU CAN SEE. The HUD read 115 and the picture read parked: nothing on
+         screen changed between half throttle and flat out, so there was no reason to
+         feel fast and no reason to lift. Two cheap terms, both keyed to v/maxV and both
+         silent below ~55% so slow driving stays clean:
+           STREAKS rake outward from the vanishing point — the air going past;
+           the VIGNETTE tightens, which is what tunnel vision at speed actually feels
+           like and costs one gradient.
+         Boost rides the same code at full strength rather than being its own effect. */
+      const vff=Math.max(0, (v/maxV-0.55)/0.45), spd=boostT>0?1:Math.min(1,vff);
+      if(spd>0.02){
+        const vx=_lastSeg?_lastSeg.x:Wd/2, vy=horizonY;
+        /* CLIPPED TO THE GROUND. Radiating from the vanishing point puts half the rays
+           in the sky, where they read as scratches on the lens or contrails over a
+           painted landscape — the backdrop is the one part of this scene that was
+           already beautiful and the last thing to rake lines across. Air rushing past
+           belongs on the ground plane, so that is where they are drawn. */
+        cx.save(); cx.beginPath(); cx.rect(0,horizonY+2,Wd,Ht-horizonY); cx.clip();
+        cx.globalAlpha=0.30*spd;
+        cx.strokeStyle=boostT>0?'rgba(255,245,205,.9)':'rgba(255,255,255,.75)';
+        cx.lineWidth=Math.max(1.4,Wd*0.0022);
+        /* PERIPHERAL ONLY. Rays drawn all the way round the vanishing point crossed the
+           middle of the field as long diagonals — scratches on the grass, not air. Real
+           motion is felt at the EDGES of vision, so a streak is kept only if it ends out
+           in the outer third, and it is short. Nothing is drawn through the part of the
+           screen the player is actually reading. */
+        const N=boostT>0?18:14, EDGE=Wd*0.29;
+        for(let i=0;i<N;i++){ const a=(i/N)*Math.PI*2+pos*0.00006;
+          const r0=Wd*(0.30+0.06*((i*7)%3)), r1=r0+Wd*(0.07+0.13*spd);
+          const ex=vx+Math.cos(a)*r1, ey=vy+Math.sin(a)*r1*0.72;
+          if(Math.abs(ex-Wd/2)<EDGE || ey<horizonY+4) continue;
+          cx.beginPath();
+          cx.moveTo(vx+Math.cos(a)*r0, vy+Math.sin(a)*r0*0.72);
+          cx.lineTo(ex,ey); cx.stroke(); }
+        cx.restore();
+        const vg=cx.createRadialGradient(Wd/2,Ht*0.52,Wd*(0.40-0.10*spd), Wd/2,Ht*0.52,Wd*0.78);
+        vg.addColorStop(0,'rgba(12,10,26,0)'); vg.addColorStop(1,'rgba(12,10,26,'+(0.30*spd).toFixed(3)+')');
+        cx.fillStyle=vg; cx.fillRect(0,0,Wd,Ht);
+      }
+      /* the near field sits closest to the camera and under the kart's own shadow;
+         without this the bottom of the frame is the same flat value as the middle
+         distance and the whole ground plane floats */
+      const nearG=cx.createLinearGradient(0,Ht*0.72,0,Ht);
+      nearG.addColorStop(0,'rgba(24,26,16,0)'); nearG.addColorStop(1,'rgba(24,26,16,.20)');
+      cx.fillStyle=nearG; cx.fillRect(0,Ht*0.72,Wd,Ht*0.28);
       if(spinFlashT>0){ cx.save(); cx.globalAlpha=Math.min(0.5,spinFlashT); cx.fillStyle='#2A1E14'; cx.fillRect(0,0,Wd,Ht); cx.restore(); }
       hudT+=0.016; if(hudT>0.15){ hudT=0; updateHud(); }
       if(mode==='count'&&countT>0){ cx.save(); cx.textAlign='center';
@@ -2878,7 +2983,10 @@
     const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
     host.querySelector('#ss-key').innerHTML=rows.map(r=>'<div class="ss-krow">'+r.split('').map(ch=>'<button class="ss-kb" data-k="'+ch+'">'+ch+'</button>').join('')+'</div>').join('')+
       '<div class="ss-krow"><button class="ss-kb ss-kwide" data-k="back">⌫</button><button class="ss-kb ss-kwide ss-kgo" data-k="enter">Enter</button></div>';
-    function renderSlots(flashWrong){ const w=words[i].w.toLowerCase();
+    /* renderSlots is also called from a setTimeout 420ms after a wrong answer, which can
+       land AFTER the last word was solved and i walked past the end. The guards on type /
+       commit / skipWord do not cover a callback already in flight. */
+    function renderSlots(flashWrong){ if(i>=words.length) return; const w=words[i].w.toLowerCase();
       slotsEl.innerHTML=w.split('').map((ch,ix)=>{ const on=ix<typed.length;
         return '<span class="ss-slot'+(on?' fill':'')+(flashWrong?' wrong':'')+'">'+(on?typed[ix].toUpperCase():'')+'</span>'; }).join(''); }
     function newWord(){ if(i>=words.length){ over=true; return win(); }
@@ -2899,6 +3007,13 @@
         try{ flash(ssCombo>=2?('🔥 '+ssCombo+'× — '+w.toUpperCase()+' drives it back!'):('✨ '+w.toUpperCase()+' — the colour rushes back!')); }catch(e){}
         // milestone: every 3rd word restored wins a life back
         if(i%3===0 && i<words.length && lives<MAXLIVES){ lives++; renderLives(); try{ flash('❤ Milestone — extra life!'); }catch(e){} }
+        /* CLOSE THE ROUND THE INSTANT IT IS WON, not 700ms later when newWord() gets
+           round to noticing. For that beat `i` sat past the last word while `over` was
+           still false, so every `if(over) return` guard in the engine was open and any
+           key, tap or in-flight callback read words[i].w off undefined. Three separate
+           call sites were patched individually before it was clear they were all the
+           same 700ms window. */
+        if(i>=words.length) over=true;
         setTimeout(newWord,700);
       } else { scClean=false; misses++; typed=''; ssCombo=0; lives--; renderLives();
         renderSlots(true); setTimeout(()=>renderSlots(),420);
@@ -2935,10 +3050,11 @@
     const kb=e=>{ if(over) return; const k=e.key;
       if(/^[a-zA-Z]$/.test(k)){ type(k.toLowerCase()); e.preventDefault(); }
       else if(k==='Backspace'){ back(); e.preventDefault(); }
-      else if(k==='Enter'){ if(typed.length===words[i].w.length) commit(); e.preventDefault(); } };
+      else if(k==='Enter'){ if(!over&&i<words.length&&typed.length===words[i].w.length) commit(); e.preventDefault(); } };
     addEventListener('keydown',kb);
     host.querySelector('#ss-key').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(!bt) return;
-      const k=bt.dataset.k; if(k==='back') back(); else if(k==='enter'){ if(typed.length===words[i].w.length) commit(); } else type(k); };
+      const k=bt.dataset.k; if(over||i>=words.length) return;
+      if(k==='back') back(); else if(k==='enter'){ if(typed.length===words[i].w.length) commit(); } else type(k); };
     host.querySelector('#ss-say').onclick=()=>{ try{ if(i<words.length) say(words[i].w); }catch(e){} };
     host.querySelector('#ss-skip').onclick=skipWord;
     function win(){ removeEventListener('keydown',kb);
