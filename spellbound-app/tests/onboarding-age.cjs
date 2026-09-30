@@ -9,23 +9,52 @@ const { chromium } = require('playwright');
   const errs=[]; pg.on('pageerror',e=>errs.push('pageerror: '+e.message));
   await pg.goto('file://'+require('path').resolve(__dirname,'..')+'/index.html'); await pg.waitForTimeout(3000);
   const r=await pg.evaluate(async()=>{
+    const wait=ms=>new Promise(r=>setTimeout(r,ms));
     state.children=[]; state.screen='onboarding'; state.onbStep=0;
-    state.draft={name:'',age:9,avatar:'bee',goal:10}; render();
-    await new Promise(r=>setTimeout(r,400));
-    const out={ bands:[...document.querySelectorAll('[data-act="onDraftBand"]')].length,
-      slider:!!document.querySelector('[data-inp="onDraftAge"]'),
-      txt:document.body.innerText.slice(0,600) };
-    const el=document.querySelector('[data-act="onDraftBand"][data-arg="14-18"]');
-    if(el){ el.click(); await new Promise(r=>setTimeout(r,300));
-      out.draftAge=state.draft.age; out.draftBand=state.draft.ageBand; }
-    app._finishOnb && app._finishOnb();
-    await new Promise(r=>setTimeout(r,400));
-    const c=state.children[0]||{}; out.kidBand=c.ageBand; out.kidAge=c.age;
+    state.draft={name:'',age:9,avatar:'bizzy',goal:10}; render(); await wait(400);
+    const out={ steps:[], slider:false, avCount:0, worldCount:0, lockedWorlds:0 };
+    /* ONE DECISION PER SCREEN. Walk the whole flow and record what each step asks for —
+       the failure this catches is a step quietly growing a second question, which is what
+       the old step 0 was: a name, an age band and a buddy off a grid of twenty. */
+    for(let i=0;i<8;i++){
+      const h=(document.querySelector('h2')||{}).textContent||'';
+      const asks=['onDraftBand','pickAvatar','onbWorld','pickGoal']
+        .filter(a=>document.querySelector('[data-act="'+a+'"]'))
+        .concat(document.querySelector('[data-inp="onDraftName"]')?['name']:[]);
+      out.steps.push({ step:state.onbStep, h, asks });
+      if(document.querySelector('[data-inp="onDraftAge"]')) out.slider=true;
+      if(asks.includes('pickAvatar')) out.avCount=document.querySelectorAll('[data-act="pickAvatar"]').length;
+      if(asks.includes('onbWorld')){
+        const w=[...document.querySelectorAll('[data-act="onbWorld"]')];
+        out.worldCount=w.length;
+        out.lockedWorlds=w.filter(x=>/🔒|Unlock/.test(x.textContent||'')).length;
+      }
+      const nm=document.querySelector('[data-inp="onDraftName"]');
+      if(nm&&!nm.value){ nm.value='Ahana'; nm.dispatchEvent(new Event('input',{bubbles:true})); }
+      const band=document.querySelector('[data-act="onDraftBand"][data-arg="14-18"]');
+      if(band){ band.click(); await wait(250); out.draftAge=state.draft.age; out.draftBand=state.draft.ageBand; }
+      const w0=document.querySelector('[data-act="onbWorld"]'); if(w0) w0.click();
+      const nx=[...document.querySelectorAll('[data-act="onbNext"]')].pop();
+      if(nx) nx.click(); await wait(500);
+      if(state.screen==='app') break;
+    }
+    out.txt=out.steps.map(s=>s.h).join(' | ');
+    out.bands=(out.steps.find(s=>s.asks.includes('onDraftBand'))||{}).asks?4:0;
+    const c=state.children[0]||{}; out.kidBand=c.ageBand; out.kidAge=c.age; out.landed=state.screen;
     return out;
   });
-  if(r.bands!==4) errs.push('onboarding shows '+r.bands+' age bands');
+  /* the promise this file has always held */
   if(r.slider) errs.push('the exact-age slider survives in onboarding');
-  if(!/Display name/.test(r.txt)) errs.push('onboarding still says "Name" not "Display name"');
+  if(r.landed!=='app') errs.push('onboarding did not finish — stuck on '+r.landed);
+  /* ONE DECISION PER SCREEN (the Bizzing Finance shape, adopted 30 Sep 2026). */
+  const busy=r.steps.filter(s=>s.asks.length>1);
+  if(busy.length) errs.push('a step asks more than one thing: '+busy.map(s=>'"'+s.h+'" ['+s.asks.join('+')+']').join(', '));
+  if(r.steps.length<5) errs.push('onboarding collapsed to '+r.steps.length+' steps — one decision each means five');
+  /* A STARTER SET, NOT A CATALOGUE. Twenty avatars plus a locked legendary row, and
+     eight worlds of which seven wore a padlock and a price, was a shop before a word. */
+  if(r.avCount!==5) errs.push('buddy step offers '+r.avCount+' avatars, want 5');
+  if(r.worldCount!==2) errs.push('world step offers '+r.worldCount+' worlds, want 2');
+  if(r.lockedWorlds) errs.push(r.lockedWorlds+' world(s) padlocked at first run — a locked tile is an advert, not a choice');
   if(r.draftBand!=='14-18') errs.push('draft band = '+r.draftBand);
   if(r.kidBand!=='14-18') errs.push('saved child band = '+r.kidBand);
   if(r.kidAge!==16) errs.push('saved child age midpoint = '+r.kidAge+' (want 16)');

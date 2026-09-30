@@ -318,6 +318,21 @@ handlers. App lives in this folder; open `index.html` to run.
   Account & subscription; it used to be a card directly beneath, where a parent looking for
   the plan found two things that both looked like the plan. The Buddy row is gone — it was
   read-only and could only tell you to go to the Hive. Guard: `tests/settings-tiles.cjs`.
+- **ONBOARDING IS FIVE STEPS, ONE DECISION EACH** (30 Sep 2026, the shape borrowed from
+  Bizzing Finance's `draft.step`): name → age band → buddy → world → daily goal. It used
+  to be three, and the first of them asked for a name, an age band AND a buddy off a grid
+  of twenty, under a heading that named none of them. **The starter sets are small on
+  purpose**: `ONB_AVS` is five avatars and `ONB_THEMES` two worlds, and `FREE_THEMES` now
+  carries **`['spellbound','aurora']`** so both worlds on that screen can actually be
+  picked. The old world step showed all eight with seven padlocked and priced — a shop and
+  a wall before a single word, and a "choice" of one. Everything else still exists in My
+  Hive, where a collection belongs and where a child goes looking for more. The **privacy
+  notice stays on the NAME step**, which is the point of collection and one of the four
+  places the COPPA notice is required — splitting a combined step is exactly the edit that
+  loses it. Guard: `tests/onboarding-age.cjs`, which walks the whole flow and fails if any
+  step asks more than one thing, if the sets grow, or if a world is padlocked at first run.
+  **Open question for the owner:** anyone who already bought Aurora for coins now has a
+  free world they paid for. `GONEW` is the precedent for refunding; it has not been done.
 - **AGE IS A RANGE, NOT A NUMBER, and the name is a DISPLAY name.** Onboarding and Settings
   ask for one of four bands (`AGE_BANDS`: 5–7 / 8–10 / 11–13 / 14–18) — never a birthday-exact
   age. `c.ageBand` is the value of record; **`c.age` is still written as the band MIDPOINT**,

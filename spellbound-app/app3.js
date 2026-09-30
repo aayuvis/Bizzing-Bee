@@ -420,7 +420,17 @@ function grantArt(k,n){ const c=active(); n=n||1; if(!ART_BY[k]) return;
    rather than a pile of one — keyed off total words right, which only ever climbs. */
 function grantStageArt(){ const rot=['shield','reveal','time']; const k=rot[(rankXp()|0)%3]; grantArt(k,1); return ART_BY[k]; }
 /* Theme tiers: 2 open free, +2 with Premium, the rest are earn-with-coins for everyone. */
-const FREE_THEMES = ['spellbound'];                    // the Hive is the default; the rest are bought
+const FREE_THEMES = ['spellbound','aurora'];           // two starters; the other six are bought
+/* THE FIRST RUN OFFERS A CHOICE, NOT A CATALOGUE.
+   Onboarding used to open on twenty free avatars, a locked legendary row beneath them
+   and "…and 122 more to collect", then a grid of eight worlds of which SEVEN were
+   padlocked with a price. A five-year-old meeting the app for the first time was given
+   a shop and a wall before a single word. Five buddies and two worlds, both of which
+   can actually be picked — a locked tile at first run is not a choice, it is an advert.
+   Everything else is still there, in My Hive, where a collection belongs and where a
+   child goes LOOKING for more. */
+const ONB_AVS = ['bizzy','panda','froggy','trice','luna'];
+const ONB_THEMES = ['spellbound','aurora'];
 const PREMIUM_THEMES = ['aurora','anime'];             // included with Premium
 function coinsOf(){ return active().coins||0; }
 function addCoins(n){ if(!n) return; const c=active(); c.coins=(c.coins||0)+n; sfx('coin'); }
@@ -2007,8 +2017,8 @@ const app = {
   onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('🔒 Locked — start in the Hive, then unlock this world for '+COST.theme+' 🪙'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
-    if(S.onbStep===1 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
-    if(S.onbStep<2){ set({onbStep:S.onbStep+1}); return; }
+    if(S.onbStep===3 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
+    if(S.onbStep<4){ set({onbStep:S.onbStep+1}); return; }
     app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝');
     /* If they picked a paid plan on the landing page, land them back on it rather
        than dropping them at the bottom of the ladder to find it again. The tier is
@@ -4191,54 +4201,60 @@ function viewAuth(){
 
 function viewOnboarding(){
   const S=state;
-  const dots=[0,1,2].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:999px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
+  /* ONE DECISION PER SCREEN — the shape Bizzing Finance uses, and the reason it works:
+     a child answers a question and moves on. This used to be three steps, the first of
+     which asked for a name, an age band AND a buddy off a grid of twenty at once, under
+     a heading that named none of them. Five steps now, each with one thing on it. */
+  const LAST=4;
+  const dots=[0,1,2,3,4].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:999px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
+  const shell=(title,sub,body)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
+      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">${title}</h2>
+      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">${sub}</p>${body}</div>`;
   let card='';
+
   if(S.onbStep===0){
-    const _freeAvs=SB_AVATARS.list.filter(a=>a.rarity==='free');
-    const _legendAvs=SB_AVATARS.list.filter(a=>a.rarity==='legendary');
-    /* minmax(0,1fr), not 1fr: a plain 1fr floors at min-content, and min-content here
-       is the 70px avatar plus its padding — so five columns refused to go under ~470px
-       and the very first screen a child sees pushed a 390px phone 191px sideways.
-       The sb-onb-avs rule lets the artwork scale down with the column. */
-    const avatars=`<div class="sb-onb-avs" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;max-width:460px;margin:0 auto;justify-items:center">${_freeAvs.map(a=>{ const on=S.draft.avatar===a.id;
-        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2.5px solid ${on?'var(--accent)':'transparent'};padding:7px;${on?'box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)':''}"><span style="width:70px;height:70px;display:inline-block">${avatarSVG(a.id,70)}</span></button>`; }).join('')}</div>
-      <div style="margin-top:14px;font-size:12.5px;font-weight:700;color:var(--muted);text-align:center">…and ${SB_AVATARS.list.length-_freeAvs.length} more to collect — earn coins by playing.</div>
-      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center">${_legendAvs.map(a=>`<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name} · legendary — unlock later with coins" style="position:relative;width:50px;height:50px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:2px solid transparent;padding:4px;opacity:.45"><span style="width:38px;height:38px;display:inline-block">${avatarSVG(a.id,38)}</span><span style="position:absolute;top:1px;right:2px;font-size:9px">🔒</span></button>`).join('')}</div>`;
-    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
-      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Who's practising?</h2>
-      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Set up your speller's profile.</p>
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name <span style="font-weight:600">— a nickname is perfect</span></label>
-      <input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana, or Fox" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:18px;outline:none">
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age range</label>
-      ${(()=>{ const cur=bandForAge(S.draft.age).k;
-        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:8px;margin-bottom:20px">${AGE_BANDS.map(b=>{ const on=b.k===cur;
-          return `<button data-act="onDraftBand" data-arg="${b.k}" style="padding:11px 8px;border-radius:13px;text-align:center;background:${on?'var(--accent)':'var(--surface)'};border:1.5px solid ${on?'var(--accent)':'var(--line)'};color:${on?'#fff':'var(--text)'};font-weight:800;font-size:14px;line-height:1.2">${b.n}<span style="display:block;font-size:10.5px;font-weight:650;opacity:.8;margin-top:2px">${b.sub}</span></button>`; }).join('')}</div>`; })()}
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;text-align:center">Pick a buddy</label>
-      ${avatars}
-      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">The display name and age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p></div>`;
+    /* THE POINT OF COLLECTION. privacy.html must be linked here — it is one of the four
+       places the COPPA notice is required, and splitting the old combined step is exactly
+       the kind of edit that loses it. */
+    card=shell("What shall we call you?","Just a first name or a nickname — whatever your speller answers to.",
+      `<input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana, or Fox" style="width:100%;padding:15px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:17px;font-weight:700;outline:none">
+      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">This name and the age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p>`);
+
   } else if(S.onbStep===1){
-    const worldCards=THEMES.map(t=>{ const open=FREE_THEMES.indexOf(t.id)>=0;
-      return worldHeroCard(t, t.id===S.draft.theme, !open, 'onbWorld'); }).join('');
-    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
-      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Choose a world</h2>
-      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">Each world is a different look <b style="color:var(--text)">and</b> a character that evolves as you level up — from its first form to its last. Pick the journey that excites your speller. You can change it any time.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px">${worldCards}</div></div>`;
+    const cur=bandForAge(S.draft.age).k;
+    card=shell("How old is "+esc(S.draft.name.trim()||'your speller')+"?","A range, never a birthday — it sets the starting word difficulty, and you can change it in Settings.",
+      `<div style="display:grid;gap:10px">${AGE_BANDS.map(b=>{ const on=b.k===cur;
+        return `<button data-act="onDraftBand" data-arg="${b.k}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:16px 18px;border-radius:14px;background:${on?'var(--accent)':'var(--surface2)'};border:2px solid ${on?'var(--accent)':'transparent'};color:${on?'#fff':'var(--text)'}">
+          <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:18px">${b.n}</span><span style="display:block;font-size:12.5px;font-weight:650;opacity:.8;margin-top:2px">${b.sub}</span></span>
+          ${on?`<span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-weight:900">✓</span>`:''}</button>`; }).join('')}</div>`);
+
+  } else if(S.onbStep===2){
+    const avs=ONB_AVS.map(id=>SB_AVATARS.byId[id]).filter(Boolean);
+    card=shell("Pick a buddy","Your speller's face around the app. There are plenty more to collect later — these five are ready now.",
+      `<div class="sb-onb-avs" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;max-width:460px;margin:0 auto;justify-items:center">${avs.map(a=>{ const on=S.draft.avatar===a.id;
+        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2.5px solid ${on?'var(--accent)':'transparent'};padding:7px;${on?'box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)':''}"><span style="width:70px;height:70px;display:inline-block">${avatarSVG(a.id,70)}</span></button>`; }).join('')}</div>
+      <div style="margin-top:16px;text-align:center;font-family:var(--display);font-weight:800;font-size:17px">${esc((SB_AVATARS.byId[S.draft.avatar]||{}).name||'')}</div>`);
+
+  } else if(S.onbStep===3){
+    const worldCards=ONB_THEMES.map(id=>THEMES.find(t=>t.id===id)).filter(Boolean)
+      .map(t=>worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld')).join('');
+    card=shell("Choose a world","A world is the look of the app and a character that grows as your speller levels up. Two to start with — the rest unlock later. You can switch any time.",
+      `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">${worldCards}</div>`);
+
   } else {
     const goals=[{v:5,label:'5 words a day',sub:'Light & breezy',ic:'sprout'},{v:10,label:'10 words a day',sub:'Recommended',ic:'spark'},{v:15,label:'15 words a day',sub:'Bee-ready',ic:'flame'}]
       .map(g=>`<button data-act="pickGoal" data-arg="${g.v}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border-radius:14px;padding:16px 18px;cursor:pointer;transition:.15s;background:var(--surface2);border:2px solid ${S.draft.goal===g.v?'var(--accent)':'transparent'}">
         <div><div style="font-family:var(--display);font-weight:800;font-size:17px">${g.label}</div><div style="font-size:13px;color:var(--muted);font-weight:600">${g.sub}</div></div>
         <div style="width:40px;height:40px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(g.ic,20)}</div></button>`).join('');
-    card=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
-      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">Set a daily goal</h2>
-      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">A small daily habit beats cramming. Pick a starting target.</p>
-      <div style="display:grid;gap:11px">${goals}</div>
+    card=shell("Set a daily goal","A small daily habit beats cramming. Pick a starting target.",
+      `<div style="display:grid;gap:11px">${goals}</div>
       <div style="margin-top:18px">
         <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">Big bee day <span style="font-weight:600">(optional)</span></label>
         <p style="margin:0 0 8px;font-size:12px;color:var(--muted)">A competition coming up? Add the date — the app counts down to it and paces practice. You can set or change it in Settings any time.</p>
         <input type="date" data-chg="onbBeeDate" value="${escA(S.draft.beeDate||'')}" style="width:100%;max-width:220px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none">
       </div>
       <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Practice start in one go.</span></span></button>
-      <div style="margin-top:14px">${voiceUpgradeTip()}</div></div>`;
+      <div style="margin-top:14px">${voiceUpgradeTip()}</div>`);
   }
   return `<div style="position:relative;z-index:1;min-height:100dvh;display:grid;place-items:center;padding:24px">
     <div style="width:100%;max-width:560px">
@@ -4246,7 +4262,7 @@ function viewOnboarding(){
       ${card}
       <div style="display:flex;justify-content:space-between;gap:12px;margin-top:18px">
         <button data-act="onbBack" style="padding:13px 20px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:700;font-size:15px">${S.onbStep===0?'Cancel':'Back'}</button>
-        <button data-act="onbNext" style="flex:1;max-width:240px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);opacity:${(S.onbStep===0&&!S.draft.name.trim())?'.5':'1'}">${S.onbStep===2?'Start spelling →':'Continue'}</button>
+        <button data-act="onbNext" style="flex:1;max-width:240px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);opacity:${(S.onbStep===0&&!S.draft.name.trim())?'.5':'1'}">${S.onbStep===LAST?'Start spelling →':'Continue'}</button>
       </div>
     </div>
   </div>`;
