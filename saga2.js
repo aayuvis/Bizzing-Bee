@@ -542,9 +542,6 @@
     let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, grace=0, flower=null, flowerT=2, card=null, over=false, fx=[];
     let lateMoth=false, spelled=0;
     const hcRound=[];                      // the round's words, for the result screen
-    let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
-                                           // 6/min floor, so the same run passed once and failed
-                                           // once. A gate that flakes teaches people to ignore it.
     /* A flower is the ONLY way to spell in this game, so it is placed within reach and
        there is always one on the board. It used to pick a uniformly random open cell —
        on a medium maze that averages a dozen cells of corridor away, often past a moth —
@@ -713,7 +710,7 @@
             SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6});
             if(dots<=0){ over=true; finish(true); return; } }          // maze cleared → win the round
           if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
-          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; sinceWord=0; spellCard(); }
+          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; spellCard(); }
           moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
             if(flee>0){ score+=50; m.px=6;m.py=1; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
             // two seconds of grace after a hit — a moth camped near the respawn point
@@ -722,15 +719,7 @@
               SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
               bee.px=6;bee.py=5;bee.dir=[0,0];
               if(lives<=0){ over=true; finish(false); } } } });
-          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--; sinceWord++;
-      /* SPELLING ON A CLOCK, NOT AS A PRIZE FOR GOOD DRIVING. Measured: this engine
-         asked for ZERO words in forty seconds, because every word sat behind a
-         pickup you had to steer into. A child who drives badly never spells — which
-         is backwards for a spelling app, and it is the arcade skill, not the
-         spelling, that the game was really testing. If WORD_GAP seconds pass with
-         no word asked, ask one. Good players still meet words the designed way and
-         reset this timer; weak players get the practice they came for anyway. */
-            if(sinceWord>=WORD_GAP && !card){ sinceWord=0; flower=null; flowerT=3; spellCard(); }
+          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--;
             if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
             /* Moths no longer breed. This line used to add one on a 16% roll every second
                up to CFG.moths+6, which saturated in 38 seconds and left EVERY difficulty
@@ -841,9 +830,6 @@
     let bee={y:Ht/2,vy:0}, obs=[], pot=null, banked=0, lives=3, t=0, over=false, card=null, graceUntil=0, inv=0;
     let moths=[], coins=[], hearts=[], coinsGot=0, gate=null, started=false;
     const kfRound=[];                      // the flight's words, for the result screen
-    let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
-                                           // 6/min floor, so the same run passed once and failed
-                                           // once. A gate that flakes teaches people to ignore it.
     const feed=wordFeed(CFG.pots+6);
     sgTexPreload(['bee-fly','moth','fly-sky','honeypot','coin','pillar']);   // decode game art before first frame
     /* per-world premium palettes; anything unlisted uses its illustrated plate */
@@ -921,14 +907,6 @@
     function frame(ts){ if(over) return;
       if(card||!started){ last=ts; requestAnimationFrame(frame); return; }
       const dt=Math.min(50,ts-last); last=ts; t+=dt/1000; potT-=dt/1000; mothT-=dt/1000; coinT-=dt/1000; heartT-=dt/1000;
-      /* SPELLING ON A CLOCK, NOT AS A PRIZE FOR GOOD DRIVING. Measured: this engine
-         asked for ZERO words in forty seconds, because every word sat behind a
-         pickup you had to steer into. A child who drives badly never spells — which
-         is backwards for a spelling app, and it is the arcade skill, not the
-         spelling, that the game was really testing. If WORD_GAP seconds pass with
-         no word asked, ask one. Good players still meet words the designed way and
-         reset this timer; weak players get the practice they came for anyway. */
-      sinceWord+=dt/1000; if(sinceWord>=WORD_GAP && started && !gate){ sinceWord=0; spellStop(); }
       const GRACE=(t<3)||(t<graceUntil);
       if(holding) bee.vy-=0.65;                                 // hold to climb (beats gravity)
       if(GRACE){ bee.vy*=0.9; bee.y+=bee.vy; bee.y=Math.max(30,Math.min(Ht-40,bee.y)); }
@@ -1228,6 +1206,14 @@
 
   /* 🏁 is a different picture in every font and lands as a flat monochrome box on
      some Androids — on the one HUD element that tells a child where the finish is. */
+  /* The brake. There wasn't one: the kart pinned itself to top speed and the only
+     input was left/right, so a bend could only ever be a steering-hold test — there
+     was no way to ANSWER a corner, and so no way to make one bite without making it
+     unfair. Keyboard AND thumb, like every control in this app. */
+  const GP_BRAKE=()=>'<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">'+
+    '<circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="2.6"/>'+
+    '<path d="M12 3.6v16.8M3.6 12h16.8" stroke="currentColor" stroke-width="2.2" '+
+    'stroke-linecap="round" transform="rotate(45 12 12)"/></svg>';
   const GP_FLAG=()=>'<svg class="sg-pbflag-i" viewBox="0 0 20 22" width="17" height="19" aria-hidden="true">'+
     '<path d="M3 1v20" stroke="#4A4036" stroke-width="2" stroke-linecap="round"/>'+
     '<path d="M4.5 2h13v9h-13z" fill="#FDFBF5" stroke="#4A4036" stroke-width="1.1"/>'+
@@ -1258,10 +1244,16 @@
        agree about how far away "far" looks. */
     const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
-    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280},
-               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300},
-               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320},
-               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340}}[diff]);
+    /* `bite` is how hard a bend pulls at TOP speed (see SPEED_BITE below). It is the
+       difficulty dial that actually changes the driving: rivals and hazards change who
+       you are racing, this changes whether the corner is a decision. Measured against a
+       driver who reacts in ~300ms with no anticipation — a child, not a bot — 3.0 put
+       them in the grass seven times in fifty seconds, which is the right shape for the
+       top of the ladder and far too much for the bottom of it. */
+    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280,bite:1.35},
+               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300,bite:2.10},
+               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320,bite:2.90},
+               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340,bite:3.60}}[diff]);
     host.innerHTML=
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
@@ -1271,7 +1263,8 @@
       '<div class="sg-race3d"><canvas id="sg-cv"></canvas>'+
       '<button class="sg-hold" id="sg-hold" aria-label="Use power-up"><span class="sg-hold-empty">?</span></button>'+
       '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">'+SGUI.chev(-1)+'</button>'+
-      '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div>'+
+      '<div class="sg-steer-r"><button class="sg-sbtn sg-brake" id="sg-brk" aria-label="Brake">'+GP_BRAKE()+'</button>'+
+      '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div></div>'+
       '<div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
     const dpr=Math.min(2,window.devicePixelRatio||1);
@@ -1326,8 +1319,25 @@
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
-    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, CPUSH=0.30, DRIFT_HALF=2.4, GRIP_HALF=0.22;
+    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, CPUSH=0.30, DRIFT_HALF=2.4, GRIP_HALF=0.55;
+    const SPEED_BITE=CFG.bite, BRAKE_GRIP=0.55, BRAKE_HALF=0.9;
+    /* THE CAMERA LAGS, AND IT NEVER FULLY CATCHES UP.
+       It used to sit exactly on the kart (camX=playerX*roadW) with the kart drawn at
+       Wd/2, so the kart NEVER MOVED ON SCREEN. Steer and the world slid; drift off the
+       tarmac and the world slid; the car stayed dead centre through all of it. Play-
+       tested in one sentence: "the car starts to drive itself with the road curving, I
+       don't have to take any action." The physics was fine — hands off, the kart is in
+       the grass inside two seconds — but NONE OF IT WAS VISIBLE, so there was nothing
+       to answer and no way to see yourself answering it.
+       Two terms fix that. FOLLOW < 1 means the camera only ever takes part of the
+       kart's offset, so a kart on the grass is DRAWN on the grass instead of being
+       re-centred onto a road it has left. The half-life adds the transient: whip the
+       wheel and the kart swings out across the screen before the camera gathers it up,
+       which is the feedback a racer runs on. */
+    const CAM_FOLLOW=0.55, CAM_HALF=0.30;
     let pos=0, playerX=0, drift=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
+    let camLag=0;                     // where the camera actually is, in road half-widths
+    let _kartPx=0;                    // the kart's drawn screen x, read by the feel probe
     let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
     const heroKart=HERO;
     const VILL=[
@@ -1368,32 +1378,18 @@
     /* ---- spelling gate: hitting a ? box pauses the race ---- */
     const feed=wordFeed(60);
     const gpRound=[];                      // the race's words, read by finish()
-    let sinceWord=0; const WORD_GAP=6;     // 6s, not 7: at 7 these three landed EXACTLY on the
-                                           // 6/min floor, so the same run passed once and failed
-                                           // once. A gate that flakes teaches people to ignore it.
     function spellGate(){
-      mode='spell'; sinceWord=0;
+      mode='spell';
       const w=feed.next();
       const p=POWERS[Math.floor(Math.random()*POWERS.length)];
       const el=host.querySelector('#sg-card');
       el.innerHTML='<div class="sg-cardbox"><b>Item box — spell it to unlock the power-up</b>'+
-        '<div class="sg-ss-timer" id="sg-gt"></div>'+
         '<button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
         '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
-      /* THE PAUSE USED TO BE INFINITE. A box stopped the race and then waited, so the
-         one moment of spelling in a racing game was also the one moment with no clock
-         on it — a rest stop. A draining ring gives it a shape. Running out grades
-         whatever is typed, which fizzles an empty box exactly like a wrong answer: no
-         life lost, no place lost, because standing still in a race costs its own price. */
-      const GATE_T={easy:14,medium:12,hard:10,champ:9}[diff]||12;
-      let left=GATE_T, gateT=null;
-      const gt=el.querySelector('#sg-gt');
-      const paintGate=()=>{ if(gt) gt.innerHTML=SGUI.ring(left/GATE_T,left); };
-      paintGate();
       function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); gpRound.push({w:w.w,ok:ok});
-        clearInterval(gateT); el.style.display='none'; el.innerHTML='';
+        el.style.display='none'; el.innerHTML='';
         if(ok){ held=p; renderHold();
           // spell combo: unbroken correct spells stack an instant extra boost
           gpCombo++; if(gpCombo>=2){ boostT=Math.max(boostT,1.2); boostMul=Math.max(boostMul,1.22+Math.min(gpCombo,6)*0.06); }
@@ -1402,8 +1398,6 @@
           uc.style.display='grid';
           setTimeout(()=>{ uc.style.display='none'; uc.innerHTML=''; resume(); },1300);
         } else { gpCombo=0; try{flash('The box fizzles… next one is coming!');}catch(_){ } resume(); } }
-      gateT=setInterval(()=>{ if(over||mode!=='spell'){ clearInterval(gateT); return; }
-        left--; paintGate(); if(left<=0) submit(); },1000);
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
       el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
@@ -1411,16 +1405,25 @@
     function resume(){ countT=1.0; mode='count'; }
 
     /* ---- steering ---- */
-    let steer=0;
+    let steer=0, braking=false;
     const setSteer=s=>{ steer=s; };
-    host.querySelectorAll('.sg-sbtn').forEach(b=>{ const s=+b.dataset.s;
+    const setBrake=b=>{ braking=!!b; };
+    const brk=host.querySelector('#sg-brk');
+    if(brk){ const on=e=>{ setBrake(true); e.preventDefault&&e.preventDefault(); };
+      brk.addEventListener('pointerdown',on);
+      brk.addEventListener('pointerup',()=>setBrake(false));
+      brk.addEventListener('pointerleave',()=>setBrake(false));
+      brk.addEventListener('pointercancel',()=>setBrake(false)); }
+    host.querySelectorAll('.sg-sbtn[data-s]').forEach(b=>{ const s=+b.dataset.s;
       b.addEventListener('pointerdown',e=>{ setSteer(s); e.preventDefault&&e.preventDefault(); });
       b.addEventListener('pointerup',()=>setSteer(0)); b.addEventListener('pointerleave',()=>setSteer(0)); });
     const kd=e=>{ if(e.target&&e.target.tagName==='INPUT') return;
       if(e.key==='ArrowLeft'||e.key==='a'){ setSteer(-1); e.preventDefault(); }
       else if(e.key==='ArrowRight'||e.key==='d'){ setSteer(1); e.preventDefault(); }
+      else if(e.key==='ArrowDown'||e.key==='s'){ setBrake(true); e.preventDefault(); }
       else if(e.key===' '){ fireHeld(); e.preventDefault(); } };
-    const ku=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='ArrowRight'||e.key==='d') setSteer(0); };
+    const ku=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='ArrowRight'||e.key==='d') setSteer(0);
+      if(e.key==='ArrowDown'||e.key==='s') setBrake(false); };
     addEventListener('keydown',kd); addEventListener('keyup',ku);
     cv.addEventListener('pointerdown',e=>{ if(mode!=='race'&&mode!=='count') return; const r=cv.getBoundingClientRect(); setSteer((e.clientX-r.left)<Wd/2?-1:1); });
     cv.addEventListener('pointerup',()=>setSteer(0)); cv.addEventListener('pointerleave',()=>setSteer(0));
@@ -1549,13 +1552,10 @@
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       let _lastSeg=null;                  // the furthest road band actually drawn
-      /* THE CAMERA FOLLOWS THE KART, NOT THE ROAD. With camX=0 the camera was welded to
-         the road's centreline, so the kart's physics (going straight while the road
-         turns) showed up on screen as the KART sliding sideways — play-tested as "the
-         car is steering on its own". Now the camera rides with the kart: the kart draws
-         dead centre and never moves; steering and bends pan the WORLD under it, which is
-         what "the road turns, the car goes straight" looks like from a chase camera. */
-      const camX=playerX*roadW;
+      let _nearW=0;                       // the nearest band's half-width, in pixels
+      /* camLag, not playerX — see CAM_FOLLOW. Welding the camera to the kart drew it
+         dead centre no matter where it was, which is what "it drives itself" was. */
+      const camX=camLag*roadW;
       for(let n=0;n<drawDist;n++){ const seg=segs[(base.index+n)%segs.length];
         const looped=seg.index<base.index; const cz=posm-(looped?trackLen:0);
         project(seg.p1, camX - x,        camH, cz);
@@ -1564,8 +1564,19 @@
         seg._vis=false; seg._clip=maxy; seg._far=n;
         if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
         seg._vis=true; maxy=seg.p2.screen.y;
+        if(!_nearW) _nearW=seg.p1.screen.w;   // first visible band is the closest one
         const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
-        if(sgTex(SKY)){ cx.globalAlpha=0.62; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
+        /* AERIAL PERSPECTIVE ON THE GRASS. The alternating bands are the speed cue and
+           they have to stay, but painted at a flat 0.62 all the way to the vanishing
+           point they read as corduroy laid over the picture — hard-edged stripes from
+           the bumper to the hills, which is most of what "the graphics look flat" is.
+           Fade the band out with distance and the ground gradient underneath takes
+           over: stripes where they sell speed, a painted field where they would only
+           sell stripes. The untextured branch stays opaque — there it IS the ground. */
+        if(sgTex(SKY)){
+          const gA=Math.max(0,Math.min(1,(s1.y-horizonY)/((Ht-horizonY)*0.52)));
+          if(gA>0.01){ cx.globalAlpha=0.62*gA; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
+        }
         else poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
         const r1=s1.w*0.18, r2=s2.w*0.18;
         poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, c.rumble);
@@ -1723,12 +1734,16 @@
         else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
         cx.globalAlpha=1; cx.restore();
       });
-      // Chase camera: the kart IS the camera's anchor, so it draws dead centre every
-      // frame — the road pans under it. Items at the same z project through the same
-      // camX, so what you see is still exactly what you hit.
-      const pw=Wd*0.115, py=Ht-14;
-      const px=Wd/2;
-      cx.save(); cx.translate(px,py); cx.rotate(steer*0.05);
+      /* THE KART IS DRAWN WHERE IT IS. Its offset from centre is measured in the same
+         projection as the road — _nearW is the nearest band's half-width in pixels — so
+         "half a road-width right of the middle" is half a road-width on screen, and a
+         kart on the grass is drawn on the grass. py used to be Ht-14, which put the
+         ground line 14px from the bottom and clipped the shadow and the wheels off the
+         frame. The lean is 0.13rad rather than 0.05: the wheel has to LOOK turned. */
+      const pw=Wd*0.115, py=Ht-Math.max(26,pw*0.34);
+      const px=Wd/2 + (playerX-camLag)*(_nearW||Wd*0.42);
+      _kartPx=px;                       // for the headless feel probe: where it DREW
+      cx.save(); cx.translate(px,py); cx.rotate(steer*0.13 - Math.max(-0.5,Math.min(0.5,drift))*0.10);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
@@ -1766,14 +1781,6 @@
       if(mode==='race') update(dt);
       draw(); requestAnimationFrame(frame); }
     function update(dt){
-      /* SPELLING ON A CLOCK, NOT AS A PRIZE FOR GOOD DRIVING. Measured: this engine
-         asked for ZERO words in forty seconds, because every word sat behind a
-         pickup you had to steer into. A child who drives badly never spells — which
-         is backwards for a spelling app, and it is the arcade skill, not the
-         spelling, that the game was really testing. If WORD_GAP seconds pass with
-         no word asked, ask one. Good players still meet words the designed way and
-         reset this timer; weak players get the practice they came for anyway. */
-      sinceWord+=dt; if(sinceWord>=WORD_GAP && mode==='race'){ sinceWord=0; spellGate(); return; }
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
       /* Steering was halved in an earlier tuning pass to stop a tap leaping across the
@@ -1800,17 +1807,38 @@
          Equilibrium on the hardest bend (curve 5, flat out) is ~1.9 u/s against 2.2 of
          steering — holdable at 89% of the wheel; and a mid bend (3) now ejects an
          unsteered kart shortly after the bend, because the slide OUTLIVES the bend. */
-      drift+=(seg.curve||0)*(v/maxV)*dt*CPUSH;
+      /* WHY SPEED HAS TO COST SOMETHING. The push was LINEAR in v and so is the
+         steering (dxs scales with v too), so their ratio was CONSTANT: going flat out
+         was exactly as easy as crawling, and a bend could never be a decision. A naive
+         driver — nudge back whenever you have drifted a quarter of the way out — held
+         the road for forty seconds and never came within 0.29 of the edge.
+         SPEED_BITE adds a term that is negligible at half throttle and dominant at the
+         top, so the ladder reads: gentle bends holdable flat out, the big ones want you
+         off the gas. It is added ON TOP of the linear term rather than replacing it,
+         because a pure v-squared model was tried once and read as self-steering at real
+         playing speeds — at half throttle it pulls with a quarter of the force.
+         And BRAKING BUYS GRIP: it cuts the build and shortens the slide's half-life, so
+         the brake is the answer to a corner and not merely a way to go slower. */
+      const vf=v/maxV;
+      drift+=(seg.curve||0)*vf*(1+SPEED_BITE*vf*vf)*(braking?BRAKE_GRIP:1)*dt*CPUSH;
       const gripping = steer!==0 && steer*drift>0;    // steering against the slide
-      drift*=Math.pow(0.5, dt/(gripping?GRIP_HALF:DRIFT_HALF));
+      const half = gripping ? GRIP_HALF : (braking ? BRAKE_HALF : DRIFT_HALF);
+      drift*=Math.pow(0.5, dt/half);
       playerX-=drift*dt;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
+      camLag += ((playerX*CAM_FOLLOW)-camLag)*(1-Math.pow(0.5, dt/CAM_HALF));
       const offRoad=(playerX<-0.95||playerX>0.95);
       if(offRoad){
         // the grass rolls the kart to a FULL STOP — no throttle off the tarmac; steering
         // still works at a standstill, so you steer back on and pull away again
         v=Math.max(0, v-(maxV/0.9)*dt);
         if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('🌿 Off the track — steer back on!');}catch(_){} }
+      } else if(braking){
+        offGrass=false;
+        /* a real lift, not a tap: down to ~46% in about a second, which is what a
+           curve-5 bend wants. It never stops the kart — a brake that could park you
+           on the racing line would be a way to hide from the race. */
+        v=Math.max(maxV*0.34, v-(maxV/1.05)*dt);
       } else {
         offGrass=false;
         v=Math.min(maxV*boostMul, v+accel*dt);   // tarmac: accelerate up to top speed
@@ -1868,7 +1896,8 @@
       '<div class="sg-howto-h">Bee Grand Prix</div>'+
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li><b>Steer</b> with the two round buttons, or the <b>arrow keys</b> — lean into the bends, dodge the oil slicks and the cops.</li>'+
+      '<li><b>Steer</b> with the two round buttons, or the <b>arrow keys</b> — dodge the oil slicks and the cops.</li>'+
+      '<li><b>The middle button is the brake</b> (or <b>↓</b>). Flat out the big bends will throw you into the grass — lift for those, and you keep the road.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
       '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
@@ -1877,7 +1906,9 @@
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,drift}),
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,drift,camLag,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+      curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
+        for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
       toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
         if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
@@ -1903,7 +1934,7 @@
       '<div id="sg-card"></div>';   // this engine had nowhere to draw a result screen
     const grid=host.querySelector('#sg-grid');
     for(let i=0;i<12;i++){ const c=document.createElement('button'); c.className='sg-cell'; c.dataset.i=i; grid.appendChild(c); }
-    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ if(wi>=words.length||doneWords>=CFG.words){ over=true; finish(true); return; }
+    function newWord(){ if(wi>=words.length||doneWords>=CFG.words){ over=true; finish(true); return; }
       cur=words[wi++]; li=0; wmClean=true; renderTarget();
       const mn=host.querySelector('#sg-wmean'); if(mn){ const m=meaningText(cur); mn.textContent=m?('💡 '+m):''; }
       try{ say(cur.w); }catch(e){} }
@@ -1942,16 +1973,6 @@
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; whackAMoth(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
-        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
-       so a child who is stuck sees ONE word for the whole round — measured at 2
-       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
-       the same word would make the game repeat itself, which is the parrot pattern
-       tests/word-rate.cjs fails a game for. `var` because the advance function runs
-       before this line and would hit the temporal dead zone of a `let`. */
-    var sinceWord=0; var WORD_GAP=7;
-    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(cur) wmRound.push({w:cur.w,ok:false}); newWord(); } },1000);
     return { destroy(){ over=true; clearInterval(popT); clearInterval(tick); } };
   }
 
@@ -2117,7 +2138,7 @@
     let PAL=wornSkin||tintPal||EVO_PAL[0], evo=null, snakeStage=0, unlocked=false;
     function occupied(x,y,extra){ for(let i=0;i<snake.length;i++) if(snake[i].x===x&&snake[i].y===y) return true;
       for(let i=0;i<(extra||[]).length;i++) if(extra[i].x===x&&extra[i].y===y) return true; return false; }
-    function layoutWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ word=feed.next().w; spelled=0; tiles=[];
+    function layoutWord(){ word=feed.next().w; spelled=0; tiles=[];
       const head=snake[0], ring=[]; for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++) ring.push({x:(head.x+dx+COLS)%COLS,y:(head.y+dy+ROWS)%ROWS});
       for(let k=0;k<word.length;k++){ let x,y,tries=0; do{ x=Math.floor(Math.random()*COLS); y=Math.floor(Math.random()*ROWS); }
         while((occupied(x,y,ring)||tiles.some(t=>t.x===x&&t.y===y))&&++tries<200);
@@ -2282,16 +2303,6 @@
       evo={ set(stage,onUnlock,uAt){ const u=(uAt!=null)?uAt:5; if(stage>=u&&onUnlock) onUnlock(3); } };  // keep the Vasuki unlock, skip chip rewrites
     } else evo.set(0);
     reset(); frame._t=tick; loop=setInterval(frame,tick); draw();
-        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
-       so a child who is stuck sees ONE word for the whole round — measured at 2
-       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
-       the same word would make the game repeat itself, which is the parrot pattern
-       tests/word-rate.cjs fails a game for. `var` because the advance function runs
-       before this line and would hit the temporal dead zone of a `let`. */
-    var sinceWord=0; var WORD_GAP=7;
-    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(word) snRound.push({w:word,ok:false}); layoutWord(); } },1000);
     return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
   }
 
@@ -2315,7 +2326,7 @@
     let word='',spelled=0,drops=[],basket=Wd/2,vx=0,wordsDone=0,lives=3,over=false,dropT=0,bonk=0,score=0,loop=null,last=0;
     const ccRound=[]; let ccClean=true;    // the round's words, and whether this one was caught clean
     const BW=64;
-    function layout(){ sinceWord=0;   /* the floor is for a child who is STUCK */ curW=feed.next(); word=curW.w.toLowerCase(); spelled=0; drops=[]; ccClean=true;
+    function layout(){ curW=feed.next(); word=curW.w.toLowerCase(); spelled=0; drops=[]; ccClean=true;
       host.querySelector('#sg-cc-slots').innerHTML=word.split('').map((ch,i)=>'<span class="sg-tl'+(i<spelled?' done':i===spelled?' next':'')+'">'+(i<spelled?ch.toUpperCase():'•')+'</span>').join('');
       const mn=host.querySelector('#sg-cc-mean'); if(mn){ const m=meaningText(curW); mn.textContent=m?('💡 '+m):''; }
       try{ say(word); }catch(e){} }
@@ -2396,14 +2407,7 @@
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
     layout(); setHud(); last=Date.now(); loop=setInterval(frame,1000/60); draw();
-    /* WORD FLOOR — see the note on whackAMoth. This engine had none: its word changes
-       only when it is finished, so a child who cannot catch the letter they need sees
-       ONE word until the hearts run out. Moving on costs no heart; the round still
-       needs CFG.words real catches to be won, so this is mercy, not a shortcut. */
-    var sinceWord=0; var WORD_GAP=7;
-    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(word) ccRound.push({w:word,ok:false}); layout(); setHud(); } },1000);
-    return { destroy(){ over=true; clearInterval(wordFloor); if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup); } };
+    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); removeEventListener('keyup',keyup); } };
   }
 
   /* ---------- ENGINE K · STAGE RHYTHM (letter notes on the beat) ---------- */
@@ -2423,13 +2427,13 @@
     const stage=host.querySelector('#sg-rst'), laneEl=host.querySelector('#sg-rl');
     let wi=0, li=0, hearts=4, score=0, notes=[], over=false, loop=null, spawnT=0, beatT=0;
     const srRound=[]; let srClean=true;    // the round's words, and whether this one was played clean
-    function cur(){ return words[wi]; }
+    function cur(){ return words[wi]||words[words.length-1]||{w:'honey'}; }   // never index past the end
     function need(){ return cur().w.toLowerCase()[li]; }
     function renderSlots(){ const w=cur().w.toLowerCase();
       host.querySelector('#sg-rslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':ix===li?' next':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
       host.querySelector('#sg-rh').textContent='❤'.repeat(Math.max(0,hearts));
       host.querySelector('#sg-rs').textContent='⭐ '+score; }
-    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ li=0; srClean=true; const w=cur();
+    function newWord(){ li=0; srClean=true; const w=cur();
       host.querySelector('#sg-rw').textContent='🎵 '+(wi+1)+'/'+CFG.words;
       host.querySelector('#sg-rmean').innerHTML=meaningHTML(w);
       renderSlots(); try{ say(w.w); }catch(e){} }
@@ -2477,16 +2481,6 @@
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; stageRhythm(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
     newWord(); loop=setInterval(frame,1000/60);
-        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
-       so a child who is stuck sees ONE word for the whole round — measured at 2
-       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
-       the same word would make the game repeat itself, which is the parrot pattern
-       tests/word-rate.cjs fails a game for. `var` because the advance function runs
-       before this line and would hit the temporal dead zone of a `let`. */
-    var sinceWord=0; var WORD_GAP=7;
-    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(words[wi]) srRound.push({w:words[wi].w,ok:false}); wi++; newWord(); } },1000);
     return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',key); } };
   }
 
@@ -2599,7 +2593,7 @@
       host.querySelector('#sg-tsh').innerHTML=shieldPips();
       host.querySelector('#sg-tc').textContent=combo>=2?(combo+'x'):'';
       host.querySelector('#sg-ts').textContent=score; }
-    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ li=0; foeY=0; wordPerfect=true; const w=cur();
+    function newWord(){ li=0; foeY=0; wordPerfect=true; const w=cur();
       host.querySelector('#sg-tw').innerHTML=(wi+1)+'<i>/'+CFG.n+'</i>';
       host.querySelector('#sg-tmean').innerHTML=meaningHTML(w);
       foe.style.top='0%'; renderSlots(); try{ say(w.w); }catch(e){} }
@@ -2650,15 +2644,8 @@
       el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML='';
         started=true; newWord(); }; }
     renderSlots(); howto(); loop=setInterval(frame,1000/60);
-    /* WORD FLOOR — see the note on the other engines. Gated on `started` so the
-       how-to card cannot burn through the word list while it is still open. */
-    var sinceWord=0; var WORD_GAP=7;
-    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(!started) return;
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; round.push({w:cur().w,ok:false});
-        wi++; if(wi>=CFG.n){ wi=CFG.n-1; } newWord(); } },1000);
     return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;}
-      clearInterval(wordFloor); removeEventListener('keydown',kb); } };
+      removeEventListener('keydown',kb); } };
   }
   /* The glitch and the cannon bee, drawn — the img fallbacks and the start card's
      art come from here, so a child meets the same creature in both places. */
@@ -2774,7 +2761,10 @@
   function unscrambleStars(host, opts, done){
     const diff=opts.diff||'medium';
     const CFG=calmCFG({easy:{n:8},medium:{n:12},hard:{n:12},champ:{n:14}}[diff]);
-    const words=pool(CFG.n+4).filter(w=>/^[a-z]+$/.test(w.w)&&w.w.length>=4&&w.w.length<=9).slice(0,CFG.n);
+    /* fillWords, not one filtered pool() draw: a single batch can come back short (or
+       empty) at bands where diffRange shifts the corpus to longer, rarer words, which
+       is the hollow-field bug the other nine engines already avoid. */
+    const words=fillWords(CFG.n,4,9).filter(w=>/^[a-z]+$/.test(w.w));
     let i=0, hints=3, over=false, speedBonus=0, wordStart=0;
     const usRound=[]; let usClean=true;    // the round's words, and whether this one was solved clean
     const art=(window.SGART&&SGART.ready());
@@ -2784,7 +2774,7 @@
       '<div class="sg-simonprompt"><button class="sg-hintbtn" id="sg-hint">💡 Zib\u2019s hint</button></div>'+
       '<div id="sg-card"></div>';   // this engine had nowhere to draw a result screen
     function scr(w){ const a=w.split(''); do{ a.sort(()=>Math.random()-0.5); }while(a.join('')===w); return a; }
-    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */
+    function newWord(){ 
       if(i>=words.length){ usFinish(true); return; }
       const w=words[i].w.toLowerCase(); const letters=scr(w); usClean=true;
       host.querySelector('#sg-c').textContent='⭐ '+(i+1)+'/'+CFG.n;
@@ -2795,7 +2785,10 @@
       try{ say(words[i].w); }catch(e){}
     }
     let picked=[];
-    function pickStar(s){ if(!s||s.disabled||over) return;
+    function pickStar(s){ if(!s||s.disabled||over||i>=words.length) return;
+      /* i can sit PAST the last word for the beat between a solve and the next
+       word arriving (setTimeout), and a key or a tap in that window read words[i].w
+       off undefined. `over` is not yet true there, so it is not enough on its own. */
       const w=words[i].w.toLowerCase();
       if(s.dataset.ch===w[picked.length]){ s.disabled=true; s.classList.add('set');
         const slot=host.querySelectorAll('.sg-slot')[picked.length]; slot.textContent=s.textContent; slot.classList.add('fill');
@@ -2828,22 +2821,12 @@
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; unscrambleStars(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
-    host.querySelector('#sg-hint').onclick=()=>{ if(hints<=0||over) return; hints--;
+    host.querySelector('#sg-hint').onclick=()=>{ if(hints<=0||over||i>=words.length) return; hints--;
       host.querySelector('#sg-h').textContent='💡 ×'+hints;
       const w=words[i].w.toLowerCase(); const need=w[picked.length];
       const s=[...host.querySelectorAll('.sg-star')].find(x=>!x.disabled&&x.dataset.ch===need);
       if(s){ s.classList.add('lit'); setTimeout(()=>s.classList.remove('lit'),900); } };
     newWord();
-        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
-       so a child who is stuck sees ONE word for the whole round — measured at 2
-       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
-       the same word would make the game repeat itself, which is the parrot pattern
-       tests/word-rate.cjs fails a game for. `var` because the advance function runs
-       before this line and would hit the temporal dead zone of a `let`. */
-    var sinceWord=0; var WORD_GAP=7;
-    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(words[i]) usRound.push({w:words[i].w,ok:false}); i++; newWord(); } },1000);
     return { destroy(){ over=true; removeEventListener('keydown',usKey); } };
   }
 
@@ -2898,7 +2881,7 @@
     function renderSlots(flashWrong){ const w=words[i].w.toLowerCase();
       slotsEl.innerHTML=w.split('').map((ch,ix)=>{ const on=ix<typed.length;
         return '<span class="ss-slot'+(on?' fill':'')+(flashWrong?' wrong':'')+'">'+(on?typed[ix].toUpperCase():'')+'</span>'; }).join(''); }
-    function newWord(){ sinceWord=0;   /* the floor is for a child who is STUCK */ if(i>=words.length){ over=true; return win(); }
+    function newWord(){ if(i>=words.length){ over=true; return win(); }
       typed=''; scClean=true; const w=words[i];
       /* meaningText masks the headword; using w.d raw printed the answer in the
          hint of a game whose whole task is to spell it */
@@ -2906,7 +2889,7 @@
       host.querySelector('#ss-hint').textContent=_mt?('“'+_mt.slice(0,88)+'”'):'Spell the word you hear';
       renderSlots(); try{ say(w.w); }catch(e){} }
     function sparkle(){ const fx=document.createElement('div'); fx.className='ss-burst'; foeEl.appendChild(fx); setTimeout(()=>fx.remove(),720); }
-    function commit(){ const w=words[i].w.toLowerCase();
+    function commit(){ if(over||i>=words.length) return; const w=words[i].w.toLowerCase();
       if(typed.toLowerCase()===w){ scRound.push({w:w,ok:scClean}); i++; const p=i/words.length; ssCombo++;
         fill.style.width=Math.round(p*100)+'%'; grey(p); mlbl.textContent=i+' / '+words.length;
         // the duel: the moth is driven back toward the edge and the hero advances as colour returns
@@ -2924,7 +2907,7 @@
         if(lives<=0){ return lose(); }
         try{ flash('💔 The Unspelling holds — listen again.'); }catch(e){} try{ say(words[i].w); }catch(e){}
       } }
-    function skipWord(){ if(over) return;
+    function skipWord(){ if(over||i>=words.length) return;
       if(lives<=1){ try{ flash('Not enough lives to skip — spell it!'); }catch(e){} return; }
       lives--; renderLives(); ssCombo=0; typed='';
       scRound.push({w:words[i].w,ok:false}); scClean=true;
@@ -2943,7 +2926,10 @@
     function lose(){ over=true; removeEventListener('keydown',kb);
       try{ flash('🌑 The colour fades… the moth wins this round.'); }catch(e){}
       setTimeout(()=>scEnd(false, i*60, 0), 700); }
-    function type(ch){ if(over) return; const w=words[i].w.toLowerCase();
+    function type(ch){ if(over||i>=words.length) return;   /* i can sit PAST the last word for the beat between a solve and the next
+       word arriving (setTimeout), and a key or a tap in that window read words[i].w
+       off undefined. `over` is not yet true there, so it is not enough on its own. */
+      const w=words[i].w.toLowerCase();
       if(typed.length<w.length){ typed+=ch; renderSlots(); if(typed.length===w.length) setTimeout(commit,180); } }
     function back(){ if(over) return; typed=typed.slice(0,-1); renderSlots(); }
     const kb=e=>{ if(over) return; const k=e.key;
@@ -2953,7 +2939,7 @@
     addEventListener('keydown',kb);
     host.querySelector('#ss-key').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(!bt) return;
       const k=bt.dataset.k; if(k==='back') back(); else if(k==='enter'){ if(typed.length===words[i].w.length) commit(); } else type(k); };
-    host.querySelector('#ss-say').onclick=()=>{ try{ say(words[i].w); }catch(e){} };
+    host.querySelector('#ss-say').onclick=()=>{ try{ if(i<words.length) say(words[i].w); }catch(e){} };
     host.querySelector('#ss-skip').onclick=skipWord;
     function win(){ removeEventListener('keydown',kb);
       // finale: the moth is banished off-screen and the world snaps to full colour
@@ -2964,16 +2950,6 @@
       }catch(e){}
       setTimeout(()=>scEnd(true, words.length*100-misses*15, misses===0?3:misses<=2?2:1), 900); }
     newWord();
-        /* WORD FLOOR. Without this the word only ever changes when the child solves it,
-       so a child who is stuck sees ONE word for the whole round — measured at 2
-       unique words/min against a 6/min floor. After WORD_GAP idle seconds, move on.
-       It ADVANCES THE INDEX rather than re-calling the round setup: re-rendering
-       the same word would make the game repeat itself, which is the parrot pattern
-       tests/word-rate.cjs fails a game for. `var` because the advance function runs
-       before this line and would hit the temporal dead zone of a `let`. */
-    var sinceWord=0; var WORD_GAP=7;
-    var wordFloor=setInterval(function(){ if(over){ clearInterval(wordFloor); return; }
-      if(++sinceWord>=WORD_GAP){ sinceWord=0; if(words[i]) scRound.push({w:words[i].w,ok:false}); i++; newWord(); } },1000);
     return { destroy(){ over=true; removeEventListener('keydown',kb); } };
   }
   W().SB_SAGA_ENGINES = Object.assign(W().SB_SAGA_ENGINES||{}, { spellScene });
