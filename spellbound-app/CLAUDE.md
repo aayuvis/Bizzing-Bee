@@ -719,14 +719,40 @@ handlers. App lives in this folder; open `index.html` to run.
   `tests/arcade-geometry.js` (linear model, v² absent, drift-to-steer ratios) and the
   headless drive in the scratchpad's `gpdrive.cjs` (no-hands runs off the outside;
   full lock beats the bend).
+- **SUPERSEDED 30 Sep — THE PUSH HAS NO MEMORY, AND IT IS STRONG.** The story above swung
+  twice more. A slide WITH memory (2.4s half-life) replaced the linear model to stop a weak
+  push pendulumming across the alternating bends; it carried each bend's push onto the next
+  straight instead. Measured: an unsteered kart moved **0.17 road-half-widths a second on
+  straights**, a kart parked in the grass kept being shoved, a counter-steer at a standstill
+  lost to the stored slide for most of a second — "the car is veering in all random
+  directions". A lagging camera (FOLLOW 0.55 / 0.30s) added a glide after every input. Now:
+  `push = curve × (v/maxV)² × CFG.pull`, applied as it is; nothing accumulates. **The cure
+  for the pendulum was strength, not memory** — `pull` (easy .33 / medium .46 / hard .52 /
+  champ .57) puts a hands-off kart on the grass at the first bend on medium (4.7s), and
+  squared-in-v makes the brake the answer (champ's tightest bend is 130% of the wheel flat
+  out, inside it at 70% speed). A 300ms-reaction child spends 5.9 / 6.4 / 7.7 / 11% of a
+  race on the grass (was 9.6 / 13.5 / 16.7 / 20.4). Camera 0.85 / 0.08s. Calm mode scales
+  pull ×0.7. **Input is what is HELD** — a Map of live inputs, last pressed wins, ended by
+  pointerup, pointercancel (a touch the browser claims — nothing listened, the wheel stuck
+  full over) or lost capture, and cleared on blur and when a spell card opens; the canvas
+  has `touch-action:none`. Guards: `tests/gp-handling.cjs` (live: the straight after a bend
+  does not move you, a parked kart is not shoved, hands-off leaves a curve-4 bend, steering
+  into it holds, roll Left→Right, cancelled touch, two thumbs, blur) and
+  `tests/arcade-geometry.js` (static). The numbers come from
+  `tools/game-bench/gp-handling-sim.js` (`--memory` replays the old model) — re-derive after
+  touching pull, steering, the brake or SECTORS; don't guess.
 - **The far road is PROJECTED past drawDist, never patched.** drawDist segments end
   ~108px short of the horizon and 165px wide — a stump against the backdrop. A straight
   wedge to the vanishing point reads as a grey pyramid the moment the road curves. The
   fix carries on the real projection: keep accumulating the track's own curve past
   drawDist (six additions a segment) and draw a band only when it advances a whole
   pixel — the far ribbon bends with the track down to a sub-pixel sliver AT the horizon.
-  Three rules keep it honest: the ribbon wears ONE fixed colour set (inheriting the last
-  segment's ALTERNATING colours strobed the whole distance at speed); its x subtracts
+  Three rules keep it honest: the ribbon wears ONE fixed colour set — the AVERAGE of the light
+  and dark bands (inheriting the last segment's ALTERNATING colours strobed the whole distance
+  at speed) — and it is **fogged by the same `fogged(col, n)` as the near road, by segment
+  distance** (the "two tone road", 30 Sep: the near road was fogged by n/drawDist to 82% sky at
+  its last band and the ribbon not at all, so they met in a ~290-RGB seam straight across the
+  screen; `tests/gp-handling.cjs` reads pixels either side of the join); its x subtracts
   the same `camX` the segment loop uses; and no grass bands out there (the ground
   gradient owns the far field — ~110 alpha polys a frame doubled p99). The backdrop
   painting is cropped strictly ABOVE the horizon with an opaque level ground below —

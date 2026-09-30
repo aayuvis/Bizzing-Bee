@@ -20,6 +20,9 @@
 .sg-pw-legend span{font:600 11.5px 'Hanken',sans-serif;background:var(--surface2,#f3eee3);border-radius:99px;padding:2px 8px;color:var(--ink,#2B2117)}
 /* pseudo-3D racer chrome */
 .sg-race3d{position:relative;width:max-content;max-width:100%;margin:0 auto}
+/* a finger on the road is a steering input, never a scroll: without this the browser may
+   claim the gesture, fire pointercancel, and leave the wheel held */
+.sg-race3d canvas{touch-action:none;user-select:none;-webkit-user-select:none}
 .sg-pwtray{position:absolute;top:8px;left:0;right:0;display:flex;gap:8px;justify-content:center;pointer-events:none;flex-wrap:wrap;padding:0 8px}
 .sg-pw-next{font:800 12.5px 'Hanken',sans-serif;color:#fff;background:rgba(20,26,40,.52);border-radius:99px;padding:4px 11px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
 .sg-pw-on{font-size:17px;background:rgba(255,255,255,.85);border-radius:99px;padding:1px 7px;line-height:1.5}

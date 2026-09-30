@@ -58,62 +58,59 @@ for (const [k, c] of Object.entries(FLY)) {
 /* ---------------- Bee Grand Prix ---------------- */
 console.log('\nBEE GRAND PRIX');
 const STEER  = +src.match(/const dxs=dt\*([\d.]+)\*Math\.max/)[1];
-/* THE DRIFT HAS MEMORY. Two memoryless models (v^2 "centrifugal", then linear v x k)
-   both still played as self-driving: the authored bends are ~1s long and ALTERNATE
-   direction, so a push that stops the instant the curve ends lets the next bend push
-   the kart back — it pendulums across the road and never leaves it. `drift` is a
-   persistent lateral velocity: bends build it, it barely decays on its own, and only
-   COUNTER-STEERING kills it fast. Verified live (gpreal.cjs): hands-off is on the
-   grass INSIDE the first bend (~6s from the green light); a bot nudging toward centre
-   15% of the time holds the road for 40s. */
-const CPUSH = +src.match(/CPUSH=([\d.]+)/)[1];
-const DRIFT_HALF = +src.match(/DRIFT_HALF=([\d.]+)/)[1];
-const GRIP_HALF = +src.match(/GRIP_HALF=([\d.]+)/)[1];
-ok(/drift\+=\(seg\.curve\|\|0\)\*vf\*\(1\+SPEED_BITE\*vf\*vf\)/.test(src),
-  'a bend BUILDS lateral drift (heading memory), scaled by speed');
-ok(/playerX-=drift\*dt/.test(src), 'the kart slides on its accumulated drift — the slide outlives the bend');
-ok(!/dt\*centri/.test(src), 'both memoryless drift models are gone');
-ok(DRIFT_HALF >= 2, `a slide does not fix itself (self-decay half-life ${DRIFT_HALF}s — longer than any bend)`);
-ok(GRIP_HALF <= DRIFT_HALF / 3, `counter-steer grips: kills the slide ${(DRIFT_HALF / GRIP_HALF).toFixed(1)}x faster than doing nothing`);
-/* ...BUT NOT INSTANTLY, WHICH IS THE WHOLE OF "the bends bite". At 0.22 a counter-steer
-   annihilated the slide in a fifth of a second, so any correction won outright and no
-   corner could ever threaten anyone: a bot nudging back at |x|>0.25 held the road for
-   forty seconds and never came within 0.29 of the edge. A slide has to OUTLIVE the
-   input that answers it, or the answer is free. */
-ok(GRIP_HALF >= 0.4, `and a slide takes real time to gather up (grip half-life ${GRIP_HALF}s, not a snap)`);
+/* THE PUSH HAS NO MEMORY — AND IS STRONG ENOUGH THAT IT DOESN'T NEED ONE.
+   History, because this has swung twice. Two memoryless models were weak enough that a
+   kart pendulumed across the alternating bends and never left the road ("it drives
+   itself"). The fix was a slide WITH memory (2.4s half-life), which then carried each
+   bend's push onto the next straight: an unsteered kart moved 0.17 road-half-widths a
+   second on straights, and kept sliding after stopping in the grass ("the car is
+   veering in all random directions"). The answer to the pendulum was never memory — it
+   was strength. PULL is set so hands-off leaves the road at the first bend on medium,
+   and the push is the bend under the kart NOW. tests/gp-handling.cjs checks it live. */
+ok(/push=\(seg\.curve\|\|0\)\*vf\*vf\*PULL;/.test(src), 'the push is the bend under the kart now, times speed squared');
+ok(/playerX-=push\*dt;/.test(src), 'and it is applied as it is — nothing accumulates');
+ok(!/DRIFT_HALF|GRIP_HALF|SPEED_BITE|drift\+=/.test(src), 'the slide-with-memory model is gone, all of it');
 
 ok(!/hill=0; curve\*=0\.7;/.test(src), 'the authored curves are no longer softened 30%');   // anchored to the CODE, not my comment about it
 const CURVE_MAX = Math.max(...[...src.matchAll(/road\(\d+,\d+,\d+,(-?\d+(?:\.\d+)?),/g)].map(m => Math.abs(+m[1])));
 ok(CURVE_MAX >= 4, `hardest authored bend is ${CURVE_MAX}`);
-/* SPEED HAS TO COST SOMETHING. The push was linear in v and so is the steering, so
-   their ratio was CONSTANT — flat out was exactly as easy as crawling. SPEED_BITE is
-   negligible at half throttle and dominant at the top, so the hardest bends out-pull
-   the wheel only when you refuse to lift. Per difficulty, because the ladder is the
-   product: a 300ms-reaction driver (a child, not a bot) is in the grass ~11% of the
-   time on easy and ~19% on hard, while one who brakes into the bends never leaves it. */
-const BITES = [...src.matchAll(/bite:([\d.]+)/g)].map(m => +m[1]);
-ok(BITES.length === 4, `every difficulty names its own bend bite (${BITES.join(' / ')})`);
-ok(BITES.every((b, i) => i === 0 || b > BITES[i - 1]), 'and the bite rises with the difficulty, in order');
-const topPull = CURVE_MAX * (1 + BITES[BITES.length - 1]) * CPUSH;   // u/s² flat out, champ
-ok(topPull > STEER, `flat out on the hardest bend the road out-pulls the wheel — ${topPull.toFixed(2)} vs ${STEER} of steering`);
-const easyPull = CURVE_MAX * (1 + BITES[0]) * CPUSH * 0.45;          // easy, half throttle
-ok(easyPull < STEER, `and lifting gets it back — ${easyPull.toFixed(2)} at part throttle on easy`);
+/* SPEED HAS TO COST SOMETHING. With steering linear in v and a push linear in v their
+   ratio was constant — flat out was exactly as easy as crawling. The push is SQUARED in
+   v, so lifting is the answer to a corner: at 80% speed it pulls a third less. Per
+   difficulty, because the ladder is the product. On the tightest bend flat out: */
+const PULLS = [...src.matchAll(/pull:([\d.]+)\}/g)].map(m => +m[1]);
+ok(PULLS.length === 4, `every difficulty names its own pull (${PULLS.join(' / ')})`);
+ok(PULLS.every((b, i) => i === 0 || b > PULLS[i - 1]), 'and the pull rises with the difficulty, in order');
+const lock = PULLS.map(p => CURVE_MAX * p / STEER);
+ok(lock[0] < 0.85, `easy holds the tightest bend flat out at ${Math.round(lock[0] * 100)}% of full lock`);
+ok(lock[3] > 1.15, `champ cannot — ${Math.round(lock[3] * 100)}% of the wheel, so it needs the brake`);
+/* a lift is not quite enough there (80% speed: 1.82 of push against 1.76 of wheel) — that
+   bend is what the brake is for, and a third of a second on it (to 70%) answers it */
+ok(CURVE_MAX * PULLS[3] * 0.49 < STEER * 0.7, `and braking to 70% brings even champ's tightest bend back inside the wheel (${(CURVE_MAX * PULLS[3] * 0.49).toFixed(2)} vs ${(STEER * 0.7).toFixed(2)})`);
+/* not self-driving: the displacement a medium curve-3 bend gives an unsteered kart, flat
+   out — enter (16, ∫p² = 1/3), hold 22, leave (16, ∫ = 1/2) — must clear the road's half-width */
+const bend3 = 3 * (16 / 3 + 22 + 16 / 2) / 46 * PULLS[1];
+ok(bend3 > 0.95, `hands off, one medium curve-3 bend carries the kart ${bend3.toFixed(2)} sideways — off a 0.95 road`);
 
 /* A BRAKE EXISTS, ON BOTH INPUTS. Without one a bend can only be a steering-hold test:
    there is no way to answer a corner, so making one bite just makes it unfair. */
-ok(/ArrowDown'\|\|e\.key==='s'/.test(src), 'the brake is on the keyboard');
+ok(/k==='ArrowDown'\|\|k==='s'\)\{ e\.preventDefault\(\); brakeOn/.test(src), 'the brake is on the keyboard');
 ok(/class="sg-sbtn sg-brake" id="sg-brk"/.test(src), 'and under a thumb, between the two steering buttons');
-ok(/braking\?BRAKE_GRIP:1/.test(src) && /braking \? BRAKE_HALF : DRIFT_HALF/.test(src),
-  'braking BUYS GRIP — it is the answer to a corner, not merely a way to go slower');
-const buildRate = CURVE_MAX * CPUSH;   // u/s^2 of slide at LOW speed, where SPEED_BITE sleeps
-ok(buildRate >= 1.0 && buildRate <= 2.0, `at low speed the hardest bend still only builds ${buildRate.toFixed(2)} u/s² — the bite is a top-end term, not a tax on crawling`);
+ok(/v=Math\.max\(maxV\*0\.34, v-\(maxV\/1\.05\)\*dt\)/.test(src), 'braking sheds real speed — and speed is what the push squares');
 
-/* THE CAMERA LAGS AND NEVER FULLY CATCHES UP. camX=playerX*roadW with the kart at Wd/2
-   drew it dead centre no matter where it was: off the road, stopped, in the grass, the
-   picture still showed clean tarmac under it. "The car drives itself with the road
-   curving." The physics was never the problem — it was that none of it was visible. */
+/* THE WHEEL IS WHAT IS HELD. Every input registers in one Map and every way it can end
+   removes it — including pointercancel, which nothing used to listen for. */
+ok(/\['pointerup','pointercancel','lostpointercapture'\]/.test(src), 'a touch ends on up, cancel OR lost capture');
+ok(/const press=\(id,d\)=>\{ wheel\.delete\(id\); wheel\.set\(id,d\); reSteer\(\); \}/.test(src), 'the last input pressed wins while others are still held');
+ok(/addEventListener\('blur',letGo\)/.test(src), 'losing focus lets go of the wheel');
+
+/* THE CAMERA FOLLOWS — MOST OF THE WAY, ALMOST AT ONCE. Welded to the kart it re-centred
+   a kart on the grass onto a road it had left; lagging at 0.55 / 0.30s it made the kart
+   swim across the screen for most of a second after every input. */
 const CAM_FOLLOW = +src.match(/CAM_FOLLOW=([\d.]+)/)[1];
-ok(CAM_FOLLOW < 1, `the camera takes only part of the kart's offset (${CAM_FOLLOW}), so a kart on the grass is DRAWN on the grass`);
+const CAM_HALF = +src.match(/CAM_HALF=([\d.]+)/)[1];
+ok(CAM_FOLLOW < 1 && CAM_FOLLOW >= 0.8, `the camera takes most of the kart's offset (${CAM_FOLLOW}) — a kart on the grass is still drawn on the grass`);
+ok(CAM_HALF <= 0.12, `and catches up in ${CAM_HALF}s, so nothing glides after you let go`);
 ok(/const camX=camLag\*roadW/.test(src), 'and the camera rides camLag, not playerX');
 ok(/const px=Wd\/2 \+ \(playerX-camLag\)\*\(_nearW/.test(src),
   'the kart is drawn at its real offset, measured in the road\'s own projection');
