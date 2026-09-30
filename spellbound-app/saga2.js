@@ -148,15 +148,6 @@
     img.onload=()=>{ _texCache[name]=img; }; img.onerror=()=>{ _texCache[name]=false; };
     img.src='app-art/gart/'+name+'.webp'; return null; }
   function sgTexPreload(names){ (names||[]).forEach(sgTex); }
-  /* Tint a loaded sprite to the player's chosen colour (source-atop wash), cached by
-     colour so it's built once. Used for the customised kart etc. */
-  const _tintCache={};
-  function tintTex(tex,col){ if(!tex||!col) return tex; const key=(tex.src||tex.width+'x'+tex.height)+'|'+col;
-    if(_tintCache[key]) return _tintCache[key];
-    try{ const cv=document.createElement('canvas'); cv.width=tex.width; cv.height=tex.height; const c2=cv.getContext('2d');
-      c2.drawImage(tex,0,0); c2.globalCompositeOperation='source-atop'; c2.globalAlpha=0.4; c2.fillStyle=col;
-      c2.fillRect(0,0,cv.width,cv.height); c2.globalAlpha=1; c2.globalCompositeOperation='source-over';
-      _tintCache[key]=cv; return cv; }catch(e){ return tex; } }
   /* Build a 4-tone snake/skin palette [base, light, pale, dark] from one colour. */
   function tintPalette(col){ try{ const n=parseInt(col.slice(1),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
     const mix=(v,t,to)=>Math.round(v+(to-v)*t);
@@ -1225,6 +1216,213 @@
      Kids race a real perspective track. Spelling words correctly earns POWER-UPS,
      each doing something different (rocket, turbo, oil slick, gust, honey, shield).
      Steer to hug the racing line and dodge oil patches. First past the flag wins. */
+  /* ===== KART ART — drawn, not pasted =====
+     The Grand Prix karts used to be five painted sprites, 300px, drawn as flat cards.
+     Three things made them read as cheap, and none was the painting: the Classic sprite
+     had a helmeted driver PAINTED IN and the player's avatar was stuck on top of that
+     helmet, so every kart had two drivers; steering ROTATED the whole card, which is a
+     sticker tilting, not a kart turning; and nothing on it moved — no wheels, no
+     suspension, no brake lights, no dust.
+     This draws the kart from parts, in a 100-unit-wide space scaled to any size, so it
+     can do what a sprite cannot: YAW (the nose and front wheels swing into the turn and
+     the side of the kart comes into view), roll against the corner, bounce on its
+     springs, spin its treads with the road speed, light its brake lamps, and seat the
+     driver IN the cockpit — the avatar goes in before the seat back and the body, so
+     its lower half is inside the kart instead of pasted over it. Light comes from the
+     upper left, as in all three painted skies. */
+  const KART_STYLES={
+    'kart':        {name:'Classic', body:'#F0527E', acc:'#2EC4B6', tyre:'std',    wing:null,    hoop:true,  exh:2,     tub:'std'},
+    'kart-red':    {name:'Racer',   body:'#D62839', acc:'#FFFFFF', tyre:'std',    wing:'flat',  hoop:false, exh:2,     tub:'std'},
+    'kart-rocket': {name:'Rocket',  body:'#2F6BFF', acc:'#FFFFFF', tyre:'std',    wing:'swept', hoop:false, exh:'jet', tub:'sleek', bolt:true},
+    'kart-buggy':  {name:'Buggy',   body:'#6DBE35', acc:'#23202B', tyre:'knobby', wing:null,    cage:true,  exh:2,     tub:'std', spare:true},
+    'kart-cruiser':{name:'Cruiser', body:'#8B5CF6', acc:'#F7E7C1', tyre:'white',  wing:null,    hoop:false, exh:1,     tub:'bubble', chrome:true}
+  };
+  function kShade(hex,f){ const n=parseInt(hex.slice(1),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+    if(f>=0){ r+=(255-r)*f; g+=(255-g)*f; b+=(255-b)*f; } else { r*=1+f; g*=1+f; b*=1+f; }
+    return '#'+((1<<24)+(Math.round(r)<<16)+(Math.round(g)<<8)+Math.round(b)).toString(16).slice(1); }
+  function kRR(c,x,y,w,h,r){ r=Math.min(r,w/2,h/2); c.beginPath(); c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.quadraticCurveTo(x+w,y,x+w,y+r);
+    c.lineTo(x+w,y+h-r); c.quadraticCurveTo(x+w,y+h,x+w-r,y+h); c.lineTo(x+r,y+h); c.quadraticCurveTo(x,y+h,x,y+h-r);
+    c.lineTo(x,y+r); c.quadraticCurveTo(x,y,x+r,y); c.closePath(); }
+  /* Gradients are built in the 100-unit space, so one set per (context, style, colour)
+     serves every size and every frame — a kart costs paths, not gradient construction. */
+  const _kGrad=new WeakMap();
+  function kGrads(c,K,body){ let m=_kGrad.get(c); if(!m){ m={}; _kGrad.set(c,m); }
+    const key=K.name+body; if(m[key]) return m[key];
+    const tub=c.createLinearGradient(0,-60,0,-12);
+    tub.addColorStop(0,kShade(body,0.34)); tub.addColorStop(0.28,kShade(body,0.08)); tub.addColorStop(0.7,body); tub.addColorStop(1,kShade(body,-0.42));
+    const side=c.createLinearGradient(0,-78,0,-30);
+    side.addColorStop(0,kShade(body,-0.05)); side.addColorStop(1,kShade(body,-0.45));
+    const tyre=c.createLinearGradient(-13,0,13,0);
+    tyre.addColorStop(0,'#101014'); tyre.addColorStop(0.3,'#2B2A32'); tyre.addColorStop(0.55,'#35333D'); tyre.addColorStop(1,'#0E0D12');
+    const seat=c.createLinearGradient(0,-78,0,-54);
+    seat.addColorStop(0,'#4A4556'); seat.addColorStop(0.45,'#2C2835'); seat.addColorStop(1,'#1A1720');
+    const wing=c.createLinearGradient(0,-74,0,-62);
+    wing.addColorStop(0,'#5A5566'); wing.addColorStop(0.35,'#2C2935'); wing.addColorStop(1,'#141219');
+    const chrome=c.createLinearGradient(0,-18,0,-6);
+    chrome.addColorStop(0,'#FFFFFF'); chrome.addColorStop(0.35,'#C9CED6'); chrome.addColorStop(0.7,'#7E858F'); chrome.addColorStop(1,'#4B5059');
+    const shadow=c.createRadialGradient(0,0,6,0,0,62);
+    shadow.addColorStop(0,'rgba(10,8,20,.46)'); shadow.addColorStop(0.5,'rgba(10,8,20,.26)'); shadow.addColorStop(1,'rgba(10,8,20,0)');
+    const helm=c.createRadialGradient(-6,-98,2,0,-88,20);
+    helm.addColorStop(0,'#FFFFFF'); helm.addColorStop(0.25,kShade(K.acc==='#FFFFFF'?body:K.acc,0.25)); helm.addColorStop(1,kShade(K.acc==='#FFFFFF'?body:K.acc,-0.35));
+    const _ts={};
+    const tyreSh=(TW,TH,i)=>{ const k=TW+'|'+TH+'|'+i; if(_ts[k]) return _ts[k]; let g;
+      if(i===0){ g=c.createLinearGradient(0,0,TW,0);
+        g.addColorStop(0,'rgba(0,0,0,.45)'); g.addColorStop(0.28,'rgba(255,255,255,.10)'); g.addColorStop(0.42,'rgba(255,255,255,.05)'); g.addColorStop(0.8,'rgba(0,0,0,.15)'); g.addColorStop(1,'rgba(0,0,0,.55)'); }
+      else { g=c.createLinearGradient(0,0,0,TH);
+        g.addColorStop(0,'rgba(255,255,255,.14)'); g.addColorStop(0.25,'rgba(255,255,255,0)'); g.addColorStop(0.85,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.35)'); }
+      return (_ts[k]=g); };
+    return (m[key]={tub,side,tyre,seat,wing,chrome,shadow,helm,tyreSh}); }
+
+  /* s: { style, body?, driver?:<img|canvas>, glyph?, yaw -1..1, roll rad, lift (units, -up),
+          wheel 0..1 (tread phase), brake, boost, t (seconds, for flicker), lod } */
+  function kartDraw(c,X,Y,w,s){
+    s=s||{}; const K=KART_STYLES[s.style]||KART_STYLES.kart, body=s.body||K.body, acc=K.acc;
+    const u=w/100, yaw=Math.max(-1,Math.min(1,s.yaw||0)), lod=(s.lod!=null)?s.lod:(w<40);
+    const G=kGrads(c,K,body), lift=s.lift||0, roll=s.roll||0, t=s.t||0;
+    const outline=kShade(body,-0.62), fx=yaw*15, sx=yaw*3.5;
+    const TW=K.tyre==='knobby'?29:25, TH=K.tyre==='knobby'?38:34, TX=K.tyre==='knobby'?38:37;
+    c.save(); c.translate(X,Y); c.scale(u,u);
+
+    /* 1 — ground: a soft contact shadow and a darker pool under each rear tyre */
+    c.save(); c.translate(fx*0.2,-1); c.scale(1,0.2); c.fillStyle=G.shadow; c.beginPath(); c.arc(0,0,62,0,7); c.fill(); c.restore();
+    if(!lod){ c.fillStyle='rgba(8,6,14,.45)'; [-1,1].forEach(k=>{ c.beginPath(); c.ellipse(k*TX-yaw*2,-0.5,TW*0.6,3,0,0,7); c.fill(); }); }
+
+    /* 2 — the far end of the kart: front tyres (steered), front axle, the nose */
+    if(!lod){
+      /* the nose, running away up the track; it swings with the yaw. (Front tyres were
+         tried here and read as ears sticking out of the driver's head — the turn shows
+         better in the flank and the hubs.) */
+      c.fillStyle=G.side; c.beginPath();
+      c.moveTo(-20,-56+lift); c.bezierCurveTo(-18,-70+lift,-10+fx,-80+lift,0+fx,-80+lift); c.bezierCurveTo(10+fx,-80+lift,18,-70+lift,20,-56+lift); c.closePath(); c.fill();
+    }
+
+    /* the sprung mass rolls about the axle line and rides the springs */
+    c.save(); c.translate(sx,-18+lift); c.rotate(roll); c.translate(0,18);
+
+    /* 3 — side pods: they join the tail to the (yawed) front, so turning shows the flank */
+    if(!lod){ c.fillStyle=G.side;
+      [-1,1].forEach(k=>{ const f=fx-sx; c.beginPath(); c.moveTo(k*35,-36);
+        c.bezierCurveTo(k*38,-49,k*31+f*0.6,-57,k*23+f,-57); c.bezierCurveTo(k*21+f,-53,k*26,-45,k*27,-36); c.closePath(); c.fill();
+        c.strokeStyle=outline; c.lineWidth=1.1; c.stroke(); }); }
+
+    /* 4 — the driver, seated: drawn BEFORE the seat back and the body, so the kart holds them */
+    const D=58, dy=-113+Math.sin(t*9.3)*0.6*(lod?0:1);
+    if(s.driver){ try{ c.drawImage(s.driver,-D/2,dy,D,D); }catch(e){} }
+    else if(s.glyph){ c.font='40px serif'; c.textAlign='center'; c.fillText(s.glyph,0,dy+38); c.textAlign='left'; }
+    else { /* no driver given (the menu thumbnail): a glossy helmet, seen from behind */
+      c.fillStyle=G.helm; c.beginPath(); c.arc(0,-84,17,0,7); c.fill();
+      c.strokeStyle=outline; c.lineWidth=1.6; c.stroke();
+      c.fillStyle=kShade(body,-0.1); c.fillRect(-3,-101,6,34);
+      c.fillStyle='rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(-7,-93,5,3,-0.6,0,7); c.fill(); }
+
+    /* 5 — seat back, then the hoop or cage that frames the driver */
+    c.fillStyle=G.seat; kRR(c,-19,-78,38,24,10); c.fill();
+    c.strokeStyle='rgba(255,255,255,.14)'; c.lineWidth=1.2; kRR(c,-15,-75,30,18,7); c.stroke();
+    if(K.hoop||K.cage){ c.lineCap='round'; c.strokeStyle='#2A2731'; c.lineWidth=K.cage?4.2:3.6;
+      c.beginPath(); c.moveTo(-30,-57); c.bezierCurveTo(-33,-100,-27,-122,0,-122); c.bezierCurveTo(27,-122,33,-100,30,-57); c.stroke();
+      if(K.cage){ c.beginPath(); c.moveTo(-30,-57); c.lineTo(-18,-121); c.moveTo(30,-57); c.lineTo(18,-121); c.stroke(); }
+      c.strokeStyle='rgba(255,255,255,.35)'; c.lineWidth=1.1;
+      c.beginPath(); c.moveTo(-29.5,-60); c.bezierCurveTo(-32,-98,-26,-120,0,-120.5); c.stroke(); c.lineCap='butt'; }
+
+    /* 6 — the tail: the body tub, lit from the upper left, with its stripe and a hex badge */
+    c.beginPath();
+    if(K.tub==='bubble'){ c.moveTo(-31,-16); c.bezierCurveTo(-40,-22,-40,-52,-26,-59); c.quadraticCurveTo(0,-65,26,-59); c.bezierCurveTo(40,-52,40,-22,31,-16); c.quadraticCurveTo(0,-11,-31,-16); }
+    else if(K.tub==='sleek'){ c.moveTo(-29,-16); c.bezierCurveTo(-35,-19,-37,-29,-36,-36); c.lineTo(-30,-54); c.quadraticCurveTo(-27,-60,-19,-60); c.lineTo(19,-60); c.quadraticCurveTo(27,-60,30,-54); c.lineTo(36,-36); c.bezierCurveTo(37,-29,35,-19,29,-16); c.quadraticCurveTo(0,-11,-29,-16); }
+    else { c.moveTo(-30,-16); c.bezierCurveTo(-36,-19,-38,-29,-37,-37); c.lineTo(-33,-53); c.quadraticCurveTo(-31,-59,-24,-59); c.lineTo(24,-59); c.quadraticCurveTo(31,-59,33,-53); c.lineTo(37,-37); c.bezierCurveTo(38,-29,36,-19,30,-16); c.quadraticCurveTo(0,-11,-30,-16); }
+    c.closePath(); c.fillStyle=G.tub; c.fill();
+    c.save(); c.clip();
+    if(K.bolt){ c.fillStyle=acc; c.beginPath(); c.moveTo(3,-62); c.lineTo(-7,-38); c.lineTo(0,-38); c.lineTo(-4,-14); c.lineTo(8,-42); c.lineTo(1,-42); c.lineTo(6,-62); c.closePath(); c.fill(); }
+    else if(K.tub==='bubble'){ c.fillStyle=acc; c.fillRect(-45,-43,90,6); c.fillStyle='rgba(0,0,0,.12)'; c.fillRect(-45,-37,90,1.5); }
+    else { c.fillStyle=acc; c.fillRect(-5.5,-66,11,60); c.fillStyle='rgba(0,0,0,.10)'; c.fillRect(3.5,-66,2,60); }
+    /* specular: a soft sheen upper-left and a hard glint on the shoulder */
+    c.fillStyle='rgba(255,255,255,.32)'; c.beginPath(); c.ellipse(-17,-52,13,3.6,-0.12,0,7); c.fill();
+    c.fillStyle='rgba(255,255,255,.75)'; c.beginPath(); c.ellipse(-24,-53.5,3.4,1.2,-0.5,0,7); c.fill();
+    c.fillStyle='rgba(0,0,0,.18)'; c.fillRect(-45,-24,90,12);   /* the underside turns away from the light */
+    c.restore();
+    c.strokeStyle=outline; c.lineWidth=1.8; c.stroke();
+    if(!lod && !K.bolt && !K.spare){ /* the Bizzing hex, the one bit of branding a kart gets */
+      c.save(); c.translate(0,K.tub==='bubble'?-28:-44); c.fillStyle='#F0B429'; c.strokeStyle='#6B4A00'; c.lineWidth=1.1; c.beginPath();
+      for(let i=0;i<6;i++){ const a=Math.PI/6+i*Math.PI/3; c.lineTo(Math.cos(a)*5.2,Math.sin(a)*5.2); } c.closePath(); c.fill(); c.stroke();
+      c.fillStyle='rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(-1.5,-1.8,2,1,-0.5,0,7); c.fill(); c.restore(); }
+    if(K.spare && !lod){ c.fillStyle='#1B1A21'; c.beginPath(); c.arc(0,-40,11,0,7); c.fill();
+      c.strokeStyle='#3A3842'; c.lineWidth=2; for(let i=0;i<8;i++){ const a=i*Math.PI/4; c.beginPath(); c.moveTo(Math.cos(a)*8,-40+Math.sin(a)*8); c.lineTo(Math.cos(a)*11,-40+Math.sin(a)*11); c.stroke(); }
+      c.fillStyle='#8C929B'; c.beginPath(); c.arc(0,-40,4.5,0,7); c.fill(); c.fillStyle='#C9CED6'; c.beginPath(); c.arc(-1,-41,1.6,0,7); c.fill(); }
+    if(K.chrome){ c.fillStyle=G.chrome; kRR(c,-33,-21,66,4.5,2.2); c.fill(); }
+
+    /* 7 — tail lamps: dark red at rest, blazing when the brake is on */
+    /* inboard of the tyres — out at ±27 the nearer tyre covered all but a sliver of them */
+    [-1,1].forEach(k=>{ const lx=k*18-5.5, ly=K.tub==='bubble'?-33:-35, cxl=lx+5.5, cyl=ly+3;
+      if(s.brake){ const gl=c.createRadialGradient(cxl,cyl,0,cxl,cyl,20);
+        gl.addColorStop(0,'rgba(255,80,60,.85)'); gl.addColorStop(0.4,'rgba(255,50,40,.35)'); gl.addColorStop(1,'rgba(255,40,40,0)'); c.fillStyle=gl; c.beginPath(); c.arc(cxl,cyl,20,0,7); c.fill(); }
+      c.fillStyle='#2A0A0E'; kRR(c,lx-0.8,ly-0.8,12.6,7.6,3); c.fill();
+      c.fillStyle=s.brake?'#FF4A3D':'#A3162A'; kRR(c,lx,ly,11,6,2.4); c.fill();
+      c.fillStyle=s.brake?'#FFE6E0':'rgba(255,255,255,.38)'; kRR(c,lx+1.4,ly+1,4.6,1.6,0.8); c.fill(); });
+
+    /* 8 — the wing, if the style has one: it is the nearest thing on the kart after the tail */
+    if(K.wing){ const sw=K.wing==='swept'?4:0;
+      c.fillStyle='#24212B'; c.fillRect(-15,-63,3.2,6); c.fillRect(11.8,-63,3.2,6);
+      c.beginPath(); c.moveTo(-41,-68-sw); c.quadraticCurveTo(0,-65.5+sw*0.4,41,-68-sw); c.lineTo(41,-62-sw); c.quadraticCurveTo(0,-59.5+sw*0.4,-41,-62-sw); c.closePath();
+      c.fillStyle=G.wing; c.fill(); c.strokeStyle='#0F0E13'; c.lineWidth=1.2; c.stroke();
+      c.fillStyle='rgba(255,255,255,.30)'; c.fillRect(-37,-67.3-sw*0.7,32,1.1);
+      c.fillStyle=body; [-1,1].forEach(k=>{ kRR(c,k>0?37:-41,-72-sw,4,13,1.5); c.fill(); c.strokeStyle=outline; c.lineWidth=0.9; c.stroke(); }); }
+    c.restore();   // end sprung mass
+
+    /* 9 — axle, engine and exhausts, below the tail */
+    c.fillStyle='#1E1C24'; kRR(c,-31,-15,62,4.5,2); c.fill();
+    c.fillStyle='#2B2833'; kRR(c,-16,-19,32,11,4); c.fill(); c.fillStyle='rgba(255,255,255,.09)'; c.fillRect(-13,-18,26,1.4);
+    const pipes=K.exh===1?[0]:[-8,8], pr=K.exh===1?5.8:5;
+    pipes.forEach(px=>{ const py=-11+lift*0.5;
+      if(K.exh==='jet'){ const jg=c.createRadialGradient(px,py,0,px,py,pr*2.6); jg.addColorStop(0,'rgba(140,250,255,.95)'); jg.addColorStop(0.4,'rgba(60,200,255,.45)'); jg.addColorStop(1,'rgba(60,200,255,0)');
+        c.fillStyle=jg; c.beginPath(); c.arc(px,py,pr*2.6,0,7); c.fill(); }
+      c.fillStyle=G.chrome; c.beginPath(); c.arc(px,py,pr,0,7); c.fill();
+      c.strokeStyle='#3B3F46'; c.lineWidth=0.9; c.stroke();
+      c.fillStyle=K.exh==='jet'?'#DFFFFF':'#141218'; c.beginPath(); c.arc(px,py,pr*0.56,0,7); c.fill(); });
+
+    /* 10 — boost: layered flame from each pipe, flickering, added light */
+    if(s.boost){ c.save(); c.globalCompositeOperation='lighter';
+      pipes.forEach((px,i)=>{ const py=-11+lift*0.5, L=26+Math.sin(t*47+i*2.1)*5+Math.sin(t*29+i)*4;
+        [[1,'rgba(255,120,40,.55)'],[0.66,'rgba(255,210,80,.75)'],[0.34,'rgba(255,255,230,.95)']].forEach(([f,col])=>{
+          c.fillStyle=col; c.beginPath(); c.moveTo(px-pr*f*1.6,py); c.quadraticCurveTo(px-pr*f*1.5,py+L*f*0.55,px,py+L*f); c.quadraticCurveTo(px+pr*f*1.5,py+L*f*0.55,px+pr*f*1.6,py); c.closePath(); c.fill(); }); });
+      c.restore(); }
+
+    /* 11 — rear tyres, the nearest thing on the kart: tread that rolls with the road,
+       and the sidewall and hub come into view on the side the kart is turning away from */
+    [-1,1].forEach(k=>{ const tx=k*TX-yaw*2, x0=tx-TW/2, y0=-TH;
+      c.fillStyle=G.tyre; kRR(c,x0,y0,TW,TH,10.5); c.fill();
+      if(!lod){ c.save(); kRR(c,x0,y0,TW,TH,10.5); c.clip();
+        const ph=((s.wheel||0)%1+1)%1, gap=K.tyre==='knobby'?9.5:6.8, n=Math.ceil(TH/gap)+2;
+        for(let i=0;i<n;i++){ const gy=y0+((i+ph)*gap)%(n*gap)-gap;
+          if(K.tyre==='knobby'){ const off=(i%2)?1:0; c.fillStyle='#3A3843';
+            c.fillRect(x0+2+off*5,gy,TW*0.36,4.4); c.fillRect(x0+TW*0.56+off*3,gy,TW*0.36,4.4);
+            c.fillStyle='rgba(255,255,255,.12)'; c.fillRect(x0+2+off*5,gy,TW*0.36,1); c.fillRect(x0+TW*0.56+off*3,gy,TW*0.36,1); }
+          else { /* chevron grooves either side of a centre rib */
+            c.strokeStyle='rgba(0,0,0,.55)'; c.lineWidth=1.8; c.beginPath();
+            c.moveTo(x0+1,gy+2.2); c.lineTo(x0+TW*0.42,gy); c.moveTo(x0+TW*0.58,gy); c.lineTo(x0+TW-1,gy+2.2); c.stroke();
+            c.strokeStyle='rgba(255,255,255,.08)'; c.lineWidth=0.9; c.beginPath();
+            c.moveTo(x0+1,gy+3.6); c.lineTo(x0+TW*0.42,gy+1.4); c.moveTo(x0+TW*0.58,gy+1.4); c.lineTo(x0+TW-1,gy+3.6); c.stroke(); } }
+        /* the tyre's roundness: a lit shoulder upper-left, shade falling away at the edges —
+           built once per style in the tyre's own coordinates, then translated into place */
+        c.translate(x0,y0); c.fillStyle=G.tyreSh(TW,TH,0); c.fillRect(0,0,TW,TH); c.fillStyle=G.tyreSh(TW,TH,1); c.fillRect(0,0,TW,TH);
+        c.restore();
+        /* sidewall: the kart turning right shows its LEFT flank, and so on */
+        const sv=-k*yaw; if(sv>0.05){ const sw2=sv*9, ex=k<0?x0:x0+TW;
+          c.fillStyle='#1F1D25'; c.beginPath(); c.ellipse(ex,y0+TH/2,sw2,TH/2-1,0,0,7); c.fill();
+          c.fillStyle=K.tyre==='white'?'#F4EEDC':'#2E2C35'; c.beginPath(); c.ellipse(ex,y0+TH/2,sw2*0.72,TH/2-4,0,0,7); c.fill();
+          c.fillStyle=K.chrome?G.chrome:kShade(body,0.1); c.beginPath(); c.ellipse(ex,y0+TH/2,sw2*0.42,TH/2-9,0,0,7); c.fill(); }
+        if(K.tyre==='white'){ c.fillStyle='#F4EEDC'; kRR(c,x0+(k<0?0:TW-2.4),y0+5,2.4,TH-10,1.2); c.fill(); }
+      }
+      c.strokeStyle='#08070B'; c.lineWidth=1.5; kRR(c,x0,y0,TW,TH,10.5); c.stroke(); });
+
+    c.restore(); }
+  /* a menu thumbnail from the same drawing — so the kart you pick is the kart you race */
+  const _kThumb={};
+  function kartThumb(style,px){ px=px||168; const key=style+'|'+px; if(_kThumb[key]) return _kThumb[key];
+    try{ const cv=document.createElement('canvas'); cv.width=px; cv.height=Math.round(px*0.9); const c=cv.getContext('2d');
+      /* 0.64 of the width leaves the roll hoop (122 units up) inside the frame */
+      kartDraw(c,px/2,cv.height-px*0.06,px*0.64,{style:style,yaw:0.28,roll:-0.02,wheel:0.3});
+      return (_kThumb[key]=cv.toDataURL('image/png')); }catch(e){ return ''; } }
+  W().SB_KART_ART={ draw:kartDraw, thumb:kartThumb, styles:KART_STYLES };
+
   function beeGrandPrix(host, opts, done){
     // Fill the play area (the steer/hold controls are absolutely overlaid on the canvas,
     // so the canvas can take almost the whole overlay height — no dark letterbox below).
@@ -1283,7 +1481,7 @@
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
-    sgTexPreload([KART,'kart-red','oil','cop','item-box',SKY,SCN.prop]);   // Gemini kart/hazard/scene art, decoded before first frame
+    sgTexPreload(['oil','cop','item-box',SKY,SCN.prop]);   // hazard/scene art, decoded before first frame (karts are drawn: SB_KART_ART)
     const LIGHT=SCN.light;
     const DARK =SCN.dark;
     const segs=[];
@@ -1344,17 +1542,22 @@
     let camLag=0;                     // where the camera actually is, in road half-widths
     let _kartPx=0;                    // the kart's drawn screen x, read by the feel probe
     let _join=null;                   // where the near road hands over to the far ribbon, read by the seam probe
+    /* what the kart LOOKS like it is doing — never read by the physics */
+    let yawS=0, wheelPh=0, bumpT=0;
+    const KART_W=0.38;                // a kart is 38% of the road's half-width: ~19% of the road, as a kart game's are
+    const parts=[];                   // screen-space puffs behind the kart: exhaust, dust, tyre smoke
+    const DUST={meadow:'150,128,88', sunset:'214,168,108', city:'150,160,190'}[opts.scene]||'150,128,88';
     let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
     const heroKart=HERO;
     const VILL=[
-      {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm'},
-      {name:'Glitch',    col:'#7B5CE0',glyph:'👾',sprite:'glitch-corrupt-glee'},
-      {name:'Vex',       col:'#C9A227',glyph:'🐝',sprite:'vex-full'},
-      {name:'The Bramble',col:'#4A7A3A',glyph:'🌿',sprite:null}];
+      {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm',        kart:'kart-cruiser'},
+      {name:'Glitch',    col:'#7B5CE0',glyph:'👾',sprite:'glitch-corrupt-glee', kart:'kart-rocket'},
+      {name:'Vex',       col:'#C9A227',glyph:'🐝',sprite:'vex-full',            kart:'kart-red'},
+      {name:'The Bramble',col:'#4A7A3A',glyph:'🌿',sprite:null,                kart:'kart-buggy'}];
     const rivals=[];
     for(let i=0;i<CFG.rivals;i++){ const vd=VILL[i%VILL.length];
       rivals.push({z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*(0.92+i*0.035),
-        name:vd.name, col:vd.col, glyph:vd.glyph, sprite:vd.sprite, spin:0, slow:0, fin:false}); }
+        name:vd.name, col:vd.col, glyph:vd.glyph, sprite:vd.sprite, kart:vd.kart, spin:0, slow:0, fin:false, ph:Math.random()}); }
 
     /* ---- power-ups: spell a ? box to UNLOCK one, tap the slot (or Space) to FIRE ---- */
     const PWSVG={
@@ -1493,50 +1696,6 @@
     const VERGE=0.24;
     const FAR={road:mixHex(LIGHT.road,DARK.road), rumble:mixHex(LIGHT.rumble,DARK.rumble),
                verge:mixHex(LIGHT.verge,DARK.verge), wear:mixHex(LIGHT.roadWear,DARK.roadWear)};
-    function drawKart(px,baseY,w,col,rider,o){ o=o||{}; const h=w*0.82;
-      cx.save(); cx.fillStyle='rgba(0,0,0,.32)'; cx.beginPath(); cx.ellipse(px,baseY-(o.kart?w*0.02:1),w*0.64,w*0.17,0,0,7); cx.fill(); cx.restore();
-      if(o.boost){ const fl=w*(0.55+Math.random()*0.3); const fg=cx.createLinearGradient(0,baseY-h*0.2,0,baseY+fl);
-        fg.addColorStop(0,'#FFF6C0'); fg.addColorStop(.45,'#FF9E3D'); fg.addColorStop(1,'rgba(255,80,40,0)');
-        cx.fillStyle=fg; cx.beginPath(); cx.moveTo(px-w*0.24,baseY-h*0.2); cx.quadraticCurveTo(px,baseY+fl,px+w*0.24,baseY-h*0.2); cx.closePath(); cx.fill(); }
-      let hd=w*0.55;
-      let riderY;                          // top-left Y for the rider head, set per kart art
-      const tex = o.kart ? sgTex(o.kart) : null;
-      if(tex){
-        // Gemini rear-view kart sprite, sized to the primitive kart's footprint (~1.15w
-        // incl. wheels) so it doesn't balloon; rider seated in the cockpit.
-        const kw=w*0.92, kh=kw*(tex.height/tex.width);
-        // tail-on rear-view sprite: wheels + exhaust sit at the sprite's bottom edge, so
-        // its bottom aligns to the ground line (tiny overlap so it doesn't hover).
-        const dtex = o.tint ? tintTex(tex,o.tint) : tex;   // player's chosen racing colour
-        try{ cx.drawImage(dtex, px-kw/2, baseY-kh*0.97, kw, kh); }catch(e){}
-        // the DRIVER sits in the cockpit — the player's chosen avatar (or a rival's face)
-        if(rider&&rider.av){ hd=kw*0.66; riderY=baseY-kh*0.58-hd*0.62; }   // chosen racer rides high in the seat
-        else { hd=kw*0.44; riderY=baseY-kh*0.62-hd*0.5; }                  // rival head peeks from the cockpit
-      } else {
-        // primitive fallback: wheels + gradient body (kept for when the sprite is absent)
-        const ww=w*0.30, wh=h*0.54, wy=baseY-wh;
-        [-1,1].forEach(s=>{ const wx=px+s*w*0.42;
-          cx.fillStyle='#17151b'; rrp(wx-ww/2,wy,ww,wh,ww*0.34); cx.fill();
-          cx.fillStyle='#39363f'; rrp(wx-ww/2+2,wy+wh*0.16,ww-4,wh*0.5,ww*0.28); cx.fill();
-          cx.fillStyle='#7a7684'; cx.beginPath(); cx.ellipse(wx,wy+wh*0.4,ww*0.2,ww*0.2,0,0,7); cx.fill(); });
-        const bw=w*0.9, bh=h*0.5, by=baseY-h*0.6;
-        cx.fillStyle=hx(col,0.5); rrp(px-bw*0.52,by-h*0.18,bw*1.04,h*0.11,4); cx.fill();
-        cx.fillStyle=hx(col,0.8); cx.fillRect(px-bw*0.4,by-h*0.18,w*0.07,h*0.2); cx.fillRect(px+bw*0.33,by-h*0.18,w*0.07,h*0.2);
-        const bg=cx.createLinearGradient(0,by-bh*0.2,0,by+bh);
-        bg.addColorStop(0,hx(col,1.38)); bg.addColorStop(.5,col); bg.addColorStop(1,hx(col,0.68));
-        cx.fillStyle=bg; rrp(px-bw/2,by,bw,bh,w*0.18); cx.fill();
-        cx.fillStyle=hx(col,0.52); rrp(px-bw/2,by+bh*0.6,bw,bh*0.42,w*0.12); cx.fill();
-        cx.fillStyle='#141018'; rrp(px-bw*0.46,baseY-h*0.15,bw*0.92,h*0.12,4); cx.fill();
-        cx.fillStyle=hx(col,0.42); cx.beginPath(); cx.ellipse(px,by+bh*0.12,bw*0.26,bh*0.36,0,0,7); cx.fill();
-        riderY = (baseY-h*0.6)-hd*0.66;
-      }
-      let done_=false;
-      if(rider&&rider.av){ const im=avImg(rider.av); if(im){ try{ cx.drawImage(im,px-hd/2,riderY,hd,hd); done_=true; }catch(e){} } }
-      if(!done_&&rider&&rider.sprite){ const im=sgImg(rider.sprite); if(im){ try{ cx.drawImage(im,px-hd/2,riderY,hd,hd); done_=true; }catch(e){} } }
-      if(!done_&&rider&&rider.glyph){ cx.font=Math.round(hd*0.8)+'px serif'; cx.textAlign='center'; cx.fillText(rider.glyph,px,riderY+hd*0.6); cx.textAlign='left'; done_=true; }
-      if(!done_&&!o.kart){ cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(px,riderY+hd*0.4,hd*0.32,0,7); cx.fill(); }
-      if(o.spin){ cx.font='700 '+Math.round(w*0.7)+'px serif'; cx.textAlign='center'; cx.fillText('💫',px,riderY-hd*0.1); cx.textAlign='left'; } }
-
     function drawBG(){
       const hz=horizonY;
       const sky=sgTex(SKY);
@@ -1837,22 +1996,33 @@
             cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
             cx.textAlign='left'; cx.textBaseline='alphabetic'; }
           cx.restore(); }
-        else { const r=o.r; drawKart(o.sx,o.sy,w*2.15,r.col,{sprite:r.sprite,glyph:r.glyph},{spin:r.spin>0,kart:'kart-red'}); }
+        else { const r=o.r, kw=w*(KART_W/0.11), sp=r.spin>0;
+          kartDraw(cx,o.sx,o.sy,kw,{style:r.kart,body:r.col,driver:r.sprite?sgImg(r.sprite):null,glyph:r.sprite?null:r.glyph,
+            yaw:sp?Math.sin(bumpT*14)*0.9:Math.sin(bumpT*0.9+r.ph*6)*0.12, wheel:(wheelPh+r.ph)%1, t:bumpT+r.ph*9,
+            lift:-Math.sin(bumpT*19+r.ph*7)*0.5});
+          if(sp){ cx.font='700 '+Math.round(kw*0.4)+'px serif'; cx.textAlign='center'; cx.fillText('💫',o.sx,o.sy-kw*1.25); cx.textAlign='left'; } }
         cx.globalAlpha=1; cx.restore();
       });
       /* THE KART IS DRAWN WHERE IT IS. Its offset from centre is measured in the same
          projection as the road — _nearW is the nearest band's half-width in pixels — so
          "half a road-width right of the middle" is half a road-width on screen, and a
-         kart on the grass is drawn on the grass. py used to be Ht-14, which put the
-         ground line 14px from the bottom and clipped the shadow and the wheels off the
-         frame. The lean is 0.13rad rather than 0.05: the wheel has to LOOK turned. */
-      const pw=Wd*0.115, py=Ht-Math.max(26,pw*0.34);
+         kart on the grass is drawn on the grass. It is KART_W of the road wide, the same
+         scale the rivals are drawn at, so a rival alongside is the same size as you.
+         It no longer ROTATES: a turn is the kart yawing (SB_KART_ART), not the picture
+         tilting. */
+      const pw=(_nearW||Wd*0.5)*KART_W, py=Ht-pw*0.13;
       const px=Wd/2 + (playerX-camLag)*(_nearW||Wd*0.42);
-      _kartPx=px;                       // for the headless feel probe: where it DREW
-      cx.save(); cx.translate(px,py); cx.rotate(steer*0.13 - Math.max(-1,Math.min(1,push/2))*0.08);
-      drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
-      cx.restore();
-      if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
+      _kartPx=px; _kpy=py; _kpw=pw;       // for the feel probe, and where the puffs leave from
+      const vfk=v/maxV, rough=offGrass&&v>1?(Math.random()-0.5)*3.2:0;
+      kartDraw(cx,px,py,pw,{style:KART,body:opts.tint||null,driver:avImg(heroKart),
+        yaw:yawS, roll:-yawS*0.07+Math.max(-1,Math.min(1,push/2.5))*0.03,
+        lift:-(Math.sin(bumpT*21)*0.45+Math.sin(bumpT*13.7)*0.3)*vfk*1.3+rough,
+        wheel:wheelPh, brake:braking&&v>maxV*0.3, boost:boostT>0, t:bumpT, lod:false});
+      /* the puffs sit in front of the kart: they are leaving it toward the camera */
+      parts.forEach(q=>{ const a=q.a*(q.life/q.max); if(a<=0.01) return;
+        cx.globalAlpha=a; cx.drawImage(puffTex(q.col),q.x-q.r*1.6,q.y-q.r*1.6,q.r*3.2,q.r*3.2); });
+      cx.globalAlpha=1;
+      if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.6,pw*0.66,pw*0.72,0,0,7); cx.stroke();
         cx.fillStyle='rgba(150,215,255,.14)'; cx.fill(); }
       /* SPEED YOU CAN SEE. The HUD read 115 and the picture read parked: nothing on
          screen changed between half throttle and flat out, so there was no reason to
@@ -1927,6 +2097,27 @@
       if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } }
       if(mode==='race') update(dt);
       draw(); requestAnimationFrame(frame); }
+    /* Puffs are spawned where the kart was DRAWN (last frame's px/py/pw), so they leave
+       from the pipes and the tyres, then drift toward the camera and fade. */
+    let _kpy=0, _kpw=0;
+    /* a puff is a soft cloud, not a disc: one radial-gradient sprite per colour, built once */
+    const _puffTex={};
+    function puffTex(col){ if(_puffTex[col]) return _puffTex[col];
+      const pc=document.createElement('canvas'); pc.width=pc.height=64; const g2=pc.getContext('2d');
+      const rg=g2.createRadialGradient(32,32,0,32,32,32);
+      rg.addColorStop(0,'rgba('+col+',1)'); rg.addColorStop(0.45,'rgba('+col+',.7)'); rg.addColorStop(1,'rgba('+col+',0)');
+      g2.fillStyle=rg; g2.fillRect(0,0,64,64); return (_puffTex[col]=pc); }
+    function puff(x,y,vx,vy,r,gr,life,col,a){ if(parts.length<110) parts.push({x,y,vx,vy,r,gr,life,max:life,col,a}); }
+    function kartFx(dt){
+      for(let i=parts.length-1;i>=0;i--){ const q=parts[i]; q.life-=dt; if(q.life<=0){ parts.splice(i,1); continue; }
+        q.x+=q.vx*dt; q.y+=q.vy*dt; q.r+=q.gr*dt; q.vx*=0.97; }
+      if(!_kpw) return; const vf=v/maxV, P=_kpw, X=_kartPx, Y=_kpy;
+      const rate=(r)=>Math.random()<r*dt;
+      if(vf>0.05 && rate(boostT>0?34:10+vf*8)) [-0.08,0.08].forEach(k=>puff(X+k*P,Y-0.11*P,(Math.random()-0.5)*P*0.3,P*(0.5+Math.random()*0.4),P*0.04,P*0.16,0.45,boostT>0?'255,190,120':'225,225,232',boostT>0?0.4:0.28));
+      const onVerge=Math.abs(playerX)>0.9;
+      if(vf>0.08 && onVerge && rate(34)) [-1,1].forEach(k=>puff(X+k*0.37*P,Y-0.03*P,k*P*(0.3+Math.random()*0.5),P*(0.7+Math.random()*0.6),P*0.06,P*0.34,0.6,DUST,0.5));
+      if(braking && vf>0.45 && rate(26)) [-1,1].forEach(k=>puff(X+k*0.37*P,Y-0.02*P,k*P*0.2,P*(0.6+Math.random()*0.4),P*0.05,P*0.28,0.5,'245,245,248',0.45));
+    }
     function update(dt){
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
@@ -1956,6 +2147,11 @@
       push=(seg.curve||0)*vf*vf*PULL;
       playerX-=push*dt;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
+      /* the kart's LOOK: nose into the steer (not a card tilting), treads rolling with the
+         road, springs working harder the faster you go and hard on the grass */
+      yawS += (steer*0.85 - yawS)*(1-Math.pow(0.5,dt/0.09));
+      wheelPh = (wheelPh + (v/maxV)*dt*5.5)%1; bumpT+=dt;
+      kartFx(dt);
       camLag += ((playerX*CAM_FOLLOW)-camLag)*(1-Math.pow(0.5, dt/CAM_HALF));
       const offRoad=(playerX<-0.95||playerX>0.95);
       if(offRoad){
@@ -2036,7 +2232,7 @@
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,push,drift:push,steer,camLag,join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},

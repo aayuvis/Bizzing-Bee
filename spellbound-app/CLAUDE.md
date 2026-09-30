@@ -741,6 +741,28 @@ handlers. App lives in this folder; open `index.html` to run.
   `tests/arcade-geometry.js` (static). The numbers come from
   `tools/game-bench/gp-handling-sim.js` (`--memory` replays the old model) — re-derive after
   touching pull, steering, the brake or SECTORS; don't guess.
+- **THE KARTS ARE DRAWN, NOT PASTED (30 Sep, "the kart graphics look cheap").** They were
+  five 300px painted sprites. What made them cheap was not the painting: the Classic sprite
+  had a helmeted driver PAINTED IN and the avatar was stuck on top of the helmet (two
+  drivers); steering ROTATED the whole card (a sticker tilting, not a kart turning); nothing
+  moved; and the Cruiser was painted three-quarter-on, not tail-on. `SB_KART_ART` (saga2.js,
+  above `beeGrandPrix`) draws a kart from parts in a 100-unit space: it **yaws** (the flank
+  and the hub of the far tyre come into view, the nose swings), rolls against the corner,
+  bounces on its springs, rolls its treads with road speed, lights its **brake lamps** (keep
+  them INBOARD — at ±27 units the nearer tyre hid them), flames on boost, and seats the
+  driver: **the avatar is drawn BEFORE the seat back and the tub**, so the kart holds them.
+  Five styles keep the menu's names (Classic/Racer/Rocket/Buggy/Cruiser); rivals get a style
+  and their own colour. **Front tyres were tried and removed** — they read as ears sticking
+  out of the driver's head; the turn shows in the flank and hubs. Gradients are built once per
+  context+style in unit space, so a kart costs paths, not gradient construction (the tyre
+  shading gradients per frame cost a visible p99; cached, 60fps held). Scale: every kart is
+  `KART_W` = 0.38 of the road half-width, player and rivals alike. Screen-space puffs (exhaust,
+  verge dust, brake smoke) are soft radial sprites, one per colour. **On a phone the brake
+  stacks above Steer Right** (`@media (max-width:640px)` in saga2.css): mid-steer the kart
+  leads the camera by ~40px and drove UNDER a brake sitting beside the arrow — measured while
+  steering, because parked it never touched. The picker thumbnails are `SB_KART_ART.thumb()`,
+  the same drawing (the webp sprites stay only as its fallback). Guards: `tests/gp-kart.cjs`
+  (yaw, lamp pixels off/on, dust, thumbnails, no clash mid-steer) and `tests/arcade-geometry.js`.
 - **The far road is PROJECTED past drawDist, never patched.** drawDist segments end
   ~108px short of the horizon and 165px wide — a stump against the backdrop. A straight
   wedge to the vanishing point reads as a grey pyramid the moment the road curves. The

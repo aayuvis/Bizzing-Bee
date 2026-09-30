@@ -118,6 +118,15 @@ ok(/const px=Wd\/2 \+ \(playerX-camLag\)\*\(_nearW/.test(src),
 ok(/while\(pyD>horizonY\+1 && n<6000\)/.test(src), 'the road past drawDist is projected on, following the curve');
 ok(!/poly\(L-rw,Y, vx,vy, vx,vy, L,Y, c\.rumble\)/.test(src), 'the straight horizon wedge (the grey pyramid on curves) is gone');
 ok(2 / STEER < 1.2, `a full road crossing takes ${(2 / STEER).toFixed(2)}s of holding (self-driving territory is >1.5s)`);
+/* THE KART IS DRAWN, SEATED, AND IT TURNS. A painted sprite had a helmeted driver baked in
+   under the player's avatar (two drivers), and steering rotated the whole card. */
+ok(!/drawKart\(|sgTexPreload\(\[KART/.test(src), 'no painted kart sprite is loaded or drawn — the karts come from SB_KART_ART');
+const kd = src.slice(src.indexOf('function kartDraw('), src.indexOf('function kartThumb('));
+ok(kd.indexOf('c.drawImage(s.driver') > 0 && kd.indexOf('c.drawImage(s.driver') < kd.indexOf('c.fillStyle=G.seat') && kd.indexOf('c.fillStyle=G.seat') < kd.indexOf('c.fillStyle=G.tub'),
+  'the driver is drawn before the seat back and the body, so they sit IN the kart');
+ok(/kartDraw\(cx,px,py,pw,\{style:KART,[^}]*yaw:yawS/.test(src) && !/cx\.rotate\(steer\*/.test(src), 'the player\'s kart YAWS into a turn; nothing rotates the picture');
+ok(/const pw=\(_nearW\|\|Wd\*0\.5\)\*KART_W/.test(src) && /kw=w\*\(KART_W\/0\.11\)/.test(src), 'you and the rivals are drawn at one scale, so a kart alongside is your size');
+
 // the item box is swept, not sampled
 ok(/const crossed=_wrapped \? \(iz>_prevPm \|\| iz<=_pm2\) : \(iz>_prevPm && iz<=_pm2\)/.test(src),
    'the item box is picked up by a swept test, immune to frame length');
