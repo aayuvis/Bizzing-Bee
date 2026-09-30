@@ -10791,7 +10791,10 @@ function arcadeMenu(k){
     box.innerHTML=gr.opts.map(o=>{
       const on=o.v===selOpt[gr.key]?' on':'';
       if(gr.kind==='kart'||gr.kind==='scene'||gr.kind==='world'){
-        const src=gr.kind==='world'?('app-art/sgw-'+o.img+'.jpg'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'')):arcGart(o.img);
+        /* a kart thumbnail is drawn by the same code that draws the kart in the race
+           (SB_KART_ART) — the picked kart and the raced kart are one drawing */
+        const kt=(gr.kind==='kart'&&window.SB_KART_ART)?SB_KART_ART.thumb(o.v,168):'';
+        const src=kt||(gr.kind==='world'?('app-art/sgw-'+o.img+'.jpg'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'')):arcGart(o.img));
         return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><img src="${src}" alt="${escA(o.n)}" loading="lazy"><span>${esc(o.n)}</span></button>`; }
       return `<button class="arcm-opt arcm-opt-chip${on}" data-v="${escA(o.v)}">${esc(o.n)}</button>`;
     }).join('');

@@ -596,5 +596,14 @@
    nowhere near the car. */
 .sg-steer-r{pointer-events:none;display:flex;gap:12px;align-items:center}
 .sg-steer-r>*{pointer-events:auto}
+/* On a phone the kart is ~19% of the road and the road is wider than the screen, so a kart
+   near the right kerb drove UNDER a brake button sitting beside Steer Right. Stack the
+   brake above the arrow there: the right-hand cluster keeps to the edge, the middle of
+   the screen belongs to the kart, and the brake is still one thumb-slide from Right. */
+@media (max-width:640px){
+  .sg-steer{align-items:flex-end}
+  .sg-steer-r{flex-direction:column;align-items:flex-end;gap:10px}
+  .sg-steer-r .sg-brake{width:52px;height:52px}
+}
 .sg-brake{opacity:.94}
 .sg-brake:active{background:#E0553C;color:#fff;transform:scale(.94)}
