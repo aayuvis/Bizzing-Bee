@@ -1433,6 +1433,14 @@ out of saga2.js so a retune cannot quietly undo them.
 > **`./deploy-internal.sh`** (repo `aayuvis/bizzing-bee-staging`, branch `gh-pages`).
 > It must carry **no `CNAME` at all**.
 >
+> **SHIP TO PRODUCTION BY DEFAULT.** (Owner's instruction, 30 Sep 2026: "please deploy
+> any changes directly to bizzingbee.com".) The internal site is for looking at
+> something before it is finished, not a holding pen for finished work — twice now a
+> change was called done, deployed to internal only, and left the live site two builds
+> behind while the summary said it was shipped. When work is complete and the tests are
+> green, run `./deploy-prod.sh`. Deploy to internal INSTEAD only when the change is
+> explicitly for review first.
+>
 > That inversion is the one thing that must never break, and each script asserts its
 > own half before pushing. A `CNAME` naming the production domain on the internal repo
 > silently STEALS the live site; a `CNAME` naming anything else there points the
