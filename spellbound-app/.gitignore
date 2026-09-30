@@ -1,3 +1,6 @@
 
 # generated review artefacts — regenerate with tools/review/bands-and-tags.cjs
 tools/review/build/
+
+# headless screenshots from tests/*.cjs — regenerate with SHOT=1
+tests/build/

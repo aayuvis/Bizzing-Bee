@@ -331,8 +331,23 @@ handlers. App lives in this folder; open `index.html` to run.
   places the COPPA notice is required — splitting a combined step is exactly the edit that
   loses it. Guard: `tests/onboarding-age.cjs`, which walks the whole flow and fails if any
   step asks more than one thing, if the sets grow, or if a world is padlocked at first run.
-  **Open question for the owner:** anyone who already bought Aurora for coins now has a
-  free world they paid for. `GONEW` is the precedent for refunding; it has not been done.
+  **Aurora buyers are refunded** (owner's call, 30 Sep): a boot migration beside `GONEW`
+  pays `COST.theme` back to any child whose `unlockedThemes` holds `'aurora'`, drops it from
+  that list (the receipt, and why it cannot pay twice — `FREE_THEMES` still answers
+  `isThemeUnlocked`), and flashes it once via `auroraRefund`. Guard: `tests/aurora-refund.cjs`,
+  which boots twice and checks the purse did not grow the second time.
+- **THE ONBOARDING FRAME IS THREE BANDS** (30 Sep): progress at the top, the card under it,
+  the Back/Continue bar **sticky** at the bottom on phones (<641px; centred group on
+  desktop). It was one `place-items:center` stack in `min-height:100dvh` — and the dev
+  banner sits ABOVE that box, so on a 430×900 phone the heading started at y≈400 and the
+  Continue button hung off the bottom edge. The buddy row overlapped because
+  `avatarSVG(id,70)` writes `width="70"` onto the art and five of them do not fit five 61px
+  tiles: **size avatar art with CSS on a wrapper (`.sb-onb-avart>svg/img{width:100%}`),
+  never with the size argument.** The two thin steps (name, buddy) got art instead of air —
+  Bizzy greets you, and the chosen buddy is shown big. Classes live in index.html's `<style>`
+  under `.sb-onb*`. Guard: `tests/onboarding-layout.cjs` — measured geometry at 430×900 on
+  all five steps (card top, heading height, Continue on-screen, no avatar overlap, nothing
+  spilling the card, card fills ≥50% of its screen). `SHOT=1` writes PNGs to `tests/build/`.
 - **AGE IS A RANGE, NOT A NUMBER, and the name is a DISPLAY name.** Onboarding and Settings
   ask for one of four bands (`AGE_BANDS`: 5–7 / 8–10 / 11–13 / 14–18) — never a birthday-exact
   age. `c.ageBand` is the value of record; **`c.age` is still written as the band MIDPOINT**,

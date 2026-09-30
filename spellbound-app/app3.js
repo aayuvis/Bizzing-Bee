@@ -4206,10 +4206,12 @@ function viewOnboarding(){
      which asked for a name, an age band AND a buddy off a grid of twenty at once, under
      a heading that named none of them. Five steps now, each with one thing on it. */
   const LAST=4;
-  const dots=[0,1,2,3,4].map(i=>`<div style="width:${i===S.onbStep?'26px':'8px'};height:8px;border-radius:999px;transition:.25s;background:${i<=S.onbStep?'var(--accent)':'var(--surface2)'}"></div>`).join('');
-  const shell=(title,sub,body)=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow)">
-      <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">${title}</h2>
-      <p style="margin:0 0 20px;color:var(--muted);font-size:13px">${sub}</p>${body}</div>`;
+  const dots=[0,1,2,3,4].map(i=>`<div class="sb-onb-dot${i===S.onbStep?' now':(i<S.onbStep?' done':'')}"></div>`).join('');
+  /* Two of the five steps ask for very little — a name, a face — and a 260px card
+     floating in a 900px phone is the "dead space" complaint in another costume. They
+     get art instead of air: the bee greets you on the way in, and the buddy you are
+     choosing is shown at a size where you can actually see the choice. */
+  const shell=(title,sub,body,art)=>`<div class="sb-onb-card">${art?`<div class="sb-onb-art">${art}</div>`:''}<h2>${title}</h2><p class="sb-onb-sub">${sub}</p>${body}</div>`;
   let card='';
 
   if(S.onbStep===0){
@@ -4218,7 +4220,7 @@ function viewOnboarding(){
        the kind of edit that loses it. */
     card=shell("What shall we call you?","Just a first name or a nickname — whatever your speller answers to.",
       `<input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana, or Fox" style="width:100%;padding:15px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:17px;font-weight:700;outline:none">
-      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">This name and the age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p>`);
+      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">This name and the age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p>`, avatarSVG('bizzy',320));
 
   } else if(S.onbStep===1){
     const cur=bandForAge(S.draft.age).k;
@@ -4231,9 +4233,10 @@ function viewOnboarding(){
   } else if(S.onbStep===2){
     const avs=ONB_AVS.map(id=>SB_AVATARS.byId[id]).filter(Boolean);
     card=shell("Pick a buddy","Your speller's face around the app. There are plenty more to collect later — these five are ready now.",
-      `<div class="sb-onb-avs" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;max-width:460px;margin:0 auto;justify-items:center">${avs.map(a=>{ const on=S.draft.avatar===a.id;
-        return `<button data-act="pickAvatar" data-arg="${a.id}" title="${a.name}" style="position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;transition:.15s;background:var(--surface2);border:2.5px solid ${on?'var(--accent)':'transparent'};padding:7px;${on?'box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)':''}"><span style="width:70px;height:70px;display:inline-block">${avatarSVG(a.id,70)}</span></button>`; }).join('')}</div>
-      <div style="margin-top:16px;text-align:center;font-family:var(--display);font-weight:800;font-size:17px">${esc((SB_AVATARS.byId[S.draft.avatar]||{}).name||'')}</div>`);
+      `<div class="sb-onb-hero">${avatarSVG(S.draft.avatar,320)}</div>
+      <div class="sb-onb-avname">${esc((SB_AVATARS.byId[S.draft.avatar]||{}).name||'')}</div>
+      <div class="sb-onb-avs">${avs.map(a=>{ const on=S.draft.avatar===a.id;
+        return `<button class="sb-onb-av${on?' on':''}" data-act="pickAvatar" data-arg="${a.id}" title="${escA(a.name)}" aria-label="${escA(a.name)}" aria-pressed="${on?'true':'false'}"><span class="sb-onb-avart">${avatarSVG(a.id,128)}</span></button>`; }).join('')}</div>`);
 
   } else if(S.onbStep===3){
     const worldCards=ONB_THEMES.map(id=>THEMES.find(t=>t.id===id)).filter(Boolean)
@@ -4256,13 +4259,21 @@ function viewOnboarding(){
       <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Practice start in one go.</span></span></button>
       <div style="margin-top:14px">${voiceUpgradeTip()}</div>`);
   }
-  return `<div style="position:relative;z-index:1;min-height:100dvh;display:grid;place-items:center;padding:24px">
-    <div style="width:100%;max-width:560px">
-      <div style="display:flex;gap:7px;justify-content:center;margin-bottom:22px">${dots}</div>
-      ${card}
-      <div style="display:flex;justify-content:space-between;gap:12px;margin-top:18px">
-        <button data-act="onbBack" style="padding:13px 20px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:700;font-size:15px">${S.onbStep===0?'Cancel':'Back'}</button>
-        <button data-act="onbNext" style="flex:1;max-width:240px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);opacity:${(S.onbStep===0&&!S.draft.name.trim())?'.5':'1'}">${S.onbStep===LAST?'Start spelling →':'Continue'}</button>
+  /* Three bands, not one centred stack: progress at the top, the question next to
+     it, the actions pinned where a thumb is. The old frame centred everything in
+     100dvh, which on a phone is ~290px of nothing above the heading and a primary
+     button hanging off the bottom edge once the dev banner takes its 56px. */
+  const blocked=(S.onbStep===0&&!S.draft.name.trim());
+  return `<div class="sb-onb">
+    <div class="sb-onb-in">
+      <div class="sb-onb-head">
+        <div class="sb-onb-step">Step ${S.onbStep+1} of ${LAST+1}</div>
+        <div class="sb-onb-dots" role="progressbar" aria-valuenow="${S.onbStep+1}" aria-valuemin="1" aria-valuemax="${LAST+1}">${dots}</div>
+      </div>
+      <div class="sb-onb-body">${card}</div>
+      <div class="sb-onb-foot">
+        <button class="sb-onb-back" data-act="onbBack">${S.onbStep===0?'Cancel':'Back'}</button>
+        <button class="sb-onb-next" data-act="onbNext"${blocked?' aria-disabled="true"':''} style="opacity:${blocked?'.5':'1'}">${S.onbStep===LAST?'Start spelling →':'Continue'}</button>
       </div>
     </div>
   </div>`;
@@ -11964,6 +11975,17 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
       if(GONEW[ch.theme]) ch.theme='spellbound'; });
     if(GONEW[state.theme]) state.theme='spellbound';
   }catch(e){}
+  /* Sep-30: Aurora became a STARTER world — onboarding now offers two, so the second one
+     had to stop costing 400 🪙. Everyone who bought it before that bought a thing we then
+     gave away, so they get the full price back. Dropping 'aurora' from the owned list is
+     both the refund receipt and the reason this cannot pay twice: FREE_THEMES makes
+     isThemeUnlocked() true for it regardless, so nothing is taken away by the removal. */
+  try{ (state.children||[]).forEach(ch=>{ const un=ch.unlockedThemes||[];
+      if(un.indexOf('aurora')<0) return;
+      ch.unlockedThemes=un.filter(t=>t!=='aurora');
+      ch.coins=(ch.coins||0)+COST.theme;
+      ch.auroraRefund=(ch.auroraRefund||0)+COST.theme; });
+  }catch(e){}
   try{ loadVoiceCfg(); }catch(e){}
   try{ loadEvoFB(); }catch(e){}
   try{ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }catch(e){}
@@ -11981,6 +12003,8 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
   try{ const _c=state.children&&state.children[state.activeIdx];
     if(_c && _c.accRefund){ const _n=_c.accRefund; delete _c.accRefund; save();
       setTimeout(()=>{ try{ flash('Bee style has been retired — '+_n+' 🪙 refunded to your purse'); }catch(e){} }, 1400); }
+    if(_c && _c.auroraRefund){ const _a=_c.auroraRefund; delete _c.auroraRefund; save();
+      setTimeout(()=>{ try{ flash('Aurora is free for everyone now — '+_a+' 🪙 back in your purse'); }catch(e){} }, 1600); }
     if(_c && _c.worldRefund){ const _w=_c.worldRefund; delete _c.worldRefund; save();
       setTimeout(()=>{ try{ flash('Some worlds have been retired — '+_w+' 🪙 refunded to your purse'); }catch(e){} }, 1800); }
   }catch(e){}

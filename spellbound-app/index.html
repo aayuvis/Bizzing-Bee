@@ -342,9 +342,9 @@
 }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 64 64%22%3E%3Cellipse cx%3D%2215%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(-24 15 20)%22%2F%3E%3Cellipse cx%3D%2249%22 cy%3D%2220%22 rx%3D%228.5%22 ry%3D%2213%22 fill%3D%22%23EDE7FF%22 stroke%3D%22%23C4B4FF%22 stroke-width%3D%222%22 transform%3D%22rotate(24 49 20)%22%2F%3E%3Cpath d%3D%22M27 17 Q23 7 21 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Cpath d%3D%22M37 17 Q41 7 43 3%22 stroke%3D%22%233A2A8C%22 stroke-width%3D%222.4%22 fill%3D%22none%22 stroke-linecap%3D%22round%22%2F%3E%3Ccircle cx%3D%2221%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Ccircle cx%3D%2243%22 cy%3D%223%22 r%3D%222.6%22 fill%3D%22%23FFC83D%22%2F%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22 fill%3D%22%23FFC23D%22%2F%3E%3Cellipse cx%3D%2224%22 cy%3D%2230%22 rx%3D%2211%22 ry%3D%227%22 fill%3D%22%23FFD86E%22 opacity%3D%22.55%22%2F%3E%3CclipPath id%3D%22b%22%3E%3Cellipse cx%3D%2232%22 cy%3D%2239%22 rx%3D%2222%22 ry%3D%2223%22%2F%3E%3C%2FclipPath%3E%3Cg clip-path%3D%22url(%23b)%22%3E%3Crect x%3D%225%22 y%3D%2245%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3Crect x%3D%225%22 y%3D%2256%22 width%3D%2254%22 height%3D%227%22 fill%3D%22%233A2A8C%22%2F%3E%3C%2Fg%3E%3Cellipse cx%3D%2217%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Cellipse cx%3D%2247%22 cy%3D%2243%22 rx%3D%224%22 ry%3D%222.5%22 fill%3D%22%23FF7FBE%22 opacity%3D%22.85%22%2F%3E%3Ccircle cx%3D%2224%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2225.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2224.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2240%22 cy%3D%2237%22 r%3D%227%22 fill%3D%22%23fff%22%2F%3E%3Ccircle cx%3D%2241.4%22 cy%3D%2238%22 r%3D%223.4%22 fill%3D%22%232B1B5E%22%2F%3E%3Ccircle cx%3D%2240.3%22 cy%3D%2236.6%22 r%3D%221.1%22 fill%3D%22%23fff%22%2F%3E%3Cpath d%3D%22M26 49 Q32 55 40 49%22 fill%3D%22none%22 stroke%3D%22%233A1E5C%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="fonts/fonts.css?v=20260930b">
-<link rel="stylesheet" href="tokens.css?v=20260930b">
-<link rel="stylesheet" href="worlds4.css?v=20260930b">
+<link rel="stylesheet" href="fonts/fonts.css?v=20260930c">
+<link rel="stylesheet" href="tokens.css?v=20260930c">
+<link rel="stylesheet" href="worlds4.css?v=20260930c">
 
 <style>
   *{box-sizing:border-box}
@@ -2296,8 +2296,63 @@
   .b2-wrap{grid-template-columns:minmax(0,1fr)}
   .b2-wrap>div:first-child{position:static;max-height:none}
 }
+
+/* ── THE ONBOARDING FRAME ────────────────────────────────────────────────────
+   One decision per screen, and the screen is three bands: progress at the top,
+   the question in the middle, the actions in the thumb zone.
+
+   It used to be a single `place-items:center` stack. On a 430×900 phone that
+   put ~290px of nothing above the first word, and — because the dev banner sits
+   ABOVE a child that asks for min-height:100dvh — pushed the Continue button off
+   the bottom edge. Anchored-top plus a sticky action bar survives both: the
+   banner's height now costs a little scroll instead of the primary button. */
+.sb-onb{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column;
+  padding:clamp(10px,2.4vh,20px) clamp(14px,4vw,24px) 0}
+.sb-onb-in{width:100%;max-width:560px;margin:0 auto;flex:1;display:flex;flex-direction:column;min-height:0}
+.sb-onb-head{display:flex;flex-direction:column;align-items:center;gap:9px;padding-bottom:clamp(12px,2.2vh,20px)}
+.sb-onb-step{font-size:10.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+.sb-onb-dots{display:flex;gap:7px;justify-content:center}
+.sb-onb-dot{width:8px;height:8px;border-radius:999px;background:var(--surface2);transition:.25s}
+.sb-onb-dot.done{background:var(--accent)}
+.sb-onb-dot.now{width:26px;background:var(--accent)}
+.sb-onb-card{background:var(--bg2);border:1px solid var(--line);border-radius:20px;
+  padding:clamp(18px,4.6vw,30px);box-shadow:var(--glow)}
+.sb-onb-card h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,5.6vw,25px);margin:0 0 5px;line-height:1.15}
+.sb-onb-card .sb-onb-sub{margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.5}
+.sb-onb-body{display:flex;flex-direction:column}
+.sb-onb-foot{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:auto;
+  position:sticky;bottom:0;padding:14px 0 calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--bg1) 56%,transparent)}
+.sb-onb-foot button{padding:14px 20px;border-radius:14px;font-weight:800;font-size:15px}
+.sb-onb-back{background:var(--surface2);color:var(--text);font-weight:700!important}
+.sb-onb-next{flex:1;max-width:260px;background:var(--accent);color:#fff;box-shadow:var(--edge)}
+@media (min-width:641px){
+  .sb-onb-in{justify-content:center}
+  .sb-onb-body{flex:0 0 auto}
+  .sb-onb-foot{margin-top:18px;position:static;padding:0 0 26px;background:none}
+}
+
+/* THE BUDDY ROW. `avatarSVG(id,70)` writes width="70" height="70" onto the svg or
+   the <img>, and five 70px faces do not fit five 58px tiles — on a phone they
+   overlapped their neighbours and the fifth ran out of the card. The tile is the
+   grid's business and the art fills it; nothing here names a pixel size. */
+.sb-onb-avs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(7px,2.4vw,13px);
+  max-width:440px;margin:0 auto;width:100%}
+.sb-onb-av{position:relative;width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;
+  padding:9%;background:var(--surface2);border:2.5px solid transparent;transition:.15s;cursor:pointer}
+.sb-onb-av:hover{transform:translateY(-2px)}
+.sb-onb-av.on{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.sb-onb-avart{display:block;width:100%;height:100%;line-height:0}
+.sb-onb-avart>svg,.sb-onb-avart>img{width:100%;height:100%;display:block}
+.sb-onb-avname{margin:11px 0 16px;text-align:center;font-family:var(--display);font-weight:800;font-size:18px;min-height:23px}
+/* The chosen buddy, big enough to actually see. The picker row below is 61px on a
+   phone — a size at which a frog and a dinosaur are two green smudges. */
+.sb-onb-hero{width:clamp(118px,33vw,158px);aspect-ratio:1;margin:0 auto;line-height:0}
+.sb-onb-hero>svg,.sb-onb-hero>img{width:100%;height:100%;display:block}
+.sb-onb-art{width:clamp(104px,28vw,132px);aspect-ratio:1;margin:0 auto clamp(6px,1.8vw,12px);line-height:0}
+.sb-onb-art>svg,.sb-onb-art>img{width:100%;height:100%;display:block}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20260930b">
+  <link rel="stylesheet" href="saga2.css?v=20260930c">
 </head>
 <body>
 <script>
@@ -2726,9 +2781,9 @@
 <p style="margin:28px 0 0;font-size:12.5px;color:#5A5470;line-height:1.55">Bizzing&trade; and Bizzing Bee&trade; are trademarks of the Bizzing Bee developer. Bizzing Bee is an independent study tool and is not affiliated with, sponsored by or endorsed by the Scripps National Spelling Bee, the North South Foundation or Merriam-Webster.</p>
 </main>
 </div>
-<script defer src="icons.js?v=20260930b"></script>
-<script defer src="icons-art.js?v=20260930b"></script>
-<script defer src="cover-art.js?v=20260930b"></script>
+<script defer src="icons.js?v=20260930c"></script>
+<script defer src="icons-art.js?v=20260930c"></script>
+<script defer src="cover-art.js?v=20260930c"></script>
 <script>/* Deferred scripts run after parsing, so this call has to wait for them —
    inline script runs at parse time and would find SB_ICON_MOTION undefined. The old
    try/catch would have swallowed that silently and simply left icon motion off. */
@@ -2781,47 +2836,47 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 </script>
 <!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
      carries a project URL and anon key, so shipping them changes nothing yet. -->
-<script defer src="sb-config.js?v=20260930b"></script>
-<script defer src="voice-cdn.js?v=20260930b"></script>
-<script>window.SB_ASSET_V="?v=20260930b";</script>
+<script defer src="sb-config.js?v=20260930c"></script>
+<script defer src="voice-cdn.js?v=20260930c"></script>
+<script>window.SB_ASSET_V="?v=20260930c";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script defer src="boot-lazy.js?v=20260930b"></script>
-<script defer src="words-data.js?v=20260930b"></script>
-<script defer src="words-extra.js?v=20260930b"></script>
-<script defer src="words-patch.js?v=20260930b"></script>
-<script defer src="themes-data.js?v=20260930b"></script>
-<script defer src="quotes.js?v=20260930b"></script>
-<script defer src="trivia-icons.js?v=20260930b"></script>
-<script defer src="trivia-data.js?v=20260930b"></script>
-<script defer src="tips-data.js?v=20260930b"></script>
-<script defer src="voice-manifest.js?v=20260930b"></script>
-<script defer src="voice-adv-manifest.js?v=20260930b"></script>
-<script defer src="voice-review.js?v=20260930b"></script>
-<script defer src="app.js?v=20260930b"></script>
-<script defer src="avatars-art.js?v=20260930b"></script>
-<script defer src="avatar-png.js?v=20260930b"></script>
-<script defer src="game-art.js?v=20260930b"></script>
-<script defer src="avatars.js?v=20260930b"></script>
-<script defer src="avatar-greetings.js?v=20260930b"></script>
-<script defer src="avatar-cards.js?v=20260930b"></script>
-<script defer src="app2.js?v=20260930b"></script>
-<script defer src="pricing.js?v=20260930b"></script>
-<script defer src="auth.js?v=20260930b"></script>
-<script defer src="supabase-auth.js?v=20260930b"></script>
-<script defer src="telemetry.js?v=20260930b"></script>
-<script defer src="app3.js?v=20260930b"></script>
-<script defer src="worlds4.js?v=20260930b"></script>
-<script defer src="mockbee.js?v=20260930b"></script>
-  <script defer src="games-daily.js?v=20260930b"></script>
-  <script defer src="saga-art/saga-art.js?v=20260930b"></script>
-  <script defer src="saga-art/saga-map.js?v=20260930b"></script>
-  <script defer src="saga-art/worlds-art.js?v=20260930b"></script>
-  <script defer src="saga-art-dom.js?v=20260930b"></script>
-  <script defer src="saga2.js?v=20260930b"></script>
-<script defer src="trivia.js?v=20260930b"></script>
-<script defer src="advanced.js?v=20260930b"></script>
-<script defer src="trail.js?v=20260930b"></script>
+<script defer src="boot-lazy.js?v=20260930c"></script>
+<script defer src="words-data.js?v=20260930c"></script>
+<script defer src="words-extra.js?v=20260930c"></script>
+<script defer src="words-patch.js?v=20260930c"></script>
+<script defer src="themes-data.js?v=20260930c"></script>
+<script defer src="quotes.js?v=20260930c"></script>
+<script defer src="trivia-icons.js?v=20260930c"></script>
+<script defer src="trivia-data.js?v=20260930c"></script>
+<script defer src="tips-data.js?v=20260930c"></script>
+<script defer src="voice-manifest.js?v=20260930c"></script>
+<script defer src="voice-adv-manifest.js?v=20260930c"></script>
+<script defer src="voice-review.js?v=20260930c"></script>
+<script defer src="app.js?v=20260930c"></script>
+<script defer src="avatars-art.js?v=20260930c"></script>
+<script defer src="avatar-png.js?v=20260930c"></script>
+<script defer src="game-art.js?v=20260930c"></script>
+<script defer src="avatars.js?v=20260930c"></script>
+<script defer src="avatar-greetings.js?v=20260930c"></script>
+<script defer src="avatar-cards.js?v=20260930c"></script>
+<script defer src="app2.js?v=20260930c"></script>
+<script defer src="pricing.js?v=20260930c"></script>
+<script defer src="auth.js?v=20260930c"></script>
+<script defer src="supabase-auth.js?v=20260930c"></script>
+<script defer src="telemetry.js?v=20260930c"></script>
+<script defer src="app3.js?v=20260930c"></script>
+<script defer src="worlds4.js?v=20260930c"></script>
+<script defer src="mockbee.js?v=20260930c"></script>
+  <script defer src="games-daily.js?v=20260930c"></script>
+  <script defer src="saga-art/saga-art.js?v=20260930c"></script>
+  <script defer src="saga-art/saga-map.js?v=20260930c"></script>
+  <script defer src="saga-art/worlds-art.js?v=20260930c"></script>
+  <script defer src="saga-art-dom.js?v=20260930c"></script>
+  <script defer src="saga2.js?v=20260930c"></script>
+<script defer src="trivia.js?v=20260930c"></script>
+<script defer src="advanced.js?v=20260930c"></script>
+<script defer src="trail.js?v=20260930c"></script>
 </body>
 </html>
