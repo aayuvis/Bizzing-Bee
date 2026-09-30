@@ -56,6 +56,7 @@
     if(c.gap) c.gap=Math.round(c.gap*1.25);
     if(c.rate) c.rate=+(c.rate*1.4).toFixed(2);
     if(c.haz) c.haz=+(c.haz*0.6).toFixed(4);
+    if(c.pull) c.pull=+(c.pull*0.7).toFixed(2);   // Grand Prix: calm bends push out less
     return c; }
 
   /* ===== Evolution ladders — every saga game shows the hero evolving as the speller
@@ -1233,9 +1234,9 @@
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
     // three scenarios: each is its own painted sky + road/grass palette
     const SCENES={
-      meadow:{sky:'gp-sky',  prop:'tree',    light:{road:'#6C6C74',roadWear:'#5E5E67',verge:'#93A86B',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',roadWear:'#585860',verge:'#8B9E64',grass:'#72B461',rumble:'#C7413F',lane:''}},
-      sunset:{sky:'gp-sunset',prop:'cactus',  light:{road:'#6B5A63',roadWear:'#5D4E56',verge:'#D8A96E',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',roadWear:'#56474F',verge:'#CB9C63',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
-      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',roadWear:'#454552',verge:'#3E4870',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',roadWear:'#3E3E47',verge:'#374063',grass:'#2C3452',rumble:'#C452C4',lane:''}}
+      meadow:{sky:'gp-sky',  prop:'tree',    light:{road:'#6C6C74',roadWear:'#65656E',verge:'#93A86B',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',roadWear:'#5E5E66',verge:'#8B9E64',grass:'#72B461',rumble:'#C7413F',lane:''}},
+      sunset:{sky:'gp-sunset',prop:'cactus',  light:{road:'#6B5A63',roadWear:'#64545C',verge:'#D8A96E',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',roadWear:'#5D4D55',verge:'#CB9C63',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
+      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',roadWear:'#4B4B58',verge:'#3E4870',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',roadWear:'#43434D',verge:'#374063',grass:'#2C3452',rumble:'#C452C4',lane:''}}
     };
     const SCN=SCENES[opts.scene]||SCENES.meadow;
     const SKY=SCN.sky, NIGHT=(opts.scene==='city');
@@ -1244,16 +1245,17 @@
        agree about how far away "far" looks. */
     const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
-    /* `bite` is how hard a bend pulls at TOP speed (see SPEED_BITE below). It is the
-       difficulty dial that actually changes the driving: rivals and hazards change who
-       you are racing, this changes whether the corner is a decision. Measured against a
-       driver who reacts in ~300ms with no anticipation — a child, not a bot — 3.0 put
-       them in the grass seven times in fifty seconds, which is the right shape for the
-       top of the ladder and far too much for the bottom of it. */
-    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280,bite:1.35},
-               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300,bite:2.10},
-               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320,bite:2.90},
-               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340,bite:3.60}}[diff]);
+    /* `pull` is how hard a bend pushes you out, in road half-widths a second per unit of
+       curve, FLAT OUT. It is the difficulty dial that changes the driving: rivals and
+       hazards change who you are racing, this changes whether a corner is a decision.
+       On the tightest bend (curve 5) at top speed it asks for 75% of full lock on easy,
+       105% on medium, 118% on hard and 130% on champ — so easy holds flat out, medium only
+       just, hard wants a lift and champ wants the brake. Hands-off, medium is on the grass
+       at the first bend (4.7s); easy gives a small child about thirteen seconds. */
+    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280,pull:0.33},
+               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300,pull:0.46},
+               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320,pull:0.52},
+               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340,pull:0.57}}[diff]);
     host.innerHTML=
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
@@ -1327,25 +1329,21 @@
     const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
 
     /* ---- racers: the villains ---- */
-    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2, CPUSH=0.30, DRIFT_HALF=2.4, GRIP_HALF=0.55;
-    const SPEED_BITE=CFG.bite, BRAKE_GRIP=0.55, BRAKE_HALF=0.9;
-    /* THE CAMERA LAGS, AND IT NEVER FULLY CATCHES UP.
-       It used to sit exactly on the kart (camX=playerX*roadW) with the kart drawn at
-       Wd/2, so the kart NEVER MOVED ON SCREEN. Steer and the world slid; drift off the
-       tarmac and the world slid; the car stayed dead centre through all of it. Play-
-       tested in one sentence: "the car starts to drive itself with the road curving, I
-       don't have to take any action." The physics was fine — hands off, the kart is in
-       the grass inside two seconds — but NONE OF IT WAS VISIBLE, so there was nothing
-       to answer and no way to see yourself answering it.
-       Two terms fix that. FOLLOW < 1 means the camera only ever takes part of the
-       kart's offset, so a kart on the grass is DRAWN on the grass instead of being
-       re-centred onto a road it has left. The half-life adds the transient: whip the
-       wheel and the kart swings out across the screen before the camera gathers it up,
-       which is the feedback a racer runs on. */
-    const CAM_FOLLOW=0.55, CAM_HALF=0.30;
-    let pos=0, playerX=0, drift=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
+    const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2;
+    const PULL=CFG.pull;
+    /* THE CAMERA FOLLOWS — MOST OF THE WAY, ALMOST AT ONCE.
+       Welded to the kart (camX=playerX*roadW, kart at Wd/2) a kart on the grass was
+       re-centred onto a road it had left. The fix for that went too far: FOLLOW 0.55 with a
+       0.30s half-life made the kart SWIM — let go of the wheel and it kept gliding across the
+       screen for most of a second while the camera caught up, which on a phone is motion
+       nobody asked for and reads as the car steering itself. 0.85 / 0.08s keeps what the lag
+       was for (the kart visibly moves before the world does, and a kart on the grass is
+       drawn on the grass) without the glide. */
+    const CAM_FOLLOW=0.85, CAM_HALF=0.08;
+    let pos=0, playerX=0, push=0, v=0, over=false, mode='howto', lap=1, hudT=1; // howto -> count -> race -> spell -> done
     let camLag=0;                     // where the camera actually is, in road half-widths
     let _kartPx=0;                    // the kart's drawn screen x, read by the feel probe
+    let _join=null;                   // where the near road hands over to the far ribbon, read by the seam probe
     let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
     const heroKart=HERO;
     const VILL=[
@@ -1387,7 +1385,7 @@
     const feed=wordFeed(60);
     const gpRound=[];                      // the race's words, read by finish()
     function spellGate(){
-      mode='spell';
+      mode='spell'; letGo();
       const w=feed.next();
       const p=POWERS[Math.floor(Math.random()*POWERS.length)];
       const el=host.querySelector('#sg-card');
@@ -1412,29 +1410,50 @@
     }
     function resume(){ countT=1.0; mode='count'; }
 
-    /* ---- steering ---- */
+    /* ---- steering ----
+       WHAT IS HELD, NOT WHAT HAPPENED LAST. The old handlers set steer on a press and zeroed
+       it on ANY release, so rolling from Left to Right (press Right, then let go of Left) left
+       the kart going straight with Right still held down. And a touch the browser turns into
+       a gesture ends in pointercancel, which nothing listened for — the wheel stayed full over
+       until the next tap. Each input now registers in `wheel` (a Map: the last one pressed
+       wins) and every way an input can end removes it. */
     let steer=0, braking=false;
-    const setSteer=s=>{ steer=s; };
-    const setBrake=b=>{ braking=!!b; };
+    const wheel=new Map(), pedal=new Set();
+    const reSteer=()=>{ let s=0; wheel.forEach(d=>{ s=d; }); steer=s; };
+    const press=(id,d)=>{ wheel.delete(id); wheel.set(id,d); reSteer(); };
+    const lift=id=>{ if(wheel.delete(id)) reSteer(); };
+    const brakeOn=id=>{ pedal.add(id); braking=true; };
+    const brakeOff=id=>{ pedal.delete(id); braking=pedal.size>0; };
+    const letGo=()=>{ wheel.clear(); pedal.clear(); steer=0; braking=false; };
+    /* A pointer is CAPTURED on press, so a thumb that wanders off a 60px button keeps
+       steering; and it ends on up, cancel or lost capture — never silently. */
+    const hold=(el,down,up)=>{
+      el.addEventListener('pointerdown',e=>{ if(down(e)===false) return;
+        try{ el.setPointerCapture(e.pointerId); }catch(_){}
+        if(e.preventDefault) e.preventDefault(); });
+      ['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,up));
+      el.addEventListener('pointerleave',e=>{ if(!(el.hasPointerCapture&&el.hasPointerCapture(e.pointerId))) up(e); }); };
     const brk=host.querySelector('#sg-brk');
-    if(brk){ const on=e=>{ setBrake(true); e.preventDefault&&e.preventDefault(); };
-      brk.addEventListener('pointerdown',on);
-      brk.addEventListener('pointerup',()=>setBrake(false));
-      brk.addEventListener('pointerleave',()=>setBrake(false));
-      brk.addEventListener('pointercancel',()=>setBrake(false)); }
+    if(brk) hold(brk, e=>brakeOn('p'+e.pointerId), e=>brakeOff('p'+e.pointerId));
     host.querySelectorAll('.sg-sbtn[data-s]').forEach(b=>{ const s=+b.dataset.s;
-      b.addEventListener('pointerdown',e=>{ setSteer(s); e.preventDefault&&e.preventDefault(); });
-      b.addEventListener('pointerup',()=>setSteer(0)); b.addEventListener('pointerleave',()=>setSteer(0)); });
-    const kd=e=>{ if(e.target&&e.target.tagName==='INPUT') return;
-      if(e.key==='ArrowLeft'||e.key==='a'){ setSteer(-1); e.preventDefault(); }
-      else if(e.key==='ArrowRight'||e.key==='d'){ setSteer(1); e.preventDefault(); }
-      else if(e.key==='ArrowDown'||e.key==='s'){ setBrake(true); e.preventDefault(); }
-      else if(e.key===' '){ fireHeld(); e.preventDefault(); } };
-    const ku=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='ArrowRight'||e.key==='d') setSteer(0);
-      if(e.key==='ArrowDown'||e.key==='s') setBrake(false); };
+      hold(b, e=>press('p'+e.pointerId,s), e=>lift('p'+e.pointerId)); });
+    const kd=e=>{ if(e.target&&e.target.tagName==='INPUT') return; const k=e.key;
+      if(k==='ArrowLeft'||k==='a'){ e.preventDefault(); if(!e.repeat) press('kL',-1); }
+      else if(k==='ArrowRight'||k==='d'){ e.preventDefault(); if(!e.repeat) press('kR',1); }
+      else if(k==='ArrowDown'||k==='s'){ e.preventDefault(); brakeOn('k'); }
+      else if(k===' '){ fireHeld(); e.preventDefault(); } };
+    const ku=e=>{ const k=e.key;
+      if(k==='ArrowLeft'||k==='a') lift('kL');
+      if(k==='ArrowRight'||k==='d') lift('kR');
+      if(k==='ArrowDown'||k==='s') brakeOff('k'); };
+    /* a window that loses focus never hears the keyup — so let go of everything */
+    const onVis=()=>{ if(document.visibilityState==='hidden') letGo(); };
     addEventListener('keydown',kd); addEventListener('keyup',ku);
-    cv.addEventListener('pointerdown',e=>{ if(mode!=='race'&&mode!=='count') return; const r=cv.getBoundingClientRect(); setSteer((e.clientX-r.left)<Wd/2?-1:1); });
-    cv.addEventListener('pointerup',()=>setSteer(0)); cv.addEventListener('pointerleave',()=>setSteer(0));
+    addEventListener('blur',letGo); document.addEventListener('visibilitychange',onVis);
+    hold(cv, e=>{ if(mode!=='race'&&mode!=='count') return false; const r=cv.getBoundingClientRect();
+      press('p'+e.pointerId,(e.clientX-r.left)<Wd/2?-1:1); }, e=>lift('p'+e.pointerId));
+    const unbind=()=>{ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
+      removeEventListener('blur',letGo); document.removeEventListener('visibilitychange',onVis); };
 
     /* ---- projection + drawing ---- */
     function project(p,camX,camY,camZ){ p.camera.x=(p.world.x||0)-camX; p.camera.y=(p.world.y||0)-camY; p.camera.z=(p.world.z||0)-camZ;
@@ -1448,24 +1467,32 @@
       r=Math.max(0,Math.min(255,Math.round(r*f))); g=Math.max(0,Math.min(255,Math.round(g*f))); b=Math.max(0,Math.min(255,Math.round(b*f)));
       return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
     function rrp(x,y,w,h,rad){ cx.beginPath(); if(cx.roundRect){ cx.roundRect(x,y,w,h,rad); } else { cx.rect(x,y,w,h); } }
-    /* AERIAL PERSPECTIVE. Distance is the depth cue this road did not have: tarmac at
-       the horizon was the identical grey as tarmac under the bumper, so a kilometre of
-       track read as a flat ribbon laid on a flat field. Everything now mixes toward the
-       scene's own fog colour with distance — the same FOG_RGB the sky and the haze band
-       already use, so the road, the verge and the air agree about how far away far is.
-       Quantised to 24 buckets and cached: ~100 segments a frame would otherwise be 100
-       string builds, and the frame budget here is already spoken for. */
-    const FOGRGB=FOG_RGB.split(',').map(Number);
+    /* AERIAL PERSPECTIVE, BY DISTANCE — ONE FUNCTION FOR THE WHOLE ROAD.
+       Everything mixes toward the scene's own FOG_RGB with distance, the colour the sky and
+       the haze band already use. The first version faded the near road by n/drawDist — 82%
+       sky by the hundredth segment — and never fogged the far ribbon at all, so the road
+       went nearly white and then snapped back to bare tarmac: a hard seam straight across
+       the screen, the "two tone road". Fog is now 1-e^(-n/K) of the SEGMENT DISTANCE, used
+       by both loops, so the two halves meet at one colour and it keeps thickening all the
+       way to the horizon. 32 buckets, cached. */
+    const FOGRGB=FOG_RGB.split(',').map(Number), FOG_MAX=0.78, FOG_K=180;
     const _fogCache=new Map();
-    function fogged(col,t){
-      const b=Math.max(0,Math.min(23,Math.round(t*23)));
-      const key=col+b; let v=_fogCache.get(key); if(v) return v;
-      const n=parseInt(col.slice(1),16), f=b/23*0.82;
-      const r=Math.round(((n>>16)&255)*(1-f)+FOGRGB[0]*f);
-      const g=Math.round(((n>>8)&255)*(1-f)+FOGRGB[1]*f);
-      const bl=Math.round((n&255)*(1-f)+FOGRGB[2]*f);
+    function fogged(col,n){
+      const b=Math.round((1-Math.exp(-Math.max(0,n)/FOG_K))*31);
+      const key=col+'|'+b; let v=_fogCache.get(key); if(v) return v;
+      const c=parseInt(col.slice(1),16), f=b/31*FOG_MAX;
+      const r=Math.round(((c>>16)&255)*(1-f)+FOGRGB[0]*f);
+      const g=Math.round(((c>>8)&255)*(1-f)+FOGRGB[1]*f);
+      const bl=Math.round((c&255)*(1-f)+FOGRGB[2]*f);
       v='#'+((1<<24)+(r<<16)+(g<<8)+bl).toString(16).slice(1);
       _fogCache.set(key,v); return v; }
+    /* the average of two palette colours — what alternating bands look like from far off */
+    const mixHex=(a,b)=>{ const x=parseInt(a.slice(1),16), y=parseInt(b.slice(1),16);
+      const m=sh=>Math.round((((x>>sh)&255)+((y>>sh)&255))/2);
+      return '#'+((1<<24)+(m(16)<<16)+(m(8)<<8)+m(0)).toString(16).slice(1); };
+    const VERGE=0.24;
+    const FAR={road:mixHex(LIGHT.road,DARK.road), rumble:mixHex(LIGHT.rumble,DARK.rumble),
+               verge:mixHex(LIGHT.verge,DARK.verge), wear:mixHex(LIGHT.roadWear,DARK.roadWear)};
     function drawKart(px,baseY,w,col,rider,o){ o=o||{}; const h=w*0.82;
       cx.save(); cx.fillStyle='rgba(0,0,0,.32)'; cx.beginPath(); cx.ellipse(px,baseY-(o.kart?w*0.02:1),w*0.64,w*0.17,0,0,7); cx.fill(); cx.restore();
       if(o.boost){ const fl=w*(0.55+Math.random()*0.3); const fg=cx.createLinearGradient(0,baseY-h*0.2,0,baseY+fl);
@@ -1579,6 +1606,7 @@
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       let _lastSeg=null;                  // the furthest road band actually drawn
       let _nearW=0;                       // the nearest band's half-width, in pixels
+      _join=null;
       /* camLag, not playerX — see CAM_FOLLOW. Welding the camera to the kart drew it
          dead centre no matter where it was, which is what "it drives itself" was. */
       const camX=camLag*roadW;
@@ -1604,36 +1632,37 @@
           if(gA>0.01){ cx.globalAlpha=0.62*gA; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
         }
         else poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
-        const fogT=n/drawDist;                      // 0 at the bumper, 1 at the horizon
         /* A VERGE. Outside the rumble a real circuit has a strip of worn ground before
            the grass proper — run-off, dust, the bit everyone puts two wheels on. Without
            it the tarmac met an unbroken green plane in one hard line, and a flat field is
            the largest area of flat colour in the frame. Two small opaque polys a segment,
-           right where the eye already is. */
-        if(s1.w>6){ const v1=s1.w*0.46, v2=s2.w*0.46, R1=s1.w*1.18, R2=s2.w*1.18, vc=fogged(c.verge,fogT);
+           right where the eye already is. It was 0.46 of a road-width and olive-grey, which
+           on a phone read as a second, paler ground beside the road; it is a shoulder now. */
+        if(s1.w>6){ const v1=s1.w*VERGE, v2=s2.w*VERGE, R1=s1.w*1.18, R2=s2.w*1.18, vc=fogged(c.verge,n);
           poly(s1.x-R1-v1,s1.y, s2.x-R2-v2,s2.y, s2.x-R2,s2.y, s1.x-R1,s1.y, vc);
           poly(s1.x+R1+v1,s1.y, s2.x+R2+v2,s2.y, s2.x+R2,s2.y, s1.x+R1,s1.y, vc); }
         const r1=s1.w*0.18, r2=s2.w*0.18;
-        poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, fogged(c.rumble,fogT));
-        poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, fogged(c.rumble,fogT));
-        poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, fogged(c.road,fogT));
+        poly(s1.x-s1.w-r1,s1.y, s2.x-s2.w-r2,s2.y, s2.x-s2.w,s2.y, s1.x-s1.w,s1.y, fogged(c.rumble,n));
+        poly(s1.x+s1.w+r1,s1.y, s2.x+s2.w+r2,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, fogged(c.rumble,n));
+        poly(s1.x-s1.w,s1.y, s2.x-s2.w,s2.y, s2.x+s2.w,s2.y, s1.x+s1.w,s1.y, fogged(c.road,n));
         /* THE RACING LINE. Two strips of tarmac worn darker where every kart has been,
            which is the detail that stops a road reading as a painted grey ribbon: it
            gives the surface a history and the eye something to track through a bend.
-           Drawn only while the band is wide enough to be more than a smear. */
-        if(s1.w>14){ const RL=0.46, rw1=s1.w*0.115, rw2=s2.w*0.115, wl=fogged(c.roadWear,fogT);
+           Drawn only while the band is wide enough to be more than a smear, and only ~6
+           levels darker than the tarmac: at 14 it read as a second colour of road. */
+        if(s1.w>14){ const RL=0.46, rw1=s1.w*0.115, rw2=s2.w*0.115, wl=fogged(c.roadWear,n);
           poly(s1.x-s1.w*RL-rw1,s1.y, s2.x-s2.w*RL-rw2,s2.y, s2.x-s2.w*RL+rw2,s2.y, s1.x-s1.w*RL+rw1,s1.y, wl);
           poly(s1.x+s1.w*RL-rw1,s1.y, s2.x+s2.w*RL-rw2,s2.y, s2.x+s2.w*RL+rw2,s2.y, s1.x+s1.w*RL+rw1,s1.y, wl); }
         /* a solid white edge line inside each rumble — real tracks have one, and it is
            what makes the road's WIDTH readable at speed instead of a grey mass */
-        if(s1.w>10){ const el=fogged('#F4F2EA',fogT), e1=s1.w*0.022, e2=s2.w*0.022, EO=0.93;
+        if(s1.w>10){ const el=fogged('#F4F2EA',n), e1=s1.w*0.022, e2=s2.w*0.022, EO=0.93;
           poly(s1.x-s1.w*EO-e1,s1.y, s2.x-s2.w*EO-e2,s2.y, s2.x-s2.w*EO+e2,s2.y, s1.x-s1.w*EO+e1,s1.y, el);
           poly(s1.x+s1.w*EO-e1,s1.y, s2.x+s2.w*EO-e2,s2.y, s2.x+s2.w*EO+e2,s2.y, s1.x+s1.w*EO+e1,s1.y, el); }
-        if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, fogged(c.lane,fogT)); }
+        if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, fogged(c.lane,n)); }
         // checkered finish strip
         if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
-        _lastSeg={x:s2.x,y:s2.y,w:s2.w,c:c};
+        _lastSeg={x:s2.x,y:s2.y,w:s2.w,c:c}; _join=_lastSeg;
       }
       /* THE ROAD MEETS THE HORIZON AT A POINT — BY PROJECTION, NOT BY A WEDGE.
          drawDist segments end ~108px short of the horizon and still ~165px wide; that
@@ -1646,10 +1675,14 @@
          screen pixel. ~110 polygons for a road that genuinely bends with the track all
          the way down to a sub-pixel sliver at the horizon. */
       if(_lastSeg){
-        /* one FIXED colour set for the whole far ribbon: it used to inherit the last
-           segment's colour, which alternates light/dark every rumbleLen segments — so at
-           speed the entire distant road strobed ~15x a second. */
-        const c=LIGHT;
+        /* ONE colour set for the whole far ribbon, and it is the AVERAGE of the light and
+           dark bands: out here a band is a sliver covering several segments, so inheriting
+           the alternation strobed the distant road ~15x a second — but plain LIGHT is not
+           what the eye sees either (red-and-white kerb far off reads pink, not white). Fogged
+           by the same fogged(col,n) as the near road, and it carries the same verge, edge
+           lines and racing line while they are wide enough to see, so nothing stops at the
+           join. */
+        const c=FAR;
         let pxD=_lastSeg.x, pwD=_lastSeg.w, pyD=_lastSeg.y;
         let n=drawDist;
         while(pyD>horizonY+1 && n<6000){
@@ -1664,14 +1697,23 @@
           /* no grass band out here — the ground gradient (and the painting through it)
              already owns the far field, and ~110 alpha-blended full-width polys a frame
              is what pushed p99 from 17ms to 33. Rumble stops once it is a sliver. */
-          if(w>3){ const r1=pwD*0.18, r2=w*0.18;
-            poly(pxD-pwD-r1,pyD, xs-w-r2,y, xs-w,y, pxD-pwD,pyD, c.rumble);
-            poly(pxD+pwD+r1,pyD, xs+w+r2,y, xs+w,y, pxD+pwD,pyD, c.rumble); }
-          poly(pxD-pwD,pyD, xs-w,y, xs+w,y, pxD+pwD,pyD, c.road);
+          if(w>3){ const r1=pwD*0.18, r2=w*0.18, rc=fogged(c.rumble,n);
+            const V1=pwD*1.18, V2=w*1.18, g1=pwD*VERGE, g2=w*VERGE, vc=fogged(c.verge,n);
+            poly(pxD-V1-g1,pyD, xs-V2-g2,y, xs-V2,y, pxD-V1,pyD, vc);
+            poly(pxD+V1+g1,pyD, xs+V2+g2,y, xs+V2,y, pxD+V1,pyD, vc);
+            poly(pxD-pwD-r1,pyD, xs-w-r2,y, xs-w,y, pxD-pwD,pyD, rc);
+            poly(pxD+pwD+r1,pyD, xs+w+r2,y, xs+w,y, pxD+pwD,pyD, rc); }
+          poly(pxD-pwD,pyD, xs-w,y, xs+w,y, pxD+pwD,pyD, fogged(c.road,n));
+          if(w>14){ const RL=0.46, a1=pwD*0.115, a2=w*0.115, wl=fogged(c.wear,n);
+            poly(pxD-pwD*RL-a1,pyD, xs-w*RL-a2,y, xs-w*RL+a2,y, pxD-pwD*RL+a1,pyD, wl);
+            poly(pxD+pwD*RL-a1,pyD, xs+w*RL-a2,y, xs+w*RL+a2,y, pxD+pwD*RL+a1,pyD, wl); }
+          if(w>10){ const el=fogged('#F4F2EA',n), e1=pwD*0.022, e2=w*0.022, EO=0.93;
+            poly(pxD-pwD*EO-e1,pyD, xs-w*EO-e2,y, xs-w*EO+e2,y, pxD-pwD*EO+e1,pyD, el);
+            poly(pxD+pwD*EO-e1,pyD, xs+w*EO-e2,y, xs+w*EO+e2,y, pxD+pwD*EO+e1,pyD, el); }
           pxD=xs; pwD=w; pyD=y;
         }
         // whatever sub-pixel sliver remains, closed to its own point
-        if(pyD>hzY()) poly(pxD-pwD,pyD, pxD,hzY(), pxD,hzY(), pxD+pwD,pyD, c.road);
+        if(pyD>hzY()) poly(pxD-pwD,pyD, pxD,hzY(), pxD,hzY(), pxD+pwD,pyD, fogged(c.road,n));
       }
       const order=[];
       for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
@@ -1694,9 +1736,9 @@
           const ph=w*0.58, pw2=Math.max(1,w*0.075), bx=o.sx, by=o.sy;
           cx.fillStyle='rgba(30,40,25,.20)';
           cx.beginPath(); cx.ellipse(bx+pw2*0.7,by,pw2*1.9,pw2*0.7,0,0,7); cx.fill();
-          cx.fillStyle=fogged('#F7F5EE',(o.far||0)/drawDist);
+          cx.fillStyle=fogged('#F7F5EE',o.far||0);
           cx.fillRect(bx-pw2/2,by-ph,pw2,ph);
-          cx.fillStyle=fogged('#D8452F',(o.far||0)/drawDist);
+          cx.fillStyle=fogged('#D8452F',o.far||0);
           cx.fillRect(bx-pw2/2,by-ph*0.86,pw2,Math.max(1,ph*0.17));
           cx.globalAlpha=1; return; }
         cx.save(); cx.beginPath(); cx.rect(0,0,Wd,o.clip||Ht); cx.clip();
@@ -1807,7 +1849,7 @@
       const pw=Wd*0.115, py=Ht-Math.max(26,pw*0.34);
       const px=Wd/2 + (playerX-camLag)*(_nearW||Wd*0.42);
       _kartPx=px;                       // for the headless feel probe: where it DREW
-      cx.save(); cx.translate(px,py); cx.rotate(steer*0.13 - Math.max(-0.5,Math.min(0.5,drift))*0.10);
+      cx.save(); cx.translate(px,py); cx.rotate(steer*0.13 - Math.max(-1,Math.min(1,push/2))*0.08);
       drawKart(0,0,pw,'#F0B429',{av:heroKart},{boost:boostT>0,kart:KART,tint:opts.tint});
       cx.restore();
       if(shieldT>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=3; cx.beginPath(); cx.ellipse(px,py-pw*0.34,pw*0.62,pw*0.5,0,0,7); cx.stroke();
@@ -1894,42 +1936,25 @@
          2.2 — the road crosses in 0.9s, a tap still nudges, and the kart answers. */
       const dxs=dt*2.2*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
-      /* THE KART GOES STRAIGHT; THE ROAD TURNS AWAY UNDER IT — WITH MEMORY.
-         Two earlier models drifted the kart at a rate proportional to the CURRENT curve
-         only. Both still read as self-driving on the real track, and play-testing said
-         so in exactly those words. The reason is the track, not the coefficient: the
-         authored bends are SHORT (about a second) and ALTERNATE direction (-3, +4,
-         -4, +5…), so a memoryless drift pushes the kart most of the way to the edge,
-         then the bend ends, the push stops dead, and the NEXT bend pushes it back.
-         The kart pendulums across the road and never leaves it: rails, again.
-         The missing physics is HEADING. A kart that did not steer through a bend comes
-         out of it still POINTED off the road, and keeps sliding until the driver
-         counter-steers. So `drift` is a persistent lateral velocity:
-           - while the road turns, it builds:  curve x (v/maxV) x CPUSH
-           - it washes out only SLOWLY on its own (half-life 2.4s) — a slide does not fix itself,
-           - and COUNTER-STEERING kills it fast (half-life 0.22s — grip), which is what
-             makes correcting a slide feel like an action rather than a wait.
-         Equilibrium on the hardest bend (curve 5, flat out) is ~1.9 u/s against 2.2 of
-         steering — holdable at 89% of the wheel; and a mid bend (3) now ejects an
-         unsteered kart shortly after the bend, because the slide OUTLIVES the bend. */
-      /* WHY SPEED HAS TO COST SOMETHING. The push was LINEAR in v and so is the
-         steering (dxs scales with v too), so their ratio was CONSTANT: going flat out
-         was exactly as easy as crawling, and a bend could never be a decision. A naive
-         driver — nudge back whenever you have drifted a quarter of the way out — held
-         the road for forty seconds and never came within 0.29 of the edge.
-         SPEED_BITE adds a term that is negligible at half throttle and dominant at the
-         top, so the ladder reads: gentle bends holdable flat out, the big ones want you
-         off the gas. It is added ON TOP of the linear term rather than replacing it,
-         because a pure v-squared model was tried once and read as self-steering at real
-         playing speeds — at half throttle it pulls with a quarter of the force.
-         And BRAKING BUYS GRIP: it cuts the build and shortens the slide's half-life, so
-         the brake is the answer to a corner and not merely a way to go slower. */
+      /* THE ROAD PUSHES YOU OUT — WHILE IT BENDS, AND ONLY THEN.
+         For a while the push had MEMORY: a bend built up a sideways slide that outlived it,
+         with a 2.4s half-life. Measured in the simulator: an unsteered kart moved 0.17
+         road-half-widths a second ON STRAIGHTS, a kart parked in the grass kept being shoved
+         sideways, and a counter-steer at a standstill lost to the stored slide for most of a
+         second. Play-tested in one line: "the car is veering in all random directions". It
+         was — the push you felt belonged to a bend you had already left.
+         So the push has no memory. It is the bend under the kart NOW, times speed squared,
+         times PULL. What that model has to prove is that it is not self-driving — the reason
+         memoryless was dropped the first time is that a weak push pendulums across
+         alternating bends and never leaves the road. PULL is set so it cannot: hands-off,
+         every difficulty is in the grass by the first sector. SQUARED is what makes the brake
+         the answer to a corner (lifting to 80% cuts the push by a third), and what makes a
+         kart that has stopped in the grass steerable straight back out.
+         Against a child who reacts 300ms late and steers back only once clearly drifting,
+         grass time fell 9.6→5.9% on easy, 13.5→6.4% medium, 16.7→7.7% hard, 20.4→11% champ. */
       const vf=v/maxV;
-      drift+=(seg.curve||0)*vf*(1+SPEED_BITE*vf*vf)*(braking?BRAKE_GRIP:1)*dt*CPUSH;
-      const gripping = steer!==0 && steer*drift>0;    // steering against the slide
-      const half = gripping ? GRIP_HALF : (braking ? BRAKE_HALF : DRIFT_HALF);
-      drift*=Math.pow(0.5, dt/half);
-      playerX-=drift*dt;
+      push=(seg.curve||0)*vf*vf*PULL;
+      playerX-=push*dt;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       camLag += ((playerX*CAM_FOLLOW)-camLag)*(1-Math.pow(0.5, dt/CAM_HALF));
       const offRoad=(playerX<-0.95||playerX>0.95);
@@ -1982,7 +2007,7 @@
     /* A race that ends by calling done() hands the child straight back to the app's
        generic text card — no placing, no words, nothing to read. The finish IS the
        race, and this one did not have one. */
-    function finish(){ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
+    function finish(){ unbind();
       const place=1+rivals.filter(r=>r.fin).length;
       const win=place===1, score=(6-place)*250+Math.round(pos/segLen);
       const stars=place===1?3:place===2?2:place===3?1:0;
@@ -2011,10 +2036,23 @@
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,drift,camLag,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,push,drift:push,steer,camLag,join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
-      steerTo:(x)=>{playerX=x;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
+      steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
+      setV:(f)=>{v=maxV*f;}, curveHere:()=>(segs[Math.floor((pos%trackLen)/segLen)]||{}).curve||0,
+      /* handling probes: park the kart at the start of a long straight, or just inside the
+         held part of a tight bend — first-lap positions, measured from the track itself */
+      toStraight:(minLen)=>{ minLen=minLen||90; let run=0; for(let i=0;i<segs.length;i++){ run=(segs[i].curve===0)?run+1:0;
+          if(run>=minLen){ pos=(i-minLen+1)*segLen; return true; } } return false; },
+      /* the end of a tight bend that runs out onto a long straight — where a slide with
+         memory shows itself: the push you feel belongs to a bend you have already left */
+      toBendExit:(minC,minRun)=>{ minC=minC||3; minRun=minRun||55;
+        for(let k=41;k<segs.length;k++){ if(segs[k].curve!==0||segs[k-1].curve===0) continue;
+          let run=0; while(k+run<segs.length&&segs[k+run].curve===0) run++;
+          let peak=0; for(let q=k-40;q<k;q++) peak=Math.max(peak,Math.abs(segs[q].curve));
+          if(run>=minRun&&peak>=minC){ pos=(k-14)*segLen; return Math.sign(segs[k-14].curve)||Math.sign(segs[k-20].curve); } } return 0; },
+      toBend:(minC)=>{ minC=minC||3; for(let i=40;i<segs.length;i++){ if(Math.abs(segs[i].curve)>=minC && Math.abs(segs[i-1].curve)<minC){ pos=i*segLen; return segs[i].curve; } } return 0; },
       toBox:()=>{ const pm=pos%trackLen, it=items.find(x=>!x.gone&&x.seg*segLen>pm+segLen*10);   // capture tooling: line up the next ? box
         if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
       toHaz:(kind)=>{ const pm=pos%trackLen, h=hazards.find(x=>!x.hit&&(!kind||x.kind===kind)&&x.seg*segLen>pm+segLen*12);   // capture tooling: line up the next hazard
@@ -2023,7 +2061,7 @@
       gateNow:()=>{ const pm=pos%trackLen, it=items.find(x=>x.seg*segLen>pm+segLen*14);   // capture tooling: summon ONE gate ahead
         if(it){ it.gone=false; pos+= (it.seg-8)*segLen - pm; playerX=it.off; } } };
     requestAnimationFrame(frame);
-    return { destroy(){ over=true; removeEventListener('keydown',kd); removeEventListener('keyup',ku); } };
+    return { destroy(){ over=true; unbind(); } };
   }
 
   function whackAMoth(host, opts, done){
