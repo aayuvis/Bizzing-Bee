@@ -3162,7 +3162,7 @@ const app = {
     // no tint: karts/heroes carry their own colours (a leftover saved arcColour used to
     // wash the kart sprite oddly). A menu-chosen world overrides the tile's default.
     try{ _arcHandle=engs[k](host, {diff:eDiff, world:gopts.world||g.w, onUnlock, hero:heroAvId,
-        kart:gopts.kart, scene:gopts.scene, layout:gopts.layout, style:gopts.style}, done); }
+        kart:gopts.kart, scene:gopts.scene, layout:gopts.layout, style:gopts.style, autoGo:!!extra.fromMenu}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
     // launched from the start menu → skip the engine's own how-to gate (the menu explained it)
     if(extra.fromMenu){ setTimeout(()=>{ try{ const go=host.querySelector('#sg-howgo'); if(go) go.click(); }catch(_){}} , 90); }
@@ -10731,7 +10731,9 @@ const ARC_HCSTYLE  = [{v:'hive',n:'Golden Hive'},{v:'meadow',n:'Meadow'},{v:'cav
 const ARC_SNAKES=['noodle','sunny','cobra','python','rattler','viper','boa','mamba','seasnake','naga','titanoboa','vasuki'];
 const ARC_SWORLDS=[{v:'forest',n:'Deep Forest',img:'forest'},{v:'pond',n:'Lily Pond',img:'pond'},{v:'cosmos',n:'Cosmos',img:'cosmos'}];
 const ARC_CFG = {
-  beeGrandPrix:{ groups:[
+  /* no hero row: the driver is the speller's own buddy. Choosing a champion out of thirty
+     before every race was a decision in front of the game, not part of it. */
+  beeGrandPrix:{ noHero:true, groups:[
     {key:'kart', label:'Your kart', kind:'kart',  opts:ARC_KARTS},
     {key:'scene',label:'Track',     kind:'scene', opts:ARC_SCENES} ]},
   honeycombRun:{ groups:[
@@ -10808,12 +10810,12 @@ function arcadeMenu(k){
   el.querySelector('.arcm-x').onclick=arcadeClose;
   el.querySelector('#arcm-go').onclick=()=>{
     // remember the per-game choices, but DON'T overwrite the child's app-wide avatar
-    c.arcGame=c.arcGame||{}; c.arcGame[k]={av:selAv,diff:selDiff,opts:{...selOpt}};
+    c.arcGame=c.arcGame||{}; c.arcGame[k]={av:cfg.noHero?null:selAv,diff:selDiff,opts:{...selOpt}};
     c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
     try{ save(); }catch(e){}
     arcadeClose();
     // no colour tint — each kart carries its own colour
-    app.arcadePlay(k,{hero:selAv,opts:{...selOpt},fromMenu:true});
+    app.arcadePlay(k,{hero:cfg.noHero?(c.avatar||'bizzy'):selAv,opts:{...selOpt},fromMenu:true});
   };
 }
 /* Per-game personal best, persisted on the device — gives the competitive speller a

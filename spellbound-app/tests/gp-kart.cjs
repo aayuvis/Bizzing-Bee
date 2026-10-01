@@ -61,7 +61,12 @@ const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEven
     return r; });
   await pg.evaluate(() => { window._race.toStraight(90); window._race.setV(1); window._race.steerTo(0); });
   await pg.waitForTimeout(300); const off = await lamp();
-  await key(pg, 'keydown', 'ArrowDown'); await pg.waitForTimeout(150); const on = await lamp(); await key(pg, 'keyup', 'ArrowDown');
+  /* read the lamps only once braking has been DRAWN: under load 150ms can be two frames,
+     and a pixel read before the frame that lit them measures the timer, not the lamp */
+  await key(pg, 'keydown', 'ArrowDown');
+  await pg.waitForFunction(() => window._race.state().braking, null, { timeout: 2000 });
+  await pg.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r)))));
+  const on = await lamp(); await key(pg, 'keyup', 'ArrowDown');
   const lit = on.every((q, i) => q.R > 200 && q.R - off[i].R > 50 && q.R - q.G > 80);
   ok(lit, `both brake lamps are red and brighten under braking — R ${off.map(q => Math.round(q.R)).join('/')} → ${on.map(q => Math.round(q.R)).join('/')}`);
 

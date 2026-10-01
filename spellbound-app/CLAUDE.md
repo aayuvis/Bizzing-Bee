@@ -763,6 +763,20 @@ handlers. App lives in this folder; open `index.html` to run.
   steering, because parked it never touched. The picker thumbnails are `SB_KART_ART.thumb()`,
   the same drawing (the webp sprites stay only as its fallback). Guards: `tests/gp-kart.cjs`
   (yaw, lamp pixels off/on, dust, thumbnails, no clash mid-steer) and `tests/arcade-geometry.js`.
+- **ON A PHONE THE GRAND PRIX RACES SIDEWAYS (1 Oct).** A phone = coarse pointer and a short
+  side under 560px (tablets race either way up). Held upright, the engine does not build the
+  race at all — `gpTurnFirst` shows "Turn your phone sideways" and starts it on rotation; a
+  race turned upright mid-lap PAUSES under the same card (`paused` gates `update` and the
+  countdown, inputs are let go) and resumes on a one-second countdown. Sideways the canvas
+  is ~2:1 and the full height, with a 96px **gutter each side for the thumbs**: Steer Left in
+  the left gutter, Brake stacked over Steer Right in the right one — no control is ever on the
+  road. The HUD floats over the sky, the arcade bar shrinks to a strip (index.html media
+  query), and the spelling card sits at the TOP because the keyboard takes the bottom half.
+  Because a race that waited for the phone to turn has no click left to skip its how-to, the
+  arcade passes `autoGo` and the engine starts on the countdown itself. **No champion pick:**
+  the Grand Prix menu is `noHero` — the driver is the speller's own buddy (`c.avatar`), and a
+  stale saved menu pick is ignored. Guard: `tests/gp-landscape.cjs` (touch-emulated phone,
+  upright → turned → upright → turned; fails 8 of 11 with the old behaviour put back).
 - **The far road is PROJECTED past drawDist, never patched.** drawDist segments end
   ~108px short of the horizon and 165px wide — a stump against the backdrop. A straight
   wedge to the vanishing point reads as a grey pyramid the moment the road curves. The
