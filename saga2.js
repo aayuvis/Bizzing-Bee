@@ -1423,10 +1423,38 @@
       return (_kThumb[key]=cv.toDataURL('image/png')); }catch(e){ return ''; } }
   W().SB_KART_ART={ draw:kartDraw, thumb:kartThumb, styles:KART_STYLES };
 
+  /* ===== PHONES RACE SIDEWAYS =====
+     Upright, a phone gave the race a 430x390 canvas: a narrow road, the kart under the
+     controls, the bends arriving with no warning. Sideways it gets a 2:1 window with a
+     thumb gutter either side, which is how every phone racer is held. A phone is a touch
+     screen whose short side is under 560px (tablets are fine either way up). Held
+     upright, the race does not start — it asks to be turned, and starts when it is. */
+  const gpPhone=()=>{ try{ return matchMedia('(pointer:coarse)').matches && Math.min(innerWidth,innerHeight)<560; }catch(e){ return false; } };
+  const gpUpright=()=>innerHeight>innerWidth;
+  const GP_TURN='<div class="sg-turn" role="alert"><div class="sg-turn-ph" aria-hidden="true">'+
+    '<svg viewBox="0 0 64 64"><rect x="20" y="6" width="24" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="3.4"/>'+
+    '<rect x="29" y="44" width="6" height="2.6" rx="1.3" fill="currentColor"/></svg></div>'+
+    '<b>Turn your phone sideways</b><span>The Grand Prix races in landscape — more road ahead, and a thumb on each side to steer.</span></div>';
+  function gpTurnFirst(host,start){
+    host.innerHTML=GP_TURN; let inner=null, gone=false, t=0;
+    const check=()=>{ clearTimeout(t); t=setTimeout(()=>{ if(gone||inner||gpUpright()) return; off(); host.innerHTML=''; inner=start(); },150); };
+    const off=()=>{ removeEventListener('resize',check); try{ screen.orientation.removeEventListener('change',check); }catch(e){} };
+    addEventListener('resize',check); try{ screen.orientation.addEventListener('change',check); }catch(e){}
+    return { destroy(){ gone=true; clearTimeout(t); off(); if(inner&&inner.destroy) inner.destroy(); } };
+  }
+
   function beeGrandPrix(host, opts, done){
+    if(gpPhone() && gpUpright()) return gpTurnFirst(host, ()=>beeGrandPrix(host,opts,done));
     // Fill the play area (the steer/hold controls are absolutely overlaid on the canvas,
     // so the canvas can take almost the whole overlay height — no dark letterbox below).
-    const Wd=Math.min(innerWidth-8,1600), Ht=Math.max(340,Math.min(innerHeight-96,Math.round(Wd*0.92)));
+    /* Sideways on a phone the HUD floats over the sky, the arcade bar is a thin strip,
+       and the canvas takes the full height with a GUT-wide gutter each side for the
+       thumbs — so no control ever sits on the road. */
+    const LAND=gpPhone() && !gpUpright(), GUT=LAND?96:0;
+    const top0=LAND?(()=>{ try{ return Math.max(0,host.getBoundingClientRect().top); }catch(e){ return 0; } })():0;
+    const HtL=LAND?Math.max(200,Math.round(innerHeight-top0-4)):0;
+    const Wd=LAND?Math.max(320,Math.min(innerWidth-2*GUT,Math.round(HtL*2.05))):Math.min(innerWidth-8,1600);
+    const Ht=LAND?HtL:Math.max(340,Math.min(innerHeight-96,Math.round(Wd*0.92)));
     const diff=opts.diff||'medium';
     const HERO=(opts.hero)||heroAv();            // the chosen racer shows as the driver + the position marker
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
@@ -1466,6 +1494,7 @@
       '<div class="sg-steer-r"><button class="sg-sbtn sg-brake" id="sg-brk" aria-label="Brake">'+GP_BRAKE()+'</button>'+
       '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div></div>'+
       '<div id="sg-card"></div>';
+    if(LAND){ host.classList.add('sg-land'); host.style.setProperty('--sg-gut',Math.floor((innerWidth-Wd)/2)+'px'); }
     const cv=host.querySelector('#sg-cv');
     const dpr=Math.min(2,window.devicePixelRatio||1);
     cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);
@@ -1655,7 +1684,15 @@
     addEventListener('blur',letGo); document.addEventListener('visibilitychange',onVis);
     hold(cv, e=>{ if(mode!=='race'&&mode!=='count') return false; const r=cv.getBoundingClientRect();
       press('p'+e.pointerId,(e.clientX-r.left)<Wd/2?-1:1); }, e=>lift('p'+e.pointerId));
+    /* turned upright mid-race: the race stops under the same "turn your phone" card and
+       comes back on a one-second countdown — nobody loses a corner to a rotation */
+    let paused=false, _rotT=0; const turnEl=document.createElement('div'); turnEl.className='sg-turn-wrap'; turnEl.innerHTML=GP_TURN;
+    const onRot=()=>{ clearTimeout(_rotT); _rotT=setTimeout(()=>{ if(over||!gpPhone()) return; const up=gpUpright();
+      if(up&&!paused){ paused=true; letGo(); host.appendChild(turnEl); }
+      else if(!up&&paused){ paused=false; turnEl.remove(); if(mode==='race') resume(); } },150); };
+    if(LAND){ addEventListener('resize',onRot); try{ screen.orientation.addEventListener('change',onRot); }catch(e){} }
     const unbind=()=>{ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
+      removeEventListener('resize',onRot); try{ screen.orientation.removeEventListener('change',onRot); }catch(e){}
       removeEventListener('blur',letGo); document.removeEventListener('visibilitychange',onVis); };
 
     /* ---- projection + drawing ---- */
@@ -2094,8 +2131,8 @@
     /* ---- loop ---- */
     let last=0;
     function frame(ts){ if(over) return; const dt=Math.min(0.05,(ts-last)/1000)||0.016; last=ts;
-      if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } }
-      if(mode==='race') update(dt);
+      if(mode==='count' && !paused){ countT-=dt; if(countT<=0){ mode='race'; } }
+      if(mode==='race' && !paused) update(dt);
       draw(); requestAnimationFrame(frame); }
     /* Puffs are spawned where the kart was DRAWN (last frame's px/py/pw), so they leave
        from the pipes and the tyres, then drift toward the camera and fade. */
@@ -2223,7 +2260,7 @@
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
       '<li><b>Steer</b> with the two round buttons, or the <b>arrow keys</b> — dodge the oil slicks and the cops.</li>'+
-      '<li><b>The middle button is the brake</b> (or <b>↓</b>). Flat out the big bends will throw you into the grass — lift for those, and you keep the road.</li>'+
+      '<li><b>The ⊗ button is the brake</b> (or <b>↓</b>). Flat out the big bends will throw you into the grass — lift for those, and you keep the road.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
       '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
@@ -2231,8 +2268,11 @@
       '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">To the grid! →</button></div>';
     host.appendChild(intro);
     intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
+    /* launched from the start menu, which already explained the race — and a race that
+       waited for the phone to turn has no click left to skip this with */
+    if(opts.autoGo){ intro.remove(); countT=1.0; mode='count'; }
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,paused,land:LAND,size:[Wd,Ht],x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
