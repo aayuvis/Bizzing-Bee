@@ -2007,12 +2007,18 @@ function pinGate(nextFn,label,soft){ if(soft && !pinSet()){ nextFn(); return; }
 /* ---------------- handlers (the `app` surface) ---------------- */
 const app = {
   goLanding:()=>set({screen:'landing'}),
-  goSignup:()=>set({screen:'auth',authMode:'signup'}),
+  /* ACCOUNTS ARE OPTIONAL ON THIS DEVICE (FIX-BEE A3/N5). "Start free" used to open an email +
+     password form whose answers were never stored anywhere — a toll gate with nothing behind it,
+     and the slowest part of the road to the first word. It goes straight to the five setup
+     steps now; a grown-up can still make an account later (Settings → account) for cloud backup. */
+  goSignup:()=>set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}),
   goSignin:()=>set({screen:'auth',authMode:'signin'}),
   swapAuth:()=>set({authMode: state.authMode==='signup'?'signin':'signup'}),
   onEmail:(v)=>set({email:v}), onPw:(v)=>set({pw:v}),
   doAuth:()=>{ if(state.authMode==='signin'){ let ch=state.children;
-      if(!ch.length) ch=[{ name:'Ahana', age:9, avatar:'fox', theme:'spellbound', level:9, streak:12, acc:88, goal:10, xp:124, week:[12,20,15,30,18,25,22] }];
+      /* no invented child: signing in on an empty device used to conjure "Ahana, level 9, a
+         12-day streak". Nothing is on this device yet, so set a speller up instead. */
+      if(!ch.length){ set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}); flash('Nothing is saved on this device yet — let’s set your speller up'); return; }
       set({children:ch, activeIdx:0, theme:ch[0].theme||'spellbound', screen:'app', nav:'home'});
     } else { set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}); } },
   // onboarding
@@ -2022,7 +2028,7 @@ const app = {
   pickAvatar:(id)=>set({draft:{...state.draft,avatar:id}}),
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
   onbBeeDate:(v)=>{ state.draft.beeDate=v||null; },
-  onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'auth'}); } else set({onbStep:state.onbStep-1}); },
+  onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'landing'}); } else set({onbStep:state.onbStep-1}); },
   pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' unlocks with coins — find it in your Collection later!'); return; } state.draft.avatar=id; render(); },
   onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('🔒 Locked — start in the Hive, then unlock this world for '+COST.theme+' 🪙'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
@@ -2030,6 +2036,9 @@ const app = {
     if(S.onbStep===3 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
     if(S.onbStep<4){ set({onbStep:S.onbStep+1}); return; }
     app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝');
+    /* Straight into learning (FIX-BEE A3): the first Atlas stop's lesson, through the one
+       next-step function every "next" uses — not a home screen to read first. */
+    try{ app.goNext(); }catch(e){}
     /* If they picked a paid plan on the landing page, land them back on it rather
        than dropping them at the bottom of the ladder to find it again. The tier is
        NOT applied here — nobody has paid yet; the sheet is where that happens. */
@@ -2038,7 +2047,12 @@ const app = {
         set({showTiers:true}); }catch(e){} }, 700); } },
   _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, ageBand:S.draft.ageBand||bandForAge(S.draft.age).k, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
     if(S.draft.beeDate) kid.milestone={ label:(S.draft.beeLabel||'the bee'), date:S.draft.beeDate };
-    const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save(); },
+    /* fr = the day this child was set up: the opening splash stays away all of that first day */
+    try{ kid.fr=SB_SHELL.ymd(); }catch(e){}
+    /* the word book goes with the child: the one who was active keeps theirs, the new one starts empty */
+    try{ if(S.children.length) SB_SHELL.bookOut(S.children[S.activeIdx]); SB_SHELL.bookIn(kid,true); }catch(e){}
+    const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save();
+    try{ SB_SHELL.startActivity(); }catch(e){} },
   startLevelTest:()=>{ if(state.screen==='onboarding'){ if(!state.draft.name.trim()){ flash('Add a name first'); return; } app._finishOnb(); }
     /* The placement test walks the difficulty-band ladder itself (not stage lists), so its
        result IS the Bee Band — the Quest start is then derived from the same number. */
@@ -2047,7 +2061,7 @@ const app = {
   ltSay:()=>{ const lt=state.lt; if(lt&&lt.words[lt.i]) say(lt.words[lt.i].w); },
   ltType:(v)=>{ state.lt.typed=v; },
   ltKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.ltEnter(); } },
-  ltSkip:()=>{ set({nav:'home', lt:null}); flash('No problem — starting at Level 1. You can climb fast!'); },
+  ltSkip:()=>{ state.lt=null; flash('No problem — starting at Level 1. You can climb fast!'); app.goNext(); },
   ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=sameSpelling(lt.typed,w.w);
     logBand(w,ok);
     if(ok){ lt.ok++; sfx('correct'); } else { lt.fails++; sfx('wrong'); }
@@ -2061,7 +2075,7 @@ const app = {
     c.band=c.bandSeed=Math.max(1,Math.min(9,lt.placed||1));            // one result, one truth: the test IS the Band
     getList(c,'journey').stage=ltStageForBand(c.band); c.activeList='journey'; save();
     sfx('win'); burstConfetti(110); lt.done=true; render(); },
-  ltGo:()=>{ set({nav:'home', lt:null}); },
+  ltGo:()=>{ state.lt=null; app.goNext(); },
   // theme / mode
   pickTheme:(id)=>{ if(!isThemeUnlocked(id)){ app.buyTheme(id); return; } const children=state.children.slice(); if(children[state.activeIdx]) children[state.activeIdx]={...children[state.activeIdx],theme:id}; set({theme:id, children}); },
   buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id);
@@ -2262,9 +2276,13 @@ const app = {
   delSpeller:(i)=>{ const ch=state.children||[]; const k=ch[+i]; if(!k) return;
     const nm=k.name||'That speller';
     if(k.cid&&window.SB_SYNC) { try{ SB_SYNC.delChild(k.cid); }catch(e){} }
+    /* keep the SAME child active (the index shifts when an earlier one goes), and if the
+       active child is the one removed, the next one brings their own word book back */
+    const wasActive=(+i===(state.activeIdx||0)); const keep=(+i<(state.activeIdx||0))?(state.activeIdx-1):(state.activeIdx||0);
     ch.splice(+i,1);
     state.children=ch;
-    state.activeIdx=Math.max(0,Math.min(state.activeIdx||0, ch.length-1));
+    state.activeIdx=Math.max(0,Math.min(keep, ch.length-1));
+    if(wasActive && ch.length){ try{ SB_SHELL.bookIn(ch[state.activeIdx]); }catch(e){} }
     state.delSpeller=null;
     save();
     if(!ch.length){ flash(esc(nm)+' removed'); set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}); return; }
@@ -2737,7 +2755,7 @@ const app = {
     state.sessionWords=words; state.sessionLabel=conceptShort(ch.title); state.gi=0; state.conceptSel=null; app.startTrain(); },
   // drawer
   openDrawer:()=>set({drawerOpen:true}), closeDrawer:()=>set({drawerOpen:false}),
-  drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), concepts:()=>app.setNav('concepts'),
+  drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), next:()=>app.goNext(), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), concepts:()=>app.setNav('concepts'),
     trail:()=>app.openTrail&&app.openTrail(), revisions:()=>app.openRevisions(), ipatrain:()=>app.openIpaTrain(),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
@@ -3451,7 +3469,8 @@ const app = {
     } else { addMiss(w); say('Incorrect'); logActivity('oral','Oral elimination', {done:(or.round||0)+1,right:or.round||0}, [w]); set({coachMode:'orgone', or:{...or,last:w}}); } },
   // parent / settings / paywall
   addChild:()=>set({screen:'onboarding', onbStep:0, addingMore:true, draft:{name:'',age:9,avatar:'panda',goal:10}}),
-  selectChild:(i)=>{ i=+i; state.activeIdx=i; const c=state.children[i]; ensureLists(c); state.theme=(c&&c.theme)||'spellbound'; state.parentLogOpen=null; state.sessionListKey=null; syncMissed(); render(); },
+  selectChild:(i)=>{ i=+i; if(i!==state.activeIdx && state.children[i]){ try{ SB_SHELL.bookOut(state.children[state.activeIdx]); SB_SHELL.bookIn(state.children[i]); }catch(e){} }
+    state.activeIdx=i; const c=state.children[i]; ensureLists(c); state.theme=(c&&c.theme)||'spellbound'; state.parentLogOpen=null; state.sessionListKey=null; syncMissed(); render(); },
   goPaywall:()=>set({showPaywall:true}), closePaywall:()=>set({showPaywall:false}),
   pickPlan:(p)=>set({plan:p}), upgrade:()=>{ pinGate(()=>{ set({premium:true, showPaywall:false}); flash('Welcome to Premium! 👑'); },'Start free trial — grown-ups only'); },
   /* THE sign-out. There used to be two controls and neither was right: this one only
@@ -3732,7 +3751,7 @@ function viewLanding() {
        it: not "sound clever", but be understood at the moment it matters. ---- */
   const risk = [
     ['bolt', 'Works with no internet', 'On a plane, in a tunnel, in the car. The words live on the device.'],
-    ['users', 'Only the parent has an account', 'Your child never signs in to anything and never talks to anyone.'],
+    ['users', 'No account needed to start', 'Set up a speller on this device in five taps — no email, no password. Your child never signs in to anything and never talks to anyone.'],
     ['close', 'No ads, no chat, no leaderboard', 'Nobody can reach your child inside this app. There is no one to reach.'],
     ['spark', 'Nothing can be bought through', 'Coins buy hats. Every locked thing can be earned by practising instead.'],
   ].map(([ic, t, b]) => `<div style="display:flex;gap:12px;align-items:flex-start">
@@ -3748,7 +3767,7 @@ function viewLanding() {
           <h1 style="font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,54px);line-height:1.04;letter-spacing:-.025em;margin:0 0 18px">Spelling bee practice that speaks every word&nbsp;aloud.</h1>
           <p style="font-size:clamp(16px,2.1vw,19px);line-height:1.55;color:var(--muted);max-width:32em;margin:0 0 28px">One day your child spells a word you can&rsquo;t. Getting there takes months of practice they actually did — so this is a game where spelling is how you win, with every word spoken in a real recorded voice and the Greek and Latin roots that make an unfamiliar one solvable.</p>
           <div style="display:flex;flex-wrap:wrap;gap:11px;margin-bottom:14px">
-            <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 38%,transparent)">Start free — no card →</button>
+            <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 38%,transparent)">Start free — no sign-up →</button>
             <button data-act="landPlans" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">See the plans</button>
           </div>
           <button data-act="goSignin" style="font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">I already have an account</button>
@@ -4029,7 +4048,7 @@ function landTry() {
         ? 'Most adults get about half — these are real entries from the library, and your child will be spelling them out loud.'
         : 'That is a strong round. The library goes a very long way past this — all the way to the words that ended national champions.'}</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
-        <button data-act="goSignup" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start free — no card →</button>
+        <button data-act="goSignup" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start free — no sign-up →</button>
         <button data-act="landRestart" style="padding:14px 20px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Try again</button>
       </div></div>`;
   }
@@ -6153,13 +6172,18 @@ function viewApp(){
          away behind a hover, which made the app feel like it had lost its navigation.
          Focus still kills the music and holds the background still; the tabs stay put. -->
     <div class="sb-header-sticky" style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg1) 82%,transparent);border-bottom:1px solid var(--line)">
+      ${SB_SHELL.demoBar()}
       <!-- flex-wrap is the safety net, not the layout: the chips collapse by breakpoint
            long before it engages. Without it this row is nowrap with every child
            flex-shrink:0, so any width it does not fit at pushes the whole document
-           sideways rather than the header. -->
-      <div style="max-width:1080px;margin:0 auto;padding:11px clamp(9px,3.2vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+           sideways rather than the header.
+           THE FAMILY TOP BAR (standard §3, FIX-BEE B7/O4): ⬡ back to Hive · the app ·
+           ……… · theme · 🔒 grown-ups · avatar ▾ — the same order in every Bizzing app, 56px.
+           Bee's own tools (the menu, the search bar, the coins pill) sit in the middle. -->
+      <div class="sb-fam-bar" style="max-width:1080px;margin:0 auto;padding:0 clamp(9px,3.2vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px;position:relative">
+        ${SB_SHELL.hiveBtn()}
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
-        <button data-act="goHome" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true">™</span> Bee</span></button>
+        <button data-act="goHome" class="sb-fam-brand" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true">™</span> Bee</span></button>
         ${(()=>{ /* A real search bar, not a button that goes somewhere to find one. Type
              here, suggestions drop under it, Enter opens the Finder on the query — and a
              suggestion tapped goes straight to that word's card. */
@@ -6190,11 +6214,9 @@ function viewApp(){
             ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4"/><path d="M12 4.2v15.6" opacity=".45"/></svg>`
             : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="none"><path d="M20.6 14.8A8.8 8.8 0 0 1 9.2 3.4 8.8 8.8 0 1 0 20.6 14.8z"/><circle cx="17.4" cy="5.6" r="1.1" opacity=".8"/></svg>`;
           return `<button data-act="cycleMode" data-dbl="toggleFocus" class="sb-hdr-ico${_fon?' on':''}" aria-label="Appearance: light, white or dusk. Double-tap for focus." title="Tap: Light / White / Dusk${_fon?' · focus is ON':''} — double-tap for focus">${glyph}</button>`; })()}
-        <button data-act="goSettings" class="sb-hdr-ico" aria-label="Settings" title="Settings">
-          ${/* Three sliders in a 24-box put the rows 5px apart and the knobs all but
-                touching — it read as a smudge at 20px. Two rows, further apart, bigger
-                knobs, hollow centres: the same idea, legible. */''}
-          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.6 8.6h5.2M13.4 8.6h7M3.6 15.4h7.2M15.8 15.4h4.6"/><circle cx="11.1" cy="8.6" r="2.6" fill="var(--bg2,#fff)"/><circle cx="13.5" cy="15.4" r="2.6" fill="var(--bg2,#fff)"/></svg></button>
+        ${/* Settings moved into the avatar menu (and stays in the drawer); the bar ends on the
+             family's three: theme (the appearance button before this) · grown-ups · child. */''}
+        ${SB_SHELL.lockBtn()}${SB_SHELL.kidBtn()}${SB_SHELL.kidMenu()}
       </div>
       <div class="sb-topnav" style="max-width:1080px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 9px;display:flex;gap:6px;overflow-x:auto">${navTabs}</div>
     </div>
@@ -6247,7 +6269,9 @@ function viewDrawer(){
         ${/* My Hive first: it is the one destination with no tab of its own, and the coins
              pill in the header is its other door. */''}
         ${row('collection','crown','My Hive','badges, avatars and worlds · '+fmtN(c.coins||0)+' coins',state.nav==='collection')}
-        ${row('levelup','steps','Continue practising','${LBL}'.replace('${LBL}',esc(listLabel(key).split(' · ')[0])+' · Stage '+(listStageIdx(c,key)+1)),false)}
+        ${/* the drawer's "jump back in" is the same ONE next step Home's Continue takes (FIX-BEE B2);
+             the Practice ladder it used to continue is the Practice tab, one tap away */''}
+        ${(()=>{ const n=SB_SHELL.nextStep(); return row('next','steps','Next on your journey', (n.ready?(n.allDone?'the next tier of the Word Atlas':trunc(n.title,34)):'the first stop on the Word Atlas'), false); })()}
         ${row('coachdesk','bulb','Coach',missedN?('what to fix, and how — '+missedN+' word'+(missedN>1?'s':'')+' to work on'):'your patterns, your level, what comes next',state.nav==='coachdesk')}
         ${row('trail','steps','The Word Atlas',atlasSub(c),state.nav==='trail')}
         ${kick('Learn')}
@@ -6343,7 +6367,10 @@ function viewHome(){
      home screen should not offer a route the Library no longer lists. */
   /* One reading of the Atlas for the whole screen: seq() filters by tier, so the
      stop card and the Atlas tile must both quote the tier's count, not all 128. */
-  const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
+  /* ONE next step (FIX-BEE B2): home reads the same SB_NEXT_STEP every "next" in the app
+     reads — family-shell.js builds it on SB_TRAIL_NEXT — so Continue cannot disagree with
+     the drawer, the end of onboarding or the Hive's #/continue. */
+  const _ns=SB_SHELL.nextStep(); const nx=_ns.ready?_ns:null;
   const atlas=nx?{done:nx.done,total:nx.total,lap:nx.lap}:(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
       const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
     catch(e){ return {done:0,total:0,lap:1}; } })();
@@ -6369,24 +6396,24 @@ function viewHome(){
       </div>
       <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
         <span class="sb-cs">Your training journey</span>
-        <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${esc(trunc(title,34))}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${trunc(title,34)}</div>
         <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(sub)}</div>
         <span style="margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:10px">
           <span style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil',15)} Practise</span>
           <span style="flex:1;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
         </span>
       </div></button>`; })();
-  return `<div>
+  return `<div class="sb-home">
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
       const woh=(typeof wordOfHour==='function')?wordOfHour():null; const wohPr=woh?pronFor(woh.w):null;
-      const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
+      const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card sb-home-woh" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
         <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:20px">⏳</span>
         <span style="min-width:0;flex:1">
           <span class="sb-cn" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Word of the hour</span>
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12;overflow-wrap:anywhere;margin:2px 0 1px;color:var(--ink,var(--text))">${esc(woh.w)}</span>
           ${(wohPr&&wohPr.p)?`<span style="display:block;font-family:var(--mono);font-size:11.5px;color:var(--muted)">/ ${esc(wohPr.p)} /</span>`:''}
-          ${woh.d?`<span style="display:block;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(woh.d,84))}</span>`:''}
+          ${woh.d?`<span style="display:block;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${trunc(woh.d,84)}</span>`:''}
           <span class="sb-cl" style="display:block;margin-top:6px">card →</span>
         </span>
       </button>`:cardHold('Word of the hour',132);
@@ -6395,13 +6422,13 @@ function viewHome(){
         <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#C8791B;color:#fff;flex-shrink:0;font-size:20px">${iconSVG('quote',20)}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-cn" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8A5B00">Quote of the hour</span>
-          <span style="display:block;font:italic 650 13.5px/1.42 var(--body,serif);color:var(--ink,var(--text));margin:3px 0 4px">“${esc(trunc(qoh.q.q,132))}”</span>
+          <span style="display:block;font:italic 650 13.5px/1.42 var(--body,serif);color:var(--ink,var(--text));margin:3px 0 4px">“${trunc(qoh.q.q,132)}”</span>
           <span style="display:block;font-size:11.5px;font-weight:800;color:var(--muted)">— ${esc(qoh.q.a||'Unknown')}</span>
           <span class="sb-cl" style="display:block;margin-top:6px">more quotes →</span>
         </span>
       </button>`:cardHold('Quote of the hour',132);
-      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
-      <div class="sb-card" style="display:flex;align-items:center;gap:14px;min-height:178px;padding:14px">
+      return `<div class="sb-home-r1" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
+      <div class="sb-card sb-home-greet" style="display:flex;align-items:center;gap:14px;min-height:178px;padding:14px">
         ${(()=>{ /* Two different questions, and they used to be answered by one flag.
              WHICH ART to draw depends on the avatar worn — Bizzy and the plain bee are the
              mascot, everyone else is their own portrait. WHETHER THE CARD DECK OPENS does
@@ -6427,11 +6454,11 @@ function viewHome(){
             if(!line){ try{ if(typeof SB_AV_CARD==='function'){ const d=SB_AV_CARD(who); line=(d&&d.greeting)||''; } }catch(e){} }
             if(!line) line="Buzz buzz, {name}! Let's spell the meadow back to bloom!";
             line=String(line).replace(/\{name\}/g,(c.name||'friend'));
-            return `<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc(line,104))}”</div>`;
+            return `<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${trunc(line,104)}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
             ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
-            ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
+            ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${trunc(ms.label,18)}</button>`:''; })()}
           </div>
         </div>
       </div>
@@ -6446,7 +6473,7 @@ function viewHome(){
            open the Coach, the level strip along the foot opens the Bee Band page. Both keep
            a real hit area, and neither is nested inside the other. */
         const bb=beeBand(c); const st=bandStage(bb.band);
-        return `<div class="sb-card" style="display:flex;flex-direction:column;gap:0;min-height:178px;padding:0;overflow:hidden">
+        return `<div class="sb-card sb-home-rings" style="display:flex;flex-direction:column;gap:0;min-height:178px;padding:0;overflow:hidden">
           <button data-act="openCoachDesk" title="Coach speaks — what Bizzy makes of today" style="display:flex;align-items:center;gap:13px;flex:1;padding:14px;text-align:left;cursor:pointer;width:100%;background:none;border:0">
             <span style="flex-shrink:0;width:104px;height:104px;display:grid;place-items:center">${ringsSVG(104,[m.pApp,m.pPrac,m.pWords])}</span>
             <span style="min-width:0;flex:1">
@@ -6458,12 +6485,15 @@ function viewHome(){
               </span>
               <span class="sb-cl" style="display:block;margin-top:8px;color:var(--accent);font-weight:800">${allDone?'All three rings closed — Coach speaks →':'Coach speaks →'}</span>
             </span></button>
-          <button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="${bb.calibrating?'sb-band-call':''}" aria-label="${bb.calibrating?'Find your spelling level':escA('Spelling level '+bb.band+', '+st.n)}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(st.n+' · '+st.s+' — your spelling level. Tap to see how to level up.')}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;border:0;border-top:1px solid var(--line);background:${bb.calibrating?'var(--chip)':'var(--surface2)'};cursor:pointer">
-            <span style="flex:none;display:inline-flex;line-height:0;${bb.calibrating?'':'width:26px;height:28px'}">${bb.calibrating?'✨':bandArt(bb.band)}</span>
+          ${/* "Find your level" used to sit here as a sheening Start — the third call to action on
+               Home (FIX-BEE B2). Placement lives in onboarding now (and on the level page); this
+               strip only says where the level stands, as a quiet link to the page that explains it. */''}
+          <button data-act="setNav" data-arg="beeband" aria-label="${bb.calibrating?'Your spelling level — still finding it':escA('Spelling level '+bb.band+', '+st.n)}" title="${bb.calibrating?'Your level settles as you spell — tap to see how it works':escA(st.n+' · '+st.s+' — your spelling level. Tap to see how to level up.')}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;border:0;border-top:1px solid var(--line);background:var(--surface2);cursor:pointer">
+            <span style="flex:none;display:inline-flex;line-height:0;width:26px;height:28px">${bandArt(bb.calibrating?1:bb.band)}</span>
             <span style="min-width:0;flex:1">
               <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Your spelling level</span>
-              <span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2;color:var(--text)">${bb.calibrating?'Find your level':esc(st.n+' · Level '+bb.band)}</span></span>
-            <span style="flex:none;font-weight:800;font-size:12.5px;color:var(--accent)">${bb.calibrating?'Start →':'→'}</span></button>
+              <span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2;color:var(--text)">${bb.calibrating?'Still finding it — keep spelling':esc(st.n+' · Level '+bb.band)}</span></span>
+            <span style="flex:none;font-weight:800;font-size:12.5px;color:var(--accent)">→</span></button>
         </div>`; })()}
       ${wohTile}
     </div>
@@ -6483,10 +6513,15 @@ function viewHome(){
         const sub=nx?(nx.allDone?'Every stop cleared at this tier — the same map returns with harder words.'
               :(nx.kind==='chk'?'Checkpoint — a mixed quiz over everything so far, no new words.':(nx.sub||'')))
             :'One guided journey through nine worlds — learn the idea, meet the words, clear the quiz gate.';
-        const go=nx&&!nx.allDone?`data-act="${nx.go}" data-arg="${escA(nx.arg)}"`:'data-act="openTrail"';
+        /* every way forward goes through app.goNext, which reads SB_NEXT_STEP again at the tap */
+        const go='data-act="goNext"';
         // Not "0/102 stops": where you are, not how long the road is. (See tierBar in trail.js.)
         const meta=nx?((nx.done?('stop '+Math.min(nx.done+1,nx.total)):'first stop')+' · Tier '+nx.lap):'nine acts, then the Advanced Rounds';
-        return `<button class="sb-lift" ${go} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
+        /* ONE progress strip beside Continue (FIX-BEE B3): the region you are in, a bar for how
+           far along this tier, and your level — the bar carries the distance, so no total is printed */
+        const region=nx?(nx.allDone?('Tier '+nx.lap+' complete'):nx.act):'The Word Atlas';
+        const pct=nx?nx.pct:0;
+        return `<button class="sb-lift sb-home-next" ${go} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
         <div style="position:relative;width:100%">
           ${paintedTileArt(world,92)}
           <span style="position:absolute;left:14px;bottom:-13px">${wayTile('trail',40,-2.5)}</span>
@@ -6496,9 +6531,16 @@ function viewHome(){
         </div>
         <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
           <span class="sb-cs">Next on your journey</span>
-          <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${esc(trunc(title,40))}</div>
-          <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(trunc(kick+(sub?' · '+sub:''),96))}</div>
-          <span style="margin-top:auto;padding-top:11px"><span style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${nx&&nx.done?'Continue':'Start'}</span></span>
+          <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${trunc(title,40)}</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${trunc(nx?(sub||kick):(kick+(sub?' · '+sub:'')),96)}</div>
+          <span style="margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:12px;width:100%">
+            <span class="sb-continue" style="flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${nx&&nx.done?'Continue':'Start'}</span>
+            <span class="sb-home-where" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+              <span style="display:block;font-size:11.5px;font-weight:800;color:var(--ink,var(--text));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(region)}</span>
+              <span role="progressbar" aria-label="How far along this tier of the Word Atlas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" style="display:block;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
+              <span style="display:block;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(SB_SHELL.levelWords(c))}</span>
+            </span>
+          </span>
         </div></button>`; })()}
       ${trainCard}
     </div>
@@ -11841,6 +11883,7 @@ function render(){
   if(fkey){ const el=root.querySelector('[data-fkey="'+fkey+'"]'); if(el){ try{ el.focus(); if(ss!=null&&el.setSelectionRange) el.setSelectionRange(ss,se); }catch(e){} } }
   // the evolution rail scrolls on narrow screens — park it on the speller's current stage
   try{ if(window.evoLadderSync) evoLadderSync(); }catch(e){}
+  try{ if(window.SB_SHELL) SB_SHELL.afterRender(); }catch(e){}   // hash route + Hive milestones
   save();
 }
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
@@ -12021,9 +12064,12 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
   try{ loadVoiceCfg(); }catch(e){}
   try{ loadEvoFB(); }catch(e){}
   try{ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }catch(e){}
-  // Back-button trap: a kid pressing Back mid-game goes Home instead of leaving the app
-  try{ history.pushState({sb:1},''); window.addEventListener('popstate',()=>{ try{ history.pushState({sb:1},'');
-    if(state.screen==='app' && state.nav!=='home'){ state.game=null; state.sq=null; tyStop&&tyStop(); state.nav='home'; render(); } }catch(e){} }); }catch(e){}
+  /* Back and deep links (FIX-BEE B6). The old trap pushed one dummy entry and sent every Back
+     to Home; now every screen has a hash route (family-shell.js), Back retraces them, and the
+     bottom of the stack climbs back onto the first screen instead of leaving the app. The same
+     file carries the top bar's family pieces and the Hive feed, which starts here once a child
+     is known (onboarding starts it for a first child). */
+  try{ SB_SHELL.install(); SB_SHELL.boot(); SB_SHELL.startActivity(); }catch(e){}
   /* Start the daily-target clock. It self-gates on tab visibility, and flushes on the way
      out so the last partial minute isn't lost. */
   try{ setInterval(metricTick, METRIC_TICK*1000);

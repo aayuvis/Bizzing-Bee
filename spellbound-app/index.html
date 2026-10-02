@@ -458,11 +458,89 @@
   .sb-hdr-ico:hover{background:var(--chip);color:var(--accent)}
   .sb-hdr-ico.round{border-radius:50%;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--accent) 34%,var(--line))}
   .sb-hdr-ico.on{background:var(--chip);color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 42%,transparent)}
+  /* THE FAMILY TOP BAR (standard §3, FIX-BEE B7/O4). One 56px line — #root is zoomed 1.09, so
+     6.5px + 38px + 6.5px here is 56px on screen — in the order every Bizzing app uses:
+     ⬡ back to Hive · the app · ……… · theme · 🔒 grown-ups · avatar ▾. Below 560px the search
+     bar takes its own row under it, as it always has. Pieces are drawn by family-shell.js. */
+  .sb-fam-bar{padding-top:6.5px!important;padding-bottom:6.5px!important;row-gap:6px!important}
+  a.sb-hdr-ico{text-decoration:none}
+  .sb-fam-brand{padding:0!important;height:38px}
+  .sb-fam-hive{color:var(--text)}
+  .sb-fam-day{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 13px 0 9px;border-radius:999px;flex-shrink:0;
+    background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px;text-decoration:none;white-space:nowrap}
+  .sb-fam-ds{display:none}
+  .sb-fam-kid{display:inline-flex;align-items:center;gap:2px;height:38px;padding:0 7px 0 3px;border-radius:999px;flex-shrink:0;
+    background:var(--surface2);border:1.5px solid color-mix(in srgb,var(--accent) 30%,var(--line));color:var(--muted);cursor:pointer}
+  .sb-fam-kid:hover,.sb-fam-kid[aria-expanded="true"]{background:var(--chip);color:var(--accent)}
+  .sb-fam-kidav{width:31px;height:31px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--paper,var(--bg2));line-height:0}
+  .sb-fam-kidav>svg,.sb-fam-kidav>img,.sb-fam-rowav>svg,.sb-fam-rowav>img{width:100%;height:100%;display:block}
+  .sb-fam-caret{font-size:11px;line-height:1;font-weight:900}
+  .sb-fam-scrim{position:fixed;inset:0;z-index:58}
+  .sb-fam-menu{position:absolute;right:clamp(9px,3.2vw,32px);top:calc(100% - 2px);z-index:59;width:min(300px,calc(100vw - 30px));
+    background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:8px;
+    box-shadow:0 14px 40px rgba(10,6,26,.22),0 2px 8px rgba(10,6,26,.1);animation:sb-fade .15s ease both}
+  .sb-fam-mh{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 10px}
+  .sb-fam-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;border-radius:12px;
+    background:transparent;border:0;color:var(--text);font-weight:800;font-size:15px;cursor:pointer}
+  .sb-fam-row.on{background:var(--chip)}
+  .sb-fam-rowav{width:34px;height:34px;flex-shrink:0;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--surface2);line-height:0}
+  .sb-fam-rown{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sb-fam-rown i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;
+    border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);margin-left:4px}
+  .sb-fam-tick{color:var(--accent);font-weight:900}
+  .sb-fam-sep{height:1px;background:var(--line);margin:6px 4px}
+  .sb-fam-item{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;padding:9px 10px;
+    border-radius:10px;background:transparent;border:0;color:var(--text);font-weight:700;font-size:14px;cursor:pointer}
+  .sb-fam-item span{font-size:11px;color:var(--muted);font-weight:700}
+  .sb-fam-item:hover,.sb-fam-row:hover{background:var(--surface2)}
+  .sb-fam-row:focus-visible,.sb-fam-item:focus-visible,.sb-fam-kid:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+  /* ?demo: the sample is labelled on every screen, and says how to leave it */
+  .sb-demo-bar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;padding:6px 14px;
+    background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-size:12.5px;font-weight:700;line-height:1.35;text-align:center}
+  .sb-demo-bar b{font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--treasure,#F0B429);color:#3A2A00}
+  .sb-demo-bar a{color:inherit;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+  @media (max-width:560px){
+    .sb-fam-bar{column-gap:5px!important;padding-top:8.5px!important;padding-bottom:8.5px!important}
+    .sb-fam-bar .sb-hdr-ico,.sb-fam-bar [data-act="openDrawer"]{width:34px!important;height:34px!important}
+    .sb-fam-kid{height:34px}
+    .sb-fam-kidav{width:27px;height:27px}
+    .sb-fam-day{height:34px;padding:0 10px 0 7px}
+    .sb-fam-brand{height:34px}
+    .sb-fam-brand>div{height:34px!important;width:30px!important}
+    .sb-fam-bar:has(.sb-fam-day) .sb-fam-brand{display:none!important}
+    .sb-fam-dl{display:none}
+    .sb-fam-ds{display:inline}
+  }
+  /* the narrowest phones: the family's three must still fit on the one line beside Bee's own
+     tools, so the coins pill drops its crown (the number stays) and the gaps tighten */
+  @media (max-width:400px){
+    .sb-fam-bar{column-gap:4px!important}
+    .sb-fam-bar [data-act="openCollection"]{padding:6px 9px!important}
+    .sb-fam-bar [data-act="openCollection"]>span:last-child{display:none!important}
+    .sb-fam-brand>div{width:26px!important}
+    .sb-fam-day>svg{display:none}
+  }
   /* Home, row 2: the next Atlas stop beside the four "Keep going" tiles. One column
      on a phone, then the stop card and a 2x2 tile block side by side. */
   .sb-home-r2{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;align-items:start}
   .sb-home-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
   @media (min-width:900px){ .sb-home-r2{grid-template-columns:minmax(300px,1fr) minmax(300px,1fr)} }
+  /* ONE Continue, above the fold on a phone (FIX-BEE B1, family standard §2). The home keeps
+     its look and its source order; below 640px the two rows dissolve (display:contents) into
+     one column and Continue is moved up to sit straight under the greeting — at 390x844 it
+     otherwise started a full screen down, under the rings and the word of the hour. */
+  @media (max-width:639px){
+    .sb-home{display:flex;flex-direction:column;gap:12px}
+    .sb-home>*{margin-top:0!important;margin-bottom:0!important}
+    .sb-home-r1,.sb-home-r2{display:contents!important}
+    .sb-home-r1>:nth-child(1){order:1}
+    .sb-home-r2>:nth-child(1){order:2}
+    .sb-home-r1>:nth-child(2){order:3}
+    .sb-home-r1>:nth-child(3){order:4}
+    .sb-home-r2>:nth-child(2){order:5}
+    .sb-home>:not(.sb-home-r1):not(.sb-home-r2){order:6}
+    .sb-home>:last-child:not(.sb-home-r2){order:7;margin-top:14px!important}
+  }
   /* mobile chrome: bottom tab bar replaces the top nav; mode switcher collapses to a cycle button */
   .sb-tabbar{display:none}
   @media(min-width:640px) and (hover:hover){
@@ -2371,11 +2449,32 @@
    Hive", "tap to travel back 100 million years") — and the tap that answers it
    starts clock, cinematic and sound together, so the audio is never lost to
    autoplay policy. */
+/* THE DEMO SANDBOX (?demo, family standard §14) — first, because it must stand in front of
+   every read and write the page will ever make. A sample child must never touch the real
+   household or the shared Hive feeds (bizzing.activity, bizzing.wallet), so under ?demo
+   localStorage is swapped for an in-memory store: the app reads and writes it exactly as
+   before, and closing the tab throws it away. family-shell.js seeds the sample into it. */
+(function(){ try{
+  if(!/[?&]demo(?:[=&]|$)/.test(location.search||'')) return;
+  var mem=Object.create(null);
+  var box={ getItem:function(k){ k=String(k); return (k in mem)?mem[k]:null; },
+    setItem:function(k,v){ mem[String(k)]=String(v); }, removeItem:function(k){ delete mem[String(k)]; },
+    clear:function(){ for(var k in mem) delete mem[k]; }, key:function(i){ return Object.keys(mem)[i]||null; } };
+  Object.defineProperty(box,'length',{get:function(){ return Object.keys(mem).length; }});
+  Object.defineProperty(window,'localStorage',{configurable:true,get:function(){ return box; }});
+  window.SB_DEMO=true;
+}catch(e){} })();
 (function(){
   try{
+    if(window.SB_DEMO) return;
     if(localStorage.getItem('sb_splash')==='0') return;
     var st={}; try{ st=JSON.parse(localStorage.getItem('sb_saas_v2')||'{}')||{}; }catch(e){}
     if(!st.children || !st.children.length) return;
+    /* FIRST RUN SKIPS IT (FIX-BEE A3). The show is a welcome BACK: on the day a child is set
+       up (kid.fr, written when onboarding finishes) nothing cinematic stands between them
+       and their first lesson — not even after a reload. From the next day on it plays. */
+    var _fk=(st.children[st.activeIdx||0]||st.children[0])||{}, _d=new Date();
+    if(_fk.fr && _fk.fr===(_d.getFullYear()+'-'+('0'+(_d.getMonth()+1)).slice(-2)+'-'+('0'+_d.getDate()).slice(-2))) return;
     var rm=false; try{ rm=(st.am===1)||(st.cm===1)||matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
     /* the EIGHT worlds of the Aug-31 store cut; a stale saved theme falls back to the Hive */
     var T={ spellbound:['The Hive','#FFD24D','#241E4E','🐝','hive','home sweet hive','Open the Hive'],
@@ -2874,6 +2973,8 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="auth.js?v=20261002b"></script>
 <script defer src="supabase-auth.js?v=20261002b"></script>
 <script defer src="telemetry.js?v=20261002b"></script>
+<script defer src="bizzing-activity.js?v=20261002b"></script>
+<script defer src="family-shell.js?v=20261002b"></script>
 <script defer src="app3.js?v=20261002b"></script>
 <script defer src="worlds4.js?v=20261002b"></script>
 <script defer src="mockbee.js?v=20261002b"></script>

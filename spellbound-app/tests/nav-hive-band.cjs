@@ -1,8 +1,8 @@
 /* My Hive is reached by the COINS PILL and heads the drawer — not by a nav tab and not by
    the old round face in the top-right, which read as a profile menu. The Bee Band sits on
    Home under "Coach speaks"; nothing flashes.
-   "Find your level" pulsed a shadow ring and hopped 1.5px twice every four seconds —
-   now it only sheens.
+   "Find your level" pulsed a shadow ring and hopped 1.5px twice every four seconds, then
+   only sheened; since FIX-BEE B2 it is not on Home at all (placement is in onboarding).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/nav-hive-band.cjs */
 const { chromium } = require('playwright');
 const root = require('path').resolve(__dirname, '..');
@@ -34,6 +34,7 @@ const root = require('path').resolve(__dirname, '..');
           return !!(p && p.closest('.sb-hdr, header') !== null) || !!p; })(),
         roundFace: !!document.querySelector('.sb-hdr-ico.round'),
         bandInHeader: !!(band && band.closest('header, .sb-hdr, [class*="hdr"]')),
+        placementCta: !!document.querySelector('.sb-content [data-act="startLevelTest"], .sb-content .sb-band-call'),
         nestedButton: !!document.querySelector('button button') };
       if (band && rings) { const br = band.getBoundingClientRect(), rr = rings.getBoundingClientRect();
         out.bandBelowRings = br.top >= rr.bottom - 2;
@@ -58,7 +59,11 @@ const root = require('path').resolve(__dirname, '..');
     if (!/Coach speaks/.test(r.txt)) errs.push(vp.n + ': the rings card does not say "Coach speaks"');
     if (/what Bizzy makes of it/.test(r.txt)) errs.push(vp.n + ': the old vague wording survived');
     if (r.bandAnim && r.bandAnim !== 'none') errs.push(vp.n + ': the band tile still animates itself (' + r.bandAnim + ') — it should only sheen');
-    if (r.sheen !== 'sb-band-sheen') errs.push(vp.n + ': the sheen is missing (::after animation = ' + r.sheen + ')');
+    /* FIX-BEE B2 (Oct 2026) reverses the sheen: "Find your level · Start" was the third call to
+       action on Home. Placement moved into onboarding, so the strip is a quiet link to the level
+       page — no Start, no sheen, nothing that competes with the one Continue. */
+    if (r.sheen && r.sheen !== 'none') errs.push(vp.n + ': the level strip still sheens (::after animation = ' + r.sheen + ') — it is a quiet link now');
+    if (r.placementCta) errs.push(vp.n + ': "Find your level" is still a call to action on Home — placement belongs in onboarding');
 
     // the coins pill opens the Hive
     await pg.evaluate(() => { const p=document.querySelector('[data-act="openCollection"]'); if (p) p.click(); });
@@ -73,6 +78,6 @@ const root = require('path').resolve(__dirname, '..');
     await pg.close();
   }
   await b.close();
-  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — Hive on the coins pill and first in the drawer, band sits under Coach speaks on Home, and it sheens rather than flashes');
+  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — Hive on the coins pill and first in the drawer, band sits under Coach speaks on Home as a quiet link, no placement call to action');
   process.exit(errs.length ? 1 : 0);
 })();
