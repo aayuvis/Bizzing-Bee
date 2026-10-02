@@ -35,7 +35,7 @@
   <a class="back" href="index.html">← Back to Bizzing Bee</a>
   <span class="tag">Privacy &amp; Parents' Notice</span>
   <h1>Bizzing Bee — Privacy Policy and Notice to Parents</h1>
-  <p class="muted">Effective 30 August 2026 · Written for parents and guardians, under the Children's Online
+  <p class="muted">Effective 2 October 2026 · Written for parents and guardians, under the Children's Online
   Privacy Protection Act (COPPA, 16 CFR Part 312)</p>
 
   <div class="card">
@@ -81,6 +81,11 @@
   <p>When you create a speller profile, the app asks for a <b>first name (or nickname)</b> and an
   <b>age</b>, and lets your child pick an avatar. As your child plays it records practice progress:
   words attempted, scores, levels, coins and settings. All of that is stored on your device.</p>
+  <p><b>Bizzing coins.</b> Coins are kept in one family wallet per child, shared by the Bizzing
+  apps opened in the same browser on this device (browser storage, key <code>bizzing.wallet</code>),
+  so a coin earned in one app can be spent in another. The wallet holds the child's first name in
+  lower case, their coin balance and a short ledger of what earned or spent each coin. It never
+  leaves the device, and coins are earned only for learning — never bought with money.</p>
   <p><b>The name and the age never leave the device</b> — not the real name, and not a nickname
   either. They are used only to greet your child on screen and to pick a starting difficulty. When
   backup is on, what is copied to the server is a label taken from <i>the avatar your child picked</i>
@@ -97,8 +102,16 @@
     <tr><td>Practice progress, scores, coins, settings</td><td>Your device</td><td>Only if you turn backup on</td></tr>
     <tr><td>Parent's email address</td><td>Only exists if you create an account</td><td>Yes — it is the account</td></tr>
     <tr><td>Parent's password</td><td>Never stored by us in readable form</td><td>Sent once to be hashed; we never see it</td></tr>
+    <tr><td>Active minutes and milestones for the Bizzing Hive</td><td>Your device</td><td><b>Never</b></td></tr>
     <tr><td>Photos, voice recordings, location, contacts</td><td>Never collected</td><td><b>Never</b></td></tr>
   </table></div>
+  <p><b>The family planner (the Bizzing Hive).</b> So the Hive on this same device can show a
+  family's day without anyone typing it in, Bizzing Bee keeps a short activity log in your
+  browser's storage under <code>bizzing.activity</code>: the app, the date, the minutes your child
+  was actively practising, the milestones they reached (an Atlas stop, a spelling level), and
+  their first name so the right child's day is shown. It stays on this device and is never sent
+  anywhere — there is no network call in the code that writes it — and the sample shown at
+  <code>?demo</code> never writes it at all.</p>
 
   <h2>4. Verifiable parental consent</h2>
   <p>COPPA requires an operator to obtain verifiable parental consent before collecting personal
@@ -146,7 +159,10 @@
 
   <h2>6. Web hosting and IP addresses</h2>
   <p>Like every website, the pages, artwork and audio of Bizzing Bee are delivered by a web host —
-  GitHub Pages, with word-audio files served from GitHub's content servers. To deliver a file, a web
+  GitHub Pages, with word-audio files served from GitHub's content servers
+  (<code>raw.githubusercontent.com</code>) and the cover art in the in-app book reader from our books
+  site (<code>aayuvis.github.io</code>, also GitHub Pages). Those are the only hosts the app contacts;
+  the database host is added only when you switch backup on. To deliver a file, a web
   host necessarily receives the requesting device's <b>IP address</b>, and may keep it briefly in
   standard server logs for security and traffic purposes; the same is true of the database host when
   backup is on. COPPA treats an IP address as a persistent identifier; it is used here solely to
@@ -155,6 +171,13 @@
   to profile, track, advertise to or contact anyone. GitHub's handling of server logs is described in
   the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub Privacy Statement</a>.</p>
 
+  <p><b>The offline copy.</b> So that the app opens with no connection, it keeps a copy of its own
+  files — pages, scripts, artwork, and the word recordings your child has already heard — in your
+  browser's storage on this device (a "service worker" cache), and can be installed to the home screen.
+  That copy is the app, not information about your child: no name, age or progress goes into it, it is
+  never sent anywhere, and clearing this site's data in your browser removes it. Nothing is fetched
+  ahead of time beyond what the app itself has already loaded.</p>
+
   <h2>7. Your rights as a parent</h2>
   <p>You can exercise every COPPA right from inside the app, immediately, without asking us and
   without waiting for a reply:</p>
@@ -162,6 +185,11 @@
     <li><b>Review</b> — open the <b>Parent Zone</b> (Progress → Parent zone, behind your parent PIN)
     to see everything the app knows: profiles, progress, scores and settings. What is backed up is a
     subset of what you see there, described in section 3.</li>
+    <li><b>Take a copy, put it back, or wipe it</b> — the Parent Zone has <b>Backup, restore &amp;
+    erase</b>, each asking for your PIN again. A backup is a file saved to <i>your</i> device — the whole
+    household, names included, because it is yours — and nothing is sent anywhere to make it. Restore
+    reads that file back. Erase removes everything Bizzing Bee keeps on this device; Bizzing coins,
+    which belong to your family's shared wallet across the Bizzing apps, are left in that wallet.</li>
     <li><b>Delete a speller</b> — remove the profile in Settings. The local copy goes, and if backup
     is on, the row and its progress are deleted from the database with it.</li>
     <li><b>Withdraw consent / turn backup off</b> — one tap in the Parent Zone. Uploads stop at once
