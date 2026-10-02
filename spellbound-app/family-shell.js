@@ -201,7 +201,7 @@
   function closeLayer() {
     try {
       if (document.querySelector('.arc-play,.bz-play')) { leaveDrill(); render(); return true; }
-      if (state.famMenu) { state.famMenu = false; render(); return true; }
+      if (menuOpen()) { state.famMenu = false; render(); return true; }
       if (state.drawerOpen) { state.drawerOpen = false; render(); return true; }
       if (state.pinDlg) { state.pinDlg = null; render(); return true; }
       if (state.showTiers || state.showPaywall) { state.showTiers = false; state.showPaywall = false; state._planOk = false; render(); return true; }
@@ -352,13 +352,16 @@
   function lockBtn() {
     return '<button data-act="setNav" data-arg="parent" class="sb-hdr-ico sb-fam-lock" aria-label="Grown-ups — needs the PIN" title="Grown-ups (PIN)">' + LOCK + '</button>';
   }
+  /* The menu belongs to the screen it was opened on: navigating anywhere (a tab, Back) puts it
+     away without anyone having to remember to close it. */
+  function menuOpen() { return !!state.famMenu && state.famMenu === routeOf() && state.screen === 'app'; }
   function kidBtn() {
-    var c = active(); var open = !!state.famMenu;
+    var c = active(); var open = menuOpen();
     return '<button data-act="famMenu" class="sb-fam-kid" aria-haspopup="menu" aria-expanded="' + (open ? 'true' : 'false') + '" aria-label="' + H((c.name || 'Speller') + ' — switch child') + '" title="Switch child">'
       + '<span class="sb-fam-kidav">' + avatarMini(c, 30) + '</span><span class="sb-fam-caret" aria-hidden="true">▾</span></button>';
   }
   function kidMenu() {
-    if (!state.famMenu || state.screen !== 'app') return '';
+    if (!menuOpen()) return '';
     var ch = state.children || [];
     var rows = ch.map(function (k, i) {
       var on = i === state.activeIdx;
@@ -371,7 +374,7 @@
       + '<div class="sb-fam-mh">Children in this household</div>' + rows
       + '<div class="sb-fam-sep"></div>'
       + '<button role="menuitem" data-act="famMine" class="sb-fam-item">My page — avatar, badges, collection</button>'
-      + '<button role="menuitem" data-act="goSettings" class="sb-fam-item">Settings</button>'
+      + '<button role="menuitem" data-act="famSettings" class="sb-fam-item">Settings</button>'
       + '<button role="menuitem" data-act="famAdd" class="sb-fam-item">+ Add a child <span>grown-ups</span></button>'
       + '</div>';
   }
@@ -409,12 +412,13 @@
   /* app3 calls this once its `app` object exists; the actions live here beside the code they serve */
   function install() {
     app.goNext = goNext;
-    app.famMenu = function () { state.famMenu = !state.famMenu; render(); };
+    app.famMenu = function () { state.famMenu = menuOpen() ? false : routeOf(); render(); };
     app.famMenuClose = function () { if (!state.famMenu) return; state.famMenu = false; render(); };
     app.famSwitch = switchChild;
     app.famMine = function () { state.famMenu = false; app.openCollection(); };
+    app.famSettings = function () { state.famMenu = false; app.goSettings(); };
     app.famAdd = function () { state.famMenu = false; pinGate(function () { app.addChild(); }, 'Add a child — grown-ups only'); };
-    try { document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && state.famMenu) { state.famMenu = false; render(); } }); } catch (e) {}
+    try { document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menuOpen()) { state.famMenu = false; render(); } }); } catch (e) {}
   }
 
   window.SB_SHELL = {
