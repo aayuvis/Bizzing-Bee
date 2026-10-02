@@ -72,8 +72,10 @@ const kid = (over) => Object.assign({ name: 'Ahana', age: 9, ageBand: '8-10', av
   // words spelled right (the karma* ids, kept as storage keys)
   const right = await step(() => { const c = active(); c.lists.default.xp = 100;
     state.celebrate = null; checkNewBadges(); const c1 = state.celebrate; state.celebrate = null;
-    return { first: c1 && c1.badge && c1.badge.id, done: badgeDefs().find(b => b.id === 'karma100').done }; });
-  ok(right.done && right.first === 'karma100', '100 words spelled right earns "Hundred Club" (' + right.first + ')');
+    /* 100 words right also reaches Level 3 (First Hatch) — two medals in one check; the overlay
+       leads with one and counts the rest, and both are recorded once */
+    return { fired: !!(c1 && c1.badge), seen: !!(c.badgesSeen || {}).karma100, done: badgeDefs().find(b => b.id === 'karma100').done }; });
+  ok(right.done && right.seen && right.fired, '100 words spelled right earns "Hundred Club", celebrated and recorded');
 
   // reload: nothing celebrates again
   await A.pg.reload(); await A.pg.waitForTimeout(3000);

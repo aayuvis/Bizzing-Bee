@@ -206,9 +206,56 @@ why, the guard and how it was proved by breaking it, and an honest re-score.
   wisp, a poke and a won arcade race move it by 0; three right and two wrong move it exactly 3.
 - Re-score: **4** — Trivia keeps its own study "Level 1–5" (a question-difficulty pick, not a rank).
 
+## Proved by breaking it (each break restored and `cmp`-identical afterwards)
+
+| break put back | test | failures |
+|---|---|---|
+| migration with no receipt (no `walletV`, no wallet guard) | wallet-coins | 5 |
+| a bare number pays again + `addCoins(12)` on the Atlas | wallet-coins | 2 |
+| no daily cap | wallet-coins | 1 |
+| Test coins write the real wallet | wallet-coins | 3 (first attempt: 0 — the cap had already been reached, so a refused write looked like no write; the test now checks Test coins and `?demo` BEFORE the cap) |
+| a plan grants start coins again | wallet-coins | 1 |
+| the "day streak" stat back on Practice | no-streaks | 2 |
+| a new day moves the streak, pays and toasts "🔥 30-day streak!" | no-streaks | 6 |
+| a cache rolls what it holds (`Math.random`) | no-random | 1 |
+| a world bought with coins again | no-random | 2 |
+| an Epic card loses its rule | no-random | 1 |
+| a medal celebrates every time | medals | 3 |
+| days in a row earn medals (`daysPlayed`) | medals | 2 |
+| streak medals shown, locked, to everyone | medals | 3 |
+| a coin price back on locked worlds | locks | 3 |
+| "$299/yr" back on the Atlas's Advanced Rounds | locks | 2 (first attempt: 0 — the edit went into `viewMap`, a fallback the map never draws; re-broken in `viewAtlas`) |
+| plan locks drawn dashed like learning locks | locks | 1 |
+| home shows the band as the level again | one-level | 1 |
+| time on the app moves the level | one-level | 1 |
+| a cache moves the level | one-level | 1 |
+
+## Test runs (after the last change)
+
+New: wallet-coins, no-streaks, no-random, medals, locks, one-level — all green.
+Existing, green: hive-store, buy-where-it-lives, hive-nav, no-accessories, aurora-refund,
+no-big-totals, nav-hive-band, atlas-alive, champion-expedition, living-meadow, living-atlas,
+living-advanced, living-cast, result-screen, reader, mobile-layout, pin-mandatory, arcade-geometry,
+coach-rules, atlas-contrast, atlas-sets, atlas-stars, back-pill, bug-sidebar, coach-rings,
+data-lint, header-search, learn-next, list-builder, loading-state, long-words, no-default-login,
+onboarding-age, onboarding-layout, set-deck, settings-tiles, sign-out, telemetry, trail-map,
+tts-once, ux-826, word-bank, word-synonyms.
+- **Flakes under load, not regressions**: `living-atlas` / `living-cast` open the Atlas 2.6s after
+  boot and can beat the lazy concepts shard (~2.6s on a loaded machine) — failed once each under
+  four agents' load, passed alone, and the base commit has the same race. `hive-store` once caught
+  the `concepts.json` fetch fallback (loadConcepts before the shard lands, from file://); the
+  medal shelf and avatar evidence now only read chapters already in memory, so they never trigger
+  that fetch. `header-search` failed once on a detached element and passed alone.
+- `ux-personas` exits 1 on base and here alike: it writes to a hard-coded scratchpad path from
+  another session. Same six findings either way (batch D's runner should fix the path).
+- `gp-*` and `worlds-splash`/`shelf-art` were not re-run: nothing in them changed (the Grand Prix
+  engine pays no coins; the wallet does not touch the splash or the shelf).
+
 ## Existing tests deliberately updated (the brief reverses what they asserted)
 
 - `hive-store.cjs` — the odds panel is now a failure, not a requirement; the tab label is Medals.
+- `no-big-totals.cjs` — the collection totals are read from the app (the medal shelf is 82 now,
+  not 80).
 - `buy-where-it-lives.cjs` — a locked chapter must NOT ask for coins; it goes to its Atlas stop or
   the PIN.
 - `hive-nav.cjs` — a locked world's tag below the art is its Level lock, and carries no price.

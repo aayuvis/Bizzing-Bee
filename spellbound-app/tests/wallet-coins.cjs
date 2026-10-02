@@ -101,13 +101,8 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const r5b = await pg.evaluate(() => ['answer', 'stop', 'contest', 'mastery'].map(e => addCoins(e)));
   ok(JSON.stringify(r5b) === JSON.stringify([1, 5, 10, 20]), 'the four standard events pay 1 · 5 · 10 · 20 — ' + JSON.stringify(r5b));
 
-  /* ---- 4. the cap: 100 per app per child per day ---- */
-  const cap = await pg.evaluate(() => { let n = 0; for (let i = 0; i < 12; i++) n += addCoins('mastery');
-    const today = BZ_WALLET.ledger('Ahana').filter(x => x.a === 'bee' && x.n > 0 && x.why !== 'migrated' && new Date(x.t).toDateString() === new Date().toDateString()).reduce((a, x) => a + x.n, 0);
-    return { today, last: addCoins('answer') }; });
-  ok(cap.today === 100 && cap.last === 0, `the day stops at 100 earned (${cap.today}), and the next right answer pays 0 (${cap.last})`);
-
-  /* ---- 6. Test coins, ?demo and a plan never write the family wallet ---- */
+  /* ---- 6. Test coins, ?demo and a plan never write the family wallet — checked BEFORE the cap
+     is reached, or a write the cap refused would look like a write that never happened ---- */
   const r6 = await pg.evaluate(async () => {
     const w0 = BZ_WALLET.balance('Ahana'); const c = active();
     state._planOk = true; state.parentPin = '1234';
@@ -125,6 +120,12 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(r6.paid === 0 && r6.wMid === r6.w0, 'while they are on, learning and spending never touch the wallet (' + r6.w0 + ' → ' + r6.wMid + ')');
   ok(r6.back === r6.w0, 'switching them off puts the real balance back — ' + r6.back);
   ok(r6.afterPlan === r6.w0 && r6.wEnd === r6.w0, 'a sample (?demo) child and a paid plan add nothing to the wallet');
+
+  /* ---- 4. the cap: 100 per app per child per day ---- */
+  const cap = await pg.evaluate(() => { let n = 0; for (let i = 0; i < 12; i++) n += addCoins('mastery');
+    const today = BZ_WALLET.ledger('Ahana').filter(x => x.a === 'bee' && x.n > 0 && x.why !== 'migrated' && new Date(x.t).toDateString() === new Date().toDateString()).reduce((a, x) => a + x.n, 0);
+    return { today, last: addCoins('answer') }; });
+  ok(cap.today === 100 && cap.last === 0, `the day stops at 100 earned (${cap.today}), and the next right answer pays 0 (${cap.last})`);
 
   await b.close();
   ok(!errs.length, errs.length ? 'page errors: ' + errs.slice(0, 3).join(' | ') : 'no page errors');
