@@ -5,7 +5,7 @@
    Settings → Testing tools, the recorder logs INTERACTION events — taps (as
    viewport-percent coordinates for heatmaps), the screen they landed on, the
    data-act they hit, screen-time heartbeats, JS errors, session opens and the
-   optional end-of-session reaction — to localStorage on THIS device only.
+   optional end-of-session reaction — to the device bucket (store.js) on THIS device only.
    Nothing personal is ever written: no name, no age, no words typed.
    The log exports as sb-research.json and is read by backend.html, the
    operator console that lives in the repo and is NEVER deployed to the site.
@@ -13,14 +13,14 @@
 (function () {
   var KEY = 'sb_tm_log', SW = 'sb_tm_on', CAP = 12000;
   var buf = null, sid = Date.now().toString(36);
-  function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function ls(k) { try { return SB_STORE.getKey(k); } catch (e) { return null; } }
   function on() { return ls(SW) === '1'; }
   function load() { if (buf) return buf; try { buf = JSON.parse(ls(KEY) || '[]'); } catch (e) { buf = []; } return buf; }
   var _wt = null;
   function write() { clearTimeout(_wt); _wt = setTimeout(function () {
-    try { localStorage.setItem(KEY, JSON.stringify(load())); } catch (e) {
+    if (!SB_STORE.setKey(KEY, JSON.stringify(load()))) {
       /* full: drop the oldest half and try once more */
-      try { buf = load().slice(-Math.floor(CAP / 2)); localStorage.setItem(KEY, JSON.stringify(buf)); } catch (e2) {}
+      buf = load().slice(-Math.floor(CAP / 2)); SB_STORE.setKey(KEY, JSON.stringify(buf));
     } }, 400); }
   function nav() { try { return (typeof state !== 'undefined' && state) ? String(state.screen === 'app' ? (state.nav || '?') : state.screen) : '?'; } catch (e) { return '?'; } }
   function rec(ev) { if (!on()) return;
@@ -46,11 +46,11 @@
 
   window.SB_TM = {
     on: on,
-    arm: function (v) { try { localStorage.setItem(SW, v ? '1' : '0'); } catch (e) {} if (v) { buf = load(); rec({ k: 'arm' }); } },
+    arm: function (v) { try { SB_STORE.setKey(SW, v ? '1' : '0'); } catch (e) {} if (v) { buf = load(); rec({ k: 'arm' }); } },
     rec: rec,
     list: function () { return load().slice(); },
     count: function () { return load().length; },
-    clear: function () { buf = []; try { localStorage.setItem(KEY, '[]'); } catch (e) {} },
+    clear: function () { buf = []; try { SB_STORE.setKey(KEY, '[]'); } catch (e) {} },
     export: function () { var b = load(); if (!b.length) return null;
       return JSON.stringify({ exported: new Date().toISOString(), device: innerWidth + 'x' + innerHeight, events: b }); }
   };

@@ -2914,6 +2914,9 @@
 <p style="margin:28px 0 0;font-size:12.5px;color:#5A5470;line-height:1.55">Bizzing&trade; and Bizzing Bee&trade; are trademarks of the Bizzing Bee developer. Bizzing Bee is an independent study tool and is not affiliated with, sponsored by or endorsed by the Scripps National Spelling Bee, the North South Foundation or Merriam-Webster.</p>
 </main>
 </div>
+<!-- store.js is the storage seam and must be the FIRST deferred script: files that read storage
+     while they load (auth.js, worlds4.js, telemetry.js) find it in place. -->
+<script defer src="store.js?v=20261002b"></script>
 <script defer src="icons.js?v=20261002b"></script>
 <script defer src="icons-art.js?v=20261002b"></script>
 <script defer src="cover-art.js?v=20261002b"></script>

@@ -239,7 +239,7 @@
    the music STOPS on the focus screens and when the tab is hidden. */
 (function(){
   var AC=null, master=null, timer=null, nextT=0, step=0, playingWorld=null;
-  var enabled=(function(){ try{ return localStorage.getItem('sb_w4_music')!=='0'; }catch(e){ return true; } })();
+  var enabled=(function(){ try{ return SB_STORE.get('music')!=='0'; }catch(e){ return true; } })();
   function midi(n){ return 440*Math.pow(2,(n-69)/12); }
   /* The ORIGINAL tunes — same keys, tempos, patterns and note density as the first engine —
      but every note now plays through a smooth voice: a detuned pair, rounded attack, singing
@@ -321,7 +321,7 @@
   window.SB_W4_MUSIC={
     on:function(){ return enabled; },
     playing:function(){ return !!playingWorld; },
-    toggle:function(){ enabled=!enabled; try{ localStorage.setItem('sb_w4_music',enabled?'1':'0'); }catch(e){}
+    toggle:function(){ enabled=!enabled; try{ SB_STORE.set('music',enabled?'1':'0'); }catch(e){}
       if(!enabled) stop(); else window.SB_W4_MUSIC.sync(); return enabled; },
     sync:function(){ try{
       var calm=document.documentElement.classList.contains('w4-calm');
@@ -344,9 +344,9 @@
    backdrop held as a faint still — on every screen, not just Practice/Supercharge.
    It rides the same w4-calm rail those screens use, so one contract rules both. */
 window.SB_W4_FOCUS={
-  on:function(){ try{ return localStorage.getItem('sb_w4_focus')==='1'; }catch(e){ return false; } },
+  on:function(){ try{ return SB_STORE.get('focus')==='1'; }catch(e){ return false; } },
   toggle:function(){ var v=!window.SB_W4_FOCUS.on();
-    try{ localStorage.setItem('sb_w4_focus', v?'1':'0'); }catch(e){}
+    try{ SB_STORE.set('focus', v?'1':'0'); }catch(e){}
     try{ if(window.SB_W4_SYNC) SB_W4_SYNC(); }catch(e){}
     return v; }
 };

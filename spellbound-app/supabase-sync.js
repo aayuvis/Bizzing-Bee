@@ -29,9 +29,9 @@
   function token() { try { return window.SB_AUTH && SB_AUTH.token && SB_AUTH.token(); } catch (e) { return null; } }
 
   function meta() {
-    try { return JSON.parse(localStorage.getItem(SYNC_LS) || 'null') || {}; } catch (e) { return {}; }
+    try { return JSON.parse(SB_STORE.getKey(SYNC_LS) || 'null') || {}; } catch (e) { return {}; }
   }
-  function setMeta(m) { try { localStorage.setItem(SYNC_LS, JSON.stringify(m)); } catch (e) {} }
+  function setMeta(m) { try { SB_STORE.setKey(SYNC_LS, JSON.stringify(m)); } catch (e) {} }
 
   /* A device id, so a progress row can say which tablet wrote it last. Random, not
      derived from anything about the device or the family — it is a label for a

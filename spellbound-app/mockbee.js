@@ -223,8 +223,8 @@
 
   /* ---------------- state ---------------- */
   const mb = () => state.mb;
-  function prog() { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } }
-  function saveProg(p) { try { localStorage.setItem(LS, JSON.stringify(p)); } catch (e) {} }
+  function prog() { try { return SB_STORE.getJSON('mockbee', {}) || {}; } catch (e) { return {}; } }   // LS names the key; store.js owns it
+  function saveProg(p) { try { SB_STORE.setJSON('mockbee', p); } catch (e) {} }
 
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
