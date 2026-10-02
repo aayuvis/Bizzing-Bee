@@ -1248,8 +1248,9 @@
     const place = meIn ? 1 : i < 0 ? 11 : Math.max(2, g.field.length - i);
     g.place = place;
     /* coins: reaching the last few is worth something even without the trophy */
-    const pay = meIn ? 250 : place <= 3 ? 120 : place <= 5 ? 70 : place <= 8 ? 35 : 15;
-    try { addCoins(pay); } catch (e) {}
+    /* a mock bee completed is the standard's contest event — the same 10 for every finish,
+       because a placing in a field of rivals is partly the draw (FAMILY-STANDARD §1) */
+    let pay = 0; try { pay = addCoins('contest'); } catch (e) {}
     g.pay = pay;
     const p = prog();
     p.played = (p.played || 0) + 1;

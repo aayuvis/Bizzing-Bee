@@ -143,7 +143,7 @@
     set({ readerQuiz: { qs, i: 0, right: 0, picked: null } }); };
   app2.readerAns = i => { const z = state.readerQuiz; if (!z || z.picked != null) return; const q = z.qs[z.i];
     z.picked = +i; const ok = q.opts[+i] === q.ok;
-    if (ok) { z.right++; try { addCoins(1); sfx('correct'); } catch (e) {} } else { try { sfx('wrong'); say(q.ok); } catch (e) {} }
+    if (ok) { z.right++; try { addCoins('answer'); sfx('correct'); } catch (e) {} } else { try { sfx('wrong'); say(q.ok); } catch (e) {} }
     render();
     setTimeout(() => { const n = state.readerQuiz; if (n !== z) return;
       if (z.i + 1 < z.qs.length) { z.i++; z.picked = null; }

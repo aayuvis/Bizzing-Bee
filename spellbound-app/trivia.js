@@ -48,11 +48,11 @@
 
   /* ---- scoring shared by all formats ---- */
   function grade(g, q, pickIdx) { const ok = q.sh[pickIdx] === 0;   // data keeps correct at c[0]
-    const c = active(); const st = tStats(c); st.done++; if (ok) { st.right++; st.themes[q.th] = (st.themes[q.th] || 0) + 1; addCoins(1); sfx('correct'); try { burstConfetti(26); } catch (e) {} } else sfx('wrong');
+    const c = active(); const st = tStats(c); st.done++; if (ok) { st.right++; st.themes[q.th] = (st.themes[q.th] || 0) + 1; g.bonus = (g.bonus || 0) + addCoins('answer'); sfx('correct'); try { burstConfetti(26); } catch (e) {} } else sfx('wrong');
     try { if (window.ttBandRecord) ttBandRecord(q.lv || 3, ok); } catch (e) {}   // feeds the auto-band
     g.mood = ok ? 'party' : 'oops';
     g.right += ok ? 1 : 0; g.streak = ok ? (g.streak || 0) + 1 : 0;
-    if (ok && g.streak > 0 && g.streak % 5 === 0) { addCoins(3); try { flash('🔥 ' + g.streak + ' in a row! +3 🪙'); } catch (e) {} }
+    if (ok && g.streak > 0 && g.streak % 5 === 0) { try { flash('⭐ ' + g.streak + ' right in a row!'); } catch (e) {} }   /* celebrated, never paid: a run is not a bigger wage */
     return ok; }
 
   const STV = {
@@ -122,7 +122,7 @@
         cell.st = ok ? 1 : 2; if (!ok) g.miss++;
         render();
         setTimeout(() => { const t = state.trv; if (!t || t.view !== 'square') return; t.sel = null; t.picked = null;
-          const L = STV._lines(t.cells); if (L > t.lines) { const gained = L - t.lines; t.lines = L; addCoins(gained * 5); sfx('win'); burstConfetti(70); flash('📐 Line complete! +' + (gained * 5) + ' 🪙'); }
+          const L = STV._lines(t.cells); if (L > t.lines) { t.lines = L; sfx('win'); burstConfetti(70); flash('📐 Line complete!'); }
           if (t.cells.every(x => x.st > 0)) STV.squareEnd(); else render(); }, ok ? 1900 : 2800); return; } },
 
     _lines(cells) { const W = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
@@ -134,17 +134,17 @@
     hear() { const g = state.trv; if (!g) return;
       const q = g.view === 'square' ? (g.sel != null && g.cells[g.sel].q) : g.qs && g.qs[g.i]; if (q) speakQ(q); },
 
-    quizEnd() { const g = state.trv; g.done = true; const bonus = 2 + g.right + (g.right >= 8 ? 3 : 0); addCoins(bonus); g.bonus = bonus;
+    quizEnd() { const g = state.trv; g.done = true; const bonus = g.bonus || 0; g.bonus = bonus;   /* the round's wage is its right answers, paid as they came */
       const st = tStats(active()); st.rounds++; if (g.right === g.qs.length) st.perfect = (st.perfect || 0) + 1;
       try { logActivity('trivia', 'Bee Trivia', { done: g.qs.length, right: g.right, coins: bonus }, []); } catch (e) {}
       if (g.right >= 8) { sfx('win'); burstConfetti(110); } else sfx('level'); save(); render(); },
     squareEnd() { const g = state.trv; g.done = true; const claimed = g.cells.filter(x => x.st === 1).length;
-      const bonus = 2 + claimed + g.lines * 2; addCoins(bonus); g.bonus = bonus;
+      const bonus = g.bonus || 0; g.bonus = bonus;
       const st = tStats(active()); st.squares++; st.lines += g.lines;
       try { logActivity('trivia', 'Trivia Squares', { done: 9, right: claimed, coins: bonus }, []); } catch (e) {}
       if (g.lines >= 3) { sfx('win'); burstConfetti(140); } else sfx('level'); save(); render(); },
     clockEnd() { const g = state.trv; if (g.done) return; g.done = true; clearInterval(g.timer);
-      const bonus = 2 + Math.floor(g.right / 2); addCoins(bonus); g.bonus = bonus;
+      const bonus = g.bonus || 0; g.bonus = bonus;
       const st = tStats(active()); const nb = g.right > (st.clockBest || 0); if (nb) st.clockBest = g.right;
       try { logActivity('trivia', 'Trivia — Beat the Clock', { done: g.right + g.wrong, right: g.right, coins: bonus }, []); } catch (e) {}
       sfx(nb ? 'win' : 'level'); if (nb) burstConfetti(110); save(); render(); },
@@ -260,7 +260,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px">
           ${fmt('trvQuiz', '🎯', 'Classic Quiz', '10 questions, fun fact after every answer.', 'linear-gradient(135deg,#7C5CFF,#6A47F5)')}
           ${fmt('trvSquare', '📐', 'Trivia Squares', 'Claim the 3×3 board — 9 different themes, one per cell.', 'linear-gradient(135deg,#13A892,#0E8A78)')}
-          ${fmt('trvClock', '⏱', 'Beat the Clock', '60 seconds, as many as you can. Streaks pay bonus coins.', 'linear-gradient(135deg,#F0703C,#D85A29)')}
+          ${fmt('trvClock', '⏱', 'Beat the Clock', '60 seconds, as many as you can. Every right answer pays a coin.', 'linear-gradient(135deg,#F0703C,#D85A29)')}
         </div>
       </div>`; },
   };

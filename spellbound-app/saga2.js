@@ -665,7 +665,7 @@
       el.style.display='grid'; try{ say(w.w); }catch(e){}
       const inp=el.querySelector('#sg-ci'); inp.focus();
       function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); hcRound.push({w:w.w,ok:ok});
-        if(ok){ spelled++; score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins(20); }catch(_){}
+        if(ok){ spelled++; score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins('answer'); }catch(_){}
           el.style.display='none'; card=null; spawnSplash();
           try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
         else { try{flash('Not quite — the moth got that one.');}catch(_){} }
@@ -1143,7 +1143,7 @@
        handed straight back to the app's generic text card. No stars, no score, and
        above all no list of the words the flight had been about. */
     function finish(win){ cleanup();
-      if(coinsGot){ try{ if(typeof addCoins==='function') addCoins(coinsGot); }catch(e){} }
+      /* coins flown through are a dexterity pickup, not a word — they score, they do not pay */
       const score=banked*100+coinsGot*5, stars=win?(lives>=3?3:lives===2?2:1):0;
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
       el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:kfRound,
@@ -2893,7 +2893,7 @@
             // streak: a whole word eaten in order without a wrong bite pays a rising bonus
             if(cleanWord){ streak++; if(streak>=2) score+=streak*12; } else streak=0; cleanWord=true;
             spawnSplash((streak>=2?('🔥 '+streak+'× '):'✓ ')+word.toUpperCase());
-            try{ if(typeof addCoins==='function') addCoins(10); }catch(e){}
+            try{ if(typeof addCoins==='function') addCoins('answer'); }catch(e){}
             // EVOLVE: grow the snake through the forms up to Vasuki (the achievable endpoint)
             const ns=Math.min(5, Math.round(wordsDone/CFG.words*5));
             if(ns!==snakeStage){ snakeStage=ns; if(!wornSkin) PAL=EVO_PAL[ns]; if(evo) evo.set(ns, ()=>onVasuki(), 5); }
@@ -3067,7 +3067,7 @@
           drops.splice(i,1);
           if(d.ch===word[spelled]){ spelled++; score+=15; renderSlots();
             SGFX.spark(fx,d.x,d.y,8,['#FFE9A8','#F0B429','#FFFFFF'],{speed:2.4,decay:0.055,rx:2.4,ry:3.2});
-            if(spelled>=word.length){ ccRound.push({w:word,ok:ccClean}); wordsDone++; score+=40; spawnSplash(); try{ if(typeof addCoins==='function') addCoins(8); }catch(e){}
+            if(spelled>=word.length){ ccRound.push({w:word,ok:ccClean}); wordsDone++; score+=40; spawnSplash(); try{ if(typeof addCoins==='function') addCoins('answer'); }catch(e){}
               if(wordsDone>=CFG.words){ finish(true); return; } layout(); setHud(); } }
           else { bonk=3; }                                    // wrong letter — no penalty beyond the miss
         } else if(d.y>Ht){ drops.splice(i,1);

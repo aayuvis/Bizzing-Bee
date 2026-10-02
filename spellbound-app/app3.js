@@ -369,7 +369,7 @@ const spellKey = (v) => String(v == null ? '' : v).normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 const sameSpelling = (a, b) => spellKey(a) === spellKey(b);
 const judgeWord = (val,w) => sameSpelling(val, (w&&w.w)||'');
-const demo = () => ({ name:'Speller', age:9, avatar:'bee', theme:'spellbound', level:1, streak:0, acc:0, goal:10, week:[0,0,0,0,0,0,0], xp:0 });
+const demo = () => ({ name:'Speller', age:9, avatar:'bee', theme:'spellbound', level:1, acc:0, goal:10, week:[0,0,0,0,0,0,0], xp:0 });
 const active = () => { const c = state.children[state.activeIdx] || demo(); ensureLists(c); return c; };
 const curWord = () => { const L=(state.sessionWords&&state.sessionWords.length)?state.sessionWords:WORDS; return L[state.gi % L.length]; };
 const formIdx = (lvl) => Math.min(9, Math.max(0, Math.ceil((lvl||1)/2)-1));
@@ -382,6 +382,17 @@ const rankName = (i) => RANK_NAMES[Math.max(0,Math.min(9,i|0))];
 const rankXp = (c) => { c=c||active(); let t=0; try{ Object.keys(c.lists||{}).forEach(k=>{ t+=((c.lists[k]&&c.lists[k].xp)||0); }); }catch(e){} return t; };
 const rankOf = (c) => { c=c||active(); const xp=rankXp(c); const lv=levelFromXp(xp).level;
   return { xp:xp, level:lv, form:formIdx(lv), name:rankName(formIdx(lv)) }; };
+/* THE ONE VISIBLE LEVEL (FIX-BEE C6). Band, Stage, Tier, Evolution and Level were five
+   ladders a child could see. Now one thing is shown as "your level": rankOf — words spelled
+   right anywhere, through the same curve as ever — wearing the bee form for that level as its
+   emblem. It moves ONLY in gainXp, which only a right answer calls: never time on the app,
+   never coins, never a game of luck, and it never goes down. The Bee Band stays UNDERNEATH as
+   the word-difficulty dial diffRange() reads; it is shown as "word difficulty", never as a
+   level. Batch A places the header pill; this is what it says. Guard: tests/one-level.cjs. */
+function oneLevel(c){ c=c||active(); const r=rankOf(c); const lp=levelFromXp(r.xp);
+  return { level:r.level, form:r.form, name:rankName(r.form), xp:r.xp, into:lp.into, need:lp.need, toNext:Math.max(0,lp.need-lp.into),
+    label:'Level '+r.level+' · '+rankName(r.form) }; }
+window.SB_ONE_LEVEL = oneLevel;
 function rankArt(i,size){ try{ return evEmb('spellbound',Math.max(0,Math.min(9,i|0))).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 const milestone = () => { const c=active(); let m=c.milestone; if((!m||!m.date) && state.coachDate) m={label:(m&&m.label)||'the bee', date:state.coachDate};
   if(!m||!m.date) return null; const d=Math.ceil((new Date(m.date+'T00:00:00') - new Date())/86400000);
@@ -396,26 +407,29 @@ function levelFromXp(xp){ xp=Math.max(0, xp||0); let lvl=1, need=xpToNext(1); wh
 function ensureLists(c){ if(!c) return c; if(!c.lists){ c.lists = { default:{ xp: (c.xp||0) }, journey:{xp:0} }; } if(!c.activeList) c.activeList='journey'; if(!c.lists.journey) c.lists.journey={xp:0}; if(!c.lists[c.activeList]) c.lists[c.activeList]={xp:0};
   if(c.coins==null) c.coins=0; if(!c.unlockedThemes) c.unlockedThemes=[c.theme||'spellbound']; if(!c.unlockedLists) c.unlockedLists={}; if(!c.gameLog) c.gameLog=[]; if(!c.pinnedLists) c.pinnedLists={};
   if(!c.missed) c.missed=[]; if(!c.activity) c.activity=[]; if(!c.unlockedConcepts) c.unlockedConcepts={};
-  if(!c.daysPlayed) c.daysPlayed=[]; if(!c.streakRewards) c.streakRewards={}; if(!c.listNames) c.listNames={}; if(c.journeyDay==null) c.journeyDay=0; return c; }
+  if(!c.daysPlayed) c.daysPlayed=[]; if(!c.listNames) c.listNames={}; if(c.journeyDay==null) c.journeyDay=0; return c; }
 /* ---- coins economy: earn by playing, spend on worlds, packs and concepts ----
    Coins buy the things that live in the Hive and the Library — a world, an avatar
    pack, a concept chapter. They no longer buy artifacts: those are EARNED (see
    grantArt below), because an edge in a game should come from playing it, not
    from a balance. Word lists are not sold either — a premium list comes with a
    plan. unlockedLists is still read, so anyone who bought one before keeps it. */
+/* COST is HISTORY now: what a world or a chapter used to cost, kept because the boot refunds
+   (GONEW, Aurora) repay exactly that. Nothing is sold at these prices any more — worlds open
+   on the Level ladder, chapters on the Atlas or with the plan (FIX-BEE I3/C4). */
 const COST = { theme:400, concept:150 };
 /* Artifacts: won, never bought. Each has one earn route, stated on its card. */
 const ART_DEFS = [
   { k:'shield', ic:'crown', name:'Boss Shield 🛡️', desc:'Absorbs one wrong answer in Boss Battle.',  how:'Won when you stage up a list' },
   { k:'reveal', ic:'bulb',  name:'Letter Reveal 💡', desc:'Reveals the next letter in Boss Battle.',   how:'Won when you stage up a list' },
   { k:'time',   ic:'timer', name:'Time Warp ⏱️',    desc:'+15 seconds on your next Buzzer sprint.',   how:'Won when you stage up a list' },
-  { k:'freeze', ic:'flame', name:'Streak Freeze 🧊', desc:'Miss a day — your streak survives.',        how:'Won at a 7, 14 or 30-day streak' },
 ];
 const ART_BY = Object.fromEntries(ART_DEFS.map(a=>[a.k,a]));
-const artCount = (c,k) => k==='freeze' ? (c.freezes||0) : (((c.pow||{})[k])||0);
-/* Freeze lives on c.freezes (the streak code reads it there); the rest on c.pow. */
+/* The Streak Freeze is retired with the streak: it was the one artifact that protected a
+   thing that should not exist. c.freezes stays in old saves and is read by nothing. */
+const artCount = (c,k) => (((c.pow||{})[k])||0);
 function grantArt(k,n){ const c=active(); n=n||1; if(!ART_BY[k]) return;
-  if(k==='freeze') c.freezes=(c.freezes||0)+n; else { if(!c.pow) c.pow={}; c.pow[k]=(c.pow[k]||0)+n; } }
+  if(!c.pow) c.pow={}; c.pow[k]=(c.pow[k]||0)+n; }
 /* Stage-ups rotate through the three game artifacts so a speller collects a spread
    rather than a pile of one — keyed off total words right, which only ever climbs. */
 function grantStageArt(){ const rot=['shield','reveal','time']; const k=rot[(rankXp()|0)%3]; grantArt(k,1); return ART_BY[k]; }
@@ -433,11 +447,49 @@ const ONB_AVS = ['bizzy','panda','froggy','trice','luna'];
 const ONB_THEMES = ['spellbound','aurora'];
 const PREMIUM_THEMES = ['aurora','anime'];             // included with Premium
 function coinsOf(){ return active().coins||0; }
-function addCoins(n){ if(!n) return; const c=active(); c.coins=(c.coins||0)+n; sfx('coin'); }
-function spendCoins(n){ const c=active(); if((c.coins||0)<n) return false; c.coins-=n; return true; }
-/* Take the test coins away and give the child their real balance back. Safe to call twice. */
+/* ---- BIZZING COINS: one family wallet (FAMILY-STANDARD §1, FIX-BEE Harmonise) ----
+   Bee coins are retired into Bizzing coins 1:1. The wallet (bizzing-wallet.js, the family
+   drop-in ported as a classic script) is the ONLY place a balance changes; c.coins is a
+   MIRROR of it, kept so the forty-odd readers of c.coins needed no change.
+   • addCoins(EVENT) — 'answer' 1 · 'stop' 5 · 'contest' 10 · 'mastery' 20, capped at 100 a
+     day by the wallet. A NUMBER pays nothing: the amount is the standard's, never the
+     caller's, so a payout invented tomorrow fails safe instead of quietly paying. Returns
+     the coins actually paid (0 at the cap) — show that number, never the asked-for one.
+   • spendCoins(price, why) — a fixed printed price, nothing else.
+   • walletSync(c) — moves a child's old c.coins into the wallet ONCE (c.walletV + the
+     wallet's own 'migrated' receipt, so neither a reload nor a restored backup pays twice),
+     follows a renamed child to their new name, then refreshes the mirror.
+   Never written: in ?demo (window.SB_DEMO — a sample child must not touch the family
+   feed) and under Test coins (c.devCoins — tester mode never rewrites the child). */
+const BEE_APP='bee';
+function walletWho(c){ return String((c&&c.name)||'').trim(); }
+function walletSync(c){ try{ c=c||active(); const W=window.BZ_WALLET; if(!c||!W||window.SB_DEMO||c.devCoins) return;
+  const who=walletWho(c); if(!who) return;
+  if(c.walletV!==1){ const old=Math.max(0, Math.floor(+c.coins||0)); if(old>0) W.migrateFrom(BEE_APP, who, old); c.walletV=1; c.walletWho=who.toLowerCase(); }
+  else if(c.walletWho && c.walletWho!==who.toLowerCase()){ const had=Math.max(0, Math.floor(+c.coins||0)); if(had>0 && !W.ledger(who).length) W.migrateFrom(BEE_APP, who, had); c.walletWho=who.toLowerCase(); }
+  else if(!c.walletWho) c.walletWho=who.toLowerCase();
+  c.coins=W.balance(who); }catch(e){} }
+function addCoins(ev){ const c=active(); const W=window.BZ_WALLET;
+  if(typeof ev!=='string' || !W || !Object.prototype.hasOwnProperty.call(W.EARN, ev)) return 0;
+  if(c.devCoins) return 0;                                   // the test purse is not a real one
+  let n=0;
+  if(window.SB_DEMO){ n=W.EARN[ev]; c.coins=(c.coins||0)+n; }  // the sample child's purse, never the family's
+  else { walletSync(c); if(!walletWho(c)) return 0; n=W.earn(BEE_APP, walletWho(c), ev); c.coins=W.balance(walletWho(c)); }
+  if(n){ sfx('coin'); _earned+=n; } return n; }
+/* What this page has paid so far — a result screen subtracts the reading it took at the
+   start, so it shows the coins that really arrived, cap and all. */
+let _earned=0; function earnedSoFar(){ return _earned; }
+/* A game's right answer: one coin into the wallet, and the same coin onto the game's own
+   tally (g.bonus) — which is what its finish screen shows. There is no finish bonus. */
+function payG(g){ const n=addCoins('answer'); if(g) g.bonus=(g.bonus||0)+n; return n; }
+function spendCoins(n, why){ const c=active(); n=Math.floor(+n||0); if(n<=0) return false;
+  if(c.devCoins || window.SB_DEMO){ if((c.coins||0)<n) return false; c.coins-=n; return true; }
+  const W=window.BZ_WALLET; if(!W) return false; walletSync(c); if(!walletWho(c)) return false;
+  const ok=W.spend(BEE_APP, walletWho(c), n, why||'bee shop'); c.coins=W.balance(walletWho(c)); return ok; }
+/* Take the test coins away and give the child their real balance back. Safe to call twice.
+   The real balance is the wallet's — the banked number is only a fallback with no wallet. */
 function devCoinsOff(){ try{ const c=active(); if(!c||!c.devCoins) return;
-  c.coins=c.devCoinsBank||0; c.devCoins=0; delete c.devCoinsBank; }catch(e){} }
+  c.coins=c.devCoinsBank||0; c.devCoins=0; delete c.devCoinsBank; walletSync(c); }catch(e){} }
 /* Is this world even offered on the current plan? (Owning it already always counts.) */
 function themeInPlan(id){ if(state.devUnlock) return true;
   try{ if((active().unlockedThemes||[]).indexOf(id)>=0) return true;
@@ -445,7 +497,28 @@ function themeInPlan(id){ if(state.devUnlock) return true;
     const idx=(typeof THEMES!=='undefined')?THEMES.findIndex(t=>t.id===id):-1; return idx>=0 && idx<lim; }catch(e){ return true; } }
 function isThemeUnlocked(id){ if(state.devUnlock) return true; if((active().unlockedThemes||[]).indexOf(id)>=0) return true;
   try{ if(window.SB_ENT){ const lim=SB_ENT.worldLimit(); if(lim==='all') return true; const idx=(typeof THEMES!=='undefined')?THEMES.findIndex(t=>t.id===id):-1; if(idx>=0 && idx<lim) return true; } }catch(e){}
-  if(FREE_THEMES.indexOf(id)>=0) return true; return false; }
+  if(FREE_THEMES.indexOf(id)>=0) return true; if(worldMet(id)) return true; return false; }
+/* WORLDS OPEN ON THE LEVEL LADDER (FIX-BEE C4): a world used to be 400 coins; now each one
+   names the Level that opens it, for every child on every plan — the plan can still include
+   it sooner. Levels are rankOf's, which only words spelled right can move. */
+const WORLD_LEVEL = { anime:3, science:5, avatar:7, godly:9, race:10, dino:11 };
+function worldMet(id){ const n=WORLD_LEVEL[id]; if(!n) return false; try{ return rankOf(active()).level>=n; }catch(e){ return false; } }
+function worldRule(id){ const n=WORLD_LEVEL[id]; return n?('Reach Level '+n):'Comes with the plan — ask a grown-up'; }
+/* TWO KINDS OF LOCK, and a child can tell them apart at a glance (FIX-BEE C4).
+   LEARNING lock (data-lock="learn"): the path icon, accent ink, a dashed edge — and the words
+   name the learning that opens it ("Reach Level 5", "Opens at stop 3 of the Meadow").
+   PLAN lock (data-lock="plan"): a padlock, quiet grey, and "comes with the plan — ask a
+   grown-up". NEVER a price: prices live on the plan sheet, behind the grown-up PIN. */
+function lockChip(kind,text,opt){ opt=opt||{}; const learn=kind==='learn';
+  return `<span class="sb-lock ${learn?'sb-lock-learn':'sb-lock-plan'}" data-lock="${learn?'learn':'plan'}" style="display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:4px 9px;border-radius:999px;font-family:var(--ui,var(--body));font-weight:800;font-size:${opt.fs||11.5}px;line-height:1.25;text-align:left;${learn?'background:var(--chip);color:var(--accent);border:1px dashed color-mix(in srgb,var(--accent) 55%,transparent)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${learn?iconSVG('steps',12,2.2):iconSVG('lock',11,2.2)}<span>${esc(text)}</span></span>`; }
+/* A concept chapter's lock: the Atlas stop that teaches it, or the plan. */
+function conceptLock(ci){ const ch=(state.conceptData||[])[ci];
+  if(ch&&ch.adv) return { kind:'plan', text:'Comes with the Advanced Pack — ask a grown-up' };
+  let t=null; try{ t=(typeof window.SB_TRAIL_TAUGHT==='function')?SB_TRAIL_TAUGHT(ci):null; }catch(e){}
+  if(!t && !window.SB_TRAIL){ try{ if(!state._trailAsked && window.SB_LAZY){ state._trailAsked=1; SB_LAZY.need('atlas',()=>{ try{ render(); }catch(e){} }); } }catch(e){}
+    return { kind:'learn', text:'Opens on the Atlas' }; }
+  if(t) return { kind:'learn', text:'Opens at stop '+t.stop+' of '+(t.act||'the Atlas'), t };
+  return { kind:'plan', text:'Comes with the plan — ask a grown-up' }; }
 function isListUnlocked(key){ if(state.devUnlock) return true; try{ if(window.SB_ENT && SB_ENT.has('lists')) return true; }catch(e){} if(!isPremiumList(key)||state.premium) return true; return !!(active().unlockedLists||{})[key]; }
 // Entitlement guard for tier-locked features. Returns true if allowed; else opens the
 // tier/pricing sheet with an upsell and returns false. feature ∈ SB_TIERS[*].ent keys.
@@ -464,40 +537,40 @@ function conceptHalf(){ const n=(state.conceptData||SB_CONCEPTS.chapters||[]).le
 function isConceptUnlocked(ci){ const ch0=(state.conceptData||SB_CONCEPTS.chapters||[])[ci];
   /* Advanced Pack chapters are pack-only: no coin unlock, no premium half-course. */
   if(ch0&&ch0.adv) return advModeOn();
-  if(state.devUnlock) return true; const ch=ch0; if(ch && catGroup(ch.category)==='Basics') return true; try{ if(window.SB_ENT && SB_ENT.has('concepts')) return true; }catch(e){} if((active().unlockedConcepts||{})[ci]) return true; if(state.premium && ci<conceptHalf()) return true; return false; }
+  if(state.devUnlock) return true; const ch=ch0; if(ch && catGroup(ch.category)==='Basics') return true; try{ if(window.SB_ENT && SB_ENT.has('concepts')) return true; }catch(e){} if((active().unlockedConcepts||{})[ci]) return true; if(state.premium && ci<conceptHalf()) return true;
+  try{ if(typeof window.SB_TRAIL_OPEN==='function' && SB_TRAIL_OPEN(ci)) return true; }catch(e){}   /* reached on the Atlas */
+  return false; }
 // Levenshtein distance (for "so close!" near-miss feedback)
 function lev(a,b){ a=a||''; b=b||''; const m=a.length,n=b.length; if(!m) return n; if(!n) return m; const d=Array.from({length:m+1},(_,i)=>[i].concat(new Array(n).fill(0)));
   for(let j=0;j<=n;j++) d[0][j]=j;
   for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){ const c=a[i-1]===b[j-1]?0:1; d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+c); }
   return d[m][n]; }
 function now(){ try{ return Date.now(); }catch(e){ return 0; } }
-/* ---- daily streak: count consecutive days with at least one finished session ---- */
+/* ---- days: local date keys ---- */
 function todayKey(){ try{ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }catch(e){ return '2026-01-01'; } }
 function dayDiff(a,b){ if(!a||!b) return 99; const pa=a.split('-').map(Number), pb=b.split('-').map(Number); return Math.round((Date.UTC(pb[0],pb[1]-1,pb[2])-Date.UTC(pa[0],pa[1]-1,pa[2]))/86400000); }
-const STREAK_REWARDS={3:15,7:40,14:100,30:300};
+/* THERE IS NO STREAK (FIX-BEE J2, FAMILY-STANDARD §8). It counted consecutive days, paid
+   15/40/100/300 coins at 3/7/14/30, handed out a Streak Freeze to protect itself, and every
+   day off reset it to 1 — the loss was the point. Now a day only records that it happened
+   (c.daysPlayed), and the one number shown from it is good days THIS week (Mon–Sun, as the
+   Hive counts them). Nothing expires, a day off costs nothing, nothing pays for coming back.
+   Old c.streak / c.streakRewards / c.freezes are left in the save untouched and read by
+   nothing but the retired-medal check. Guard: tests/no-streaks.cjs. */
 function markActiveToday(){ const c=active(); if(!c) return; const t=todayKey();
   if(!c.daysPlayed) c.daysPlayed=[]; if(c.daysPlayed.indexOf(t)<0){ c.daysPlayed.push(t); if(c.daysPlayed.length>140) c.daysPlayed=c.daysPlayed.slice(-140); }
-  if(c.lastActiveDay===t) return; // already counted today
-  const d=dayDiff(c.lastActiveDay, t);
-  if(!c.lastActiveDay) c.streak=Math.max(1, c.streak||0);   // legacy profiles: never wipe an existing streak
-  else if(d===1) c.streak=(c.streak||0)+1;
-  else if(d===2 && (c.freezes||0)>0){ c.freezes--; c.streak=(c.streak||0)+1; try{ flash('🧊 Streak Freeze used — your '+c.streak+'-day streak survives!'); }catch(e){} }
-  else if(d>1) c.streak=1; else c.streak=(c.streak||1);
-  c.lastActiveDay=t; c.streakBest=Math.max(c.streakBest||0, c.streak||1);
-  if(!c.streakRewards) c.streakRewards={}; const rw=STREAK_REWARDS[c.streak];
-  if(rw && !c.streakRewards[c.streak]){ c.streakRewards[c.streak]=1; addCoins(rw);
-    // 7 / 14 / 30 also hand over a Streak Freeze — the artifact that protects the very
-    // thing being rewarded. (Day 3 is coins only; a freeze that early is wasted.)
-    const frz = c.streak>=7; if(frz) grantArt('freeze',1);
-    state.toast='🔥 '+c.streak+'-day streak! +'+rw+' coins'+(frz?' and a Streak Freeze 🧊':''); scheduleToast(3000); sfx('win'); burstConfetti(80); }
 }
+/* The week as the Hive counts it: Monday to Sunday, local dates. */
+function weekDayKeys(){ const out=[]; const d=new Date(); const dow=(d.getDay()+6)%7; d.setDate(d.getDate()-dow);
+  for(let i=0;i<7;i++){ out.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')); d.setDate(d.getDate()+1); }
+  return out; }
+function goodDaysThisWeek(c){ c=c||active(); const played=new Set((c&&c.daysPlayed)||[]); return weekDayKeys().filter(k=>played.has(k)).length; }
 /* ---- misses: persist per-child to a revise list (with counts) AND the working pool ---- */
 function addMiss(w){ if(!w||!w.w) return; const c=active(); if(!c.missed) c.missed=[]; const k=nkey(w.w);
   const ex=c.missed.find(x=>nkey(x.w)===k);
   if(ex){ ex.n=(ex.n||1)+1; ex.ts=now(); } else { c.missed.unshift({w:w.w,d:w.d||'',s:w.s||'',p:w.p||'',o:w.o||'',r:w.r||'',y:w.y||3,n:1,ts:now()}); }
   if(c.missed.length>200) c.missed=c.missed.slice(0,200);
   const cur=(state.missedWords||[]).filter(x=>nkey(x.w)!==k); cur.unshift(w); state.missedWords=cur.slice(0,60); }
-function clearMiss(key){ key=nkey(key); const c=active(); if(c.missed) c.missed=c.missed.filter(x=>nkey(x.w)!==key); state.missedWords=(state.missedWords||[]).filter(x=>nkey(x.w)!==key); }
+function clearMiss(key){ key=nkey(key); const c=active(); if(c.missed){ if(c.missed.some(x=>nkey(x.w)===key)) (c.trapsBeaten=c.trapsBeaten||{})[key]=1; c.missed=c.missed.filter(x=>nkey(x.w)!==key); }   /* a word once missed and now spelled right is a TRAP BEATEN — evidence for the Traps medals */ state.missedWords=(state.missedWords||[]).filter(x=>nkey(x.w)!==key); }
 function syncMissed(){ const c=active(); state.missedWords=((c&&c.missed)||[]).slice(0,60); }
 /* ---- parental activity log: one high-level entry per finished session, tap to expand ---- */
 function logActivity(kind, label, stats, misses){ const c=active(); if(!c.activity) c.activity=[]; markActiveToday();
@@ -509,9 +582,10 @@ function logActivity(kind, label, stats, misses){ const c=active(); if(!c.activi
 /* Badge celebrations — every session-end funnels through logActivity, so newly
    earned badges are caught there. First run seeds silently (no back-pay parade). */
 function checkNewBadges(){ const c=active(); if(!c) return;
+  try{ grantAvatarMilestones(); }catch(e){}   /* avatars won by a milestone arrive here too — once, with a line */
   const first=!c.badgesSeen; const seen=c.badgesSeen||(c.badgesSeen={});
   const defs=badgeDefs(); const fresh=[];
-  for(const b of defs){ if(b.done && !seen[b.id]){ seen[b.id]=1; if(!first) fresh.push(b); } }
+  for(const b of defs){ if(b.done && !seen[b.id]){ seen[b.id]=1; if(!first && !b.retired) fresh.push(b); } }   /* each medal celebrated ONCE; a retired one is kept, never celebrated */
   if(first || !fresh.length){ save(); return; }
   save(); if(state.celebrate) return;
   state.celebrate={kind:'badge', badge:fresh[0], more:fresh.length-1};
@@ -554,7 +628,7 @@ function newCoachBatch(){ const key=state.sessionListKey||activeListKey(); state
 function gainXp(){ const c=active(); const key=activeListKey(); const lp=getList(c,key); const before=listLevel(c,key);
   lp.xp=(lp.xp||0)+1; const rawAfter=listLevelRaw(c,key); const after=Math.min(rawAfter, levelCap());
   if(after>before){ const form=formIdx(after); const art=grantStageArt();
-    state.toast='Stage up in '+listLabel(key)+' ✨ — you won a '+art.name; scheduleToast(3000); addCoins(4); sfx('level'); burstConfetti(90); }
+    addCoins('mastery'); state.toast='Stage up in '+listLabel(key)+' ✨ — you won a '+art.name; scheduleToast(3000); sfx('level');   /* a stage mastered is the standard's mastery event */ burstConfetti(90); }
   else if(!state.premium && rawAfter>FREE_LEVEL_CAP && before>=FREE_LEVEL_CAP && (lp.xp % 6 === 0)){ state.toast='Level 5 reached — go Premium to keep leveling 👑'; scheduleToast(2800); }
 }
 // pick the smoothest natural voice the device offers (loaded async)
@@ -2012,7 +2086,7 @@ const app = {
   swapAuth:()=>set({authMode: state.authMode==='signup'?'signin':'signup'}),
   onEmail:(v)=>set({email:v}), onPw:(v)=>set({pw:v}),
   doAuth:()=>{ if(state.authMode==='signin'){ let ch=state.children;
-      if(!ch.length) ch=[{ name:'Ahana', age:9, avatar:'fox', theme:'spellbound', level:9, streak:12, acc:88, goal:10, xp:124, week:[12,20,15,30,18,25,22] }];
+      if(!ch.length) ch=[{ name:'Ahana', age:9, avatar:'fox', theme:'spellbound', level:9, acc:88, goal:10, xp:124, week:[12,20,15,30,18,25,22] }];
       set({children:ch, activeIdx:0, theme:ch[0].theme||'spellbound', screen:'app', nav:'home'});
     } else { set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}); } },
   // onboarding
@@ -2036,7 +2110,7 @@ const app = {
     if(state.landWant && state.landWant!=='free'){ const want=state.landWant; state.landWant=null;
       setTimeout(()=>{ try{ state.tierUpsell={feature:'plan', label:'the plan you picked', need:want};
         set({showTiers:true}); }catch(e){} }, 700); } },
-  _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, ageBand:S.draft.ageBand||bandForAge(S.draft.age).k, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, streak:0, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
+  _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, ageBand:S.draft.ageBand||bandForAge(S.draft.age).k, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
     if(S.draft.beeDate) kid.milestone={ label:(S.draft.beeLabel||'the bee'), date:S.draft.beeDate };
     const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save(); },
   startLevelTest:()=>{ if(state.screen==='onboarding'){ if(!state.draft.name.trim()){ flash('Add a name first'); return; } app._finishOnb(); }
@@ -2065,13 +2139,22 @@ const app = {
   // theme / mode
   pickTheme:(id)=>{ if(!isThemeUnlocked(id)){ app.buyTheme(id); return; } const children=state.children.slice(); if(children[state.activeIdx]) children[state.activeIdx]={...children[state.activeIdx],theme:id}; set({theme:id, children}); },
   buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id);
-    if(!themeInPlan(id)){ const t=(typeof THEMES!=='undefined')&&THEMES.find(x=>x.id===id); openUpsell('worlds','The '+((t&&t.label)||'world')+' world', themePlanNeeded(id)); return; }
-    if(!window.confirm('Unlock this world for '+COST.theme+' coins?')) return; if(spendCoins(COST.theme)){ const c=active(); c.unlockedThemes=[...(c.unlockedThemes||[]),id]; sfx('win'); burstConfetti(70); flash('New world unlocked! 🎨'); app.pickTheme(id); } else { flash('Need '+COST.theme+' 🪙 — play games to earn!'); } },
+    /* never sold for coins: a locked world says which Level opens it (worldRule) */
+    const t=(typeof THEMES!=='undefined')&&THEMES.find(x=>x.id===id);
+    flash('🔒 '+((t&&t.label)||'This world')+' opens when you '+worldRule(id).replace(/^Reach/,'reach')+' — every word you spell right counts.'); },
   /* Word lists are not sold. A premium list comes with a plan, so a locked one opens
      the plan sheet where it stands, in the Library. (Lists bought under the old coin
      price stay unlocked — isListUnlocked still reads c.unlockedLists.) */
   lockedList:(key)=>{ if(isListUnlocked(key)) return app.selectList(key); openUpsell('lists', listLabel(key)); },
-  buyConcept:(ci)=>{ ci=+ci; if(isConceptUnlocked(ci)) return app.openConcept(ci); if(!window.confirm('Unlock this concept for '+COST.concept+' coins?')) return; if(spendCoins(COST.concept)){ const c=active(); c.unlockedConcepts={...(c.unlockedConcepts||{}),[ci]:1}; sfx('win'); burstConfetti(70); flash('Concept unlocked! 🔓'); app.openConcept(ci); } else { flash('Need '+COST.concept+' 🪙 to unlock — earn by playing!'); } },
+  /* A locked chapter is never sold (FIX-BEE C4). Tapping it goes where it opens: the Atlas
+     region that teaches it, or — for a chapter that only comes with the plan — the grown-up
+     PIN in front of the plan sheet. The action keeps its old name; callers still use it. */
+  buyConcept:(ci)=>{ ci=+ci; if(isConceptUnlocked(ci)) return app.openConcept(ci); const L=conceptLock(ci);
+    if(L.kind==='learn'){ flash('🧭 '+L.text+' — walk there and it opens.'); if(L.t){ try{ app.trailAct((L.t.course||'honey')+'|'+L.t.actId); }catch(e){ try{ app.setNav('trail'); }catch(_){} } } else { try{ app.setNav('trail'); }catch(e){} } return; }
+    app.askPlan('concepts'); },
+  /* "Ask a grown-up about the plan": the plan sheet, which the grown-up PIN guards where it is
+     drawn (pinGate in render) — so the child meets a PIN pad, never a price. */
+  askPlan:(feature)=>{ openUpsell(feature||'plan', 'More to explore', 'beginner'); },
   setMode:(m)=>set({mode:m}),
   setTextSize:(k)=>set({textSize:k==='large'?'large':'normal'}),
   // accessibility toggles
@@ -2128,7 +2211,7 @@ const app = {
     i=Math.max(0,Math.min(items.length-1,i));
     const c=active(); c.figSeen=c.figSeen||{};
     if(i>(c.figSeen[state.figDeck]||0)){ c.figSeen[state.figDeck]=i;
-      if(i===items.length-1 && !((c.figDone||{})[state.figDeck])){ (c.figDone=c.figDone||{})[state.figDeck]=1; addCoins(5); sfx('win'); burstConfetti(50); flash('📚 Deck complete! +5 🪙'); } save(); }
+      if(i===items.length-1 && !((c.figDone||{})[state.figDeck])){ (c.figDone=c.figDone||{})[state.figDeck]=1; const _p=addCoins('stop'); sfx('win'); burstConfetti(50); flash('📚 Deck complete!'+(_p?' +'+_p+' 🪙':'')); } save(); }
     set({figIdx:i, figFlip:false}); },
   figBackToDecks:()=>set({figDeck:null, figFlip:false}),
   // ----- Vocabulary study (NSF vocabulary-bee style) -----
@@ -2286,7 +2369,7 @@ const app = {
     if(to && state.readAloud){ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w+'. '+(w.d||'')); }
     set({vocFlip:to}); },
   vocNav:(dir)=>{ const n=(state.vocWords||[]).length; const prev=state.vocIdx||0; let i=prev+(+dir); i=Math.max(0,Math.min(n-1,i));
-    if(+dir>0 && i===n-1 && prev<n-1 && n>=10){ const c=active(); c.vocDone=(c.vocDone||0)+1; addCoins(5); sfx('win'); burstConfetti(50); flash('📖 Vocabulary set complete! +5 🪙'); save(); }
+    if(+dir>0 && i===n-1 && prev<n-1 && n>=10){ const c=active(); c.vocDone=(c.vocDone||0)+1; const _p=addCoins('stop'); sfx('win'); burstConfetti(50); flash('📖 Vocabulary set complete!'+(_p?' +'+_p+' 🪙':'')); save(); }
     set({vocIdx:i, vocFlip:false});
     const w=(state.vocWords||[])[i]; if(w) setTimeout(()=>say(w.w),150); },
   vocSayWord:()=>{ const w=(state.vocWords||[])[state.vocIdx||0]; if(w) say(w.w); },
@@ -2316,8 +2399,8 @@ const app = {
       v.known[dk]=v.known[dk].slice(-800); v.miss[dk]=v.miss[dk].slice(-200);
     }catch(e){}
     if(g.ok){ g.right++; sfx('correct');
-      if(g.mode==='practice'){ addCoins(1);
-        state.toast='✓ +1 coin 🪙'; scheduleToast(1400); save(); } }
+      if(g.mode==='practice'){ const _p=addCoins('answer');
+        state.toast='✓'+(_p?' +1 coin 🪙':''); scheduleToast(1400); save(); } }
     else { sfx('wrong'); g.missed.push(nkey(q.w.w)); }
     render(); },
   vocNext:()=>{ const g=state.vocCheck; if(!g||g.picked==null) return;
@@ -2360,7 +2443,7 @@ const app = {
   openIpaTrain:()=>{ if(!gateFeature('trainTools','The Sound Alphabet')) return; lazyNeed('sounds'); set({nav:'ipatrain', screen:'app', it:null, conceptSel:null}); },
   itMode:(m)=>{ if(m==='learn'){ set({it:{mode:'learn'}}); return; } const it=itBuild(m); if(!it){ flash('The sound data has not loaded yet'); return; } set({it}); },
   itPick:(i)=>{ const it=state.it; if(!it||it.done||it.picked!=null) return; i=+i; const q=it.qs[it.i]; it.picked=i;
-    if(i===q.ans){ it.score++; addCoins(1); }
+    if(i===q.ans){ it.score++; addCoins('answer'); }
     if(it.mode!=='readipa'||i===q.ans) app.itSay();   // confirm with the real voice
     render(); },
   itNext:()=>{ const it=state.it; if(!it||it.picked==null) return; if(it.i+1>=it.qs.length){ it.done=true; if(it.score>=it.qs.length*0.8){ sfx('win'); burstConfetti(50); } } else { it.i++; it.picked=null; } render(); },
@@ -2382,7 +2465,7 @@ const app = {
     if(t.flip){ const c=active(); c.ttSeen=c.ttSeen||{}; const sk=ttSeenKey(t.th); c.ttSeen[sk]=Math.max(c.ttSeen[sk]||0, t.i+1);
       const q=ttDeck(t.th)[t.i||0]; const k=ttKey(q);
       // Seeing the answer is the lightest state there is: the card counts as practised.
-      if(k){ const rec=ttRec(c,k); if(!rec.s){ rec.s='practised'; addCoins(1); } ttPut(c,k,rec); }
+      if(k){ const rec=ttRec(c,k); if(!rec.s){ rec.s='practised'; }   /* seeing an answer is not getting one right — no coin */ ttPut(c,k,rec); }
       save(); }
     render(); },
   ttNav:(d)=>{ const t=state.tt; if(!t) return; const deck=ttDeck(t.th); if(!deck.length) return;
@@ -2597,7 +2680,7 @@ const app = {
     state.vp={ w:target, opts:opts, picked:null, total:pool.length, idx:(state._vpSeen||[]).length }; state.vpAllDone=false; return true; },
   vocabSay:()=>{ if(state.vp) say(state.vp.w.w); },
   vocabPick:(i)=>{ i=+i; const vp=state.vp; if(!vp||vp.picked!=null) return; vp.picked=i; const ok=!!(vp.opts[i]&&vp.opts[i].correct);
-    if(ok){ sfx('correct'); addCoins(1); state.vpRight=(state.vpRight||0)+1; state.toast='✓ +1 coin 🪙'; scheduleToast(1500); save(); }
+    if(ok){ sfx('correct'); const _p=addCoins('answer'); state.vpRight=(state.vpRight||0)+1; state.toast='✓'+(_p?' +1 coin 🪙':''); scheduleToast(1500); save(); }
     else { sfx('wrong'); }
     state.vpDone=(state.vpDone||0)+1; render();
     clearTimeout(state._vpTimer); state._vpTimer=setTimeout(()=>{ if(state.luTab==='vocab' && state.vp && state.vp.picked!=null){
@@ -2667,8 +2750,8 @@ const app = {
         } }catch(e){}
       const streakRight=(state._run||0)+1; const mood=streakRight>=3?'love':'excited';
       state._run=streakRight; state.sessionRight+=1; state.sessionDone+=1;
-      sfx('correct'); addCoins(1); gainXp(); clearMiss(target);
-      if(streakRight>0 && streakRight%5===0){ addCoins(5); state.toast='🔥 '+streakRight+' in a row! +5 bonus coins'; scheduleToast(2200); burstConfetti(50); }
+      sfx('correct'); addCoins('answer'); gainXp(); clearMiss(target);
+      if(streakRight>0 && streakRight%5===0){ state.toast='⭐ '+streakRight+' right in a row!'; scheduleToast(2200); burstConfetti(50); }
       state.status='correct'; state.mood=state.toast?'wow':mood; render();
       autoAdvance(850);  // correct → already marked complete; move on, no click needed
     } else {
@@ -2949,14 +3032,14 @@ const app = {
     g.cell=i; g.qi=0; g.right=0; g.picked=null; g.ok=null; g.revealed=false; g.status='play'; state.typed='';
     render(); const q=g.qs[0]; if(q.k==='spell') setTimeout(()=>say(q.w.w),350); },
   magicPick:(c)=>{ const g=state.game; if(!g||g.status!=='play'||g.picked!=null) return; const q=g.qs[g.qi];
-    g.picked=c; g.ok=(nkey(c)===nkey(q.w.w)); if(g.ok){ g.right++; sfx('correct'); addCoins(1); g.coins++; } else sfx('wrong');
+    g.picked=c; g.ok=(nkey(c)===nkey(q.w.w)); if(g.ok){ g.right++; sfx('correct'); g.coins+=addCoins('answer'); } else sfx('wrong');
     render(); setTimeout(magicAdvance, g.ok?900:1700); },
   magicKey:(e)=>{ if(e.key==='Enter') app.magicSubmit(); },
   magicSubmit:()=>{ const g=state.game; if(!g||g.status!=='play'||g.revealed) return; const q=g.qs[g.qi];
     const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word first'); return; }
     g.revealed=true; g.ok=(ans===q.w.w.toLowerCase());
     logBand(q.w, g.ok);
-    if(g.ok){ g.right++; sfx('correct'); addCoins(1); g.coins++; markMastered(nkey(q.w.w)); } else { sfx('wrong'); addMiss(q.w); }
+    if(g.ok){ g.right++; sfx('correct'); g.coins+=addCoins('answer'); markMastered(nkey(q.w.w)); } else { sfx('wrong'); addMiss(q.w); }
     render(); setTimeout(magicAdvance, g.ok?900:2100); },
   magicHear:()=>{ const g=state.game; if(g&&g.qs&&g.qs[g.qi]) say(g.qs[g.qi].w.w); },
   magicBoard:()=>{ const g=state.game; if(!g) return; g.status='board'; g.celebr=null; state.typed=''; render(); },
@@ -2984,7 +3067,7 @@ const app = {
     if(ok){ g.p[g.turn].right++; sfx('right'); } else sfx('wrong');
     state.typed=''; g.i++;
     if(g.i>=g.list.length){ if(g.turn===0){ g.phase='pass'; render(); return; }
-      g.phase='done'; const a=g.p[0].right,b=g.p[1].right; addCoins(a===b?8:12); sfx('win'); burstConfetti(120); render(); return; }
+      g.phase='done'; const a=g.p[0].right,b=g.p[1].right; addCoins('contest'); sfx('win'); burstConfetti(120); render(); return; }
     render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[gg.i]) say(gg.list[gg.i].w); },300); },
   duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
   /* The Coach explains; openCoach (nav 'coach') drills. Two different screens — keep the
@@ -3001,53 +3084,20 @@ const app = {
   openEvo:()=>set({nav:'evolution', screen:'app'}),
   openCollection:()=>set({nav:'collection', screen:'app'}),
   collTab:(t)=>set({collTab:t}),
+  /* The ONE coin purchase in Bee: a Rare avatar in an open pack, at its printed price. No
+     chance, no pack, no content — a cosmetic at a fixed price (FAMILY-STANDARD §1). */
   buyAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||avOwned(c,id)) return;
-    if(!spendCoins(a.price)){ flash('Need '+a.price+' 🪙 — play games and clear Levels to earn!'); return; }
+    const r=avRule(a,c); if(!r||r.kind!=='milestone'||!r.price){ flash(r?r.text:'Not for sale'); return; }
+    if(!spendCoins(r.price,'avatar:'+id)){ flash('That one is '+r.price+' Bizzing coins — or '+r.text.toLowerCase()+' and it is yours.'); return; }
     avGive(c,id,1); c.avatar=id; save(); sfx('win'); flash('✨ '+a.name+' joined your collection!'); render();
     try{ app.showAvCard(id,{unlocked:true}); }catch(e){ burstConfetti(120); } },
-  // Selling trades ONE copy. Spares go first and freely; parting with your last copy still
-  // requires that you are not wearing it.
-  sellAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||a.rarity==='free') return;
-    const n=avCount(c,id); if(n<1) return;
-    if(n===1 && c.avatar===id){ flash('Pick a different avatar first — you can\'t sell the one you\'re wearing'); return; }
-    if(n===1) delete c.avOwned[id]; else c.avOwned[id]=n-1;
-    addCoins(a.sell); save(); sfx('coin');
-    flash(n>1?('Sold a spare '+a.name+' for '+a.sell+' 🪙 · '+(n-1)+' left'):('Sold '+a.name+' for '+a.sell+' 🪙')); render(); },
-  // One tap to cash in every spare across the whole collection.
-  sellDupes:()=>{ const c=active(); const n=avDupeTotal(c); if(!n){ flash('No spare copies to sell'); return; }
-    const v=avDupeValue(c);
-    if(!window.confirm('Sell all '+n+' spare copies for '+v+' coins? You keep one of every avatar.')) return;
-    SB_AVATARS.list.forEach(a=>{ if(a.rarity==='free') return; const d=avDupes(c,a.id); if(d>0) c.avOwned[a.id]=1; });
-    addCoins(v); save(); sfx('coin'); burstConfetti(60); flash('Sold '+n+' spares for '+v+' 🪙'); render(); },
-  // ----- avatar packs: probability drop (70% rare · 24% epic · 6% legendary) -----
-  // Duplicates are real drops now, so a pack never runs dry and commons stack up into a
-  // sellable pile. A new avatar is still favoured 3:1 while any remain, so the set fills in
-  // at a decent clip instead of burying a child in repeats.
-  buyPack:(pk)=>{ const c=active(); const all=SB_AVATARS.list.filter(a=>a.pack===pk);
-    if(!avPackUnlocked(pk)){ const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; openUpsell('avatarPacks','The '+(P.label||'avatar')+' pack', packPlanNeeded(pk)); return; }
-    if(!all.length) return;
-    const P=SB_AVATARS.packs.find(p=>p.id===pk)||{}; const cost=packCost(pk);
-    const missing=all.filter(a=>!avOwned(c,a.id)).length;
-    if(!window.confirm('Open the '+(P.label||'pack')+' for '+cost+' coins? You get one surprise avatar'+(missing?'':' — you have them all, so this will be a spare you can sell')+'.')) return;
-    if(!spendCoins(cost)){ flash('Need '+cost+' 🪙 — play games and clear Levels to earn!'); return; }
-    const tiers=[['rare',PACK_WEIGHTS.rare],['epic',PACK_WEIGHTS.epic],['legendary',PACK_WEIGHTS.legendary]].filter(t=>all.some(a=>a.rarity===t[0]));
-    const tot=tiers.reduce((s,t)=>s+t[1],0); let roll=Math.random()*tot; let tier=tiers[tiers.length-1][0];
-    for(const t of tiers){ if(roll<t[1]){ tier=t[0]; break; } roll-=t[1]; }
-    let cand=all.filter(a=>a.rarity===tier);
-    const fresh=cand.filter(a=>!avOwned(c,a.id));
-    if(fresh.length && Math.random()<0.75) cand=fresh;        // new-first bias
-    const win=cand[Math.floor(Math.random()*cand.length)];
-    const dupe=avCount(c,win.id)>0; avGive(c,win.id,1); save();
-    state.packDupe=dupe?avCount(c,win.id):0;
-    const reveal=()=>{ state.packRoll=null; sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60)); set({packDrop:win.id}); };
-    if(state.a11yMotion){ reveal(); return; }                // reduce-motion: skip the reel
-    state.packRoll={pk:pk, winId:win.id}; render();           // themed "calculating" reel…
-    clearTimeout(state._packTimer); state._packTimer=setTimeout(reveal, 2500); }, // …then the card drops
-  packSkip:()=>{ const r=state.packRoll; if(!r) return; clearTimeout(state._packTimer); state._packTimer=null; const win=SB_AVATARS.byId[r.winId]; state.packRoll=null;
-    if(win){ sfx(win.rarity==='legendary'?'win':'coin'); burstConfetti(win.rarity==='legendary'?150:(win.rarity==='epic'?100:60)); } set({packDrop:r.winId}); },
-  toggleOdds:(pk)=>{ state.oddsOpen=(state.oddsOpen===pk?null:pk); render(); },
-  packClose:()=>set({packDrop:null, packDupe:0}),
-  packWear:()=>{ const id=state.packDrop; if(id){ const c=active(); c.avatar=id; save(); sfx('correct'); } set({packDrop:null, packDupe:0}); },
+  /* Selling is gone (FIX-BEE I3): it turned avatars back into coins at a rate no learning
+     earned, and spares only ever existed because packs were a lottery. sellAvatar and
+     sellDupes are deleted with the packs; a spare a child already holds stays harmlessly
+     in the count. */
+  /* buyPack, packSkip, toggleOdds, packClose and packWear are deleted with the draw. A
+     stale tap on an old "Open pack" lands on the Avatars tab, which says how each is won. */
+  buyPack:()=>{ state.collTab='avatars'; app.openCollection(); },
   openShopAvatars:()=>{ state.collTab='avatars'; app.openCollection(); },
   wearAv:(id)=>{ const c=active(); if(!avOwned(c,id)){ flash('Not collected yet'); return; } c.avatar=id; save(); sfx('correct'); render(); },
   trapPick:(k)=>set({trapSel:k}),
@@ -3169,7 +3219,8 @@ const app = {
     document.body.appendChild(el);
     el.querySelector('#arc-back').onclick=arcadeClose;
     const host=el.querySelector('#arc-host');
-    const onUnlock=()=>{ try{ addCoins(15); }catch(e){} };
+    const onUnlock=()=>{};   /* a stage reached inside a game pays nothing extra — its words paid as they were spelled */
+    g._e0=earnedSoFar();
     // one round = one word log, so the result card reports this play and not the last one
     try{ if(window.SB_WORDLOG) SB_WORDLOG.reset(); }catch(e){}
     const done=(res)=>{ _arcHandle=null; arcadeResult(g, res||{}); };
@@ -3235,16 +3286,16 @@ const app = {
     // on a miss, EVERY game stops to show the word big and say it — that's how the word sticks
     const missPause=(fin,ms)=>{ g.fb={ok:false,word:w.w}; g.wait=true; try{ say(w.w); }catch(e){} render();
       setTimeout(()=>{ const G=state.game; if(G!==g) return; if(fin){ fin(); } else { advance(); render(); } }, ms); };
-    if(g.type==='buzz'){ g.ans.push({w,val:state.typed,ok}); if(ok){ g.right++; addCoins(1); gainXp(); }
+    if(g.type==='buzz'){ g.ans.push({w,val:state.typed,ok}); if(ok){ g.right++; payG(g); gainXp(); }
       const last=!(g.i+1<g.list.length);
       /* 2200ms read as a flash (Amrita 8.26) — a child needs time to LOOK at the
          correct spelling before it moves on. Daily Buzz is untimed, so linger. */
       if(!ok){ missPause(last?gFinishBuzz:null, 3600); } else if(last){ gFinishBuzz(); } else { advance(); render(); } }
-    else if(g.type==='beat'){ if(ok){ g.right++; addCoins(1); gainXp(); advance(); render(); } else { g.wrong++; missPause(null, 1400); } }
-    else if(g.type==='boss'){ if(ok){ g.hp=Math.max(0,g.hp-1); g.right++; addCoins(1); gainXp(); g.last={ok:true,word:w.w}; if(g.hp<=0){ gFinishBoss(true); return; } advance(); render(); }
+    else if(g.type==='beat'){ if(ok){ g.right++; payG(g); gainXp(); advance(); render(); } else { g.wrong++; missPause(null, 1400); } }
+    else if(g.type==='boss'){ if(ok){ g.hp=Math.max(0,g.hp-1); g.right++; payG(g); gainXp(); g.last={ok:true,word:w.w}; if(g.hp<=0){ gFinishBoss(true); return; } advance(); render(); }
       else { const cc=active(); if(((cc.pow||{}).shield||0)>0){ cc.pow.shield--; save(); g.last={ok:false,word:w.w,shielded:true}; flash('🛡️ Boss Shield absorbed the miss!'); advance(); render(); }
         else { g.lives--; g.last={ok:false,word:w.w}; if(g.lives<=0){ missPause(()=>gFinishBoss(false), 2000); return; } missPause(null, 2000); } } }
-    else if(g.type==='champ'){ g.ans.push({w,ok}); if(ok){ g.right++; addCoins(1); } else g.wrong++;
+    else if(g.type==='champ'){ g.ans.push({w,ok}); if(ok){ g.right++; payG(g); } else g.wrong++;
       /* a Challenge miss shows the word like every other game — "just a sound" left the
          child not knowing what was correct (Amrita 8.26). Timed runs get a shorter look. */
       const chLast=g.fmt==='count' && (g.i+1>=g.total || g.i+1>=g.list.length);
@@ -3254,7 +3305,7 @@ const app = {
   gPick:(idx)=>{ const g=state.game; if(!g||!g.qs||g.picked!=null) return; idx=+idx; const q=g.qs[g.i]; g.picked=idx; const ok=q.choices[idx]===q.answer; logGameWord(nkey(q.word));
     const spellingGame = ['origin','idiom','simile2','vocab'].indexOf(q.kind)<0; // knowledge rounds don't count as spelling mastery
     logBand(q.wordObj||q.word, ok, spellingGame?0.5:0);
-    if(ok){ g.right++; addCoins(1); gainXp(); if(spellingGame){ markMastered(nkey(q.word)); clearMiss(q.word); } sfx('correct'); }
+    if(ok){ g.right++; payG(g); gainXp(); if(spellingGame){ markMastered(nkey(q.word)); clearMiss(q.word); } sfx('correct'); }
     else { sfx('wrong'); if(spellingGame && q.wordObj){ addMiss(q.wordObj); (g.miss=g.miss||[]).push(q.word); } try{ say(q.word); }catch(e){} }
     if(!g.rw) g.rw=[]; g.rw.push({w:q.word, ok});
     render();
@@ -3408,7 +3459,7 @@ const app = {
     const html='<!doctype html><html><head><meta charset="utf-8"><title>Bizzing Bee — '+E(c.name)+'</title>'+
       '<style>*{box-sizing:border-box}body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#1a1530;max-width:740px;margin:0 auto;padding:28px}h1{font-size:24px;margin:0}h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:#7C5CFF;margin:26px 0 10px;border-bottom:2px solid #eee;padding-bottom:6px}.row{display:flex;gap:14px;flex-wrap:wrap}.stat{flex:1;min-width:120px;border:1px solid #eee;border-radius:10px;padding:14px;text-align:center}.stat b{display:block;font-size:24px}.stat span{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.04em}@media print{body{padding:0}button{display:none}}</style></head><body>'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">BIZZING BEE · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Ages '+E(ageBandOf(c).n)+'</div></div>'+
-      '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+(c.streak||0)+'</b><span>Day streak</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
+      '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
       '<table style="width:100%;margin-top:16px;border-collapse:collapse"><tr>'+dotRow+'</tr></table>'+
       '<h2>Progress</h2><div class="row"><div class="stat"><b>'+rk.level+'</b><span>Rank · '+E(rk.name)+'</span></div><div class="stat"><b>'+ov+'</b><span>Stage ('+E(listLabel(activeListKey()))+')</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+bnd.band+'</b><span>Word difficulty · '+E(bnd.tier)+'</span></div></div>'+
       '<h2>Words to revise ('+(c.missed||[]).length+')</h2><div>'+missChips+'</div>'+
@@ -3433,7 +3484,7 @@ const app = {
   wrSaySlow:()=>{ const wr=state.wr; const w=wr&&wr.list[wr.i]; if(w) say(w.w,0.6); },
   wrKey:(e)=>{ if(e.key==='Enter') app.wrNext(); },
   wrNext:()=>{ const S=state; const wr=S.wr; const w=wr.list[wr.i]; const ok=judgeWord(S.typed,w); recordCoach(w.w,ok); logBand(w,ok);
-    if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); addCoins(1); gainXp(); } else { addMiss(w); sfx('wrong'); }
+    if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); addCoins('answer'); gainXp(); } else { addMiss(w); sfx('wrong'); }
     const ans=wr.ans.concat([{w,val:S.typed,ok}]);
     if(wr.i+1<wr.list.length){ set({wr:{...wr,i:wr.i+1,ans}, typed:'', wrInfoKey:''}); setTimeout(()=>{ const nx=wr.list[wr.i+1]; if(nx) say(nx.w); },250); }
     else { const rgt=ans.filter(a=>a.ok).length; logActivity('written','Written round', {done:ans.length,right:rgt}, ans.filter(a=>!a.ok).map(a=>a.w)); set({wr:{...wr,ans}, coachMode:'wrdone'}); } },
@@ -3446,7 +3497,7 @@ const app = {
   orSaySlow:()=>{ const or=state.or; const w=or&&or.pool[or.i]; if(w) say(w.w,0.6); },
   orKey:(e)=>{ if(e.key==='Enter') app.orJudge(); },
   orJudge:()=>{ const S=state; const or=S.or; const w=or.pool[or.i]; const ok=judgeWord(S.typed,w); recordCoach(w.w,ok); logBand(w,ok);
-    if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); addCoins(1); gainXp(); const round=or.round+1; state.or={...or,round}; state.coachBestRounds=Math.max(state.coachBestRounds||0,round); state.orFeedback='✓ Correct — advancing! ('+round+' in a row)'; say('Correct!'); render();
+    if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); addCoins('answer'); gainXp(); const round=or.round+1; state.or={...or,round}; state.coachBestRounds=Math.max(state.coachBestRounds||0,round); state.orFeedback='✓ Correct — advancing! ('+round+' in a row)'; say('Correct!'); render();
       setTimeout(()=>{ if(!state.or) return; let ni=state.or.i+1; let np=state.or.pool; if(ni>=np.length){ np=sample(np); ni=0; } state.or={...state.or,i:ni,pool:np}; state.typed=''; state.orInfoKey=''; state.orFeedback=''; render(); const nx=state.or&&state.or.pool[state.or.i]; if(nx) say(nx.w); },1000);
     } else { addMiss(w); say('Incorrect'); logActivity('oral','Oral elimination', {done:(or.round||0)+1,right:or.round||0}, [w]); set({coachMode:'orgone', or:{...or,last:w}}); } },
   // parent / settings / paywall
@@ -4073,7 +4124,7 @@ function landPlansSection() {
     const sub = id === 'free' ? 'No card, no expiry'
       : yearly ? 'about $' + (t.priceYr / 12).toFixed(2) + ' a month, billed yearly' : 'billed monthly · cancel anytime';
     const rows = {
-      free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress and streaks'],
+      free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress reports'],
       beginner: [sbFmt(10000) + ' words', 'Concepts and Word Lists', 'The revision pile', 'Four worlds · 5 avatar packs'],
       regional: [sbFmt(40000) + ' words — the full graded library', 'The full arcade: ' + SB_FACTS.engines + ' games, trivia and the mock bee',
                  'The book series — 19 volumes and 4 companions', 'Every world, avatar pack and game',
@@ -4201,7 +4252,7 @@ function viewAuth(){
       <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:22px">
         <div style="width:56px;height:62px">${mascotSVG('happy')}</div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">${signup?'Create your account':'Welcome back'}</h2>
-        <p style="margin:0;color:var(--muted);font-size:13px;text-align:center">${signup?'Start free — no card needed.':'Sign in to keep your streak going.'}</p>
+        <p style="margin:0;color:var(--muted);font-size:13px;text-align:center">${signup?'Start free — no card needed.':'Sign in to pick up where you left off.'}</p>
       </div>
       <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Parent email</label>
       <input data-inp="onEmail" data-fkey="email" value="${escA(S.email)}" type="email" placeholder="you@email.com" autocomplete="off" style="width:100%;padding:13px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:600;margin-bottom:14px;outline:none">
@@ -4450,7 +4501,8 @@ function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO
     :'';
   /* The price used to sit as a badge over the artwork, where it competed with the world's
      own title. It reads better as a line under the tile, beside what the world is. */
-  const priceRow=locked?`<span style="display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:5px 11px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:900;font-size:12px">${iconSVG('lock',11,2.2)} Unlock · ${coinAmt(COST.theme,11)}</span>`:'';
+  /* A locked world names the Level that opens it — a learning lock, never a price (FIX-BEE C4). */
+  const priceRow=locked?`<span style="display:block;margin-top:9px">${lockChip(WORLD_LEVEL[t.id]?'learn':'plan',worldRule(t.id))}</span>`:'';
   return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
     <div class="wh-band" style="position:relative;height:118px;${H.bg};${locked?'filter:grayscale(1) brightness(.96);opacity:.75':''}">
       ${locked?'':(WORLD_FX[t.id]||'')}${H.art}${badge}
@@ -4886,13 +4938,13 @@ function tyFinish(){ const t=state.ty; if(!t||t.done) return; t.done=true; tySto
   const c=active(); const st=tyStats(c);
   if(t.mode==='test'){ st.tests=(st.tests||0)+1; const nb=t.wpm>(st.bestWpm||0);
     if(nb) st.bestWpm=t.wpm; if(t.acc>(st.bestAcc||0)) st.bestAcc=t.acc;
-    const coins=Math.min(40,Math.max(3,Math.floor(t.wpm/2))); addCoins(coins); t.coins=coins;
+    t.coins=addCoins('stop');   /* a finished typing test is a finished lesson — speed is not a bigger wage */
     sfx(nb?'win':'level'); if(nb) burstConfetti(90);
   } else { st.lessons[t.lesson]=Math.max(st.lessons[t.lesson]||0, t.acc);
     st.sessions=(st.sessions||0)+1;
     if(t.lesson==='sent'||t.lesson==='mean') st.bank=(st.bank||0)+1;
     if(t.acc>=100) st.perfect=(st.perfect||0)+1;
-    const coins=(t.lesson==='sent'||t.lesson==='mean')?5:3; addCoins(coins); t.coins=coins; sfx('correct'); }
+    t.coins=addCoins('stop'); sfx('correct'); }
   save(); render(); }
 function tyKeyboardHTML(){ const rows=['qwertyuiop','asdfghjkl;','zxcvbnm,.'];
   const key=(ch)=>{ const f=TY_FINGER[ch]; const col=f?TY_FCOLOR[f]:'#9A93AB';
@@ -5574,8 +5626,8 @@ function advBanner(c){
   const sub=on
     ? 'National-bee prep · 125,000-word library · 2-year plan, mock bees, champion tips & games'
     : ready
-      ? 'You are ready for this — the Advanced Pack adds the full 125,000-word library, mock bees and narrated advanced lessons · $'+price+'/yr'
-      : 'Advanced Pack · $'+price+'/yr — the full 125,000-word library, mock bees, narrated advanced lessons and champion techniques';
+      ? 'You are ready for this — the Advanced Pack adds the full 125,000-word library, mock bees and narrated advanced lessons · ask a grown-up'
+      : 'Advanced Pack — ask a grown-up · the full 125,000-word library, mock bees, narrated advanced lessons and champion techniques';
   return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
     <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
       <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)">${SB_ICON('trophy',{size:29})}</span>
@@ -5707,83 +5759,63 @@ function coachExample(k){
    rewarded by coins, which is the right currency for showing up.
    ========================================================================== */
 function viewBeeBand(){
-  const c=active(), bb=beeBand(c), st=bandStage(bb.band);
-  const wordsRight=(typeof rankXp==='function')?rankXp(c):0;
+  /* FIX-BEE C6: this page is "Your level" now — the ONE level (oneLevel), and only right
+     answers move it. The Bee Band is shown underneath as WORD DIFFICULTY, with no stage names
+     and no rung ladder of its own: it is the dial that picks words, not a second rank. */
+  const c=active(), bb=beeBand(c), L=oneLevel(c);
+  const wordsRight=L.xp;
   const mastered=masteredCount();
-  const next=bb.band<9?bandStage(bb.band+1):null;
-
-  const rung=(i)=>{ const n=i+1, s2=bandStage(n), on=n===bb.band, done=n<bb.band;
-    return `<div style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:12px;background:${on?'color-mix(in srgb,var(--accent) 13%,transparent)':'transparent'};border:1px solid ${on?'var(--accent)':'transparent'}">
-      <span style="flex:none;width:30px;height:32px;display:block;${done?'':on?'':'opacity:.42;filter:grayscale(.65)'}">${bandArt(n)}</span>
-      <span style="min-width:0;flex:1">
-        <span style="display:block;font-weight:800;font-size:13.5px;color:${on?'var(--accent)':'var(--text)'}">${esc(s2.n)}<span style="font-weight:650;color:var(--muted);font-size:12px"> · ${esc(s2.s)}</span></span>
-        ${on||n===bb.band+1?`<span style="display:block;font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:2px">${esc(s2.d)}</span>`:''}
-      </span>
-      ${on?'<span style="flex:none;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)">you</span>':''}
-    </div>`; };
-
+  const pct=Math.max(0,Math.min(100,Math.round(L.into/Math.max(1,L.need)*100)));
   const mover=(ic,t,b,col)=>`<div style="display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line)">
       <span style="flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;background:color-mix(in srgb,${col} 14%,transparent)">${ic}</span>
       <span style="min-width:0;flex:1"><span style="display:block;font-weight:800;font-size:13.5px;margin-bottom:2px">${t}</span>
         <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.55">${b}</span></span></div>`;
 
   return `<div style="max-width:900px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Your spelling level','','One ladder, nine stages. Here is what yours means and exactly what moves it.')}
+    ${pageHead('Your level','','One level. Every word you spell right moves it, and nothing else does.')}
 
     <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--ink));padding:clamp(17px,3.2vw,24px);margin-bottom:15px;box-shadow:var(--sh-rest)">
       <div style="display:flex;align-items:center;gap:clamp(13px,2.6vw,20px);flex-wrap:wrap">
-        <div style="width:clamp(58px,11vw,80px);height:clamp(64px,12vw,88px);flex:none;filter:drop-shadow(0 3px 10px rgba(0,0,0,.28))">${bandArt(bb.band)||mascotSVG('excited')}</div>
+        <div style="width:clamp(58px,11vw,80px);height:clamp(64px,12vw,88px);flex:none;filter:drop-shadow(0 3px 10px rgba(0,0,0,.28))">${rankArt(L.form)||mascotSVG('excited')}</div>
         <div style="min-width:0;flex:1">
-          <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72)">${bb.calibrating?'Still working it out':'Level '+bb.band+' of 9'}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:clamp(24px,4.6vw,34px);color:#fff;line-height:1.1;margin:2px 0 3px">${esc(st.n)}</div>
-          <div style="font-size:13.5px;color:rgba(255,255,255,.9);line-height:1.5">${esc(st.s)} — ${esc(st.d)}</div>
+          <div class="sb-one-level" style="font-family:var(--display);font-weight:800;font-size:clamp(24px,4.6vw,34px);color:#fff;line-height:1.1;margin:2px 0 3px">${esc(L.label)}</div>
+          <div style="font-size:13.5px;color:rgba(255,255,255,.9);line-height:1.5"><b>${fmtN(L.toNext)}</b> more ${L.toNext===1?'word':'words'} spelled right to Level ${L.level+1}.</div>
+          <div style="height:7px;border-radius:999px;background:rgba(255,255,255,.22);overflow:hidden;margin-top:9px"><div style="height:100%;width:${pct}%;background:#fff"></div></div>
         </div>
       </div>
-      ${bb.calibrating?`<button data-act="startLevelTest" style="margin-top:14px;padding:11px 19px;border-radius:12px;background:#fff;color:var(--accent);font-weight:800;font-size:14px">Take the 3-minute placement →</button>`:''}
     </div>
-
-    ${(()=>{ const r=rankOf(c);
-      return `<button data-act="openEvo" class="sb-card" style="width:100%;text-align:left;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:15px;cursor:pointer">
-        <span style="width:56px;height:60px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(r.form)}</span>
-        <span style="min-width:0;flex:1">
-          <span class="sb-cs">Your bee</span>
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15">${esc(rankName(r.form))} · form ${r.form+1} of 10</span>
-          <span class="sb-cn" style="display:block;margin-top:3px">A <b style="color:var(--text)">collection</b>, not a level — it counts effort and only ever climbs. The level above is the one that sets how hard your words are.</span>
-        </span>
-        <span style="flex:none;font-weight:800;font-size:13px;color:var(--accent);white-space:nowrap">See all ten →</span></button>`; })()}
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
       <section class="sb-card">
-        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">How to level up</div>
-        ${mover('🎯','Spell harder words right','Only graded answers count — Practice, an Atlas quiz, the mock bee. The level follows the trickiness of the words you get right, not how many you attempt.','var(--accent)')}
-        ${mover('🔁','Clear your revision pile','A word you once missed and now spell right is the strongest evidence there is, which is why the pile is worth more than a fresh list.','var(--bad)')}
-        ${mover('📅','Come back tomorrow','Spelling a word right on three different days beats spelling it right three times today. The level moves on what sticks.','var(--good)')}
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">What moves your level</div>
+        ${mover('🎯','Spell a word right','Anywhere — Practice, an Atlas stop, the Arcade, the mock bee. Each right answer is one step, and the steps add up to the next level.','var(--accent)')}
+        ${mover('🔁','Beat a word that tripped you','A word you once missed and now spell right counts the same — and it is the best practice there is.','var(--bad)')}
+        ${mover('🛡️','It never goes down','A day off, a wrong answer, a lost race: none of them take a step away.','var(--good)')}
         <div style="margin-top:12px;padding:10px 12px;border-radius:11px;background:var(--surface2);font-size:12px;color:var(--muted);line-height:1.55">
-          <b style="color:var(--text)">It cannot be bought or waited out.</b> Coins buy looks and chapters in your Hive and never touch this. Time on the app earns coins, not levels — because this number also decides how hard your words are, and a level you did not earn would hand you words you cannot spell.</div>
+          <b style="color:var(--text)">It cannot be bought or waited out.</b> Time on the app, Bizzing coins and games of luck never move your level. Coins come from learning too, but they buy looks — never a level.</div>
       </section>
 
       <section class="sb-card">
-        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">The nine stages</div>
-        <div style="display:flex;flex-direction:column;gap:3px">${[...Array(9)].map((_,i)=>rung(i)).join('')}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">How hard your words are</div>
+        <div class="sb-cn" style="line-height:1.55;margin-bottom:10px">This is not a level — it is the dial that picks your words. It follows how you do on words of each difficulty, so it can ease off when words get too hard, and that is a good thing.</div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:800;font-size:20px">${bb.calibrating?'Still working it out':('Difficulty '+bb.band+' of 9')}</span>${bb.calibrating?'':`<span class="sb-cn">${esc(bb.tier||'')}</span>`}</div>
+        <div style="display:flex;gap:4px;margin-top:9px">${[...Array(9)].map((_,i)=>`<span style="flex:1;height:7px;border-radius:99px;background:${!bb.calibrating&&i<bb.band?'var(--accent)':'var(--surface2)'}"></span>`).join('')}</div>
+        ${bb.calibrating?`<button data-act="startLevelTest" style="margin-top:12px;padding:10px 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Take the 3-minute placement →</button>`:''}
       </section>
     </div>
 
     <section class="sb-card" style="margin-top:14px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:11px">Where you are right now</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px">
-        ${[[mastered,'words mastered','var(--good)'],[wordsRight,'words spelled right','var(--accent)'],
+        ${[[fmtN(wordsRight),'words spelled right','var(--accent)'],[mastered,'words mastered','var(--good)'],
            [((c.missed||[]).length),'on the revision pile','var(--bad)'],[bb.acc?bb.acc+'%':'—','recent accuracy','var(--treasure-deep,#8A5B00)']]
           .map(([v,l,col])=>`<div style="padding:12px 13px;border-radius:13px;background:color-mix(in srgb,${col} 10%,transparent)">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;line-height:1;color:${col}">${v}</div>
             <div style="font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:5px">${l}</div></div>`).join('')}
       </div>
-      ${next?`<div style="margin-top:13px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 13%,transparent);color:var(--treasure-deep,#8A5B00)">
-        <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px">Next stage · ${esc(next.n)}</div>
-        <div style="font-size:13.5px;line-height:1.55">${esc(next.d)}</div></div>`:
-        `<div style="margin-top:13px;font-size:13.5px;color:var(--muted)">You are at the top stage. From here it is depth and calm, not new categories.</div>`}
       <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px">
         <button data-act="openCoachDesk" style="padding:11px 18px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">What to fix next →</button>
-        <button data-act="openEvo" style="padding:11px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px">See all ten bee forms →</button>
+        <button data-act="openEvo" style="padding:11px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px">Your bee's ten forms →</button>
       </div>
     </section></div>`;
 }
@@ -5888,7 +5920,7 @@ function viewCoachDesk(){
       <span style="display:block;width:100%;max-width:${on?34:26}px;aspect-ratio:27/29;${done||on?'':'opacity:.38;filter:grayscale(.7)'}">${bandArt(n)}</span></span>`; }).join('');
   const ladder=`<div style="display:flex;align-items:flex-end;gap:3px;margin:2px 0 12px">${rungs}</div>
     <div style="display:flex;gap:11px;flex-wrap:wrap">
-      <div style="flex:1;min-width:210px"><div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Right now · ${esc(bandStage(bb.band).n)} · level ${bb.band} of 9</div>
+      <div style="flex:1;min-width:210px"><div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Right now · word difficulty ${bb.band} of 9</div>
         <div style="font-size:13.5px;line-height:1.55">${esc(B.words||'')}</div></div>
       <div style="flex:1;min-width:210px;padding:11px 13px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 13%,transparent)">
         <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:3px">Coming next</div>
@@ -5925,7 +5957,7 @@ function viewCoachDesk(){
   const stats=`<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
       ${stat(masteredCount(),'words mastered','var(--good)')}
       ${stat(missed.length,'to revise','var(--bad)')}
-      ${stat((c.streak||0),'day streak','var(--treasure-deep,#8A5B00)')}
+      ${stat(goodDaysThisWeek(c),'good days this week','var(--treasure-deep,#8A5B00)')}
       ${stat(bb.acc?bb.acc+'%':'—','accuracy','var(--accent)')}
     </div>`;
 
@@ -5963,7 +5995,7 @@ function viewCoachDesk(){
       ${/* natural heights, not stretched: a stretched card ends in empty card, which is
             the dead space itself. */''}
       <div class="sb-coach-2col" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
-        ${panel('Your spelling level, and the step ahead', ladder)}
+        ${panel('How hard your words are, and the step ahead', ladder)}
         ${panel('Bizzy’s habit of the day', tipCard)}
         ${panel('Chapters that teach this', chapters)}
       </div>
@@ -6130,7 +6162,7 @@ function viewApp(){
         ${celeAvatar('You did it!')}
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Word set mastered!</div>
         <div style="font-family:var(--display);font-weight:800;font-size:34px;line-height:1.05;margin:6px 0 6px">Every word — nailed!</div>
-        <div style="font-size:15px;color:var(--muted);font-weight:500">${esc(cb.sub||'')} A fresh set is ready — keep the streak rolling.</div>
+        <div style="font-size:15px;color:var(--muted);font-weight:500">${esc(cb.sub||'')} A fresh set is ready.</div>
         <button data-act="celebrateNextSet" style="width:100%;margin-top:20px;padding:15px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:16px;box-shadow:var(--edge)">Bring on the next set →</button>
         <button data-act="celebrateClose" style="margin-top:10px;color:var(--muted);font-weight:700;font-size:13px">Take a breather</button>`); }
     return shell(`
@@ -6288,14 +6320,16 @@ function viewDrawer(){
     </aside>`;
 }
 
-function streakCard(){ const c=active(); ensureLists(c); const t=todayKey(); const played=new Set(c.daysPlayed||[]);
-  const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push({on:played.has(k), today:k===t, dn:['S','M','T','W','T','F','S'][d.getDay()]}); }
+/* Good days THIS week — the whole of what is left of the streak card. Seven squares, Monday
+   to Sunday, lit where a session finished. No count of days in a row, no "next reward", no
+   best, no fire: a day off costs nothing (FAMILY-STANDARD §8). */
+function goodDaysCard(){ const c=active(); ensureLists(c); const t=todayKey(); const played=new Set(c.daysPlayed||[]);
+  const days=weekDayKeys().map((k,i)=>({on:played.has(k), today:k===t, dn:['M','T','W','T','F','S','S'][i]}));
+  const n=days.filter(d=>d.on).length;
   const dots=days.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="width:17px;height:17px;border-radius:6px;display:inline-block;background:${d.on?'var(--accent)':'var(--surface2)'};${d.today?'box-shadow:0 0 0 2px var(--accent)':''}"></span><span style="font-size:12px;color:var(--muted);font-weight:700">${d.dn}</span></div>`).join('');
-  const playedToday=played.has(t); const next=[3,7,14,30].find(m=>m>(c.streak||0));
-  return `<div class="sb-card">
+  return `<div class="sb-card sb-gooddays">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:11px"><div style="width:42px;height:42px;border-radius:10px;background:color-mix(in srgb,#FF8A3D 18%,var(--bg2));color:#FF7A1A;display:grid;place-items:center">${iconSVG('fire',24)}</div><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${c.streak||0}-day streak</div><div style="font-size:12px;color:var(--muted);font-weight:600">Best ${c.streakBest||c.streak||0} · ${playedToday?'practised today ✓':'practise today to keep it going'}</div></div></div>
-      ${next?`<div style="text-align:right"><div style="font-size:12px;color:var(--muted);font-weight:700">Next reward</div><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;font-weight:800;font-size:13px;color:var(--accent)">${next}-day · ${coinAmt(STREAK_REWARDS[next],12)}</div></div>`:'<div style="font-weight:800;font-size:13px;color:var(--accent)">All rewards earned ✓</div>'}
+      <div style="display:flex;align-items:center;gap:11px"><div style="width:42px;height:42px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('check',22)}</div><div><div style="font-family:var(--display);font-weight:800;font-size:20px;line-height:1">${n} good ${n===1?'day':'days'} this week</div><div style="font-size:12px;color:var(--muted);font-weight:600">Nothing expires. A day off costs nothing.</div></div></div>
     </div>
     <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:space-between">${dots}</div>
   </div>`; }
@@ -6430,7 +6464,7 @@ function viewHome(){
             return `<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${esc(trunc(line,104))}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
-            ${(c.streak||0)>0?`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">${iconSVG('flame',14)} ${c.streak}-day streak</span>`:''}
+            
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${esc(trunc(ms.label,18))}</button>`:''; })()}
           </div>
         </div>
@@ -6458,11 +6492,11 @@ function viewHome(){
               </span>
               <span class="sb-cl" style="display:block;margin-top:8px;color:var(--accent);font-weight:800">${allDone?'All three rings closed — Coach speaks →':'Coach speaks →'}</span>
             </span></button>
-          <button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="${bb.calibrating?'sb-band-call':''}" aria-label="${bb.calibrating?'Find your spelling level':escA('Spelling level '+bb.band+', '+st.n)}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(st.n+' · '+st.s+' — your spelling level. Tap to see how to level up.')}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;border:0;border-top:1px solid var(--line);background:${bb.calibrating?'var(--chip)':'var(--surface2)'};cursor:pointer">
-            <span style="flex:none;display:inline-flex;line-height:0;${bb.calibrating?'':'width:26px;height:28px'}">${bb.calibrating?'✨':bandArt(bb.band)}</span>
+          <button data-act="${bb.calibrating?'startLevelTest':'setNav'}" data-arg="beeband" class="${bb.calibrating?'sb-band-call':''}" aria-label="${bb.calibrating?'Find your spelling level':escA('Your level: '+oneLevel(c).label)}" title="${bb.calibrating?'A 3-minute placement quest sets your words, games and tips exactly to you':escA(oneLevel(c).label+' — your level. Every word you spell right moves it.')}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;border:0;border-top:1px solid var(--line);background:${bb.calibrating?'var(--chip)':'var(--surface2)'};cursor:pointer">
+            <span style="flex:none;display:inline-flex;line-height:0;${bb.calibrating?'':'width:26px;height:28px'}">${bb.calibrating?'✨':rankArt(oneLevel(c).form)}</span>
             <span style="min-width:0;flex:1">
-              <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Your spelling level</span>
-              <span style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2;color:var(--text)">${bb.calibrating?'Find your level':esc(st.n+' · Level '+bb.band)}</span></span>
+              <span style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">${bb.calibrating?'Your spelling level':'Your level'}</span>
+              <span class="sb-one-level" style="display:block;font-family:var(--display);font-weight:800;font-size:14.5px;line-height:1.2;color:var(--text)">${bb.calibrating?'Find your level':esc(oneLevel(c).label)}</span></span>
             <span style="flex:none;font-weight:800;font-size:12.5px;color:var(--accent)">${bb.calibrating?'Start →':'→'}</span></button>
         </div>`; })()}
       ${wohTile}
@@ -6759,34 +6793,56 @@ function badgeArtSVG(kind, size, won){
 function shade(hex, pct){ hex=String(hex||'#888').replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
   let r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16); const t=pct<0?0:255, p=Math.abs(pct)/100;
   const m=v=>Math.round((t-v)*p+v); return '#'+[m(r),m(g),m(b)].map(v=>('0'+Math.max(0,Math.min(255,v)).toString(16)).slice(-2)).join(''); }
-// Per-pack economy: price scales with the pack's contents (legendaries cost most), so every
-// pack costs something different. Drop weights are shared; odds are shown to kids per avatar.
-// drop probability is inverse to rarity — the rarer the tier, the lower its chance
-const PACK_WEIGHTS = { rare:.70, epic:.24, legendary:.06 };
-// Curated per-pack prices (cheap starter → premium legendary packs).
-const PACK_COST = { hive:50, stage:100, cosmos:150, dojo:175, lab:200, arcade:200, origami:200,
-  elements:200, critter:300, vibe:300, dino:300, enchanted:300, wildhearts:300, legends:350,
-  turbo:350, villains:400, serpent:400, bigbeasts:450, worldchangers:450, gods:500 };
-function packCost(pk){ if(PACK_COST[pk]!=null) return PACK_COST[pk];
-  const avs=SB_AVATARS.list.filter(a=>a.pack===pk);   // fallback for any future pack
-  const legs=avs.filter(a=>a.rarity==='legendary').length, epics=avs.filter(a=>a.rarity==='epic').length, rares=avs.filter(a=>a.rarity==='rare').length;
-  return Math.max(60, Math.round((70 + legs*80 + epics*28 + rares*10)/5)*5); }
-function packOdds(pk){ const avs=SB_AVATARS.list.filter(a=>a.pack===pk);
-  const tiers=['rare','epic','legendary'].filter(t=>avs.some(a=>a.rarity===t));
-  const sum=tiers.reduce((s,t)=>s+PACK_WEIGHTS[t],0)||1; const out=[];
-  tiers.forEach(t=>{ const inTier=avs.filter(a=>a.rarity===t); const each=(PACK_WEIGHTS[t]/sum)/inTier.length*100;
-    inTier.forEach(a=>out.push({id:a.id,name:a.name,rarity:t,pct:each})); });
-  const ord={legendary:0,epic:1,rare:2}; out.sort((a,b)=>(ord[a.rarity]-ord[b.rarity])||a.name.localeCompare(b.name));
-  return out; }
-function oddsPct(p){ return p<1?p.toFixed(1):Math.round(p); }
-function oddsPanel(pk,c){ const rows=packOdds(pk).map(o=>{ const own=avOwned(c,o.id); const n=avCount(c,o.id); const R=SB_AVATARS.rarities[o.rarity]||{c:'#888',label:o.rarity};
-    return `<div style="display:flex;align-items:center;gap:8px;padding:4px 2px">
-      <span style="width:30px;height:30px;flex-shrink:0;display:grid;place-items:center;background:var(--surface2);border-radius:8px;${own?'':'opacity:.55;filter:saturate(.5)'}">${avatarSVG(o.id,26)}</span>
-      <span style="flex:1;min-width:0;font-weight:700;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.name)}${n>1?' <span style="font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--treasure-deep,#8A5B00);font-weight:800">×'+n+'</span>':(own?' <span style="color:var(--good);font-weight:800">✓</span>':'')}</span>
-      <span style="font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${R.c};border-radius:99px;padding:2px 7px">${esc(R.label)}</span>
-      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--muted);min-width:36px;text-align:right">${oddsPct(o.pct)}%</span></div>`; }).join('');
-  return `<div style="margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 11px">
-    <div style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Drop chances · new ones come up first; repeats become spares you can sell</div>${rows}</div>`; }
+/* ==== AVATARS: rarity stays, chance is gone (FIX-BEE I3, FAMILY-STANDARD §1) ====
+   Packs used to be a lottery — pay a pack's price, draw 70% rare / 24% epic / 6% legendary,
+   sell the repeats. Now every avatar names, on its own card, exactly how it is won, and the
+   rule is the same for every child who reads it:
+   • Starter — yours from the start.
+   • Rare / Epic / Legendary in a pack your plan includes — a named LEARNING MILESTONE
+     ("Spell 60 words right", "Master 3 concepts", "Reach Level 8"), won the moment the
+     evidence is there and celebrated once. A Rare can ALSO be bought outright at its printed
+     price in Bizzing coins — a cosmetic at a fixed price, never a draw.
+   • A pack your plan does not include — "Comes with the plan": a grown-up's decision, asked
+     about, never priced on the child's screen.
+   The milestone is fixed per avatar by its place in the roster (AV_LADDER below), never by a
+   roll, so two children see the same rule on the same card. Guard: tests/no-random.cjs. */
+const AV_EVID = {
+  right:    { t:n=>'Spell '+fmtN(n)+' words right',              v:e=>e.right },
+  mast:     { t:n=>'Master '+fmtN(n)+' words',                   v:e=>e.mast },
+  stops:    { t:n=>'Finish '+n+' Atlas stop'+(n===1?'':'s'),      v:e=>e.stops },
+  level:    { t:n=>'Reach Level '+n,                             v:e=>e.level },
+  concepts: { t:n=>'Master '+n+' concept'+(n===1?'':'s'),        v:e=>e.concepts },
+};
+/* [kinds in rotation, threshold(kind, step)] per rarity — step = how far down the roster */
+const AV_LADDER = {
+  rare:      { kinds:['right','stops','mast','level'], n:(k,s)=>({right:20+20*s, stops:1+s, mast:10+10*s, level:2+Math.floor(s/2)})[k] },
+  epic:      { kinds:['mast','right','concepts','stops'], n:(k,s)=>({mast:50+25*s, right:150+75*s, concepts:1+s, stops:5+3*s})[k] },
+  legendary: { kinds:['level','mast','concepts','stops'], n:(k,s)=>({level:8+Math.floor(s/2), mast:300+100*s, concepts:8+3*s, stops:25+8*s})[k] },
+};
+let _avRuleIdx=null;
+function avMilestone(a){ if(!a||!AV_LADDER[a.rarity]) return null;
+  if(!_avRuleIdx){ _avRuleIdx={}; const ctr={}; SB_AVATARS.list.forEach(x=>{ if(!AV_LADDER[x.rarity]) return; _avRuleIdx[x.id]=(ctr[x.rarity]=(ctr[x.rarity]||0)+1)-1; }); }
+  const L=AV_LADDER[a.rarity]; const i=_avRuleIdx[a.id]||0; const k=L.kinds[i%L.kinds.length]; const n=L.n(k,Math.floor(i/L.kinds.length));
+  return { k, n, text:AV_EVID[k].t(n) }; }
+/* The evidence the milestones read — computed once per call site, not once per tile. */
+function avEvidence(c){ c=c||active(); let concepts=0, stops=0;
+  try{ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; }catch(e){}
+  try{ stops=(typeof window.SB_TRAIL_STOPS==='function')?SB_TRAIL_STOPS(c):0; }catch(e){}
+  return { right:rankXp(c), mast:masteredCount(), stops, level:rankOf(c).level, concepts }; }
+/* One rule per avatar, as the child should read it now. kind: free | plan | milestone. */
+function avRule(a,c){ c=c||active(); if(!a) return null;
+  if(a.rarity==='free') return { kind:'free', text:'Yours from the start' };
+  if(!avPackUnlocked(a.pack)) return { kind:'plan', text:'Comes with the plan — ask a grown-up' };
+  const m=avMilestone(a); if(!m) return { kind:'plan', text:'Comes with the plan — ask a grown-up' };
+  return { kind:'milestone', k:m.k, n:m.n, text:m.text, price:(a.rarity==='rare'?a.price:0) }; }
+/* Give every avatar whose milestone is met and whose pack is open — once, with a card. Runs
+   where medals are checked (every finished session) and when the Hive opens. */
+function grantAvatarMilestones(quiet){ try{ const c=active(); if(!c||!window.SB_AVATARS) return [];
+    const e=avEvidence(c); const won=[];
+    SB_AVATARS.list.forEach(a=>{ if(a.rarity==='free'||avCount(c,a.id)>0||!avPackUnlocked(a.pack)) return;
+      const m=avMilestone(a); if(m && AV_EVID[m.k].v(e)>=m.n){ avGive(c,a.id,1); (c.avWon=c.avWon||{})[a.id]=1; won.push(a); } });
+    if(won.length){ save(); if(!quiet){ try{ flash('✨ '+won[0].name+' joined your collection — '+avMilestone(won[0]).text.toLowerCase()+'!'+(won.length>1?' (+'+(won.length-1)+' more)':'')); }catch(e){} } }
+    return won; }catch(e){ return []; } }
 /* c.avOwned[id] is a COUNT, not a flag — duplicates are collectable and sellable.
    Old saves stored a bare 1, which reads back as a single copy. */
 function avCount(c,id){ const v=(c&&c.avOwned||{})[id]; const n=(typeof v==='number')?v:(v?1:0); return n>0?n:0; }
@@ -6810,7 +6866,13 @@ function avOwnedCount(c){ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)).leng
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageIdx(c,'journey')+1;
   let concepts=0; try{ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; }catch(e){}
-  const st=(n)=>((c.streak||0)>=n)||!!((c.streakRewards||{})[n]);
+  /* Streak medals are RETIRED, not re-locked: one already earned stays on the shelf under
+     "Kept from before" (its id is a storage key in badgesSeen, like the karma* ones); one not
+     earned is never shown and can never be earned — c.streak no longer moves. */
+  const _seen=c.badgesSeen||{};
+  const kept=(id,n)=>!!_seen[id] || !!((c.streakRewards||{})[n]) || Math.max(c.streakBest||0, c.streak||0)>=n;
+  let stops=0; try{ stops=(typeof window.SB_TRAIL_STOPS==='function')?SB_TRAIL_STOPS(c):0; }catch(e){}
+  const beaten=Object.keys(c.trapsBeaten||{}).length;
   const mast=masteredCount();
   const owned=avOwnedCount(c);
   const legs=SB_AVATARS.list.filter(a=>a.rarity==='legendary'&&avOwned(c,a.id)).length;
@@ -6822,16 +6884,27 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
   const mbPlayed=mbSt.played||0, mbWins=mbSt.wins||0, mbBest=mbSt.best||99;
   const worlds=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
   const wkWords=(c.week||[]).reduce((a,b)=>a+(b||0),0);
-  const arts=((c.pow||{}).shield||0)+((c.pow||{}).reveal||0)+((c.pow||{}).time||0)+(c.freezes||0);
-  return [
-    // Streaks
-    { g:'Streaks', id:'streak3', name:'3-Day Buzz', desc:'Practise 3 days in a row', ic:'flame', done:st(3) },
-    { g:'Streaks', id:'streak7', name:'Week of Wings', desc:'A 7-day streak', ic:'flame', done:st(7) },
-    { g:'Streaks', id:'streak14', name:'Fortnight Flyer', desc:'A 14-day streak', ic:'flame', done:st(14) },
-    { g:'Streaks', id:'streak30', name:'Iron Wings', desc:'A 30-day streak', ic:'fire', done:st(30) },
-    { g:'Streaks', id:'streak60', name:'Two-Month Torch', desc:'A 60-day streak', ic:'fire', done:st(60)||(c.streak||0)>=60 },
-    { g:'Streaks', id:'streak100', name:'Century Flame', desc:'A 100-day streak', ic:'fire', done:(c.streak||0)>=100 },
-    { g:'Streaks', id:'busyweek', name:'Busy Bee Week', desc:'100 words in one week', ic:'chart', done:wkWords>=100 },
+  const arts=((c.pow||{}).shield||0)+((c.pow||{}).reveal||0)+((c.pow||{}).time||0);
+  const defs=[
+    /* EVIDENCE MEDALS (FIX-BEE I4): each one names a thing the child DID with words — a stop
+       finished, a trap beaten, a concept mastered, a word spelled right. None of them can be
+       had for showing up on a run of days. */
+    { g:'Atlas', id:'stop1', name:'First Stop', desc:'Finish a stop on the Atlas', ic:'steps', done:stops>=1 },
+    { g:'Atlas', id:'stop10', name:'Trailblazer', desc:'Finish 10 Atlas stops', ic:'steps', done:stops>=10 },
+    { g:'Atlas', id:'stop25', name:'Pathfinder', desc:'Finish 25 Atlas stops', ic:'steps', done:stops>=25 },
+    { g:'Atlas', id:'stop60', name:'Cartographer', desc:'Finish 60 Atlas stops', ic:'crown', done:stops>=60 },
+    { g:'Traps', id:'trap1', name:'Trap Spotted', desc:'Spell a word right that you once missed', ic:'target', done:beaten>=1 },
+    { g:'Traps', id:'trap10', name:'Trap Breaker', desc:'Beat 10 words that once tripped you', ic:'target', done:beaten>=10 },
+    { g:'Traps', id:'trap50', name:'Trap Master', desc:'Beat 50 words that once tripped you', ic:'bolt', done:beaten>=50 },
+    { g:'Traps', id:'trap150', name:'Untrappable', desc:'Beat 150 words that once tripped you', ic:'crown', done:beaten>=150 },
+    { g:'Word mastery', id:'busyweek', name:'Busy Bee Week', desc:'100 words in one week', ic:'chart', done:wkWords>=100 },
+    // Retired — shown only where already earned (see `kept` above)
+    { g:'Kept from before', id:'streak3', name:'3-Day Buzz', desc:'Kept from before', ic:'flame', done:kept('streak3',3), retired:true },
+    { g:'Kept from before', id:'streak7', name:'Week of Wings', desc:'Kept from before', ic:'flame', done:kept('streak7',7), retired:true },
+    { g:'Kept from before', id:'streak14', name:'Fortnight Flyer', desc:'Kept from before', ic:'flame', done:kept('streak14',14), retired:true },
+    { g:'Kept from before', id:'streak30', name:'Iron Wings', desc:'Kept from before', ic:'fire', done:kept('streak30',30), retired:true },
+    { g:'Kept from before', id:'streak60', name:'Two-Month Torch', desc:'Kept from before', ic:'fire', done:kept('streak60',60), retired:true },
+    { g:'Kept from before', id:'streak100', name:'Century Flame', desc:'Kept from before', ic:'fire', done:kept('streak100',100), retired:true },
     // Word mastery
     { g:'Word mastery', id:'mast10', name:'First Ten', desc:'Master 10 words', ic:'check', done:mast>=10 },
     { g:'Word mastery', id:'mast50', name:'Half Century', desc:'Master 50 words', ic:'check', done:mast>=50 },
@@ -6841,11 +6914,11 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Word mastery', id:'mast1000', name:'Walking Dictionary', desc:'Master 1,000 words', ic:'crown', done:mast>=1000 },
     { g:'Word mastery', id:'acc90', name:'Sharp Speller', desc:'Keep accuracy at 90%+', ic:'target', done:(c.acc||0)>=90 },
     // Bee Band
-    { g:'Bee Band', id:'placed', name:'On the Map', desc:'Finish your placement — find your Bee Band', ic:'search', done:!bb.calibrating },
-    { g:'Bee Band', id:'band3', name:'Classroom Champ', desc:'Prove Bee Band 3', ic:'target', done:bb.band>=3 },
-    { g:'Bee Band', id:'band5', name:'Regional Ready', desc:'Prove Bee Band 5', ic:'target', done:bb.band>=5 },
-    { g:'Bee Band', id:'band7', name:'State & National', desc:'Prove Bee Band 7', ic:'target', done:bb.band>=7 },
-    { g:'Bee Band', id:'band9', name:'Championship Band', desc:'Prove Bee Band 9', ic:'crown', done:bb.band>=9 },
+    { g:'Word difficulty', id:'placed', name:'On the Map', desc:'Finish your placement — find your word difficulty', ic:'search', done:!bb.calibrating },
+    { g:'Word difficulty', id:'band3', name:'Classroom Champ', desc:'Spell right at word difficulty 3', ic:'target', done:bb.band>=3 },
+    { g:'Word difficulty', id:'band5', name:'Regional Ready', desc:'Spell right at word difficulty 5', ic:'target', done:bb.band>=5 },
+    { g:'Word difficulty', id:'band7', name:'State & National', desc:'Spell right at word difficulty 7', ic:'target', done:bb.band>=7 },
+    { g:'Word difficulty', id:'band9', name:'Championship Band', desc:'Spell right at word difficulty 9', ic:'crown', done:bb.band>=9 },
     // Levels & evolution
     { g:'Levels', id:'hatched', name:'First Hatch', desc:'Reach Hatchling — your first evolution', ic:'sprout', done:listLevel(c,activeListKey())>=2 },
     { g:'Levels', id:'quest5', name:'Level 5 Climber', desc:'Reach Level 5 on any path', ic:'steps', done:jl>=5 },
@@ -6885,8 +6958,8 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     // Explorer
     { g:'Explorer', id:'worlds4', name:'Globe Trotter', desc:'Unlock 4 worlds', ic:'palette', done:worlds>=4 },
     { g:'Explorer', id:'worldsAll', name:'World Master', desc:'Unlock every world', ic:'palette', done:worlds>=THEMES.length },
-    { g:'Explorer', id:'coins250', name:'Honey Saver', desc:'Hold 250 coins at once', ic:'coin', done:(c.coins||0)>=250 },
-    { g:'Explorer', id:'coins1000', name:'Honey Tycoon', desc:'Hold 1,000 coins at once', ic:'coin', done:(c.coins||0)>=1000 },
+    { g:'Explorer', id:'coins250', name:'Honey Saver', desc:'Hold 250 Bizzing coins at once', ic:'coin', done:(c.coins||0)>=250 },
+    { g:'Explorer', id:'coins1000', name:'Honey Tycoon', desc:'Hold 1,000 Bizzing coins at once', ic:'coin', done:(c.coins||0)>=1000 },
     { g:'Explorer', id:'milestone', name:'Eye on the Prize', desc:'Set a bee-day milestone', ic:'pencil', done:!!(c.milestone&&c.milestone.date) },
     // Typing
     { g:'Typing', id:'ty1', name:'Keys Found', desc:'Finish your first typing test', ic:'pencil', done:((c.typing||{}).tests||0)>=1 },
@@ -6918,7 +6991,12 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Vocabulary', id:'vocq10', name:'Vocabulary Bee', desc:'Play 10 Vocabulary quiz rounds', ic:'target', done:(c.vocQuiz||0)>=10 },
     { g:'Vocabulary', id:'figdecks3', name:'Phrase Fancier', desc:'Complete 3 idiom & simile decks', ic:'spark', done:Object.keys(c.figDone||{}).length>=3 },
     { g:'Vocabulary', id:'figq5', name:'Idiom Sleuth', desc:'Play 5 idiom or simile quiz rounds', ic:'spark', done:(c.figQuiz||0)>=5 },
-  ]; }
+  ];
+  /* A medal once earned STAYS earned. Live evidence can fall — mastery is re-checked, a
+     retired artifact no longer counts toward "Well Stocked" — and a medal that greys out again
+     is a medal taken away. badgesSeen is the record (checkNewBadges writes it, once). */
+  return defs.map(b=>(b.done||!_seen[b.id])?b:Object.assign({},b,{done:true}))
+    .filter(b=>!b.retired||b.done); }
 /* My Hive is one page with tabs — there is no section bar above it any more.
    "Your bee" moved to the Bee Band page (tap the pill in the header), because the bee
    and the band are the two ladders and they belong side by side, not one tab apart.
@@ -6930,53 +7008,37 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
   if(tab==='avatars'){
-    const dupN=avDupeTotal(c); const dupV=avDupeValue(c);
-    const dupBar=dupN?`<div class="sb-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-color:var(--treasure,#F0B429)"><div style="min-width:0"><div class="sb-ct" style="font-size:15px">🪙 ${dupN} spare ${dupN===1?'copy':'copies'}</div><div class="sb-cn">Duplicates from packs. Sell them all for ${fmtN(dupV)} coins — you keep one of every avatar.</div></div><button data-act="sellDupes" style="padding:11px 17px;border-radius:10px;background:var(--treasure,#F0B429);color:#5a3d00;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">Sell spares · ${fmtN(dupV)}🪙</button></div>`:'';
-    const printBar=dupBar;   // printing moved to a header pill; the banner it had was pure overhead
-    // How packs work used to be explained only in the Store. With the Store gone it
-    // belongs beside the packs themselves — you read the odds where you open one.
-    /* The old Store showed an Open-a-pack button on every pack; the Collection checks the
-       plan first, and app.buyPack would have bounced the free-plan tap to the upsell anyway.
-       The Collection's rule is the honest one, so the explainer follows it: only promise
-       drop odds when there is a pack this speller can actually open. */
-    const anyPack=SB_AVATARS.packs.some(p=>avPackUnlocked(p.id));
-    const howPacks=anyPack
-      ? `<p class="sb-cn" style="margin:0 0 14px">A pack drops an avatar you don't own — <b>70% rare · 24% epic · 6% legendary</b>.</p>`
-      : `<p class="sb-cn" style="margin:0 0 14px">Avatars arrive in packs, and packs come with a plan.</p>`;
-    /* "Bee style" is gone. The accessories were stickers drawn at fixed coordinates in the
-       bee's 120x120 space — a crown at the top, a moustache across the middle — which
-       worked on the bee and collided with everything else. The gods already wear crowns
-       and haloes of their own, and the real people are drawn as people. An overlay that
-       only suits one of 217 avatars is not a feature. */
-    /* each pack's row reads left to right up the ladder: Starter → Rare →
-       Epic → Legendary (roster order breaks ties) */
+    /* Every card says how it is won (avRule) — no packs to open, no odds, no spares to sell.
+       A milestone shows its progress; a Rare also shows its fixed coin price; a pack outside
+       the plan says so and asks for a grown-up, never for money. */
+    grantAvatarMilestones(true);
+    const ev=avEvidence(c);
+    const howAv=`<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Starters are yours. Every other avatar says on its card exactly how it is won — a learning milestone, and for a Rare, a fixed price in Bizzing coins too. Packs beyond your plan come with the plan. Nothing here is left to chance.</p>`;
     const RARO={free:0,rare:1,epic:2,legendary:3};
-    body=printBar+howPacks+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id)
+    body=howAv+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id)
         .sort((x,y)=>(RARO[x.rarity]||0)-(RARO[y.rarity]||0)); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
       const inPlan=avPackUnlocked(p.id);
       const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
-        const n=avCount(c,a.id); const dup=Math.max(0,n-1);
-        const sellBtn=(a.rarity!=='free')?`<button data-act="sellAvatar" data-arg="${a.id}" title="${dup?('Sell one of your '+n+' copies for '+a.sell+' coins'):('Sell for '+a.sell+' coins')}" style="padding:6px 9px;border-radius:8px;background:${dup?'var(--treasure-tint,#FFF3D6)':'var(--surface2)'};border:1px solid ${dup?'var(--treasure,#F0B429)':'var(--line)'};font-weight:800;font-size:11.5px;color:${dup?'var(--treasure-deep,#8A5B00)':'var(--muted)'}">Sell ${a.sell}🪙</button>`:'';
-        const action= on?`<span style="display:inline-flex;gap:6px;align-items:center"><span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>${dup?sellBtn:''}</span>`
-          : own?`<span style="display:inline-flex;gap:6px"><button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>${sellBtn}</span>`
-          : inPlan?`<button data-act="buyPack" data-arg="${p.id}" title="Drops from a ${p.label} pack — ${packCost(p.id)} coins" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--muted)">${iconSVG('lock',11,2.2)} In a pack</button>`
-          : `<button data-act="openTiers" title="Part of a paid plan" style="display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:var(--chip);border:1px solid var(--line);font-weight:800;font-size:11.5px;color:var(--accent)">${iconSVG('lock',11,2.2)} Plan</button>`;
+        const rule=avRule(a,c);
+        let action;
+        if(on) action=`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`;
+        else if(own) action=`<button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>`;
+        else if(rule.kind==='milestone'){ const have=Math.min(rule.n, AV_EVID[rule.k].v(ev));
+          action=`<span class="av-rule" style="display:flex;flex-direction:column;align-items:center;gap:5px">${lockChip('learn',rule.text,{fs:10.5})}<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:800;color:var(--muted)">${fmtN(have)} / ${fmtN(rule.n)}</span>${rule.price?`<button data-act="buyAvatar" data-arg="${a.id}" title="A fixed price — no chance involved" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:var(--treasure-tint,#FFF3D6);border:1px solid var(--treasure,#F0B429);font-weight:800;font-size:11px;color:var(--treasure-deep,#8A5B00)">or ${coinAmt(rule.price,10)}</button>`:''}</span>`; }
+        else action=`<button data-act="askPlan" data-arg="avatarPacks" class="av-rule" style="background:none;border:0;padding:0;cursor:pointer">${lockChip('plan',rule.text,{fs:10.5})}</button>`;
         const card=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null;
         // Unowned avatars are drawn as silhouettes-in-waiting: desaturated and dimmed, so the
         // collection reads at a glance as "mine" vs "still to win".
-        return `<div style="position:relative;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;${own?'':'opacity:.62'}">
-          ${n>1?`<span title="You have ${n} copies of ${esc(a.name)}" style="position:absolute;top:7px;right:7px;z-index:2;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;font-size:11px;color:#5a3d00;background:var(--treasure,#F0B429);border-radius:99px;padding:2px 8px;box-shadow:0 1px 3px rgba(0,0,0,.18)">×${n}</span>`:''}
-          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;${own?'':'filter:grayscale(1) contrast(.82) brightness(.96)'}">${avatarSVG(a.id,89)}</button>
+        return `<div style="position:relative;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
+          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;${own?'':'filter:grayscale(1) contrast(.82) brightness(.96);opacity:.7'}">${avatarSVG(a.id,89)}</button>
           <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
           ${card?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
           <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
           ${action}</div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${ownedN<avs.length&&inPlan?`<button data-act="toggleOdds" data-arg="${p.id}" style="font-size:11.5px;font-weight:800;color:var(--accent);background:none;border:0;padding:2px 0;cursor:pointer;white-space:nowrap">🎲 ${S.oddsOpen===p.id?'Hide odds':'Drop odds'}</button>`:''}${!inPlan
-          ?`<button data-act="openTiers" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('lock',11,2.2)} Comes with ${esc((SB_TIERS[packPlanNeeded(p.id)]||{}).name||'a paid plan')}</button>`
-          :(ownedN<avs.length?`<button data-act="buyPack" data-arg="${p.id}" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px">🎁 Open pack · ${coinAmt(packCost(p.id),11)}</button>`:'')}</div>
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${!inPlan
+          ?`<button data-act="askPlan" data-arg="avatarPacks" style="margin-left:auto;background:none;border:0;padding:0;cursor:pointer">${lockChip('plan','Comes with the plan — ask a grown-up')}</button>`:''}</div>
         <div style="height:5px;border-radius:99px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:11px"><div style="height:100%;background:linear-gradient(90deg,${p.c1},${p.c2});width:${Math.round(ownedN/(avs.length||1)*100)}%"></div></div>
-        ${S.oddsOpen===p.id?oddsPanel(p.id,c):''}
         <div class="av-row">${tiles}</div></div>`; }).join('');
   } else if(tab==='worlds'){
     /* The painted hero cards, moved here from the standalone picker. A locked world is
@@ -7008,7 +7070,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
           <div style="font-size:11.5px;font-weight:800;color:var(--accent);margin-top:3px">${it.how}</div></div>
         <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:900;font-size:14px;color:${own?'var(--good)':'var(--muted)'};white-space:nowrap">× ${own}</span></div>`; }).join('');
     const artCard=`<div class="sb-card" style="margin-bottom:14px"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:4px"><span class="sb-ct" style="font-size:15px">Artifacts</span><span class="sb-cn">won by playing, never bought</span></div>
-      <p class="sb-cn" style="margin:0 0 12px;line-height:1.5">An edge in a game is something you earn in one. Stage up any list and you win a game artifact${_capped?' — you\'re at the free level cap, so Premium reopens these.':` — <b style="color:var(--text)">${_left} more right ${_left===1?'word':'words'}</b> in ${esc(listLabel(_lk))} wins the next one.`} Keep a daily streak going to ${(c.streak||0)>=7?'keep earning':'reach'} the Streak Freeze.</p>
+      <p class="sb-cn" style="margin:0 0 12px;line-height:1.5">An edge in a game is something you earn in one. Stage up any list and you win a game artifact${_capped?' — you\'re at the free level cap, so Premium reopens these.':` — <b style="color:var(--text)">${_left} more right ${_left===1?'word':'words'}</b> in ${esc(listLabel(_lk))} wins the next one.`}</p>
       ${inv}</div>`;
     const B=badgeDefs(); const won=B.filter(b=>b.done).length;
     const groups=[...new Set(B.map(b=>b.g))];
@@ -7019,7 +7081,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
         <span style="font-weight:800;font-size:12.5px;line-height:1.15">${b.name}</span>
         <span class="sb-cn" style="font-size:11px">${b.desc}</span>
         <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`; }).join('')
-      + `<div class="sb-cn" style="margin:4px 2px 14px">${won}/${B.length} badges won — earned by playing, never bought.</div>`
+      + `<div class="sb-cn" style="margin:4px 2px 14px">${won}/${B.length} medals won — each one names what earned it, and none is ever bought or taken back.</div>`
       + artCard;
   }
   const bAll=badgeDefs();
@@ -7029,7 +7091,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
     ${pageHead('My Hive', '', '',
       (tab==='avatars'?`<button data-act="printAvCards" title="Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${SB_ICON('printer',{size:15})} Print my cards</button>`:'')
       + `<span class="sb-coinchip" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Badges · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Medals · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}</div>
     ${body}
   </div>`; }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
@@ -7040,8 +7102,8 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
   const rungMarks=Array.from({length:10},(_,i)=>i===0?'start':fmtN(stageXp(i))+' words');
   const xpToForm=Math.max(0, stageXp(Math.min(9,fIdx+1))-totalXp);
   return `<div style="max-width:900px;margin:0 auto">
-    ${pageHead('Your bee','ten forms, earned by practising','','','setNav','Your spelling level','beeband')}
-    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Every word you practise feeds your bee, and it grows through ten forms that keep their names in every world. This is a <b style="color:var(--text)">collection</b>, not a level: it measures effort, always climbs and never falls. <b style="color:var(--text)">Your spelling level is the Bee Band</b> — the pill in the header — and that is the one that decides how hard your words are.</p>
+    ${pageHead('Your bee','ten forms, earned by practising','','','setNav','Your level','beeband')}
+    <p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">Your bee is <b style="color:var(--text)">your level</b>, drawn. Every word you spell right moves your level one step, and as the levels climb your bee grows through ten forms that keep their names in every world. It only ever climbs.</p>
     <div class="sb-card" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-bottom:10px">
         <span style="width:56px;height:60px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(fIdx)}</span>
@@ -7054,11 +7116,11 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
         </span>
       </div>
       <div style="overflow-x:auto;padding:4px 0 2px"><div style="min-width:760px">${evoLadderHTML('spellbound',fIdx,rungMarks)}</div></div>
-      <div class="sb-cn" style="margin-top:6px">Each form shows how many words spelled right unlocks it — anywhere in the app, and the count never goes down. This is your bee’s <b>look</b>, not your level: your <b>spelling level</b> is the Bee Band, and it lives in the header.</div>
+      <div class="sb-cn" style="margin-top:6px">Each form shows how many words spelled right reach it — anywhere in the app, and the count never goes down.</div>
     </div>
     <div class="sb-card" style="margin-bottom:14px">
       <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How your bee evolves</div>
-      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in Practice, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Coins 🪙 are different: treasure you win and <i>spend</i> on worlds, avatar packs and concept chapters. Spending coins never costs you a step.</div>
+      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in Practice, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Bizzing coins 🪙 are different: they come from learning too, and you <i>spend</i> them on looks like a Rare avatar. They never buy a level, and spending them never costs you a step.</div>
     </div>
     ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
     ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Practice, the Arcade, Concepts — and every right word feeds the same evolution.')}
@@ -7076,7 +7138,7 @@ function conceptStat(ch){ const ws=conceptWordsOf(ch); const total=ws.length; co
 function patWords(ws){ return (ws||[]).filter(x=>x&&x.w); }
 function justCrossed(ws,key){ ws=patWords(ws); const total=ws.length; if(!total||!ws.some(x=>nkey(x.w)===key)) return false;
   const m=ws.filter(x=>state.luMastered[nkey(x.w)]).length; return (m/total>=PATTERN_DONE_PCT) && ((m-1)/total < PATTERN_DONE_PCT); }
-function celebratePattern(emoji,kind,name,reward){ addCoins(reward); try{ sfx('win'); burstConfetti(150); }catch(e){} state.toast=emoji+' '+kind+' complete — '+name+'! +'+reward+' '+'🪙'; scheduleToast(3200); }
+function celebratePattern(emoji,kind,name,reward){ const _p=addCoins('mastery'); try{ sfx('win'); burstConfetti(150); }catch(e){} state.toast=emoji+' '+kind+' complete — '+name+'!'+(_p?' +'+_p+' 🪙':''); scheduleToast(3200); }   /* a concept or lesson mastered is the standard's mastery event; the old per-caller reward is ignored */
 function checkPatternDone(key){
   for(const ch of (state.conceptData||[])){ if(justCrossed(ch.words,key)){ celebratePattern('🧩','Concept',conceptShort(ch.title),20); return; } }
   for(const L of lessonsAll()){ if(justCrossed(L.words,key)){ celebratePattern('🗺️','Lesson',L.title,15); return; } } }
@@ -7152,9 +7214,9 @@ function conceptCardHTML(ch, allChs){
     </div>
   </div>`;
   const footL = locked
-    ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',11,2.2)} ${coinAmt(COST.concept,11)}</span>`
+    ? (()=>{ const L=conceptLock(ci); return lockChip(L.kind,L.text,{fs:11}); })()
     : `<span style="padding:3px 9px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span>`;
-  const footR=`<span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${locked?'Unlock':(nWords+' words')} →</span>`;
+  const footR=`<span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${locked?'How to open':(nWords+' words')} →</span>`;
   const prog=(!locked && !st.done && st.m>0)?`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:${f.c};font-weight:700;margin-top:7px">${st.m}/${st.total} mastered</div>`:'';
   return `<button class="sb-cover-card" data-act="${locked?'buyConcept':'openConcept'}" data-arg="${ci}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column;${locked?'opacity:.97':''}">
     ${cover}
@@ -7169,13 +7231,14 @@ function conceptCardHTML(ch, allChs){
 }
 function conceptBigCard(ch, allChs){
   const ci=allChs.indexOf(ch); const st=conceptStat(ch); const locked=!isConceptUnlocked(ci);
-  const tag=locked?`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:900;color:#a06a00;background:linear-gradient(135deg,#FFE08A,#F0B85C)">${iconSVG('lock',12,2.2)} Locked</span>`:`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
-  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)">🔓 Unlock · ${coinAmt(COST.concept,12)}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
+  const _L=locked?conceptLock(ci):null;
+  const tag=locked?lockChip(_L.kind,_L.text):`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
+  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${_L.kind==='learn'?'🧭 Take me there':'Ask a grown-up'}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
     <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.12;margin-bottom:4px;display:flex;align-items:center;gap:9px">${locked?`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',22,2.2)}</span>`:''}${esc(conceptShort(ch.title))}</div>
     <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:13px">${esc(conceptRoots(ch.title))}</div>
-    <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?'This concept is locked. Unlock it with coins to reveal its pattern, worked examples and word list.':esc(ch.concept||'')}</div>
+    <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?(_L.kind==='learn'?'This chapter opens on the Atlas, at the stop that teaches it — walk there and its pattern, worked examples and word list are yours.':'This chapter comes with the plan. Ask a grown-up about it.'):esc(ch.concept||'')}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">${tag}${cta}</div>
   </div>`;
 }
@@ -7238,7 +7301,7 @@ function chapterCoverCard(chap){ const f=CONCEPT_FAM[chap.name]||CONCEPT_FAM.Adv
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(chap.name)}">
       <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">${chap.adv?'◆ Advanced':'Shelf '+chap.n}</span>
       <span style="font-family:var(--display);font-weight:800;font-size:23px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(chap.name)}</span>
-      ${gated?`<span style="position:absolute;bottom:9px;right:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:rgba(10,6,26,.5);color:#fff;font-weight:800;font-size:11px">${iconSVG('lock',12,2.2)} $${price}/yr</span>`
+      ${gated?`<span style="position:absolute;bottom:9px;right:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:rgba(10,6,26,.5);color:#fff;font-weight:800;font-size:11px">${iconSVG('lock',12,2.2)} Advanced Pack</span>`
         :st.complete?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
@@ -7971,7 +8034,7 @@ function parentSignals(){ const c=active(); const played=(c.daysPlayed||[]).slic
   const arcadeN=(function(){ try{ return Object.keys(JSON.parse(localStorage.getItem('sb_arc_best')||'{}')).length; }catch(e){ return 0; } })();
   const advOn=(function(){ try{ return !!(window.ADV&&ADV.active&&ADV.active()); }catch(e){ return false; } })();
   const traps=(function(){ try{ return missTraps(); }catch(e){ return []; } })();
-  return { c, daysSince, active14, acc:(c.acc||0), missedN, streak:(c.streak||0), toBee:(milestone()||{days:9999}).days, age:(c.age||9), coverage,
+  return { c, daysSince, active14, acc:(c.acc||0), missedN, goodDays:goodDaysThisWeek(c), toBee:(milestone()||{days:9999}).days, age:(c.age||9), coverage,
     reviewHealth:Math.max(0,100-missedN*5), consistency:Math.round(active14/14*100),
     band:band.band, calibrating:!!band.calibrating, trailDone, vocabTouched, themesN, arcadeN, advOn,
     traps, topTrap:traps[0]||null }; }
@@ -8797,7 +8860,7 @@ function viewQuest(){
       <span style="min-width:0;flex:1">
         <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Advanced Mode</span>${aUnlocked?`<span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#0a7a44;background:color-mix(in srgb,#39d98a 30%,transparent);padding:2px 8px;border-radius:999px">Unlocked</span>`:`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--muted);background:var(--surface2);padding:2px 9px;border-radius:999px">${SB_ICON('lock',{size:12})} Locked</span>`}</span>
         <span style="display:block;font-size:13px;color:var(--text);font-weight:600;margin-top:5px;line-height:1.5">National Spelling Bee prep from the full <b>128,000-word</b> library — a 2-year sprint plan, mock bees, champion tips and advanced games.</span>
-        <span style="display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px;line-height:1.45"><span style="color:${advCol};flex-shrink:0;margin-top:1px">${SB_ICON('sparkle',{size:13})}</span>${aUnlocked?'You’ve earned it — master the very hardest words.':('Advanced Pack · $'+aPrice+'/yr — sits on top of your plan.')}</span>
+        <span style="display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px;line-height:1.45"><span style="color:${advCol};flex-shrink:0;margin-top:1px">${SB_ICON('sparkle',{size:13})}</span>${aUnlocked?'You’ve earned it — master the very hardest words.':('Advanced Pack — ask a grown-up about it.')}</span>
         <span style="display:inline-flex;align-items:center;gap:5px;margin-top:11px;font-weight:800;font-size:12.5px;color:#fff;background:${advCol};padding:9px 15px;border-radius:10px">${aUnlocked?'Enter Advanced':'See how to unlock'} ${SB_ICON('arrowRight',{size:14})}</span>
       </span>
     </button>`;
@@ -8951,7 +9014,7 @@ function viewTtList(){ const st=state.ttList; if(!st) return ''; const c=active(
 function viewProgress(){
   const c=active();
   const bb=beeBand(c);
-  const stats=[{v:c.streak||0,k:'Day streak'}]   /* words mastered is in the rank block above */
+  const stats=[{v:goodDaysThisWeek(c),k:'Good days this week'}]   /* words mastered is in the rank block above */
     .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent)">${s.v}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
   const wk=c.week&&c.week.length?c.week:[12,20,15,30,18,25,22]; const maxW=Math.max(...wk,1); const days=['M','T','W','T','F','S','S'];
   const week=wk.map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end"><div style="font-size:11px;font-weight:800;color:var(--muted)">${m||''}</div><div style="width:100%;border-radius:6px 7px 4px 4px;background:var(--accent);height:${Math.round((m/maxW)*100)}%;min-height:5px;opacity:${m?'1':'.3'}"></div><div style="font-size:12px;color:var(--muted);font-weight:700">${days[i]}</div></div>`).join('');
@@ -8966,9 +9029,9 @@ function viewProgress(){
       <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
         <span style="width:60px;height:64px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:var(--surface2)">${rankArt(r.form)}</span>
         <span style="min-width:0;flex:1">
-          <span class="sb-cs">Your bee</span>
+          <span class="sb-cs">Your level</span>
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12">Level ${r.level} · ${esc(r.name)}</span>
-          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">Effort, not readiness — it only ever climbs, and it keeps these names in every world.</span>
+          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">Words spelled right move it, and nothing else — it only ever climbs.</span>
         </span>
         <button data-act="setNav" data-arg="evolution" class="sb-cl" style="align-self:flex-start">the ladder →</button>
       </div>
@@ -9065,7 +9128,7 @@ function viewProgress(){
         <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Practice, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
-    <div style="margin-bottom:18px">${streakCard()}</div>
+    <div style="margin-bottom:18px">${goodDaysCard()}</div>
     ${metricsCard(c)}
     ${ttAnalyticsCard(c)}
     ${(()=>{ const ec=explorerCard(c,{title:'Your Bizzing Bee world',sub:'Everywhere you’re exploring — the arcade, quotes, journeys, typing and more.'}); return ec?`<div style="margin-bottom:18px">${ec}</div>`:''; })()}
@@ -9148,7 +9211,7 @@ function viewParent(){
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(beeBand(k).band)} — proven difficulty band across all activities">${(()=>{ const kb=beeBand(k); return `<div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.calibrating?'…':kb.band}</div><div style="font-size:12px;color:var(--muted);font-weight:700">BEE BAND</div>`; })()}</div>
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.acc||0}%</div><div style="font-size:12px;color:var(--muted);font-weight:700">ACCURACY</div></div>
-        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.streak||0}</div><div style="font-size:12px;color:var(--muted);font-weight:700">STREAK</div></div>
+        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${goodDaysThisWeek(k)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">GOOD DAYS THIS WEEK</div></div>
       </div>
       ${S.children.length?(S.delSpeller===i
         ? `<div style="margin-top:11px;padding:11px 12px;border-radius:11px;background:color-mix(in srgb,var(--bad,#D6453A) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--bad,#D6453A) 34%,transparent)">
@@ -9505,7 +9568,7 @@ function viewThemeDetail(){
     ${tabBar}
     ${thin?`<div style="background:color-mix(in srgb,${cl.c} 10%,var(--bg2));border:1px solid color-mix(in srgb,${cl.c} 35%,var(--line));border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
       <b>Only ${ws.length} ${ws.length===1?'word':'words'} here so far.</b> This family is small in the core library and deepens
-      to hundreds of words with the 125,000-word library in the Advanced Pack ($${price}/yr). Read the explanation now;
+      to hundreds of words with the 125,000-word library in the Advanced Pack (ask a grown-up). Read the explanation now;
       the level ladder opens once there are ${THEME_MIN} words to climb.</div>`:''}
     ${tab==='train' && !thin ? (()=>{ const pref=state.trainPref||'cards';
       const MODES=[['cards','Cards','book','See the word, the meaning and the story, one card at a time.'],
@@ -9745,7 +9808,7 @@ function viewSettings(){
       <span style="width:38px;height:38px;flex:none;border-radius:11px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:20}):(window.SB_ICON?SB_ICON('trophy',{size:19}):'')}</span>
       <span style="min-width:0;flex:1">
         <span style="display:block;font-weight:800;font-size:14.5px">Advanced Pack <span style="font-weight:700;font-size:12px;color:var(--muted)">add-on</span></span>
-        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 125,000-word library, mock bees, advanced concepts, tips and games are live.':'$'+((window.ADV&&ADV.price)?ADV.price():299)+'/yr adds national-bee prep. Turn on to preview it.'}</span></span>
+        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 125,000-word library, mock bees, advanced concepts, tips and games are live.':'The Advanced Pack adds national-bee prep. Turn on to preview it.'}</span></span>
       ${S.devUnlock
         ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex:none;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
         : `<button data-act="toggleAdvPack" role="switch" aria-label="Advanced Pack" aria-checked="${_advOn?'true':'false'}" style="flex:none;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
@@ -10130,7 +10193,7 @@ function coachSetup(){
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,#5B3FA6 13%,transparent);color:#5B3FA6;display:grid;place-items:center;opacity:.8">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:22}):''}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)">Ultra Champions Journey</span>
         <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 125,000 words · Advanced Pack</span></span>
-        <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} $${(window.ADV&&ADV.price)?ADV.price():299}/yr</span></button>`;
+        <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} Ask a grown-up</span></button>`;
       // unlocked: the advanced journey leads. locked: it sits under the standard one.
       return on ? (ultra+journeyBanner) : (journeyBanner+locked); })()}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
@@ -10262,8 +10325,8 @@ function magicFinishCell(){ const g=state.game; const i=g.cell; const cell=g.boa
   const win=g.right>=4; let celebr=null; let coins=0;
   if(win && !cell.done){ cell.done=true; coins+=MAGIC_BONUS.cell;
     const lines=magicLinesCheck(g);
-    if(lines.length){ celebr={msgs:lines.map(l=>l.label+' +'+l.coins+' 🪙'), mega:lines.some(l=>l.mega)}; coins+=lines.reduce((a,l)=>a+l.coins,0); } }
-  if(coins){ addCoins(coins); g.coins+=coins; }
+    if(lines.length){ celebr={msgs:lines.map(l=>l.label), mega:lines.some(l=>l.mega)}; } }   /* a line is a pattern on the board, not a wage */
+  if(coins){ coins=addCoins('stop'); g.coins+=coins; }   /* a cell won (4 of 5 right) is a finished round */
   g.cellResult={win, right:g.right, coins}; g.celebr=celebr; g.status='result';
   if(celebr&&celebr.mega){ sfx('win'); burstConfetti(240); setTimeout(()=>burstConfetti(180),700); }
   else if(celebr){ sfx('win'); burstConfetti(140); }
@@ -10396,7 +10459,7 @@ function challengePool(){ const c=active(); const key=state.challengeKey||active
   return journeySorted().filter(w=>w&&w.w&&tier(w)); }
 function gFinishChamp(){ clearGTimer(); const g=state.game; g.status='done'; const done=g.right+g.wrong;
   g.pass = g.fmt==='count' ? (done>0 && g.right/done>=0.8) : (g.right>=10);
-  const bonus=g.right*2 + (g.pass?10:0); addCoins(bonus); g.bonus=bonus;
+  g.bonus=(g.bonus||0)+(g.pass?addCoins('contest'):0);   /* each right word paid as it went (payG); passing the challenge is a contest completed */
   const c=active(); const curLvl=listStageIdx(c,g.champKey)+1;
   const blockLib = g.champKey==='journey' && g.champLevel>=CHAMP_LEVELS && !state.premium;
   g.canAdvance = g.pass && g.band==='level' && curLvl===g.champLevel && !blockLib && (listStageIdx(c,g.champKey) < listStages(g.champKey).length-1);
@@ -10537,15 +10600,15 @@ function buildMC(mode,n){ const all=gameWordsD();
     return { kind:(useSent?'sentence':'meaning'), word:w.w, wordObj:w, answer:w.w, choices, prompt:(useSent?blankHTML(w.s,w.w):blankHTML(w.d,w.w)), say:(useSent?w.s:w.w) };
   }); }
 function gMisses(g){ return (g.ans?g.ans.filter(a=>!a.ok).map(a=>a.w):[]); }
-function gFinishBuzz(){ const g=state.game; g.status='done'; const bonus=2+g.right; addCoins(bonus); g.bonus=bonus;
+function gFinishBuzz(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;   /* the wage is the words, paid as they were spelled (payG) */
   logActivity('buzz','10-Word Warm-Up', {done:g.ans.length,right:g.right,coins:bonus}, gMisses(g));
   if(g.right>=8){ sfx('win'); burstConfetti(120); } else sfx('level'); render(); }
-function gFinishBeat(){ const g=state.game; g.status='done'; const bonus=Math.round(g.right*1.5); addCoins(bonus); g.bonus=bonus;
+function gFinishBeat(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
   logActivity('beat','Beat the Buzzer', {done:g.right+g.wrong,right:g.right,coins:bonus}, []);
   if(g.right>=12){ sfx('win'); burstConfetti(120); } else sfx('level'); render(); }
-function gFinishBoss(won){ clearGTimer(); const g=state.game; g.status=won?'won':'lost'; const bonus=won?14:0; if(won){ addCoins(bonus); g.bonus=bonus; sfx('win'); burstConfetti(150); } else { sfx('lose'); }
+function gFinishBoss(won){ clearGTimer(); const g=state.game; g.status=won?'won':'lost'; g.bonus=g.bonus||0; if(won){ sfx('win'); burstConfetti(150); } else { sfx('lose'); }
   logActivity('boss', won?'Boss Battle — won':'Boss Battle — lost', {done:g.right,right:g.right,coins:bonus}, []); render(); }
-function gFinishMC(){ const g=state.game; g.status='done'; const bonus=2+g.right; addCoins(bonus); g.bonus=bonus;
+function gFinishMC(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
   if(g.round==='vocab'){ const c=active(); c.vocQuiz=(c.vocQuiz||0)+1; }
   if(g.round==='idiom'||g.round==='simile'){ const c=active(); c.figQuiz=(c.figQuiz||0)+1; }
   logActivity(g.type, ACT_LABEL[g.type]||'Quiz', {done:g.qs.length,right:g.right,coins:bonus}, g.miss||[]);
@@ -10845,8 +10908,9 @@ function arcadeResult(g, res){
   const isBest = score > 0 && score > prevBest;
   if(isBest) arcSaveBest(g.k, score);
   const shownBest = Math.max(prevBest, score);
-  const coins = win ? 20 : 0;
-  if(coins) try{ addCoins(coins); }catch(e){}
+  /* a game's wage is its words, one coin each as they were spelled — winning pays no extra,
+     because a win is partly reflexes and the standard pays only for learning */
+  const coins = Math.max(0, earnedSoFar()-(g._e0||0));
   // best-score line: celebrate a new record, else show the bar to beat
   const bestLine = score>0
     ? (isBest
@@ -10881,7 +10945,7 @@ function arcadeResult(g, res){
   card.innerHTML=`<div class="arc-play-rcard">
       <div style="font-size:34px;line-height:1">${isBest?'🌟':win?'🏆':'💪'}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
-      <div style="font-size:13px;color:var(--muted)">${win?('+'+coins+' 🪙 · play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
+      <div style="font-size:13px;color:var(--muted)">${win?((coins?'+'+coins+' 🪙 · ':'')+'play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
       ${bestLine}
       ${recap}
       <div style="display:flex;gap:9px;margin-top:16px;justify-content:center;flex-wrap:wrap">
@@ -10970,6 +11034,7 @@ function bizzAnswer(i){
     setTimeout(()=>{ if(!_bizzS) return;
       if(right){
         if(S.rung>=SB_BIZZ_LADDER.length-1){ bizzResult(true,'won'); return; }
+        try{ S.paid=(S.paid||0)+addCoins('answer'); }catch(e){}
         S.rung++; S.reveal=false; bizzNext();
       } else { bizzResult(false,'wrong'); }
     }, 950);
@@ -10992,8 +11057,9 @@ function bizzResult(won, why){
      reaches rung 6 should not walk away with nothing because 1,000 ÷ big number rounds
      to zero. ~12 per rung cleared, +150 for going all the way, capped so the ladder
      can't out-earn a day of real practice. */
-  const coins = Math.min(400, S.rung*12 + (won?150:0));
-  if(coins) try{ addCoins(coins); }catch(e){}
+  /* each rung climbed was a right answer and paid one coin as it was climbed; reaching the top
+     is a contest completed. The "money" on the ladder is flavour and never becomes coins. */
+  let coins = S.paid||0; if(won) try{ coins+=addCoins('contest'); }catch(e){}
   bizzRender('result', {won, banked, coins, why});
 }
 function bizzRender(mode, data){
@@ -11085,11 +11151,11 @@ function gamesHub(){ const S=state; const c=active();
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
-     full-width banner under the two story adventures, where the streak is the hook. */
+     full-width banner under the two story adventures. It shows no run of days: a day off costs nothing. */
   let dailyBanner='';
   if(window.SB_DAILY){ let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
     const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
-    const doneToday=st.day===today&&st.over; const streak=st.streak||0;
+    const doneToday=st.day===today&&st.over;
     dailyBanner=`<button data-act="openDaily" class="sb-lift sb-daily" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
         background:linear-gradient(110deg,#1E7D45,#2FA35C 46%,#3FBF6E);box-shadow:0 8px 22px rgba(24,96,55,.28)">
       <span aria-hidden="true" style="position:absolute;inset:0;opacity:.22;background:radial-gradient(320px 150px at 88% 30%,#FFF6D6,transparent 70%)"></span>
@@ -11101,7 +11167,6 @@ function gamesHub(){ const S=state; const c=active();
           <span style="display:block;font-size:13px;line-height:1.45;color:rgba(255,255,255,.92);margin-top:4px;max-width:34em">Six tries to spell today&rsquo;s mystery word, then share your grid. A new word every day at midnight.</span>
         </span>
         <span class="sb-daily-cta">
-          ${streak>0?`<span style="display:inline-flex;align-items:center;gap:5px;font-family:var(--display);font-weight:800;font-size:14px;color:#fff;background:rgba(0,0,0,.22);border-radius:999px;padding:7px 14px">🔥 ${streak}-day streak</span>`:''}
           <span class="sb-daily-go">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
         </span>
       </span></button>`; }
@@ -11133,35 +11198,7 @@ function gamesHub(){ const S=state; const c=active();
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px">${feats.join('')}${quick}</div>
   </div>`;
 }
-/* Themed "calculating your drop" reel — plays while the app rolls, then the card drops. */
-function packRollOverlay(){ const r=state.packRoll; if(!r) return '';
-  const P=SB_AVATARS.packs.find(p=>p.id===r.pk)||{label:'Pack'};
-  const pool=SB_AVATARS.list.filter(a=>a.pack===r.pk);
-  const strip=pool.concat(pool).map(a=>`<span>${SB_AVATAR(a.id,72,{dark:true})}</span>`).join('');
-  return `<div class="pk-ov" data-act="packSkip"><div class="pk-card" data-act="noop">
-      <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.16em;color:color-mix(in srgb,var(--accent) 55%,#fff)">${esc(String(P.label||'').toUpperCase())}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;color:#fff;margin-top:6px">Calculating your drop<span class="pk-dots"></span></div>
-      <div class="pk-reelwin"><div class="pk-reel">${strip}</div></div>
-      <div class="pk-scan"><i></i></div>
-      <div style="font-size:11.5px;color:rgba(255,255,255,.62);font-weight:650;margin-top:12px">Shuffling the ${esc(P.label)} — tap to reveal</div>
-    </div></div>`; }
-/* Pack-drop reveal: modal card over the Hive after opening a pack — the won card drops in. */
-function packDropOverlay(){ const id=state.packDrop; if(!id) return '';
-  const a=SB_AVATARS.byId[id]; if(!a) return ''; const R=SB_AVATARS.rarities[a.rarity]||{label:a.rarity,c:'#888'};
-  const leg=a.rarity==='legendary'; const od=(typeof packOdds==='function')?packOdds(a.pack).find(o=>o.id===id):null;
-  return `<div data-act="packClose" class="pk-ov" style="z-index:83">
-    <div data-act="noop" style="position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 20%,#3A2F5C),#241A47);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:26px 30px 28px;text-align:center;max-width:330px;width:100%;box-shadow:0 0 64px ${leg?'rgba(255,194,61,.5)':'color-mix(in srgb,var(--accent) 40%,transparent)'}">
-      <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;letter-spacing:.16em;color:${state.packDupe?'#FFD98A':'#C9BFEA'};margin-bottom:10px">${state.packDupe?('🪙 SPARE · YOU NOW HAVE ×'+state.packDupe):'✨ YOU GOT'}</div>
-      <div class="pk-drop" style="width:150px;height:150px;margin:0 auto">${SB_AVATAR(a.id,150,{dark:true})}</div>
-      <div style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:${R.c};border-radius:99px;padding:4px 12px;margin:14px 0 6px">${R.label}${leg?' ✦':''}</div>
-      <div style="font-family:var(--display);color:#fff;font-weight:800;font-size:22px">${esc(a.name)}</div>
-      ${state.packDupe?`<div style="font-size:11.5px;color:#FFD98A;font-weight:700;margin-top:6px">A repeat — sell the spare for ${a.sell} 🪙 in your Collection.</div>`
-        :(od?`<div style="font-size:11.5px;color:#C9BFEA;font-weight:700;margin-top:6px">🎲 ${oddsPct(od.pct)}% drop chance — nice roll!</div>`:'')}
-      <div style="display:flex;gap:9px;justify-content:center;margin-top:18px">
-        <button data-act="packWear" style="padding:12px 22px;border-radius:99px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px;box-shadow:0 4px 0 #C8891B">Wear now</button>
-        <button data-act="packClose" style="padding:12px 18px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#E9E1FF;font-weight:800;font-size:13px">Keep it</button>
-      </div>
-    </div></div>`; }
+/* The pack reel and the drop reveal are deleted with the draw (FIX-BEE I3). */
 function gameShell(statusBar, inner){ return `<div style="max-width:680px;margin:0 auto">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">${statusBar}<div style="display:flex;align-items:center;gap:10px">${coinChip()}<button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div></div>
     ${inner}</div>`; }
@@ -11304,7 +11341,7 @@ function fullListOverlay(){ const S=state; if(!S.listView) return '';
     </div></div>`;
 }
 function overlays(){
-  const S=state; let h=''; h+=fullListOverlay(); h+=packRollOverlay(); h+=packDropOverlay();
+  const S=state; let h=''; h+=fullListOverlay(); 
   // These sheets live out here, not inside view(): render() wraps view() in a
   // position:relative;z-index:1 box, which is a stacking context — anything drawn inside it
   // is pinned below the overlays no matter how high its own z-index is. That is why
@@ -11335,14 +11372,14 @@ function overlays(){
       </div></div>`;
   }
   if(S.showPaywall){
-    const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Level up past Level 5 on every list','Premium word lists + full library','Earn 🪙 coins to unlock everything else']
+    const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Level up past Level 5 on every list','Premium word lists + full library','More worlds and chapters open as your speller learns — never with coins']
       .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
     const planStyle=(on)=>'flex:1;text-align:left;border-radius:14px;padding:14px;cursor:pointer;background:var(--surface2);border:2px solid '+(on?'var(--accent)':'transparent');
     h+=`<div data-act="closePaywall" style="position:fixed;inset:0;z-index:60;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px">
       <div data-act="noop" style="width:100%;max-width:460px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(24px,5vw,34px);box-shadow:var(--glow);animation:sb-pop .35s ease both;max-height:92dvh;overflow:auto">
         <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:70px;height:78px">${mascotSVG('love')}</div></div>
         <h2 style="font-family:var(--display);font-weight:800;font-size:24px;text-align:center;margin:0 0 4px">Go Premium</h2>
-        <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 20px">Unlock 4 worlds, half the concepts, and uncapped levels — then earn coins for the rest.</p>
+        <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 20px">Unlock 4 worlds, half the concepts, and uncapped levels.</p>
         <div style="display:grid;gap:9px;margin-bottom:20px">${perks}</div>
         <div style="display:flex;gap:10px;margin-bottom:16px">
           <button data-act="pickPlan" data-arg="year" style="${planStyle(S.plan==='year')}"><div style="font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.04em">BEST VALUE · SAVE 38%</div><div style="font-family:var(--display);font-weight:800;font-size:20px">$59<span style="font-size:13px;color:var(--muted)">/yr</span></div><div style="font-size:12px;color:var(--muted)">$4.92 / month</div></button>
@@ -11678,7 +11715,7 @@ function viewCloudSheet(){ const S=state; const m=S.cloudSheet;
     <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px">
       <div style="font-weight:800;font-size:13px;margin-bottom:6px">What gets uploaded</div>
       <ul style="margin:0 0 12px 16px;padding:0;font-size:13px;color:var(--muted);line-height:1.5">
-        ${yes('A label taken from their avatar — “Fox”, “Panda”')}${yes('Their spelling level, avatar and world')}${yes('Practice progress: words, scores, coins, streaks')}</ul>
+        ${yes('A label taken from their avatar — “Fox”, “Panda”')}${yes('Their spelling level, avatar and world')}${yes('Practice progress: words, scores, coins, days practised')}</ul>
       <div style="font-weight:800;font-size:13px;margin-bottom:6px">What never leaves this device</div>
       <ul style="margin:0 0 0 16px;padding:0;font-size:13px;color:var(--muted);line-height:1.5">
         ${yes('<b style="color:var(--text)">The name you typed for them</b> — real name or nickname, neither is uploaded')}${yes('<b style="color:var(--text)">Their age</b>')}${yes('Anything else that could identify them — the database has no column for it')}</ul>
@@ -11980,7 +12017,7 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
   try{ (state.children||[]).forEach(ch=>{
     if(ch.devCoins){ ch.coins=ch.devCoinsBank||0; ch.devCoins=0; delete ch.devCoinsBank; }
     else if((ch.coins||0)>=1000000){
-      let base=400; try{ const t=window.SB_TIERS&&SB_TIERS[ch.tier||'free']; if(t&&t.ent&&t.ent.startCoins) base=t.ent.startCoins; }catch(e){}
+      let base=0; try{ const t=window.SB_TIERS&&SB_TIERS[ch.tier||'free']; if(t&&t.ent&&t.ent.startCoins) base=t.ent.startCoins; }catch(e){}   // plans grant no coins now (pricing.js), so the floor is 0
       ch.coins=base; ch.coinsReset=1; }
   }); }catch(e){}
   /* Bee-style accessories were removed (they were bee-shaped stickers pinned to fixed
@@ -12018,6 +12055,11 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
       ch.coins=(ch.coins||0)+COST.theme;
       ch.auroraRefund=(ch.auroraRefund||0)+COST.theme; });
   }catch(e){}
+  /* FIX-BEE: Bee coins become Bizzing coins, 1:1, once per child (walletSync). It runs AFTER
+     the refunds above on purpose: money handed back for a withdrawn world or accessory is
+     the child's, and moves into the family wallet with the rest. From here on c.coins is a
+     mirror of the wallet. Guard: tests/wallet-coins.cjs (boots twice, pays once). */
+  try{ (state.children||[]).forEach(ch=>walletSync(ch)); }catch(e){}
   try{ loadVoiceCfg(); }catch(e){}
   try{ loadEvoFB(); }catch(e){}
   try{ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }catch(e){}
