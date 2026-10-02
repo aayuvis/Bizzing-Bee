@@ -1,0 +1,84 @@
+# Bizzing Bee — the test gate (FIX-BEE N3).
+#
+# Runs on every push to every branch except the published ones. `npm run check` is the
+# same fast subset the deploy scripts wait on (spellbound-app/tests/lib/run.cjs, CHECK);
+# the full suite runs after it, one browser at a time, exactly as `npm test` does locally.
+#
+# The checkout is SPARSE and PARTIAL on purpose: spellbound-app/voice/w holds 128k word
+# clips (1.4GB) that the app streams from raw.githubusercontent and no test reads — they
+# 404 locally and the app falls back to device speech, which is the behaviour the tests
+# expect. Fetching them would turn a two-minute job into a twenty-minute one.
+name: bee-tests
+
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+      - 'gh-pages-*'
+  workflow_dispatch:
+
+concurrency:
+  group: bee-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: spellbound-app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/spellbound-app/voice/w/
+            !/spellbound-app/books/art/
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: spellbound-app/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: npm run check (the deploy gate)
+        run: npm run check
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: check-logs
+          path: spellbound-app/tests/build/logs/
+
+  full:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: spellbound-app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/spellbound-app/voice/w/
+            !/spellbound-app/books/art/
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: spellbound-app/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: npm test (every test, sequentially)
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-logs
+          path: spellbound-app/tests/build/logs/

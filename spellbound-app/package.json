@@ -1,0 +1,19 @@
+{
+  "name": "bizzing-bee",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Bizzing Bee — the app is vanilla JS with no build step; this file exists only to run its tests. Open index.html to run the app.",
+  "scripts": {
+    "test": "node tests/lib/run.cjs",
+    "check": "node tests/lib/run.cjs --check",
+    "budget": "node tests/first-load.cjs"
+  },
+  "devDependencies": {
+    "axe-core": "4.11.0",
+    "esbuild": "0.25.12",
+    "playwright": "1.56.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

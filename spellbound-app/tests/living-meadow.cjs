@@ -10,7 +10,7 @@ const fs = require('fs');
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const pg = await b.newPage({ viewport: { width: 1100, height: 800 } });
   const errs = []; pg.on('pageerror', e => errs.push(String(e.message)));
   await pg.goto('file://' + SRC + '/index.html');

@@ -21,7 +21,7 @@ const SRC = require('path').resolve(__dirname, '..');
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const out = {};
   for (const [w, h, tag] of [[1100, 900, 'desktop'], [390, 844, 'phone']]) {
     const pg = await b.newPage({ viewport: { width: w, height: h } });

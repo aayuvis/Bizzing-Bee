@@ -9,7 +9,7 @@ const F = [];   // findings
 const log = (persona, type, sev, step, msg) => { F.push({ persona, type, sev, step, msg }); console.log(`[${persona}] ${type}${sev ? '/' + sev : ''} · ${step} · ${msg}`); };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
 
   async function newSession(viewport, persona) {
     const pg = await b.newPage({ viewport });

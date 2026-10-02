@@ -20,7 +20,7 @@ const seed = (coins, themes) => ({
 });
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const url = 'file://' + require('path').resolve(__dirname, '..') + '/index.html';
   const errs = [];
   /* The seed goes in through an init script, not a setItem on a live page: save() fires

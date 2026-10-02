@@ -4,7 +4,7 @@
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/onboarding-age.cjs */
 const { chromium } = require('playwright');
 (async()=>{
-  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+  const b=await chromium.launch({executablePath:process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p))});
   const pg=await b.newPage({viewport:{width:1180,height:1200}});
   const errs=[]; pg.on('pageerror',e=>errs.push('pageerror: '+e.message));
   await pg.goto('file://'+require('path').resolve(__dirname,'..')+'/index.html'); await pg.waitForTimeout(3000);

@@ -7,7 +7,7 @@
 const { chromium } = require('playwright');
 const root = require('path').resolve(__dirname, '..');
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const pg = await b.newPage({ viewport: { width: 1180, height: 900 } });
   const errs = [];
   pg.on('pageerror', e => errs.push('pageerror: ' + e.message));

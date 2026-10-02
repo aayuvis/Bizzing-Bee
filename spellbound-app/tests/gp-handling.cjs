@@ -37,7 +37,7 @@ const key = (pg, type, k) => pg.evaluate(([type, k]) => dispatchEvent(new Keyboa
 (async () => {
   /* file:// art is cross-origin to a file:// page unless told otherwise, and a tainted canvas
      refuses getImageData — which the seam check needs */
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--allow-file-access-from-files'] });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)), args: ['--allow-file-access-from-files'] });
   const pg = await b.newPage({ viewport: { width: 430, height: 900 }, deviceScaleFactor: 1 });
   const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.addInitScript(() => { window.SB_DEBUG = true; });

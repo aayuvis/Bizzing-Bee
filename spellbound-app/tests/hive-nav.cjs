@@ -10,7 +10,7 @@ const child = (over) => Object.assign({ name:'T', avatar:'bee', coins:5000, pow:
   beeAcc:{}, unlockedConcepts:{}, unlockedLists:{}, questPath:'journey' }, over||{});
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const errs = [];
   for (const vp of [{width:1180,height:900,n:'desktop'},{width:390,height:844,n:'phone'}]) {
     const pg = await b.newPage({ viewport: { width: vp.width, height: vp.height } });

@@ -43,7 +43,7 @@ let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const pg = await b.newPage({ viewport: { width: 900, height: 700 } });
   const errs = []; pg.on('pageerror', e => errs.push(String(e.message).slice(0, 120)));
   await pg.addInitScript(() => { window.SB_DEBUG = true; });

@@ -16,7 +16,7 @@ let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   await ctx.addInitScript(() => { window.SB_DEBUG = true; try { if (!localStorage.getItem('seeded')) {
     localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', activeIdx: 0,

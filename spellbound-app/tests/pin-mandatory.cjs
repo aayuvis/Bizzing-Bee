@@ -14,7 +14,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'bizzy', theme: 'spellbound', coins: 50, xp: 40, level: 3 }] };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const ctx = await b.newContext({ viewport: { width: 900, height: 1000 } });
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, seed);
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
