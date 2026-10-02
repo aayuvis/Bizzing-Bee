@@ -515,7 +515,8 @@
       avatar: (c && c.avatar) || 'bizzy', name: (c && c.name) || 'You',
     };
     announce(fill(pick(SAY.open, state.mb.seed), {}));
-    after(1400, () => { announce(fill(pick(SAY.draw, state.mb.seed + 1), { n: me.n })); beginRound(); });
+    after(1400, () => { if (!state.mb || state.mb.view !== 'stage') return;   /* quit during the draw: nothing to call */
+      announce(fill(pick(SAY.draw, state.mb.seed + 1), { n: me.n })); beginRound(); });
     render();
   };
 
@@ -1625,6 +1626,9 @@
     view: () => { const g = mb(); if (!g) return viewLobby();
       return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : viewLobby(); },
     stats: () => prog(),
+    /* the meaning-round question for a word, exactly as the hall builds it — the generated
+       question test (tests/question-leaks.cjs) runs it over real words */
+    vocQ: w => vocQuestion(w),
   };
 
   /* keyboard: Enter submits from anywhere on the speller's turn, and moves

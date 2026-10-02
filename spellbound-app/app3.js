@@ -2269,9 +2269,9 @@ const app = {
   bkPick:(file)=>{ try{ const rd=new FileReader(); rd.onload=()=>app.bkLoad(String(rd.result||'')); rd.onerror=()=>{ state.bkMsg={t:'Could not read that file.',bad:1}; render(); }; rd.readAsText(file); }catch(e){} },
   bkLoad:(text)=>{ const r=backupParse(text); if(!r.ok){ state.bkPending=null; state.bkMsg={t:r.why,bad:1}; render(); return; }
     state.bkAsk=null; state.bkMsg=null; state.bkPending=r; render(); },
-  bkRestoreGo:()=>{ const p=state.bkPending; if(!p) return; pinGate(()=>{ restoreHousehold(p.blob); state.bkPending=null; flash('Restored — opening the household from the file'); bkHaltAndReload(); },'Restore a backup — grown-ups only'); },
+  bkRestoreGo:()=>{ const p=state.bkPending; if(!p) return; pinGate(()=>{ bkHalt(); restoreHousehold(p.blob); state.bkPending=null; flash('Restored — opening the household from the file'); bkHaltAndReload(); },'Restore a backup — grown-ups only'); },
   bkAskErase:()=>set({bkAsk:(state.bkAsk==='erase'?null:'erase'), bkPending:null, bkMsg:null}),
-  bkEraseGo:()=>pinGate(()=>{ eraseHousehold(); state.bkAsk=null; flash('Erased — Bizzing Bee is starting fresh'); bkHaltAndReload(); },'Erase everything — grown-ups only'),
+  bkEraseGo:()=>pinGate(()=>{ bkHalt(); eraseHousehold(); state.bkAsk=null; flash('Erased — Bizzing Bee is starting fresh'); bkHaltAndReload(); },'Erase everything — grown-ups only'),
   bkCancel:()=>set({bkAsk:null, bkPending:null}),
   delSpeller:(i)=>{ const ch=state.children||[]; const k=ch[+i]; if(!k) return;
     const nm=k.name||'That speller';
@@ -4223,6 +4223,7 @@ function landFoot() {
       <a href="privacy.html" style="font-size:13px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">Privacy &amp; the children&rsquo;s online notice</a>
       <button data-act="landPlans" style="font-size:13px;font-weight:700;color:var(--muted)">Plans</button>
       <button data-act="goSignin" style="font-size:13px;font-weight:700;color:var(--muted)">Sign in</button>
+      ${bkLandingLink()}
     </div>
     <div style="max-width:1080px;margin:14px auto 0;padding:0 clamp(18px,4vw,32px);font-size:12px;color:var(--muted);line-height:1.6;opacity:.85">
       Built by a family who has sat through the regional rounds. Figures on this page are counted from the shipping build.
@@ -4590,6 +4591,7 @@ function focusAutoSync(){ try{ const F=window.SB_W4_FOCUS; if(!F) return;
    describing it — you watch the new row slide into the position it now occupies. */
 
 function advCheckUnlock(){ try{ const c=active(); if(!c) return;
+    if(state.devUnlock) return;   // tester mode opens gates; it never writes to the child (FIX-BEE M3) — no announcement, no activity row, no "day played"
     if(!advModeOn(c)) return; if(c.advAnnounced) return;
     c.advAnnounced=1; save();
     /* NO TAKEOVER ON UNLOCK. This used to open a sixteen-step guided tour over the whole
@@ -10951,7 +10953,7 @@ function magicView(){ const g=state.game; const S=state;
         ${(g.picked!=null&&!g.ok)?`<p style="text-align:center;margin:12px 0 0;font-weight:700;font-size:13.5px">Not this time — the green one is right.</p><button data-act="magicNext" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>`:''}`;
     }
     return `<div style="max-width:560px;margin:0 auto">${head}
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(cell.label)}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(maskTxt(cell.label,(q&&q.w&&q.w.w)||''))}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
       <div style="display:flex;gap:5px;margin-bottom:14px">${dots}</div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,4vw,24px);box-shadow:var(--glow)">${body}</div>
     </div>`; }
@@ -12039,17 +12041,24 @@ function bkFamilyAdd(fam){ fam=fam||{};
   try{ const src=fam['bizzing.activity']; if(src&&Array.isArray(src.s)){ const a=JSON.parse(localStorage.getItem('bizzing.activity')||'null')||{v:1,s:[]}; a.s=Array.isArray(a.s)?a.s:[];
       const sig=x=>[x.a,x.d,x.t,x.who||'',x.ev||'',x.label||''].join('|'); const have=new Set(a.s.map(sig));
       src.s.forEach(x=>{ if(x&&!have.has(sig(x))){ a.s.push(x); have.add(sig(x)); } }); a.s.sort((p,q)=>(p.d<q.d?-1:p.d>q.d?1:(p.t||0)-(q.t||0))); localStorage.setItem('bizzing.activity',JSON.stringify(a)); } }catch(e){} }
-/* the page is about to reload into what is on disk: nothing may write the old household back */
-function bkHaltAndReload(){ try{ window.save=function(){}; }catch(e){} try{ if(window.SB_SYNC) SB_SYNC.queue=function(){}; }catch(e){}
-  try{ setTimeout(()=>{ try{ location.reload(); }catch(e){} }, 60); }catch(e){} }
+/* the page is about to reload into what is on disk: nothing may write the old household back.
+   Halt FIRST — any render() on the way out (a flash, a view) can call save(). */
+function bkHalt(){ try{ window.save=function(){}; }catch(e){} try{ if(window.SB_SYNC) SB_SYNC.queue=function(){}; }catch(e){} }
+function bkHaltAndReload(){ bkHalt(); try{ setTimeout(()=>{ try{ location.reload(); }catch(e){} }, 60); }catch(e){} }
 function eraseHousehold(){ const names=bkNames(state.children); bkKeys(true).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); bkFamilyDrop(names); }
 function restoreHousehold(blob){ bkKeys(false).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
   Object.keys(blob.keys).forEach(k=>{ try{ localStorage.setItem(k, blob.keys[k]); }catch(e){} }); bkFamilyAdd(blob.family); }
-function backupCard(){ const S=state; const p=S.bkPending; const ask=S.bkAsk;
-  const btn=(act,label,bg,col,bd)=>`<button data-act="${act}" style="padding:10px 15px;border-radius:10px;background:${bg};color:${col};border:1px solid ${bd||'transparent'};font-weight:800;font-size:13px">${label}</button>`;
-  const restoreConfirm=p?`<div class="sb-bk-confirm" style="margin-top:12px;padding:12px;border-radius:11px;background:var(--surface2);border:1px solid var(--line)">
+const bkBtn=(act,label,bg,col,bd)=>`<button data-act="${act}" style="padding:10px 15px;border-radius:10px;background:${bg};color:${col};border:1px solid ${bd||'transparent'};font-weight:800;font-size:13px">${label}</button>`;
+/* a new device (or one just erased) has no Parent Zone to restore from — the welcome page's
+   footer carries the same file picker and the same confirm */
+function bkLandingLink(){ const S=state; const p=S.bkPending;
+  return `<label style="position:relative;font-size:13px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer">Restore a backup<input type="file" accept=".json,application/json" data-file="bkPick" aria-label="Restore a household from a backup file" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;left:0"></label>
+    ${(p||S.bkMsg)?`<div style="flex-basis:100%">${S.bkMsg?`<div class="sb-bk-msg" role="status" style="font-size:12.5px;font-weight:700;color:${S.bkMsg.bad?'var(--bad)':'var(--good)'}">${esc(S.bkMsg.t)}</div>`:''}${bkRestoreConfirm()}</div>`:''}`; }
+function bkRestoreConfirm(){ const p=state.bkPending; const btn=bkBtn; return p?`<div class="sb-bk-confirm" style="margin-top:12px;padding:12px;border-radius:11px;background:var(--surface2);border:1px solid var(--line)">
       <div style="font-size:13px;line-height:1.5;font-weight:650;margin-bottom:9px">Restore <b>${esc(p.names.join(', ')||(p.kids+' speller'+(p.kids===1?'':'s')))}</b> from the backup made ${p.at?esc(new Date(p.at).toLocaleString()):'earlier'}? Everything Bizzing Bee holds on this device now is replaced by the file.</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">${btn('bkRestoreGo','Restore it','var(--accent)','#fff')}${btn('bkCancel','Cancel','var(--surface)','var(--text)','var(--line)')}</div></div>`:'';
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${btn('bkRestoreGo','Restore it','var(--accent)','#fff')}${btn('bkCancel','Cancel','var(--surface)','var(--text)','var(--line)')}</div></div>`:''; }
+function backupCard(){ const S=state; const ask=S.bkAsk; const btn=bkBtn;
+  const restoreConfirm=bkRestoreConfirm();
   const eraseConfirm=ask==='erase'?`<div class="sb-bk-confirm" style="margin-top:12px;padding:12px;border-radius:11px;background:color-mix(in srgb,var(--bad,#D6453A) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--bad,#D6453A) 34%,transparent)">
       <div style="font-size:13px;line-height:1.5;font-weight:650;margin-bottom:9px">Erase everything Bizzing Bee keeps on this device — every speller, their words, progress and settings — and start again? This cannot be undone unless you have a backup file. Bizzing coins are shared with your family's other Bizzing apps and stay in the family wallet.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">${btn('bkEraseGo','Erase everything','var(--bad,#D6453A)','#fff')}${btn('bkCancel','Cancel','var(--surface)','var(--text)','var(--line)')}</div></div>`:'';

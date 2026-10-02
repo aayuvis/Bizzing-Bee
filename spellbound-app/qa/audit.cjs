@@ -204,7 +204,7 @@ const seed = (page, P) => page.evaluate(P => {
   const voc = await page.evaluate(() => {
     const c = active();
     const snap = () => JSON.stringify({ lists: c.lists, xp: c.xp, level: c.level,
-      luMastered: c.luMastered, missed: c.missed, band: c.band });
+      luMastered: state.luMastered, mast: c.mast, missed: c.missed, band: c.band });   // c.mast: the evidence record (FIX-BEE D5)
     const before = snap(); let ran = 0;
     try { for (let i = 0; i < 12; i++) { if (typeof vocBuildCheck !== 'function') break;
       if (!vocBuildCheck()) break; ran++; } } catch (e) { return { err: String(e) }; }
