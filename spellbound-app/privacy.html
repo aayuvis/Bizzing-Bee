@@ -159,7 +159,10 @@
 
   <h2>6. Web hosting and IP addresses</h2>
   <p>Like every website, the pages, artwork and audio of Bizzing Bee are delivered by a web host —
-  GitHub Pages, with word-audio files served from GitHub's content servers. To deliver a file, a web
+  GitHub Pages, with word-audio files served from GitHub's content servers
+  (<code>raw.githubusercontent.com</code>) and the cover art in the in-app book reader from our books
+  site (<code>aayuvis.github.io</code>, also GitHub Pages). Those are the only hosts the app contacts;
+  the database host is added only when you switch backup on. To deliver a file, a web
   host necessarily receives the requesting device's <b>IP address</b>, and may keep it briefly in
   standard server logs for security and traffic purposes; the same is true of the database host when
   backup is on. COPPA treats an IP address as a persistent identifier; it is used here solely to
@@ -167,6 +170,13 @@
   asked for, and maintaining security), which COPPA permits without parental consent. It is not used
   to profile, track, advertise to or contact anyone. GitHub's handling of server logs is described in
   the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub Privacy Statement</a>.</p>
+
+  <p><b>The offline copy.</b> So that the app opens with no connection, it keeps a copy of its own
+  files — pages, scripts, artwork, and the word recordings your child has already heard — in your
+  browser's storage on this device (a "service worker" cache), and can be installed to the home screen.
+  That copy is the app, not information about your child: no name, age or progress goes into it, it is
+  never sent anywhere, and clearing this site's data in your browser removes it. Nothing is fetched
+  ahead of time beyond what the app itself has already loaded.</p>
 
   <h2>7. Your rights as a parent</h2>
   <p>You can exercise every COPPA right from inside the app, immediately, without asking us and

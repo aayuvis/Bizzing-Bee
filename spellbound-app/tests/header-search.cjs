@@ -7,7 +7,7 @@
 const { chromium } = require('playwright');
 const root = require('path').resolve(__dirname, '..');
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const errs = [];
   for (const vp of [{width:1180,height:900,n:'desktop'},{width:390,height:844,n:'phone'}]) {
     const pg = await b.newPage({ viewport: { width: vp.width, height: vp.height } });
@@ -27,6 +27,10 @@ const root = require('path').resolve(__dirname, '..');
 
     // typing shows suggestions, and the caret survives the re-render
     await box.click();
+    /* Since FIX-BEE N2 the second word shard is lazy: focusing the search asks for it (a door
+       in boot-lazy.js), and "irid…" lives in it. Wait for it the way a child would wait a
+       moment for the list to fill, then type. */
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('words', r)));
     await pg.keyboard.type('irid', { delay: 45 });
     await pg.waitForTimeout(500);
     const r = await pg.evaluate(() => ({

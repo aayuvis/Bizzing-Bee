@@ -75,6 +75,20 @@
        book volumes use. The books/ path is real on gh-pages (the deploy copies
        them beside the redirect stubs) and in the repo alike. */
     reader: 'reader.js',
+    /* The arcade's engines and the art they draw with (FIX-BEE N2). ~110KB gzipped that
+       only the Play tab's games use — none of it is on Home. Loaded in this order (DEPS),
+       at the door of a game (app.arcadePlay / arcadeMenu, wrapped below) or on the idle
+       queue once the child has done something. */
+    /* The vector avatar art (FIX-BEE N2): 300KB, ~52KB gzipped, on the boot path for a
+       fallback that never fires — all 217 avatars have painted art (SB_AVATAR_PNG), and
+       SB_AVATAR draws the vector only for an id that does not. It arrives on the idle
+       queue so the fallback still exists for any id added without a painting. */
+    avatarArt: 'avatars-art.js',
+    sagaArt: 'saga-art/saga-art.js',
+    sagaMap: 'saga-art/saga-map.js',
+    worldsArt: 'saga-art/worlds-art.js',
+    sagaDom: 'saga-art-dom.js',
+    saga2: 'saga2.js',
     eponbk: 'books/eponym-chapters.js',
     ultrabk: 'books/ultra-chapters.js',
     poems: 'books/poem-chapters.js'
@@ -86,7 +100,10 @@
     card: ['words2', 'lore', 'alts', 'syn', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
     advanced: ['advConcepts', 'advTips', 'southasia'],
-    atlas: ['trail', 'concepts', 'cscript', 'southasia'],
+    /* advConcepts too: the map draws the Advanced Rounds (locked or not), and a stop
+       whose chapter is an `ai` ref resolves through SB_ADV_CONCEPTS — without it chOf()
+       is undefined and setsOf() throws. The idle queue used to hide that. */
+    atlas: ['trail', 'concepts', 'cscript', 'southasia', 'advConcepts'],
     quotes: ['quotes'],
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
@@ -95,13 +112,19 @@
     sounds: ['sounds', 'pron'],
     coach: ['coachRules', 'concepts', 'words2'],
     cloud: ['sync'],
+    arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
     reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes']
   };
 
-  var IDLE = ['words2', 'lore', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
+  /* A file that must not run before another. load() fetches the prerequisite first and
+     injects the dependant only once it has run — async scripts otherwise execute in
+     whatever order they arrive. */
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'] };
+
+  var IDLE = ['words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'sync'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'sync'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]
@@ -158,6 +181,15 @@
     var src = REG[name];
     if (!src) { state[name] = 'done'; flush(name); return; }
     state[name] = 'loading';
+    var deps = (DEPS[name] || []).filter(function (d) { return state[d] !== 'done'; });
+    if (deps.length) {
+      var left = deps.length;
+      deps.forEach(function (d) { load(d, function () { if (--left === 0) inject(name, src); }); });
+      return;
+    }
+    inject(name, src);
+  }
+  function inject(name, src) {
     var s = document.createElement('script');
     s.src = src + V();
     s.async = true;
@@ -214,12 +246,78 @@
     var name = IDLE[qi++];
     load(name, pump);
   }
+  var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 220); };
+  var started = false;
   function start() {
-    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 220); };
+    if (started) return; started = true;
     idle(pump, { timeout: 1500 });
   }
-  if (document.readyState === 'complete') start();
-  else window.addEventListener('load', start);
 
-  window.SB_LAZY = { need: need, ready: ready, reg: REG, group: GROUP };
+  /* WHEN THE IDLE QUEUE RUNS (FIX-BEE N2, family standard §11: "data lazy per route").
+     It used to start the moment the page had loaded and pull every file in IDLE — about
+     34MB, ~10MB on the wire — whether or not the child ever opened a screen that reads
+     them. That was most of the audit's "29MB first load on a phone". Now:
+       · FIRST is fetched after load: the little a first screen shows that is not in the
+         boot scripts (the Atlas frontier behind Home's "Next on your journey").
+       · the rest waits until the child DOES something — a tap, a key, a scroll. A screen
+         that needs a file before then asks for it at its door with need(), as they all
+         already do (setNav, startTrain, openCoach, the reader, the Atlas…).
+       · on a data-saver connection (Save-Data / navigator.connection.saveData) the queue
+         never runs on its own at all: files arrive only when a screen asks for them.
+     need() is unaffected — it loads what it is asked for, immediately, either way. */
+  var FIRST = ['trail'];
+  var saveData = false;
+  try { saveData = !!(navigator.connection && navigator.connection.saveData); } catch (e) {}
+  var ARM = ['pointerdown', 'keydown', 'touchstart', 'wheel'];
+  function onFirstAct() {
+    ARM.forEach(function (ev) { window.removeEventListener(ev, onFirstAct, true); });
+    start();
+  }
+  function afterLoad() {
+    idle(function () { FIRST.forEach(function (n) { load(n); }); }, { timeout: 1500 });
+    if (saveData) return;
+    ARM.forEach(function (ev) { window.addEventListener(ev, onFirstAct, { capture: true, passive: true }); });
+  }
+  if (document.readyState === 'complete') afterLoad();
+  else window.addEventListener('load', afterLoad);
+
+  /* DOORS. A few app actions open a feature whose code is now lazy; they are wrapped
+     here so the feature loads before the action runs, and nothing in app3.js had to learn
+     about it. Deferred scripts have all run by DOMContentLoaded, so `app` (a top-level
+     const in app3.js — a bare name, not window.app) exists by then. A tap that arrives
+     before the code does simply runs when it lands. */
+  var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade' };
+  /* KICKS start a screen's data the moment its door is opened but do NOT hold the screen:
+     it draws at once from what is in hand and redraws as each file lands (every load
+     re-renders). For screens that are useful before the whole library is in. */
+  var KICKS = { openBuilder: ['themes', 'lists'], openFinder: 'words', openTraps: 'card' };
+  document.addEventListener('DOMContentLoaded', function () {
+    try {
+      if (typeof app === 'undefined') return;
+      Object.keys(DOORS).forEach(function (k) {
+        var f = app[k]; if (typeof f !== 'function' || f._door) return;
+        var g = function () {
+          var a = arguments, self = this;
+          if (ready(DOORS[k])) return f.apply(self, a);
+          need(DOORS[k], function () { f.apply(self, a); });
+        };
+        g._door = true; app[k] = g;
+      });
+      Object.keys(KICKS).forEach(function (k) {
+        var f = app[k]; if (typeof f !== 'function' || f._door) return;
+        var g = function () { need(KICKS[k]); return f.apply(this, arguments); };
+        g._door = true; app[k] = g;
+      });
+    } catch (e) {}
+  });
+
+  /* The header search suggests from the whole served corpus, most of which is the second
+     word shard: ask for it the moment the box is focused, not when the first suggestion
+     would already have been drawn from the boot tier alone. */
+  document.addEventListener('focusin', function (e) {
+    try { if (e.target && e.target.closest && e.target.closest('.sb-hsearch')) need('words'); } catch (err) {}
+  }, true);
+
+  window.SB_LAZY = { need: need, ready: ready, reg: REG, group: GROUP, start: start,
+    state: function (n) { return state[n] || null; } };
 })();

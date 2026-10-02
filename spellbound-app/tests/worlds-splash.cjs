@@ -15,7 +15,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(/M80 16 q-4 40 -7 80/.test(w4), 'and the stream falls from the lip, into the catch beaker');
 
   const idx0 = fs.readFileSync(SRC + '/index.html', 'utf8');
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
 
   // ---- scene richness: count real elements in every world layer ----
   const pg = await b.newPage({ viewport: { width: 1100, height: 900 } });

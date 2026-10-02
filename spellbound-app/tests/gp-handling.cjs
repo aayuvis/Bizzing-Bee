@@ -37,12 +37,13 @@ const key = (pg, type, k) => pg.evaluate(([type, k]) => dispatchEvent(new Keyboa
 (async () => {
   /* file:// art is cross-origin to a file:// page unless told otherwise, and a tainted canvas
      refuses getImageData — which the seam check needs */
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--allow-file-access-from-files'] });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)), args: ['--allow-file-access-from-files'] });
   const pg = await b.newPage({ viewport: { width: 430, height: 900 }, deviceScaleFactor: 1 });
   const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.addInitScript(() => { window.SB_DEBUG = true; });
   await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html');
   await pg.waitForTimeout(3500);
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
   await mount(pg, 'meadow', 'medium');
 
   /* 1 — A STRAIGHT DOES NOT MOVE YOU — NOT EVEN THE ONE AFTER A BEND. Flat out through

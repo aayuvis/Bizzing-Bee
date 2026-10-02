@@ -777,6 +777,13 @@ function loadConcepts(){
   if(state.conceptData || state.conceptLoading) return;
   if(SB_CONCEPTS && SB_CONCEPTS.chapters && SB_CONCEPTS.chapters.length){ state.conceptData = mergedConcepts(); return; }
   state.conceptLoading = true;
+  /* FIX-BEE N2: the course is a boot-lazy file now, not something the idle queue has always
+     fetched by the time anyone asks — so ask for it. The sb-lazy listener below calls back
+     in here when it lands; the callback only covers a file that failed to load. (The old
+     fetch of concepts.json is a pre-boot-lazy fallback: there is no such file, and under
+     file:// it is a CORS error in the console.) */
+  if(window.SB_LAZY){ SB_LAZY.need('concepts', ()=>{ if(state.conceptLoading && !state.conceptData){ state.conceptLoading=false;
+      if(SB_CONCEPTS && SB_CONCEPTS.chapters && SB_CONCEPTS.chapters.length) state.conceptData=mergedConcepts(); else state.conceptErr=true; render(); } }); return; }
   fetch('concepts.json').then(r=>r.json()).then(j=>{ state.conceptData=j.chapters; state.conceptLoading=false; render(); })
     .catch(()=>{ state.conceptLoading=false; state.conceptErr=true; render(); });
 }
@@ -3798,8 +3805,13 @@ const SB_SHELF = [
 let _spinesWarm=false;
 function warmSpines(){ if(_spinesWarm) return; _spinesWarm=true;
   try{ SB_SHELF.forEach(b=>{ const im=new Image(); im.decoding='async'; im.src='app-art/spines/'+b.s+'.png'; }); }catch(e){} }
-try{ if('requestIdleCallback' in window) requestIdleCallback(warmSpines,{timeout:9000});
-  else setTimeout(warmSpines,3500); }catch(e){}
+/* FIX-BEE N2: no longer at boot. 23 PNGs (~360KB on the wire) were a quarter of a phone's
+   first-screen budget, spent on a shelf that lives on another tab. They warm on the child's
+   FIRST tap or key instead — the moment boot-lazy starts its own idle queue — and the
+   service worker keeps them after that, so a second visit pays nothing. */
+try{ const _warmGo=()=>{ ['pointerdown','keydown'].forEach(ev=>window.removeEventListener(ev,_warmGo,true));
+    if('requestIdleCallback' in window) requestIdleCallback(warmSpines,{timeout:4000}); else setTimeout(warmSpines,600); };
+  ['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev,_warmGo,{capture:true,passive:true})); }catch(e){}
 
 const SB_FACTS = {
   clips: 128491,        // voice/w/*.mp3, every word in both libraries
@@ -5642,7 +5654,7 @@ function libShelf(){
   const attrs=(b)=>`data-act="openBook" data-arg="${escA(b.s)}" title="${escA(b.t)}${ok?'':' — Regional Speller'}"`;
 
   const upright=(b,i)=>`<button class="bk-sp" ${attrs(b)}
-      style="--bh:${bh(b.t,i,b.s)}%;${LEAN[i]?`--lean:${LEAN[i]}deg;margin:0 9px`:''}">${img(b)}${title(b,i)}</button>`;
+      style="--a:${b.a};--bh:${bh(b.t,i,b.s)}%;${LEAN[i]?`--lean:${LEAN[i]}deg;margin:0 9px`:''}">${img(b)}${title(b,i)}</button>`;
   /* A book lying down is the same drawing turned a quarter turn. Rotating the IMAGE
      rather than shipping a second set of art keeps one file per volume, and the title
      simply stops being vertical. */
@@ -10168,7 +10180,7 @@ function viewSettings(){
   const num=(lab,col,act,val,unit,hint)=>`<div style="flex:1;min-width:150px">
       <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px"><span style="width:9px;height:9px;border-radius:3px;background:${col};flex-shrink:0"></span>${lab}</label>
       <div style="display:flex;align-items:center;gap:7px">
-        <input type="number" min="1" max="600" data-chg="${act}" value="${val}" style="width:82px;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px;outline:none">
+        <input type="number" min="1" max="600" data-chg="${act}" value="${val}" aria-label="${escA(lab+' ('+unit+')')}" style="width:82px;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px;outline:none">
         <span style="font-size:12.5px;color:var(--muted);font-weight:700">${unit}</span></div>
       <div style="font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.35">${hint}</div></div>`;
   const spellerCard=`<div style="padding:15px 16px">
@@ -10189,7 +10201,7 @@ function viewSettings(){
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Milestone <span style="font-weight:600">(optional — e.g. NSF Finals)</span></label>
           <input data-inp="profMsLabel" data-fkey="profMsLabel" value="${escA((c.milestone&&c.milestone.label)||'')}" maxlength="30" placeholder="e.g. NSF Finals" style="width:200px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
         <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Date</label>
-          <input type="date" data-chg="profMsDate" value="${escA((c.milestone&&c.milestone.date)||'')}" style="width:170px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
+          <input type="date" data-chg="profMsDate" aria-label="Milestone date" value="${escA((c.milestone&&c.milestone.date)||'')}" style="width:170px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
         ${c.milestone&&c.milestone.date?`<div class="sb-cn" style="padding-bottom:12px">countdown shows in Practice &amp; Progress</div>`:''}
       </div></div>`;
 
@@ -10223,7 +10235,7 @@ function viewSettings(){
           <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Reading voice</div><div style="font-size:12.5px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
           <button data-act="voiceTest" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
         </div>
-        <div style="position:relative"><select data-chg="voiceSetDevice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
+        <div style="position:relative"><select data-chg="voiceSetDevice" aria-label="Device voice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
         <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:11px 0 0">Bizzing Bee picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
         ${voiceUpgradeTip()}
       </div>

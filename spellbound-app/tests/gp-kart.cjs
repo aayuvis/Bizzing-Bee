@@ -29,11 +29,13 @@ const st = pg => pg.evaluate(() => window._race.state());
 const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEvent(t, { key: k })), [t, k]);
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--allow-file-access-from-files'] });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)), args: ['--allow-file-access-from-files'] });
   const errs = [];
   const open = async (w, h) => { const pg = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     pg.on('pageerror', e => errs.push(e.message)); await pg.addInitScript(() => { window.SB_DEBUG = true; });
-    await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(3500); return pg; };
+    await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(3500);
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
+    return pg; };
 
   /* ---------- desktop ---------- */
   const pg = await open(1280, 860);

@@ -21,7 +21,7 @@ const CREDS = [['admin', 'admin'], ['admin', 'password'], ['admin', '1234'], ['a
     ok(!/digest\(\s*['"][^'"]+['"]\s*\)/.test(src), `${f} hashes no literal password (a hard-coded credential)`);
   }
 
-  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const url = 'file://' + ROOT + '/index.html';
   const errs = [];
   const open = async (init) => {

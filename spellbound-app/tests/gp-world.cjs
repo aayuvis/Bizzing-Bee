@@ -39,12 +39,13 @@ const frames = (pg, n, f) => pg.evaluate(([n, f]) => new Promise(res => { const 
   const tick = () => { out.push(g(window._race.state())); if (out.length < n) requestAnimationFrame(tick); else res(out); }; requestAnimationFrame(tick); }), [n, f]);
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const pg = await b.newPage({ viewport: { width: 1280, height: 860 } });
   const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.addInitScript(() => { window.SB_DEBUG = true; });
   await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html');
   await pg.waitForTimeout(3500);
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
 
   /* ---- 1. the kart holds still ---- */
   await race(pg, 'meadow');

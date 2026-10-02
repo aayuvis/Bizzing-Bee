@@ -16,7 +16,7 @@ const CHILD = { name: 'Ravi', avatar: 'bee', coins: 240, pow: {}, age: 11,
   unlockedConcepts: {}, unlockedLists: {}, questPath: 'journey' };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   for (const W of [360, 390]) {
     const pg = await b.newPage({ viewport: { width: W, height: 844 }, isMobile: true, hasTouch: true });
     const errs = []; pg.on('pageerror', e => errs.push(String(e.message)));

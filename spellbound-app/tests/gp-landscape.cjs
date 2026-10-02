@@ -16,7 +16,7 @@ let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   await ctx.addInitScript(() => { window.SB_DEBUG = true; try { if (!localStorage.getItem('seeded')) {
     localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', activeIdx: 0,
@@ -25,6 +25,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
     localStorage.setItem('seeded', '1'); localStorage.setItem('sb_splash', '0'); } } catch (e) {} });
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(4500);
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
   ok(await pg.evaluate(() => matchMedia('(pointer:coarse)').matches), 'the page sees a phone (coarse pointer)');
 
   /* 1 — NO CHAMPION CHOICE. (The saved menu choice says 'luna'; the buddy is 'panda'.) */

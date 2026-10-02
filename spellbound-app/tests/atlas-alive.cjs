@@ -6,7 +6,7 @@ const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const pg = await b.newPage({ viewport: { width: 1100, height: 900 } });
   const errs = []; pg.on('pageerror', e => errs.push(String(e.message)));
   await pg.goto('file://' + SRC + '/index.html'); await pg.waitForTimeout(2600);
@@ -40,6 +40,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     Math.random = () => 0.1;                       // door 1: the region's game
     app.trailTre('meadow:0'); await new Promise(res => setTimeout(res, 200));
     out.giftGame = state.treG && state.treG.kind === 'game' && /Play it/.test(document.body.innerHTML);
+    // the arcade engines are lazy since FIX-BEE N2: treGame's door loads them first
+    await new Promise(res => SB_LAZY.need('arcade', res));
     app.treGame(); await new Promise(res => setTimeout(res, 400));
     out.gameOpens = !!document.querySelector('.arc-menu');
     document.querySelectorAll('.arc-menu').forEach(e => e.remove()); state.treG = null;

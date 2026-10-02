@@ -2780,7 +2780,14 @@
 
   /* headless-test accessors: where this child's secrets are seeded, and the record */
   window.SB_EXPED = { spots: key => uSpots(active(), key), prog: () => uP(active()), key: () => uKey() };
-  window.TRAIL = { view: () => { if (!T()) return '<div style="padding:40px;text-align:center;color:var(--muted)">Opening the Word Atlas…</div>';
+  /* FIX-BEE N2: the map reads the concept course (chOf) and the Grand Trunk Road chapters as
+     (and the Advanced Rounds' SB_ADV_CONCEPTS) as well as SB_TRAIL, and all of them arrive lazily — boot-lazy's idle queue now waits for
+     the child's first tap instead of pulling 34MB at load. A map drawn before them threw in
+     setsOf (`chOf(u).words` of undefined). So the Atlas asks for its group at the door and
+     holds the hive loader until what it draws from is in; each landing re-renders. */
+  const atlasReady = () => !window.SB_LAZY || ['trail', 'concepts', 'southasia', 'advConcepts'].every(n => SB_LAZY.ready(n));
+  window.TRAIL = { view: () => { if (!T() || !atlasReady()) { if (window.SB_LAZY) SB_LAZY.need('atlas');
+      return (typeof hiveLoader === 'function') ? hiveLoader('Opening the Word Atlas…') : '<div style="padding:40px;text-align:center;color:var(--muted)">Opening the Word Atlas…</div>'; }
     const v = state.trailView || 'map';
     const k = v + '|' + (state.trailAct || '') + '|' + (state.trailUnit || '') + '|' + (state.trailChk || '') + '|' + (state.tq ? (state.tq.over ? 'qo' : 'q' + state.tq.i) : '');
     _fresh = k !== _vk; _vk = k;

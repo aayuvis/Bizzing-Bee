@@ -20,7 +20,7 @@ const ACTS = ['library', 'forum', 'storm', 'roots', 'strait', 'junkyard', 'sprin
     return t.includes("'lv-hero-" + a + "'") || t.includes("'lv-lm-" + a + "'");
   }), 'every act names its keyed sprite art in the LIV table');
 
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const pg = await b.newPage({ viewport: { width: 1100, height: 800 } });
   const errs = []; pg.on('pageerror', e => errs.push(String(e.message)));
   await pg.goto('file://' + SRC + '/index.html');

@@ -6,7 +6,7 @@
 const { chromium } = require('playwright');
 const root = require('path').resolve(__dirname, '..');
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   const errs = [];
   const pg = await b.newPage({ viewport: { width: 1180, height: 900 } });
   pg.on('pageerror', e => errs.push('pageerror: ' + e.message));
@@ -17,6 +17,10 @@ const root = require('path').resolve(__dirname, '..');
     unlockedConcepts:{},unlockedLists:{},questPath:'journey'}];
     state.activeIdx=0; state.screen='app'; state.devUnlock=true; });
 
+  /* Since FIX-BEE N2 the concept course is lazy and asked for at the Library's door, so it
+     would land mid-case and resolve the waiting state this test forces. Have it in hand first
+     (as the idle queue used to guarantee), then force the wait. */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('concepts', r)));
   // force each screen into its waiting state and look at what is on it
   const cases = [
     ['concepts', () => { state.conceptData=null; state.conceptLoading=true; app.setNav('concepts'); }],
