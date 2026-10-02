@@ -165,17 +165,30 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     'hints come in steps: the meaning, then letters and beats, then the first letter — and a fourth tap hides them');
   ok(e6 && e6.every(x => !x.leak), 'no hint step ever prints the word');
 
-  /* ---- 14. (G11) Bizzillionaire asks word questions, and there are enough of them at every rung ---- */
-  { const draws = (app3.match(/BIZZ_WORD_TH\[x\.th\]/g) || []).length;
-    const C = {}; const vmx = require('vm'); const cx = { window: {} }; cx.window.SB_TRIVIA = { _add: (lv, a) => a.forEach(q => { if (q.ty === 'mc' && /^(words|eponyms|langs)$/.test(q.th)) C[lv] = (C[lv] || 0) + 1; }) }; cx.SB_TRIVIA = cx.window.SB_TRIVIA; vmx.createContext(cx);
-    for (let i = 1; i <= 5; i++) vmx.runInContext(fs.readFileSync(path.join(SRC, 'trivia-q' + i + '.js'), 'utf8'), cx);
-    ok(draws === 3 && /const BIZZ_WORD_TH=\{ words:1, eponyms:1, langs:1 \}/.test(app3), 'every Bizzillionaire draw is filtered to word questions (meanings, roots, eponyms)');
-    ok([1, 2, 3, 4, 5].every(l => (C[l] || 0) >= 150), 'and every level holds 150+ of them: ' + [1, 2, 3, 4, 5].map(l => C[l]).join(' · ')); }
+  /* ---- 14. (G11) Bizzillionaire asks word questions, and there are enough of them at every rung ----
+     Behaviour, not source text: this file also runs against the MINIFIED deploy tree, where the
+     filter's parameter names are renamed. Draw every rung many times and read what came out. */
+  const g11 = await pg.evaluate(async () => { for (let lv = 1; lv <= 5; lv++) await new Promise(r => { try { SB_TRIVIA.need(lv, r); } catch (e) { r(); } setTimeout(r, 8000); });
+    const ths = {}, per = {}; let n = 0;
+    for (let rung = 0; rung < 15; rung++) for (let k = 0; k < 12; k++) { _bizzS = { rung, used: new Set(), cur: null }; const d = bizzDraw(); if (!d) continue; n++; ths[d.q.th] = 1; }
+    for (const q of SB_TRIVIA.questions || []) if (q.ty === 'mc' && /^(words|eponyms|langs|wmeaning|wroots|wbreak|wstories)$/.test(q.th)) per[q.lv] = (per[q.lv] || 0) + 1;
+    _bizzS = null; try { localStorage.removeItem('sb_bizz_seen'); } catch (e) {} return { n, ths: Object.keys(ths), per }; });
+  ok(g11.n >= 150 && g11.ths.every(t => /^(words|eponyms|langs|wmeaning|wroots|wbreak|wstories)$/.test(t)), `${g11.n} Bizzillionaire draws across all 15 rungs are all word questions (${g11.ths.join(', ')})`);
+  ok([1, 2, 3, 4, 5].every(l => (g11.per[l] || 0) >= 150), 'and every level holds 150+ of them: ' + [1, 2, 3, 4, 5].map(l => g11.per[l]).join(' · '));
 
   /* ---- 6. Spell Scene's result ---- */
   const saga = fs.readFileSync(path.join(SRC, 'saga2.js'), 'utf8');
   ok(!/Back to map/.test(saga), 'no result card offers "Back to map" — the arcade has no map');
-  ok(/function lose\(\)\{[^]*?scRound\.push\(\{w:words\[i\]/.test(saga), 'a lost Spell Scene logs the word it was lost on, so "N of N spelled" can never sit over a lost round');
+  /* Behaviour, not source text (the deploy tree is minified): lose a real round — three wrong
+     answers — and read the result card. */
+  const ss = await pg.evaluate(async () => { const W = ms => new Promise(r => setTimeout(r, ms)); const host = document.createElement('div');
+    host.style.cssText = 'position:fixed;inset:0;z-index:9999'; document.body.appendChild(host); let out = null;
+    SB_SAGA_ENGINES.spellScene(host, { diff: 'easy' }, () => {});
+    for (let t = 0; t < 3; t++) { await W(500); const n = host.querySelectorAll('#ss-slots .ss-slot').length; for (let j = 0; j < n; j++) host.querySelector('.ss-kb[data-k="z"]').click(); }
+    for (let t = 0; t < 30 && !(host.querySelector('#sg-card') || {}).innerHTML; t++) await W(100);
+    const chips = [...host.querySelectorAll('#sg-card .sg-wchip')]; out = { n: chips.length, no: chips.filter(c => c.classList.contains('no')).length, txt: (host.querySelector('#sg-card') || {}).textContent || '' };
+    host.remove(); return out; });
+  ok(ss.n >= 1 && ss.no >= 1, `a lost Spell Scene logs the word it was lost on, so "N of N spelled" can never sit over a lost round (${ss.no} of ${ss.n} chips marked missed)`);
 
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();

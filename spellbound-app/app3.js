@@ -11584,7 +11584,7 @@ function bizzSafe(rung){ let s=0; for(let i=0;i<rung;i++) if(SB_BIZZ_LADDER[i].s
    Draws RANDOMLY from the whole level pool (not a fixed index), skipping anything asked
    in this game (S.used) or any past game (_bizzSeen), so the trivia bank is spread across
    plays instead of cycling the same slice. */
-const BIZZ_WORD_TH={ words:1, eponyms:1, langs:1 };
+const BIZZ_WORD_TH={ words:1, eponyms:1, langs:1, wmeaning:1, wroots:1, wbreak:1, wstories:1 };   /* the w* themes are the generated word bank: meanings, roots, word breakdowns */
 function bizzDraw(){
   const S=_bizzS; const lv=_bizzLevelOf(S.rung); const seen=_bizzSeenLoad();
   const all=(window.SB_TRIVIA&&SB_TRIVIA.questions)||[];
