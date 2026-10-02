@@ -809,6 +809,24 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
   converging on one hard-to-guess answer). Never clue with the answer's most famous
   fact — that belongs in `f`.
 
+## The Arcade hub has no blank space (2 Oct 2026, owner: "dont like the blank space")
+- **Four large tiles, then ONE grid, and no section headings.** Mock Spelling Bee, the
+  Bizzillionaire ladder, **Bee Grand Prix and Honeycomb Run** are the large tiles (`heroTile`,
+  `grid-auto-rows:1fr` so all four are one height). The race and the maze are painted for their
+  cards — `app-art/arc-grandprix.jpg` / `arc-honeycomb.jpg` (`heroTile({img})`, under the
+  `.arc-hero::after` scrim; no lettering in either, like every painted asset) — and open the same
+  `arcadeMenu` start menu the small tiles did. They are filtered out of the small grid
+  (`HERO_GAMES`). Then the Daily Buzz banner, then `.arc-grid`: the other arcade games, Bee
+  Trivia, Magic Squares and the quick games in **fixed columns, 4 (2 below 720px)** — eight tiles
+  fill every row at every width. `auto-fill` left two empty cells under a heading; do not go back
+  to it, and if the tile count stops being a multiple of four, give the grid a ninth job or a
+  wider tile rather than a hole.
+- **A quick game's word level is ONE chip on its picture** (`.arc-lvl`, top right, steps Auto →
+  Easy → Med → Hard → Champ through `setGameDiff`). It was a two-row strip under the card that
+  made those two tiles taller than their row and left a hollow above the Play button in the
+  others. Guard: `tests/arcade-hub.cjs` (@check; the old hub fails 13, the strip alone fails 5 —
+  it measures the gap between a tile's words and its Play button, ≤ three lines of slack).
+
 ## The Arcade's competition game
 - **Spelling Quest is gone** (`quest.js` deleted, its `sq*` actions with it). Its slot is
   the **Mock Spelling Bee** (`mockbee.js`, `window.MOCKBEE`, nav `'mockbee'`): eleven

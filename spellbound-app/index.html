@@ -367,10 +367,10 @@
   }, 1200); });
 }catch(e){} })();
 </script>
-<link rel="stylesheet" href="fonts/fonts.css?v=20261002d">
-<link rel="stylesheet" href="tokens.css?v=20261002d">
-<link rel="stylesheet" href="worlds4.css?v=20261002d">
-<link rel="stylesheet" href="bizzing-avatars.css?v=20261002d">
+<link rel="stylesheet" href="fonts/fonts.css?v=20261002e">
+<link rel="stylesheet" href="tokens.css?v=20261002e">
+<link rel="stylesheet" href="worlds4.css?v=20261002e">
+<link rel="stylesheet" href="bizzing-avatars.css?v=20261002e">
 
 <style>
   *{box-sizing:border-box}
@@ -1082,6 +1082,15 @@
   .arc-hero{position:relative;overflow:hidden;border-radius:18px;text-align:left;color:#fff;min-height:158px;box-shadow:0 10px 26px rgba(43,27,94,.28);display:block;transition:transform .16s ease,box-shadow .16s ease}
   .arc-hero:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(43,27,94,.36)}
   .arc-hero-art{position:absolute;right:-14px;bottom:-22px;opacity:.96;filter:drop-shadow(0 5px 14px rgba(0,0,0,.42));pointer-events:none}
+  /* a painted hero: the picture fills the card from the right; .arc-hero::after's scrim keeps the words legible */
+  .arc-hero-img{position:absolute;inset:0;background-size:cover;background-position:right center;pointer-events:none}
+  .arc-hero:has(.arc-hero-img){min-height:200px}
+  /* the game grid: fixed columns so a multiple-of-four set always fills its rows */
+  .arc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:2px 0 16px}
+  @media (max-width:720px){ .arc-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  /* a game's word level, as one chip on the tile's picture (top right, across from its badge) */
+  .arc-lvl{position:absolute;top:10px;right:10px;z-index:2;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.94);color:#2A2244;font-weight:800;font-size:11.5px;line-height:1.3;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  .arc-lvl:hover{background:#fff}
   /* the character sits behind the copy, so a scrim keeps antennae and props off the words */
   .arc-hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(96deg,rgba(18,11,42,.84) 0%,rgba(18,11,42,.72) 46%,rgba(18,11,42,.3) 72%,transparent 90%)}
   .arc-hero-in{display:block;position:relative;z-index:2;padding:18px 20px;max-width:min(72%,100% - 108px)}
@@ -1089,7 +1098,7 @@
   .arc-hero-title{font-family:var(--display);font-weight:800;font-size:21px;line-height:1.08}
   .arc-hero-blurb{font-size:12.5px;line-height:1.45;margin-top:5px;opacity:.9}
   .arc-hero-cta{display:inline-flex;align-items:center;gap:9px;margin-top:13px}
-  .arc-hero-go{padding:9px 17px;border-radius:10px;background:#FFC23D;color:#241E33;font-weight:800;font-size:13.5px}
+  .arc-hero-go{padding:9px 17px;border-radius:10px;background:#FFC23D;color:#241E33;font-weight:800;font-size:13.5px;white-space:nowrap}
   .arc-hero-sub{font-size:11.5px;font-weight:800;opacity:.82}
   .arc-tile{position:relative;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--paper,var(--bg2));box-shadow:0 0 0 1px var(--line),var(--sh-rest);text-align:left;transition:transform .15s ease,box-shadow .15s ease}
   .arc-tile:hover{transform:translateY(-3px);box-shadow:0 0 0 1px var(--line),0 12px 24px rgba(43,27,94,.17)}
@@ -2608,8 +2617,8 @@
 .sb-onb-art{width:clamp(104px,28vw,132px);aspect-ratio:1;margin:0 auto clamp(6px,1.8vw,12px);line-height:0}
 .sb-onb-art>svg,.sb-onb-art>img{width:100%;height:100%;display:block}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20261002d">
-  <link rel="stylesheet" href="a11y.css?v=20261002d">
+  <link rel="stylesheet" href="saga2.css?v=20261002e">
+  <link rel="stylesheet" href="a11y.css?v=20261002e">
 </head>
 <body>
 <script>
@@ -3066,10 +3075,10 @@
 </div>
 <!-- store.js is the storage seam and must be the FIRST deferred script: files that read storage
      while they load (auth.js, worlds4.js, telemetry.js) find it in place. -->
-<script defer src="store.js?v=20261002d"></script>
-<script defer src="icons.js?v=20261002d"></script>
-<script defer src="icons-art.js?v=20261002d"></script>
-<script defer src="cover-art.js?v=20261002d"></script>
+<script defer src="store.js?v=20261002e"></script>
+<script defer src="icons.js?v=20261002e"></script>
+<script defer src="icons-art.js?v=20261002e"></script>
+<script defer src="cover-art.js?v=20261002e"></script>
 <script>/* Deferred scripts run after parsing, so this call has to wait for them —
    inline script runs at parse time and would find SB_ICON_MOTION undefined. The old
    try/catch would have swallowed that silently and simply left icon motion off. */
@@ -3122,47 +3131,47 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 </script>
 <!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
      carries a project URL and anon key, so shipping them changes nothing yet. -->
-<script defer src="sb-config.js?v=20261002d"></script>
-<script defer src="voice-cdn.js?v=20261002d"></script>
-<script>window.SB_ASSET_V="?v=20261002d";</script>
+<script defer src="sb-config.js?v=20261002e"></script>
+<script defer src="voice-cdn.js?v=20261002e"></script>
+<script>window.SB_ASSET_V="?v=20261002e";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script defer src="boot-lazy.js?v=20261002d"></script>
-<script defer src="words-data.js?v=20261002d"></script>
-<script defer src="words-extra.js?v=20261002d"></script>
-<script defer src="words-patch.js?v=20261002d"></script>
-<script defer src="themes-data.js?v=20261002d"></script>
-<script defer src="quotes.js?v=20261002d"></script>
-<script defer src="trivia-icons.js?v=20261002d"></script>
-<script defer src="trivia-data.js?v=20261002d"></script>
-<script defer src="tips-data.js?v=20261002d"></script>
-<script defer src="voice-manifest.js?v=20261002d"></script>
-<script defer src="voice-adv-manifest.js?v=20261002d"></script>
-<script defer src="voice-review.js?v=20261002d"></script>
-<script defer src="app.js?v=20261002d"></script>
-<script defer src="avatar-png.js?v=20261002d"></script>
-<script defer src="game-art.js?v=20261002d"></script>
-<script defer src="avatars.js?v=20261002d"></script>
-<script defer src="avatar-greetings.js?v=20261002d"></script>
-<script defer src="avatar-cards.js?v=20261002d"></script>
-<script defer src="app2.js?v=20261002d"></script>
-<script defer src="pricing.js?v=20261002d"></script>
-<script defer src="auth.js?v=20261002d"></script>
-<script defer src="supabase-auth.js?v=20261002d"></script>
-<script defer src="telemetry.js?v=20261002d"></script>
-<script defer src="bizzing-wallet.js?v=20261002d"></script>
-<script defer src="bizzing-avatars.js?v=20261002d"></script>
-<script defer src="bizzing-activity.js?v=20261002d"></script>
-<script defer src="family-shell.js?v=20261002d"></script>
-<script defer src="app3.js?v=20261002d"></script>
-<script defer src="worlds4.js?v=20261002d"></script>
-<script defer src="mockbee.js?v=20261002d"></script>
-  <script defer src="games-daily.js?v=20261002d"></script>
+<script defer src="boot-lazy.js?v=20261002e"></script>
+<script defer src="words-data.js?v=20261002e"></script>
+<script defer src="words-extra.js?v=20261002e"></script>
+<script defer src="words-patch.js?v=20261002e"></script>
+<script defer src="themes-data.js?v=20261002e"></script>
+<script defer src="quotes.js?v=20261002e"></script>
+<script defer src="trivia-icons.js?v=20261002e"></script>
+<script defer src="trivia-data.js?v=20261002e"></script>
+<script defer src="tips-data.js?v=20261002e"></script>
+<script defer src="voice-manifest.js?v=20261002e"></script>
+<script defer src="voice-adv-manifest.js?v=20261002e"></script>
+<script defer src="voice-review.js?v=20261002e"></script>
+<script defer src="app.js?v=20261002e"></script>
+<script defer src="avatar-png.js?v=20261002e"></script>
+<script defer src="game-art.js?v=20261002e"></script>
+<script defer src="avatars.js?v=20261002e"></script>
+<script defer src="avatar-greetings.js?v=20261002e"></script>
+<script defer src="avatar-cards.js?v=20261002e"></script>
+<script defer src="app2.js?v=20261002e"></script>
+<script defer src="pricing.js?v=20261002e"></script>
+<script defer src="auth.js?v=20261002e"></script>
+<script defer src="supabase-auth.js?v=20261002e"></script>
+<script defer src="telemetry.js?v=20261002e"></script>
+<script defer src="bizzing-wallet.js?v=20261002e"></script>
+<script defer src="bizzing-avatars.js?v=20261002e"></script>
+<script defer src="bizzing-activity.js?v=20261002e"></script>
+<script defer src="family-shell.js?v=20261002e"></script>
+<script defer src="app3.js?v=20261002e"></script>
+<script defer src="worlds4.js?v=20261002e"></script>
+<script defer src="mockbee.js?v=20261002e"></script>
+  <script defer src="games-daily.js?v=20261002e"></script>
   <!-- saga-art/*.js, saga-art-dom.js and saga2.js (the arcade engines, ~110KB gzipped) are
        NOT boot scripts any more: boot-lazy.js loads them, in order, at the door of a game. -->
-<script defer src="trivia.js?v=20261002d"></script>
-<script defer src="advanced.js?v=20261002d"></script>
-<script defer src="trail.js?v=20261002d"></script>
+<script defer src="trivia.js?v=20261002e"></script>
+<script defer src="advanced.js?v=20261002e"></script>
+<script defer src="trail.js?v=20261002e"></script>
 </body>
 </html>

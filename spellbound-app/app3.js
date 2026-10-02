@@ -11702,6 +11702,7 @@ function gamesHub(){ const S=state; const c=active();
   // ---- graphical tile helpers ----
   const heroTile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-hero" ${o.span?'style="grid-column:span 2"':''}>
       <span aria-hidden="true" style="position:absolute;inset:0;background:${o.grad}"></span>
+      ${o.img?`<span aria-hidden="true" class="arc-hero-img" style="background-image:url('${o.img}${window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''}')"></span>`:''}
       ${o.art?`<span class="arc-hero-art">${o.art}</span>`:''}
       <span class="arc-hero-in">
         <span class="arc-tag" style="color:${o.tagC||'#FFD98A'};background:${o.tagBg||'rgba(255,194,61,.14)'};border:1px solid ${o.tagBd||'rgba(255,194,61,.35)'}">${o.tag}</span>
@@ -11728,7 +11729,11 @@ function gamesHub(){ const S=state; const c=active();
           <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
           <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
         </span></button>
-      <div class="arc-diff" role="group" aria-label="Difficulty for ${escA(o.title)}">${DIFFS.map(([k,l])=>`<button data-act="setGameDiff" data-arg="${escA(o.arg)}|${k}" class="${cur===k?'on':''}" title="${l} words">${l}</button>`).join('')}</div>
+      ${/* the level is ONE chip on the picture that steps Auto → Easy → Med → Hard → Champ on each
+           tap (keyboard: it is a button). It used to be a two-row strip under the card, which made
+           these two cards taller than the rest of their row and left blank space in the others. */''}
+      ${(()=>{ const i=Math.max(0,DIFFS.findIndex(d=>d[0]===cur)), nx=DIFFS[(i+1)%DIFFS.length], lab=DIFFS[i][1];
+        return `<button data-act="setGameDiff" data-arg="${escA(o.arg)}|${nx[0]}" class="arc-lvl" aria-label="${escA('Word level for '+o.title+': '+lab+'. Tap for '+nx[1])}" title="Word level: ${lab} — tap to change">${lab} ▾</button>`; })()}
     </div>`; };
   const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
   // ---- HEROES: the two marquee games ----
@@ -11742,6 +11747,14 @@ function gamesHub(){ const S=state; const c=active();
     heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:iconSVG('trophy',12,2.4)+' Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
   if(window.SB_TRIVIA){ const bhid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
     heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:iconSVG('steps',12,2.4)+' Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen word questions — meanings, roots and the people words are named after. Two safe rungs, three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
+  /* The race and the maze are the two biggest games, so they stand with the bee and the
+     ladder as large painted tiles (app-art/arc-grandprix.jpg, arc-honeycomb.jpg — painted for
+     these cards, no lettering) instead of two small cards in the grid. They open the same
+     start menu (arcadeMenu) the small tile did, where the level is picked. */
+  const HERO_GAMES={ beeGrandPrix:{img:'app-art/arc-grandprix.jpg',grad:'linear-gradient(150deg,#2A1A4A,#1B1235)',tag:'Race',cta:'Start your engine'},
+    honeycombRun:{img:'app-art/arc-honeycomb.jpg',grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)',tag:'Maze',cta:'Enter the maze'} };
+  (SB_ARCADE_GAMES||[]).forEach(g=>{ const H=HERO_GAMES[g.k]; if(!H) return;
+    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:H.sub})); });
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
@@ -11774,7 +11787,7 @@ function gamesHub(){ const S=state; const c=active();
      not a hive. Same images the landing uses; regenerate both with qa/shots.cjs. */
   // Difficulty is chosen in each game's START MENU now (arcadeMenu), so the tile is just a
   // single Play button + its screenshot — no difficulty strip. Lighter scrim so the shot reads.
-  const arcadeGames=SB_ARCADE_GAMES.map(g=>tile({act:'arcadeMenu',arg:g.k,
+  const arcadeGames=SB_ARCADE_GAMES.filter(g=>!HERO_GAMES[g.k]).map(g=>tile({act:'arcadeMenu',arg:g.k,
     grad:"linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
     art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
@@ -11784,12 +11797,12 @@ function gamesHub(){ const S=state; const c=active();
          Arcade-wide selector was redundant with that and misleading (it did nothing for
          the games that carry their own level, like Trivia). -->
     ${pageHead('Bizzy&rsquo;s Great Spelling Arcade','','',coinChip(),'goHome','Home',null,arcadeLogoSVG(34))}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:16px">${heroes.join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));grid-auto-rows:1fr;gap:14px;margin-bottom:16px">${heroes.join('')}</div>
     ${dailyBanner}
-    <div class="arc-sech">The games — pick your level on each</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 18px">${arcadeGames}</div>
-    <div class="arc-sech">More to play</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px">${feats.join('')}${quick}</div>
+    ${/* ONE grid, no section headings, FIXED columns (4, or 2 on a phone): the tiles come in a
+         multiple of four, so every row is full at every width — auto-fill left two empty
+         cells at the end of the first section and a heading floating over blank space. */''}
+    <div class="arc-grid">${arcadeGames}${feats.join('')}${quick}</div>
   </div>`;
 }
 /* The pack reel and the drop reveal are deleted with the draw (FIX-BEE I3). */
