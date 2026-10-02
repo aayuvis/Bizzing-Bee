@@ -99,6 +99,8 @@ const seed = (tier) => ({ theme: 'spellbound', mode: 'light', premium: false, ac
 
   /* ---- 4. coins buy a cosmetic at its printed price, never content ---- */
   /* a FREE child — on a plan every world and chapter is already open, which would prove nothing */
+  /* the course is a boot-lazy file since FIX-BEE N2: ask for it and wait, or there is no chapter to try */
+  await F.pg.evaluate(() => new Promise(r => { if (window.SB_LAZY) SB_LAZY.need('concepts', () => { try { state.conceptData = null; state.conceptLoading = false; loadConcepts(); } catch (e) {} r(); }); else r(); }));
   const shop = await F.pg.evaluate(() => { const c = active(); const W = () => BZ_WALLET.balance(c.name);
     window.confirm = () => true; const out = {};
     const lockedW = THEMES.find(t => !isThemeUnlocked(t.id)); const w0 = W();
