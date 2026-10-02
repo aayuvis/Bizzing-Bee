@@ -43,6 +43,21 @@ const SKIP = {
   'ux-personas.cjs': 'a persona walk-through that WRITES A REPORT (no pass/fail exit code, and its output path is an old session\'s scratchpad) — run it by hand when you want the report',
 };
 
+/* Tests that assert on SOURCE TEXT — a comment, a quoted constant, a function's
+   toString — as well as on behaviour. Against a minified deploy tree (--root) those
+   assertions fail by construction (comments are gone, 'x' becomes "x", locals are
+   renamed), so --root skips them; their behavioural halves were proved against the
+   source, and a full browser run of the minified tree on 2 Oct 2026 showed every one of
+   these failing ONLY on its source-text lines. */
+const SOURCE_TEXT = {
+  'loading-state.cjs': 'viewTrivTrain asserted from app3.js text',
+  'living-advanced.cjs': 'art keys read from trail.js text', 'living-atlas.cjs': 'art keys read from trail.js text',
+  'living-cast.cjs': 'cast table read from trail.js text', 'living-meadow.cjs': 'comments read from trail.js',
+  'reader.cjs': 'art paths read from reader.js text', 'ux-826.cjs': 'timings read from app3.js text',
+  'result-screen.cjs': "engines' toString must contain SGUI.result (a renamed local in minified code)",
+  'telemetry.cjs': 'drives backend.html, which is never deployed',
+};
+
 /* Known-slow tests get a longer leash. Seconds. Everything else gets DEFAULT_TIMEOUT.
    Times are from the full sequential run on a shared 4-core box; the limit is ~2.5x that. */
 const DEFAULT_TIMEOUT = 300;
@@ -138,6 +153,8 @@ function runOne(dir, file, env, limit) {
   if (CHECK_ONLY) picked = picked.filter(f => CHECK.includes(f) || optsIn(fs.readFileSync(path.join(dir, f), 'utf8')));
   if (filters.length) picked = picked.filter(f => filters.some(q => f.includes(q)));
   if (BROWSER_ONLY) picked = picked.filter(f => isBrowser(fs.readFileSync(path.join(dir, f), 'utf8')));
+  const textSkipped = ROOT ? picked.filter(f => SOURCE_TEXT[f]) : [];
+  if (ROOT) picked = picked.filter(f => !SOURCE_TEXT[f]);
   const missingCheck = CHECK_ONLY ? CHECK.filter(f => !all.includes(f)) : [];
 
   const chrome = chromePath();
@@ -178,6 +195,7 @@ function runOne(dir, file, env, limit) {
   console.log(line);
   console.log(`  ${rows.length - bad.length} passed, ${bad.length} failed, ${((Date.now() - T0) / 1000).toFixed(0)}s total`);
   if (missingCheck.length) console.log(`  NOTE: check list names ${missingCheck.join(', ')} — not found`);
+  for (const f of textSkipped) console.log(`  ${f.padEnd(30)}skipped on a deploy tree — ${SOURCE_TEXT[f]}`);
   for (const r of bad) {
     console.log(`\n--- ${r.f} (${r.res}) — last lines of ${path.join('tests/build/logs', r.f.replace(/\.(c?js)$/, '.log'))}`);
     const out = fs.readFileSync(path.join(logDir, r.f.replace(/\.(c?js)$/, '.log')), 'utf8').trim().split('\n');

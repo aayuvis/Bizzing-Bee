@@ -40,6 +40,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     Math.random = () => 0.1;                       // door 1: the region's game
     app.trailTre('meadow:0'); await new Promise(res => setTimeout(res, 200));
     out.giftGame = state.treG && state.treG.kind === 'game' && /Play it/.test(document.body.innerHTML);
+    // the arcade engines are lazy since FIX-BEE N2: treGame's door loads them first
+    await new Promise(res => SB_LAZY.need('arcade', res));
     app.treGame(); await new Promise(res => setTimeout(res, 400));
     out.gameOpens = !!document.querySelector('.arc-menu');
     document.querySelectorAll('.arc-menu').forEach(e => e.remove()); state.treG = null;
