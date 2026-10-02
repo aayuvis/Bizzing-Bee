@@ -314,7 +314,9 @@
   /* The word book that used to be household-wide. Out: the active child's copy goes onto the
      child. In: the child's own copy comes back (a child with none yet, from before this
      split, keeps a copy of the shared book — nothing anyone earned is lost). */
-  var BOOK = [['luMastered', '_lu'], ['coachSrs', '_srs'], ['coachHistory', '_chist']];
+  /* luMastered is NOT in the book: since FIX-BEE D5 each child carries an evidence record (c.mast)
+     and app3's mastSync() derives luMastered from the active child's record on every switch. */
+  var BOOK = [['coachSrs', '_srs'], ['coachHistory', '_chist']];
   function bookOut(c) { if (!c) return; BOOK.forEach(function (b) { c[b[1]] = state[b[0]] || {}; }); }
   function bookIn(c, fresh) {
     if (!c) return;

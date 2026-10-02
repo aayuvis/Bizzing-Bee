@@ -20,9 +20,12 @@ const HIVE = 'https://aayuvis.github.io/Bizzing_Schedule/';
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const TR = (done) => ({ lap: 1, done, chk: {}, seen: {}, st: {}, elap: 1, edone: {}, echk: {} });
-const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, lu: { cat: true, dog: true, ship: true }, children: [
-  { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 120, lists: { journey: { xp: 30, stage: 2 } }, activeList: 'journey', trail: TR({ u1: { 1: 90 }, u2: { 1: 85 } }) },
-  { name: 'Ravi', age: 12, ageBand: '11-13', avatar: 'froggy', theme: 'aurora', coins: 7, lists: { journey: { xp: 2 } }, activeList: 'journey', trail: TR({}), _lu: { sun: true } } ] };
+/* mastery is per child on its evidence record (c.mast, FIX-BEE D5): box 2+ = mastered */
+const DAY = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
+const M2 = (ws) => Object.fromEntries(ws.map(w => [w, { b: 2, due: DAY + 30, d: DAY - 3, ok: 2, n: 2 }]));
+const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [
+  { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 120, lists: { journey: { xp: 30, stage: 2 } }, activeList: 'journey', trail: TR({ u1: { 1: 90 }, u2: { 1: 85 } }), mast: M2(['cat', 'dog', 'ship']) },
+  { name: 'Ravi', age: 12, ageBand: '11-13', avatar: 'froggy', theme: 'aurora', coins: 7, lists: { journey: { xp: 2 } }, activeList: 'journey', trail: TR({}), mast: M2(['sun']) } ] };
 
 async function open(b, vp, errs) {
   const ctx = await b.newContext({ viewport: vp, hasTouch: vp.width < 640 });
@@ -101,7 +104,7 @@ const bar = pg => pg.evaluate(() => {
         "Ravi has Ravi's coins, word lists, Atlas trail, avatar and world — not Ahana's");
       ok(asRavi.lu === 'sun', `Ravi gets his own mastered words, not Ahana's (${before.lu} → "${asRavi.lu}")`);
       /* Ravi earns something; Ahana must not get it */
-      await pg.evaluate(() => { markMastered('zebra'); active().coins += 5; active().lists.journey.xp += 9; save(); });
+      await pg.evaluate(() => { const M = mastRec(active()); M.zebra = { b: 2, due: mastDay() + 30, d: mastDay() - 3, ok: 2, n: 2 }; mastSync(true); addCoins('stop'); active().lists.journey.xp += 9; save(); });   // coins arrive by a standard event (c.coins mirrors the wallet)
       await pg.click('[data-act="famMenu"]'); await pg.waitForTimeout(250);
       await pg.click('.sb-fam-menu [data-act="famSwitch"][data-arg="0"]'); await pg.waitForTimeout(600);
       const backA = await pg.evaluate(() => { const c = active(); return { name: c.name, coins: c.coins, lists: JSON.stringify(c.lists), trail: JSON.stringify(c.trail), lu: Object.keys(state.luMastered).sort().join(',') }; });
@@ -109,7 +112,7 @@ const bar = pg => pg.evaluate(() => {
         "back on Ahana: her coins, lists, trail and mastered words are exactly as she left them — Ravi's zebra is not among them");
       await pg.reload(); await pg.waitForTimeout(2600);
       const afterReload = await pg.evaluate(() => { const r = state.children[1]; return { a: active().name, alu: Object.keys(state.luMastered).sort().join(','),
-        rlu: Object.keys(r._lu || {}).sort().join(','), rc: r.coins }; });
+        rlu: Object.keys(r.mast || {}).filter(k => r.mast[k].b >= 2).sort().join(','), rc: r.coins }; });
       ok(afterReload.a === 'Ahana' && afterReload.alu === before.lu && afterReload.rlu === 'sun,zebra' && afterReload.rc === before.r.coins + 5,
         'after a reload each child still has their own book (' + afterReload.alu + ' | ' + afterReload.rlu + ')');
       /* adding a child is a grown-up's job */
@@ -122,7 +125,8 @@ const bar = pg => pg.evaluate(() => {
   /* ---- a household from before the split: the shared book is COPIED to each child once, so
      nothing anyone earned is lost — and from then on the two copies never touch ---- */
   {
-    const legacy = JSON.parse(JSON.stringify(SEED)); delete legacy.children[1]._lu;
+    /* the household format before per-child mastery: one shared `lu` map, no evidence record on any child */
+    const legacy = JSON.parse(JSON.stringify(SEED)); legacy.lu = { cat: true, dog: true, ship: true }; legacy.children.forEach(k => { delete k.mast; });
     const ctx = await b.newContext({ viewport: { width: 1000, height: 800 } });
     await ctx.addInitScript(s2 => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s2)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, legacy);
     const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));

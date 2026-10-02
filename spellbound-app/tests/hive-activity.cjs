@@ -64,9 +64,12 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
     'clearing an Atlas stop writes one "stop" milestone, named: ' + JSON.stringify(stop.map(x => x.label)));
   ok(world.length === 1 && /The Meadow/.test(world[0].label), 'and it was the last stop of the Meadow, so one "world" milestone: ' + JSON.stringify(world.map(x => x.label)));
   /* a new spelling level, and a list stage mastered */
-  await pg.evaluate(() => { active().band = 4; active().lists.journey.stage = 2; render(); }); await pg.clock.runFor(800);
+  /* the level is THE one level (oneLevel: list XP from words spelled right, FIX-BEE C6) — raise it by one */
+  const target = await pg.evaluate(() => { const c = active(); const L = oneLevel(c).level + 1; c.lists.journey = c.lists.journey || {};
+    let x = 0; while (levelFromXp(x).level < L) x++; const other = rankXp(c) - (c.lists.journey.xp || 0); c.lists.journey.xp = Math.max(0, x - other);
+    c.lists.journey.stage = 2; render(); return L; }); await pg.clock.runFor(800);
   m = await ms();
-  ok(m.filter(x => x.ev === 'band').length === 1 && /level 4/i.test(m.find(x => x.ev === 'band').label), 'a new spelling level writes one "band" milestone');
+  ok(m.filter(x => x.ev === 'band').length === 1 && new RegExp('level ' + target + '\\b', 'i').test(m.find(x => x.ev === 'band').label), 'a new level writes one "band" milestone: ' + JSON.stringify(m.filter(x => x.ev === 'band').map(x => x.label)));
   ok(m.filter(x => x.ev === 'mastery').length === 1, 'a list stage mastered writes one "mastery" milestone: ' + JSON.stringify((m.find(x => x.ev === 'mastery') || {}).label));
   /* re-rendering, reloading: nothing is counted twice */
   const n0 = m.length;

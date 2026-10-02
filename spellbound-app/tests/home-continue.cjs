@@ -129,13 +129,14 @@ function filledPrimaries() {
     const span = (start) => { const i = src.indexOf(start); if (i < 0) return; const j = src.indexOf('\nfunction ', i + 1); allowed.push([i, j < 0 ? src.length : j]); };
     if (f === 'family-shell.js') span('function trailNext(');
     if (f === 'app3.js') span('function viewProgress(');
+    if (f === 'app3.js') span('function reportCard(');   // the grown-ups' report card (batch C) displays the Atlas position too
     let i = -1;
     while ((i = src.indexOf('SB_TRAIL_NEXT(', i + 1)) >= 0) {
       if (allowed.some(([a2, b2]) => i > a2 && i < b2)) { if (f === 'family-shell.js') shellReads++; continue; }
       stray.push(f + ' @' + src.slice(0, i).split('\n').length);
     }
   }
-  ok(shellReads >= 1 && stray.length === 0, 'SB_TRAIL_NEXT is read only by the next-step function (and the Progress page, which only displays it): ' + (stray.join(', ') || 'no strays'));
+  ok(shellReads >= 1 && stray.length === 0, 'SB_TRAIL_NEXT is read only by the next-step function (and the Progress page and report card, which only display it): ' + (stray.join(', ') || 'no strays'));
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
