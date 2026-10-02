@@ -40,6 +40,92 @@ handlers. App lives in this folder; open `index.html` to run.
   (`SAGA_ART`/`WORLD_ART`/`SB_AVATAR`); hand-drawn canvas is fine when richly shaded.
 - **Never** put a real model identifier in commits, PRs, code, or any pushed artifact.
 
+## FIX-BEE (2 Oct 2026) — the family standard, applied. READ THIS BEFORE THE OLDER SECTIONS.
+The October family audit (brief: `/root/.claude/uploads/…/FIX-BEE.md`; standard:
+`aayuvis/Bizzing_Schedule` → `docs/family/FAMILY-STANDARD.md`) was worked in four parallel
+batches plus the storage seam. Each batch's full record — what, where, why, the guard, how it
+was proved by breaking, what was left — is in **`fixbee-notes/{a-home,b-rewards,c-learning,
+d-platform}.md`**. Read the one for the area you touch. The rules that matter most:
+
+**Older bullets further down that are now WRONG** (kept for their history, do not follow them):
+streaks, Streak Freeze and streak badges (gone — "good days this week" only); avatar packs,
+drop odds and "Open a pack" (gone — no random reward anywhere); hidden-cache 20/30/50, trove
++30, wisp, poke and quiz-ladder coin payouts, Bizzillionaire's "+150 capped 400" (gone — coins
+come only from the four standard events); "Quiz items serve themselves… 3.2s on a wrong one"
+(a miss now HOLDS until tapped); "One thing is called a Level: the BEE BAND" and the sheening
+"Find your level" on Home (the ONE level is `oneLevel()`; the band is "word difficulty";
+placement lives in onboarding); "Home is three rows" (Home follows standard §2, one Continue);
+the header-tools bullet (the family top bar replaced it); "everything else is coins" for worlds
+and concepts (content is never bought with coins); the boot-budget figures (see D below).
+
+- **Coins are Bizzing coins, one family wallet** (`bizzing-wallet.js`, classic port of the
+  family drop-in, `window.BZ_WALLET`; key `bizzing.wallet`). `addCoins(event)` takes an EVENT —
+  `'answer'` 1 · `'stop'` 5 · `'contest'` 10 · `'mastery'` 20, 100/day/app cap — and a bare
+  number pays NOTHING. `c.coins` is only a MIRROR of the wallet; a direct write does not
+  survive a reload. Old Bee coins moved across 1:1 once (`walletSync`, after the refunds).
+  Testing and `?demo` never write the wallet; the "Test coins" lever is gone (testing never
+  rewrites a child). Guards: `wallet-coins`, `no-random`, `no-streaks`, `medals`, `locks`.
+- **Rarity stays, chance goes.** Every rare avatar card names its unlock — a learning milestone
+  or "comes with the plan — ask a grown-up". Worlds open at a named Level, concepts at their
+  Atlas stop or with the plan. Learning locks (dashed, name what to learn) look different from
+  plan locks (grey padlock), and **no price is ever shown to a child** — prices live behind the
+  grown-up PIN. Owner decision flagged by batch B: a Rare avatar can also be bought at a fixed
+  120 coins (one branch in `avRule`), so coins have something to buy.
+- **One visible level**: `oneLevel(c)` / `window.SB_ONE_LEVEL` (list XP from words spelled right,
+  worn as the bee's form). It moves on right answers only — never on time, coins or luck.
+- **Mastery is evidence** (`c.mast`, per child, Leitner boxes in local days): mastered only after
+  right answers on two separate days; it comes due again and a miss drops it. `luMastered` is
+  DERIVED from the active child's record by `mastSync()` — never write it as the truth. Self-marks
+  ("Got it", Complete, swipes, "Know it") count for nothing. Picking from options never masters.
+- **A miss holds, shows the letters and the why** (one shared miss panel: typed-vs-word diff +
+  the concept family + the memory hook), everywhere a question is graded. Right answers may
+  advance; wrong ones never auto-advance. The mascot has no frown (`'sad'`/`'oops'` draw `'think'`).
+- **The report card is Time · Progress · Mastery** (`reportCard()`), Time read from
+  `bizzing.activity`, Mastery from evidence (retained, slipped, traps, carried-over not counted).
+- **Grown-ups**: PIN mandatory (Fix-first, above); backup / restore / erase in the Parent Zone,
+  each re-asking the PIN; erase leaves the family wallet alone.
+- **Home: exactly one filled button**, Continue, from ONE next-step function
+  (`SB_NEXT_STEP` / `app.goNext`, `family-shell.js`) shared by Home, the drawer and `#/continue`.
+  A progress strip sits beside it; below 640px Continue is above the fold at 390×844.
+- **Every screen has a hash route; Back never leaves the app** (`family-shell.js`). `#/continue`
+  and `?from=hive` (a "← back to my day" chip) work. A route goes through the same opener a tap
+  uses, so an address cannot open a locked stop.
+- **The family top bar** (56px): ⬡ Hive · ☰ · Bizzing Bee · search · coins · theme · 🔒 grown-ups ·
+  avatar ▾ (one-tap, PIN-free child switcher; adding a child is behind the PIN). ⬡ hides inside a
+  drill. The real search bar stays — and is disabled while a word is being tested.
+- **First run**: "Start free" needs no account; setup ends INSIDE the first Atlas lesson (0 taps);
+  the splash stays away on a child's first day (`kid.fr`); "Find my level" is a setup choice.
+- **Hive feed**: `bizzing-activity.js` (`window.BZ_ACTIVITY`) writes active minutes and one
+  milestone per stop / region / level / stage mastered. `?demo` runs in an in-memory sandbox
+  (inline script at the top of `<body>`) and never touches the real household or family keys.
+- **Storage goes through `store.js` and nothing else** (N4). It is the FIRST deferred script.
+  Three buckets: the VERSIONED household (`sb_saas_v2`, field `sv`; `STEPS[n]` takes vN→vN+1 and
+  never reaches back — the six old ad-hoc boot migrations are steps v1→v7 now, in their old
+  order), named device keys, and the family keys. **Add a migration as a new step, never as a
+  block in init.** A household written by a newer build opens READ-ONLY with a banner that stays,
+  and is never written over; a newer backup is refused. An unregistered name throws. The only
+  direct `localStorage` in shipped code is the one parse-time inline script (splash peek + demo
+  sandbox). Guard: `tests/store-seam.cjs` (proved by breaking: 6 fail).
+- **Tests run from one command**: `npm test` (everything, sequential, summary table) and
+  `npm run check` (the fast subset; a test joins it with an `@check` comment). Tests take the
+  browser from `SB_CHROME`. CI (`.github/workflows/bee-tests.yml`) runs on every push except
+  gh-pages. **Both deploy scripts refuse to ship unless `npm run check` passes**, then minify a
+  COPY (`tools/minify.cjs`, esbuild) — the source stays readable and no-build — and re-run the
+  browser half of the check against that copy. Tests that read source text skip themselves
+  against a minified tree (`--root`), by name, saying why.
+- **Offline**: `sw.js` (pages network-first, stamped assets cache-first in `bee-core-<stamp>`,
+  audio cached once played), `manifest.json` + `icons/`; registered only over http(s).
+- **First load is 1.7MB on a phone (was 12.3MB)** — idle data waits for the child's first tap,
+  screens ask for their own data through boot-lazy "doors", arcade engines are lazy. The family
+  budget (1.5MB, 400KB JS) is NOT yet met; `tests/first-load.cjs` is a ratchet at today's numbers
+  and prints the gap. What is left: the 594KB boot word shard (shrinking it changes
+  `defaultStages()`, i.e. the curriculum — needs care), an app3 code split, and the landing page's
+  screenshots. Do not add anything to the first screen without lowering something else.
+- **Accessibility and privacy are tested**: `tests/a11y-axe.cjs` (axe WCAG 2.1 A+AA, three looks ×
+  two widths, focus and reduced motion; fixes live in `a11y.css`, loaded last) and
+  `tests/privacy-requests.cjs` (a hosted walk fails on any host privacy.html does not name, any
+  POST, or the child's name in any request).
+
 ## Architecture map
 - `app3.js` — main app: home, practice, settings, avatars, and the **voice layer**
   (`wordClip`/`deviceSpeak`/`WV_BAD`) + the **Word Voice Tester** (`viewVoiceTest`).

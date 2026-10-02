@@ -4454,6 +4454,10 @@ function tipOfDay(kid,asCard){ const pool=[]; let band=2; try{ band=beeBand(acti
     cats.forEach(k=>(T[k]||[]).forEach(t=>pool.push(t))); }
   }catch(e){}
   try{ if(band>2) lessonsAll().slice(0,40).forEach(L=>{ if(L.hook) pool.push(L.hook); }); }catch(e){}
+  /* the course chapters now wait for the first tap (boot-lazy, FIX-BEE N2), so a young speller's
+     pool is empty at first paint — the bundled young tips stand in rather than a shimmer that
+     never resolves until someone touches the screen */
+  try{ if(!pool.length) ((window.SB_TIPS||{}).young||[]).forEach(t=>pool.push(t)); }catch(e){}
   if(!pool.length) return asCard?cardHold('Today\u2019s bee tip',128):'';
   // Up to 10 tips a day: a daily-resettable step lets the speller tap forward through more tips.
   const c0=active(); const day=dayNum(); const MAXFWD=10;
@@ -8427,6 +8431,8 @@ function reportCardHTML(c){ c=c||active(); let R; try{ R=reportCard(c); }catch(e
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Report card · ${esc(R.name||'your speller')}</div><span style="font-size:12px;color:var(--muted);font-weight:700">what ${esc(R.name||'they')} can now do, from evidence</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0">${time}${prog}${mast}</div>
     ${lines.length?`<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5">${lines.join('')}</div>`:''}
+    ${/* standard §13: the grown-ups page links to the Hive's family-wide view (a link, not a request) */''}
+    <a class="sb-hive-grown" href="https://aayuvis.github.io/Bizzing_Schedule/#grown" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;font-weight:800;color:var(--accent);text-decoration:none">⬡ The whole family in the Bizzing Hive →</a>
   </div>`; }
 function everPractised(c){ c=c||active(); try{ return bandEvidence(c)>0 || masteredCount()>0 || (c.missed||[]).length>0 || Object.keys(state.coachHistory||{}).length>0; }catch(e){ return false; } }
 function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
