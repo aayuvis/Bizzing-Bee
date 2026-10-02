@@ -336,8 +336,12 @@
     const ws = shuffle(lapWords(u, lapOf(active()), 40).slice());
     ws.slice(0, 8).forEach(w => items.push({ ty: 'spell', w: w.w, d: w.d }));
     const withDef = ws.filter(x => x.d && x.d.length > 8);
-    withDef.slice(0, 3).forEach(w => { const dec = shuffle(withDef.filter(x => x.w !== w.w).slice()).slice(0, 3).map(x => (x.d || '').slice(0, 110));
-      if (dec.length >= 2) { const opts = [{ c: (w.d || '').slice(0, 110), ok: true }].concat(dec.map(d2 => ({ c: d2, ok: false }))); shuffle(opts);
+    /* meaning options are masked against the word on screen and kept DISTINCT — a definition
+       that names its own headword points at the answer, and two identical texts are two right
+       answers (FIX-BEE D8, tests/question-leaks.cjs) */
+    withDef.slice(0, 3).forEach(w => { const mk = d => maskTxt((d || '').slice(0, 110), w.w); const A = mk(w.d); const seen = new Set([A.toLowerCase()]);
+      const dec = shuffle(withDef.filter(x => x.w !== w.w).slice()).map(x => mk(x.d)).filter(d2 => { const k = d2.toLowerCase(); if (!k || seen.has(k)) return false; seen.add(k); return true; }).slice(0, 3);
+      if (dec.length >= 2) { const opts = [{ c: A, ok: true }].concat(dec.map(d2 => ({ c: d2, ok: false }))); shuffle(opts);
         items.push({ ty: 'mean', q: 'Which meaning fits “' + w.w + '”?', opts, ans: opts.findIndex(o => o.ok) }); } });
     const out = shuffle(items).slice(0, 15);
     /* the Living Atlas: every 4th item is a KIT round — the same word, the
@@ -594,14 +598,21 @@
      the Next button stays for anyone faster than the timer. */
   const tqAutoSay = () => setTimeout(() => { try { const q2 = state.tq;
     if (q2 && !q2.over && q2.picked == null) { const it = q2.items[q2.i]; if (it && it.ty === 'spell' && it.w) say(it.w); } } catch (e) {} }, 450);
-  const tqAutoNext = ok2 => { const q2 = state.tq; const at = q2.i;
+  /* RIGHT ANSWERS ADVANCE; WRONG ANSWERS HOLD (FIX-BEE D3, family standard §6). A miss used
+     to move on by itself after 3.2s — less time than it takes to read why. Now it waits for
+     Next (tap or Enter) under the letter-by-letter panel; a right answer still moves on. */
+  const tqAutoNext = ok2 => { if (!ok2) return; const q2 = state.tq; const at = q2.i;
     setTimeout(() => { try { const n = state.tq;
-      if (n === q2 && !n.over && n.picked != null && n.i === at) app2.tqNext(); } catch (e) {} }, ok2 ? 1100 : 3200); };
+      if (n === q2 && !n.over && n.picked != null && n.i === at) app2.tqNext(); } catch (e) {} }, 1100); };
+  /* a spelled item is evidence about the word (app3's mastery record, FIX-BEE D5): typed is
+     recall, a built or picked spelling is recognition */
+  const tqEvidence = (w, ok, kind) => { try { if (ok) markMastered(nkey(w), kind); else mastEvidence(w, false); } catch (e) {} };
   app2.tqPick = i => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
-    q2.picked = +i; const ok2 = +i === it.ans; if (ok2) q2.score++; else q2.missed.push(it);
+    q2.picked = +i; const ok2 = +i === it.ans; q2.right = ok2; if (ok2) q2.score++; else q2.missed.push(it);
     render(); tqAutoNext(ok2); };
   app2.tqSpell = () => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
     const ok = nkey(state.tqTyped || '') === nkey(it.w); q2.picked = ok ? 1 : 0; q2.right = ok;
+    q2.tryTyped = state.tqTyped || ''; tqEvidence(it.w, ok);
     if (ok) q2.score++; else q2.missed.push(it);
     render(); tqAutoNext(ok); };
   app2.tqSay = () => { const it = state.tq && state.tq.items[state.tq.i]; if (it && it.w) say(it.w); };
@@ -958,7 +969,8 @@
         <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 0 4px">${esc(maskTxt((it.d || '').slice(0, 120), it.w))}</p>
         <input data-inp="tqInput" data-fkey="tqInput" value="${escA(state.tqTyped || '')}" ${picked != null ? 'disabled' : ''} autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type the spelling…" style="width:100%;max-width:330px;margin-top:8px;padding:13px 15px;border-radius:12px;border:1.5px solid ${picked == null ? 'var(--line)' : q2.right ? 'var(--good)' : 'var(--bad)'};background:var(--surface);font-size:17px;font-weight:800;text-align:center;letter-spacing:.06em;outline:none">
         ${picked == null ? `<div style="margin-top:10px"><button data-act="tqSpell" style="padding:11px 26px;border-radius:12px;background:var(--good);color:#fff;font-weight:800;font-size:14px">Check ✓</button></div>`
-        : `<p style="margin-top:10px;font-weight:800;color:${q2.right ? 'var(--good)' : 'var(--bad)'}">${q2.right ? 'Nailed it!' : 'It’s “' + esc(it.w) + '”'}</p>`}</div>`;
+        : q2.right ? `<p style="margin-top:10px;font-weight:800;color:var(--good)">Nailed it!</p>`
+        : `<div style="margin-top:12px">${missFeedbackHTML(it.w, q2.tryTyped || '')}</div>`}</div>`;
     } else {
       body = `<p style="font-size:15px;font-weight:700;line-height:1.5;margin-bottom:12px">${esc(it.q)}</p>
         <div style="display:grid;gap:8px">${it.opts.map((o, i) => { const st = picked == null ? 'background:var(--surface2);border:1px solid var(--line)'
@@ -975,6 +987,7 @@
         <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px">${it.ty === 'kit' ? (it.kit === 'butterfly' ? '🦋 Butterfly catch' : it.kit === 'comb' ? '🍯 Comb builder' : '🌸 Petal trail') : it.ty === 'spell' ? '🔊 Spell it' : it.ty === 'mean' ? '📖 Meaning' : '💡 Concept'}${state.trailChk ? ' · checkpoint' : ''}${q2.sideName ? ' · ' + esc(q2.sideName) : ''}</div>
         ${q2.heroLine ? `<p style="font-size:13.5px;font-weight:700;color:var(--text);margin:0 0 12px;line-height:1.5">${esc(q2.heroLine)}</p>` : ''}
         ${body}
+        ${picked != null && !q2.right && it.ty !== 'spell' && it.ty !== 'kit' ? `<p class="tq-miss" style="margin:12px 0 0;font-size:13.5px;font-weight:700;color:var(--text);text-align:center">Not this time — the one in green is right. Read it, then tap Next.</p>` : ''}
         ${picked != null ? `<div style="text-align:center;margin-top:14px"><button data-act="tqNext" style="padding:11px 26px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">${q2.i + 1 >= q2.items.length ? 'Finish' : 'Next →'}</button></div>` : ''}
       </div>
       <p style="text-align:center;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:8px">Keys: 1–4 answer · Enter check/next · R hear it</p>
@@ -2212,7 +2225,8 @@
   const KIT_OF = ['butterfly', 'comb', 'petal'];
   /* butterfly tap resolves like a normal pick; comb + petal build then resolve */
   app2.kitPick = i => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
-    const ok = +i === it.ans; q2.picked = +i; q2.right = ok; if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
+    const ok = +i === it.ans; q2.picked = +i; q2.right = ok; q2.tryTyped = (it.opts[+i] || {}).c || ''; tqEvidence(it.w, ok, 'mc');
+    if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
     try { sfx(ok ? 'coin' : 'wrong'); } catch (e) {} render(); tqAutoNext(ok); };
   app2.kitTile = k => { const q2 = state.tq; if (!q2 || q2.over || q2.picked != null) return; const it = q2.items[q2.i];
     const buf = state.kitBuf = state.kitBuf || [];
@@ -2222,7 +2236,8 @@
     if (buf.length >= want) {
       const made = it.kit === 'comb' ? buf.map(j => it.tiles[j].t).join('') : buf.map(j => it.pool[j].L).join('');
       const ok = nkey(made) === nkey(it.w);
-      q2.picked = 1; q2.right = ok; if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
+      q2.picked = 1; q2.right = ok; q2.tryTyped = made; tqEvidence(it.w, ok, 'mc');
+      if (ok) q2.score++; else q2.missed.push({ ty: 'spell', w: it.w, d: it.d });
       state.kitBuf = null;
       try { sfx(ok ? 'coin' : 'wrong'); } catch (e) {} render(); tqAutoNext(ok); return; }
     render(); };
@@ -2243,7 +2258,7 @@
           return `<button data-act="kitPick" data-arg="${i}" ${picked != null ? 'disabled' : ''} class="kit-fly" style="--kd:${(i * 0.7).toFixed(1)}s;${st}">
             ${face(i)}
             <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.04em;margin-top:2px">${esc(o.c)}</span></button>`; }).join('')}</div>
-        ${picked != null ? `<p style="margin-top:8px;font-weight:800;color:${q2.right ? 'var(--good)' : 'var(--bad)'}">${q2.right ? S[1] : S[2] + ' — it’s “' + esc(it.w) + '”'}</p>` : ''}</div>`;
+        ${picked != null ? (q2.right ? `<p style="margin-top:8px;font-weight:800;color:var(--good)">${S[1]}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '', { head: esc(S[2]) + ' — here is the word, letter by letter' })}</div>`) : ''}</div>`;
     }
     const buf = state.kitBuf || [];
     if (it.kit === 'comb') {
@@ -2256,7 +2271,7 @@
         <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
         ${it.tiles.map((t2, k) => `<button data-act="kitTile" data-arg="${k}" ${picked != null || buf.includes(k) ? 'disabled' : ''} class="kit-tile${buf.includes(k) ? ' used' : ''}">${esc(t2.t)}</button>`).join('')}</div>
         ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="font-size:12px;font-weight:800;color:var(--muted)">↺ start over</button></div>` : ''}
-        ${picked != null ? `<p style="margin-top:10px;font-weight:800;color:${q2.right ? 'var(--good)' : 'var(--bad)'}">${q2.right ? S[1] : 'It’s “' + esc(it.w) + '”'}</p>` : ''}</div>`;
+        ${picked != null ? (q2.right ? `<p style="margin-top:10px;font-weight:800;color:var(--good)">${S[1]}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '')}</div>`) : ''}</div>`;
     }
     const S = KS.petal;
     const done2 = buf.map(j => it.pool[j].L).join('');
@@ -2266,7 +2281,7 @@
       <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
       ${it.pool.map((p, k) => `<button data-act="kitTile" data-arg="${k}" ${picked != null || buf.includes(k) ? 'disabled' : ''} class="kit-petal${buf.includes(k) ? ' used' : ''}" style="--kd:${((k * 37) % 10) / 6}s">${esc(p.L)}</button>`).join('')}</div>
       ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="font-size:12px;font-weight:800;color:var(--muted)">↺ start over</button></div>` : ''}
-      ${picked != null ? `<p style="margin-top:10px;font-weight:800;color:${q2.right ? 'var(--good)' : 'var(--bad)'}">${q2.right ? S[1] : S[2] + ' — it’s “' + esc(it.w) + '”'}</p>` : ''}</div>`;
+      ${picked != null ? (q2.right ? `<p style="margin-top:10px;font-weight:800;color:var(--good)">${S[1]}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '', { head: esc(S[2]) + ' — here is the word, letter by letter' })}</div>`) : ''}</div>`;
   }
 
   /* ---- hidden caches ----

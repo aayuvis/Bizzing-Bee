@@ -137,18 +137,23 @@
   app2.readerTry = () => { const ch = chapters(state.readerBook)[state.readerCh]; if (!ch) return;
     const pool = (ch.words || []).filter(x => x.w && x.d);
     if (pool.length < 4) { flash('This chapter drills its words in Practice instead'); return; }
-    const pick = pool.slice().sort(() => Math.random() - 0.5).slice(0, 4);
-    const qs = pick.map(w => { const wrong = pool.filter(x => x.w !== w.w).sort(() => Math.random() - 0.5).slice(0, 3);
-      return { d: w.d, ok: w.w, opts: [w.w].concat(wrong.map(x => x.w)).sort(() => Math.random() - 0.5) }; });
+    /* real shuffles (sample = Fisher-Yates): sort(()=>Math.random()-.5) is biased by position,
+       which leaks an answer slot without any text giving it away (FIX-BEE D8) */
+    const pick = sample(pool, 4);
+    const qs = pick.map(w => { const seen = new Set([nkey(w.w)]);
+      const wrong = sample(pool.filter(x => { const k = nkey(x.w); if (seen.has(k)) return false; seen.add(k); return true; }), 3);
+      return { d: w.d, ok: w.w, opts: sample([w.w].concat(wrong.map(x => x.w))) }; });
     set({ readerQuiz: { qs, i: 0, right: 0, picked: null } }); };
   app2.readerAns = i => { const z = state.readerQuiz; if (!z || z.picked != null) return; const q = z.qs[z.i];
     z.picked = +i; const ok = q.opts[+i] === q.ok;
     if (ok) { z.right++; try { addCoins(1); sfx('correct'); } catch (e) {} } else { try { sfx('wrong'); say(q.ok); } catch (e) {} }
-    render();
-    setTimeout(() => { const n = state.readerQuiz; if (n !== z) return;
+    /* right moves on; a miss holds until Next (FIX-BEE D3) */
+    z.go = () => { const n = state.readerQuiz; if (n !== z) return; z.go = null;
       if (z.i + 1 < z.qs.length) { z.i++; z.picked = null; }
       else { z.over = true; if (z.right >= 3) { try { sfx('win'); burstConfetti(100); } catch (e) {} } }
-      render(); }, ok ? 900 : 2400); };
+      render(); };
+    render(); if (ok) setTimeout(() => { if (z.go) z.go(); }, 900); };
+  app2.readerNext = () => { const z = state.readerQuiz; if (z && z.go) z.go(); };
   app2.readerTryClose = () => set({ readerQuiz: null });
   app2.readerPrint = () => { try { const w = window.open(SITE + state.readerBook + '.html', '_blank', 'noopener');
     if (!w) flash('Pop-up blocked — allow pop-ups to open the print edition'); } catch (e) {} };
@@ -205,11 +210,11 @@
       <button data-act="readerTryClose" style="padding:12px 22px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Back to the chapter</button>`);
     const q = z.qs[z.i];
     return frame(`<div style="font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Try it · ${z.i + 1} of ${z.qs.length}</div>
-      <p style="font-size:14.5px;line-height:1.55;margin:9px 0 13px">${esc(q.d)}</p>
+      <p style="font-size:14.5px;line-height:1.55;margin:9px 0 13px">${esc(maskTxt(q.d, q.ok))}</p>
       <div style="display:flex;flex-direction:column;gap:8px">${q.opts.map((o, i) => { const on = z.picked != null;
         const good = on && o === q.ok, bad = on && z.picked === i && !good;
         return `<button data-act="readerAns" data-arg="${i}" style="padding:12px;border-radius:12px;font-family:var(--mono);font-weight:800;font-size:14px;border:1.5px solid ${good ? 'var(--good)' : bad ? 'var(--bad)' : 'var(--line)'};background:${good ? 'color-mix(in srgb,var(--good) 15%,transparent)' : bad ? 'color-mix(in srgb,var(--bad) 12%,transparent)' : 'var(--surface2)'};color:var(--text)">${esc(o)}${good ? ' ✓' : bad ? ' ✗' : ''}</button>`; }).join('')}</div>
-      ${z.picked != null && z.qs[z.i].opts[z.picked] !== q.ok ? `<div style="margin-top:10px;font-size:12.5px;font-weight:700;color:var(--muted)">It's “${esc(q.ok)}” — ⚑ worth a revise.</div>` : ''}
+      ${z.picked != null && z.qs[z.i].opts[z.picked] !== q.ok ? `<div style="margin-top:10px;font-size:12.5px;font-weight:700;color:var(--muted)">Not this time — it's “${esc(q.ok)}”, lit in green.</div><button data-act="readerNext" style="margin-top:10px;padding:11px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Next →</button>` : ''}
       <button data-act="readerTryClose" style="margin-top:12px;color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:2px">Close</button>`);
   }
 

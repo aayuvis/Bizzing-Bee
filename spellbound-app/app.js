@@ -42,6 +42,10 @@ function mascotSVG(mood, bodyColor, accentColor){
     `<g clip-path="url(#${CLIP})"><rect x="28" y="214" width="184" height="24" fill="${C.stripe}"/><rect x="28" y="246" width="184" height="24" fill="${C.stripe}"/></g>`;
   const cheeks = `<ellipse cx="62" cy="184" rx="15" ry="9" fill="${C.cheek}" opacity="0.85"/><ellipse cx="178" cy="184" rx="15" ry="9" fill="${C.cheek}" opacity="0.85"/>`;
   const eye=(cx,cy,er,pr,dx,dy)=>`<circle cx="${cx}" cy="${cy}" r="${er}" fill="${C.white}"/><circle cx="${cx+dx}" cy="${cy+dy}" r="${pr}" fill="${C.pupil}"/><circle cx="${cx+dx-pr*0.35}" cy="${cy+dy-pr*0.4}" r="${pr*0.32}" fill="${C.white}"/>`;
+  /* NO FROWN, EVER (FIX-BEE D3 / J2). 'oops' drew slanted brows, a downturned mouth and a
+     tear, and every miss in the app showed it. A miss gets the curious, kind face instead —
+     the old name still resolves so no caller can bring the frown back. */
+  if(mood==='oops'||mood==='sad') mood='think';
   let face='';
   if(mood==='happy'){ face=eye(EL,EY,27,13,2,2)+eye(ER,EY,27,13,2,2)+`<path d="M96,196 Q120,224 150,196" fill="none" stroke="${C.mouth}" stroke-width="9" stroke-linecap="round"/>`; }
   else if(mood==='excited'){ face=`<path d="${starPath(EL,EY,26,11)}" fill="${C.pupil}"/><path d="${starPath(ER,EY,26,11)}" fill="${C.pupil}"/><path d="M92,194 Q120,200 150,194 Q142,232 120,232 Q98,232 92,194 Z" fill="${C.mouth}"/><path d="M104,222 Q120,238 138,222 Q138,210 120,210 Q104,210 104,222 Z" fill="${C.tongue}"/><path d="${starPath(30,70,9,4,4)}" fill="${C.gold}"/><path d="${starPath(214,60,11,5,4)}" fill="${C.gold}"/><path d="${starPath(200,120,7,3,4)}" fill="${C.gold}"/>`; }

@@ -103,21 +103,24 @@
       set({ advView: 'sprint' });
       setTimeout(() => { const w = batch[0]; if (w) sayW(w.w); }, 300); },
     scanMark(known) { const g = state.adv; if (!g || g.mode !== 'scan') return; const w = g.words[g.i];
-      if (known) { g.know.push(w); markMastered(nkey(w.w)); addCoins(1); } else g.gaps.push(w);
+      /* "Know it" is the child's own word for it — it skips the drill, it masters nothing (FIX-BEE D5) */
+      if (known) { g.know.push(w); addCoins(1); } else g.gaps.push(w);
       g.i++; if (g.i >= g.words.length) { ADV._afterScan(); return; }
       render(); setTimeout(() => sayW(g.words[g.i].w), 150); },
     _afterScan() { const g = state.adv;
       if (g.gaps.length) { g.mode = 'drill'; g.drillIdx = 0; state.typed = ''; render(); setTimeout(() => sayW(g.gaps[0].w), 300); }
       else ADV._nextBatch(); },
-    drillSubmit() { const g = state.adv; if (!g || g.mode !== 'drill') return; const w = g.gaps[g.drillIdx];
+    drillSubmit() { const g = state.adv; if (!g || g.mode !== 'drill') return; if (g.goNext) { g.goNext(); return; } const w = g.gaps[g.drillIdx];
       const ans = (state.typed || '').trim().toLowerCase(); if (!ans) { flash('Type the word'); return; }
       const ok = ans === nkey(w.w); const c = active(); const st = aStats(c);
       if (ok) { markMastered(nkey(w.w)); addCoins(2); sfx('correct'); try { burstConfetti(24); } catch (e) {}
         st.srs[nkey(w.w)] = Math.min(5, (st.srs[nkey(w.w)] || 0) + 1); g.right++; }
       else { sfx('wrong'); addMiss(w); st.srs[nkey(w.w)] = 1; try { logBand(w, false); } catch (e) {} }
-      g.lastOk = ok; g.lastWord = w.w; state.typed = ''; render();
-      setTimeout(() => { const t = state.adv; if (!t) return; t.drillIdx++; if (t.drillIdx >= t.gaps.length) { ADV._nextBatch(); return; }
-        t.lastOk = null; render(); sayW(t.gaps[t.drillIdx].w); }, ok ? 900 : 1900); },
+      g.lastOk = ok; g.lastWord = w.w; g.lastTry = ans; state.typed = '';
+      /* right moves on; a miss HOLDS under the letters until Next or Enter (FIX-BEE D3) */
+      const go = () => { const t = state.adv; if (!t || t !== g) return; t.goNext = null; t.drillIdx++; if (t.drillIdx >= t.gaps.length) { ADV._nextBatch(); return; }
+        t.lastOk = null; render(); sayW(t.gaps[t.drillIdx].w); };
+      if (ok) { g.goNext = null; render(); setTimeout(go, 900); } else { g.goNext = go; render(); } },
     _nextBatch() { const g = state.adv; const st = aStats(active());
       st.sprinted += g.words.length; save();
       const nextStart = g.bi + 25;
@@ -153,8 +156,11 @@
         if (g.i >= g.list.length) { ADV.mockEnd(); return; } render(); setTimeout(() => sayW(g.list[g.i].w), 250); return; }
       if (g.round === 'lightning') { if (!ok) g.wrong++; state.typed = ''; g.i = (g.i + 1) % g.list.length; render(); setTimeout(() => sayW(g.list[g.i].w), 120); } },
     mockPickVocab(idx) { const g = state.adv; if (!g || g.round !== 'vocab' || g.picked != null) return; const q = g.qs[g.i];
-      g.picked = idx; const ok = q.choices[idx] === q.answer; if (ok) { g.right++; addCoins(1); sfx('correct'); } else sfx('wrong'); render();
-      setTimeout(() => { const t = state.adv; if (!t) return; if (t.i + 1 < t.qs.length) { t.i++; t.picked = null; render(); } else ADV.mockEnd(); }, 1100); },
+      g.picked = idx; const ok = q.choices[idx] === q.answer; if (ok) { g.right++; addCoins(1); sfx('correct'); } else sfx('wrong');
+      /* right moves on; a miss holds until Next (FIX-BEE D3) */
+      g.goNext = () => { const t = state.adv; if (!t || t !== g) return; t.goNext = null; if (t.i + 1 < t.qs.length) { t.i++; t.picked = null; render(); } else ADV.mockEnd(); };
+      render(); if (ok) setTimeout(() => { if (g.goNext) g.goNext(); }, 1100); },
+    mockVocabNext() { const g = state.adv; if (g && g.goNext) g.goNext(); },
     mockEnd() { const g = state.adv; if (!g || g.done) return; g.done = true; if (g.timer) clearInterval(g.timer);
       const c = active(); const st = aStats(c); const total = g.round === 'lightning' ? (g.right + g.wrong) : (g.list ? g.list.length : g.qs.length);
       const pct = total ? Math.round(g.right / total * 100) : 0; g.pct = pct; g.total = total;
@@ -366,17 +372,17 @@
         `, 'advExit'); }
       // drill
       const w = g.gaps[g.drillIdx]; const dn = g.gaps.length;
-      const fb = g.lastOk != null ? (g.lastOk ? `<div style="color:var(--good,#1f9d57);font-weight:800;font-size:14px;margin-bottom:10px">✓ Locked in!</div>` : `<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:12px;padding:11px;margin-bottom:12px"><div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--fix,#C4453C)">The spelling</div><div style="font-family:var(--entry);font-weight:800;${(typeof hwSpell==='function')?hwSpell(g.lastWord,24):'font-size:24px;letter-spacing:.14em;overflow-wrap:anywhere'}">${esc4(g.lastWord)}</div></div>`) : '';
+      const fb = g.lastOk != null ? (g.lastOk ? `<div style="color:var(--good,#1f9d57);font-weight:800;font-size:14px;margin-bottom:10px">✓ Locked in!</div>` : `${(typeof missFeedbackHTML === 'function') ? missFeedbackHTML(g.lastWord, g.lastTry || '') : esc4(g.lastWord)}`) : '';
       return ADV._shell(`
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--accent);font-weight:800">DRILL YOUR GAPS ${g.drillIdx + 1}/${dn}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--good,#1f9d57)">✓ ${g.right}</span></div>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--glow);text-align:center">
           <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 12px">Hear it, then spell it</p>
           <button data-act="advSayCur" style="display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:8px">${iconSVG('volume', 18)} Hear the word</button>
           <button data-act="advSaySlow" style="display:block;margin:0 auto 14px;padding:7px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:700;font-size:12.5px">Slower</button>
-          ${w.d ? `<div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">${esc4(w.d)}</div>` : ''}
+          ${w.d ? `<div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">${esc4(maskTxt(w.d, w.w))}</div>` : ''}
           ${fb}
           <input data-inp="onType" data-key="advKey" data-fkey="typed" value="${escA4(state.typed || '')}" placeholder="type the word" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,26px);letter-spacing:.12em;text-transform:lowercase;outline:none;margin-bottom:12px">
-          <button data-act="advDrillSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Enter →</button>
+          <button data-act="advDrillSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${g.goNext ? 'Next word →' : 'Enter →'}</button>
         </div>`, 'advExit'); },
 
     _mockView() { const g = state.adv;
@@ -409,7 +415,8 @@
           return `<button data-act="advMockVocab" data-arg="${idx}" ${g.picked != null ? 'disabled' : ''} style="text-align:left;padding:13px 15px;border-radius:12px;background:${bg};border:2px solid ${bd};font-weight:700;font-size:13.5px;line-height:1.4">${esc4(ch)}</button>`; }).join('');
         return ADV._shell(`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);margin-bottom:10px">VOCABULARY ${g.i + 1}/${g.qs.length} · ✓ ${g.right}</div>
           <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:var(--glow);text-align:center;margin-bottom:13px"><div style="font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">What does it mean?</div><div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,5.5vw,30px)">${esc4(q.prompt)}</div><button data-act="advSayW" data-arg="${escA4(q.w.w)}" style="margin-top:10px;padding:8px 15px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:12.5px">${iconSVG('volume', 14)} Hear</button></div>
-          <div style="display:grid;gap:9px">${choices}</div>`, 'advExit'); }
+          <div style="display:grid;gap:9px">${choices}</div>
+          ${g.picked != null && g.goNext ? `<p style="text-align:center;margin:12px 0 0;font-weight:700;font-size:13.5px">Not this time — the green one is right.</p><button data-act="advMockVocabNext" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>` : ''}`, 'advExit'); }
       // written / lightning
       const w = g.list[g.i];
       const head = g.round === 'lightning' ? `<span style="font-family:var(--display);font-weight:900;font-size:19px;color:${g.timeLeft <= 10 ? 'var(--bad)' : 'var(--accent)'}"><span id="adv-clock">${g.timeLeft}s</span></span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);margin-left:10px">✓ ${g.right}</span>` : `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">WRITTEN ${g.i + 1}/${g.list.length} · ✓ ${g.right}</span>`;
@@ -417,7 +424,7 @@
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--glow);text-align:center">
           <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 12px">Listen and spell</p>
           <button data-act="advSayCurList" style="display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:8px">${iconSVG('volume', 18)} Hear the word</button>
-          ${g.round === 'written' && w.d ? `<div style="font-size:12.5px;color:var(--muted);margin:8px 0 4px;line-height:1.45">${esc4(w.d)}</div>` : ''}
+          ${g.round === 'written' && w.d ? `<div style="font-size:12.5px;color:var(--muted);margin:8px 0 4px;line-height:1.45">${esc4(maskTxt(w.d, w.w))}</div>` : ''}
           <input data-inp="onType" data-key="advKey" data-fkey="typed" value="${escA4(state.typed || '')}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:15px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(19px,5vw,25px);letter-spacing:.12em;text-transform:lowercase;outline:none;margin:12px 0">
           <button data-act="advMockSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Enter →</button>
         </div>`, 'advExit'); },

@@ -1027,8 +1027,8 @@
        progress, and a meaning answered right is not a word spelt right — the
        same separation the Vocabulary section keeps, and there is a headless test
        over there that asserts it. */
-    render();
-    after(1100, () => {
+    /* a wrong meaning HOLDS until Continue, like a wrong spelling (FIX-BEE D3) */
+    const goOn = () => {
       const gg = mb(); if (!gg) return;
       /* your shot at the title runs on its own rails, exactly as in mbSpell */
       if (gg.c2) {
@@ -1052,7 +1052,9 @@
       me.hist.push(ok);
       gg.turn++; gg.phase = 'call';
       after(900, nextTurn);
-    });
+    };
+    if (ok) { render(); after(1100, goOn); }
+    else { g.hold = () => { if (mb() !== g || !g.hold) return; g.hold = null; render(); after(300, goOn); }; render(); }
   };
 
   /* ---------------- a rival's word, pronounced ----------------
@@ -1203,12 +1205,23 @@
     const g = mb(); if (!g || g.phase !== 'me') return;
     const me = alive().find(s => s.kind === 'me'); if (!me) return;
     const ok = sameSpelling(g.typed || '', g.word.w);
-    g.phase = 'meDone'; g.meOk = ok;
+    g.phase = 'meDone'; g.meOk = ok; g.meTry = g.typed || '';
     try { logBand(g.word, ok, 1); } catch (e) {}
     if (ok) { try { markMastered(nkey(g.word.w)); } catch (e) {} }
+    else { try { mastEvidence(g.word.w, false); } catch (e) {} }
+    /* A MISS HOLDS (FIX-BEE D3). The hall used to ring the bell and call the next speller
+       900ms later, so the one moment a child most needs — the word they just got wrong — was
+       gone before it could be read. Now the letters and the why stay at the microphone until
+       the child taps Continue (or Enter); the verdict and the next turn follow from there. */
+    if (!ok) { g.hold = () => { const gg = mb(); if (gg !== g || !g.hold) return; g.hold = null; mbVerdict(g, me, ok); };
+      try { sfx('wrong'); } catch (e) {} render(); return; }
+    mbVerdict(g, me, ok);
+  };
+  app2.mbGoOn = () => { const g = mb(); if (g && g.hold) g.hold(); };
+  function mbVerdict(g, me, ok) {
     /* your shot at the title */
     if (g.c2) {
-      try { sfx(ok ? 'right' : 'wrong'); if (ok) burstConfetti(24); } catch (e) {}
+      try { if (ok) { sfx('right'); burstConfetti(24); } } catch (e) {}
       announce(fill(pick(ok ? SAY.meRight : SAY.meWrong, g.seed + g.round), { n: me.n, word: g.word.w }));
       me.hist.push(ok);
       after(900, () => champAfter(ok));
@@ -1219,7 +1232,6 @@
       announce(fill(pick(SAY.meRight, g.seed + g.turn), { n: me.n }));
     } else {
       const out = sitDown(me); g.roundMissed++;
-      try { sfx('wrong'); } catch (e) {}
       announce(fill(pick(out ? SAY.meWrong : SAY.meSafe, g.seed + g.turn), { word: g.word.w }));
       if (out && alive().length === 1 && champTry(me, g.word)) {
         me.hist.push(ok); render(); return;
@@ -1229,7 +1241,7 @@
     g.turn++;
     after(900, () => { const gg = mb(); if (!gg) return; gg.phase = 'call'; nextTurn(); });
     render();
-  };
+  }
 
   /* ---------------- the finish ---------------- */
   function finish() {
@@ -1362,9 +1374,10 @@
             return `<button class="mb-vopt${right ? ' right' : chosen ? ' wrong' : ''}"
               ${done ? '' : `data-act="mbVocPick" data-arg="${i}"`}>
               <span class="mb-vletter">${String.fromCharCode(65 + i)}</span>
-              <span>${esc(c)}</span></button>`;
+              <span>${esc(maskTxt(c, q.w.w))}</span></button>`;
           }).join('')}
         </div>
+        ${done && !g.meOk && g.hold ? `<p style="margin:10px 0 4px;font-weight:700;font-size:13.5px">Not this time — the green one is what it means.</p><button data-act="mbGoOn" class="mb-submit">Continue →</button>` : ''}
       </div></div>`;
   }
   /* ---- a rival's meaning question, with the child's own thirty seconds ----
@@ -1388,7 +1401,7 @@
         <div class="mb-vopts">
           ${q.choices.map((c, i) => `<button class="mb-vopt${pr.pick === c ? ' picked' : ''}"
             ${pr.pick == null ? `data-act="mbVPracPick" data-arg="${i}"` : ''}>
-            <span class="mb-vletter">${String.fromCharCode(65 + i)}</span><span>${esc(c)}</span></button>`).join('')}
+            <span class="mb-vletter">${String.fromCharCode(65 + i)}</span><span>${esc(maskTxt(c, q.w.w))}</span></button>`).join('')}
         </div>
         <button data-act="mbVPracSkip" class="mb-submit" style="align-self:flex-start">${esc(s.bot.name)}, answer it &rarr;</button>
       </div></div>`;
@@ -1417,7 +1430,7 @@
           ${q.choices.map((c, k) => {
             const right = done && c === q.answer, theirs = done && c === g.vPick && c !== q.answer;
             return `<button class="mb-vopt small${right ? ' right' : theirs ? ' wrong' : ''}${lp && lp.pick === c ? ' mine' : ''}">
-              <span class="mb-vletter">${String.fromCharCode(65 + k)}</span><span>${esc(c)}</span></button>`;
+              <span class="mb-vletter">${String.fromCharCode(65 + k)}</span><span>${esc(maskTxt(c, q.w.w))}</span></button>`;
           }).join('')}
         </div>
         ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You picked ${esc(lp.pick.slice(0, 40))}${lp.pick.length > 40 ? '…' : ''} — ${lp.correct ? 'you had it too.' : 'not that one.'}</div>` : ''}
@@ -1523,7 +1536,9 @@
         <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(g.avatar, 74) : ''}</span>
         <div class="mb-mic-in"><span class="mb-mic-name">${esc(g.name)}</span>
           <div class="mb-letters">${(g.typed || '—').toUpperCase().split('').join(' ')}</div>
-          <div class="mb-truth">${g.meOk ? 'Correct' : 'The word was <b>' + esc(w.w) + '</b>'}</div></div></div>`
+          <div class="mb-truth">${g.meOk ? 'Correct' : 'The word was <b>' + esc(w.w) + '</b>'}</div>
+          ${!g.meOk && g.hold && window.missFeedbackHTML ? `<div class="mb-why" style="margin-top:10px">${missFeedbackHTML(w, g.meTry || '')}</div>
+            <button data-act="mbGoOn" class="mb-submit" style="margin-top:4px">Continue →</button>` : ''}</div></div>`
       : (g.phase === 'vme' || g.phase === 'vmeDone') ? vocMeUI()
       : g.phase === 'vprac' ? vocPracUI()
       : g.phase === 'vbot' ? vocBotUI()
@@ -1618,6 +1633,7 @@
     const g = mb(); if (!g || state.nav !== 'mockbee') return;
     if (e.key !== 'Enter') return;
     if (g.phase === 'me') { e.preventDefault(); app2.mbSpell(); }
+    else if ((g.phase === 'meDone' || g.phase === 'vmeDone') && g.hold) { e.preventDefault(); app2.mbGoOn(); }
     else if (g.phase === 'practice') { e.preventDefault(); app2.mbPracSkip(); }
   } catch (_) {} });
 })();
