@@ -4,7 +4,8 @@
    integration/bizzing-wallet.js at commit d42455e (2 Oct 2026). The logic and the
    constants are the drop-in's, line for line; only the module syntax is gone, because
    <script type="module"> does not load over file:// and Bee must run from a folder.
-   The API is window.BZ_WALLET = { EARN, DAILY_CAP, balance, earn, spend, migrateFrom,
+   One fix, marked where it is (the migration line no longer counts toward the daily
+   cap). The API is window.BZ_WALLET = { EARN, DAILY_CAP, balance, earn, spend, migrateFrom,
    ledger }. EARN is frozen here so no caller in this app can rewrite an amount — the
    drop-in's own comment says an app cannot override them, and a module export of a
    plain object would have let it.
@@ -50,7 +51,10 @@
     if (!APPS.test(app) || !(event in EARN)) return 0;
     const o = load(), k = kid(o, who);
     if (!k) return 0;
-    const today = k.ledger.filter((x) => x.a === app && x.n > 0 && day(x.t) === day(now)).reduce((a, x) => a + x.n, 0);
+    /* ONE DEVIATION from d42455e: the 'migrated' line is not earning, so it does not count
+       toward the day's cap. In the drop-in it did — a child whose old purse was 100 or more
+       could earn nothing at all on the day of the migration. Reported upstream. */
+    const today = k.ledger.filter((x) => x.a === app && x.n > 0 && x.why !== 'migrated' && day(x.t) === day(now)).reduce((a, x) => a + x.n, 0);
     const n = Math.min(EARN[event], Math.max(0, DAILY_CAP - today));
     if (!n) return 0;
     k.coins += n;

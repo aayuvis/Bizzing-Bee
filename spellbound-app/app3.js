@@ -269,7 +269,7 @@ function journeyOrder(){ if(_journeyOrder) return _journeyOrder;
 let _journeyStages = null;
 function journeyStages(){ if(_journeyStages) return _journeyStages;
   const {champ,rest}=journeyOrder(); const stages=[]; let i=0;
-  for(let k=1;k<=CHAMP_LEVELS;k++){ const sz=champLevelSize(k); stages.push({ n:k, label:'Level '+k, words:champ.slice(i,i+sz), champ:true }); i+=sz; }
+  for(let k=1;k<=CHAMP_LEVELS;k++){ const sz=champLevelSize(k); stages.push({ n:k, label:'Stage '+k, words:champ.slice(i,i+sz), champ:true }); i+=sz; }
   // Sprinkle the Scripps championship words across the toughest Champ levels (15–20).
   const scripps=(window.SB_SCRIPPS||[]);
   if(scripps.length){ const seen=new Set(); stages.forEach(s=>(s.words||[]).forEach(w=>seen.add(nkey(w.w))));
@@ -629,7 +629,7 @@ function gainXp(){ const c=active(); const key=activeListKey(); const lp=getList
   lp.xp=(lp.xp||0)+1; const rawAfter=listLevelRaw(c,key); const after=Math.min(rawAfter, levelCap());
   if(after>before){ const form=formIdx(after); const art=grantStageArt();
     addCoins('mastery'); state.toast='Stage up in '+listLabel(key)+' ✨ — you won a '+art.name; scheduleToast(3000); sfx('level');   /* a stage mastered is the standard's mastery event */ burstConfetti(90); }
-  else if(!state.premium && rawAfter>FREE_LEVEL_CAP && before>=FREE_LEVEL_CAP && (lp.xp % 6 === 0)){ state.toast='Level 5 reached — go Premium to keep leveling 👑'; scheduleToast(2800); }
+  else if(!state.premium && rawAfter>FREE_LEVEL_CAP && before>=FREE_LEVEL_CAP && (lp.xp % 6 === 0)){ state.toast='Stage 5 cleared — more stages come with the plan (ask a grown-up)'; scheduleToast(2800); }
 }
 // pick the smoothest natural voice the device offers (loaded async)
 let _voice = null;
@@ -2097,7 +2097,7 @@ const app = {
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
   onbBeeDate:(v)=>{ state.draft.beeDate=v||null; },
   onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'auth'}); } else set({onbStep:state.onbStep-1}); },
-  pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' unlocks with coins — find it in your Collection later!'); return; } state.draft.avatar=id; render(); },
+  pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' is waiting in your Collection — its card says how to win it.'); return; } state.draft.avatar=id; render(); },
   onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('🔒 Locked — start in the Hive, then unlock this world for '+COST.theme+' 🪙'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
@@ -3088,6 +3088,7 @@ const app = {
      chance, no pack, no content — a cosmetic at a fixed price (FAMILY-STANDARD §1). */
   buyAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||avOwned(c,id)) return;
     const r=avRule(a,c); if(!r||r.kind!=='milestone'||!r.price){ flash(r?r.text:'Not for sale'); return; }
+    if((c.coins||0)>=r.price && !window.confirm('Buy '+a.name+' for '+r.price+' Bizzing coins? The price is fixed — this is exactly what you get.')) return;
     if(!spendCoins(r.price,'avatar:'+id)){ flash('That one is '+r.price+' Bizzing coins — or '+r.text.toLowerCase()+' and it is yours.'); return; }
     avGive(c,id,1); c.avatar=id; save(); sfx('win'); flash('✨ '+a.name+' joined your collection!'); render();
     try{ app.showAvCard(id,{unlocked:true}); }catch(e){ burstConfetti(120); } },
@@ -3138,9 +3139,14 @@ const app = {
     const c=active(); const owned=(typeof avOwned==='function')?avOwned(c,id):true; const wearing=c.avatar===id;
     const ov=document.createElement('div'); ov.className='avc-ov';
     const unlockBanner=opts.unlocked?'<div class="avc-unlock">✨ New card unlocked!</div>':'';
-    const actions=owned?(wearing?'<span class="avc-worn">Wearing ✓</span>':'<button class="avc-use" data-avc-use="'+id+'">Wear this avatar</button>'):'';
+    /* an unowned card says, under the card, exactly how it is won (avRule) — FIX-BEE I3 */
+    const _a=(window.SB_AVATARS&&SB_AVATARS.byId[id])||null; const _r=(!owned&&_a)?avRule(_a,c):null;
+    const ruleHTML=_r?('<div class="avc-rule av-rule" style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:10px">'+lockChip(_r.kind==='milestone'?'learn':(_r.kind==='plan'?'plan':'learn'),_r.text)
+      +(_r.price?'<button class="avc-use" data-avc-buy="'+id+'">Buy for '+_r.price+' Bizzing coins</button>':'')+'</div>'):'';
+    const actions=owned?(wearing?'<span class="avc-worn">Wearing ✓</span>':'<button class="avc-use" data-avc-use="'+id+'">Wear this avatar</button>'):ruleHTML;
     ov.innerHTML='<div class="avc-wrap">'+unlockBanner+SB_AV_CARD_HTML(id,{owned})+actions+'<button class="avc-x" aria-label="Close">Close</button></div>';
     ov.onclick=e=>{ const useId=e.target.closest('[data-avc-use]'); if(useId){ app.wearAv(useId.getAttribute('data-avc-use')); ov.remove(); return; }
+      const buyId=e.target.closest('[data-avc-buy]'); if(buyId){ ov.remove(); app.buyAvatar(buyId.getAttribute('data-avc-buy')); return; }
       if(e.target===ov||e.target.closest('.avc-x')) ov.remove(); };
     document.body.appendChild(ov);
     try{ if(opts.unlocked&&typeof burstConfetti==='function') burstConfetti(120); }catch(e){} },
@@ -3785,7 +3791,7 @@ function viewLanding() {
     ['bolt', 'Works with no internet', 'On a plane, in a tunnel, in the car. The words live on the device.'],
     ['users', 'Only the parent has an account', 'Your child never signs in to anything and never talks to anyone.'],
     ['close', 'No ads, no chat, no leaderboard', 'Nobody can reach your child inside this app. There is no one to reach.'],
-    ['spark', 'Nothing can be bought through', 'Coins buy hats. Every locked thing can be earned by practising instead.'],
+    ['spark', 'Nothing can be bought through', 'Coins are earned by learning and buy looks. Every locked thing names the learning that opens it.'],
   ].map(([ic, t, b]) => `<div style="display:flex;gap:12px;align-items:flex-start">
       <span style="flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG(ic, 17)}</span>
       <span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px;line-height:1.3">${t}</span>
@@ -4000,11 +4006,11 @@ function landCollect(){
 
   return landSection('Collect · evolve · never buy',
     `${SB_FACTS.avatars} characters. Not one of them for&nbsp;sale.`,
-    `Packs drop with a golden reveal and duplicates never land. Every one of them is earned by practising — coins buy hats and nothing else, and anything paid for can be earned instead. In a category built on pester-power purchases, that is the headline.`,
+    `No packs and no odds: every card says exactly how it is won, by a learning milestone printed on it — coins buy looks and nothing else, and nothing is ever left to chance. In a category built on pester-power purchases, that is the headline.`,
     `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(52px,7.4vw,76px),1fr));gap:10px;justify-items:center;margin-bottom:22px">${strip}</div>
      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
        ${[['Egg to Queen Bee', SB_FACTS.evoForms + ' evolution forms across twelve worlds, each hand-drawn with its own idle animation. It measures effort, and it never goes down.'],
-          ['Coins buy things, never words', 'Coins buy a world to wear, an avatar pack or a concept chapter. There is no way to pay your way past a word you cannot spell — and game artifacts are won by playing, not bought.'],
+          ['Coins buy looks, never words', 'Bizzing coins are earned by learning and buy a Rare avatar at its printed price — worlds open on your level and chapters on the Atlas. There is no way to pay your way past a word you cannot spell — and game artifacts are won by playing, not bought.'],
           ['A golden reveal', 'Pack drops are the reason a nine-year-old comes back tomorrow without being asked — bought with practice, not with a card.']]
         .map(([t,b])=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
           <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">${t}</div>
@@ -4168,7 +4174,7 @@ function landPlansSection() {
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,258px),1fr));gap:16px">${cards}</div>
       ${addon}
-      <div style="text-align:center;font-size:13px;color:var(--muted);margin-top:20px;line-height:1.6">Coins are earned by playing and only buy cosmetics. Nothing that affects learning is ever behind a coin — anything paid can be earned instead.</div>
+      <div style="text-align:center;font-size:13px;color:var(--muted);margin-top:20px;line-height:1.6">Bizzing coins are earned by learning and only buy cosmetics. Nothing that affects learning is ever behind a coin, and nothing is ever left to chance.</div>
     </div></section>`;
 }
 
@@ -6166,9 +6172,9 @@ function viewApp(){
         <button data-act="celebrateNextSet" style="width:100%;margin-top:20px;padding:15px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:16px;box-shadow:var(--edge)">Bring on the next set →</button>
         <button data-act="celebrateClose" style="margin-top:10px;color:var(--muted);font-weight:700;font-size:13px">Take a breather</button>`); }
     return shell(`
-        ${celeAvatar(cb.champ?'CHAMP! 🏆':'Level up!')}
-        <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">${cb.champ?'Champion unlocked':'Level cleared'}</div>
-        <div style="font-family:var(--display);font-weight:800;font-size:36px;line-height:1.05;margin:6px 0 4px">${cb.champ?'Bizzing Bee Champ!':('Level '+cb.level+' unlocked!')}</div>
+        ${celeAvatar(cb.champ?'CHAMP! 🏆':'Stage cleared!')}
+        <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">${cb.champ?'Champion unlocked':'Stage cleared'}</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:36px;line-height:1.05;margin:6px 0 4px">${cb.champ?'Bizzing Bee Champ!':('Stage '+cb.level+' unlocked!')}</div>
         <div style="font-size:15px;color:var(--muted);font-weight:450">${esc(cb.list)} · ${esc(c2.name||'')} — ${esc(rankName(fi))} · ${cb.date}</div>
         <div style="display:flex;justify-content:center;gap:6px;margin:14px 0 18px">${[0,1,2].map(i=>`<span style="display:inline-block;width:12px;height:12px;border-radius:999px;background:var(--treasure,#F0B429);animation:sb-pop .4s ease ${(i*0.12).toFixed(2)}s both"></span>`).join('')}</div>
         ${(()=>{ const L=lessonsAll()[loreCount(c2)-1]; if(!L) return ''; return `<div style="text-align:left;display:flex;align-items:center;gap:11px;background:var(--treasure-tint,#FFF3D6);border-radius:12px;padding:11px 13px;margin-bottom:14px">
@@ -6212,7 +6218,7 @@ function viewApp(){
              collection belongs, reached by the Bizzy button. */''}
         ${/* The coins pill IS the door to My Hive — that is where coins are spent, and the
              Hive has no tab of its own. */''}
-        <button data-act="openCollection" title="My Hive — your coins, badges, avatars and worlds" aria-label="My Hive — ${escA(String(active().coins||0))} coins" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}<span style="display:inline-flex;line-height:0;opacity:.85">${iconSVG('crown',14)}</span></button>
+        <button data-act="openCollection" title="My Hive — your Bizzing coins, medals, avatars and worlds" aria-label="My Hive — ${escA(String(active().coins||0))} Bizzing coins" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}<span style="display:inline-flex;line-height:0;opacity:.85">${iconSVG('crown',14)}</span></button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
           /* One button for how the app looks: a tap cycles Light → White → Dusk, a
              double-tap holds the world still (focus) in whichever look you are in. */
@@ -6870,7 +6876,7 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
      "Kept from before" (its id is a storage key in badgesSeen, like the karma* ones); one not
      earned is never shown and can never be earned — c.streak no longer moves. */
   const _seen=c.badgesSeen||{};
-  const kept=(id,n)=>!!_seen[id] || !!((c.streakRewards||{})[n]) || Math.max(c.streakBest||0, c.streak||0)>=n;
+  const kept=(id,n)=>!!_seen[id] || !!((c.streakRewards||{})[n]) || (c.streakBest||0)>=n;   /* the RECORD of what was earned, never the live counter */
   let stops=0; try{ stops=(typeof window.SB_TRAIL_STOPS==='function')?SB_TRAIL_STOPS(c):0; }catch(e){}
   const beaten=Object.keys(c.trapsBeaten||{}).length;
   const mast=masteredCount();
@@ -6920,11 +6926,11 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
     { g:'Word difficulty', id:'band7', name:'State & National', desc:'Spell right at word difficulty 7', ic:'target', done:bb.band>=7 },
     { g:'Word difficulty', id:'band9', name:'Championship Band', desc:'Spell right at word difficulty 9', ic:'crown', done:bb.band>=9 },
     // Levels & evolution
-    { g:'Levels', id:'hatched', name:'First Hatch', desc:'Reach Hatchling — your first evolution', ic:'sprout', done:listLevel(c,activeListKey())>=2 },
-    { g:'Levels', id:'quest5', name:'Level 5 Climber', desc:'Reach Level 5 on any path', ic:'steps', done:jl>=5 },
-    { g:'Levels', id:'quest10', name:'Level 10 Ace', desc:'Reach Level 10 on the Journey', ic:'steps', done:jl>=10 },
-    { g:'Levels', id:'quest15', name:'Level 15 Star', desc:'Reach Level 15 on the Journey', ic:'steps', done:jl>=15 },
-    { g:'Levels', id:'champ', name:'Bizzing Bee Champ', desc:'Clear all 20 Champ Levels', ic:'crown', done:isChampDone(c) },
+    { g:'Levels', id:'hatched', name:'First Hatch', desc:'Reach Level 3 — your bee hatches', ic:'sprout', done:rankOf(c).level>=3 },
+    { g:'Levels', id:'quest5', name:'Stage 5 Climber', desc:'Reach Stage 5 on the Journey', ic:'steps', done:jl>=5 },
+    { g:'Levels', id:'quest10', name:'Stage 10 Ace', desc:'Reach Stage 10 on the Journey', ic:'steps', done:jl>=10 },
+    { g:'Levels', id:'quest15', name:'Stage 15 Star', desc:'Reach Stage 15 on the Journey', ic:'steps', done:jl>=15 },
+    { g:'Levels', id:'champ', name:'Bizzing Bee Champ', desc:'Clear all 20 Champ stages', ic:'crown', done:isChampDone(c) },
     /* The three ids below still read karma*. They are STORAGE KEYS for earned badges —
        renaming them would re-lock all three for every child who already has them. The name
        and the wording are what a child reads, and those are fixed. */
@@ -7090,7 +7096,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
           that tab is open rather than standing as a banner over the packs. */''}
     ${pageHead('My Hive', '', '',
       (tab==='avatars'?`<button data-act="printAvCards" title="Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${SB_ICON('printer',{size:15})} Print my cards</button>`:'')
-      + `<span class="sb-coinchip" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
+      + `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Medals · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}</div>
     ${body}
   </div>`; }
@@ -7271,7 +7277,7 @@ function sideShelves(){
   const lessons=lessonsAll().length;
   if(lessons) out.push(shelfCover('Word journeys', lessons+' journeys',
     'The history and geography of one word at a time — story, pattern, then five words to keep.',
-    'openJourneys', null, !state.premium && !state.devUnlock ? 'Premium' : ''));
+    'openJourneys', null, !state.premium && !state.devUnlock ? 'With the plan — ask a grown-up' : ''));
   const tips=((window.SB_ADV_TIPS)||[]).length;
   if(tips) out.push(shelfCover('Champion tips', tips+' techniques',
     'Memory, speed, roots and bee-day tactics from spellers who have stood at the microphone.',
@@ -7281,7 +7287,7 @@ function sideShelves(){
 function shelfCover(name, meta, blurb, act, arg, badge){
   const f=CONCEPT_FAM[name]||CONCEPT_FAM.Advanced;
   const locked=!!badge;
-  return `<button class="sb-cover-card" data-act="${locked&&badge!=='Premium'?'openAdvanced':act}" ${arg?`data-arg="${escA(arg)}"`:''} style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
+  return `<button class="sb-cover-card" data-act="${locked&&!/plan/.test(badge)?'openAdvanced':act}" ${arg?`data-arg="${escA(arg)}"`:''} style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(name)}">
       <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">Also here</span>
       <span style="font-family:var(--display);font-weight:800;font-size:23px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(name)}</span>
@@ -9124,7 +9130,7 @@ function viewProgress(){
           <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;color:var(--muted)">${a===b2?('Band '+a):('Bands '+a+'–'+b2)}</div>
           <div style="font-size:12px;font-weight:800;line-height:1.15;margin-top:3px;${on?'color:var(--accent)':''}">${label}</div></div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:18px">
-        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your word difficulty</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Level '+bb.band+' of 9 · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your word difficulty</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Word difficulty '+bb.band+' of 9 · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
         <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Practice, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
@@ -9201,8 +9207,8 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
 function viewParent(){
   const S=state;
   const sub=S.premium
-    ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. Earn coins for the rest.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
-    : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. Earn 🪙 coins to unlock more, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
+    ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. The rest opens as they learn.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
+    : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. More opens as they learn, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
   const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px">
       <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:60px;height:60px;border-radius:16px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(k.avatar,44)}</div>
         <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Bizzing Bee'}</div></div>
@@ -9960,7 +9966,7 @@ function coachTrain(){
     return `<div style="position:relative;display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;border:1px solid var(--line);background:var(--surface)">
       <button data-act="selectList" data-arg="${escA(k)}" title="Switch to this list" style="display:flex;align-items:center;gap:9px;min-width:0;flex:1;text-align:left">
         <span style="width:27px;height:27px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,${cc},color-mix(in srgb,${cc} 70%,#1c1030 30%))"></span>
-        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:12px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(dockLabel(k))}</span><span style="font-size:12px;color:var(--muted);font-weight:700">Level ${listStageIdx(c,k)+1}</span></span></button>
+        <span style="min-width:0"><span style="display:block;font-weight:800;font-size:12px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(dockLabel(k))}</span><span style="font-size:12px;color:var(--muted);font-weight:700">Stage ${listStageIdx(c,k)+1}</span></span></button>
       <button data-act="dockMenu" data-arg="${escA(k)}" aria-label="List options" style="flex-shrink:0;width:26px;height:26px;border-radius:6px;color:var(--muted);display:grid;place-items:center;background:${open?'var(--surface2)':'transparent'};font-weight:800;font-size:15px;line-height:1">⋯</button>
       ${open?`<div style="position:absolute;top:calc(100% + 4px);right:4px;z-index:40;background:var(--bg2);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh-overlay);padding:6px;min-width:170px;animation:sb-pop .18s ease both">
         <button data-act="pauseList" data-arg="${escA(k)}" style="display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;padding:8px 10px;border-radius:6px;font-weight:800;font-size:12px;color:var(--text)">${SB_ICON('pause',{size:16})} Pause <span style="color:var(--muted);font-weight:600;font-size:12px">keeps progress</span></button>
@@ -9992,7 +9998,7 @@ function coachTrain(){
     const curK=(S.luTab==='practice'&&state.status==='idle')?nkey((curWord()||{}).w||''):'';
     const cells=shown.map(w=>{ const hide=curK&&nkey(w.w)===curK;
       return `<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:var(--display);font-weight:800;font-size:13px">${hide?'•••':esc(w.w)}</span>${state.luMastered[nkey(w.w)]?'<span style="color:var(--good);font-weight:800;font-size:12px">✓</span>':''}<button data-act="say" data-arg="${escA(w.w)}" style="margin-left:auto;color:var(--accent)">${iconSVG('volume',14)}</button></div>${w.d?`<div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:3px">${esc(trunc(hide?maskTxt(w.d,w.w):w.d,90))}</div>`:''}</div>`; }).join('');
-    return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Level ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:12px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
+    return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-rise .3s ease both"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">Stage ${stage.n} words · ${esc(listLabel(key).split(' · ')[0])} · ${fullList.length}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:360px;overflow-y:auto">${cells}</div>${fullList.length>cap?`<div style="font-size:12px;color:var(--muted);margin-top:8px">Showing the first ${cap} of ${fullList.length}.</div>`:''}</div>`; })() : '';
   const titleRow = (S.renameKey===key)
     ? `<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px"><input data-inp="renameInput" data-fkey="renameInp" value="${escA(S.renameVal)}" maxlength="40" placeholder="List name" style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:8px 11px;font-size:15px;font-weight:800;color:var(--text);font-family:var(--display)"><button data-act="saveRename" style="padding:8px 13px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Save</button><button data-act="cancelRename" style="padding:8px 11px;border-radius:10px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px">✕</button></div>`
     : `<div style="display:inline-flex;align-items:center;gap:8px;min-width:0"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(listLabel(key))}</span><button data-act="startRename" data-arg="${escA(key)}" title="Rename this list" style="color:var(--muted);display:inline-flex">${iconSVG('pencil',15)}</button><span style="font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap">· Stage ${uiLevel}</span></div>`;
@@ -10020,11 +10026,11 @@ function coachTrain(){
   // ---- one Level header (Word→Set→Level→Champ→Library) ----
   const levelHeadline = isJourney
     ? (stage.champ ? ('Stage '+stage.n+' of '+CHAMP_LEVELS+' to Champ') : ('Champion\'s Library · '+esc(stage.label)))
-    : ('Level '+stage.n+' of '+stages.length);
+    : ('Stage '+stage.n+' of '+stages.length);
   const levelTag = isJourney
     ? (stage.champ ? `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent)">BIZZING BEE CHAMP</span>` : `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:#C8901B">★ CHAMP · LIBRARY</span>`)
     : `<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)">${esc(listLabel(key).split(' · ')[0]).toUpperCase()}</span>`;
-  const advanceTo = isJourney ? (nextIsLibrary ? ('Library '+(stage.n-CHAMP_LEVELS+1)) : ('Level '+(stage.n+1))) : ('Level '+(stage.n+1));
+  const advanceTo = isJourney ? (nextIsLibrary ? ('Library '+(stage.n-CHAMP_LEVELS+1)) : ('Stage '+(stage.n+1))) : ('Stage '+(stage.n+1));
   let advanceHTML;
   if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
   else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Bizzing Bee Champ!</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
@@ -10114,7 +10120,7 @@ function listCoverCard(k,label,sub,count,locked){ const c=active(); const voc=!!
      it — browsing lists to read should never write anything into the spelling data. */
   const lvl = voc ? (vocLevel('list:'+k)+1) : ((getList(c,k).stage||0)+1);
   const stMeta = voc ? (' · Vocab set '+(vocLevel('list:'+k)+1))
-    : (k==='journey') ? (' · Level '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Level '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
+    : (k==='journey') ? (' · Stage '+(listStageIdx(c,'journey')+1)) : ((on && !locked) ? (' · Stage '+(listStageIdx(c,k)+1)+'/'+listStages(k).length) : '');
   return `<button class="sb-cover-card" data-act="${act}" data-arg="${k}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px ${on?f.c:'var(--line)'},var(--sh-rest);display:flex;flex-direction:column">
     <div style="position:relative;height:88px;display:flex;align-items:center;justify-content:center;padding:12px;${listCoverBG(k)}">
       <span style="position:absolute;top:10px;left:11px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">${esc(f.tag)}</span>
@@ -10126,7 +10132,7 @@ function listCoverCard(k,label,sub,count,locked){ const c=active(); const voc=!!
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(sub,64))}</div>
       <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
         <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${count} words · L${lvl}${stMeta}</span>
-        <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?(iconSVG('lock',11,2.2)+' Premium'):'Choose →')}</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?lockChip('plan','With the plan — ask a grown-up',{fs:10.5}):'Choose →')}</span>
       </div>
     </div>
   </button>`; }
@@ -10168,7 +10174,7 @@ function coachSetup(){
         return listCoverCard(o.key,o.label,o.sub,o.count, !isListUnlocked(o.key)); }).join('');
   const jc=listCoverOf('journey'); const jLvl=(getList(c,'journey').stage||0)+1; const jMast=journeyMastered(c);
   const jChampPct=Math.round(Math.min(1,(getList(c,'journey').stage||0)/CHAMP_LEVELS)*100); const jStarted=(getList(c,'journey').stage||0)>0 || jMast>0;
-  const champLabel = jLvl>CHAMP_LEVELS ? 'Bizzing Bee Champ 🏆 · exploring the Library' : ('Level '+Math.min(jLvl,CHAMP_LEVELS)+' of '+CHAMP_LEVELS+' to Champ');
+  const champLabel = jLvl>CHAMP_LEVELS ? 'Bizzing Bee Champ 🏆 · exploring the Library' : ('Stage '+Math.min(jLvl,CHAMP_LEVELS)+' of '+CHAMP_LEVELS+' to Champ');
   const journeyBanner=`<button data-act="startJourney" style="position:relative;overflow:hidden;text-align:left;width:100%;border-radius:20px;margin-bottom:16px;${listCoverBG('journey')};box-shadow:0 8px 22px rgba(43,27,94,.18)">
     <div style="padding:18px 20px;color:#fff">
       <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">${(active().activeList||'default')==='journey'?'Your path':'★ Recommended path'}</span>
@@ -10275,7 +10281,7 @@ function coachOrGone(){
 }
 
 /* ===== Magic Squares — a 3×3 bingo board of themes. Clear a cell by acing 5 questions
-   (spell-it or pick-the-meaning). Complete rows, columns & diagonals for bonus coins;
+   (spell-it or pick-the-meaning). Complete rows, columns & diagonals for a celebration (coins come from the words: a won cell is a finished round);
    black out the whole square for the mega prize. ===== */
 const MAGIC_BONUS={cell:3,row:10,col:10,diag:15,square:40};
 function magicConceptCells(){ try{ loadConcepts(); }catch(e){}
@@ -10464,7 +10470,7 @@ function gFinishChamp(){ clearGTimer(); const g=state.game; g.status='done'; con
   const blockLib = g.champKey==='journey' && g.champLevel>=CHAMP_LEVELS && !state.premium;
   g.canAdvance = g.pass && g.band==='level' && curLvl===g.champLevel && !blockLib && (listStageIdx(c,g.champKey) < listStages(g.champKey).length-1);
   if(g.pass){ sfx('win'); burstConfetti(120); } else sfx('level');
-  logActivity('champ','Champ Challenge', {done, right:g.right, coins:bonus}, []); render(); }
+  logActivity('champ','Champ Challenge', {done, right:g.right, coins:g.bonus||0}, []); render(); }
 const BANDS=[['level','This Level'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champion','Champion'],['missed','My misses']];
 function challengeConfig(){ const S=state; const key=S.challengeKey||activeListKey(); const lvl=listStageIdx(active(),key)+1;
   const seg=(f,v,label,cur)=>`<button data-act="chSet" data-arg="${f}:${v}" style="flex:1;min-width:64px;padding:11px 8px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid ${cur?'var(--accent)':'var(--line)'};${cur?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">${label}</button>`;
@@ -10480,7 +10486,7 @@ function challengeConfig(){ const S=state; const key=S.challengeKey||activeListK
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:18px">
       ${fmtRow}${amtRow}${bandRow}
       <button data-act="chStart" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start Challenge →</button>
-      ${S.chBand==='level'?`<div style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Testing out of <b>Level ${lvl}</b> of ${esc(listLabel(key).split(' · ')[0])}.</div>`:''}
+      ${S.chBand==='level'?`<div style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Testing out of <b>Stage ${lvl}</b> of ${esc(listLabel(key).split(' · ')[0])}.</div>`:''}
     </div>
   </div>`; }
 function champDone(){ const g=state.game; const done=g.right+g.wrong; const acc=done?Math.round(g.right/done*100):0;
@@ -10601,22 +10607,22 @@ function buildMC(mode,n){ const all=gameWordsD();
   }); }
 function gMisses(g){ return (g.ans?g.ans.filter(a=>!a.ok).map(a=>a.w):[]); }
 function gFinishBuzz(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;   /* the wage is the words, paid as they were spelled (payG) */
-  logActivity('buzz','10-Word Warm-Up', {done:g.ans.length,right:g.right,coins:bonus}, gMisses(g));
+  logActivity('buzz','10-Word Warm-Up', {done:g.ans.length,right:g.right,coins:g.bonus||0}, gMisses(g));
   if(g.right>=8){ sfx('win'); burstConfetti(120); } else sfx('level'); render(); }
 function gFinishBeat(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
-  logActivity('beat','Beat the Buzzer', {done:g.right+g.wrong,right:g.right,coins:bonus}, []);
+  logActivity('beat','Beat the Buzzer', {done:g.right+g.wrong,right:g.right,coins:g.bonus||0}, []);
   if(g.right>=12){ sfx('win'); burstConfetti(120); } else sfx('level'); render(); }
 function gFinishBoss(won){ clearGTimer(); const g=state.game; g.status=won?'won':'lost'; g.bonus=g.bonus||0; if(won){ sfx('win'); burstConfetti(150); } else { sfx('lose'); }
-  logActivity('boss', won?'Boss Battle — won':'Boss Battle — lost', {done:g.right,right:g.right,coins:bonus}, []); render(); }
+  logActivity('boss', won?'Boss Battle — won':'Boss Battle — lost', {done:g.right,right:g.right,coins:g.bonus||0}, []); render(); }
 function gFinishMC(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
   if(g.round==='vocab'){ const c=active(); c.vocQuiz=(c.vocQuiz||0)+1; }
   if(g.round==='idiom'||g.round==='simile'){ const c=active(); c.figQuiz=(c.figQuiz||0)+1; }
-  logActivity(g.type, ACT_LABEL[g.type]||'Quiz', {done:g.qs.length,right:g.right,coins:bonus}, g.miss||[]);
+  logActivity(g.type, ACT_LABEL[g.type]||'Quiz', {done:g.qs.length,right:g.right,coins:g.bonus||0}, g.miss||[]);
   if(g.right>=7){ sfx('win'); burstConfetti(110); } else sfx('level'); render(); }
 
 function coinIc(sz){ return (window.SB_ICON_ART&&SB_ICON_ART.coin)?SB_ICON_ART('coin',{size:sz||14}):SB_ICON('coin',{size:sz||14}); }
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${coinIc(sz)} ${n}</span>`; }
-function coinChip(){ return `<span class="sb-coinchip" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
+function coinChip(){ return `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();
@@ -10635,7 +10641,7 @@ function pickerCard(act,arg,c,ic,name,desc){ return `<button data-act="${act}" d
 function beatModePicker(){ return gamePickerShell('Beat the Buzzer','Pick how you want to play.',
   pickerCard('beatStart','sprint','#FF5FA2','target','60-Second Sprint','Spell as many as you can before the clock runs out.')+
   pickerCard('beatStart','warmup','#E0922E','flame','10-Word Warm-Up','A relaxed, untimed round of ten mixed words — your daily warm-up.')+
-  pickerCard('openChallenge','journey','#7C5CFF','trophy','Level Challenge','Beat the clock or a set number — pass your Level to test out.')+
+  pickerCard('openChallenge','journey','#7C5CFF','trophy','Stage Challenge','Beat the clock or a set number — pass your Stage to test out.')+
   pickerCard('playGame','duel','#C43D5A','swords','Spelling Duel','Pass the device — same 10 words, two spellers. Who takes the crown?')+
   (advModeOn()?pickerCard('arcAdvDict','','#3A2A72','bolt','◆ Rapid Dictation','90 seconds — hear & type the hardest words in the library.'):'')); }
 function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round — each is 10 questions.',
@@ -11372,7 +11378,7 @@ function overlays(){
       </div></div>`;
   }
   if(S.showPaywall){
-    const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Level up past Level 5 on every list','Premium word lists + full library','More worlds and chapters open as your speller learns — never with coins']
+    const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Every stage of every list, past Stage 5','Premium word lists + full library','More worlds and chapters open as your speller learns — never with coins']
       .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
     const planStyle=(on)=>'flex:1;text-align:left;border-radius:14px;padding:14px;cursor:pointer;background:var(--surface2);border:2px solid '+(on?'var(--accent)':'transparent');
     h+=`<div data-act="closePaywall" style="position:fixed;inset:0;z-index:60;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px">
