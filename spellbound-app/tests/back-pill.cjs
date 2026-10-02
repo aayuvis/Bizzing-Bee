@@ -18,6 +18,8 @@ const root = require('path').resolve(__dirname, '..');
       unlockedThemes:['spellbound'],unlockedConcepts:{},unlockedLists:{},questPath:'journey',
       trail:{done:{},lap:1}}]; state.activeIdx=0; state.screen='app'; try{loadConcepts();}catch(e){} });
     await pg.waitForTimeout(1800);
+    // Since FIX-BEE N2 the Atlas holds a loader until its lazy data is in; have it in hand.
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r)));
 
     const screens = [['openGames','arcade'],['openCollection','hive'],['openTrail','atlas'],
       ['openCoachDesk','coach'],['setNav','progress','progress'],['openFinder','finder'],

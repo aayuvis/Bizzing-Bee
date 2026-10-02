@@ -108,7 +108,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(!strangers.length, 'every request goes to the app\'s own origin or a host privacy.html names' + (strangers.length ? ' — UNNAMED: ' + strangers.join(', ') : ''));
   ok(seen.filter(r => r.host.split(':')[0] === HOST).length > 20, 'the walk actually loaded the app (' + seen.length + ' requests recorded)');
   const policy = fs.readFileSync(path.join(SRC, 'privacy.html'), 'utf8');
-  for (const h of Object.keys(hosts)) if (NAMED[h]) ok(policy.includes(h), `privacy.html names ${h} — ${NAMED[h]}`);
+  for (const h of Object.keys(NAMED)) ok(policy.includes(h), `privacy.html names ${h} — ${NAMED[h]}` + (hosts[h] ? ' (contacted on this walk)' : ''));
   const carries = seen.filter(r => (decodeURIComponent(r.url) + r.post).toLowerCase().includes(NAME.toLowerCase()));
   ok(!carries.length, 'no request carries the child\'s name' + (carries.length ? ' — ' + carries.map(r => r.url).slice(0, 3).join(', ') : ''));
   const posts = seen.filter(r => r.post && r.host.split(':')[0] !== HOST);

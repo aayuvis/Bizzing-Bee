@@ -23,6 +23,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
         unlockedLists: {}, questPath: 'journey',
         trail: { lap: 1, done: {}, chk: {}, seen: {}, elap: 1, edone: {}, echk: {} } }];
       state.activeIdx = 0; state.screen = 'app';
+      // Since FIX-BEE N2 the second word shard and the list data are lazy (openBuilder kicks them).
+      await new Promise(res => SB_LAZY.need(['themes', 'lists'], res));
       app.openBuilder(); await new Promise(res => setTimeout(res, 1100));
       const o = {};
       o.sideways = document.documentElement.scrollWidth > window.innerWidth + 1;

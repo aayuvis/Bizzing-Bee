@@ -700,6 +700,13 @@ function loadConcepts(){
   if(state.conceptData || state.conceptLoading) return;
   if(SB_CONCEPTS && SB_CONCEPTS.chapters && SB_CONCEPTS.chapters.length){ state.conceptData = mergedConcepts(); return; }
   state.conceptLoading = true;
+  /* FIX-BEE N2: the course is a boot-lazy file now, not something the idle queue has always
+     fetched by the time anyone asks — so ask for it. The sb-lazy listener below calls back
+     in here when it lands; the callback only covers a file that failed to load. (The old
+     fetch of concepts.json is a pre-boot-lazy fallback: there is no such file, and under
+     file:// it is a CORS error in the console.) */
+  if(window.SB_LAZY){ SB_LAZY.need('concepts', ()=>{ if(state.conceptLoading && !state.conceptData){ state.conceptLoading=false;
+      if(SB_CONCEPTS && SB_CONCEPTS.chapters && SB_CONCEPTS.chapters.length) state.conceptData=mergedConcepts(); else state.conceptErr=true; render(); } }); return; }
   fetch('concepts.json').then(r=>r.json()).then(j=>{ state.conceptData=j.chapters; state.conceptLoading=false; render(); })
     .catch(()=>{ state.conceptLoading=false; state.conceptErr=true; render(); });
 }

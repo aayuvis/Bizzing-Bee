@@ -100,7 +100,10 @@
     card: ['words2', 'lore', 'alts', 'syn', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
     advanced: ['advConcepts', 'advTips', 'southasia'],
-    atlas: ['trail', 'concepts', 'cscript', 'southasia'],
+    /* advConcepts too: the map draws the Advanced Rounds (locked or not), and a stop
+       whose chapter is an `ai` ref resolves through SB_ADV_CONCEPTS — without it chOf()
+       is undefined and setsOf() throws. The idle queue used to hide that. */
+    atlas: ['trail', 'concepts', 'cscript', 'southasia', 'advConcepts'],
     quotes: ['quotes'],
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
@@ -284,6 +287,10 @@
      const in app3.js — a bare name, not window.app) exists by then. A tap that arrives
      before the code does simply runs when it lands. */
   var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade' };
+  /* KICKS start a screen's data the moment its door is opened but do NOT hold the screen:
+     it draws at once from what is in hand and redraws as each file lands (every load
+     re-renders). For screens that are useful before the whole library is in. */
+  var KICKS = { openBuilder: ['themes', 'lists'], openFinder: 'words', openTraps: 'card' };
   document.addEventListener('DOMContentLoaded', function () {
     try {
       if (typeof app === 'undefined') return;
@@ -294,6 +301,11 @@
           if (ready(DOORS[k])) return f.apply(self, a);
           need(DOORS[k], function () { f.apply(self, a); });
         };
+        g._door = true; app[k] = g;
+      });
+      Object.keys(KICKS).forEach(function (k) {
+        var f = app[k]; if (typeof f !== 'function' || f._door) return;
+        var g = function () { need(KICKS[k]); return f.apply(this, arguments); };
         g._door = true; app[k] = g;
       });
     } catch (e) {}
