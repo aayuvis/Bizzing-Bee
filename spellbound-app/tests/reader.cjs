@@ -89,7 +89,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     // ---- an advanced volume honours the pack gate ----
     state.devUnlock = false;
     app.openBook('book-12'); await W(300);
-    out.advLocked = /Advanced Pack/.test(document.body.textContent) && document.querySelectorAll('[data-act="readerCh"]:not([disabled])').length === 0;
+    /* locked = the reader's own lock card, or (since Oct 2026) the grown-up PIN standing in front of
+       the plan sheet — a child never meets the price, only "ask a grown-up" */
+    out.advLocked = (/Advanced Pack/.test(document.body.textContent) || (!!state.pinDlg && !state.showTiers && /grown-up/.test(state.pinDlg.label)))
+      && document.querySelectorAll('[data-act="readerCh"]:not([disabled])').length === 0;
     state.devUnlock = true;
     app.openBook('book-12'); await W(300);
     app.readerCh(0); await W(250);

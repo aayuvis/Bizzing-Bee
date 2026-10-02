@@ -1991,9 +1991,19 @@ function coachWeakList(n){ const srs=state.coachSrs||{}; const byKey={}; coachPo
 
 /* ---- Parent PIN: a 4-digit gate on grown-up areas (Settings, Parent zone, Premium).
    Stored locally only. No PIN set = gates stay open (first-run friendliness). ---- */
+/* A recorded misspelling that IS the word is not a misspelling. 97 boot-shard words (4,845
+   across the whole library) once printed 'Often misspelled "army"' under "army". The data is
+   cleaned and tests/data-lint.cjs holds it; this guard keeps a future import from saying it. */
+function realMiss(w){ return !!(w && w.m && String(w.m).trim().toLowerCase()!==String(w.w||'').trim().toLowerCase()); }
 function pinSet(){ return !!state.parentPin; }
-function pinGate(nextFn,label){ if(!pinSet()){ nextFn(); return; }
-  state.pinDlg={ label:label||'Grown-ups only', typed:'', next:nextFn }; render(); }
+/* THE GROWN-UP PIN IS MANDATORY in front of plans, purchases, the parent zone and the testing
+   tools (FIX-BEE, Oct 2026). It used to be optional and off by default, so on most devices a
+   child could reach the plan sheet in two taps. With no PIN yet, the gate asks a grown-up to
+   CHOOSE one (typed twice) and then carries on to where they were going. `soft` keeps the old
+   rule — ask only if one exists — for Settings, which also holds a child's own sound and text
+   size. It is a deterrent, not security: the dialog says so. Guard: tests/pin-mandatory.cjs. */
+function pinGate(nextFn,label,soft){ if(soft && !pinSet()){ nextFn(); return; }
+  state.pinDlg={ label:label||'Grown-ups only', typed:'', next:nextFn, make:!pinSet(), first:null }; render(); }
 /* ---------------- handlers (the `app` surface) ---------------- */
 const app = {
   goLanding:()=>set({screen:'landing'}),
@@ -2074,7 +2084,7 @@ const app = {
   // nav
   setNav:(key)=>{ if(state.settingsOpen && key!=='settings') state.settingsOpen=false;   // navigating away closes the Settings pop-up
     if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
-    if(key==='settings'){ pinGate(()=>app.openSettings(),'Settings — grown-ups only'); return; }
+    if(key==='settings'){ pinGate(()=>app.openSettings(),'Settings — grown-ups only',true); return; }
     if(key==='parent'){ pinGate(()=>{ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); },'Parent zone'); return; }
     if(key==='progress'&&state.progTab==null) state.progTab='me';
     if(key==='concepts'){ lazyNeed('concepts'); loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
@@ -2087,17 +2097,21 @@ const app = {
   pinKey:(d)=>{ const p=state.pinDlg; if(!p) return;
     if(d==='del'){ p.typed=p.typed.slice(0,-1); render(); return; }
     p.typed=(p.typed+d).slice(0,4);
-    if(p.typed.length===4){ if(p.typed===state.parentPin){ const fn=p.next; state.pinDlg=null; p.wrong=false; fn&&fn(); }
+    if(p.typed.length===4 && p.make){
+      if(!p.first){ p.first=p.typed; p.typed=''; p.wrong=false; render(); return; }
+      if(p.typed!==p.first){ p.first=null; p.typed=''; p.wrong=true; try{sfx('wrong');}catch(e){} render(); return; }
+      state.parentPin=p.typed; save(); flash('Grown-up PIN set ✓'); }
+    if(p.typed.length===4){ if(p.typed===state.parentPin){ const fn=p.next; state.pinDlg=null; p.wrong=false;
+        /* a pass is good for whatever it opens on this same tick — the plan sheet's own guard in
+           render() reads it, so a gated opener is not asked twice */
+        state._pinPass=true; try{ fn ? fn() : render(); } finally { state._pinPass=false; } }
       else { p.typed=''; p.wrong=true; try{sfx('wrong');}catch(e){} render(); } }
     else render(); },
   pinCancel:()=>set({pinDlg:null}),
-  pinSetup:()=>{ const cur=state.parentPin;
-    const go=()=>{ const v=window.prompt(cur?'New 4-digit PIN (leave empty to remove):':'Choose a 4-digit parent PIN:','');
-      if(v==null) return; const t=(v||'').trim();
-      if(t===''){ if(cur){ state.parentPin=null; save(); flash('Parent PIN removed'); render(); } return; }
-      if(!/^\d{4}$/.test(t)){ flash('PIN must be exactly 4 digits'); return; }
-      state.parentPin=t; save(); flash('Parent PIN set ✓'); render(); };
-    if(cur) pinGate(go,'Change parent PIN'); else go(); },
+  /* Change the PIN: the old one first, then the new one twice. There is no "remove" any more —
+     the PIN is what stands between a child and the plan sheet. */
+  pinSetup:()=>{ const make=()=>set({pinDlg:{ label:'Choose a new grown-up PIN', typed:'', next:null, make:true, first:null }});
+    if(pinSet()) pinGate(make,'Change grown-up PIN'); else make(); },   // the old PIN stands until the new one is confirmed
   // ----- Idioms & Sayings browser -----
   figQ:(v)=>{ state.figQ=v||''; state.figPage=0; render(); },
   figType:(k)=>set({figType:k, figPage:0}),
@@ -2168,7 +2182,7 @@ const app = {
   deckGo:(i)=>set({deckOpen:false,cardIdx:Math.max(0,+i||0),cardDone:false,coachCardView:true}),
   wohPractise:(word)=>{ set({wordCard:null}); try{ app.reviseOne(word); }catch(e){ flash('Could not open practice'); } },
   // ===== Subscription tiers (PIN-gated from Settings) =====
-  openTiers:()=>{ if(typeof pinGate==='function'){ pinGate(()=>set({showTiers:true}),'Account & plan'); } else set({showTiers:true}); },
+  openTiers:()=>set({showTiers:true}),   // render()'s plan guard asks for the PIN
   closeTiers:()=>set({showTiers:false, tierUpsell:null}),
   chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tap':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
   buyAddon:(k)=>{ const c=active(); if(!window.SB_ADDONS||!SB_ADDONS[k]) return;
@@ -2180,7 +2194,7 @@ const app = {
     flash(SB_ADDONS[k].name+' added'); render(); },
   // ===== Parent account / auth (local scaffold; Supabase in Phase 2) =====
   openAuth:(mode)=>set({authSheet:mode||'signin', authErr:null}),
-  closeAuth:()=>set({authSheet:null, authErr:null, authAdmin:false}),
+  closeAuth:()=>set({authSheet:null, authErr:null}),
   authEmail:(v)=>{ state.auth_email=v; }, authPw:(v)=>{ state.auth_pw=v; }, authName:(v)=>{ state.auth_name=v; },
   /* signIn/signUp return a value in local mode and a promise once a backend is
      configured. Promise.resolve() flattens both, so neither path needs its own
@@ -2190,8 +2204,7 @@ const app = {
       state.authBusy=false;
       if(!r || r.error){ set({authErr:(r&&r.error)||'Could not sign in'}); return; }
       state.auth_pw='';
-      if(r.user && r.user.role==='admin'){ set({authSheet:null, authAdmin:false, screen:'admin'}); }
-      else { set({authSheet:null}); flash('Signed in as '+esc((r.user&&(r.user.name||r.user.email))||'you')); }
+      set({authSheet:null}); flash('Signed in as '+esc((r.user&&(r.user.name||r.user.email))||'you'));
     }); },
   doSignUp:()=>{ set({authErr:null, authBusy:true});
     Promise.resolve(SB_AUTH.signUp(state.auth_email||'', state.auth_pw||'', state.auth_name||'')).then(r=>{
@@ -2257,7 +2270,9 @@ const app = {
     if(!ch.length){ flash(esc(nm)+' removed'); set({screen:'onboarding', onbStep:0, addingMore:false, draft:{name:'',age:9,avatar:'bizzy',goal:10}}); return; }
     flash(esc(nm)+' removed — everything of theirs is deleted'); render(); },
   // ===== Admin console =====
-  openAdmin:()=>{ if(SB_AUTH.isAdmin()){ set({screen:'admin', adminTab:'users'}); } else { set({authSheet:'signin', authAdmin:true, authErr:null}); } },
+  /* The local support console. It used to open on a seeded admin / admin sign-in — a default
+     credential that set any child's plan. It is a testing tool now, behind the grown-up PIN. */
+  openAdmin:()=>pinGate(()=>set({screen:'admin', adminTab:'users'}),'Testing tools — grown-ups only'),
   closeAdmin:()=>set({screen:'app'}),
   adminTab:(t)=>set({adminTab:t}),
   adminSetTier:(arg)=>{ const p=String(arg).split('|'); const i=+p[0]; const c=(state.children||[])[i]; if(c&&window.SB_ENT){ SB_ENT.setTier(c,p[1]); save(); render(); } },
@@ -7850,7 +7865,7 @@ function wordFlash(words, idx, navAct, opts){
       <div style="font-size:15px;color:var(--text);line-height:1.5;margin-top:8px">${esc(w.d)}</div>
       ${w.s?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
       ${w.h?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',15)}</span><span>${esc(w.h)}</span></div>`:''}
-      ${w.m?`<div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--bad);font-weight:700;line-height:1.5;margin-top:9px">${iconSVG('alert',14)} Often misspelled “${esc(w.m)}”</div>`:''}
+      ${realMiss(w)?`<div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--bad);font-weight:700;line-height:1.5;margin-top:9px">${iconSVG('alert',14)} Often misspelled “${esc(w.m)}”</div>`:''}
       ${(()=>{try{const ps=homPartners(w.w); return ps.length?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="color:var(--accent);flex-shrink:0;font-weight:800">≈</span><span>Sounds exactly like <b>${ps.map(esc).join('</b> and <b>')}</b> — a different spelling! At the bee, ask for the meaning to know which one you have.</span></div>`:'';}catch(e){return '';}})()}
       ${(()=>{try{const a=altPron(w.w); return a?`<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span>Two ways to say it: <b>/ ${esc(a.a)} /</b> and <b>/ ${esc(a.b)} /</b>${a.n?` — ${esc(a.n)}`:''}</span><button data-act="sayAlt" data-arg="${escA(w.w)}" title="Hear the other pronunciation" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12px;flex-shrink:0">${iconSVG('volume',14)} Hear it the other way</button></div>`:'';}catch(e){return '';}})()}
       ${(()=>{try{const d=diacritic(w.w); return (d&&d.m!==w.w)?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);line-height:1.5;margin-top:9px;background:var(--surface2);border-radius:10px;padding:9px 13px;max-width:42em"><span style="flex-shrink:0">´</span><span>In full dress it wears its marks: <b style="font-size:15px">${esc(d.m)}</b> (${esc(d.n)}) — at the bee, spelling the plain letters is accepted.</span></div>`:'';}catch(e){return '';}})()}
@@ -8665,7 +8680,7 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
         ${w.s?`<div class="frow"><span class="ic">💬</span><div class="ftx"><b>In a sentence</b>${esc(w.s)}</div></div>`:''}
         ${w.o?`<div class="frow"><span class="ic">🌍</span><div class="ftx"><b>Origin</b>${esc(w.o)}${w.r?('. '+esc(w.r)):''}</div></div>`:''}
         ${w.h?`<div class="fhint"><span class="ic">💡</span><div><b>Memory trick</b>${esc(w.h)}</div></div>`:''}
-        ${w.m?`<div class="fmis">⚠️ Often misspelled “${esc(w.m)}”</div>`:''}
+        ${realMiss(w)?`<div class="fmis">⚠️ Often misspelled “${esc(w.m)}”</div>`:''}
         <div class="fnotes"><span class="nlab">✏️ My notes</span><span class="nl"></span><span class="nl"></span></div>
       </div>${av?`<div class="favatar">${av}</div>`:''}</div>`; };
   /* Fronts only. The decorative back sheet doubled the paper for no teaching value, and
@@ -9745,7 +9760,6 @@ function viewSettings(){
     ${advRow}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px;border-top:1px solid var(--line);padding-top:13px">
       ${_parent?'':`<button data-act="openAuth" data-arg="signin" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Parent sign in</button>`}
-      <button data-act="openAdmin" style="padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px">🛡️ Admin console</button>
       <a href="privacy.html" style="display:inline-flex;align-items:center;padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px;text-decoration:none">🔒 Privacy &amp; Parents' Notice</a>
     </div></div>`;
 
@@ -9800,7 +9814,7 @@ function viewSettings(){
     ${sec('Progress &amp; reports','for grown-ups',
         line('Progress','Your level, the Atlas, this week and every word met',go('setNav','progress','Open'))
       + line('Parent zone','Weekly report, printables and the plan',go('setNav','parent','Open'))
-      + line('Parent PIN', pinSet()?'Set — protects Settings, the parent zone and purchases.':'Add a 4-digit PIN so only grown-ups can open Settings and buy things.',
+      + line('Grown-up PIN', pinSet()?'Set — plans, purchases, the parent zone and Settings ask for it. A deterrent, not a lock.':'Plans, purchases and the parent zone will ask a grown-up to choose one the first time.',
           `<button data-act="pinSetup" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:${pinSet()?'var(--surface2)':'var(--accent)'};color:${pinSet()?'var(--muted)':'#fff'};font-weight:800;font-size:13px;white-space:nowrap">${pinSet()?'Change':'Set PIN'}</button>`))}
     <section style="margin-bottom:20px">
       <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0 0 10px 2px">
@@ -9822,6 +9836,7 @@ function viewSettings(){
       <div class="sb-card" style="padding:4px 0;margin-top:8px">
         ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
         ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(c&&c.devCoins),'On','Off'))}
+        ${line('Support console','Profiles and plans on this device, for testing. Local only — it changes nothing anywhere else.',`<button data-act="openAdmin" style="padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Open</button>`)}
         ${line('Research capture','Logs taps, screens and errors on THIS device only — nothing is ever sent anywhere. For play-testing; read it with the operator console.',tog('toggleResearch',!!(window.SB_TM&&SB_TM.on()),'On','Off'))}
         ${(window.SB_TM&&SB_TM.on())?`<div style="display:flex;gap:8px;align-items:center;padding:10px 16px 14px">
           <span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(SB_TM.count())} events on this device</span>
@@ -11294,6 +11309,16 @@ function overlays(){
   // position:relative;z-index:1 box, which is a stacking context — anything drawn inside it
   // is pinned below the overlays no matter how high its own z-index is. That is why
   // Settings → Manage plan used to open *behind* Settings.
+  /* THE PLAN GUARD. Eight places open the plan sheet or the paywall (a locked list, a locked
+     lesson, an upsell, the landing page's plan pick…). Guarding each opener is how this went
+     wrong, so it is guarded HERE, where the sheet is drawn: no sheet until a grown-up has passed
+     the PIN, creating one first if there is none. The pass lasts until the sheet closes. */
+  if((S.showTiers||S.showPaywall) && !S._planOk){
+    if(S._pinPass) S._planOk=true;
+    else { const t=!!S.showTiers, pw=!!S.showPaywall; S.showTiers=false; S.showPaywall=false;
+      if(!S.pinDlg) S.pinDlg={ label:((S.tierUpsell&&S.tierUpsell.label)?S.tierUpsell.label.replace(/^./,ch=>ch.toUpperCase())+' — ask a grown-up':'Plans — grown-ups only'), typed:'', make:!pinSet(), first:null,
+        next:()=>{ state._planOk=true; state.showTiers=t; state.showPaywall=pw; render(); } }; } }
+  if(!S.showTiers && !S.showPaywall) S._planOk=false;
   if(S.qWord) h+=viewQuotesWordPop();
   if(S.wordCard) h+=viewWordCardPop();
   if(S.deckOpen) h+=viewSetDeck();
@@ -11338,7 +11363,9 @@ function overlays(){
     <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;box-shadow:var(--sh-overlay);width:100%;max-width:320px;padding:26px 24px;text-align:center;animation:sb-pop .3s ease both">
       <div style="display:flex;justify-content:center;color:var(--accent)">${SB_ICON('lock',{size:34})}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:19px;margin:4px 0 2px">${esc(S.pinDlg.label)}</div>
-      <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">${S.pinDlg.wrong?'<b style="color:var(--bad,#D6453A)">Wrong PIN — try again</b>':'Ask a grown-up to enter the 4-digit PIN.'}</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5">${S.pinDlg.make
+        ? (S.pinDlg.wrong?'<b style="color:var(--bad,#D6453A)">Those didn’t match — choose again</b>':S.pinDlg.first?'Type it again to check.':'Grown-ups: choose a 4-digit PIN. Plans, purchases and the parent zone will ask for it. It keeps small hands out — it is not a lock.')
+        : (S.pinDlg.wrong?'<b style="color:var(--bad,#D6453A)">Wrong PIN — try again</b>':'Ask a grown-up to enter the 4-digit PIN.')}</div>
       <div style="display:flex;gap:9px;justify-content:center;margin-bottom:16px">${[0,1,2,3].map(i=>`<span style="width:15px;height:15px;border-radius:50%;border:2px solid var(--accent);display:inline-block;background:${i<S.pinDlg.typed.length?'var(--accent)':'transparent'}"></span>`).join('')}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${['1','2','3','4','5','6','7','8','9','del','0','x'].map(k=>k==='x'?`<button data-act="pinCancel" style="padding:13px 0;border-radius:12px;background:var(--surface2);font-weight:800;font-size:13px;color:var(--muted)">Cancel</button>`:`<button data-act="pinKey" data-arg="${k}" style="padding:13px 0;border-radius:12px;background:${k==='del'?'var(--surface2)':'var(--chip)'};font-weight:800;font-size:${k==='del'?'12px':'17px'};color:${k==='del'?'var(--muted)':'var(--accent)'}">${k==='del'?'⌫':k}</button>`).join('')}</div>
     </div></div>`;
@@ -11589,13 +11616,13 @@ function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId
       <div style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center">Local preview — real billing (Stripe / Razorpay) connects in Phase 2. Plans are managed by a parent.</div>
     </div></div>`; }
 // ===== Parent / admin auth sheet =====
-function viewAuthSheet(){ const S=state; const mode=S.authSheet; const signup=mode==='signup'; const adminHint=S.authAdmin;
+function viewAuthSheet(){ const S=state; const mode=S.authSheet; const signup=mode==='signup';
   return `<div style="position:fixed;inset:0;z-index:136;display:grid;place-items:center;padding:20px;background:rgba(20,12,4,.55)" data-act="closeAuth">
     <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:380px;width:100%;padding:24px 22px;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .3s ease both">
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin-bottom:3px">${signup?'Create parent account':(adminHint?'Admin sign in':'Parent sign in')}</div>
-      <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px">${adminHint?'Enter the admin credentials to open the console.':'Accounts are for grown-ups — kids just play. '+((window.SB_AUTH&&SB_AUTH.isCloud)?'Your email is the account; your child never signs in to anything.':'(Local preview — this account stays on this device.)')}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin-bottom:3px">${signup?'Create parent account':'Parent sign in'}</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:16px">${'Accounts are for grown-ups — kids just play. '+((window.SB_AUTH&&SB_AUTH.isCloud)?'Your email is the account; your child never signs in to anything.':'(Local preview — this account stays on this device.)')}</div>
       ${signup?`<input data-inp="authName" placeholder="Your name" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:10px;outline:none">`:''}
-      <input data-inp="authEmail" placeholder="${adminHint?'admin':'you@email.com'}" autocomplete="off" autocapitalize="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:10px;outline:none">
+      <input data-inp="authEmail" placeholder="you@email.com" autocomplete="off" autocapitalize="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:10px;outline:none">
       <input data-inp="authPw" type="password" placeholder="Password" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:600;margin-bottom:${S.authErr?'8':'16'}px;outline:none">
       ${S.authErr?`<div style="font-size:12.5px;color:var(--bad,#D6453A);font-weight:700;margin-bottom:14px">${esc(S.authErr)}</div>`:''}
       <button data-act="${signup?'doSignUp':'doSignIn'}" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge);margin-bottom:10px">${signup?'Create account':'Sign in'}</button>

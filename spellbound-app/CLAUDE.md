@@ -569,6 +569,41 @@ handlers. App lives in this folder; open `index.html` to run.
   mailing address and phone (placeholder noted in §1), and if real payments are added the
   purchase flow must stay parent-only (behind the PIN) with notice/consent revisited.
 
+## Trust fixes — the FIX-BEE brief's "Fix first" (2 Oct 2026)
+- **There are NO default accounts.** `auth.js` seeded `admin / admin`, and signing in with it
+  opened a console that could set any child's plan — a default credential is a door everyone
+  already holds the key to. The seed is gone; `purge()` deletes any `seeded`/admin account a
+  device still carries and ends a session signed into one. The support console (`viewAdmin`)
+  is a **testing tool behind the grown-up PIN** (Settings → Testing tools → Support console);
+  the "🛡️ Admin console" button is off the parent's account card. `isAdmin()` is always false.
+  Guard: `tests/no-default-login.cjs` (11 common pairs, a legacy device, the console's gate).
+- **The grown-up PIN is mandatory in front of plans, purchases, the parent zone and the
+  testing tools.** `pinGate(next,label)` with no PIN asks a grown-up to CHOOSE one (typed
+  twice, a mismatch starts over) and then carries on; `pinGate(next,label,true)` is the old
+  soft rule, used only by Settings, which also holds a child's own sound and text size. There
+  is no "remove PIN" any more, only change (old PIN, then the new one twice; the old one stands
+  until the new one is confirmed). **The plan sheet is guarded where it is DRAWN** — the top of
+  the overlay block in `render()` — not at its eight openers: `showTiers`/`showPaywall` cannot
+  render until a PIN pass sets `_planOk`, which clears when the sheet closes. A pass made on the
+  same tick (`_pinPass`, set around the gated callback) counts, so a gated opener asks once.
+  The dialog says the PIN is a deterrent, not a lock. Guard: `tests/pin-mandatory.cjs` (four
+  ways in, including writing `state.showTiers` directly).
+- **A word is never "often misspelled" as itself.** 4,845 records carried `m === w` (97 in the
+  boot shard — "army" printed `Often misspelled "army"`). The field was REMOVED rather than
+  guessed at: no claim beats a false one. Only those fields changed — every other field of all
+  185,933 records was compared and is byte-identical. `realMiss(w)` guards both render sites.
+- **Quotations credited to a whole people are gone, and quotes now need sources.** 124 quotes
+  credited to "Native American proverb", a tribe's "proverb", "African/Latin American/Middle
+  Eastern proverb", or "Chief Seattle" were removed, with the 10 trivia questions built on them
+  (trivia-data.js `byLevel` updated). Those are the classic misattribution genres — "the rain
+  falls on the just and the unjust" is Matthew 5:45; the Seattle lines are generally traced to a
+  1971 screenplay. **None of the ~5,000 quotes had a source**, and sourcing them is research,
+  not a find-and-replace — so `tests/data-lint.cjs` holds a RATCHET (`UNSOURCED_MAX`): the count
+  of unsourced quotes may only fall. Give a quote `src:"<citation>"` or remove it, and lower the
+  ceiling in the same commit. Never fill `src` from memory. Watch substring traps in these
+  regexes: "hopi" matches "hoping" — the first run removed a Harriet Tubman question for it.
+  The printed books (`book-champion` themes SB_QUOTES) pick this up on their next rebuild.
+
 ## Accounts & cloud backup (Supabase)
 - **Four files, and three of them do nothing until two values are pasted in.**
   `sb-config.js` holds the project URL + anon key (blank = the app is exactly as it was:

@@ -28,8 +28,9 @@ const { chromium } = require('playwright');
   const clicked=await pg.evaluate(()=>{ const el=document.querySelector('[data-act="lockedList"]'); if(!el) return 'none'; el.click(); return null; });
   if(clicked) errs.push('locked list: '+clicked);
   await pg.waitForTimeout(500);
-  if(!(await pg.evaluate(()=>!!state.showTiers))) errs.push('locked list did not open the plan sheet');
-  await pg.evaluate(()=>{ state.showTiers=false; render(); });
+  /* the plan sheet now waits behind the grown-up PIN (tests/pin-mandatory.cjs) — either is the door */
+  if(!(await pg.evaluate(()=>!!state.showTiers || (!!state.pinDlg && /grown-up/.test(state.pinDlg.label))))) errs.push('locked list did not open the plan sheet (or the grown-up PIN in front of it)');
+  await pg.evaluate(()=>{ state.showTiers=false; state.pinDlg=null; render(); });
 
   // --- Concepts: unlocking still lives in the Library ---
   await pg.evaluate(()=>{ try{ loadConcepts(); }catch(e){} app.setNav('concepts'); }); await pg.waitForTimeout(2500); await pg.evaluate(()=>render()); await pg.waitForTimeout(600);
