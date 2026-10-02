@@ -124,10 +124,6 @@ window.SB_QUOTES = (window.SB_QUOTES || []).concat([
   {q:"Where there is love there is life.",a:"Mahatma Gandhi",c:"kindness",who:"Indian leader"},
   {q:"Arise, awake, and stop not until the goal is reached.",a:"Swami Vivekananda",c:"perseverance",who:"Indian teacher"},
   {q:"Take up one idea. Make that one idea your life; dream of it.",a:"Swami Vivekananda",c:"dreams",who:"Indian teacher"},
-  {q:"If you want to walk fast, walk alone. If you want to walk far, walk together.",a:"African Proverb",c:"teamwork",who:"a traditional saying"},
-  {q:"Smooth seas do not make skillful sailors.",a:"African Proverb",c:"perseverance",who:"a traditional saying"},
-  {q:"Knowledge is like a garden: if it is not cultivated, it cannot be harvested.",a:"African Proverb",c:"learning",who:"a traditional saying"},
-  {q:"A single bracelet does not jingle.",a:"African Proverb",c:"teamwork",who:"a traditional saying"},
   {q:"When spider webs unite, they can tie up a lion.",a:"Ethiopian Proverb",c:"teamwork",who:"a traditional saying"},
   // ---- Poems & plays (public domain) with meaning + tappable hard words ----
   {c:"poetry",a:"William Shakespeare",who:"from Hamlet, Act 3 — a prince thinks aloud",

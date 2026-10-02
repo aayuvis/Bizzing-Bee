@@ -8,7 +8,11 @@
    any caller — every screen talks to SB_AUTH.*(), never to localStorage directly.
 
    Model: a PARENT account owns the device's child profiles. Children never log in.
-   A seeded ADMIN account (admin / admin) unlocks the internal admin console.
+   There are NO default accounts. A seeded admin / admin login used to ship here and opened
+   a console that could set any child's plan — a default credential is a door everyone
+   already has the key to. `purge()` removes it from devices that still carry it, and
+   tests/no-default-login.cjs fails if any default login ever exists again. The local
+   support console now lives behind the grown-up PIN in Settings → Testing tools.
    Passwords are lightly hashed for storage hygiene only (NOT real security). */
 (function () {
   var LS = 'sb_accounts_v1', SESS = 'sb_session_v1';
@@ -23,12 +27,13 @@
   function save(db) { try { localStorage.setItem(LS, JSON.stringify(db)); } catch (e) {} }
   function norm(e) { return String(e || '').trim().toLowerCase(); }
 
-  function seed() {
-    var db = load();
-    if (!db.users['admin']) {
-      db.users['admin'] = { id: 'admin', email: 'admin', name: 'Administrator', role: 'admin', pw: digest('admin'), created: 0, seeded: true };
-      save(db);
-    }
+  /* Every account the app ever created for itself, rather than for a person who typed an
+     email, goes — and so does a session signed into one. */
+  function purge() {
+    var db = load(), gone = false;
+    Object.keys(db.users).forEach(function (k) { var u = db.users[k]; if (u && (u.seeded || u.role === 'admin')) { delete db.users[k]; gone = true; } });
+    if (gone) save(db);
+    try { var s = JSON.parse(localStorage.getItem(SESS) || 'null'); if (s && !db.users[s.id]) localStorage.removeItem(SESS); } catch (e) {}
     return db;
   }
 
@@ -36,7 +41,7 @@
     // ---- session ----
     current: function () { try { var s = JSON.parse(localStorage.getItem(SESS) || 'null'); if (!s) return null; var db = load(); var u = db.users[s.id]; return u ? { id: u.id, email: u.email, name: u.name, role: u.role || 'parent' } : null; } catch (e) { return null; } },
     isAuthed: function () { return !!this.current(); },
-    isAdmin: function () { var u = this.current(); return !!(u && u.role === 'admin'); },
+    isAdmin: function () { return false; },   // no account is an admin; see the header
     signOut: function () { try { localStorage.removeItem(SESS); } catch (e) {} },
 
     // ---- credentials ----
@@ -51,7 +56,7 @@
       return { user: { id: key, email: key, name: db.users[key].name, role: 'parent' } };
     },
     signIn: function (email, password) {
-      var db = seed(); var key = norm(email);
+      var db = load(); var key = norm(email);
       var u = db.users[key];
       if (!u || u.pw !== digest(password)) return { error: 'Wrong email or password.' };
       try { localStorage.setItem(SESS, JSON.stringify({ id: key })); } catch (e) {}
@@ -65,9 +70,9 @@
     },
 
     // ---- admin helpers (local console over on-device data) ----
-    listUsers: function () { var db = load(); return Object.keys(db.users).map(function (k) { var u = db.users[k]; return { id: u.id, email: u.email, name: u.name, role: u.role || 'parent', seeded: !!u.seeded }; }); }
+    listUsers: function () { var db = load(); return Object.keys(db.users).map(function (k) { var u = db.users[k]; return { id: u.id, email: u.email, name: u.name, role: u.role || 'parent' }; }); }
   };
 
-  seed();
+  purge();
   window.SB_AUTH = SB_AUTH;
 })();
