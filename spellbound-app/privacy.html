@@ -102,8 +102,16 @@
     <tr><td>Practice progress, scores, coins, settings</td><td>Your device</td><td>Only if you turn backup on</td></tr>
     <tr><td>Parent's email address</td><td>Only exists if you create an account</td><td>Yes — it is the account</td></tr>
     <tr><td>Parent's password</td><td>Never stored by us in readable form</td><td>Sent once to be hashed; we never see it</td></tr>
+    <tr><td>Active minutes and milestones for the Bizzing Hive</td><td>Your device</td><td><b>Never</b></td></tr>
     <tr><td>Photos, voice recordings, location, contacts</td><td>Never collected</td><td><b>Never</b></td></tr>
   </table></div>
+  <p><b>The family planner (the Bizzing Hive).</b> So the Hive on this same device can show a
+  family's day without anyone typing it in, Bizzing Bee keeps a short activity log in your
+  browser's storage under <code>bizzing.activity</code>: the app, the date, the minutes your child
+  was actively practising, the milestones they reached (an Atlas stop, a spelling level), and
+  their first name so the right child's day is shown. It stays on this device and is never sent
+  anywhere — there is no network call in the code that writes it — and the sample shown at
+  <code>?demo</code> never writes it at all.</p>
 
   <h2>4. Verifiable parental consent</h2>
   <p>COPPA requires an operator to obtain verifiable parental consent before collecting personal
