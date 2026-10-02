@@ -27,6 +27,10 @@ const root = require('path').resolve(__dirname, '..');
 
     // typing shows suggestions, and the caret survives the re-render
     await box.click();
+    /* Since FIX-BEE N2 the second word shard is lazy: focusing the search asks for it (a door
+       in boot-lazy.js), and "irid…" lives in it. Wait for it the way a child would wait a
+       moment for the list to fill, then type. */
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('words', r)));
     await pg.keyboard.type('irid', { delay: 45 });
     await pg.waitForTimeout(500);
     const r = await pg.evaluate(() => ({

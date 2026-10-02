@@ -33,7 +33,9 @@ const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEven
   const errs = [];
   const open = async (w, h) => { const pg = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     pg.on('pageerror', e => errs.push(e.message)); await pg.addInitScript(() => { window.SB_DEBUG = true; });
-    await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(3500); return pg; };
+    await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(3500);
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
+    return pg; };
 
   /* ---------- desktop ---------- */
   const pg = await open(1280, 860);

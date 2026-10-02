@@ -50,6 +50,20 @@ for f in app3.js saga2.js voice-review.js voice-words.js voice-cdn.js \
   echo "   ok  $f"
 done
 
+# ---------- 0b. THE TEST GATE: npm run check ----------
+# FIX-BEE N3. The guards that hold a promise to a parent — no default login, the grown-up
+# PIN, no third-party requests, the first-load budget, offline after one visit, the a11y
+# pass, the data lints — run BEFORE anything is copied, and a failure ends the deploy here.
+# It is the same subset CI runs on every push (tests/lib/run.cjs, CHECK), so a red build
+# never reaches a child just because nobody looked at CI. There is deliberately no switch
+# to skip it.
+say "0b. Tests (npm run check)"
+cd "$SRC"
+if [ ! -d node_modules/playwright ] || [ ! -d node_modules/esbuild ] || [ ! -d node_modules/axe-core ]; then
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --no-audit --no-fund >/dev/null || die "npm ci failed — the test gate cannot run, so nothing is deployed"
+fi
+npm run -s check || die "npm run check FAILED — read tests/build/logs/. Nothing was copied or pushed."
+
 # ---------- 1. the stamp must have moved ----------
 # index.html is served no-store while every asset it points at caches forever on
 # its ?v= stamp. Ship without bumping it and devices keep running the old JS.
@@ -103,6 +117,7 @@ tar -C "$SRC" \
     --exclude='./*.sh' --exclude='./*.py' --exclude='./*.log' \
     --exclude=./tests --exclude=./qa --exclude=./pipeline \
     --exclude=./node_modules --exclude=./design-pack \
+    --exclude=./package.json --exclude=./package-lock.json \
     --exclude=./eponyms --exclude=./trivia-all.json \
     --exclude='./voice/tq*.mp3' --exclude=./voice/rebuild-queue.json \
     --exclude=./CLAUDE.md --exclude=./AUDIT_BRIEF.md \
@@ -131,6 +146,26 @@ rm -rf "$STG"/CLAUDE.md "$STG"/AUDIT_BRIEF.md "$STG"/TESTING-PROTOCOL.md \
 rm -f "$STG"/voice/tq*.mp3
 
 echo "   files: $(find "$STG" -type f -not -path '*/.git/*' | wc -l)"
+
+# ---------- 3b. minify the COPY (never the source) ----------
+# FIX-BEE N2. The app stays no-build: the source is what a developer edits and opens from
+# file://. Only this copy is minified (esbuild, whitespace + syntax + local names; top-level
+# names survive because these are classic scripts). app3.js alone goes 382KB -> ~282KB on
+# the wire — the difference between meeting the family's 400KB JavaScript budget and not.
+say "3b. Minify the copy"
+node "$SRC/tools/minify.cjs" "$STG" || die "minifying the deploy copy failed"
+
+# ---------- 3c. test the tree you are about to push ----------
+# The check above ran against the SOURCE. This runs its browser half again against THIS
+# tree — minified, copied by exclusion — because the source always has every file and is
+# never minified. The tests are put beside the tree for the run and removed after it.
+say "3c. Browser check against the deploy tree"
+rm -rf "$STG/tests"
+if ! node "$SRC/tests/lib/run.cjs" --check --browser-only --root "$STG"; then
+  rm -rf "$STG/tests"; die "the DEPLOY TREE fails the check (the source passed) — suspect the copy or the minifier. Nothing was pushed."
+fi
+rm -rf "$STG/tests"
+[ ! -e "$STG/tests" ] || die "tests/ is still in the deploy tree"
 
 # ---------- 4. the CNAME guard (inverted for this target) ----------
 say "4. CNAME"

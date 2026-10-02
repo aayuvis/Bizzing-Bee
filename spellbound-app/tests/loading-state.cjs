@@ -17,6 +17,10 @@ const root = require('path').resolve(__dirname, '..');
     unlockedConcepts:{},unlockedLists:{},questPath:'journey'}];
     state.activeIdx=0; state.screen='app'; state.devUnlock=true; });
 
+  /* Since FIX-BEE N2 the concept course is lazy and asked for at the Library's door, so it
+     would land mid-case and resolve the waiting state this test forces. Have it in hand first
+     (as the idle queue used to guarantee), then force the wait. */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('concepts', r)));
   // force each screen into its waiting state and look at what is on it
   const cases = [
     ['concepts', () => { state.conceptData=null; state.conceptLoading=true; app.setNav('concepts'); }],

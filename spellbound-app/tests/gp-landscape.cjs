@@ -25,6 +25,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
     localStorage.setItem('seeded', '1'); localStorage.setItem('sb_splash', '0'); } } catch (e) {} });
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(4500);
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
   ok(await pg.evaluate(() => matchMedia('(pointer:coarse)').matches), 'the page sees a phone (coarse pointer)');
 
   /* 1 — NO CHAMPION CHOICE. (The saved menu choice says 'luna'; the buddy is 'panda'.) */

@@ -1,0 +1,72 @@
+/* a11y.css — accessibility fixes that live in CSS (FIX-BEE L5, family standard §12).
+   Loaded LAST in <head> so it wins the cascade; guarded by tests/a11y-axe.cjs, which runs
+   axe-core (WCAG 2.1 A+AA) over Home, the Atlas, Practice, the Library, the Arcade and
+   Settings in all three looks at phone and desktop width.
+
+   Why a separate file: these are cross-cutting rules (focus, contrast) that several views
+   share, and keeping them out of index.html's 2,000-line <style> keeps them findable and
+   keeps four people's edits to that block from colliding.                                */
+
+/* ---- 1. Focus is always visible ------------------------------------------------------
+   index.html already draws a :focus-visible ring, but dozens of inputs carry an INLINE
+   `outline:none` (the header search, the settings number fields, the date pickers), and an
+   inline style beats any stylesheet rule that is not !important. A keyboard user tabbing
+   into the header search saw nothing move. Mouse clicks on buttons still show no ring
+   (index.html's `button:focus:not(:focus-visible)` rule), so nobody tapping sees a change. */
+:focus-visible { outline: 3px solid var(--accent, #7c5cff) !important; outline-offset: 2px !important; }
+[data-mode="dusk"] :focus-visible { outline-color: #c7b8ff !important; }
+
+/* ---- 2. White type on a coloured chip ------------------------------------------------
+   The Arcade's Play chips and the Library's Open chips are white 11.5–12.5px type on the
+   tile's own colour — amber #C8791B (3.4:1), pink #FF5FA2 (2.8:1), teal #13A892 (3.0:1),
+   dusk violet #9B82F2 (3.1:1). AA asks 4.5:1 at that size. The colours ARE the tiles'
+   identity, so instead of repainting them the type carries a tight dark halo: on every one
+   of those grounds the white letterforms now sit on near-black at their edges, which is
+   what the eye (and axe, which reads text-shadow) measures against. */
+.arc-cta, .lib-go { text-shadow: 0 0 2px rgba(20, 10, 30, .9), 0 1px 2px rgba(20, 10, 30, .75); }
+
+/* ---- 3. Spine titles: the ink is chosen against the spine's colour --------------------
+   app3's ink() picks white or near-black by computing the contrast against each volume's
+   colour (b.a) — but the spine is an <img>, and behind it the button was transparent, so
+   neither a checker nor a failed image had that colour to stand on. The button now wears
+   the spine colour underneath the art (--a, set in libShelf): invisible when the picture
+   loads, a coloured spine with readable type when it does not. */
+.bk-sp, .bk-lay { background-color: var(--a, transparent); }
+
+/* ---- 4. Dusk: violet type on violet-grey, white type on light violet ------------------
+   Dusk's accent (#9B82F2 in the Hive) is used both as TEXT on the dusk surfaces (3.2–3.8:1)
+   and as a BACKGROUND under white text (3.1:1). No single colour passes both ways — lighter
+   fails the white type, darker fails the violet type — so the two uses are split, for ANY
+   world, by mixing the world's own accent: type gets it lifted 45% toward white (#C9BCF8 in
+   the Hive, 4.8–6.6:1 on every dusk surface), a filled chip under white type gets it sunk
+   38% toward black (#604F95, 7:1). The hue stays the world's; only the lightness moves.
+   Templates write these colours INLINE (158 `color:var(--accent)`, 108 accent fills with
+   `color:#fff` in app3.js), which no ordinary rule can reach — hence the attribute
+   selectors, scoped to dusk. They are a stopgap that is honest about contrast; the real fix
+   is an --accent-ink / --on-accent token pair in the templates (fixbee-notes/d-platform.md). */
+[data-mode="dusk"] .sb-qtile-v,
+[data-mode="dusk"] .sb-cl,
+[data-mode="dusk"] .bk-kick,
+[data-mode="dusk"] [style*="color:var(--accent)"]:not([style*="background:var(--accent)"]) {
+  color: color-mix(in srgb, var(--accent) 55%, #fff) !important;
+}
+[data-mode="dusk"] .sb-qtile.on,
+[data-mode="dusk"] [style*="background:var(--accent)"][style*="color:#fff"] {
+  background: color-mix(in srgb, var(--accent) 62%, #000) !important;
+}
+[data-mode="dusk"] .sb-qtile.on .sb-qtile-v,
+[data-mode="dusk"] .sb-qtile.on .sb-qtile-l { color: #fff !important; }
+/* The mobile tab bar's current tab is accent type on the bar. */
+[data-mode="dusk"] .sb-tabbar button[aria-current="page"] { color: color-mix(in srgb, var(--accent) 55%, #fff) !important; }
+/* The top nav's current tab is drawn in --action with --action-ink, the design system's own
+   pair. Five of the eight dusk worlds define a dark ink for their light accent; these three
+   did not, and fell back to white at ~3:1. */
+[data-theme="spellbound"][data-mode="dusk"],
+[data-theme="galaxy"][data-mode="dusk"],
+[data-theme="blade"][data-mode="dusk"] { --action-ink: #1b1338; }
+
+/* ---- 5. Sign out: a red that reads on both grounds ---------------------------------------
+   var(--bad) is #C4453C in light (4.3:1 on the settings card) and #E06158 in dusk (2.5:1).
+   The button is the one place it is used as small text on a card. */
+[data-act="signOut"] { color: #b3392f !important; border-color: #b3392f !important; }
+[data-mode="dusk"] [data-act="signOut"] { color: #ffb3ad !important; border-color: #ffb3ad !important; }

@@ -49,6 +49,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pg.addInitScript(() => { window.SB_DEBUG = true; });
   await pg.goto('file://' + SRC + '/index.html');
   await pg.waitForTimeout(3200);
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
 
   let names = await pg.evaluate(() => Object.keys(window.SB_SAGA_ENGINES || {}));
   if (ONLY) names = names.filter(n => n === ONLY);
