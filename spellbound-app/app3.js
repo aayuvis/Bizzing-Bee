@@ -6832,7 +6832,9 @@ function avMilestone(a){ if(!a||!AV_LADDER[a.rarity]) return null;
   return { k, n, text:AV_EVID[k].t(n) }; }
 /* The evidence the milestones read — computed once per call site, not once per tile. */
 function avEvidence(c){ c=c||active(); let concepts=0, stops=0;
-  try{ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; }catch(e){}
+  /* only read chapters already in memory — loadConcepts() would fall back to a fetch while the
+     lazy shard is still on its way, and a fetch from file:// is a console error on every render */
+  try{ if(state.conceptData || (window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)){ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; } }catch(e){}
   try{ stops=(typeof window.SB_TRAIL_STOPS==='function')?SB_TRAIL_STOPS(c):0; }catch(e){}
   return { right:rankXp(c), mast:masteredCount(), stops, level:rankOf(c).level, concepts }; }
 /* One rule per avatar, as the child should read it now. kind: free | plan | milestone. */
@@ -6843,7 +6845,7 @@ function avRule(a,c){ c=c||active(); if(!a) return null;
   return { kind:'milestone', k:m.k, n:m.n, text:m.text, price:(a.rarity==='rare'?a.price:0) }; }
 /* Give every avatar whose milestone is met and whose pack is open — once, with a card. Runs
    where medals are checked (every finished session) and when the Hive opens. */
-function grantAvatarMilestones(quiet){ try{ const c=active(); if(!c||!window.SB_AVATARS) return [];
+function grantAvatarMilestones(quiet){ try{ const c=active(); if(!c||!window.SB_AVATARS||state.devUnlock) return [];   /* testing mode opens every pack — it must never GIVE from them */
     const e=avEvidence(c); const won=[];
     SB_AVATARS.list.forEach(a=>{ if(a.rarity==='free'||avCount(c,a.id)>0||!avPackUnlocked(a.pack)) return;
       const m=avMilestone(a); if(m && AV_EVID[m.k].v(e)>=m.n){ avGive(c,a.id,1); (c.avWon=c.avWon||{})[a.id]=1; won.push(a); } });
@@ -6871,7 +6873,7 @@ function themePlanNeeded(id){ try{ const idx=THEMES.findIndex(t=>t.id===id);
 function avOwnedCount(c){ return SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length; }
 function evArt(theme,i){ try{ return evEmb(theme,i).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
 function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageIdx(c,'journey')+1;
-  let concepts=0; try{ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; }catch(e){}
+  let concepts=0; try{ if(state.conceptData || (window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)){ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; } }catch(e){}   /* never trigger the file:// fetch fallback from the medal shelf */
   /* Streak medals are RETIRED, not re-locked: one already earned stays on the shelf under
      "Kept from before" (its id is a storage key in badgesSeen, like the karma* ones); one not
      earned is never shown and can never be earned — c.streak no longer moves. */
@@ -7017,7 +7019,9 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
     /* Every card says how it is won (avRule) — no packs to open, no odds, no spares to sell.
        A milestone shows its progress; a Rare also shows its fixed coin price; a pack outside
        the plan says so and asks for a grown-up, never for money. */
-    grantAvatarMilestones(true);
+    /* a milestone met since the last finished session is granted here — after this paint, so the
+       flash that celebrates it (once) is not fired from inside render() */
+    setTimeout(()=>{ try{ if(state.nav==='collection' && grantAvatarMilestones().length) render(); }catch(e){} },0);
     const ev=avEvidence(c);
     const howAv=`<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Starters are yours. Every other avatar says on its card exactly how it is won — a learning milestone, and for a Rare, a fixed price in Bizzing coins too. Packs beyond your plan come with the plan. Nothing here is left to chance.</p>`;
     const RARO={free:0,rare:1,epic:2,legendary:3};
@@ -9904,7 +9908,7 @@ function viewSettings(){
       <summary style="cursor:pointer;font-weight:800;font-size:13.5px;color:var(--muted);padding:10px 2px">Testing tools</summary>
       <div class="sb-card" style="padding:4px 0;margin-top:8px">
         ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
-        ${line('Test coins','Tops the purse up to 1,000,000 so you can test buying. Switching it off puts the real balance back.',tog('toggleDevCoins',!!(c&&c.devCoins),'On','Off'))}
+        ${line('Test coins','Shows a 1,000,000 test purse so you can test buying. It never touches the family wallet — nothing earned or spent while it is on is real, and switching it off shows the real balance again.',tog('toggleDevCoins',!!(c&&c.devCoins),'On','Off'))}
         ${line('Support console','Profiles and plans on this device, for testing. Local only — it changes nothing anywhere else.',`<button data-act="openAdmin" style="padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Open</button>`)}
         ${line('Research capture','Logs taps, screens and errors on THIS device only — nothing is ever sent anywhere. For play-testing; read it with the operator console.',tog('toggleResearch',!!(window.SB_TM&&SB_TM.on()),'On','Off'))}
         ${(window.SB_TM&&SB_TM.on())?`<div style="display:flex;gap:8px;align-items:center;padding:10px 16px 14px">

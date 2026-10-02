@@ -20,8 +20,12 @@ let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const APP = path.resolve(__dirname, '..');
 
-/* what a streak SAYS, however it is phrased — run over rendered text */
-const STREAK_RX = /\bstreaks?\b|days? in a row|\bday run\b|you['’]ll lose|don['’]t lose|\bfreezes?\b|keep (it|the chain) going|break the chain/i;
+/* what a streak SAYS, however it is phrased — run over rendered text. It is about the MECHANIC
+   ("12-day streak", "Streak Freeze", "STREAK", "keep your streak"), not the word: the library's
+   own text can carry "a streak of light" or "water freezes" on the word of the hour. */
+const STREAK_I = /\d+\s*[- ]?\s*day streak|\bday streak|streak (freeze|reward|bonus|pays|survives)|\b(your|best|keep the|lose the) streak\b|\d+\s*streak\b|\bstreak\s*:?\s*\d+|streaks pay|days? in a row|you['’]ll lose|don['’]t lose|keep (it|the chain) going|break the chain|🧊/i;
+const STREAK_U = /\bSTREAKS?\b/;
+const STREAK_RX = { test: t => STREAK_I.test(t) || STREAK_U.test(t), match: t => t.match(STREAK_I) || t.match(STREAK_U) };
 
 /* ---- the source: no streak copy in any string the app can show ---- */
 const SRC_RX = [/-day streak/i, /day streak/i, /streak freeze/i, /streak rewards?/i, /days? in a row/i,
@@ -76,7 +80,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
       else app.setNav(n); }, [nav, tab]);
     await pg.waitForTimeout(900);
     const t = await pg.evaluate(() => document.body.innerText);
-    const m = t.match(STREAK_RX);
+    const m = STREAK_RX.match(t);
     if (m) found.push(nav + (tab ? '/' + tab : '') + ': "…' + t.slice(Math.max(0, m.index - 40), m.index + 30).replace(/\s+/g, ' ') + '…"');
     if (nav === 'progress') ok(/good days? this week/i.test(t), 'Progress shows good days this week in place of the streak');
     if (nav === 'parent') ok(/good days this week/i.test(t) || /GOOD DAYS THIS WEEK/.test(t), 'the grown-ups page counts good days this week, not a streak');

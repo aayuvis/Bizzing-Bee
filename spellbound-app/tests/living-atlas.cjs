@@ -114,7 +114,8 @@ const ACTS = ['library', 'forum', 'storm', 'roots', 'strait', 'junkyard', 'sprin
   });
   ok(lm.open && lm.pure, 'the Card Catalogue opens a KIT-ONLY side round');
   ok(lm.themed, 'and it speaks LIBRARY verbs — shelves and volumes, not combs');
-  ok(lm.over && lm.paid >= 12, 'clearing it pays the honey trickle (+' + lm.paid + ')');
+  /* FIX-BEE: a side round passed is a finished round — the standard's 5 (tests/wallet-coins.cjs) */
+  ok(lm.over && lm.paid === 5, 'clearing it pays a finished round (+' + lm.paid + ')');
   ok(lm.libMarked && lm.meadowClean, 'the visit is remembered in the LIBRARY\'s own bucket — the meadow\'s is untouched');
 
   // ---- a second act keeps a separate bucket the same day ----

@@ -118,9 +118,11 @@ const CAST = {
     for (let i = 0; i < n; i++) {
       app.mwPoke(String(i));
       await new Promise(r => setTimeout(r, 90));
-      const now = state.children[0].coins || 0;
-      if (now - before >= 30) { hit = i; paid = now - before; break; }
+      /* FIX-BEE: the trove is a FIND, not a wage — poking is luck, and luck pays no coins.
+         So it is found by its record (p.tv), and every poke must pay nothing. */
+      if ((((state.children[0].trail.lv || {}).forum) || {}).tv) { hit = i; break; }
     }
+    paid = (state.children[0].coins || 0) - before;
     const marked = !!(((state.children[0].trail.lv || {}).forum || {}).tv);
     // poke the same spot again — a trove is found for GOOD
     const mid = state.children[0].coins || 0;
@@ -128,9 +130,9 @@ const CAST = {
     const again = (state.children[0].coins || 0) - mid;
     return { hit, paid, marked, again };
   });
-  ok(trove.hit >= 0 && trove.paid >= 30, 'one poke in the forum hides a BURIED TROVE (+' + trove.paid + ' honey)');
+  ok(trove.hit >= 0 && trove.paid === 0, 'one poke in the forum hides a BURIED TROVE — found for good, and worth no coins (+' + trove.paid + ')');
   ok(trove.marked, 'the trove is recorded as found');
-  ok(trove.again === 0, 'and it never pays twice — the only find on the board that does not come back');
+  ok(trove.again === 0, 'and poking it again pays nothing either');
   ok(/mwFixed/.test(tj) && /WITHOUT the date/.test(tj),
     'the trove sits still until it is found (seeded off the child, never the date)');
 

@@ -23,7 +23,7 @@ const path=require('path').resolve(__dirname,'..');
         beeAcc:{},unlockedConcepts:{},unlockedLists:{}}];
       st.activeIdx=0; st.screen='app'; st.premium=true; st.devUnlock=false; try{ window.SB_ENT.avatarPackLimit=()=>'all'; }catch(e){}
     });
-    for(const [tab,label] of [['badges','Badges'],['avatars','Avatars'],['worlds','Worlds']]){
+    for(const [tab,label] of [['badges','Medals'],['avatars','Avatars'],['worlds','Worlds']]){   // the Badges tab reads Medals now (FIX-BEE I4); its key is still 'badges'
       await pg.evaluate(t=>{ state.collTab=t; app.openCollection(); }, tab);
       await pg.waitForTimeout(400);
       const r=await pg.evaluate(()=>({
@@ -43,15 +43,15 @@ const path=require('path').resolve(__dirname,'..');
       if(tab==='avatars'&&/Bee style/i.test(r.txt)) errs.push(vp.n+' Bee style is back on the avatars tab');
       if(tab==='avatars'&&/Bee Cheer/.test(r.txt)) errs.push(vp.n+' Bee Cheer is back on the avatars tab');
     }
-    // odds panel actually opens
+    /* FIX-BEE I3 REVERSES the odds panel: packs no longer draw, so there are no odds to show.
+       Every card names how it is won instead (tests/no-random.cjs holds the rule itself). */
     await pg.evaluate(()=>{ state.collTab='avatars'; app.openCollection(); });
     await pg.waitForTimeout(300);
-    const okOdds=await pg.evaluate(()=>{ const b=[...document.querySelectorAll('[data-act="toggleOdds"]')][0];
-      if(!b) return 'no toggle'; b.click(); return null; });
-    if(okOdds) errs.push(vp.n+' '+okOdds);
-    await pg.waitForTimeout(350);
-    const oddsTxt=await pg.evaluate(()=>document.body.innerText);
-    if(!/%/.test(oddsTxt)) errs.push(vp.n+' odds panel did not render');
+    const av=await pg.evaluate(()=>({ odds:!!document.querySelector('[data-act="toggleOdds"],[data-act="buyPack"]'), txt:document.body.innerText,
+      rules:document.querySelectorAll('.av-rule').length }));
+    if(av.odds) errs.push(vp.n+' a pack draw or odds toggle is back on the avatars tab');
+    if(/odds|drop chance|Open pack/i.test(av.txt)) errs.push(vp.n+' odds / pack copy is back on the avatars tab');
+    if(!av.rules) errs.push(vp.n+' no avatar card names how it is won');
     // worlds + library
     for(const [act,name] of [['openWorlds','worlds'],['openEvo','evolution']]){
       await pg.evaluate(a=>app[a](), act); await pg.waitForTimeout(350);
