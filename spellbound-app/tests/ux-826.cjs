@@ -1,5 +1,8 @@
 // Amrita's 8.25/8.26 sweep, pinned: the Atlas quiz says its word and moves on by
-// itself; a Challenge miss SHOWS the correct word; Daily Buzz lingers on a miss;
+// itself after a RIGHT answer; a Challenge miss SHOWS the correct word; a miss holds;
+// (FIX-BEE D3 reversed one 8.26 decision on purpose: a wrong answer used to linger 3.2-3.6s
+// and then move on by itself; the family standard says a miss holds until tapped, so the
+// three source checks below now pin the hold. tests/answer-feedback.cjs drives it live.)
 // a new session resets the Card view (the shows-X-says-Y mismatch); the quick
 // practice row is three tiles with an honest word-picker label.
 const { chromium } = require('playwright');
@@ -9,8 +12,9 @@ let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 (async () => {
   const src = fs.readFileSync(SRC + '/app3.js', 'utf8');
-  ok(/missPause\(last\?gFinishBuzz:null, 3600\)/.test(src), 'Daily Buzz holds a miss on screen 3.6s');
-  ok(/g\.fmt==='time'\?1600:2400/.test(src), 'a Challenge miss pauses to show the word (shorter when timed)');
+  const mp = src.slice(src.indexOf('const missPause='), src.indexOf('const missPause=') + 400);
+  ok(/missPause\(last\?gFinishBuzz:null/.test(src) && /g\.fbGo=/.test(mp) && !/setTimeout/.test(mp), 'Daily Buzz holds a miss on screen until Next (no timer)');
+  ok(/missPause\(chLast\?gFinishChamp:null/.test(src), 'a Challenge miss stops to show the word');
   ok(/Saved for revision/.test(src.slice(src.indexOf("Look &amp; listen"))), 'the miss reveal says the word is saved for revision');
 
   const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });

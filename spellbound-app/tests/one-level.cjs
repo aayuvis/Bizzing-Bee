@@ -71,8 +71,9 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     out.luck = xp() - x0; x0 = xp();
     // a round: three right, two wrong
     app.playGame('buzz'); const g = state.game;
+    /* a miss HOLDS until Next since FIX-BEE D3 (batch C) — tap through it as a child would */
     for (let i = 0; i < 5; i++) { const G = state.game; const w = G.list[G.i].w; state.typed = (i % 2 === 1) ? (w + 'q') : w; app.gSubmit();
-      await new Promise(r => setTimeout(r, i % 2 === 1 ? 3800 : 60)); }
+      await new Promise(r => setTimeout(r, i % 2 === 1 ? 300 : 60)); if (state.game && state.game.fbGo) state.game.fbGo(); await new Promise(r => setTimeout(r, 60)); }
     out.right = state.game.right; out.round = xp() - x0;
     out.label = oneLevel(c).label;
     return out; });

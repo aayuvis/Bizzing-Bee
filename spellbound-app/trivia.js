@@ -111,19 +111,22 @@
 
     /* ---------- answers ---------- */
     pick(idx) { const g = state.trv; if (!g || g.picked != null) return; idx = +idx;
-      if (g.view === 'quiz') { const q = g.qs[g.i]; g.picked = idx; const ok = grade(g, q, idx); stopAud(); render();
-        // fun-fact dwell: longer after a miss so the right answer sinks in
-        setTimeout(() => { const t = state.trv; if (!t || t.view !== 'quiz') return;
-          if (t.i + 1 < t.qs.length) { t.i++; t.picked = null; render(); speakQ(t.qs[t.i]); } else STV.quizEnd(); }, ok ? 2100 : 3000); return; }
-      if (g.view === 'clock') { const q = g.qs[g.i]; g.picked = idx; const ok = grade(g, q, idx); if (!ok) g.wrong++; stopAud(); render();
-        setTimeout(() => { const t = state.trv; if (!t || t.view !== 'clock' || t.done) return;
-          t.i = (t.i + 1) % t.qs.length; t.picked = null; render(); speakQ(t.qs[t.i]); }, ok ? 550 : 1500); return; }
+      /* RIGHT ANSWERS ADVANCE; A MISS HOLDS until Next (FIX-BEE D3 — it used to dwell 3s and move on) */
+      if (g.view === 'quiz') { const q = g.qs[g.i]; g.picked = idx; const ok = grade(g, q, idx); stopAud();
+        g.go = () => { const t = state.trv; if (!t || t !== g || t.view !== 'quiz') return; t.go = null;
+          if (t.i + 1 < t.qs.length) { t.i++; t.picked = null; render(); speakQ(t.qs[t.i]); } else STV.quizEnd(); };
+        render(); if (ok) setTimeout(() => { if (g.go && g.picked === idx) g.go(); }, 2100); else g.held = true; return; }
+      if (g.view === 'clock') { const q = g.qs[g.i]; g.picked = idx; const ok = grade(g, q, idx); if (!ok) g.wrong++; stopAud();
+        g.go = () => { const t = state.trv; if (!t || t !== g || t.view !== 'clock' || t.done) return; t.go = null;
+          t.i = (t.i + 1) % t.qs.length; t.picked = null; render(); speakQ(t.qs[t.i]); };
+        render(); if (ok) setTimeout(() => { if (g.go && g.picked === idx) g.go(); }, 550); return; }
       if (g.view === 'square' && g.sel != null) { const cell = g.cells[g.sel]; const q = cell.q; g.picked = idx; const ok = grade(g, q, idx); stopAud();
         cell.st = ok ? 1 : 2; if (!ok) g.miss++;
-        render();
-        setTimeout(() => { const t = state.trv; if (!t || t.view !== 'square') return; t.sel = null; t.picked = null;
+        g.go = () => { const t = state.trv; if (!t || t !== g || t.view !== 'square') return; t.go = null; t.sel = null; t.picked = null;
           const L = STV._lines(t.cells); if (L > t.lines) { t.lines = L; sfx('win'); burstConfetti(70); flash('📐 Line complete!'); }
-          if (t.cells.every(x => x.st > 0)) STV.squareEnd(); else render(); }, ok ? 1900 : 2800); return; } },
+          if (t.cells.every(x => x.st > 0)) STV.squareEnd(); else render(); };
+        render(); if (ok) setTimeout(() => { if (g.go && g.picked === idx) g.go(); }, 1900); return; } },
+    next() { const g = state.trv; if (g && g.go && g.picked != null) g.go(); },
 
     _lines(cells) { const W = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
       return W.filter(w => w.every(i => cells[i].st === 1)).length; },
@@ -205,6 +208,7 @@
           ${isAud ? `<div style="margin:4px 0 10px"><button data-act="trvHear" style="display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:999px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${iconSVG('volume', 19)} Listen 🔊</button></div>` : ''}
           <div style="font-size:clamp(16px,3.6vw,20px);line-height:1.5;font-weight:700">${esc3(q.q)}</div>
           ${wrongNote}${fact}
+          ${wrong && g.go ? `<button data-act="trvNext" style="margin-top:12px;padding:12px 26px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Next →</button>` : ''}
         </div></div>
         <div style="display:grid;grid-template-columns:${q.ty === 'tf' ? '1fr 1fr' : 'repeat(auto-fit,minmax(200px,1fr))'};gap:10px">${choices}</div>`, head); },
 

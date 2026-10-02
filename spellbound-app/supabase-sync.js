@@ -89,6 +89,7 @@
     'luMastered', 'missedWords', 'xp', 'streak', 'acc', 'week', 'goal', 'goalDone',
     'coins', 'karma', 'band', 'level', 'addons', 'tier', 'gameDiffBy', 'arcGame',
     'hive', 'evo', 'world', 'seenTips', 'ttLvSel', 'advOn', 'lastPlayed',
+    'mast', // the mastery evidence record (FIX-BEE D5): word keys and day numbers, nothing about the child
   ];
 
   /* The label a backed-up speller wears. It is derived from the AVATAR, never from

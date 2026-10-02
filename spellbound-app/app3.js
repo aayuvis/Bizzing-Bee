@@ -565,7 +565,10 @@ function weekDayKeys(){ const out=[]; const d=new Date(); const dow=(d.getDay()+
   return out; }
 function goodDaysThisWeek(c){ c=c||active(); const played=new Set((c&&c.daysPlayed)||[]); return weekDayKeys().filter(k=>played.has(k)).length; }
 /* ---- misses: persist per-child to a revise list (with counts) AND the working pool ---- */
-function addMiss(w){ if(!w||!w.w) return; const c=active(); if(!c.missed) c.missed=[]; const k=nkey(w.w);
+/* `mark` = the child filed it themselves (a study aid) — the revise pile only. Without it this
+   is a real miss, and a real miss is evidence against mastery (FIX-BEE D5). */
+function addMiss(w,mark){ if(!w||!w.w) return; const c=active(); if(!c.missed) c.missed=[]; const k=nkey(w.w);
+  if(mark!=='mark'){ try{ mastEvidence(k,false); }catch(e){} }
   const ex=c.missed.find(x=>nkey(x.w)===k);
   if(ex){ ex.n=(ex.n||1)+1; ex.ts=now(); } else { c.missed.unshift({w:w.w,d:w.d||'',s:w.s||'',p:w.p||'',o:w.o||'',r:w.r||'',y:w.y||3,n:1,ts:now()}); }
   if(c.missed.length>200) c.missed=c.missed.slice(0,200);
@@ -2169,7 +2172,7 @@ const app = {
     if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
     if(key==='settings'){ pinGate(()=>app.openSettings(),'Settings — grown-ups only',true); return; }
     if(key==='parent'){ pinGate(()=>{ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); },'Parent zone'); return; }
-    if(key==='progress'&&state.progTab==null) state.progTab='me';
+    if(key==='progress'&&state.progTab!=='me') state.progTab='me';   // the Parent tab must ask for the PIN again (FIX-BEE M3)
     if(key==='concepts'){ lazyNeed('concepts'); loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
     if(key==='figurative') lazyNeed('figurative');
     if(key==='themes'||key==='journeys') lazyNeed(['themes','lists']);
@@ -2342,6 +2345,17 @@ const app = {
      information, and the privacy notice says it can be done in the app — so it has to
      actually exist. Two taps, because the second tap destroys months of practice. */
   askDelSpeller:(i)=>set({delSpeller:(state.delSpeller===+i?null:+i)}),
+  /* backup · restore · erase (FIX-BEE M3) — each re-asks the PIN at the moment it acts */
+  bkDownload:()=>pinGate(()=>{ try{ const txt=JSON.stringify(backupBlob()); const blob=new Blob([txt],{type:'application/json'}); const u=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=u; a.download=backupFileName(); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
+      state.bkMsg={t:'Saved '+backupFileName()+' — keep it somewhere safe.'}; render(); }catch(e){ state.bkMsg={t:'Could not save the file.',bad:1}; render(); } },'Backup — grown-ups only'),
+  bkPick:(file)=>{ try{ const rd=new FileReader(); rd.onload=()=>app.bkLoad(String(rd.result||'')); rd.onerror=()=>{ state.bkMsg={t:'Could not read that file.',bad:1}; render(); }; rd.readAsText(file); }catch(e){} },
+  bkLoad:(text)=>{ const r=backupParse(text); if(!r.ok){ state.bkPending=null; state.bkMsg={t:r.why,bad:1}; render(); return; }
+    state.bkAsk=null; state.bkMsg=null; state.bkPending=r; render(); },
+  bkRestoreGo:()=>{ const p=state.bkPending; if(!p) return; pinGate(()=>{ bkHalt(); restoreHousehold(p.blob); state.bkPending=null; flash('Restored — opening the household from the file'); bkHaltAndReload(); },'Restore a backup — grown-ups only'); },
+  bkAskErase:()=>set({bkAsk:(state.bkAsk==='erase'?null:'erase'), bkPending:null, bkMsg:null}),
+  bkEraseGo:()=>pinGate(()=>{ bkHalt(); eraseHousehold(); state.bkAsk=null; flash('Erased — Bizzing Bee is starting fresh'); bkHaltAndReload(); },'Erase everything — grown-ups only'),
+  bkCancel:()=>set({bkAsk:null, bkPending:null}),
   delSpeller:(i)=>{ const ch=state.children||[]; const k=ch[+i]; if(!k) return;
     const nm=k.name||'That speller';
     if(k.cid&&window.SB_SYNC) { try{ SB_SYNC.delChild(k.cid); }catch(e){} }
@@ -2557,8 +2571,10 @@ const app = {
   reviseNav:(dir)=>{ const N=(state.sessionWords&&state.sessionWords.length)||LEVEL_WORDS.length; let i=(state.reviseIdx||0)+(dir==='next'?1:-1); set({reviseIdx:Math.max(0,Math.min(N-1,i))}); },
   // Learn-card self-mark: arg is "kind|navAct|word" — record the outcome, then advance via that nav.
   flashMark:(arg)=>{ const p=String(arg).split('|'); const kind=p.shift(); const nav=p.shift(); const w=p.join('|');
-    if(kind==='done'){ if(w){ markMastered(w.toLowerCase()); clearMiss(w.toLowerCase()); } }
-    else { const ws=state.sessionWords||[]; const obj=ws.find(x=>nkey(x.w)===nkey(w))||{w:w,d:'',s:''}; addMiss(obj); flash('Marked for revision ⚑'); }
+    /* FIX-BEE D5: a child cannot mark a word mastered. "Got it" moves on and writes nothing;
+       "revise" puts the word on the revise pile (a study list), never on the evidence record. */
+    if(kind==='done'){ /* study aid only */ }
+    else { const ws=state.sessionWords||[]; const obj=ws.find(x=>nkey(x.w)===nkey(w))||{w:w,d:'',s:''}; addMiss(obj,'mark'); flash('Marked for revision ⚑'); }
     if(nav && typeof app[nav]==='function') app[nav]('next'); else render(); },
   /* The last card's Next used to be a dead button ("nothing happens" — Amrita 8.26).
      Finishing a deck is a MOMENT: confetti, a high five, and a real next step. */
@@ -2571,12 +2587,14 @@ const app = {
   exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; try{ if(window.SB_TRAIL_PRACTICED) SB_TRAIL_PRACTICED(u, state.sessionRight||0, state.sessionDone||0); }catch(e){} if(/^ul\d+$/.test(u)){ state.trailReturn=null; state.coachSession=false; try{ app.ultraAct(Math.floor(parseInt(u.slice(2),10)/4)); }catch(e){ app.setNav('trail'); } return; } state.trailReturn=null; state.coachSession=false; state.nav='trail'; app.trailUnit(u); return; } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='revisions'){ state.trainBack=null; app.openRevisions(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
   // Revisions — the words you flagged to revise; complete them or drill them again
   openRevisions:()=>set({nav:'revisions', screen:'app'}),
-  reviseComplete:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word)); markMastered(nkey(word));
+  reviseComplete:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word));   // moves it off the pile; mastery needs a spelling (FIX-BEE D5)
     if(m){ c.reviseHistory=c.reviseHistory||[]; if(!c.reviseHistory.some(x=>nkey(x.w)===nkey(word))) c.reviseHistory.unshift(Object.assign({},m,{doneTs:now()})); if(c.reviseHistory.length>300) c.reviseHistory=c.reviseHistory.slice(0,300); }
     clearMiss(word); save(); flash('Completed ✓ — saved to Revise history'); render(); },
   reviseHistoryAgain:(word)=>{ const c=active(); const m=(c.reviseHistory||[]).find(x=>nkey(x.w)===nkey(word)); if(!m) return;
-    addMiss(m); c.reviseHistory=(c.reviseHistory||[]).filter(x=>nkey(x.w)!==nkey(word)); save(); flash('Back on the revise list ⚑'); render(); },
+    addMiss(m,'mark'); c.reviseHistory=(c.reviseHistory||[]).filter(x=>nkey(x.w)!==nkey(word)); save(); flash('Back on the revise list ⚑'); render(); },
   revTab:(t)=>set({revTab:t}),
+  mastRecheck:()=>{ const due=mastDueWords(active(),30); if(!due.length){ flash('Nothing is due for a check today'); return; }
+    state.sessionWords=due; state.sessionLabel='Ready for a check'; state.gi=0; state.coachSession=false; state.trainBack='revisions'; app.startTrain(); },
   practiceRevisions:()=>{ const c=active(); const list=(c.missed||[]).slice(0,30); if(!list.length){ flash('No revisions yet — nice work!'); return; }
     state.sessionWords=list.map(m=>({w:m.w,d:m.d||'',s:m.s||'',p:m.p||'',o:m.o||'',r:m.r||'',y:m.y||3,sy:m.sy||'',h:m.h||''})); state.sessionLabel='Revisions'; state.gi=0; state.coachSession=false; state.trainBack='revisions'; app.startTrain(); },
   reviseOne:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word)); const src=m||(wordDB().get(nkey(word))); if(!src){ flash('Word not found'); return; }
@@ -2584,20 +2602,20 @@ const app = {
   onType:(v)=>{ state.typed=v; }, /* no per-keystroke render — a full re-render restarts tile animations (dock flicker) */
   trainKey:(e)=>{ if(e.key==='Enter'){ if(state.status==='idle') app.check(); else app.next(); } },
   toggleDef:()=>set({showDef:!state.showDef}),
-  openFinder:()=>{ state.drawerOpen=false; set({nav:'finder', conceptSel:null}); },
+  openFinder:()=>{ if(drillLive()){ flash('Search waits until this word is answered — it could give the spelling away'); return; } state.drawerOpen=false; set({nav:'finder', conceptSel:null}); },
   finderQ:(v)=>{ state.finderQ=v||''; state.finderSel=null; render(); },
   /* ---- header search: type here, see suggestions, Enter opens the Finder ----
      The dropdown is NOT closed on blur. Blur fires before the click that picks a
      suggestion, so closing there kills the very tap it exists for; it closes on pick,
      on Enter, on Escape, on any nav change, and on a click outside the bar. */
-  hqType:(v)=>{ state.hq=v||''; state.hqSel=-1; render(); },
+  hqType:(v)=>{ if(drillLive()){ state.hq=''; return; } state.hq=v||''; state.hqSel=-1; render(); },
   hqClear:()=>{ state.hq=''; state.hqSel=-1; render();
     setTimeout(()=>{ try{ document.querySelector('[data-fkey="hq"]')?.focus(); }catch(e){} },0); },
-  hqGo:()=>{ const q=(state.hq||'').trim(); if(q.length<2){ flash('Type at least two letters'); return; }
+  hqGo:()=>{ if(drillLive()) return; const q=(state.hq||'').trim(); if(q.length<2){ flash('Type at least two letters'); return; }
     state.finderQ=q; state.finderSel=null; state.hq=''; state.hqSel=-1; app.openFinder(); },
-  hqPick:(w)=>{ state.finderQ=w||''; state.hq=''; state.hqSel=-1; state.finderSel=null;
+  hqPick:(w)=>{ if(drillLive()) return; state.finderQ=w||''; state.hq=''; state.hqSel=-1; state.finderSel=null;
     app.openFinder(); try{ app.finderPick(w); }catch(e){} },
-  hqKey:(e)=>{ const list=suggestWords(state.hq,7); const n=list.length;
+  hqKey:(e)=>{ if(drillLive()) return; const list=suggestWords(state.hq,7); const n=list.length;
     if(e.key==='ArrowDown'){ e.preventDefault(); state.hqSel=n?((state.hqSel+1+n+1)%(n+1))-0:-1; if(state.hqSel>=n) state.hqSel=-1; render(); return; }
     if(e.key==='ArrowUp'){ e.preventDefault(); state.hqSel=n?(state.hqSel<=-1?n-1:state.hqSel-1):-1; render(); return; }
     if(e.key==='Escape'){ state.hq=''; state.hqSel=-1; render(); try{ e.target.blur(); }catch(_){} return; }
@@ -2676,14 +2694,17 @@ const app = {
     const used={}; used[String(target.d).toLowerCase()]=1;
     const others=pool.filter(w=>nkey(w.w)!==nkey(target.w)).sort(()=>Math.random()-0.5); const distract=[];
     for(let j=0;j<others.length && distract.length<3;j++){ const dk=String(others[j].d).toLowerCase(); if(!used[dk]){ used[dk]=1; distract.push(others[j].d); } }
-    const opts=[{d:target.d,correct:true}].concat(distract.map(d=>({d:d,correct:false}))).sort(()=>Math.random()-0.5);
+    /* a real shuffle: sort(()=>Math.random()-.5) is biased by position, and option order is how
+       an answer leaks without any text giving it away (FIX-BEE D8, tests/question-leaks.cjs) */
+    const opts=sample([{d:target.d,correct:true}].concat(distract.map(d=>({d:d,correct:false}))));
     state.vp={ w:target, opts:opts, picked:null, total:pool.length, idx:(state._vpSeen||[]).length }; state.vpAllDone=false; return true; },
   vocabSay:()=>{ if(state.vp) say(state.vp.w.w); },
   vocabPick:(i)=>{ i=+i; const vp=state.vp; if(!vp||vp.picked!=null) return; vp.picked=i; const ok=!!(vp.opts[i]&&vp.opts[i].correct);
     if(ok){ sfx('correct'); const _p=addCoins('answer'); state.vpRight=(state.vpRight||0)+1; state.toast='✓'+(_p?' +1 coin 🪙':''); scheduleToast(1500); save(); }
     else { sfx('wrong'); }
     state.vpDone=(state.vpDone||0)+1; render();
-    clearTimeout(state._vpTimer); state._vpTimer=setTimeout(()=>{ if(state.luTab==='vocab' && state.vp && state.vp.picked!=null){
+    clearTimeout(state._vpTimer); if(!ok) return;   // a miss holds until Next (FIX-BEE D3)
+    state._vpTimer=setTimeout(()=>{ if(state.luTab==='vocab' && state.vp && state.vp.picked!=null){
       const more=app.vocabNewQ();
       if(more){ render(); try{ if(state.vp) say(state.vp.w.w); }catch(e){} }
       else { // every word matched — big celebration with the child's avatar cheering
@@ -2700,13 +2721,12 @@ const app = {
   // Show answer = you didn't know it → save for revision and move on (no manual marking in Practice)
   reveal:()=>{ if(state.status==='revealed') return; const cw=curWord(); if(cw&&cw.w){ addMiss(cw); state.sessionDone=(state.sessionDone||0)+1; state._run=0;
       const rk=nkey(cw.w); state.sessionCorrect=(state.sessionCorrect||[]).filter(x=>nkey(x.w)!==rk); state.sessionWrong=(state.sessionWrong||[]).filter(x=>nkey(x.w)!==rk); state.sessionWrong.push(cw); }
-    set({status:'revealed', mood:'sleepy'}); },   // asked to see it → it stays until they move on
+    set({status:'revealed', mood:'think'}); },   // asked to see it → it stays until they move on (a kind face, not a yawn)
   primary:()=>{ app.check(); },
   // Self-directed advance: the two card buttons replace the old "Next" button.
-  completeWord:()=>{ const cw=curWord(); if(cw&&cw.w){ const t=cw.w.toLowerCase(); markMastered(t); clearMiss(t);
-      if(state.status==='idle'){ state.sessionDone=(state.sessionDone||0)+1; state.sessionRight=(state.sessionRight||0)+1; } }
-    sfx('correct'); app.next(); },
-  reviseWord:()=>{ const cw=curWord(); if(cw){ addMiss(cw); if(state.status==='idle') state.sessionDone=(state.sessionDone||0)+1; }
+  /* a self-mark: moves on, scores nothing, masters nothing (FIX-BEE D5) */
+  completeWord:()=>{ app.next(); },
+  reviseWord:()=>{ const cw=curWord(); if(cw){ addMiss(cw,'mark'); }
     flash('Marked for revision ⚑'); app.next(); },
   // Practice card view: an icon toggles the spell card into a swipeable portrait flash-card
   // deck. Tap/swipe right = "got it" (completeWord), tap/swipe left = revise (reviseWord).
@@ -2720,7 +2740,7 @@ const app = {
   cardNext:()=>app.cardAdvance('next'),
   cardRevise:()=>app.cardAdvance('revise'),
   cardAdvance:(mode)=>{ const ws=learnWords(); const i=state.cardIdx||0; const w=ws[i];
-    if(mode==='revise' && w){ addMiss(w); flash('Marked for revision ⚑'); }
+    if(mode==='revise' && w){ addMiss(w,'mark'); flash('Marked for revision ⚑'); }
     if(i>=ws.length-1){ set({cardDone:true}); }
     else { state.cardIdx=i+1; state.reviseIdx=i+1; render(); setTimeout(()=>say(cardWordNow().w),250); } },
   cardBack:()=>{ const i=state.cardIdx||0; if(i>0){ state.cardIdx=i-1; state.reviseIdx=i-1; render(); setTimeout(()=>say(cardWordNow().w),200); } },
@@ -2757,7 +2777,8 @@ const app = {
     } else {
       addMiss(curWord());
       sfx('wrong'); const d=lev(ans,target); if(d>0 && d<=2 && target.length>=4){ state.toast='So close — '+d+' letter'+(d>1?'s':'')+' off! 💡'; scheduleToast(2400); }
-      state.status='wrong'; state.mood='oops'; state.sessionDone+=1; state._run=0; render();
+      state.lastTry=ans;   // the attempt itself, so the letter-by-letter panel survives the child retyping (FIX-BEE D3)
+      state.status='wrong'; state.mood='think'; state.sessionDone+=1; state._run=0; render();   // a kind face on a miss, never a frown
       // NO auto-advance on a wrong answer. It used to move on after 2.2s, which is less
       // time than it takes to read a word you have just got wrong — play-testing asked for
       // longer, and the honest answer is that the reader should decide, not a timer. The
@@ -3018,7 +3039,7 @@ const app = {
   trvQuiz:()=>{ if(window.STV) STV.startQuiz(); },
   trvSquare:()=>{ if(window.STV) STV.startSquare(); },
   trvClock:()=>{ if(window.STV) STV.startClock(); },
-  trvPick:(a)=>{ if(window.STV) STV.pick(a); },
+  trvPick:(a)=>{ if(window.STV) STV.pick(a); }, trvNext:()=>{ if(window.STV&&STV.next) STV.next(); },
   trvCell:(a)=>{ if(window.STV) STV.cell(a); },
   trvHear:()=>{ if(window.STV) STV.hear(); },
   trvExit:()=>{ if(window.STV) STV.exit(); },
@@ -3033,14 +3054,15 @@ const app = {
     render(); const q=g.qs[0]; if(q.k==='spell') setTimeout(()=>say(q.w.w),350); },
   magicPick:(c)=>{ const g=state.game; if(!g||g.status!=='play'||g.picked!=null) return; const q=g.qs[g.qi];
     g.picked=c; g.ok=(nkey(c)===nkey(q.w.w)); if(g.ok){ g.right++; sfx('correct'); g.coins+=addCoins('answer'); } else sfx('wrong');
-    render(); setTimeout(magicAdvance, g.ok?900:1700); },
-  magicKey:(e)=>{ if(e.key==='Enter') app.magicSubmit(); },
+    render(); if(g.ok) setTimeout(magicAdvance, 900); },   // a miss holds until Next (FIX-BEE D3)
+  magicKey:(e)=>{ if(e.key==='Enter'){ const g=state.game; if(g&&g.revealed&&!g.ok){ magicAdvance(); return; } app.magicSubmit(); } },
+  magicNext:()=>{ const g=state.game; if(g&&(g.revealed||g.picked!=null)) magicAdvance(); },
   magicSubmit:()=>{ const g=state.game; if(!g||g.status!=='play'||g.revealed) return; const q=g.qs[g.qi];
     const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word first'); return; }
     g.revealed=true; g.ok=(ans===q.w.w.toLowerCase());
     logBand(q.w, g.ok);
     if(g.ok){ g.right++; sfx('correct'); g.coins+=addCoins('answer'); markMastered(nkey(q.w.w)); } else { sfx('wrong'); addMiss(q.w); }
-    render(); setTimeout(magicAdvance, g.ok?900:2100); },
+    g.tried=ans; render(); if(g.ok) setTimeout(magicAdvance, 900); },
   magicHear:()=>{ const g=state.game; if(g&&g.qs&&g.qs[g.qi]) say(g.qs[g.qi].w.w); },
   magicBoard:()=>{ const g=state.game; if(!g) return; g.status='board'; g.celebr=null; state.typed=''; render(); },
   magicNew:()=>magicNewBoard(),
@@ -3129,8 +3151,10 @@ const app = {
   // are on and restored the moment they go off (or testing mode ends).
   toggleDevCoins:()=>{ pinGate(()=>{
       const c=active(); if(!c) return;
+      /* Testing never rewrites the child (FIX-BEE M3, family standard §7): this switch can only
+         hand a banked purse back now. "Unlock everything" opens the gates without touching it. */
       if(c.devCoins){ devCoinsOff(); flash('🪙 Test coins removed — real balance restored'); }
-      else { c.devCoinsBank=c.coins||0; c.devCoins=1; c.coins=1000000; flash('🪙 1,000,000 test coins — temporary'); }
+      else { flash('Testing tools never change a child’s coins — Unlock everything opens the gates instead.'); }
       save(); render();
     },'Testing tools — grown-ups only'); },
   avLore:(id)=>app.showAvCard(id),   // legacy alias
@@ -3282,7 +3306,8 @@ const app = {
   gSaySlow:()=>{ const g=state.game; if(g&&g.list&&g.list[g.i]) say(g.list[g.i].w,0.6); },
   gSayQ:()=>{ const g=state.game; const q=g&&g.qs&&g.qs[g.i]; mcSpeak(q); },
   gInfoToggle:()=>set({gInfo:!state.gInfo}),
-  gKey:(e)=>{ if(e.key==='Enter') app.gSubmit(); },
+  gKey:(e)=>{ if(e.key==='Enter'){ const g=state.game; if(g&&g.wait&&g.fbGo){ try{ e.preventDefault(); }catch(_){} g.fbGo(); return; } app.gSubmit(); } },
+  gMissGo:()=>{ const g=state.game; if(g&&g.fbGo) g.fbGo(); },   // the child decides when a miss leaves the screen (FIX-BEE D3)
   gSubmit:()=>{ const g=state.game; if(!g||g.qs||g.wait) return; const w=g.list[g.i]; const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word, then Enter'); return; }
     const ok=ans===nkey(w.w); logGameWord(nkey(w.w)); logBand(w,ok);
     if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); }
@@ -3290,8 +3315,13 @@ const app = {
     if(!g.rw) g.rw=[]; g.rw.push({w:w.w, ok});
     const advance=()=>{ g.fb=null; g.wait=false; g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWordsD(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
     // on a miss, EVERY game stops to show the word big and say it — that's how the word sticks
-    const missPause=(fin,ms)=>{ g.fb={ok:false,word:w.w}; g.wait=true; try{ say(w.w); }catch(e){} render();
-      setTimeout(()=>{ const G=state.game; if(G!==g) return; if(fin){ fin(); } else { advance(); render(); } }, ms); };
+    /* A MISS HOLDS UNTIL TAPPED (FIX-BEE D3). It used to move on after 1.4-3.6s on a timer;
+       now the word stays, letter by letter with the why, until Next (tap or Enter). `ms` is
+       kept in the signature so the call sites read as before. A timed round's clock keeps
+       running while the child reads — their choice, not the app's. */
+    const missPause=(fin,ms)=>{ g.fb={ok:false,word:w.w,typed:ans}; g.wait=true; try{ say(w.w); }catch(e){}
+      g.fbGo=()=>{ const G=state.game; if(G!==g) return; g.fbGo=null; if(fin){ fin(); } else { advance(); render(); } };
+      render(); };
     if(g.type==='buzz'){ g.ans.push({w,val:state.typed,ok}); if(ok){ g.right++; payG(g); gainXp(); }
       const last=!(g.i+1<g.list.length);
       /* 2200ms read as a flash (Amrita 8.26) — a child needs time to LOOK at the
@@ -3308,14 +3338,17 @@ const app = {
       if(!ok){ missPause(chLast?gFinishChamp:null, g.fmt==='time'?1600:2400); return; }
       if(chLast){ gFinishChamp(); return; } advance(); render(); }
   },
-  gPick:(idx)=>{ const g=state.game; if(!g||!g.qs||g.picked!=null) return; idx=+idx; const q=g.qs[g.i]; g.picked=idx; const ok=q.choices[idx]===q.answer; logGameWord(nkey(q.word));
+  gPick:(idx)=>{ const g=state.game; if(!g||!g.qs||g.picked!=null) return; idx=+idx; const q=g.qs[g.i]; q._i0=g.i; g.picked=idx; const ok=q.choices[idx]===q.answer; logGameWord(nkey(q.word));
     const spellingGame = ['origin','idiom','simile2','vocab'].indexOf(q.kind)<0; // knowledge rounds don't count as spelling mastery
     logBand(q.wordObj||q.word, ok, spellingGame?0.5:0);
-    if(ok){ g.right++; payG(g); gainXp(); if(spellingGame){ markMastered(nkey(q.word)); clearMiss(q.word); } sfx('correct'); }
+    if(ok){ g.right++; payG(g); gainXp(); if(spellingGame){ markMastered(nkey(q.word),'mc'); clearMiss(q.word); } sfx('correct'); }
     else { sfx('wrong'); if(spellingGame && q.wordObj){ addMiss(q.wordObj); (g.miss=g.miss||[]).push(q.word); } try{ say(q.word); }catch(e){} }
     if(!g.rw) g.rw=[]; g.rw.push({w:q.word, ok});
+    /* right moves on by itself; a miss HOLDS under the answer until Next (FIX-BEE D3) */
+    g.mcGo=()=>{ const G=state.game; if(!G||G!==g||G.picked==null) return; G.mcGo=null; if(G.i+1<G.qs.length){ G.i++; G.picked=null; render(); mcSpeak(G.qs[G.i]); } else { gFinishMC(); } };
     render();
-    setTimeout(()=>{ const G=state.game; if(!G) return; if(G.i+1<G.qs.length){ G.i++; G.picked=null; render(); mcSpeak(G.qs[G.i]); } else { gFinishMC(); } }, ok?950:2400); },
+    if(ok) setTimeout(()=>{ if(g.mcGo&&state.game===g&&g.i===q._i0) g.mcGo(); }, 950); },
+  gMcNext:()=>{ const g=state.game; if(g&&g.mcGo) g.mcGo(); },
   coachTab:(t)=>set({coachTab:t}),
   setCoachDate:(v)=>{ const c=active(); c.milestone={ label:(c.milestone&&c.milestone.label)||'the bee', date:v||null }; if(!v) c.milestone=null; set({coachDate:v||null}); },
   setCoachGoal:(v)=>{ const n=parseInt(v,10); set({coachGoal:(n&&n>0)?n:20}); },
@@ -3396,7 +3429,7 @@ const app = {
   advSayCurList:()=>{ const g=state.adv; if(!g||!g.list) return; const w=g.list[g.i]; if(w) say(w.w); },
   advMockPick:(k)=>{ if(window.ADV) ADV.mockPick(k); },
   advMockSubmit:()=>{ if(window.ADV) ADV.mockSubmit(); },
-  advMockVocab:(i)=>{ if(window.ADV) ADV.mockPickVocab(+i); },
+  advMockVocab:(i)=>{ if(window.ADV) ADV.mockPickVocab(+i); }, advMockVocabNext:()=>{ if(window.ADV&&ADV.mockVocabNext) ADV.mockVocabNext(); },
   advOpenTip:(i)=>{ if(window.ADV) ADV.openTip(+i); },
   advTipCat:(c)=>{ if(window.ADV) ADV.tipCat(c); },
   advMemStart:()=>{ if(window.ADV) ADV.memStart(); },
@@ -3452,7 +3485,7 @@ const app = {
     const played=new Set(c.daysPlayed||[]); const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const last7=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); last7.push({on:played.has(k), label:dn[d.getDay()]}); }
     const daysThisWeek=last7.filter(x=>x.on).length;
-    const mastered=masteredCount();
+    const RC=reportCard(c); const mastered=RC.mastery.retained;   // one number everywhere: mastered on evidence (FIX-BEE M2)
     const tsKey=(ts)=>{ const d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
     const recent=(c.activity||[]).filter(a=>a.ts && dayDiff(tsKey(a.ts), t)<=7);
     const sessions=recent.length; const totDone=recent.reduce((s,a)=>s+(a.done||0),0); const totRight=recent.reduce((s,a)=>s+(a.right||0),0);
@@ -3467,6 +3500,8 @@ const app = {
       '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #7C5CFF;padding-bottom:12px"><div><div style="font-size:13px;color:#7C5CFF;font-weight:800;letter-spacing:.08em">BIZZING BEE · WEEKLY REPORT</div><h1>'+E(c.name)+'</h1></div><div style="text-align:right;font-size:12px;color:#888">'+new Date().toLocaleDateString()+'<br>Ages '+E(ageBandOf(c).n)+'</div></div>'+
       '<h2>This week at a glance</h2><div class="row"><div class="stat"><b>'+daysThisWeek+'/7</b><span>Days practised</span></div><div class="stat"><b>'+sessions+'</b><span>Sessions</span></div><div class="stat"><b>'+acc+'%</b><span>Accuracy</span></div></div>'+
       '<table style="width:100%;margin-top:16px;border-collapse:collapse"><tr>'+dotRow+'</tr></table>'+
+      '<h2>Report card</h2><div class="row"><div class="stat"><b>'+(RC.time.feed?RC.time.minutes:'—')+'</b><span>Active minutes · 7 days</span></div><div class="stat"><b>'+(RC.progress&&RC.progress.atlas?RC.progress.atlas.cleared:'—')+'</b><span>Atlas stops cleared</span></div><div class="stat"><b>'+RC.mastery.retained+'</b><span>Mastered on two days</span></div><div class="stat"><b>'+RC.mastery.due+'</b><span>Due for a re-check</span></div><div class="stat"><b>'+RC.mastery.slipped.length+'</b><span>Slipped since mastered</span></div></div>'+
+      (RC.mastery.traps.length?'<p style="font-size:13px;margin:10px 0 0"><b>Traps to help with:</b> '+RC.mastery.traps.map(t=>E(t.label)+' ('+t.words.map(E).join(', ')+')').join(' · ')+'</p>':'')+
       '<h2>Progress</h2><div class="row"><div class="stat"><b>'+rk.level+'</b><span>Rank · '+E(rk.name)+'</span></div><div class="stat"><b>'+ov+'</b><span>Stage ('+E(listLabel(activeListKey()))+')</span></div><div class="stat"><b>'+mastered+'</b><span>Words mastered</span></div><div class="stat"><b>'+totRight+'</b><span>Correct this week</span></div><div class="stat"><b>'+bnd.band+'</b><span>Word difficulty · '+E(bnd.tier)+'</span></div></div>'+
       '<h2>Words to revise ('+(c.missed||[]).length+')</h2><div>'+missChips+'</div>'+
       (milestone()?('<h2>Countdown</h2><p style="font-size:15px">'+esc(milestone().label)+' — <b>'+milestone().days+' days</b> to go.</p>'):'')+
@@ -4245,6 +4280,7 @@ function landFoot() {
       <a href="privacy.html" style="font-size:13px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">Privacy &amp; the children&rsquo;s online notice</a>
       <button data-act="landPlans" style="font-size:13px;font-weight:700;color:var(--muted)">Plans</button>
       <button data-act="goSignin" style="font-size:13px;font-weight:700;color:var(--muted)">Sign in</button>
+      ${bkLandingLink()}
     </div>
     <div style="max-width:1080px;margin:14px auto 0;padding:0 clamp(18px,4vw,32px);font-size:12px;color:var(--muted);line-height:1.6;opacity:.85">
       Built by a family who has sat through the regional rounds. Figures on this page are counted from the shipping build.
@@ -4613,6 +4649,7 @@ function focusAutoSync(){ try{ const F=window.SB_W4_FOCUS; if(!F) return;
    describing it — you watch the new row slide into the position it now occupies. */
 
 function advCheckUnlock(){ try{ const c=active(); if(!c) return;
+    if(state.devUnlock) return;   // tester mode opens gates; it never writes to the child (FIX-BEE M3) — no announcement, no activity row, no "day played"
     if(!advModeOn(c)) return; if(c.advAnnounced) return;
     c.advAnnounced=1; save();
     /* NO TAKEOVER ON UNLOCK. This used to open a sixteen-step guided tour over the whole
@@ -4764,7 +4801,7 @@ function vocBuildCheck(words){ const pool=gameWordsD({needDef:true});
   return (words||[]).filter(w=>w&&w.d).map(w=>{
     const near=pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d&&Math.abs((x.y||3)-(w.y||3))<=1);
     const src=near.length>=3?near:pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d);
-    const others=sample(src,3).map(x=>x.d).filter(Boolean);
+    const others=mcDistinct(w.d, sample(src).slice(0,24).map(x=>x.d).filter(Boolean), 3);   // distinct, never a second copy of the answer (FIX-BEE D8)
     return { w, answer:w.d, choices:sample([w.d].concat(others)) }; }); }
 
 /* Every list in the coach catalogue — the curated ones, the NSF tiers, the origin lists,
@@ -5167,7 +5204,7 @@ function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
     const bg=picked==null?'var(--surface2)':(isAns?'var(--mastered-tint,#E1F4E8)':(isPicked?'var(--fix-tint,#FBE9E7)':'var(--surface2)'));
     const bd=picked==null?'var(--line)':(isAns?'var(--good,#1f9d57)':(isPicked?'var(--fix,#C4453C)':'var(--line)'));
     return `<button data-act="vocPick" data-arg="${idx}" ${picked!=null?'disabled':''} style="display:block;width:100%;text-align:left;padding:13px 15px;border-radius:13px;background:${bg};border:1.5px solid ${bd};font-weight:650;font-size:14px;line-height:1.45;margin-bottom:9px;color:var(--text)">
-      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;color:var(--muted);margin-right:9px">${idx+1}</span>${esc(d)}</button>`; };
+      <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800;color:var(--muted);margin-right:9px">${idx+1}</span>${esc(maskTxt(d,q.w.w))}</button>`; };
   return `<div style="max-width:600px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
       ${backPill('vocCheckClose','Cards',null)}
@@ -5725,6 +5762,77 @@ function coachWordArt(w){
       ${cell(sp.pre,sp.mid,sp.post,true)}${cell(sp.pre,sp.wmid,sp.post,false)}
     </div>`;
 }
+/* ===================== WHY THAT MISS (FIX-BEE D3, Oct 2026) =====================
+   A wrong answer used to say '✗ Not quite — it's "army"' and nothing else, with a frowning
+   bee. Now every surface that grades a typed or picked spelling shows the same two things,
+   and HOLDS until the child taps on:
+     1. the letters, one column per letter — what they wrote over what the word is, with
+        the letters that differ lit (missAlign: an edit-distance alignment, so a dropped
+        letter shows as a gap rather than shifting every letter after it);
+     2. WHY — the concept family that explains THAT miss, found from where the letters
+        actually differ (a dropped k at the front is a silent letter; a lost m in
+        committee is a double letter), falling back to the word's own trickAnal family.
+        The rule line comes from the Coach's rulebook (SB_COACH_RULES[k].check, lazy) or
+        TRAP_TIP while it loads; the word's own memory hook (w.h) follows when it has one.
+   Shown only AFTER an attempt, so it cannot leak a spelling. Guard: tests/answer-feedback.cjs. */
+function missAlign(typed, word){ const a=String(typed||'').toLowerCase().slice(0,60), b=String(word||'').toLowerCase();
+  const m=a.length, n=b.length; const D=[]; for(let i=0;i<=m;i++){ D.push(new Array(n+1).fill(0)); D[i][0]=i; } for(let j=0;j<=n;j++) D[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) D[i][j]=Math.min(D[i-1][j]+1, D[i][j-1]+1, D[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  const cols=[]; let i=m, j=n;
+  while(i>0||j>0){
+    if(i>0&&j>0&&a[i-1]===b[j-1]&&D[i][j]===D[i-1][j-1]){ cols.push({t:a[i-1],w:b[j-1],op:'ok'}); i--; j--; }
+    else if(i>0&&j>0&&D[i][j]===D[i-1][j-1]+1){ cols.push({t:a[i-1],w:b[j-1],op:'sub'}); i--; j--; }
+    else if(j>0&&D[i][j]===D[i][j-1]+1){ cols.push({t:'',w:b[j-1],op:'del'}); j--; }
+    else { cols.push({t:a[i-1],w:'',op:'ins'}); i--; } }
+  return cols.reverse(); }
+const MISS_CLS_KEY={dbl:'double',silent:'silent',vow:'ieei',end:'endings',fr:'french',gk:'greek',epon:'epon',hom:'hom'};
+const MISS_LABEL={double:'Double letters',silent:'Silent letters',ieei:'ie or ei',schwa:'The schwa',endings:'Suffix endings',french:'French patterns',greek:'Greek patterns',latin:'Latin roots',epon:'Words from names',hom:'Sound-alikes'};
+const MISS_TIP_X={ epon:'This word is named after a person or a place. Spell the name first, then add the ending.',
+  hom:'Another word sounds exactly like this one. Only the meaning tells you which spelling is wanted — ask for it.',
+  plain:'Say it slowly, one beat at a time, and spell each beat. Then say the whole word again and check it sounds right.' };
+function missWhy(wo, typed){ const w=String((wo&&wo.w)||wo||'').toLowerCase(); if(!w) return null;
+  const rec=(typeof wo==='object'&&wo)||{w:w}; const full=wordIndex()[w]||rec;
+  const cols=missAlign(typed,w); const zone=new Set(); let wi=0, vowSwap=false, dblHit=false;
+  cols.forEach(c=>{ if(c.op==='ins'){ zone.add(Math.max(0,wi-1)); zone.add(Math.min(w.length-1,wi));
+        if(c.t===w[wi-1]||c.t===w[wi]) dblHit=true; return; }
+      if(c.op!=='ok'){ zone.add(wi); if(c.op==='del'&&(w[wi-1]===c.w||w[wi+1]===c.w)) dblHit=true;
+        if(c.op==='sub'&&/[aeiouy]/.test(c.t)&&/[aeiouy]/.test(c.w)) vowSwap=true; }
+      wi++; });
+  const hit=(re)=>{ const g=new RegExp(re.source,'g'); let mm; while((mm=g.exec(w))){ for(let i=mm.index;i<mm.index+mm[0].length;i++) if(zone.has(i)) return true; if(g.lastIndex===mm.index) g.lastIndex++; } return false; };
+  let k=null;
+  if(hit(/^(kn|wr|gn|ps|pn|mn|rh)/)||hit(/(mb|mn|gn)$/)||(hit(/gh/)&&!/ough|augh/.test(w))||hit(/(stle|sten|ften)$/)) k='silent';
+  else if(dblHit||hit(/([b-df-hj-np-tv-z])\1/)) k='double';
+  else if(hit(/ie|ei/)) k='ieei';
+  else if(hit(/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|ury|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede)$/)) k='endings';
+  else if(hit(/ph|rh|ch|y(?=[^aeiou])/)&&/greek/i.test(full.o||'')) k='greek';
+  else if(hit(/eau|que$|gue$|ette$|oir|ille|et$/)) k='french';
+  else if(vowSwap) k='schwa';
+  if(!k){ try{ const cls=trickAnal(full).cls; k=MISS_CLS_KEY[cls]||null; }catch(e){} }
+  if(!k && homPartners(w).length) k='hom';
+  const R=(window.SB_COACH_RULES||{})[k]||null;
+  if(!R) lazyNeed('coachRules');
+  const tip=(R&&R.check)||((typeof TRAP_TIP!=='undefined'&&TRAP_TIP[k])||MISS_TIP_X[k])||MISS_TIP_X.plain;
+  return { k:k||'plain', label:(R&&R.label)||MISS_LABEL[k]||'How to get it next time', tip, hook:full.h||rec.h||'', cols }; }
+/* The whole miss panel. typed='' (asked to see it / picked nothing) still shows the word in
+   letters and the why. opts.head overrides the headline. */
+function missFeedbackHTML(wo, typed, opts){ opts=opts||{}; const why=missWhy(wo, typed); if(!why) return '';
+  const word=String((wo&&wo.w)||wo||'');
+  const cell=(ch,kind,row)=>{ const bad=row==='t'&&kind!=='ok', good=row==='w'&&kind!=='ok';
+    const gap=(row==='t'&&kind==='del')||(row==='w'&&kind==='ins');
+    return `<span class="sb-mdc${gap?' gap':''}" style="display:grid;place-items:center;min-width:1.15em;height:1.45em;padding:0 2px;border-radius:5px;${gap?'border:1.5px dashed var(--line)':bad?'background:color-mix(in srgb,var(--bad) 20%,transparent);color:var(--bad);text-decoration:'+(kind==='ins'?'line-through':'none'):good?'background:color-mix(in srgb,var(--good) 22%,transparent);color:var(--good)':'color:var(--muted)'}">${gap?'&nbsp;':esc(ch)}</span>`; };
+  const cols=why.cols.map(c=>`<span class="sb-mdcol" data-op="${c.op}" style="display:inline-flex;flex-direction:column;gap:3px">${cell(c.t,c.op,'t')}${cell(c.w,c.op,'w')}</span>`).join('');
+  const nDiff=why.cols.filter(c=>c.op!=='ok').length;
+  const summary=(typed?'You wrote '+typed+'. ':'')+'The word is spelled '+word.split('').join(' ')+'. '+(typed?nDiff+' letter'+(nDiff===1?'':'s')+' differ.':'');
+  return `<div class="sb-miss" data-why="${escA(why.k)}" style="text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:14px;animation:sb-pop .3s ease both">
+      <div style="font-weight:800;font-size:14.5px;color:var(--text);margin-bottom:9px">${opts.head||(typed?'Not this time — here is the word, letter by letter':'Here is the word, letter by letter')}</div>
+      <div role="img" aria-label="${escA(summary)}" style="display:flex;align-items:flex-start;gap:8px">
+        <span aria-hidden="true" style="display:inline-flex;flex-direction:column;gap:3px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">${typed?'<span style="height:1.45em;display:flex;align-items:center">You</span>':''}<span style="height:1.45em;display:flex;align-items:center">Word</span></span>
+        <span aria-hidden="true" class="sb-mdiff" style="display:flex;flex-wrap:wrap;gap:2px 1px;font-family:var(--mono,ui-monospace,monospace);font-weight:800;font-size:clamp(16px,4.2vw,21px)">${typed?cols:why.cols.map(c=>c.w?`<span class="sb-mdcol" style="display:inline-flex">${cell(c.w,'ok','w')}</span>`:'').join('')}</span></div>
+      <div class="sb-mwhy" style="display:flex;gap:9px;align-items:flex-start;margin-top:11px;padding-top:10px;border-top:1px solid var(--line)">
+        <span style="flex-shrink:0;color:var(--treasure-deep,#8A5B00);margin-top:1px">${iconSVG('bulb',16)}</span>
+        <span style="font-size:13.5px;line-height:1.5;color:var(--text)"><b>${esc(why.label)}</b> — ${esc(why.tip)}${why.hook?`<br><span style="color:var(--muted)">Memory hook: ${esc(why.hook)}</span>`:''}</span></div>
+      ${opts.foot?`<div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:8px">${opts.foot}</div>`:''}
+    </div>`; }
 function coachFace(id,sz,ring){
   try{ if(window.SB_AVATAR){ const a=SB_AVATAR(id,sz); if(a) return `<span style="flex:none;width:${sz}px;height:${sz}px;border-radius:50%;overflow:hidden;display:grid;place-items:center;${ring?`box-shadow:0 0 0 3px ${ring}`:''}">${a}</span>`; } }catch(e){}
   return '';
@@ -6066,10 +6174,19 @@ function viewRevisions(){
       :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Practice and it will show up here.'));
   return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
     ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Practice and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
+    ${mastDueCard()}
     <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:14px">${tabBtn('todo','To revise'+(list.length?' · '+list.length:''))}${tabBtn('history','Revise history'+(hist.length?' · '+hist.length:''))}</div>
     ${body}
   </div>`;
 }
+/* "Ready for a check" — the words whose spaced re-check has come round (FIX-BEE D5). This is
+   the decay made visible: a mastered word comes back, and spelling it again keeps it. */
+function mastDueCard(){ const due=mastDueWords(active(),30); if(!due.length) return '';
+  return `<div class="sb-card sb-mastdue" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+    <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);display:grid;place-items:center">${iconSVG('retry',19)}</span>
+    <span style="min-width:0;flex:1"><b style="display:block;font-family:var(--display);font-size:15px">${due.length} word${due.length===1?'':'s'} ready for a check</b>
+      <span style="font-size:12.5px;color:var(--muted);line-height:1.45">A word is mastered when you spell it right on two different days — and it comes back now and then so it stays mastered.</span></span>
+    <button data-act="mastRecheck" style="flex-shrink:0;padding:11px 16px;border-radius:12px;background:var(--good);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Check them →</button></div>`; }
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
@@ -6201,12 +6318,12 @@ function viewApp(){
         ${(()=>{ /* A real search bar, not a button that goes somewhere to find one. Type
              here, suggestions drop under it, Enter opens the Finder on the query — and a
              suggestion tapped goes straight to that word's card. */
-          const _q=state.hq||''; const _sug=suggestWords(_q,7); const _sel=state.hqSel==null?-1:state.hqSel;
+          const _drill=drillLive(); const _q=_drill?'':(state.hq||''); const _sug=_drill?[]:suggestWords(_q,7); const _sel=state.hqSel==null?-1:state.hqSel;   // FIX-BEE D8: no search while a word is being tested
           const _rows=_sug.map((r,i)=>`<button data-act="hqPick" data-arg="${escA(r.w)}" class="sb-hsug-row${i===_sel?' on':''}" role="option" aria-selected="${i===_sel?'true':'false'}">
               <span class="sb-hsug-w">${esc(r.w)}</span>${r.d?`<span class="sb-hsug-d">${esc(trunc(r.d,64))}</span>`:''}</button>`).join('');
           return `<div class="sb-hsearch">
             <span class="sb-hsearch-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg></span>
-            <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search any word…">
+            <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${_drill?'Search waits until you answer':'Search any word…'}"${_drill?' disabled aria-disabled="true" title="Search pauses while a word is being tested — it could give the spelling away."':''}>
             ${_q?`<button data-act="hqClear" class="sb-hsearch-x" aria-label="Clear search">✕</button>`:''}
             ${_sug.length?`<div class="sb-hsug" role="listbox">${_rows}<button data-act="hqGo" class="sb-hsug-all">See all matches for “${esc(_q)}” →</button></div>`
               :(_q.trim().length===1?`<div class="sb-hsug"><div class="sb-hsug-none">Keep typing — two letters and the words start arriving.</div></div>`:'')}
@@ -7152,7 +7269,103 @@ function celebratePattern(emoji,kind,name,reward){ const _p=addCoins('mastery');
 function checkPatternDone(key){
   for(const ch of (state.conceptData||[])){ if(justCrossed(ch.words,key)){ celebratePattern('🧩','Concept',conceptShort(ch.title),20); return; } }
   for(const L of lessonsAll()){ if(justCrossed(L.words,key)){ celebratePattern('🗺️','Lesson',L.title,15); return; } } }
-function markMastered(key){ if(!key||state.luMastered[key]) return; state.luMastered={...state.luMastered,[key]:true}; checkPatternDone(key); }
+/* ===================== MASTERY FROM EVIDENCE (FIX-BEE D5, Oct 2026) =====================
+   markMastered used to set luMastered[word]=true on the FIRST right answer, from anywhere,
+   and nothing ever took it back — a "Complete" button on a card did the same. So one lucky
+   answer, or one tap, said "mastered" for ever. Now a word is mastered only on evidence:
+   right, and right again on a LATER DAY. The record lives on the CHILD (c.mast), one entry
+   per word: {b box 0-5, due day, d day of the last box move, ok, n, at, mt mastered-at,
+   lp lapses, sl last slip, miss, leg}. Days are local day numbers (mastDay), so "tomorrow"
+   is the calendar's, not 24 hours.
+     · a right recall moves the box up only when it is DUE and on a new day; the same word
+       right twice today is practice, not evidence (box 0 -> 1 is the first right answer).
+     · box >= MAST_BOX (2) is mastered: right on two separate days, a day or more apart.
+     · a mastered word comes DUE again after MAST_GAPS[box] days — that is the decay. It is
+       still counted as mastered while due, and the Revisions page and the report surface it
+       for a re-check; a right answer on the re-check moves it further out.
+     · a miss drops it: a mastered word falls to box 1 (and counts a lapse — "slipped"),
+       anything else to box 0. Re-mastering needs another later day.
+     · recognition ('mc': picking the right spelling) is never enough to move a box up,
+       but a wrong pick still drops one — failing to recognise a word is evidence too.
+   state.luMastered is DERIVED from the active child's record by mastSync() (every reader —
+   stage-ups, concept/lesson labels, heatmaps, reports — keeps working unchanged). Nothing
+   else may write it. The child cannot self-mark: the card "Got it" / "Complete" buttons are
+   study aids that write nothing here. Guard: tests/mastery-evidence.cjs. */
+const MAST_GAPS=[0,1,3,7,21,60];   // days until a box comes due again — a design assumption to tune, not a cited finding
+const MAST_BOX=2;                  // box 2 = right on two separate days
+function mastDay(t){ const d=new Date(t==null?Date.now():t); return Math.floor((d.getTime()-d.getTimezoneOffset()*60000)/86400000); }
+function mastRec(c){ if(!c) return null; if(!c.mast||typeof c.mast!=='object'||Array.isArray(c.mast)) c.mast={}; return c.mast; }
+function mastGet(c,key){ const M=c&&c.mast; key=nkey(key); return (M&&Object.prototype.hasOwnProperty.call(M,key))?M[key]:null; }
+function mastIsMastered(r){ return !!(r&&r.b>=MAST_BOX); }
+function mastIsDue(r,today){ return !!(r&&r.b>=1&&(today==null?mastDay():today)>=r.due); }
+/* one piece of evidence about one word. kind: undefined = a typed recall, 'mc' = recognition */
+function mastEvidence(key, ok, kind){ key=nkey(key); if(!key) return null; const c=active(); if(!c) return null;
+  const M=mastRec(c); const t=Date.now(), today=mastDay(t);
+  const r=Object.prototype.hasOwnProperty.call(M,key)?M[key]:(M[key]={b:0,due:today,ok:0,n:0});
+  r.n=(r.n||0)+1; r.at=t;
+  if(ok){ r.ok=(r.ok||0)+1;
+    if(kind!=='mc'){
+      if(!r.b){ r.b=1; r.d=today; r.due=today+MAST_GAPS[1]; }
+      else if(today>=r.due && today>(r.d==null?-Infinity:r.d)){ const was=r.b;
+        r.b=Math.min(MAST_GAPS.length-1,r.b+1); r.d=today; r.due=today+MAST_GAPS[r.b]; delete r.leg;
+        if(was<MAST_BOX && r.b>=MAST_BOX) r.mt=t; } } }
+  else { if(r.b>=MAST_BOX){ r.lp=(r.lp||0)+1; r.sl=t; }
+    r.b=(r.b>=MAST_BOX)?1:0; r.d=today; r.due=today; r.miss=(r.miss||0)+1; delete r.leg; }
+  mastSync(true);
+  try{ mastMilestone(c); }catch(e){}
+  return r; }
+/* luMastered = the active child's mastered words. Rebuilt when the child changes or a record
+   is written; a direct write to state.luMastered survives until then (tests seed it). */
+let _mastSig='';
+function mastSync(force){ try{ const c=active(); if(!c) return; const sig=(state.activeIdx||0)+'|'+(c.name||'');
+    if(!force && sig===_mastSig) return; _mastSig=sig;
+    const M=c.mast||{}; const lu={}; for(const k in M){ if(Object.prototype.hasOwnProperty.call(M,k) && mastIsMastered(M[k])) lu[k]=true; }
+    state.luMastered=lu; }catch(e){} }
+/* First load after this change: the household's old luMastered (one right answer, or a
+   self-mark — no way to tell which) is carried onto each child as box 2 flagged `leg`, due
+   today. It keeps every stage, label and heatmap exactly as the child left it, while the
+   report refuses to count it as retained until a re-check proves it. Runs once: only when
+   no child in the household has a record yet. */
+function mastBoot(lu){ try{ const kids=state.children||[]; if(!kids.length) return;
+    if(kids.some(k=>k&&k.mast&&typeof k.mast==='object')){ mastSync(true); return; }
+    const today=mastDay(); const keys=Object.keys(lu||{}).filter(k=>lu[k]);
+    kids.forEach(k=>{ if(!k) return; const M=mastRec(k);
+      keys.forEach(w=>{ const key=nkey(w); if(key && !Object.prototype.hasOwnProperty.call(M,key)) M[key]={b:MAST_BOX,due:today,d:today-1,ok:1,n:1,leg:1}; }); });
+    mastSync(true); }catch(e){} }
+/* the words ready for their next check, oldest due first — mastered ones being re-checked
+   and once-right ones waiting for their second day */
+function mastDueWords(c,n){ c=c||active(); const M=(c&&c.mast)||{}; const today=mastDay(); const idx=wordIndex();
+  return Object.keys(M).filter(k=>mastIsDue(M[k],today)).sort((a,b)=>(M[a].due-M[b].due)||(M[b].b-M[a].b))
+    .slice(0,n||30).map(k=>{ const w=idx[k]||(wordDB().get?wordDB().get(k):null)||{w:k}; return {w:w.w||k,d:w.d||'',s:w.s||'',p:w.p||'',o:w.o||'',r:w.r||'',y:w.y||3,sy:w.sy||'',h:w.h||''}; }); }
+/* Hive milestones for mastery — every 25 words actually mastered, written through the family
+   drop-in when it is present (batch A wires BZ_ACTIVITY). Never more than one per threshold. */
+function mastMilestone(c){ if(!window.BZ_ACTIVITY||typeof BZ_ACTIVITY.trackMilestone!=='function') return;
+  const M=c.mast||{}; let n=0; for(const k in M) if(mastIsMastered(M[k])&&!M[k].leg) n++;
+  const step=Math.floor(n/25)*25; if(step<25||(c.mastMs||0)>=step) return; c.mastMs=step;
+  BZ_ACTIVITY.trackMilestone('bee', c.name||'', 'mastery', step+' words mastered'); }
+/* Is a word being tested on screen right now? While it is, the header search and the Finder
+   are off — typing the start of the word there would show its spelling mid-drill (FIX-BEE D8).
+   State-based (the header renders after the view, but must not depend on the previous DOM). */
+function drillLive(){ try{ const S=state; if(S.screen!=='app') return false;
+    const practice=(S.nav==='train')||((S.nav==='coach'||S.nav==='levelup')&&S.luTab==='practice');
+    if(practice && !S.sessionOver && !S.coachCardView) return true;
+    if((S.nav==='coach'||S.nav==='levelup') && S.luTab==='vocab' && S.vp && S.vp.picked==null) return true;
+    if(S.nav==='coach' && (S.coachMode==='written'||S.coachMode==='oral')) return true;
+    if(S.nav==='trail' && S.trailView==='quiz' && S.tq && !S.tq.over) return true;
+    if(S.vocCheck && !S.vocCheck.done && S.nav==='vocab') return true;
+    if(S.nav==='mockbee' && S.mb && S.mb.view==='stage') return true;
+    if(S.nav==='trivia' && S.trv && /^(quiz|clock|square)$/.test(S.trv.view||'') && !S.trv.done) return true;
+    if(S.nav==='games' && S.game && S.game.status==='play') return true;
+    if(S.nav==='adv' && S.adv && /^(drill|scan|mock)$/.test(S.adv.mode||'') && !S.adv.done) return true;
+    if(S.nav==='leveltest' && S.lt && S.lt.placed==null) return true;
+    if(S.readerQuiz && !S.readerQuiz.over) return true;
+    if(document.querySelector('.arc-play,.bz-play')) return true;
+    return false; }catch(e){ return false; } }
+/* A right answer is EVIDENCE now, not a verdict (the name stays: a dozen callers in four
+   files use it). kind 'mc' = recognition. A word crossing into mastery can still finish a
+   concept or lesson pattern. */
+function markMastered(key,kind){ if(!key) return; key=nkey(key); const was=!!state.luMastered[key];
+  mastEvidence(key,true,kind); if(!was && state.luMastered[key]) checkPatternDone(key); }
 function conceptTierList(t){ return (state.conceptData||[]).filter(c=>(c.difficulty||'medium')===t); }
 function currentTier(){ const order=['easy','medium','hard']; for(const t of order){ const list=conceptTierList(t); if(list.length && !list.every(c=>conceptStat(c).done)) return t; } return 'hard'; }
 /* ---- generated concept covers: theme-independent family palette + texture (design handoff) ---- */
@@ -7678,7 +7891,7 @@ function sessionResults(){
       } else if(lm<st.words.length){
         advBtn=`<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 16px;text-align:left">
           <span style="color:var(--accent);flex-shrink:0">${iconSVG('steps',18)}</span>
-          <span style="min-width:0;flex:1;font-size:13px;font-weight:650;color:var(--muted)"><b style="color:var(--ink,var(--text))">Stage ${li+1}: ${lm} of ${st.words.length} words mastered</b> — ${st.words.length-lm} to go. Your next session serves exactly those words; master them all (or pass the ⚡ Challenge) to open Stage ${li+2}.</span>
+          <span style="min-width:0;flex:1;font-size:13px;font-weight:650;color:var(--muted)"><b style="color:var(--ink,var(--text))">Stage ${li+1}: ${lm} of ${st.words.length} words mastered</b> — ${st.words.length-lm} to go.${(()=>{ const pend=st.words.filter(w=>{ const r=mastGet(c,w.w); return r&&r.b===1; }).length; return pend?` <b style="color:var(--good)">${pend} spelled right</b> — spell them right again on another day and they count as mastered.`:''; })()} Master them all (or pass the ⚡ Challenge) to open Stage ${li+2}.</span>
           <div style="flex-shrink:0;width:90px;height:7px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden"><div style="height:100%;background:var(--good);width:${Math.round(lm/st.words.length*100)}%"></div></div>
         </div>
         ${(()=>{ const miss=st.words.filter(w=>!state.luMastered[nkey(w.w)]);
@@ -7752,8 +7965,9 @@ function trainerCard(){
   let resultText='',resultStyle=''; const primaryLabel=(st==='idle')?'Check':'Check again'; const showResult=(st!=='idle');
   const rbase='border-radius:14px;padding:13px 16px;font-weight:800;font-size:15px;margin-bottom:16px;animation:sb-pop .3s ease both;';
   if(st==='correct'){ resultText='✓ Correct! Nicely spelled — next word…'; resultStyle=rbase+'background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)'; }
-  else if(st==='wrong'){ resultText='✗ Not quite — it’s "'+word.w+'". Saved for revision. Take your time.'; resultStyle=rbase+'background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)'; }
-  else if(st==='revealed'){ resultText='The word is "'+word.w+'".'; resultStyle=rbase+'background:var(--surface2);color:var(--text)'; }
+  /* a miss shows the letters and the why, and HOLDS (FIX-BEE D3) — see missFeedbackHTML */
+  else if(st==='wrong'){ resultText=''; resultStyle=''; }
+  else if(st==='revealed'){ resultText=''; resultStyle=''; }
   // Correct auto-advances (no click needed). Wrong and Show-answer HOLD, so the reader
   // controls when the spelling leaves the screen — they get a Next word button instead.
   const showMarks=(st==='idle'||st==='revealed');
@@ -7769,7 +7983,7 @@ function trainerCard(){
   if(S.showSent) hints.push('<b>Sentence</b> — '+blankHTML(word.s,word.w));
   if(S.showOrigin) hints.push('<b>Origin</b> — '+esc(word.o||'—')+'.'); // language of origin only — the full etymology (word.r) spells out the roots and would leak the answer
   const tchip=(on,label,act)=>`<button data-act="${act}" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid ${on?'var(--accent)':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:transparent;color:var(--text)'}">${label}</button>`;
-  const mascotAnim=st==='wrong'?'animation:sb-shake .45s ease':(st==='correct'?'animation:sb-pop .4s ease':'');
+  const mascotAnim=st==='correct'?'animation:sb-pop .4s ease':'';   // no head-shake on a miss: the bee stays kind
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,34px);box-shadow:var(--glow);text-align:center;position:relative">
       <div style="height:6px"></div>
       <div style="width:96px;height:108px;margin:0 auto 4px"><div style="${mascotAnim};width:96px;height:108px">${mascotSVG(S.mood)}</div></div>
@@ -7780,7 +7994,9 @@ function trainerCard(){
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px">${tchip(S.showDef,'Definition','toggleDef')}${tchip(S.showSent,'Sentence','toggleSent')}${tchip(S.showOrigin,'Origin','toggleOrigin')}</div>
       ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
       <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
-      ${showResult?`<div style="${resultStyle}">${esc(resultText)}</div>`:''}
+      ${st==='wrong'?missFeedbackHTML(word, S.lastTry||'', {foot:'⚑ Saved for revision. Take your time — tap Next word when you are ready.'})
+        :st==='revealed'?missFeedbackHTML(word, '', {head:'The word is', foot:'⚑ Saved for revision.'})
+        :(showResult?`<div style="${resultStyle}">${esc(resultText)}</div>`:'')}
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;min-width:120px;padding:14px;border-radius:14px;${showResult?'background:var(--surface2);color:var(--text);border:1px solid var(--line)':'background:var(--accent);color:#fff;box-shadow:var(--edge)'};font-weight:800;font-size:15px">${primaryLabel}</button>${st==='wrong'?`<button data-act="next" style="flex:1;min-width:120px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;box-shadow:var(--edge);font-weight:800;font-size:15px">Next word →</button>`:''}</div>
     </div>`;
 }
@@ -8093,6 +8309,72 @@ function parentTips(){ const T=window.SB_TIPS||{}; const s=parentSignals(); cons
   ['motivation','memory','parenting','oral','written','origin','pattern','champword','theme','plateau','atlas','vocab','themes','arcade','placement'].forEach(cat=>{ if(picks.length<6) take(cat,'daily coaching rotation'); });
   return picks.slice(0,6); }
 const TIP_CAT_LABEL={trap:'Their pattern',atlas:'The Atlas',vocab:'Vocabulary',themes:'Theme Journeys',arcade:'The Arcade',advanced:'Advanced Pack',placement:'Finding their level',reengage:'Re-engage',consistency:'Consistency',difficult:'Hard words',memory:'Memory science',accuracy:'Accuracy',oral:'Oral rounds',written:'Written rounds',beeday:'Bee day',nerves:'Nerves',motivation:'Motivation',parenting:'Parenting',young:'Young spellers',plateau:'Plateau',review:'Review',coverage:'Coverage',origin:'Origins',pattern:'Patterns',champword:'Champion words',theme:'Themes',miss:'Their words'};
+/* ===================== THE FAMILY REPORT CARD (FIX-BEE M2, family standard §7) =====================
+   Three measures, the same in every Bizzing app so the Hive can merge them:
+     TIME      active minutes, read from the family feed localStorage['bizzing.activity']
+               (the drop-in writes {a:'bee', d, m, who}); never invented when it is absent.
+     PROGRESS  steps along the path — Atlas stops cleared and where the child is now, plus the
+               spelling Stage on the active list.
+     MASTERY   what the child can now DO, from the evidence record (c.mast) and nothing else:
+               words retained on a later day, by concept family; words that slipped since they
+               were mastered; words due for their re-check; traps to help with.
+   Cumulative counts and minutes are never presented as learning. Every number comes from
+   one pass over the record, so the totals agree with each other by construction — and
+   tests/report-card.cjs checks they do. */
+function reportCard(c){ c=c||active(); const out={ name:(c&&c.name)||'' };
+  /* time */
+  try{ const raw=localStorage.getItem('bizzing.activity'); const o=raw?JSON.parse(raw):null;
+    if(o&&Array.isArray(o.s)){ const who=String(c.name||'').trim().toLowerCase(); const d0=new Date(); d0.setDate(d0.getDate()-6);
+      const cut=d0.getFullYear()+'-'+String(d0.getMonth()+1).padStart(2,'0')+'-'+String(d0.getDate()).padStart(2,'0');
+      const mine=o.s.filter(x=>x&&x.a==='bee'&&String(x.who||'').trim().toLowerCase()===who&&!x.ev&&x.d>=cut);
+      out.time={ feed:true, minutes:mine.reduce((t,x)=>t+(+x.m||0),0), days:new Set(mine.map(x=>x.d)).size }; }
+    else out.time={ feed:false, minutes:0, days:0 }; }catch(e){ out.time={ feed:false, minutes:0, days:0 }; }
+  /* progress */
+  try{ const tn=window.SB_TRAIL_NEXT?SB_TRAIL_NEXT():null;
+    out.progress={ atlas:tn?{ cleared:tn.done, at:tn.allDone?'every stop on this tier':tn.title, region:tn.act||'', tier:tn.lap||1 }:null };
+    const lk=activeListKey(); out.progress.stage=listStageIdx(c,lk)+1; out.progress.list=listLabel(lk).split(' · ')[0]; }catch(e){ out.progress=out.progress||{atlas:null}; }
+  /* mastery — one pass */
+  const M=(c&&c.mast)||{}; const today=mastDay(); const week=Date.now()-7*864e5; const idx=wordIndex();
+  const fam={}, traps={}; const m={ retained:0, carried:0, due:0, learning:0, newThisWeek:0, slipped:[], dueWords:[] };
+  for(const k in M){ if(!Object.prototype.hasOwnProperty.call(M,k)) continue; const r=M[k]; if(!r) continue;
+    const w=idx[k]||{w:k}; let cls='plain'; try{ cls=trickAnal(w).cls; }catch(e){}
+    if(r.b>=MAST_BOX){
+      if(r.leg) m.carried++; else { m.retained++; fam[cls]=(fam[cls]||0)+1; if(r.mt&&r.mt>=week) m.newThisWeek++; }
+      if(today>=r.due){ m.due++; if(m.dueWords.length<12) m.dueWords.push(k); } }
+    else { if(r.b===1) m.learning++;
+      if(r.lp) m.slipped.push({w:k, at:r.sl||0});
+      if(r.miss){ const t=(traps[cls]=traps[cls]||{n:0,words:[]}); t.n+=r.miss; if(t.words.length<4) t.words.push(k); } } }
+  m.slipped.sort((a,b)=>b.at-a.at);
+  m.mastered=m.retained+m.carried;
+  m.families=Object.keys(fam).map(k=>({k, label:TRICK_LABELS[k]||k, n:fam[k]})).sort((a,b)=>b.n-a.n);
+  m.traps=Object.keys(traps).filter(k=>k!=='plain'||Object.keys(traps).length===1).map(k=>({k, label:TRICK_LABELS[k]||k, n:traps[k].n, words:traps[k].words})).sort((a,b)=>b.n-a.n).slice(0,3);
+  out.mastery=m; return out; }
+window.SB_REPORT_CARD=reportCard;
+function reportCardHTML(c){ c=c||active(); let R; try{ R=reportCard(c); }catch(e){ return ''; } const m=R.mastery, T=R.time, P=R.progress||{};
+  const box=(label,big,sub,body)=>`<div class="sb-rc-box" style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px 15px;min-width:0">
+      <div style="font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">${label}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:4px 0 2px;line-height:1.2">${big}</div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.45">${sub}</div>${body||''}</div>`;
+  const chips=(ws)=>ws.map(w=>`<span style="display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--paper,var(--bg2));border:1px solid var(--line);margin:3px 4px 0 0">${esc(w)}</span>`).join('');
+  const time=T.feed?box('Time',`${T.minutes} active minute${T.minutes===1?'':'s'}`,`over the last 7 days, on ${T.days} day${T.days===1?'':'s'}. Time is effort, not learning — it is here so you can see the habit.`)
+    :box('Time','Not recorded yet','Active minutes appear once the Bizzing family activity feed is on for this device.');
+  const at=P.atlas; if(!at) lazyNeed('atlas');   // the map's data rides the idle queue; it re-renders when it lands
+  const prog=box('Progress', at?`${at.cleared} Atlas stop${at.cleared===1?'':'s'} cleared`:`Stage ${P.stage||1}`,
+    (at?`Now at <b>${esc(at.at)}</b>${at.region?' · '+esc(at.region):''} (tier ${at.tier}). `:'')+(P.list?`Spelling: Stage ${P.stage||1} of ${esc(P.list)}.`:''));
+  const famLine=m.families.length?`<div style="margin-top:8px;font-size:12.5px;line-height:1.5">${m.families.slice(0,4).map(f=>`<b>${f.n}</b> ${esc(f.label.toLowerCase())}`).join(' · ')}</div>`:'';
+  const mast=box('Mastery', `${m.retained} word${m.retained===1?'':'s'} mastered`,
+    `Spelled right on two different days, a day or more apart — so it stuck.${m.newThisWeek?` <b>${m.newThisWeek}</b> new this week.`:''}`+
+    (m.carried?` <br>${m.carried} more ${m.carried===1?'was':'were'} marked before mastery needed a second day; ${m.carried===1?'it counts':'they count'} once re-checked.`:''), famLine);
+  const lines=[];
+  if(m.due) lines.push(`<div><b>${m.due} due for a re-check</b> — mastered words come back now and then. ${chips(m.dueWords.slice(0,8))}</div>`);
+  if(m.slipped.length) lines.push(`<div><b>${m.slipped.length} slipped since mastered</b> — spelled right before, missed since. ${chips(m.slipped.slice(0,8).map(x=>x.w))}</div>`);
+  if(m.traps.length) lines.push(`<div><b>Traps to help with:</b> ${m.traps.map(t=>`${esc(t.label)} (${t.words.map(esc).join(', ')})`).join(' · ')}</div>`);
+  if(m.learning) lines.push(`<div><b>${m.learning}</b> spelled right once and waiting for another day.</div>`);
+  return `<div class="sb-card sb-report-card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Report card · ${esc(R.name||'your speller')}</div><span style="font-size:12px;color:var(--muted);font-weight:700">what ${esc(R.name||'they')} can now do, from evidence</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0">${time}${prog}${mast}</div>
+    ${lines.length?`<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5">${lines.join('')}</div>`:''}
+  </div>`; }
 function everPractised(c){ c=c||active(); try{ return bandEvidence(c)>0 || masteredCount()>0 || (c.missed||[]).length>0 || Object.keys(state.coachHistory||{}).length>0; }catch(e){ return false; } }
 function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachReadiness().ready||0; }catch(e){}
   if(!everPractised(s.c)) return `<div class="sb-card" style="display:flex;align-items:center;gap:16px">
@@ -8108,7 +8390,7 @@ function parentAnalytics(){ const s=parentSignals(); let rd=0; try{ rd=coachRead
       <span style="flex-shrink:0;margin-top:1px;padding:4px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px;white-space:nowrap">${TIP_CAT_LABEL[t.cat]||t.cat}</span>
       <div style="min-width:0"><div style="font-size:13px;line-height:1.5;color:var(--text);font-weight:600">${esc(t.text)}</div><div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:3px">Why now: ${esc(t.why)}</div></div></div>`).join('');
   return `<div class="sb-card" style="margin-bottom:18px">
-    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Parent analytics</div><span style="font-size:12px;color:var(--muted);font-weight:700">readiness across five signals</span></div>
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Practice habits</div><span style="font-size:12px;color:var(--muted);font-weight:700">how the practice is going — the report card above says what has been learned</span></div>
     <p style="margin:0 0 14px;font-size:12px;color:var(--muted)">All computed on this device from the practice log — no internet, no AI.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px">${bars}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Coach's corner <span style="color:var(--muted);font-weight:700;font-size:12px">· picked for this week by the practice data</span></div>
@@ -9242,7 +9524,7 @@ function viewParent(){
       <button data-act="goPaywall" style="${sub.btnStyle}">${sub.btn}</button></div></div>
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:20px 2px 12px">Spellers</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${kids}</div>
-    <div style="margin-top:18px">${parentAnalytics()}</div>
+    <div style="margin-top:18px">${reportCardHTML(active())}${parentAnalytics()}</div>
     ${explorerCard(active(),{mt:true,title:'Beyond spelling',sub:'Enrichment and engagement across the whole app — not just word drills.'})}
     ${parentReviseCard()}
     ${parentActivityCard()}
@@ -9254,6 +9536,7 @@ function viewParent(){
         <div class="sb-cn" style="margin-top:8px">The app is fully offline — copy these and share them with us to get the dictionary corrected.</div>
       </div>`; })()}
     ${cloudCard()}
+    ${backupCard()}
     <div class="sb-card" style="margin-top:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px">${(()=>{ const ms=milestone(); return ms?esc(ms.label):'Your next milestone'; })()}</div>
@@ -9908,7 +10191,7 @@ function viewSettings(){
       <summary style="cursor:pointer;font-weight:800;font-size:13.5px;color:var(--muted);padding:10px 2px">Testing tools</summary>
       <div class="sb-card" style="padding:4px 0;margin-top:8px">
         ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
-        ${line('Test coins','Shows a 1,000,000 test purse so you can test buying. It never touches the family wallet — nothing earned or spent while it is on is real, and switching it off shows the real balance again.',tog('toggleDevCoins',!!(c&&c.devCoins),'On','Off'))}
+        ${(c&&c.devCoins)?line('Test coins','Left on by an older build. Switch off to put the real balance back — testing no longer changes a child’s purse.',tog('toggleDevCoins',true,'On','Off')):''}
         ${line('Support console','Profiles and plans on this device, for testing. Local only — it changes nothing anywhere else.',`<button data-act="openAdmin" style="padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Open</button>`)}
         ${line('Research capture','Logs taps, screens and errors on THIS device only — nothing is ever sent anywhere. For play-testing; read it with the operator console.',tog('toggleResearch',!!(window.SB_TM&&SB_TM.on()),'On','Off'))}
         ${(window.SB_TM&&SB_TM.on())?`<div style="display:flex;gap:8px;align-items:center;padding:10px 16px 14px">
@@ -10320,7 +10603,7 @@ function magicBuildQs(id){ const all=diffSlice(magicCellWords(id).filter(w=>w.d&
   let ws=pickFresh(all,5); if(ws.length<5) ws=ws.concat(sample(all.filter(w=>!ws.some(x=>nkey(x.w)===nkey(w.w))),5-ws.length));
   return ws.slice(0,5).map(w=>{ logGameWord(nkey(w.w));
     if(Math.random()<0.5 && /^[a-z'\- ]+$/i.test(w.w)) return {k:'spell',w};
-    const others=sample(all.filter(x=>nkey(x.w)!==nkey(w.w)),3).map(x=>x.w);
+    const others=mcDistinct(w.w, sample(all.filter(x=>nkey(x.w)!==nkey(w.w))).slice(0,24).map(x=>x.w), 3);
     return {k:'mean',w,choices:sample([w.w].concat(others))}; }); }
 function magicLinesCheck(g){ const d=g.board.map(c=>c.done); const won=[];
   const L=g.lines;
@@ -10567,11 +10850,25 @@ function pickFresh(pool, n){ const c=active(); const recent=recentGameKeys(c); c
   if(fresh.length>=n) return sample(fresh, n);
   const used=valid.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
   return sample(fresh).concat(used).slice(0, n); }
+/* n distinct distractor strings, none equal to the answer (case- and space-blind). Every
+   multiple-choice generator goes through this: two identical options is two right answers, and
+   a "last-resort filler" pushed three times was three identical wrong ones (FIX-BEE D8). */
+function mcDistinct(answer, cands, n){ const seen=new Set([String(answer||'').trim().toLowerCase()]); const out=[];
+  for(const c of (cands||[])){ const k=String(c==null?'':c).trim().toLowerCase(); if(!k||seen.has(k)) continue; seen.add(k); out.push(c); if(out.length>=n) break; }
+  return out; }
+/* wrong spellings that are honestly wrong and all different: a doubled letter, a dropped
+   double, a swapped neighbour, a dropped letter — in that order — never the word itself */
+function spellVariants(w, n){ const s=String(w||''); const out=[]; const add=v=>{ if(v&&v.length>1&&nkey(v)!==nkey(s)&&!out.some(x=>nkey(x)===nkey(v))) out.push(v); };
+  for(let i=1;i<s.length-1&&out.length<n*2;i++){ if(/[a-z]/i.test(s[i])&&s[i]!==s[i-1]&&s[i]!==s[i+1]) add(s.slice(0,i+1)+s[i]+s.slice(i+1)); }
+  for(let i=1;i<s.length;i++){ if(s[i]===s[i-1]) add(s.slice(0,i)+s.slice(i+1)); }
+  for(let i=1;i<s.length-1;i++){ if(s[i]!==s[i+1]) add(s.slice(0,i)+s[i+1]+s[i]+s.slice(i+2)); }
+  for(let i=1;i<s.length;i++) add(s.slice(0,i)+s.slice(i+1));
+  return sample(out).slice(0,n); }
 /* Word Quiz rounds from the figurative dataset: idiom meanings + complete-the-simile. */
 function buildFigQs(mode,n){ const pool=figPool(); if(pool.length<8) return [];
   if(mode==='idiom'){
     const cand=sample(pool.filter(x=>x.t!=='simile'), n);
-    return cand.map(x=>{ const others=sample(pool.filter(y=>y!==x&&y.t!=='simile'&&y.m!==x.m),3).map(y=>y.m);
+    return cand.map(x=>{ const others=mcDistinct(x.m, sample(pool.filter(y=>y!==x&&y.t!=='simile'&&y.m!==x.m)).map(y=>y.m), 3);
       return {kind:'idiom', word:x.p, wordObj:{w:x.p,y:3}, answer:x.m, choices:sample([x.m].concat(others)), prompt:esc(x.p), say:x.p, os:x.os}; }); }
   const sims=pool.filter(x=>x.t==='simile'&&x.vehicle&&x.p.toLowerCase().includes(x.vehicle.toLowerCase()));
   const cand=sample(sims, Math.min(n,sims.length));
@@ -10585,8 +10882,11 @@ function buildVocabQs(n){ const pool=gameWordsD({needDef:true}); if(pool.length<
   const cand=pickFresh(pool,n); const ws=cand.length>=Math.min(n,5)?cand:sample(pool,Math.min(n,pool.length));
   return ws.map(w=>{ logGameWord(nkey(w.w));
     const near=pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d&&Math.abs((x.y||3)-(w.y||3))<=1);
-    const others=sample(near.length>=3?near:pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d),3).map(x=>x.d);
-    return {kind:'vocab', word:w.w, wordObj:w, answer:w.d, choices:sample([w.d].concat(others)), prompt:esc(w.w), say:w.w, p2:w.p||''}; });
+    /* the word is ON screen in a meaning round, so every option is masked against it: a
+       definition that names its own headword would point straight at the answer */
+    const ans=maskTxt(w.d,w.w);
+    const others=mcDistinct(ans, sample(near.length>=3?near:pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d)).slice(0,24).map(x=>maskTxt(x.d,w.w)), 3);
+    return {kind:'vocab', word:w.w, wordObj:w, answer:ans, choices:sample([ans].concat(others)), prompt:esc(w.w), say:w.w, p2:w.p||''}; });
 }
 function buildMC(mode,n){ const all=gameWordsD();
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
@@ -10598,7 +10898,8 @@ function buildMC(mode,n){ const all=gameWordsD();
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{ const wrong=[];
       if(w.m && nkey(w.m)!==nkey(w.w)) wrong.push(w.m);
       misspellings(w.w, 5).forEach(x=>{ if(wrong.length<3 && !wrong.some(y=>nkey(y)===nkey(x)) && nkey(x)!==nkey(w.w)) wrong.push(x); });
-      while(wrong.length<3) wrong.push(w.w.slice(0,-1)+w.w.slice(-1)+'e'); // last-resort filler
+      /* top up with DISTINCT honest variants — the old filler pushed one string three times */
+      spellVariants(w.w, 6).forEach(x=>{ if(wrong.length<3 && !wrong.some(y=>nkey(y)===nkey(x))) wrong.push(x); });
       const choices=sample([w.w].concat(wrong.slice(0,3)));
       return { kind:'spell', word:w.w, wordObj:w, answer:w.w, choices, prompt:(w.d?('“'+blankHTML((w.d.length>90?w.d.slice(0,88).replace(/\s+\S*$/,'')+'…':w.d),w.w)+'”'):'Which spelling is correct?'), say:w.w };
     }); }
@@ -10606,7 +10907,7 @@ function buildMC(mode,n){ const all=gameWordsD();
   const pool=all.filter(w=>(w.d&&w.d.length>4)||(w.s&&/[a-z]/i.test(w.s))); if(pool.length<4) return [];
   return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
     const useSent = w.s && /[a-z]/i.test(w.s) && Math.random()<0.5;
-    const choices=sample([w.w].concat(sample(all.filter(x=>nkey(x.w)!==nkey(w.w)),3).map(x=>x.w)));
+    const choices=sample([w.w].concat(mcDistinct(w.w, sample(all.filter(x=>nkey(x.w)!==nkey(w.w))).slice(0,24).map(x=>x.w), 3)));
     return { kind:(useSent?'sentence':'meaning'), word:w.w, wordObj:w, answer:w.w, choices, prompt:(useSent?blankHTML(w.s,w.w):blankHTML(w.d,w.w)), say:(useSent?w.s:w.w) };
   }); }
 function gMisses(g){ return (g.ans?g.ans.filter(a=>!a.ok).map(a=>a.w):[]); }
@@ -10707,24 +11008,25 @@ function magicView(){ const g=state.game; const S=state;
     const dots=g.qs.map((_,i)=>`<span style="flex:1;height:6px;border-radius:999px;background:${i<g.qi?'var(--good)':(i===g.qi?cl.c:'var(--surface2)')}"></span>`).join('');
     let body='';
     if(q.k==='spell'){
-      const fb = g.revealed ? (g.ok?`<div style="border-radius:14px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);animation:sb-pop .3s ease both">✓ Correct!</div>`:`<div style="border-radius:14px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad);animation:sb-pop .3s ease both">✗ It's “${esc(q.w.w)}”</div>`) : '';
+      const fb = g.revealed ? (g.ok?`<div style="border-radius:14px;padding:12px 15px;margin-bottom:12px;font-weight:800;background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good);animation:sb-pop .3s ease both">✓ Correct!</div>`:missFeedbackHTML(q.w, g.tried||'')) : '';
       body=`<div style="text-align:center">
         <button data-act="magicHear" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',17)} Hear it again</button>
-        ${q.w.d?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px;max-width:40em;margin-left:auto;margin-right:auto"><b style="color:var(--text)">Meaning.</b> ${esc(q.w.d)}</div>`:''}
+        ${q.w.d?`<div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px;max-width:40em;margin-left:auto;margin-right:auto"><b style="color:var(--text)">Meaning.</b> ${esc(maskTxt(q.w.d,q.w.w))}</div>`:''}
         ${fb}
         <input data-inp="onType" data-key="magicKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ${g.revealed?'disabled':''} style="width:100%;text-align:center;padding:15px 14px;border-radius:14px;background:var(--surface);border:2px solid ${g.revealed?(g.ok?'var(--good)':'var(--bad)'):'var(--line)'};color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(19px,4.5vw,26px);letter-spacing:.13em;text-transform:lowercase;outline:none;margin-bottom:12px">
-        ${g.revealed?'':`<button data-act="magicSubmit" style="width:100%;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Check ✓</button>`}
+        ${g.revealed?(g.ok?'':`<button data-act="magicNext" style="width:100%;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>`):`<button data-act="magicSubmit" style="width:100%;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Check ✓</button>`}
       </div>`;
     } else {
       const btns=q.choices.map(c=>{ const isPick=g.picked===c; const isAns=nkey(c)===nkey(q.w.w);
         let st='background:var(--surface2);border:1px solid var(--line);color:var(--text)';
         if(g.picked!=null){ if(isAns) st=`background:color-mix(in srgb,var(--good) 20%,transparent);border:1.5px solid var(--good);color:var(--good)`; else if(isPick) st=`background:color-mix(in srgb,var(--bad) 16%,transparent);border:1.5px solid var(--bad);color:var(--bad)`; else st+=';opacity:.55'; }
         return `<button data-act="magicPick" data-arg="${escA(c)}" style="padding:14px 12px;border-radius:14px;font-family:var(--display);font-weight:800;font-size:15px;${st}">${esc(c)}</button>`; }).join('');
-      body=`<div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:16px;text-align:center"><b>Which word means:</b><br>“${esc(q.w.d)}”</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${btns}</div>`;
+      body=`<div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:16px;text-align:center"><b>Which word means:</b><br>“${esc(maskTxt(q.w.d,q.w.w))}”</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${btns}</div>
+        ${(g.picked!=null&&!g.ok)?`<p style="text-align:center;margin:12px 0 0;font-weight:700;font-size:13.5px">Not this time — the green one is right.</p><button data-act="magicNext" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>`:''}`;
     }
     return `<div style="max-width:560px;margin:0 auto">${head}
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(cell.label)}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:color-mix(in srgb,${cl.c} 14%,var(--bg2));color:${cl.c};font-weight:800;font-size:12px">${esc(maskTxt(cell.label,(q&&q.w&&q.w.w)||''))}</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">Question ${g.qi+1}/5 · ${g.right} right</span></div>
       <div style="display:flex;gap:5px;margin-bottom:14px">${dots}</div>
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,4vw,24px);box-shadow:var(--glow)">${body}</div>
     </div>`; }
@@ -10967,7 +11269,7 @@ function arcadeResult(g, res){
   card.querySelector('.arc-r-back').onclick=arcadeClose;
   card.querySelectorAll('.arc-r-say').forEach(b=>{ b.onclick=()=>{ try{ say(b.dataset.w); }catch(e){} }; });
   card.querySelectorAll('.arc-r-rev').forEach(b=>{ b.onclick=()=>{
-    try{ addMiss({w:b.dataset.w, d:b.dataset.d||''}); }catch(e){}
+    try{ addMiss({w:b.dataset.w, d:b.dataset.d||''},'mark'); }catch(e){}
     b.textContent='⚑ On revise list'; b.disabled=true; b.style.opacity='.65';
     try{ flash('Marked for revision ⚑'); }catch(e){}
   }; });
@@ -11220,10 +11522,8 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   else statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
   const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No hint for this one — listen closely!':''}</div>` : '';
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
-  if(g.fb&&!g.fb.ok){ bossFb=`<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:14px;padding:14px;margin-bottom:14px;animation:sb-pop .3s ease both">
-      <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--fix,#C4453C)">Look &amp; listen — it's spelled</div>
-      <div style="font-family:var(--entry);font-weight:800;color:var(--text);margin-top:4px;${hwSpell(g.fb.word,32)}">${esc(g.fb.word)}</div>
-      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:6px">⚑ Saved for revision</div></div>`; }
+  if(g.fb&&!g.fb.ok){ bossFb=missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
+      +`<button data-act="gMissGo" style="width:100%;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">Next word →</button>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
@@ -11288,8 +11588,11 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
   const wrongPick=g.picked!=null && q.choices[g.picked]!==q.answer;
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
-    ${wrongPick?`<div style="background:var(--fix-tint,#FBE9E7);border:1.5px solid var(--fix,#C4453C);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">✗ The answer: <span style="color:var(--fix,#C4453C)">${esc(trunc(q.answer,90))}</span></div>`:''}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>`;
+    ${wrongPick?(q.kind==='spell'
+        ? missFeedbackHTML(q.wordObj||q.answer, q.choices[g.picked]||'', {head:'Not this time — the right spelling, letter by letter'})
+        : `<div style="background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">Not this time — the answer is: <span style="color:var(--good)">${esc(trunc(q.answer,90))}</span></div>`):''}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>
+    ${wrongPick?`<button data-act="gMcNext" style="width:100%;margin-top:12px;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>`:''}`;
   return gameShell(statusBar, inner); }
 function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length||1)*100);
   return `<div style="max-width:560px;margin:0 auto">
@@ -11740,6 +12043,87 @@ function viewCloudSheet(){ const S=state; const m=S.cloudSheet;
 /* The card in the Parent dashboard. It states the truth about THIS install rather than
    a general claim, because the honest answer differs per family: most are offline-only,
    and telling them their data is in a cloud they never opted into would be a lie. */
+/* ===================== BACKUP · RESTORE · ERASE (FIX-BEE M3, family standard §7) =====================
+   A grown-up can take the whole household away in one file, put it back, or wipe it — all three
+   behind the PIN, each asked for again at the moment it acts (the parent zone can stay open on a
+   shared device). There is no server; the file goes to the grown-up's own device and nowhere else.
+   · WHAT IS IN THE FILE: every `sb_*` key this app keeps — the household blob (names included:
+     it is the family's own file, and a backup that loses the child's name is not a backup) —
+     EXCEPT device things that must not travel (BK_SKIP: sign-in, session, cloud consent, the
+     research log, bug reports, voice flags, tester mode). It is a deny-list on purpose, unlike
+     the cloud allow-list: a backup that silently drops a key added next month loses a child's
+     work, which is the worse failure here.
+   · THE FAMILY KEYS are shared with the other Bizzing apps on this origin, so the file carries
+     only this household's slice (its children's wallet rows, Bee's rows of the activity feed),
+     and restore only ADDS what is missing — it never overwrites another app's newer history.
+   · ERASE removes every `sb_*` key and Bee's rows of the activity feed for these children. The
+     family wallet is left alone and the screen says so: its coins were earned across apps.
+   · After restore/erase the page reloads into what is on disk, and `save` is stubbed first —
+     pagehide calls save(), which would otherwise write the old household straight back.
+   Guard: tests/backup-restore.cjs (round-trip a child exactly, the PIN, a refused file). */
+const BK_SKIP=/^sb_(accounts_v\d+|session_v\d+|sync_v\d+|tm_log|tm_on|bugs|devunlock|vflags|evofeedback)$/;
+function bkKeys(all){ const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&/^sb_/.test(k)&&(all||!BK_SKIP.test(k))) out.push(k); } }catch(e){} return out.sort(); }
+function bkNames(children){ return (children||[]).map(c=>String((c&&c.name)||'').trim().toLowerCase()).filter(Boolean); }
+function backupBlob(){ try{ save(); }catch(e){}
+  const keys={}; bkKeys(false).forEach(k=>{ keys[k]=localStorage.getItem(k); });
+  const names=bkNames(state.children); const family={};
+  try{ const w=JSON.parse(localStorage.getItem('bizzing.wallet')||'null'); if(w&&w.kids){ const kids={}; names.forEach(n=>{ if(w.kids[n]) kids[n]=w.kids[n]; }); if(Object.keys(kids).length) family['bizzing.wallet']={v:w.v||1,kids}; } }catch(e){}
+  try{ const a=JSON.parse(localStorage.getItem('bizzing.activity')||'null'); if(a&&Array.isArray(a.s)){ const s=a.s.filter(x=>x&&x.a==='bee'&&names.indexOf(String(x.who||'').trim().toLowerCase())>=0); if(s.length) family['bizzing.activity']={v:a.v||1,s}; } }catch(e){}
+  return { app:'bizzing-bee', kind:'household-backup', v:1, at:Date.now(), keys, family }; }
+function backupFileName(){ const n=(state.children||[]).map(c=>String((c&&c.name)||'').replace(/[^A-Za-z0-9]/g,'')).filter(Boolean).join('-');
+  return 'bizzing-bee-'+(n||'household')+'-'+todayKey()+'.json'; }
+/* the risky direction is the strict one: the file says what it is, or it is refused with a reason */
+function backupParse(text){ let b; try{ b=JSON.parse(String(text||'')); }catch(e){ return {ok:false, why:'That file is not a Bizzing Bee backup — it cannot be read as one.'}; }
+  if(!b||b.app!=='bizzing-bee'||b.kind!=='household-backup'||!b.keys||typeof b.keys!=='object') return {ok:false, why:'That is a file, but not a Bizzing Bee backup.'};
+  if((b.v||0)>1) return {ok:false, why:'That backup was made by a newer Bizzing Bee. Update the app first — restoring it here would lose what it knows.'};
+  let h; try{ h=JSON.parse(b.keys.sb_saas_v2||'null'); }catch(e){ h=null; }
+  if(!h||!Array.isArray(h.children)) return {ok:false, why:'The backup has no household in it.'};
+  for(const k in b.keys){ if(!/^sb_/.test(k)||BK_SKIP.test(k)||typeof b.keys[k]!=='string') return {ok:false, why:'The backup carries something that is not Bizzing Bee data ('+String(k).slice(0,40)+'), so it was not restored.'}; }
+  return {ok:true, blob:b, kids:h.children.length, names:h.children.map(c=>c&&c.name).filter(Boolean), at:b.at||0}; }
+function bkFamilyDrop(names){ try{ const a=JSON.parse(localStorage.getItem('bizzing.activity')||'null');
+    if(a&&Array.isArray(a.s)){ a.s=a.s.filter(x=>!(x&&x.a==='bee'&&names.indexOf(String(x.who||'').trim().toLowerCase())>=0)); localStorage.setItem('bizzing.activity',JSON.stringify(a)); } }catch(e){} }
+function bkFamilyAdd(fam){ fam=fam||{};
+  try{ const src=fam['bizzing.wallet']; if(src&&src.kids){ const w=JSON.parse(localStorage.getItem('bizzing.wallet')||'null')||{v:1,kids:{}}; w.kids=w.kids||{};
+      let ch=false; Object.keys(src.kids).forEach(n=>{ if(!w.kids[n]){ w.kids[n]=src.kids[n]; ch=true; } }); if(ch) localStorage.setItem('bizzing.wallet',JSON.stringify(w)); } }catch(e){}
+  try{ const src=fam['bizzing.activity']; if(src&&Array.isArray(src.s)){ const a=JSON.parse(localStorage.getItem('bizzing.activity')||'null')||{v:1,s:[]}; a.s=Array.isArray(a.s)?a.s:[];
+      const sig=x=>[x.a,x.d,x.t,x.who||'',x.ev||'',x.label||''].join('|'); const have=new Set(a.s.map(sig));
+      src.s.forEach(x=>{ if(x&&!have.has(sig(x))){ a.s.push(x); have.add(sig(x)); } }); a.s.sort((p,q)=>(p.d<q.d?-1:p.d>q.d?1:(p.t||0)-(q.t||0))); localStorage.setItem('bizzing.activity',JSON.stringify(a)); } }catch(e){} }
+/* the page is about to reload into what is on disk: nothing may write the old household back.
+   Halt FIRST — any render() on the way out (a flash, a view) can call save(). */
+function bkHalt(){ try{ window.save=function(){}; }catch(e){} try{ if(window.SB_SYNC) SB_SYNC.queue=function(){}; }catch(e){} }
+function bkHaltAndReload(){ bkHalt(); try{ setTimeout(()=>{ try{ location.reload(); }catch(e){} }, 60); }catch(e){} }
+function eraseHousehold(){ const names=bkNames(state.children); bkKeys(true).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); bkFamilyDrop(names); }
+function restoreHousehold(blob){ bkKeys(false).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
+  Object.keys(blob.keys).forEach(k=>{ try{ localStorage.setItem(k, blob.keys[k]); }catch(e){} }); bkFamilyAdd(blob.family); }
+const bkBtn=(act,label,bg,col,bd)=>`<button data-act="${act}" style="padding:10px 15px;border-radius:10px;background:${bg};color:${col};border:1px solid ${bd||'transparent'};font-weight:800;font-size:13px">${label}</button>`;
+/* a new device (or one just erased) has no Parent Zone to restore from — the welcome page's
+   footer carries the same file picker and the same confirm */
+function bkLandingLink(){ const S=state; const p=S.bkPending;
+  return `<label style="position:relative;font-size:13px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer">Restore a backup<input type="file" accept=".json,application/json" data-file="bkPick" aria-label="Restore a household from a backup file" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;left:0"></label>
+    ${(p||S.bkMsg)?`<div style="flex-basis:100%">${S.bkMsg?`<div class="sb-bk-msg" role="status" style="font-size:12.5px;font-weight:700;color:${S.bkMsg.bad?'var(--bad)':'var(--good)'}">${esc(S.bkMsg.t)}</div>`:''}${bkRestoreConfirm()}</div>`:''}`; }
+function bkRestoreConfirm(){ const p=state.bkPending; const btn=bkBtn; return p?`<div class="sb-bk-confirm" style="margin-top:12px;padding:12px;border-radius:11px;background:var(--surface2);border:1px solid var(--line)">
+      <div style="font-size:13px;line-height:1.5;font-weight:650;margin-bottom:9px">Restore <b>${esc(p.names.join(', ')||(p.kids+' speller'+(p.kids===1?'':'s')))}</b> from the backup made ${p.at?esc(new Date(p.at).toLocaleString()):'earlier'}? Everything Bizzing Bee holds on this device now is replaced by the file.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${btn('bkRestoreGo','Restore it','var(--accent)','#fff')}${btn('bkCancel','Cancel','var(--surface)','var(--text)','var(--line)')}</div></div>`:''; }
+function backupCard(){ const S=state; const ask=S.bkAsk; const btn=bkBtn;
+  const restoreConfirm=bkRestoreConfirm();
+  const eraseConfirm=ask==='erase'?`<div class="sb-bk-confirm" style="margin-top:12px;padding:12px;border-radius:11px;background:color-mix(in srgb,var(--bad,#D6453A) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--bad,#D6453A) 34%,transparent)">
+      <div style="font-size:13px;line-height:1.5;font-weight:650;margin-bottom:9px">Erase everything Bizzing Bee keeps on this device — every speller, their words, progress and settings — and start again? This cannot be undone unless you have a backup file. Bizzing coins are shared with your family's other Bizzing apps and stay in the family wallet.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${btn('bkEraseGo','Erase everything','var(--bad,#D6453A)','#fff')}${btn('bkCancel','Cancel','var(--surface)','var(--text)','var(--line)')}</div></div>`:'';
+  return `<div class="sb-card sb-backup" style="margin-top:18px">
+    <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:4px">Backup, restore &amp; erase</div>
+    <div style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:12px">The whole household in one file on your own device — nothing is sent anywhere. Each of these asks for the grown-up PIN again. The PIN is a deterrent, not a lock.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      ${btn('bkDownload','⬇ Download a backup','var(--accent)','#fff')}
+      <label style="display:inline-flex;align-items:center;gap:6px;padding:10px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:13px;cursor:pointer">⬆ Restore from a file<input type="file" accept=".json,application/json" data-file="bkPick" aria-label="Restore from a backup file" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden"></label>
+      ${btn('bkAskErase','Erase everything…','transparent','var(--bad,#D6453A)','color-mix(in srgb,var(--bad,#D6453A) 45%,transparent)')}
+    </div>
+    ${S.bkMsg?`<div class="sb-bk-msg" role="status" style="margin-top:10px;font-size:12.5px;font-weight:700;color:${S.bkMsg.bad?'var(--bad)':'var(--good)'}">${esc(S.bkMsg.t)}</div>`:''}
+    ${restoreConfirm}${eraseConfirm}
+  </div>`; }
+/* a file input cannot dispatch through data-act (the value is a fake path); this one listener
+   hands the File itself to its action */
+document.addEventListener('change', e=>{ try{ const el=e.target&&e.target.closest&&e.target.closest('[data-file]'); if(!el) return;
+  const f=el.files&&el.files[0]; const fn=app[el.getAttribute('data-file')]; if(fn&&f) fn(f); el.value=''; }catch(err){} });
 function cloudCard(){
   const st=(window.SB_SYNC&&SB_SYNC.status())||{configured:false};
   const signed=(window.SB_AUTH&&SB_AUTH.current())||null;
@@ -11846,6 +12230,7 @@ function render(){
   }catch(e){}
   // keep the legacy paid/free flag in lock-step with the active child's subscription tier
   try{ if(window.SB_ENT && state.children && state.children.length) state.premium = SB_ENT.isPaid(); }catch(e){}
+  try{ mastSync(); }catch(e){}   // luMastered follows the active child's evidence record (FIX-BEE D5)
   // Advanced Mode can switch on from a level-up mid-session, so check on every render.
   // advCheckUnlock() is a no-op after the first time for a given child.
   try{ if(state.screen==='app') advCheckUnlock(); }catch(e){}
@@ -11978,6 +12363,7 @@ window.addEventListener('keydown', e=>{ try{
   if(e.metaKey||e.ctrlKey||e.altKey) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
   const g=state.game; if(!g || state.nav!=='games' || state.pinDlg || state.settingsOpen) return;
+  if(g.qs && g.picked!=null && g.mcGo && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); app.gMcNext(); return; }   // a held miss moves on with Enter
   if(g.qs && g.picked==null && g.status==='play'){
     if(e.key>='1'&&e.key<='4'){ const q=g.qs[g.i]; if(q && q.choices[+e.key-1]!=null){ e.preventDefault(); app.gPick(String(+e.key-1)); } return; }
     if(e.key==='r'||e.key==='R'){ e.preventDefault(); app.gSayQ(); return; } }
@@ -12017,6 +12403,7 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
       if(shift>0) state.children.forEach(ch=>{ if(ch.unlockedConcepts){ const u={}; Object.keys(ch.unlockedConcepts).forEach(k=>{ u[+k+shift]=1; }); ch.unlockedConcepts=u; } }); }catch(e){}
     try{ state.children.forEach(ensureLists); }catch(e){}
     try{ syncMissed(); }catch(e){}
+    try{ mastBoot(s.lu); }catch(e){}   // FIX-BEE D5: mastery from evidence (c.mast); luMastered is derived from it
     state.screen=(s.children&&s.children.length)?'app':'landing'; state.nav='home';
   } }catch(e){}
   try{ if(localStorage.getItem('sb_devunlock')==='1'){ state.devUnlock=true; state.premium=true; } }catch(e){}

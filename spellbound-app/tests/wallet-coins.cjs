@@ -101,25 +101,22 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const r5b = await pg.evaluate(() => ['answer', 'stop', 'contest', 'mastery'].map(e => addCoins(e)));
   ok(JSON.stringify(r5b) === JSON.stringify([1, 5, 10, 20]), 'the four standard events pay 1 · 5 · 10 · 20 — ' + JSON.stringify(r5b));
 
-  /* ---- 6. Test coins, ?demo and a plan never write the family wallet — checked BEFORE the cap
-     is reached, or a write the cap refused would look like a write that never happened ---- */
+  /* ---- 6. Testing, ?demo and a plan never write the family wallet — checked BEFORE the cap
+     is reached, or a write the cap refused would look like a write that never happened.
+     (The "Test coins" purse is gone: testing never rewrites a child — FIX-BEE M3, batch C.) ---- */
   const r6 = await pg.evaluate(async () => {
-    const w0 = BZ_WALLET.balance('Ahana'); const c = active();
+    const w0 = BZ_WALLET.balance('Ahana'); const c = active(); const c0 = c.coins;
     state._planOk = true; state.parentPin = '1234';
     app.toggleDevCoins(); for (const k of '1234') app.pinKey(k);
-    const testPurse = c.coins;
-    const paid = addCoins('stop'); const spent = spendCoins(500, 'test');
-    const wMid = BZ_WALLET.balance('Ahana');
-    app.toggleDevCoins(); for (const k of '1234') app.pinKey(k);
-    const back = c.coins;
+    const afterLever = { coins: c.coins, wallet: BZ_WALLET.balance('Ahana'), dev: !!c.devCoins };
     window.SB_DEMO = true; addCoins('contest'); window.SB_DEMO = false;
+    const afterDemo = BZ_WALLET.balance('Ahana');
     SB_ENT.setTier(c, 'regional'); const afterPlan = BZ_WALLET.balance('Ahana'); SB_ENT.setTier(c, 'free');
-    return { w0, testPurse, paid, spent, wMid, back, afterPlan, wEnd: BZ_WALLET.balance('Ahana') };
+    return { w0, c0, afterLever, afterDemo, afterPlan, wEnd: BZ_WALLET.balance('Ahana') };
   });
-  ok(r6.testPurse === 1000000, 'Test coins show a 1,000,000 test purse');
-  ok(r6.paid === 0 && r6.wMid === r6.w0, 'while they are on, learning and spending never touch the wallet (' + r6.w0 + ' → ' + r6.wMid + ')');
-  ok(r6.back === r6.w0, 'switching them off puts the real balance back — ' + r6.back);
-  ok(r6.afterPlan === r6.w0 && r6.wEnd === r6.w0, 'a sample (?demo) child and a paid plan add nothing to the wallet');
+  ok(r6.afterLever.coins === r6.c0 && r6.afterLever.wallet === r6.w0 && !r6.afterLever.dev, 'the old Test-coins switch changes nothing — no test purse, no wallet write (' + r6.c0 + ' → ' + r6.afterLever.coins + ')');
+  ok(r6.afterDemo === r6.w0, 'a sample (?demo) child adds nothing to the wallet');
+  ok(r6.afterPlan === r6.w0 && r6.wEnd === r6.w0, 'a paid plan adds nothing to the wallet');
 
   /* ---- 4. the cap: 100 per app per child per day ---- */
   const cap = await pg.evaluate(() => { let n = 0; for (let i = 0; i < 12; i++) n += addCoins('mastery');
