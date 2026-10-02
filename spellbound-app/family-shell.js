@@ -89,7 +89,8 @@
       if (S.nav === 'leveltest' && S.lt && !S.lt.done) return true;
       if (S.nav === 'trail' && S.trailView === 'quiz' && S.tq && !S.tq.over) return true;
       if (S.nav === 'coach' && /^(written|oral|challenge)$/.test(S.coachMode || '')) return true;
-      if (S.game && S.game.status !== 'over') return true;
+      /* a classic game is live once past its menu and until its result */
+      if (S.game && !/^(mode|pick|setup)$/.test(S.game.phase || '') && !/^(over|done|result|board)$/.test(S.game.status || '')) return true;
       if (S.nav === 'mockbee' && S.mb && S.mb.view === 'stage') return true;
       return !!document.querySelector('.arc-play,.bz-play');
     } catch (e) { return false; }
@@ -132,7 +133,9 @@
       return 'atlas';
     }
     if (n === 'concepts') {
-      if (S.conceptSel) { var i = (S.conceptData || []).indexOf(S.conceptSel); return 'concepts' + (i >= 0 ? '/' + i : ''); }
+      /* by title as well as identity: the course array is rebuilt when a shard lands, and a
+         route that flickered to 'concepts' would push a history entry nobody asked for */
+      if (S.conceptSel) { var i = (S.conceptData || []).findIndex(function (ch) { return ch === S.conceptSel || (ch && ch.title && ch.title === S.conceptSel.title); }); return 'concepts' + (i >= 0 ? '/' + i : ''); }
       return 'concepts';
     }
     if (n === 'collection') return 'hive' + (S.collTab ? '/' + S.collTab : '');

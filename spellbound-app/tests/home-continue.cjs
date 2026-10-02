@@ -57,6 +57,8 @@ function filledPrimaries() {
       await ctx.addInitScript(k => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, KIDS[who]);
       const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(vp.n + ' ' + e.message));
       await pg.goto(URL); await pg.waitForTimeout(3200);
+      /* the Atlas curriculum is lazy; a started child's Continue holds its space until it lands */
+      await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r))); await pg.evaluate(() => render()); await pg.waitForTimeout(300);
       const tag = vp.n + '/' + who;
       /* ---- one filled primary, in every look ---- */
       for (const mode of ['light', 'white', 'dusk']) {
