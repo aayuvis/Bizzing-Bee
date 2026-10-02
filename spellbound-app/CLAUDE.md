@@ -777,6 +777,52 @@ handlers. App lives in this folder; open `index.html` to run.
   the Grand Prix menu is `noHero` — the driver is the speller's own buddy (`c.avatar`), and a
   stale saved menu pick is ignored. Guard: `tests/gp-landscape.cjs` (touch-emulated phone,
   upright → turned → upright → turned; fails 8 of 11 with the old behaviour put back).
+- **THE KART IS SIZED ANALYTICALLY, NEVER FROM A ROAD BAND (2 Oct, "the car is shaking").**
+  Its width came from `_nearW`, the width of whichever road band happened to be nearest the
+  bottom of the screen — a sawtooth that jumped 9.8px every time a band scrolled past, so the
+  whole kart pulsed at speed. Now `hwAt(y)` is the road's half-width at any screen line,
+  straight from the projection (`((y-horizonY)*2/(camH*Ht))*roadW*Wd/2`), and the kart is
+  `KART_W` of that at its own fixed line: 0.00px over 90 frames flat out. The springs were
+  smoothed the same day (two slow sines, not a 23Hz shudder; the shake is kept for the grass).
+  **Rivals are interpolated INSIDE their band** in camera space — they used to snap to the
+  band's near edge, freeze for 2–4 frames and hop 7px. **A band's `_vis` is only true for the
+  frame that set it** (`seg._vf===_frameN`): the near loop clears only the bands it visits,
+  so after any jump the bands left behind kept `_vis=true` and old screen coordinates and drew
+  rivals, oil and boxes where they used to be.
+- **THE WORLD IS MEASURED IN KART HEIGHTS (2 Oct, "the trees are too small").** Every size is
+  in road half-widths (kart 0.38 wide, ~0.44 tall) and `tests/gp-world.cjs` holds each kind of
+  prop to a band of kart heights: tree 2.2–4.5, a police car 1–1.4× a kart's width, a marker
+  post ~0.5× its height, a tower 10–20, and so on (`H` in the test). The on-road sizes are
+  named constants (`COP_W` `OIL_W` `BOX_W` `POST_H`) because they were literals, and the cop
+  was a toy at 0.55 of a kart. **Nothing stands on the verge**: `put()` pushes any prop whose
+  painted footprint would reach inside 1.46 road half-widths back out, so a wide boulder
+  cannot overhang the rumble strip because its centre was placed correctly.
+- **EACH WORLD IS FOUR PLACES, NOT ONE TILE (2 Oct, "too many trees and cacti… repetitive").**
+  `GP_ZONES` gives meadow / sunset / city four zones each (orchard · farm · flowers · lake;
+  cacti · boulders · canyon · ranch; downtown · avenue · park · bridge), shuffled one per track
+  sector, never the same twice in a row, with the ground tint blended over 14 bands so a zone
+  arrives rather than switches. A zone declares props by `gap` (in bands), `off`, `group`,
+  `once` and `side`, plus strips (fence, rail), water (one side or both) and lamps. The test
+  caps trees at 8 and cacti at 6 per 100 bands, and any zone not flagged `dense` at 12
+  standing props — the canyon and the city blocks say `dense:1` because a wall of rock or
+  buildings is the point of them. **The canyon is painted sandstone formations** (hoodoo,
+  mesa, twin spires, arch), not a wall strip: the wall was flat bands with hairline seams and
+  read as "poor graphics" the moment it was screenshotted. The wall-strip code is deleted.
+- **SCENERY IS PAINTED ONCE AND BLITTED (`GPS`, saga2.js, above "PHONES RACE SIDEWAYS").**
+  Each prop is painted into its own canvas at 90px per half-width with its origin at its foot
+  (`tex(kind,v,world)` → `{cv,bw,bh,foot}`); distance draws a shrunk copy (`mipOf`) tinted to
+  one of 16 pre-made haze steps (`tinted`), so a prop is exactly ONE `drawImage` however far
+  away — the earlier fog-silhouette pass drew everything twice. Far props draw out to a
+  per-kind range (`GP_FAR`: a butte 1800 units, a bush 350) and fade over their last 15%, which
+  is what killed the see-through ghosts popping in at the draw-distance edge. Billboards carry
+  **icons only, never lettering** (bee / star / heart / bolt) — this is a spelling app, and a
+  painted sign that spells badly is a lesson. **Perf, measured honestly:** headless chromium
+  draws the canvas in software, where big overlapping images cost far more than on a phone's
+  GPU; a city with every prop removed measures the same as one with them, and the shipped and
+  new builds sit within a few ms of each other there (~19–27ms). Do not tune against headless
+  frame times alone. Guard: `tests/gp-world.cjs` — steady kart, rivals moving every frame, no
+  ghosts after a half-lap jump, every kind in scale in every world, verge clearance, zone
+  variety and density. Every check was watched to fail with its fault put back.
 - **The far road is PROJECTED past drawDist, never patched.** drawDist segments end
   ~108px short of the horizon and 165px wide — a stump against the backdrop. A straight
   wedge to the vanishing point reads as a grey pyramid the moment the road curves. The

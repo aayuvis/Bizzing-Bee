@@ -112,7 +112,7 @@ const CAM_HALF = +src.match(/CAM_HALF=([\d.]+)/)[1];
 ok(CAM_FOLLOW < 1 && CAM_FOLLOW >= 0.8, `the camera takes most of the kart's offset (${CAM_FOLLOW}) — a kart on the grass is still drawn on the grass`);
 ok(CAM_HALF <= 0.12, `and catches up in ${CAM_HALF}s, so nothing glides after you let go`);
 ok(/const camX=camLag\*roadW/.test(src), 'and the camera rides camLag, not playerX');
-ok(/const px=Wd\/2 \+ \(playerX-camLag\)\*\(_nearW/.test(src),
+ok(/const px=Wd\/2 \+ \(playerX-camLag\)\*hwK;/.test(src) && /const hwAt=y=>\(\(y-horizonY\)\*2\/\(camH\*Ht\)\)\*roadW\*Wd\/2;/.test(src),
   'the kart is drawn at its real offset, measured in the road\'s own projection');
 // the far road is drawn by continued projection, never a straight wedge
 ok(/while\(pyD>horizonY\+1 && n<6000\)/.test(src), 'the road past drawDist is projected on, following the curve');
@@ -125,7 +125,15 @@ const kd = src.slice(src.indexOf('function kartDraw('), src.indexOf('function ka
 ok(kd.indexOf('c.drawImage(s.driver') > 0 && kd.indexOf('c.drawImage(s.driver') < kd.indexOf('c.fillStyle=G.seat') && kd.indexOf('c.fillStyle=G.seat') < kd.indexOf('c.fillStyle=G.tub'),
   'the driver is drawn before the seat back and the body, so they sit IN the kart');
 ok(/kartDraw\(cx,px,py,pw,\{style:KART,[^}]*yaw:yawS/.test(src) && !/cx\.rotate\(steer\*/.test(src), 'the player\'s kart YAWS into a turn; nothing rotates the picture');
-ok(/const pw=\(_nearW\|\|Wd\*0\.5\)\*KART_W/.test(src) && /kw=w\*\(KART_W\/0\.11\)/.test(src), 'you and the rivals are drawn at one scale, so a kart alongside is your size');
+ok(/pw=hwK\*KART_W;/.test(src) && /kw=w\*\(KART_W\/0\.11\)/.test(src), 'you and the rivals are drawn at one scale, so a kart alongside is your size');
+/* THE KART'S SIZE IS A CONSTANT. It came from _nearW, the nearest road band's width, which
+   steps every time a band scrolls past (46 a second flat out): the kart grew and snapped
+   back 4.5% per band — "the car is shaking". It comes from the exact road width at its
+   ground line now. tests/gp-world.cjs measures it frame to frame. */
+ok(!/_nearW\s*=/.test(src) && !/let _nearW/.test(src), 'nothing sizes the kart from a road band any more');
+/* A RIVAL IS DRAWN WHERE IT IS — interpolated inside its band, not snapped to the band's
+   near edge, which made rivals hop a band at a time. */
+ok(/const f=\(zm-si\*segLen\)\/segLen, a=seg\.p1\.camera, b=seg\.p2\.camera/.test(src), 'rivals are placed inside their road band, not snapped to its edge');
 
 // the item box is swept, not sampled
 ok(/const crossed=_wrapped \? \(iz>_prevPm \|\| iz<=_pm2\) : \(iz>_prevPm && iz<=_pm2\)/.test(src),

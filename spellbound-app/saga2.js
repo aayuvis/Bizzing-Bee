@@ -1423,6 +1423,285 @@
       return (_kThumb[key]=cv.toDataURL('image/png')); }catch(e){ return ''; } }
   W().SB_KART_ART={ draw:kartDraw, thumb:kartThumb, styles:KART_STYLES };
 
+  /* ===== GRAND PRIX SCENERY — painted once, blitted forever =====
+     Everything beside the road is painted ONCE into a canvas at RES pixels per road
+     half-width, in the road's own unit (the kart is 0.38 wide, 0.44 tall), and blitted
+     from then on. A far prop draws from a pre-shrunk copy (mipOf) already tinted to the
+     world's fog (fogOf); a near one draws full size with its fog laid on as a silhouette.
+     That is one or two drawImages per prop at any distance, against a dozen path fills
+     and a gradient each — which is what let the props get big and varied without the
+     frame budget going with them. Painters work with the origin at the prop's FOOT
+     (bottom centre), y negative upward, light from the upper left. No lettering on
+     anything: a billboard carries a bee, a star, a heart or a bolt. */
+  const GPS=(function(){
+    const RES=90;
+    const rng=s=>()=>{ s|=0; s=s+0x6D2B79F5|0; let t=Math.imul(s^s>>>15,1|s); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
+    const sh=(hex,f)=>kShade(hex,f);
+    const dot=(g,x,y,r,col)=>{ g.fillStyle=col; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); };
+    const foot=(g,w,a)=>{ g.fillStyle='rgba(0,0,0,'+(a||0.18)+')'; g.beginPath(); g.ellipse(0,-0.01,w,w*0.16,0,0,7); g.fill(); };
+    function rock(g,cx0,w,h,R,col){ const pts=[]; for(let i=0;i<=10;i++){ const a=Math.PI+i/10*Math.PI, rr=0.84+R()*0.28; pts.push([cx0+Math.cos(a)*w/2*rr,Math.min(0,Math.sin(a)*h*rr)]); }
+      g.beginPath(); g.moveTo(cx0-w/2,0); pts.forEach(p=>g.lineTo(p[0],p[1])); g.lineTo(cx0+w/2,0); g.closePath();
+      const gr=g.createLinearGradient(cx0-w/2,-h,cx0+w/2,0); gr.addColorStop(0,sh(col,0.24)); gr.addColorStop(0.55,col); gr.addColorStop(1,sh(col,-0.36));
+      g.fillStyle=gr; g.fill(); g.strokeStyle='rgba(50,20,10,.28)'; g.lineWidth=0.012; g.stroke();
+      g.beginPath(); g.moveTo(cx0-w*0.1,-h*0.75); g.lineTo(cx0+w*0.02,-h*0.4); g.lineTo(cx0-w*0.04,-h*0.15); g.stroke(); }
+    const ICON={
+      bee:g=>{ g.fillStyle='rgba(255,255,255,.85)'; g.beginPath(); g.ellipse(-0.12,-0.2,0.14,0.09,-0.5,0,7); g.ellipse(0.12,-0.2,0.14,0.09,0.5,0,7); g.fill();
+        g.fillStyle='#FFD34A'; g.beginPath(); g.ellipse(0,0,0.24,0.17,0,0,7); g.fill(); g.fillStyle='#2A2340';
+        [-0.08,0.06].forEach(x=>g.fillRect(x,-0.16,0.06,0.32)); dot(g,0.2,-0.03,0.025,'#2A2340'); },
+      star:g=>{ g.beginPath(); for(let i=0;i<10;i++){ const r=i%2?0.13:0.32, a=-Math.PI/2+i*Math.PI/5; g.lineTo(Math.cos(a)*r,Math.sin(a)*r); } g.closePath(); g.fill(); },
+      heart:g=>{ g.beginPath(); g.moveTo(0,0.24); g.bezierCurveTo(-0.38,-0.02,-0.2,-0.34,0,-0.14); g.bezierCurveTo(0.2,-0.34,0.38,-0.02,0,0.24); g.fill(); },
+      bolt:g=>{ g.beginPath(); g.moveTo(0.06,-0.32); g.lineTo(-0.16,0.03); g.lineTo(0,0.03); g.lineTo(-0.06,0.32); g.lineTo(0.17,-0.05); g.lineTo(0.01,-0.05); g.closePath(); g.fill(); } };
+    /* kind -> (variant, world) -> { bw, bh (box, half-widths), foot (footprint half-width), paint(g) } */
+    const P={
+      bush:(v,world)=>{ const pal=world==='cactus'?['#6F6E38','#8F8C4A','#B3AF66']:world==='building'?['#1E4632','#2B6142','#3D7F55']:['#2E763C','#45A04E','#6CC768'];
+        const R=rng(v*97+3), fl=world==='tree'&&v%2===1, fc=['#FF8FB8','#FFD54A','#FFFFFF'][v%3];
+        const pts=[[-0.19,-0.11,0.12],[0.19,-0.11,0.12],[-0.06,-0.19,0.15],[0.1,-0.21,0.13],[0,-0.1,0.14]];
+        return {bw:0.72,bh:0.42,foot:0.3,paint:g=>{ foot(g,0.33);
+          pts.forEach(p=>dot(g,p[0]+(R()-0.5)*0.04,p[1],p[2]*(0.9+R()*0.2),pal[0]));
+          pts.forEach(p=>dot(g,p[0]-0.03,p[1]-0.03,p[2]*0.72,pal[1]));
+          pts.forEach(p=>dot(g,p[0]-0.06,p[1]-0.06,p[2]*0.34,pal[2]));
+          if(fl) for(let i=0;i<10;i++){ const p=pts[i%5]; dot(g,p[0]+(R()-0.5)*p[2]*1.4,p[1]+(R()-0.5)*p[2]*1.2,0.022,fc); } }}; },
+      hedge:()=>({bw:0.8,bh:0.46,foot:0.36,paint:g=>{ foot(g,0.38,0.25);
+        const pg=g.createLinearGradient(-0.36,0,0.36,0); pg.addColorStop(0,'#8E93A8'); pg.addColorStop(1,'#5A5F74');
+        g.fillStyle=pg; g.fillRect(-0.36,-0.18,0.72,0.18);
+        g.fillStyle='#244A36'; kRR(g,-0.33,-0.44,0.66,0.3,0.14); g.fill(); g.fillStyle='#356A4A'; kRR(g,-0.3,-0.43,0.5,0.16,0.08); g.fill(); }}),
+      flowers:(v)=>{ const R=rng(v*31+7), fc=['#FF7FAF','#FFD34A','#B48CFF'][v%3];
+        return {bw:0.9,bh:0.2,foot:0.42,paint:g=>{ for(let i=0;i<26;i++){ const x=(R()-0.5)*0.8, h=0.05+R()*0.1;
+          g.strokeStyle='#3E8B3E'; g.lineWidth=0.012; g.beginPath(); g.moveTo(x,0); g.lineTo(x+(R()-0.5)*0.03,-h); g.stroke();
+          dot(g,x,-h,0.022+R()*0.012,fc); dot(g,x-0.006,-h-0.006,0.009,'rgba(255,255,255,.7)'); } }}; },
+      haybale:(v)=>{ const n=v%3, r=0.19, bw=n===0?0.5:0.92, bh=n===2?0.74:0.42;
+        return {bw,bh,foot:bw/2-0.05,paint:g=>{ foot(g,bw*0.45);
+          const one=(x,y)=>{ g.fillStyle='#B6872D'; g.beginPath(); g.ellipse(x+0.05,y-r,r*0.92,r,0,0,7); g.fill();
+            const gr=g.createRadialGradient(x-0.06,y-r-0.06,0.02,x,y-r,r); gr.addColorStop(0,'#F6D774'); gr.addColorStop(1,'#C4952F');
+            g.fillStyle=gr; g.beginPath(); g.arc(x,y-r,r,0,7); g.fill();
+            g.strokeStyle='rgba(120,80,20,.45)'; g.lineWidth=0.012; g.beginPath();
+            for(let a=0.3;a<14;a+=0.25){ const rr=r*(a/14); g.lineTo(x+Math.cos(a)*rr,y-r+Math.sin(a)*rr); } g.stroke(); };
+          if(n===0) one(0,0); else { one(-0.22,0); one(0.22,0); if(n===2) one(0,-r*1.78); } }}; },
+      barn:(v)=>{ const red=v%2?'#B83A32':'#C9563B';
+        return {bw:2.5,bh:2.15,foot:1.1,paint:g=>{ foot(g,1.2,0.2);
+          const bg=g.createLinearGradient(-1,0,1,0); bg.addColorStop(0,sh(red,0.12)); bg.addColorStop(1,sh(red,-0.2));
+          g.fillStyle=bg; g.fillRect(-1,-1.25,2,1.25);
+          g.strokeStyle='rgba(60,10,10,.25)'; g.lineWidth=0.02; for(let x=-0.9;x<1;x+=0.18){ g.beginPath(); g.moveTo(x,-1.25); g.lineTo(x,0); g.stroke(); }
+          g.fillStyle='#55505E'; g.beginPath(); g.moveTo(-1.12,-1.22); g.lineTo(-0.86,-1.78); g.lineTo(0,-2.1); g.lineTo(0.86,-1.78); g.lineTo(1.12,-1.22); g.closePath(); g.fill();
+          g.fillStyle='rgba(255,255,255,.12)'; g.beginPath(); g.moveTo(-1.12,-1.22); g.lineTo(-0.86,-1.78); g.lineTo(0,-2.1); g.lineTo(-0.04,-1.96); g.lineTo(-0.8,-1.68); g.lineTo(-1.0,-1.25); g.closePath(); g.fill();
+          g.strokeStyle='#F2EEE6'; g.lineWidth=0.05; g.beginPath(); g.moveTo(-1,-1.25); g.lineTo(-0.78,-1.74); g.lineTo(0,-2.02); g.lineTo(0.78,-1.74); g.lineTo(1,-1.25); g.stroke();
+          g.strokeRect(-1,-1.25,2,1.25);
+          g.fillStyle=sh(red,-0.28); g.fillRect(-0.4,-0.82,0.8,0.82); g.lineWidth=0.045; g.strokeRect(-0.4,-0.82,0.8,0.82);
+          g.beginPath(); g.moveTo(-0.4,-0.82); g.lineTo(0.4,0); g.moveTo(0.4,-0.82); g.lineTo(-0.4,0); g.moveTo(0,-0.82); g.lineTo(0,0); g.stroke();
+          g.fillStyle='#3A2A22'; g.fillRect(-0.2,-1.62,0.4,0.3); g.strokeRect(-0.2,-1.62,0.4,0.3); }}; },
+      windmill:()=>({bw:2.4,bh:3.5,foot:0.38,paint:g=>{ foot(g,0.5);
+        const tg=g.createLinearGradient(-0.36,0,0.36,0); tg.addColorStop(0,'#FFFDF6'); tg.addColorStop(1,'#CFC7B8');
+        g.fillStyle=tg; g.beginPath(); g.moveTo(-0.36,0); g.lineTo(-0.2,-2.3); g.lineTo(0.2,-2.3); g.lineTo(0.36,0); g.closePath(); g.fill();
+        g.fillStyle='#6A4A3A'; g.fillRect(-0.09,-0.32,0.18,0.32); g.fillStyle='#7FA8C8'; g.fillRect(-0.07,-1.2,0.14,0.16); g.fillRect(-0.06,-1.75,0.12,0.14);
+        g.fillStyle='#A8433A'; g.beginPath(); g.moveTo(-0.27,-2.28); g.quadraticCurveTo(0,-2.62,0.27,-2.28); g.closePath(); g.fill();
+        g.save(); g.translate(0,-2.38); g.rotate(0.35);
+        for(let i=0;i<4;i++){ g.rotate(Math.PI/2); g.fillStyle='#5A4636'; g.fillRect(-0.025,0,0.05,1.0);
+          g.fillStyle='rgba(250,245,232,.94)'; g.fillRect(0.03,0.18,0.18,0.8); g.strokeStyle='#5A4636'; g.lineWidth=0.015;
+          for(let y=0.28;y<0.98;y+=0.12){ g.beginPath(); g.moveTo(0.03,y); g.lineTo(0.21,y); g.stroke(); } }
+        dot(g,0,0,0.07,'#3A2E28'); g.restore(); }}),
+      reeds:(v)=>{ const R=rng(v*13+5); return {bw:0.55,bh:0.56,foot:0.2,paint:g=>{
+        for(let i=0;i<9;i++){ const x=(R()-0.5)*0.4, h=0.25+R()*0.25, b=(R()-0.5)*0.12; g.strokeStyle=i%2?'#4E8F3C':'#6BAA4A'; g.lineWidth=0.02;
+          g.beginPath(); g.moveTo(x,0); g.quadraticCurveTo(x,-h*0.6,x+b,-h); g.stroke(); }
+        for(let i=0;i<3;i++){ const x=(i-1)*0.12+(R()-0.5)*0.05, h=0.4+R()*0.12; g.strokeStyle='#5C7A3A'; g.lineWidth=0.014; g.beginPath(); g.moveTo(x,0); g.lineTo(x,-h); g.stroke();
+          g.fillStyle='#6B4226'; g.beginPath(); g.ellipse(x,-h+0.05,0.026,0.075,0,0,7); g.fill(); } }}; },
+      cactus:(v)=>{ const kk=(v+0.5)/6, U=0.6, H=U*(1.6+kk*0.9), bwid=U*0.36, aw=bwid*0.66, flip=kk>0.5?-1:1;
+        return {bw:U*0.95,bh:H+U*0.15,foot:0.12,paint:g=>{ foot(g,0.22,0.2); const top=-H;
+          /* arms in the cactus's own mirrored frame, rising from an elbow at their foot, drawn
+             before the trunk so the joint is seamless — the old mirror flipped the offsets but
+             not the shapes, and half the cacti had an arm floating in the air beside them */
+          g.save(); g.scale(flip,1); g.fillStyle='#3E8848';
+          const aY=-H*(0.52+kk*0.16), aH=H*0.40, bY=-H*(0.40+kk*0.1), bH=H*0.30;
+          kRR(g,bwid*0.42,aY,aw,aH,aw*0.5); g.fill(); kRR(g,bwid*0.1,aY+aH-aw,bwid*0.32+aw,aw,aw*0.5); g.fill();
+          kRR(g,-bwid*0.42-aw,bY,aw,bH,aw*0.5); g.fill(); kRR(g,-bwid*0.42-aw,bY+bH-aw,bwid*0.32+aw,aw,aw*0.5); g.fill();
+          g.fillStyle='rgba(190,255,190,.28)'; kRR(g,bwid*0.42+aw*0.18,aY+aw*0.3,aw*0.22,aH-aw*1.2,aw*0.11); g.fill(); g.restore();
+          const cg=g.createLinearGradient(-bwid/2,0,bwid/2,0); cg.addColorStop(0,'#2F6B3A'); cg.addColorStop(.42,'#63BC70'); cg.addColorStop(.62,'#4E9B57'); cg.addColorStop(1,'#2A5E33');
+          g.fillStyle=cg; kRR(g,-bwid/2,top,bwid,H,bwid*0.5); g.fill();
+          g.strokeStyle='rgba(20,60,26,.35)'; g.lineWidth=U*0.014;
+          for(const f of [-0.22,0,0.22]){ g.beginPath(); g.moveTo(bwid*f,top+bwid*0.4); g.lineTo(bwid*f,-bwid*0.2); g.stroke(); }
+          if(kk>0.6) dot(g,0,top+bwid*0.1,U*0.075,'#FF9EC4'); }}; },
+      rock:(v,world)=>{ const R=rng(v*41+9), col=world==='cactus'?['#B4643E','#A65A3A','#C27548','#9A5434'][v%4]:['#8E8A86','#7C7874','#9A958E','#868079'][v%4];
+        return {bw:0.7,bh:0.42,foot:0.32,paint:g=>{ foot(g,0.32,0.22); rock(g,0,0.62,0.32+R()*0.06,R,col); }}; },
+      boulders:(v)=>{ const R=rng(v*59+17), c=['#B4643E','#A65A3A','#C27548'];
+        return {bw:1.5,bh:0.85,foot:0.7,paint:g=>{ foot(g,0.72,0.22); rock(g,0.05,0.75,0.78,R,c[(v+1)%3]); rock(g,-0.4,0.62,0.45,R,c[v%3]); rock(g,0.42,0.6,0.38,R,c[(v+2)%3]); }}; },
+      deadtree:(v)=>{ const R=rng(v*53+11); return {bw:1.3,bh:1.55,foot:0.08,paint:g=>{ foot(g,0.16);
+        const br=(x,y,a,len,w,d)=>{ const x2=x+Math.cos(a)*len, y2=y+Math.sin(a)*len; g.strokeStyle=d>2?'#6B5442':'#7E6650'; g.lineWidth=w;
+          g.beginPath(); g.moveTo(x,y); g.lineTo(x2,y2); g.stroke();
+          if(d>0){ br(x2,y2,a-0.35-R()*0.3,len*(0.62+R()*0.15),w*0.66,d-1); br(x2,y2,a+0.3+R()*0.3,len*(0.6+R()*0.15),w*0.66,d-1); } };
+        br(0,0,-Math.PI/2+(R()-0.5)*0.15,0.55,0.07,4); }}; },
+      butte:()=>({bw:5.2,bh:2.5,foot:2.4,paint:g=>{
+        g.beginPath(); g.moveTo(-2.6,0); g.lineTo(-2.0,-0.8); g.lineTo(-1.7,-0.9); g.lineTo(-1.45,-2.25); g.lineTo(1.25,-2.4); g.lineTo(1.55,-1.0); g.lineTo(1.95,-0.85); g.lineTo(2.6,0); g.closePath();
+        const gr=g.createLinearGradient(-2.6,-2.4,2.6,0); gr.addColorStop(0,'#D98A55'); gr.addColorStop(0.5,'#B5603C'); gr.addColorStop(1,'#7E3E2A'); g.fillStyle=gr; g.fill();
+        g.save(); g.clip(); for(let y=-2.2;y<0;y+=0.32){ g.fillStyle='rgba(90,30,20,.18)'; g.fillRect(-2.6,y,5.2,0.08); g.fillStyle='rgba(255,210,170,.12)'; g.fillRect(-2.6,y-0.06,5.2,0.04); }
+        g.fillStyle='rgba(60,20,15,.25)'; g.beginPath(); g.moveTo(0.4,-2.37); g.lineTo(1.25,-2.4); g.lineTo(1.55,-1.0); g.lineTo(1.95,-0.85); g.lineTo(2.6,0); g.lineTo(0.9,0); g.closePath(); g.fill(); g.restore(); }}),
+      watertower:()=>({bw:1.5,bh:3.32,foot:0.62,paint:g=>{ foot(g,0.6);
+        g.strokeStyle='#5B4030'; g.lineWidth=0.06;
+        [[-0.55,-0.42],[0.55,0.42],[-0.2,-0.16],[0.2,0.16]].forEach(l=>{ g.beginPath(); g.moveTo(l[0],0); g.lineTo(l[1],-1.95); g.stroke(); });
+        g.lineWidth=0.025; for(let y=-0.2;y>-1.8;y-=0.6){ g.beginPath(); g.moveTo(-0.53,y); g.lineTo(0.5,y-0.55); g.moveTo(0.53,y); g.lineTo(-0.5,y-0.55); g.stroke(); }
+        const tg=g.createLinearGradient(-0.62,0,0.62,0); tg.addColorStop(0,'#B07A4E'); tg.addColorStop(0.4,'#9A6640'); tg.addColorStop(1,'#6E4428');
+        g.fillStyle=tg; g.fillRect(-0.62,-2.95,1.24,1.0);
+        g.strokeStyle='rgba(50,25,10,.35)'; g.lineWidth=0.015; for(let x=-0.5;x<0.62;x+=0.12){ g.beginPath(); g.moveTo(x,-2.95); g.lineTo(x,-1.95); g.stroke(); }
+        g.strokeStyle='#3E2C22'; g.lineWidth=0.035; [-2.75,-2.15].forEach(y=>{ g.beginPath(); g.moveTo(-0.62,y); g.lineTo(0.62,y); g.stroke(); });
+        g.fillStyle='#5E3A26'; g.beginPath(); g.moveTo(-0.7,-2.95); g.lineTo(0,-3.28); g.lineTo(0.7,-2.95); g.closePath(); g.fill(); }}),
+      signpost:(v)=>({bw:0.95,bh:1.0,foot:0.05,paint:g=>{ foot(g,0.08);
+        g.fillStyle='#6E4A30'; g.fillRect(-0.03,-0.95,0.06,0.95);
+        const board=(y,d,col)=>{ g.fillStyle=col; g.beginPath(); g.moveTo(-d*0.06,y-0.055); g.lineTo(d*0.36,y-0.055); g.lineTo(d*0.44,y); g.lineTo(d*0.36,y+0.055); g.lineTo(-d*0.06,y+0.055); g.closePath(); g.fill();
+          g.strokeStyle='rgba(60,30,15,.5)'; g.lineWidth=0.012; g.stroke(); };
+        board(-0.84,1,'#C99060'); board(-0.64,-1,'#B27A4C'); if(v%2) board(-0.46,1,'#D4A06C'); }}),
+      tower:(v)=>{ const k=(v+0.5)/6, bw=2.1*(0.72+((k*7)%1)*0.5), bh=2.1*(1.5+k*1.9), setback=k>0.55?0.63:0, neon=['#5BE9FF','#FF6BD6','#8B7BFF','#57FFC2'][(k*13|0)%4];
+        return {bw:bw+0.12,bh:bh+setback+0.12,foot:bw/2,res:56,paint:g=>{ const x0=-bw/2, top=-bh;
+          const gr=g.createLinearGradient(0,top,0,0); gr.addColorStop(0,'#4A5080'); gr.addColorStop(0.55,'#2E3355'); gr.addColorStop(1,'#1A1C30'); g.fillStyle=gr; g.fillRect(x0,top,bw,bh);
+          g.fillStyle='rgba(255,255,255,.06)'; g.fillRect(x0,top,bw*0.16,bh);
+          if(setback){ const tw=bw*0.6; g.fillStyle='#3A4068'; g.fillRect(-tw/2,top-setback,tw,setback); g.fillStyle=neon; g.fillRect(-tw/2,top-setback,tw,0.05); }
+          const bay=0.36, cols=Math.floor((bw-0.2)/bay), rows=Math.floor((bh-0.3)/bay), ox=(bw-cols*bay)/2;
+          for(let r=0;r<rows;r++) for(let q=0;q<cols;q++){ const lit=((r*7+q*3+v*5)%5)!==0 && ((r+q*2+v)%7)!==3;
+            g.fillStyle=lit?'rgba(255,214,130,.95)':'rgba(70,80,120,.55)'; g.fillRect(x0+ox+q*bay+0.07,top+0.2+r*bay+0.07,bay*0.58,bay*0.54); }
+          g.fillStyle=neon; g.globalAlpha=0.3; g.fillRect(x0-0.05,top-0.08,bw+0.1,0.2); g.globalAlpha=1; g.fillRect(x0,top,bw,0.05);
+          g.globalAlpha=0.5; g.fillRect(x0,top,0.04,bh); g.fillRect(-x0-0.04,top,0.04,bh); g.globalAlpha=1;
+          if(k>0.34){ const sw=0.12, sy2=top+bh*0.16, sh2=bh*0.42, sx2=x0+bw*0.8; g.globalAlpha=0.3; g.fillRect(sx2-sw,sy2-sw,sw*3,sh2+sw*2); g.globalAlpha=1; g.fillRect(sx2,sy2,sw,sh2); } }}; },
+      lamp:(v,world)=>{ const d=v%2?-1:1, glow=world==='building'?'190,240,255':'255,236,190';
+        return {bw:0.64,bh:1.56,foot:0.05,paint:g=>{ g.scale(d,1); g.fillStyle='rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(-0.18,-0.01,0.08,0.025,0,0,7); g.fill();
+          g.fillStyle='#2A2F45'; g.fillRect(-0.21,-1.36,0.05,1.36); g.fillRect(-0.245,-0.08,0.12,0.08);
+          g.strokeStyle='#2A2F45'; g.lineWidth=0.04; g.beginPath(); g.moveTo(-0.185,-1.34); g.quadraticCurveTo(-0.15,-1.45,0.12,-1.41); g.stroke();
+          const gl=g.createRadialGradient(0.15,-1.36,0,0.15,-1.36,0.15); gl.addColorStop(0,'rgba('+glow+',.8)'); gl.addColorStop(1,'rgba('+glow+',0)');
+          g.fillStyle=gl; g.beginPath(); g.arc(0.15,-1.36,0.15,0,7); g.fill();
+          g.fillStyle='#3A4060'; g.fillRect(0.06,-1.44,0.17,0.05); g.fillStyle='rgb('+glow+')'; g.fillRect(0.08,-1.39,0.13,0.025); }}; },
+      /* SANDSTONE FORMATIONS — the canyon pass. Four shapes (hoodoo with a cap rock, mesa
+         block, twin spires, an arch), each built as stacked ledges and then dressed the way
+         the backdrop painting dresses its rocks: lit left face, shadowed right, strata,
+         ledge highlights, cracks, desert-varnish streaks, rubble at the foot. */
+      formation:(v)=>{ const R=rng(v*71+23), t=v%4, W=[1.5,2.7,2.4,2.7][t], H=[3.05,1.95,2.75,2.35][t];
+        const pal=[['#E39A5E','#C46C40','#8A4029'],['#D98552','#B85E38','#7E3824'],['#E8A468','#C9773F','#91482B'],['#DB8E5A','#BE653D','#843E27']][v%4];
+        const stack=(cx0,wb,h,steps,top)=>{ const L=[],Rr=[]; let prev=null;
+          for(let i=0;i<steps;i++){ const y0=top-h*i/steps, y1=top-h*(i+1)/steps, ww=wb*(1-0.28*i/steps)*(0.9+R()*0.18)/2;
+            if(prev!==null){ L.push([cx0-ww,y0]); Rr.push([cx0+ww+(R()-0.5)*0.04,y0]); } else { L.push([cx0-ww,y0]); Rr.push([cx0+ww,y0]); }
+            L.push([cx0-ww*(0.97+R()*0.05),y1]); Rr.push([cx0+ww*(0.97+R()*0.05),y1]); prev=ww; }
+          return {pts:L.concat(Rr.reverse()), ledges:L.map(p=>p[1])}; };
+        const shapes=[]; const ledgeYs=[];
+        if(t===0){ const c=stack(0,1.0,2.55,6,0); shapes.push(c.pts); ledgeYs.push(...c.ledges);
+          shapes.push([[-0.62,-2.5],[-0.66,-2.78],[-0.5,-3.0],[0.48,-3.02],[0.66,-2.8],[0.6,-2.5]]); }
+        else if(t===1){ const c=stack(0,2.6,1.9,4,0); shapes.push(c.pts); ledgeYs.push(...c.ledges); }
+        else if(t===2){ const a=stack(-0.55,0.95,2.7,6,0), b=stack(0.6,0.85,2.05,5,0); shapes.push(a.pts,b.pts,[[-1.15,0],[-1.1,-0.7],[1.1,-0.62],[1.15,0]]); ledgeYs.push(...a.ledges,...b.ledges); }
+        else { const a=stack(-0.95,0.75,2.3,5,0), b=stack(0.95,0.75,2.3,5,0); shapes.push(a.pts,b.pts); ledgeYs.push(...a.ledges); }
+        const path=new Path2D(); shapes.forEach(sp=>{ path.moveTo(sp[0][0],sp[0][1]); sp.forEach(p=>path.lineTo(p[0],p[1])); path.closePath(); });
+        if(t===3){ path.moveTo(-1.3,-1.85); path.bezierCurveTo(-1.25,-2.55,1.25,-2.55,1.3,-1.85); path.lineTo(1.3,-2.05); path.lineTo(-1.3,-2.05); path.closePath();
+          path.moveTo(-1.32,-1.72); path.lineTo(-1.32,-2.0); path.bezierCurveTo(-0.9,-2.5,0.9,-2.5,1.32,-2.0); path.lineTo(1.32,-1.72);
+          path.bezierCurveTo(0.9,-2.2,-0.9,-2.2,-1.32,-1.72); path.closePath(); }
+        return {bw:W+0.5,bh:H+0.25,foot:W/2,paint:g=>{ foot(g,W*0.58,0.26);
+          const base=g.createLinearGradient(-W/2,0,W/2,0); base.addColorStop(0,pal[0]); base.addColorStop(0.5,pal[1]); base.addColorStop(1,pal[2]);
+          g.fillStyle=base; g.fill(path);
+          g.save(); g.clip(path);
+          for(let y=0,i=0;y>-H-0.3;y-=0.14+R()*0.14,i++){ const th=0.05+R()*0.06;
+            g.fillStyle=i%2?'rgba(255,214,170,.16)':'rgba(110,40,25,.2)'; g.beginPath(); g.moveTo(-W,y);
+            for(let x=-W;x<=W;x+=0.25) g.lineTo(x,y+Math.sin(x*3+i)*0.025); g.lineTo(W,y-th); g.lineTo(-W,y-th); g.closePath(); g.fill(); }
+          const sh2=g.createLinearGradient(0,0,W/2,0); sh2.addColorStop(0,'rgba(60,20,10,0)'); sh2.addColorStop(1,'rgba(60,20,10,.32)'); g.fillStyle=sh2; g.fillRect(0,-H-0.3,W,H+0.3);
+          for(let i=0;i<7;i++){ const x=(R()-0.5)*W*0.9, y=-R()*H*0.9, l=0.25+R()*0.5, vg=g.createLinearGradient(0,y,0,y+l);
+            vg.addColorStop(0,'rgba(70,30,20,.30)'); vg.addColorStop(1,'rgba(70,30,20,0)'); g.fillStyle=vg; g.fillRect(x,y,0.06+R()*0.08,l); }
+          g.strokeStyle='rgba(60,22,12,.45)'; g.lineWidth=0.018;
+          for(let i=0;i<6;i++){ const x=(R()-0.5)*W*0.8, y=-R()*H*0.8; g.beginPath(); g.moveTo(x,y); g.lineTo(x+(R()-0.5)*0.06,y+0.18+R()*0.25); g.lineTo(x+(R()-0.5)*0.08,y+0.4+R()*0.3); g.stroke(); }
+          g.strokeStyle='rgba(255,226,190,.55)'; g.lineWidth=0.026;
+          ledgeYs.forEach(y=>{ if(y>-0.05) return; g.beginPath(); g.moveTo(-W/2,y+0.012); g.lineTo(-W*0.05,y+0.012); g.stroke(); });
+          g.restore();
+          g.strokeStyle='rgba(70,26,14,.55)'; g.lineWidth=0.028; g.stroke(path);
+          for(let i=0;i<4;i++) rock(g,(R()-0.5)*W*0.9,0.22+R()*0.2,0.12+R()*0.1,R,pal[1+(i%2)]); }}; },
+      /* a two-storey shop for the neon avenue: lit window, striped awning, door, upper floor */
+      shop:(v)=>{ const body=['#8E3B46','#2F6F78','#5B3F86','#9A7340'][v%4], neon=['#FF6BD6','#5BE9FF','#FFD34A','#57FFC2'][v%4], R=rng(v*19+3);
+        return {bw:1.62,bh:1.32,foot:0.76,paint:g=>{ foot(g,0.8,0.25);
+          const bg=g.createLinearGradient(-0.75,0,0.75,0); bg.addColorStop(0,sh(body,0.12)); bg.addColorStop(1,sh(body,-0.25));
+          g.fillStyle=bg; g.fillRect(-0.75,-1.15,1.5,1.15);
+          g.fillStyle=sh(body,-0.35); g.fillRect(-0.8,-1.24,1.6,0.1);            // cornice
+          for(let q=0;q<3;q++){ const lit=R()<0.7; g.fillStyle='#1E2034'; g.fillRect(-0.6+q*0.44,-1.05,0.32,0.3);
+            g.fillStyle=lit?'rgba(255,214,140,.92)':'rgba(90,110,160,.6)'; g.fillRect(-0.58+q*0.44,-1.03,0.28,0.26);
+            g.fillStyle='rgba(255,255,255,.18)'; g.fillRect(-0.58+q*0.44,-1.03,0.28,0.05); }
+          g.fillStyle='#14162A'; g.fillRect(-0.68,-0.62,1.0,0.56);                // shop window
+          const wg=g.createLinearGradient(0,-0.62,0,-0.06); wg.addColorStop(0,'rgba(255,226,170,.95)'); wg.addColorStop(1,'rgba(255,170,90,.85)');
+          g.fillStyle=wg; g.fillRect(-0.65,-0.59,0.94,0.5);
+          g.fillStyle='rgba(60,40,30,.35)'; for(let i=0;i<4;i++) g.fillRect(-0.6+i*0.24,-0.3,0.12,0.2);   // shelves of goods
+          g.fillStyle='#24263A'; g.fillRect(0.38,-0.6,0.3,0.6); g.fillStyle='rgba(255,220,160,.8)'; g.fillRect(0.42,-0.56,0.22,0.26);   // door
+          g.save(); g.beginPath(); g.moveTo(-0.78,-0.72); g.lineTo(0.78,-0.72); g.lineTo(0.7,-0.6); g.lineTo(-0.7,-0.6); g.closePath(); g.clip();
+          for(let i=0;i<9;i++){ g.fillStyle=i%2?'#F4EFE6':neon; g.fillRect(-0.78+i*0.174,-0.74,0.174,0.16); } g.restore();
+          g.strokeStyle=neon; g.lineWidth=0.03; g.beginPath(); g.moveTo(-0.7,-0.6); g.lineTo(0.7,-0.6); g.stroke();
+          /* a blade sign sticking out from the corner, carrying the shop's neon icon */
+          g.fillStyle='#30354C'; g.fillRect(-0.8,-0.98,0.06,0.03);
+          g.fillStyle='#161A2E'; kRR(g,-0.98,-1.08,0.22,0.26,0.03); g.fill(); g.strokeStyle=neon; g.lineWidth=0.02; kRR(g,-0.98,-1.08,0.22,0.26,0.03); g.stroke();
+          g.save(); g.translate(-0.87,-0.95); g.scale(0.27,0.27); g.fillStyle=neon; ICON[['star','heart','bolt','bee'][v%4]](g); g.restore(); }}; },
+      billboard:(v)=>{ const neon=['#FF6BD6','#5BE9FF','#FFD34A','#57FFC2'][v%4], ic=['bee','star','heart','bolt'][v%4], deep=['#3A1450','#0E2E52','#4A2A0E','#0E3E36'][v%4];
+        return {bw:2.8,bh:2.55,foot:0.95,paint:g=>{ foot(g,1.0,0.22);
+          g.strokeStyle='#30354C';
+          for(const x of [-0.82,0.82]){ g.lineWidth=0.06; g.beginPath(); g.moveTo(x-0.08,0); g.lineTo(x-0.05,-1.12); g.moveTo(x+0.08,0); g.lineTo(x+0.05,-1.12); g.stroke();
+            g.lineWidth=0.022; for(let y=0;y>-1.05;y-=0.22){ g.beginPath(); g.moveTo(x-0.075,y); g.lineTo(x+0.07,y-0.22); g.moveTo(x+0.075,y); g.lineTo(x-0.07,y-0.22); g.stroke(); } }
+          g.fillStyle='#1A1D2E'; g.fillRect(-1.32,-2.47,2.64,1.32);
+          const sc=g.createLinearGradient(0,-2.38,0,-1.24); sc.addColorStop(0,deep); sc.addColorStop(1,sh(neon,-0.55));
+          g.fillStyle=sc; g.fillRect(-1.22,-2.38,2.44,1.14);
+          g.save(); g.beginPath(); g.rect(-1.22,-2.38,2.44,1.14); g.clip(); g.translate(0,-1.81);
+          g.fillStyle='rgba(255,255,255,.07)'; for(let i=0;i<12;i++){ g.beginPath(); g.moveTo(0,0); g.arc(0,0,2,i*Math.PI/6,i*Math.PI/6+Math.PI/12); g.closePath(); g.fill(); }
+          g.globalAlpha=0.28; g.save(); g.scale(1.75,1.75); g.fillStyle=neon; ICON[ic](g); g.restore(); g.globalAlpha=1;
+          g.save(); g.scale(1.3,1.3); g.fillStyle=neon; ICON[ic](g); g.restore();
+          for(let i=0;i<14;i++){ const a=i*2.4, r=0.55+((i*37)%10)/14; dot(g,Math.cos(a)*r,Math.sin(a)*r*0.5,0.018,'rgba(255,255,255,.75)'); }
+          g.restore();
+          for(let i=0;i<=16;i++){ const x=-1.27+i*0.159; dot(g,x,-2.43,0.026,i%2?'#FFF6D8':neon); dot(g,x,-1.19,0.026,i%2?neon:'#FFF6D8'); }
+          g.fillStyle='#2A2E44'; g.fillRect(-1.22,-1.15,2.44,0.05); g.strokeStyle='#3A4060'; g.lineWidth=0.014; g.beginPath(); g.moveTo(-1.22,-1.27); g.lineTo(1.22,-1.27); g.stroke();
+          g.save(); g.globalCompositeOperation='lighter';
+          for(const x of [-0.75,0,0.75]){ const cone=g.createLinearGradient(0,-1.16,0,-2.4); cone.addColorStop(0,'rgba(255,250,220,.22)'); cone.addColorStop(1,'rgba(255,250,220,0)');
+            g.fillStyle=cone; g.beginPath(); g.moveTo(x-0.04,-1.16); g.lineTo(x-0.34,-2.38); g.lineTo(x+0.34,-2.38); g.lineTo(x+0.04,-1.16); g.closePath(); g.fill(); }
+          g.restore();
+          for(const x of [-0.75,0,0.75]){ g.fillStyle='#3A4060'; g.fillRect(x-0.05,-1.2,0.1,0.06); g.fillStyle='#FFF6D8'; g.fillRect(x-0.04,-1.21,0.08,0.015); } }}; }
+    };
+    const _tex=new Map();
+    function tex(kind,v,world){ const key=kind+'|'+v+'|'+world; let t=_tex.get(key); if(t) return t;
+      const d=P[kind](v,world), res=d.res||RES, c=document.createElement('canvas');
+      c.width=Math.max(2,Math.ceil(d.bw*res)); c.height=Math.max(2,Math.ceil(d.bh*res));
+      const g=c.getContext('2d'); g.setTransform(res,0,0,res,c.width/2,c.height); g.lineCap='round'; g.lineJoin='round'; d.paint(g);
+      t={cv:c,bw:d.bw,bh:d.bh,foot:d.foot}; _tex.set(key,t); return t; }
+    const box=(kind,v,world)=>{ const d=P[kind](v,world); return {bw:d.bw,bh:d.bh,foot:d.foot}; };
+    const _mip=new WeakMap(), _fog=new WeakMap();
+    function mipOf(src,level){ let m=_mip.get(src); if(!m){ m=[src]; _mip.set(src,m); }
+      for(let l=m.length;l<=level;l++){ const p=m[l-1], c=document.createElement('canvas'); c.width=Math.max(1,p.width>>1); c.height=Math.max(1,p.height>>1);
+        const g=c.getContext('2d'); g.imageSmoothingQuality='high'; g.drawImage(p,0,0,c.width,c.height); m.push(c); }
+      return m[level]; }
+    function tinted(src,rgb,a){ let m=_fog.get(src); if(!m){ m=new Map(); _fog.set(src,m); } const key=rgb+'|'+a; let c=m.get(key); if(c) return c;
+      c=document.createElement('canvas'); c.width=src.width; c.height=src.height; const g=c.getContext('2d'); g.drawImage(src,0,0);
+      g.globalCompositeOperation='source-atop'; g.fillStyle='rgba('+rgb+','+a+')'; g.fillRect(0,0,c.width,c.height); m.set(key,c); return c; }
+    /* ONE drawImage per prop at any distance: the copy pre-shrunk to about its drawn size,
+       already tinted to the nearest of 16 fog steps. Near props used to lay their fog on as a
+       second full-size silhouette — on the biggest images on screen that doubled the fill, and
+       measured, it was ~6ms a frame in the city. The very nearest (fog < 0.05) take none. */
+    function blit(c,src,x,y,w,h,fog,rgb){ if(!src||w<0.5) return;
+      const ratio=src.width/Math.max(1,w), lv=ratio<2?0:ratio<4?1:ratio<8?2:3, m=lv?mipOf(src,lv):src;
+      const b=fog<0.05?0:Math.max(1,Math.round(fog*16));
+      try{ c.drawImage(b?tinted(m,rgb,(b/16).toFixed(4)):m,x,y,w,h); }catch(e){} }
+    return { tex, box, blit, kinds:Object.keys(P) };
+  })();
+
+  /* ===== THE ZONES OF EACH WORLD =====
+     A lap is a run of zones, one per track sector (~150-190 bands), in a shuffled cycle
+     so the same zone never follows itself. A zone sets the ground tint, the props and
+     their spacing (`gap` in bands, alternating sides at random), an optional landmark
+     (`once`, at that fraction of the zone), a strip that runs along the road (fence,
+     railing) and water (one side: a lakeshore; both: a bridge). `dense` marks the zones that
+     are crowded ON PURPOSE — a canyon pass is walled with rock, a street with buildings —
+     and only those may exceed the audit's density cap. `off` is
+     the distance from the road's centre line in half-widths; every prop's footprint
+     stands clear of the verge, which ends at 1.42. tests/gp-world.cjs audits all of it. */
+  const GP_ZONES={
+    tree:{ list:['orchard','farm','flowers','lake'], water:['#5AAEE0','#52A4D6'], z:{
+      orchard:{grass:['#7AC46A','#71B862'], props:[{k:'tree',gap:[28,48],off:[2.0,3.3],group:[1,3]},{k:'bush',gap:[24,40],off:[1.8,2.9]}]},
+      farm:{grass:['#A9C35C','#9FB954'], verge:'#B9A06A', strip:'fence', props:[{k:'haybale',gap:[20,34],off:[2.2,3.6],group:[1,2]},{k:'barn',once:0.5,off:[3.7,4.3]},{k:'tree',gap:[55,85],off:[2.6,3.8]}]},
+      flowers:{grass:['#76CA6E','#6CBE66'], props:[{k:'flowers',gap:[10,16],off:[1.9,3.6]},{k:'bush',gap:[26,42],off:[1.8,2.8]},{k:'windmill',once:0.55,off:[4.6,5.4]}]},
+      lake:{grass:['#7AC46A','#71B862'], verge:'#D8C996', water:'one', props:[{k:'reeds',gap:[8,14],off:[1.75,2.1],side:'water'},{k:'tree',gap:[30,50],off:[2.1,3.2],side:'dry'},{k:'bush',gap:[24,38],off:[1.8,2.6],side:'dry'}]} }},
+    cactus:{ list:['cacti','boulders','canyon','ranch'], z:{
+      cacti:{props:[{k:'cactus',gap:[32,54],off:[1.95,3.4],group:[1,2]},{k:'rock',gap:[22,36],off:[1.8,2.8]},{k:'bush',gap:[20,32],off:[1.8,3.0]}]},
+      boulders:{grass:['#C27845','#B87040'], props:[{k:'boulders',gap:[32,52],off:[2.3,3.4]},{k:'rock',gap:[14,24],off:[1.8,3.0]},{k:'deadtree',gap:[46,74],off:[2.2,3.2]}]},
+      canyon:{dense:1, grass:['#A65C3E','#9C543A'], verge:'#A0603F', props:[{k:'formation',gap:[7,12],off:[2.2,3.0]},{k:'rock',gap:[12,20],off:[1.8,2.4]}]},
+      ranch:{grass:['#D79B5C','#CC9154'], props:[{k:'watertower',once:0.35,off:[3.4,4.0]},{k:'signpost',once:0.7,off:[1.75,1.8]},{k:'butte',once:0.5,off:[8,10]},{k:'bush',gap:[24,38],off:[1.8,3.2]},{k:'cactus',gap:[54,84],off:[2.2,3.4]}]} }},
+    building:{ list:['downtown','avenue','park','bridge'], water:['#1F3D6B','#1C3863'], z:{
+      downtown:{dense:1, lamps:1, props:[{k:'tower',gap:[8,13],off:[3.0,4.4]}]},
+      avenue:{dense:1, lamps:1, props:[{k:'shop',gap:[7,11],off:[2.4,2.9]},{k:'billboard',gap:[40,62],off:[3.5,3.9]},{k:'tower',gap:[18,28],off:[4.4,5.4]}]},
+      park:{grass:['#2F5A3E','#2A5238'], lamps:1, props:[{k:'parktree',gap:[18,28],off:[2.0,3.0],group:[1,2]},{k:'hedge',gap:[24,36],off:[1.8,2.4]}]},
+      bridge:{water:'both', verge:'#4A5068', strip:'rail', lamps:1, props:[]} }} };
+  /* how far up the road each kind is still drawn (bands); small things stop sooner */
+  const GP_FAR={formation:1300,shop:600,bush:350,flowers:300,reeds:300,haybale:420,rock:380,hedge:350,signpost:420,lamp:320,tree:800,parktree:700,cactus:800,boulders:700,deadtree:700,billboard:900,tower:1100,barn:1500,windmill:1600,watertower:1500,butte:1800};
+  const GP_VAR={formation:4,shop:4,bush:4,flowers:3,haybale:3,barn:2,windmill:1,reeds:3,cactus:6,rock:4,boulders:3,deadtree:3,butte:1,watertower:1,signpost:2,tower:6,lamp:2,billboard:4,hedge:1,tree:2,parktree:2};
+
   /* ===== PHONES RACE SIDEWAYS =====
      Upright, a phone gave the race a 430x390 canvas: a narrow road, the kart under the
      controls, the bends arriving with no warning. Sideways it gets a 2:1 window with a
@@ -1510,7 +1789,7 @@
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
-    sgTexPreload(['oil','cop','item-box',SKY,SCN.prop]);   // hazard/scene art, decoded before first frame (karts are drawn: SB_KART_ART)
+    sgTexPreload(['oil','cop','item-box',SKY].concat(SCN.prop!=='cactus'?['tree']:[]));   // every other prop is painted (GPS), never fetched   // hazard/scene art, decoded before first frame (karts are drawn: SB_KART_ART)
     const LIGHT=SCN.light;
     const DARK =SCN.dark;
     const segs=[];
@@ -1536,17 +1815,59 @@
       ()=>{ road(16,20,16,3,-1.6); road(18,24,18,-5,0); road(20,26,20,0,0); },
       ()=>{ road(14,18,14,5,1.4); road(16,22,16,0,-2); road(18,24,18,2,0); }
     ];
-    let si=0; while(segs.length<CFG.len){ SECTORS[si%SECTORS.length](); si++; }
+    let si=0; const sectors=[]; while(segs.length<CFG.len){ const a=segs.length; SECTORS[si%SECTORS.length](); sectors.push([a,segs.length]); si++; }
     while(segs.length%rumbleLen!==0) addSeg(0,lastY());
+    sectors[sectors.length-1][1]=segs.length;
     const trackLen=segs.length*segLen, TOTAL=trackLen*CFG.laps, FINVIS=trackLen-segLen*8;
-    for(let n=10;n<segs.length;n+=6){ const side=(n%12<6)?-1:1; segs[n].sprites.push({kind:'flora',off:side*(1.15+Math.random()*0.9),k:Math.random()}); }
+    /* THE WORLD IS TO THE KART'S SCALE, AND IT CHANGES AS YOU DRIVE.
+       Everything beside the road is in road half-widths, the unit the kart is drawn in
+       (KART_W = 0.38). When the kart grew to that size the world did not: trees were 0.19
+       wide, a tower was shorter than the kart, a police car half a kart. And it was one
+       prop on a fixed beat for the whole race — "too many trees and cacti… repetitive and
+       boring". A lap is now a run of zones (GP_ZONES) with their own ground, props,
+       spacing, landmarks, strips and water. */
+    const COP_W=0.46, OIL_W=0.34, BOX_W=0.27, POST_H=0.24;   // on the road: a car a touch wider than a kart; oil and the box sized to CATCH; a post half a kart high
+    const WORLD=SCN.prop, ZONES=GP_ZONES[WORLD]||GP_ZONES.tree;
+    const zoneCycle=ZONES.list.slice().sort(()=>Math.random()-0.5);
+    sectors.forEach((r,i)=>{ for(let n=r[0];n<r[1];n++) segs[n].zone=zoneCycle[i%zoneCycle.length]; });
+    const lerpHex=(a,b,t)=>{ const p=parseInt(a.slice(1),16), q=parseInt(b.slice(1),16), m=k=>Math.round(((p>>k)&255)*(1-t)+((q>>k)&255)*t);
+      return '#'+((1<<24)+(m(16)<<16)+(m(8)<<8)+m(0)).toString(16).slice(1); };
+    const ZP={}; ZONES.list.forEach(nm=>{ const z=ZONES.z[nm];
+      ZP[nm]=[LIGHT,DARK].map((B,d)=>({...B, grass:z.grass?z.grass[d]:B.grass, verge:z.verge?(d?kShade(z.verge,-0.06):z.verge):B.verge, water:z.water?ZONES.water[d]:null})); });
+    { let runStart=0; const BLEND=14;            // the ground tint eases into a new zone over 14 bands
+      for(let n=0;n<segs.length;n++){ const sg=segs[n]; if(n>0&&sg.zone!==segs[n-1].zone) runStart=n;
+        const d=(Math.floor(n/rumbleLen)%2), here=ZP[sg.zone][d], i=n-runStart;
+        if(runStart>0&&i<BLEND){ const pz=ZP[segs[runStart-1].zone][d], t=(i+1)/(BLEND+1);
+          sg.color={...here, grass:lerpHex(pz.grass,here.grass,t), verge:lerpHex(pz.verge,here.verge,t)}; }
+        else sg.color=here; } }
+    const runs=[]; segs.forEach((sg,n)=>{ if(!n||sg.zone!==segs[n-1].zone) runs.push({name:sg.zone,a:n,b:n+1}); else runs[runs.length-1].b=n+1; });
+    const rnd=(a,b)=>a+Math.random()*(b-a);
+    /* every prop's footprint clears the verge (1.42) by construction — a wide variant is
+       pushed out rather than trusted to the zone's offset range */
+    const put=(n,kind,off,far,v)=>{ if(n<4||n>=segs.length-2) return; const vv=v!=null?v:Math.floor(Math.random()*GP_VAR[kind]);
+      if(kind!=='tree'&&kind!=='parktree'&&kind!=='lamp'){ const ft=GPS.box(kind,vv,WORLD).foot; if(Math.abs(off)<1.46+ft) off=Math.sign(off||1)*(1.46+ft); }
+      segs[n].sprites.push({kind:'prop',p:kind,v:vv,off,k:Math.random(),far:far||GP_FAR[kind]}); };
+    runs.forEach(run=>{ const z=ZONES.z[run.name], len=run.b-run.a;
+      run.water=z.water==='one'?(Math.random()<0.5?-1:1):z.water==='both'?2:0;
+      for(let n=run.a;n<run.b;n++){ const sg=segs[n]; sg.water=run.water; sg.strip=z.strip||null;
+        }
+      (z.props||[]).forEach(rule=>{
+        const side=()=>{ if(rule.side==='water') return run.water===2?(Math.random()<0.5?-1:1):(run.water||1);
+          if(rule.side==='dry') return run.water&&run.water!==2?-run.water:(Math.random()<0.5?-1:1);
+          return Math.random()<0.5?-1:1; };
+        if(rule.once!=null){ put(run.a+Math.round(len*rule.once),rule.k,side()*rnd(rule.off[0],rule.off[1])); return; }
+        for(let n=run.a+Math.round(rnd(0,rule.gap[0])); n<run.b-2; n+=Math.round(rnd(rule.gap[0],rule.gap[1]))){
+          const sd=side(), g=rule.group?Math.round(rnd(rule.group[0],rule.group[1]+0.49)):1;
+          for(let q=0;q<g;q++) put(Math.min(run.b-1,n+q*Math.round(rnd(2,5))),rule.k,sd*(rnd(rule.off[0],rule.off[1])+q*0.55)); } });
+      if(z.lamps) for(let n=run.a+3;n<run.b-1;n+=14){ put(n,'lamp',-1.62,0,0); put(n,'lamp',1.62,0,1); } });   // each lamp's arm reaches over the road
     /* MARKER POSTS, BOTH VERGES, EVERY 5 SEGMENTS. This is the oldest trick in pseudo-3D
        racing and the one thing this track had nothing of: at 46 segments a second a post
        every five is nine a second flicking past your shoulder, and THAT is what speed
        looks like. Trees at random offsets cannot do it — they are too sparse and too
        irregular to read as a rate. Regular spacing is the whole point: the eye counts
        them without being asked, so lifting off is visible before the speedo confirms it. */
-    for(let n=0;n<segs.length;n+=6){ segs[n].sprites.push({kind:'post',off:-1.06,k:n});
+    for(let n=0;n<segs.length;n+=6){ if(segs[n].strip==='rail') continue;   // a bridge has its railing instead
+                                     segs[n].sprites.push({kind:'post',off:-1.06,k:n});
                                      segs[n].sprites.push({kind:'post',off:1.06,k:n}); }
     // mixed hazards + crazy distractions: oil slicks and patrol cops
     const HKINDS=['oil','oil','oil','cop'];
@@ -1733,6 +2054,38 @@
     const VERGE=0.24;
     const FAR={road:mixHex(LIGHT.road,DARK.road), rumble:mixHex(LIGHT.rumble,DARK.rumble),
                verge:mixHex(LIGHT.verge,DARK.verge), wear:mixHex(LIGHT.roadWear,DARK.roadWear)};
+    /* ===== ROADSIDE PROPS — one drawing, at every distance =====
+       Props used to stop at drawDist (100 bands, a third of the way to the horizon) and
+       fade in there by ALPHA — fine for a 0.19-wide tree, a field of see-through ghosts
+       once trees were the size of trees. Now a prop is drawn the same way near and far:
+       near ones inside the band loop (with its clip), far ones collected by the far-road
+       loop out to their kind's range, and every one takes the ROAD'S OWN fog by distance
+       (fogAt is fogged()'s curve), so it arrives out of the haze instead of out of nothing. */
+    const fogAt=n=>(1-Math.exp(-Math.max(0,n)/FOG_K))*FOG_MAX;
+    let _treeFlip=null;
+    const treeFlip=tr=>{ if(_treeFlip&&_treeFlip.w===tr.width) return _treeFlip.c;
+      const c=document.createElement('canvas'); c.width=tr.width; c.height=tr.height; const g=c.getContext('2d');
+      g.translate(c.width,0); g.scale(-1,1); g.drawImage(tr,0,0); _treeFlip={c,w:tr.width}; return c; };
+    function drawPropSp(sx,sy,hw,sp,n){ const fog=fogAt(n);
+      if(sp.p==='tree'||sp.p==='parktree'){ const tr=sgTex('tree'); if(!tr) return;
+        const dw=hw*(sp.p==='tree'?1.1:0.78)*(0.85+sp.k*0.35), dh=dw*(tr.height/tr.width);
+        if(dw>8){ cx.fillStyle='rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(sx,sy,dw*0.3,dw*0.08,0,0,7); cx.fill(); }
+        GPS.blit(cx,sp.v?treeFlip(tr):tr,sx-dw/2,sy-dh,dw,dh,fog,FOG_RGB); return; }
+      const t=GPS.tex(sp.p,sp.v,WORLD), dw=t.bw*hw, dh=t.bh*hw;
+      GPS.blit(cx,t.cv,sx-dw/2,sy-dh,dw,dh,fog,FOG_RGB); }
+    /* STRIPS run along the road instead of standing at a point — a farm fence, a bridge
+       railing — drawn band by band between each band's near and far edge, so they bend with
+       the road, and faded out by the end of drawDist, where they are a pixel thick. (A
+       canyon WALL was a strip once: flat bands with seams and a hard end; the canyon is
+       painted sandstone formations now.) */
+    function drawStrip(kind,x1,y1,w1,x2,y2,w2,n,si){
+      const fade=n>60?Math.max(0,(100-n)/40):1; if(fade<=0.02) return;
+      const isF=kind==='fence', o=isF?1.62:1.36, col=fogged(isF?'#F2EFE8':'#A9B2C6',n), a0=cx.globalAlpha; cx.globalAlpha=a0*fade;
+      for(const sd of [-1,1]){ const ax=x1+sd*o*w1, bx=x2+sd*o*w2;
+        for(const h of (isF?[0.13,0.25]:[0.16,0.3])) poly(ax,y1-h*w1, bx,y2-h*w2, bx,y2-(h+0.028)*w2, ax,y1-(h+0.028)*w1, col);
+        if(si%(isF?2:3)===0){ const pw=0.035*w1, ph=(isF?0.3:0.34)*w1; cx.fillStyle=col; cx.fillRect(ax-pw/2,y1-ph,pw,ph); } }
+      cx.globalAlpha=a0; }
+    const farItems=[];                       // far props, collected near-to-far, drawn far-to-near
     function drawBG(){
       const hz=horizonY;
       const sky=sgTex(SKY);
@@ -1795,13 +2148,16 @@
       cx.fillStyle=hg; cx.fillRect(0,hz-18,Wd,36);
     }
     const hzY=()=>horizonY;
-    function draw(){
+    /* _vis is written only for bands inside this frame's draw range, so a band the camera
+       jumped past keeps last time's true. Anything placed by band (rivals, hazards, boxes)
+       checks the band was visited THIS frame, or a jump leaves ghosts drawn at old positions. */
+    let _frameN=0;
+    function draw(){ _frameN++;
       drawBG();
       const posm=pos%trackLen;
       const base=segs[Math.floor(posm/segLen)%segs.length]; const basePct=(posm%segLen)/segLen;
       let x=0, dx=-(base.curve*basePct), maxy=Ht;
       let _lastSeg=null;                  // the furthest road band actually drawn
-      let _nearW=0;                       // the nearest band's half-width, in pixels
       _join=null;
       /* camLag, not playerX — see CAM_FOLLOW. Welding the camera to the kart drew it
          dead centre no matter where it was, which is what "it drives itself" was. */
@@ -1811,10 +2167,9 @@
         project(seg.p1, camX - x,        camH, cz);
         project(seg.p2, camX - x - dx,   camH, cz);
         x+=dx; dx+=seg.curve;
-        seg._vis=false; seg._clip=maxy; seg._far=n;
+        seg._vis=false; seg._clip=maxy; seg._far=n; seg._vf=_frameN;   // _vis is only true for bands THIS frame visited — see _frameN
         if(seg.p1.camera.z<=camDepth || seg.p2.screen.y>=seg.p1.screen.y || seg.p2.screen.y>=maxy) continue;
         seg._vis=true; maxy=seg.p2.screen.y;
-        if(!_nearW) _nearW=seg.p1.screen.w;   // first visible band is the closest one
         const s1=seg.p1.screen, s2=seg.p2.screen, c=seg.color;
         /* AERIAL PERSPECTIVE ON THE GRASS. The alternating bands are the speed cue and
            they have to stay, but painted at a flat 0.62 all the way to the vanishing
@@ -1828,6 +2183,12 @@
           if(gA>0.01){ cx.globalAlpha=0.62*gA; poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass); cx.globalAlpha=1; }
         }
         else poly(0,s1.y, 0,s2.y, Wd,s2.y, Wd,s1.y, c.grass);
+        /* WATER where the zone has it — one side for a lakeshore, both for a bridge. Opaque,
+           and faded with distance the way the grass is, so it gives way to the ground. */
+        if(seg.water && c.water){ const gW=Math.max(0,Math.min(1,(s1.y-horizonY)/((Ht-horizonY)*0.45)));
+          if(gW>0.01){ const wc=fogged(c.water,n), a=seg.water===2?1.42:1.62, b=40; cx.globalAlpha=gW;
+            for(const sd of (seg.water===2?[-1,1]:[seg.water])) poly(s1.x+sd*a*s1.w,s1.y, s2.x+sd*a*s2.w,s2.y, s2.x+sd*b*s2.w,s2.y, s1.x+sd*b*s1.w,s1.y, wc);
+            cx.globalAlpha=1; } }
         /* A VERGE. Outside the rumble a real circuit has a strip of worn ground before
            the grass proper — run-off, dust, the bit everyone puts two wheels on. Without
            it the tarmac met an unbroken green plane in one hard line, and a flat field is
@@ -1880,9 +2241,12 @@
            join. */
         const c=FAR;
         let pxD=_lastSeg.x, pwD=_lastSeg.w, pyD=_lastSeg.y;
-        let n=drawDist;
+        let n=drawDist; farItems.length=0;
         while(pyD>horizonY+1 && n<6000){
           const seg=segs[(base.index+n)%segs.length];
+          if(n<1800 && seg.sprites.length){ const z1=(n-basePct)*segLen, s1=camDepth/z1, hw1=s1*roadW*Wd/2;
+            for(let q=0;q<seg.sprites.length;q++){ const sp=seg.sprites[q]; if(sp.kind!=='prop'||n>=sp.far) continue;
+              farItems.push({t:0,sx:Wd/2+s1*(x-camX)*Wd/2+hw1*sp.off,sy:horizonY+s1*camH*Ht/2,hw:hw1,sp,n}); } }
           const xf=x+dx;
           x+=dx; dx+=seg.curve; n++;
           const z=(n-basePct)*segLen;            // far edge of the band just entered
@@ -1910,16 +2274,36 @@
         }
         // whatever sub-pixel sliver remains, closed to its own point
         if(pyD>hzY()) poly(pxD-pwD,pyD, pxD,hzY(), pxD,hzY(), pxD+pwD,pyD, fogged(c.road,n));
+        /* the far props, far to near; only the last stretch fades, where they are a few
+           pixels of near-fog colour anyway */
+        for(let i=farItems.length-1;i>=0;i--){ const it=farItems[i];
+          cx.globalAlpha=Math.max(0,Math.min(1,(it.sp.far-it.n)/(it.sp.far*0.15)));
+          drawPropSp(it.sx,it.sy,it.hw,it.sp,it.n); }
+        cx.globalAlpha=1;
       }
       const order=[];
-      for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length]; if(!seg._vis) continue; const sc=seg.p1.screen;
-        seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,w2:sc.w,k:sp.k||0,clip:seg._clip,far:seg._far}); }); }
-      hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:hh.kind||'oil',hw:sc.w,clip:seg._clip,far:seg._far}); } });
-      items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it,clip:seg._clip,far:seg._far}); } });
-      rivals.forEach(r=>{ const seg=segs[Math.floor((r.z%trackLen)/segLen)%segs.length]; if(seg&&seg._vis){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*r.x,sy:sc.y,t:'rival',r:r,clip:seg._clip,far:seg._far}); } });
+      for(let n=drawDist-1;n>=0;n--){ const seg=segs[(base.index+n)%segs.length];
+        if(!seg._vis) continue;
+        const sc=seg.p1.screen;
+        seg.sprites.forEach(sp=>{ order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*(sp.off||0),sy:sc.y,t:sp.kind,sp:sp,w2:sc.w,k:sp.k||0,clip:seg._clip,far:seg._far}); });
+        if(seg.strip){ const s2=seg.p2.screen;
+          order.push({y:sc.y,t:'strip',kind:seg.strip,x1:sc.x,y1:sc.y,w1:sc.w,x2:s2.x,y2:s2.y,w2:s2.w,si:seg.index,clip:seg._clip,far:seg._far}); } }
+      hazards.forEach(hh=>{ const seg=segs[hh.seg]; if(seg&&seg._vis&&seg._vf===_frameN){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*hh.off,sy:sc.y,t:hh.kind||'oil',hw:sc.w,clip:seg._clip,far:seg._far}); } });
+      items.forEach(it=>{ if(it.gone) return; const seg=segs[it.seg]; if(seg&&seg._vis&&seg._vf===_frameN){ const sc=seg.p1.screen; order.push({y:sc.y,scale:sc.scale,sx:sc.x+sc.w*it.off,sy:sc.y,t:'item',it:it,clip:seg._clip,far:seg._far}); } });
+      /* A RIVAL IS DRAWN WHERE IT IS, NOT AT THE NEAR EDGE OF ITS BAND. Snapped to p1, a
+         rival hopped one band (200 units) at a time — at the speeds rivals pass you that
+         is a visible jump several times a second. Depth is linear in camera space inside
+         a band, so interpolate there and project, which is exact. */
+      rivals.forEach(r=>{ const zm=r.z%trackLen, si=Math.floor(zm/segLen)%segs.length, seg=segs[si]; r._sy=null;
+        if(!seg||!seg._vis||seg._vf!==_frameN) return;
+        const f=(zm-si*segLen)/segLen, a=seg.p1.camera, b=seg.p2.camera, cz2=a.z+(b.z-a.z)*f; if(cz2<=camDepth) return;
+        const sc=camDepth/cz2, sx=Wd/2+sc*(a.x+(b.x-a.x)*f)*Wd/2+sc*roadW*Wd/2*r.x, sy=horizonY-sc*(a.y+(b.y-a.y)*f)*Ht/2;
+        r._sx=sx; r._sy=sy;
+        order.push({y:sy,scale:sc,sx:sx,sy:sy,t:'rival',r:r,clip:seg._clip,far:seg._far}); });
       order.sort((a,b)=>a.y-b.y);
-      order.forEach(o=>{ if((o.far||0)>95) return;   // beyond this sprites are sub-pixel - skip instead of shimmering
-        const w=Math.max(6,o.scale*roadW*Wd/2*0.11);
+      order.forEach(o=>{ if(o.t!=='prop' && o.t!=='strip' && (o.far||0)>95) return;   // beyond this they are sub-pixel; props carry on in the far loop
+        const hw=o.scale*roadW*Wd/2;            // the road's half-width at this depth, px
+        const w=Math.max(6,hw*0.11);
         /* A POST NEEDS NO CLIP PATH. It is a few pixels wide and sits on the verge, so it
            can never spill over nearer road the way a tree can — and there are forty of
            them a frame. save + rect + clip + restore forty times was most of what the
@@ -1929,7 +2313,7 @@
           cx.globalAlpha=Math.max(0,Math.min(1,(66-(o.far||0))/22));
           /* a slim white post with a red reflector band, and a shadow thrown along the
              ground so it is planted rather than floating */
-          const ph=w*0.58, pw2=Math.max(1,w*0.075), bx=o.sx, by=o.sy;
+          const ph=hw*POST_H, pw2=Math.max(1,hw*POST_H*0.086), bx=o.sx, by=o.sy;
           cx.fillStyle='rgba(30,40,25,.20)';
           cx.beginPath(); cx.ellipse(bx+pw2*0.7,by,pw2*1.9,pw2*0.7,0,0,7); cx.fill();
           cx.fillStyle=fogged('#F7F5EE',o.far||0);
@@ -1938,86 +2322,23 @@
           cx.fillRect(bx-pw2/2,by-ph*0.86,pw2,Math.max(1,ph*0.17));
           cx.globalAlpha=1; return; }
         cx.save(); cx.beginPath(); cx.rect(0,0,Wd,o.clip||Ht); cx.clip();
-        cx.globalAlpha=Math.max(0,Math.min(1,(95-(o.far||0))/25));
-        if(o.t==='flora'){
-          cx.fillStyle='rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(o.sx,o.sy,w*0.5,w*0.14,0,0,7); cx.fill();
-          const tr=sgTex(SCN.prop);   // bespoke sprite if present, else a per-scene procedural prop
-          if(tr){ const tw=w*(SCN.prop==='building'?1.9:1.75), th=tw*(tr.height/tr.width); try{ cx.drawImage(tr,o.sx-tw/2,o.sy-th,tw,th); }catch(e){} }
-          else if(SCN.prop==='building'){
-            /* NEON CITY tower: a lit slab with a glass gradient, warm window grid, a glowing
-               roof crown and a vertical neon sign. Everything keys off the prop's own seed
-               (o.k) so the skyline varies instead of repeating one block. */
-            const k=o.k||0, tall=1.5+k*1.9, bw2=w*(0.72+((k*7)%1)*0.5), bh2=w*tall;
-            const top=o.sy-bh2;
-            const NEON=['#5BE9FF','#FF6BD6','#8B7BFF','#57FFC2'], neon=NEON[(k*13|0)%4];
-            cx.save();
-            // body: cool glass, darker at the base
-            const bg2=cx.createLinearGradient(0,top,0,o.sy);
-            bg2.addColorStop(0,'#4A5080'); bg2.addColorStop(0.55,'#2E3355'); bg2.addColorStop(1,'#1A1C30');
-            cx.fillStyle=bg2; cx.fillRect(o.sx-bw2/2,top,bw2,bh2);
-            // a setback tier on taller towers
-            if(k>0.55){ const tw=bw2*0.6; cx.fillStyle='#3A4068'; cx.fillRect(o.sx-tw/2,top-w*0.3,tw,w*0.3);
-              cx.fillStyle=neon; cx.globalAlpha=0.85; cx.fillRect(o.sx-tw/2,top-w*0.3,tw,Math.max(1,w*0.035)); cx.globalAlpha=1; }
-            // window grid — warm, unevenly lit
-            const cols=Math.max(2,Math.round(bw2/(w*0.22))), rows=Math.max(3,Math.round(bh2/(w*0.26)));
-            const cwid=bw2/cols, rhi=bh2/rows;
-            for(let r=0;r<rows;r++) for(let c2=0;c2<cols;c2++){
-              const lit=((r*7+c2*3+(k*97|0))%5)!==0;
-              cx.fillStyle=lit?'rgba(255,214,130,.92)':'rgba(90,100,140,.5)';
-              cx.fillRect(o.sx-bw2/2+c2*cwid+cwid*0.22, top+r*rhi+rhi*0.24, cwid*0.56, rhi*0.5); }
-            // glowing crown + edge light
-            cx.shadowColor=neon; cx.shadowBlur=Math.max(6,w*0.5);
-            cx.fillStyle=neon; cx.fillRect(o.sx-bw2/2,top,bw2,Math.max(1.5,w*0.055));
-            cx.shadowBlur=0;
-            cx.fillStyle=neon; cx.globalAlpha=0.5;
-            cx.fillRect(o.sx-bw2/2,top,Math.max(1,w*0.02),bh2); cx.fillRect(o.sx+bw2/2-Math.max(1,w*0.02),top,Math.max(1,w*0.02),bh2);
-            cx.globalAlpha=1;
-            // vertical neon sign strip on some towers
-            if(k>0.34){ const sw=Math.max(2,w*0.08), sy2=top+bh2*0.16, sh2=bh2*0.42;
-              cx.shadowColor=neon; cx.shadowBlur=Math.max(5,w*0.42);
-              cx.fillStyle=neon; cx.fillRect(o.sx+bw2*0.30,sy2,sw,sh2); cx.shadowBlur=0; }
-            cx.restore(); }
-          else if(SCN.prop==='cactus'){
-            /* saguaro: ribbed body, sun-side highlight, arms at varied heights, bloom on top */
-            const k=o.k||0, H=w*(1.6+k*0.9), bx=o.sx, top=o.sy-H, bwid=w*0.36;
-            cx.save();
-            const cg=cx.createLinearGradient(bx-bwid,0,bx+bwid,0);
-            cg.addColorStop(0,'#2F6B3A'); cg.addColorStop(.42,'#63BC70'); cg.addColorStop(.62,'#4E9B57'); cg.addColorStop(1,'#2A5E33');
-            cx.fillStyle=cg;
-            rrp(bx-bwid/2,top,bwid,H,bwid*0.5); cx.fill();
-            // arms — left low, right high (flipped by seed)
-            const flip=k>0.5?-1:1, aw=bwid*0.66;
-            const armY=o.sy-H*(0.52+k*0.16), armY2=o.sy-H*(0.40+k*0.1);
-            rrp(bx+flip*(bwid*0.42), armY, aw, H*0.40, aw*0.5); cx.fill();
-            rrp(bx+flip*(bwid*0.22), armY, aw*1.5, aw, aw*0.5); cx.fill();
-            rrp(bx-flip*(bwid*0.42)-aw, armY2, aw, H*0.30, aw*0.5); cx.fill();
-            rrp(bx-flip*(bwid*1.1), armY2, aw*1.5, aw, aw*0.5); cx.fill();
-            // ribs + rim light
-            cx.strokeStyle='rgba(20,60,26,.35)'; cx.lineWidth=Math.max(0.6,w*0.014);
-            for(const f of [-0.22,0,0.22]){ cx.beginPath(); cx.moveTo(bx+bwid*f,top+bwid*0.4); cx.lineTo(bx+bwid*f,o.sy-bwid*0.2); cx.stroke(); }
-            cx.strokeStyle='rgba(190,255,190,.4)'; cx.lineWidth=Math.max(0.7,w*0.02);
-            cx.beginPath(); cx.moveTo(bx-bwid*0.30,top+bwid*0.5); cx.lineTo(bx-bwid*0.30,o.sy-bwid*0.3); cx.stroke();
-            if(k>0.6){ cx.fillStyle='#FF9EC4'; cx.beginPath(); cx.arc(bx,top+bwid*0.1,w*0.075,0,7); cx.fill(); }
-            cx.restore(); }
-          else {
-            cx.fillStyle='#6b4a2a'; cx.fillRect(o.sx-w*0.09,o.sy-w*0.7,w*0.18,w*0.7);
-            const tg=cx.createRadialGradient(o.sx-w*0.2,o.sy-w*1.5,2,o.sx,o.sy-w*1.3,w*0.95);
-            tg.addColorStop(0,'#7ED07A'); tg.addColorStop(1,'#2F8A46'); cx.fillStyle=tg;
-            cx.beginPath(); cx.arc(o.sx,o.sy-w*1.35,w*0.72,0,7); cx.arc(o.sx-w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.arc(o.sx+w*0.5,o.sy-w*0.95,w*0.5,0,7); cx.fill(); } }
+        cx.globalAlpha=(o.t==='prop'||o.t==='strip')?1:Math.max(0,Math.min(1,(95-(o.far||0))/25));
+        if(o.t==='prop'){ drawPropSp(o.sx,o.sy,hw,o.sp,o.far||0); }
+        else if(o.t==='strip'){ drawStrip(o.kind,o.x1,o.y1,o.w1,o.x2,o.y2,o.w2,o.far||0,o.si); }
         else if(o.t==='oil'){ const oil=sgTex('oil');
-          if(oil){ const ow=w*2.1, oh=ow*(oil.height/oil.width); try{ cx.drawImage(oil,o.sx-ow/2,o.sy-oh*0.62,ow,oh); }catch(e){} }
+          if(oil){ const ow=hw*OIL_W, oh=ow*(oil.height/oil.width); try{ cx.drawImage(oil,o.sx-ow/2,o.sy-oh*0.62,ow,oh); }catch(e){} }
           else { cx.fillStyle='rgba(18,16,24,.78)'; cx.beginPath(); cx.ellipse(o.sx,o.sy-w*0.1,w*0.95,w*0.32,0,0,7); cx.fill();
             cx.fillStyle='rgba(150,110,210,.55)'; cx.beginPath(); cx.ellipse(o.sx-w*0.22,o.sy-w*0.16,w*0.34,w*0.11,0,0,7); cx.fill();
             cx.fillStyle='rgba(90,200,255,.35)'; cx.beginPath(); cx.ellipse(o.sx+w*0.25,o.sy-w*0.06,w*0.22,w*0.07,0,0,7); cx.fill(); } }
         else if(o.t==='cop'){ const cop=sgTex('cop');
-          if(cop){ const cw=w*1.9, ch2=cw*(cop.height/cop.width); try{ cx.drawImage(cop,o.sx-cw/2,o.sy-ch2*0.9,cw,ch2); }catch(e){}
+          if(cop){ const cw=hw*COP_W, ch2=cw*(cop.height/cop.width); try{ cx.drawImage(cop,o.sx-cw/2,o.sy-ch2*0.9,cw,ch2); }catch(e){}
             // flashing roof light-bar
             const on=(Math.floor(pos/90)%2)===0; cx.globalAlpha*=0.9;
-            cx.fillStyle=on?'#FF3B4D':'#3B7BFF'; cx.beginPath(); cx.ellipse(o.sx,o.sy-ch2*0.86,w*0.2,w*0.09,0,0,7); cx.fill(); cx.globalAlpha=Math.max(0,Math.min(1,(95-(o.far||0))/25)); }
+            cx.fillStyle=on?'#FF3B4D':'#3B7BFF'; cx.beginPath(); cx.ellipse(o.sx,o.sy-ch2*0.86,cw*0.105,cw*0.047,0,0,7); cx.fill(); cx.globalAlpha=Math.max(0,Math.min(1,(95-(o.far||0))/25)); }
           else { cx.fillStyle='#20222B'; rrp(o.sx-w*0.5,o.sy-w*0.8,w,w*0.8,w*0.16); cx.fill();
             cx.fillStyle='#EDEDED'; cx.fillRect(o.sx-w*0.5,o.sy-w*0.5,w,w*0.22);
             const on=(Math.floor(pos/90)%2)===0; cx.fillStyle=on?'#FF3B4D':'#3B7BFF'; cx.fillRect(o.sx-w*0.22,o.sy-w*0.92,w*0.44,w*0.12); } }
-        else if(o.t==='item'){ const s=Math.max(14,w*1.3), yy=o.sy-w*1.25-Math.sin(pos/180+o.it.k)*4;
+        else if(o.t==='item'){ const s=Math.max(14,hw*BOX_W/1.9), yy=o.sy-w*1.25-Math.sin(pos/180+o.it.k)*4;
           cx.save(); cx.translate(o.sx,yy); cx.rotate(Math.sin(pos/300+o.it.k)*0.12);
           const halo=cx.createRadialGradient(0,0,s*0.2,0,0,s*1.5);
           halo.addColorStop(0,'rgba(140,230,255,.5)'); halo.addColorStop(1,'rgba(140,230,255,0)');
@@ -2036,24 +2357,30 @@
         else { const r=o.r, kw=w*(KART_W/0.11), sp=r.spin>0;
           kartDraw(cx,o.sx,o.sy,kw,{style:r.kart,body:r.col,driver:r.sprite?sgImg(r.sprite):null,glyph:r.sprite?null:r.glyph,
             yaw:sp?Math.sin(bumpT*14)*0.9:Math.sin(bumpT*0.9+r.ph*6)*0.12, wheel:(wheelPh+r.ph)%1, t:bumpT+r.ph*9,
-            lift:-Math.sin(bumpT*19+r.ph*7)*0.5});
+            lift:-Math.sin(bumpT*8.5+r.ph*7)*0.25});
           if(sp){ cx.font='700 '+Math.round(kw*0.4)+'px serif'; cx.textAlign='center'; cx.fillText('💫',o.sx,o.sy-kw*1.25); cx.textAlign='left'; } }
         cx.globalAlpha=1; cx.restore();
       });
       /* THE KART IS DRAWN WHERE IT IS. Its offset from centre is measured in the same
-         projection as the road — _nearW is the nearest band's half-width in pixels — so
+         projection as the road — hwK is the road's half-width at the kart's line — so
          "half a road-width right of the middle" is half a road-width on screen, and a
          kart on the grass is drawn on the grass. It is KART_W of the road wide, the same
          scale the rivals are drawn at, so a rival alongside is the same size as you.
          It no longer ROTATES: a turn is the kart yawing (SB_KART_ART), not the picture
          tilting. */
-      const pw=(_nearW||Wd*0.5)*KART_W, py=Ht-pw*0.13;
-      const px=Wd/2 + (playerX-camLag)*(_nearW||Wd*0.42);
+      /* THE KART'S SIZE IS A CONSTANT. It used to come from _nearW, the width of the
+         nearest road band — and the nearest band changes every time one scrolls past
+         (46 times a second flat out), so the kart grew and snapped back by 4.5% on every
+         band: the "shaking". The road's half-width at a screen line is exact and fixed
+         (flat road: scale = (y-horizon)*2/(camH*Ht)), so size and offset come from that. */
+      const hwAt=y=>((y-horizonY)*2/(camH*Ht))*roadW*Wd/2;
+      const py=Ht-hwAt(Ht)*KART_W*0.13, hwK=hwAt(py), pw=hwK*KART_W;
+      const px=Wd/2 + (playerX-camLag)*hwK;
       _kartPx=px; _kpy=py; _kpw=pw;       // for the feel probe, and where the puffs leave from
-      const vfk=v/maxV, rough=offGrass&&v>1?(Math.random()-0.5)*3.2:0;
+      const vfk=v/maxV, rough=offGrass&&v>1?(Math.sin(bumpT*23)*1.1+Math.sin(bumpT*37)*0.6):0;
       kartDraw(cx,px,py,pw,{style:KART,body:opts.tint||null,driver:avImg(heroKart),
         yaw:yawS, roll:-yawS*0.07+Math.max(-1,Math.min(1,push/2.5))*0.03,
-        lift:-(Math.sin(bumpT*21)*0.45+Math.sin(bumpT*13.7)*0.3)*vfk*1.3+rough,
+        lift:-(Math.sin(bumpT*9)*0.3+Math.sin(bumpT*5.7)*0.2)*vfk+rough,
         wheel:wheelPh, brake:braking&&v>maxV*0.3, boost:boostT>0, t:bumpT, lod:false});
       /* the puffs sit in front of the kart: they are leaving it toward the camera */
       parts.forEach(q=>{ const a=q.a*(q.life/q.max); if(a<=0.01) return;
@@ -2272,9 +2599,26 @@
        waited for the phone to turn has no click left to skip this with */
     if(opts.autoGo){ intro.remove(); countT=1.0; mode='count'; }
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,paused,land:LAND,size:[Wd,Ht],x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,paused,land:LAND,size:[Wd,Ht],rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
+      /* the size of everything, in road half-widths — what tests/gp-scale.cjs audits */
+      scale:()=>{ const tr=sgTex('tree'), kinds={};
+        ZONES.list.forEach(nm=>{ const z=ZONES.z[nm]; (z.props||[]).concat(z.lamps?[{k:'lamp',off:[1.62,1.62]}]:[]).forEach(r=>{
+          let w,h,f; if(r.k==='tree'||r.k==='parktree'){ const s0=r.k==='tree'?1.1:0.78; w=s0*1.2; h=tr?s0*(tr.height/tr.width):null; f=0.15; }
+          else { let bw=0,bh=0,ft=0, hmin=1e9; for(let v=0;v<GP_VAR[r.k];v++){ const b=GPS.box(r.k,v,WORLD); bw=Math.max(bw,b.bw); bh=Math.max(bh,b.bh); hmin=Math.min(hmin,b.bh); ft=Math.max(ft,b.foot); } w=bw; h=[hmin,bh]; f=ft; }
+          const k=kinds[r.k]||(kinds[r.k]={w,h,foot:f,offMin:9,zones:[]}); k.offMin=Math.min(k.offMin,r.off[0]); k.zones.push(nm); }); });
+        const counts={}; ZONES.list.forEach(nm=>counts[nm]={bands:0,dense:!!ZONES.z[nm].dense,kinds:{}});
+        segs.forEach(sg=>{ const c2=counts[sg.zone]; c2.bands++; sg.sprites.forEach(sp=>{ if(sp.kind==='prop') c2.kinds[sp.p]=(c2.kinds[sp.p]||0)+1; }); });
+        /* the closest any PLACED prop's footprint comes to the road's centre line */
+        let clear={d:9,kind:null}; segs.forEach(sg=>sg.sprites.forEach(sp=>{ if(sp.kind!=='prop') return;
+          const ft=(sp.p==='tree'||sp.p==='parktree')?0.15:sp.p==='lamp'?0.2:GPS.box(sp.p,sp.v,WORLD).foot, d=Math.abs(sp.off)-ft;
+          if(d<clear.d) clear={d,kind:sp.p}; }));
+        return { world:WORLD, zones:ZONES.list.slice(), cycle:zoneCycle.slice(), runs:runs.map(r=>r.name), kinds, counts, clear,
+                 kartW:KART_W, kartH:KART_W*1.15, rivalW:KART_W, copW:COP_W, oilW:OIL_W, boxW:BOX_W, postH:POST_H, catchR:0.34, verge:1.42 }; },
+      pace:(i,dz,x)=>{ const r=rivals[i]; if(r){ r.z=pos+dz; if(x!=null) r.x=x; } },
+      rivZ:()=>rivals.map(r=>Math.round(r.z)),
+      toZone:(nm,into)=>{ const r=runs.find(q=>q.name===nm); if(!r) return false; pos=(r.a+(into==null?Math.min(30,(r.b-r.a)>>2):into))*segLen; return true; },
       steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
       setV:(f)=>{v=maxV*f;}, curveHere:()=>(segs[Math.floor((pos%trackLen)/segLen)]||{}).curve||0,
       /* handling probes: park the kart at the start of a long straight, or just inside the
