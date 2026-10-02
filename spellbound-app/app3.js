@@ -6757,7 +6757,7 @@ function viewHome(){
                       :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px">${esc(c.name)}</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px;color:var(--text)">${esc(c.name)}</div>
           ${(()=>{ /* Your buddy says hello, whoever your buddy is — Bizzy included. The
               line comes from SB_AV_GREETINGS, with the avatar card as a second source. */
             const line=homeGreet(c);
