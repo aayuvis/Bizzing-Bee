@@ -233,111 +233,25 @@
 })();
 
 /* ============================ world music ============================
-   A tiny generative engine — no audio files. Each world gets a key, a tempo, a voice and
-   a walking pattern; a 250ms scheduler keeps ~0.7s of notes queued. Volume is low
-   (background, not foreground), the toggle lives in the header, the choice persists, and
-   the music STOPS on the focus screens and when the tab is hidden. */
+   The music moved to music.js (FIX-BEE v2, standard §11): ten loops COMPOSED in code — Home,
+   the games and each of the eight worlds — at the one volume in Settings, ducked under every
+   word, paused when hidden, off in Calm mode. It is lazy (not in the first load): this shim
+   keeps the old SB_W4_MUSIC surface that trail.js and app3 call, and fetches music.js through
+   boot-lazy the first time music is wanted after the child has tapped something (a browser
+   will not start audio before a gesture anyway). The old generative engine is gone. */
 (function(){
-  var AC=null, master=null, timer=null, nextT=0, step=0, playingWorld=null;
-  var enabled=(function(){ try{ return SB_STORE.get('music')!=='0'; }catch(e){ return true; } })();
-  function midi(n){ return 440*Math.pow(2,(n-69)/12); }
-  /* The ORIGINAL tunes — same keys, tempos, patterns and note density as the first engine —
-     but every note now plays through a smooth voice: a detuned pair, rounded attack, singing
-     release, per-note low-pass, and a light delay room on the master. Arcade stays crisp. */
-  var CFG={
-    spellbound:{r:64,sc:[0,2,4,7,9],bpm:104,w:'triangle',bw:'sine',g:.05,st:'walk'},
-    marquee:{r:62,sc:[0,2,4,5,7,9,11],bpm:112,w:'triangle',bw:'triangle',g:.045,st:'swing'},
-    aurora:{r:69,sc:[0,2,4,7,9,11],bpm:60,w:'sine',bw:'sine',g:.05,st:'ambient'},
-    anime:{r:64,sc:[0,2,5,7,10],bpm:96,w:'triangle',bw:'sine',g:.04,st:'pluck'},
-    science:{r:67,sc:[0,2,4,6,7,11],bpm:120,w:'triangle',bw:'sine',g:.035,st:'blip'},
-    origami:{r:76,sc:[0,2,4,7,9],bpm:84,w:'triangle',bw:'sine',g:.045,st:'box'},
-    pixel:{r:64,sc:[0,3,5,7,10],bpm:132,w:'square',bw:'square',g:.03,st:'chip'},
-    avatar:{r:62,sc:[0,2,5,7,9],bpm:72,w:'sine',bw:'sine',g:.05,st:'ambient'},
-    godly:{r:57,sc:[0,4,7,12],bpm:52,w:'sine',bw:'sine',g:.055,st:'bell'},
-    serpent:{r:52,sc:[0,1,4,5,7,8],bpm:80,w:'sine',bw:'sine',g:.05,st:'walk'},
-    race:{r:52,sc:[0,3,5,6,7,10],bpm:144,w:'sawtooth',bw:'sawtooth',g:.03,st:'drive'},
-    dino:{r:45,sc:[0,3,5,7,10],bpm:66,w:'triangle',bw:'sine',g:.055,st:'drums'}
-  };
-  function ensureAC(){ var A=window.AudioContext||window.webkitAudioContext; if(!A) return false;
-    if(!AC){ AC=new A();
-      // Background music level. 1 originally, then 0.3, and now 40% of THAT — this is
-      // the bed that plays on the world screens themselves, and it had only been cut
-      // once while the saga bed had been cut twice, which is why the worlds stayed the
-      // loud ones. SFX are on a separate context and unaffected.
-      master=AC.createGain(); master.gain.value=0.12;
-      var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800; lp.Q.value=.3;
-      var dly=AC.createDelay(1); dly.delayTime.value=.29;
-      var fb=AC.createGain(); fb.gain.value=.28; var wet=AC.createGain(); wet.gain.value=.2;
-      master.connect(lp); lp.connect(AC.destination);
-      lp.connect(dly); dly.connect(fb); fb.connect(dly); dly.connect(wet); wet.connect(AC.destination);
-    }
-    if(AC.state==='suspended') AC.resume(); return true; }
-  function tone(f,at,dur,type,vol,slide){
-    if(type==='square'){ /* Arcade keeps its edges */
-      var o=AC.createOscillator(),q=AC.createGain(); o.type=type; o.frequency.setValueAtTime(f,at);
-      if(slide) o.frequency.exponentialRampToValueAtTime(slide,at+dur);
-      q.gain.setValueAtTime(0.0001,at); q.gain.exponentialRampToValueAtTime(vol,at+0.02);
-      q.gain.exponentialRampToValueAtTime(0.0001,at+dur);
-      o.connect(q); q.connect(master); o.start(at); o.stop(at+dur+0.05); return; }
-    var rel=Math.max(.4,dur*.8), g=AC.createGain(), flt=AC.createBiquadFilter();
-    flt.type='lowpass'; flt.frequency.value=2800; flt.Q.value=.4;
-    g.gain.setValueAtTime(0.0001,at);
-    g.gain.linearRampToValueAtTime(vol,at+Math.min(.05,dur*.3));
-    g.gain.setValueAtTime(vol,at+dur*.55);
-    g.gain.exponentialRampToValueAtTime(0.0001,at+dur+rel);
-    [-4,4].forEach(function(d){ var osc=AC.createOscillator(); osc.type=type;
-      osc.frequency.setValueAtTime(f,at); osc.detune.value=d;
-      if(slide) osc.frequency.exponentialRampToValueAtTime(slide,at+dur);
-      osc.connect(flt); osc.start(at); osc.stop(at+dur+rel+.05); });
-    flt.connect(g); g.connect(master); }
-  var walkPos=2;
-  function scheduleStep(c,t,i){
-    var beat=60/c.bpm, deg;
-    if(c.st==='bell'){ if(i%8===0){ tone(midi(c.r),t,beat*6,'sine',c.g); tone(midi(c.r+7),t+.05,beat*5,'sine',c.g*.6); tone(midi(c.r+12),t+.1,beat*4,'sine',c.g*.35); } return; }
-    if(c.st==='drums'){ if(i%4===0) tone(60,t,.3,'sine',c.g*1.4,40);
-      if(i%8===4) tone(48,t,.4,'sine',c.g*1.2,36);
-      if(i%2===0&&Math.random()<.3) tone(midi(c.r+12+c.sc[(Math.random()*c.sc.length)|0]),t,beat*.8,'triangle',c.g*.5); return; }
-    if(c.st==='ambient'){ if(i%16===0){ deg=c.sc[(Math.random()*c.sc.length)|0];
-        tone(midi(c.r+deg),t,beat*14,'sine',c.g*.7); tone(midi(c.r+deg+7),t+.3,beat*12,'sine',c.g*.4); }
-      if(i%4===2&&Math.random()<.5) tone(midi(c.r+12+c.sc[(Math.random()*c.sc.length)|0]),t,beat*1.6,'sine',c.g*.5); return; }
-    if(i%4===0) tone(midi(c.r-12),t,beat*(c.st==='drive'?.4:.9),c.bw,c.g*.8);
-    if(c.st==='drive'&&i%2===1) tone(midi(c.r-12+((i%8===5)?3:0)),t,beat*.3,c.bw,c.g*.55);
-    var play=(c.st==='box'||c.st==='pluck')?(i%2===0&&Math.random()<.75):(Math.random()<.85);
-    if(play&&i%2===0){ walkPos+=(Math.random()<.5?-1:1); if(Math.random()<.15) walkPos+=(Math.random()<.5?-2:2);
-      walkPos=Math.max(0,Math.min(c.sc.length*2-1,walkPos));
-      deg=c.sc[walkPos%c.sc.length]+12*Math.floor(walkPos/c.sc.length);
-      var dur=beat*(c.st==='blip'||c.st==='chip'?.35:(c.st==='swing'?.5:.9));
-      tone(midi(c.r+deg),t,dur,c.w,c.g);
-      if(c.st==='swing'&&Math.random()<.4) tone(midi(c.r+deg+4),t+beat*.66,dur*.6,c.w,c.g*.6); }
-  }
-  function loop(){ if(!AC||!playingWorld) return; var c=CFG[playingWorld]; if(!c) return;
-    var sub=(60/c.bpm)/2;
-    while(nextT<AC.currentTime+0.7){ scheduleStep(c,Math.max(nextT,AC.currentTime+.02),step); step++; nextT+=sub; } }
-  function start(world){ if(!CFG[world]||!ensureAC()) return;
-    if(playingWorld===world&&timer) return;
-    stop(); playingWorld=world; step=0; walkPos=2; nextT=AC.currentTime+0.1;
-    timer=setInterval(loop,250); }
-  function stop(){ if(timer){ clearInterval(timer); timer=null; } playingWorld=null; }
-  window.SB_W4_MUSIC={
-    on:function(){ return enabled; },
-    playing:function(){ return !!playingWorld; },
-    toggle:function(){ enabled=!enabled; try{ SB_STORE.set('music',enabled?'1':'0'); }catch(e){}
-      if(!enabled) stop(); else window.SB_W4_MUSIC.sync(); return enabled; },
-    sync:function(){ try{
-      var calm=document.documentElement.classList.contains('w4-calm');
-      var hidden=(typeof document!=='undefined'&&document.visibilityState!=='visible');
-      var w=(typeof state!=='undefined'&&state&&state.screen==='app')?state.theme:null;
-      var muted=(typeof state!=='undefined'&&state&&state.sound===false);
-      /* a world with no authored tune hums the house one — a pill that says ON
-         while a themeless world stays silent reads as "music didn't work" */
-      if(w&&!CFG[w]) w='spellbound';
-      if(!enabled||calm||hidden||muted||!w){ stop(); return; }
-      start(w); }catch(e){} }
-  };
-  document.addEventListener('visibilitychange',function(){ try{ window.SB_W4_MUSIC.sync(); }catch(e){} });
   var armed=false;
-  document.addEventListener('pointerdown',function(){ if(armed) return; armed=true;
-    setTimeout(function(){ try{ window.SB_W4_MUSIC.sync(); }catch(e){} },200); },{capture:true});
+  function wanted(){ try{ return !!(window.SB_VOL&&SB_VOL.musicOn()&&SB_VOL.level()>0); }catch(e){ return false; } }
+  function go(){ try{ if(window.SB_MUSIC){ SB_MUSIC.sync(); return; }
+      if(!armed||!wanted()||!window.SB_LAZY) return;
+      SB_LAZY.need('music',function(){ try{ if(window.SB_MUSIC) SB_MUSIC.sync(); }catch(e){} }); }catch(e){} }
+  window.SB_W4_MUSIC={
+    on:function(){ return !!(window.SB_VOL&&SB_VOL.musicOn()); },
+    playing:function(){ try{ return !!(window.SB_MUSIC&&SB_MUSIC.playing()); }catch(e){ return false; } },
+    toggle:function(){ var on=!(window.SB_VOL&&SB_VOL.musicOn()); try{ SB_VOL.setMusic(on); }catch(e){} go(); return on; },
+    sync:go, reload:go };
+  document.addEventListener('pointerdown',function(){ if(armed) return; armed=true; setTimeout(go,150); },{capture:true});
+  document.addEventListener('keydown',function(){ if(armed) return; armed=true; setTimeout(go,150); },{capture:true});
 })();
 
 /* Focus: one header switch that quiets the whole app — music silenced and the world

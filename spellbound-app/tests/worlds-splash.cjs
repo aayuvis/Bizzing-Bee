@@ -44,7 +44,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   // ---- the splash: rich open for a returning child, gone in all the right cases ----
   const seed = JSON.stringify({ theme: 'dino', children: [{ name: 'T' }] });
   const pg2 = await b.newPage({ viewport: { width: 1100, height: 900 } });
-  await pg2.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.removeItem('sb_splash'); }, seed);
+  await pg2.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.setItem('sb_splash', '1'); }, seed);
   await pg2.goto('file://' + SRC + '/index.html'); await pg2.waitForTimeout(700);
   await pg2.waitForTimeout(1300);   // past DOMContentLoaded, so the credits beat has landed
   const s1 = await pg2.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
@@ -97,7 +97,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(cast2 && cast2.recreated === 0, 'no recreated stand-in dinos remain');
   // the GATE: paints the world, holds ~1s, then presses ITSELF with a visible click
   const pgG = await b.newPage({ viewport: { width: 1100, height: 900 } });
-  await pgG.addInitScript(s => localStorage.setItem('sb_saas_v2', s), seed);
+  await pgG.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.setItem('sb_splash', '1'); }, seed);
   await pgG.goto('file://' + SRC + '/index.html'); await pgG.waitForTimeout(400);
   const hold = await pgG.evaluate(() => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate');
     return { kb: d && d.classList.contains('kb'), gate: g ? g.textContent : '', shown: g && getComputedStyle(g).display !== 'none' }; });
@@ -134,7 +134,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   // ---- THE HIVE's own opening: comb, swarm, and the honey that takes the frame ----
   const seedH = JSON.stringify({ theme: 'spellbound', children: [{ name: 'T' }] });
   const pgH = await b.newPage({ viewport: { width: 1100, height: 900 } });
-  await pgH.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.removeItem('sb_splash'); }, seedH);
+  await pgH.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.setItem('sb_splash', '1'); }, seedH);
   await pgH.goto('file://' + SRC + '/index.html'); await pgH.waitForTimeout(2000);
   const hv = await pgH.evaluate(() => { const d = document.querySelector('#sb-splash'); return {
     up: !!d, marked: d && d.classList.contains('w-hive'),
@@ -193,7 +193,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   };
   for (const [theme, spec] of Object.entries(SIX)) {
     const pgW = await b.newPage({ viewport: { width: 1100, height: 900 } });
-    await pgW.addInitScript(t => localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: t, children: [{ name: 'T' }] })), theme);
+    await pgW.addInitScript(t => { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: t, children: [{ name: 'T' }] })); localStorage.setItem('sb_splash', '1'); }, theme);
     await pgW.goto('file://' + SRC + '/index.html'); await pgW.waitForTimeout(900);
     const got = await pgW.evaluate(ps => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate'); return {
       cls: d ? d.className : '', gate: g ? g.textContent : '', counts: Object.fromEntries(Object.entries(ps).map(([k, [sel]]) =>
@@ -210,7 +210,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
   // never touched at all: the auto-press runs the show and it bows out on its own
   const pg3 = await b.newPage({ viewport: { width: 900, height: 700 } });
-  await pg3.addInitScript(s => localStorage.setItem('sb_saas_v2', s), seed);
+  await pg3.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.setItem('sb_splash', '1'); }, seed);
   await pg3.goto('file://' + SRC + '/index.html');
   await pg3.waitForTimeout(400);
   const upEarly = await pg3.evaluate(() => !!document.querySelector('#sb-splash'));
@@ -219,7 +219,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
   // no world borrows another's close — the lab gets no jaws, no honey
   const pgS = await b.newPage();
-  await pgS.addInitScript(() => localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'science', children: [{ name: 'T' }] })));
+  await pgS.addInitScript(() => { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'science', children: [{ name: 'T' }] })); localStorage.setItem('sb_splash', '1'); });
   await pgS.goto('file://' + SRC + '/index.html'); await pgS.waitForTimeout(600);
   ok(await pgS.evaluate(() => { const d = document.querySelector('#sb-splash');
     return !!d && !d.classList.contains('w-dino') && !d.querySelector('.spl-jaw')
@@ -232,6 +232,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pg4.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.setItem('sb_splash', '0'); }, seed);
   await pg4.goto('file://' + SRC + '/index.html'); await pg4.waitForTimeout(500);
   ok(await pg4.evaluate(() => !document.querySelector('#sb-splash')), 'sb_splash=0 silences it');
+  /* FIX-BEE v2: the splash is OPT-IN — a returning child with no setting goes straight to the app */
+  const pg5 = await (await b.newContext()).newPage();
+  await pg5.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.removeItem('sb_splash'); }, seed);
+  await pg5.goto('file://' + SRC + '/index.html'); await pg5.waitForTimeout(900);
+  ok(await pg5.evaluate(() => !document.querySelector('#sb-splash')), 'with no setting the splash stays away — it is opt-in (Settings → Look)');
   const pg5 = await b.newPage();
   await pg5.goto('file://' + SRC + '/index.html'); await pg5.waitForTimeout(500);
   ok(await pg5.evaluate(() => !document.querySelector('#sb-splash')), 'first run (no children) never hides onboarding behind it');

@@ -413,7 +413,9 @@
         '<div class="sg-end-score">'+((o.score|0).toLocaleString())+'<span>'+(o.scoreLabel||'points')+'</span></div>'+
         list+
         '<div class="sg-inrow sg-end-btns"><button class="sg-rbtn" id="sg-again">Play again</button>'+
-        '<button class="sg-rbtn go" id="sg-cont">'+(o.win?'Continue':'Back to map')+'</button></div></div>'; },
+        /* The old not-a-win label promised a map the arcade does not have (FIX-BEE v2 C5): the button
+           returns to wherever the game was opened from, so it says so plainly. */
+        '<button class="sg-rbtn go" id="sg-cont">'+(o.contLabel||(o.win?'Continue':'Done'))+'</button></div></div>'; },
 
     /* ◀ ▶ are typographic triangles, and they sit inside the one control a child
        HOLDS DOWN for a whole race: different weight in every font, flat monochrome
@@ -3656,9 +3658,13 @@
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; spellScene(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
+    /* The word the round was lost on goes into the log, so the card reads "4 of 5 spelled" and
+       not "4 of 4" over a lost round (FIX-BEE v2 C5). Stars follow the words: a lost round still
+       earns one for restoring at least half the scene — what the stars measure is spelling. */
     function lose(){ over=true; removeEventListener('keydown',kb);
-      try{ flash('🌑 The colour fades… the moth wins this round.'); }catch(e){}
-      setTimeout(()=>scEnd(false, i*60, 0), 700); }
+      if(i<words.length && !scRound.some(r=>r.w===words[i].w.toLowerCase()&&!r.ok)) scRound.push({w:words[i].w.toLowerCase(),ok:false});
+      try{ flash('The colour fades… the moth wins this round.'); }catch(e){}
+      setTimeout(()=>scEnd(false, i*60, (words.length&&i>=words.length/2)?1:0), 700); }
     function type(ch){ if(over||i>=words.length) return;   /* i can sit PAST the last word for the beat between a solve and the next
        word arriving (setTimeout), and a key or a tap in that window read words[i].w
        off undefined. `over` is not yet true there, so it is not enough on its own. */

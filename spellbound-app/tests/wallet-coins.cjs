@@ -81,9 +81,10 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(round.status === 'done' && round.right === round.n, `played a full round, ${round.right}/${round.n} right`);
   const roundLines = (await wallet()).kids.ahana.ledger.slice(n0);
   const answers = roundLines.filter(x => x.why === 'answer'), others = roundLines.filter(x => x.why !== 'answer');
-  /* a right word can also cross a list stage (gainXp) — that is the standard's 'mastery' event,
-     and it is the only other line a round may write. Nothing pays for finishing. */
-  ok(answers.length === round.right && answers.every(x => x.n === 1) && others.every(x => x.why === 'mastery' && x.n === 20),
+  /* A round pays its right answers and nothing else. A stage-up inside the round is XP, and since
+     FIX-BEE v2 it pays NO mastery coin — that fires only when a Stage is mastered on evidence
+     (right on two separate days), which one sitting can never show. Nothing pays for finishing. */
+  ok(answers.length === round.right && answers.every(x => x.n === 1) && others.length === 0,
     `the round paid one coin per right word (${answers.length}) and nothing for finishing — other lines: ${others.map(x => x.why).join(',') || 'none'}`);
   ok(after - before === roundLines.reduce((a, x) => a + x.n, 0), `the purse moved by exactly what the ledger says (+${after - before})`);
   ok(round.bonus === answers.length, `and its finish screen shows the coins its words earned (+${round.bonus})`);

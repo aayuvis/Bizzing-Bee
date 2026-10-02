@@ -39,7 +39,12 @@ const TARGET = { total: 1.5 * MB, js: 400 * KB };
      · app3.js: 277KB minified — needs a code split, i.e. app3 changes.
      · the opening splash's audio and art (126KB + 88KB) on a returning speller's load,
        and the opening page's screenshots and avatar row (~340KB) on a new visitor's. */
-const CEILING = { 'new visitor': { total: 1800 * KB, js: 1260 * KB }, 'returning speller': { total: 1780 * KB, js: 1260 * KB } };
+/* FIX-BEE v2 (2 Oct 2026) lowered it: the boot tier's sentences moved to words-data-s.js (−200KB),
+   the landing's screenshots all lazy (−250KB), and the opening splash became opt-in — the family
+   standard has no load screens for now (−240KB of its audio and art). Both first screens are now
+   ~1.27MB: the 1.5MB family target is MET. The 400KB JS target is not: words-data.js (354KB) and
+   app3.js (288KB) are what is left. */
+const CEILING = { 'new visitor': { total: 1330 * KB, js: 1050 * KB }, 'returning speller': { total: 1330 * KB, js: 1050 * KB } };
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234',

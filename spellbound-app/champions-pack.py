@@ -3,7 +3,8 @@
 
     python3 champions-pack.py --all
 
-Five children who won a national spelling bee between 1908 and 1928, drawn in the same
+Six children from the first national spelling bees (1908, 1925-1928) and two fictional
+champions (Trophy Bee, Lexi the Word Owl — FIX-BEE v2), drawn in the same
 chibi register as the rest of the collection and dropped into `avatars/` as 384px RGBA
 webp, which is what avatars.js expects.
 
@@ -38,6 +39,17 @@ STYLE = (
 )
 
 SLOTS = {
+    # FIX-BEE v2 (2 Oct 2026): the pack is filled from 6 to 8 with two FICTIONAL champions, so no
+    # invented fact about a real child joins the six real ones. Both are non-human on purpose: a
+    # made-up child beside real 1920s children would read as one more real champion.
+    'trophybee': (
+        'A cheerful round honeybee champion, chubby and fuzzy with golden-yellow and warm brown '
+        'stripes, small translucent wings, holding up a shining golden two-handled trophy cup with '
+        'both arms and beaming with pride, a little laurel ribbon around its middle.'),
+    'wordowl': (
+        'A cheerful little owl champion with soft cream and caramel-brown feathers, big round '
+        'friendly eyes, wearing a winner\'s sash ribbon across its chest and a small round gold '
+        'medal, hugging a thick leather-bound dictionary with blank covers under one wing.'),
     'bolden': (
         'A cheerful African-American schoolgirl of about thirteen from 1908, in a simple '
         'high-necked cotton pinafore dress and buttoned boots, her hair in two neat plaits '

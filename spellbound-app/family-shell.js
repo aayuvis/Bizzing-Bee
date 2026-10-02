@@ -111,7 +111,7 @@
   var ROUTE_NAV = { practice: 'coach', library: 'explore', play: 'games', hive: 'collection', level: 'beeband' };
   /* Screens that draw correctly from nothing but their nav. Anything else needs live
      sub-state (a running drill, an open book) and is restored to its parent screen. */
-  var RESTORABLE = { home: 1, concepts: 1, coach: 1, quest: 1, explore: 1, themes: 1, figurative: 1, vocab: 1, quotes: 1,
+  var RESTORABLE = { shop: 1, help: 1, home: 1, concepts: 1, coach: 1, quest: 1, explore: 1, themes: 1, figurative: 1, vocab: 1, quotes: 1,
     trivtrain: 1, ipatrain: 1, typing: 1, builder: 1, beeband: 1, coachdesk: 1, traps: 1, revisions: 1, evolution: 1,
     collection: 1, finder: 1, games: 1, trivia: 1, journeys: 1, adv: 1, progress: 1 };
   var PARENT = { train: 'coach', levelup: 'coach', leveltest: 'home', mockbee: 'games', sq: 'games', reader: 'explore',
@@ -140,6 +140,7 @@
       return 'concepts';
     }
     if (n === 'collection') return 'hive' + (S.collTab ? '/' + S.collTab : '');
+    if (n === 'shop') return 'shop/' + (S.shopTab || 'avatars');
     if (n === 'progress' || n === 'parent') return S.progTab === 'parent' ? 'grownups' : 'progress';
     if (n === 'train') return 'practice/drill';
     if (n === 'games' && S.game) return 'play/game';
@@ -191,6 +192,7 @@
       app.setNav('concepts'); return;
     }
     if (head === 'hive') { if (p[1]) state.collTab = p[1]; app.openCollection(); return; }
+    if (head === 'shop') { app.openShop(p[1] || 'avatars'); return; }
     if (head === 'grownups') { app.setNav('parent'); return; }
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
     if (head === 'practice') { app.openCoach(); return; }
@@ -207,6 +209,7 @@
       if (document.querySelector('.arc-play,.bz-play')) { leaveDrill(); render(); return true; }
       if (menuOpen()) { state.famMenu = false; render(); return true; }
       if (state.drawerOpen) { state.drawerOpen = false; render(); return true; }
+      if (state.walletOpen) { state.walletOpen = false; render(); return true; }
       if (state.pinDlg) { state.pinDlg = null; render(); return true; }
       if (state.showTiers || state.showPaywall) { state.showTiers = false; state.showPaywall = false; state._planOk = false; render(); return true; }
     } catch (e) {}
@@ -345,8 +348,12 @@
   var HEX = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8 20 7.4v9.2L12 21.2 4 16.6V7.4z"/><path d="M12 8.2 15.3 10.1v3.8L12 15.8 8.7 13.9v-3.8z" fill="currentColor" stroke="none" opacity=".55"/></svg>';
   var LOCK = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.6" y="10.4" width="14.8" height="10.2" rx="2.6"/><path d="M8 10.4V7.6a4 4 0 0 1 8 0v2.8"/><circle cx="12" cy="15.4" r="1.4" fill="currentColor" stroke="none"/></svg>';
   function avatarMini(c, size) {
-    try { if (c.avatar && c.avatar !== 'bizzy' && c.avatar !== 'bee' && typeof window.SB_AVATAR === 'function') { var a = window.SB_AVATAR(c.avatar, size); if (a) return a; } } catch (e) {}
-    try { return mascotSVG('happy'); } catch (e) { return ''; }
+    var art = '';
+    try { if (c.avatar && c.avatar !== 'bizzy' && c.avatar !== 'bee' && typeof window.SB_AVATAR === 'function') art = window.SB_AVATAR(c.avatar, size) || ''; } catch (e) {}
+    if (!art) { try { art = mascotSVG('happy'); } catch (e) { art = ''; } }
+    /* the frame the child bought and wears (the Shop's Extras) rides wherever the avatar does */
+    try { if (typeof framed === 'function') return framed(art, c, size + 4); } catch (e) {}
+    return art;
   }
   /* [⬡ back to Hive] — hidden only while a drill word is live. Arriving from the Hive
      (?from=hive) it carries the words "back to my day", which is the chip §4 asks for. */

@@ -2,7 +2,7 @@
    Blooket-style squircle characters drawn with the app's palette + duotone cheer.
    window.SB_AVATARS = defs (pack, rarity, price); window.SB_AVATAR(id, size) = SVG. */
 (function(){
-  const RAR = { free:{label:'Starter', c:'#7B8794', price:0, sell:0},
+  const RAR = { free:{label:'Common', c:'#7B8794', price:0, sell:0},
                 rare:{label:'Rare', c:'#3D7DF0', price:120, sell:60},
                 epic:{label:'Epic', c:'#B14FC4', price:250, sell:125},
                 legendary:{label:'Legendary', c:'#F0B429', price:500, sell:250} };
@@ -207,6 +207,7 @@
     ['noodle','Noodle','serpent','free'],['sunny','Sunny','serpent','free'],['cobra','King Cobra','serpent','rare'],['python','Python','serpent','rare'],['rattler','Rattles','serpent','rare'],['viper','Viper','serpent','rare'],['boa','Boa','serpent','epic'],['mamba','Mamba','serpent','epic'],['seasnake','Sea Serpent','serpent','epic'],['naga','Naga','serpent','legendary'],
     ['mammoth','Mammoth','bigbeasts','free'],['titanoboa','Titanoboa','bigbeasts','rare'],['megalodon','Megalodon','bigbeasts','rare'],['argentavis','Argentavis','bigbeasts','rare'],['megatherium','Megatherium','bigbeasts','rare'],['vasuki','Vasuki','bigbeasts','epic'],['livyatan','Livyatan','bigbeasts','epic'],['gigantopithecus','Gigantopithecus','bigbeasts','epic'],['dunkleo','Dunkleosteus','bigbeasts','epic'],['bluewhale','Blue Whale','bigbeasts','legendary'],
     ['newton','Isaac Newton','worldchangers','free'],['mlk','Martin Luther King Jr.','worldchangers','epic'],['gutenberg','Johannes Gutenberg','worldchangers','epic'],['nightingale','Florence Nightingale','worldchangers','epic'],['qinshihuang','Qin Shi Huang','worldchangers','epic'],['curie','Marie Curie','worldchangers','legendary'],['gandhi','Mahatma Gandhi','worldchangers','legendary'],['aryabhatta','Aryabhatta','worldchangers','legendary'],['buddha','Buddha','worldchangers','legendary'],['einstein','Albert Einstein','worldchangers','legendary'],
+    ['trophybee','Trophy Bee','champions','free'],['wordowl','Lexi the Word Owl','champions','epic'],
     ['neuhauser','Frank Neuhauser','champions','free'],['pbell','Pauline Bell','champions','rare'],['lucas','Dean Lucas','champions','rare'],['brobinson','Betty Robinson','champions','epic'],['stover','Edna Stover','champions','rare'],['bolden','Marie C. Bolden','champions','legendary'],
     ['thor','Thor','gods','free'],['poseidon','Poseidon','gods','epic'],['ra','Ra','gods','epic'],['athena','Athena','gods','epic'],['hades','Hades','gods','epic'],['anubis','Anubis','gods','epic'],['freya','Freya','gods','epic'],['loki','Loki','gods','epic'],['apollo','Apollo','gods','epic'],['isis','Isis','gods','epic'],['hanuman','Hanuman','gods','epic'],['lakshmi','Lakshmi','gods','epic'],['amaterasu','Amaterasu','gods','epic'],['zeus','Zeus','gods','legendary'],['rama','Rama','gods','legendary'],['odin','Odin','gods','legendary'],['krishna','Krishna','gods','legendary'],['shiva','Shiva','gods','legendary'],['ganesha','Ganesha','gods','legendary'],['durga','Durga','gods','legendary'],['saraswati','Saraswati','gods','legendary'],
   ].map(([id,name,pack,rarity])=>({ id, name, pack, rarity, price:RAR[rarity].price, sell:RAR[rarity].sell }));
@@ -246,9 +247,93 @@
     'gutenberg','qinshihuang',                           // worldchangers -> 8
     'freya','ra','anubis','isis','amaterasu' ]);         // gods outside the two new packs
   AV.forEach(a=>{ if(MOVE[a.id]) a.pack=MOVE[a.id]; });
-  const LIVE = AV.filter(a=>!ARCH.has(a.id));
-  window.SB_AVATARS = { list:LIVE, all:AV, archived:ARCH, packs:PACKS, rarities:RAR,
-    byId:Object.fromEntries(AV.map(a=>[a.id,a])) };
+
+  /* ---------------- FIX-BEE v2 (2 Oct 2026): 96 = 12 × 8, through the family engine ----------------
+     FAMILY-STANDARD §8. Bee keeps TWELVE packs (owner, 2 Oct: the Gods packs, World Changers and
+     Spelling Champions stay). Six packs leave Bee's live store and packs — they were handed to the
+     siblings (Turbo + Origami → Maths, Big Beasts + Elements → Geography, Critter Crew + Vibe →
+     Finance) — the same way the Aug-31 cut retired packs: their ids join ARCH, so an avatar a child
+     already owns still renders everywhere (byId keeps it) and leaves only the store, the packs and
+     the collection count. Every pack is re-tiered to 2 Common · 3 Rare · 2 Epic · 1 Legendary
+     ("Starter" is "Common" now); every Legendary names its learning milestone; every real person
+     carries a one-line `about` (with the source of the fact); sacred figures are marked `sacred`
+     and none sits in the Villains pack. Spelling Champions gained two FICTIONAL champions (Trophy
+     Bee, Lexi the Word Owl), drawn in the pack's style, so no invented fact sits beside the real
+     ones. The engine's validate() and sacredSafe() run in tests/avatars-engine.cjs. */
+  ['turbo','origami','bigbeasts','elements','critter','vibe'].forEach(pk=>AV.forEach(a=>{ if(a.pack===pk) ARCH.add(a.id); }));
+  const RETIER = {
+    hive:      { free:['bizzy','honeypot'], rare:['bumble','waggle','clover'], epic:['blossom','nectar'], legendary:['queenhive'] },
+    champions: { free:['trophybee','neuhauser'], rare:['pbell','lucas','stover'], epic:['brobinson','wordowl'], legendary:['bolden'] },
+    cosmos:    { free:['luna','astro'], rare:['comet','rocket','alien'], epic:['saturn','supernova'], legendary:['nebula'] },
+    enchanted: { free:['midnight','wisp'], rare:['lunamoth','fae','crystal'], epic:['mer','snowfox'], legendary:['starweaver'] },
+    dojo:      { free:['panda','neko'], rare:['ninja','samurai','koi'], epic:['kitsune','oni'], legendary:['dragonmaster'] },
+    lab:       { free:['beaker','germy'], rare:['atom','robo','volt'], epic:['brainiac','phoenix'], legendary:['aurum'] },
+    worldchangers: { free:['newton','buddha'], rare:['nightingale','aryabhatta','curie'], epic:['mlk','gandhi'], legendary:['einstein'] },
+    legends:   { free:['squatch','golem'], rare:['nessie','griff','mino'], epic:['kraken','pegasus'], legendary:['hydra'] },
+    godseu:    { free:['thor','athena'], rare:['poseidon','apollo','hades'], epic:['loki','odin'], legendary:['zeus'] },
+    godsin:    { free:['ganesha','saraswati'], rare:['hanuman','lakshmi','durga'], epic:['rama','krishna'], legendary:['shiva'] },
+    villains:  { free:['greymoth','locust'], rare:['gnash','smudge','gatekeeper'], epic:['voidmaw','wordeater'], legendary:['vex'] },
+    reptilian: { free:['trice','noodle'], rare:['stego','bronto','cobra'], epic:['raptor','naga'], legendary:['rexking'] },
+  };
+  /* The twelve live packs, in the order the Collection and the Shop show them. `n` is the engine's
+     pack number (1–12); `world` is the WORLD the pack belongs to — Bee's eight worlds in THEMES order
+     (1 Bizzing Bee · 2 Galaxy · 3 Blade · 4 Lab · 5 Elements · 6 God's Abode · 7 Race Zone ·
+     8 Dino Era). Worlds 1–2 are open to everyone, so four packs are open on every plan. */
+  const LIVE_ORDER = [
+    ['hive',1],['champions',1],['cosmos',2],['enchanted',2],['dojo',3],['lab',4],
+    ['worldchangers',4],['legends',5],['godseu',6],['godsin',6],['villains',7],['reptilian',8] ];
+  const byPack = Object.fromEntries(PACKS.map(p=>[p.id,p]));
+  const LIVE_PACKS = LIVE_ORDER.map(([id,w],i)=>Object.assign({}, byPack[id]||PACKS.find(p=>p.id===id), { n:i+1, world:w }));
+  const VILLAIN_PACKS = ['villains'];
+  /* Every Legendary's named learning milestone (k = the evidence AV_EVID in app3 reads, n = how much). */
+  const MILESTONE = {
+    queenhive:{k:'stops',n:8,label:'finish 8 Atlas stops'},       bolden:{k:'mast',n:100,label:'master 100 words'},
+    nebula:{k:'level',n:6,label:'reach Level 6'},                   starweaver:{k:'concepts',n:5,label:'master 5 concepts'},
+    dragonmaster:{k:'right',n:1000,label:'spell 1,000 words right'},aurum:{k:'concepts',n:10,label:'master 10 concepts'},
+    einstein:{k:'mast',n:300,label:'master 300 words'},             hydra:{k:'stops',n:25,label:'finish 25 Atlas stops'},
+    zeus:{k:'level',n:9,label:'reach Level 9'},                     shiva:{k:'mast',n:500,label:'master 500 words'},
+    vex:{k:'traps',n:50,label:'beat 50 words that once tripped you'},rexking:{k:'stops',n:40,label:'finish 40 Atlas stops'} };
+  /* Real people: one line each. The champions' facts come from video/ep-origins-first-four-bees.md
+     ("THE FACTS (checked)"); the World Changers' are the standard textbook facts. */
+  const SRC_BEES = 'video/ep-origins-first-four-bees.md — The facts (checked)';
+  const REAL = {
+    newton:{about:'Isaac Newton (1643–1727), English mathematician and physicist who described gravity and the laws of motion.'},
+    curie:{about:'Marie Curie (1867–1934), physicist and chemist, the first person to win Nobel Prizes in two sciences.'},
+    mlk:{about:'Martin Luther King Jr. (1929–1968), American civil rights leader who worked for equal rights through peaceful protest.'},
+    nightingale:{about:'Florence Nightingale (1820–1910), British nurse who founded modern nursing and used statistics to make hospitals safer.'},
+    gandhi:{about:'Mohandas K. Gandhi (1869–1948), who led India’s independence movement through non-violent resistance.'},
+    aryabhatta:{about:'Aryabhata (born 476 CE), Indian mathematician and astronomer who wrote the Aryabhatiya in 499 CE.'},
+    buddha:{about:'Siddhartha Gautama, the Buddha (about the 5th century BCE), whose teachings are the foundation of Buddhism.', sacred:1},
+    einstein:{about:'Albert Einstein (1879–1955), physicist who developed the theory of relativity.'},
+    bolden:{about:'Marie C. Bolden, 13, of Cleveland, the champion of the first national spelling bee in 1908, with no errors.', src:SRC_BEES},
+    neuhauser:{about:'Frank Neuhauser, 11, of Louisville, won the 1925 national bee — the first of today’s series — with “gladiolus”.', src:SRC_BEES},
+    stover:{about:'Edna Stover, 11, of Trenton, New Jersey, the 1925 runner-up, who missed “gladiolus” by one letter.', src:SRC_BEES},
+    pbell:{about:'Pauline Bell, 13, of Clarkson, Kentucky, won the 1926 national bee with “cerise”.', src:SRC_BEES},
+    lucas:{about:'Dean Lucas, 13, of West Salem, Ohio, won the 1927 national bee with “abrogate”.', src:SRC_BEES},
+    brobinson:{about:'Betty Robinson, 13, of South Bend, Indiana, runner-up in 1926, came back to win in 1928.', src:SRC_BEES},
+  };
+  const FICTION = { trophybee:'A made-up champion, drawn for Bizzing Bee: the bee who carries the cup.',
+    wordowl:'A made-up champion, drawn for Bizzing Bee: an owl who has read every dictionary twice.' };
+  const SACRED = new Set(['buddha','thor','athena','poseidon','apollo','hades','loki','odin','zeus',
+    'ganesha','saraswati','hanuman','lakshmi','durga','rama','krishna','shiva','naga']);
+  Object.keys(RETIER).forEach(pk=>{ const R=RETIER[pk]; Object.keys(R).forEach(r=>R[r].forEach(id=>{
+    const a=AV.find(x=>x.id===id); if(!a) return; a.pack=pk; a.rarity=r; a.price=RAR[r].price; a.sell=0; ARCH.delete(id); })); });
+  AV.forEach(a=>{ const pk=LIVE_PACKS.find(p=>p.id===a.pack); a.worldN=pk?pk.world:null;
+    if(MILESTONE[a.id]&&a.rarity==='legendary') a.milestone=Object.assign({id:'av-'+a.id},MILESTONE[a.id]);
+    if(REAL[a.id]){ a.real=1; a.about=REAL[a.id].about; if(REAL[a.id].src) a.src=REAL[a.id].src; if(REAL[a.id].sacred) a.sacred=1; }
+    if(FICTION[a.id]) a.about=FICTION[a.id];
+    if(SACRED.has(a.id)) a.sacred=1; });
+  const LIVE = LIVE_PACKS.flatMap(p=>{ const R=RETIER[p.id]; return ['free','rare','epic','legendary'].flatMap(r=>R[r]); })
+    .map(id=>AV.find(a=>a.id===id)).filter(Boolean);
+  /* The catalogue in the engine's own words — what validate() and stateOf() read. */
+  const TIER = { free:'common', rare:'rare', epic:'epic', legendary:'legendary' };
+  const catalogue = () => LIVE.map(a=>{ const p=LIVE_PACKS.find(x=>x.id===a.pack);
+    const e={ id:a.id, name:a.name, pack:p.n, tier:TIER[a.rarity], art:'avatars/'+a.id+'.webp', world:p.world, price:a.price };
+    if(a.milestone) e.milestone={ id:a.milestone.id, label:a.milestone.label };
+    if(a.real){ e.real=true; e.about=a.about; } if(a.sacred) e.sacred=true; return e; });
+  window.SB_AVATARS = { list:LIVE, all:AV, archived:ARCH, packs:LIVE_PACKS, allPacks:PACKS, rarities:RAR,
+    byId:Object.fromEntries(AV.map(a=>[a.id,a])), catalogue, villainPacks:()=>LIVE_PACKS.filter(p=>VILLAIN_PACKS.includes(p.id)).map(p=>p.n),
+    tierOf:(a)=>TIER[(a||{}).rarity]||'common' };
 
   /* Per-pack ink colour for the sticker outline (matches the design Contact Sheet). */
   const INK = {

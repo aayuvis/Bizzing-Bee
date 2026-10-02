@@ -15,9 +15,12 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     state.children = [{ name: 'SecretName', avatar: 'bee', coins: 0, pow: {}, age: 9, lists: { default: { xp: 10 } }, activeList: 'default',
       missed: [], unlockedThemes: ['spellbound'], unlockedConcepts: {}, unlockedLists: {}, questPath: 'journey',
       trail: { lap: 1, done: {}, chk: {}, seen: {}, elap: 1, edone: {}, echk: {} } }];
-    state.activeIdx = 0; state.screen = 'app'; state.nav = 'home'; localStorage.removeItem('sb_bugs'); render(); await W(200);
+    state.activeIdx = 0; state.screen = 'app'; state.nav = 'home'; localStorage.removeItem('sb_bugs'); state.devUnlock = false; render(); await W(200);
 
-    // ---- the tab is there, quiet, on the app shell ----
+    // ---- a child never sees it (FIX-BEE v2, Q7): it is a testing tool, behind the PIN ----
+    out.childNone = !document.querySelector('.sb-bug-tab');
+    state.devUnlock = true; render(); await W(150);
+    // ---- with testing mode on, the tab is there, quiet, on the app shell ----
     out.tab = !!document.querySelector('.sb-bug-tab');
     document.querySelector('.sb-bug-tab').click(); await W(250);
     out.panel = !!document.querySelector('.sb-bug-panel') && /stays.*on this device|on this device/i.test(document.querySelector('.sb-bug-panel').textContent);
@@ -47,10 +50,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     out.closes = !document.querySelector('.sb-bug-panel');
     state.screen = 'welcome'; render(); await W(150);
     out.offShell = !document.querySelector('.sb-bug-tab');
-    state.screen = 'app'; render();
+    state.screen = 'app'; state.devUnlock = false; render();
     return out;
   });
-  ok(r.tab, 'a quiet 🐞 tab rides the right edge of every app screen');
+  ok(r.childNone, 'a child never sees the bug tab — it exists only in testing mode, behind the PIN');
+  ok(r.tab, 'with testing mode on, a quiet tab rides the right edge of every app screen');
   ok(r.panel, 'it opens a sidebar that says reports stay on this device');
   ok(r.saved, 'a report saves with its category and text');
   ok(r.context, 'technical context rides along: screen, version, viewport');

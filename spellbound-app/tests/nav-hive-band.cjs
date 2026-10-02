@@ -30,8 +30,7 @@ const root = require('path').resolve(__dirname, '..');
       const out = { tabs, txt: document.body.innerText,
         ow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
         hiveTab: tabs.includes('collection'),
-        coinsToHive: (() => { const p = document.querySelector('[data-act="openCollection"]');
-          return !!(p && p.closest('.sb-hdr, header') !== null) || !!p; })(),
+        coinsToHive: !!document.querySelector('[data-act="openWallet"].bz-coinchip'),
         roundFace: !!document.querySelector('.sb-hdr-ico.round'),
         bandInHeader: !!(band && band.closest('header, .sb-hdr, [class*="hdr"]')),
         placementCta: !!document.querySelector('.sb-content [data-act="startLevelTest"], .sb-content .sb-band-call'),
@@ -49,7 +48,7 @@ const root = require('path').resolve(__dirname, '..');
       return out;
     });
     if (r.hiveTab) errs.push(vp.n + ': My Hive is back in the nav bar — it belongs on the coins pill and the drawer');
-    if (!r.coinsToHive) errs.push(vp.n + ': nothing in the header opens My Hive');
+    if (!r.coinsToHive) errs.push(vp.n + ': the coin chip in the header does not open the wallet');
     if (r.roundFace) errs.push(vp.n + ': the round Bizzy button is still in the header');
     if (!r.bandOnHome) errs.push(vp.n + ': the Bee Band is not on Home');
     if (r.bandBelowRings === false) errs.push(vp.n + ': the band is not below the rings');
@@ -65,19 +64,19 @@ const root = require('path').resolve(__dirname, '..');
     if (r.sheen && r.sheen !== 'none') errs.push(vp.n + ': the level strip still sheens (::after animation = ' + r.sheen + ') — it is a quiet link now');
     if (r.placementCta) errs.push(vp.n + ': "Find your level" is still a call to action on Home — placement belongs in onboarding');
 
-    // the coins pill opens the Hive
-    await pg.evaluate(() => { const p=document.querySelector('[data-act="openCollection"]'); if (p) p.click(); });
+    /* FIX-BEE v2 (standard §1.1, §3): the coin chip opens the WALLET (balance + where the coins came
+       from + the way to the Shop), and the drawer runs in the family order: My page · Shop ·
+       Collection · Medals first. */
+    await pg.evaluate(() => { const p=document.querySelector('[data-act="openWallet"].bz-coinchip'); if (p) p.click(); });
     await pg.waitForTimeout(600);
-    if (await pg.evaluate(() => state.nav) !== 'collection') errs.push(vp.n + ': the coins pill did not open My Hive');
-    // and it is the FIRST row of the drawer
-    await pg.evaluate(() => { app.setNav('home'); state.drawerOpen=true; render(); });
+    if (!(await pg.evaluate(() => !!state.walletOpen && !!document.querySelector('.bz-sheet .bz-ledger, .bz-sheet .bz-empty')))) errs.push(vp.n + ': the coin chip did not open the wallet history');
+    await pg.evaluate(() => { state.walletOpen=false; app.setNav('home'); state.drawerOpen=true; render(); });
     await pg.waitForTimeout(500);
-    const first = await pg.evaluate(() => { const r=document.querySelector('aside nav [data-act="drawer"]');
-      return r ? r.getAttribute('data-arg') : null; });
-    if (first !== 'collection') errs.push(vp.n + ': the drawer starts with "' + first + '", not My Hive');
+    const first = await pg.evaluate(() => [...document.querySelectorAll('aside nav .bz-dr-row')].slice(0,4).map(r => (r.querySelector('.bz-dr-l')||{}).textContent).join(' · '));
+    if (first !== 'My page · Shop · Collection · Medals') errs.push(vp.n + ': the drawer starts "' + first + '", not My page · Shop · Collection · Medals');
     await pg.close();
   }
   await b.close();
-  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — Hive on the coins pill and first in the drawer, band sits under Coach speaks on Home as a quiet link, no placement call to action');
+  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — wallet on the coin chip, the drawer in the family order, band sits under Coach speaks on Home as a quiet link, no placement call to action');
   process.exit(errs.length ? 1 : 0);
 })();

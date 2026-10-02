@@ -75,6 +75,34 @@ function iconSVG(name, size, sw){
     search: () => w('<circle cx="11" cy="11" r="6.2"/>'+p('M15.6 15.6 20 20')),
     link: () => w(p('M9.5 14.5 14.5 9.5')+p('M8.2 11 6.6 12.6a3.2 3.2 0 0 0 4.5 4.5l1.6-1.6')+p('M15.8 13 17.4 11.4a3.2 3.2 0 0 0-4.5-4.5L11.3 8.5')),
     palette: () => w(p('M12 3.6a8.4 8.4 0 1 0 0 16.8c1.4 0 1.9-1.1 1.4-2-.5-1.1.3-2.2 1.5-2.2h1.3a3.6 3.6 0 0 0 3.6-3.6C19.8 7 16.3 3.6 12 3.6z')+'<circle cx="8.2" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="15.8" cy="11" r="1" fill="currentColor" stroke="none"/>'),
+
+    /* Family set additions (FIX-BEE v2, standard §9): the same 24-grid, 2px round stroke,
+       currentColor — so Settings, the Shop and ☰ need no emoji. */
+    user: () => w('<circle cx="12" cy="8.2" r="3.7"/>'+p('M4.6 20.2a7.4 7.4 0 0 1 14.8 0')),
+    heart: () => w(p('M12 20s-7.5-4.6-7.5-10.1A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z')),
+    arrowLeft: () => w(p('M19 12H6')+p('M11 6 5 12l6 6')),
+    music: () => w(p('M9 18V5.5l10-2V16')+'<circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>'),
+    mute: () => w(p('M11 5 6 9H3v6h3l5 4z')+p('M16 9.5l5 5M21 9.5l-5 5')),
+    shop: () => w(p('M5 8.5h14l-1.1 11a1.6 1.6 0 0 1-1.6 1.5H7.7a1.6 1.6 0 0 1-1.6-1.5z')+p('M9 8.5V7a3 3 0 0 1 6 0v1.5')),
+    sun: () => w('<circle cx="12" cy="12" r="4"/>'+p('M12 2.8v2.2M12 19v2.2M2.8 12H5M19 12h2.2M5.5 5.5l1.6 1.6M16.9 16.9l1.6 1.6M18.5 5.5l-1.6 1.6M7.1 16.9l-1.6 1.6')),
+    moon: () => w(p('M20 14.6A8.2 8.2 0 0 1 9.4 4 8.2 8.2 0 1 0 20 14.6z')),
+    star: () => w(p('M12 3.2l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z')),
+    hive: () => w(p('M12 2.8 20 7.4v9.2L12 21.2 4 16.6V7.4z')+p('M12 8.2 15.3 10.1v3.8L12 15.8 8.7 13.9v-3.8z')),
+    help: () => w('<circle cx="12" cy="12" r="8.6"/>'+p('M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.6')+'<circle cx="12" cy="16.9" r=".9" fill="currentColor" stroke="none"/>'),
+    shield: () => w(p('M12 3.2 19 6v5.6c0 4.2-2.9 7.6-7 9.2-4.1-1.6-7-5-7-9.2V6z')),
+    medal: () => w('<circle cx="12" cy="14.5" r="5.2"/>'+p('M8.6 10.6 6.5 3.5h3.8L12 8M15.4 10.6l2.1-7.1h-3.8L12 8')),
+    frame: () => w('<rect x="3.5" y="3.5" width="17" height="17" rx="4"/><rect x="7.2" y="7.2" width="9.6" height="9.6" rx="2"/>'),
+    sticker: () => w(p('M20.5 12.5V6.4a2.9 2.9 0 0 0-2.9-2.9H6.4a2.9 2.9 0 0 0-2.9 2.9v11.2a2.9 2.9 0 0 0 2.9 2.9h6.1z')+p('M20.5 12.5h-5.1a2.9 2.9 0 0 0-2.9 2.9v5.1')),
+    history: () => w(p('M4 12a8 8 0 1 0 2.4-5.7L4 8.6')+p('M4 4v4.6h4.6')+p('M12 8v4.4l3 1.8')),
+    globe: () => w('<circle cx="12" cy="12" r="8.6"/>'+p('M3.4 12h17.2M12 3.4c2.4 2.6 3.5 5.5 3.5 8.6s-1.1 6-3.5 8.6c-2.4-2.6-3.5-5.5-3.5-8.6s1.1-6 3.5-8.6z')),
+    trophy: () => w(p('M7.5 4h9v5a4.5 4.5 0 0 1-9 0z')+p('M7.5 6H4.5a3 3 0 0 0 3 4M16.5 6h3a3 3 0 0 1-3 4M12 13.5V17M8.5 20.5h7M9.5 17h5v3.5h-5z')),
+    retry: () => w(p('M20 12a8 8 0 1 1-2.4-5.7L20 8.6')+p('M20 4v4.6h-4.6')),
+    flag: () => w(p('M5.5 21V4')+p('M5.5 4.5h11.5l-2.3 4 2.3 4H5.5')),
+    timer: () => w('<circle cx="12" cy="13.5" r="7.2"/>'+p('M12 13.5V9.6M9.6 2.8h4.8M18.4 6.6l1.4-1.4')),
+    cards: () => w('<rect x="3.5" y="7.5" width="12.5" height="13" rx="2.2"/>'+p('M8 4.5h10a2 2 0 0 1 2 2v10')),
+    play: () => w(p('M8 5.2v13.6L19 12z')),
+    sprout2: () => w(p('M12 20v-7.5')+p('M12 12.5C12 9.5 9.7 7.5 6 7.5c0 3 2.3 5 6 5z')),
+
   };
   return (M[name] || M.grid)();
 }
@@ -99,7 +127,30 @@ function arcadeLogoSVG(size){ size=size||40;
 /* ---- delight: sound effects (Web Audio, no files) + confetti ---- */
 let _actx=null;
 function audioCtx(){ try{ if(!_actx) _actx=new (window.AudioContext||window.webkitAudioContext)(); if(_actx.state==='suspended') _actx.resume(); return _actx; }catch(e){ return null; } }
-function _tone(freq,start,dur,type,gain){ const ac=audioCtx(); if(!ac) return; const o=ac.createOscillator(); const g=ac.createGain();
+/* ---- ONE VOLUME (FAMILY-STANDARD §5/§11, FIX-BEE v2) ----
+   One master slider in Settings, 0–100, default 40. Music plays AT it; effects and the recorded
+   voice are scaled so that the default leaves them where they always were (40 → ×1), and 0 is
+   silence for all three. "Mute" (one tap from ☰) silences everything without losing the level.
+   Music is its own switch (device key 'music'). duck(ms) lowers the music under a word or an
+   effect and lets it back up — the music engine (music.js, lazy) reads it.
+   Device settings, so they live in the device bucket, never on a child. */
+window.SB_VOL=(function(){ const get=(k,d)=>{ try{ const v=SB_STORE.get(k); return v==null?d:v; }catch(e){ return d; } };
+  const put=(k,v)=>{ try{ SB_STORE.set(k,String(v)); }catch(e){} };
+  let pct=Math.max(0,Math.min(100,parseInt(get('volume','40'),10)||0)); if(get('volume',null)===null) pct=40;
+  let mute=get('mute','0')==='1', duckUntil=0;
+  const sync=()=>{ try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){} try{ if(window.SB_MUSIC) SB_MUSIC.level(); }catch(e){} };
+  const V={ pct:()=>pct, level:()=>mute?0:pct/100,
+    set:(p)=>{ pct=Math.max(0,Math.min(100,Math.round(+p||0))); put('volume',pct); sync();
+      try{ document.querySelectorAll('[data-vol-n]').forEach(n=>n.textContent=pct+'%'); }catch(e){} },
+    musicOn:()=>get('music','1')!=='0', setMusic:(on)=>{ put('music',on?'1':'0'); try{ if(window.SB_W4_MUSIC&&SB_W4_MUSIC.reload) SB_W4_MUSIC.reload(); }catch(e){} sync(); },
+    muted:()=>mute, setMuted:(m)=>{ mute=!!m; put('mute',mute?'1':'0'); sync(); },
+    fx:()=>mute?0:Math.min(1.6,pct/40), voice:()=>mute?0:Math.min(1,pct/40),
+    duck:(ms)=>{ duckUntil=Math.max(duckUntil,Date.now()+(ms||600)); try{ if(window.SB_MUSIC) SB_MUSIC.duck(ms||600); }catch(e){} },
+    ducked:()=>Date.now()<duckUntil };
+  /* the slider moves the level live while it is dragged; the change event saves it */
+  try{ document.addEventListener('input',e=>{ const t=e.target; if(t&&t.matches&&t.matches('[data-vol]')) V.set(t.value); },true); }catch(e){}
+  return V; })();
+function _tone(freq,start,dur,type,gain){ const ac=audioCtx(); if(!ac) return; const _v=(window.SB_VOL?SB_VOL.fx():1); if(_v<=0) return; gain=(gain||0.16)*_v; const o=ac.createOscillator(); const g=ac.createGain();
   o.type=type||'sine'; o.frequency.value=freq; const t0=ac.currentTime+start; o.connect(g); g.connect(ac.destination);
   g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(gain||0.16,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
   o.start(t0); o.stop(t0+dur+0.03); }
@@ -120,7 +171,7 @@ function iconTile(name, col, opts){ opts=opts||{}; const size=opts.size||46; con
     <span aria-hidden="true" style="position:absolute;top:${size*0.09}px;left:${size*0.16}px;right:${size*0.16}px;height:${size*0.4}px;border-radius:999px;background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,0));pointer-events:none"></span>
     <span style="position:relative;display:grid;place-items:center;filter:drop-shadow(0 1px 1px rgba(0,0,0,.28))">${ico}</span>
   </span>`; }
-function sfx(kind){ try{ if(typeof state!=='undefined' && state.sound===false) return;
+function sfx(kind){ try{ if(typeof state!=='undefined' && state.sound===false) return; try{ if(window.SB_VOL) SB_VOL.duck(kind==='win'||kind==='level'||kind==='lose'?900:350); }catch(e){}
   if(kind==='correct'){ _tone(660,0,0.12,'sine'); _tone(880,0.09,0.16,'sine'); }
   else if(kind==='coin'){ _tone(988,0,0.07,'square',0.11); _tone(1319,0.06,0.12,'square',0.11); }
   else if(kind==='wrong'){ _tone(196,0,0.22,'sawtooth',0.11); }

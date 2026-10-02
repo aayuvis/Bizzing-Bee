@@ -252,7 +252,7 @@
      "name": "Does it work without internet?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on the device and backed up to your account whenever there is a connection, so a wiped or lost tablet does not cost your child months of work."
+      "text": "Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on this device. Nothing leaves it unless a grown-up switches on the optional cloud backup — and a child’s name and age never leave it at all."
      }
     },
     {
@@ -370,6 +370,7 @@
 <link rel="stylesheet" href="fonts/fonts.css?v=20261002c">
 <link rel="stylesheet" href="tokens.css?v=20261002c">
 <link rel="stylesheet" href="worlds4.css?v=20261002c">
+<link rel="stylesheet" href="bizzing-avatars.css?v=20261002c">
 
 <style>
   *{box-sizing:border-box}
@@ -452,6 +453,142 @@
   .sb-qtile.on .sb-qtile-i{background:rgba(255,255,255,.22);color:#fff}
   .sb-qtile.on .sb-qtile-v{color:rgba(255,255,255,.92)}
   @media (max-width:420px){ .sb-qgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))} }
+  /* ---- Settings: the family sheet (FAMILY-STANDARD §5, FIX-BEE v2) — switch, segmented pills, slider ---- */
+  .bz-settings{max-width:680px;margin:0 auto}
+  .bz-set-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:0 0 14px}
+  .bz-set-head h2{display:flex;align-items:center;gap:8px;margin:0;font-family:'Fraunces',var(--display);font-weight:700;font-size:21px}
+  .bz-set-back{justify-self:start;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px}
+  .bz-set-sec{margin:0 0 16px}
+  .bz-set-sec h3{display:flex;align-items:center;gap:8px;margin:0 0 8px 2px;font-family:'Fraunces',var(--display);font-weight:700;font-size:16px}
+  .bz-set-n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:var(--chip);color:var(--accent);font:800 12px/1 var(--ui,var(--body))}
+  .bz-set-ic{display:inline-flex;color:var(--accent)}
+  .bz-set-lock{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font:800 11px/1 var(--ui,var(--body));color:var(--muted)}
+  .bz-set-card{padding:2px 0 !important}
+  .bz-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;border-top:1px solid var(--line)}
+  .bz-set-card>.bz-row:first-child{border-top:0}
+  .bz-row-col{flex-direction:column;align-items:stretch;gap:7px}
+  .bz-row-t{display:flex;flex-direction:column;min-width:0;flex:1}
+  .bz-row-l{font-weight:800;font-size:14.5px;line-height:1.25;color:var(--text)}
+  .bz-row-s{display:block;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:600}
+  .bz-sw{flex:none;position:relative;width:54px;height:32px;min-width:54px;border-radius:999px;background:var(--line);border:0;transition:background .2s ease-out;cursor:pointer}
+  .bz-sw::before{content:"";position:absolute;inset:-6px -2px}
+  .bz-sw>span{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:left .2s ease-out}
+  .bz-sw.on{background:var(--action,var(--accent))} .bz-sw.on>span{left:25px}
+  .bz-seg{display:flex;flex-wrap:wrap;gap:6px;padding:4px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+  .bz-seg>button{flex:1 1 auto;min-height:40px;min-width:44px;padding:6px 12px;border-radius:10px;border:0;background:transparent;color:var(--text);font-weight:800;font-size:13.5px;transition:background .18s ease-out}
+  .bz-seg>button.on{background:var(--action,var(--accent));color:var(--action-ink,#fff);box-shadow:var(--edge)}
+  .bz-range{width:100%;height:32px;accent-color:var(--accent);cursor:pointer}
+  .bz-vol-n{font-family:'Sono',var(--display);color:var(--accent);margin-left:6px}
+  .bz-btn{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:44px;padding:0 16px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13.5px;white-space:nowrap}
+  .bz-btn-lock{color:var(--text)}
+  .bz-input{width:100%;max-width:340px;min-height:44px;padding:10px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700}
+  .bz-set-av{display:inline-flex;width:46px;height:46px}
+  .bz-set-av>svg,.bz-set-av>img{width:100%;height:100%}
+  .bz-wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+  .bz-wthumb{position:relative;display:flex;flex-direction:column;align-items:stretch;padding:0;border-radius:14px;overflow:hidden;border:2px solid var(--line);background:var(--paper,var(--bg2));text-align:left;min-height:44px}
+  .bz-wthumb.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+  .bz-wthumb-art{display:block;height:54px}
+  .bz-wthumb.locked .bz-wthumb-art{filter:grayscale(.85) brightness(.95);opacity:.7}
+  .bz-wthumb-l{padding:6px 9px 2px;font-weight:800;font-size:13px;color:var(--text)}
+  .bz-wthumb-lock{display:flex;align-items:center;gap:4px;padding:0 9px 7px;font-size:11px;font-weight:700;color:var(--muted)}
+  .bz-nums{display:flex;flex-wrap:wrap;gap:12px}
+  .bz-num{display:flex;flex-direction:column;gap:4px}
+  .bz-num input{width:84px;min-height:44px;padding:8px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px}
+  .bz-tools>summary{cursor:pointer;padding:4px 0;list-style:none}
+  .bz-tools .bz-row{padding-left:0;padding-right:0}
+  .bz-set-foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:6px 0 2px;font-size:12.5px;color:var(--muted);font-weight:700}
+  .bz-set-foot a,.bz-set-about{color:var(--muted);font-weight:800;text-decoration:underline;background:none;border:0;min-height:44px;padding:0 4px;font-size:12.5px}
+  :root[data-size="small"] #root{zoom:.9}
+  /* ---- The Shop, the wallet sheet, the family avatar card and frames (FIX-BEE v2, standard §1, §8) ---- */
+  .bz-tabs{display:flex;gap:6px;margin:0 0 14px;padding:4px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+  .bz-tab{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;border-radius:10px;border:0;background:transparent;color:var(--muted);font-family:'Fraunces',var(--display);font-weight:800;font-size:14.5px}
+  .bz-tab.on{background:var(--action,var(--accent));color:var(--action-ink,#fff);box-shadow:var(--edge)}
+  .bz-coin{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-family:'Sono',var(--display);font-weight:800;font-size:14px;border:0}
+  .bz-for{font-size:13px;line-height:1.5;color:var(--muted);font-weight:600}
+  .bz-pack{margin:0 0 14px}
+  .bz-pack-h{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 11px}
+  .bz-pack-h h3{margin:0;font-family:'Fraunces',var(--display);font-weight:800;font-size:16px}
+  .bz-pack-sw{width:14px;height:14px;border-radius:5px;display:inline-block}
+  .bz-pack-n{font-family:'Sono',var(--display);font-weight:700;font-size:12.5px;color:var(--muted)}
+  .bz-pack-w{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--muted)}
+  .bz-av-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+  .bz-av{align-content:start;background:var(--paper,var(--bg2))}   /* Bee has no --card token; its card ground is --paper */
+  .bz-av .bz-av-art{background:none;border:0;padding:0;width:84px;height:84px;cursor:pointer;min-height:44px}
+  .bz-av .bz-av-art>svg,.bz-av .bz-av-art>img{width:100%;height:100%}
+  .bz-av[data-state="world"] .bz-av-art,.bz-av[data-state="milestone"] .bz-av-art{filter:grayscale(.85) brightness(.95);opacity:.72}
+  .bz-av figcaption{color:var(--text)}
+  .bz-av-say{font-size:11.5px;line-height:1.35;font-weight:700;color:var(--muted);text-align:center;min-height:2.7em}
+  .bz-av-btn{min-height:40px;min-width:64px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);color:var(--accent);font-weight:800;font-size:12.5px;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+  .bz-av-btn.buy,.bz-btn.buy{background:var(--treasure-tint,#FFF3D6);border-color:var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-family:'Sono',var(--display)}
+  .bz-av-btn[aria-disabled="true"]{opacity:.62}
+  .bz-av-on{display:inline-flex;align-items:center;gap:4px;font-weight:800;font-size:12px;color:var(--good,#1E8E5A)}
+  .bz-linkbtn{background:none;border:0;padding:0 2px;min-height:32px;color:var(--accent);font-weight:800;text-decoration:underline;font-size:inherit}
+  .bz-wcard{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--paper,var(--bg2));display:flex;flex-direction:column}
+  .bz-wcard-art{position:relative;height:96px;display:flex;align-items:flex-end;padding:10px 14px}
+  .bz-wcard-art b{font-size:22px;font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+  .bz-wcard.locked .bz-wcard-art{filter:grayscale(.8) brightness(.95)}
+  .bz-wcard-lock{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);color:#241E33}
+  .bz-wcard-b{display:flex;flex-direction:column;gap:7px;padding:11px 14px 14px;align-items:flex-start}
+  .bz-frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+  .bz-fcard{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:14px 12px;border-radius:18px;background:var(--paper,var(--bg2));border:1px solid var(--line)}
+  .bz-frame{display:inline-grid;place-items:center;width:var(--fs,40px);height:var(--fs,40px);border-radius:50%;padding:3px;box-sizing:border-box;flex:none}
+  .bz-frame>svg,.bz-frame>img{width:100%;height:100%;border-radius:50%}
+  .bz-frame-honey{background:conic-gradient(#F0B429,#FFD86E,#C8791B,#F0B429)}
+  .bz-frame-leaf{background:conic-gradient(#4F9E5A,#9BE34D,#2E7D52,#4F9E5A);box-shadow:0 -3px 0 -1px #9BE34D}
+  .bz-frame-comet{background:conic-gradient(from 200deg,#2E6FD8,#36D1FF,#fff,#2E6FD8)}
+  .bz-frame-sunset{background:linear-gradient(135deg,#FF9A3D,#E8458C)}
+  .bz-frame-royal{background:conic-gradient(#5A37D6,#B14FC4,#5A37D6);box-shadow:0 0 0 2px #F0B429}
+  .bz-frame-rainbow{background:conic-gradient(#E8458C,#FF9A3D,#FFD23F,#39D98A,#36D1FF,#7C5CFF,#E8458C)}
+  .bz-hist{margin-top:18px}
+  .bz-hist h3,.bz-sub{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-family:'Fraunces',var(--display);font-weight:800;font-size:16px}
+  .bz-ledger{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column}
+  .bz-ledger li{display:grid;grid-template-columns:52px 1fr auto;gap:2px 10px;align-items:baseline;padding:8px 2px;border-top:1px solid var(--line)}
+  .bz-ledger li:first-child{border-top:0}
+  .bz-ledger b{font-family:'Sono',var(--display);font-weight:800;font-size:14px;grid-row:span 2}
+  .bz-ledger b.in{color:var(--good,#1E8E5A)} .bz-ledger b.out{color:var(--bad,#C4453C)}
+  .bz-ledger-w{font-size:13.5px;font-weight:700;color:var(--text);line-height:1.35}
+  .bz-ledger-a{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:800;color:var(--accent)}
+  .bz-ledger-a.sib{color:var(--muted)}
+  .bz-ledger-t{grid-column:2;font-size:11.5px;color:var(--muted);font-weight:600}
+  .bz-empty{display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--muted);font-weight:600;margin:4px 0 12px}
+  .bz-empty-m{width:44px;height:50px;flex:none}
+  .bz-sheet-ov{position:fixed;inset:0;z-index:80;background:rgba(10,8,20,.55);display:grid;place-items:start center;padding:18px;overflow:auto}
+  .bz-sheet{width:100%;max-width:560px;margin:24px 0;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px 20px 22px;box-shadow:var(--glow);animation:sb-pop .25s ease-out both}
+  .bz-sheet-h{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+  .bz-sheet-h h2{display:flex;align-items:center;gap:8px;margin:0;font-family:'Fraunces',var(--display);font-weight:800;font-size:20px}
+  .bz-x{margin-left:auto;width:44px;height:44px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center}
+  .bz-bal{display:flex;align-items:baseline;gap:10px;margin:4px 0 6px}
+  .bz-bal-n{font-family:'Sono',var(--display);font-weight:800;font-size:38px;color:var(--treasure-deep,#8A5B00)}
+  .bz-bal-l{font-weight:700;color:var(--muted)}
+  .bz-btn-wide{width:100%;min-height:48px;font-size:15px}
+  /* the ☰ drawer (standard §3) */
+  .bz-dr-scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;animation:sb-fade .2s ease-out both}
+  .bz-drawer{position:fixed;top:0;left:0;bottom:0;width:300px;max-width:86vw;background:var(--paper,var(--bg2));border-right:1px solid var(--line);z-index:56;display:flex;flex-direction:column;padding:12px 10px;overflow-y:auto;box-shadow:var(--sh-overlay);animation:bz-slide .22s ease-out both}
+  @keyframes bz-slide{from{transform:translateX(-24px);opacity:.4}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){ .bz-drawer,.bz-dr-scrim{animation:none} }
+  .bz-dr-head{display:flex;align-items:center;gap:10px;padding:6px 6px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  .bz-dr-av{width:48px;height:48px;display:grid;place-items:center;flex:none}
+  .bz-dr-av>svg,.bz-dr-av>img{width:44px;height:44px}
+  .bz-dr-who{min-width:0;flex:1;display:flex;flex-direction:column}
+  .bz-dr-who b{font-family:'Fraunces',var(--display);font-weight:800;font-size:17px;line-height:1.15}
+  .bz-dr-who span{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);font-weight:700}
+  .bz-dr-mute,.bz-dr-x{width:44px;height:44px;flex:none;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center}
+  .bz-dr-mute[aria-pressed="true"]{background:var(--action,var(--accent));color:var(--action-ink,#fff);border-color:var(--action,var(--accent))}
+  .bz-dr-nav{display:flex;flex-direction:column;gap:1px}
+  .bz-dr-row{display:flex;align-items:center;gap:11px;width:100%;min-height:48px;text-align:left;padding:8px 10px;border-radius:12px;background:transparent;border:0;color:var(--text);text-decoration:none}
+  .bz-dr-row:hover{background:var(--surface2)}
+  .bz-dr-row.on{background:var(--action,var(--accent));color:var(--action-ink,#fff)}
+  .bz-dr-ic{display:inline-flex;color:var(--accent);flex:none}
+  .bz-dr-row.on .bz-dr-ic{color:#fff}
+  .bz-dr-t{min-width:0;display:flex;flex-direction:column}
+  .bz-dr-l{font-weight:800;font-size:15px;line-height:1.2}
+  .bz-dr-s{font-size:12px;font-weight:650;color:var(--muted);line-height:1.3}
+  .bz-dr-row.on .bz-dr-s{color:rgba(255,255,255,.85)}
+  .bz-dr-sep{display:flex;align-items:center;gap:8px;margin:8px 4px 4px;border-top:1px solid var(--line);padding-top:8px}
+  .bz-dr-sep span{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .bz-help{margin:0 0 10px} .bz-help summary{cursor:pointer;font-family:'Fraunces',var(--display);font-weight:800;font-size:16px;min-height:44px;display:flex;align-items:center}
+  .bz-help p{margin:6px 0 2px;line-height:1.6;color:var(--text)}
+  @media (max-width:640px){ .bz-sheet-ov{padding:0} .bz-sheet{margin:0;min-height:100dvh;border-radius:0} .bz-av-row{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))} }
   /* The page header centres its title against the page (grid 1fr/auto/1fr). On a phone
      three columns leave the title a sliver, so it stacks: pill and actions on one row,
      the name below, still centred. */
@@ -606,6 +743,8 @@
      aria-hidden, because a screen reader announcing "trade mark" mid-brand every time the
      header is read is noise, not information. */
   .sb-tm{font-size:.42em;font-weight:700;letter-spacing:0;vertical-align:.78em;margin-left:.24em}
+  /* The mark is drawn by CSS, not typed into the button's text: a control's text carries no pictograph (FIX-BEE v2, standard §9). */
+  .sb-tm::before{content:"\2122"}
   /* drawer rows that duplicate the desktop top nav — mobile only */
   @media(min-width:640px){ .sb-mob-only{display:none!important} }
   /* comfortable default type: the whole app runs ~9% larger; Large text steps up further */
@@ -902,6 +1041,11 @@
   .avc-villain .avc-foil{background:linear-gradient(115deg,transparent 38%,color-mix(in srgb,var(--c1) 60%,rgba(255,120,150,.5)) 48%,transparent 58%);animation:avcShine 4s linear infinite}
   .avc-art{position:relative;z-index:1;width:160px;height:160px;margin:2px auto 0;display:grid;place-items:center;
     background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--c2) 45%,transparent),transparent 68%)}
+  .avc-sil{display:block;filter:brightness(0) opacity(.28)}.avc-sil svg,.avc-sil img{width:100%;height:100%}
+  .avc-tierword{font:900 12px var(--body,sans-serif);letter-spacing:.08em;text-transform:uppercase;align-self:center}
+  .avc-stat.avc-ev{grid-template-columns:1fr auto}
+  .avc-ev-none{font:600 12.5px/1.45 var(--body,sans-serif);color:var(--ink,#241E33);padding:2px 0}
+  .avc-villain .avc-ev-none{color:#EFE9FF}
   .avc-art.locked .avc-lock{font-size:64px;filter:grayscale(1);opacity:.5}
   .avc-name{position:relative;z-index:1;text-align:center;font:800 21px var(--display,serif);color:var(--ink,#241E33);margin-top:2px}
   .avc-title{position:relative;z-index:1;text-align:center;font:italic 600 12px/1.35 var(--body,sans-serif);color:var(--muted,#7A6E5C);margin:1px 6px 8px}
@@ -2493,7 +2637,9 @@
 (function(){
   try{
     if(window.SB_DEMO) return;
-    if(localStorage.getItem('sb_splash')==='0') return;
+    /* NO LOAD SCREENS FOR NOW (FAMILY-STANDARD v2, owner decision 4): the world opening is OFF unless a
+       child turned it on (Settings → Look → Opening splash). It also kept ~240KB of audio and art off the first load. */
+    if(localStorage.getItem('sb_splash')!=='1') return;
     var st={}; try{ st=JSON.parse(localStorage.getItem('sb_saas_v2')||'{}')||{}; }catch(e){}
     if(!st.children || !st.children.length) return;
     /* FIRST RUN SKIPS IT (FIX-BEE A3). The show is a welcome BACK: on the day a child is set
@@ -2904,7 +3050,7 @@
 <dt style="font-weight:700;margin-top:14px">Does my child hear the words spoken aloud?</dt><dd style="margin:4px 0 0;line-height:1.6">Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly.</dd>
 <dt style="font-weight:700;margin-top:14px">How does it help prepare for the Scripps National Spelling Bee?</dt><dd style="margin:4px 0 0;line-height:1.6">It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all 108 national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.</dd>
 <dt style="font-weight:700;margin-top:14px">Does it teach Greek and Latin roots?</dt><dd style="margin:4px 0 0;line-height:1.6">Yes. 100 Word Journeys lessons and 122 concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.</dd>
-<dt style="font-weight:700;margin-top:14px">Does it work without internet?</dt><dd style="margin:4px 0 0;line-height:1.6">Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on the device and backed up to your account whenever there is a connection, so a wiped or lost tablet does not cost your child months of work.</dd>
+<dt style="font-weight:700;margin-top:14px">Does it work without internet?</dt><dd style="margin:4px 0 0;line-height:1.6">Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on this device. Nothing leaves it unless a grown-up switches on the optional cloud backup — and a child’s name and age never leave it at all.</dd>
 <dt style="font-weight:700;margin-top:14px">What ages is it for?</dt><dd style="margin:4px 0 0;line-height:1.6">Children aged 8 to 15. Difficulty tracks the individual child rather than their school year, so a strong eight-year-old and a struggling thirteen-year-old both get words pitched at them.</dd>
 <dt style="font-weight:700;margin-top:14px">Is it safe for children?</dt><dd style="margin:4px 0 0;line-height:1.6">There is no chat, no leaderboard, no microphone, no ads and no strangers. Only the parent holds an account; children never sign in to anything. Practice is stored on your own device.</dd>
 <dt style="font-weight:700;margin-top:14px">Can more than one child use one account?</dt><dd style="margin:4px 0 0;line-height:1.6">Yes. One parent account carries a profile for each child, each with their own words, progress and avatar.</dd>
@@ -3002,6 +3148,7 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="supabase-auth.js?v=20261002c"></script>
 <script defer src="telemetry.js?v=20261002c"></script>
 <script defer src="bizzing-wallet.js?v=20261002c"></script>
+<script defer src="bizzing-avatars.js?v=20261002c"></script>
 <script defer src="bizzing-activity.js?v=20261002c"></script>
 <script defer src="family-shell.js?v=20261002c"></script>
 <script defer src="app3.js?v=20261002c"></script>

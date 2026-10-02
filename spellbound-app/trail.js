@@ -108,7 +108,7 @@
   /* A STOP FINISHED pays the standard's 'stop' once per stop per lap, whichever door finished
      it — Practice at PGATE or the quiz. Both used to be able to fire for one stop. */
   const payStop = (c, uid) => { try { if (!uid) return 0; const k = uid + ':' + lapOf(c); const pd = tr(c).paid = tr(c).paid || {};
-    if (pd[k]) return 0; pd[k] = 1; return addCoins('stop'); } catch (e) { return 0; } };
+    if (pd[k]) return 0; pd[k] = Date.now(); return addCoins('stop'); } catch (e) { return 0; } };   /* the time, not 1: Home counts the stops cleared THIS WEEK from it (FIX-BEE v2 B3) */
   const stRec = (c, u, lap) => { const st = tr(c).st = tr(c).st || {}; return st[stKey(u, lap)] = st[stKey(u, lap)] || {}; };
   /* THE FIVE STARS: one for opening the road, then two for finishing the stop
      (every task, every set) and two for how well it was finished. Reading a
@@ -854,7 +854,7 @@
           <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;flex-shrink:0">${iconSVG('target', 26)}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Five expert expeditions</span>
           <span style="display:block;font-size:13px;color:var(--muted);margin-top:3px">The hardest chapters in the library — 90% gates, no mercy, national-level words. Unlocks with the Advanced Pack.</span></span>
-          <span style="flex-shrink:0;padding:10px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap">Ask a grown-up →</span></button>`;
+          <span style="flex-shrink:0;padding:10px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap">${iconSVG('lock',14)} Advanced Pack</span></button>`;
     return `<div style="${RISE()}max-width:660px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
@@ -1601,7 +1601,7 @@
             <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('lock', 24)}</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">Six expert expeditions</span>
             <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">54 stops at national level, each on its own map, gated at 90%. Unlocks with the Advanced Pack.</span>
-            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Ask a grown-up &rarr;</span></span></button>`}
+            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${iconSVG('lock',14)} Advanced Pack</span></span></button>`}
       </div>
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">Ultra Champions</span>
@@ -1613,7 +1613,7 @@
             <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('crown', 24)}</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">The champions' journey</span>
             <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">Every word in the library, hardest first, in day-sized blocks. The end of the road.</span>
-            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Ask a grown-up &rarr;</span></span></button>`}
+            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${iconSVG('lock',14)} Advanced Pack</span></span></button>`}
       </div>
       <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>
     </div>`;

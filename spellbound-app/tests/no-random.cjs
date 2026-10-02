@@ -26,7 +26,11 @@ const gone = [/PACK_WEIGHTS/, /\bpackOdds\b/, /\boddsPanel\b/, /Drop odds/i, /dr
 const left = gone.filter(rx => rx.test(app3)).map(String);
 ok(!left.length, 'no pack draw, drop odds, selling or coin-priced content left in app3.js' + (left.length ? ' — ' + left.join(', ') : ''));
 const spendCalls = [...app3.matchAll(/\bspendCoins\(([^)]*)\)/g)].map(m => m[1]).filter(a => !/^n, why$/.test(a));
-ok(spendCalls.length === 1 && /r\.price/.test(spendCalls[0]), 'the ONE coin purchase is an avatar at its printed price (' + spendCalls.join(' | ') + ')');
+/* FIX-BEE v2: coins buy three things, each at a FIXED printed price — an avatar (its tier's price),
+   a world (240, the family WORLD_PRICE), a frame (its own price). Nothing rolled, nothing variable. */
+const allowed = [/^f\.price,'frame:'\+id$/, /^s\.price,'avatar:'\+id$/, /^WORLD_PRICE_COINS,'world:'\+n$/];
+ok(spendCalls.length === 3 && spendCalls.every(a => allowed.some(rx => rx.test(a.trim()))), 'coins buy only an avatar, a world or a frame, each at its printed price (' + spendCalls.join(' | ') + ')');
+ok(/const WORLD_PRICE_COINS=240\b/.test(app3), 'a world costs the family price, 240 Bizzing coins');
 
 const seed = (tier) => ({ theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234',
   children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'bizzy', theme: 'spellbound', coins: 300, tier,

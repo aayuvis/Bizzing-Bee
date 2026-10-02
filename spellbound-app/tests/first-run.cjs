@@ -25,6 +25,7 @@ const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0
 const LEARNING = () => {
   const S = state;
   if (S.screen !== 'app') return null;
+  if (S.nav === 'firstword' && S.fw && !S.fw.done) return 'firstword';
   if (S.nav === 'concepts' && S.conceptSel && S.trailReturn) return 'lesson:' + S.trailReturn;
   if (S.nav === 'trail' && S.trailView === 'quiz' && S.tq && S.tq.items && S.tq.items.length) return 'quiz';
   if (S.nav === 'train' && S.sessionWords && S.sessionWords.length && !S.sessionOver) return 'drill';
@@ -78,7 +79,20 @@ async function walkSetup(pg, stopAtLast) {
   }
   const first = await pg.evaluate(() => { try { const n = SB_NEXT_STEP(); return n && n.arg; } catch (e) { return null; } });
   ok(!!reached && taps <= 3, `a real lesson or question is on screen within 3 taps of finishing setup (${reached || 'nothing'} after ${taps} taps)`);
-  ok(reached === 'lesson:' + first && taps === 0, `and it is the first Atlas stop's own lesson, reached with no tap at all (${reached}, first stop ${first})`);
+  /* A8 (FIX-BEE v2): the first thing is ONE spoken word to spell — right, and celebrated, inside two
+     minutes — and then the first Atlas stop's own lesson. */
+  ok(reached === 'firstword' && taps === 0, `the first thing on screen is one word to spell, with no tap at all (${reached})`);
+  const t0 = Date.now();
+  await pg.fill('[data-inp="fwType"]', 'zzz'); await pg.click('[data-act="fwCheck"]'); await pg.waitForTimeout(250);
+  const held = await pg.evaluate(() => ({ nav: state.nav, miss: !!state.fw.miss, panel: !!document.querySelector('.sb-content') && /Nearly/.test(document.querySelector('.sb-content').textContent) }));
+  ok(held.nav === 'firstword' && held.miss && held.panel, 'a wrong first try HOLDS and shows the letters — it never moves on by itself');
+  const w = await pg.evaluate(() => state.fw.w);
+  await pg.fill('[data-inp="fwType"]', w); await pg.click('[data-act="fwCheck"]'); await pg.waitForTimeout(300);
+  const yay = await pg.evaluate(() => ({ done: !!(state.fw && state.fw.done), msg: /spelled right/i.test(document.querySelector('.sb-content').textContent), ms: Date.now() - state.fw.t0 }));
+  ok(yay.done && yay.msg && yay.ms < 120000, `the first word is spelled right and celebrated inside two minutes (${Math.round(yay.ms / 1000)}s)`);
+  await pg.click('[data-act="fwDone"]'); reached = null;
+  for (let t = 0; t < 30 && !reached; t++) { await pg.waitForTimeout(200); reached = await pg.evaluate(LEARNING); }
+  ok(reached === 'lesson:' + first, `then one tap opens the first Atlas stop's own lesson (${reached}, first stop ${first})`);
   ok(await pg.evaluate(() => !document.querySelector('#sb-splash')), 'no splash stood in the way');
   const kid = await pg.evaluate(() => { const c = state.children[0] || {}; return { fr: c.fr, n: state.children.length, lu: Object.keys(state.luMastered || {}).length }; });
   ok(kid.n === 1 && kid.fr === ymd(new Date()), 'the new child carries the day they were set up (fr = today)');

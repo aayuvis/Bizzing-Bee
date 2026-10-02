@@ -131,7 +131,8 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
     state.parentPin = '1234';
     for (const nav of ['home', 'trail', 'coach', 'games', 'collection', 'progress', 'revisions']) { try { app.setNav(nav); } catch (e) {} await W(120); levers(document).forEach(x => seen.add(nav + ':' + x)); state.pinDlg = null; }
     state.progTab = 'parent'; state.nav = 'progress'; render(); await W(120); levers(document).forEach(x => seen.add('parent:' + x));
-    state.settingsOpen = true; state.nav = 'settings'; render(); await W(120);
+    /* Settings' Testing tools sit behind the Grown-ups PIN now (FIX-BEE v2, §5): pass it, then look */
+    state.settingsOpen = true; state.nav = 'settings'; state._setGrown = true; render(); await W(120);
     o.settingsLevers = [...document.querySelectorAll('[data-act]')].filter(el => /toggleDev/.test(el.getAttribute('data-act'))).map(el => ({ act: el.getAttribute('data-act'), inTools: !!el.closest('details') }));
     o.outside = [...seen];
     o.testCoinsOffered = /Tops the purse up to 1,000,000/.test(document.body.innerHTML);

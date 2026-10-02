@@ -41,7 +41,7 @@ const CREDS = [['admin', 'admin'], ['admin', 'password'], ['admin', '1234'], ['a
     ok(r.admin === false, 'nobody is an admin');
     /* the console is behind the grown-up PIN, not a password */
     const acct = await pg.evaluate(() => { app.setNav('settings'); const t = document.body.textContent;
-      return { open: !!state.settingsOpen && /Account & subscription/.test(t), admin: /Admin console/.test(t) }; });
+      return { open: !!state.settingsOpen && /Grown-ups/.test(t), admin: /Admin console/.test(t) }; });
     ok(acct.open && !acct.admin, acct.open ? 'the parent-facing account card no longer offers an "Admin console" sign-in' : 'Settings did not open to check the account card');
     const gate = await pg.evaluate(() => { state.settingsOpen = false; state.pinDlg = null; app.openAdmin(); return { dlg: !!state.pinDlg, make: !!(state.pinDlg && state.pinDlg.make), screen: state.screen }; });
     ok(gate.dlg && gate.make && gate.screen !== 'admin', 'the support console asks a grown-up to set a PIN before it opens');

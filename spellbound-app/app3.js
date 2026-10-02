@@ -27,7 +27,7 @@ const state = {
   coachSession:false, trainBack:'home', wr:null, or:null, wrInfoKey:'', orInfoKey:'', orFeedback:'',
   drawerOpen:false,
   luTab:'revise', luWordsOpen:false, luMastered:{}, reviseIdx:0, conceptWordIdx:0, heatReveal:false,
-  game:null, gInfo:false, sound:true, parentLogOpen:null, evoSel:null,
+  game:null, gInfo:false, sound:(function(){ try{ return SB_STORE.get('sound')!=='0'; }catch(e){ return true; } })(), parentLogOpen:null, evoSel:null,
   lessonSel:null, lessonWordsOpen:false,
 };
 /* ---- Word Journeys: 100 etymology lessons (premium) ---- */
@@ -469,9 +469,14 @@ function walletSync(c){ try{ c=c||active(); const W=window.BZ_WALLET; if(!c||!W|
   else if(c.walletWho && c.walletWho!==who.toLowerCase()){ const had=Math.max(0, Math.floor(+c.coins||0)); if(had>0 && !W.ledger(who).length) W.migrateFrom(BEE_APP, who, had); c.walletWho=who.toLowerCase(); }
   else if(!c.walletWho) c.walletWho=who.toLowerCase();
   c.coins=W.balance(who); }catch(e){} }
+/* J7: what a child did while wearing each buddy — the card shows these, never invented stats. */
+function avEvBump(c,ev){ try{ const id=c.avatar||'bizzy'; const E=(c.avEv=c.avEv||{}); const r=E[id]=E[id]||{r:0,s:0,m:0};
+  if(ev==='answer') r.r++; else if(ev==='stop') r.s++; else if(ev==='mastery') r.m++; }catch(e){} }
+window.SB_AV_EVIDENCE=(id)=>{ const c=active(); return (c&&c.avEv&&c.avEv[id])||null; };
 function addCoins(ev){ const c=active(); const W=window.BZ_WALLET;
   if(typeof ev!=='string' || !W || !Object.prototype.hasOwnProperty.call(W.EARN, ev)) return 0;
   if(c.devCoins) return 0;                                   // the test purse is not a real one
+  avEvBump(c,ev);                                            // the buddy's card records the work, paid or capped
   let n=0;
   if(window.SB_DEMO){ n=W.EARN[ev]; c.coins=(c.coins||0)+n; }  // the sample child's purse, never the family's
   else { walletSync(c); if(!walletWho(c)) return 0; n=W.earn(BEE_APP, walletWho(c), ev); c.coins=W.balance(walletWho(c)); }
@@ -495,15 +500,25 @@ function themeInPlan(id){ if(state.devUnlock) return true;
   try{ if((active().unlockedThemes||[]).indexOf(id)>=0) return true;
     if(!window.SB_ENT) return true; const lim=SB_ENT.worldLimit(); if(lim==='all') return true;
     const idx=(typeof THEMES!=='undefined')?THEMES.findIndex(t=>t.id===id):-1; return idx>=0 && idx<lim; }catch(e){ return true; } }
+/* WORLDS OPEN BY THE FAMILY RULE (FIX-BEE v2, FAMILY-STANDARD §7–§8), through the shared engine
+   (bizzing-avatars.js → BZ_AVATARS). Bee's eight worlds are numbered in THEMES order. Worlds 1–2
+   (Bizzing Bee, Galaxy) are open to everyone; worlds 3–8 open with the family plan, or one at a
+   time for 240 Bizzing coins (buyWorld, through the wallet). A world opens its packs too. Worlds a
+   child already held — bought under the old price, or reached on the old Level ladder (store step
+   v7→v8 kept those) — stay in c.unlockedThemes and stay open. Guard: tests/avatars-engine.cjs. */
+function worldNum(id){ try{ const i=THEMES.findIndex(t=>t.id===id); return i<0?0:i+1; }catch(e){ return 0; } }
+function worldIdOf(n){ try{ return (THEMES[n-1]||{}).id||null; }catch(e){ return null; } }
+function familyPlan(){ if(state.devUnlock) return true; try{ return !!state.premium || (!!window.SB_ENT && SB_ENT.tierId()!=='free'); }catch(e){ return !!state.premium; } }
+function worldsHeld(c){ c=c||active(); return (c.unlockedThemes||[]).map(worldNum).filter(Boolean); }
+function avCtx(c){ c=c||active(); const owned=new Set(); try{ Object.keys(c.avOwned||{}).forEach(id=>{ if(avCount(c,id)>0) owned.add(id); }); }catch(e){}
+  return { owned, worlds:worldsHeld(c), plan:familyPlan()?'family':'free', milestones:avMilestonesMet(c), who:walletWho(c)||undefined }; }
 function isThemeUnlocked(id){ if(state.devUnlock) return true; if((active().unlockedThemes||[]).indexOf(id)>=0) return true;
-  try{ if(window.SB_ENT){ const lim=SB_ENT.worldLimit(); if(lim==='all') return true; const idx=(typeof THEMES!=='undefined')?THEMES.findIndex(t=>t.id===id):-1; if(idx>=0 && idx<lim) return true; } }catch(e){}
-  if(FREE_THEMES.indexOf(id)>=0) return true; if(worldMet(id)) return true; return false; }
-/* WORLDS OPEN ON THE LEVEL LADDER (FIX-BEE C4): a world used to be 400 coins; now each one
-   names the Level that opens it, for every child on every plan — the plan can still include
-   it sooner. Levels are rankOf's, which only words spelled right can move. */
-const WORLD_LEVEL = { anime:3, science:5, avatar:7, godly:9, race:10, dino:11 };
-function worldMet(id){ const n=WORLD_LEVEL[id]; if(!n) return false; try{ return rankOf(active()).level>=n; }catch(e){ return false; } }
-function worldRule(id){ const n=WORLD_LEVEL[id]; return n?('Reach Level '+n):'Comes with the plan — ask a grown-up'; }
+  const n=worldNum(id); if(!n) return FREE_THEMES.indexOf(id)>=0;
+  try{ return BZ_AVATARS.worldOpen(n, avCtx()); }catch(e){ return FREE_THEMES.indexOf(id)>=0; } }
+function worldMet(id){ return false; }   /* the Level ladder no longer opens worlds (kept for old callers) */
+const WORLD_PRICE_COINS=240;
+function worldLockText(id,short){ return short?(WORLD_PRICE_COINS+' coins'):('Open it for '+WORLD_PRICE_COINS+' Bizzing coins, or it comes with the family plan'); }
+function worldRule(id){ return worldLockText(id); }
 /* TWO KINDS OF LOCK, and a child can tell them apart at a glance (FIX-BEE C4).
    LEARNING lock (data-lock="learn"): the path icon, accent ink, a dashed edge — and the words
    name the learning that opens it ("Reach Level 5", "Opens at stop 3 of the Meadow").
@@ -513,12 +528,12 @@ function lockChip(kind,text,opt){ opt=opt||{}; const learn=kind==='learn';
   return `<span class="sb-lock ${learn?'sb-lock-learn':'sb-lock-plan'}" data-lock="${learn?'learn':'plan'}" style="display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:4px 9px;border-radius:999px;font-family:var(--ui,var(--body));font-weight:800;font-size:${opt.fs||11.5}px;line-height:1.25;text-align:left;${learn?'background:var(--chip);color:var(--accent);border:1px dashed color-mix(in srgb,var(--accent) 55%,transparent)':'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}">${learn?iconSVG('steps',12,2.2):iconSVG('lock',11,2.2)}<span>${esc(text)}</span></span>`; }
 /* A concept chapter's lock: the Atlas stop that teaches it, or the plan. */
 function conceptLock(ci){ const ch=(state.conceptData||[])[ci];
-  if(ch&&ch.adv) return { kind:'plan', text:'Comes with the Advanced Pack — ask a grown-up' };
+  if(ch&&ch.adv) return { kind:'plan', text:'Comes with the Advanced Pack' };
   let t=null; try{ t=(typeof window.SB_TRAIL_TAUGHT==='function')?SB_TRAIL_TAUGHT(ci):null; }catch(e){}
   if(!t && !window.SB_TRAIL){ try{ if(!state._trailAsked && window.SB_LAZY){ state._trailAsked=1; SB_LAZY.need('atlas',()=>{ try{ render(); }catch(e){} }); } }catch(e){}
     return { kind:'learn', text:'Opens on the Atlas' }; }
   if(t) return { kind:'learn', text:'Opens at stop '+t.stop+' of '+(t.act||'the Atlas'), t };
-  return { kind:'plan', text:'Comes with the plan — ask a grown-up' }; }
+  return { kind:'plan', text:'Comes with the family plan' }; }
 function isListUnlocked(key){ if(state.devUnlock) return true; try{ if(window.SB_ENT && SB_ENT.has('lists')) return true; }catch(e){} if(!isPremiumList(key)||state.premium) return true; return !!(active().unlockedLists||{})[key]; }
 // Entitlement guard for tier-locked features. Returns true if allowed; else opens the
 // tier/pricing sheet with an upsell and returns false. feature ∈ SB_TIERS[*].ent keys.
@@ -563,6 +578,41 @@ function markActiveToday(){ const c=active(); if(!c) return; const t=todayKey();
 function weekDayKeys(){ const out=[]; const d=new Date(); const dow=(d.getDay()+6)%7; d.setDate(d.getDate()-dow);
   for(let i=0;i<7;i++){ out.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')); d.setDate(d.getDate()+1); }
   return out; }
+/* THIS WEEK, from evidence (FIX-BEE v2 B3): stops cleared (trail's paid record carries the time) and
+   words mastered (c.mast — mastered-at, right on two different days). Monday is the first day, as the
+   Hive counts it. */
+function weekStartTs(){ const d=new Date(); const dow=(d.getDay()+6)%7; d.setHours(0,0,0,0); d.setDate(d.getDate()-dow); return d.getTime(); }
+function weekProgress(c){ c=c||active(); const t0=weekStartTs(); let stops=0, words=0;
+  try{ const pd=((c.trail||{}).paid)||{}; for(const k in pd) if(+pd[k]>=t0) stops++; }catch(e){}
+  try{ const M=c.mast||{}; for(const k in M){ const r=M[k]; if(r&&r.b>=2&&!r.leg&&+r.mt>=t0) words++; } }catch(e){}
+  return { stops, words }; }
+/* Where the next stop sits in its own region: "stop 3 of 12". The region's count is small and
+   concrete — not the 102-stop road (CLAUDE: never show a speller how long the whole road is). */
+function regionPos(nx){ try{ const T=window.SB_TRAIL; if(!T||!nx||nx.kind!=='unit') return null;
+    const units=(T.honey&&T.honey.units)||[]; const u=units.find(x=>x.id===nx.arg); if(!u) return null;
+    const inAct=units.filter(x=>x.act===u.act); const i=inAct.findIndex(x=>x.id===u.id); return i<0?null:{ n:i+1, of:inAct.length }; }catch(e){ return null; } }
+/* THE BUDDY'S HELLO (FIX-BEE v2 B5): built from what the child last DID — the last missed word,
+   words due again, this week's stops and masteries, the last trap beaten — with the buddy's own
+   line as one voice among them. It changes once per visit (never on a re-render) and never says
+   the same thing two visits running (c.lastGreet). It names effort, never a lapse: a miss is a
+   word "to try again", and nothing here counts days or mentions a skip. */
+function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'friend';
+  try{ const due=mastDueWords(c,30).length; if(due) out.push({k:'due',t:`${due} word${due===1?' is':'s are'} ready for a second look today, ${nm} — that is how they stick.`}); }catch(e){}
+  try{ const mn=(c.missed||[]).length; if(mn) out.push({k:'miss',t:`${mn===1?'One word':mn+' words'} from last time ${mn===1?'is':'are'} waiting for another try, ${nm} — every try counts.`}); }catch(e){}
+  try{ const wp=weekProgress(c); if(wp.stops||wp.words) out.push({k:'week',t:`This week: ${wp.stops} stop${wp.stops===1?'':'s'} and ${wp.words} word${wp.words===1?'':'s'} mastered. Nice work, ${nm}.`}); }catch(e){}
+  try{ const tb=Object.keys(c.trapsBeaten||{}).length; if(tb) out.push({k:'trap',t:`You have beaten ${tb} trap word${tb===1?'':'s'} — words that once tripped you up.`}); }catch(e){}
+  try{ const nx=SB_SHELL.nextStep(); if(nx&&nx.ready&&!nx.allDone&&nx.title) out.push({k:'next',t:`Next up: ${trunc(nx.title,40)}. Ready when you are, ${nm}.`}); }catch(e){}
+  let line=''; const who=c.avatar||'bizzy';
+  try{ const G=window.SB_AV_GREETINGS||{}; line=G[who]||''; }catch(e){}
+  if(!line){ try{ if(typeof SB_AV_CARD==='function'){ const d=SB_AV_CARD(who); line=(d&&d.greeting)||''; } }catch(e){} }
+  if(!line) line="Buzz buzz, {name}! Let's spell the meadow back to bloom!";
+  out.push({k:'buddy',t:String(line).replace(/\{name\}/g,nm)});
+  return out; }
+let _greetVisit=null;   /* one pick per visit to Home — a re-render keeps it */
+function homeGreet(c){ c=c||active(); const C=homeGreetCands(c); const key=(c&&c.name||'')+'|'+state.nav;
+  if(_greetVisit&&_greetVisit.key===key&&C.some(x=>x.k===_greetVisit.k)) return C.find(x=>x.k===_greetVisit.k).t;
+  const n=((c.greetN|0)+1); const pool=C.filter(x=>x.k!==c.lastGreet); const pick=(pool.length?pool:C)[n%(pool.length||C.length)];
+  c.greetN=n; c.lastGreet=pick.k; _greetVisit={key,k:pick.k}; return pick.t; }
 function goodDaysThisWeek(c){ c=c||active(); const played=new Set((c&&c.daysPlayed)||[]); return weekDayKeys().filter(k=>played.has(k)).length; }
 /* ---- misses: persist per-child to a revise list (with counts) AND the working pool ---- */
 /* `mark` = the child filed it themselves (a study aid) — the revise pile only. Without it this
@@ -631,8 +681,11 @@ function newCoachBatch(){ const key=state.sessionListKey||activeListKey(); state
 function gainXp(){ const c=active(); const key=activeListKey(); const lp=getList(c,key); const before=listLevel(c,key);
   lp.xp=(lp.xp||0)+1; const rawAfter=listLevelRaw(c,key); const after=Math.min(rawAfter, levelCap());
   if(after>before){ const form=formIdx(after); const art=grantStageArt();
-    addCoins('mastery'); state.toast='Stage up in '+listLabel(key)+' ✨ — you won a '+art.name; scheduleToast(3000); sfx('level');   /* a stage mastered is the standard's mastery event */ burstConfetti(90); }
-  else if(!state.premium && rawAfter>FREE_LEVEL_CAP && before>=FREE_LEVEL_CAP && (lp.xp % 6 === 0)){ state.toast='Stage 5 cleared — more stages come with the plan (ask a grown-up)'; scheduleToast(2800); }
+    /* NO COINS HERE (FIX-BEE v2): a stage-up is XP — right answers counted — and the standard's
+       mastery coin fires only on mastery EVIDENCE. It moved to listMasteryPay(), which pays when
+       every word of a Stage is mastered (right on two separate days). */
+    state.toast='Stage up in '+listLabel(key)+' ✨ — you won a '+art.name; scheduleToast(3000); sfx('level'); burstConfetti(90); }
+  else if(!state.premium && rawAfter>FREE_LEVEL_CAP && before>=FREE_LEVEL_CAP && (lp.xp % 6 === 0)){ state.toast='Stage 5 cleared — well spelled!'; scheduleToast(2800); }
 }
 // pick the smoothest natural voice the device offers (loaded async)
 let _voice = null;
@@ -644,7 +697,7 @@ function loadVoices(){ try{ const vs=window.speechSynthesis.getVoices()||[]; if(
   if(!best) best=pool.find(v=>/en[-_]?us/i.test(v.lang))||pool[0];
   _voice=best||null;
 }catch(e){} }
-function utter(text,rate){ const u=new SpeechSynthesisUtterance(text); if(_voice) u.voice=_voice; u.rate=rate||0.9; u.pitch=1.0; u.volume=1; return u; }
+function utter(text,rate){ const u=new SpeechSynthesisUtterance(text); if(_voice) u.voice=_voice; u.rate=rate||0.9; u.pitch=1.0; u.volume=(window.SB_VOL?SB_VOL.voice():1); try{ if(window.SB_VOL) SB_VOL.duck(Math.min(8000,600+String(text).length*70)); }catch(e){} return u; }
 /* Studio word audio: single words prefer a bundled Google TTS clip (voice/w/*.mp3,
    manifest in voice-words.js) — correct pronunciations, same voice as the bee.
    Anything without a clip (sentences, long-tail words) falls back to device TTS. */
@@ -665,6 +718,7 @@ function deviceSpeak(text,rate){ try{
     if(_wvAudio){ try{ _wvAudio.pause(); }catch(e){} }
     const a=new Audio(clip); try{ a.preservesPitch=true; a.mozPreservesPitch=true; }catch(e){}
     a.playbackRate=Math.max(.55,Math.min(1.3,(rate||0.9)/0.9)); _wvAudio=a;
+    try{ if(window.SB_VOL){ a.volume=SB_VOL.voice(); SB_VOL.duck(1400); a.addEventListener('ended',()=>{ try{ SB_VOL.duck(250); }catch(e){} }); } }catch(e){}
     /* A clip that fails to load fires BOTH `error` on the element AND a rejection from
        play() — so an unguarded fallback spoke the word twice, which is what a word with
        no working recording sounded like on every hosted build (those stream each clip
@@ -1647,8 +1701,11 @@ function quoteOfHour(){
 /* ---- 🐞 bug reports live in the device bucket of SB_STORE (not on a child) ---- */
 function _bugList(){ try{ return SB_STORE.getJSON('bugs',[])||[]; }catch(e){ return []; } }
 function _bugSave(list){ try{ SB_STORE.setJSON('bugs', list); }catch(e){} }
+/* The bug panel is a TESTING tool (FIX-BEE v2, Q7): it used to ride the edge of every child
+   screen as a "BUG?" tab. It now exists only while a grown-up has testing mode on (behind the
+   PIN), and Settings → Grown-ups → Testing tools opens it. A child never sees it. */
 function bugUI(){
-  if(state.screen!=='app') return '';
+  if(state.screen!=='app' || !state.devUnlock) return '';
   const tab=`<button data-act="bugToggle" class="sb-bug-tab" title="Report a bug or share an idea" aria-label="Report a bug">🐞<span>BUG?</span></button>`;
   if(!state.bugOpen) return tab;
   const cats=[['bug','💥 Something broke'],['looks','🎨 Looks wrong'],['audio','🔊 Audio'],['words','📖 A word or fact'],['idea','💡 An idea']];
@@ -1687,7 +1744,7 @@ function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
   const sent=w.s?`<div style="margin-top:12px;text-align:left;background:var(--surface2);border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:var(--text)"><span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px">In a sentence</span>${esc(w.s)}</div>`:'';
   return `<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:22px;background:rgba(20,12,4,.5)" data-act="wordCardClose">
     <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;max-width:380px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 20px 60px rgba(20,10,30,.5);animation:sb-pop .35s cubic-bezier(.2,1.5,.4,1) both;max-height:88vh;overflow:auto">
-      <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:8px">⏳ Word of the hour</div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:8px">${iconSVG('history',14,2.4)} Word of the hour</div>
       <div style="font-family:var(--display);font-weight:800;${hwStyle(w.w,30)};margin-bottom:${respell?'3px':'6px'}">${esc(w.w)}</div>
       ${respell}${syl}
       <button data-act="wordCardSay" data-arg="${escA(w.w)}" style="margin-top:4px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
@@ -2114,15 +2171,15 @@ const app = {
   onbBeeDate:(v)=>{ state.draft.beeDate=v||null; },
   onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'landing'}); } else set({onbStep:state.onbStep-1}); },
   pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' is waiting in your Collection — its card says how to win it.'); return; } state.draft.avatar=id; render(); },
-  onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('🔒 Locked — start in the Hive, then unlock this world for '+COST.theme+' 🪙'); return; } state.draft.theme=id; state.theme=id; render(); },
+  onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('That world opens later — start in one of these two'); return; } state.draft.theme=id; state.theme=id; render(); },
   onbNext:()=>{ const S=state;
     if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
     if(S.onbStep===3 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
     if(S.onbStep<4){ set({onbStep:S.onbStep+1}); return; }
-    app._finishOnb(); set({screen:'app', nav:'home'}); flash('Profile ready — let’s spell! 🐝');
-    /* Straight into learning (FIX-BEE A3): the first Atlas stop's lesson, through the one
-       next-step function every "next" uses — not a home screen to read first. */
-    try{ app.goNext(); }catch(e){}
+    app._finishOnb(); set({screen:'app', nav:'home'});
+    /* A8 (FIX-BEE v2): the first thing a new speller does is SPELL — one spoken word, right inside
+       the first minute, celebrated — and then the first Atlas lesson through the one next step. */
+    try{ app.firstWord(); }catch(e){ try{ app.goNext(); }catch(e2){} }
     /* If they picked a paid plan on the landing page, land them back on it rather
        than dropping them at the bottom of the ladder to find it again. The tier is
        NOT applied here — nobody has paid yet; the sheet is where that happens. */
@@ -2142,6 +2199,18 @@ const app = {
        result IS the Bee Band — the Quest start is then derived from the same number. */
     state.lt={ band:2, i:0, ok:0, fails:0, words:sample(ltBandPool(2),6), typed:'', placed:null };
     set({screen:'app', nav:'leveltest'}); setTimeout(()=>{ const lt=state.lt; if(lt&&lt.words[0]) say(lt.words[0].w); },400); },
+  firstWord:()=>{ const idx=wordIndex(); const c=active(); const opts=['bee','sun','hop','map','cup','jam','fox','web','hat','pen'].filter(w=>idx[w]);
+    const w=opts.length?opts[((c&&c.name)||'').length%opts.length]:'bee';
+    state.fw={ w, typed:'', tries:0, done:false, miss:false, t0:Date.now() }; set({screen:'app', nav:'firstword'});
+    setTimeout(()=>{ try{ say(w); }catch(e){} },450); },
+  fwSay:()=>{ if(state.fw) say(state.fw.w); },
+  fwType:(v)=>{ if(state.fw) state.fw.typed=v; },
+  fwKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.fwCheck(); } },
+  fwCheck:()=>{ const f=state.fw; if(!f||f.done) return; const ok=sameSpelling(f.typed,f.w); f.tries++;
+    if(ok){ f.done=true; f.miss=false; addCoins('answer'); sfx('correct'); try{ burstConfetti(200); }catch(e){} try{ SB_SHELL.milestone&&SB_SHELL.milestone('first-word'); }catch(e){} save(); render(); return; }
+    /* a miss HOLDS: the letters and the why, and the child types it again */
+    f.miss=f.typed||' '; f.typed=''; sfx('wrong'); render(); },
+  fwDone:()=>{ state.fw=null; try{ app.goNext(); }catch(e){ app.setNav('home'); } },
   ltSay:()=>{ const lt=state.lt; if(lt&&lt.words[lt.i]) say(lt.words[lt.i].w); },
   ltType:(v)=>{ state.lt.typed=v; },
   ltKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.ltEnter(); } },
@@ -2162,10 +2231,8 @@ const app = {
   ltGo:()=>{ state.lt=null; app.goNext(); },
   // theme / mode
   pickTheme:(id)=>{ if(!isThemeUnlocked(id)){ app.buyTheme(id); return; } const children=state.children.slice(); if(children[state.activeIdx]) children[state.activeIdx]={...children[state.activeIdx],theme:id}; set({theme:id, children}); },
-  buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id);
-    /* never sold for coins: a locked world says which Level opens it (worldRule) */
-    const t=(typeof THEMES!=='undefined')&&THEMES.find(x=>x.id===id);
-    flash('🔒 '+((t&&t.label)||'This world')+' opens when you '+worldRule(id).replace(/^Reach/,'reach')+' — every word you spell right counts.'); },
+  /* A locked world goes to the Shop's Worlds tab, where its fixed price is printed (FIX-BEE v2). */
+  buyTheme:(id)=>{ if(isThemeUnlocked(id)) return app.pickTheme(id); app.openShop('worlds'); },
   /* Word lists are not sold. A premium list comes with a plan, so a locked one opens
      the plan sheet where it stands, in the Library. (Lists bought under the old coin
      price stay unlocked — isListUnlocked still reads c.unlockedLists.) */
@@ -2179,8 +2246,8 @@ const app = {
   /* "Ask a grown-up about the plan": the plan sheet, which the grown-up PIN guards where it is
      drawn (pinGate in render) — so the child meets a PIN pad, never a price. */
   askPlan:(feature)=>{ openUpsell(feature||'plan', 'More to explore', 'beginner'); },
-  setMode:(m)=>set({mode:m}),
-  setTextSize:(k)=>set({textSize:k==='large'?'large':'normal'}),
+  setMode:(m)=>{ state.modePref=null; set({mode:m}); },
+  setTextSize:(k)=>set({textSize:(k==='large'||k==='small')?k:'normal'}),
   // accessibility toggles
   setA11yFont:(k)=>{ state.a11yFont=(k==='easy'?'easy':'std'); save(); render(); },
   toggleContrast:()=>{ state.a11yContrast=!state.a11yContrast; save(); render(); },
@@ -2189,9 +2256,13 @@ const app = {
   toggleReadAloud:()=>{ state.readAloud=!state.readAloud; save(); if(state.readAloud) say('I will read the cards to you!'); render(); },
   setVoiceRate:(k)=>{ state.voiceRate=(k==='slow'?0.75:1); save(); say('Hello! I read the words like this.'); render(); },
   // nav
-  setNav:(key)=>{ if(state.settingsOpen && key!=='settings') state.settingsOpen=false;   // navigating away closes the Settings pop-up
+  setNav:(key)=>{ if(key!=='home') _greetVisit=null;
+    /* C5: a route change resets the overlays that belong to the screen being left — a PIN dialog
+       opened over a locked book must not follow the child to the next screen. */
+    state.pinDlg=null; state.walletOpen=false;   /* leaving Home ends the visit: the next one gets a new hello */
+    if(state.settingsOpen && key!=='settings') state.settingsOpen=false;   // navigating away closes the Settings pop-up
     if(key==='train'){ app.startTrain(); return; } if(key==='coach'){ app.openCoach(); return; } if(key==='games'){ app.openGames(); return; } if(key==='journeys'){ app.openJourneys(); return; } if(key==='trivia'){ app.openTrivia(); return; }
-    if(key==='settings'){ pinGate(()=>app.openSettings(),'Settings — grown-ups only',true); return; }
+    if(key==='settings'){ app.openSettings(); return; }   /* the child's four sections open freely; Grown-ups asks for the PIN (FIX-BEE v2, §5) */
     if(key==='parent'){ pinGate(()=>{ state.progTab='parent'; set({nav:'progress', screen:'app', mood:'happy', conceptSel:null}); },'Parent zone'); return; }
     if(key==='progress'&&state.progTab!=='me') state.progTab='me';   // the Parent tab must ask for the PIN again (FIX-BEE M3)
     if(key==='concepts'){ lazyNeed('concepts'); loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
@@ -2548,7 +2619,7 @@ const app = {
     try{ if(typeof clearGTimer==='function') clearGTimer(); }catch(e){}
     try{ if(state.ty&&state.ty.timer){ clearInterval(state.ty.timer); state.ty.timer=null; } }catch(e){}
     state._setOpened=false; set({settingsOpen:true}); },
-  closeSettings:()=>{ state.settingsOpen=false; state._setOpened=false;
+  closeSettings:()=>{ state.settingsOpen=false; state._setOpened=false; state._setGrown=false;   /* the grown-ups pass ends with the sheet */
     try{ const g=state.game; if(g && (g.type==='beat'||g.type==='champ') && g.status==='play' && typeof startGTimer==='function') startGTimer(); }catch(e){}
     try{ if(state.status && state.status!=='idle' && (state.nav==='train'||state.nav==='coach')) autoAdvance(1600); }catch(e){}
     render(); },
@@ -2866,11 +2937,11 @@ const app = {
     state.sessionWords=words; state.sessionLabel=conceptShort(ch.title); state.gi=0; state.conceptSel=null; app.startTrain(); },
   // drawer
   openDrawer:()=>set({drawerOpen:true}), closeDrawer:()=>set({drawerOpen:false}),
-  drawer:(key)=>{ state.drawerOpen=false; const F={ home:()=>app.setNav('home'), next:()=>app.goNext(), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), concepts:()=>app.setNav('concepts'),
+  drawer:(key)=>{ state.drawerOpen=false; const F={ mypage:()=>{ state.progTab='me'; app.setNav('progress'); }, medals:()=>{ state.collTab='badges'; app.openCollection(); }, help:()=>set({nav:'help', screen:'app', conceptSel:null}), evolution:()=>app.openEvo(), home:()=>app.setNav('home'), next:()=>app.goNext(), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), concepts:()=>app.setNav('concepts'),
     trail:()=>app.openTrail&&app.openTrail(), revisions:()=>app.openRevisions(), ipatrain:()=>app.openIpaTrain(),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
       weak:()=>app.coachWeakDrill(), parentview:()=>{ state.progTab='parent'; app.setNav('progress'); }, settings:()=>app.setNav('settings'), themes:()=>app.setNav('themes'),
-      quest:()=>app.openQuestChooser(), coachdesk:()=>app.openCoachDesk(), traps:()=>app.openTraps(), collection:()=>app.openCollection(), finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain(), trail:()=>app.openTrail() };
+      quest:()=>app.openQuestChooser(), coachdesk:()=>app.openCoachDesk(), traps:()=>app.openTraps(), collection:()=>{ state.collTab='avatars'; app.openCollection(); }, finder:()=>app.openFinder(), builder:()=>app.openBuilder(), progress:()=>app.setNav('progress'), parent:()=>app.setNav('parent'), explore:()=>app.setNav('explore'), figurative:()=>app.setNav('figurative'), vocab:()=>app.openVocab(), typing:()=>app.openTyping(), quotes:()=>app.openQuotes(), trivia:()=>app.openTrivia(), trivtrain:()=>app.openTrivTrain(), ipatrain:()=>app.openIpaTrain(), trail:()=>app.openTrail() };
     (F[key]||(()=>{}))(); },
   // coach
   openCoach:()=>{ lazyNeed(['card','lists']); const c=active(); ensureLists(c);
@@ -2963,6 +3034,9 @@ const app = {
   printGo:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
     const key=activeListKey(); const cards=(state.prn&&state.prn.fmt==='cards');
     w.document.write(cards?printCards(key):printDoc(key)); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },350); state.printOpen=false; render(); }catch(e){ flash('Could not open the print view'); } },
+  certPng:(id)=>{ const c=active(); const x=certList(c).find(y=>y.id===id); if(!x) return;
+    const out=(cv)=>{ const url=cv.toDataURL('image/png'); const a=document.createElement('a'); a.href=url; a.download=('bizzing-bee-'+(c.name||'certificate')+'-'+x.title).toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,70)+'.png'; document.body.appendChild(a); a.click(); a.remove(); state._certMade=a.download; flash('Certificate saved as a picture'); };
+    certDraw(x,c,true).then(cv=>{ try{ out(cv); }catch(e){ certDraw(x,c,false).then(cv2=>{ try{ out(cv2); }catch(e2){ flash('Could not make the picture on this device'); } }); } }); },
   printAvCards:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
     w.document.write(printAvCardsDoc()); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },420); }catch(e){ flash('Could not open the print view'); } },
   addTheme:(id)=>{ const c=active(); ensureLists(c); const key=themeKey(id); const t=themeOf(id); if(!t) return;
@@ -3095,7 +3169,17 @@ const app = {
      so the buy button now sits on the thing itself. openShop survives only as a
      redirect, so old entry points (deep links, the drawer) land somewhere sensible
      instead of a blank screen. */
-  openShop:()=>app.openCollection(),
+  /* THE SHOP (FIX-BEE v2): Avatars · Worlds · Extras, then the wallet history. From ☰ and the coin chip. */
+  openShop:(tab)=>{ state.walletOpen=false; state.drawerOpen=false; state.shopTab=({avatars:1,worlds:1,extras:1})[tab]?tab:(state.shopTab||'avatars'); set({nav:'shop', screen:'app', conceptSel:null}); },
+  shopTab:(t)=>set({shopTab:({avatars:1,worlds:1,extras:1})[t]?t:'avatars'}),
+  openWallet:()=>{ state.drawerOpen=false; try{ walletSync(active()); }catch(e){} set({walletOpen:true}); },
+  closeWallet:()=>set({walletOpen:false}),
+  buyFrame:(id)=>{ const c=active(); const f=FRAME_BY[id]; if(!f||frameOwned(c,id)) return;
+    const bal=c.coins|0; if(bal<f.price){ flash(f.name+' is '+f.price+' Bizzing coins — '+(f.price-bal)+' more to go.'); return; }
+    if(!window.confirm('Buy the '+f.name+' frame for '+f.price+' Bizzing coins? The price is fixed.')) return;
+    if(!spendCoins(f.price,'frame:'+id)){ flash('That did not go through — nothing was spent.'); return; }
+    c.frames=c.frames||{}; c.frames[id]=Date.now(); c.frame=id; save(); sfx('win'); flash('The '+f.name+' frame is yours — you are wearing it now.'); render(); },
+  wearFrame:(id)=>{ const c=active(); if(id&&!frameOwned(c,id)) return; c.frame=id||null; save(); sfx('correct'); render(); },
   celebrateLore:(n)=>{ state.celebrate=null; app.openLesson(n); },
   celebrateNextSet:()=>{ state.celebrate=null; newCoachBatch(); state.luTab='practice'; state.status='idle'; state.typed=''; render(); setTimeout(speak,350); },
   celebrateBadges:()=>{ state.celebrate=null; app.setNav('collection'); },
@@ -3133,12 +3217,28 @@ const app = {
   collTab:(t)=>set({collTab:t}),
   /* The ONE coin purchase in Bee: a Rare avatar in an open pack, at its printed price. No
      chance, no pack, no content — a cosmetic at a fixed price (FAMILY-STANDARD §1). */
+  /* Buying is the ENGINE's (BZ_AVATARS.buy): a fixed printed price, through the family wallet, only
+     when the card says "N coins" — its world open, and for a Legendary its milestone met. */
   buyAvatar:(id)=>{ const c=active(); const a=SB_AVATARS.byId[id]; if(!a||avOwned(c,id)) return;
-    const r=avRule(a,c); if(!r||r.kind!=='milestone'||!r.price){ flash(r?r.text:'Not for sale'); return; }
-    if((c.coins||0)>=r.price && !window.confirm('Buy '+a.name+' for '+r.price+' Bizzing coins? The price is fixed — this is exactly what you get.')) return;
-    if(!spendCoins(r.price,'avatar:'+id)){ flash('That one is '+r.price+' Bizzing coins — or '+r.text.toLowerCase()+' and it is yours.'); return; }
-    avGive(c,id,1); c.avatar=id; save(); sfx('win'); flash('✨ '+a.name+' joined your collection!'); render();
+    const s=avState(a,c); if(!s||s.state!=='buy'){ flash(s?s.say:'Not for sale'); return; }
+    if(s.short){ flash(a.name+' is '+s.price+' Bizzing coins — '+s.short+' more to go.'); return; }
+    if(!window.confirm('Buy '+a.name+' for '+s.price+' Bizzing coins? The price is fixed — this is exactly what you get.')) return;
+    let ok=false;
+    if(window.SB_DEMO){ ok=spendCoins(s.price,'avatar:'+id); }
+    else { walletSync(c); ok=BZ_AVATARS.buy(BEE_APP, walletWho(c), { id:a.id, tier:SB_AVATARS.tierOf(a), pack:1, world:a.worldN||1, milestone:a.milestone }, avCtx(c)); try{ c.coins=BZ_WALLET.balance(walletWho(c)); }catch(e){} }
+    if(!ok){ flash('That did not go through — nothing was spent.'); return; }
+    avGive(c,id,1); c.avatar=id; save(); sfx('win'); flash(a.name+' joined your collection!'); render();
     try{ app.showAvCard(id,{unlocked:true}); }catch(e){ burstConfetti(120); } },
+  /* A world for 240 Bizzing coins (BZ_AVATARS.buyWorld). It opens the world AND its packs. */
+  buyWorld:(id)=>{ const c=active(); const n=worldNum(id); if(!n){ return; } if(isThemeUnlocked(id)){ app.pickTheme(id); return; }
+    const t=THEMES.find(x=>x.id===id)||{label:id}; const bal=(c.coins|0);
+    if(bal<WORLD_PRICE_COINS){ flash(t.label+' is '+WORLD_PRICE_COINS+' Bizzing coins — '+(WORLD_PRICE_COINS-bal)+' more to go.'); return; }
+    if(!window.confirm('Open '+t.label+' for '+WORLD_PRICE_COINS+' Bizzing coins? The price is fixed. It opens the world and its avatar packs.')) return;
+    let ok=false;
+    if(window.SB_DEMO){ ok=spendCoins(WORLD_PRICE_COINS,'world:'+n); }
+    else { walletSync(c); ok=BZ_AVATARS.buyWorld(BEE_APP, walletWho(c), n, avCtx(c)); try{ c.coins=BZ_WALLET.balance(walletWho(c)); }catch(e){} }
+    if(!ok){ flash('That did not go through — nothing was spent.'); return; }
+    c.unlockedThemes=(c.unlockedThemes||[]).concat([id]); save(); sfx('win'); burstConfetti(140); flash(t.label+' is open — and so are its avatar packs!'); app.pickTheme(id); },
   /* Selling is gone (FIX-BEE I3): it turned avatars back into coins at a rate no learning
      earned, and spares only ever existed because packs were a lottery. sellAvatar and
      sellDupes are deleted with the packs; a spare a child already holds stays harmlessly
@@ -3146,7 +3246,7 @@ const app = {
   /* buyPack, packSkip, toggleOdds, packClose and packWear are deleted with the draw. A
      stale tap on an old "Open pack" lands on the Avatars tab, which says how each is won. */
   buyPack:()=>{ state.collTab='avatars'; app.openCollection(); },
-  openShopAvatars:()=>{ state.collTab='avatars'; app.openCollection(); },
+  openShopAvatars:()=>app.openShop('avatars'),
   wearAv:(id)=>{ const c=active(); if(!avOwned(c,id)){ flash('Not collected yet'); return; } c.avatar=id; save(); sfx('correct'); render(); },
   trapPick:(k)=>set({trapSel:k}),
   trapBack:()=>set({trapSel:null}),
@@ -3157,10 +3257,20 @@ const app = {
     c.pow.reveal--; state.typed=w.w.slice(0,cur.length+1); save(); sfx('coin'); render();
     try{ document.querySelector('[data-fkey="gType"],[data-inp="gType"]')?.focus(); }catch(e){} },
 
-  toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
+  toggleSound:()=>{ set({sound:!state.sound}); try{ SB_STORE.set('sound',state.sound?'1':'0'); }catch(e){} if(state.sound) sfx('coin'); },
+  /* ---- Settings §5 controls (FIX-BEE v2) ---- */
+  toggleMusic:()=>{ try{ if(window.SB_VOL) SB_VOL.setMusic(!SB_VOL.musicOn()); }catch(e){} render(); },
+  setVolume:(v)=>{ try{ if(window.SB_VOL) SB_VOL.set(+v); }catch(e){} render(); },
+  muteAll:()=>{ try{ if(window.SB_VOL) SB_VOL.setMuted(!SB_VOL.muted()); }catch(e){} state.drawerOpen=false; render();
+    try{ flash(SB_VOL.muted()?'Sound off — tap again to bring it back':'Sound on'); }catch(e){} },
+  setModePref:(m)=>{ m=({light:1,white:1,dusk:1,auto:1})[m]?m:'light'; state.modePref=m; state.mode=effectiveMode(m); save(); render(); },
+  setOpenCollection:()=>{ app.closeSettings(); state.collTab='avatars'; app.openCollection(); },
+  setSwitchChild:(i)=>{ app.closeSettings(); try{ SB_SHELL.switchChild(+i); }catch(e){} },
+  setOpenShopWorld:(id)=>{ app.closeSettings(); app.openShop('worlds'); },
+  setGrownOpen:()=>pinGate(()=>{ state._setGrown=true; render(); },'Grown-ups settings'),
   /* the 6-second world splash on app open — a device switch (SB_STORE 'splash'), because the
      splash runs from an inline script long before this file has parsed */
-  toggleSplash:()=>{ let on=true; try{ on=SB_STORE.get('splash')!=='0'; }catch(e){}
+  toggleSplash:()=>{ let on=false; try{ on=SB_STORE.get('splash')==='1'; }catch(e){}
     try{ SB_STORE.set('splash',on?'0':'1'); }catch(e){}
     flash(on?'Opening splash off — straight to the app':'✨ Opening splash on — see you at the next launch'); render(); },
   toggleFocus:()=>{ clearTimeout(app._modeT); try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
@@ -3393,7 +3503,11 @@ const app = {
       au.onerror=fallback; au.play().catch(fallback);
     }catch(e){ fallback(); } },
   /* ===== Advanced Mode (window.ADV, advanced.js) ===== */
-  openAdvanced:()=>{ if(!window.ADV) return; lazyNeed('advanced'); ADV.open();
+  openAdvanced:()=>{ if(!window.ADV) return; lazyNeed('advanced');
+    /* T3: the Advanced Pack's sales page is a grown-up's screen. A child who owns the pack walks
+       straight in; anyone else meets the PIN first, so no sales page draws on a child's screen. */
+    if(!advModeOn(active()) && !state._advPinOk){ pinGate(()=>{ state._advPinOk=true; app.openAdvanced(); state._advPinOk=false; },'The Advanced Pack — grown-ups only'); return; }
+    ADV.open();
     if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
   advGo:(v)=>{ if(window.ADV) ADV.go(v); },
   /* ◆ advanced rounds inside the ordinary Arcade pickers (no separate Advanced Games room) */
@@ -3907,7 +4021,7 @@ function viewLanding() {
   ].map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
       <span style="position:relative;display:block;aspect-ratio:16/11;overflow:hidden;background:#241E33">
         <img src="app-art/shots/${f}.jpg" alt="${escA(name)} — gameplay from Bizzing Bee"
-             ${i < 2 ? '' : 'loading="lazy"'} decoding="async"
+             loading="lazy" decoding="async"
              style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block">
       </span>
       <span style="padding:12px 13px 14px">
@@ -4012,7 +4126,7 @@ const SB_FAQ = [
   ['Does my child hear the words spoken aloud?', "Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
   ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all 108 national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
   ['Does it teach Greek and Latin roots?', 'Yes. 100 Word Journeys lessons and 122 concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
-  ['Does it work without internet?', 'Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on the device and backed up to your account whenever there is a connection, so a wiped or lost tablet does not cost your child months of work.'],
+  ['Does it work without internet?', 'Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on this device. Nothing leaves it unless a grown-up switches on the optional cloud backup — and a child’s name and age never leave it at all.'],
   ['What ages is it for?', 'Children aged 8 to 15. Difficulty tracks the individual child rather than their school year, so a strong eight-year-old and a struggling thirteen-year-old both get words pitched at them.'],
   ['Is it safe for children?', 'There is no chat, no leaderboard, no microphone, no ads and no strangers. Only the parent holds an account; children never sign in to anything. Practice is stored on your own device.'],
   ['Can more than one child use one account?', 'Yes. One parent account carries a profile for each child, each with their own words, progress and avatar.'],
@@ -4047,7 +4161,7 @@ function landShowcase(){
         <p style="font-size:15px;line-height:1.6;color:var(--muted);margin:0;max-width:32em">${esc(b)}</p></div>
       <div style="border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px rgba(20,12,50,.16);background:var(--bg2)">
         <img src="app-art/shots/${f}.jpg" alt="${escA(t)} — a screen from Bizzing Bee"
-             ${i ? 'loading="lazy"' : ''} decoding="async"
+             loading="lazy" decoding="async"
              style="display:block;width:100%;height:auto"></div>
     </div>`).join('');
   return landSection('This is the actual app', 'Not a mock-up. This is what your child&nbsp;opens.', '', rows);
@@ -4579,7 +4693,7 @@ function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO
   /* The price used to sit as a badge over the artwork, where it competed with the world's
      own title. It reads better as a line under the tile, beside what the world is. */
   /* A locked world names the Level that opens it — a learning lock, never a price (FIX-BEE C4). */
-  const priceRow=locked?`<span style="display:block;margin-top:9px">${lockChip(WORLD_LEVEL[t.id]?'learn':'plan',worldRule(t.id))}</span>`:'';
+  const priceRow=locked?`<span style="display:block;margin-top:9px">${lockChip('plan',worldLockText(t.id))}</span>`:'';
   return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
     <div class="wh-band" style="position:relative;height:118px;${H.bg};${locked?'filter:grayscale(1) brightness(.96);opacity:.75':''}">
       ${locked?'':(WORLD_FX[t.id]||'')}${H.art}${badge}
@@ -4878,7 +4992,7 @@ function vocDeckWords(k){
   return [];
 }
 function figTabsBar(on){ const b=(k,l)=>`<button data-act="figTab" data-arg="${k}" style="flex:1;min-width:120px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${on===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${l}</button>`;
-  return `<div style="display:flex;gap:8px;margin-bottom:14px">${b('learn','📚 Learn — deck by deck')}${b('browse','🔎 Browse all')}</div>`; }
+  return `<div style="display:flex;gap:8px;margin-bottom:14px">${b('learn',iconSVG('book',15,2.2)+' Learn — deck by deck')}${b('browse',iconSVG('search',15,2.2)+' Browse all')}</div>`; }
 function figLearnView(){ const S=state; const c=active();
   if(S.figDeck){ const items=figDeckItems(S.figDeck); const deck=figDecks().find(d=>d.id===S.figDeck)||{label:'Deck'};
     const i=Math.min(S.figIdx||0, items.length-1); const x=items[i]; if(!x) return figTabsBar('learn')+'<p style="color:var(--muted)">Empty deck.</p>';
@@ -5065,7 +5179,7 @@ function viewTyping(){ const S=state; const c=active(); const st=tyStats(c);
       <span style="display:block;font-size:11.5px;color:var(--muted);font-weight:650">${acc!=null?('best accuracy '+acc+'%'+(acc>=90?' ✓':'')):'not tried yet'}</span></span></button>`; }).join('');
   return `<div style="max-width:920px;margin:0 auto">
     ${pageHead('Typing Trainer','⌨️ '+ (st.bestWpm?('best '+st.bestWpm+' WPM · '+st.bestAcc+'% acc'):'online bees are typed!'),'Learn to touch-type finger by finger — then race the 60-second Typing Test. NSF online rounds are typed, so speed is real bee prep.',
-      `<button data-act="tyTest" style="padding:10px 18px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⏱ 60-second Typing Test →</button>`)}
+      `<button data-act="tyTest" style="padding:10px 18px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('timer',14,2.4)} 60-second Typing Test →</button>`)}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px">${lessons}</div>
   </div>`;
 }
@@ -5187,7 +5301,7 @@ function vocDock(){ const c=active(); const key=vocListKey(); const deck=vocDeck
 /* Same three-tab bar shape as the Practice. */
 function vocTabs(){ const t=state.vocTab||'cards';
   const tab=(k,l)=>`<button data-act="vocSetTab" data-arg="${k}" style="flex:1;padding:9px 8px;border-radius:10px;font-weight:800;font-size:13px;${t===k?'background:var(--bg2);color:var(--text);box-shadow:var(--sh-rest)':'color:var(--muted)'}">${l}</button>`;
-  return `<div style="display:flex;gap:6px;background:var(--surface2);border-radius:12px;padding:5px;margin-bottom:14px">${tab('cards','📇 Cards')}${tab('practice','🎯 Practise')}${tab('check','✓ Check')}</div>`; }
+  return `<div style="display:flex;gap:6px;background:var(--surface2);border-radius:12px;padding:5px;margin-bottom:14px">${tab('cards',iconSVG('cards',15,2.2)+' Cards')}${tab('practice',iconSVG('target',15,2.2)+' Practise')}${tab('check','✓ Check')}</div>`; }
 
 function viewVocCheck(){ const g=state.vocCheck; if(!g) return '';
   const total=g.qs.length;
@@ -5288,7 +5402,7 @@ function viewVocab(){ const S=state; const c=active();
       </div>
 
       <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
-        <button data-act="wqStart" data-arg="vocab" style="padding:10px 16px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">🎯 Play the Vocabulary round →</button>
+        <button data-act="wqStart" data-arg="vocab" style="padding:10px 16px;border-radius:10px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">${iconSVG('target',14,2.4)} Play the Vocabulary round →</button>
       </div></div>`);
   }
   const deckBtn=(k,label,sub)=>`<button data-act="vocDeck" data-arg="${k}" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;flex-direction:column;gap:6px">
@@ -5303,7 +5417,7 @@ function viewVocab(){ const S=state; const c=active();
   const themeDecks=myThemes().slice(0,6).map(t=>deckBtn('th:'+t.id,'🗂️ '+esc(t.label),VOC_SET+' words from this theme')).join('');
   return `<div style="max-width:980px;margin:0 auto">
     ${pageHead('Vocabulary','word → meaning','Study a set of '+VOC_SET+' the vocabulary-bee way — hear the word, guess the meaning, flip the card. Then check yourself: score 80% and the next set of new words unlocks, or revise the ones you missed first. Vocabulary levels up on its own — your spelling levels are separate.',
-      `<button data-act="wqStart" data-arg="vocab" style="padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">🎯 Vocabulary round →</button>`)}
+      `<button data-act="wqStart" data-arg="vocab" style="padding:9px 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('target',14,2.4)} Vocabulary round →</button>`)}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
       ${deckBtn('mix','✨ My level mix','20 fresh words from your list, at your level')}
       ${deckBtn('easy','🌱 Easy','genuinely easy words — a friendly warm-up')}
@@ -5326,14 +5440,20 @@ function viewVocab(){ const S=state; const c=active();
         </div></div>`; })()}</div>`;
 }
 /* ---- Quotes: kid-friendly quotations from famous people (SB_QUOTES) ---- */
-const QUOTE_CAT_LABEL={ courage:'💪 Courage', kindness:'💛 Kindness', perseverance:'🧗 Never give up',
-  learning:'📚 Learning', dreams:'✨ Dreams', friendship:'🤝 Friendship', honesty:'🕊️ Honesty',
-  curiosity:'🔍 Curiosity', teamwork:'🐝 Teamwork', imagination:'🎨 Imagination', gratitude:'🙏 Gratitude',
-  leadership:'🚩 Leadership', happiness:'😊 Happiness', hardwork:'🛠️ Hard work', believe:'🌟 Believe in yourself',
-  creativity:'💡 Creativity', nature:'🌿 Nature', change:'🔄 Making a difference', wisdom:'🦉 Wisdom',
-  humor:'😄 Fun & humor', science:'🔬 Science', sports:'🏅 Sports', reading:'📖 Reading & words',
-  poetry:'🎭 Poems & plays' };
+/* Labels are words; each carries an icon from the family SVG set (never an emoji — standard §9). */
+const QUOTE_CAT_LABEL={ courage:'Courage', kindness:'Kindness', perseverance:'Never give up',
+  learning:'Learning', dreams:'Dreams', friendship:'Friendship', honesty:'Honesty',
+  curiosity:'Curiosity', teamwork:'Teamwork', imagination:'Imagination', gratitude:'Gratitude',
+  leadership:'Leadership', happiness:'Happiness', hardwork:'Hard work', believe:'Believe in yourself',
+  creativity:'Creativity', nature:'Nature', change:'Making a difference', wisdom:'Wisdom',
+  humor:'Fun & humor', science:'Science', sports:'Sports', reading:'Reading & words',
+  poetry:'Poems & plays' };
+const QUOTE_CAT_IC={ courage:'shield', kindness:'heart', perseverance:'steps', learning:'book', dreams:'star', friendship:'users',
+  honesty:'check', curiosity:'search', teamwork:'hive', imagination:'palette', gratitude:'heart', leadership:'crown', happiness:'sun',
+  hardwork:'pencil', believe:'star', creativity:'bulb', nature:'sprout', change:'retry', wisdom:'bulb', humor:'spark', science:'bolt',
+  sports:'trophy', reading:'book', poetry:'quote' };
 function quoteCatLabel(k){ return QUOTE_CAT_LABEL[k]||(String(k||'').charAt(0).toUpperCase()+String(k||'').slice(1)); }
+function quoteCatChip(k){ return (QUOTE_CAT_IC[k]?iconSVG(QUOTE_CAT_IC[k],14,2.3)+' ':'')+esc(quoteCatLabel(k)); }
 function quoteList(){ const all=(window.SB_QUOTES||[]); const cat=state.qCat;
   if(cat==='__fav'){ const f=(active().quoteFavs)||{}; return all.filter(x=>f[(x.q||'').slice(0,60)]); }
   if(!cat) return all; return all.filter(x=>x.c===cat); }
@@ -5371,9 +5491,9 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
   const L=quoteList(); const total=L.length; let i=Math.min(Math.max(S.qi||0,0),Math.max(0,total-1));
   const x=L[i]||all[0]; const favs=(c.quoteFavs)||{}; const isFav=!!favs[(x.q||'').slice(0,60)];
   const catList=quoteCats(); const favN=all.filter(q=>favs[(q.q||'').slice(0,60)]).length;
-  const chip=(key,label,on)=>`<button data-act="qSetCat" data-arg="${escA(key)}" style="white-space:nowrap;padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;border:1px solid ${on?'transparent':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${label}</button>`;
+  const chip=(key,label,on)=>`<button data-act="qSetCat" data-arg="${escA(key)}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;white-space:nowrap;padding:7px 13px;border-radius:999px;font-weight:800;font-size:12.5px;border:1px solid ${on?'transparent':'var(--line)'};${on?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${label}</button>`;
   const chips=`<div style="display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;-webkit-overflow-scrolling:touch">
-    ${chip('all','All',!S.qCat)}${favN?chip('__fav','❤ Favorites · '+favN,S.qCat==='__fav'):''}${catList.map(k=>chip(k,quoteCatLabel(k),S.qCat===k)).join('')}</div>`;
+    ${chip('all','All',!S.qCat)}${favN?chip('__fav',iconSVG('heart',14,2.3)+' Favorites · '+favN,S.qCat==='__fav'):''}${catList.map(k=>chip(k,quoteCatChip(k),S.qCat===k)).join('')}</div>`;
   const qlen=(x.q||'').length; const isLong=/\n/.test(x.q||'')||qlen>240;
   const qsize=isLong?(qlen>600?'15px':'17px'):(qlen>170?'22px':qlen>110?'26px':qlen>60?'31px':'36px');
   const qHTML=renderQuoteHTML(x); const meaning=x.m||x.meaning||'';
@@ -5383,7 +5503,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
       <div style="position:absolute;top:13px;right:16px;display:flex;gap:8px;z-index:2">
         <button data-act="qSpeak" title="Read aloud" aria-label="Read aloud" style="width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:var(--edge)">${iconSVG('volume',18)}</button>
         ${meaning?`<button data-act="qMeaning" title="What does it mean?" aria-label="Meaning" style="width:38px;height:38px;border-radius:50%;background:${S.qMeaningOpen?'#F0B429':'#fff'};color:${S.qMeaningOpen?'#5a3d00':'#B67B00'};border:1px solid ${S.qMeaningOpen?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">💡</button>`:''}
-        <button data-act="qFav" title="Save to favorites" aria-label="Favorite" style="width:38px;height:38px;border-radius:50%;background:${isFav?'#FF4D8D':'#fff'};color:${isFav?'#fff':'#C4453C'};border:1px solid ${isFav?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">❤</button>
+        <button data-act="qFav" title="Save to favorites" aria-label="Favorite" style="width:38px;height:38px;border-radius:50%;background:${isFav?'#FF4D8D':'#fff'};color:${isFav?'#fff':'#C4453C'};border:1px solid ${isFav?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">${iconSVG('heart',18,2.4)}</button>
       </div>
       <div style="position:relative;z-index:1;margin-top:10px;${isLong?'max-height:min(52vh,440px);overflow:auto;text-align:left':''}">
         <div style="font-family:${isLong?'var(--ui)':'var(--display)'};font-weight:${isLong?'500':'800'};font-size:${qsize};line-height:${isLong?'1.7':'1.28'};color:#2A2410;overflow-wrap:anywhere;white-space:pre-line">${qHTML}</div>
@@ -5399,7 +5519,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     </div>
     <div style="max-width:600px;margin:14px auto 0;display:flex;align-items:center;gap:10px">
       <button data-act="qNav" data-arg="-1" style="padding:12px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">←</button>
-      <button data-act="qShuffle" style="flex:1;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">🔀 Surprise me</button>
+      <button data-act="qShuffle" style="flex:1;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:7px">${iconSVG('retry',16,2.3)} Surprise me</button>
       <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--muted);white-space:nowrap;min-width:74px;text-align:center">${fmtN(i+1)} / ${fmtN(total)}</span>
       <button data-act="qNav" data-arg="1" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">→</button>
     </div>
@@ -5410,10 +5530,27 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     ${chips}
     ${body}
   </div>`; }
+/* A8: the first word. One spoken word, spelled right in the first minute, celebrated. */
+function viewFirstWord(){ const f=state.fw; if(!f) return '';
+  const c=active();
+  if(f.done) return `<div style="max-width:520px;margin:30px auto;text-align:center;padding:26px 22px;border-radius:22px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
+    <div style="width:150px;margin:0 auto 6px">${avatarSVG((c&&c.avatar)||'bizzy',150)}</div>
+    <h1 style="font-family:var(--display);font-size:30px;margin:6px 0">Your first word — spelled right!</h1>
+    <div style="font-size:16px;color:var(--muted);margin-bottom:18px"><b style="color:var(--text);letter-spacing:.06em">${esc(f.w)}</b> · that is how every champion starts.</div>
+    <button class="sb-btn-primary" data-act="fwDone" style="min-height:48px;padding:12px 26px;border-radius:14px;background:var(--action,var(--accent));color:#fff;font-weight:800;font-size:16px">Start your first lesson ${iconSVG('arrow',16)}</button></div>`;
+  return `<div style="max-width:520px;margin:30px auto;text-align:center;padding:26px 22px;border-radius:22px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
+    <div style="width:110px;margin:0 auto">${mascotSVG('happy')}</div>
+    <h1 style="font-family:var(--display);font-size:26px;margin:6px 0 4px">Your first word</h1>
+    <div style="font-size:15px;color:var(--muted);margin-bottom:14px">Listen, then spell it.</div>
+    <button data-act="fwSay" aria-label="Hear the word again" style="width:72px;height:72px;border-radius:50%;background:var(--chip);color:var(--accent);display:inline-grid;place-items:center;margin-bottom:14px">${iconSVG('volume',32)}</button>
+    ${f.miss?`<div style="text-align:left;margin-bottom:12px">${missFeedbackHTML({w:f.w},String(f.miss).trim(),{head:'Nearly — here are the letters. Type it once more.'})}</div>`:''}
+    <div style="display:flex;gap:8px;justify-content:center"><input data-inp="fwType" data-key="fwKey" data-fkey="fw" value="${escA(f.typed)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the word" style="font-size:22px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);width:220px;text-align:center;background:var(--paper,var(--bg));color:var(--text)">
+    <button data-act="fwCheck" style="min-height:48px;padding:0 20px;border-radius:12px;background:var(--action,var(--accent));color:#fff;font-weight:800">Check</button></div>
+    <button data-act="fwDone" style="margin-top:14px;min-height:44px;color:var(--muted);font-weight:700;font-size:13px">Go straight to the lesson</button></div>`; }
 function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
   const tab=(m,label)=>`<button data-act="itMode" data-arg="${m}" style="padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;${(it?it.mode:'learn')===m?'background:var(--accent);color:#fff;box-shadow:var(--edge)':'background:var(--surface2);color:var(--text);border:1px solid var(--line)'}">${label}</button>`;
   const head=pageHead('The Sound Alphabet','read IPA like a champion','Study lists write pronunciations in phonetic symbols. Learn what each one says, then drill with real bee words — every one spoken by the real voice.');
-  const tabs=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px"><button data-act="setNav" data-arg="explore" style="color:var(--muted);font-weight:700;font-size:13px;padding:9px 6px">→ x/button>${tab('learn','Learn the symbols')}${tab('readipa','Read it')}${tab('writeipa','Transcribe it')}${tab('sound','Find the sound')}</div>`;
+  const tabs=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">${backPill('setNav','Library','explore')}${tab('learn','Learn the symbols')}${tab('readipa','Read it')}${tab('writeipa','Transcribe it')}${tab('sound','Find the sound')}</div>`;
   if(!it||it.mode==='learn'){
     const eg=(sym)=>pool.filter(e=>e.t.indexOf(sym)>=0).slice(0,2);
     const card=(M)=>{ const samples=M.s==='ˈ'?[]:eg(M.s);
@@ -5683,14 +5820,14 @@ function libShelf(){
         <div class="bk-kick">Read</div>
         <div class="bk-title">The Book Series</div>
       </div>
-      <button class="bk-all" data-act="openBooks">${iconSVG(ok?'book':'lock',13)} ${ok?'Open the shelf':'👑 Regional Speller'}</button>
+      <button class="bk-all" data-act="openBooks">${iconSVG(ok?'book':'crown',13)} ${ok?'Open the shelf':'Regional Speller'}</button>
     </div>
     <div class="bk-books">${row(0,half)}${row(half,SB_SHELF.length)}</div>
     <div class="bk-wood"></div>
     <div class="bk-foot">${SB_SHELF.length} books · 19 volumes and 4 companions${ok?' · opens in a new tab':' · included with 👑 Regional Speller'}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
-function advBanner(c){
+function advBanner(c){ if(!advModeOn(c)) return '';   /* T3: no offer on a child's screen — the pack is sold behind the PIN */
   /* Only ever an offer. Once the pack is active its five features live in Supercharge,
      the Arcade and Practice, so a banner pointing at a hub would be a second, redundant
      route to things already on screen. */
@@ -5704,8 +5841,8 @@ function advBanner(c){
   const sub=on
     ? 'National-bee prep · 125,000-word library · 2-year plan, mock bees, champion tips & games'
     : ready
-      ? 'You are ready for this — the Advanced Pack adds the full 125,000-word library, mock bees and narrated advanced lessons · ask a grown-up'
-      : 'Advanced Pack — ask a grown-up · the full 125,000-word library, mock bees, narrated advanced lessons and champion techniques';
+      ? 'You are ready for this — the Advanced Pack adds the full 125,000-word library, mock bees and narrated advanced lessons'
+      : 'Advanced Pack · the full 125,000-word library, mock bees, narrated advanced lessons and champion techniques';
   return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
     <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
       <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)">${SB_ICON('trophy',{size:29})}</span>
@@ -5838,11 +5975,14 @@ function missWhy(wo, typed){ const w=String((wo&&wo.w)||wo||'').toLowerCase(); i
   if(hit(/^(kn|wr|gn|ps|pn|mn|rh)/)||hit(/(mb|mn|gn)$/)||(hit(/gh/)&&!/ough|augh/.test(w))||hit(/(stle|sten|ften)$/)) k='silent';
   else if(dblHit||hit(/([b-df-hj-np-tv-z])\1/)) k='double';
   else if(hit(/ie|ei/)) k='ieei';
-  else if(hit(/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|ury|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede)$/)) k='endings';
+  /* E5: an ending is only a SUFFIX when a real stem stands before it — "giant" ends in -ant but
+     "gi" is no stem, so a miss there is the schwa, never "Suffix endings". */
+  else if((()=>{ const m=w.match(/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|ury|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede)$/); return m && w.length-m[0].length>=3 && hit(/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|ury|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede)$/); })()) k='endings';
   else if(hit(/ph|rh|ch|y(?=[^aeiou])/)&&/greek/i.test(full.o||'')) k='greek';
   else if(hit(/eau|que$|gue$|ette$|oir|ille|et$/)) k='french';
   else if(vowSwap) k='schwa';
   if(!k){ try{ const cls=trickAnal(full).cls; k=MISS_CLS_KEY[cls]||null; }catch(e){} }
+  if(k==='endings'){ const m=w.match(/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|ury|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede|ize|ise|ful|less|ness|ment|ly|er|or|ar)$/); if(!m||w.length-m[0].length<3) k=vowSwap?'schwa':null; }
   if(!k && homPartners(w).length) k='hom';
   const R=(window.SB_COACH_RULES||{})[k]||null;
   if(!R) lazyNeed('coachRules');
@@ -6058,7 +6198,7 @@ function viewCoachDesk(){
         ${eg&&eg.h?`<div style="margin-top:8px;font-size:12.5px;color:var(--muted);line-height:1.5">💡 ${esc(eg.h)}</div>`:''}`,r.col)}
       ${step(3,'Watch it work',`<div style="display:flex;flex-direction:column;gap:6px">${r.egs.map(([w,why])=>
           `<div style="display:flex;gap:9px;align-items:baseline;flex-wrap:wrap">
-            <button data-act="say" data-arg="${escA(w)}" title="Hear it" style="font-family:var(--mono);font-size:12.5px;font-weight:800;padding:4px 9px;border-radius:7px;background:var(--chip);color:var(--accent);flex:none">🔊 ${esc(w)}</button>
+            <button data-act="say" data-arg="${escA(w)}" title="Hear it" style="font-family:var(--mono);font-size:12.5px;font-weight:800;padding:4px 9px;border-radius:7px;background:var(--chip);color:var(--accent);flex:none">${iconSVG('volume',14,2.4)} ${esc(w)}</button>
             <span style="font-size:12.5px;color:var(--muted);flex:1;min-width:180px">${esc(why)}</span></div>`).join('')}</div>`,'var(--good)')}
     </div>`;
   }
@@ -6200,7 +6340,7 @@ function viewRevisions(){
         <span style="display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15;overflow-wrap:anywhere">${esc(w)}</span>
         ${m.d?`<span style="display:block;font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.d)}</span>`:''}
       </span>${actBtn}</div>`; };
-  const todoRow=(m)=>nameRow(m,`<button data-act="reviseOne" data-arg="${escA(m.w)}" title="Practice this word again" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Revise</button><button data-act="reviseComplete" data-arg="${escA(m.w)}" title="I know it now — mark complete" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good);font-weight:800;font-size:12.5px">✓ Complete</button>`);
+  const todoRow=(m)=>nameRow(m,`<button data-act="reviseOne" data-arg="${escA(m.w)}" title="Practice this word again" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">${iconSVG('flag',14,2.4)} Revise</button><button data-act="reviseComplete" data-arg="${escA(m.w)}" title="I know it now — mark complete" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good);font-weight:800;font-size:12.5px">✓ Complete</button>`);
   const histRow=(m)=>nameRow(m,`<span style="flex-shrink:0;color:var(--good);font-weight:800;font-size:12px">✓ done</span><button data-act="reviseHistoryAgain" data-arg="${escA(m.w)}" title="Put it back on the revise list" style="flex-shrink:0;padding:8px 11px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">↻ Revise again</button>`);
   const tabBtn=(k,l)=>`<button data-act="revTab" data-arg="${k}" style="flex:1;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--bg2);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)':'background:transparent;color:var(--muted)'}">${l}</button>`;
   const body = tab==='history'
@@ -6254,6 +6394,7 @@ function viewApp(){
   else if(S.nav==='quotes') content=viewQuotes();
   else if(S.nav==='trivtrain') content=viewTrivTrain();
   else if(S.nav==='ipatrain') content=viewIpaTrain();
+  else if(S.nav==='firstword') content=viewFirstWord();
   else if(S.nav==='trail'&&window.TRAIL) content=TRAIL.view();
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
@@ -6265,6 +6406,8 @@ function viewApp(){
   else if(S.nav==='revisions') content=viewRevisions();
   else if(S.nav==='evolution') content=viewEvolution();
   else if(S.nav==='collection') content=viewCollection();
+  else if(S.nav==='shop') content=viewShop();
+  else if(S.nav==='help') content=viewHelp();
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
@@ -6354,7 +6497,7 @@ function viewApp(){
       <div class="sb-fam-bar" style="max-width:1080px;margin:0 auto;padding:0 clamp(9px,3.2vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px;position:relative">
         ${SB_SHELL.hiveBtn()}
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
-        <button data-act="goHome" class="sb-fam-brand" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true">™</span> Bee</span></button>
+        <button data-act="goHome" class="sb-fam-brand" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true"></span> Bee</span></button>
         ${(()=>{ /* A real search bar, not a button that goes somewhere to find one. Type
              here, suggestions drop under it, Enter opens the Finder on the query — and a
              suggestion tapped goes straight to that word's card. */
@@ -6375,7 +6518,7 @@ function viewApp(){
              collection belongs, reached by the Bizzy button. */''}
         ${/* The coins pill IS the door to My Hive — that is where coins are spent, and the
              Hive has no tab of its own. */''}
-        <button data-act="openCollection" title="My Hive — your Bizzing coins, medals, avatars and worlds" aria-label="My Hive — ${escA(String(active().coins||0))} Bizzing coins" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}<span style="display:inline-flex;line-height:0;opacity:.85">${iconSVG('crown',14)}</span></button>
+        <button data-act="openWallet" class="bz-coinchip" title="Your Bizzing coins — where they came from" aria-label="${escA(String(active().coins||0))} Bizzing coins — where they came from" style="display:inline-flex;align-items:center;gap:6px;padding:0 13px;height:38px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
           /* One button for how the app looks: a tap cycles Light → White → Dusk, a
              double-tap holds the world still (focus) in whichever look you are in. */
@@ -6414,75 +6557,64 @@ function atlasSub(c){ try{ const T=window.SB_TRAIL; if(!T) return 'the guided jo
     return n?('stop '+Math.min(n+1,total)+' · tier '+(tr.lap||1)):'nine acts · start at the Meadow'; }catch(e){ return 'the guided journey'; } }
 function conceptDrawerSub(){ try{ const n=(state.conceptData||[]).length; const sh=conceptChapters().length;
     return n?(n+' chapters on '+sh+' shelves'):'every explanation in the app'; }catch(e){ return 'every explanation in the app'; } }
+/* THE ☰ DRAWER IN THE FAMILY ORDER (FIX-BEE v2, FAMILY-STANDARD §3): My page · Shop · Collection ·
+   Medals · four of Bee's own areas · Settings · Grown-ups 🔒 · Help · Privacy · Back to the Hive.
+   A left sheet, 300px, over a scrim; Esc, the scrim and × close it, and Tab stays inside it
+   (data-trap). Mute is one tap, at the top. The five tabs carry everything else — the Atlas, the
+   Library and the Arcade are not repeated here. Guards: tests/nav-hive-band.cjs (order, the wallet
+   chip) and tests/trust-v2.cjs (Esc, focus stays inside). */
 function viewDrawer(){
   if(!state.drawerOpen) return '';
-  const c=active(); ensureLists(c); const key=activeListKey();
+  const c=active(); ensureLists(c);
   const evoD=EVO[state.theme]||EVO.spellbound; const fiD=formIdx(heroLevel(c));
-  const kick=(t)=>`<div style="font-family:var(--ui,var(--body));font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650;padding:16px 12px 6px">${t}</div>`;
-  const row=(k,ic,label,sub,active)=>`<button data-act="drawer" data-arg="${k}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border-radius:10px;${active?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--text)'}">
-      <span style="display:inline-flex;flex-shrink:0;${active?'':'color:var(--muted)'}">${iconSVG(ic,18)}</span>
-      <span style="min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.15">${label}</span>${sub?`<span style="display:block;font-size:12px;font-weight:650;${active?'opacity:.85':'color:var(--muted)'}">${sub}</span>`:''}</span></button>`;
-  const wayRow=(k,wkey,label,sub)=>`<button data-act="drawer" data-arg="${k}" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:8px 12px;border-radius:10px;background:transparent;color:var(--text)">
-      ${wayTile(wkey,34,-2)}
-      <span style="min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.15">${label}</span><span style="display:block;font-size:12px;font-weight:650;color:var(--muted)">${sub}</span></span></button>`;
-  const missedN=((c.missed)||[]).length;
-  return `<div data-act="closeDrawer" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;animation:sb-fade .2s ease both"></div>
-    <aside data-act="noop" style="position:fixed;top:0;left:0;bottom:0;width:300px;max-width:86vw;background:var(--paper,var(--bg2));border-right:1px solid var(--line);z-index:56;display:flex;flex-direction:column;padding:14px 12px;overflow-y:auto;box-shadow:var(--sh-overlay)">
-      <div style="display:flex;align-items:center;gap:11px;padding:8px 8px 14px;border-bottom:1px solid var(--line);margin-bottom:4px">
-        <div style="width:44px;height:50px;flex-shrink:0">${mascotSVG('happy')}</div>
-        <div style="min-width:0;flex:1">
-          <div style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.1">${esc(c.name||'Speller')}</div>
-          <div style="font-size:12px;color:var(--muted);font-weight:650">${esc(rankName(fiD))} · <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">${c.coins||0} coins</span></div>
-        </div>
-        <button data-act="closeDrawer" aria-label="Close" style="width:32px;height:32px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('close',18)}</button>
+  const row=(act,arg,ic,label,sub,on)=>`<button data-act="${act}"${arg!=null?` data-arg="${escA(String(arg))}"`:''} class="bz-dr-row${on?' on':''}"${on?' aria-current="page"':''}>
+      <span class="bz-dr-ic" aria-hidden="true">${iconSVG(ic,19,2.2)}</span>
+      <span class="bz-dr-t"><span class="bz-dr-l">${label}</span>${sub?`<span class="bz-dr-s">${sub}</span>`:''}</span></button>`;
+  const sep=(t)=>`<div class="bz-dr-sep" role="separator">${t?`<span>${t}</span>`:''}</div>`;
+  const missedN=((c.missed)||[]).length; const muted=!!(window.SB_VOL&&SB_VOL.muted());
+  const N=state.nav;
+  return `<div data-act="closeDrawer" class="bz-dr-scrim"></div>
+    <aside data-act="noop" data-trap="drawer" role="dialog" aria-modal="true" aria-label="Menu" class="bz-drawer">
+      <div class="bz-dr-head">
+        <span class="bz-dr-av" aria-hidden="true">${framed(avatarSVG(c.avatar||'bizzy',44),c,48)}</span>
+        <span class="bz-dr-who"><b>${esc(c.name||'Speller')}</b><span>${esc(rankName(fiD))} · ${coinIc(12)} ${fmtN(c.coins||0)}</span></span>
+        <button data-act="muteAll" class="bz-dr-mute" aria-pressed="${muted?'true':'false'}" aria-label="${muted?'Sound is off — turn it on':'Mute all sound'}" title="${muted?'Sound off':'Mute'}">${iconSVG(muted?'mute':'volume',19,2.2)}</button>
+        <button data-act="closeDrawer" class="bz-dr-x" aria-label="Close menu">${iconSVG('close',18,2.4)}</button>
       </div>
-      <nav style="display:flex;flex-direction:column;gap:1px;overflow-y:auto">
-        ${/* My Hive first: it is the one destination with no tab of its own, and the coins
-             pill in the header is its other door. */''}
-        ${row('collection','crown','My Hive','badges, avatars and worlds · '+fmtN(c.coins||0)+' coins',state.nav==='collection')}
-        ${/* the drawer's "jump back in" is the same ONE next step Home's Continue takes (FIX-BEE B2);
-             the Practice ladder it used to continue is the Practice tab, one tap away */''}
-        ${(()=>{ const n=SB_SHELL.nextStep(); return row('next','steps','Next on your journey', (n.ready?(n.allDone?'the next tier of the Word Atlas':trunc(n.title,34)):'the first stop on the Word Atlas'), false); })()}
-        ${row('coachdesk','bulb','Coach',missedN?('what to fix, and how — '+missedN+' word'+(missedN>1?'s':'')+' to work on'):'your patterns, your level, what comes next',state.nav==='coachdesk')}
-        ${row('trail','steps','The Word Atlas',atlasSub(c),state.nav==='trail')}
-        ${kick('Learn')}
-        ${wayRow('concepts','concepts','Concepts',conceptDrawerSub())}
-        ${wayRow('themes','themes','Theme Journeys',(themeDefs().length||75)+' families'+(myThemes().length?' · '+myThemes().length+' picked':''))}
-        ${wayRow("vocab","vocab","Vocabulary","word → meaning, bee-style")}
-        ${kick('Play')}
-        ${row('games','joystick','Arcade','eight games plus the Mock Bee',state.nav==='games')}
-        ${row('trivia','bulb','Bee Trivia',(window.SB_TRIVIA?fmtN(triviaTotal())+' questions · '+SB_TRIVIA.themes.length+' themes':'31,000 questions · 29 themes'),state.nav==='trivia')}
-        ${kick('Revise')}
-        ${row('revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',state.nav==='revisions')}
-        <div class="sb-mob-only" style="display:contents">
-        ${kick('Find')}
-        ${row('finder','search','Search words','find any of 125,000 words',state.nav==='finder')}
-        </div>
-        ${kick('')}
-        <details style="margin:0 2px 2px">
-          <summary style="cursor:pointer;list-style:none;padding:10px 12px;border-radius:10px;font-weight:800;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:8px">${iconSVG('grid',17)} More ways to train ▾</summary>
-          <div style="display:flex;flex-direction:column;gap:1px;padding-top:2px">
-            ${wayRow("figurative","figurative","Idioms & Sayings","2,350 phrases · true origin stories")}
-            ${wayRow('quotes','quotes','Quotes','words worth keeping')}
-            ${wayRow('trivtrain','trivtrain','Know the World of Words','etymology cards by chapter')}
-            ${row('ipatrain','book','The Sound Alphabet','read IPA · the notation study lists use',state.nav==='ipatrain')}
-            ${wayRow("typing","typing","Typing Trainer","learn to type · 60s test")}
-            ${row('traps','target','Your weak patterns','the trap drills, on their own',state.nav==='traps')}
-            ${row('builder','pencil','List Builder','custom list in five taps',state.nav==='builder')}
-          </div>
-        </details>
-        ${row('settings','gear','Settings','look, sound, account and plan',state.nav==='settings')}
-        ${/* The same one control as the foot of Settings, in the other place people look
-             for it. Both dispatch app.signOut, which signs the account out if there is one
-             and always returns to the welcome screen. */''}
-        <button data-act="signOut" style="display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;margin-top:6px;border-radius:10px;background:transparent;border:0;border-top:1px solid var(--line);cursor:pointer;color:var(--bad,#D6453A)">
-          <span style="display:inline-flex;flex-shrink:0"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17v2.4a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19.4V4.6A1.6 1.6 0 0 1 5.6 3h7.8A1.6 1.6 0 0 1 15 4.6V7"/><path d="M10 12h10M17 8.6 20.4 12 17 15.4"/></svg></span>
-          <span style="min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.15">Sign out</span>
-            <span style="display:block;font-size:12px;font-weight:650;opacity:.8">back to the welcome screen</span></span></button>
+      <nav class="bz-dr-nav" aria-label="Menu">
+        ${row('drawer','mypage','user','My page','your level, your week and every word met',N==='progress')}
+        ${row('openShop','avatars','shop','Shop','avatars, worlds and frames · '+fmtN(c.coins||0)+' coins',N==='shop')}
+        ${row('drawer','collection','star','Collection',SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length+'/'+SB_AVATARS.list.length+' avatars',N==='collection'&&state.collTab!=='badges')}
+        ${row('drawer','medals','medal','Medals','what you have done, and what is next',N==='collection'&&state.collTab==='badges')}
+        ${sep('Bizzing Bee')}
+        ${/* the drawer's jump-back-in is the same ONE next step Home's Continue takes (FIX-BEE B2) */''}
+        ${(()=>{ const n=SB_SHELL.nextStep(); return row('drawer','next','steps','Next on your journey', (n.ready?(n.allDone?'the next tier of the Word Atlas':trunc(n.title,34)):'the first stop on the Word Atlas'), false); })()}
+        ${row('drawer','coachdesk','bulb','Coach',missedN?('what to fix, and how — '+missedN+' word'+(missedN>1?'s':'')+' to work on'):'your patterns and what comes next',N==='coachdesk')}
+        ${row('drawer','revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',N==='revisions')}
+        ${row('drawer','evolution','sprout','Your bee','the ten forms your bee grows through',N==='evolution')}
+
+        ${sep('')}
+        ${row('drawer','settings','gear','Settings','me, sound, look and comfort',!!state.settingsOpen)}
+        ${row('drawer','parent','lock','Grown-ups','report card, plan and backup — needs the PIN',false)}
+        ${row('drawer','help','help','Help','how coins, worlds and mastery work',N==='help')}
+        <a href="privacy.html" class="bz-dr-row"><span class="bz-dr-ic" aria-hidden="true">${iconSVG('shield',19,2.2)}</span><span class="bz-dr-t"><span class="bz-dr-l">Privacy</span><span class="bz-dr-s">what stays on this device</span></span></a>
+        <a href="${escA((window.SB_SHELL&&SB_SHELL.HIVE_URL)||'https://aayuvis.github.io/Bizzing_Schedule/')}" class="bz-dr-row"><span class="bz-dr-ic" aria-hidden="true">${iconSVG('hive',19,2.2)}</span><span class="bz-dr-t"><span class="bz-dr-l">Back to the Hive</span><span class="bz-dr-s">your day across every Bizzing app</span></span></a>
       </nav>
     </aside>`;
 }
-
+/* HELP — one page, plain words, the family glossary (standard §21). */
+function viewHelp(){ const q=(h,b)=>`<details class="sb-card bz-help"><summary>${h}</summary><p>${b}</p></details>`;
+  return `<div style="max-width:720px;margin:0 auto">${pageHead('Help','','',null,'goHome','Home',null,iconSVG('help',20,2.2))}
+    ${q('What is Continue?','The big button on Home. It always takes you to the next stop on your journey across the Word Atlas — the exact place you left off.')}
+    ${q('How do I earn Bizzing coins?','A right answer pays 1, a finished round 5, a contest 10, and a Stage you have mastered 20 — up to 100 a day in Bizzing Bee. Coins never come from time, logins or luck. The same wallet works in every Bizzing app.')}
+    ${q('What can coins buy?','Avatars, worlds and frames in the Shop, each at a fixed price that is printed on it. Coins never buy lessons, stops or games, and they are never real money.')}
+    ${q('What are worlds?','A world repaints the whole app and brings its own music and avatar packs. Bizzing Bee and Galaxy are open to everyone; the other six open for 240 coins each, or with the family plan.')}
+    ${q('What do Common, Rare, Epic and Legendary mean?','Commons are free for everyone. Rares cost 120 coins and Epics 250 once their world is open. A Legendary costs 500 and first asks you to reach a learning milestone, which its card names.')}
+    ${q('When is a word mastered?','When you spell it right on two different days. A word comes back for a check later, and if it slips it is simply practised again.')}
+    ${q('How do I look up a word?','Type it into the search bar at the top: find any of 125,000 words, hear it and read its card. While a word is being tested, search waits — it could give the spelling away.')}
+    ${q('What are Medals?','Medals record what you did — stops finished, traps beaten, words mastered. Each one says exactly what earned it.')}
+    ${q('Who are the Grown-ups?','The lock at the top opens the grown-ups area behind a 4-digit PIN: the report card, the plan, backup and erase. The PIN keeps little hands out; it is not a bank lock.')}
+  </div>`; }
 /* Good days THIS week — the whole of what is left of the streak card. Seven squares, Monday
    to Sunday, lit where a session finished. No count of days in a row, no "next reward", no
    best, no fire: a day off costs nothing (FAMILY-STANDARD §8). */
@@ -6581,7 +6713,7 @@ function viewHome(){
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
       const woh=(typeof wordOfHour==='function')?wordOfHour():null; const wohPr=woh?pronFor(woh.w):null;
       const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card sb-home-woh" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
-        <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:20px">⏳</span>
+        <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:20px">${iconSVG('history',20,2.2)}</span>
         <span style="min-width:0;flex:1">
           <span class="sb-cn" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Word of the hour</span>
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.12;overflow-wrap:anywhere;margin:2px 0 1px;color:var(--ink,var(--text))">${esc(woh.w)}</span>
@@ -6622,12 +6754,8 @@ function viewHome(){
           <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px">${esc(c.name)}</div>
           ${(()=>{ /* Your buddy says hello, whoever your buddy is — Bizzy included. The
               line comes from SB_AV_GREETINGS, with the avatar card as a second source. */
-            let line=''; const who=c.avatar||'bizzy';
-            try{ const G=window.SB_AV_GREETINGS||{}; line=G[who]||''; }catch(e){}
-            if(!line){ try{ if(typeof SB_AV_CARD==='function'){ const d=SB_AV_CARD(who); line=(d&&d.greeting)||''; } }catch(e){} }
-            if(!line) line="Buzz buzz, {name}! Let's spell the meadow back to bloom!";
-            line=String(line).replace(/\{name\}/g,(c.name||'friend'));
-            return `<div style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${trunc(line,104)}”</div>`;
+            const line=homeGreet(c);
+            return `<div class="sb-home-greet" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${trunc(line,104)}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
             ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${trunc(ms.label,18)}</button>`:''; })()}
@@ -6710,7 +6838,8 @@ function viewHome(){
             <span class="sb-home-where" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
               <span style="display:block;font-size:11.5px;font-weight:800;color:var(--ink,var(--text));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(region)}</span>
               <span role="progressbar" aria-label="How far along this tier of the Word Atlas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" style="display:block;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
-              <span style="display:block;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(SB_SHELL.levelWords(c))}</span>
+              <span class="sb-home-pos" style="display:block;font-size:11px;font-weight:700;color:var(--muted);line-height:1.3">${(()=>{ const rp=regionPos(nx); const wk=weekProgress(c);
+                return esc((rp?('stop '+rp.n+' of '+rp.of):SB_SHELL.levelWords(c))+' · this week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered'); })()}</span>
             </span>
           </span>
         </div></button>`; })()}
@@ -6973,58 +7102,55 @@ function badgeArtSVG(kind, size, won){
 function shade(hex, pct){ hex=String(hex||'#888').replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
   let r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16); const t=pct<0?0:255, p=Math.abs(pct)/100;
   const m=v=>Math.round((t-v)*p+v); return '#'+[m(r),m(g),m(b)].map(v=>('0'+Math.max(0,Math.min(255,v)).toString(16)).slice(-2)).join(''); }
-/* ==== AVATARS: rarity stays, chance is gone (FIX-BEE I3, FAMILY-STANDARD §1) ====
-   Packs used to be a lottery — pay a pack's price, draw 70% rare / 24% epic / 6% legendary,
-   sell the repeats. Now every avatar names, on its own card, exactly how it is won, and the
-   rule is the same for every child who reads it:
-   • Starter — yours from the start.
-   • Rare / Epic / Legendary in a pack your plan includes — a named LEARNING MILESTONE
-     ("Spell 60 words right", "Master 3 concepts", "Reach Level 8"), won the moment the
-     evidence is there and celebrated once. A Rare can ALSO be bought outright at its printed
-     price in Bizzing coins — a cosmetic at a fixed price, never a draw.
-   • A pack your plan does not include — "Comes with the plan": a grown-up's decision, asked
-     about, never priced on the child's screen.
-   The milestone is fixed per avatar by its place in the roster (AV_LADDER below), never by a
-   roll, so two children see the same rule on the same card. Guard: tests/no-random.cjs. */
+/* ==== AVATARS: 96 in 12 × 8, through the family engine (FIX-BEE v2, FAMILY-STANDARD §8) ====
+   One engine for all five apps (bizzing-avatars.js → window.BZ_AVATARS). Every card's path is the
+   engine's stateOf().say, in plain words:
+   • Common — "Free for everyone", every plan, from day one.
+   • Rare 120 · Epic 250 — "Opens with its world" until the pack's world is open, then the fixed
+     price in Bizzing coins ("120 coins · 40 more to go").
+   • Legendary 500 — its world open AND its named learning milestone ("First: master 300 words"),
+     then the coins.
+   No chance, no packs drawn blind, no duplicates, no selling, never real money and never a
+   button to a payment form. A milestone, once reached, stays reached (c.avMs). An avatar a child
+   already owned — won on an old milestone, bought at an old price, or from a pack that has since
+   left Bee — stays theirs and still renders. Guard: tests/avatars-engine.cjs. */
 const AV_EVID = {
-  right:    { t:n=>'Spell '+fmtN(n)+' words right',              v:e=>e.right },
-  mast:     { t:n=>'Master '+fmtN(n)+' words',                   v:e=>e.mast },
-  stops:    { t:n=>'Finish '+n+' Atlas stop'+(n===1?'':'s'),      v:e=>e.stops },
-  level:    { t:n=>'Reach Level '+n,                             v:e=>e.level },
-  concepts: { t:n=>'Master '+n+' concept'+(n===1?'':'s'),        v:e=>e.concepts },
+  right:    { t:n=>'spell '+fmtN(n)+' words right',              v:e=>e.right },
+  mast:     { t:n=>'master '+fmtN(n)+' words',                   v:e=>e.mast },
+  stops:    { t:n=>'finish '+n+' Atlas stop'+(n===1?'':'s'),      v:e=>e.stops },
+  level:    { t:n=>'reach Level '+n,                             v:e=>e.level },
+  concepts: { t:n=>'master '+n+' concept'+(n===1?'':'s'),        v:e=>e.concepts },
+  traps:    { t:n=>'beat '+n+' words that once tripped you',     v:e=>e.traps },
 };
-/* [kinds in rotation, threshold(kind, step)] per rarity — step = how far down the roster */
-const AV_LADDER = {
-  rare:      { kinds:['right','stops','mast','level'], n:(k,s)=>({right:20+20*s, stops:1+s, mast:10+10*s, level:2+Math.floor(s/2)})[k] },
-  epic:      { kinds:['mast','right','concepts','stops'], n:(k,s)=>({mast:50+25*s, right:150+75*s, concepts:1+s, stops:5+3*s})[k] },
-  legendary: { kinds:['level','mast','concepts','stops'], n:(k,s)=>({level:8+Math.floor(s/2), mast:300+100*s, concepts:8+3*s, stops:25+8*s})[k] },
-};
-let _avRuleIdx=null;
-function avMilestone(a){ if(!a||!AV_LADDER[a.rarity]) return null;
-  if(!_avRuleIdx){ _avRuleIdx={}; const ctr={}; SB_AVATARS.list.forEach(x=>{ if(!AV_LADDER[x.rarity]) return; _avRuleIdx[x.id]=(ctr[x.rarity]=(ctr[x.rarity]||0)+1)-1; }); }
-  const L=AV_LADDER[a.rarity]; const i=_avRuleIdx[a.id]||0; const k=L.kinds[i%L.kinds.length]; const n=L.n(k,Math.floor(i/L.kinds.length));
-  return { k, n, text:AV_EVID[k].t(n) }; }
+function avMilestone(a){ if(!a||!a.milestone) return null; const m=a.milestone; return { k:m.k, n:m.n, text:m.label, id:m.id }; }
 /* The evidence the milestones read — computed once per call site, not once per tile. */
 function avEvidence(c){ c=c||active(); let concepts=0, stops=0;
   /* only read chapters already in memory — loadConcepts() would fall back to a fetch while the
      lazy shard is still on its way, and a fetch from file:// is a console error on every render */
   try{ if(state.conceptData || (window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)){ loadConcepts(); concepts=(state.conceptData||[]).filter(ch=>conceptStat(ch).done).length; } }catch(e){}
   try{ stops=(typeof window.SB_TRAIL_STOPS==='function')?SB_TRAIL_STOPS(c):0; }catch(e){}
-  return { right:rankXp(c), mast:masteredCount(), stops, level:rankOf(c).level, concepts }; }
-/* One rule per avatar, as the child should read it now. kind: free | plan | milestone. */
-function avRule(a,c){ c=c||active(); if(!a) return null;
-  if(a.rarity==='free') return { kind:'free', text:'Yours from the start' };
-  if(!avPackUnlocked(a.pack)) return { kind:'plan', text:'Comes with the plan — ask a grown-up' };
-  const m=avMilestone(a); if(!m) return { kind:'plan', text:'Comes with the plan — ask a grown-up' };
-  return { kind:'milestone', k:m.k, n:m.n, text:m.text, price:(a.rarity==='rare'?a.price:0) }; }
-/* Give every avatar whose milestone is met and whose pack is open — once, with a card. Runs
-   where medals are checked (every finished session) and when the Hive opens. */
-function grantAvatarMilestones(quiet){ try{ const c=active(); if(!c||!window.SB_AVATARS||state.devUnlock) return [];   /* testing mode opens every pack — it must never GIVE from them */
-    const e=avEvidence(c); const won=[];
-    SB_AVATARS.list.forEach(a=>{ if(a.rarity==='free'||avCount(c,a.id)>0||!avPackUnlocked(a.pack)) return;
-      const m=avMilestone(a); if(m && AV_EVID[m.k].v(e)>=m.n){ avGive(c,a.id,1); (c.avWon=c.avWon||{})[a.id]=1; won.push(a); } });
-    if(won.length){ save(); if(!quiet){ try{ flash('✨ '+won[0].name+' joined your collection — '+avMilestone(won[0]).text.toLowerCase()+'!'+(won.length>1?' (+'+(won.length-1)+' more)':'')); }catch(e){} } }
-    return won; }catch(e){ return []; } }
+  return { right:rankXp(c), mast:masteredCount(), stops, level:rankOf(c).level, concepts, traps:Object.keys(c.trapsBeaten||{}).length }; }
+/* Milestones met: the ones recorded (c.avMs — once reached, kept) plus any the evidence shows now. */
+function avMilestonesMet(c){ c=c||active(); const out=new Set(Object.keys(c.avMs||{}));
+  try{ let e=null; (window.SB_AVATARS?SB_AVATARS.list:[]).forEach(a=>{ if(a.rarity!=='legendary'||!a.milestone||out.has(a.milestone.id)) return;
+      e=e||avEvidence(c); if(AV_EVID[a.milestone.k] && AV_EVID[a.milestone.k].v(e)>=a.milestone.n) out.add(a.milestone.id); }); }catch(e){}
+  return out; }
+/* The engine's reading of one card, for this child now. */
+function avState(a,c){ c=c||active(); if(!a) return null;
+  if(state.devUnlock) return { state:'owned', say:'Open for testing', tier:SB_AVATARS.tierOf(a), price:a.price||0 };
+  try{ const s=BZ_AVATARS.stateOf({ id:a.id, tier:SB_AVATARS.tierOf(a), pack:1, world:a.worldN||1, milestone:a.milestone }, avCtx(c));
+    if(s.state==='world'){ const wid=worldIdOf(s.world); s.say='Opens with its world'+(wid?(' — '+((THEMES.find(t=>t.id===wid)||{}).label||'')):''); }
+    return s; }catch(e){ return { state:'owned', say:'', tier:'common', price:0 }; } }
+/* The old name — a short rule for anything that still asks for one. */
+function avRule(a,c){ const s=avState(a,c); if(!s) return null;
+  return { kind:s.state==='owned'?'free':(s.state==='buy'?'buy':(s.state==='milestone'?'milestone':'world')), text:s.say, price:s.state==='buy'?s.price:0 }; }
+/* A legendary's milestone, met for the first time, is recorded (and said once): it does not GIVE the
+   avatar any more — the standard says milestone, then coins — it opens the buying of it. */
+function grantAvatarMilestones(quiet){ try{ const c=active(); if(!c||!window.SB_AVATARS||state.devUnlock) return [];
+    const met=avMilestonesMet(c); const newly=[]; c.avMs=c.avMs||{};
+    SB_AVATARS.list.forEach(a=>{ if(a.rarity!=='legendary'||!a.milestone) return; const id=a.milestone.id; if(met.has(id)&&!c.avMs[id]){ c.avMs[id]=Date.now(); newly.push(a); } });
+    if(newly.length){ save(); if(!quiet){ try{ flash(newly[0].name+' can be yours now — you did it: '+newly[0].milestone.label+'.'); }catch(e){} } }
+    return []; }catch(e){ return []; } }
 /* c.avOwned[id] is a COUNT, not a flag — duplicates are collectable and sellable.
    Old saves stored a bare 1, which reads back as a single copy. */
 function avCount(c,id){ const v=(c&&c.avOwned||{})[id]; const n=(typeof v==='number')?v:(v?1:0); return n>0?n:0; }
@@ -7038,8 +7164,7 @@ function avDupeValue(c){ let v=0; SB_AVATARS.list.forEach(a=>{ if(a.rarity!=='fr
    Packs beyond your plan's allowance are not for sale at any price — they come with the
    upgrade. (Free-rarity avatars stay free everywhere; they are the starter bees.) */
 function avPackUnlocked(pk){ if(state.devUnlock) return true;
-  try{ if(!window.SB_ENT) return true; const lim=SB_ENT.avatarPackLimit(); if(lim==='all') return true;
-    const idx=SB_AVATARS.packs.findIndex(p=>p.id===pk); return idx>=0 && idx<lim; }catch(e){ return true; } }
+  try{ const p=SB_AVATARS.packs.find(x=>x.id===pk); if(!p) return false; return BZ_AVATARS.worldOpen(p.world, avCtx()); }catch(e){ return true; } }
 function packPlanNeeded(pk){ try{ const idx=SB_AVATARS.packs.findIndex(p=>p.id===pk);
   const b=SB_TIERS.beginner.ent.avatarPacks; return (b!=='all'&&idx>=b)?'regional':'beginner'; }catch(e){ return 'regional'; } }
 function themePlanNeeded(id){ try{ const idx=THEMES.findIndex(t=>t.id===id);
@@ -7179,6 +7304,111 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
      is a medal taken away. badgesSeen is the record (checkNewBadges writes it, once). */
   return defs.map(b=>(b.done||!_seen[b.id])?b:Object.assign({},b,{done:true}))
     .filter(b=>!b.retired||b.done); }
+/* ===================== THE SHOP AND THE WALLET (FIX-BEE v2, FAMILY-STANDARD §1, §1.1, §8) =====================
+   One Shop, the same in every Bizzing app: tabs Avatars · Worlds · Extras, then the wallet history.
+   It opens from ☰ → Shop and from the coin chip's sheet. Every price is fixed and PRINTED, every
+   purchase goes through the family wallet, nothing is random, nothing is content (lessons, stops and
+   games are never sold), and no screen here shows real money or a way to a payment form.
+   • Avatars — the twelve packs by world, each card in the family look (bizzing-avatars.css) with the
+     engine's own words for its path ("Free for everyone", "120 coins · 40 more to go",
+     "First: master 300 words", "Opens with its world").
+   • Worlds — worlds 1–2 open to all; 3–8 for 240 coins each (or with the family plan).
+   • Extras — avatar frames, the first cosmetic line: a ring worn around your avatar wherever it shows.
+   The coin chip opens the wallet sheet: the balance, the last 30 lines in words (sibling apps
+   marked), and one line on what coins are for. Guards: tests/avatars-engine.cjs (prices, buying) and tests/nav-hive-band.cjs (the wallet sheet). */
+const FRAMES=[
+  { id:'honey',   name:'Honey ring',     price:40,  about:'A warm gold ring, like the edge of a honeycomb.' },
+  { id:'leaf',    name:'Meadow leaves',  price:60,  about:'A green ring with a sprig at the top.' },
+  { id:'comet',   name:'Comet trail',    price:80,  about:'A blue ring with a streak of starlight.' },
+  { id:'sunset',  name:'Sunset',         price:100, about:'Orange to pink, like the Race Zone at dusk.' },
+  { id:'royal',   name:'Royal purple',   price:150, about:'A deep purple ring with a gold rim.' },
+  { id:'rainbow', name:'Rainbow',        price:200, about:'Every colour of the worlds, all the way round.' } ];
+const FRAME_BY=Object.fromEntries(FRAMES.map(f=>[f.id,f]));
+function frameOwned(c,id){ c=c||active(); return !!((c.frames||{})[id]); }
+/* Wrap any avatar drawing in the child's worn frame. The ring is pure CSS (.bz-frame-<id>). */
+function framed(html,c,size){ c=c||active(); const f=c&&c.frame&&FRAME_BY[c.frame]&&frameOwned(c,c.frame)?c.frame:null;
+  return f?`<span class="bz-frame bz-frame-${f}" style="--fs:${size||40}px">${html}</span>`:html; }
+const SHOP_APP_LABEL={ bee:'Bee', maths:'Maths', geography:'Geography', india:'India', finance:'Finance' };
+/* One ledger line, in words: "+5 · finished The Meadow, stop 3 · Bee". */
+function ledgerWords(x,c){ c=c||active(); const why=String(x.why||'');
+  let what;
+  if(why==='answer') what='a right answer';
+  else if(why==='stop') what='finished a round';
+  else if(why==='contest') what='finished a contest';
+  else if(why==='mastery') what='mastered on two different days';
+  else if(why==='migrated') what='Bee coins moved into the family wallet';
+  else if(/^avatar:/.test(why)){ const a=(window.SB_AVATARS&&SB_AVATARS.byId[why.slice(7)])||null; what='bought '+(a?a.name:'an avatar'); }
+  else if(/^world:/.test(why)){ const w=THEMES[(+why.slice(6))-1]; what='opened the world '+(w?w.label:why.slice(6)); }
+  else if(/^frame:/.test(why)){ const f=FRAME_BY[why.slice(6)]; what='bought the '+(f?f.name:'frame')+' frame'; }
+  else if(/^refund:/.test(why)) what='money back for something withdrawn';
+  else what=why.replace(/[:_-]/g,' ');
+  /* name the round it came from, when Bee's own log has it (the session closes just after it pays) */
+  if(x.a==='bee' && /^(stop|contest|answer|mastery)$/.test(why)){
+    const act=(c.activity||[]).filter(e=>e.ts>=x.t-1000 && e.ts-x.t<15*60000).pop();
+    if(act&&act.label) what+=' — '+act.label; }
+  return what; }
+function walletLines(c,n){ c=c||active(); try{ if(window.SB_DEMO) return []; const W=window.BZ_WALLET; if(!W) return [];
+    return W.ledger(walletWho(c)).slice().sort((x,y)=>y.t-x.t).slice(0,n||30); }catch(e){ return []; } }
+function walletRowsHTML(c,n){ const L=walletLines(c,n);
+  if(!L.length) return `<p class="bz-empty"><span class="bz-empty-m">${mascotSVG('think')}</span>No coins yet. Every right answer pays one — they land here.</p>`;
+  return `<ol class="bz-ledger">${L.map(x=>{ const plus=x.n>0; const app=SHOP_APP_LABEL[x.a]||x.a;
+    return `<li><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(ledgerWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
+const WALLET_FOR='Bizzing coins come from learning — right answers, finished rounds, contests and mastery — in every Bizzing app. They buy avatars, worlds and frames at fixed prices. Never lessons, and never real money.';
+function viewWalletSheet(){ if(!state.walletOpen) return ''; const c=active();
+  return `<div class="bz-sheet-ov" data-act="closeWallet"><div class="bz-sheet" data-act="noop" data-trap="wallet" role="dialog" aria-modal="true" aria-label="Your Bizzing coins">
+    <div class="bz-sheet-h"><h2>${iconSVG('coin',20,2.2)} Your Bizzing coins</h2><button data-act="closeWallet" class="bz-x" aria-label="Close">${iconSVG('close',18,2.4)}</button></div>
+    <div class="bz-bal"><span class="bz-bal-n">${fmtN(c.coins||0)}</span><span class="bz-bal-l">coins in your wallet</span></div>
+    <p class="bz-for">${WALLET_FOR}</p>
+    <h3 class="bz-sub">Where your coins came from</h3>
+    ${walletRowsHTML(c,30)}
+    <button data-act="openShop" data-arg="avatars" class="bz-btn bz-btn-wide">${iconSVG('shop',16,2.2)} Open the Shop</button>
+  </div></div>`; }
+/* One avatar card in the family look. */
+function avCardHTML(a,c){ c=c||active(); const s=avState(a,c); const own=avOwned(c,a.id); const on=c.avatar===a.id;
+  const tier=SB_AVATARS.tierOf(a); const st=own?'owned':s.state;
+  let act='';
+  if(on) act=`<span class="bz-av-on">${iconSVG('check',12,2.6)} Wearing</span>`;
+  else if(own) act=`<button data-act="wearAv" data-arg="${a.id}" class="bz-av-btn">Wear</button>`;
+  else if(s.state==='buy') act=`<button data-act="buyAvatar" data-arg="${a.id}" class="bz-av-btn buy"${s.short?' aria-disabled="true"':''}>${coinIc(12)} ${s.price}</button>`;
+  return `<figure class="bz-av" data-tier="${tier}" data-state="${st}" data-av="${a.id}">
+    <button data-act="showAvCard" data-arg="${a.id}" class="bz-av-art" aria-label="${escA(a.name+' — '+TIERS_LABEL[tier]+'. '+(own?'Yours':s.say))}">${avatarSVG(a.id,96)}</button>
+    <figcaption>${esc(a.name)} <b>${TIERS_LABEL[tier]}</b></figcaption>
+    <span class="bz-av-say av-rule">${esc(own?(tier==='common'?'Free for everyone':'Yours'):s.say)}</span>
+    ${act}</figure>`; }
+const TIERS_LABEL={ common:'Common', rare:'Rare', epic:'Epic', legendary:'Legendary' };
+function avPacksHTML(c){ c=c||active();
+  return SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
+    const wid=worldIdOf(p.world); const wl=(THEMES.find(t=>t.id===wid)||{}).label||''; const open=avPackUnlocked(p.id);
+    return `<section class="sb-card bz-pack" data-pack="${p.id}">
+      <div class="bz-pack-h"><span class="bz-pack-sw" style="background:linear-gradient(135deg,${p.c1},${p.c2})"></span><h3>${esc(p.label)}</h3>
+        <span class="bz-pack-n">${ownedN}/${avs.length}</span><span class="bz-pack-w">${iconSVG(open?'globe':'lock',12,2.4)} ${esc(wl)}${open?'':' — '+esc(worldLockText(wid,true))}</span></div>
+      <div class="bz-av-row">${avs.map(a=>avCardHTML(a,c)).join('')}</div></section>`; }).join(''); }
+function worldsShopHTML(c){ c=c||active();
+  return `<div class="wh-grid">${THEMES.map((t,i)=>{ const un=isThemeUnlocked(t.id); const n=i+1;
+    const packs=SB_AVATARS.packs.filter(p=>p.world===n).map(p=>p.label.replace(/ Pack$/,'')).join(' · ');
+    const H=(typeof WORLD_HERO!=='undefined'&&WORLD_HERO[t.id])||{};
+    return `<div class="bz-wcard${un?'':' locked'}" data-world="${t.id}">
+      <div class="bz-wcard-art" style="${H.bg||''}">${un?'':`<span class="bz-wcard-lock">${iconSVG('lock',14,2.4)}</span>`}<b style="font-family:${H.face||'inherit'};color:${H.ink||'#fff'}">${esc(t.label)}</b></div>
+      <div class="bz-wcard-b"><span class="bz-row-s">${esc(WORLD_ABOUT[t.id]||'')}</span>${packs?`<span class="bz-row-s"><b>Avatars:</b> ${esc(packs)}</span>`:''}
+        ${un?(t.id===state.theme?`<span class="bz-av-on">${iconSVG('check',12,2.6)} Your world now</span>`:`<button data-act="pickTheme" data-arg="${t.id}" class="bz-btn">Use this world</button>`)
+          :(n<=2?'':`<button data-act="buyWorld" data-arg="${t.id}" class="bz-btn buy">${coinIc(13)} ${WORLD_PRICE_COINS} coins</button><span class="bz-row-s">or with the family plan</span>`)}</div></div>`; }).join('')}</div>`; }
+function extrasShopHTML(c){ c=c||active(); const prev=avatarSVG(c.avatar||'bizzy',64);
+  return `<p class="bz-row-s" style="margin:0 0 12px">A frame is a ring worn around your avatar — at the top of the screen, on Home and on your card. Buy it once, wear it in every world.</p>
+    <div class="bz-frames">${FRAMES.map(f=>{ const own=frameOwned(c,f.id); const on=own&&c.frame===f.id;
+      return `<div class="bz-fcard" data-frame="${f.id}"><span class="bz-frame bz-frame-${f.id}" style="--fs:64px">${prev}</span><b>${esc(f.name)}</b><span class="bz-row-s">${esc(f.about)}</span>
+        ${on?`<button data-act="wearFrame" data-arg="" class="bz-btn">${iconSVG('check',12,2.6)} Wearing — take off</button>`:own?`<button data-act="wearFrame" data-arg="${f.id}" class="bz-btn">Wear</button>`
+          :`<button data-act="buyFrame" data-arg="${f.id}" class="bz-btn buy">${coinIc(13)} ${f.price} coins</button>`}</div>`; }).join('')}</div>`; }
+function viewShop(){ const c=active(); const tab=state.shopTab||'avatars';
+  const T=(k,ic,l)=>`<button role="tab" aria-selected="${tab===k?'true':'false'}" data-act="shopTab" data-arg="${k}" class="bz-tab${tab===k?' on':''}">${iconSVG(ic,16,2.2)} ${l}</button>`;
+  const body=tab==='worlds'?worldsShopHTML(c):tab==='extras'?extrasShopHTML(c):avPacksHTML(c);
+  return `<div class="bz-shop">
+    ${pageHead('Shop','','',`<button data-act="openWallet" class="bz-coin" aria-label="${escA(fmtN(c.coins||0)+' Bizzing coins — where they came from')}">${coinIc(16)} ${fmtN(c.coins||0)}</button>`,'goHome','Home',null,iconSVG('shop',20,2.2))}
+    <p class="bz-for" style="margin:0 0 12px">${WALLET_FOR}</p>
+    <div class="bz-tabs" role="tablist" aria-label="Shop">${T('avatars','user','Avatars')}${T('worlds','globe','Worlds')}${T('extras','frame','Extras')}</div>
+    <div role="tabpanel">${body}</div>
+    <section class="sb-card bz-hist"><h3>${iconSVG('history',17,2.2)} Where your coins came from</h3>${walletRowsHTML(c,30)}</section>
+  </div>`; }
+
 /* My Hive is one page with tabs — there is no section bar above it any more.
    "Your bee" moved to the Bee Band page (tap the pill in the header), because the bee
    and the band are the two ladders and they belong side by side, not one tab apart.
@@ -7190,40 +7420,10 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
   let body='';
   if(tab==='avatars'){
-    /* Every card says how it is won (avRule) — no packs to open, no odds, no spares to sell.
-       A milestone shows its progress; a Rare also shows its fixed coin price; a pack outside
-       the plan says so and asks for a grown-up, never for money. */
-    /* a milestone met since the last finished session is granted here — after this paint, so the
-       flash that celebrates it (once) is not fired from inside render() */
-    setTimeout(()=>{ try{ if(state.nav==='collection' && grantAvatarMilestones().length) render(); }catch(e){} },0);
-    const ev=avEvidence(c);
-    const howAv=`<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Starters are yours. Every other avatar says on its card exactly how it is won — a learning milestone, and for a Rare, a fixed price in Bizzing coins too. Packs beyond your plan come with the plan. Nothing here is left to chance.</p>`;
-    const RARO={free:0,rare:1,epic:2,legendary:3};
-    body=howAv+SB_AVATARS.packs.map(p=>{ const avs=SB_AVATARS.list.filter(a=>a.pack===p.id)
-        .sort((x,y)=>(RARO[x.rarity]||0)-(RARO[y.rarity]||0)); const ownedN=avs.filter(a=>avOwned(c,a.id)).length;
-      const inPlan=avPackUnlocked(p.id);
-      const tiles=avs.map(a=>{ const own=avOwned(c,a.id); const R=SB_AVATARS.rarities[a.rarity]; const on=c.avatar===a.id;
-        const rule=avRule(a,c);
-        let action;
-        if(on) action=`<span style="font-weight:800;font-size:11.5px;color:var(--good)">Wearing ✓</span>`;
-        else if(own) action=`<button data-act="wearAv" data-arg="${a.id}" style="padding:6px 11px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:11.5px">Use</button>`;
-        else if(rule.kind==='milestone'){ const have=Math.min(rule.n, AV_EVID[rule.k].v(ev));
-          action=`<span class="av-rule" style="display:flex;flex-direction:column;align-items:center;gap:5px">${lockChip('learn',rule.text,{fs:10.5})}<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:800;color:var(--muted)">${fmtN(have)} / ${fmtN(rule.n)}</span>${rule.price?`<button data-act="buyAvatar" data-arg="${a.id}" title="A fixed price — no chance involved" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:var(--treasure-tint,#FFF3D6);border:1px solid var(--treasure,#F0B429);font-weight:800;font-size:11px;color:var(--treasure-deep,#8A5B00)">or ${coinAmt(rule.price,10)}</button>`:''}</span>`; }
-        else action=`<button data-act="askPlan" data-arg="avatarPacks" class="av-rule" style="background:none;border:0;padding:0;cursor:pointer">${lockChip('plan',rule.text,{fs:10.5})}</button>`;
-        const card=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null;
-        // Unowned avatars are drawn as silhouettes-in-waiting: desaturated and dimmed, so the
-        // collection reads at a glance as "mine" vs "still to win".
-        return `<div style="position:relative;background:var(--paper,var(--bg2));border:1.5px solid ${on?'var(--accent)':'var(--line)'};border-radius:14px;padding:11px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
-          <button data-act="showAvCard" data-arg="${a.id}" title="See ${esc(a.name)}'s card" style="background:none;border:0;padding:0;cursor:pointer;width:89px;height:89px;${own?'':'filter:grayscale(1) contrast(.82) brightness(.96);opacity:.7'}">${avatarSVG(a.id,89)}</button>
-          <span style="font-weight:800;font-size:12px;line-height:1.15">${a.name}</span>
-          ${card?`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:9.5px;font-weight:800;color:var(--muted)">OVR ${card.overall}</span>`:''}
-          <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;color:#fff;background:${R.c}">${R.label}</span>
-          ${action}</div>`; }).join('');
-      return `<div class="sb-card" style="margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,${p.c1},${p.c2});display:inline-block"></span><span class="sb-ct" style="font-size:15px">${p.label}</span><span class="sb-cn">${ownedN}/${avs.length} collected</span>${!inPlan
-          ?`<button data-act="askPlan" data-arg="avatarPacks" style="margin-left:auto;background:none;border:0;padding:0;cursor:pointer">${lockChip('plan','Comes with the plan — ask a grown-up')}</button>`:''}</div>
-        <div style="height:5px;border-radius:99px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin-bottom:11px"><div style="height:100%;background:linear-gradient(90deg,${p.c1},${p.c2});width:${Math.round(ownedN/(avs.length||1)*100)}%"></div></div>
-        <div class="av-row">${tiles}</div></div>`; }).join('');
+    /* All 96 by pack, owned and locked, each with the engine's words for its path (FIX-BEE v2 J5/J7).
+       A Legendary whose milestone was just reached is recorded after this paint, once, with a line. */
+    setTimeout(()=>{ try{ if(state.nav==='collection') grantAvatarMilestones(); }catch(e){} },0);
+    body=`<p class="sb-cn" style="margin:0 0 14px;line-height:1.5">Commons are free for everyone. Rares are 120 Bizzing coins and Epics 250 once their world is open; a Legendary is 500 after its learning milestone. Every price is fixed, and nothing here is left to chance. <button data-act="openShop" data-arg="avatars" class="bz-linkbtn">Open the Shop</button></p>`+avPacksHTML(c);
   } else if(tab==='worlds'){
     /* The painted hero cards, moved here from the standalone picker. A locked world is
        greyed and carries its coin price under the tile — a price belongs with the thing,
@@ -7272,7 +7472,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
   return `<div style="max-width:920px;margin:0 auto">
     ${/* Printing is an avatars-only action, so it rides the header beside the purse when
           that tab is open rather than standing as a banner over the packs. */''}
-    ${pageHead('My Hive', '', '',
+    ${pageHead('Collection', '', '',
       (tab==='avatars'?`<button data-act="printAvCards" title="Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${SB_ICON('printer',{size:15})} Print my cards</button>`:'')
       + `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Medals · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}</div>
@@ -7422,7 +7622,20 @@ function drillLive(){ try{ const S=state; if(S.screen!=='app') return false;
    files use it). kind 'mc' = recognition. A word crossing into mastery can still finish a
    concept or lesson pattern. */
 function markMastered(key,kind){ if(!key) return; key=nkey(key); const was=!!state.luMastered[key];
-  mastEvidence(key,true,kind); if(!was && state.luMastered[key]) checkPatternDone(key); }
+  mastEvidence(key,true,kind); if(!was && state.luMastered[key]){ checkPatternDone(key); listMasteryPay(key); } }
+/* THE MASTERY COIN (standard §1: "fires on mastery evidence, never on an XP level-up").
+   A Stage of a word list is mastered when every one of its words is mastered on evidence —
+   right on two separate days (c.mast box ≥ 2). The word that completes it pays 'mastery' (20)
+   once per list and Stage, recorded on the child (c.mastPaid), so a slip and a re-master
+   cannot pay twice. Guard: tests/trust-v2.cjs. */
+function listMasteryPay(key){ try{ const c=active(); if(!c||!key) return 0; ensureLists(c);
+    const lk=activeListKey(); const s=curStage(c,lk); if(!s||!s.words||!s.words.length) return 0;
+    if(!s.words.some(w=>nkey(w.w)===key)) return 0;
+    if(!s.words.every(w=>state.luMastered[nkey(w.w)])) return 0;
+    const id=lk+':'+(listStageIdx(c,lk)|0); c.mastPaid=c.mastPaid||{}; if(c.mastPaid[id]) return 0;
+    c.mastPaid[id]=Date.now(); const n=addCoins('mastery'); save();
+    state.toast='Stage mastered in '+listLabel(lk)+' — every word right on two different days'+(n?' · +'+n+' Bizzing coins':''); scheduleToast(3200);
+    return n; }catch(e){ return 0; } }
 function conceptTierList(t){ return (state.conceptData||[]).filter(c=>(c.difficulty||'medium')===t); }
 function currentTier(){ const order=['easy','medium','hard']; for(const t of order){ const list=conceptTierList(t); if(list.length && !list.every(c=>conceptStat(c).done)) return t; } return 'hard'; }
 /* ---- generated concept covers: theme-independent family palette + texture (design handoff) ---- */
@@ -7551,7 +7764,7 @@ function sideShelves(){
   const lessons=lessonsAll().length;
   if(lessons) out.push(shelfCover('Word journeys', lessons+' journeys',
     'The history and geography of one word at a time — story, pattern, then five words to keep.',
-    'openJourneys', null, !state.premium && !state.devUnlock ? 'With the plan — ask a grown-up' : ''));
+    'openJourneys', null, !state.premium && !state.devUnlock ? 'With the family plan' : ''));
   const tips=((window.SB_ADV_TIPS)||[]).length;
   if(tips) out.push(shelfCover('Champion tips', tips+' techniques',
     'Memory, speed, roots and bee-day tactics from spellers who have stood at the microphone.',
@@ -8072,7 +8285,7 @@ function cardDonePanel(){ const miss=((active().missed)||[]).length;
     <div style="font-size:13px;color:var(--muted);line-height:1.5;margin:6px 0 18px">You’ve been through every word in this set. What next?</div>
     <div style="display:flex;flex-direction:column;gap:9px">
       <button data-act="cardToPractice" style="padding:14px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice &amp; test →</button>
-      ${miss?`<button data-act="cardToRevise" style="padding:14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:15px">⚑ Revise the ${miss} revision word${miss>1?'s':''}</button>`:''}
+      ${miss?`<button data-act="cardToRevise" style="padding:14px;border-radius:12px;background:color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:15px">${iconSVG('flag',14,2.4)} Revise the ${miss} revision word${miss>1?'s':''}</button>`:''}
       <div style="display:flex;gap:9px">
         <button data-act="cardRestart" style="flex:1;padding:11px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px">↺ Cards again</button>
         ${backPill('toggleCardView','Back to Learn',null)}
@@ -8130,7 +8343,7 @@ function coachFlashCard(){
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${i+1} of ${N}</span>
       <div style="flex:1;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${pct}%;transition:width .3s"></div></div>
-      ${onRev?'<span style="color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px;white-space:nowrap">⚑ On revise</span>':''}
+      ${onRev?'<span style="color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12px;white-space:nowrap">'+iconSVG('flag',14,2.4)+' On revise</span>':''}
     </div>
     <div data-swipe="coach" class="coach-card" style="position:relative;max-width:340px;margin:0 auto;min-height:min(72vh,470px);border-radius:24px;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none">
       <div class="coach-glimmer"></div>
@@ -8194,7 +8407,7 @@ function wordFlash(words, idx, navAct, opts){
   const selfMark=!!opts.selfMark;
   const markRow=selfMark?`<div style="display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;align-self:stretch;width:100%;margin-bottom:6px">
         <button data-act="flashMark" data-arg="${escA('done|'+navAct+'|'+w.w)}" title="Got it — mark this word complete and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;${mastered?'background:var(--good);border:1px solid var(--good);color:#fff':'background:color-mix(in srgb,var(--good) 15%,transparent);border:1px solid var(--good);color:var(--good)'};font-weight:800;font-size:12.5px">✓ Complete</button>
-        <button data-act="flashMark" data-arg="${escA('revise|'+navAct+'|'+w.w)}" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">⚑ Mark for revision</button>
+        <button data-act="flashMark" data-arg="${escA('revise|'+navAct+'|'+w.w)}" title="Mark this word for revision and move to the next" style="display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent);border:1px solid var(--treasure,#F0B429);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:12.5px">${iconSVG('flag',14,2.4)} Mark for revision</button>
       </div>`:'';
   return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <span style="font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap">Card ${i+1} of ${N}</span>
@@ -8220,7 +8433,7 @@ function wordFlash(words, idx, navAct, opts){
       <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:15px">
         ${w.bp!=null?`<span title="Bee-probability score: ${w.bp}/100" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;background:var(--surface2);font-size:12px;color:var(--accent);font-weight:800">${iconSVG('target',13)} ${beeOdds(w.bp)}</span>`:''}
         ${w.p?chip('/ '+esc(w.p)+' /'):''}${(()=>{try{const t=ipaOf(w.w,w.p); return t?chip('IPA /'+esc(t)+'/'):'';}catch(e){return '';}})()}${w.o?chip(esc(w.o)):''}${w.ps?chip(esc(w.ps)):''}${(()=>{try{const tl=trickLabel(w);return tl?`<span title="Why this word is tricky" style="padding:4px 11px;border-radius:999px;background:var(--chip);font-size:12px;color:var(--accent);font-weight:800">🧩 ${esc(tl)}</span>`:'';}catch(e){return '';}})()}
-        <button data-act="reportWord" data-arg="${escA(w.w)}" title="Meaning or sentence look wrong? Report it for review" style="padding:4px 11px;border-radius:999px;background:transparent;border:1px dashed var(--line);font-size:12px;color:var(--muted);font-weight:700">⚑ Report a fix</button>
+        <button data-act="reportWord" data-arg="${escA(w.w)}" title="Meaning or sentence look wrong? Report it for review" style="padding:4px 11px;border-radius:999px;background:transparent;border:1px dashed var(--line);font-size:12px;color:var(--muted);font-weight:700">${iconSVG('flag',14,2.4)} Report a fix</button>
       </div>
       ${state.reportW===w.w?`<div style="margin-top:12px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:34em">
         <div style="font-weight:800;font-size:13px;margin-bottom:8px">What looks wrong with “${esc(w.w)}”?</div>
@@ -9129,18 +9342,19 @@ function printCards(key){ const p=(state.prn&&state.prn.inc)?state.prn:{inc:{w:1
 // then cut out. Backs were dropped: they doubled the paper for decoration, and the duplex
 // mirroring came out misaligned on any printer that feeds differently.
 function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter(a=>avOwned(c,a.id));
-  if(!owned.length) return '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:40px;color:#333">No avatars collected yet — open a pack in your Hive first! 🐝</body></html>';
+  if(!owned.length) return '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:40px;color:#333">No avatars collected yet — find one in the Shop first.</body></html>';
   const bar=(lab,val,col)=>`<div class="abar"><span class="al">${lab}</span><span class="at"><i style="width:${Math.max(6,val)}%;background:${col}"></i></span><b class="av">${val}</b></div>`;
   const front=(a)=>{ const d=(typeof SB_AV_CARD==='function')?SB_AV_CARD(a.id):null; if(!d) return '<div class="card afront"></div>';
     const art=avatarSVG(a.id,124); const vil=d.villain;
     return `<div class="card afront${vil?' avil':''}" style="--c1:${d.c1};--c2:${d.c2};--rc:${d.rc}">
-      <div class="atop"><span class="aov"><b>${d.overall}</b><i>OVR</i></span><span class="abadges"><span class="akind ${vil?'kv':'kh'}">${vil?'😈 Villain':'⭐ Hero'}</span><span class="arar" style="background:${d.rc}">${esc(d.rarityLabel)}</span></span></div>
+      <div class="atop"><span class="aov" style="font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase">${esc(d.rarityLabel)}</span><span class="abadges"><span class="akind ${vil?'kv':'kh'}">${vil?'Villain':'Hero'}</span><span class="arar" style="background:${d.rc}">${esc(d.rarityLabel)}</span></span></div>
       <div class="aart">${art}</div>
       <div class="aname">${esc(d.name)}</div>
       <div class="atitle">${esc(d.title)}</div>
-      <div class="astats">${bar('⚡ Stamina',d.stats.spark,d.c1)}${bar('🧠 Wisdom',d.stats.wisdom,d.c1)}${bar('💨 Speed',d.stats.speed,d.c1)}${bar('😎 Coolness',d.stats.grit,d.c1)}</div>
-      ${d.power?`<div class="afact" style="margin-bottom:6px"><b>⚡ Superpower</b> ${esc(d.power)}</div>`:''}
-      <div class="afact"><b>💡 Inspired by</b> ${esc(d.fact)}</div>
+      <div class="astats">${(()=>{ const e=(c.avEv||{})[a.id]; const r=(l,v)=>`<div class="abar" style="grid-template-columns:1fr auto"><span class="al">${l}</span><b class="av">${v}</b></div>`;
+        return (e&&(e.r||e.s||e.m))?r('Words spelled right together',e.r)+r('Atlas stops finished',e.s)+r('Stages mastered',e.m):`<div class="al" style="padding:4px 0">Wear ${esc(d.name)} and your words will show here.</div>`; })()}</div>
+      ${d.power?`<div class="afact" style="margin-bottom:6px"><b>${iconSVG('bolt',14,2.4)} Superpower</b> ${esc(d.power)}</div>`:''}
+      <div class="afact"><b>Inspired by</b> ${esc(d.fact)}</div>
       <div class="apack">🐝 ${esc(d.packLabel)}</div>
     </div>`; };
   let pages=''; for(let i=0;i<owned.length;i+=4){
@@ -9211,7 +9425,7 @@ function viewQuest(){
       <span style="min-width:0;flex:1">
         <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Advanced Mode</span>${aUnlocked?`<span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#0a7a44;background:color-mix(in srgb,#39d98a 30%,transparent);padding:2px 8px;border-radius:999px">Unlocked</span>`:`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--muted);background:var(--surface2);padding:2px 9px;border-radius:999px">${SB_ICON('lock',{size:12})} Locked</span>`}</span>
         <span style="display:block;font-size:13px;color:var(--text);font-weight:600;margin-top:5px;line-height:1.5">National Spelling Bee prep from the full <b>128,000-word</b> library — a 2-year sprint plan, mock bees, champion tips and advanced games.</span>
-        <span style="display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px;line-height:1.45"><span style="color:${advCol};flex-shrink:0;margin-top:1px">${SB_ICON('sparkle',{size:13})}</span>${aUnlocked?'You’ve earned it — master the very hardest words.':('Advanced Pack — ask a grown-up about it.')}</span>
+        <span style="display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px;line-height:1.45"><span style="color:${advCol};flex-shrink:0;margin-top:1px">${SB_ICON('sparkle',{size:13})}</span>${aUnlocked?'You’ve earned it — master the very hardest words.':('Comes with the Advanced Pack.')}</span>
         <span style="display:inline-flex;align-items:center;gap:5px;margin-top:11px;font-weight:800;font-size:12.5px;color:#fff;background:${advCol};padding:9px 15px;border-radius:10px">${aUnlocked?'Enter Advanced':'See how to unlock'} ${SB_ICON('arrowRight',{size:14})}</span>
       </span>
     </button>`;
@@ -9237,7 +9451,7 @@ function viewQuest(){
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
     ${pageHead('Practice paths','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Word Atlas tab.')}
-    <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):(paths+advTile)}</div>
+    <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):paths}</div>
     ${vault}
   </div>`;
 }
@@ -9520,7 +9734,7 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
 function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
   const total=window.SB_FULL?'125,000':'40,000';
-  const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':'📚 Load all 128,000 words'}</button>`:'';
+  const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':iconSVG('book',14,2.2)+' Load all 128,000 words'}</button>`:'';
   let body='';
   if(S.finderSel){ const w=S.finderSel;
     const lists=Object.entries(c.builtLists||{});
@@ -9549,6 +9763,44 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
       <input data-inp="finderQ" data-fkey="finderQ" value="${escA(q)}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type a word… e.g. iridescent" style="width:100%;padding:14px 16px 14px 44px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:17px;outline:none"></div>
     ${body}
   </div>`; }
+/* CERTIFICATES (FIX-BEE v2 T9, FAMILY-STANDARD §13). One for every region of the Atlas walked end to
+   end, and one for every Stage mastered on evidence (c.mastPaid). It shows the first name, the child's
+   avatar, Bizzy, and what was mastered; it is made on the device as a PNG and saved from the
+   grown-ups' area only — never shared from a child's screen. */
+function certList(c){ c=c||active(); const out=[];
+  try{ const T=window.SB_TRAIL; const pd=((c.trail||{}).paid)||{}; const when={};
+    for(const k in pd){ const u=k.split(':')[0]; when[u]=Math.max(when[u]||0,+pd[k]||0); }
+    ((T&&T.honey&&T.honey.acts)||[]).forEach(a=>{ const us=a.units||[]; if(us.length&&us.every(u=>when[u]!==undefined))
+      out.push({ id:'r:'+a.id, kind:'Region', title:String(a.title).replace(/^Act [IVX]+ · /,''), what:`walked all ${us.length} stops of the Word Atlas region`, t:Math.max(...us.map(u=>when[u]||0)) }); }); }catch(e){}
+  try{ const mp=c.mastPaid||{}; for(const id in mp){ const i=id.lastIndexOf(':'); const lk=id.slice(0,i), st=+id.slice(i+1);
+      let lab=lk; try{ const cat=coachCatalog().find(x=>x.key===lk); if(cat) lab=cat.label||cat.title||lk; }catch(e){}
+      out.push({ id:'s:'+id, kind:'Stage', title:`${lab==='default'||lab==='journey'?'The Bizzing Bee Journey':lab} · Stage ${st+1}`, what:'mastered every word of the Stage — right on two different days', t:+mp[id]||0 }); } }catch(e){}
+  return out.sort((a,b)=>b.t-a.t); }
+function certCard(){ const c=active(); if(!c) return ''; const L=certList(c);
+  return `<div class="sb-card" style="margin-top:16px;padding:16px 18px;border-radius:16px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
+    <h3 style="font-family:var(--display);font-size:17px;margin:0 0 4px">${iconSVG('medal',18)} Certificates</h3>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px">One for each region walked end to end and each Stage mastered. Made on this device as a picture — save it, print it or send it to family.</div>
+    ${L.length?L.map((x,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)">
+      <span style="flex:1;min-width:0"><b>${esc(x.title)}</b><span style="display:block;font-size:12px;color:var(--muted)">${x.kind}${x.t?' · '+new Date(x.t).toLocaleDateString():''}</span></span>
+      <button class="bz-btn" data-act="certPng" data-arg="${escA(x.id)}" style="min-height:44px">Save as picture</button></div>`).join('')
+      :`<div style="font-size:13px;color:var(--muted)">${esc(c.name)}'s first certificate arrives when a region of the Atlas is walked end to end, or a Stage is mastered.</div>`}
+  </div>`; }
+function certDraw(x, c, withAv){ return new Promise(res=>{ const W=1600,H=1130; const cv=document.createElement('canvas'); cv.width=W; cv.height=H; const g=cv.getContext('2d');
+  const gr=g.createLinearGradient(0,0,W,H); gr.addColorStop(0,'#FFF8E6'); gr.addColorStop(1,'#FCE7B2'); g.fillStyle=gr; g.fillRect(0,0,W,H);
+  g.strokeStyle='#E8A81C'; g.lineWidth=18; g.strokeRect(40,40,W-80,H-80); g.strokeStyle='#241E33'; g.lineWidth=3; g.strokeRect(72,72,W-144,H-144);
+  g.fillStyle='#241E33'; g.textAlign='center';
+  const F=(w,sz,f)=>`${w} ${sz}px ${f||"'Fredoka','Trebuchet MS',sans-serif"}`;
+  g.font=F(700,34); g.fillText('BIZZING BEE · CERTIFICATE', W/2, 170);
+  g.font=F(800,96); g.fillText(String(c.name||'').slice(0,24), W/2, 600);
+  g.font=F(600,40,"'Nunito','Segoe UI',sans-serif"); g.fillText(x.what, W/2, 680);
+  g.font=F(800,58); g.fillText(x.title.slice(0,46), W/2, 770);
+  g.font=F(600,30,"'Nunito','Segoe UI',sans-serif"); g.fillStyle='#5b5470'; g.fillText((x.t?new Date(x.t):new Date()).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}), W/2, 860);
+  g.fillText('Earned on evidence: right answers, on more than one day.', W/2, 910);
+  const imgs=[]; const add=(src,x0,y0,s)=>imgs.push(new Promise(r=>{ const im=new Image(); im.onload=()=>{ try{ g.drawImage(im,x0,y0,s,s); }catch(e){} r(); }; im.onerror=()=>r(); im.src=src; }));
+  try{ const m=mascotSVG('happy'); add('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(m.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"')), W-430, 230, 260); }catch(e){}
+  if(withAv){ try{ const h=String(avatarSVG(c.avatar||'bizzy',384)||''); const m=h.match(/<img[^>]*src="([^"]+)"/);
+      const src=m?m[1]:(/^\s*<svg/.test(h)?'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(/xmlns=/.test(h)?h:h.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"')):''); if(src) add(src,170,230,260); }catch(e){} }
+  Promise.all(imgs).then(()=>res(cv)); }); }
 function viewParent(){
   const S=state;
   const sub=S.premium
@@ -9589,12 +9841,13 @@ function viewParent(){
     ${parentActivityCard()}
     ${(()=>{ const rs=state.wordReports||[]; if(!rs.length) return '';
       return `<div class="sb-card" style="margin-top:18px">
-        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px"><span style="font-family:var(--display);font-weight:800;font-size:15px">⚑ Reported word fixes</span><span class="sb-cn">${rs.length} flagged by your speller</span>
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px"><span style="font-family:var(--display);font-weight:800;font-size:15px">${iconSVG('flag',14,2.4)} Reported word fixes</span><span class="sb-cn">${rs.length} flagged by your speller</span>
           <span style="margin-left:auto;display:inline-flex;gap:7px"><button data-act="copyReports" style="padding:7px 13px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--text)">Copy all</button><button data-act="clearReports" style="padding:7px 13px;border-radius:10px;background:transparent;border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">Clear</button></span></div>
         <div style="display:grid;gap:6px;max-height:220px;overflow-y:auto">${rs.slice().reverse().map(r=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12.5px"><b>${esc(r.w)}</b> — ${esc(r.issue)} <span style="color:var(--muted)">· ${esc(r.when)}</span>${r.d?`<div style="color:var(--muted);margin-top:2px">meaning: ${esc(trunc(r.d,110))}</div>`:''}</div>`).join('')}</div>
         <div class="sb-cn" style="margin-top:8px">The app is fully offline — copy these and share them with us to get the dictionary corrected.</div>
       </div>`; })()}
     ${cloudCard()}
+    ${certCard()}
     ${backupCard()}
     <div class="sb-card" style="margin-top:18px">
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:6px">Countdown</div>
@@ -9920,7 +10173,7 @@ function viewThemeDetail(){
     ${tabBar}
     ${thin?`<div style="background:color-mix(in srgb,${cl.c} 10%,var(--bg2));border:1px solid color-mix(in srgb,${cl.c} 35%,var(--line));border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
       <b>Only ${ws.length} ${ws.length===1?'word':'words'} here so far.</b> This family is small in the core library and deepens
-      to hundreds of words with the 125,000-word library in the Advanced Pack (ask a grown-up). Read the explanation now;
+      to hundreds of words with the 125,000-word library in the Advanced Pack. Read the explanation now;
       the level ladder opens once there are ${THEME_MIN} words to climb.</div>`:''}
     ${tab==='train' && !thin ? (()=>{ const pref=state.trainPref||'cards';
       const MODES=[['cards','Cards','book','See the word, the meaning and the story, one card at a time.'],
@@ -10115,154 +10368,111 @@ function viewVoiceTest(){
 }
 
 function viewSettings(){
+  /* SETTINGS IN THE FAMILY'S FIVE SECTIONS (FAMILY-STANDARD §5, FIX-BEE v2), in this order:
+     Me · Sound & music · Look · Comfort · Grown-ups 🔒. The first four are the child's own and
+     open without a PIN — they hold sound, text size and the world, which a child must be able to
+     change. Everything a grown-up decides (the plan, the age band, the daily targets, backup,
+     the testing tools, signing out) sits BEHIND the PIN in the fifth section: until the PIN is
+     passed, that section is one row and nothing else, so "Manage plan" can never appear on a
+     child's screen. The pass lasts until the sheet closes (state._setGrown, cleared by
+     closeSettings). Components are the family's: switch, segmented pills, one slider.
+     Guard: tests/trust-v2.cjs (order, the PIN wall, Esc, every control has an effect). */
   const S=state, c=active();
-  const _voices=enVoices();
-  const _nat=(n)=>/natural|enhanced|premium|siri|google|neural|online/i.test(n);
-  const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}${_nat(v.name)?' ✨':''}</option>`)).join('');
+  const sw=(act,label,on,sub,id)=>`<div class="bz-row"><div class="bz-row-t"><span class="bz-row-l" id="${id||('l-'+act)}">${label}</span>${sub?`<span class="bz-row-s">${sub}</span>`:''}</div>
+      <button data-act="${act}" role="switch" aria-checked="${on?'true':'false'}" aria-labelledby="${id||('l-'+act)}" class="bz-sw${on?' on':''}"><span></span></button></div>`;
+  const seg=(label,act,opts,cur,sub)=>`<div class="bz-row bz-row-col"><div class="bz-row-t"><span class="bz-row-l">${label}</span>${sub?`<span class="bz-row-s">${sub}</span>`:''}</div>
+      <div class="bz-seg" role="radiogroup" aria-label="${escA(label)}">${opts.map(o=>`<button data-act="${act}" data-arg="${escA(o[0])}" role="radio" aria-checked="${o[0]===cur?'true':'false'}" class="${o[0]===cur?'on':''}">${o[1]}</button>`).join('')}</div></div>`;
+  const card=(n,id,title,icon,body,extra)=>`<section class="bz-set-sec" data-sec="${id}" aria-labelledby="bz-sec-${id}">
+      <h3 id="bz-sec-${id}"><span class="bz-set-n" aria-hidden="true">${n}</span>${icon?`<span class="bz-set-ic" aria-hidden="true">${iconSVG(icon,17,2.2)}</span>`:''}${title}${extra||''}</h3>
+      <div class="sb-card bz-set-card">${body}</div></section>`;
 
-  /* ---------- the tile: one control, tap to change, state legible at a glance ----------
-     Two kinds, and the difference is the whole idea borrowed from a phone's quick
-     settings: a TOGGLE lights up when it is on, a CHOICE never lights and just shows
-     which option is current. A grid of ten of these replaces two sections of look-alike
-     rows that a parent had to read end to end to find one switch. */
-  const tileBtn=(act,arg,icon,label,value,lit)=>`<button data-act="${act}"${arg!=null?` data-arg="${escA(String(arg))}"`:''} aria-label="${escA(label+': '+value)}" class="sb-qtile${lit?' on':''}">
-      <span class="sb-qtile-i">${window.SB_ICON?SB_ICON(icon,{size:19}):iconSVG(icon,19)}</span>
-      <span class="sb-qtile-l">${label}</span>
-      <span class="sb-qtile-v">${value}</span></button>`;
-  const toggle=(act,icon,label,on,onW,offW)=>tileBtn(act,null,icon,label,on?(onW||'On'):(offW||'Off'),on);
-  // a CHOICE tile advances to the next option on tap — no menu, no sub-screen
-  const choice=(act,icon,label,opts,cur)=>{ const i=Math.max(0,opts.findIndex(o=>o[0]===cur));
-    const nxt=opts[(i+1)%opts.length]; return tileBtn(act,nxt[0],icon,label,opts[i]?opts[i][1]:opts[0][1],false); };
+  /* ---- 1. Me ---- */
+  const kids=(S.children||[]);
+  const me=`<div class="bz-row bz-row-col"><label class="bz-row-l" for="bz-name">Display name <span class="bz-row-s" style="display:inline">— a nickname is perfect</span></label>
+      <input id="bz-name" data-inp="profName" data-fkey="profName" value="${escA(c.name||'')}" maxlength="24" placeholder="e.g. Ahana, or Fox" autocomplete="off" class="bz-input"></div>
+    <div class="bz-row"><div class="bz-row-t" style="flex-direction:row;align-items:center;gap:12px"><span class="bz-set-av" aria-hidden="true">${avatarSVG(c.avatar||'bizzy',46)}</span><span><span class="bz-row-l">Avatar</span><span class="bz-row-s">${esc(((window.SB_AVATARS&&SB_AVATARS.byId[c.avatar])||{}).name||'Bizzy')}</span></span></div>
+      <button data-act="setOpenCollection" class="bz-btn">Change</button></div>
+    ${kids.length>1?`<div class="bz-row bz-row-col"><span class="bz-row-l">Switch child</span><div class="bz-seg" role="radiogroup" aria-label="Switch child">${kids.map((k,i)=>`<button data-act="setSwitchChild" data-arg="${i}" role="radio" aria-checked="${i===S.activeIdx?'true':'false'}" class="${i===S.activeIdx?'on':''}">${esc(k.name||'Speller')}</button>`).join('')}</div></div>`
+      :`<div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Switch child</span><span class="bz-row-s">Only ${esc(c.name||'one speller')} on this device. A grown-up can add a child below.</span></div></div>`}`;
 
-  const mode=S.mode||'light';
-  const ageM=(c.ageMode||((c.age||9)<=11?'playful':'focused'));
-  const tiles=[
-    choice('setMode','palette','Background',[['light','Light'],['white','White'],['dusk','Dusk']],mode),
-    choice('setAgeMode','sparkle','Style',[['playful','Playful'],['focused','Focused']],ageM),
-    choice('setTextSize','list','Text size',[['normal','Normal'],['large','Large']],S.textSize||'normal'),
-    choice('setA11yFont','book','Letters',[['std','Standard'],['easy','Easy-read']],S.a11yFont||'std'),
-    toggle('toggleContrast','star','High contrast',!!S.a11yContrast),
-    toggle('toggleReduceMotion','pause','Reduce motion',!!S.a11yMotion),
-    toggle('toggleCalm','heart','Calm mode',!!S.calmMode),
-    toggle('toggleSound',S.sound?'speaker':'mute','Sound effects',!!S.sound),
-    choice('setVoiceRate','timer','Voice speed',[['normal','Normal'],['slow','Slow']],((S.voiceRate||1)<1)?'slow':'normal'),
-    toggle('toggleReadAloud','mic','Read cards aloud',!!S.readAloud),
-    toggle('toggleSplash','spark','Opening splash',(function(){try{return SB_STORE.get('splash')!=='0';}catch(e){return true;}})()),
-  ].join('');
+  /* ---- 2. Sound & music ---- */
+  const V=window.SB_VOL; const vol=V?V.pct():40; const musicOn=V?V.musicOn():true;
+  const sound=sw('toggleSound','Sound effects',!!S.sound,'Right, wrong, finish, medal and coin sounds.')
+    + sw('toggleMusic','Music',musicOn,'A calm loop for Home, each world and the games. Off in Calm mode.')
+    + `<div class="bz-row bz-row-col"><label class="bz-row-l" for="bz-vol">Volume <b class="bz-vol-n" data-vol-n>${vol}%</b></label>
+        <input id="bz-vol" type="range" min="0" max="100" step="5" value="${vol}" data-vol data-chg="setVolume" class="bz-range" aria-valuetext="${vol} percent"></div>`
+    + sw('toggleReadAloud','Read aloud',!!S.readAloud,'Reads cards and sentences to you.')
+    + seg('Reading speed','setVoiceRate',[['slow','Slower'],['normal','Normal']],((S.voiceRate||1)<1)?'slow':'normal');
 
-  /* ---------- Account: the plan, the parent, and the Advanced Pack, in one place ----------
-     The pack used to be a card of its own directly beneath this one, which is where a
-     parent looks for a plan and then finds two things that both look like the plan. */
-  const _tierId=(window.SB_ENT)?SB_ENT.tierId():'free'; const _tier=(window.SB_TIERS&&SB_TIERS[_tierId])||{name:'Free',badge:'🐝'};
-  const _parent=(window.SB_AUTH)?SB_AUTH.current():null;
-  const _advOn=advModeOn(c);
-  const advRow=`<div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:13px;margin-top:13px">
-      <span style="width:38px;height:38px;flex:none;border-radius:11px;background:linear-gradient(135deg,#3A2A72,#5B3FA6);display:grid;place-items:center;color:#fff">${(window.SB_ICON_ART&&SB_ICON_ART.advanced)?SB_ICON_ART('advanced',{size:20}):(window.SB_ICON?SB_ICON('trophy',{size:19}):'')}</span>
-      <span style="min-width:0;flex:1">
-        <span style="display:block;font-weight:800;font-size:14.5px">Advanced Pack <span style="font-weight:700;font-size:12px;color:var(--muted)">add-on</span></span>
-        <span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">${_advOn?'On — the 125,000-word library, mock bees, advanced concepts, tips and games are live.':'The Advanced Pack adds national-bee prep. Turn on to preview it.'}</span></span>
-      ${S.devUnlock
-        ? `<button data-act="toggleDevUnlock" title="Testing unlock is forcing this on" style="flex:none;padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12.5px;white-space:nowrap">Testing unlock is on →</button>`
-        : `<button data-act="toggleAdvPack" role="switch" aria-label="Advanced Pack" aria-checked="${_advOn?'true':'false'}" style="flex:none;width:52px;height:30px;border-radius:999px;background:${_advOn?'var(--accent)':'var(--line)'};position:relative;transition:background .2s">
-        <span style="position:absolute;top:3px;left:${_advOn?'25px':'3px'};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.24);transition:left .2s"></span></button>`}
-    </div>${S.devUnlock?`<div style="margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface2);font-size:12.5px;line-height:1.45;color:var(--muted)"><b style="color:var(--text)">Testing unlock is on</b>, so every gate reads as open and this switch cannot change anything. Turn it off in <b style="color:var(--text)">Testing tools</b> below.</div>`:''}`;
-  const accountCard=`<div class="sb-card" style="margin-bottom:18px">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Account &amp; subscription</span><span style="font-size:11px;color:var(--muted);font-weight:700;display:inline-flex;align-items:center;gap:4px">${iconSVG('lock',11,2.2)} Grown-ups only</span></div>
-    <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
-      <div style="min-width:0;flex:1"><div style="font-size:12.5px;color:var(--muted)">Current plan</div><div style="font-family:var(--display);font-weight:800;font-size:17px">${_tier.badge} ${esc(_tier.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${_parent?('Signed in · '+esc(_parent.email)):'Not signed in · playing offline'}</div></div>
-      <button data-act="openTiers" style="padding:10px 16px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">Manage plan →</button>
-    </div>
-    ${advRow}
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px;border-top:1px solid var(--line);padding-top:13px">
-      ${_parent?'':`<button data-act="openAuth" data-arg="signin" style="padding:9px 15px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Parent sign in</button>`}
-      <a href="privacy.html" style="display:inline-flex;align-items:center;padding:8px 13px;border-radius:9px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:12.5px;text-decoration:none">🔒 Privacy &amp; Parents' Notice</a>
-    </div></div>`;
+  /* ---- 3. Look ---- */
+  const modePref=S.modePref||S.mode||'light';
+  const worldThumbs=THEMES.map((t,i)=>{ const un=isThemeUnlocked(t.id); const on=t.id===S.theme; const H=(typeof WORLD_HERO!=='undefined'&&WORLD_HERO[t.id])||{};
+    return `<button data-act="${un?'pickTheme':'setOpenShopWorld'}" data-arg="${t.id}" class="bz-wthumb${on?' on':''}${un?'':' locked'}" aria-pressed="${on?'true':'false'}" aria-label="${escA(t.label+(un?(on?' — on':''):' — '+worldLockText(t.id)))}">
+        <span class="bz-wthumb-art" style="${H.bg||''}"></span><span class="bz-wthumb-l">${esc(t.label)}</span>${un?'':`<span class="bz-wthumb-lock">${iconSVG('lock',11,2.4)} ${esc(worldLockText(t.id,true))}</span>`}</button>`; }).join('');
+  const look=`<div class="bz-row bz-row-col"><span class="bz-row-l">World</span><span class="bz-row-s">Each world repaints the app and brings its own cast and music.</span><div class="bz-wgrid">${worldThumbs}</div></div>`
+    + seg('Light or dark','setModePref',[['light','Light'],['white','White'],['dusk','Dark'],['auto','Match device']],modePref)
+    + seg('Text size','setTextSize',[['small','S'],['normal','M'],['large','L']],S.textSize||'normal')
+    + seg('Style','setAgeMode',[['playful','Playful'],['focused','Focused']],(c.ageMode||((c.age||9)<=11?'playful':'focused')),'Playful has more colour and confetti; Focused is quieter.')
+    + sw('toggleSplash','Opening splash',(function(){try{return SB_STORE.get('splash')==='1';}catch(e){return false;}})(),'A short world opening when the app starts. Off unless you turn it on.');
 
-  /* ---------- the speller: a DISPLAY NAME and an age RANGE, and no buddy ----------
-     The buddy lived here as a read-only picture with a link to the Hive, which is where
-     you actually change it — a row that could only tell you to go somewhere else. */
-  const _band=ageBandOf(c);
-  const t=targets(c);
-  const num=(lab,col,act,val,unit,hint)=>`<div style="flex:1;min-width:150px">
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px"><span style="width:9px;height:9px;border-radius:3px;background:${col};flex-shrink:0"></span>${lab}</label>
-      <div style="display:flex;align-items:center;gap:7px">
-        <input type="number" min="1" max="600" data-chg="${act}" value="${val}" aria-label="${escA(lab+' ('+unit+')')}" style="width:82px;padding:11px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px;outline:none">
-        <span style="font-size:12.5px;color:var(--muted);font-weight:700">${unit}</span></div>
-      <div style="font-size:11.5px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.35">${hint}</div></div>`;
-  const spellerCard=`<div style="padding:15px 16px">
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Display name <span style="font-weight:600">— a nickname is perfect</span></label>
-      <input data-inp="profName" data-fkey="profName" value="${escA(c.name||'')}" maxlength="24" placeholder="e.g. Ahana, or Fox" autocomplete="off" style="width:100%;max-width:320px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;margin-bottom:16px;outline:none">
-      <label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">Age range <span style="font-weight:600">— sets how hard the words start</span></label>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:8px;margin-bottom:16px;max-width:420px">${AGE_BANDS.map(b=>{ const on=b.k===_band.k;
-        return `<button data-act="setAgeBand" data-arg="${b.k}" aria-pressed="${on?'true':'false'}" style="padding:11px 8px;border-radius:13px;text-align:center;background:${on?'var(--accent)':'var(--surface)'};border:1.5px solid ${on?'var(--accent)':'var(--line)'};color:${on?'#fff':'var(--text)'};font-weight:800;font-size:14px;line-height:1.2">${b.n}<span style="display:block;font-size:10.5px;font-weight:650;opacity:.8;margin-top:2px">${b.sub}</span></button>`; }).join('')}</div>
-      <div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:3px"><span style="flex-shrink:0">${ringsSVG(34,[1,1,1])}</span><span style="font-family:var(--display);font-weight:800;font-size:15px">Your three daily targets</span></div>
-        <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.45">They draw the three rings on the Home card. Going past a target is encouraged; the ring keeps filling.</div>
-        <div style="display:flex;gap:14px;flex-wrap:wrap">
-          ${num('Total time on the app', RING_COL[0][0], 'setTgtApp', t.app, 'min / day', 'Everything you do in Bizzing Bee.')}
-          ${num('Time practising words', RING_COL[1][0], 'setTgtPrac', t.prac, 'min / day', 'Practice and revisions only — the clock stops in games.')}
-          ${num('Words practised', RING_COL[2][0], 'setTgtWords', t.words, 'words / day', 'Your daily word goal — used all across the app.')}
-        </div></div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
-        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Milestone <span style="font-weight:600">(optional — e.g. NSF Finals)</span></label>
-          <input data-inp="profMsLabel" data-fkey="profMsLabel" value="${escA((c.milestone&&c.milestone.label)||'')}" maxlength="30" placeholder="e.g. NSF Finals" style="width:200px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
-        <div><label style="display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px">Date</label>
-          <input type="date" data-chg="profMsDate" aria-label="Milestone date" value="${escA((c.milestone&&c.milestone.date)||'')}" style="width:170px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none"></div>
-        ${c.milestone&&c.milestone.date?`<div class="sb-cn" style="padding-bottom:12px">countdown shows in Practice &amp; Progress</div>`:''}
-      </div></div>`;
+  /* ---- 4. Comfort ---- */
+  const comfort=sw('toggleReduceMotion','Reduce motion',!!S.a11yMotion,'Stops the moving backgrounds and slides.')
+    + sw('toggleCalm','Calm mode',!!S.calmMode,'Music off, softer effects, no confetti, games without a rush.')
+    + sw('toggleContrast','High contrast',!!S.a11yContrast,'Stronger outlines and text.')
+    + seg('Letters','setA11yFont',[['std','Standard'],['easy','Easy-read']],S.a11yFont||'std');
 
-  const sec=(title,sub,body)=>`<section style="margin-bottom:20px">
-      <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0 0 9px 2px">
-        <h3 style="font-family:var(--display);font-weight:800;font-size:15px;margin:0">${title}</h3>
-        ${sub?`<span style="font-size:12.5px;color:var(--muted);font-weight:650">${sub}</span>`:''}</div>
-      <div class="sb-card" style="padding:4px 0">${body}</div></section>`;
-  const line=(title,sub,ctrl)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:13px 16px;border-top:1px solid var(--line)">
-      <div style="min-width:0;flex:1"><div style="font-weight:800;font-size:14.5px;line-height:1.25">${title}</div>
-        ${sub?`<div style="font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:2px">${sub}</div>`:''}</div>${ctrl}</div>`;
-  const tog=(act,on,onLbl,offLbl)=>`<button data-act="${act}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:${on?'var(--accent)':'var(--surface2)'};color:${on?'#fff':'var(--muted)'};font-weight:800;font-size:13px;white-space:nowrap;flex-shrink:0">${on?onLbl:offLbl}</button>`;
-  const go=(act,arg,label)=>`<button data-act="${act}"${arg?` data-arg="${escA(arg)}"`:''} style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap;flex-shrink:0">${label} →</button>`;
+  /* ---- 5. Grown-ups 🔒 ---- */
+  let grown;
+  if(!S._setGrown){
+    grown=`<div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Grown-ups only</span><span class="bz-row-s">Age range, daily targets, the plan, backup and the testing tools. ${pinSet()?'Needs the grown-up PIN.':'A grown-up chooses a PIN the first time.'} The PIN is a deterrent, not a lock.</span></div>
+      <button data-act="setGrownOpen" class="bz-btn bz-btn-lock">${iconSVG('lock',14,2.4)} Open</button></div>`;
+  } else {
+    const _tierId=(window.SB_ENT)?SB_ENT.tierId():'free'; const _tier=(window.SB_TIERS&&SB_TIERS[_tierId])||{name:'Free',badge:''};
+    const _parent=(window.SB_AUTH)?SB_AUTH.current():null; const _advOn=advModeOn(c);
+    const _band=ageBandOf(c); const t=targets(c);
+    const num=(lab,act,val,unit)=>`<label class="bz-num"><span class="bz-row-s">${lab}</span><span><input type="number" min="1" max="600" data-chg="${act}" value="${val}" aria-label="${escA(lab+' ('+unit+')')}"> <span class="bz-row-s" style="display:inline">${unit}</span></span></label>`;
+    const _voices=enVoices();
+    const voiceOpts=['<option value="">Auto · best available</option>'].concat(_voices.map(v=>`<option value="${escA(v.name)}"${VOICE.name===v.name?' selected':''}>${esc(v.name)}</option>`)).join('');
+    grown=`<div class="bz-row bz-row-col"><span class="bz-row-l">Age range</span><span class="bz-row-s">Sets how hard the words start.</span>
+        <div class="bz-seg" role="radiogroup" aria-label="Age range">${AGE_BANDS.map(b=>`<button data-act="setAgeBand" data-arg="${b.k}" role="radio" aria-checked="${b.k===_band.k?'true':'false'}" class="${b.k===_band.k?'on':''}">${b.n}</button>`).join('')}</div></div>
+      <div class="bz-row bz-row-col"><span class="bz-row-l">Daily targets</span><span class="bz-row-s">They draw the three rings on Home. Going past one is fine.</span>
+        <div class="bz-nums">${num('Time on the app','setTgtApp',t.app,'min')}${num('Time practising','setTgtPrac',t.prac,'min')}${num('Words practised','setTgtWords',t.words,'words')}</div></div>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Plan</span><span class="bz-row-s">${esc(_tier.name)}${_parent?(' · signed in as '+esc(_parent.email)):' · playing offline'}</span></div>
+        <button data-act="openTiers" class="bz-btn">Manage plan</button></div>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Advanced Pack</span><span class="bz-row-s">${S.devUnlock?'Testing unlock is on, so this reads as open.':(_advOn?'On — national-bee prep is live.':'An add-on with national-bee prep.')}</span></div>
+        ${S.devUnlock?'':`<button data-act="toggleAdvPack" role="switch" aria-checked="${_advOn?'true':'false'}" aria-label="Advanced Pack" class="bz-sw${_advOn?' on':''}"><span></span></button>`}</div>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Report card and backup</span><span class="bz-row-s">The weekly report, printables, backup, restore and erase.</span></div>
+        <button data-act="setNav" data-arg="parent" class="bz-btn">Open</button></div>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Progress</span><span class="bz-row-s">Level, the Atlas, this week and every word met.</span></div>
+        <button data-act="setNav" data-arg="progress" class="bz-btn">Open</button></div>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Grown-up PIN</span><span class="bz-row-s">${pinSet()?'Set. Change it any time.':'Not set yet.'}</span></div>
+        <button data-act="pinSetup" class="bz-btn">${pinSet()?'Change':'Set PIN'}</button></div>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Add a child</span><span class="bz-row-s">Each child keeps their own words, coins and collection.</span></div>
+        <button data-act="addChild" class="bz-btn">Add</button></div>
+      <div class="bz-row bz-row-col"><label class="bz-row-l" for="bz-voice">Device voice for sentences</label><span class="bz-row-s">Words use the app's recorded voice. Sentences use a voice on this device.</span>
+        <select id="bz-voice" data-chg="voiceSetDevice" class="bz-input">${voiceOpts}</select></div>
+      ${_parent?'':`<div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Parent account</span><span class="bz-row-s">Optional, for cloud backup.</span></div><button data-act="openAuth" data-arg="signin" class="bz-btn">Sign in</button></div>`}
+      <details class="bz-row bz-row-col bz-tools"><summary class="bz-row-l">Testing tools</summary>
+        ${sw('toggleDevUnlock','Unlock everything',!!S.devUnlock,'Opens every gate for testing. It never changes a child’s coins or collection.')}
+        ${(c&&c.devCoins)?sw('toggleDevCoins','Test coins',true,'Left on by an older build. Switch off to restore the real balance.'):''}
+        ${S.devUnlock?`<div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Report a bug</span><span class="bz-row-s">Notes stay on this device.</span></div><button data-act="bugToggle" class="bz-btn">Open</button></div>`:''}
+        <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Support console</span><span class="bz-row-s">Profiles and plans on this device. Local only.</span></div><button data-act="openAdmin" class="bz-btn">Open</button></div>
+        ${sw('toggleResearch','Research capture',!!(window.SB_TM&&SB_TM.on()),'Logs taps and screens on this device only. Nothing is sent.')}
+        ${(window.SB_TM&&SB_TM.on())?`<div class="bz-row"><span class="bz-row-s">${fmtN(SB_TM.count())} events on this device</span><span style="display:flex;gap:8px"><button data-act="tmExport" class="bz-btn">Export</button><button data-act="tmClear" class="bz-btn">Clear</button></span></div>`:''}
+      </details>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l" style="color:var(--bad,#D6453A)">Sign out</span><span class="bz-row-s">${_parent?('Signs '+esc(_parent.email)+' out and returns to the welcome screen.'):'Returns to the welcome screen.'}</span></div>
+        <button data-act="signOut" class="bz-btn" style="color:var(--bad,#D6453A)">Sign out</button></div>`;
+  }
 
-  return `<div style="max-width:660px;margin:0 auto">
-    ${pageHead('Settings','','',null,'goHome','Home',null,window.SB_ICON?SB_ICON('sliders',{size:20}):'')}
-    ${accountCard}
-    ${sec('Your speller','display name, age range and daily goal', spellerCard)}
-    ${sec('Progress &amp; reports','for grown-ups',
-        line('Progress','Your level, the Atlas, this week and every word met',go('setNav','progress','Open'))
-      + line('Parent zone','Weekly report, printables and the plan',go('setNav','parent','Open'))
-      + line('Grown-up PIN', pinSet()?'Set — plans, purchases, the parent zone and Settings ask for it. A deterrent, not a lock.':'Plans, purchases and the parent zone will ask a grown-up to choose one the first time.',
-          `<button data-act="pinSetup" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;background:${pinSet()?'var(--surface2)':'var(--accent)'};color:${pinSet()?'var(--muted)':'#fff'};font-weight:800;font-size:13px;white-space:nowrap">${pinSet()?'Change':'Set PIN'}</button>`))}
-    <section style="margin-bottom:20px">
-      <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:0 0 10px 2px">
-        <h3 style="font-family:var(--display);font-weight:800;font-size:15px;margin:0">How the app looks &amp; sounds</h3>
-        <span style="font-size:12.5px;color:var(--muted);font-weight:650">tap a tile to change it</span></div>
-      <div class="sb-qgrid">${tiles}</div>
-      <div class="sb-card" style="margin-top:10px">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:11px">
-          <div><div style="font-family:var(--display);font-weight:800;font-size:15px">Reading voice</div><div style="font-size:12.5px;color:var(--muted)">The voice that reads words &amp; sentences aloud</div></div>
-          <button data-act="voiceTest" style="padding:10px 17px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge);white-space:nowrap">▶ Test</button>
-        </div>
-        <div style="position:relative"><select data-chg="voiceSetDevice" aria-label="Device voice" style="width:100%;appearance:none;-webkit-appearance:none;padding:13px 36px 13px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;cursor:pointer">${voiceOpts}</select><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--accent);font-size:12px">▼</span></div>
-        <p style="font-size:12px;color:var(--muted);line-height:1.55;margin:11px 0 0">Bizzing Bee picks the smoothest voice your device offers — no account or key, fully offline. Voices marked ✨ are the most natural. ${_voices.length?'':'<b style="color:var(--text)">Voices load a moment after opening</b> — reopen Settings to see the full list. '}</p>
-        ${voiceUpgradeTip()}
-      </div>
-    </section>
-    <details style="margin-bottom:20px">
-      <summary style="cursor:pointer;font-weight:800;font-size:13.5px;color:var(--muted);padding:10px 2px">Testing tools</summary>
-      <div class="sb-card" style="padding:4px 0;margin-top:8px">
-        ${line('Unlock everything','All concepts, lists, worlds, Advanced Mode and every level — no coins or Premium needed.',tog('toggleDevUnlock',!!S.devUnlock,'On','Off'))}
-        ${(c&&c.devCoins)?line('Test coins','Left on by an older build. Switch off to put the real balance back — testing no longer changes a child’s purse.',tog('toggleDevCoins',true,'On','Off')):''}
-        ${line('Support console','Profiles and plans on this device, for testing. Local only — it changes nothing anywhere else.',`<button data-act="openAdmin" style="padding:9px 15px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Open</button>`)}
-        ${line('Research capture','Logs taps, screens and errors on THIS device only — nothing is ever sent anywhere. For play-testing; read it with the operator console.',tog('toggleResearch',!!(window.SB_TM&&SB_TM.on()),'On','Off'))}
-        ${(window.SB_TM&&SB_TM.on())?`<div style="display:flex;gap:8px;align-items:center;padding:10px 16px 14px">
-          <span style="font-size:12px;color:var(--muted);font-weight:700">${fmtN(SB_TM.count())} events on this device</span>
-          <button data-act="tmExport" style="margin-left:auto;padding:8px 14px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12px">💾 Export</button>
-          <button data-act="tmClear" style="padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12px">Clear</button></div>`:''}
-      </div>
-    </details>
-    <button data-act="signOut" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 18px;border-radius:13px;background:var(--surface2);border:1px solid var(--bad,#D6453A);color:var(--bad,#D6453A);font-weight:800;font-size:14.5px">
-      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17v2.4a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19.4V4.6A1.6 1.6 0 0 1 5.6 3h7.8A1.6 1.6 0 0 1 15 4.6V7"/><path d="M10 12h10M17 8.6 20.4 12 17 15.4"/></svg>Sign out</button>
-    <p style="margin:8px 2px 0;font-size:12px;color:var(--muted);text-align:center">${_parent?('Signs '+esc(_parent.email)+' out and returns to the welcome screen.'):'Returns to the welcome screen. No account is signed in — this device is playing offline.'}</p>
-    <button data-act="devTap" style="display:block;width:100%;text-align:center;background:none;border:0;cursor:default;margin-top:14px;font-size:11.5px;color:var(--muted);font-weight:650">Bizzing Bee · made with 🐝 for spellers</button>
+  return `<div class="bz-settings">
+    <div class="bz-set-head"><button data-act="closeSettings" class="bz-set-back" aria-label="Back">${iconSVG('arrowLeft',16,2.4)}<span>Back</span></button>
+      <h2>${iconSVG('gear',20,2.2)} Settings</h2><span></span></div>
+    ${card(1,'me','Me','user',me)}
+    ${card(2,'sound','Sound &amp; music','volume',sound)}
+    ${card(3,'look','Look','palette',look)}
+    ${card(4,'comfort','Comfort','heart',comfort)}
+    ${card(5,'grownups','Grown-ups','lock',grown,`<span class="bz-set-lock">${iconSVG('lock',12,2.4)} PIN</span>`)}
+    <footer class="bz-set-foot"><a href="privacy.html">Privacy</a><span aria-hidden="true">·</span><button data-act="devTap" class="bz-set-about">About Bizzing Bee</button><span aria-hidden="true">·</span><span>version ${esc(String(window.SB_ASSET_V||'').replace(/^\?v=/,'')||'dev')}</span></footer>
   </div>`;
 }
 
@@ -10321,7 +10531,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">⚑ Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('flag',14,2.4)} Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
       purple banner between the header and the tabs, which ate a whole row of Practice and
       pushed the thing the child came for below the fold — for a pack most of them do not
       own. A pill says the same thing and costs 40px. */
@@ -10380,8 +10590,8 @@ function coachTrain(){
   let advanceHTML;
   if(lastStage && stageDone){ advanceHTML=`<div style="margin-top:10px;font-size:12px;color:var(--good);font-weight:800">🏆 Every level cleared — legendary!</div>`; }
   else if(stageDone && libLocked){ advanceHTML=`<div style="margin-top:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px"><div style="font-weight:800;font-size:13px;margin-bottom:3px">🏆 You're a Bizzing Bee Champ!</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:9px">The Champion's Library — the other ${fmtN(journeyTotal()-champWordCount())} words — is Premium.</div><button data-act="goPaywall" style="padding:9px 15px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Unlock the Library 👑</button></div>`; }
-  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Stage ${stage.n} cleared! Go to ${advanceTo} →</button><button data-act="openChallenge" data-arg="${escA(key)}" style="margin-top:8px;width:100%;padding:11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px">⚡ Take the Stage ${stage.n} Challenge</button>`; }
-  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">⚡ Take the Stage ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to open the next Stage — or pass the Challenge to test out early.</div>`; }
+  else if(stageDone){ advanceHTML=`<button data-act="advanceStage" data-arg="${escA(key)}" style="margin-top:11px;width:100%;padding:12px;border-radius:10px;background:var(--good);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Stage ${stage.n} cleared! Go to ${advanceTo} →</button><button data-act="openChallenge" data-arg="${escA(key)}" style="margin-top:8px;width:100%;padding:11px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px">${iconSVG('bolt',14,2.4)} Take the Stage ${stage.n} Challenge</button>`; }
+  else { advanceHTML=`<div style="margin-top:11px"><button data-act="openChallenge" data-arg="${escA(key)}" style="width:100%;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)">${iconSVG('bolt',14,2.4)} Take the Stage ${stage.n} Challenge</button></div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5">Master all ${stage.words.length} words to open the next Stage — or pass the Challenge to test out early.</div>`; }
   const tracker = isJourney
     ? `<div style="display:flex;gap:3px;margin-top:11px">${Array.from({length:CHAMP_LEVELS},(_,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(uiLevel>i+1||(uiLevel===i+1&&stageDone))?'var(--good)':(uiLevel===i+1?'var(--accent)':'var(--line)')}"></span>`).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:5px">20 Stages to Bizzing Bee Champ${uiLevel>CHAMP_LEVELS?' ✓ — now exploring the Library':''}</div>`
     : `<div style="display:flex;gap:4px;margin-top:11px">${stages.map((s,i)=>`<span style="flex:1;height:5px;border-radius:999px;background:${(i<sIdx||(i===sIdx&&stageDone))?'var(--good)':(i===sIdx?'var(--accent)':'var(--line)')}"></span>`).join('')}</div>`;
@@ -10407,7 +10617,7 @@ function coachTrain(){
      tab. Two ways to practise plus one clearly-named door to the word lists. */
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','list','Pick your words','#C8901B')}</div>`;
-  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">★ Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Stages to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
+  const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Stages to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   /* The Ultra banner moved into the Practice header as a pill (see topBar above):
      a full-width card for a pack most spellers do not own was pushing Practice itself
      below the fold. */
@@ -10478,7 +10688,7 @@ function listCoverCard(k,label,sub,count,locked){ const c=active(); const voc=!!
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.4;color:var(--muted);margin-top:4px">${esc(trunc(sub,64))}</div>
       <div style="margin-top:auto;padding-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px">
         <span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);font-weight:700">${count} words · L${lvl}${stMeta}</span>
-        <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?lockChip('plan','With the plan — ask a grown-up',{fs:10.5}):'Choose →')}</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--body);font-weight:800;font-size:12px;color:${on?f.c:(locked?'#a06a00':f.c)};white-space:nowrap">${on?'Training':(locked?lockChip('plan','With the family plan',{fs:10.5}):'Choose →')}</span>
       </div>
     </div>
   </button>`; }
@@ -10629,7 +10839,10 @@ function coachOrGone(){
 /* ===== Magic Squares — a 3×3 bingo board of themes. Clear a cell by acing 5 questions
    (spell-it or pick-the-meaning). Complete rows, columns & diagonals for a celebration (coins come from the words: a won cell is a finished round);
    black out the whole square for the mega prize. ===== */
-const MAGIC_BONUS={cell:3,row:10,col:10,diag:15,square:40};
+/* A won cell is a finished round and pays the standard 'stop' (5) through the wallet. Lines,
+   diagonals and the full square are CELEBRATED, never paid: they used to print +10/+15/+40 and
+   pay nothing (FIX-BEE v2 Fix-first). The copy now says exactly what is paid. */
+const MAGIC_BONUS={cell:1};
 function magicConceptCells(){ try{ loadConcepts(); }catch(e){}
   return (state.conceptData||[]).map((ch,ci)=>({kind:'concept', id:'c:'+ci, label:conceptShort(ch.title), ci}))
     .filter(x=>isConceptUnlocked(x.ci) && conceptWordsOf((state.conceptData||[])[x.ci]).length>=5); }
@@ -10666,11 +10879,11 @@ function magicBuildQs(id){ const all=diffSlice(magicCellWords(id).filter(w=>w.d&
     return {k:'mean',w,choices:sample([w.w].concat(others))}; }); }
 function magicLinesCheck(g){ const d=g.board.map(c=>c.done); const won=[];
   const L=g.lines;
-  for(let r=0;r<3;r++) if(!L.r[r] && d[r*3]&&d[r*3+1]&&d[r*3+2]){ L.r[r]=true; won.push({label:'Row '+(r+1)+' complete!',coins:MAGIC_BONUS.row}); }
-  for(let c=0;c<3;c++) if(!L.c[c] && d[c]&&d[c+3]&&d[c+6]){ L.c[c]=true; won.push({label:'Column '+(c+1)+' complete!',coins:MAGIC_BONUS.col}); }
-  if(!L.d[0] && d[0]&&d[4]&&d[8]){ L.d[0]=true; won.push({label:'Diagonal complete!',coins:MAGIC_BONUS.diag}); }
-  if(!L.d[1] && d[2]&&d[4]&&d[6]){ L.d[1]=true; won.push({label:'Diagonal complete!',coins:MAGIC_BONUS.diag}); }
-  if(!g.squareDone && d.every(Boolean)){ g.squareDone=true; won.push({label:'✨ MAGIC SQUARE! ✨',coins:MAGIC_BONUS.square,mega:true}); }
+  for(let r=0;r<3;r++) if(!L.r[r] && d[r*3]&&d[r*3+1]&&d[r*3+2]){ L.r[r]=true; won.push({label:'Row '+(r+1)+' complete!'}); }
+  for(let c=0;c<3;c++) if(!L.c[c] && d[c]&&d[c+3]&&d[c+6]){ L.c[c]=true; won.push({label:'Column '+(c+1)+' complete!'}); }
+  if(!L.d[0] && d[0]&&d[4]&&d[8]){ L.d[0]=true; won.push({label:'Diagonal complete!'}); }
+  if(!L.d[1] && d[2]&&d[4]&&d[6]){ L.d[1]=true; won.push({label:'Diagonal complete!'}); }
+  if(!g.squareDone && d.every(Boolean)){ g.squareDone=true; won.push({label:'MAGIC SQUARE!',mega:true}); }
   return won; }
 function magicFinishCell(){ const g=state.game; const i=g.cell; const cell=g.board[i];
   cell.tried++; cell.best=Math.max(cell.best,g.right);
@@ -11059,7 +11272,7 @@ function magicView(){ const g=state.game; const S=state;
       </button>`; }).join('');
     const doneN=g.board.filter(c=>c.done).length;
     return `<div style="max-width:560px;margin:0 auto">${head}
-      <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Pick a square and ace <b>4 of 5</b> questions to claim it. Finish a <b>row +${MAGIC_BONUS.row}</b> 🪙, <b>column +${MAGIC_BONUS.col}</b>, <b>diagonal +${MAGIC_BONUS.diag}</b> — and the whole square for <b>+${MAGIC_BONUS.square}</b>!</p>
+      <p style="margin:0 0 14px;color:var(--muted);font-size:13px">Pick a square and ace <b>4 of 5</b> questions to claim it — a claimed square is a finished round and pays <b>5 Bizzing coins</b>. Rows, columns and diagonals light up the board.</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">${tiles}</div>
       <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--muted);font-weight:700">Round ${g.round||1} · ${doneN}/9 squares</span><span style="flex:1"></span><button data-act="magicNew" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">🔄 New board</button></div>
     </div>`; }
@@ -11095,7 +11308,7 @@ function magicView(){ const g=state.game; const S=state;
   return `<div style="max-width:520px;margin:0 auto;text-align:center;animation:sb-pop .4s ease both">${head}
     <div style="display:flex;justify-content:center;margin:6px 0 4px"><div style="width:84px;height:92px">${mascotSVG(r.win?(g.celebr?'excited':'happy'):'oops')}</div></div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px">${r.win?(g.celebr&&g.celebr.mega?'MAGIC SQUARE!':'Square claimed! ⭐'):'So close!'}</h2>
-    <div style="font-size:15px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' 🪙 bonus'):''}</div>
+    <div style="font-size:15px;color:var(--muted);font-weight:700">${esc(cell.label)} — ${r.right}/5 right${r.coins?(' · +'+r.coins+' Bizzing coins for the round'):''}</div>
     ${celebr}
     <div style="display:flex;gap:10px;margin-top:16px">${r.win?'':`<button data-act="magicCell" data-arg="${g.cell}" style="flex:1;padding:13px;border-radius:14px;background:${cl.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Try again →</button>`}${g.squareDone
       ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new cells →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
@@ -11308,7 +11521,7 @@ function arcadeResult(g, res){
             <span style="font-family:var(--display);font-weight:800;font-size:14.5px;color:${x.ok?'var(--text)':'var(--bad)'};letter-spacing:.02em">${esc(x.w)}</span>
             <span style="flex:1;min-width:0;font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.d||'')}</span>
             <button class="arc-r-say" data-w="${escA(x.w)}" title="Hear it" aria-label="Hear ${escA(x.w)}" style="flex:none;padding:4px 7px;border-radius:7px;background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:11px">🔊</button>
-            <button class="arc-r-rev" data-w="${escA(x.w)}" data-d="${escA(x.d||'')}" style="flex:none;padding:4px 9px;border-radius:7px;background:${x.ok?'var(--surface)':'var(--treasure,#F0B429)'};border:1px solid ${x.ok?'var(--line)':'transparent'};color:${x.ok?'var(--muted)':'var(--treasure-deep,#8A5B00)'};font-weight:800;font-size:11px;white-space:nowrap">⚑ Revise</button>
+            <button class="arc-r-rev" data-w="${escA(x.w)}" data-d="${escA(x.d||'')}" style="flex:none;padding:4px 9px;border-radius:7px;background:${x.ok?'var(--surface)':'var(--treasure,#F0B429)'};border:1px solid ${x.ok?'var(--line)':'transparent'};color:${x.ok?'var(--muted)':'var(--treasure-deep,#8A5B00)'};font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('flag',14,2.4)} Revise</button>
           </div>`).join('')}
         </div>
       </div>`;
@@ -11516,9 +11729,9 @@ function gamesHub(){ const S=state; const c=active();
   const heroes=[];
   if(window.MOCKBEE){ const st=MOCKBEE.stats();
     const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
-    heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:'★ Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
+    heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:iconSVG('trophy',12,2.4)+' Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
   if(window.SB_TRIVIA){ const bhid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
-    heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:'💰 Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen questions, rising stakes, two safe rungs and three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
+    heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:iconSVG('steps',12,2.4)+' Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen questions, rising stakes, two safe rungs and three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
@@ -11544,7 +11757,7 @@ function gamesHub(){ const S=state; const c=active();
   if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=triviaTotal();
     feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?fmtN(nQ)+' questions · ':'')+SB_TRIVIA.themes.length+' themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
-  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — lines win bonus coins.',cta:'#7E2E9E',stat:''}));
+  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — every square you claim is a finished round.',cta:'#7E2E9E',stat:''}));
   // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
   /* Tile banner is a REAL screenshot of the game (app-art/shots/game-<k>.jpg), not the
      generic painted world plate — so the picture on the Bee Grand Prix tile is the race,
@@ -11574,10 +11787,10 @@ function gameShell(statusBar, inner){ return `<div style="max-width:680px;margin
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">${statusBar}<div style="display:flex;align-items:center;gap:10px">${coinChip()}<button data-act="exitGame" style="color:var(--muted);font-weight:700;font-size:13px">✕ Exit</button></div></div>
     ${inner}</div>`; }
 function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let statusBar='';
-  if(g.type==='beat'){ const low=g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:20px;color:${low?'var(--bad)':'var(--accent)'};min-width:54px">⏱ ${g.timeLeft}s</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
+  if(g.type==='beat'){ const low=g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:20px;color:${low?'var(--bad)':'var(--accent)'};min-width:54px">${iconSVG('timer',14,2.4)} ${g.timeLeft}s</span><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
   else if(g.type==='boss'){ const hpPct=Math.round(g.hp/g.maxhp*100); const hearts='❤️'.repeat(g.lives)+'🖤'.repeat(g.maxlives-g.lives); const sh=(active().pow||{}).shield||0;
     statusBar=`<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:20px">👹</span><div style="flex:1;height:11px;border-radius:999px;background:var(--surface2);overflow:hidden;max-width:220px"><div style="height:100%;border-radius:999px;background:linear-gradient(90deg,#FF4D8D,#d63a3a);width:${hpPct}%;transition:width .35s"></div></div><span style="font-size:13px">${hearts}${sh?' <span title="Boss Shields — each absorbs one miss">🛡️×'+sh+'</span>':''}</span></div></div>`; }
-  else if(g.type==='champ'){ const low=g.fmt==='timed'&&g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:17px;color:var(--accent)">⚡ Challenge</span>${g.fmt==='timed'?`<span style="font-family:var(--display);font-weight:900;font-size:17px;color:${low?'var(--bad)':'var(--accent)'}">⏱ ${g.timeLeft}s</span>`:`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${g.i+1}/${g.total}</span>`}<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
+  else if(g.type==='champ'){ const low=g.fmt==='timed'&&g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:17px;color:var(--accent)">${iconSVG('bolt',14,2.4)} Challenge</span>${g.fmt==='timed'?`<span style="font-family:var(--display);font-weight:900;font-size:17px;color:${low?'var(--bad)':'var(--accent)'}">${iconSVG('timer',14,2.4)} ${g.timeLeft}s</span>`:`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${g.i+1}/${g.total}</span>`}<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
   else statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
   const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No hint for this one — listen closely!':''}</div>` : '';
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
@@ -11739,9 +11952,10 @@ function overlays(){
   if(S.authSheet) h+=viewAuthSheet();
   if(S.cloudSheet) h+=viewCloudSheet();
   h+=bugUI();
+  h+=viewWalletSheet();
   if(S.settingsOpen){
     h+=`<div id="sb-set-ov" data-act="closeSettings" style="position:fixed;inset:0;z-index:76;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:start center;padding:18px;overflow:auto">
-      <div data-act="noop" style="position:relative;width:100%;max-width:660px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;${state._setOpened?'':'animation:sb-pop .3s ease both'}">
+      <div data-act="noop" data-trap="settings" role="dialog" aria-modal="true" aria-label="Settings" style="position:relative;width:100%;max-width:720px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;box-shadow:var(--glow);padding:clamp(16px,4vw,26px) clamp(16px,4vw,26px) 24px;margin:20px 0;${state._setOpened?'':'animation:sb-pop .3s ease both'}">
         <button data-act="closeSettings" aria-label="Close settings" title="Close" style="position:absolute;top:14px;right:14px;z-index:3;width:38px;height:38px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center;font-weight:900;font-size:16px">✕</button>
         ${viewSettings()}
       </div></div>`;
@@ -12193,7 +12407,7 @@ function cloudCard(){
   const when=(t)=>t?new Date(t).toLocaleString():'never';
   let body, ctrl;
   if(!st.configured){
-    body='Everything in this app — names, ages, progress, scores — lives only in this browser on this device. Nothing is sent anywhere: no accounts, no analytics, no ads, no third parties. Deleting a profile (or clearing this site’s browser data) erases it permanently.';
+    body='Everything in this app — names, ages, progress, scores — lives in this browser on this device. Nothing leaves it unless a grown-up switches on the optional cloud backup, and a child’s name and age never leave it at all. No analytics, no ads, no third parties. Deleting a profile (or clearing this site’s browser data) erases it permanently.';
     ctrl='';
   } else if(!st.consented){
     body='Right now this app is <b>offline only</b> — your child’s names, ages and progress live in this browser and nothing is sent anywhere. You can optionally back up progress to your parent account so a wiped tablet does not cost months of work. Names and ages are never uploaded.';
@@ -12255,8 +12469,12 @@ function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_
 
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
+/* "Match device" (standard §5): the look follows prefers-color-scheme — Light by day, Dusk by night. */
+function effectiveMode(pref){ if(pref!=='auto') return pref||'light';
+  try{ return (window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dusk':'light'; }catch(e){ return 'light'; } }
+try{ if(window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ try{ if(state.modePref==='auto'){ state.mode=effectiveMode('auto'); render(); } }catch(e){} }); }catch(e){}
 function save(){ if(window.SB_STORE&&SB_STORE.readOnly()) return;   // a newer build wrote this household: never write over it
-  try{ SB_STORE.saveHousehold({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] }); }catch(e){}
+  try{ SB_STORE.saveHousehold({ theme:state.theme, mode:state.mode, mp:state.modePref||null, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] }); }catch(e){}
   /* Cloud backup rides on the same call, coalesced inside SB_SYNC. save() fires on
      nearly every interaction, so this must never do work on the calling frame — and
      it must never be able to break the local save above, which is why it is last and
@@ -12303,6 +12521,7 @@ function render(){
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
   document.documentElement.setAttribute('data-theme', state.theme);
   document.documentElement.setAttribute('data-mode', state.mode);
+  if(state.mode==='dusk') document.documentElement.setAttribute('data-bz-dark',''); else document.documentElement.removeAttribute('data-bz-dark');   /* the family night glow (bizzing-avatars.css) */
   document.documentElement.setAttribute('data-size', state.textSize||'normal');
   { const R=document.documentElement;
     R.setAttribute('data-font', state.a11yFont==='easy'?'easy':'std');
@@ -12318,7 +12537,8 @@ function render(){
      not a sentence worth ranking for. A visitor sees it; a crawler describes the
      product. Dismissible for the session only — it comes back on the next visit,
      because it stops being true only when we say so, not when someone clicks an X. */
-  const devBanner = state.devBannerOff ? '' : `<div style="position:relative;z-index:60;
+  /* Only on the landing page: a child's screens (setup and the app) never carry it (FIX-BEE v2, Q7). */
+  const devBanner = (state.devBannerOff || state.screen==='app' || state.screen==='onboarding') ? '' : `<div style="position:relative;z-index:60;
     background:linear-gradient(90deg,#F0B429,#E09612);color:#3A2A00;
     font-family:var(--ui,system-ui);font-weight:800;font-size:12.5px;line-height:1.4;
     padding:8px clamp(12px,3vw,20px);display:flex;align-items:center;gap:10px;justify-content:center;text-align:center">
@@ -12338,6 +12558,7 @@ function render(){
   // the evolution rail scrolls on narrow screens — park it on the speller's current stage
   try{ if(window.evoLadderSync) evoLadderSync(); }catch(e){}
   try{ if(window.SB_SHELL) SB_SHELL.afterRender(); }catch(e){}   // hash route + Hive milestones
+  trapFocusAfterRender();
   save();
 }
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
@@ -12365,6 +12586,33 @@ root.addEventListener('keydown', e=>{ const el=e.target.closest('[data-key]'); i
     if(Date.now()-st>700) return;
     if(Math.abs(dx)>=48 && Math.abs(dx)>Math.abs(dy)*1.3){ e.preventDefault(); if(dx>0) app.cardNext(); else app.cardBack(); return; }
     if(Math.abs(dy)>=54 && Math.abs(dy)>Math.abs(dx)*1.3){ e.preventDefault(); if(dy>0) app.cardRevise(); else app.toggleCardView(); } },{passive:false}); })();
+/* ESC CLOSES THE SHEET AND THE DRAWER, AND FOCUS STAYS INSIDE THEM (FIX-BEE v2, P5; standard §3).
+   Topmost first: the PIN dialog, then Settings, then ☰, then the Shop. Tab and Shift+Tab wrap
+   inside whichever [data-trap] layer is open, and opening one moves focus into it. */
+function _trapLayer(){ const L=document.querySelectorAll('[data-trap]'); return L.length?L[L.length-1]:null; }
+window.addEventListener('keydown',e=>{ try{
+  if(e.key==='Escape'){
+    if(state.pinDlg){ state.pinDlg=null; render(); e.preventDefault(); return; }
+    if(state.settingsOpen){ app.closeSettings(); e.preventDefault(); return; }
+    if(state.drawerOpen){ state.drawerOpen=false; render(); e.preventDefault(); try{ const m=document.querySelector('[data-act="openDrawer"]'); if(m) m.focus(); }catch(_){} return; }
+    if(state.walletOpen){ state.walletOpen=false; render(); e.preventDefault(); return; }
+    return; }
+  if(e.key!=='Tab') return; const box=_trapLayer(); if(!box) return;
+  const f=[...box.querySelectorAll('button,[href],input,select,textarea,summary,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled&&x.offsetParent!==null);
+  if(!f.length) return; const first=f[0], last=f[f.length-1];
+  if(!box.contains(document.activeElement)){ e.preventDefault(); first.focus(); return; }
+  if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+}catch(_){} }, true);
+let _trapWas='';
+/* A re-render (a lazy file landing, the music arriving) rebuilds the layer and drops focus to <body>;
+   the focused control is remembered by its place in the layer and given back, so Tab never escapes. */
+let _trapFocusIdx=-1;
+document.addEventListener('focusin',e=>{ try{ const box=_trapLayer(); if(box&&box.contains(e.target)){ _trapFocusIdx=[...box.querySelectorAll('button,[href],input,select')].indexOf(e.target); } }catch(_){} });
+function trapFocusAfterRender(){ try{ const box=_trapLayer(); const k=box?box.getAttribute('data-trap'):'';
+  if(k&&!box.contains(document.activeElement)){ const all=box.querySelectorAll('button,[href],input,select');
+    const f=(k===_trapWas&&_trapFocusIdx>=0&&all[_trapFocusIdx])||all[0]; if(f) f.focus({preventScroll:true}); }
+  if(k!==_trapWas) _trapFocusIdx=-1; _trapWas=k; }catch(e){} }
 window.addEventListener('keydown',e=>{ try{ if(!state.coachCardView||state.cardDone||state.pinDlg||state.settingsOpen||state.showTiers) return;
   if(e.metaKey||e.ctrlKey||e.altKey) return;
   const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
@@ -12465,7 +12713,7 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
      here — exactly once per household, in the order they always ran. Add a step there, never a
      block here. */
   try{ const s=SB_STORE.loadHousehold(); if(s){
-    state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra; state.a11yFont=s.af||'std'; state.a11yContrast=!!s.ac; state.a11yMotion=!!s.am; state.calmMode=!!s.cm; window.SB_CALM=!!s.cm;
+    state.theme=s.theme||'spellbound'; state.modePref=s.mp||null; state.mode=s.mp?effectiveMode(s.mp):(s.mode||'light'); state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra; state.a11yFont=s.af||'std'; state.a11yContrast=!!s.ac; state.a11yMotion=!!s.am; state.calmMode=!!s.cm; window.SB_CALM=!!s.cm;
     state.children=s.children||[]; state.activeIdx=s.activeIdx||0; state.goalDone=s.goalDone||0;
     state.luMastered=s.lu||{}; state.coachSrs=s.srs||{}; state.coachHistory=s.chist||{}; state.wordReports=s.wr||[];
     try{ state.children.forEach(ensureLists); }catch(e){}

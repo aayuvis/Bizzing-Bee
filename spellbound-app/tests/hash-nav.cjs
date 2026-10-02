@@ -48,9 +48,10 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   await tab('coach'); seen.practice = (await where(pg)).h;
   await tab('explore'); seen.library = (await where(pg)).h;
   await tab('games'); seen.play = (await where(pg)).h;
-  await pg.click('[data-act="openCollection"]'); await pg.waitForTimeout(700); seen.hive = (await where(pg)).h;
+  /* the coin chip opens the wallet sheet (FIX-BEE v2, §1.1); its "Open the Shop" is a real screen with a route */
+  await pg.click('.bz-coinchip'); await pg.waitForTimeout(400); await pg.click('.bz-sheet [data-act="openShop"]'); await pg.waitForTimeout(700); seen.hive = (await where(pg)).h;
   ok(seen.home === '#/home' && seen.atlas === '#/atlas' && seen.stop === '#/stop/u3' && /^#\/(practice|quest)$/.test(seen.practice)
-    && seen.library === '#/library' && seen.play === '#/play' && /^#\/hive/.test(seen.hive),
+    && seen.library === '#/library' && seen.play === '#/play' && /^#\/shop/.test(seen.hive),
     'each screen has its own route: ' + Object.values(seen).join(' '));
 
   /* ---- 2. Back retraces them, inside the app ---- */
@@ -61,7 +62,7 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   w = await back(); const b4 = w.nav === 'trail' && w.tv === 'unit' && w.tu === 'u3';
   w = await back(); const b5 = w.nav === 'trail' && w.tv === 'map';
   w = await back(); const b6 = w.nav === 'home' && w.h === '#/home';
-  ok(b1 && b2 && b3 && b4 && b5 && b6, `Back walks Hive → Play → Library → Practice → the stop → the Atlas → Home (${[b1, b2, b3, b4, b5, b6].map(x => x ? '✓' : '✗').join('')})`);
+  ok(b1 && b2 && b3 && b4 && b5 && b6, `Back walks the Shop → Play → Library → Practice → the stop → the Atlas → Home (${[b1, b2, b3, b4, b5, b6].map(x => x ? '✓' : '✗').join('')})`);
   w = await back(); w = await back(); w = await back();
   ok(w.url.indexOf('index.html') > 0 && w.screen === 'app' && w.nav === 'home', 'three more Backs on Home never leave the app (' + w.url.split('/').pop() + ')');
 

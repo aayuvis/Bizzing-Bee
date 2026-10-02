@@ -42,6 +42,10 @@
   /* name -> file. Order inside IDLE is the priority order: what the reader is
      most likely to reach for first comes first. */
   var REG = {
+    /* the boot tier's example sentences (FIX-BEE v2, R2): words-data.js carries the words and their
+       meanings; no first screen shows a sentence, so they wait here — first on the idle queue, and at
+       the door of every screen that shows a card. voice/pipeline/split-sentences.js writes it. */
+    sents: 'words-data-s.js',
     words2: 'words-data-2.js',          // the rest of the core library (32,944 words)
     lore: 'words-lore.js',              // etymology + memory hint, merged onto SB_DATA
     concepts: 'concepts-data.js',       // the 121-chapter course
@@ -84,6 +88,9 @@
        SB_AVATAR draws the vector only for an id that does not. It arrives on the idle
        queue so the fallback still exists for any id added without a painting. */
     avatarArt: 'avatars-art.js',
+    /* The music (FIX-BEE v2, standard §11): composed in code, ~9KB, never in the first load. The
+       worlds4 shim asks for it after the child's first tap, when music is on. */
+    music: 'music.js',
     sagaArt: 'saga-art/saga-art.js',
     sagaMap: 'saga-art/saga-map.js',
     worldsArt: 'saga-art/worlds-art.js',
@@ -96,8 +103,8 @@
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
   var GROUP = {
-    words: ['words2', 'lore'],
-    card: ['words2', 'lore', 'alts', 'syn', 'sounds', 'pron'],
+    words: ['sents', 'words2', 'lore'],
+    card: ['sents', 'words2', 'lore', 'alts', 'syn', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
     advanced: ['advConcepts', 'advTips', 'southasia'],
     /* advConcepts too: the map draws the Advanced Rounds (locked or not), and a stop
@@ -107,10 +114,10 @@
     quotes: ['quotes'],
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
-    lists: ['words2', 'lessons', 'vocab26', 'finals500', 'scripps'],
-    themes: ['words2', 'themeLore'],
+    lists: ['sents', 'words2', 'lessons', 'vocab26', 'finals500', 'scripps'],
+    themes: ['sents', 'words2', 'themeLore'],
     sounds: ['sounds', 'pron'],
-    coach: ['coachRules', 'concepts', 'words2'],
+    coach: ['coachRules', 'concepts', 'sents', 'words2'],
     cloud: ['sync'],
     arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
@@ -122,7 +129,7 @@
      whatever order they arrive. */
   var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'] };
 
-  var IDLE = ['words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
+  var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
     'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'sync'];
 
@@ -132,6 +139,19 @@
 
   /* after() hooks: work that has to happen the moment a file lands. */
   var AFTER = {
+    /* Sentences land on the SAME record objects, by word and in order (words-patch may have spliced
+       a record out, so position alone is not trusted), and only where a record has none — a sentence
+       words-patch rewrote stays rewritten. Then the QC pass runs again over the merged text. */
+    sents: function () {
+      try {
+        var P = window.SB_SENT_BOOT, D = window.SB_DATA; if (!P || !D || !D.nsf) return;
+        var j = 0, n = D.nsf.length;
+        for (var i = 0; i < P.length; i++) { var w = P[i][0], s = P[i][1]; if (!s) continue;
+          for (var k = j; k < Math.min(n, j + 64); k++) { var r = D.nsf[k]; if (r && r.w === w) { if (!r.s) r.s = s; j = k + 1; break; } } }
+        window.SB_SENT_MERGED = true;
+        if (window.SB_WORDS_PATCH) window.SB_WORDS_PATCH();
+      } catch (e) {}
+    },
     /* The second word shard arrives with bare records, so if lore is already in
        hand it has to be merged again over the new ones. Both directions are
        covered: whichever of the two lands second re-runs the merge. */

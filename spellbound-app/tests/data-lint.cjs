@@ -31,6 +31,40 @@ const app3 = fs.readFileSync(path.join(ROOT, 'app3.js'), 'utf8');
 const shows = (app3.match(/Often misspelled “/g) || []).length, guarded = (app3.match(/\$\{realMiss\(w\)\?[^]*?Often misspelled “/g) || []).length;
 ok(shows >= 2 && shows === guarded, `every "Often misspelled" line on screen goes through realMiss() (${guarded} of ${shows})`);
 
+/* ---- 1b. NAMES ARE NOT SPELLING WORDS (FIX-BEE v2 Fix-first: "remove proper nouns from the
+   spelling lists"; E10, S4). The served corpus carried WordNet's NAME senses: "philip: husband of
+   Elizabeth II", "latinos: a native of Latin America", "Islamic: of or relating to or supporting
+   Islamism", and common words glossed as people ("eddy: founder of Christian Science"). The patterns
+   below are the ones the review used; a gloss that matches one is a name, not a word, unless the word
+   is an eponym (named AFTER someone, which is the point of that list). qc-corpus-fixes.json `properNouns`
+   records what was done. Proved by breaking: with the old words-data*.js this fails on 1,900+. */
+{
+  const C = ctx.SB_DATA.nsf;
+  const NAT = 'united states|american|english|british|french|german|italian|spanish|russian|greek|roman|scottish|irish|dutch|swedish|norwegian|danish|austrian|polish|chinese|japanese|hebrew|israeli|egyptian|canadian|australian|welsh|swiss|belgian|flemish|portuguese|mexican|persian|prussian|athenian|babylonian';
+  const ROLE = 'poet|writer|novelist|composer|painter|statesman|politician|general|philosopher|physicist|chemist|astronomer|mathematician|explorer|inventor|architect|sculptor|dramatist|playwright|singer|actor|actress|king|queen|saint|prophet|soldier|admiral|economist|journalist|historian|scientist|engineer|botanist|physician|businessman|industrialist|jurist|comedian|financier';
+  const NAME = [
+    new RegExp('^(a |an |the )?((' + NAT + ')[ -](born )?)+([a-z]+ )?(' + ROLE + ')s?\\b', 'i'),
+    /\(\s*(c\.?\s*)?\d{1,4}\s*(bc|ad)?\s*-\s*(c\.?\s*)?\d{1,4}\s*(bc|ad)?\s*\)|\(\s*born (in )?\d{4}\s*\)/i,
+    /\b(boy|girl)'?s name\b/i,
+    /^\((greek|roman|norse|egyptian|arthurian|classical)( mythology| legend)\)|^\((old testament|new testament)\)/i,
+    /^(a |an |the )?(native|inhabitant|citizen|native or inhabitant) of (the )?[A-Z]/,
+    /^(the )?capital( (and|&) (largest|chief) (city|port))? of\b/i,
+    /^(a |an |the )?((large|small|landlocked|island|independent|former|ancient)\s+)*(country|republic|monarchy|kingdom|state|city|town|river|island|province|county)\s+(in|on|off|between|bordering)\b(?! which)/i,
+    /\bsupporting Islamism\b|\bJudeo-Christian and Islamic religions\b/,
+    /^(the )?((ancient|chief|national) )*((greek|roman|egyptian|norse|teutonic|babylonian|assyrian|celtic|persian|hindu|sumerian|italian) )+(god|goddess|deity)\b|^(chief )?(god|goddess) of\b|\bavatar of vishnu\b/i,
+  ];
+  const named = C.filter(e => e && e.d && !(e.t || []).includes('eponyms') && NAME.some(r => r.test(e.d)));
+  ok(named.length === 0, `served corpus: no gloss is a person, place, people or faith named as such — ${named.length}` + (named.length ? ' e.g. ' + named.slice(0, 6).map(e => e.w + ': ' + e.d.slice(0, 40)).join(' | ') : ''));
+  const W = new Set(C.map(e => e && norm(e.w)));
+  const gone = ['philip', 'latinos', 'islamic', 'aaron', 'paris', 'shakespeare', 'krishna', 'jesus', 'allah', 'muslims', 'hindus'].filter(w => W.has(w));
+  ok(gone.length === 0, `the names the audit found are gone from the spelling lists — ${gone.join(', ') || 'none left'}`);
+  const kept = ['eddy', 'marks', 'begins', 'mosque', 'synagogue', 'karma', 'wednesday', 'herculean', 'samurai'].filter(w => !W.has(w));
+  ok(kept.length === 0, `ordinary words that once carried a name sense, and the words of faith, stay — ${kept.join(', ') || 'all present'}`);
+  const q = JSON.parse(fs.readFileSync(path.join(ROOT, 'qc-corpus-fixes.json'), 'utf8'));
+  const rec = new Set(q.removed.filter(x => /^proper noun:/.test(x.why)).map(x => norm(x.w)));
+  ok(rec.size > 1500 && !!q.properNouns, `every name taken out is recorded in qc-corpus-fixes.json, so a regeneration re-applies it (${rec.size})`);
+}
+
 /* ---- 2 & 3. quotations ---- */
 run('quotes.js'); run('quotes-lib.js');
 const Q = ctx.SB_QUOTES;

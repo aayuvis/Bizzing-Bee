@@ -40,6 +40,54 @@ handlers. App lives in this folder; open `index.html` to run.
   (`SAGA_ART`/`WORLD_ART`/`SB_AVATAR`); hand-drawn canvas is fine when richly shaded.
 - **Never** put a real model identifier in commits, PRs, code, or any pushed artifact.
 
+## FIX-BEE v2 (2 Oct 2026, family standard v2) — READ FIRST; it overrides the section below
+Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, `family-dropins.cjs`,
+`avatars-engine.cjs`, `music.cjs` (all `@check`, each proved by breaking).
+- **The family drop-ins are CLASSIC PORTS** (`bizzing-wallet.js`, `bizzing-activity.js`,
+  `bizzing-avatars.js` → `window.BZ_*`; `bizzing-avatars.css` byte-identical). file:// will not
+  load ES modules. The upstream originals are vendored in `tests/lib/family/` (never shipped) and
+  `family-dropins.cjs` runs both side by side — re-copy them there when upstream changes.
+- **Avatars: 96 = 12 packs × 8**, each 2 common / 3 rare / 2 epic / 1 legendary (`RETIER`,
+  `LIVE_ORDER` in avatars.js; "Starter" is "Common"). Packs: Hive, Champions, Cosmos, Enchanted,
+  Dojo, Lab, World Changers, Legends, European Gods, Indian Gods, Villains, Reptilian — paired to the
+  8 worlds by `world`. Turbo/Origami/Big Beasts/Elements/Critter Crew/Vibe are ARCHIVED (owned ones
+  still render). `SB_AVATARS.catalogue()` must pass `BZ_AVATARS.validate()` with `[]`. Every
+  legendary names its learning milestone (`MILESTONE`); real people carry a one-line `about`;
+  `SACRED` figures never sit in the Villains pack (`sacredSafe`). Owner decision: the gods and
+  World Changers packs STAY. Prices: common 0 · rare 120 · epic 250 · legendary 500 (after its
+  milestone). **Free children buy avatars with coins** (`app.buyAvatar` → `BZ_AVATARS.buy`).
+- **Worlds 1–2 are free; 3+ come with the family plan or 240 coins** (`app.buyWorld`); the old
+  Level ladder for worlds is gone — store step **v7→v8** keeps any world already reached.
+- **There IS a Shop again** (nav `shop`, route `#/shop/<tab>`): Avatars · Worlds · Extras (frames),
+  plus wallet history. This reverses "There is no Store": the family standard asks for one place
+  coins are spent. The coin chip opens the wallet sheet; its history comes from `BZ_WALLET.ledger`.
+- **Avatar cards show the child's own evidence** (`c.avEv`, bumped in `addCoins`) — the OVR score
+  and Stamina/Wisdom/Speed/Coolness bars are gone (they ranked sacred figures by a made-up power).
+- **Settings is the five family sections**: Me · Sound & music · Look · Comfort · Grown-ups 🔒.
+  Settings opens without a PIN; Grown-ups is ONE row until the PIN, and the pass ends when the
+  sheet closes. Esc closes the sheet, the ☰ drawer and the wallet; Tab is trapped in them.
+- **No paywall on a child's screen** (T3): locked plan items are quiet ("Comes with the family
+  plan"), never "ask a grown-up"; the Advanced Pack sales page asks for the PIN first.
+- **Music is composed in code** (`music.js`, lazy, WebAudio): Home, games and one loop per world,
+  60–90 s, fixed score. One volume (`SB_VOL`, default 40%), Music switch, ducked under words,
+  off in Calm mode, stopped when hidden. `music/CREDITS.md`. No new narration was recorded.
+- **Coins**: Magic Squares pays a claimed square as a finished round (no line bonuses); the
+  mastery coin fires once per list Stage mastered on evidence (`listMasteryPay`), never on XP.
+- **No "BUG?" tab or beta banner on a child's screen** — the bug sidebar shows only in testing mode.
+- **First load ≈1.27 MB** (budget 1.5 MB met; JS ≈1.0 MB vs the 400 KB target is NOT met).
+  Sentences were split out of `words-data.js` into `words-data-s.js` (lazy, `sents` group;
+  `voice/pipeline/split-sentences.js`, idempotent). `tests/first-load.cjs` is the ratchet.
+- **Proper nouns are out of the word corpus** (~1,800 records removed, ~170 definitions fixed;
+  ledger in `qc-corpus-fixes.json`; `data-lint.cjs` fails on a capitalised headword). A second
+  human reader for religion/nationality definitions is still an owner item.
+- **The splash is opt-in now** (`sb_splash` must be `'1'`), from Settings → Look.
+- **First run** spells ONE word first (nav `firstword`, A8), celebrates, then opens the first lesson.
+- **Home's hello** is built from the child's own evidence and never repeats two visits running.
+- **Certificates** (T9): a region walked end to end or a Stage mastered → a PNG made on the device,
+  saved from the Parent Zone only (`certList`/`certCard`/`app.certPng`).
+- UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
+  headings free of emoji.
+
 ## FIX-BEE (2 Oct 2026) — the family standard, applied. READ THIS BEFORE THE OLDER SECTIONS.
 The October family audit (brief: `/root/.claude/uploads/…/FIX-BEE.md`; standard:
 `aayuvis/Bizzing_Schedule` → `docs/family/FAMILY-STANDARD.md`) was worked in four parallel

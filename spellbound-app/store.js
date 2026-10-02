@@ -23,7 +23,7 @@
 (function () {
   var KEYS = {
     household: 'sb_saas_v2',
-    splash: 'sb_splash', music: 'sb_w4_music', focus: 'sb_w4_focus', voice: 'sb_voice',
+    splash: 'sb_splash', music: 'sb_w4_music', sound: 'sb_sound', volume: 'sb_volume', mute: 'sb_mute', focus: 'sb_w4_focus', voice: 'sb_voice',
     devunlock: 'sb_devunlock', vflags: 'sb_vflags', bugs: 'sb_bugs', evofeedback: 'sb_evofeedback',
     daily: 'sb_daily', arcBest: 'sb_arc_best', bizzSeen: 'sb_bizz_seen', mockbee: 'sb_mockbee',
     tmLog: 'sb_tm_log', tmArm: 'sb_tm_on', accounts: 'sb_accounts_v1', session: 'sb_session_v1',
@@ -94,6 +94,19 @@
       var lu = b.lu || {}; var keys = Object.keys(lu).filter(function (k) { return lu[k]; });
       kids.forEach(function (k) { if (!k) return; if (!k.mast || typeof k.mast !== 'object' || Array.isArray(k.mast)) k.mast = {};
         keys.forEach(function (w) { var key = norm(w); if (key && !Object.prototype.hasOwnProperty.call(k.mast, key)) k.mast[key] = { b: 2, due: day, d: day - 1, ok: 1, n: 1, leg: 1 }; }); });
+      return b;
+    },
+    /* v7 → v8: worlds open by the family rule now (FIX-BEE v2, standard §7): worlds 1–2 for everyone,
+       3+ with the family plan or for 240 coins. They used to open on the Level ladder too, so a world
+       a child had ALREADY reached by Level is theirs to keep: it is written into unlockedThemes, which
+       the new rule still honours, and nothing is charged. `worldsKept` is the receipt. */
+    function v7_to_v8(b) {
+      var LV = { anime: 3, science: 5, avatar: 7, godly: 9, race: 10, dino: 11 };
+      (b.children || []).forEach(function (ch) { if (!ch) return; var lv = 0;
+        try { lv = (typeof rankOf === 'function') ? rankOf(ch).level : 0; } catch (e) { lv = 0; }
+        var un = Array.isArray(ch.unlockedThemes) ? ch.unlockedThemes.slice() : [], kept = [];
+        Object.keys(LV).forEach(function (w) { if (lv >= LV[w] && un.indexOf(w) < 0) { un.push(w); kept.push(w); } });
+        if (kept.length) { ch.unlockedThemes = un; ch.worldsKept = kept; } });
       return b;
     }
   ];

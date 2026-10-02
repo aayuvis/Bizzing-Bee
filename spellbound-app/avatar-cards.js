@@ -427,26 +427,27 @@
     var owned = opts.owned !== false;
     var art = (typeof window.SB_AVATAR === 'function') ? window.SB_AVATAR(id, 150) : '';
     var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
-    var bars = STAT_KEYS.map(function (k) {
-      var v = d.stats[k[0]]; var pct = Math.round(v / 99 * 100);
-      var col = v >= 85 ? '#2FA35C' : v >= 68 ? '#3D7DF0' : v >= 50 ? '#E0922E' : '#9A8F7C';
-      return '<div class="avc-stat"><span class="avc-stat-l">' + k[1] + ' ' + k[2] + '</span>'
-        + '<span class="avc-stat-bar"><i style="width:' + pct + '%;background:' + col + '"></i></span>'
-        + '<b class="avc-stat-v">' + v + '</b></div>';
-    }).join('');
+    /* J7 (FIX-BEE v2): no invented numbers. The card used to print an OVR score and four stat bars
+       (Stamina, Wisdom, Speed, Coolness) — meaningless, and it ranked sacred figures against each other
+       by a made-up power score. Now the card shows what the CHILD did while wearing this buddy. */
+    var ev = (typeof window.SB_AV_EVIDENCE === 'function') ? window.SB_AV_EVIDENCE(id) : null;
+    var row = function (lab, v) { return '<div class="avc-stat avc-ev"><span class="avc-stat-l">' + lab + '</span><b class="avc-stat-v">' + v + '</b></div>'; };
+    var bars = !owned ? '<div class="avc-ev-none">' + esc(opts.say || 'Not in your collection yet') + '</div>'
+      : (ev && (ev.r || ev.s || ev.m)) ? row('Words spelled right with ' + esc(d.name), ev.r) + row('Atlas stops finished', ev.s) + row('Stages mastered', ev.m)
+      : '<div class="avc-ev-none">Wear ' + esc(d.name) + ' and the words you spell together will show here.</div>';
     var kindBadge = d.villain
-      ? '<span class="avc-kind villain">😈 Villain</span>'
-      : '<span class="avc-kind hero">⭐ Hero</span>';
+      ? '<span class="avc-kind villain">Villain</span>'
+      : '<span class="avc-kind hero">Hero</span>';
     return '<div class="avc-card avc-' + d.rarity + (d.villain ? ' avc-villain' : '') + '" style="--c1:' + d.c1 + ';--c2:' + d.c2 + ';--rc:' + d.rc + '">'
       + '<div class="avc-foil"></div>'
-      + '<div class="avc-top"><span class="avc-ovr"><b>' + d.overall + '</b><i>OVR</i></span>'
+      + '<div class="avc-top"><span class="avc-tierword" style="color:' + d.rc + '">' + esc(d.rarityLabel) + '</span>'
       + '<span class="avc-badges">' + kindBadge + '<span class="avc-rar" style="background:' + d.rc + '">' + esc(d.rarityLabel) + '</span></span></div>'
-      + '<div class="avc-art' + (owned ? '' : ' locked') + '">' + (owned ? art : '<span class="avc-lock">🔒</span>') + '</div>'
+      + '<div class="avc-art' + (owned ? '' : ' locked') + '">' + (owned ? art : '<span class="avc-sil" aria-hidden="true">' + art + '</span>') + '</div>'
       + '<div class="avc-name">' + esc(d.name) + '</div>'
       + '<div class="avc-title">' + esc(d.title) + '</div>'
       + '<div class="avc-lore">' + esc(d.lore) + '</div>'
       + '<div class="avc-stats">' + bars + '</div>'
-      + '<div class="avc-power" style="position:relative;z-index:1;margin-top:7px;font:600 11.5px/1.4 var(--body,sans-serif);color:var(--ink,#241E33)"><b style="color:var(--c1)">⚡ ' + esc((d.power||'').split(' — ')[0]) + '</b>' + ((d.power||'').indexOf(' — ')>=0 ? (' — ' + esc((d.power||'').split(' — ').slice(1).join(' — '))) : '') + '</div>'
+      + '<div class="avc-power" style="position:relative;z-index:1;margin-top:7px;font:600 11.5px/1.4 var(--body,sans-serif);color:var(--ink,#241E33)"><b style="color:var(--c1)">' + esc((d.power||'').split(' — ')[0]) + '</b>' + ((d.power||'').indexOf(' — ')>=0 ? (' — ' + esc((d.power||'').split(' — ').slice(1).join(' — '))) : '') + '</div>'
       + '<div class="avc-fact"><span class="avc-fact-h">💡 Inspired by</span>' + esc(d.fact) + '</div>'
       + '<div class="avc-pack"><span class="avc-dot"></span>' + esc(d.packLabel) + '</div>'
       + '</div>';

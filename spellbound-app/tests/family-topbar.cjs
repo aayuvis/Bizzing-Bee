@@ -39,7 +39,7 @@ const bar = pg => pg.evaluate(() => {
   const B = document.querySelector('.sb-fam-bar'); const br = B.getBoundingClientRect();
   const box = sel => { const e = B.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return r.width ? { l: r.left, r: r.right, t: r.top, b: r.bottom, cy: (r.top + r.bottom) / 2 } : null; };
   const parts = { hive: box('.sb-fam-hive'), brand: box('.sb-fam-brand'), theme: box('[data-act="cycleMode"]'), lock: box('.sb-fam-lock'), kid: box('[data-act="famMenu"]'),
-    search: box('.sb-hsearch input'), coins: box('[data-act="openCollection"]'), menu: box('[data-act="openDrawer"]') };
+    search: box('.sb-hsearch input'), coins: box('[data-act="openWallet"].bz-coinchip'), menu: box('[data-act="openDrawer"]') };
   const h = parts.hive || parts.lock;
   return { parts, line: h ? Math.round((2 * (h.t - br.top) + (h.b - h.t)) * 10) / 10 : 0, sw: document.documentElement.scrollWidth, vw: innerWidth,
     href: (B.querySelector('.sb-fam-hive') || {}).href || null,

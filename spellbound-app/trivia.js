@@ -6,16 +6,21 @@
 (function(){
   const T = () => (window.SB_TRIVIA || { themes: [], questions: [] });
   const LV = [
-    { n: 1, label: 'Rookie',   sub: 'age 6–7',  e: '🐣' },
-    { n: 2, label: 'Explorer', sub: 'age 8–9',  e: '🧭' },
-    { n: 3, label: 'Brainiac', sub: 'age 9–10', e: '🧠' },
-    { n: 4, label: 'Whiz',     sub: 'age 11',   e: '⚡' },
-    { n: 5, label: 'Champion', sub: 'age 12+',  e: '🏆' },
+    /* icons from the family SVG set, not emoji (FIX-BEE v2, standard §9) */
+    { n: 1, label: 'Rookie',   sub: 'age 6–7',  ic: 'sprout' },
+    { n: 2, label: 'Explorer', sub: 'age 8–9',  ic: 'globe' },
+    { n: 3, label: 'Brainiac', sub: 'age 9–10', ic: 'bulb' },
+    { n: 4, label: 'Whiz',     sub: 'age 11',   ic: 'bolt' },
+    { n: 5, label: 'Champion', sub: 'age 12+',  ic: 'trophy' },
   ];
   const THC = { animals:'#4F9E6A', bugs:'#E0922E', ocean:'#3D7DF0', space:'#7B52E0', body:'#E8458C', plants:'#3C8455', food:'#F0703C', sports:'#2A63D6', music:'#B14FC4', myth:'#9B59D0', world:'#13A892', history:'#C8901B', science:'#0E8A78', numbers:'#6A47F5', weather:'#36A3D9', machines:'#4A6B8A', art:'#DC5B7E', fest:'#D6453A', story:'#7C5CFF', words:'#C8791B', wroots:'#4F9E6A', wbreak:'#2A8FA8', wmeaning:'#7C5CFF', wstories:'#C8791B' };
   const esc3 = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const escA3 = (s) => esc3(s).replace(/"/g, '&quot;');
   const themeOf = (id) => T().themes.find(t => t.id === id) || { id, label: id, e: '🐝' };
+  /* A theme's picture: the illustrated chapter icon (trivia-icons.js), never its emoji (FIX-BEE v2). */
+  const thIcon = (t, sz) => { const A = window.SB_TT_ICON_ART || {}; const id = t && t.id;
+    const art = (id && A[id]) || (id === 'mix' ? iconSVG('grid', sz, 2.2) : iconSVG('star', sz, 2.2));
+    return '<span class="tv-thic" style="display:inline-flex;width:' + sz + 'px;height:' + sz + 'px;line-height:0;vertical-align:middle">' + art.replace('<svg ', '<svg width="100%" height="100%" ') + '</span>'; };
 
   /* ---- kid-appropriate default level from age/band ---- */
   function autoLv() { try { if (window.ttBand) return ttBand(active());
@@ -203,7 +208,7 @@
         <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:13px">
         ${STV._buddy(g)}
         <div style="flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4.5vw,28px);box-shadow:var(--glow);text-align:center">
-          <div style="display:inline-flex;align-items:center;gap:7px;padding:4px 13px;border-radius:999px;background:color-mix(in srgb,${col} 14%,transparent);color:${col};font-weight:800;font-size:12px;margin-bottom:10px">${th.e} ${esc3(th.label)} · L${q.lv}</div>
+          <div style="display:inline-flex;align-items:center;gap:7px;padding:4px 13px;border-radius:999px;background:color-mix(in srgb,${col} 14%,transparent);color:${col};font-weight:800;font-size:12px;margin-bottom:10px">${thIcon(th,16)} ${esc3(th.label)} · L${q.lv}</div>
           ${STV._visual(q)}
           ${isAud ? `<div style="margin:4px 0 10px"><button data-act="trvHear" style="display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:999px;background:${col};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${iconSVG('volume', 19)} Listen 🔊</button></div>` : ''}
           <div style="font-size:clamp(16px,3.6vw,20px);line-height:1.5;font-weight:700">${esc3(q.q)}</div>
@@ -215,7 +220,7 @@
     _square() { const g = state.trv;
       if (g.sel != null) return STV._q(g.cells[g.sel].q, 'Cell ' + (g.sel + 1) + ' · ' + g.lines + ' lines');
       const cells = g.cells.map((c2, i) => { const th = themeOf(c2.th); const col = THC[c2.th] || '#7C5CFF';
-        const face = c2.st === 1 ? '<span style="display:inline-block;animation:sb-bee-pop .5s ease both">⭐</span>' : c2.st === 2 ? '❌' : `<span style="display:inline-block;animation:sb-art-float 3.4s ease-in-out infinite;animation-delay:${(i % 5) * 0.35}s">${th.e}</span>`;
+        const face = c2.st === 1 ? '<span style="display:inline-flex;animation:sb-bee-pop .5s ease both;color:#F0B429">'+iconSVG('star',26,2.4)+'</span>' : c2.st === 2 ? '<span style="display:inline-flex;color:#C4453C">'+iconSVG('close',26,2.6)+'</span>' : `<span style="display:inline-block;animation:sb-art-float 3.4s ease-in-out infinite;animation-delay:${(i % 5) * 0.35}s">${thIcon(th,30)}</span>`;
         return `<button data-act="trvCell" data-arg="${i}" ${c2.st > 0 ? 'disabled' : ''} style="aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:clamp(28px,8vw,40px);background:${c2.st === 1 ? 'color-mix(in srgb,#1f9d57 22%,var(--bg2))' : c2.st === 2 ? 'color-mix(in srgb,var(--bad) 14%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${c2.st === 1 ? '#1f9d57' : c2.st === 2 ? 'var(--bad)' : 'var(--line)'};box-shadow:var(--sh-rest)">${face}
           <span style="font-size:10.5px;font-weight:800;color:${c2.st > 0 ? 'var(--muted)' : col}">${esc3(th.label.split(' ')[0])}</span></button>`; }).join('');
       return STV._shell(`
@@ -245,11 +250,11 @@
     _hub() { const g = state.trv; const c = active(); const st = tStats(c);
       const sel = g.ths || [];
       const themes = [{ id: 'mix', label: 'Mega Mix', e: '🎲' }].concat(T().themes).map(t => { const on = t.id === 'mix' ? sel.length === 0 : sel.indexOf(t.id) >= 0; const col = t.id === 'mix' ? '#7C5CFF' : (THC[t.id] || '#7C5CFF');
-        return `<button data-act="trvTh" data-arg="${t.id}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 6px;border-radius:14px;background:${on ? 'color-mix(in srgb,' + col + ' 16%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${on ? col : 'var(--line)'};min-width:0"><span style="position:relative;font-size:26px;display:inline-block;${on ? 'animation:sb-bee-talk 1.3s ease-in-out infinite' : ''}">${t.e}${on && t.id !== 'mix' ? '<span style="position:absolute;top:-3px;right:-9px;width:15px;height:15px;border-radius:50%;background:' + col + ';color:#fff;font-size:9px;line-height:15px;text-align:center;font-weight:900">✓</span>' : ''}</span><span style="font-size:10.5px;font-weight:800;line-height:1.15;text-align:center;color:${on ? col : 'var(--muted)'}">${esc3(t.label)}</span></button>`; }).join('');
+        return `<button data-act="trvTh" data-arg="${t.id}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 6px;border-radius:14px;background:${on ? 'color-mix(in srgb,' + col + ' 16%,var(--bg2))' : 'var(--bg2)'};border:2px solid ${on ? col : 'var(--line)'};min-width:0"><span style="position:relative;font-size:26px;display:inline-block;${on ? 'animation:sb-bee-talk 1.3s ease-in-out infinite' : ''}">${thIcon(t,30)}${on && t.id !== 'mix' ? '<span style="position:absolute;top:-3px;right:-9px;width:15px;height:15px;border-radius:50%;background:' + col + ';color:#fff;font-size:9px;line-height:15px;text-align:center;font-weight:900">✓</span>' : ''}</span><span style="font-size:10.5px;font-weight:800;line-height:1.15;text-align:center;color:${on ? col : 'var(--muted)'}">${esc3(t.label)}</span></button>`; }).join('');
       const lvs = LV.map(l => { const on = g.lv === l.n;
-        return `<button data-act="trvLv" data-arg="${l.n}" style="flex:1;min-width:86px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 6px;border-radius:12px;font-weight:800;${on ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}"><span style="font-size:13px">${l.e} ${l.label}</span><span style="font-size:10px;font-weight:700;opacity:.85">${l.sub}</span></button>`; }).join('');
+        return `<button data-act="trvLv" data-arg="${l.n}" style="flex:1;min-width:86px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 6px;border-radius:12px;font-weight:800;${on ? 'background:var(--accent);color:#fff;box-shadow:var(--edge)' : 'background:var(--surface2);color:var(--muted);border:1px solid var(--line)'}"><span style="font-size:13px;display:inline-flex;align-items:center;gap:5px">${iconSVG(l.ic,14,2.3)} ${l.label}</span><span style="font-size:10px;font-weight:700;opacity:.85">${l.sub}</span></button>`; }).join('');
       const fmt = (act, e2, name, desc, col) => `<button data-act="${act}" style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
-          <span style="width:46px;height:46px;border-radius:13px;background:${col};display:grid;place-items:center;font-size:24px;flex-shrink:0">${e2}</span>
+          <span style="width:46px;height:46px;border-radius:13px;background:${col};display:grid;place-items:center;font-size:24px;flex-shrink:0;color:#fff">${e2}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15.5px">${name}</span>
           <span style="display:block;font-size:12px;color:var(--muted);font-weight:650;line-height:1.35">${desc}</span></span>
           <span style="color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Play →</span></button>`;
@@ -262,9 +267,9 @@
         <div style="margin-bottom:16px"><div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:8px"><span style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase">Themes</span><span style="font-size:11.5px;color:var(--muted);font-weight:650">pick as many as you like${sel.length ? ' · ' + sel.length + ' selected' : ' · all themes'}</span></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px">${themes}</div></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px">
-          ${fmt('trvQuiz', '🎯', 'Classic Quiz', '10 questions, fun fact after every answer.', 'linear-gradient(135deg,#7C5CFF,#6A47F5)')}
-          ${fmt('trvSquare', '📐', 'Trivia Squares', 'Claim the 3×3 board — 9 different themes, one per cell.', 'linear-gradient(135deg,#13A892,#0E8A78)')}
-          ${fmt('trvClock', '⏱', 'Beat the Clock', '60 seconds, as many as you can. Every right answer pays a coin.', 'linear-gradient(135deg,#F0703C,#D85A29)')}
+          ${fmt('trvQuiz', iconSVG('target', 24, 2.2), 'Classic Quiz', '10 questions, fun fact after every answer.', 'linear-gradient(135deg,#7C5CFF,#6A47F5)')}
+          ${fmt('trvSquare', iconSVG('grid', 24, 2.2), 'Trivia Squares', 'Claim the 3×3 board — 9 different themes, one per cell.', 'linear-gradient(135deg,#13A892,#0E8A78)')}
+          ${fmt('trvClock', iconSVG('timer', 24, 2.2), 'Beat the Clock', '60 seconds, as many as you can. Every right answer pays a coin.', 'linear-gradient(135deg,#F0703C,#D85A29)')}
         </div>
       </div>`; },
   };

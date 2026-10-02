@@ -43,9 +43,9 @@ const child = (over) => Object.assign({ name:'T', avatar:'bee', coins:5000, pow:
       const buys = [...document.querySelectorAll('[data-act="buyTheme"]')];
       const grey = buys.filter(el => { const band = el.querySelector('.wh-band');
         return band && /grayscale\(1\)/.test(getComputedStyle(band).filter || band.getAttribute('style') || ''); });
-      /* FIX-BEE C4: a locked world names the Level that opens it (a learning lock), never a
-         coin price — the tag below the art is that lock now (tests/locks.cjs) */
-      const priced = buys.filter(el => /Reach Level \d+/.test(el.innerText) && !/🪙|Unlock ·/.test(el.innerText));
+      /* FIX-BEE v2 (standard §7): a locked world opens for 240 Bizzing coins or with the family plan,
+         and the tag below the art says exactly that — the price is printed, never in real money */
+      const priced = buys.filter(el => /240 Bizzing coins/.test(el.innerText) && !/\$|£|€|Reach Level/.test(el.innerText));
       // the tag must sit BELOW the artwork, not on it
       const belowArt = buys.filter(el => { const band = el.querySelector('.wh-band');
         const tag = el.querySelector('[data-lock]');
@@ -56,7 +56,7 @@ const child = (over) => Object.assign({ name:'T', avatar:'bee', coins:5000, pow:
     if (!w.hero) errs.push(vp.n + ' the Worlds tab is not the tiled hero view');
     if (!w.buys) errs.push(vp.n + ' no locked world rendered');
     if (w.grey !== w.buys) errs.push(vp.n + ' locked worlds not greyed: ' + w.grey + '/' + w.buys);
-    if (w.priced !== w.buys) errs.push(vp.n + ' locked worlds missing their Level lock (or carrying a price): ' + w.priced + '/' + w.buys);
+    if (w.priced !== w.buys) errs.push(vp.n + ' locked worlds missing their printed 240-coin path: ' + w.priced + '/' + w.buys);
     if (w.belowArt !== w.buys) errs.push(vp.n + ' the lock is not below the tile: ' + w.belowArt + '/' + w.buys);
 
     // --- the Ultra pill ---

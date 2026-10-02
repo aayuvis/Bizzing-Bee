@@ -1,7 +1,7 @@
 /* Buying lives where the thing lives — the Library/Worlds half.
    A locked word list opens the plan sheet in the Library (lists are not sold for coins).
    A locked concept chapter leads to the Atlas stop that opens it (FIX-BEE: never coins). A
-   locked world names the Level that opens it, on the world. And the Store's old entry points still land on the Hive.
+   locked world goes to the Shop, where its 240-coin price is printed (FIX-BEE v2). The old Store doors land on the Shop.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/buy-where-it-lives.cjs */
 const { chromium } = require('playwright');
 (async()=>{
@@ -57,11 +57,11 @@ const { chromium } = require('playwright');
   r=await pg.evaluate(()=>[...new Set([...document.querySelectorAll('[data-act]')].map(e=>e.dataset.act))]);
   if(!r.includes('buyTheme')) errs.push('buyTheme missing from Worlds');
 
-  // --- surviving entry points must land somewhere real ---
+  // --- the family Shop is real again (FIX-BEE v2, standard §1): both old doors land on it ---
   for(const a of ['openShop','openShopAvatars']){
     await pg.evaluate(x=>app[x](), a); await pg.waitForTimeout(400);
     const nav=await pg.evaluate(()=>state.nav);
-    if(nav!=='collection') errs.push(a+' landed on nav='+nav);
+    if(nav!=='shop') errs.push(a+' landed on nav='+nav);
   }
   // --- the drawer must not offer a Store ---
   await pg.evaluate(()=>{ state.drawerOpen=true; render(); }); await pg.waitForTimeout(400);
