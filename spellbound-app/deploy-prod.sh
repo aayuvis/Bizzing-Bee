@@ -99,7 +99,7 @@ tar -C "$SRC" \
     --exclude='./*.sh' --exclude='./*.py' --exclude='./*.log' \
     --exclude=./tests --exclude=./qa --exclude=./pipeline \
     --exclude=./node_modules --exclude=./design-pack \
-    --exclude=./package.json --exclude=./package-lock.json \
+    --exclude=./package.json --exclude=./package-lock.json --exclude=./fixbee-notes \
     --exclude=./eponyms --exclude=./trivia-all.json \
     --exclude='./voice/tq*.mp3' --exclude=./voice/rebuild-queue.json \
     --exclude=./CLAUDE.md --exclude=./AUDIT_BRIEF.md \
