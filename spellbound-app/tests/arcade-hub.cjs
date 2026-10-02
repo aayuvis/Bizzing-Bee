@@ -1,5 +1,4 @@
-/* THE ARCADE HUB HAS NO BLANK SPACE (2 Oct 2026, owner: "dont like the blank space in the game hub").
-   @check
+/* THE ARCADE HUB HAS NO BLANK SPACE (2 Oct 2026, owner: "dont like the blank space in the game hub") — @check
 
    - no section headings ("The games — pick your level on each", "More to play" are gone)
    - Bee Grand Prix and Honeycomb Run are LARGE painted tiles beside the Mock Bee and the
