@@ -56,8 +56,8 @@
     return ((day % WORDS.length) + WORDS.length) % WORDS.length;
   }
   function todayKey() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
-  function load() { try { return JSON.parse(localStorage.getItem('sb_daily') || '{}'); } catch (e) { return {}; } }
-  function save(s) { try { localStorage.setItem('sb_daily', JSON.stringify(s)); } catch (e) {} }
+  function load() { try { return SB_STORE.getJSON('daily', {}) || {}; } catch (e) { return {}; } }
+  function save(s) { try { SB_STORE.setJSON('daily', s); } catch (e) {} }
 
   var overlay = null, answer = '', guesses = [], cur = '', over = false, won = false, kbState = {};
 

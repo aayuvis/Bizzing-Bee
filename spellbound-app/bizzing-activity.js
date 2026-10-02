@@ -13,7 +13,8 @@
    WHAT IT RECORDS — and nothing else:
        { a: 'bee', d: '2026-09-27', t: 1020, m: 18, who: 'Anaya' }
      app id, local date, start minute, ACTIVE minutes, the child's first name.
-   It lives in localStorage['bizzing.activity'] on this device. Every Bizzing app
+   It lives under the storage key 'bizzing.activity' on this device (Bee reaches it through
+   store.js, its storage seam — the only change from the family drop-in). Every Bizzing app
    is served from aayuvis.github.io, so Schedule reads the same key. It is never
    sent anywhere: no network call exists in this file.
 
@@ -32,12 +33,12 @@
   const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
   function load() {
-    try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); return o && Array.isArray(o.s) ? o : { v: 1, s: [] }; } catch (e) { return { v: 1, s: [] }; }
+    try { const o = JSON.parse(SB_STORE.getKey(KEY) || 'null'); return o && Array.isArray(o.s) ? o : { v: 1, s: [] }; } catch (e) { return { v: 1, s: [] }; }
   }
   function store(o) {
     const cutoff = ymd(new Date(Date.now() - KEEP_DAYS * 864e5));
     o.s = o.s.filter((x) => x.d >= cutoff).slice(-MAX);
-    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
+    try { SB_STORE.setKey(KEY, JSON.stringify(o)); } catch (e) {}
   }
 
   function trackActivity(app, getName = () => null) {

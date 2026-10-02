@@ -23,7 +23,7 @@
    • No randomness anywhere: spend() takes a fixed price.
    • Never transmitted; no network code exists in this file.
 
-   localStorage['bizzing.wallet'] = { v:1, kids: { "<first name, lower case>":
+   storage key 'bizzing.wallet' (through Bee's store.js) = { v:1, kids: { "<first name, lower case>":
      { coins, ledger:[{ a, t, n, why }] } } }. Append-only ledger, trimmed to 2,000.
    The family server replaces this key later; the shape stays. */
 (function () {
@@ -38,10 +38,10 @@
   const kidKey = (who) => String(who || '').trim().toLowerCase();
 
   function load() {
-    try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o && o.v === 1 && o.kids) return o; } catch (e) {}
+    try { const o = JSON.parse(SB_STORE.getKey(KEY) || 'null'); if (o && o.v === 1 && o.kids) return o; } catch (e) {}
     return { v: 1, kids: {} };
   }
-  function save(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); return true; } catch (e) { return false; } }
+  function save(o) { try { return SB_STORE.setKey(KEY, JSON.stringify(o)); } catch (e) { return false; } }
   function kid(o, who) { const k = kidKey(who); return k ? (o.kids[k] || (o.kids[k] = { coins: 0, ledger: [] })) : null; }
 
   function balance(who) { const k = load().kids[kidKey(who)]; return k ? k.coins : 0; }

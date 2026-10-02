@@ -44,8 +44,8 @@ function lessonWordObjs(L){ const db=wordDB(); return (L.words||[]).map(w=>{ con
   return { w:w.w, d:(hit&&hit.d)||'', s:(hit&&hit.s)||'', p:(hit&&hit.p)||w.pron||'', o:(hit&&hit.o)||'', r:ety, etyArr, y:(hit&&hit.y)||3, sy:(hit&&hit.sy)||w.syll||'', h:ety, bp:(hit&&hit.bp) }; }); }
 /* ---- design-feedback store for the 80 evolution tiles (dev/design tool) ---- */
 let EVOFB = {};
-function loadEvoFB(){ try{ const r=localStorage.getItem('sb_evofeedback'); if(r) EVOFB=JSON.parse(r)||{}; }catch(e){} }
-function saveEvoFB(){ try{ localStorage.setItem('sb_evofeedback', JSON.stringify(EVOFB)); }catch(e){} }
+function loadEvoFB(){ try{ EVOFB=SB_STORE.getJSON('evofeedback',{})||{}; }catch(e){} }
+function saveEvoFB(){ try{ SB_STORE.setJSON('evofeedback', EVOFB); }catch(e){} }
 const LEVEL_WORDS = WORDS; // the current level's word list
 /* ---- Default track: a 20-stage curriculum that gets longer & tougher as you climb ----
    Built once from the real library (40k words), sorted by difficulty tier then length, then
@@ -678,8 +678,8 @@ function deviceSpeak(text,rate){ try{
   window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter(text,rate||0.92)); }catch(e){} }
 // voice preference: which installed device voice to use ('' = auto best). No account, no key.
 const VOICE = { name:'' };
-function loadVoiceCfg(){ try{ const raw=localStorage.getItem('sb_voice'); if(raw) Object.assign(VOICE, JSON.parse(raw)); }catch(e){} }
-function saveVoiceCfg(){ try{ localStorage.setItem('sb_voice', JSON.stringify(VOICE)); }catch(e){} }
+function loadVoiceCfg(){ try{ const v=SB_STORE.getJSON('voice',null); if(v) Object.assign(VOICE, v); }catch(e){} }
+function saveVoiceCfg(){ try{ SB_STORE.setJSON('voice', VOICE); }catch(e){} }
 function enVoices(){ try{ return (window.speechSynthesis.getVoices()||[]).filter(v=>/^en/i.test(v.lang)); }catch(e){ return []; } }
 // A one-time OS step unlocks a much nicer voice — apps can't install system voices, so we
 // detect the platform and show the exact path. Once added, it appears in the picker above.
@@ -1637,9 +1637,9 @@ function quoteOfHour(){
   const all=(window.SB_QUOTES||[]);
   let i=all.indexOf(q); if(i<0) i=all.findIndex(x=>x&&x.q===q.q);
   return {q, i:i<0?0:i}; }
-/* ---- 🐞 bug reports live in localStorage, device-level (not on a child) ---- */
-function _bugList(){ try{ return JSON.parse(localStorage.getItem('sb_bugs')||'[]')||[]; }catch(e){ return []; } }
-function _bugSave(list){ try{ localStorage.setItem('sb_bugs', JSON.stringify(list)); }catch(e){} }
+/* ---- 🐞 bug reports live in the device bucket of SB_STORE (not on a child) ---- */
+function _bugList(){ try{ return SB_STORE.getJSON('bugs',[])||[]; }catch(e){ return []; } }
+function _bugSave(list){ try{ SB_STORE.setJSON('bugs', list); }catch(e){} }
 function bugUI(){
   if(state.screen!=='app') return '';
   const tab=`<button data-act="bugToggle" class="sb-bug-tab" title="Report a bug or share an idea" aria-label="Report a bug">🐞<span>BUG?</span></button>`;
@@ -2655,7 +2655,7 @@ const app = {
   reportWord:(w)=>set({reportW:w}),
   reportClose:()=>set({reportW:null}),
   /* ---- 🐞 the bug sidebar. OFFLINE by design (COPPA: the app transmits nothing):
-     reports save to localStorage on THIS device, with only technical context
+     reports save to the device bucket on THIS device, with only technical context
      (screen, version, viewport, theme — never a name or age), and the panel
      exports them as bug-reports.json / copies them for the parent to send. ---- */
   /* ---- research capture (SB_TM): grown-up switch, on-device only ---- */
@@ -3151,17 +3151,17 @@ const app = {
     try{ document.querySelector('[data-fkey="gType"],[data-inp="gType"]')?.focus(); }catch(e){} },
 
   toggleSound:()=>{ set({sound:!state.sound}); if(state.sound) sfx('coin'); },
-  /* the 6-second world splash on app open — a localStorage switch, because the
+  /* the 6-second world splash on app open — a device switch (SB_STORE 'splash'), because the
      splash runs from an inline script long before this file has parsed */
-  toggleSplash:()=>{ let on=true; try{ on=localStorage.getItem('sb_splash')!=='0'; }catch(e){}
-    try{ localStorage.setItem('sb_splash',on?'0':'1'); }catch(e){}
+  toggleSplash:()=>{ let on=true; try{ on=SB_STORE.get('splash')!=='0'; }catch(e){}
+    try{ SB_STORE.set('splash',on?'0':'1'); }catch(e){}
     flash(on?'Opening splash off — straight to the app':'✨ Opening splash on — see you at the next launch'); render(); },
   toggleFocus:()=>{ clearTimeout(app._modeT); try{ if(window.SB_W4_FOCUS){ const on=SB_W4_FOCUS.toggle(); flash(on?'Focus on — music off, world held still':'Focus off — the world wakes up'); } }catch(e){} render(); },
   devTap:()=>{ state._devTaps=(state._devTaps||0)+1;
     if(state._devTaps>=7){ state._devTaps=0; state.devReveal=!state.devReveal; flash(state.devReveal?'🛠 Testing tools revealed':'🛠 Testing tools hidden'); render(); } },
   toggleDevUnlock:()=>{ pinGate(()=>{
       const on=!state.devUnlock; state.devUnlock=on; state.premium=on?true:false;
-      try{localStorage.setItem('sb_devunlock',on?'1':'0');}catch(e){}
+      try{SB_STORE.set('devunlock',on?'1':'0');}catch(e){}
       if(!on) devCoinsOff();                       // leaving testing always hands the real purse back
       save(); flash(on?'🔓 All features unlocked for testing':'🔒 Locked features restored'); render();
     },'Testing tools — grown-ups only'); },
@@ -8298,7 +8298,7 @@ function parentSignals(){ const c=active(); const played=(c.daysPlayed||[]).slic
   const trail=c.trail||{}; const trailDone=Object.keys(trail.done||{}).length;
   const vocab=c.vocab||{}; const vocabTouched=Object.keys(vocab).length>0;
   const themesN=(function(){ try{ return myThemes().length; }catch(e){ return 0; } })();
-  const arcadeN=(function(){ try{ return Object.keys(JSON.parse(localStorage.getItem('sb_arc_best')||'{}')).length; }catch(e){ return 0; } })();
+  const arcadeN=(function(){ try{ return Object.keys(SB_STORE.getJSON('arcBest',{})||{}).length; }catch(e){ return 0; } })();
   const advOn=(function(){ try{ return !!(window.ADV&&ADV.active&&ADV.active()); }catch(e){ return false; } })();
   const traps=(function(){ try{ return missTraps(); }catch(e){ return []; } })();
   return { c, daysSince, active14, acc:(c.acc||0), missedN, goodDays:goodDaysThisWeek(c), toBee:(milestone()||{days:9999}).days, age:(c.age||9), coverage,
@@ -8352,7 +8352,7 @@ function parentTips(){ const T=window.SB_TIPS||{}; const s=parentSignals(); cons
 const TIP_CAT_LABEL={trap:'Their pattern',atlas:'The Atlas',vocab:'Vocabulary',themes:'Theme Journeys',arcade:'The Arcade',advanced:'Advanced Pack',placement:'Finding their level',reengage:'Re-engage',consistency:'Consistency',difficult:'Hard words',memory:'Memory science',accuracy:'Accuracy',oral:'Oral rounds',written:'Written rounds',beeday:'Bee day',nerves:'Nerves',motivation:'Motivation',parenting:'Parenting',young:'Young spellers',plateau:'Plateau',review:'Review',coverage:'Coverage',origin:'Origins',pattern:'Patterns',champword:'Champion words',theme:'Themes',miss:'Their words'};
 /* ===================== THE FAMILY REPORT CARD (FIX-BEE M2, family standard §7) =====================
    Three measures, the same in every Bizzing app so the Hive can merge them:
-     TIME      active minutes, read from the family feed localStorage['bizzing.activity']
+     TIME      active minutes, read from the family feed (SB_STORE 'activity' = bizzing.activity)
                (the drop-in writes {a:'bee', d, m, who}); never invented when it is absent.
      PROGRESS  steps along the path — Atlas stops cleared and where the child is now, plus the
                spelling Stage on the active list.
@@ -8364,7 +8364,7 @@ const TIP_CAT_LABEL={trap:'Their pattern',atlas:'The Atlas',vocab:'Vocabulary',t
    tests/report-card.cjs checks they do. */
 function reportCard(c){ c=c||active(); const out={ name:(c&&c.name)||'' };
   /* time */
-  try{ const raw=localStorage.getItem('bizzing.activity'); const o=raw?JSON.parse(raw):null;
+  try{ const o=SB_STORE.getJSON('activity',null);
     if(o&&Array.isArray(o.s)){ const who=String(c.name||'').trim().toLowerCase(); const d0=new Date(); d0.setDate(d0.getDate()-6);
       const cut=d0.getFullYear()+'-'+String(d0.getMonth()+1).padStart(2,'0')+'-'+String(d0.getDate()).padStart(2,'0');
       const mine=o.s.filter(x=>x&&x.a==='bee'&&String(x.who||'').trim().toLowerCase()===who&&!x.ev&&x.d>=cut);
@@ -10037,14 +10037,14 @@ function viewDebug(){
 }
 
 /* ===================== WORD VOICE TESTER (human-in-the-loop QA) ===================== */
-// Flags live in a dedicated localStorage key that no reset touches, AND are seeded
+// Flags live in a dedicated device key (SB_STORE 'vflags') that no reset touches, AND are seeded
 // from window.SB_VOICE_FLAGLOG — the git-committed permanent record — so a cache
 // clear can never lose feedback Claude has already logged.
-function vtLoad(){ let f; try{ f=JSON.parse(localStorage.getItem('sb_vflags')||'{}'); }catch(e){ f={}; }
+function vtLoad(){ let f; try{ f=SB_STORE.getJSON('vflags',{})||{}; }catch(e){ f={}; }
   f.ok=f.ok||{}; f.bad=f.bad||{};
   try{ (window.SB_VOICE_FLAGLOG||[]).forEach(x=>{ const k=nkey(x&&(x.w||x)); if(k && !f.ok[k] && !f.bad[k]) f.bad[k]={h:(x&&x.h)||'',at:(x&&x.at)||0,logged:1}; }); }catch(e){}
   return f; }
-function vtSave(f){ try{ localStorage.setItem('sb_vflags', JSON.stringify({ok:f.ok||{},bad:f.bad||{}})); }catch(e){} }
+function vtSave(f){ try{ SB_STORE.setJSON('vflags', {ok:f.ok||{},bad:f.bad||{}}); }catch(e){} }
 function voiceFlagList(){ const f=vtLoad(); return Object.keys(f.bad).map(k=>({w:k,h:(f.bad[k]&&f.bad[k].h)||''})); }
 function voiceFlagCount(){ try{ return Object.keys(vtLoad().bad).length; }catch(e){ return 0; } }
 window.sbVTnote=function(k,val){ const f=vtLoad(); k=nkey(k); if(!f.bad[k]) f.bad[k]={h:'',at:Date.now()}; f.bad[k].h=String(val||'').slice(0,60); vtSave(f); };
@@ -10129,7 +10129,7 @@ function viewSettings(){
     toggle('toggleSound',S.sound?'speaker':'mute','Sound effects',!!S.sound),
     choice('setVoiceRate','timer','Voice speed',[['normal','Normal'],['slow','Slow']],((S.voiceRate||1)<1)?'slow':'normal'),
     toggle('toggleReadAloud','mic','Read cards aloud',!!S.readAloud),
-    toggle('toggleSplash','spark','Opening splash',(function(){try{return localStorage.getItem('sb_splash')!=='0';}catch(e){return true;}})()),
+    toggle('toggleSplash','spark','Opening splash',(function(){try{return SB_STORE.get('splash')!=='0';}catch(e){return true;}})()),
   ].join('');
 
   /* ---------- Account: the plan, the parent, and the Advanced Pack, in one place ----------
@@ -11250,9 +11250,9 @@ function arcadeMenu(k){
   };
 }
 /* Per-game personal best, persisted on the device — gives the competitive speller a
-   number to beat every play. localStorage['sb_arc_best'] = { <gameKey>: bestScore }. */
-function arcBestMap(){ try{ return JSON.parse(localStorage.getItem('sb_arc_best')||'{}')||{}; }catch(e){ return {}; } }
-function arcSaveBest(k,v){ try{ const m=arcBestMap(); m[k]=v; localStorage.setItem('sb_arc_best',JSON.stringify(m)); }catch(e){} }
+   number to beat every play. SB_STORE 'arcBest' (sb_arc_best) = { <gameKey>: bestScore }. */
+function arcBestMap(){ try{ return SB_STORE.getJSON('arcBest',{})||{}; }catch(e){ return {}; } }
+function arcSaveBest(k,v){ try{ const m=arcBestMap(); m[k]=v; SB_STORE.setJSON('arcBest',m); }catch(e){} }
 function arcadeResult(g, res){
   if(!_arcEl) return;
   const win = !!(res && res.win);
@@ -11335,9 +11335,9 @@ let _bizzEl=null, _bizzS=null, _bizzSeen=null;
    been exhausted do we forget that level, so the game can keep running forever without
    ever repeating until it truly has to. */
 function _bizzSeenLoad(){ if(_bizzSeen) return _bizzSeen;
-  try{ _bizzSeen=new Set(JSON.parse(localStorage.getItem('sb_bizz_seen')||'[]')); }catch(e){ _bizzSeen=new Set(); }
+  try{ _bizzSeen=new Set(SB_STORE.getJSON('bizzSeen',[])||[]); }catch(e){ _bizzSeen=new Set(); }
   return _bizzSeen; }
-function _bizzSeenSave(){ try{ localStorage.setItem('sb_bizz_seen', JSON.stringify([..._bizzSeen].slice(-6000))); }catch(e){} }
+function _bizzSeenSave(){ try{ SB_STORE.setJSON('bizzSeen', [..._bizzSeen].slice(-6000)); }catch(e){} }
 function bizzMoney(n){ return n.toLocaleString('en-US'); }
 function bizzClose(){ if(_bizzEl){ _bizzEl.remove(); _bizzEl=null; } _bizzS=null;
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){} }
@@ -11506,7 +11506,7 @@ function gamesHub(){ const S=state; const c=active();
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
      full-width banner under the two story adventures. It shows no run of days: a day off costs nothing. */
   let dailyBanner='';
-  if(window.SB_DAILY){ let st={}; try{ st=JSON.parse(localStorage.getItem('sb_daily')||'{}'); }catch(e){}
+  if(window.SB_DAILY){ let st={}; try{ st=SB_STORE.getJSON('daily',{})||{}; }catch(e){}
     const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
     const doneToday=st.day===today&&st.over;
     dailyBanner=`<button data-act="openDaily" class="sb-lift sb-daily" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
@@ -11700,6 +11700,9 @@ function overlays(){
   // position:relative;z-index:1 box, which is a stacking context — anything drawn inside it
   // is pinned below the overlays no matter how high its own z-index is. That is why
   // Settings → Manage plan used to open *behind* Settings.
+  /* A household written by a NEWER build is opened read-only (store.js) — say so for as long as
+     it lasts, not in a toast that is gone before anyone reads it. */
+  if(window.SB_STORE && SB_STORE.readOnly()) h+=`<div class="sb-ro" role="status" style="position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:120;max-width:min(560px,calc(100vw - 32px));padding:10px 16px;border-radius:12px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);border:1px solid currentColor;font-weight:700;font-size:13px;line-height:1.45;box-shadow:var(--sh-overlay)">This device holds Bizzing Bee data from a newer version. Reload to update — nothing is saved until then.</div>`;
   /* THE PLAN GUARD. Eight places open the plan sheet or the paywall (a locked list, a locked
      lesson, an upsell, the landing page's plan pick…). Guarding each opener is how this went
      wrong, so it is guarded HERE, where the sheet is drawn: no sheet until a grown-up has passed
@@ -12103,13 +12106,13 @@ function viewCloudSheet(){ const S=state; const m=S.cloudSheet;
      pagehide calls save(), which would otherwise write the old household straight back.
    Guard: tests/backup-restore.cjs (round-trip a child exactly, the PIN, a refused file). */
 const BK_SKIP=/^sb_(accounts_v\d+|session_v\d+|sync_v\d+|tm_log|tm_on|bugs|devunlock|vflags|evofeedback)$/;
-function bkKeys(all){ const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&/^sb_/.test(k)&&(all||!BK_SKIP.test(k))) out.push(k); } }catch(e){} return out.sort(); }
+function bkKeys(all){ const out=[]; try{ SB_STORE.keys().forEach(k=>{ if(/^sb_/.test(k)&&(all||!BK_SKIP.test(k))) out.push(k); }); }catch(e){} return out.sort(); }
 function bkNames(children){ return (children||[]).map(c=>String((c&&c.name)||'').trim().toLowerCase()).filter(Boolean); }
 function backupBlob(){ try{ save(); }catch(e){}
-  const keys={}; bkKeys(false).forEach(k=>{ keys[k]=localStorage.getItem(k); });
+  const keys={}; bkKeys(false).forEach(k=>{ keys[k]=SB_STORE.getKey(k); });
   const names=bkNames(state.children); const family={};
-  try{ const w=JSON.parse(localStorage.getItem('bizzing.wallet')||'null'); if(w&&w.kids){ const kids={}; names.forEach(n=>{ if(w.kids[n]) kids[n]=w.kids[n]; }); if(Object.keys(kids).length) family['bizzing.wallet']={v:w.v||1,kids}; } }catch(e){}
-  try{ const a=JSON.parse(localStorage.getItem('bizzing.activity')||'null'); if(a&&Array.isArray(a.s)){ const s=a.s.filter(x=>x&&x.a==='bee'&&names.indexOf(String(x.who||'').trim().toLowerCase())>=0); if(s.length) family['bizzing.activity']={v:a.v||1,s}; } }catch(e){}
+  try{ const w=SB_STORE.getJSON('wallet',null); if(w&&w.kids){ const kids={}; names.forEach(n=>{ if(w.kids[n]) kids[n]=w.kids[n]; }); if(Object.keys(kids).length) family['bizzing.wallet']={v:w.v||1,kids}; } }catch(e){}
+  try{ const a=SB_STORE.getJSON('activity',null); if(a&&Array.isArray(a.s)){ const s=a.s.filter(x=>x&&x.a==='bee'&&names.indexOf(String(x.who||'').trim().toLowerCase())>=0); if(s.length) family['bizzing.activity']={v:a.v||1,s}; } }catch(e){}
   return { app:'bizzing-bee', kind:'household-backup', v:1, at:Date.now(), keys, family }; }
 function backupFileName(){ const n=(state.children||[]).map(c=>String((c&&c.name)||'').replace(/[^A-Za-z0-9]/g,'')).filter(Boolean).join('-');
   return 'bizzing-bee-'+(n||'household')+'-'+todayKey()+'.json'; }
@@ -12119,23 +12122,24 @@ function backupParse(text){ let b; try{ b=JSON.parse(String(text||'')); }catch(e
   if((b.v||0)>1) return {ok:false, why:'That backup was made by a newer Bizzing Bee. Update the app first — restoring it here would lose what it knows.'};
   let h; try{ h=JSON.parse(b.keys.sb_saas_v2||'null'); }catch(e){ h=null; }
   if(!h||!Array.isArray(h.children)) return {ok:false, why:'The backup has no household in it.'};
+  if((+h.sv||1)>SB_STORE.SCHEMA) return {ok:false, why:'That backup was made by a newer Bizzing Bee. Update the app first — restoring it here would lose what it knows.'};
   for(const k in b.keys){ if(!/^sb_/.test(k)||BK_SKIP.test(k)||typeof b.keys[k]!=='string') return {ok:false, why:'The backup carries something that is not Bizzing Bee data ('+String(k).slice(0,40)+'), so it was not restored.'}; }
   return {ok:true, blob:b, kids:h.children.length, names:h.children.map(c=>c&&c.name).filter(Boolean), at:b.at||0}; }
-function bkFamilyDrop(names){ try{ const a=JSON.parse(localStorage.getItem('bizzing.activity')||'null');
-    if(a&&Array.isArray(a.s)){ a.s=a.s.filter(x=>!(x&&x.a==='bee'&&names.indexOf(String(x.who||'').trim().toLowerCase())>=0)); localStorage.setItem('bizzing.activity',JSON.stringify(a)); } }catch(e){} }
+function bkFamilyDrop(names){ try{ const a=SB_STORE.getJSON('activity',null);
+    if(a&&Array.isArray(a.s)){ a.s=a.s.filter(x=>!(x&&x.a==='bee'&&names.indexOf(String(x.who||'').trim().toLowerCase())>=0)); SB_STORE.setJSON('activity',a); } }catch(e){} }
 function bkFamilyAdd(fam){ fam=fam||{};
-  try{ const src=fam['bizzing.wallet']; if(src&&src.kids){ const w=JSON.parse(localStorage.getItem('bizzing.wallet')||'null')||{v:1,kids:{}}; w.kids=w.kids||{};
-      let ch=false; Object.keys(src.kids).forEach(n=>{ if(!w.kids[n]){ w.kids[n]=src.kids[n]; ch=true; } }); if(ch) localStorage.setItem('bizzing.wallet',JSON.stringify(w)); } }catch(e){}
-  try{ const src=fam['bizzing.activity']; if(src&&Array.isArray(src.s)){ const a=JSON.parse(localStorage.getItem('bizzing.activity')||'null')||{v:1,s:[]}; a.s=Array.isArray(a.s)?a.s:[];
+  try{ const src=fam['bizzing.wallet']; if(src&&src.kids){ const w=SB_STORE.getJSON('wallet',null)||{v:1,kids:{}}; w.kids=w.kids||{};
+      let ch=false; Object.keys(src.kids).forEach(n=>{ if(!w.kids[n]){ w.kids[n]=src.kids[n]; ch=true; } }); if(ch) SB_STORE.setJSON('wallet',w); } }catch(e){}
+  try{ const src=fam['bizzing.activity']; if(src&&Array.isArray(src.s)){ const a=SB_STORE.getJSON('activity',null)||{v:1,s:[]}; a.s=Array.isArray(a.s)?a.s:[];
       const sig=x=>[x.a,x.d,x.t,x.who||'',x.ev||'',x.label||''].join('|'); const have=new Set(a.s.map(sig));
-      src.s.forEach(x=>{ if(x&&!have.has(sig(x))){ a.s.push(x); have.add(sig(x)); } }); a.s.sort((p,q)=>(p.d<q.d?-1:p.d>q.d?1:(p.t||0)-(q.t||0))); localStorage.setItem('bizzing.activity',JSON.stringify(a)); } }catch(e){} }
+      src.s.forEach(x=>{ if(x&&!have.has(sig(x))){ a.s.push(x); have.add(sig(x)); } }); a.s.sort((p,q)=>(p.d<q.d?-1:p.d>q.d?1:(p.t||0)-(q.t||0))); SB_STORE.setJSON('activity',a); } }catch(e){} }
 /* the page is about to reload into what is on disk: nothing may write the old household back.
    Halt FIRST — any render() on the way out (a flash, a view) can call save(). */
 function bkHalt(){ try{ window.save=function(){}; }catch(e){} try{ if(window.SB_SYNC) SB_SYNC.queue=function(){}; }catch(e){} }
 function bkHaltAndReload(){ bkHalt(); try{ setTimeout(()=>{ try{ location.reload(); }catch(e){} }, 60); }catch(e){} }
-function eraseHousehold(){ const names=bkNames(state.children); bkKeys(true).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); bkFamilyDrop(names); }
-function restoreHousehold(blob){ bkKeys(false).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
-  Object.keys(blob.keys).forEach(k=>{ try{ localStorage.setItem(k, blob.keys[k]); }catch(e){} }); bkFamilyAdd(blob.family); }
+function eraseHousehold(){ const names=bkNames(state.children); bkKeys(true).forEach(k=>{ try{ SB_STORE.delKey(k); }catch(e){} }); bkFamilyDrop(names); }
+function restoreHousehold(blob){ bkKeys(false).forEach(k=>{ try{ SB_STORE.delKey(k); }catch(e){} });
+  Object.keys(blob.keys).forEach(k=>{ try{ SB_STORE.setKey(k, blob.keys[k]); }catch(e){} }); bkFamilyAdd(blob.family); }
 const bkBtn=(act,label,bg,col,bd)=>`<button data-act="${act}" style="padding:10px 15px;border-radius:10px;background:${bg};color:${col};border:1px solid ${bd||'transparent'};font-weight:800;font-size:13px">${label}</button>`;
 /* a new device (or one just erased) has no Parent Zone to restore from — the welcome page's
    footer carries the same file picker and the same confirm */
@@ -12233,7 +12237,8 @@ function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_
 
 /* ===================== render + events ===================== */
 const root = document.getElementById('root');
-function save(){ try{ localStorage.setItem('sb_saas_v2', JSON.stringify({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] })); }catch(e){}
+function save(){ if(window.SB_STORE&&SB_STORE.readOnly()) return;   // a newer build wrote this household: never write over it
+  try{ SB_STORE.saveHousehold({ theme:state.theme, mode:state.mode, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] }); }catch(e){}
   /* Cloud backup rides on the same call, coalesced inside SB_SYNC. save() fires on
      nearly every interaction, so this must never do work on the calling frame — and
      it must never be able to break the local save above, which is why it is last and
@@ -12436,64 +12441,23 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
 });
 
 (function init(){
-  try{ const raw=localStorage.getItem('sb_saas_v2'); if(raw){ const s=JSON.parse(raw);
+  /* THE HOUSEHOLD COMES THROUGH THE SEAM (store.js, FIX-BEE N4). loadHousehold() has already run
+     the versioned steps — the concept-index shift, the test-coin reset, the accessory, world-cut
+     and Aurora refunds, and the per-child mastery copy, which used to be ad-hoc blocks right
+     here — exactly once per household, in the order they always ran. Add a step there, never a
+     block here. */
+  try{ const s=SB_STORE.loadHousehold(); if(s){
     state.theme=s.theme||'spellbound'; state.mode=s.mode||'light'; state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra; state.a11yFont=s.af||'std'; state.a11yContrast=!!s.ac; state.a11yMotion=!!s.am; state.calmMode=!!s.cm; window.SB_CALM=!!s.cm;
     state.children=s.children||[]; state.activeIdx=s.activeIdx||0; state.goalDone=s.goalDone||0;
     state.luMastered=s.lu||{}; state.coachSrs=s.srs||{}; state.coachHistory=s.chist||{}; state.wordReports=s.wr||[];
-    // Chapter 1 insert shifted concept indices by 11 — migrate index-keyed coin unlocks once
-    try{ const shift=(((window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121))-(s.cN||110);
-      if(shift>0) state.children.forEach(ch=>{ if(ch.unlockedConcepts){ const u={}; Object.keys(ch.unlockedConcepts).forEach(k=>{ u[+k+shift]=1; }); ch.unlockedConcepts=u; } }); }catch(e){}
     try{ state.children.forEach(ensureLists); }catch(e){}
     try{ syncMissed(); }catch(e){}
     try{ mastBoot(s.lu); }catch(e){}   // FIX-BEE D5: mastery from evidence (c.mast); luMastered is derived from it
     state.screen=(s.children&&s.children.length)?'app':'landing'; state.nav='home';
   } }catch(e){}
-  try{ if(localStorage.getItem('sb_devunlock')==='1'){ state.devUnlock=true; state.premium=true; } }catch(e){}
-  /* Test coins never survive a reload, and neither does the legacy cheat: an earlier build
-     handed out 5,000,000 coins the instant testing mode was switched on — reachable by a
-     child tapping the Settings footer seven times. Give those profiles their plan's starting
-     purse back; no one earns a million coins by spelling. */
-  try{ (state.children||[]).forEach(ch=>{
-    if(ch.devCoins){ ch.coins=ch.devCoinsBank||0; ch.devCoins=0; delete ch.devCoinsBank; }
-    else if((ch.coins||0)>=1000000){
-      let base=0; try{ const t=window.SB_TIERS&&SB_TIERS[ch.tier||'free']; if(t&&t.ent&&t.ent.startCoins) base=t.ent.startCoins; }catch(e){}   // plans grant no coins now (pricing.js), so the floor is 0
-      ch.coins=base; ch.coinsReset=1; }
-  }); }catch(e){}
-  /* Bee-style accessories were removed (they were bee-shaped stickers pinned to fixed
-     coordinates, and collided with the god and real-person avatars). Anyone who spent
-     coins on one gets the full price back — we withdrew the thing, they did not sell it.
-     Runs once per child; the old records are cleared so it cannot pay twice. */
-  try{ const PAID={crown:120,halo:110,bow:100,cape:150,mustache:100,sceptre:180,funbrella:160};
-    (state.children||[]).forEach(ch=>{ const own=Object.keys(ch.beeAcc||{}); if(!own.length && !ch.accOn) return;
-      const back=own.reduce((t,k)=>t+(PAID[k]||100),0);
-      if(back){ ch.coins=(ch.coins||0)+back; ch.accRefund=back; }
-      delete ch.beeAcc; delete ch.accOn; });
-  }catch(e){}
-  /* Aug-31 world cut: Spotlight, Origami, Arcade and Serpent's Lair left the store
-     (EIGHT worlds now, the Hive free and the rest bought). Anyone who spent coins on
-     a removed world gets the full price back — we withdrew it, they did not sell it.
-     Spotlight was free, so it is simply re-homed. A save pointing at a removed world
-     falls back to the Hive. Scenes/ladders stay in the codebase as an archive
-     (archive/store-cut-2026-08.md). Self-clearing: the filtered list cannot pay twice. */
-  try{ const GONEW={marquee:1,serpent:1,origami:1,pixel:1}, PAIDW={serpent:1,origami:1,pixel:1};
-    (state.children||[]).forEach(ch=>{ const un=ch.unlockedThemes||[];
-      if(un.some(t=>GONEW[t])){ let back=0; un.forEach(t=>{ if(PAIDW[t]) back+=COST.theme; });
-        ch.unlockedThemes=un.filter(t=>!GONEW[t]);
-        if(back){ ch.coins=(ch.coins||0)+back; ch.worldRefund=(ch.worldRefund||0)+back; } }
-      if(GONEW[ch.theme]) ch.theme='spellbound'; });
-    if(GONEW[state.theme]) state.theme='spellbound';
-  }catch(e){}
-  /* Sep-30: Aurora became a STARTER world — onboarding now offers two, so the second one
-     had to stop costing 400 🪙. Everyone who bought it before that bought a thing we then
-     gave away, so they get the full price back. Dropping 'aurora' from the owned list is
-     both the refund receipt and the reason this cannot pay twice: FREE_THEMES makes
-     isThemeUnlocked() true for it regardless, so nothing is taken away by the removal. */
-  try{ (state.children||[]).forEach(ch=>{ const un=ch.unlockedThemes||[];
-      if(un.indexOf('aurora')<0) return;
-      ch.unlockedThemes=un.filter(t=>t!=='aurora');
-      ch.coins=(ch.coins||0)+COST.theme;
-      ch.auroraRefund=(ch.auroraRefund||0)+COST.theme; });
-  }catch(e){}
+  try{ if(SB_STORE.get('devunlock')==='1'){ state.devUnlock=true; state.premium=true; } }catch(e){}
+  /* (the test-coin reset and the accessory, world-cut and Aurora refunds are store.js steps
+     v2_to_v3 … v5_to_v6 now; the flashes below still read the receipts they leave on a child) */
   /* FIX-BEE: Bee coins become Bizzing coins, 1:1, once per child (walletSync). It runs AFTER
      the refunds above on purpose: money handed back for a withdrawn world or accessory is
      the child's, and moves into the family wallet with the rest. From here on c.coins is a

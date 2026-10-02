@@ -23,7 +23,7 @@
         object, so a second child inherited the first one's mastery. They now travel with the
         child (`c._lu`, `c._srs`, `c._chist` while that child is not the active one).
      5. DEMO. `?demo` runs a sample child inside a storage SANDBOX installed by the inline
-        script at the top of <body>: every localStorage read and write goes to memory, so the
+        script at the top of <body>: every storage read and write goes to memory, so the
         real household, `bizzing.activity` and `bizzing.wallet` are never read or written.
 
    Loaded before app3.js. Everything that touches app3's globals (`state`, `app`, `active`,
@@ -411,7 +411,7 @@
     return { theme: 'spellbound', mode: 'light', premium: false, pin: null, children: [kid], activeIdx: 0, goalDone: 0, lu: lu, srs: {}, chist: {} };
   }
   if (DEMO) {
-    try { localStorage.setItem('sb_saas_v2', JSON.stringify(sampleHousehold())); localStorage.setItem('sb_splash', '0'); } catch (e) {}
+    try { SB_STORE.saveHousehold(sampleHousehold()); SB_STORE.set('splash', '0'); } catch (e) {}
   }
 
   /* ------------------------------------------------------------------ install */

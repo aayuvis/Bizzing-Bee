@@ -53,7 +53,7 @@
 
   function saveSession(s) {
     try {
-      localStorage.setItem(SESS, JSON.stringify({
+      SB_STORE.setKey(SESS, JSON.stringify({
         access_token: s.access_token, refresh_token: s.refresh_token,
         expires_at: Date.now() + ((s.expires_in || 3600) * 1000),
         user: { id: s.user.id, email: s.user.email },
@@ -61,7 +61,7 @@
     } catch (e) {}
   }
   function readSession() {
-    try { return JSON.parse(localStorage.getItem(SESS) || 'null'); } catch (e) { return null; }
+    try { return JSON.parse(SB_STORE.getKey(SESS) || 'null'); } catch (e) { return null; }
   }
 
   /* The session is refreshed in the background, never on the critical path. A child
@@ -94,7 +94,7 @@
 
     signOut: function () {
       var s = readSession();
-      try { localStorage.removeItem(SESS); } catch (e) {}
+      try { SB_STORE.delKey(SESS); } catch (e) {}
       if (s && s.access_token) {
         api('/auth/v1/logout', { method: 'POST', token: s.access_token }).catch(function () {});
       }
