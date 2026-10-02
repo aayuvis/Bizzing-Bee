@@ -6,9 +6,9 @@
    Tiers (repriced 2026-08-09):
      Free              $0             500 words · no lists · basic games only
      Beginner Bee      $9.99 / $99    10k words · Concepts + Revise + Lists · Train tools LOCKED ·
-                                        4 worlds · 5 avatar packs · Saga LOCKED · 400 start coins
+                                        4 worlds · 5 avatar packs · Saga LOCKED
      Regional Speller  $19.99 / $199  40k words · ALL worlds/avatars/games · ALL Supercharge ·
-                                        Saga UNLOCKED · 1,500 start coins
+                                        Saga UNLOCKED
      + Advanced Pack   +$299/yr add-on   130k library + Advanced Mode coaching (BUILT 2026-07-29).
                                         Sits ON TOP of any tier, including Regional Speller —
                                         no tier grants it, and it cannot be bought with coins.
@@ -40,14 +40,14 @@
       blurb: '10,000 words, Concepts, Lists and four worlds to explore.',
       ent: { words: 10000, lists: true, concepts: true, journeys: false, revise: true,
              trainTools: false, games: 'basic', worlds: 4, avatarPacks: 5, saga: false,
-             books: false, startCoins: 400 }
+             books: false, startCoins: 0 }
     },
     regional: {
       id: 'regional', name: 'Regional Speller', order: 2, priceMo: 19.99, priceYr: 199, badge: '👑',
       blurb: 'Everything unlocked — all 40k words, worlds, avatars, games, Supercharge, the Saga and the book series.',
       ent: { words: 40000, lists: true, concepts: true, journeys: true, revise: true,
              trainTools: true, games: 'all', worlds: 'all', avatarPacks: 'all', saga: true,
-             books: true, startCoins: 1500 }
+             books: true, startCoins: 0 }
     }
   };
   var ADDONS = {
@@ -86,15 +86,14 @@
     startCoins: function () { return this.tier().ent.startCoins; },
     // cap a word array to the tier's allowance (stable slice from the front of the library)
     capWords: function (arr) { var n = this.wordCap(); return (n && arr && arr.length > n) ? arr.slice(0, n) : arr; },
-    // set the plan on a child (local for now; Stripe writes this in Phase 2). Grants start coins once.
+    // set the plan on a child (local for now; Stripe writes this in Phase 2).
+    /* A plan grants CONTENT, never coins (FAMILY-STANDARD §1: "no path from real money to
+       coins"). It used to top the purse up to 400 / 1,500 the first time a child reached a
+       paid tier — a grown-up's payment turning into a child's spending money. startCoins
+       stays in the shape at 0 so old readers get a number. */
     setTier: function (c, tierId) {
       if (!c || !TIERS[tierId]) return false;
       var prev = c.tier || 'free'; c.tier = tierId;
-      // grant the tier's starting coins the first time the child reaches it (top-up to the floor)
-      var floor = TIERS[tierId].ent.startCoins || 0;
-      if (tierId !== 'free' && floor && (c.coins || 0) < floor && !(c._coinFloor && c._coinFloor[tierId])) {
-        c.coins = floor; c._coinFloor = c._coinFloor || {}; c._coinFloor[tierId] = 1;
-      }
       return prev !== tierId;
     }
   };

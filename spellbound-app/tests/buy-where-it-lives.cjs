@@ -1,7 +1,7 @@
 /* Buying lives where the thing lives — the Library/Worlds half.
    A locked word list opens the plan sheet in the Library (lists are not sold for coins).
-   A locked concept chapter offers its coin unlock in the Library. A locked world is
-   bought on the world. And the Store's old entry points still land on the Hive.
+   A locked concept chapter leads to the Atlas stop that opens it (FIX-BEE: never coins). A
+   locked world names the Level that opens it, on the world. And the Store's old entry points still land on the Hive.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/buy-where-it-lives.cjs */
 const { chromium } = require('playwright');
 (async()=>{
@@ -38,13 +38,17 @@ const { chromium } = require('playwright');
   await pg.evaluate(()=>{ const e=document.querySelector('[data-act="openConceptChapter"]'); if(e) e.click(); });
   await pg.waitForTimeout(900);
   r=await pg.evaluate(()=>({ ow:document.documentElement.scrollWidth>document.documentElement.clientWidth+2 }));
-  // a locked chapter tapped in the Library must offer the coin unlock right there
+  /* FIX-BEE C4 REVERSES the coin unlock: a chapter is content, and content is never bought
+     with coins. A locked chapter tapped in the Library goes where it opens — the Atlas stop
+     that teaches it, or the grown-up PIN for a plan chapter — and asks for no coins. */
   const conc=await pg.evaluate(()=>{ let asked=null; const real=window.confirm;
     window.confirm=(m)=>{ asked=m; return false; };
     const ci=(state.conceptData||[]).findIndex((c,i)=>!isConceptUnlocked(i));
     if(ci<0) return 'no locked chapter';
-    app.openConcept(ci); window.confirm=real;
-    return /Unlock this concept for \d+ coins/.test(asked||'') ? null : ('unlock prompt was: '+asked); });
+    const coins0=active().coins; state.pinDlg=null; app.openConcept(ci); window.confirm=real;
+    if(asked) return 'a coin prompt still appears: '+asked;
+    if(active().coins!==coins0) return 'coins moved';
+    return (state.nav==='trail' || !!state.pinDlg) ? null : ('a locked chapter led nowhere (nav='+state.nav+')'); });
   if(conc) errs.push('concepts: '+conc);
   if(r.ow) errs.push('H-OVERFLOW on concepts');
 

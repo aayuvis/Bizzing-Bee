@@ -43,10 +43,12 @@ const child = (over) => Object.assign({ name:'T', avatar:'bee', coins:5000, pow:
       const buys = [...document.querySelectorAll('[data-act="buyTheme"]')];
       const grey = buys.filter(el => { const band = el.querySelector('.wh-band');
         return band && /grayscale\(1\)/.test(getComputedStyle(band).filter || band.getAttribute('style') || ''); });
-      const priced = buys.filter(el => /Unlock/.test(el.innerText));
-      // the price must sit BELOW the artwork, not on it
+      /* FIX-BEE C4: a locked world names the Level that opens it (a learning lock), never a
+         coin price — the tag below the art is that lock now (tests/locks.cjs) */
+      const priced = buys.filter(el => /Reach Level \d+/.test(el.innerText) && !/🪙|Unlock ·/.test(el.innerText));
+      // the tag must sit BELOW the artwork, not on it
       const belowArt = buys.filter(el => { const band = el.querySelector('.wh-band');
-        const tag = [...el.querySelectorAll('span')].find(s => /Unlock/.test(s.textContent));
+        const tag = el.querySelector('[data-lock]');
         return band && tag && tag.getBoundingClientRect().top >= band.getBoundingClientRect().bottom - 1; });
       return { buys: buys.length, grey: grey.length, priced: priced.length, belowArt: belowArt.length,
                hero: !!document.querySelector('.wh-band') };
@@ -54,8 +56,8 @@ const child = (over) => Object.assign({ name:'T', avatar:'bee', coins:5000, pow:
     if (!w.hero) errs.push(vp.n + ' the Worlds tab is not the tiled hero view');
     if (!w.buys) errs.push(vp.n + ' no locked world rendered');
     if (w.grey !== w.buys) errs.push(vp.n + ' locked worlds not greyed: ' + w.grey + '/' + w.buys);
-    if (w.priced !== w.buys) errs.push(vp.n + ' locked worlds missing a price: ' + w.priced + '/' + w.buys);
-    if (w.belowArt !== w.buys) errs.push(vp.n + ' price is not below the tile: ' + w.belowArt + '/' + w.buys);
+    if (w.priced !== w.buys) errs.push(vp.n + ' locked worlds missing their Level lock (or carrying a price): ' + w.priced + '/' + w.buys);
+    if (w.belowArt !== w.buys) errs.push(vp.n + ' the lock is not below the tile: ' + w.belowArt + '/' + w.buys);
 
     // --- the Ultra pill ---
     const ultra = await pg.evaluate(() => {

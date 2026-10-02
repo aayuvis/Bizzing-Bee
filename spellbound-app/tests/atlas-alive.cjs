@@ -57,7 +57,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     if (out.giftTriv) {
       const coins0 = c.coins; const okIx = state.treG.q.opts.findIndex(o => o.ok);
       app.treTrivAns(okIx); await new Promise(res => setTimeout(res, 150));
-      out.trivPays = c.coins === coins0 + 10 && /Back to the map/.test(document.body.innerHTML);
+      /* FIX-BEE: coins are Bizzing coins now, paid only as the family standard's events — a right answer 1, a finished round 5, a contest 10 (tests/wallet-coins.cjs). */ out.trivPays = c.coins === coins0 + 1 && /Back to the map/.test(document.body.innerHTML);
     }
     state.treG = null;
 
@@ -70,7 +70,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     out.wrongHolds = !!state.villain && state.villain.wrong === 1;
     const coins1 = c.coins;
     app.villType(word); app.villGo(); await new Promise(res => setTimeout(res, 150));
-    out.freed = !state.villain && c.coins === coins1 + 12;
+    out.freed = !state.villain && c.coins === coins1 + 1;   // a right answer is one coin
     app.trailToMap(); await new Promise(res => setTimeout(res, 150));
     app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 250));
     out.onceADay = !state.villain;
@@ -85,10 +85,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.gameOpens, 'and Play it really opens the game setup menu');
   ok(r.giftLore, 'a chest can open onto the region\'s library chapter');
   ok(r.giftTriv, 'a chest can hold one real 4-option trivia question');
-  ok(r.trivPays !== false, 'answering it right pays 10 coins and shows the fact (' + r.trivPays + ')');
+  ok(r.trivPays !== false, 'answering it right pays one coin (a right answer) and shows the fact (' + r.trivPays + ')');
   ok(r.ambushUp, 'the moth ambush appears and names the deed: spell to free your buddy');
   ok(r.wrongHolds, 'a wrong spelling keeps the net closed (no punishment, try again)');
-  ok(r.freed, 'the RIGHT spelling frees the buddy and pays 12 coins');
+  ok(r.freed, 'the RIGHT spelling frees the buddy and pays one coin (a right answer)');
   ok(r.onceADay, 'a region ambushes at most once a day');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();

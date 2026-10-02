@@ -105,6 +105,10 @@
   const QSTAR = () => course() === 'exp' ? 95 : 90;
   const PGATE = 70;                       // practice % that opens the next stop
   const stKey = (u, lap) => u.id + ':' + lap;
+  /* A STOP FINISHED pays the standard's 'stop' once per stop per lap, whichever door finished
+     it — Practice at PGATE or the quiz. Both used to be able to fire for one stop. */
+  const payStop = (c, uid) => { try { if (!uid) return 0; const k = uid + ':' + lapOf(c); const pd = tr(c).paid = tr(c).paid || {};
+    if (pd[k]) return 0; pd[k] = 1; return addCoins('stop'); } catch (e) { return 0; } };
   const stRec = (c, u, lap) => { const st = tr(c).st = tr(c).st || {}; return st[stKey(u, lap)] = st[stKey(u, lap)] || {}; };
   /* THE FIVE STARS: one for opening the road, then two for finishing the stop
      (every task, every set) and two for how well it was finished. Reading a
@@ -183,7 +187,7 @@
       const si = r.cur | 0; const ss = (r.ss = r.ss || {});
       if (pct > (ss[si] || 0)) ss[si] = pct;
       save();
-      if (!had && r.p >= PGATE) { try { sfx('win'); burstConfetti(40); } catch (e) {} flash(`⭐ ${pct}% — the next stop is open!`); }
+      if (!had && r.p >= PGATE) { const p2 = payStop(c, u.id); try { sfx('win'); burstConfetti(40); } catch (e) {} flash(`⭐ ${pct}% — the next stop is open!` + (p2 ? ' +' + p2 + ' 🪙' : '')); }
     } catch (e) {}
   };
   function availableIn(u, lap) { if (course() === 'exp') return lap === 1 || !!(doneMap(active())[u.id] || {})[lap - 1] === false ? lap === 1 : true; return (u.laps || [u.lap || 1]).includes(lap); }
@@ -384,6 +388,26 @@
     } catch (e) { return null; }
   };
 
+  /* STOPS FINISHED, every course and lap, counted once per stop — the evidence behind the
+     Atlas medals and some avatar milestones (FIX-BEE I3/I4). A stop is finished the way the
+     map itself decides it: a quiz pass on any lap, or Practice at PGATE. */
+  window.SB_TRAIL_STOPS = function (c) { try { c = c || active(); const t = tr(c); const ids = new Set();
+      [t.done || {}, t.edone || {}].forEach(m => Object.keys(m).forEach(id => { if (Object.keys(m[id] || {}).length) ids.add(id); }));
+      Object.keys(t.st || {}).forEach(k => { if (((t.st[k] || {}).p || 0) >= PGATE) ids.add(k.split(':')[0]); });
+      return ids.size; } catch (e) { return 0; } };
+  /* Has the child REACHED the stop that teaches this concept? A concept chapter opens on the
+     Atlas (FIX-BEE C4: content is never bought with coins) — passed on any lap, or standing at
+     or behind the frontier of its own course. Testing mode reaches everything. */
+  window.SB_TRAIL_OPEN = function (gi) { try {
+      const t = window.SB_TRAIL_TAUGHT(gi); if (!t) return false; if (devOn()) return true;
+      const c = active(); const T2 = tr(c);
+      const done = t.course === 'exp' ? (T2.edone || {}) : (T2.done || {});
+      if (Object.keys(done[t.unit] || {}).length) return true;
+      if (Object.keys(T2.st || {}).some(k => k.split(':')[0] === t.unit && ((T2.st[k] || {}).p || 0) >= PGATE)) return true;
+      const prev = state.trailCourse; state.trailCourse = t.course;
+      try { const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === t.unit); return i >= 0 && i <= frontier(c); }
+      finally { state.trailCourse = prev; }
+    } catch (e) { return false; } };
   /* Where is this concept taught? The reverse of SB_TRAIL_NEXT: given a concept
      index (the `gi` a unit points at), name the act and the stop that teaches it,
      so the Library can point back at the map instead of being a parallel world.
@@ -610,26 +634,27 @@
     if (q2.i + 1 >= q2.items.length) { q2.over = true; finishQuiz(); } else { q2.i++; q2.picked = null; tqAutoSay(); }
     render(); };
   function finishQuiz() { const c = active(); const q2 = state.tq; const pct = q2.items.length ? q2.score / q2.items.length : 0;
-    /* a HERO challenge is one word, the hero's way: win = +5 honey the first
+    /* a HERO challenge is one word, the hero's way: win = one coin (a right answer) the first
        time each day; replays pay nothing. Touches nothing else. */
     if (q2.hero != null) { q2.pct = pct; q2.pass = pct >= 1;
       if (q2.pass) { const hr = mwP(c).hr = mwP(c).hr || {};
-        if (hr[q2.hero] !== mwDay()) { hr[q2.hero] = mwDay(); addCoins(5); q2.heroPaid = true; }
+        if (hr[q2.hero] !== mwDay()) { hr[q2.hero] = mwDay(); q2.heroPaid = addCoins('answer'); }   /* one word right is one right answer */
         try { sfx('win'); burstConfetti(40); } catch (e) {} save(); }
       return; }
-    /* a LANDMARK side round pays a honey trickle and touches nothing else:
+    /* a LANDMARK side round pays a finished round ('stop') and touches nothing else:
        no stars, no doneMap, no lap — rank still comes from the road itself */
     if (q2.side != null) { q2.pct = pct; q2.pass = pct >= 0.5;
-      if (q2.pass) { addCoins(12); (mwP(c).lm = mwP(c).lm || {})[q2.side] = mwDay(); try { sfx('win'); } catch (e) {} save(); }
+      if (q2.pass) { q2.lmPaid = addCoins('stop'); (mwP(c).lm = mwP(c).lm || {})[q2.side] = mwDay(); try { sfx('win'); } catch (e) {} save(); }
       return; }
     q2.pct = pct; q2.pass = pct >= gate();
     /* the best full-quiz score sticks even on a fail — it feeds the quiz stars;
        a revise round is missed-items-only, so its score proves nothing */
     if (!state.trailChk && !q2.revising) { try { const u = unit(state.trailUnit);
       const r = stRec(c, u, lapOf(c)); r.q = Math.max(r.q || 0, Math.round(pct * 100)); save(); } catch (e) {} }
-    if (q2.pass) { addCoins(15);
-      /* today's bonus bloom: passing the bloomed stop pays double honey */
-      try { if (state.trailUnit && state.trailUnit === state.mwBloomU) { addCoins(15); q2.bloom = true; } } catch (e) {}
+    if (q2.pass) { q2.paid = state.trailChk ? 0 : payStop(c, state.trailUnit);
+      /* today's bloom marks a stop on the map; it no longer doubles the wage — a flower the
+         date picked is luck, and the standard pays only for learning */
+      try { if (state.trailUnit && state.trailUnit === state.mwBloomU) { q2.bloom = true; } } catch (e) {}
       try { sfx('win'); burstConfetti(60); } catch (e) {}
       if (state.trailChk) chkMap(c)[lapOf(c) + ':' + state.trailChk] = Math.round(pct * 100);
       else { const u = unit(state.trailUnit); (doneMap(c)[u.id] = doneMap(c)[u.id] || {})[lapOf(c)] = Math.round(pct * 100);
@@ -641,9 +666,9 @@
             const other = ns[pi === MW.pair[0] ? MW.pair[1] : MW.pair[0]];
             if (!p.fk) p.fk = pi === MW.pair[0] ? 'hi' : 'lo';
             if (other && passedNode(c, other.n) && !p.fkPaid) { p.fkPaid = 1;
-              if (p.fk === 'hi') { addCoins(25); q2.chest = true; } } } } } catch (e) {} }
+              if (p.fk === 'hi') { q2.chest = true; }   /* the dared road's chest is a moment, not a wage */ } } } } catch (e) {} }
       // lap complete?
-      const s = seq(c); if (s.every(n => passedNode(c, n))) { if (course() === 'exp') tr(c).elap = Math.min(3, tr(c).elap + 1); else tr(c).lap = Math.min(3, tr(c).lap + 1); q2.lapUp = true; try { burstConfetti(140); } catch (e) {} }
+      const s = seq(c); if (s.every(n => passedNode(c, n))) { if (course() === 'exp') tr(c).elap = Math.min(3, tr(c).elap + 1); else tr(c).lap = Math.min(3, tr(c).lap + 1); q2.lapUp = true; q2.lapPaid = addCoins('mastery'); try { burstConfetti(140); } catch (e) {} }   /* a whole tier walked is the standard's mastery event */
       save(); }
   }
   app2.tqRevise = () => { const q2 = state.tq; if (!q2) return;
@@ -818,7 +843,7 @@
           <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,#37415B,#1F2A44);color:#fff;flex-shrink:0">${iconSVG('target', 26)}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Five expert expeditions</span>
           <span style="display:block;font-size:13px;color:var(--muted);margin-top:3px">The hardest chapters in the library — 90% gates, no mercy, national-level words. Unlocks with the Advanced Pack.</span></span>
-          <span style="flex-shrink:0;padding:10px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap">Unlock · $${price}/yr →</span></button>`;
+          <span style="flex-shrink:0;padding:10px 17px;border-radius:11px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;white-space:nowrap">Ask a grown-up →</span></button>`;
     return `<div style="${RISE()}max-width:660px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
@@ -916,7 +941,7 @@
       return `<div style="${RISE()}max-width:420px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:26px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <span style="width:84px;height:84px;display:inline-block"><img src="app-art/${h.img}.svg" alt="" style="width:100%;height:100%;object-fit:contain"></span>
-          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(h.name) + ' is delighted!' + (q2.heroPaid ? ' · +5 🪙' : '') : 'Almost — try again!'}</h2>
+          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(h.name) + ' is delighted!' + (q2.heroPaid ? ' · +' + q2.heroPaid + ' 🪙' : '') : 'Almost — try again!'}</h2>
           <p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.pass ? (q2.heroPaid ? 'First win of the day.' : 'Already thanked you today — but always happy to play.') : 'The word got away. The ' + esc(h.name.replace(/^the /, '')) + ' will wait.'}</p>
           <div style="display:flex;gap:9px;justify-content:center">
           ${!q2.pass ? `<button data-act="mwHero" data-arg="${q2.hero}" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">Once more!</button>` : ''}
@@ -929,7 +954,7 @@
       return `<div style="${RISE()}max-width:420px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:26px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <span style="width:64px;height:70px;display:inline-block">${lmArt(lm)}</span>
-          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(lm.name) + ' says thanks · +12 🪙' : 'The words wriggled away'}</h2>
+          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(lm.name) + ' says thanks' + (q2.lmPaid ? ' · +' + q2.lmPaid + ' 🪙' : '') : 'The words wriggled away'}</h2>
           <p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.pass ? 'Come back tomorrow — there will be more.' : 'No harm done (' + pct + '%). The road is right there.'}</p>
           <button data-act="trailBack" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">Back to the road →</button>
         </div></div>`;
@@ -940,7 +965,7 @@
         <div style="background:var(--bg2);border-radius:20px;padding:28px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <div style="width:92px;height:92px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(${q2.pass ? 'var(--good)' : 'var(--bad)'} ${pct}%,var(--surface2) 0)"><div style="width:72px;height:72px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:21px">${pct}%</div></div>
           ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">TIER ${lapOf(c)} UNLOCKED</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole route returns — tougher words, same ideas. That is how it sticks.</p>`
-          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared · +15 🪙${q2.bloom ? ' · 🌸 bloom ×2 +15' : ''}${q2.chest ? ' · 🎁 the dared road +25' : ''}</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.chest ? 'You took the dark mushroom knoll first — the chest at the reunion is yours.' : q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
+          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared${q2.paid ? ' · +' + q2.paid + ' 🪙' : ''}${q2.bloom ? ' · 🌸 the bloom stop' : ''}${q2.chest ? ' · 🎁 the dared road' : ''}</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.chest ? 'You took the dark mushroom knoll first — the chest at the reunion is yours.' : q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
           : `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">${pct}% — so close</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">You need ${Math.round(gate() * 100)}%. Win back the ${q2.missed.length} you missed, then take it again.</p>`}
           <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
             ${!q2.pass && q2.missed.length ? `<button data-act="tqRevise" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">⚑ Revise the missed ones</button>` : ''}
@@ -1254,7 +1279,7 @@
       if (q.me >= 2 || q.riv >= 2 || q.i >= q.words.length) {
         const won = q.me > q.riv; state.uq = null;
         const f = uP(c).finds[key] = uP(c).finds[key] || {}; f.duel = 1; uP(c).duel[key] = won ? 1 : -1; save();
-        if (won) { addCoins(25); try { sfx('win'); burstConfetti(120); } catch (e) {} flash('🏆 ' + q.rival + ' bows — the duel is yours! +25 🪙'); }
+        if (won) { const p2 = addCoins('contest'); try { sfx('win'); burstConfetti(120); } catch (e) {} flash('🏆 ' + q.rival + ' bows — the duel is yours!' + (p2 ? ' +' + p2 + ' 🪙' : '')); }
         else flash('🎭 ' + q.rival + ' wins this one — champions come back.');
         uCheckEmblem(c, key);
       } else setTimeout(() => { try { state.uq && say(state.uq.words[state.uq.i].w); } catch (e) {} }, 400);
@@ -1267,10 +1292,10 @@
         state.uq = null; const f = uP(c).finds[key] = uP(c).finds[key] || {}; f.gate = 1;
         const ai = uAiOf(key);
         if (ai >= 0 && ai < ULTRA_PINS.length - 1) { uP(c).gates[ai + 1] = 1; flash('⛩️ The Hidden Pass opens — ' + ULTRA_PINS[ai + 1][0] + ' is yours to enter!'); }
-        else if (ai === ULTRA_PINS.length - 1) { addCoins(40); flash('👑 The last gate holds a crown relic — +40 coins!'); }
+        else if (ai === ULTRA_PINS.length - 1) { const p2 = addCoins('stop'); flash('👑 The last gate holds a crown relic!' + (p2 ? ' +' + p2 + ' 🪙' : '')); }
         else { /* the teaching road keeps its order — here the gate is the CARTOGRAPHER'S */
-          addCoins(20);
-          flash('🗺️ The Cartographer\'s Gate swings open — +20 coins!'); }
+          const p2 = addCoins('stop');   /* a three-word chain spelled clean is a round finished */
+          flash('🗺️ The Cartographer\'s Gate swings open!' + (p2 ? ' +' + p2 + ' 🪙' : '')); }
         try { sfx('win'); burstConfetti(140); } catch (e) {} save(); uCheckEmblem(c, key);
       } else setTimeout(() => { try { state.uq && say(state.uq.words[state.uq.i].w); } catch (e) {} }, 400);
       render(); return;
@@ -1286,7 +1311,7 @@
     render(); setTimeout(() => { try { state.uq && say(state.uq.words[0].w); } catch (e) {} }, 400); };
   app2.uWisp = () => { const key = uKey(); const c = active();
     const f = uP(c).finds[key] = uP(c).finds[key] || {}; if (f.wisp) return;
-    f.wisp = 1; addCoins(8); save(); try { burstConfetti(50); } catch (e) {} flash('💫 A word-wisp — +8 coins!'); uCheckEmblem(c, key); render(); };
+    f.wisp = 1; save(); try { burstConfetti(50); } catch (e) {} flash('💫 A word-wisp — it whispers a word and drifts off.');   /* a tap is not a word spelled — no coin */ uCheckEmblem(c, key); render(); };
   /* the secrets layer: NO fog — the painting stays bright (that is a play-tested
      rule, see the block comment above). The three seeded secrets sit visibly on
      the board as tappable surprise markers; a claimed one leaves either nothing
@@ -1346,11 +1371,11 @@
         ? `<span class="mw-lm-halo"></span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`
         : `<span class="mw-lm-a">${lmArt(lm)}</span><span class="mw-lm-n">${esc(lm.name)}${done2 ? ' ✓' : ''}</span>`;
       return `<button class="mw-lm${lm.anch ? ' anch' : ''}${done2 ? ' done' : ''}${i === glowLm && !done2 ? ' glow' : ''}" data-act="mwLmk" data-arg="${i}"
-        style="left:${lm.x}%;top:${lm.y}%" title="${escA(lm.name + (done2 ? ' — visited today' : ' — a side round of words, +12 honey'))}">
+        style="left:${lm.x}%;top:${lm.y}%" title="${escA(lm.name + (done2 ? ' — visited today' : ' — a side round of words'))}">
         ${body2}</button>`; }).join('');
     const wd = mwWander(c, edge), wdr = LV.wander || MW.wander;
     if (!wd.done) H += `<button class="mw-wander" data-act="mwWander" style="left:${wd.x.toFixed(1)}%;top:${wd.y.toFixed(1)}%"
-      title="${escA(wdr.name + ' has a word for you — +8 honey')}">${wdr.g}<span class="mw-lm-n">${esc(livShort(wdr.name))}</span></button>`;
+      title="${escA(wdr.name + ' has a word for you')}">${wdr.g}<span class="mw-lm-n">${esc(livShort(wdr.name))}</span></button>`;
     if (edge < 99) { /* the sign teases what the bend hides: the rest of this
       country if most of it is still unseen, else the next one */
       const remaining = LV.legEdge[rv] - edge;
@@ -1563,7 +1588,7 @@
             <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('lock', 24)}</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">Six expert expeditions</span>
             <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">54 stops at national level, each on its own map, gated at 90%. Unlocks with the Advanced Pack.</span>
-            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Unlock &middot; $${price}/yr &rarr;</span></span></button>`}
+            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Ask a grown-up &rarr;</span></span></button>`}
       </div>
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">Ultra Champions</span>
@@ -1575,7 +1600,7 @@
             <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('crown', 24)}</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">The champions' journey</span>
             <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">Every word in the library, hardest first, in day-sized blocks. The end of the road.</span>
-            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Unlock &middot; $${price}/yr &rarr;</span></span></button>`}
+            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">Ask a grown-up &rarr;</span></span></button>`}
       </div>
       <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>
     </div>`;
@@ -1983,7 +2008,7 @@
     } catch (_) {} }, 350);
     return true; }
   /* ---- the daily seed's gifts ---- */
-  function mwBloomIdx(c, pts, nodes, edge) { // today's 2x-honey stop, always in earned country
+  function mwBloomIdx(c, pts, nodes, edge) { // today's bloom stop (a flower, no longer a double wage), always in earned country
     const open = pts.map((p, i) => i).filter(i => pts[i].x <= edge && !passedNode(c, nodes[i].n));
     if (!open.length) return -1;
     return open[Math.floor(mwSeed(c, 'bloom') * open.length) % open.length]; }
@@ -2007,39 +2032,39 @@
     needMap(() => { try {
       const ws = livWords(c, 8); const w = ws[Math.floor(mwSeed(c, 'ww') * ws.length) % ws.length];
       if (w) say(w.w);
-      p.wd = mwDay(); addCoins(8); save();
+      p.wd = mwDay(); save();   /* a word heard is not a word spelled — no coin */
       const wn = lvCfg().wander || MW.wander;
-      flash(wn.g + ' ' + wn.name + ': “' + (w ? w.w + '! A fine word. ' : '') + 'For your kindness — 8 honey.”'); render();
+      flash(wn.g + ' ' + wn.name + ': “' + (w ? w.w + '! A fine word. ' : '') + 'Thank you for listening.”'); render();
     } catch (e) {} }); };
   /* what a poke SHEDS in each country, and what its daily prize is called —
      a petal shower in the meadow, a shower of sparks in the junkyard. Poking
      is the one thing a child can do on the board with no words attached, so
      it has to feel native to the place. */
   const POKE_SKIN = {
-    meadow:   { g: ['🌸', '✨'], win: '🌸 A petal shower! +2 honey' },
-    library:  { g: ['📄', '✨'], win: '📄 A loose page, and a coin pressed in it! +2 honey' },
-    forum:    { g: ['🍃', '✨'], win: '🪙 A coin under the flagstones! +2 honey' },
-    storm:    { g: ['💧', '⚡'], win: '⚡ The charge earths through you! +2 honey' },
-    roots:    { g: ['🍄', '✨'], win: '🌱 A seed purse in the moss! +2 honey' },
-    strait:   { g: ['💧', '🐚'], win: '🐚 A shell with something in it! +2 honey' },
-    junkyard: { g: ['⚙️', '✨'], win: '⚙️ A shower of sparks — and a bolt of gold! +2 honey' },
-    sprints:  { g: ['🎉', '✨'], win: '🎉 The crowd throws you something! +2 honey' },
-    stage:    { g: ['⭐', '✨'], win: '🌟 A coin lands at your feet! +2 honey' },
-    proving:  { g: ['🔥', '✨'], win: '🔥 A token from the ashes! +2 honey' },
-    greysea:  { g: ['🌫️', '💧'], win: '🔔 Something chimes in the fog! +2 honey' },
-    liars:    { g: ['❓', '✨'], win: '🪙 One honest coin in all this! +2 honey' },
-    grandtrunk: { g: ['🍃', '✨'], win: '🪙 A traveller dropped this! +2 honey' },
-    farflung: { g: ['🐚', '💧'], win: '🪙 Washed up from a long way off! +2 honey' },
-    factory:  { g: ['⚙️', '✨'], win: '⚙️ A tile falls off the press — gold! +2 honey' },
-    uproving: { g: ['🔥', '✨'], win: '🔥 A relic in the cinders! +2 honey' },
-    ulibrary: { g: ['📄', '✨'], win: '📄 A page nobody has read. +2 honey' },
-    ucrucible: { g: ['✨', '🔥'], win: '🥇 A bead of gold from the pour! +2 honey' },
-    uobservatory: { g: ['⭐', '✨'], win: '🔭 A star nobody had charted! +2 honey' },
-    uchampionship: { g: ['🎊', '✨'], win: '🏅 A medal ribbon, dropped. +2 honey' },
+    meadow:   { g: ['🌸', '✨'], win: '🌸 A petal shower!' },
+    library:  { g: ['📄', '✨'], win: '📄 A loose page, and a coin pressed in it!' },
+    forum:    { g: ['🍃', '✨'], win: '🪙 A coin under the flagstones!' },
+    storm:    { g: ['💧', '⚡'], win: '⚡ The charge earths through you!' },
+    roots:    { g: ['🍄', '✨'], win: '🌱 A seed purse in the moss!' },
+    strait:   { g: ['💧', '🐚'], win: '🐚 A shell with something in it!' },
+    junkyard: { g: ['⚙️', '✨'], win: '⚙️ A shower of sparks — and a bolt of gold!' },
+    sprints:  { g: ['🎉', '✨'], win: '🎉 The crowd throws you something!' },
+    stage:    { g: ['⭐', '✨'], win: '🌟 A coin lands at your feet!' },
+    proving:  { g: ['🔥', '✨'], win: '🔥 A token from the ashes!' },
+    greysea:  { g: ['🌫️', '💧'], win: '🔔 Something chimes in the fog!' },
+    liars:    { g: ['❓', '✨'], win: '🪙 One honest coin in all this!' },
+    grandtrunk: { g: ['🍃', '✨'], win: '🪙 A traveller dropped this!' },
+    farflung: { g: ['🐚', '💧'], win: '🪙 Washed up from a long way off!' },
+    factory:  { g: ['⚙️', '✨'], win: '⚙️ A tile falls off the press — gold!' },
+    uproving: { g: ['🔥', '✨'], win: '🔥 A relic in the cinders!' },
+    ulibrary: { g: ['📄', '✨'], win: '📄 A page nobody has read.' },
+    ucrucible: { g: ['✨', '🔥'], win: '🥇 A bead of gold from the pour!' },
+    uobservatory: { g: ['⭐', '✨'], win: '🔭 A star nobody had charted!' },
+    uchampionship: { g: ['🎊', '✨'], win: '🏅 A medal ribbon, dropped.' },
   };
   const pokeSkin = () => POKE_SKIN[livKey()] || POKE_SKIN.meadow;
   /* ---- pokes: tap a painted thing, it boings and sheds sparkles. One seeded
-     spot per day hides that country's little prize (+2 honey, once) — and ONE
+     spot per day used to hide a little prize (gone: a seeded prize is luck) — and ONE
      spot per country hides a TROVE that pays once ever. Pure DOM — a poke must
      feel instant, so no full render unless something actually pays. ---- */
   app2.mwPoke = i => { try { const c = active(); i = +i;
@@ -2058,18 +2083,17 @@
        is found for good. This is the only find on the board that does not come
        back tomorrow, which is exactly what makes it worth hunting. */
     const trove = Math.floor(mwFixed(c, 'trove') * pk.length) % pk.length;
-    if (i === trove && !p.tv) { p.tv = 1; addCoins(30); save();
+    if (i === trove && !p.tv) { p.tv = 1; save();   /* found once, for good — a find, never a wage: poking is luck */
       try { sfx('win'); burstConfetti(150); } catch (_) {}
-      flash('🗝️ A BURIED TROVE — nobody had touched it. +30 honey!'); render(); return; }
-    const lucky = Math.floor(mwSeed(c, 'poke') * pk.length) % pk.length;
-    if (i === lucky && p.pk !== mwDay()) { p.pk = mwDay(); addCoins(2); save();
-      try { sfx('coin'); burstConfetti(40); } catch (_) {}
-      flash(sk.win); render(); }
+      flash('🗝️ A BURIED TROVE — nobody had touched it.'); render(); return; }
+    /* the old "lucky poke" paid 2 coins on one spot the date picked. It is gone: a prize a
+       seed hands out is a random reward (FAMILY-STANDARD §1, §8). Poking still sheds the
+       country's own stuff — that was always the fun of it. */
   } catch (e) {} };
   /* a HERO answers a tap in its own voice — a stir, a burst, and then a FUN
      CHALLENGE: one word, played the hero's own way (petal-hop for the cherry,
      butterfly catch at the lollipop, comb-build under the toadstool, a bee's
-     message at the banner). +5 honey the first win each day; replays are free. */
+     message at the banner). One coin the first win each day; replays are free. */
   app2.mwHero = i => { try { const c = active(); const h = lvCfg().heroes[+i]; if (!h) return;
     const el = document.querySelector('.mw-hero[data-arg="' + i + '"]');
     if (el) { el.classList.remove('stir'); void el.offsetWidth; el.classList.add('stir');
@@ -2274,7 +2298,6 @@
      while the stops ahead of them are, open the moment the speller reaches
      them, and pay once. Deliberately NOT worth xp: rank comes from spelling,
      and a chest that moved your level would be a way to skip the work. */
-  const TRE_PAY = [20, 30, 50];
   const treMap = c => (tr(c).tre || (tr(c).tre = {}));
   const treGate = (n, i) => Math.max(1, Math.ceil(n * (i + 1) / 4));
   const treGot = (c, act, i) => !!(treMap(c)[act] || {})[i];
@@ -2299,14 +2322,14 @@
     const cell = treMap(c)[act] || (treMap(c)[act] = {});
     if (cell[i]) { flash('Already found'); return; }
     cell[i] = 1; save();
-    addCoins(TRE_PAY[i] || 20);
+    /* a cache is a find, not a wage: the stops that opened it already paid */
     try { sfx('win'); burstConfetti(40); } catch (e) {}
     /* The message names WHAT you found and where you are, not "cache found" — the whole
        point of nine painted regions is that they are different places. */
     const k = treKit(act);
-    flash(k.g + ' ' + k.n[0].toUpperCase() + k.n.slice(1) + ' — ' + k.l + ' +' + (TRE_PAY[i] || 20) + ' coins');
+    flash(k.g + ' ' + k.n[0].toUpperCase() + k.n.slice(1) + ' — ' + k.l);
     const kinds = ['game', 'lore', 'trivia'];
-    const kind = kinds[Math.floor(Math.random() * kinds.length)];
+    const kind = kinds[i % kinds.length];   /* which cache holds what is fixed, never a roll */
     const g = { kind, act, game: TRE_GAME[act] || 'honeycombRun' };
     if (kind === 'lore') { try { const a2 = actsOf(course()).find(x => x.id === act);
       g.uid = a2 && a2.units[0]; } catch (e) {}
@@ -2335,7 +2358,7 @@
     else render(); };
   app2.treTrivAns = i => { const g = state.treG; if (!g || !g.q || g.q.picked != null) return;
     g.q.picked = +i;
-    if (g.q.opts[+i] && g.q.opts[+i].ok) { addCoins(10); try { sfx('win'); burstConfetti(50); } catch (e) {} }
+    if (g.q.opts[+i] && g.q.opts[+i].ok) { addCoins('answer'); try { sfx('win'); burstConfetti(50); } catch (e) {} }
     else { try { sfx('wrong'); } catch (e) {} }
     render(); };
   function treGiftCard() {
@@ -2402,7 +2425,7 @@
   app2.villFlee = () => { state.villain = null; flash('The moth keeps its prize… this time. 🦇'); render(); };
   app2.villGo = () => { const V = state.villain; if (!V) return;
     if (sameSpelling(V.typed || '', V.w)) {
-      state.villain = null; addCoins(12);
+      state.villain = null; addCoins('answer');
       try { sfx('win'); burstConfetti(90); } catch (e) {}
       flash('✂️ ' + V.w + ' — the net bursts and the moth flees! +12 🪙');
     } else {
@@ -2481,12 +2504,11 @@
   const treKit = (actId) => TRE_KIT[String(actId||'').replace(/^map-/,'')] || { g:'✦', n:'a cache', l:'Someone left this for whoever came next.' };
   function treMark(c, actId, i, x, y, cleared, n) {
     const open = treGot(c, actId, i), ready = cleared >= treGate(n, i);
-    const pay = TRE_PAY[i] || 20;
     const kit = treKit(actId);
     if (!ready) return `<span class="atlas-tre glim" style="left:${x}%;top:${y}%" aria-hidden="true"></span>`;
     return `<button class="atlas-tre ${open ? 'got' : 'ready'}" data-act="${open ? '' : 'trailTre'}" data-arg="${escA(actId + ':' + i)}"
-      style="left:${x}%;top:${y}%" title="${open ? kit.n[0].toUpperCase() + kit.n.slice(1) + ' — found · ' + pay + ' coins' : 'You spot ' + kit.n + '. Tap to open — ' + pay + ' coins'}"
-      aria-label="${open ? 'Already found: ' + kit.n : 'Open ' + kit.n + ' for ' + pay + ' coins'}">
+      style="left:${x}%;top:${y}%" title="${open ? kit.n[0].toUpperCase() + kit.n.slice(1) + ' — found' : 'You spot ' + kit.n + '. Tap to open it'}"
+      aria-label="${open ? 'Already found: ' + kit.n : 'Open ' + kit.n}">
       <span>${open ? '⌣' : kit.g}</span></button>`;
   }
   /* If the board grew past its container, centre the stop the card is showing. */
@@ -2628,7 +2650,7 @@
       /* the child's OWN avatar walks the Living Meadow; other acts keep the guide */
       const rider = kind === 'now' && window.SB_AVATAR
         ? `<span class="atlas-rider">${SB_AVATAR(isMW ? (c.avatar || 'bizzy') : guide, 34, { dark: true })}</span>` : '';
-      const bloom = isMW && i === bloomI ? '<span class="mw-bloom" title="Today’s bonus bloom — clear this stop for DOUBLE honey">🌸</span>' : '';
+      const bloom = isMW && i === bloomI ? '<span class="mw-bloom" title="Today’s bloom stop">🌸</span>' : '';
       const spur = isMW && LV.pairPos && LV.pairPos[i] && kind !== 'done' ? `<span class="mw-spurtag">${esc(LV.pairPos[i].tag)}</span>` : '';
       return `<button class="atlas-stop${kind === 'now' ? ' now' : ''}${on ? ' on' : ''}${node.kind === 'chk' ? ' chk' : ''}"
           data-act="trailPick" data-arg="${nodes[i].i}" style="left:${p.x.toFixed(2)}%;top:${p.y.toFixed(2)}%;--pz:${on ? 5 : kind === 'now' ? 4 : 3}"

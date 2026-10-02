@@ -103,7 +103,7 @@
       set({ advView: 'sprint' });
       setTimeout(() => { const w = batch[0]; if (w) sayW(w.w); }, 300); },
     scanMark(known) { const g = state.adv; if (!g || g.mode !== 'scan') return; const w = g.words[g.i];
-      if (known) { g.know.push(w); markMastered(nkey(w.w)); addCoins(1); } else g.gaps.push(w);
+      if (known) { g.know.push(w); markMastered(nkey(w.w)); } else g.gaps.push(w);   /* "I know it" is a tap, not a right answer — no coin */
       g.i++; if (g.i >= g.words.length) { ADV._afterScan(); return; }
       render(); setTimeout(() => sayW(g.words[g.i].w), 150); },
     _afterScan() { const g = state.adv;
@@ -112,7 +112,7 @@
     drillSubmit() { const g = state.adv; if (!g || g.mode !== 'drill') return; const w = g.gaps[g.drillIdx];
       const ans = (state.typed || '').trim().toLowerCase(); if (!ans) { flash('Type the word'); return; }
       const ok = ans === nkey(w.w); const c = active(); const st = aStats(c);
-      if (ok) { markMastered(nkey(w.w)); addCoins(2); sfx('correct'); try { burstConfetti(24); } catch (e) {}
+      if (ok) { markMastered(nkey(w.w)); addCoins('answer'); sfx('correct'); try { burstConfetti(24); } catch (e) {}
         st.srs[nkey(w.w)] = Math.min(5, (st.srs[nkey(w.w)] || 0) + 1); g.right++; }
       else { sfx('wrong'); addMiss(w); st.srs[nkey(w.w)] = 1; try { logBand(w, false); } catch (e) {} }
       g.lastOk = ok; g.lastWord = w.w; state.typed = ''; render();
@@ -148,17 +148,17 @@
     mockSubmit() { const g = state.adv; if (!g || g.round === 'vocab') return; const w = g.list[g.i];
       const ans = (state.typed || '').trim().toLowerCase(); if (!ans && g.round === 'written') { flash('Type the word'); return; }
       const ok = ans === nkey(w.w); try { logBand(w, ok); } catch (e) {}
-      if (ok) { addCoins(1); sfx('correct'); g.right++; } else { sfx('wrong'); if (g.round !== 'lightning') addMiss(w); }
+      if (ok) { addCoins('answer'); sfx('correct'); g.right++; } else { sfx('wrong'); if (g.round !== 'lightning') addMiss(w); }
       if (g.round === 'written') { g.results.push({ w: w.w, ok }); state.typed = ''; g.i++;
         if (g.i >= g.list.length) { ADV.mockEnd(); return; } render(); setTimeout(() => sayW(g.list[g.i].w), 250); return; }
       if (g.round === 'lightning') { if (!ok) g.wrong++; state.typed = ''; g.i = (g.i + 1) % g.list.length; render(); setTimeout(() => sayW(g.list[g.i].w), 120); } },
     mockPickVocab(idx) { const g = state.adv; if (!g || g.round !== 'vocab' || g.picked != null) return; const q = g.qs[g.i];
-      g.picked = idx; const ok = q.choices[idx] === q.answer; if (ok) { g.right++; addCoins(1); sfx('correct'); } else sfx('wrong'); render();
+      g.picked = idx; const ok = q.choices[idx] === q.answer; if (ok) { g.right++; addCoins('answer'); sfx('correct'); } else sfx('wrong'); render();
       setTimeout(() => { const t = state.adv; if (!t) return; if (t.i + 1 < t.qs.length) { t.i++; t.picked = null; render(); } else ADV.mockEnd(); }, 1100); },
     mockEnd() { const g = state.adv; if (!g || g.done) return; g.done = true; if (g.timer) clearInterval(g.timer);
       const c = active(); const st = aStats(c); const total = g.round === 'lightning' ? (g.right + g.wrong) : (g.list ? g.list.length : g.qs.length);
       const pct = total ? Math.round(g.right / total * 100) : 0; g.pct = pct; g.total = total;
-      const bonus = 3 + g.right; addCoins(bonus); g.bonus = bonus;
+      const bonus = addCoins('contest'); g.bonus = bonus;   /* a mock completed is the standard's contest event */
       if (g.round === 'lightning' && g.right > (st.mockBest || 0)) st.mockBest = g.right;
       try { logActivity('practice', 'Mock Bee — ' + g.round, { done: total, right: g.right, coins: bonus }, []); sfx(pct >= 70 ? 'win' : 'level'); if (pct >= 70) burstConfetti(110); } catch (e) {}
       save(); render(); },
@@ -185,13 +185,13 @@
     memFlip(idx) { const g = state.adv; if (!g || g.mode !== 'mem') return; idx = +idx;
       if (g.open.length >= 2 || g.open.includes(idx) || g.matched.includes(idx)) return;
       g.open.push(idx); if (g.open.length === 2) { g.moves++; const [a, b] = g.open;
-        if (g.cards[a].id === g.cards[b].id && g.cards[a].t !== g.cards[b].t) { g.matched.push(a, b); g.open = []; addCoins(2); sfx('correct'); try { burstConfetti(20); } catch (e) {}
+        if (g.cards[a].id === g.cards[b].id && g.cards[a].t !== g.cards[b].t) { g.matched.push(a, b); g.open = []; addCoins('answer'); sfx('correct'); try { burstConfetti(20); } catch (e) {}
           if (g.matched.length >= g.cards.length) ADV._memDone(); }
         else { render(); setTimeout(() => { const t = state.adv; if (t) { t.open = []; render(); } }, 900); return; } }
       render(); },
     _memDone() { const c = active(); const st = aStats(c); g_bonus: { const g = state.adv; g.done = true;
       const score = Math.max(1, 30 - g.moves); if (score > (st.memBest || 0)) st.memBest = score;
-      addCoins(6); try { sfx('win'); burstConfetti(130); } catch (e) {} save(); render(); } },
+      try { sfx('win'); burstConfetti(130); } catch (e) {} save(); render(); } },   /* each pair paid as it matched — no finish bonus */
     dictStart() { const pool = hardPool().slice(0, 6000); const list = sample(pool, 80);
       state.adv = { mode: 'dict', list, i: 0, right: 0, timeLeft: 90, done: false };
       const g = state.adv; g.timer = setInterval(() => { const t = state.adv; if (!t || t.mode !== 'dict' || t.done) { clearInterval(g.timer); return; }
@@ -199,11 +199,11 @@
       set({ advView: 'dict' }); setTimeout(() => sayW(list[0].w), 300); },
     dictSubmit() { const g = state.adv; if (!g || g.mode !== 'dict') return; const w = g.list[g.i];
       const ans = (state.typed || '').trim().toLowerCase(); const ok = ans === nkey(w.w);
-      if (ok) { g.right++; addCoins(1); sfx('correct'); try { logBand(w, true); } catch (e) {} } else { sfx('wrong'); }
+      if (ok) { g.right++; addCoins('answer'); sfx('correct'); try { logBand(w, true); } catch (e) {} } else { sfx('wrong'); }
       state.typed = ''; g.i = (g.i + 1) % g.list.length; render(); setTimeout(() => sayW(g.list[g.i].w), 120); },
     _dictDone() { const g = state.adv; if (g.done) return; g.done = true; if (g.timer) clearInterval(g.timer);
       const c = active(); const st = aStats(c); if (g.right > (st.dictBest || 0)) st.dictBest = g.right;
-      addCoins(3 + Math.floor(g.right / 2)); try { sfx('win'); if (g.right >= 15) burstConfetti(110); logActivity('practice', 'Rapid dictation sprint', { done: g.i, right: g.right }, []); } catch (e) {} save(); render(); },
+      try { sfx('win'); if (g.right >= 15) burstConfetti(110); logActivity('practice', 'Rapid dictation sprint', { done: g.i, right: g.right }, []); } catch (e) {} save(); render(); },
     exit() { const g = state.adv; if (g && g.timer) clearInterval(g.timer); state.adv = null; ADV.back(); },
 
     /* ============ VIEWS ============ */
@@ -288,7 +288,7 @@
           <div style="width:78px;height:78px;margin:0 auto 12px;border-radius:23px;background:linear-gradient(135deg,#241B4E,#5B3FA6);display:grid;place-items:center;color:#fff;box-shadow:0 12px 30px rgba(58,42,114,.42)">${SBI('advanced', 40) || ''}</div>
           ${ready ? `<div style="display:inline-block;padding:5px 13px;border-radius:999px;background:var(--mastered-tint,#E1F4E8);color:var(--good,#1f9d57);font-weight:800;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Ready for this &mdash; ${lvl >= 12 ? 'Level ' + lvl : 'Bee Band ' + band}</div>` : ''}
           <h2 style="font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px">Advanced Mode</h2>
-          <div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--accent);margin-bottom:7px">Advanced Pack &middot; $${price}/year</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:15px;color:var(--accent);margin-bottom:7px">Advanced Pack &middot; a grown-up's decision</div>
           <p style="color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 18px">National Spelling Bee preparation. An add-on that sits on top of whichever plan you are on.</p>
         </div>
         <div style="background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 18px;text-align:left;margin-bottom:14px">
@@ -299,7 +299,7 @@
           ${progRow('trophy', 'Level 12 on the Journey', 'Level ' + lvl + ' / 12', lvl >= 12)}
           ${progRow('target', 'Bee Band 7', 'Band ' + band + ' / 7', band >= 7)}
           <div style="font-size:11.5px;color:var(--muted);font-weight:650;line-height:1.45;padding-top:9px">These are guidance, not gates. The pack works at any level &mdash; it is simply hardest-first material.</div></div>`}
-        <button data-act="advBuy" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Get the Advanced Pack &mdash; $${price}/yr</button>
+        <button data-act="advBuy" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:16px;box-shadow:var(--edge)">Ask a grown-up about the Advanced Pack</button>
         <p style="text-align:center;color:var(--muted);font-size:11.5px;font-weight:650;margin:10px 0 0;line-height:1.5">A grown-up completes the purchase. Nothing in the app changes until the pack is active.</p>
       </div>`; },
 

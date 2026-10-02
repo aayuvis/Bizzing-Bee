@@ -37,7 +37,10 @@ const root=require('path').resolve(__dirname,'..');
   const m=[...t.matchAll(/(\d[\d,]*)\s*(?:\/|of)\s*(\d[\d,]*)/g)].filter(x=>parseInt(x[2].replace(/,/g,''),10)>=40).map(x=>x[0]);
   if(m.length) hits['concepts']=[...new Set(m)];
   // collections keep their counts; everything else must not show a big total
-  const COLLECTION=/^(24|\d+)\s*\/\s*(142|80|8)$/;
+  /* the collection totals are read from the app, not typed: the medal shelf changed size when
+     streak medals retired and evidence medals arrived (FIX-BEE I4) */
+  const tot=await pg.evaluate(()=>[SB_AVATARS.list.length, badgeDefs().length, THEMES.length]).catch(()=>[142,80,8]);
+  const COLLECTION=new RegExp('^(\\d+)\\s*\\/\\s*('+tot.join('|')+')$');
   const bad={}; for(const k of Object.keys(hits)){
     const left=hits[k].filter(x=>!COLLECTION.test(x.replace(/\s+/g,''))); if(left.length) bad[k]=left; }
   await b.close();

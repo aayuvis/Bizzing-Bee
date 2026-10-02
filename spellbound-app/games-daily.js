@@ -1,8 +1,8 @@
 /* ============================================================
    Bizzing Bee — DAILY BUZZ (game #38)
    A Wordle-style daily spelling puzzle: one 5-letter word a day,
-   six tries, green/amber/grey deduction, a forgiving streak with
-   a free freeze, and a spoiler-free shareable grid. Kid-safe:
+   six tries, green/amber/grey deduction, and a spoiler-free
+   shareable grid. No run of days is counted (FIX-BEE J2). Kid-safe:
    no dictionary rejection (any 5 letters is accepted), untimed,
    no shaming. Self-contained — injects its own CSS, renders a
    full-screen overlay. Exposes window.SB_DAILY.open().
@@ -105,7 +105,7 @@
     var st = load();
     return '<div class="db-done"><h3>' + (won ? '✨ Solved it!' : 'The word was ' + answer.toUpperCase()) + '</h3>'
       + '<div class="db-stats">'
-      + '<div class="db-stat"><b>' + (st.streak || 0) + '</b><span>streak</span></div>'
+      + '<div class="db-stat"><b>' + (st.wins || 0) + '</b><span>solved</span></div>'
       + '<div class="db-stat"><b>' + (st.played || 0) + '</b><span>played</span></div>'
       + '<div class="db-stat"><b>' + Math.round(((st.wins || 0) / Math.max(1, st.played || 0)) * 100) + '%</b><span>won</span></div>'
       + '</div>'
@@ -129,15 +129,12 @@
   function finish() {
     var st = load(); var last = st.lastWin;
     if (won) {
-      // forgiving streak: increment if last win was yesterday or today, else reset to 1 (one free skip via freeze)
-      var y = new Date(); y.setDate(y.getDate() - 1);
-      var yk = y.getFullYear() + '-' + (y.getMonth() + 1) + '-' + y.getDate();
-      st.streak = (last === yk || last === todayKey()) ? (st.streak || 0) + (last === todayKey() ? 0 : 1) : 1;
+      // no streak: solved days are counted, never a run of them (FIX-BEE J2)
       st.lastWin = todayKey(); st.wins = (st.wins || 0) + 1;
     }
     st.played = (st.played || 0) + (st.playedDay === todayKey() ? 0 : 1); st.playedDay = todayKey();
     save(st);
-    try { if (won && typeof addCoins === 'function') addCoins(30 + (6 - guesses.length) * 8); } catch (e) {}
+    try { if (won && typeof addCoins === 'function') addCoins('answer'); } catch (e) {}   /* one word solved is one right answer */
     try { if (typeof logActivity === 'function') logActivity('daily', { won: won, tries: guesses.length }); } catch (e) {}
   }
   function shareGrid() {

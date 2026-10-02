@@ -33,7 +33,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     // ---- the wisp is a tap-gift ----
     const coins0 = c.coins;
     app.uWisp(); await W(150);
-    out.wispGift = c.coins === coins0 + 8 && (SB_EXPED.prog().finds.u0 || {}).wisp === 1;
+    /* FIX-BEE: coins are Bizzing coins now, paid only as the family standard's events — a right answer 1, a finished round 5, a contest 10 (tests/wallet-coins.cjs). */ out.wispGift = c.coins === coins0 && (SB_EXPED.prog().finds.u0 || {}).wisp === 1;   // a tap is not a word: no coin
     app.ultraAct(0); await W(200);
     out.wispGone = !document.querySelector('[data-act="uWisp"]');
 
@@ -43,7 +43,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     const cW = c.coins;
     app.uqType(state.uq.words[0].w); app.uqGo(); await W(120);
     app.uqType(state.uq.words[1].w); app.uqGo(); await W(120);
-    out.duelWon = !state.uq && c.coins === cW + 25 && (SB_EXPED.prog().finds.u0 || {}).duel === 1;
+    out.duelWon = !state.uq && c.coins === cW + 10 && (SB_EXPED.prog().finds.u0 || {}).duel === 1;   // a duel won is a contest: 10
 
     // ---- the Hidden Pass: 3-word chain, next landmark opens EARLY ----
     app.uGate(); await W(150);
@@ -83,7 +83,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     app.uGate(); await W(150);
     const cG = c.coins;
     for (let i = 0; i < 3; i++) { app.uqType(state.uq.words[i].w); app.uqGo(); await W(100); }
-    out.cartographer = !state.uq && c.coins === cG + 20 && (SB_EXPED.prog().finds.meadow || {}).gate === 1;
+    out.cartographer = !state.uq && c.coins === cG + 5 && (SB_EXPED.prog().finds.meadow || {}).gate === 1;   // a 3-word chain is a finished round: 5
     Math.random = R;
     return out;
   });
@@ -92,10 +92,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.allPins, 'all four stops are visible on the road');
   ok(r.secretsVisible, 'the three seeded secrets sit visibly on the board');
   ok(r.secretsLine, 'the header counts the secrets still unfound (0/3)');
-  ok(r.wispGift, 'tapping the word-wisp is a surprise gift (+8)');
+  ok(r.wispGift, 'tapping the word-wisp is a moment, not a wage — it pays nothing (FIX-BEE: no coins for luck)');
   ok(r.wispGone, 'a claimed wisp leaves the board');
   ok(r.duelCard, 'the rival waits with a named challenge');
-  ok(r.duelWon, 'winning the best-of-3 duel pays 25 coins');
+  ok(r.duelWon, 'winning the best-of-3 duel pays a contest\'s 10 coins');
   ok(r.gateCard, 'the Hidden Pass demands a 3-word chain');
   ok(r.chainResets, 'a miss breaks the chain back to the start');
   ok(r.passOpens && r.skippedIn, 'the finished chain opens the NEXT landmark early — real non-linearity');
@@ -107,7 +107,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.mappedClean, 'a fully-mapped board carries no leftover markers');
   ok(r.honeyBright, 'the TEACHING road boards are bright too');
   ok(r.honeySecrets, 'and carry the same three visible secrets');
-  ok(r.cartographer, "there the gate is the Cartographer's: the chain pays +20");
+  ok(r.cartographer, "there the gate is the Cartographer's: the chain pays a finished round's +5");
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);

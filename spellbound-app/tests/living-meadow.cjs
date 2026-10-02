@@ -190,7 +190,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       stars: !((c2.trail || {}).st || {}).u1q };
   });
   ok(lm.open && lm.pure, 'the Beehive landmark opens a KIT-ONLY side round');
-  ok(lm.over && lm.paid >= 12, 'clearing it pays the honey trickle (+' + lm.paid + ')');
+  /* FIX-BEE: a side round passed is a finished round — the standard's 5, not 12 (tests/wallet-coins.cjs) */
+  ok(lm.over && lm.paid === 5, 'clearing it pays a finished round (+' + lm.paid + ')');
   ok(lm.marked, 'and the landmark remembers today\'s visit (once a day)');
 
   // ---- the wanderer: one tap, one word, a little honey ----
@@ -203,7 +204,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     return { there: true, paid: (state.children[0].coins || 0) - coins0,
       gone: !document.querySelector('.mw-wander') };
   });
-  ok(!wd.there || (wd.paid === 8 && wd.gone), 'Barnaby pays his 8 honey and wanders off until tomorrow');
+  ok(!wd.there || (wd.paid === 0 && wd.gone), 'Barnaby says his word and wanders off until tomorrow — a word heard is not a word spelled, so no coin');
 
   // ---- the fork pair: both spurs open together; the dared one pays a chest ----
   const fork = await pg.evaluate(async () => {
@@ -316,7 +317,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       over: state.tq.over, paid: (state.children[0].coins || 0) - coins0 };
   });
   ok(hq.open && hq.one && hq.line, 'the tap hands over to the hero\'s CHALLENGE — one word, the hero\'s way, with its own story line');
-  ok(hq.over && hq.paid === 5, 'winning it pays +5 honey, first time today (' + hq.paid + ')');
+  ok(hq.over && hq.paid === 1, 'winning it pays one coin — one word right — first time today (' + hq.paid + ')');
   await pg.evaluate(async () => { app.trailBack(); await new Promise(r => setTimeout(r, 300)); });
   ['mw-hero-tree', 'mw-hero-lolly', 'mw-hero-shroom', 'mw-hero-flag'].forEach(f =>
     ok(fs.existsSync(SRC + '/app-art/' + f + '.svg'), f + '.svg ships'));

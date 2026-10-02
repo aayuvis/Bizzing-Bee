@@ -124,7 +124,8 @@ const ULTRA = ['uproving', 'ulibrary', 'ucrucible', 'uobservatory', 'uchampionsh
   });
   ok(side.open && side.jk === 'ulibrary' && side.ult === 1,
     'the black library\'s landmark round remembers WHICH road it was taken on (jk=' + side.jk + ')');
-  ok(side.paid >= 12, 'clearing it pays the champion\'s honey trickle (+' + side.paid + ')');
+  /* FIX-BEE: a side round passed is a finished round — the standard's 5 (tests/wallet-coins.cjs) */
+  ok(side.paid === 5, 'clearing it pays a finished round (+' + side.paid + ')');
   ok(side.ulibMarked && side.meadowClean,
     'and it is banked to the black library\'s own bucket — the meadow\'s is untouched');
 
