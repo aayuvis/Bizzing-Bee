@@ -82,7 +82,9 @@ const CHILD = { name: 'Ravi', avatar: 'bee', coins: 240, pow: {}, age: 11,
     ok(coins.hive <= 1, W + 'px: My Hive shows it once too (' + coins.hive + ')');
 
     // ---- the bug tab keeps out of the reading band ----
-    const bug = await pg.evaluate(() => {
+    /* FIX-BEE v2: the bug tab exists only in testing mode — a child never sees it (trust-v2) — so
+       switch testing on to measure where it sits for the grown-up who uses it. */
+    const bug = await pg.evaluate(async () => { state.devUnlock = true; render(); await new Promise(r => setTimeout(r, 200));
       const t = document.querySelector('.sb-bug-tab');
       if (!t) return null;
       const r = t.getBoundingClientRect();

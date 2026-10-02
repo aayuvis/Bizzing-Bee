@@ -108,7 +108,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const gr = await pg.evaluate(async () => { const W = () => new Promise(r => setTimeout(r, 80)); const c = active();
     c.missed = [{ w: 'rhythm', n: 1 }]; c.trapsBeaten = { necessary: 1 };
     const seen = []; const txt = () => (document.querySelector('.sb-home-greet') || {}).textContent || '';
-    for (let i = 0; i < 6; i++) { app.setNav('games'); await W(); app.setNav('home'); await W(); const a = txt(); render(); await W(); seen.push({ a, b: txt(), k: c.lastGreet }); }
+    for (let i = 0; i < 6; i++) { app.setNav('games'); await W(); app.setNav('home'); await W(); const a = txt(); render(); await W(); seen.push({ a, b: txt(), k: (JSON.parse(SB_STORE.get('greet') || '{}')[c.name] || [])[1] }); }
     return { seen, leak: seen.some(x => /rhythm/i.test(x.a)) }; });
   ok(gr.seen.every(x => x.a && x.a === x.b), 'the hello holds still while the child is on Home (a re-render keeps it)');
   ok(gr.seen.every((x, i) => !i || x.k !== gr.seen[i - 1].k), 'it is never the same hello two visits running: ' + gr.seen.map(x => x.k).join(' → '));
@@ -155,6 +155,22 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(t9.n >= 2 && t9.kinds.includes('Region') && t9.kinds.includes('Stage'), `a region walked end to end and a Stage mastered each give a certificate (${t9.kinds.join(', ')})`);
   ok(/\.png$/.test(t9.made || ''), 'the certificate is made on the device as a PNG (' + t9.made + ')');
   ok(t9.inParent && !t9.onKid, 'it is saved from the grown-ups\' area only — never from a child\'s screen ' + JSON.stringify(t9.kids) + ' ' + t9.inParent);
+
+  /* ---- 13. (E6) graduated hints on the item in front of the child, never the word ---- */
+  const e6 = await pg.evaluate(async () => { const W = () => new Promise(r => setTimeout(r, 80)); app.playGame('buzz'); await W();
+    const g = state.game; if (!g || !g.list) return null; g.list[g.i] = Object.assign({}, g.list[g.i], { w: 'rhythm', d: 'a strong regular repeated pattern of movement or sound', p: 'RITH-uhm', s: 'She tapped out the rhythm on the table.' }); render(); await W();
+    const steps = []; for (let i = 0; i < 4; i++) { app.gInfoToggle(); await W(); const t = document.querySelector('.sb-content').textContent; steps.push({ lv: state.gInfo, letters: /6 letters/.test(t), beats: /2 beats/.test(t), first: /Starts with — “R”/.test(t), leak: /rhythm/i.test(t) }); }
+    app.exitGame(); return steps; });
+  ok(e6 && e6[0].lv === 1 && !e6[0].letters && e6[1].letters && e6[1].beats && !e6[1].first && e6[2].first && e6[3].lv === 0,
+    'hints come in steps: the meaning, then letters and beats, then the first letter — and a fourth tap hides them');
+  ok(e6 && e6.every(x => !x.leak), 'no hint step ever prints the word');
+
+  /* ---- 14. (G11) Bizzillionaire asks word questions, and there are enough of them at every rung ---- */
+  { const draws = (app3.match(/BIZZ_WORD_TH\[x\.th\]/g) || []).length;
+    const C = {}; const vmx = require('vm'); const cx = { window: {} }; cx.window.SB_TRIVIA = { _add: (lv, a) => a.forEach(q => { if (q.ty === 'mc' && /^(words|eponyms|langs)$/.test(q.th)) C[lv] = (C[lv] || 0) + 1; }) }; cx.SB_TRIVIA = cx.window.SB_TRIVIA; vmx.createContext(cx);
+    for (let i = 1; i <= 5; i++) vmx.runInContext(fs.readFileSync(path.join(SRC, 'trivia-q' + i + '.js'), 'utf8'), cx);
+    ok(draws === 3 && /const BIZZ_WORD_TH=\{ words:1, eponyms:1, langs:1 \}/.test(app3), 'every Bizzillionaire draw is filtered to word questions (meanings, roots, eponyms)');
+    ok([1, 2, 3, 4, 5].every(l => (C[l] || 0) >= 150), 'and every level holds 150+ of them: ' + [1, 2, 3, 4, 5].map(l => C[l]).join(' · ')); }
 
   /* ---- 6. Spell Scene's result ---- */
   const saga = fs.readFileSync(path.join(SRC, 'saga2.js'), 'utf8');

@@ -70,3 +70,5 @@
    The button is the one place it is used as small text on a card. */
 [data-act="signOut"] { color: #b3392f !important; border-color: #b3392f !important; }
 [data-mode="dusk"] [data-act="signOut"] { color: #ffb3ad !important; border-color: #ffb3ad !important; }
+.sb-sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+html[data-mode="dusk"] .bz-btn:not(.buy){color:var(--text)}

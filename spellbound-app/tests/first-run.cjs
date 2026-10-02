@@ -108,10 +108,10 @@ async function walkSetup(pg, stopAtLast) {
   /* ---- 2. a returning child the next day gets the welcome back ---- */
   const yday = ymd(new Date(Date.now() - 864e5));
   const ctx2 = await b.newContext({ viewport: { width: 1000, height: 800 } });
-  await ctx2.addInitScript(d => { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', children: [{ name: 'T', fr: d }] })); localStorage.removeItem('sb_splash'); }, yday);
+  await ctx2.addInitScript(d => { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', children: [{ name: 'T', fr: d }] })); localStorage.setItem('sb_splash', '1'); }, yday);   /* the splash is opt-in since FIX-BEE v2 (Settings → Look) */
   const pg2 = await ctx2.newPage(); pg2.on('pageerror', e => errs.push(e.message));
   await pg2.goto(URL); await pg2.waitForTimeout(600);
-  ok(await pg2.evaluate(() => !!document.querySelector('#sb-splash')), 'set up yesterday: the opening splash plays for the returning child');
+  ok(await pg2.evaluate(() => !!document.querySelector('#sb-splash')), 'set up yesterday, with the splash switched on: it plays for the returning child');
   await ctx2.close();
 
   /* ---- 3. "Find my level" from setup starts asking words at once ---- */

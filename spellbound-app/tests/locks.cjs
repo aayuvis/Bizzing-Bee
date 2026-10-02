@@ -16,6 +16,9 @@
      • any lock — chip or padlock icon — whose words do not name how to open it;
      • learning and plan locks that look the same;
      • a lock that, tapped, goes nowhere (every one must lead somewhere a child can act).
+   FIX-BEE v2 (owner decision, family standard §1.1): avatars and worlds are now SOLD for coins, at
+   a printed price, in the Shop — those prices are not locks. A Shop card that cannot be bought yet
+   (its world shut, its milestone not met) is a lock and must say which.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/locks.cjs                           */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -23,7 +26,7 @@ let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const APP = path.resolve(__dirname, '..');
 const MONEY = /\$\s?\d|\d\s*\/\s*(yr|year|mo|month)\b|per (year|month)|[₹£€]\s?\d/i;
-const OPENER = /reach level|opens? |finish|master|spell|grown-up|comes with|advanced pack|clear the earlier|earlier stops|the plan|ultra/i;
+const OPENER = /reach level|opens? |finish|master|spell|grown-up|comes with|advanced pack|clear the earlier|earlier stops|the plan|family plan|ultra|first: /i;
 
 const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234',
   children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'bizzy', theme: 'spellbound', coins: 900,
@@ -44,6 +47,10 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     const MRX = new RegExp(MONEY, 'i'), ORX = new RegExp(OPENER, 'i');
     const lockSvg = (() => { const d = document.createElement('div'); d.innerHTML = iconSVG('lock', 12); return d.querySelector('svg').innerHTML; })();
     const locks = [...document.querySelectorAll('[data-lock]')];
+    /* FIX-BEE v2: a Shop card that cannot be bought yet is a lock too — its world is shut, or its
+       learning milestone is not met — and it must say which. (A card with a coin price is a thing
+       for sale, not a lock: free children buy avatars with coins, at the printed price.) */
+    const shopLocks = [...document.querySelectorAll('.bz-av[data-state="world"], .bz-av[data-state="milestone"]')];
     document.querySelectorAll('svg').forEach(s => { if (s.innerHTML === lockSvg && !s.closest('[data-lock]')) locks.push(s); });
     const out = { n: 0, money: [], mute: [], coin: [], kinds: new Set() };
     for (const l of locks) { const host = l.closest('button,a,[data-act],.sb-card,.sb-cover-card') || l.parentElement;
@@ -53,6 +60,8 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
       if (MRX.test(t)) out.money.push(t.slice(0, 70));
       if (/🪙|Unlock ·/.test(t) || host.querySelector('[class*="coin"]')) out.coin.push(t.slice(0, 70));
       if (!ORX.test(t)) out.mute.push(t.slice(0, 70)); }
+    for (const f of shopLocks) { if (!f.offsetParent) continue; out.n++; const t = ((f.querySelector('.bz-av-say') || {}).textContent || '').trim();
+      if (MRX.test(t)) out.money.push(t.slice(0, 70)); if (!ORX.test(t)) out.mute.push(f.getAttribute('data-av') + ': ' + t.slice(0, 60)); }
     const page = document.body.innerText; const pm = page.match(MRX);
     out.pageMoney = pm ? page.slice(Math.max(0, pm.index - 40), pm.index + 20).replace(/\s+/g, ' ') : null;
     out.kinds = [...out.kinds]; return out; }, { MONEY: MONEY.source, OPENER: OPENER.source });
@@ -68,8 +77,10 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     ['concept shelf', () => { app.setNav('concepts'); const e = document.querySelector('[data-act="openConceptChapter"]'); if (e) e.click(); }],
     ['library', () => app.setNav('explore')],
     ['arcade', () => app.setNav('games')],
+    ['shop avatars', () => app.openShop('avatars')],
+    ['shop worlds', () => app.openShop('worlds')],
+    ['legendary card', () => { const a = SB_AVATARS.list.find(x => SB_AVATARS.tierOf(x) === 'legendary' && !avOwned(active(), x.id)); app.showAvCard(a.id); }],
     ['hive avatars', () => { state.collTab = 'avatars'; app.openCollection(); }],
-    ['hive worlds', () => { state.collTab = 'worlds'; app.openCollection(); }],
     ['hive medals', () => { state.collTab = 'badges'; app.openCollection(); }],
     ['your level', () => app.setNav('beeband')],
     ['your bee', () => app.setNav('evolution')],
@@ -77,7 +88,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ];
   let total = 0; const money = [], mute = [], coin = [], pageMoney = [], kinds = new Set();
   for (const [name, go] of walk) {
-    await pg.evaluate(`(()=>{ state.pinDlg=null; state.showTiers=false; state.screen='app'; (${go.toString()})(); })()`);
+    await pg.evaluate(`(()=>{ document.querySelectorAll('.avc-ov').forEach(e=>e.remove()); state.pinDlg=null; state.showTiers=false; state.screen='app'; (${go.toString()})(); })()`);
     await pg.waitForTimeout(900);
     const r = await scan(); total += r.n;
     r.money.forEach(t => money.push(name + ': ' + t)); r.mute.forEach(t => mute.push(name + ': ' + t));
@@ -96,12 +107,12 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const lead = await pg.evaluate(() => { const out = {}; const c = active();
     const w = THEMES.find(t => !isThemeUnlocked(t.id)); state.toast = ''; let said = '';
     const realFlash = window.flash; try { flash = (m) => { said = m; }; } catch (e) {}
-    app.buyTheme(w.id); out.world = said; try { flash = realFlash; } catch (e) {}
+    app.buyTheme(w.id); out.world = { said, nav: state.nav, tab: state.shopTab, txt: (document.querySelector('.sb-content') || {}).innerText || '' }; try { flash = realFlash; } catch (e) {}
     const ci = (state.conceptData || []).findIndex((ch, i) => !ch.adv && !isConceptUnlocked(i));
     state.pinDlg = null; app.buyConcept(ci); out.concept = { nav: state.nav, pin: !!state.pinDlg, act: state.trailAct };
     state.pinDlg = null; app.askPlan('avatarPacks'); out.plan = { pin: !!state.pinDlg, sheet: !!document.querySelector('[data-act="closeTiers"]') };
     state.pinDlg = null; render(); return out; });
-  ok(/Level \d+/.test(lead.world), 'a locked world, tapped, says which Level opens it — "' + lead.world + '"');
+  ok(lead.world.nav === 'shop' && /240/.test(lead.world.txt) && /family plan/i.test(lead.world.txt), 'a locked world, tapped, opens the Shop\'s Worlds tab, which says how it opens: the family plan or 240 Bizzing coins (' + lead.world.nav + '/' + lead.world.tab + ')');
   ok(lead.concept.nav === 'trail' || lead.concept.pin, 'a locked chapter, tapped, goes to the Atlas stop that opens it (or to a grown-up) — nav ' + lead.concept.nav + (lead.concept.act ? ' / ' + lead.concept.act : ''));
   ok(lead.plan.pin && !lead.plan.sheet, 'a plan lock, tapped, asks for a grown-up — the plan sheet waits behind the PIN');
 

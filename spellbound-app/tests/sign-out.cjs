@@ -1,4 +1,6 @@
-/* "Sign out" — in Settings AND at the foot of the hamburger, always visible, one action.
+/* "Sign out" — one action, in Settings → Grown-ups (behind the PIN since FIX-BEE v2: signing a
+   family out is a grown-up's act, and the ☰ menu now follows the family order exactly, ending on
+   "Back to the Hive" — family standard §3).
    There used to be two controls and neither was right. app.signOut only returned to the
    landing screen, so a button labelled "Sign out" was a lie; the REAL one (SB_AUTH.signOut)
    was a chip inside the account card, invisible unless a parent happened to be signed in —
@@ -17,7 +19,7 @@ const root = require('path').resolve(__dirname, '..');
   await pg.evaluate(() => { state.children=[{name:'T',avatar:'bee',coins:900,pow:{},age:9,
     lists:{default:{xp:30}},activeList:'default',missed:[],unlockedThemes:['spellbound'],
     unlockedConcepts:{},unlockedLists:{},questPath:'journey'}];
-    state.activeIdx=0; state.screen='app'; app.setNav('settings'); });
+    state.parentPin=state.parentPin||'2468'; state.activeIdx=0; state.screen='app'; app.setNav('settings'); app.setGrownOpen(); for (const k of state.parentPin) app.pinKey(k); });
   await pg.waitForTimeout(700);
 
   const r = await pg.evaluate(() => {
@@ -43,7 +45,7 @@ const root = require('path').resolve(__dirname, '..');
     try { SB_AUTH.signUp('parent@example.com', 'pw123456', 'Parent'); } catch (e) {}
     if (!SB_AUTH.current()) { try { SB_AUTH.signIn('parent@example.com','pw123456'); } catch(e){} }
     if (!SB_AUTH.current()) return 'could not sign in';
-    state.screen='app'; app.setNav('settings');
+    state.screen='app'; app.setNav('settings'); app.setGrownOpen(); for (const k of state.parentPin) app.pinKey(k);
     await new Promise(r => setTimeout(r, 400));
     const n = document.querySelectorAll('[data-act="signOut"],[data-act="doSignOut"]').length;
     document.querySelector('[data-act="signOut"]').click();
@@ -64,18 +66,18 @@ const root = require('path').resolve(__dirname, '..');
     state.activeIdx=0; app.setNav('home'); state.drawerOpen=true; render();
     await new Promise(r => setTimeout(r, 400));
     const nav = document.querySelector('aside nav'); if (!nav) return 'no drawer';
-    const btns = [...nav.querySelectorAll('button')];
+    const btns = [...nav.querySelectorAll('button, a')];
     const last = btns[btns.length - 1];
     return { hasOut: !!nav.querySelector('[data-act="signOut"]'),
-             isLast: last && last.getAttribute('data-act') === 'signOut',
+             isLast: last && /Back to the Hive/.test(last.textContent),
              label: last ? last.textContent.trim().split('\n')[0] : null };
   });
   if (typeof drawer === 'string') errs.push('drawer: ' + drawer);
   else {
-    if (!drawer.hasOut) errs.push('no Sign out in the hamburger');
-    if (!drawer.isLast) errs.push('Sign out is not the last row of the hamburger (last is "' + drawer.label + '")');
+    if (drawer.hasOut) errs.push('Sign out is in the hamburger — it belongs behind the PIN');
+    if (!drawer.isLast) errs.push('the hamburger does not end on "Back to the Hive" (last is "' + drawer.label + '")');
   }
   await b.close();
-  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — "Sign out" in Settings and last in the hamburger, one action, and it really signs out');
+  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — one "Sign out", behind the PIN in Settings → Grown-ups, and it really signs out; ☰ ends on Back to the Hive');
   process.exit(errs.length ? 1 : 0);
 })();

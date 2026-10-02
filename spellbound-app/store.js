@@ -23,7 +23,7 @@
 (function () {
   var KEYS = {
     household: 'sb_saas_v2',
-    splash: 'sb_splash', music: 'sb_w4_music', sound: 'sb_sound', volume: 'sb_volume', mute: 'sb_mute', focus: 'sb_w4_focus', voice: 'sb_voice',
+    splash: 'sb_splash', music: 'sb_w4_music', sound: 'sb_sound', volume: 'sb_volume', mute: 'sb_mute', greet: 'sb_greet', focus: 'sb_w4_focus', voice: 'sb_voice',
     devunlock: 'sb_devunlock', vflags: 'sb_vflags', bugs: 'sb_bugs', evofeedback: 'sb_evofeedback',
     daily: 'sb_daily', arcBest: 'sb_arc_best', bizzSeen: 'sb_bizz_seen', mockbee: 'sb_mockbee',
     tmLog: 'sb_tm_log', tmArm: 'sb_tm_on', accounts: 'sb_accounts_v1', session: 'sb_session_v1',

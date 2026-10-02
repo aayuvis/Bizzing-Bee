@@ -98,10 +98,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   // the GATE: paints the world, holds ~1s, then presses ITSELF with a visible click
   const pgG = await b.newPage({ viewport: { width: 1100, height: 900 } });
   await pgG.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.setItem('sb_splash', '1'); }, seed);
-  await pgG.goto('file://' + SRC + '/index.html'); await pgG.waitForTimeout(400);
+  await pgG.goto('file://' + SRC + '/index.html', { waitUntil: 'commit' }); await pgG.waitForSelector('#sb-splash', { state: 'attached' }); await pgG.waitForTimeout(250);   /* measured from the moment the splash is painted, not from 'load': the deferred scripts run before DCL, and a slower boot used to eat the 1s hold */
   const hold = await pgG.evaluate(() => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate');
     return { kb: d && d.classList.contains('kb'), gate: g ? g.textContent : '', shown: g && getComputedStyle(g).display !== 'none' }; });
-  ok(hold && !hold.kb && hold.shown, 'the show opens HOLDING on the gate — no .kb, no cinematic yet');
+  ok(hold && !hold.kb && hold.shown, 'the show opens HOLDING on the gate — no .kb, no cinematic yet ' + JSON.stringify(hold));
   ok(/100 million years/.test(hold.gate), 'the gate speaks the world\'s own invitation (' + hold.gate + ')');
   await pgG.waitForTimeout(1500);
   const going = await pgG.evaluate(() => { const d = document.querySelector('#sb-splash'); const g = d && d.querySelector('.spl-gate');
@@ -233,10 +233,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   await pg4.goto('file://' + SRC + '/index.html'); await pg4.waitForTimeout(500);
   ok(await pg4.evaluate(() => !document.querySelector('#sb-splash')), 'sb_splash=0 silences it');
   /* FIX-BEE v2: the splash is OPT-IN — a returning child with no setting goes straight to the app */
-  const pg5 = await (await b.newContext()).newPage();
-  await pg5.addInitScript(s => { localStorage.setItem('sb_saas_v2', s); localStorage.removeItem('sb_splash'); }, seed);
-  await pg5.goto('file://' + SRC + '/index.html'); await pg5.waitForTimeout(900);
-  ok(await pg5.evaluate(() => !document.querySelector('#sb-splash')), 'with no setting the splash stays away — it is opt-in (Settings → Look)');
+  const pgOpt = await (await b.newContext()).newPage();
+  await pgOpt.addInitScript(s => { localStorage.setItem("sb_saas_v2", s); localStorage.removeItem("sb_splash"); }, seed);
+  await pgOpt.goto("file://" + SRC + "/index.html"); await pgOpt.waitForTimeout(900);
+  ok(await pgOpt.evaluate(() => !document.querySelector("#sb-splash")), 'with no setting the splash stays away — it is opt-in (Settings → Look)');
   const pg5 = await b.newPage();
   await pg5.goto('file://' + SRC + '/index.html'); await pg5.waitForTimeout(500);
   ok(await pg5.evaluate(() => !document.querySelector('#sb-splash')), 'first run (no children) never hides onboarding behind it');

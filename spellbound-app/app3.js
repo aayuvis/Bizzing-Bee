@@ -594,7 +594,7 @@ function regionPos(nx){ try{ const T=window.SB_TRAIL; if(!T||!nx||nx.kind!=='uni
 /* THE BUDDY'S HELLO (FIX-BEE v2 B5): built from what the child last DID — the last missed word,
    words due again, this week's stops and masteries, the last trap beaten — with the buddy's own
    line as one voice among them. It changes once per visit (never on a re-render) and never says
-   the same thing two visits running (c.lastGreet). It names effort, never a lapse: a miss is a
+   the same thing two visits running (device key sb_greet). It names effort, never a lapse: a miss is a
    word "to try again", and nothing here counts days or mentions a skip. */
 function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'friend';
   try{ const due=mastDueWords(c,30).length; if(due) out.push({k:'due',t:`${due} word${due===1?' is':'s are'} ready for a second look today, ${nm} — that is how they stick.`}); }catch(e){}
@@ -611,8 +611,12 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
 let _greetVisit=null;   /* one pick per visit to Home — a re-render keeps it */
 function homeGreet(c){ c=c||active(); const C=homeGreetCands(c); const key=(c&&c.name||'')+'|'+state.nav;
   if(_greetVisit&&_greetVisit.key===key&&C.some(x=>x.k===_greetVisit.k)) return C.find(x=>x.k===_greetVisit.k).t;
-  const n=((c.greetN|0)+1); const pool=C.filter(x=>x.k!==c.lastGreet); const pick=(pool.length?pool:C)[n%(pool.length||C.length)];
-  c.greetN=n; c.lastGreet=pick.k; _greetVisit={key,k:pick.k}; return pick.t; }
+  /* the rotation is a DEVICE note (sb_greet: {name:[n,k]}), not part of the child's record — a hello
+     must never change what a backup holds */
+  let G={}; try{ G=JSON.parse(SB_STORE.get('greet')||'{}')||{}; }catch(e){}
+  const me=(c&&c.name)||''; const was=G[me]||[0,null];
+  const n=(was[0]|0)+1; const pool=C.filter(x=>x.k!==was[1]); const pick=(pool.length?pool:C)[n%(pool.length||C.length)];
+  G[me]=[n,pick.k]; try{ SB_STORE.set('greet',JSON.stringify(G)); }catch(e){} _greetVisit={key,k:pick.k}; return pick.t; }
 function goodDaysThisWeek(c){ c=c||active(); const played=new Set((c&&c.daysPlayed)||[]); return weekDayKeys().filter(k=>played.has(k)).length; }
 /* ---- misses: persist per-child to a revise list (with counts) AND the working pool ---- */
 /* `mark` = the child filed it themselves (a study aid) — the revise pile only. Without it this
@@ -3440,7 +3444,9 @@ const app = {
   gSay:()=>{ const g=state.game; if(g&&g.list&&g.list[g.i]) say(g.list[g.i].w); },
   gSaySlow:()=>{ const g=state.game; if(g&&g.list&&g.list[g.i]) say(g.list[g.i].w,0.6); },
   gSayQ:()=>{ const g=state.game; const q=g&&g.qs&&g.qs[g.i]; mcSpeak(q); },
-  gInfoToggle:()=>set({gInfo:!state.gInfo}),
+  /* E6: graduated hints on the item in front of the child — 1 the meaning and a sentence, 2 how many
+     letters and beats, 3 the first letter. Never the word. A new word starts again at none. */
+  gInfoToggle:()=>set({gInfo:((state.gInfo|0)+1)%4}),
   gKey:(e)=>{ if(e.key==='Enter'){ const g=state.game; if(g&&g.wait&&g.fbGo){ try{ e.preventDefault(); }catch(_){} g.fbGo(); return; } app.gSubmit(); } },
   gMissGo:()=>{ const g=state.game; if(g&&g.fbGo) g.fbGo(); },   // the child decides when a miss leaves the screen (FIX-BEE D3)
   gSubmit:()=>{ const g=state.game; if(!g||g.qs||g.wait) return; const w=g.list[g.i]; const ans=(state.typed||'').trim().toLowerCase(); if(!ans){ flash('Type the word, then Enter'); return; }
@@ -6518,7 +6524,7 @@ function viewApp(){
              collection belongs, reached by the Bizzy button. */''}
         ${/* The coins pill IS the door to My Hive — that is where coins are spent, and the
              Hive has no tab of its own. */''}
-        <button data-act="openWallet" class="bz-coinchip" title="Your Bizzing coins — where they came from" aria-label="${escA(String(active().coins||0))} Bizzing coins — where they came from" style="display:inline-flex;align-items:center;gap:6px;padding:0 13px;height:38px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinAmt(active().coins||0,14)}</button>
+        <button data-act="openWallet" class="bz-coinchip" title="Your Bizzing coins — where they came from" aria-label="${escA(String(active().coins||0))} Bizzing coins — where they came from" style="display:inline-flex;align-items:center;gap:6px;padding:0 13px;height:37px;box-sizing:border-box;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);flex-shrink:0">${coinIc(14)}<span class="bz-coin-n">${active().coins||0}</span></button>
         ${(()=>{ const _fon=!!(window.SB_W4_FOCUS&&SB_W4_FOCUS.on());
           /* One button for how the app looks: a tap cycles Light → White → Dusk, a
              double-tap holds the world still (focus) in whichever look you are in. */
@@ -6839,7 +6845,7 @@ function viewHome(){
               <span style="display:block;font-size:11.5px;font-weight:800;color:var(--ink,var(--text));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(region)}</span>
               <span role="progressbar" aria-label="How far along this tier of the Word Atlas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" style="display:block;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
               <span class="sb-home-pos" style="display:block;font-size:11px;font-weight:700;color:var(--muted);line-height:1.3">${(()=>{ const rp=regionPos(nx); const wk=weekProgress(c);
-                return esc((rp?('stop '+rp.n+' of '+rp.of):SB_SHELL.levelWords(c))+' · this week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered'); })()}</span>
+                return esc((rp?('stop '+rp.n+' of '+rp.of+' · '):'')+SB_SHELL.levelWords(c))+'<br>'+esc('This week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered'); })()}</span>
             </span>
           </span>
         </div></button>`; })()}
@@ -7388,7 +7394,7 @@ function worldsShopHTML(c){ c=c||active();
     const packs=SB_AVATARS.packs.filter(p=>p.world===n).map(p=>p.label.replace(/ Pack$/,'')).join(' · ');
     const H=(typeof WORLD_HERO!=='undefined'&&WORLD_HERO[t.id])||{};
     return `<div class="bz-wcard${un?'':' locked'}" data-world="${t.id}">
-      <div class="bz-wcard-art" style="${H.bg||''}">${un?'':`<span class="bz-wcard-lock">${iconSVG('lock',14,2.4)}</span>`}<b style="font-family:${H.face||'inherit'};color:${H.ink||'#fff'}">${esc(t.label)}</b></div>
+      <div class="bz-wcard-art" style="${H.bg||''}">${un?'':`<span class="bz-wcard-lock">${iconSVG('lock',14,2.4)}<span class="sb-sr">${esc(worldLockText(t.id))}</span></span>`}<b style="font-family:${H.face||'inherit'};color:${H.ink||'#fff'}">${esc(t.label)}</b></div>
       <div class="bz-wcard-b"><span class="bz-row-s">${esc(WORLD_ABOUT[t.id]||'')}</span>${packs?`<span class="bz-row-s"><b>Avatars:</b> ${esc(packs)}</span>`:''}
         ${un?(t.id===state.theme?`<span class="bz-av-on">${iconSVG('check',12,2.6)} Your world now</span>`:`<button data-act="pickTheme" data-arg="${t.id}" class="bz-btn">Use this world</button>`)
           :(n<=2?'':`<button data-act="buyWorld" data-arg="${t.id}" class="bz-btn buy">${coinIc(13)} ${WORLD_PRICE_COINS} coins</button><span class="bz-row-s">or with the family plan</span>`)}</div></div>`; }).join('')}</div>`; }
@@ -11343,7 +11349,8 @@ const SB_ARCADE_GAMES = [
   {k:'beeGrandPrix',        n:'Bee Grand Prix',   tag:'Race',   w:'hive',      blurb:'Spell to boost past rivals in a flat-out race.'},
   {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Race the maze — spell a word to open each gate.'},
   {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'arcade',    blurb:'Type the words before they reach the bottom.'},
-  {k:'keepFlying',          n:'Keep Flying',      tag:'Flight', w:'sky',       blurb:'Tap to fly, bank the honey pots, spell through the gates.'},
+  /* Keep Flying is CUT from the arcade (FIX-BEE v2 G11): a Flappy loop where spelling was a toll, and
+     the Grand Prix already carries "spell to keep moving". The engine stays in saga2.js — one line back. */
   {k:'wordSnake',           n:'Word Snake',       tag:'Arcade', w:'forest',    blurb:'Grow the snake by eating the letters in order.'},
   {k:'unscrambleStars',     n:'Unscramble Stars', tag:'Puzzle', w:'cosmos',    blurb:'Slide the scrambled letters into the right order.'},
   {k:'spellScene',          n:'Spell Scene',      tag:'Scene',  w:'homecoming',blurb:'Spell the word that finishes each scene.'},
@@ -11577,18 +11584,21 @@ function bizzSafe(rung){ let s=0; for(let i=0;i<rung;i++) if(SB_BIZZ_LADDER[i].s
    Draws RANDOMLY from the whole level pool (not a fixed index), skipping anything asked
    in this game (S.used) or any past game (_bizzSeen), so the trivia bank is spread across
    plays instead of cycling the same slice. */
+const BIZZ_WORD_TH={ words:1, eponyms:1, langs:1 };
 function bizzDraw(){
   const S=_bizzS; const lv=_bizzLevelOf(S.rung); const seen=_bizzSeenLoad();
   const all=(window.SB_TRIVIA&&SB_TRIVIA.questions)||[];
-  const atLv=all.filter(x=>x.lv===lv && x.ty==='mc' && x.c && x.c.length>=4);
+  /* G11 (FIX-BEE v2): a spelling app's quiz asks about WORDS — meanings, roots, origins and the
+     people words are named after — never "what number comes after 9". */
+  const atLv=all.filter(x=>x.lv===lv && x.ty==='mc' && x.c && x.c.length>=4 && BIZZ_WORD_TH[x.th]);
   let pool=atLv.filter(x=>!S.used.has(x.id) && !seen.has(x.id));
   if(!pool.length && atLv.length){          // this whole level has been seen across plays — recycle just this level
     atLv.forEach(x=>seen.delete(x.id)); _bizzSeenSave();
     pool=atLv.filter(x=>!S.used.has(x.id));
   }
   if(!pool.length){                          // level not loaded yet, or genuinely dry — any fresh mc, seen-aware then not
-    pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&!S.used.has(x.id)&&!seen.has(x.id));
-    if(!pool.length) pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&!S.used.has(x.id));
+    pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&BIZZ_WORD_TH[x.th]&&!S.used.has(x.id)&&!seen.has(x.id));
+    if(!pool.length) pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&BIZZ_WORD_TH[x.th]&&!S.used.has(x.id));
     if(!pool.length) return null;
   }
   return bizzShape(pool[Math.floor(Math.random()*pool.length)]);
@@ -11731,7 +11741,7 @@ function gamesHub(){ const S=state; const c=active();
     const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
     heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:iconSVG('trophy',12,2.4)+' Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
   if(window.SB_TRIVIA){ const bhid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
-    heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:iconSVG('steps',12,2.4)+' Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen questions, rising stakes, two safe rungs and three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
+    heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:iconSVG('steps',12,2.4)+' Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen word questions — meanings, roots and the people words are named after. Two safe rungs, three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
@@ -11792,14 +11802,14 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
     statusBar=`<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:20px">👹</span><div style="flex:1;height:11px;border-radius:999px;background:var(--surface2);overflow:hidden;max-width:220px"><div style="height:100%;border-radius:999px;background:linear-gradient(90deg,#FF4D8D,#d63a3a);width:${hpPct}%;transition:width .35s"></div></div><span style="font-size:13px">${hearts}${sh?' <span title="Boss Shields — each absorbs one miss">🛡️×'+sh+'</span>':''}</span></div></div>`; }
   else if(g.type==='champ'){ const low=g.fmt==='timed'&&g.timeLeft<=10; statusBar=`<div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--display);font-weight:900;font-size:17px;color:var(--accent)">${iconSVG('bolt',14,2.4)} Challenge</span>${g.fmt==='timed'?`<span style="font-family:var(--display);font-weight:900;font-size:17px;color:${low?'var(--bad)':'var(--accent)'}">${iconSVG('timer',14,2.4)} ${g.timeLeft}s</span>`:`<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${g.i+1}/${g.total}</span>`}<span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">✓ ${g.right}</span></div>`; }
   else statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
-  const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No hint for this one — listen closely!':''}</div>` : '';
+  const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No meaning for this one — listen closely!':''}${(S.gInfo|0)>=2?`<br><b>Shape</b> — ${String(w.w).replace(/[^a-z]/gi,'').length} letters${w.p?' · '+String(w.p).split(/[-\s]+/).filter(Boolean).length+' beat'+(String(w.p).split(/[-\s]+/).filter(Boolean).length===1?'':'s'):''}`:''}${(S.gInfo|0)>=3&&String(w.w).length>3?`<br><b>Starts with</b> — “${esc(String(w.w)[0].toUpperCase())}”`:''}</div>` : '';
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
   if(g.fb&&!g.fb.ok){ bossFb=missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
       +`<button data-act="gMissGo" style="width:100%;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">Next word →</button>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
       <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${g.type==='boss'&&((active().pow||{}).reveal||0)>0?`<button data-act="gReveal" style="padding:9px 14px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">💡 Reveal letter × ${(active().pow||{}).reveal}</button>`:''}<button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}">💡 Hint</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${g.type==='boss'&&((active().pow||{}).reveal||0)>0?`<button data-act="gReveal" style="padding:9px 14px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">💡 Reveal letter × ${(active().pow||{}).reveal}</button>`:''}<button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}" aria-label="Hint, step ${(S.gInfo|0)+1} of 3">${iconSVG('bulb',14)} ${['Hint','More help','One more','Hide help'][S.gInfo|0]}</button></div>
       ${hint}${bossFb}
       <input data-inp="onType" data-key="gKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="type here" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:14px">
       <button data-act="gSubmit" style="width:100%;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">${g.type==='boss'?'Attack! ⚔️':'Enter →'}</button>

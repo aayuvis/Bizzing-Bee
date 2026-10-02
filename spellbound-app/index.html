@@ -665,6 +665,7 @@
     .sb-fam-bar{column-gap:5px!important;padding-top:8.5px!important;padding-bottom:8.5px!important}
     .sb-fam-bar .sb-hdr-ico,.sb-fam-bar [data-act="openDrawer"]{width:34px!important;height:34px!important}
     .sb-fam-kid{height:34px}
+    .sb-fam-bar .bz-coinchip{height:34px!important;padding:0 10px!important}
     .sb-fam-kidav{width:27px;height:27px}
     .sb-fam-day{height:34px;padding:0 10px 0 7px}
     .sb-fam-brand{height:34px}
@@ -2986,7 +2987,10 @@
         tune();
       }, 300);
     }
-    if(!rm) autoTm=setTimeout(startShow, 1000);
+    /* the hold is counted from when the page can be SEEN to hold — after the deferred scripts have
+       run (DOMContentLoaded) — not from parse time, where a busy boot ate the whole second */
+    if(!rm){ var armGate=function(){ if(!started&&!done) autoTm=setTimeout(startShow, 1000); };
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', armGate); else armGate(); }
     d.addEventListener('pointerdown',function ev(){
       if(!started){ startShow(); return; }
       if(!rm && !d.classList.contains('kb')) return;   /* the press beat — the show is about to start */

@@ -33,7 +33,7 @@ ok(fs.existsSync(credits) && /composed in code for Bizzing/i.test(fs.readFileSyn
   await pg.goto('file://' + SRC + '/index.html'); await pg.waitForTimeout(2600);
   await pg.evaluate(() => { state.screen = 'app'; state.nav = 'home'; render(); });
   ok(!(await pg.evaluate(() => !!window.SB_MUSIC)), 'before any tap, the music file has not been fetched');
-  await pg.mouse.click(600, 400); await pg.waitForTimeout(1500);
+  await pg.mouse.click(600, 400); await pg.waitForFunction(() => !!window.SB_MUSIC, null, { timeout: 8000 }).catch(() => {}); await pg.waitForTimeout(300);
   const W = ms => pg.waitForTimeout(ms);
   ok(await pg.evaluate(() => !!window.SB_MUSIC), 'after the first tap it arrives through boot-lazy');
 

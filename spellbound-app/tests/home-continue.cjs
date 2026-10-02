@@ -86,7 +86,7 @@ function filledPrimaries() {
           beside: !!(cr && sr && sr.left >= cr.right - 1 && sr.top < cr.bottom && sr.bottom > cr.top),
           region: strip && strip.textContent, pct: bar && +bar.getAttribute('aria-valuenow'), want: ns.ready ? ns.pct : 0, act: ns.ready ? ns.act : 'The Word Atlas',
           level: strip && /Level \d|level/i.test(strip.textContent),
-          bigTotal: strip && /\d+\s*(\/|of)\s*\d+/.test(strip.textContent),
+          bigTotal: strip && [...strip.textContent.matchAll(/(\d+)\s*(\/|of)\s*(\d+)/g)].some(m => !(/stop\s*$/i.test(strip.textContent.slice(0, m.index)) && +m[3] <= 30)),   /* B3 (FIX-BEE v2): "stop 3 of 11" — the position in its own region — is allowed; the road's total never */
           pracOutline: !!(pracCta && getComputedStyle(pracCta).borderTopStyle !== 'none' && getComputedStyle(pracCta).backgroundColor !== actCol),
           greetFirst: !!(greet && next && (greet.compareDocumentPosition(next) & Node.DOCUMENT_POSITION_FOLLOWING)),
           today, tiles: document.querySelectorAll('.sb-content .sb-home-tiles > *').length,
@@ -95,7 +95,7 @@ function filledPrimaries() {
       ok(g.has, `${tag}: the Continue card is on Home`);
       ok(g.above, `${tag}: Continue is above the fold and clear of the tab bar (bottom ${g.contBottom}px, fold ${g.fold}px)`);
       ok(g.beside && g.region && g.region.indexOf(g.act) >= 0 && g.level && g.pct === g.want && !g.bigTotal,
-        `${tag}: beside Continue, one strip says the region ("${g.act}"), the level, and draws a bar at ${g.pct}% — no total printed`);
+        `${tag}: beside Continue, one strip says the region ("${g.act}"), the level, and draws a bar at ${g.pct}% — no total printed` + (g.beside && g.level && !g.bigTotal ? "" : " " + JSON.stringify({ beside: g.beside, level: g.level, big: g.bigTotal, strip: (g.region || "").slice(0, 160) })));
       ok(g.pracOutline, `${tag}: the journey card's Practise is an outline button, not a second primary`);
       ok(!g.placement, `${tag}: "Find your level" is not a call to action on Home`);
       ok(g.greetFirst && g.today <= 3 && g.tiles <= 6, `${tag}: anatomy — greeting before Continue, Today's row of ${g.today} (≤3), ${g.tiles} ways-in tiles (≤6)`);
