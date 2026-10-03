@@ -12,7 +12,9 @@ const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
-const CORE = 126594;   // SB_FULL as it ships, before the shard
+const CORE = 126562;   // SB_FULL as it ships, before the shard
+/* 126,594 until 3 Oct 2026, when the owner had the 32 Nazi-vocabulary records deleted
+   (tests/no-nazi-words.cjs). */
 /* 128,197 until 5 Sep 2026, when the library sweep deleted 1,528 records and one
    (`cli`) came back. This number is not a target to hit — it is the count the
    130,000-word CLAIM was retired against, and the floor assertion further down

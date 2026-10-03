@@ -1280,7 +1280,7 @@ window.SB_EPONYMS = [
     "ex": "The general was branded a quisling after he secretly passed battle plans to the invading army.",
     "hook": "",
     "o": "Norwegian",
-    "after": "Vidkun Quisling, who governed Norway for the Nazis and gave every language a word for traitor."
+    "after": "Vidkun Quisling, who governed occupied Norway for its German invaders and gave every language a word for traitor."
    },
    {
     "w": "dunce",
