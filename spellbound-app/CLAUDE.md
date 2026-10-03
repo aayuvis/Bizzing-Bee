@@ -88,6 +88,33 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
 - UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
   headings free of emoji.
 
+## My Feed (2 Oct 2026, FAMILY-STANDARD §6a) — the sixth tab, LAST, after Play
+- **Tabs: Home · Word Atlas · Practice · Library · Play · My Feed** (`NAV_TABS()` in app3.js draws both
+  bars; `navIcon('feed')`/`iconSVG('feed')`). The family's `checkShell(page,{phone,bee:true})` still returns
+  [] with six (`tests/feed-screen.cjs`). A grown-up's switch behind the PIN (`toggleFeed`, household `fo`)
+  takes the tab and the ☰ row away; `#/feed` then says it is off.
+- **The engine is the family's**: `bizzing-feed.js` is a CLASSIC PORT (window.BZ_FEED) of
+  `Bizzing_Schedule/integration/bizzing-feed.js` — the body line for line, only `export` removed; the
+  original is vendored in `tests/lib/family/` and `family-dropins.cjs` runs both. `bizzing-feed.css` is
+  byte-identical; `bee-feed.css` maps its `--bz-*` tokens onto Bee's, scoped to `.sb-feedpage`.
+- **The cards are cut, never typed**: `node tools/build-feed.cjs` (reads the corpus through
+  `tools/feed-corpus.cjs`, exactly as the page loads it) writes `feed/` — `feed-meta.js`, an index per
+  level (`fi<L>.js`, `fi0` = no level) and body chunks (`fb<L>-<n>.js`, ≤400 cards). Several ANGLES per
+  object, each its own kind and src field (a chapter word: meaning · sentence · hook · origin); no two
+  cards ≥ 80% the same words (`tools/feed-near.cjs`). NOT quotes-lib/quotes (unsourced), not the concept
+  `method` blocks, not the `card` concept questions (options cut mid-word), not archived packs, not the
+  animal facts on story characters. Change the corpus → re-run the build → `tests/feed-content.cjs`.
+- **The level is the Word Atlas REGION** (the place Home's strip names beside Continue; 9 of them),
+  from `SB_SHELL.nextStep()`. The engine shows the child's region, review from passed ones, ≤2 peeks at
+  the next; nothing beyond. `oneLevel()` is NOT the feed's level — it is unbounded XP with no content.
+- **Lazy, in groups**: `#/feed` loads `feed` (engine + meta + `bee-feed.js`), then only the indexes of
+  levels 0..L+1, then only the body chunks today's twenty cards live in. Nothing on the first screen.
+- Ranked on the device by what the child did: the stop they are at, the stop just finished, words that
+  SLIPPED (`c.mast` lapses / the revision pile, gap over) come first. Kept per child in `c.feed`
+  (`seen`, `paid`, today's `ids`). Only a right answer pays, once, through `addCoins('answer')`; a wrong
+  one holds with Continue. A "Hear it" button plays the recorded clip on a tap — no sound before one.
+- `#/word/<w>` opens a word's card (family-shell `applyRoute`, the same door as a search suggestion).
+
 ## FIX-BEE (2 Oct 2026) — the family standard, applied. READ THIS BEFORE THE OLDER SECTIONS.
 The October family audit (brief: `/root/.claude/uploads/…/FIX-BEE.md`; standard:
 `aayuvis/Bizzing_Schedule` → `docs/family/FAMILY-STANDARD.md`) was worked in four parallel

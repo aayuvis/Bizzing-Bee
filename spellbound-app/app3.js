@@ -2256,6 +2256,7 @@ const app = {
   setA11yFont:(k)=>{ state.a11yFont=(k==='easy'?'easy':'std'); save(); render(); },
   toggleContrast:()=>{ state.a11yContrast=!state.a11yContrast; save(); render(); },
   toggleReduceMotion:()=>{ state.a11yMotion=!state.a11yMotion; save(); render(); },
+  toggleFeed:()=>{ if(!state._setGrown) return; state.feedOff=!state.feedOff; save(); if(state.feedOff&&state.nav==='feed') state.nav='home'; flash(state.feedOff?'My Feed is off':'My Feed is on'); render(); },
   toggleCalm:()=>{ state.calmMode=!state.calmMode; window.SB_CALM=state.calmMode; save(); flash(state.calmMode?'🌿 Calm mode on — games run gentler, no rush':'Calm mode off'); render(); },
   toggleReadAloud:()=>{ state.readAloud=!state.readAloud; save(); if(state.readAloud) say('I will read the cards to you!'); render(); },
   setVoiceRate:(k)=>{ state.voiceRate=(k==='slow'?0.75:1); save(); say('Hello! I read the words like this.'); render(); },
@@ -2271,6 +2272,7 @@ const app = {
     if(key==='progress'&&state.progTab!=='me') state.progTab='me';   // the Parent tab must ask for the PIN again (FIX-BEE M3)
     if(key==='concepts'){ lazyNeed('concepts'); loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
     if(key==='figurative') lazyNeed('figurative');
+    if(key==='feed'&&!state.feedOff) lazyNeed(['feed','atlas']);   /* My Feed: engine, cards and screen arrive at its door (boot-lazy `feed`) */
     if(key==='themes'||key==='journeys') lazyNeed(['themes','lists']);
     if(key==='adv') lazyNeed('advanced');
     set({nav:key, screen:'app', mood:'happy', conceptSel:null}); },
@@ -5627,7 +5629,11 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
    icon drops back to currentColor, because the pill behind it is already the
    accent and a coloured glyph on it would be unreadable. */
 const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#0E8A78',
-  play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B' };
+  play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B', feed:'#D2553A' };
+/* The tabs, in the family order. My Feed is the LAST tab, after Play (owner, 2 Oct 2026,
+   FAMILY-STANDARD §6a) — and it goes, with its ☰ row, when a grown-up switches it off. */
+function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']];
+  if(!state.feedOff) t.push(['feed','My Feed','feed']); return t; }
 function navIcon(key,size,plain){ size=size||22;
   const tint=plain?'currentColor':(NAV_TINT[key]||'currentColor');
   const w=(inner)=>`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${tint}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0">${inner}</svg>`;
@@ -5646,6 +5652,8 @@ function navIcon(key,size,plain){ size=size||22;
     /* a climbing chart with the last point lit */
     /* a skep hive with its comb — My Hive is a tab now, not a face in the corner */
     hive:()=>w(f('M12 3.2c4.3 0 7.4 3.6 7.4 8.4s-3.1 8.8-7.4 8.8-7.4-4-7.4-8.8S7.7 3.2 12 3.2z')+'<path d="M12 3.2c4.3 0 7.4 3.6 7.4 8.4s-3.1 8.8-7.4 8.8-7.4-4-7.4-8.8S7.7 3.2 12 3.2z"/><path d="M5.6 8.6h12.8M4.8 12.4h14.4M5.4 16.2h13.2"/><path d="M10.4 20.4h3.2"/>'),
+    /* My Feed: two stacked cards, the top one with a line of text — a feed you read, then it ends */
+    feed:()=>w(f('M5.2 8.4h13.6a1.6 1.6 0 0 1 1.6 1.6v8.6a1.6 1.6 0 0 1-1.6 1.6H5.2a1.6 1.6 0 0 1-1.6-1.6V10a1.6 1.6 0 0 1 1.6-1.6z')+'<rect x="3.6" y="8.4" width="16.8" height="11.8" rx="1.8"/><path d="M6.2 5.8h11.6M8.2 3.4h7.6"/><path d="M7 12.6h10M7 16h6.2"/>'),
     progress:()=>w(f('M4.6 19.4h15V21h-15zM6.4 13h2.8v6.4H6.4zM11.2 9.6H14v9.8h-2.8zM16 5.8h2.8v13.6H16z')+'<path d="M4 20.4h16"/><rect x="6.4" y="12.4" width="3" height="8" rx="1.1"/><rect x="11" y="9" width="3" height="11.4" rx="1.1"/><rect x="15.6" y="5.2" width="3" height="15.2" rx="1.1"/><circle cx="17.1" cy="3" r="1.5" fill="${tint}" stroke="none"/>'),
   };
   return (M[key]||M.home)();
@@ -6377,7 +6385,7 @@ function viewApp(){
      door, and it heads the drawer. (It briefly had a tab; a sixth crowded the phone bar
      and put a collection beside the five things a speller actually does.) Progress is not
      a tab either — it opens from Settings and the drawer. */
-  const navTabs=[['home','Home','home'],['trail','Word Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([key,label,ic])=>{
+  const navTabs=NAV_TABS().map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
       :key==='trail'?(S.nav==='trail'||atlasDrill())
@@ -6416,6 +6424,7 @@ function viewApp(){
   else if(S.nav==='help') content=viewHelp();
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
+  else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
   else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
@@ -6543,7 +6552,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${[['home','Home','home'],['trail','Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']].map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -6598,6 +6607,7 @@ function viewDrawer(){
         ${row('drawer','coachdesk','bulb','Coach',missedN?('what to fix, and how — '+missedN+' word'+(missedN>1?'s':'')+' to work on'):'your patterns and what comes next',N==='coachdesk')}
         ${row('drawer','revisions','retry','Revision pile',missedN?missedN+' words waiting':'nothing waiting — nice',N==='revisions')}
         ${row('drawer','evolution','sprout','Your bee','the ten forms your bee grows through',N==='evolution')}
+        ${state.feedOff?'':row('setNav','feed','feed','My Feed','about twenty cards from across the app, and then it ends',N==='feed')}
 
         ${sep('')}
         ${row('drawer','settings','gear','Settings','me, sound, look and comfort',!!state.settingsOpen)}
@@ -10451,6 +10461,7 @@ function viewSettings(){
         <button data-act="setNav" data-arg="parent" class="bz-btn">Open</button></div>
       <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Progress</span><span class="bz-row-s">Level, the Atlas, this week and every word met.</span></div>
         <button data-act="setNav" data-arg="progress" class="bz-btn">Open</button></div>
+      ${sw('toggleFeed','My Feed',!state.feedOff,'A short feed of cards from across the app, picked from what your child is learning. Off removes the tab and the menu row.')}
       <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Grown-up PIN</span><span class="bz-row-s">${pinSet()?'Set. Change it any time.':'Not set yet.'}</span></div>
         <button data-act="pinSetup" class="bz-btn">${pinSet()?'Change':'Set PIN'}</button></div>
       <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Add a child</span><span class="bz-row-s">Each child keeps their own words, coins and collection.</span></div>
@@ -12484,7 +12495,7 @@ function effectiveMode(pref){ if(pref!=='auto') return pref||'light';
   try{ return (window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dusk':'light'; }catch(e){ return 'light'; } }
 try{ if(window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ try{ if(state.modePref==='auto'){ state.mode=effectiveMode('auto'); render(); } }catch(e){} }); }catch(e){}
 function save(){ if(window.SB_STORE&&SB_STORE.readOnly()) return;   // a newer build wrote this household: never write over it
-  try{ SB_STORE.saveHousehold({ theme:state.theme, mode:state.mode, mp:state.modePref||null, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] }); }catch(e){}
+  try{ SB_STORE.saveHousehold({ theme:state.theme, mode:state.mode, mp:state.modePref||null, premium:state.premium, pin:state.parentPin||null, vr:state.voiceRate||1, tz:state.textSize||'normal', ra:state.readAloud?1:0, af:state.a11yFont||'std', ac:state.a11yContrast?1:0, am:state.a11yMotion?1:0, cm:state.calmMode?1:0, fo:state.feedOff?1:0, children:state.children, activeIdx:state.activeIdx, goalDone:state.goalDone, cN:(window.SB_CONCEPTS&&SB_CONCEPTS.chapters&&SB_CONCEPTS.chapters.length)||121, lu:state.luMastered, srs:state.coachSrs, chist:state.coachHistory, wr:state.wordReports||[] }); }catch(e){}
   /* Cloud backup rides on the same call, coalesced inside SB_SYNC. save() fires on
      nearly every interaction, so this must never do work on the calling frame — and
      it must never be able to break the local save above, which is why it is last and
@@ -12723,7 +12734,7 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
      here — exactly once per household, in the order they always ran. Add a step there, never a
      block here. */
   try{ const s=SB_STORE.loadHousehold(); if(s){
-    state.theme=s.theme||'spellbound'; state.modePref=s.mp||null; state.mode=s.mp?effectiveMode(s.mp):(s.mode||'light'); state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra; state.a11yFont=s.af||'std'; state.a11yContrast=!!s.ac; state.a11yMotion=!!s.am; state.calmMode=!!s.cm; window.SB_CALM=!!s.cm;
+    state.theme=s.theme||'spellbound'; state.modePref=s.mp||null; state.mode=s.mp?effectiveMode(s.mp):(s.mode||'light'); state.premium=!!s.premium; state.parentPin=s.pin||null; state.voiceRate=s.vr||1; state.textSize=s.tz||'normal'; state.readAloud=!!s.ra; state.a11yFont=s.af||'std'; state.a11yContrast=!!s.ac; state.a11yMotion=!!s.am; state.calmMode=!!s.cm; window.SB_CALM=!!s.cm; state.feedOff=!!s.fo;
     state.children=s.children||[]; state.activeIdx=s.activeIdx||0; state.goalDone=s.goalDone||0;
     state.luMastered=s.lu||{}; state.coachSrs=s.srs||{}; state.coachHistory=s.chist||{}; state.wordReports=s.wr||[];
     try{ state.children.forEach(ensureLists); }catch(e){}

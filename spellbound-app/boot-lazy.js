@@ -98,7 +98,13 @@
     saga2: 'saga2.js',
     eponbk: 'books/eponym-chapters.js',
     ultrabk: 'books/ultra-chapters.js',
-    poems: 'books/poem-chapters.js'
+    poems: 'books/poem-chapters.js',
+    /* My Feed (FAMILY-STANDARD §6a): the family's engine (classic port), the cards cut from the
+       corpus by tools/build-feed.cjs, and Bee's screen. Fetched at the door of #/feed only —
+       never on the idle queue, never on the first screen. */
+    feedEngine: 'bizzing-feed.js',
+    feedMeta: 'feed/feed-meta.js',     // names the per-level index and body groups; bee-feed.js registers and loads those
+    feedView: 'bee-feed.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -121,13 +127,14 @@
     cloud: ['sync'],
     arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
-    reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes']
+    reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes'],
+    feed: ['feedEngine', 'feedMeta', 'feedView']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'] };
 
   var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',

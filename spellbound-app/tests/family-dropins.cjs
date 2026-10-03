@@ -11,7 +11,10 @@
        the same answers on the same inputs, including on a broken catalogue;
      • the wallet's earn/spend/refund/migrate/cap match, with the ONE documented Bee deviation
        (a migration line does not count toward the day's cap) held to exactly that.
-   Proved by breaking: change a price in the port (rare 120 → 125) and four checks fail.
+     • bizzing-feed.css is byte-identical and bizzing-feed.js (My Feed, §6a) is the drop-in line for line,
+       ranking, ordering and drawing exactly as the original does.
+   Proved by breaking: change a price in the port (rare 120 → 125) and four checks fail; change
+   the feed's SPREAD (1.5 → 0.2) in the port and the line-for-line and ranking checks fail.
    Run: node tests/family-dropins.cjs                                                           */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -87,6 +90,40 @@ ok(tailDiff < 0, 'stateOf() says the same thing about all 96 cards (balances asi
 ok(rp[130 + CAT.length] === true && rp[131 + CAT.length] === true && rp[132 + CAT.length] === false, 'buy() pays a rare in an open world, buyWorld() opens world 4 for 240, and refuses a world that is already open');
 ok(rp[133 + CAT.length] === 240 && rp[134 + CAT.length] === 0, 'refund() gives back exactly what was paid, once');
 ok(typeof P.W.refund === 'function', 'the wallet port carries refund() (added upstream after the first port)');
+
+/* ---- My Feed (FAMILY-STANDARD §6a): bizzing-feed.css byte for byte, bizzing-feed.js as a classic port ---- */
+ok(fs.readFileSync(path.join(APP, 'bizzing-feed.css'), 'utf8') === fs.readFileSync(path.join(FAM, 'bizzing-feed.css'), 'utf8'),
+  'bizzing-feed.css is byte-identical to the family drop-in');
+{
+  const oc = { console, Date, Math, JSON, Object, Array, Set, Number, String };
+  vm.createContext(oc);
+  vm.runInContext(fs.readFileSync(path.join(FAM, 'bizzing-feed.js'), 'utf8').replace(/^export (const|function|let) /mg, '$1 ') +
+    '\n;globalThis.F={LIMIT,MAX_PLAY,MAX_KIND,MAX_WHY,hash,feedFor,order,feedHead,feedCard,feedEnd};', oc);
+  const pw = { console }; pw.window = pw;
+  const pc = { window: pw, console, Date, Math, JSON, Object, Array, Set, Number, String }; vm.createContext(pc);
+  vm.runInContext(fs.readFileSync(path.join(APP, 'bizzing-feed.js'), 'utf8'), pc);
+  const O = oc.F, P = pw.BZ_FEED;
+  /* the port's body IS the original's body, minus the word `export` */
+  const body = fs.readFileSync(path.join(APP, 'bizzing-feed.js'), 'utf8').split('/* ---- the drop-in, line for line ---- */\n')[1].split('/* ---- end of the drop-in ---- */')[0];
+  ok(body === fs.readFileSync(path.join(FAM, 'bizzing-feed.js'), 'utf8').replace(/^export (const|function|let) /mg, '$1 '),
+    'bizzing-feed.js: the port is the drop-in line for line (only `export` removed)');
+  ok(['LIMIT', 'MAX_PLAY', 'MAX_KIND', 'MAX_WHY'].every(k => O[k] === P[k]), 'feed constants match the drop-in');
+  /* the same answers on the same inputs: a synthetic corpus of every shape the engine branches on */
+  const items = []; const kinds = ['lesson', 'word', 'play', 'game', 'fun'];
+  for (let i = 0; i < 240; i++) items.push({ id: 'x' + i, kind: kinds[i % 5], level: i % 7 === 0 ? undefined : 1 + (i % 4), bands: i % 9 === 0 ? ['11-13'] : undefined,
+    topics: ['t' + (i % 6)], key: i % 11 === 0 ? 'word:w' + i : undefined, play: i % 5 === 2 ? { q: 'q' + i, opts: ['a', 'b', 'c'], after: 'z' } : undefined,
+    title: 'T' + i, body: 'B' + i, route: '#/x', cta: 'Go' });
+  const runs = [{}, { level: 2 }, { level: 3, band: '8-10' }, { level: 1, signals: [{ topic: 't2', w: 5, why: 'Because' }], due: { 'word:w22': 'slipped' } },
+    { level: 4, seen: { x1: 20000, x4: 20000, x8: 19990 }, levelName: n => 'Region ' + n }];
+  const same = runs.every(r => { const o = Object.assign({ items, now: Date.UTC(2026, 9, 2) }, r);
+    return JSON.stringify(O.feedFor(o)) === JSON.stringify(P.feedFor(o)); });
+  ok(same, 'feedFor() ranks five different children identically in the port and the drop-in');
+  ok([3, 4, 5].every(n => ['a', 'pq-w24', 'ws-focus'].every(id => JSON.stringify(O.order(id, n)) === JSON.stringify(P.order(id, n)))), 'order() agrees');
+  const it = items[2];
+  ok(['', 'right', 'wrong'].every(st => O.feedCard(it, { why: 'w' }, { st, o: 1 }) === P.feedCard(it, { why: 'w' }, { st, o: 1 })) &&
+    O.feedEnd({ href: '#/continue', label: 'Go' }) === P.feedEnd({ href: '#/continue', label: 'Go' }) && O.feedHead({}) === P.feedHead({}),
+    'feedCard(), feedEnd() and feedHead() draw the same markup');
+}
 
 console.log(fails ? `\n${fails} FAILED` : '\nall good');
 process.exit(fails ? 1 : 0);

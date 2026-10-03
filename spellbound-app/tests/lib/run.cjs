@@ -73,7 +73,8 @@ const TIMEOUT = {
   'mobile-layout.cjs': 600,
   'reader.cjs': 600,
   'a11y-axe.cjs': 600,
-  'result-screen.cjs': 1200,   // 70s per engine, eleven engines
+  'result-screen.cjs': 1200,
+  'feed-screen.cjs': 900,      // every card route (thousands of word cards) and 24 world × look contrast passes   // 70s per engine, eleven engines
 };
 
 /* The deploy gate. Fast, and each one guards a promise made to a parent. */

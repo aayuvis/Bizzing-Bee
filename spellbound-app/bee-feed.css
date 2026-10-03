@@ -1,0 +1,19 @@
+/* bee-feed.css — Bee's tokens for the family's feed card (bizzing-feed.css, byte-identical,
+   which reads only --bz-* tokens and the shell's .bz-card). Bee is the layout reference and
+   carries no bizzing-shell.css, so the feed page maps the family tokens onto Bee's own world
+   tokens HERE, scoped to the page, and every world and look (light / white / dusk) follows.
+   Lazy, with bee-feed.js: never on the first screen. */
+.sb-feedpage { --bz-ink: var(--text); --bz-muted: var(--muted); --bz-line: var(--line); --bz-card: var(--paper, var(--bg2));
+  --bz-chip: var(--surface2, var(--chip)); --bz-accent: var(--accent); --bz-display: var(--display); --bz-body: var(--ui, var(--body));
+  max-width: 720px; margin: 0 auto; }
+.sb-feedpage .bz-card { background: var(--paper, var(--bg2)); border: 1px solid var(--line); border-radius: var(--r-xl, 20px); box-shadow: var(--sh-rest); }
+.sb-feedpage .bz-btn { text-decoration: none; }
+.sb-feedpage .bz-btn.out { background: transparent; color: var(--text); }
+.sb-feedpage .bzf-opt.ok, .sb-feedpage .bzf-opt.no { color: var(--text); }
+.sb-feedpage .bzf-opt:disabled { cursor: default; opacity: 1; }
+
+/* contrast, measured in every world by tests/feed-screen.cjs: a world's accent and muted inks are
+   tuned for its own surfaces, and on a feed card's chip a few fall under 4.5:1 — so the feed's
+   buttons and its subtitle take the world's TEXT ink, which every world holds at full contrast */
+.sb-feedpage > p, .sb-feedpage .sb-phead + p { color: var(--text) !important; }
+.sb-feedpage .bzf-row .bz-btn { color: var(--text); }

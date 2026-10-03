@@ -1,0 +1,155 @@
+{
+ "total": 14198,
+ "agnostic": 3021,
+ "byKind": {
+  "place": 9,
+  "lesson": 760,
+  "quiz": 209,
+  "word": 1565,
+  "usage": 2212,
+  "hook": 1511,
+  "origin": 1268,
+  "play": 3503,
+  "spotlight": 689,
+  "game": 8,
+  "story": 36,
+  "character": 60,
+  "fun": 2368
+ },
+ "byLevel": [
+  [
+   1,
+   "the Meadow",
+   798
+  ],
+  [
+   2,
+   "the Great Library",
+   1161
+  ],
+  [
+   3,
+   "the Roman Forum",
+   1978
+  ],
+  [
+   4,
+   "the Storm of Elements",
+   1136
+  ],
+  [
+   5,
+   "the Root Kingdoms",
+   1521
+  ],
+  [
+   6,
+   "the Wide Strait",
+   1336
+  ],
+  [
+   7,
+   "the Trickster Junkyard",
+   414
+  ],
+  [
+   8,
+   "the Subject Sprints",
+   1494
+  ],
+  [
+   9,
+   "the Big Stage",
+   1339
+  ]
+ ],
+ "nearDuplicatesDropped": 398,
+ "nearDuplicateExamples": [
+  [
+   "uq-u1-1",
+   "uq-u2-1"
+  ],
+  [
+   "uq-u1-1",
+   "uq-u3-1"
+  ],
+  [
+   "uq-u1-1",
+   "uq-u4-1"
+  ],
+  [
+   "uq-u1-1",
+   "uq-u5-1"
+  ],
+  [
+   "uq-u1-1",
+   "uq-u6-1"
+  ],
+  [
+   "uq-u1-1",
+   "uq-u7-1"
+  ],
+  [
+   "uq-u1-1",
+   "uq-u8-1"
+  ],
+  [
+   "uq-u1-1",
+   "uq-u9-1"
+  ],
+  [
+   "uq-u10-1",
+   "uq-u11-1"
+  ],
+  [
+   "wo-abandoned",
+   "wo-abandoning"
+  ],
+  [
+   "uq-u12-1",
+   "uq-u13-1"
+  ],
+  [
+   "uq-u12-1",
+   "uq-u14-1"
+  ]
+ ],
+ "libraryWordsHeldBackPerLevel": [
+  [
+   1,
+   612
+  ],
+  [
+   2,
+   759
+  ],
+  [
+   3,
+   2043
+  ],
+  [
+   4,
+   1087
+  ],
+  [
+   5,
+   1519
+  ],
+  [
+   6,
+   1517
+  ],
+  [
+   7,
+   1020
+  ],
+  [
+   8,
+   3504
+  ],
+  [
+   9,
+   3106
+  ]
+ ]
+}
