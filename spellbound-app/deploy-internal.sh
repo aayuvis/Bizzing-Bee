@@ -50,19 +50,17 @@ for f in app3.js saga2.js voice-review.js voice-words.js voice-cdn.js \
   echo "   ok  $f"
 done
 
-# ---------- 0b. THE TEST GATE: npm run check ----------
-# FIX-BEE N3. The guards that hold a promise to a parent — no default login, the grown-up
-# PIN, no third-party requests, the first-load budget, offline after one visit, the a11y
-# pass, the data lints — run BEFORE anything is copied, and a failure ends the deploy here.
-# It is the same subset CI runs on every push (tests/lib/run.cjs, CHECK), so a red build
-# never reaches a child just because nobody looked at CI. There is deliberately no switch
-# to skip it.
-say "0b. Tests (npm run check)"
+# ---------- 0b. no test gate (owner, 3 Oct 2026) ----------
+# "remove the gate as all changes will only pass through this chat": every change is made and
+# verified in the working session, which runs the tests that touch it before committing, so the
+# deploy no longer re-runs `npm run check`. The tests stay in tests/ and CI still runs them on
+# every push; they just do not stand between a commit and the live site. What remains below is
+# structural and takes seconds: syntax, stamp, CNAME, asset references, art trees, size.
 cd "$SRC"
-if [ ! -d node_modules/playwright ] || [ ! -d node_modules/esbuild ] || [ ! -d node_modules/axe-core ]; then
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --no-audit --no-fund >/dev/null || die "npm ci failed — the test gate cannot run, so nothing is deployed"
+# the minifier (3b) needs esbuild
+if [ ! -d node_modules/esbuild ]; then
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --no-audit --no-fund >/dev/null || die "npm ci failed — the minifier cannot run, so nothing is deployed"
 fi
-npm run -s check || die "npm run check FAILED — read tests/build/logs/. Nothing was copied or pushed."
 
 # ---------- 1. the stamp must have moved ----------
 # index.html is served no-store while every asset it points at caches forever on
@@ -155,15 +153,7 @@ echo "   files: $(find "$STG" -type f -not -path '*/.git/*' | wc -l)"
 say "3b. Minify the copy"
 node "$SRC/tools/minify.cjs" "$STG" || die "minifying the deploy copy failed"
 
-# ---------- 3c. test the tree you are about to push ----------
-# The check above ran against the SOURCE. This runs its browser half again against THIS
-# tree — minified, copied by exclusion — because the source always has every file and is
-# never minified. The tests are put beside the tree for the run and removed after it.
-say "3c. Browser check against the deploy tree"
-rm -rf "$STG/tests"
-if ! node "$SRC/tests/lib/run.cjs" --check --browser-only --root "$STG"; then
-  rm -rf "$STG/tests"; die "the DEPLOY TREE fails the check (the source passed) — suspect the copy or the minifier. Nothing was pushed."
-fi
+# ---------- 3c. tests/ never ships ----------
 rm -rf "$STG/tests"
 [ ! -e "$STG/tests" ] || die "tests/ is still in the deploy tree"
 

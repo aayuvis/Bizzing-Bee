@@ -63,10 +63,18 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     }
     state.treG = null;
 
-    // 4 — the ambush: once per region per day, resolved only by spelling
+    // 4 — the ambush: once per region per day, resolved only by spelling — and it never
+    //     stands in the doorway: not on a first visit, and the board always shows first
     Math.random = () => 0.05;
+    app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 2000));
+    out.firstQuiet = !state.villain && state.trailView === 'act';
+    app.trailToMap(); await new Promise(res => setTimeout(res, 100));
     app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 300));
+    out.mapFirst = !state.villain && state.trailView === 'act' && !!document.querySelector('.atlas-stop');
+    await new Promise(res => setTimeout(res, 1700));
     out.ambushUp = !!state.villain && /moth of the Unspelling/.test(document.body.innerHTML);
+    { const x = document.querySelector('[data-trap="villain"] [aria-label="Close"]'); const r = x && x.getBoundingClientRect();
+      out.closeBtn = !!(r && r.width >= 24 && r.top >= 0 && r.bottom <= innerHeight && x.dataset.act === 'villFlee'); }
     const word = state.villain && state.villain.w;
     app.villType('zzz'); app.villGo(); await new Promise(res => setTimeout(res, 150));
     out.wrongHolds = !!state.villain && state.villain.wrong === 1;
@@ -74,8 +82,19 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     app.villType(word); app.villGo(); await new Promise(res => setTimeout(res, 150));
     out.freed = !state.villain && c.coins === coins1 + 1;   // a right answer is one coin
     app.trailToMap(); await new Promise(res => setTimeout(res, 150));
-    app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 250));
+    app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 1900));
     out.onceADay = !state.villain;
+    // Escape lets go of it, like every other layer
+    app.trailToMap(); app.trailAct('honey|forum'); await new Promise(res => setTimeout(res, 100));
+    app.trailToMap(); app.trailAct('honey|forum'); await new Promise(res => setTimeout(res, 1900));
+    const up2 = !!state.villain;
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await new Promise(res => setTimeout(res, 150));
+    out.escCloses = up2 && !state.villain && !document.querySelector('[data-trap="villain"]') && state.trailView === 'act';
+    // walking away before it lands means it never lands
+    app.trailToMap(); app.trailAct('honey|storm'); await new Promise(res => setTimeout(res, 100));
+    app.trailToMap(); app.trailAct('honey|storm'); await new Promise(res => setTimeout(res, 200));
+    app.trailToMap(); await new Promise(res => setTimeout(res, 1900));
+    out.leftInTime = !state.villain;
     Math.random = R;
     return out;
   });
@@ -88,10 +107,15 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.giftLore, 'a chest can open onto the region\'s library chapter');
   ok(r.giftTriv, 'a chest can hold one real 4-option trivia question');
   ok(r.trivPays !== false, 'answering it right pays one coin (a right answer) and shows the fact (' + r.trivPays + ')');
+  ok(r.firstQuiet, 'a first visit to a region never springs the moth — the child meets the country');
+  ok(r.mapFirst, 'on a later visit the board renders first: the moth is never in the doorway');
   ok(r.ambushUp, 'the moth ambush appears and names the deed: spell to free your buddy');
+  ok(r.closeBtn, 'the ambush has a visible Close button on screen');
   ok(r.wrongHolds, 'a wrong spelling keeps the net closed (no punishment, try again)');
   ok(r.freed, 'the RIGHT spelling frees the buddy and pays one coin (a right answer)');
   ok(r.onceADay, 'a region ambushes at most once a day');
+  ok(r.escCloses, 'Escape lets go of the moth and leaves the child on the board');
+  ok(r.leftInTime, 'a child who walks off the board before the moth arrives is not chased by it');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);

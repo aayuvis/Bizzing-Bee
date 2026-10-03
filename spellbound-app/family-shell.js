@@ -69,7 +69,12 @@
       }
     };
     leaveDrill();
-    if (window.SB_TRAIL && window.SB_TRAIL.honey) run(); else lazyNeed('atlas', run);
+    /* the WHOLE atlas group, not just trail-data.js: nextStep()'s "untouched stop opens on its
+       lesson" reads the concept course, and trail-data.js alone lands first (boot-lazy's FIRST,
+       for Home's card). Gating on SB_TRAIL.honey let Home's Continue run before the course was
+       in, read every stop as lesson-less and open #/stop/u2, while #/continue — which waited for
+       the group — opened #/concepts/1. One next step means one answer, whenever it is asked. */
+    lazyNeed('atlas', run);
   }
   /* The child's place, said in words for the progress strip beside Continue. The level half is
      THE one level (SB_ONE_LEVEL, app3's oneLevel — words spelled right, worn as the bee's form);
@@ -159,10 +164,32 @@
     } catch (e) {}
     R.last = r;
   }
+  /* A route is a new screen, and nothing drawn over the old one survives it. #/journeys once
+     left its PIN dialog standing, and every route after it changed the screen unseen
+     underneath — a modal over a screen nobody could reach. Every layer goes: the PIN, the plan
+     sheet and paywall, the ☰ drawer, the wallet, the child menu, the word / quote / list / deck
+     pop-ups, the account sheets, a celebration card, and the avatar cards app3 draws straight
+     onto <body>. A route that wants a layer (settings, a gated screen) opens its own after. */
+  function dropLayers() {
+    try {
+      var S = state;
+      S.pinDlg = null; S.showTiers = false; S.showPaywall = false; S._planOk = false;
+      S.drawerOpen = false; S.walletOpen = false; S.famMenu = false;
+      S.wordCard = null; S.qWord = null; S.listView = null; S.deckOpen = false; S.ttList = null;
+      S.authSheet = null; S.cloudSheet = null; S.celebrate = null;
+    } catch (e) {}
+    try {
+      [].forEach.call(document.querySelectorAll('.avc-ov'), function (ov) {
+        var x = ov.querySelector('[data-avd="close"]');   // the deck holds a key listener; its own close lets it go
+        if (x) x.click(); else ov.remove();
+      });
+    } catch (e) {}
+  }
   /* Map a route back onto the openers the UI itself uses — the same gates apply. */
   function applyRoute(r) {
     var p = String(r || '').split('/'), head = p[0];
     var kids = !!(state.children && state.children.length);
+    dropLayers();
     if (head === 'welcome' || head === 'signin' || head === 'setup') {
       if (state.screen === 'onboarding' && head === 'setup') { var st = Math.max(0, Math.min(state.onbStep | 0, (+p[1]) | 0)); set({ onbStep: st }); return; }
       if (state.screen === 'auth' && head === 'welcome') { set({ screen: 'landing' }); return; }
@@ -220,7 +247,13 @@
   function onPop(e) {
     if (!R.booted) return;
     var here = R.last;
-    if (closeLayer()) { try { history.pushState({ sb: 1 }, '', urlFor(here)); } catch (x) {} return; }
+    /* Every entry this app writes carries a state object; a NEW entry — an address typed, a
+       link followed — carries none. Back closes a layer and stays put; a new address is
+       somewhere the child asked to GO, so it is applied (applyRoute drops the layers). It
+       used to be swallowed by the open layer and pushed straight back to the old route. */
+    var fresh = !(e && e.state);
+    if (fresh) { try { history.replaceState({ sb: 1 }, '', location.href); } catch (x) {} }
+    if (!fresh && closeLayer()) { try { history.pushState({ sb: 1 }, '', urlFor(here)); } catch (x) {} return; }
     var st = (e && e.state) || {};
     var r = String(location.hash || '').replace(/^#\/?/, '');
     if (st.sbRoot || !r) {
@@ -232,7 +265,7 @@
       R.applying = true; try { applyRoute(top); } finally { R.applying = false; }
       return;
     }
-    if (r === here) return;
+    if (r === here) { if (fresh) { dropLayers(); render(); } return; }   // asked for the screen it is on: show it, uncovered
     /* the screen under a layer: closing Settings must not restart what is beneath it */
     if (state.settingsOpen && r === baseRoute()) { R.last = r; app.closeSettings(); return; }
     R.last = r;

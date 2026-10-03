@@ -466,7 +466,7 @@
     flash('The Word Atlas data is still loading'); };
   app2.trailUnit = id => { const c = active();
     const crs = courseOfId(id);
-    if (crs === 'exp' && !advOn() && !devOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    if (crs === 'exp' && !advOn() && !devOn()) { app2.atlasAdvDoor(); return; }
     state.trailCourse = crs;
     const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
     if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
@@ -481,7 +481,7 @@
   app2.trailChk = arg => { const c = active();
     /* checkpoint args carry their course: "honey|meadow:4" / "exp|proving:4" */
     const [crs, id] = String(arg).indexOf('|') >= 0 ? String(arg).split('|') : ['honey', String(arg)];
-    if (crs === 'exp' && !advOn() && !devOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    if (crs === 'exp' && !advOn() && !devOn()) { app2.atlasAdvDoor(); return; }
     state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
     const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
     if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
@@ -531,7 +531,7 @@
     set({ trailView: 'map', trailUnit: null, tq: null }); };
   /* a region on the atlas: "honey|meadow" */
   app2.trailAct = arg => { state.trailStop = null; const [crs, id] = String(arg || '').split('|');
-    if (crs === 'exp' && !advOn() && !devOn()) { app2.openAdvanced ? app2.openAdvanced() : flash('The Advanced Rounds come with the Advanced Pack'); return; }
+    if (crs === 'exp' && !advOn() && !devOn()) { app2.atlasAdvDoor(); return; }
     state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
     try { window.scrollTo(0, 0); } catch (e) {}
     maybeAmbush(active(), id);
@@ -1069,16 +1069,30 @@
        swap: bold art everywhere, and the mist kept for what is still ahead, so an unreached
        region recedes instead of the whole map fading. It is on the PIN, not the board — a
        board is never wholly locked, its stops are. */
+    const sub = stat.total ? stat.done + '/' + stat.total + ' stops' : 'ahead';
     return `<button data-act="trailAct" data-arg="${escA(crs + '|' + act.id)}" class="atlas-pin${locked ? ' locked' : ''}${done ? ' done' : ''}"
-        style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}">
+        style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}" aria-label="${escA((ROMAN[idx] || idx + 1) + ' ' + label + ', ' + sub)}">
       <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
         box-shadow:${cur ? `0 0 0 5px color-mix(in srgb,${a} 26%,transparent),0 6px 16px rgba(10,6,26,.5)` : '0 4px 12px rgba(10,6,26,.45)'};
         border:2px solid rgba(255,255,255,${locked ? '.42' : '.78'})">
         ${av || `<span style="font-family:var(--display);font-weight:800;font-size:${cur ? 15 : 13}px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">${done ? '★' : ROMAN[idx] || (idx + 1)}</span>`}
       </span>
       <span class="atlas-chip" style="${cur ? `border-color:color-mix(in srgb,${a} 60%,transparent)` : ''}">
-        <b>${esc(label)}</b><i>${stat.total ? stat.done + '/' + stat.total + ' stops' : 'ahead'}</i></span>
+        <b>${esc(label)}</b><i>${sub}</i></span>
     </button>`;
+  }
+  /* THE KEY UNDER A NARROW BOARD.
+     Nine regions with a two-line name chip each do not fit a 358x200 painting: on a
+     phone the chips sat on each other, the top row's numerals were cut off by the
+     board's edge and the avatar medallion covered the Roman Forum's count. A narrow
+     board (index.html: the .atlas-wrap container queries, plus a 640px media query for
+     browsers without them) shows only the medallions — each centred on its point, so
+     none can leave the board — and this key lists the same regions underneath, as
+     real buttons through the same door. Wide boards never show it; desktop is as it was. */
+  function atlasKey(rows, cap) {
+    return `<div class="atlas-key">${rows.map(r => `<button data-act="${r.act}" data-arg="${escA(r.arg)}" class="atlas-key-i${r.cls ? ' ' + r.cls : ''}"${r.cur ? ' aria-current="location"' : ''}>
+        <span class="atlas-key-n" style="background:${r.bg};color:${r.ink || '#fff'}">${r.badge}</span>
+        <span class="atlas-key-t"><b>${esc(r.name)}</b><i>${r.sub}</i></span></button>`).join('')}${cap ? `<p class="atlas-key-cap">${esc(cap)}</p>` : ''}</div>`;
   }
 
   /* the dotted route between the pins, so the order is never in doubt */
@@ -1106,18 +1120,28 @@
     const s = seq(c); const fr = frontier(c);
     const statOf = id => { const ns = s.map((n, i) => ({ n, i })).filter(x => x.n.act === id);
       return { total: ns.length, done: ns.filter(x => passedNode(c, x.n)).length, here: ns.some(x => x.i === fr) }; };
-    let curIdx = -1;
+    let curIdx = -1; const keyRows = [];
     const cells = pins.map(([id, x, y], i) => {
       const act = acts.find(a2 => a2.id === id); if (!act) return '';
       const st = statOf(id);
       const state2 = st.total && st.done >= st.total ? 'done' : st.here ? 'cur' : st.done ? 'cur' : 'locked';
       if (st.here) curIdx = i;
+      const [a, d] = ACCENT[act.world] || ACCENT.meadow;
+      const av = state2 === 'cur' && window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 26) : '';
+      keyRows.push({ act: 'trailAct', arg: crs + '|' + act.id, cls: state2, cur: state2 === 'cur',
+        name: ((act.title || '').split('·').slice(1).join('·').trim() || act.title).replace(/^The\s+/i, ''),
+        sub: st.total ? st.done + '/' + st.total + ' stops' : 'ahead',
+        bg: state2 === 'done' ? 'linear-gradient(160deg,#FFD24D,#C8791B)' : state2 === 'cur' ? `linear-gradient(160deg,${a},${d})` : '#3A3352',
+        ink: state2 === 'done' ? '#3B2A00' : '#fff',
+        badge: av || (state2 === 'done' ? '★' : ROMAN[i] || (i + 1)) });
       return atlasPin(c, act, i, x, y, st, state2, crs);
     }).join('');
-    return `<div class="atlas-board">
+    /* a locked continent sits under its own lock panel, so it gets no key to tap */
+    const keyed = crs !== 'exp' || advOn() || devOn();
+    return `<div class="atlas-wrap aw-${crs}"><div class="atlas-board">
       <img src="app-art/${img}.jpg" alt="" loading="lazy" decoding="async">
       ${atlasRoute(pins, curIdx)}
-      ${cells}</div>`;
+      ${cells}</div>${keyed ? atlasKey(keyRows) : ''}</div>`;
   }
   /* ---------------------------------------------------------------
      The third continent. Honey (three tiers) → the Expedition → Ultra.
@@ -1135,6 +1159,7 @@
   ];
   function ultraBoard(c) {
     const on = advOn() || devOn();
+    const keyRows = [];
     const pins = ULTRA_PINS.map(([label, x, y], i) => {
       const dnI = on ? uDnCount(c, i) : 0;
       const open = on && uOpen(c, i);
@@ -1150,18 +1175,23 @@
         : isDone ? '<i>all four cleared</i>'
         : open ? `<i>${dnI}/4 stops${byPass ? ' · by the Hidden Pass' : ''}</i>`
         : '<i>🔒 3 stops behind it — or its Hidden Pass</i>';
+      keyRows.push({ act: 'ultraAct', arg: String(i), cls: cur ? 'cur' : isDone ? 'done' : open ? '' : 'locked', cur,
+        name: label, sub: sub.replace(/<\/?i>/g, ''), badge: emb ? '🏅' : isDone ? '✓' : (i + 1),
+        bg: emb || isDone || cur ? ring : '#2A2440', ink: cur || isDone || emb ? '#3B2A00' : '#FFF6DE' });
       return `<button data-act="${on ? 'ultraAct' : 'openAdvanced'}" data-arg="${i}" class="atlas-pin${open || !on ? '' : ' locked'}"
-          style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}">
+          style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}" aria-label="${escA((i + 1) + ' ' + label + (sub ? ', ' + sub.replace(/<\/?i>/g, '') : ''))}">
         <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
           border:2px solid rgba(255,246,222,${cur || isDone ? '.9' : '.42'});color:${cur || isDone ? '#3B2A00' : 'rgba(255,246,222,.85)'};
           font-family:var(--display);font-weight:800;font-size:${cur ? 17 : 15}px;box-shadow:0 4px 12px rgba(6,4,18,.5)">${emb ? '🏅' : isDone ? '✓' : (i + 1)}</span>
         <span class="atlas-chip"><b>${esc(label)}</b>${sub}</span></button>`;
     }).join('');
     const line = 'Five landmarks, each hiding secrets. Clear 3 of 4 stops to move on — or find the Hidden Pass ⛩️ and skip ahead.';
-    return `<div class="atlas-board">
+    /* the caption takes its own line-height: the board's is 0 (for the image), and a
+       caption that wrapped drew both its lines on one baseline */
+    return `<div class="atlas-wrap aw-ultra"><div class="atlas-board">
       <img src="app-art/atlas-ultra.jpg" alt="" loading="lazy" decoding="async">
       ${pins}
-      <span style="position:absolute;left:12px;bottom:11px;z-index:4;font-size:11.5px;font-weight:800;color:#fff;background:rgba(10,7,26,.56);border-radius:999px;padding:5px 12px;backdrop-filter:blur(3px)">${esc(line)}</span></div>`;
+      <span class="atlas-cap" style="position:absolute;left:12px;bottom:11px;z-index:4;font-size:11.5px;line-height:1.35;font-weight:800;color:#fff;background:rgba(10,7,26,.56);border-radius:999px;padding:5px 12px;backdrop-filter:blur(3px)">${esc(line)}</span></div>${on ? atlasKey(keyRows, line) : ''}</div>`;
   }
   /* ---------------------------------------------------------------
      Ultra has its own curriculum now, not just five pins over a word pile.
@@ -1352,7 +1382,7 @@
     const input = `<input data-inp="uqType" data-key="uqKey" data-fkey="uqType" value="${escA(q.typed || '')}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="spell it…" style="width:100%;max-width:300px;display:block;margin:0 auto 12px;padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:17px;font-weight:800;text-align:center;letter-spacing:.08em;outline:none">`;
     const hear = `<button data-act="uqSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">🔊 Hear the word</button>`;
     const frame = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(14,10,26,.62)">
-      <div style="width:min(440px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">${inner}</div></div>`;
+      <div style="box-sizing:border-box;width:min(440px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">${inner}</div></div>`;
     if (q.kind === 'duel') return frame(`<div style="font-size:40px">🎭</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">${esc(q.rival)} challenges you!</h3>
       <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Best of three words. Win two and the clearing is yours.</p>
@@ -1559,6 +1589,39 @@
       </div>
     </div>`;
   }
+  /* A LOCKED CONTINENT HAS A DOOR, AND YOU MAY LOOK THROUGH IT.
+     The two plan-locked continents used to be one big button reading "Unlocks with the
+     Advanced Pack" over a blurred map — it named no way in, and on a child's screen it read
+     as a dead end. Each panel now says what it comes with and offers two real actions:
+     "Show a grown-up", which opens the Advanced Pack through the grown-up PIN
+     (app.openAdvanced → pinGate — the PIN dialog IS the door; the pack's page is drawn only
+     behind it), and "Look at the map", which lifts the veil so the child can see the board
+     before anyone unlocks it; its regions then lead to the same door. No price, and never
+     the words "ask a grown-up" (FIX-BEE v2 T3, tests/trust-v2.cjs). Guard:
+     tests/atlas-layout.cjs. */
+  function advLock(key, icon, title, line, blur) {
+    return `<div data-act="atlasAdvDoor" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;cursor:pointer;background:${blur ? 'linear-gradient(180deg,rgba(12,9,28,.66),rgba(12,9,28,.88));-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px)' : 'linear-gradient(180deg,rgba(10,8,26,.40),rgba(10,8,26,.80))'}">
+      <div style="text-align:center;padding:22px;max-width:26em">
+        <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG(icon, 24)}</span>
+        <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">${esc(title)}</span>
+        <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">${esc(line)} Comes with the Advanced Pack.</span>
+        <span style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+          <button data-act="atlasAdvDoor" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${iconSVG('lock', 14)} Show a grown-up</button>
+          <button data-act="atlasPeek" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:11px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);color:#fff;font-weight:800;font-size:14px">Look at the map</button>
+        </span></div></div>`;
+  }
+  function advPeekBar(key) {
+    return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding:10px 12px;border-radius:14px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
+      <span style="flex:1;min-width:180px;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted)">${iconSVG('lock', 13)} Just looking — this comes with the Advanced Pack.</span>
+      <button data-act="atlasAdvDoor" style="padding:9px 14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13px">Show a grown-up</button>
+      <button data-act="atlasPeek" data-arg="${key}" style="padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Done looking</button></div>`;
+  }
+  /* the door: the pack's own page, behind the PIN. app.openAdvanced returns silently while
+     advanced.js is not in, so go through app3's ultraUpsell, which waits for it and falls back
+     to the (PIN-guarded) plan sheet — one door, never a dead tap. The whole veil is this door
+     too, as the old single button was; its two buttons are the named, focusable ways in. */
+  app2.atlasAdvDoor = () => { if (app2.ultraUpsell) return app2.ultraUpsell(); if (window.ADV) app2.openAdvanced(); };
+  app2.atlasPeek = k => { const p = state.atlasPeek = Object.assign({}, state.atlasPeek); p[k] = !p[k]; render(); };
   function viewAtlas() {
     const c = active();
     state.trailCourse = 'honey';
@@ -1569,7 +1632,7 @@
     const x = expOk ? actSections(c, 'exp') : null;
     const advBoard = atlasBoard(c, 'exp');
     state.trailCourse = 'honey';
-    const price = (window.ADV && ADV.price) ? ADV.price() : 299;
+    const peek = state.atlasPeek || {};
     return `<div style="${RISE()}max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
@@ -1586,8 +1649,9 @@
            the lock content — icon, heading, two-line paragraph, price button — is
            272px. The button fell out of the bottom of the panel and landed on the
            next section's heading. Desktop never showed it: there the map is 596px
-           tall and the content has room to spare. -->
-      <div style="position:relative${expOk ? '' : ';min-height:302px'}">
+           tall and the content has room to spare. With two actions (a door and a look)
+           it is ~310px at 360px wide, so 340px — and the Ultra panel below needs the same. -->
+      <div style="position:relative${expOk || peek.exp ? '' : ';min-height:340px'}">
         ${advBoard}
         <!-- The scrim used to start at .34 opacity, which is nowhere near enough to
              cover what is under it: the expedition map's region labels are white
@@ -1596,24 +1660,14 @@
              as a locked one. Stronger now, and blurred, so the map is still legibly
              THERE — you can see there is something to unlock — without any of its
              lettering competing with the lettering on top of it. -->
-        ${expOk ? '' : `<button data-act="openAdvanced" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;background:linear-gradient(180deg,rgba(12,9,28,.66),rgba(12,9,28,.88));-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px)">
-          <span style="text-align:center;padding:22px;max-width:26em">
-            <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('lock', 24)}</span>
-            <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">Six expert expeditions</span>
-            <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">54 stops at national level, each on its own map, gated at 90%. Unlocks with the Advanced Pack.</span>
-            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${iconSVG('lock',14)} Advanced Pack</span></span></button>`}
+        ${expOk ? '' : peek.exp ? advPeekBar('exp') : advLock('exp', 'lock', 'Six expert expeditions', '54 stops at national level, each on its own map, gated at 90%.', true)}
       </div>
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">Ultra Champions</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#241E33;background:linear-gradient(135deg,#FFE49B,#E8A81C);border-radius:999px;padding:4px 11px">THE LAST CONTINENT</span></div>
-      <div style="position:relative">
+      <div style="position:relative${expOk || peek.ultra ? '' : ';min-height:340px'}">
         ${ultraBoard(c)}
-        ${expOk ? '' : `<button data-act="openAdvanced" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;background:linear-gradient(180deg,rgba(10,8,26,.40),rgba(10,8,26,.80))">
-          <span style="text-align:center;padding:22px;max-width:26em">
-            <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG('crown', 24)}</span>
-            <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">The champions' journey</span>
-            <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">Every word in the library, hardest first, in day-sized blocks. The end of the road.</span>
-            <span style="display:inline-block;margin-top:14px;padding:11px 20px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${iconSVG('lock',14)} Advanced Pack</span></span></button>`}
+        ${expOk ? '' : peek.ultra ? advPeekBar('ultra') : advLock('ultra', 'crown', "The champions' journey", 'Every word in the library, hardest first, in day-sized blocks. The end of the road.', false)}
       </div>
       <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>
     </div>`;
@@ -1988,7 +2042,40 @@
     const el = e.target; if (!el || el.id !== 'sb-pan') return;
     if (_mwMax !== Infinity && el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
     _mwScroll = el.scrollLeft;   // the camera position SURVIVES re-renders
+    popFitSoon();
   } catch (_) {} }, true);
+  /* THE STOP CARD STAYS ON SCREEN. Which side of its pin the callout opens on is decided
+     in BOARD percent, but on a phone only a 360px window of a 3,000px panorama is showing,
+     so a card centred on a stop near that window's edge ran off it — "Clear the earlier
+     stops firs" on a 390px phone. Once the camera has settled (and whenever it pans) the
+     card is slid sideways into the window (--dx) while its pointer slides the other way
+     to keep pointing at the pin, and it flips above/below if that side would be cut off.
+     Measured from layout (offsetLeft/offsetWidth), so the pop-in's scale cannot skew it.
+     Guard: tests/atlas-layout.cjs (first, middle and last stops at 360 and 390). */
+  let _popRaf = 0;
+  function popFitSoon() { if (_popRaf) return; _popRaf = requestAnimationFrame(() => { _popRaf = 0; popFit(); }); }
+  function popFit() { try {
+    const pan = document.getElementById('sb-pan'), p = pan && pan.querySelector('.atlas-pop'); if (!p) return;
+    const bd = p.offsetParent; if (!bd || !bd.offsetWidth) return;
+    const br = bd.getBoundingClientRect(), wr = pan.getBoundingClientRect();
+    /* #root carries a CSS zoom (1.09, or the text-size setting): rects are zoomed, offsets
+       are not — so work in screen pixels and hand the nudge back in CSS pixels */
+    const z = br.width / bd.offsetWidth || 1;
+    const w = p.offsetWidth * z, h = p.offsetHeight * z, side = p.dataset.side || 'c';
+    const L = Math.max(wr.left, 0) + 6, R = Math.min(wr.right, document.documentElement.clientWidth) - 6;
+    const left = br.left + p.offsetLeft * z + (side === 'l' ? -16 * z : side === 'r' ? 16 * z - w : -w / 2);
+    let dx = 0;
+    if (left + w > R) dx = R - (left + w);
+    if (left + dx < L) dx = L - left;
+    p.style.setProperty('--dx', Math.round(dx / z) + 'px');
+    /* above or below: whichever side the board actually has room for */
+    const top = br.top + p.offsetTop * z, T = Math.max(wr.top, br.top) + 4, B = Math.min(wr.bottom, br.bottom) - 4;
+    const below = p.classList.contains('below');
+    const fitsUp = top - 24 * z - h >= T, fitsDown = top + 24 * z + h <= B;
+    if (below && !fitsDown && fitsUp) { p.classList.remove('below'); p.style.setProperty('--ty', 'calc(-100% - 24px)'); }
+    else if (!below && !fitsUp && fitsDown) { p.classList.add('below'); p.style.setProperty('--ty', '24px'); }
+  } catch (_) {} }
+  window.addEventListener('resize', popFitSoon);
   function mwClamp(edge, homeX) { setTimeout(() => { try {
     const el = document.getElementById('sb-pan'); if (!el) { _mwMax = Infinity; return; }
     const bd = el.firstElementChild, img = bd && bd.querySelector('img');
@@ -2383,7 +2470,7 @@
        handler, which left every button in the card dead (the "can't pick a
        trivia answer" bug) */
     const shell = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(20,12,30,.5)" data-act="treClose">
-      <div data-act="popKeep" style="width:min(430px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:sb-rise .3s ease both">
+      <div data-act="popKeep" style="box-sizing:border-box;width:min(430px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:sb-rise .3s ease both">
         ${inner}
         <button data-act="treClose" style="position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:8px;background:var(--surface2);color:var(--muted);font-weight:800">✕</button>
       </div></div>`;
@@ -2417,7 +2504,19 @@
   /* ---- THE AMBUSH: a moth of the Unspelling snatches your buddy ----
      Rarely, on stepping onto a region, a villain grabs the avatar and only a
      SPELLED WORD cuts them free — the action is always spelling, never a chore.
-     At most once per region per day; fleeing costs nothing but the rescue reward. */
+     At most once per region per day; fleeing costs nothing but the rescue reward.
+     IT NEVER STANDS IN THE DOORWAY. It used to open as a full-screen modal in the same
+     tick as the region, so the child's first sight of a country was the moth — and on a
+     fresh profile (a new child, ?demo, a screenshot sweep) every region rolled it on its
+     very first visit, which read as "a moth blocks every region". Now: never on the first
+     visit to a region (tr(c).ambV); the board renders first and the moth arrives after
+     AMB_DELAY only if the child is still standing on that board with nothing else open;
+     and it closes on ✕, "Run away" or Escape. Its card (like the chest's and the rival's) is
+     sized against its overlay, not 94vw: #root's 1.09 zoom made 94vw wider than a phone, and
+     the ✕ and the heading's last word fell off the right edge. Guards: tests/atlas-alive.cjs
+     (first visit, map first, ✕, Escape) and tests/atlas-layout.cjs (on screen at 360/390). */
+  const AMB_DELAY = 1600;
+  let _ambT = 0;
   function ambushWord(c) {
     try { const s = seq(c); const fr = s[Math.min(frontier(c), s.length - 1)];
       const u = fr && fr.kind === 'unit' ? fr.u : (s.find(n => n.kind === 'unit') || {}).u;
@@ -2428,10 +2527,19 @@
   function maybeAmbush(c, key) {
     try { const day = Math.floor(Date.now() / 864e5);
       const am = tr(c).ambD = tr(c).ambD || {};
+      const seen = tr(c).ambV = tr(c).ambV || {};
+      if (!seen[key]) { seen[key] = 1; save(); return; }   // a first visit meets the country, not the moth
       if (state.villain || state.treG || am[key] === day || Math.random() >= 0.22) return;
       am[key] = day; save();
-      state.villain = { w: ambushWord(c), typed: '', wrong: 0 };
-      setTimeout(() => { try { if (state.villain) say(state.villain.w); } catch (e) {} }, 650);
+      clearTimeout(_ambT);
+      _ambT = setTimeout(() => { try {
+        const here = state.nav !== 'trail' ? null : state.trailView === 'act' ? state.trailAct
+          : state.trailView === 'ultra' ? 'ultra' + state.ultraAct : null;
+        if (here !== key || active() !== c || state.villain || state.treG || state.tq || state.pinDlg
+          || state.settingsOpen || state.drawerOpen || state.walletOpen || state.showTiers || state.wordCard) return;
+        state.villain = { w: ambushWord(c), typed: '', wrong: 0 }; render();
+        setTimeout(() => { try { if (state.villain) say(state.villain.w); } catch (e) {} }, 650);
+      } catch (e) {} }, AMB_DELAY);
     } catch (e) {}
   }
   app2.villType = v => { if (state.villain) state.villain.typed = String(v == null ? '' : v); };
@@ -2452,22 +2560,23 @@
   function villainCard(c) {
     const V = state.villain; if (!V) return '';
     const av = (function () { try { return SB_AVATAR(c.avatar || 'bizzy', 56) || ''; } catch (e) { return ''; } })();
-    return `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(16,10,28,.6)">
-      <div style="width:min(430px,94vw);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">
-        <div style="font-size:42px;line-height:1">🦇</div>
+    return `<div data-act="villFlee" style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(16,10,28,.6)">
+      <div data-act="noop" data-trap="villain" role="dialog" aria-modal="true" aria-labelledby="sb-vill-h" style="position:relative;box-sizing:border-box;width:min(430px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">
+        <div style="font-size:42px;line-height:1" aria-hidden="true">🦇</div>
         <div style="position:relative;width:76px;height:76px;margin:8px auto 2px;display:grid;place-items:center">
           <span style="width:56px;height:56px;display:block;filter:saturate(.65) brightness(.92)">${av || '🐝'}</span>
           <span style="position:absolute;inset:0;border-radius:50%;border:3px dashed rgba(130,96,210,.85)"></span>
         </div>
-        <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">A moth of the Unspelling strikes!</h3>
+        <h3 id="sb-vill-h" style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">A moth of the Unspelling strikes!</h3>
         <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">It has your buddy in a net. <b>Spell the word you hear</b> to cut them free.</p>
         <button data-act="villSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">🔊 Hear the word</button>
-        <input data-inp="villType" data-key="villKey" data-fkey="villType" value="${escA(V.typed || '')}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="spell it…" style="width:100%;max-width:300px;display:block;margin:0 auto 10px;padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:17px;font-weight:800;text-align:center;letter-spacing:.08em;outline:none">
+        <input data-inp="villType" data-key="villKey" data-fkey="villType" value="${escA(V.typed || '')}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="spell it…" aria-label="Spell the word you hear" style="width:100%;max-width:300px;display:block;margin:0 auto 10px;padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--text);font-size:17px;font-weight:800;text-align:center;letter-spacing:.08em;outline:none">
         ${V.wrong >= 2 ? `<p style="font-size:12.5px;font-weight:700;color:var(--muted);margin:0 0 10px">Hint: it starts with “${esc(V.w.slice(0, 2))}…” and has ${V.w.length} letters.</p>` : ''}
         <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
-          <button data-act="villGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">✂️ Cut them free!</button>
+          <button data-act="villGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;text-shadow:0 0 2px rgba(20,10,30,.9),0 1px 2px rgba(20,10,30,.75);font-weight:800;font-size:14.5px;box-shadow:var(--edge)">✂️ Cut them free!</button>
           <button data-act="villFlee" style="padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13.5px">Run away</button>
         </div>
+        <button data-act="villFlee" class="sb-vill-x" aria-label="Close" title="Close (Esc)" style="position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);border:1px solid var(--line);color:var(--text)">${iconSVG('close', 16)}</button>
       </div></div>`;
   }
 
@@ -2718,7 +2827,8 @@
     const _tx = _side === 'l' ? '-16px' : _side === 'r' ? 'calc(-100% + 16px)' : '-50%';
     const _ty = _below ? '24px' : 'calc(-100% - 24px)';
     const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
-    const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}" data-act="popKeep" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
+    if (!shut) setTimeout(popFit, 0);   // after panTo/mwClamp have moved the camera
+    const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}" data-act="popKeep" data-side="${_side}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
       <div class="atlas-pop-in">
         <div style="display:flex;align-items:flex-start;gap:13px">
           <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>
@@ -2794,6 +2904,12 @@
     return v === 'unit' ? viewUnit() : v === 'words' ? viewWords() : v === 'quiz' ? viewQuiz()
       : v === 'ultra' ? viewUltraAct() : v === 'act' ? viewAct() : viewAtlas(); } };
 
+  /* Escape lets go of the moth (and closes a chest), like every other layer in the app */
+  window.addEventListener('keydown', e => { try {
+    if (e.key !== 'Escape' || state.pinDlg || state.settingsOpen) return;
+    if (state.villain) { e.preventDefault(); app2.villFlee(); }
+    else if (state.treG) { e.preventDefault(); app2.treClose(); }
+  } catch (_) {} });
   /* keyboard: 1-4 answers, Enter advances/checks, R replays */
   window.addEventListener('keydown', e => { try {
     if (state.nav !== 'trail' || !state.tq || state.tq.over || state.pinDlg || state.settingsOpen) return;
