@@ -184,10 +184,14 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
 - **Tests run from one command**: `npm test` (everything, sequential, summary table) and
   `npm run check` (the fast subset; a test joins it with an `@check` comment). Tests take the
   browser from `SB_CHROME`. CI (`.github/workflows/bee-tests.yml`) runs on every push except
-  gh-pages. **Both deploy scripts refuse to ship unless `npm run check` passes**, then minify a
-  COPY (`tools/minify.cjs`, esbuild) — the source stays readable and no-build — and re-run the
-  browser half of the check against that copy. Tests that read source text skip themselves
-  against a minified tree (`--root`), by name, saying why.
+  gh-pages. **The deploy scripts no longer run the tests** (owner, 3 Oct 2026: "remove the gate
+  as all changes will only pass through this chat"). The session that makes a change runs the
+  tests that touch it before committing; the deploy keeps only its seconds-long structural
+  guards (syntax, stamp, CNAME, asset references, art trees, size), then minifies a COPY
+  (`tools/minify.cjs`, esbuild) — the source stays readable and no-build. Nothing now tests the
+  minified tree, so after a deploy that touches minify.cjs or adds a new script, run
+  `node tests/lib/run.cjs --check --browser-only --root <deploy tree>` by hand. Tests that read
+  source text skip themselves against a minified tree (`--root`), by name, saying why.
 - **Offline**: `sw.js` (pages network-first, stamped assets cache-first in `bee-core-<stamp>`,
   audio cached once played), `manifest.json` + `icons/`; registered only over http(s).
 - **First load is 1.7MB on a phone (was 12.3MB)** — idle data waits for the child's first tap,
