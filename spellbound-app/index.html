@@ -1082,6 +1082,15 @@
   .arc-hero{position:relative;overflow:hidden;border-radius:18px;text-align:left;color:#fff;min-height:158px;box-shadow:0 10px 26px rgba(43,27,94,.28);display:block;transition:transform .16s ease,box-shadow .16s ease}
   .arc-hero:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(43,27,94,.36)}
   .arc-hero-art{position:absolute;right:-14px;bottom:-22px;opacity:.96;filter:drop-shadow(0 5px 14px rgba(0,0,0,.42));pointer-events:none}
+  /* a painted hero: the picture fills the card from the right; .arc-hero::after's scrim keeps the words legible */
+  .arc-hero-img{position:absolute;inset:0;background-size:cover;background-position:right center;pointer-events:none}
+  .arc-hero:has(.arc-hero-img){min-height:200px}
+  /* the game grid: fixed columns so a multiple-of-four set always fills its rows */
+  .arc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:2px 0 16px}
+  @media (max-width:720px){ .arc-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  /* a game's word level, as one chip on the tile's picture (top right, across from its badge) */
+  .arc-lvl{position:absolute;top:10px;right:10px;z-index:2;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.94);color:#2A2244;font-weight:800;font-size:11.5px;line-height:1.3;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  .arc-lvl:hover{background:#fff}
   /* the character sits behind the copy, so a scrim keeps antennae and props off the words */
   .arc-hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(96deg,rgba(18,11,42,.84) 0%,rgba(18,11,42,.72) 46%,rgba(18,11,42,.3) 72%,transparent 90%)}
   .arc-hero-in{display:block;position:relative;z-index:2;padding:18px 20px;max-width:min(72%,100% - 108px)}
@@ -1089,7 +1098,7 @@
   .arc-hero-title{font-family:var(--display);font-weight:800;font-size:21px;line-height:1.08}
   .arc-hero-blurb{font-size:12.5px;line-height:1.45;margin-top:5px;opacity:.9}
   .arc-hero-cta{display:inline-flex;align-items:center;gap:9px;margin-top:13px}
-  .arc-hero-go{padding:9px 17px;border-radius:10px;background:#FFC23D;color:#241E33;font-weight:800;font-size:13.5px}
+  .arc-hero-go{padding:9px 17px;border-radius:10px;background:#FFC23D;color:#241E33;font-weight:800;font-size:13.5px;white-space:nowrap}
   .arc-hero-sub{font-size:11.5px;font-weight:800;opacity:.82}
   .arc-tile{position:relative;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--paper,var(--bg2));box-shadow:0 0 0 1px var(--line),var(--sh-rest);text-align:left;transition:transform .15s ease,box-shadow .15s ease}
   .arc-tile:hover{transform:translateY(-3px);box-shadow:0 0 0 1px var(--line),0 12px 24px rgba(43,27,94,.17)}
