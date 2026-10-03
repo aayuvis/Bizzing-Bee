@@ -1,5 +1,6 @@
-/* THE ATLAS FITS A PHONE: no label on another, nothing clipped, a card that stays on screen,
-   and a locked continent with a real door — @check
+/* THE ATLAS FITS A PHONE — @check
+   No label on another, nothing clipped, a card that stays on screen, a moth that fits, and
+   a locked continent with a real door.
 
    Four owner-reported faults from the 3 Oct screenshot sweep, each measured here:
    1. The overview at 390x844: nine two-line region chips on a 358x200 painting sat on each
