@@ -67,6 +67,11 @@ function lowContrast() {
     await pg.evaluate(() => { state.screen = 'app'; app.setNav('home'); }); await pg.clock.runFor(800);
     const T = vp.n;
 
+    /* transitions off before anything is measured by its colour: the Continue pill carries
+       `transition: all`, and one caught mid-fade on a loaded machine is no colour at all (the gate
+       once saw zero primaries on a Home that plainly had one); a card mid-fade from light to dusk
+       is not the dusk look either */
+    await pg.addStyleTag({ content: '*,*::before,*::after{transition:none!important;animation:none!important}' });
     /* 1. Continue is the only primary on Home */
     const prim = await pg.evaluate(filledPrimaries);
     ok(prim.length === 1 && /^goNext:/.test(prim[0]), `${T}: Continue is the only filled primary on Home (${prim.join(' | ')})`);
@@ -75,8 +80,6 @@ function lowContrast() {
     ok(Math.max(ov.sw, ov.bw) <= vp.width, `${T}: nothing runs past the screen edge (${Math.max(ov.sw, ov.bw)}px in a ${vp.width}px viewport)`);
     /* 3. contrast in every theme (light, white, dusk) — text on Home and the top bar */
     const contrast = {};
-    /* transitions off while measuring: a card caught mid-fade from light to dusk is not the dusk look */
-    await pg.addStyleTag({ content: '*,*::before,*::after{transition:none!important;animation:none!important}' });
     for (const mode of ['light', 'white', 'dusk']) { await pg.evaluate(m => { state.mode = m; render(); }, mode); await pg.clock.runFor(300); contrast[mode] = await pg.evaluate(lowContrast); }
     await pg.evaluate(() => { state.mode = 'light'; render(); });
     ok(Object.values(contrast).every(a => a.length === 0), `${T}: every line of text on Home clears WCAG AA in light, white and dusk` + (Object.values(contrast).some(a => a.length) ? ' — ' + JSON.stringify(contrast).slice(0, 300) : ''));
