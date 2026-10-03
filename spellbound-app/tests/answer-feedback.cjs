@@ -6,6 +6,9 @@
    word letter by letter against what the child wrote, names the concept family that explains
    THAT miss (missWhy), and waits for Next. The mascot is never sad.
 
+   FIX2 (3 Oct): and NOTHING COVERS THE PANEL — no toast is visible over it on any of these
+   surfaces, at a desktop and on a phone (the near-miss "So close" toast sat across the diff).
+
    Driven for real on: the practice card, the Atlas quiz gate (a spell item and a concept MCQ),
    the Mock Spelling Bee at the microphone, a typed game card (Daily Buzz) and a multiple-choice
    game card (Word Quiz · Spellings). Each: right advances, wrong holds (checked after 4s, longer
@@ -32,6 +35,19 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     try { window.speechSynthesis.speak = () => {}; } catch (e) {}
     const TEAR = '#5EC2FF';   // the old 'oops' face drew a tear in this colour
     const missOn = () => { const m = document.querySelector('.sb-miss'); return m ? { why: m.dataset.why, cols: m.querySelectorAll('.sb-mdcol').length, txt: m.innerText } : null; };
+    /* FIX2 #1: nothing covers the panel — no toast may be visible on top of it, the near-miss
+       toast the practice card used to raise included, nor one raised while the panel is up */
+    const covered = () => { const ms = [...document.querySelectorAll('.sb-miss')].filter(m => m.getClientRects().length); if (!ms.length) return 'no panel';
+      const hit = [...document.querySelectorAll('.sb-toast')].filter(t => { if (!t.getClientRects().length || getComputedStyle(t).display === 'none' || getComputedStyle(t).visibility === 'hidden') return false;
+        const r = t.getBoundingClientRect(); return ms.some(m => { const a = m.getBoundingClientRect(); return !(r.right <= a.left || r.left >= a.right || r.bottom <= a.top || r.top >= a.bottom); }); });
+      if (hit.length) return 'covered by "' + hit[0].textContent.trim().slice(0, 40) + '"';
+      /* and the rule that guarantees it whatever the layout: no toast shows at all while a panel is up */
+      const shown = [...document.querySelectorAll('.sb-toast')].find(t => t.getClientRects().length && getComputedStyle(t).display !== 'none' && getComputedStyle(t).visibility !== 'hidden');
+      return shown ? 'a toast showing beside it ("' + shown.textContent.trim().slice(0, 30) + '")' : ''; };
+    /* the panel is scrolled to the foot of the screen first — where a toast is drawn — so a toast
+       that showed would land on it on every surface, not only where the layout happens to put it */
+    const toastOver = async () => { const now = covered(); const m = document.querySelector('.sb-miss'); if (m) m.scrollIntoView({ block: 'end' });
+      flash('A message while the panel is up'); await W(80); const r = now || covered(); window.scrollTo(0, 0); return r; };
 
     /* ---- the mascot has no frown to give ---- */
     const strip = h => h.replace(/bc\d+/g, 'X');
@@ -41,7 +57,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     state.sessionWords = [{ w: 'committee', d: 'a group chosen to decide things' }, { w: 'knight', d: 'a soldier on horseback' }, { w: 'harbour', d: 'a place for ships' }];
     app.startTrain(); await W(200);
     state.typed = 'comitee'; app.check(); await W(150);
-    o.pcPanel = missOn(); o.pcMood = state.mood;
+    o.pcPanel = missOn(); o.pcMood = state.mood; o.pcCover = await toastOver();
     const pcFace = (document.querySelector('[data-act="speak"]') || {}).closest ? document.querySelector('#root').innerHTML : '';
     o.pcNoTear = pcFace.indexOf(TEAR) < 0;
     o.pcNoShake = !/sb-shake/.test(document.querySelector('#root').innerHTML.split('data-act="speak"')[0].slice(-600));
@@ -66,7 +82,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     // a spell item, wrong
     q2.i = spellAt; q2.picked = null; render(); await W(100);
     const sw = q2.items[spellAt].w; app.tqInput(sw.slice(0, -1) + (sw.slice(-1) === 'x' ? 'y' : 'x')); app.tqSpell(); await W(150);
-    o.qgPanel = missOn();
+    o.qgPanel = missOn(); o.qgCover = await toastOver();
     await W(4000);
     o.qgHeld = state.tq.i === spellAt && state.tq.picked != null && !!missOn();
     app.tqNext(); await W(150);
@@ -86,7 +102,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     app.mbOpen(); await W(150); app.mbStart(); await W(200);
     const g = state.mb; g.word = { w: 'meringue', d: 'a sweet topping of whipped egg whites', y: 3 }; g.phase = 'me'; g.typed = ''; g.asked = {}; render(); await W(100);
     app.mbType('merang'); app.mbSpell(); await W(150);
-    o.mbPanel = missOn(); o.mbHeldPhase = state.mb.phase;
+    o.mbPanel = missOn(); o.mbHeldPhase = state.mb.phase; o.mbCover = await toastOver();
     await W(4000);
     o.mbHeld = state.mb.phase === 'meDone' && !!state.mb.hold && !!missOn();
     app.mbGoOn(); await W(200);
@@ -97,7 +113,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     app.playGame('buzz'); await W(200);
     const gb = state.game; gb.list = [{ w: 'rhythm', d: 'a strong regular repeated pattern' }, { w: 'island', d: 'land with water all round' }, { w: 'harbour', d: '' }]; gb.i = 0; render();
     state.typed = 'rythm'; app.gSubmit(); await W(150);
-    o.gbPanel = missOn();
+    o.gbPanel = missOn(); o.gbCover = await toastOver();
     await W(4000);
     o.gbHeld = state.game.i === 0 && state.game.wait === true && !!missOn() && !!document.querySelector('[data-act="gMissGo"]');
     app.gMissGo(); await W(200);
@@ -110,7 +126,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     app.wqStart('spell'); await W(250);
     const gm = state.game; const q0 = gm.qs[0]; const wrongIdx = q0.choices.findIndex(c => c !== q0.answer);
     app.gPick(String(wrongIdx)); await W(150);
-    o.mcPanel = missOn();
+    o.mcPanel = missOn(); o.mcCover = await toastOver();
     await W(4000);
     o.mcHeld = state.game.i === 0 && state.game.picked != null && !!document.querySelector('[data-act="gMcNext"]');
     app.gMcNext(); await W(200);
@@ -124,6 +140,9 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(r.pcPanel && r.pcPanel.why === 'double' && r.pcPanel.cols >= 9, 'practice card: a miss shows the word letter by letter and WHY (committee → double letters)');
   ok(r.pcMood === 'think' && r.pcNoTear && r.pcNoShake, 'practice card: the bee stays kind on a miss (mood think, no tear, no head-shake)');
   ok(r.pcHeld, 'practice card: the miss HOLDS (still there after 4s)');
+  ok(r.pcPanel && /So close — 2 letters off/.test(r.pcPanel.txt), 'practice card: a near miss says "So close — 2 letters off" IN the panel\'s headline, where it covers nothing');
+  const covers = { practice: r.pcCover, 'Atlas quiz gate': r.qgCover, 'Mock Bee': r.mbCover, 'Daily Buzz': r.gbCover, 'Word Quiz': r.mcCover };
+  ok(Object.values(covers).every(v => v === ''), 'no toast is ever drawn over the letter-by-letter panel — on a miss, or raised while it is up (' + Object.entries(covers).map(([k, v]) => k + ': ' + (v || 'clear')).join(', ') + ')');
   ok(r.pcNext, 'practice card: Next moves on and clears the panel');
   ok(r.pcSilent === 'silent', 'practice card: "nite" for knight is explained as a silent letter');
   ok(r.pcRightAdvances, 'practice card: a right answer advances by itself');
@@ -143,6 +162,24 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(r.mcHeld, 'Word Quiz: and holds with a Next button');
   ok(r.mcNext, 'Word Quiz: Next moves on');
   ok(r.mcRightAdvances, 'Word Quiz: a right pick advances by itself');
+  /* ---- the same on a phone, where the toast sat right across the diff (390×844) ---- */
+  const ctxP = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  await ctxP.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, seed);
+  const pp = await ctxP.newPage(); pp.on('pageerror', e => errs.push('phone ' + e.message));
+  await pp.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pp.waitForTimeout(2800);
+  const ph = await pp.evaluate(async () => { const W = ms => new Promise(res => setTimeout(res, ms)); state.sound = false;
+    window.Audio = function () { return { play: () => Promise.resolve(), pause: () => {} }; }; try { window.speechSynthesis.speak = () => {}; } catch (e) {}
+    const covered = () => { const ms = [...document.querySelectorAll('.sb-miss')].filter(m => m.getClientRects().length); if (!ms.length) return 'no panel';
+      const hit = [...document.querySelectorAll('.sb-toast')].filter(t => { if (!t.getClientRects().length || getComputedStyle(t).display === 'none' || getComputedStyle(t).visibility === 'hidden') return false;
+        const r = t.getBoundingClientRect(); return ms.some(m => { const a = m.getBoundingClientRect(); return !(r.right <= a.left || r.left >= a.right || r.bottom <= a.top || r.top >= a.bottom); }); });
+      return hit.length ? 'covered by "' + hit[0].textContent.trim().slice(0, 40) + '"' : ''; };
+    state.sessionWords = [{ w: 'committee', d: 'a group chosen to decide things' }, { w: 'knight', d: 'a soldier on horseback' }];
+    app.startTrain(); await W(200); state.typed = 'comitee'; app.check(); await W(200);
+    const onMiss = covered(); flash('A message while the panel is up'); await W(80); const raised = covered();
+    app.next(); await W(150); const back = [...document.querySelectorAll('.sb-toast')].some(t => getComputedStyle(t).display !== 'none');
+    return { onMiss, raised, back }; });
+  ok(ph.onMiss === '' && ph.raised === '', `phone (390×844): no toast covers the practice card's panel, on the miss or raised after (${ph.onMiss || 'clear'} / ${ph.raised || 'clear'})`);
+  ok(ph.back, 'phone: once the panel goes (Next), a toast still in its time shows again — toasts are held back, not lost');
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);

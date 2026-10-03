@@ -346,8 +346,21 @@ function _paintToast(){ try{
     if(!el){ el=document.createElement('div'); el.id='sb-toast-live'; el.className='sb-toast';
       el.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:9999;pointer-events:none;background:var(--accent);color:#fff;font-weight:800;font-size:15px;padding:13px 22px;border-radius:14px;box-shadow:0 8px 26px rgba(10,6,26,.34);max-width:min(90vw,460px);text-align:center';
       document.body.appendChild(el); }
-    el.textContent=state.toast; return true;
+    el.textContent=state.toast; _toastVsMiss(); return true;
   }catch(e){ return false; } }
+/* NOTHING COVERS THE MISS PANEL (FIX2 #1). The letter-by-letter diff IS the lesson, and a toast
+   ("So close — 2 letters off!") was drawn straight across it at the bottom of the screen, on a
+   desktop and on a phone. While a miss panel is on screen no toast shows — on every surface that
+   draws one (practice, the Atlas quiz gate, the Mock Bee, the games), because it is decided here,
+   after every paint, not at each place that grades. The near-miss words moved into the panel. */
+function _toastVsMiss(){ try{
+    const up=[...document.querySelectorAll('.sb-miss')].some(m=>m.getClientRects().length>0);
+    document.querySelectorAll('.sb-toast').forEach(t=>{ t.style.display=up?'none':''; });
+  }catch(e){} }
+/* the near-miss headline for the panel: said where it cannot cover anything */
+function nearHead(typed,w){ try{ const a=nkey(typed), b=nkey(w); const d=lev(a,b);
+    if(a && d>0 && d<=2 && b.length>=4) return 'So close — '+d+' letter'+(d>1?'s':'')+' off. Here is the word, letter by letter'; }catch(e){}
+  return undefined; }
 function flash(msg){ state.toast = msg; scheduleToast();
   if(_gameOverlayUp() && _paintToast()) return;      // a game is running: do not rebuild the app
   render(); }
@@ -2878,7 +2891,7 @@ const app = {
       autoAdvance(850);  // correct → already marked complete; move on, no click needed
     } else {
       addMiss(curWord());
-      sfx('wrong'); const d=lev(ans,target); if(d>0 && d<=2 && target.length>=4){ state.toast='So close — '+d+' letter'+(d>1?'s':'')+' off! 💡'; scheduleToast(2400); }
+      sfx('wrong');   /* "So close — 2 letters off" is the miss panel's own headline now (viewTrainCard): as a toast it sat on the letter-by-letter diff */
       state.lastTry=ans;   // the attempt itself, so the letter-by-letter panel survives the child retyping (FIX-BEE D3)
       state.status='wrong'; state.mood='think'; state.sessionDone+=1; state._run=0; render();   // a kind face on a miss, never a frown
       // NO auto-advance on a wrong answer. It used to move on after 2.2s, which is less
@@ -3604,11 +3617,17 @@ const app = {
   reviseMisses:()=>{ const c=active(); const list=(c.missed||[]).slice(0,20); if(!list.length){ flash('No missed words yet — nice work!'); return; } state.sessionWords=list.map(m=>({w:m.w,d:m.d||'',s:m.s||'',p:m.p||'',o:m.o||'',r:m.r||'',y:m.y||3})); state.sessionLabel='Revise misses'; state.gi=0; state.coachSession=false; app.startTrain(); },
   parentLogToggle:(i)=>{ i=+i; set({parentLogOpen: state.parentLogOpen===i?null:i}); },
   // ===== Word Journeys (etymology lessons) =====
-  openJourneys:()=>{ if(!gateFeature('journeys','Word Journeys')) return; set({nav:'journeys', screen:'app', lessonSel:null, conceptSel:null, game:null, mood:'happy'}); },
+  /* Word Journeys opens for EVERY child. The tales a child earns — one per Stage cleared
+     (loreCount) — are theirs on any plan, and the Story vault and a stage-cleared "Read →" both
+     send them here. The whole screen used to sit behind gateFeature, which put the grown-up PIN
+     in front of a child's own earned tales, and on #/journeys left that PIN standing over the
+     screen beneath. The plan lock is per lesson now (journeyOpen): quiet on the card, and a tap
+     on a locked one asks a grown-up, like every other plan lock. */
+  openJourneys:()=>{ set({nav:'journeys', screen:'app', lessonSel:null, conceptSel:null, game:null, mood:'happy'}); },
   journeySetView:(v)=>set({journeyView:v, journeyPage:0}),
   journeyPagePrev:()=>set({journeyPage:Math.max(0,(state.journeyPage||0)-1)}),
   journeyPageNext:()=>set({journeyPage:(state.journeyPage||0)+1}),
-  openLesson:(n)=>{ const earned=+n<=loreCount(); if(!state.premium && !earned){ set({showPaywall:true}); return; } const L=lessonsAll().find(x=>x.n===+n); if(!L) return; set({nav:'journeys', screen:'app', lessonSel:L, lessonWordsOpen:false, lessonGuided:(state.journeyView==='guided'), lessonStep:0}); try{window.scrollTo(0,0);}catch(e){} },
+  openLesson:(n)=>{ if(!journeyOpen(n)){ gateFeature('journeys','Word Journeys'); return; } const L=lessonsAll().find(x=>x.n===+n); if(!L) return; set({nav:'journeys', screen:'app', lessonSel:L, lessonWordsOpen:false, lessonGuided:(state.journeyView==='guided'), lessonStep:0}); try{window.scrollTo(0,0);}catch(e){} },
   lessonBack:()=>set({lessonSel:null}),
   lessonStepGo:(i)=>{ set({lessonStep:+i}); try{window.scrollTo(0,0);}catch(e){} },
   lessonStepPrev:()=>{ set({lessonStep:Math.max(0,(state.lessonStep||0)-1)}); try{window.scrollTo(0,0);}catch(e){} },
@@ -4028,7 +4047,7 @@ function viewLanding() {
     ['game-spellScene',     'Spell Scene',      'Spell the word that finishes the scene.'],
   ].map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
       <span style="position:relative;display:block;aspect-ratio:16/11;overflow:hidden;background:#241E33">
-        <img src="app-art/shots/${f}.jpg" alt="${escA(name)} — gameplay from Bizzing Bee"
+        <img data-lsrc="app-art/shots/${f}.jpg" alt="${escA(name)} — gameplay from Bizzing Bee"
              loading="lazy" decoding="async"
              style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block">
       </span>
@@ -4162,15 +4181,25 @@ const SB_SHOTS = [
   ['card', 'Every word, spoken properly',
    'The word said aloud in a real recorded voice, its meaning, a sentence, the language it came from, and a hint for the letter that catches people out.'],
 ];
+/* THE LANDING'S SCREENSHOTS LOAD AS THE VISITOR SCROLLS TO THEM. `loading="lazy"` still fetches
+   anything inside the browser's own margin — thousands of pixels on a phone — so a first visit
+   paid for screenshots far below the fold, and when the one-line phone header (FIX2 #4) lifted
+   the page ~40px two more crossed that margin: the landing's first screen went 1274 → 1488 KB
+   (tests/first-load.cjs). The <img>s carry data-lsrc and this hands them their src 600px ahead. */
+function landShots(){ try{ const imgs=document.querySelectorAll('img[data-lsrc]'); if(!imgs.length) return;
+    const show=i=>{ i.src=i.getAttribute('data-lsrc'); i.removeAttribute('data-lsrc'); };
+    if(!('IntersectionObserver' in window)){ imgs.forEach(show); return; }
+    const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); show(e.target); } }),{rootMargin:'600px 0px'});
+    imgs.forEach(i=>io.observe(i)); }catch(e){} }
 function landShowcase(){
   const rows = SB_SHOTS.map(([f, t, b], i) => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(20px,4vw,44px);align-items:center;margin-bottom:clamp(28px,5vw,56px)">
       <div style="${i % 2 ? 'order:2' : ''}">
         <h3 style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.15;margin:0 0 10px">${esc(t)}</h3>
         <p style="font-size:15px;line-height:1.6;color:var(--muted);margin:0;max-width:32em">${esc(b)}</p></div>
       <div style="border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px rgba(20,12,50,.16);background:var(--bg2)">
-        <img src="app-art/shots/${f}.jpg" alt="${escA(t)} — a screen from Bizzing Bee"
+        <img data-lsrc="app-art/shots/${f}.jpg" alt="${escA(t)} — a screen from Bizzing Bee"
              loading="lazy" decoding="async"
-             style="display:block;width:100%;height:auto"></div>
+             style="display:block;width:100%;height:auto;aspect-ratio:1200/834"></div>
     </div>`).join('');
   return landSection('This is the actual app', 'Not a mock-up. This is what your child&nbsp;opens.', '', rows);
 }
@@ -4232,13 +4261,13 @@ function landFAQ(){
 
 function landNav() {
   return `<div style="position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)">
-    <div style="max-width:1080px;margin:0 auto;padding:11px clamp(18px,4vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:10px">
-      <button data-act="goLanding" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer">
-        <span style="width:30px;height:34px;flex-shrink:0;display:block">${mascotSVG('happy')}</span>
-        <span style="font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
-      <button data-act="landPlans" style="padding:9px 15px;border-radius:12px;font-weight:800;font-size:13.5px;color:var(--muted)">Plans</button>
-      <button data-act="goSignin" style="padding:9px 15px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px">Sign in</button>
-      <button data-act="goSignup" style="padding:9px 17px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">Start free</button>
+    <div class="sb-lnav" style="max-width:1080px;margin:0 auto;padding:11px clamp(18px,4vw,32px);display:flex;flex-wrap:nowrap;align-items:center;gap:10px">
+      <button data-act="goLanding" class="sb-lnav-home" aria-label="Bizzing Bee — home" style="display:flex;align-items:center;gap:9px;margin-right:auto;min-width:0;background:none;border:0;cursor:pointer">
+        <span class="sb-lnav-bee" style="width:30px;height:34px;flex-shrink:0;display:block">${mascotSVG('happy')}</span>
+        <span class="sb-lnav-mark" style="font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i> Bee</span></button>
+      <button data-act="landPlans" class="sb-lnav-b" style="padding:9px 15px;border-radius:12px;font-weight:800;font-size:13.5px;color:var(--muted);white-space:nowrap">Plans</button>
+      <button data-act="goSignin" class="sb-lnav-b" style="padding:9px 15px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px;white-space:nowrap">Sign in</button>
+      <button data-act="goSignup" class="sb-lnav-b sb-lnav-cta" style="padding:9px 17px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);white-space:nowrap;flex-shrink:0">Start free</button>
     </div></div>`;
 }
 
@@ -4560,6 +4589,9 @@ function beeEmpty(mood,text){ return `<div style="display:flex;align-items:cente
 /* ---- Word Journeys as lore: one lesson unlocks per Level cleared (any list) ---- */
 function loreCount(c){ c=c||active(); try{ return Object.values(c.lists||{}).reduce((n,l)=>n+(l.stage||0),0); }catch(e){ return 0; } }
 function loreUnlocked(){ const n=loreCount(); return lessonsAll().slice(0,Math.min(n,lessonsAll().length)); }
+/* ONE rule for whether a Word Journeys lesson opens: the plan that carries journeys, testing's
+   unlock, or a tale the child has earned. The screen itself is never locked (openJourneys). */
+function journeyOpen(n){ if(state.devUnlock) return true; try{ if(window.SB_ENT && SB_ENT.has('journeys')) return true; }catch(e){} return +n<=loreCount(); }
 // Tip of the day — pithy, rotating daily, banded to the speller's proven Bee Band:
 // Bands 1–2 draw only from the Spelling Bee Basics concepts + gentle habit tips;
 // 3–5 widen to easy/medium concepts and practice tips; 6+ open the full library + lore.
@@ -8280,7 +8312,7 @@ function trainerCard(){
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px">${tchip(S.showDef,'Definition','toggleDef')}${tchip(S.showSent,'Sentence','toggleSent')}${tchip(S.showOrigin,'Origin','toggleOrigin')}</div>
       ${hints.length?`<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;font-size:15px;line-height:1.6;margin-bottom:18px">${hints.join('  ·  ')}</div>`:''}
       <input data-inp="onType" data-key="trainKey" data-fkey="typed" value="${escA(S.typed)}" placeholder="spell it" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;text-align:center;padding:16px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry);font-weight:700;font-size:clamp(20px,5vw,28px);letter-spacing:.14em;text-transform:lowercase;outline:none;margin-bottom:16px">
-      ${st==='wrong'?missFeedbackHTML(word, S.lastTry||'', {foot:'⚑ Saved for revision. Take your time — tap Next word when you are ready.'})
+      ${st==='wrong'?missFeedbackHTML(word, S.lastTry||'', {head:nearHead(S.lastTry,word&&word.w), foot:'⚑ Saved for revision. Take your time — tap Next word when you are ready.'})
         :st==='revealed'?missFeedbackHTML(word, '', {head:'The word is', foot:'⚑ Saved for revision.'})
         :(showResult?`<div style="${resultStyle}">${esc(resultText)}</div>`:'')}
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button data-act="reveal" style="padding:14px 18px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">Show answer</button><button data-act="primary" style="flex:1;min-width:120px;padding:14px;border-radius:14px;${showResult?'background:var(--surface2);color:var(--text);border:1px solid var(--line)':'background:var(--accent);color:#fff;box-shadow:var(--edge)'};font-weight:800;font-size:15px">${primaryLabel}</button>${st==='wrong'?`<button data-act="next" style="flex:1;min-width:120px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;box-shadow:var(--edge);font-weight:800;font-size:15px">Next word →</button>`:''}</div>
@@ -9897,7 +9929,8 @@ function lessonHero(L){ if(L._hero) return L._hero; const ws=(L.words||[]).map(x
 function lessonCoverCard(L){
   const dn=lessonComplete(L); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''}; const f=unitPal(L.unit);
   const dc=DIFF_DOT[L.diff]||DIFF_DOT.medium; const hero=lessonHero(L); const nW=(L.words||[]).filter(x=>x&&x.w).length;
-  const uname=capWords(u.title); const _dk=state.mode==='dusk'; const cover=`<div style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;padding:14px;overflow:hidden;${unitCoverBG(L.unit)}">${SB_BACKDROP(state.theme,{dark:_dk})}
+  const lk=!journeyOpen(L.n);   /* a tale not earned yet and not on the plan: a quiet plan lock, never a price */
+  const uname=capWords(u.title); const _dk=state.mode==='dusk'; const cover=`<div style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;padding:14px;overflow:hidden;${unitCoverBG(L.unit)}${lk?';filter:grayscale(.75);opacity:.78':''}">${SB_BACKDROP(state.theme,{dark:_dk})}
     <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${_dk?'rgba(255,255,255,.14)':'rgba(255,255,255,.92)'};color:${_dk?'#fff':'#241E33'}">${esc(L.id)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${dn?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
@@ -9909,7 +9942,7 @@ function lessonCoverCard(L){
       <div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.18;color:var(--text)">${esc(L.title)}</div>
       <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c};margin-top:4px">Chapter ${L.unit} · ${esc(trunc(uname,26))}</div>
       <div style="font-family:var(--body);font-weight:600;font-size:12px;line-height:1.45;color:var(--muted);margin-top:8px">${trunc(L.bigIdea||L.story||'',92)}</div>
-      <div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="padding:3px 9px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span><span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${nW} words →</span></div>
+      <div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="padding:3px 9px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span>${lk?lockChip('plan','Comes with the family plan',{fs:11}):`<span style="font-family:var(--body);font-weight:800;font-size:12px;color:${f.c};white-space:nowrap">${nW} words →</span>`}</div>
     </div>
   </button>`;
 }
@@ -9928,7 +9961,8 @@ function lessonBigCard(L){ const dn=lessonComplete(L); const u=lessonUnits().fin
       <p style="font-size:15px;line-height:1.6;color:var(--text);margin:0 0 18px">${mdInline(trunc(L.bigIdea||L.story||'',200))}</p>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <span style="padding:4px 11px;border-radius:999px;font-family:var(--body);font-weight:800;font-size:12px;color:#fff;background:${dc}">${L.diff?titleCase(L.diff):'Medium'}</span>
-        <button data-act="openLesson" data-arg="${L.n}" style="padding:12px 20px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${nW} words →</button>
+        ${journeyOpen(L.n)?`<button data-act="openLesson" data-arg="${L.n}" style="padding:12px 20px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${nW} words →</button>`
+          :`<button data-act="openLesson" data-arg="${L.n}" style="background:none;border:0;padding:6px 0;min-height:44px">${lockChip('plan','Comes with the family plan')}</button>`}
       </div>
     </div>
   </div>`; }
@@ -9937,22 +9971,11 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
   const chaptersDone=units.filter(u=>{ const ls=all.filter(L=>L.unit===u.n); return ls.length && ls.every(L=>lessonComplete(L)); }).length;
   const chaptersTotal=units.length||10;
   if(!all.length) return `<div style="max-width:680px;margin:0 auto;padding:60px 0;text-align:center;color:var(--muted);font-weight:700">Lessons are loading…</div>`;
-  if(!S.premium){
-    /* This card carries no headword — it is the Word Journeys paywall. The
-       hwWide(...) widening idiom belongs on cards that print a word and must grow
-       for a long one; pasted in here it read `words` and `idx`, which do not exist
-       in this scope, so the whole screen threw for every free speller and the only
-       route to the upsell was a blank page. */
-  return `<div style="max-width:620px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">${backPill('goHome','Home',null)}</div>
-      <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow)">
-        <div style="width:64px;height:64px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px">${iconSVG('book',32)}</div>
-        <h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 8px">Word Journeys</h2>
-        <p style="color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 18px">A 100‑lesson tour through the history &amp; geography of words — from Proto‑Indo‑European roots to Latin, Greek, Norse and beyond. Learn the stories behind spellings, then drill the words from each lesson.</p>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px">${units.slice(0,5).map(u=>`<span style="padding:5px 11px;border-radius:999px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--muted)">${esc(trunc(u.title,22))}</span>`).join('')}</div>
-        <button data-act="goPaywall" style="padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Unlock with Premium 👑</button>
-      </div></div>`;
-  }
+  /* No paywall card here any more (T3, FIX2 #5): every child sees the shelf; the tales they have
+     earned open, the rest wear a quiet plan lock (lessonCoverCard / lessonBigCard). */
+  const planAll=journeyOpen(Infinity);
+  const earnedN=planAll?0:Math.min(loreCount(),all.length);
+  const earnLine=planAll?'':`<p class="sb-cn" style="margin:0 0 8px;font-size:13px;color:var(--text);font-weight:700">Every Stage you clear opens the next tale — ${earnedN?earnedN+' open so far':'clear your first Stage to open one'}. The rest come with the family plan.</p>`;
   const guided=S.journeyView==='guided';
   let main, headDesc, wrapStyle;
   if(guided){
@@ -9982,6 +10005,7 @@ function viewJourneys(){ const S=state; if(S.lessonSel) return viewLesson();
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">${backPill('goHome','Home',null)}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px"><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Word Journeys</h2><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)">${chaptersTotal} chapters</span></div>${pathBtn}</div>
     <p style="margin:0 0 8px;color:var(--muted);font-size:13px;max-width:52em">${headDesc}</p>
+    ${earnLine}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin:12px 0 4px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('book',15)} ${chaptersDone}/${chaptersTotal} chapters</span>
       <div style="flex:1;min-width:140px;height:7px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:${Math.round(done)}%;transition:width .4s"></div></div>
@@ -10240,7 +10264,7 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
   const dots=steps.map((s,i)=>`<button data-act="lessonStepGo" data-arg="${i}" style="height:7px;border-radius:999px;flex:1;background:${i<=idx?f.c:'var(--surface2)'}" title="${esc(s.tag)}"></button>`).join('');
   const last=idx>=N-1;
   const nextBtn=last
-    ? (()=>{ const nextOpen = L.n<100 && (state.premium || state.devUnlock || (L.n+1)<=loreCount());
+    ? (()=>{ const nextOpen = L.n<100 && journeyOpen(L.n+1);
         // never dead-end a journey: route to the next unlocked journey, or back to Practice
         return (nextOpen?`<button data-act="openLesson" data-arg="${L.n+1}" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next journey →</button>`:'')+
           `<button data-act="openCoach" style="flex:1;padding:14px;border-radius:14px;background:${nextOpen?'var(--surface2)':'var(--accent)'};color:${nextOpen?'var(--text)':'#fff'};font-weight:800;font-size:15px;${nextOpen?'border:1px solid var(--line)':'box-shadow:var(--edge)'}">Back to Practice →</button>`; })()
@@ -12020,7 +12044,7 @@ function overlays(){
         <div style="width:28px;height:28px;margin:14px auto 0;border:3px solid var(--surface2);border-top-color:var(--accent);border-radius:50%;animation:sb-spin .8s linear infinite"></div>
       </div></div>`;
   if(S.pinDlg) h+=`<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgb(20 12 40 / .6)" data-act="pinCancel">
-    <div data-act="noop" style="background:var(--paper,#fff);border-radius:20px;box-shadow:var(--sh-overlay);width:100%;max-width:320px;padding:26px 24px;text-align:center;animation:sb-pop .3s ease both">
+    <div data-act="noop" data-pin-dlg role="dialog" aria-modal="true" aria-label="${escA(S.pinDlg.label)}" style="background:var(--paper,#fff);border-radius:20px;box-shadow:var(--sh-overlay);width:100%;max-width:320px;padding:26px 24px;text-align:center;animation:sb-pop .3s ease both">
       <div style="display:flex;justify-content:center;color:var(--accent)">${SB_ICON('lock',{size:34})}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:19px;margin:4px 0 2px">${esc(S.pinDlg.label)}</div>
       <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5">${S.pinDlg.make
@@ -12582,6 +12606,8 @@ function render(){
       style="flex-shrink:0;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
+  _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
+  if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the
      injector guards against running twice, and its own 6s ceiling covers the case
      where a render never arrives at all. */
@@ -12637,6 +12663,24 @@ window.addEventListener('keydown',e=>{ try{
   if(!box.contains(document.activeElement)){ e.preventDefault(); first.focus(); return; }
   if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
   else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+}catch(_){} }, true);
+/* THE GROWN-UP PIN PAD TYPES FROM A KEYBOARD (FIX2 #7). It was tap-only: a grown-up at a laptop
+   had to click four digits. Now, whenever the PIN dialog is up — entering a PIN or choosing one —
+   the top-row digits and the numpad type (by e.code too, so a numpad with Num Lock off still
+   works), Backspace/Delete takes one back, and Escape cancels (above). Enter and Space press only a
+   key of the pad that has focus; anywhere else they are swallowed, so they can never press a button
+   hidden under the dialog. Every key the dialog handles stops here — a digit must not also land in
+   a spelling box or a game underneath. The touch pad is unchanged. */
+window.addEventListener('keydown',e=>{ try{
+  if(!state.pinDlg || e.ctrlKey || e.metaKey || e.altKey) return;
+  const m=/^Numpad(\d)$/.exec(e.code||''); const d=/^\d$/.test(e.key)?e.key:(m?m[1]:null);
+  const inPad=!!(e.target && e.target.closest && e.target.closest('[data-pin-dlg]'));
+  if(d!=null){ app.pinKey(d); }
+  else if(e.key==='Backspace'||e.key==='Delete'){ app.pinKey('del'); }
+  else if((e.key==='Enter'||e.key===' ') && inPad){ return; }   /* a focused key of the pad: let it press */
+  else if(e.key==='Enter'||e.key===' '){}
+  else return;
+  e.preventDefault(); e.stopImmediatePropagation();
 }catch(_){} }, true);
 let _trapWas='';
 /* A re-render (a lazy file landing, the music arriving) rebuilds the layer and drops focus to <body>;

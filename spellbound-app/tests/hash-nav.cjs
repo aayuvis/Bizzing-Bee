@@ -10,7 +10,9 @@
        leaving the app;
      · #/atlas and #/stop/u1 open where they say; a locked stop is NOT opened by its address;
      · #/continue lands exactly where Home's Continue goes;
-     · ?from=hive shows "← back to my day", pointing at the Hive, and hides inside a drill.
+     · ?from=hive shows "← back to my day", pointing at the Hive, and hides inside a drill;
+     · (FIX2) a typed address is never swallowed by a PIN dialog or any other layer, and
+       #/journeys opens Word Journeys rather than a PIN over the screen beneath.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/hash-nav.cjs                         */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -119,6 +121,36 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   await pg.evaluate(() => { app.trailPractice && app.trailUnit(SB_NEXT_STEP().arg); }); await pg.waitForTimeout(600);
   await pg.evaluate(() => app.trailPractice()); await pg.waitForTimeout(1500);
   ok(await pg.evaluate(() => state.nav === 'train' && !document.querySelector('a.sb-fam-day')), 'and the chip hides inside a drill');
+  await ctx.close();
+
+  /* ---- 7. (FIX2 #5) no screen is ever trapped under a layer ----
+     #/journeys put a grown-up PIN over the Word Finder, and every address typed after it was
+     swallowed by that dialog and pushed back. Word Journeys is a child's own earned tales and
+     opens for them; a NEW address closes whatever layer is up and goes where it says; Back still
+     closes a layer first and stays, because Back is not an address. */
+  ({ ctx, pg } = await open(b, URL + '#/journeys', errs));
+  const layers = () => pg.evaluate(() => ({ h: location.hash, nav: state.nav, pin: !!state.pinDlg, drawer: !!state.drawerOpen, card: !!state.wordCard, tiers: !!state.showTiers,
+    modal: !!document.querySelector('[data-pin-dlg],[data-act="closeTiers"],[data-act="closePaywall"]') }));
+  let L = await layers();
+  ok(L.nav === 'journeys' && !L.pin && !L.modal && L.h === '#/journeys', `#/journeys opens Word Journeys for a child, with no PIN in front of it (${L.nav}${L.pin ? ', PIN up' : ''})`);
+  const go = async h => { await pg.evaluate(h => { location.hash = h; }, h); await pg.waitForTimeout(1100); return layers(); };
+  await pg.evaluate(() => app.setNav('parent')); await pg.waitForTimeout(250);
+  const pinUp = (await layers()).pin;
+  L = await go('#/atlas');
+  const t1 = pinUp && L.nav === 'trail' && !L.pin && !L.modal && L.h === '#/atlas';
+  L = await go('#/library');
+  const t2 = L.nav === 'explore' && !L.pin && L.h === '#/library';
+  ok(t1 && t2, `with a PIN dialog left open, a typed address closes it and goes there — and so does the next (${t1 ? '✓' : '✗'}${t2 ? '✓' : '✗'} ${L.h})`);
+  await pg.evaluate(() => { state.drawerOpen = true; state.wordCard = { w: 'necessary' }; state.showTiers = true; render(); }); await pg.waitForTimeout(200);
+  L = await go('#/play');
+  ok(L.nav === 'games' && !L.drawer && !L.card && !L.tiers && !L.pin && !L.modal, 'every other layer goes with it: drawer, word card and plan sheet are gone and Play is on screen (' + JSON.stringify(L) + ')');
+  await pg.evaluate(() => app.setNav('parent')); await pg.waitForTimeout(250);
+  await pg.evaluate(() => { const a = document.createElement('a'); a.href = '#/play'; document.body.appendChild(a); a.click(); a.remove(); }); await pg.waitForTimeout(700);
+  L = await layers();
+  ok(L.nav === 'games' && !L.pin && !L.modal, 'a link to the screen already beneath the dialog uncovers it too');
+  await pg.evaluate(() => app.setNav('parent')); await pg.waitForTimeout(250);
+  w = await back(); L = await layers();
+  ok(!L.pin && L.nav === 'games' && L.h === '#/play', 'Back with the PIN open still only closes it and stays on Play (' + L.h + ')');
   await ctx.close();
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

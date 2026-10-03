@@ -4,7 +4,8 @@
    in two taps. Now: no plan sheet and no paywall draws until a grown-up has passed the PIN —
    and with no PIN yet, the gate asks them to choose one, twice, then carries on. The guard is
    in render(), where the sheet is drawn, so it holds however the sheet was asked for: this test
-   asks four different ways, including by writing the state flag directly.
+   asks four different ways, including by writing the state flag directly. And (FIX2) the pad
+   types from a keyboard as well as by touch, in both modes.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/pin-mandatory.cjs                    */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -63,6 +64,30 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(!r.dlg && await pg.evaluate(() => !!state.settingsOpen), "with no PIN yet, Settings still opens — it holds the child's own sound and text size");
   const noRemove = await pg.evaluate(() => !/leave empty to remove|PIN removed/.test(app.pinSetup.toString()));
   ok(noRemove, 'there is no way to remove the PIN, only to change it');
+
+  /* ---- 5. (FIX2 #7) the pad types from a keyboard, choosing a PIN and entering one ----
+     Top-row digits and the numpad, Backspace takes one back, Escape cancels; Enter outside the
+     pad presses nothing hidden under it, and a digit never also lands in a box beneath. */
+  const where = () => pg.evaluate(() => ({ nav: state.nav, tab: state.progTab, dlg: state.pinDlg && { typed: state.pinDlg.typed, make: !!state.pinDlg.make, first: !!state.pinDlg.first, wrong: !!state.pinDlg.wrong }, pin: state.parentPin }));
+  const press = async ks => { for (const k of ks) await pg.keyboard.press(k); };
+  await reset(); await pg.evaluate(() => { state.settingsOpen = false; state.parentPin = null; state.devUnlock = false; state.progTab = 'me'; state.screen = 'app'; app.setNav('home'); app.setNav('parent'); });
+  await press(['Digit4', 'Numpad3', 'Digit9', 'Backspace', 'Digit2', 'Numpad1']);
+  let k1 = await where();
+  await press(['Numpad4', 'Digit3', 'Numpad2', 'Digit1']);
+  let k2 = await where();
+  ok(k1.dlg && k1.dlg.make && k1.dlg.first && !k1.pin && !k2.dlg && k2.pin === '4321' && k2.nav === 'progress' && k2.tab === 'parent',
+    'choosing a PIN by keyboard: top row and numpad type, Backspace takes one back, typed twice it is saved and the parent zone opens');
+  await pg.evaluate(() => { state.progTab = 'me'; app.setNav('home'); });
+  await pg.evaluate(() => { const i = document.querySelector('.sb-hsearch input,input'); if (i) i.focus(); app.setNav('parent'); });
+  await press(['Digit7']);
+  const under = await pg.evaluate(() => [...document.querySelectorAll('input')].map(i => i.value).join(''));
+  await press(['Enter']); k1 = await where();
+  ok(k1.dlg && k1.dlg.typed === '7' && !/7/.test(under) && k1.nav === 'home', `entering it: a digit types into the PIN and nowhere else, and Enter outside the pad presses nothing (${JSON.stringify(k1.dlg)})`);
+  await press(['Escape']); k1 = await where();
+  await pg.evaluate(() => app.setNav('parent')); await press(['0', '0', '0', '0']); k2 = await where();
+  await press(['Numpad4', 'Numpad3', 'Numpad2', 'Numpad1']); const k3 = await where();
+  ok(!k1.dlg && k1.nav === 'home' && k2.dlg && k2.dlg.wrong && !k3.dlg && k3.nav === 'progress' && k3.tab === 'parent',
+    'Escape cancels; a wrong PIN typed by keyboard opens nothing; the right one, on the numpad, opens the parent zone');
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
