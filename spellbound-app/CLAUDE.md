@@ -840,6 +840,56 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
   converging on one hard-to-guess answer). Never clue with the answer's most famous
   fact — that belongs in `f`.
 
+## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
+
+- **Miss panel**: no toast shows while a visible `.sb-miss` is on screen (`_toastVsMiss`, after
+  every `render()` and `_paintToast()`). Near-miss copy ("So close…") is the panel's `head`
+  (`nearHead()`), never a toast. Guard: `tests/answer-feedback.cjs`.
+- **Routing**: a popstate with no state is a NEW address — it drops every layer (`dropLayers`
+  in family-shell.js: PIN, tiers/paywall, drawer, wallet, menus, word/quote/list/deck pop-ups,
+  auth/cloud, celebrate, `.avc-ov`) and applies the route; Back still closes one layer first.
+  **A new overlay flag goes in `dropLayers`**, or a typed address will open under it.
+  Guard: `tests/hash-nav.cjs`.
+- **Continue**: `goNext` always waits for the whole `atlas` lazy group (`lazyNeed('atlas', …)`),
+  never just `trail-data.js` — the concept course decides whether a stop has a lesson, and
+  without it Home said `#/stop/u2` while `#/continue` said `#/concepts/1`. Guard: `home-continue`.
+- **Word Journeys open to every child**: `journeyOpen(n)` is the one rule (`SB_ENT.has('journeys')`,
+  testing unlock, or a tale earned via `loreCount`). Plan locks are per lesson, a quiet
+  `lockChip`, never a price.
+- **PIN dialog takes the keyboard**: digits (top row + numpad, matched by `e.code` too),
+  Backspace/Delete, Escape; handled keys never reach what is underneath. `[data-pin-dlg]`
+  marks it. Guard: `pin-mandatory`.
+- **Mock Bee**: a rival whose face is the child's wears its `alt` (`faceOf`). `ANN_HAVE` lists
+  the recorded announcer lines and must match `voice/ann/` — the bee never asks for an
+  unrecorded one — and the announcer is silent off the mockbee screen. Guards:
+  `mockbee-faces` (@check), `console-clean` (≈4 min, not @check; fails on ANY console error
+  except the documented local `voice/w/` 404s).
+- **Landing**: the header is one line down to 340px (`.sb-lnav*`). Its screenshots use
+  `data-lsrc` + `landShots()` (IntersectionObserver, 600px margin) — never a plain `src`, or
+  they land in the first-load budget. Guards: `one-row`, `first-load`.
+- **`#root` zoom (1.09, or the text-size setting)**: `vw` inside `#root` overflows a phone, so
+  size modals `min(Npx,100%)` of their overlay. On-screen rects include the zoom, layout
+  offsets do not; container queries measure in zoomed CSS px.
+- **Atlas on a narrow board**: markers only, plus a key of 44px region buttons under the board
+  (`atlasKey`). Narrow is per board by container query (Honey ≤609, Advanced ≤799, Ultra ≤619px
+  of board, measured with every label on), with a 640px media fallback. **Stop popovers** are
+  slid into the visible window by `popFit()` (after the camera settles, on pan and resize), the
+  pointer counter-shifted so it still points at the stop. Guard: `tests/atlas-layout.cjs` (@check).
+- **Moth ambush**: never on a child's first visit to a region (`tr(c).ambV`); the board draws
+  first and the moth arrives 1.6s later only if the child is still there with nothing open;
+  ✕, Escape, Run away and the backdrop all dismiss it. Guards: `atlas-alive`, `atlas-layout`.
+- **Locked continents**: "Comes with the Advanced Pack" + **Show a grown-up** (`atlasAdvDoor` →
+  `ultraUpsell` → PIN) + **Look at the map** (`state.atlasPeek`). Never the words "ask a
+  grown-up" (FIX-BEE v2 T3, `trust-v2`).
+- **World decoration lives behind the app**: anything `position:fixed` in a world sits at
+  `z-index:0` (the Race Zone countdown once sat at 70 over Home); card marks are `z-index:-1`
+  inside `[data-theme] .sb-card{isolation:isolate}`, so no prop paints over a control.
+  Guard: `tests/world-decor.cjs` (@check, all 8 worlds, light + dusk, 1280 + 390).
+- **Measure colour with transitions off**: `family-check` once saw zero primaries on a phone Home
+  that had one — Continue carries `transition: all` and was caught mid-fade on a loaded machine.
+- **Deploys no longer run the tests** (see "Tests run from one command" above): the guards above
+  are run here, one at a time, before a commit.
+
 ## The Arcade hub has no blank space (2 Oct 2026, owner: "dont like the blank space")
 - **Four large tiles, then ONE grid, and no section headings.** Mock Spelling Bee, the
   Bizzillionaire ladder, **Bee Grand Prix and Honeycomb Run** are the large tiles (`heroTile`,
@@ -1493,7 +1543,7 @@ out of saga2.js so a retune cannot quietly undo them.
   manual. `FREE_THEMES=['spellbound']`; everything else is coins (Premium still includes
   aurora+anime). A boot migration in app3 (`GONEW`) refunds coin-bought removed worlds
   once, clears them from `unlockedThemes`, and re-homes a save whose theme was removed.
-- **Avatar packs hold exactly EIGHT and render as ONE ROW** (`.av-row`). 18 packs / 142
+- **Avatar packs hold exactly EIGHT and render as ONE ROW** (`.bz-av-row` — the old `.av-row` has no markup: 4 columns by default, 8 via `@container (min-width:800px)` on `.bz-pack`, so 1024–1440 is one row of 8 and 360–900 is 4+4; `tests/one-row.cjs`). 18 packs / 142
   live avatars. Stage, Arcade and Wildhearts packs retired (popcorn→Vibe, rainbow→Turbo,
   hoppy+fawn→Critter, pegasus→Legends); Dino+Serpent merged into the Reptilian Pack;
   the Gods Pack split into European Gods (godseu) and Indian Gods (godsin) — the five
