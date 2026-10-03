@@ -890,6 +890,31 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
 - **Deploys no longer run the tests** (see "Tests run from one command" above): the guards above
   are run here, one at a time, before a commit.
 
+## Nazi vocabulary is deleted (3 Oct 2026, owner: "remove words like nazi nazism nazis" — "delete these words from the repo")
+- **32 records deleted from every store** — the Nazi family (nazi/nazis/nazism/naziism/nazify…,
+  denazify, nazidom, Naziland, Nazilike) and the words whose MEANING is Nazism: hitler, hitlerian,
+  goebbels, Goebbelsian, speer(s), gestapo(s), Wehrmacht, kapo, anschluss, reich, Reichskanzler,
+  falange, falangist, swastika(s), gammadion, aryan(s), Aryanize — from both shards, the sentence
+  file, the 130k library, lore, synonyms, alternates, the voice index, the homophone/pronunciation
+  data, an Atlas stop pool, and **35 clips in `voice/w/`** (they stay on `main`, which voice-cdn
+  streams from, until this branch merges — nothing requests them now). `blacklisted` and `emigrate`
+  were re-sentenced; four trivia facts lost the mention (Krebs, Meitner, Szent-Györgyi, Quisling) and
+  two questions that existed only for it were deleted (`byLevel` 5 → 6872); the eponyms book's
+  Quisling line was rewritten in the source and in book-17.
+- **Kept on purpose**: holocaust (its general sense), Reichstag, Ashkenazi(m), monazite, nadir's
+  Arabic *nazir*, the Nazirites, Iran "land of the Aryans" and the *ariana* lore (Indo-Iranian, not
+  Nazi), Steve Reich, and `speer` as the recorded misspelling of *spear*. **swastika went** because
+  its only definition here was the Nazi one — it is sacred in Hindu, Jain and Buddhist practice, and
+  if it comes back it comes back with that meaning, written by a person.
+- `SB_UNSAFE_RE` refuses the family by headword AND definition, so the library cannot bring one
+  back; `\bnazi(?!r)` spares nazir/Nazirite and Ashkenazi has no word boundary. The QC ledgers
+  (`qc-*-fixes.json`) still name them — they are the record of the deletion, not content.
+  Guard: `tests/no-nazi-words.cjs` (@check, node, 6s; proved by putting the boot shard, a trivia
+  shard and the regex back). `word-bank.cjs` CORE is now 126,562.
+- **`books/mkbooks.js` crashes in `comicOpener`** (`co1.id` undefined — a co-star avatar lookup,
+  not the words) since the v2 avatar re-tiering, so `deploy-books-repo.sh` cannot rebuild today.
+  The book-17 line was published by patching the live file. Fix mkbooks before the next rebuild.
+
 ## The Arcade hub has no blank space (2 Oct 2026, owner: "dont like the blank space")
 - **Four large tiles, then ONE grid, and no section headings.** Mock Spelling Bee, the
   Bizzillionaire ladder, **Bee Grand Prix and Honeycomb Run** are the large tiles (`heroTile`,
