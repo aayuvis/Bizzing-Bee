@@ -31,38 +31,45 @@
      barely at all, low nerve = a lot); spec is an origin they are unusually good
      at; pace is how long they take at the microphone, which is characterisation
      as much as timing. */
+  /* `alt` is a rival's stand-in face. A rival must never wear the child's own avatar — "Suki" in
+     the panda the child picked read as the child spelling against themselves — so when the two
+     collide the rival wears `alt` (faceOf). Each alt is a live avatar no rival and no other alt
+     uses, so the swap is deterministic and can never land on another face in the hall. */
   const BOTS = [
-    { id: 'pixel', lvl: .18, name: 'Pip', age: 8, skill: .52, nerve: .74, voc: 0.40, vtell: 'spells at a sprint and has never once asked what it means', spec: null, pace: 620,
+    { id: 'pixel', alt: 'germy', lvl: .18, name: 'Pip', age: 8, skill: .52, nerve: .74, voc: 0.40, vtell: 'spells at a sprint and has never once asked what it means', spec: null, pace: 620,
       note: 'Eight, and spells at a sprint. Brilliant or gone.', vary: .22,
       tell: 'starts before the pronouncer finishes' },
-    { id: 'koi', lvl: .24, name: 'Nova', age: 9, skill: .58, nerve: .70, voc: 0.56, vtell: 'reads more than she lets on', spec: /old english|germanic/i, pace: 1150,
+    { id: 'koi', alt: 'luna', lvl: .24, name: 'Nova', age: 9, skill: .58, nerve: .70, voc: 0.56, vtell: 'reads more than she lets on', spec: /old english|germanic/i, pace: 1150,
       note: 'Steady. Short words are hers and she knows it.', vary: .08,
       tell: 'says the word twice, always' },
-    { id: 'beaker', lvl: .32, name: 'Rafi', age: 10, skill: .63, nerve: .58, voc: 0.74, vtell: 'takes the Latin root apart, so the meaning falls out of it', spec: /latin/i, pace: 1300,
+    { id: 'beaker', alt: 'atom', lvl: .32, name: 'Rafi', age: 10, skill: .63, nerve: .58, voc: 0.74, vtell: 'takes the Latin root apart, so the meaning falls out of it', spec: /latin/i, pace: 1300,
       note: 'Takes every Latin root apart before he writes it.', vary: .10,
       tell: 'traces the letters on his palm' },
-    { id: 'panda', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, voc: 0.62, vtell: 'steady here too', spec: null, pace: 1400,
+    { id: 'panda', alt: 'neko', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, voc: 0.62, vtell: 'steady here too', spec: null, pace: 1400,
       note: 'Unshakeable. The lights do nothing to her.', vary: .07,
       tell: 'breathes out, then spells' },
-    { id: 'comet', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not define at gunpoint', spec: null, pace: 700,
+    { id: 'comet', alt: 'rocket', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not define at gunpoint', spec: null, pace: 700,
       note: 'Fastest here in round one. Watch him in round six.', vary: .16,
       tell: 'rocks on his heels' },
-    { id: 'astro', lvl: .44, name: 'Mira', age: 12, skill: .70, nerve: .66, voc: 0.79, vtell: 'Greek gives her the meaning before the spelling', spec: /greek/i, pace: 1250,
+    { id: 'astro', alt: 'saturn', lvl: .44, name: 'Mira', age: 12, skill: .70, nerve: .66, voc: 0.79, vtell: 'Greek gives her the meaning before the spelling', spec: /greek/i, pace: 1250,
       note: 'Greek is her language. Ask her for the origin and smile.', vary: .09,
       tell: 'asks for the language of origin every time' },
-    { id: 'scopey', lvl: .43, name: 'Theo', age: 12, skill: .69, nerve: .80, voc: 0.85, vtell: 'asks for the definition every time — and remembers it', spec: null, pace: 2100,
+    { id: 'scopey', alt: 'robo', lvl: .43, name: 'Theo', age: 12, skill: .69, nerve: .80, voc: 0.85, vtell: 'asks for the definition every time — and remembers it', spec: null, pace: 2100,
       note: 'Asks all four questions. Every word. No exceptions.', vary: .06,
       tell: 'asks all four questions, every single word' },
-    { id: 'melody', lvl: .52, name: 'Ines', age: 13, skill: .74, nerve: .72, voc: 0.71, vtell: 'French roots, French meanings', spec: /french/i, pace: 1200,
+    { id: 'melody', alt: 'fae', lvl: .52, name: 'Ines', age: 13, skill: .74, nerve: .72, voc: 0.71, vtell: 'French roots, French meanings', spec: /french/i, pace: 1200,
       note: 'French endings hold no silence she has not heard.', vary: .08,
       tell: 'mouths the word in French first' },
-    { id: 'samurai', lvl: .62, name: 'Kwame', age: 14, skill: .80, nerve: .78, voc: 0.81, vtell: 'no weakness here either', spec: /latin|greek/i, pace: 1100,
+    { id: 'samurai', alt: 'ninja', lvl: .62, name: 'Kwame', age: 14, skill: .80, nerve: .78, voc: 0.81, vtell: 'no weakness here either', spec: /latin|greek/i, pace: 1100,
       note: 'No weakness anybody has found yet.', vary: .06,
       tell: 'hands behind his back, dead still' },
-    { id: 'goldlegend', lvl: .72, name: 'Vesper', age: 15, skill: .87, nerve: .95, voc: 0.88, vtell: 'knows the list the way other people know a song', spec: null, pace: 900,
+    { id: 'goldlegend', alt: 'crystal', lvl: .72, name: 'Vesper', age: 15, skill: .87, nerve: .95, voc: 0.88, vtell: 'knows the list the way other people know a song', spec: null, pace: 900,
       note: 'Won this last year. Has not looked at anyone since.', vary: .05,
       tell: 'does not ask for anything' },
   ];
+  /* the face a rival wears in this hall: their own, unless it is the child's (see `alt`) */
+  function myFace() { try { const g = state.mb; return (g && g.avatar) || (active() || {}).avatar || 'bizzy'; } catch (e) { return 'bizzy'; } }
+  function faceOf(b) { return b && b.id === myFace() ? b.alt : (b && b.id); }
 
   /* ---------------- the rounds, in the Scripps shape ----------------
      A national bee is not a single ladder of spelling rounds. It runs in
@@ -612,6 +619,9 @@
   }
   function aqPush(item) { AQ.q.push(item); aqPump(); }
   function aqPump() {
+    /* the hall is only heard IN the hall. Leaving by the tab bar, Back or Home (anything but
+       "Leave the hall", which stops it) left the bee's timers announcing over the next screen. */
+    if (state.nav !== 'mockbee') { if (AQ.q.length || AQ.busy) aqStop(); return; }
     if (AQ.busy) return;
     const it = AQ.q.shift(); if (!it) return;
     AQ.busy = true;
@@ -656,10 +666,17 @@
      bee. One failure is enough. Not a manifest: it stays correct on its own as
      clips are added or removed. */
   const _annGone = new Set();
+  /* …but that one failure was a 404 in the console of every bee, seventeen times. The recorded
+     lines are exactly the files in voice/ann/ (and its manifest.json); this lists them, and
+     tests/console-clean.cjs holds the list to the folder, so it cannot drift as clips come and go.
+     An unrecorded line is shown on the stage card and never asked for. */
+  const ANN_HAVE = new Set(('allMiss-0 allMiss-1 boltEnd-0 boltEnd-1 boltIn-0 boltIn-1 botRight-0 botRight-1 botSafe-0 botSafe-1 '
+    + 'botWrong-0 botWrong-1 c2Champ-0 c2Champ-1 c2First-0 c2First-1 callVocBot-0 finalTwo-0 finalTwo-1 meRight-0 meRight-1 '
+    + 'meWrong-0 open-0 open-1 outMe-1 thin-0 thin-1 thin-2 thin-3 winBot-0 winBot-1 winMe-0 winMe-1').split(' '));
   function playAnn(pick) {
     if (!pick || !pick.pool) return;
     const key = pick.pool + '-' + pick.i;
-    if (_annGone.has(key)) return;
+    if (!ANN_HAVE.has(key) || _annGone.has(key)) return;
     aqPush({ kind: 'clip', src: 'voice/ann/' + key + '.mp3', gap: 160,
              miss: () => _annGone.add(key) });
   }
@@ -1287,7 +1304,7 @@
   /* ================= rendering ================= */
   const face = (s, size) => s.kind === 'me'
     ? (window.SB_AVATAR ? SB_AVATAR(mb().avatar, size) : '')
-    : (window.SB_AVATAR ? SB_AVATAR(s.bot.id, size) : '');
+    : (window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), size) : '');
   const nameOf = s => s.kind === 'me' ? (mb().name || 'You') : s.bot.name;
 
   function fieldRow() {
@@ -1334,7 +1351,7 @@
       </div>
       <div class="mb-sech">The field</div>
       <div class="mb-cards">${BOTS.map(b => `<div class="mb-card">
-        <span class="mb-card-face">${window.SB_AVATAR ? SB_AVATAR(b.id, 54) : ''}</span>
+        <span class="mb-card-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(b), 54) : ''}</span>
         <span class="mb-card-in">
           <b>${esc(b.name)}<i>${b.age}</i></b>
           <span class="mb-note">${esc(b.note)}</span>
@@ -1391,7 +1408,7 @@
     const s = pr.forBot;
     const left = Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000));
     return `<div class="mb-mic practice">
-      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
+      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
       <div class="mb-mic-in">
         <span class="mb-mic-name">${esc(s.bot.name)} is up next · number ${s.n}</span>
         <div class="mb-vword">${esc(q.w.w)}
@@ -1419,7 +1436,7 @@
     const done = i >= 0;
     const lp = g.lastVPrac;
     return `<div class="mb-mic${done ? (g.vPick === q.answer ? ' ok' : ' no') : ''}">
-      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
+      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
       <div class="mb-mic-in">
         <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
         <div class="mb-vword">${esc(q.w.w)}</div>
@@ -1482,7 +1499,7 @@
     const s = pr.forBot;
     const left = Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000));
     return `<div class="mb-mic practice">
-      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
+      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
       <div class="mb-mic-in">
         <span class="mb-mic-name">${esc(s.bot.name)} is up next · number ${s.n}</span>
         <div class="mb-prac-row">
@@ -1564,7 +1581,7 @@
         const done = g.phase === 'botSpell' && g.botStep >= g.botLen;
         const ghost = new Array(Math.max(1, g.botLen || (w.w || '').length || 1)).fill('X').join(' ');
         return `<div class="mb-mic ${done ? (g.botOk ? 'ok' : 'no') : ''}">
-          <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(s.bot.id, 74) : ''}</span>
+          <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
           <div class="mb-mic-in">
             <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
             <div class="mb-letters">
@@ -1607,7 +1624,7 @@
         <span class="mb-title">${g.meWon ? 'Champion' : 'The bee is over'}</span></div>
       <div class="mb-result ${g.meWon ? 'won' : ''}">
         <span class="mb-result-face">${g.meWon ? (window.SB_AVATAR ? SB_AVATAR(g.avatar, 108) : '')
-          : (champ && window.SB_AVATAR ? SB_AVATAR(champ.kind === 'me' ? g.avatar : champ.bot.id, 108) : '')}</span>
+          : (champ && window.SB_AVATAR ? SB_AVATAR(champ.kind === 'me' ? g.avatar : faceOf(champ.bot), 108) : '')}</span>
         <h2>${g.meWon ? 'You won the bee.' : esc((champ && champ.kind === 'bot' ? champ.bot.name : 'Nobody')) + ' takes it.'}</h2>
         <p>${g.meWon ? 'Eleven spellers, and the microphone is yours.'
           : 'You finished <b>' + ordinal(g.place) + '</b> of eleven.'}</p>
@@ -1627,6 +1644,9 @@
     view: () => { const g = mb(); if (!g) return viewLobby();
       return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : viewLobby(); },
     stats: () => prog(),
+    /* the rivals' faces against the child's avatar, and the recorded announcer lines — for the tests */
+    faces: () => BOTS.map(b => ({ id: b.id, name: b.name, face: faceOf(b) })),
+    annHave: () => [...ANN_HAVE],
     /* the meaning-round question for a word, exactly as the hall builds it — the generated
        question test (tests/question-leaks.cjs) runs it over real words */
     vocQ: w => vocQuestion(w),

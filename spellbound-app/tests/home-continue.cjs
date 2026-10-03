@@ -119,6 +119,34 @@ function filledPrimaries() {
       await ctx.close();
     }
   }
+  /* ---- (FIX2 #6) one answer, WHENEVER it is asked ----
+     Home's Continue went to #/stop/u2 while #/continue went to #/concepts/1 for the same child:
+     goNext ran as soon as trail-data.js was in, before the concept course nextStep() reads to
+     decide that an untouched stop opens on its lesson. Asked at once — the moment Home's card
+     appears, before the rest of the Atlas has landed — Home, the drawer and #/continue must all
+     end on the same screen. */
+  const FRESH_U2 = { name: 'Mira', age: 9, ageBand: '8-10', avatar: 'koi', theme: 'spellbound', coins: 10, lists: { journey: { xp: 12 } }, activeList: 'journey',
+    trail: { lap: 1, done: { u1: { 1: 90 } }, chk: {}, seen: {}, st: { 'u1:1': { l: 1, w: 1, p: 90 } }, elap: 1, edone: {}, echk: {} } };
+  const landing = async (how) => {
+    const ctx = await b.newContext({ viewport: { width: 1180, height: 900 } });
+    await ctx.addInitScript(k => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, FRESH_U2);
+    const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push('fix2 ' + e.message));
+    let early = null;
+    if (how === 'link') { await pg.goto(URL + '#/continue'); }
+    else {
+      await pg.goto(URL);
+      await pg.waitForFunction(() => !!document.querySelector('.sb-content [data-act="goNext"]') && !!(window.SB_TRAIL && SB_TRAIL.honey), null, { timeout: 8000 });
+      early = await pg.evaluate(() => !SB_LAZY.ready('atlas'));
+      if (how === 'home') await pg.click('.sb-content [data-act="goNext"]'); else await pg.evaluate(() => app.drawer('next'));
+    }
+    await pg.waitForTimeout(3500);
+    const r = await pg.evaluate(() => ({ h: location.hash, nav: state.nav }));
+    await ctx.close(); return Object.assign(r, { early });
+  };
+  const viaHome = await landing('home'), viaDrawer = await landing('drawer'), viaLink = await landing('link');
+  ok(viaHome.h === viaLink.h && viaDrawer.h === viaLink.h && viaLink.nav === 'concepts',
+    `asked at once (Atlas still landing: ${viaHome.early}), Home's Continue, the drawer and #/continue end on the same screen — the untouched stop's lesson (${viaHome.h} · ${viaDrawer.h} · ${viaLink.h})`);
+
   /* ---- and nobody else reads the frontier for a call to action ---- */
   const files = fs.readdirSync(ROOT).filter(f => /\.js$/.test(f) && f !== 'trail.js');   // trail.js owns it
   const stray = []; let shellReads = 0;
