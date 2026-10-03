@@ -221,7 +221,10 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
 
   /* ---- contrast: every world, light / white / dusk ---- */
   {
-    const AXE = path.join(SRC, 'node_modules', 'axe-core', 'axe.min.js');
+    /* resolved like tests/a11y-axe.cjs: from the installed packages first — a deploy tree (SRC under
+       --root) carries no node_modules, and the deploy's browser check runs this test against it */
+    const AXE = (() => { try { return require.resolve('axe-core/axe.min.js'); } catch (e) {}
+      return [path.join(SRC, 'node_modules', 'axe-core', 'axe.min.js'), path.join(__dirname, '..', 'node_modules', 'axe-core', 'axe.min.js')].find(p => fs.existsSync(p)); })();
     const { ctx, pg } = await open();
     await openFeed(pg);
     await pg.addScriptTag({ path: AXE });
