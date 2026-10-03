@@ -74,10 +74,14 @@
 [data-theme="race"] .sb-card::after{right:18px}
 /* the countdown chrome the world puts on every screen */
 @keyframes w4-cd{0%{transform:scale(.6);opacity:0}25%{transform:scale(1.15);opacity:1}70%{transform:scale(1);opacity:1}100%{transform:scale(1.5);opacity:0}}
-.w4-countdown{position:fixed;inset:0;z-index:70;display:grid;place-items:center;pointer-events:none}
+/* The countdown is DECORATION, so it sits with the backdrop (z-index 0, under #root's 1) and
+   never over a card. At z-index 70 a 190px "3" crossed the Home cards for three seconds on
+   every visit to the Race Zone, and the five lights sat on the coin pill in the top bar.
+   Guard: tests/world-decor.cjs. */
+.w4-countdown{position:fixed;inset:0;z-index:0;display:grid;place-items:center;pointer-events:none}
 .w4-countdown b{font-family:"Bungee",system-ui,sans-serif;font-size:clamp(64px,18vw,190px);color:#FFC83D;
   text-shadow:0 6px 0 #14337A,0 10px 26px rgba(0,0,0,.4);animation:w4-cd .75s ease-out forwards}
-.w4-lights{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:70;display:flex;gap:9px;pointer-events:none}
+.w4-lights{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:0;display:flex;gap:9px;pointer-events:none}
 .w4-lights i{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
 .w4-lights i.on{background:#FFC83D;box-shadow:0 0 12px 3px rgba(255,200,61,.75)}
 
@@ -228,6 +232,18 @@
   box-shadow:inset 0 -14px 24px -18px color-mix(in srgb,#2E8FB8 35%,transparent),var(--sh-rest)}
 [data-theme="avatar"] .sb-card::after{content:"";position:absolute;top:9px;right:14px;width:50px;height:9px;pointer-events:none;opacity:.85;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 9'%3E%3Ccircle cx='4.5' cy='4.5' r='3.6' fill='%23AEDDE4'/%3E%3Ccircle cx='19' cy='4.5' r='3.6' fill='%233FA9D8'/%3E%3Ccircle cx='33.5' cy='4.5' r='3.6' fill='%235FB87A'/%3E%3Ccircle cx='48' cy='4.5' r='3.6' fill='%23F3A13C'/%3E%3C/svg%3E") no-repeat center/contain}
+
+/* ================= A WORLD'S CARD COSTUME SITS BEHIND THE CARD'S CONTENT =================
+   Every world dresses its cards with ::before/::after marks — Dino Era's silhouette in the
+   bottom-right corner, Race Zone's wheels, the Hive's cell, Aurora's star, Avatar's orbs.
+   An absolutely positioned pseudo-element paints ABOVE a card's ordinary content, so the
+   dino stood on the cards' → buttons and the "Your level" arrow. The card is made its own
+   stacking context and the marks go to z-index -1: they paint on the card's ground, under
+   every word and control in it, in every world, at every width. (Probed before this rule
+   went in: no positioned, z-indexed descendant of a card overflows it on any main screen,
+   so isolating the card hides nothing.) Guard: tests/world-decor.cjs. */
+[data-theme] .sb-card{isolation:isolate}
+[data-theme] .sb-card::before,[data-theme] .sb-card::after{z-index:-1}
 
 /* ================= TOTAL CALM on Practice & Supercharge ====================================
    Focus screens strip everything the worlds add: the scene freezes to a faint still, the

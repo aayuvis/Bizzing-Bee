@@ -1778,6 +1778,39 @@
     .atlas-chip{max-width:10ch;padding:2px 7px}
     .atlas-chip b{font-size:9.5px}.atlas-chip i{font-size:8.5px}
   }
+  /* A NARROW BOARD SHOWS MEDALLIONS AND A KEY (trail.js atlasKey). Two-line chips under
+     nine medallions cannot share a 358x200 painting: on a phone they sat on each other,
+     the top row's numerals were cut off by the board's edge and the avatar covered the
+     Roman Forum's count. So below the width at which a board's chips stop colliding,
+     the chips go and the key under the board names every region — each medallion is
+     then centred on its own point and cannot leave the board. The width is the BOARD's
+     (container queries), per continent, because the Advanced map is the densest; the
+     640px media query is the same switch for a browser without container queries.
+     tests/atlas-layout.cjs sweeps the widths and holds both halves of it. */
+  .atlas-wrap{container-type:inline-size}
+  .atlas-wrap.aw-honey{container-name:aw-honey}
+  .atlas-wrap.aw-exp{container-name:aw-exp}
+  .atlas-wrap.aw-ultra{container-name:aw-ultra}
+  .atlas-key{display:none;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:6px;margin-top:8px;line-height:1.2}
+  .atlas-key-i{display:flex;align-items:center;gap:8px;min-height:44px;padding:5px 10px 5px 6px;border-radius:12px;text-align:left;
+    background:var(--bg2);box-shadow:0 0 0 1px var(--line);color:var(--text)}
+  .atlas-key-i.cur{box-shadow:0 0 0 2px var(--accent)}
+  .atlas-key-n{flex-shrink:0;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;overflow:hidden;
+    font-family:var(--display);font-weight:800;font-size:12px;line-height:1}
+  .atlas-key-n svg{width:26px;height:26px}
+  .atlas-key-t{min-width:0}
+  .atlas-key-t b{display:block;font-family:var(--display);font-weight:800;font-size:12.5px}
+  .atlas-key-t i{display:block;font-style:normal;font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;color:var(--muted);margin-top:2px}
+  .atlas-key-cap{grid-column:1/-1;margin:2px 2px 0;font-size:12px;font-weight:600;color:var(--muted)}
+  @media (max-width:640px){
+    .atlas-board .atlas-chip,.atlas-board .atlas-cap{display:none}
+    .atlas-key{display:grid}
+  }
+  /* measured with every chip forced on (CSS px of the board, inside #root's zoom): the Honey
+     chips first collide at 576, the Advanced ones at 763, Ultra's at 576 — ~20px of margin */
+  @container aw-honey (max-width:609px){ .atlas-board .atlas-chip{display:none} .atlas-key{display:grid} }
+  @container aw-exp (max-width:799px){ .atlas-board .atlas-chip{display:none} .atlas-key{display:grid} }
+  @container aw-ultra (max-width:619px){ .atlas-board .atlas-chip,.atlas-board .atlas-cap{display:none} .atlas-key{display:grid} }
   /* ---- world tiles: each card moves the way its world moves ----
      One layer, one keyframe each, driven by --c (the world's own light). The
      global data-motion="off" rule already stops all of it for anyone who asks. */
@@ -1835,15 +1868,17 @@
      covered the first six stops of the road and left a wide empty stripe beside two small
      buttons. The pointer sits at --ax and flips with .below; --tx/--ty are set per stop in
      trail.js from that pin's own percentage coordinates. */
+  /* --dx is popFit()'s nudge (trail.js) that keeps the card inside the visible window of a
+     panning board; the pointer moves back by the same amount so it still meets the pin */
   .atlas-pop{position:absolute;z-index:9;width:min(336px,76vw);
-    transform:translate(var(--tx,-50%),var(--ty,calc(-100% - 24px)));
+    transform:translate(calc(var(--tx,-50%) + var(--dx,0px)),var(--ty,calc(-100% - 24px)));
     animation:atlas-pop-in .18s cubic-bezier(.2,.9,.3,1.2) both;pointer-events:auto}
-  @keyframes atlas-pop-in{from{opacity:0;transform:translate(var(--tx,-50%),calc(var(--ty,-100%) + 8px)) scale(.96)}}
+  @keyframes atlas-pop-in{from{opacity:0;transform:translate(calc(var(--tx,-50%) + var(--dx,0px)),calc(var(--ty,-100%) + 8px)) scale(.96)}}
   .atlas-pop-in{position:relative;background:var(--paper,var(--bg2));border:1px solid var(--line);
     border-radius:16px;padding:12px 14px 13px;line-height:normal;text-align:left;
     box-shadow:0 14px 34px rgba(10,6,26,.34),0 2px 6px rgba(10,6,26,.18)}
   /* the pointer: a rotated square so the border joins the card's own edge cleanly */
-  .atlas-pop-in::after{content:"";position:absolute;left:var(--ax,50%);width:13px;height:13px;
+  .atlas-pop-in::after{content:"";position:absolute;left:clamp(18px,calc(var(--ax,50%) - var(--dx,0px)),calc(100% - 18px));width:13px;height:13px;
     margin-left:-6.5px;background:var(--paper,var(--bg2));transform:rotate(45deg)}
   .atlas-pop:not(.below) .atlas-pop-in::after{bottom:-7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
   .atlas-pop.below .atlas-pop-in::after{top:-7px;border-left:1px solid var(--line);border-top:1px solid var(--line)}
