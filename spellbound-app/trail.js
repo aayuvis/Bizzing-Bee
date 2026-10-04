@@ -2683,8 +2683,12 @@
   function villainCard(c) {
     const V = state.villain; if (!V) return '';
     let av = (function () { try { return SB_AVATAR(c.avatar || 'bizzy', 56) || ''; } catch (e) { return ''; } })();
-    const isImg = /<img\b/i.test(av);
-    if (isImg) av = av.replace(/<img\b/i, '<img onload="var n=this.closest(\'.sb-vnet\');if(n)n.classList.add(\'ready\')" onerror="var n=this.closest(\'.sb-vnet\');if(n)n.classList.add(\'ready\')"');
+    const isImg = /<img\b/i.test(av), src = (av.match(/\ssrc=["']([^"']+)/i) || [])[1] || '';
+    /* once a picture has loaded it is remembered, so a re-render (every keystroke redraws the
+       card) never blinks the net away while the cached image fires its load again */
+    const okAv = window._sbAvOk = window._sbAvOk || {};
+    const ready = !isImg || (src && okAv[src]);
+    if (isImg && !ready) av = av.replace(/<img\b/i, '<img onload="window._sbAvOk=window._sbAvOk||{};window._sbAvOk[this.getAttribute(\'src\')]=1;var n=this.closest(\'.sb-vnet\');if(n)n.classList.add(\'ready\')" onerror="var n=this.closest(\'.sb-vnet\');if(n)n.classList.add(\'ready\')"');
     const body = V.shown
       ? `<h3 id="sb-vill-h" style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 8px">Here is the word</h3>
         ${missFeedbackHTML(V.w, V.tried || '', { head: 'Two tries — here is the word, letter by letter' })}
@@ -2701,7 +2705,7 @@
     return `<div data-act="villFlee" style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(16,10,28,.6)">
       <div data-act="noop" data-trap="villain" role="dialog" aria-modal="true" aria-labelledby="sb-vill-h" style="position:relative;box-sizing:border-box;width:min(430px,100%);max-height:100%;overflow:auto;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">
         <img class="sb-vill-moth" src="app-art/gart/moth.webp" alt="" aria-hidden="true" style="width:64px;height:64px;object-fit:contain;display:block;margin:0 auto" onerror="this.style.display='none'">
-        <div class="sb-vnet${isImg ? '' : ' ready'}" style="position:relative;width:76px;height:76px;margin:6px auto 2px;display:grid;place-items:center">
+        <div class="sb-vnet${ready ? ' ready' : ''}" style="position:relative;width:76px;height:76px;margin:6px auto 2px;display:grid;place-items:center">
           <span style="width:56px;height:56px;display:block;filter:saturate(.65) brightness(.92)">${av || ''}</span>
           <span class="sb-vnet-mesh" aria-hidden="true"></span>
         </div>
