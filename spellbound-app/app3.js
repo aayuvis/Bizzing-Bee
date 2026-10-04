@@ -2751,7 +2751,7 @@ const app = {
   finderCreateAdd:()=>{ const c=active(); const w=state.finderSel; if(!w) return; const name=(state.finderName||'').trim()||'My words';
     c.builtLists=c.builtLists||{}; const key='built_'+Date.now().toString(36);
     c.builtLists[key]={ label:name, ws:[w.w] }; state.finderName=''; save(); sfx('win');
-    flash('New list “'+name+'” created with “'+w.w+'” — find it in Practice ✓'); render(); },
+    flash('New list “'+name+'” created with “'+w.w+'” — find it in the Word Gym ✓'); render(); },
   reportWord:(w)=>set({reportW:w}),
   reportClose:()=>set({reportW:null}),
   /* ---- 🐞 the bug sidebar. OFFLINE by design (COPPA: the app transmits nothing):
@@ -4549,7 +4549,7 @@ function viewOnboarding(){
         <p style="margin:0 0 8px;font-size:12px;color:var(--muted)">A competition coming up? Add the date — the app counts down to it and paces practice. You can set or change it in Settings any time.</p>
         <input type="date" data-chg="onbBeeDate" value="${escA(S.draft.beeDate||'')}" style="width:100%;max-width:220px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none">
       </div>
-      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Practice start in one go.</span></span></button>
+      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Word Gym start in one go.</span></span></button>
       <div style="margin-top:14px">${voiceUpgradeTip()}</div>`);
   }
   /* Three bands, not one centred stack: progress at the top, the question next to
@@ -5667,7 +5667,7 @@ const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#
   play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B', feed:'#D2553A' };
 /* The tabs, in the family order. My Feed is the LAST tab, after Play (owner, 2 Oct 2026,
    FAMILY-STANDARD §6a) — and it goes, with its ☰ row, when a grown-up switches it off. */
-function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']];
+function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Word Gym','practice'],['explore','Library','library'],['games','Play','play']];
   if(!state.feedOff) t.push(['feed','My Feed','feed']); return t; }
 function navIcon(key,size,plain){ size=size||22;
   const tint=plain?'currentColor':(NAV_TINT[key]||'currentColor');
@@ -5914,7 +5914,7 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
       <div style="width:100px;height:110px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotSVG('excited')}</div>
       <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Placement complete</div>
       <div style="font-family:var(--display);font-weight:800;font-size:30px;margin:6px 0 4px">Band ${lt.placed} — ${bandTier(lt.placed||1)}!</div>
-      <p style="font-size:15px;color:var(--muted);margin:0 0 6px">That's exactly where champions start. Your word difficulty, your games and your Practice are all set to it — spell well and it climbs with you.</p>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 6px">That's exactly where champions start. Your word difficulty, your games and your Word Gym are all set to it — spell well and it climbs with you.</p>
       <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Quest start: Stage ${ltStageForBand(lt.placed||1)+1} of the Bizzing Bee Journey.</p>
       <p style="font-size:12.5px;color:var(--muted);margin:0 0 18px;line-height:1.5">One more thing: your <b>bee</b> still hatches young — evolution measures <b>practice</b>, not skill, and it only ever climbs. Your Band is the skill part, and yours is already set. 🐝</p>
       <button data-act="ltGo" style="width:100%;max-width:280px;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Let's spell →</button>
@@ -6126,7 +6126,7 @@ function viewBeeBand(){
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
       <section class="sb-card">
         <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">What moves your level</div>
-        ${mover('🎯','Spell a word right','Anywhere — Practice, an Atlas stop, the Arcade, the mock bee. Each right answer is one step, and the steps add up to the next level.','var(--accent)')}
+        ${mover('🎯','Spell a word right','Anywhere — the Word Gym, an Atlas stop, the Arcade, the mock bee. Each right answer is one step, and the steps add up to the next level.','var(--accent)')}
         ${mover('🔁','Beat a word that tripped you','A word you once missed and now spell right counts the same — and it is the best practice there is.','var(--bad)')}
         ${mover('🛡️','It never goes down','A day off, a wrong answer, a lost race: none of them take a step away.','var(--good)')}
         <div style="margin-top:12px;padding:10px 12px;border-radius:11px;background:var(--surface2);font-size:12px;color:var(--muted);line-height:1.55">
@@ -6395,9 +6395,9 @@ function viewRevisions(){
   const body = tab==='history'
     ? (hist.length?`<div style="display:flex;flex-direction:column;gap:9px">${hist.map(histRow).join('')}</div>`:beeEmpty('happy','No revise history yet. When you mark a revision word ✓ Complete, it moves here so you can revisit it any time.'))
     : (list.length?`<div style="display:flex;gap:8px;margin-bottom:14px"><button data-act="practiceRevisions" style="flex:1;padding:13px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice all ${list.length} →</button></div><div style="display:flex;flex-direction:column;gap:9px">${list.map(todoRow).join('')}</div>`
-      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Practice and it will show up here.'));
+      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in the Word Gym and it will show up here.'));
   return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Practice and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
+    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in the Word Gym and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
     ${mastDueCard()}
     <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:14px">${tabBtn('todo','To revise'+(list.length?' · '+list.length:''))}${tabBtn('history','Revise history'+(hist.length?' · '+hist.length:''))}</div>
     ${body}
@@ -7555,10 +7555,10 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
     </div>
     <div class="sb-card" style="margin-bottom:14px">
       <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How your bee evolves</div>
-      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in Practice, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Bizzing coins 🪙 are different: they come from learning too, and you <i>spend</i> them on looks like a Rare avatar. They never buy a level, and spending them never costs you a step.</div>
+      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in the Word Gym, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Bizzing coins 🪙 are different: they come from learning too, and you <i>spend</i> them on looks like a Rare avatar. They never buy a level, and spending them never costs you a step.</div>
     </div>
     ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
-    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Practice, the Arcade, Concepts — and every right word feeds the same evolution.')}
+    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — the Word Gym, the Arcade, Concepts — and every right word feeds the same evolution.')}
   </div>`;
 }
 
@@ -9501,7 +9501,7 @@ function viewQuest(){
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;color:var(--treasure-deep,#8A5B00)">Story vault</span><span style="display:block;font-size:12px;color:var(--treasure-deep,#8A5B00);opacity:.85">${un.length} of ${all} word-history tales unlocked</span></span>
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
-    ${pageHead('Practice paths','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Word Atlas tab.')}
+    ${pageHead('Word Gym','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Word Atlas tab.')}
     <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):paths}</div>
     ${vault}
   </div>`;
@@ -9582,7 +9582,7 @@ function metricsCard(c){
       <div style="display:flex;align-items:flex-end;gap:2px;height:${H}px">${bars}</div>
     </div>
     <div style="display:flex;gap:2px;margin-top:4px">${ticks}</div>
-    <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:8px">${sel==='prac'?'Practice time counts Practice and revisions only — the clock stops in the Arcade and everywhere else.':(sel==='app'?'Every minute spent anywhere in Bizzing Bee, counted only while the app is on screen.':'Every word you spell right, wherever you spell it.')}</div>
+    <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:8px">${sel==='prac'?'Practice time counts the Word Gym and revisions only — the clock stops in the Arcade and everywhere else.':(sel==='app'?'Every minute spent anywhere in Bizzing Bee, counted only while the app is on screen.':'Every word you spell right, wherever you spell it.')}</div>
   </div>`; }
 /* Study-card analytics: how the trivia cards are split across practised / tested / mastered /
    revision, chapter by chapter — and tapping a state opens the actual list of those cards. */
@@ -9710,11 +9710,11 @@ function viewProgress(){
       return `<div class="sb-card" style="margin-bottom:18px">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <span style="min-width:0;flex:1">
-            <span class="sb-cs">Practice · now training</span>
+            <span class="sb-cs">Word Gym · now training</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-top:2px">${esc(listLabel(k).split(' · ')[0])}</span>
             <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">${k==='journey'?(si<CHAMP_LEVELS?('Stage '+(si+1)+' of '+CHAMP_LEVELS+' to Champ'):('Champion’s Library · stage '+(si+1))):('Stage '+(si+1)+(st.length?(' of '+st.length):''))} · ${m} of ${ws.length} words met are mastered</span>
           </span>
-          <button data-act="openCoach" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Open Practice →</button>
+          <button data-act="openCoach" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Open Word Gym →</button>
         </div>
         <div style="height:7px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin:12px 0 0"><div style="height:100%;background:var(--good);width:${pct}%"></div></div>
         ${others.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px">${others.map(x=>`<button data-act="selectList" data-arg="${escA(x)}" style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--muted)">${esc(listLabel(x).split(' · ')[0])} · Stage ${listStageIdx(c,x)+1}</button>`).join('')}</div>`:''}
@@ -9741,7 +9741,7 @@ function viewProgress(){
           <div style="font-size:12px;font-weight:800;line-height:1.15;margin-top:3px;${on?'color:var(--accent)':''}">${label}</div></div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:18px">
         <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your word difficulty</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Word difficulty '+bb.band+' of 9 · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
-        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Practice, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
+        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — the Word Gym, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${goodDaysCard()}</div>
@@ -9795,7 +9795,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
         <div class="sb-ct" style="font-size:14px;margin-bottom:8px">Add “${esc(w.w)}” to a list</div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">${addChips}
           <span style="display:inline-flex;gap:6px;align-items:center"><input data-inp="finderName" data-fkey="finderName" value="${escA(S.finderName||'')}" maxlength="30" placeholder="New list name…" style="width:150px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:700;outline:none"><button data-act="finderCreateAdd" style="padding:8px 14px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">Create + add</button></span></div>
-        <div class="sb-cn" style="margin-top:8px">Lists live in Practice — practise them any time.</div>
+        <div class="sb-cn" style="margin-top:8px">Lists live in the Word Gym — practise them any time.</div>
       </div>
       ${wordFlash([w],0,'noop',{})}`;
   } else {
@@ -10123,7 +10123,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
       </div>
       <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
         <button data-act="openTheme" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;background:${cl.c};color:#fff;font-weight:800;font-size:12px;box-shadow:var(--edge)">${iconSVG('bulb',13)} Open</button>
-        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Practice':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
+        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in the Word Gym':'Add to your lists (top bar in the Word Gym)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
       </div>
     </div>
   </div>`; }
@@ -10133,7 +10133,7 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
   const doneThemes=defs.filter(t=>{ const st=themeStat(t.id); return st.total>0 && st.m/st.total>=PATTERN_DONE_PCT; }).length;
   const myRow = mine.length
     ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700">My themes</span>${mine.map(t=>{ const cl=themeClusters().find(x=>x.id===t.cluster)||{}; return `<button data-act="selectList" data-arg="${themeKey(t.id)}" oncontextmenu="return sbDelList(event,'${themeKey(t.id)}')" title="Train · right-click to remove" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1px solid ${cl.c};background:color-mix(in srgb,${cl.c} 12%,var(--bg2));color:var(--text);font-weight:800;font-size:12px">${esc(t.label)} <span style="opacity:.7;font-size:12px">L${listStageIdx(c,themeKey(t.id))+1}</span></button>`; }).join('')}</div>`
-    : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in Practice.</div>`;
+    : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in the Word Gym.</div>`;
   const grid='display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:13px';
   const sections=themeClusters().map(cl=>{ const ts=defs.filter(t=>t.cluster===cl.id); if(!ts.length) return '';
     return `<div style="display:flex;align-items:center;gap:12px;margin:24px 0 12px">
@@ -10270,7 +10270,7 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
     ? (()=>{ const nextOpen = L.n<100 && journeyOpen(L.n+1);
         // never dead-end a journey: route to the next unlocked journey, or back to Practice
         return (nextOpen?`<button data-act="openLesson" data-arg="${L.n+1}" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next journey →</button>`:'')+
-          `<button data-act="openCoach" style="flex:1;padding:14px;border-radius:14px;background:${nextOpen?'var(--surface2)':'var(--accent)'};color:${nextOpen?'var(--text)':'#fff'};font-weight:800;font-size:15px;${nextOpen?'border:1px solid var(--line)':'box-shadow:var(--edge)'}">Back to Practice →</button>`; })()
+          `<button data-act="openCoach" style="flex:1;padding:14px;border-radius:14px;background:${nextOpen?'var(--surface2)':'var(--accent)'};color:${nextOpen?'var(--text)':'#fff'};font-weight:800;font-size:15px;${nextOpen?'border:1px solid var(--line)':'box-shadow:var(--edge)'}">Back to the Word Gym →</button>`; })()
     : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`;
   return `<div style="max-width:660px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${backPill('lessonBack','All lessons',null)}<span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--display);font-variant-numeric:tabular-nums">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
@@ -10575,7 +10575,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('flag',14,2.4)} Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Gym</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('flag',14,2.4)} Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
       purple banner between the header and the tabs, which ate a whole row of Practice and
       pushed the thing the child came for below the fold — for a pack most of them do not
       own. A pill says the same thing and costs 40px. */
@@ -10784,7 +10784,7 @@ function coachSetup(){
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#fff;color:${jc.c};font-weight:800;font-size:13px">${jStarted?'Continue':'Start the Journey'} →</span></div>
     </div></button>`;
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${backPill('openCoach','Back to Practice',null)}</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${backPill('openCoach','Back to the Word Gym',null)}</div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px">Setup &amp; lists</h2>
     <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists come with Premium.'}</p>
     ${(()=>{ const on=advModeOn(c);

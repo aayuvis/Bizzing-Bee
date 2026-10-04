@@ -136,7 +136,7 @@
      and — deliberately — no spelling-progress writes: reading is not drilling. */
   app2.readerTry = () => { const ch = chapters(state.readerBook)[state.readerCh]; if (!ch) return;
     const pool = (ch.words || []).filter(x => x.w && x.d);
-    if (pool.length < 4) { flash('This chapter drills its words in Practice instead'); return; }
+    if (pool.length < 4) { flash('This chapter drills its words in the Word Gym instead'); return; }
     /* real shuffles (sample = Fisher-Yates): sort(()=>Math.random()-.5) is biased by position,
        which leaks an answer slot without any text giving it away (FIX-BEE D8) */
     const pick = sample(pool, 4);

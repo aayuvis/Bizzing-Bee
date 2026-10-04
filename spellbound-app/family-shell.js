@@ -224,7 +224,7 @@
     if (head === 'shop') { app.openShop(p[1] || 'avatars'); return; }
     if (head === 'grownups') { app.setNav('parent'); return; }
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
-    if (head === 'practice') { app.openCoach(); return; }
+    if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
     if (head === 'play') { app.openGames(); return; }
     if (head === 'support') { app.setNav('home'); return; }
     var nav = ROUTE_NAV[head] || head;

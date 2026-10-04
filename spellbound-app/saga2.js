@@ -1704,38 +1704,45 @@
   const GP_FAR={formation:1300,shop:600,bush:350,flowers:300,reeds:300,haybale:420,rock:380,hedge:350,signpost:420,lamp:320,tree:800,parktree:700,cactus:800,boulders:700,deadtree:700,billboard:900,tower:1100,barn:1500,windmill:1600,watertower:1500,butte:1800};
   const GP_VAR={formation:4,shop:4,bush:4,flowers:3,haybale:3,barn:2,windmill:1,reeds:3,cactus:6,rock:4,boulders:3,deadtree:3,butte:1,watertower:1,signpost:2,tower:6,lamp:2,billboard:4,hedge:1,tree:2,parktree:2};
 
-  /* ===== PHONES RACE SIDEWAYS =====
-     Upright, a phone gave the race a 430x390 canvas: a narrow road, the kart under the
-     controls, the bends arriving with no warning. Sideways it gets a 2:1 window with a
-     thumb gutter either side, which is how every phone racer is held. A phone is a touch
-     screen whose short side is under 560px (tablets are fine either way up). Held
-     upright, the race does not start — it asks to be turned, and starts when it is. */
+  /* ===== PHONES RACE EITHER WAY UP (4 Oct, owner: the race must play upright) =====
+     1 Oct made a phone race SIDEWAYS only: held upright it showed "Turn your phone sideways"
+     and would not start. The owner reversed that — a child holding the phone the way they
+     always hold it gets a race. So a phone (a touch screen whose short side is under 560px;
+     tablets and desktops are untouched) has TWO layouts and switches between them live:
+       sideways  the 2:1 canvas, full height, a thumb gutter either side (unchanged);
+       upright   the road takes the top ~60% at the full width, the HUD floats over its
+                 sky, and every control lives in the thumb zone BELOW it — Steer Left,
+                 Brake, Steer Right, the power-up slot over the brake. Nothing is on the road.
+     Turning the phone mid-race re-lays the same race out (canvas, horizon, controls) and
+     lets go of every input; nothing restarts and nothing pauses. */
   const gpPhone=()=>{ try{ return matchMedia('(pointer:coarse)').matches && Math.min(innerWidth,innerHeight)<560; }catch(e){ return false; } };
   const gpUpright=()=>innerHeight>innerWidth;
-  const GP_TURN='<div class="sg-turn" role="alert"><div class="sg-turn-ph" aria-hidden="true">'+
-    '<svg viewBox="0 0 64 64"><rect x="20" y="6" width="24" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="3.4"/>'+
-    '<rect x="29" y="44" width="6" height="2.6" rx="1.3" fill="currentColor"/></svg></div>'+
-    '<b>Turn your phone sideways</b><span>The Grand Prix races in landscape — more road ahead, and a thumb on each side to steer.</span></div>';
-  function gpTurnFirst(host,start){
-    host.innerHTML=GP_TURN; let inner=null, gone=false, t=0;
-    const check=()=>{ clearTimeout(t); t=setTimeout(()=>{ if(gone||inner||gpUpright()) return; off(); host.innerHTML=''; inner=start(); },150); };
-    const off=()=>{ removeEventListener('resize',check); try{ screen.orientation.removeEventListener('change',check); }catch(e){} };
-    addEventListener('resize',check); try{ screen.orientation.addEventListener('change',check); }catch(e){}
-    return { destroy(){ gone=true; clearTimeout(t); off(); if(inner&&inner.destroy) inner.destroy(); } };
-  }
 
   function beeGrandPrix(host, opts, done){
-    if(gpPhone() && gpUpright()) return gpTurnFirst(host, ()=>beeGrandPrix(host,opts,done));
-    // Fill the play area (the steer/hold controls are absolutely overlaid on the canvas,
-    // so the canvas can take almost the whole overlay height — no dark letterbox below).
-    /* Sideways on a phone the HUD floats over the sky, the arcade bar is a thin strip,
-       and the canvas takes the full height with a GUT-wide gutter each side for the
-       thumbs — so no control ever sits on the road. */
-    const LAND=gpPhone() && !gpUpright(), GUT=LAND?96:0;
-    const top0=LAND?(()=>{ try{ return Math.max(0,host.getBoundingClientRect().top); }catch(e){ return 0; } })():0;
-    const HtL=LAND?Math.max(200,Math.round(innerHeight-top0-4)):0;
-    const Wd=LAND?Math.max(320,Math.min(innerWidth-2*GUT,Math.round(HtL*2.05))):Math.min(innerWidth-8,1600);
-    const Ht=LAND?HtL:Math.max(340,Math.min(innerHeight-96,Math.round(Wd*0.92)));
+    /* THE LAYOUT IS MEASURED, AND MEASURED AGAIN WHEN THE PHONE TURNS (gpLayout).
+       Desktop and tablet: the canvas fills the play area and the steer/hold controls are
+       overlaid on it, as they always were. A phone sideways: the HUD floats over the sky,
+       the arcade bar is a thin strip, and the canvas takes the full height with a GUT-wide
+       gutter each side for the thumbs. A phone upright: the canvas is the full width and
+       PORT_FR of the play area's height, and the rest (CTL) is the thumb zone the controls
+       sit in. Either way no control ever sits on the road. */
+    let LAND=false, PORT=false, GUT=0, Wd=0, Ht=0, CTL=0, horizonY=0;
+    const PORT_FR=0.62, CTL_MIN=210;
+    function gpMeasure(){
+      const ph=gpPhone(); LAND=ph&&!gpUpright(); PORT=ph&&gpUpright(); GUT=LAND?96:0;
+      host.classList.toggle('sg-land',LAND); host.classList.toggle('sg-port',PORT);   // the arcade bar's height depends on it
+      const top0=(LAND||PORT)?(()=>{ try{ return Math.max(0,host.getBoundingClientRect().top); }catch(e){ return 0; } })():0;
+      if(LAND){ Ht=Math.max(200,Math.round(innerHeight-top0-4)); Wd=Math.max(320,Math.min(innerWidth-2*GUT,Math.round(Ht*2.05))); CTL=0; }
+      else if(PORT){ const avail=Math.max(CTL_MIN+260,Math.round(innerHeight-top0)); Wd=Math.min(innerWidth,host.clientWidth||innerWidth);
+        Ht=Math.max(260,Math.min(avail-CTL_MIN,Math.round(avail*PORT_FR))); CTL=avail-Ht; }
+      else { Wd=Math.min(innerWidth-8,1600); Ht=Math.max(340,Math.min(innerHeight-96,Math.round(Wd*0.92))); CTL=0; }
+      /* The horizon stays at 0.30 upright too. 0.36 and 0.42 were tried at 390x844: more
+         painted sky, but the near road narrows and the kart shrinks to ~50px, and the bend
+         ahead arrives later on screen. At 0.30 the road fills the width at the bumper and
+         the kart is ~62px — the projection (and hwAt) is unchanged, only the canvas is taller. */
+      horizonY=Math.round(Ht*0.30);
+      host.style.setProperty('--sg-gut',(LAND?Math.floor((innerWidth-Wd)/2):0)+'px');
+      host.style.setProperty('--sg-ctl',CTL+'px'); }
     const diff=opts.diff||'medium';
     const HERO=(opts.hero)||heroAv();            // the chosen racer shows as the driver + the position marker
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
@@ -1775,12 +1782,14 @@
       '<div class="sg-steer-r"><button class="sg-sbtn sg-brake" id="sg-brk" aria-label="Brake">'+GP_BRAKE()+'</button>'+
       '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div></div>'+
       '<div id="sg-card"></div>';
-    if(LAND){ host.classList.add('sg-land'); host.style.setProperty('--sg-gut',Math.floor((innerWidth-Wd)/2)+'px'); }
     const cv=host.querySelector('#sg-cv');
     const dpr=Math.min(2,window.devicePixelRatio||1);
-    cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);
-    cv.style.width=Wd+'px'; cv.style.height=Ht+'px';
-    const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
+    const cx=cv.getContext('2d');
+    function gpLayout(){ gpMeasure();
+      cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);   // a new size clears the canvas and its transform
+      cv.style.width=Wd+'px'; cv.style.height=Ht+'px';
+      cx.setTransform(dpr,0,0,dpr,0,0); }
+    gpLayout();
 
     /* ---- pseudo-3D track ---- */
     // drawDist is the count of road segments projected AND drawn every frame — the
@@ -1789,7 +1798,7 @@
     const segLen=200, roadW=2200, rumbleLen=3, drawDist=100, camH=3600, fov=62;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
-    const horizonY=Math.round(Ht*0.30);   // horizon high up-screen: more track visible from above
+    // horizonY is Ht*0.30, set by gpMeasure because Ht changes when a phone turns.
     const camDepth=1/Math.tan((fov/2)*Math.PI/180);
     sgTexPreload(['oil','cop','item-box',SKY].concat(SCN.prop!=='cactus'?['tree']:[]));   // every other prop is painted (GPS), never fetched   // hazard/scene art, decoded before first frame (karts are drawn: SB_KART_ART)
     const LIGHT=SCN.light;
@@ -1963,7 +1972,7 @@
       el.querySelector('#sg-cgo').onclick=submit;
       el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
     }
-    function resume(){ countT=1.0; mode='count'; }
+    function resume(){ countT=1.0; mode='count'; if(_rotWait){ _rotWait=false; onRot(); } }
 
     /* ---- steering ----
        WHAT IS HELD, NOT WHAT HAPPENED LAST. The old handlers set steer on a press and zeroed
@@ -2007,13 +2016,17 @@
     addEventListener('blur',letGo); document.addEventListener('visibilitychange',onVis);
     hold(cv, e=>{ if(mode!=='race'&&mode!=='count') return false; const r=cv.getBoundingClientRect();
       press('p'+e.pointerId,(e.clientX-r.left)<Wd/2?-1:1); }, e=>lift('p'+e.pointerId));
-    /* turned upright mid-race: the race stops under the same "turn your phone" card and
-       comes back on a one-second countdown — nobody loses a corner to a rotation */
-    let paused=false, _rotT=0; const turnEl=document.createElement('div'); turnEl.className='sg-turn-wrap'; turnEl.innerHTML=GP_TURN;
-    const onRot=()=>{ clearTimeout(_rotT); _rotT=setTimeout(()=>{ if(over||!gpPhone()) return; const up=gpUpright();
-      if(up&&!paused){ paused=true; letGo(); host.appendChild(turnEl); }
-      else if(!up&&paused){ paused=false; turnEl.remove(); if(mode==='race') resume(); } },150); };
-    if(LAND){ addEventListener('resize',onRot); try{ screen.orientation.addEventListener('change',onRot); }catch(e){} }
+    /* TURNED MID-RACE: the same race, laid out again. Nothing restarts and nothing pauses —
+       but every held input is let go, because the button a thumb was on has moved out from
+       under it. While a spell card is open the keyboard is up and resizing the screen, so the
+       re-layout waits for the card to close (resume() runs it). */
+    let _rotT=0, _rotWait=false;
+    const onRot=()=>{ clearTimeout(_rotT); _rotT=setTimeout(()=>{ if(over) return;
+      if(mode==='spell'){ _rotWait=true; return; }
+      const wasLand=LAND, was=[LAND,PORT,Wd,Ht].join(); gpMeasure(); if([LAND,PORT,Wd,Ht].join()===was) return;
+      if(LAND!==wasLand) letGo();   // a turn, not just the browser bar moving
+      gpLayout(); },150); };
+    if(gpPhone()){ addEventListener('resize',onRot); try{ screen.orientation.addEventListener('change',onRot); }catch(e){} }
     const unbind=()=>{ removeEventListener('keydown',kd); removeEventListener('keyup',ku);
       removeEventListener('resize',onRot); try{ screen.orientation.removeEventListener('change',onRot); }catch(e){}
       removeEventListener('blur',letGo); document.removeEventListener('visibilitychange',onVis); };
@@ -2460,8 +2473,8 @@
     /* ---- loop ---- */
     let last=0;
     function frame(ts){ if(over) return; const dt=Math.min(0.05,(ts-last)/1000)||0.016; last=ts;
-      if(mode==='count' && !paused){ countT-=dt; if(countT<=0){ mode='race'; } }
-      if(mode==='race' && !paused) update(dt);
+      if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } }
+      if(mode==='race') update(dt);
       draw(); requestAnimationFrame(frame); }
     /* Puffs are spawned where the kart was DRAWN (last frame's px/py/pw), so they leave
        from the pipes and the tyres, then drift toward the camera and fade. */
@@ -2588,7 +2601,7 @@
       '<div class="sg-howto-h">Bee Grand Prix</div>'+
       '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li><b>Steer</b> with the two round buttons, or the <b>arrow keys</b> — dodge the oil slicks and the cops.</li>'+
+      '<li><b>Steer</b> with the two arrow buttons, or the <b>arrow keys</b> — dodge the oil slicks and the cops.</li>'+
       '<li><b>The ⊗ button is the brake</b> (or <b>↓</b>). Flat out the big bends will throw you into the grass — lift for those, and you keep the road.</li>'+
       '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
       '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
@@ -2601,7 +2614,7 @@
        waited for the phone to turn has no click left to skip this with */
     if(opts.autoGo){ intro.remove(); countT=1.0; mode='count'; }
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,paused,land:LAND,size:[Wd,Ht],rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,land:LAND,port:PORT,size:[Wd,Ht],hz:horizonY,rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       /* the size of everything, in road half-widths — what tests/gp-scale.cjs audits */
