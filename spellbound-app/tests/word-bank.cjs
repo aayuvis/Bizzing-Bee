@@ -12,7 +12,9 @@ const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
-const CORE = 126562;   // SB_FULL as it ships, before the shard
+const CORE = 126555;   // SB_FULL as it ships, before the shard
+/* 126,562 until 4 Oct 2026, when the owner had retard, retards, idiots, idiotic, moronic,
+   imbeciles and morons deleted from every store (tests/struck-words.cjs) — seven library records. */
 /* 126,594 until 3 Oct 2026, when the owner had the 32 Nazi-vocabulary records deleted
    (tests/no-nazi-words.cjs). */
 /* 128,197 until 5 Sep 2026, when the library sweep deleted 1,528 records and one
@@ -274,12 +276,15 @@ ok(collateral.length === 0, 'and no innocent lookalike went with them'
    ethnic slur, and this app SPEAKS EVERY WORD ALOUD. That is the same reasoning
    block 1c of words-patch.js already applies to `rape`, which is struck although
    the bank serves only the plant sense. A child hears the slur either way. */
+/* `retard` came OFF this list on 4 Oct 2026: it was kept under its verb sense through CORE_FIX
+   until the owner had it deleted (CORE_STRIKE, "the owner's call on the words under review").
+   `retarding` — the innocent lookalike — stays, and so does the check that it survives. */
 const mustStay = ['shrimp', 'runt', 'ragtag', 'riffraff', 'madhouse', 'peewee', 'nuthouse',
-  'retard', 'spicy', 'spices', 'japes', 'fagoting', 'chinking', 'retarding',
+  'spicy', 'spices', 'japes', 'fagoting', 'chinking', 'retarding',
   'affront', 'euphemism', 'rude', 'obnoxious', 'innuendo', 'nefandous', 'insultment'];
 const lost = mustStay.filter(w => !live.has(w));
 ok(lost.length === 0, 'and no ordinary word is lost to it' + (lost.length ? ' — LOST: ' + lost.join(', ') : ''));
-for (const w of ['shrimp', 'runt', 'ragtag', 'retard'])
+for (const w of ['shrimp', 'runt', 'ragtag', 'riffraff'])
   ok(FIXD[w] && !SLUR_DEF.test(FIXD[w]), w + ' ships the everyday meaning, not the disparaging sense');
 
 /* ETHNIC SLURS THE DEFINITION FILTER CANNOT SEE. SLUR_DEF reads what a gloss

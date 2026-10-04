@@ -51,6 +51,14 @@
 const fs = require('fs'), path = require('path');
 const { load, APP, regionName } = require('./feed-corpus.cjs');
 const C = load();
+/* A CARD IS NEVER CUT FROM A RAW GLOSS (audit v4, V3: "is an outfit…", "(ethics)… in the basis",
+   "comfy`"). words-patch.js's SB_GLOSS_OK is the test — the same one the word of the hour uses —
+   and a meaning that fails it gives no card: not a chapter word's meaning, not a spotlight, not a
+   question whose options carry one. A word HELD for the owner's decision (SB_WORDS_HELD) gives no
+   card at all. tests/struck-words.cjs re-checks the finished cards. */
+const GLOSS_OK = C.win.SB_GLOSS_OK || (() => true);
+const HELD = new Set((C.win.SB_WORDS_HELD || []).map((w) => String(w).toLowerCase()));
+const heldKey = (it) => !!(it.key && HELD.has(String(it.key).slice(5).toLowerCase()));
 
 const BANDS = ['5-7', '8-10', '11-13', '14-18'];
 const from = (k) => BANDS.slice(BANDS.indexOf(k));
@@ -64,7 +72,7 @@ function clip(text, max) {
   for (const p of parts) { if ((out + p).trim().length > max) break; out += p; }
   return (out || parts[0]).trim();               // a first sentence longer than max stays whole
 }
-const items = [], add = (it) => { items.push(it); return it; };
+const items = [], add = (it) => { if (!heldKey(it)) items.push(it); return it; };
 
 /* ------------------------------------------------------------- the road, region by region */
 const LEVELS = C.ACTS.map((a, i) => ({ n: i + 1, id: a.id, title: a.title, name: regionName(a.title) }));
@@ -107,7 +115,7 @@ C.ACTS.forEach((a, ai) => {
       if (!x || !x.w || !LOWER.test(x.w) || usedWord.has(x.w) || !C.WORD[x.w]) return;
       usedWord.add(x.w);
       const ws = 'concept:' + u.gi + ':words:' + j, t = ['stop:' + u.id, 'word:' + x.w], key = 'word:' + x.w, rt = '#/word/' + x.w, clipOk = C.VOICED.has(x.w) ? 1 : 0;
-      if (x.def) put({ id: 'wd-' + x.w, kind: 'word', topics: t, key, src: ws + ':def', route: rt, cta: 'Open the word card', title: x.w, roman: x.say || '', body: x.def, clip: clipOk });
+      if (x.def && GLOSS_OK(x.def, x.w)) put({ id: 'wd-' + x.w, kind: 'word', topics: t, key, src: ws + ':def', route: rt, cta: 'Open the word card', title: x.w, roman: x.say || '', body: x.def, clip: clipOk });
       if (x.ex) put({ id: 'wx-' + x.w, kind: 'usage', topics: t, key, src: ws + ':ex', route: rt, cta: 'Open the word card', title: 'In a sentence · ' + x.w, body: x.ex, clip: clipOk });
       if (x.hook) put({ id: 'wh-' + x.w, kind: 'hook', topics: t, key, src: ws + ':hook', route: rt, cta: 'Open the word card', title: 'Remember it · ' + x.w, body: x.hook });
       const lore = C.LORE[x.w];
@@ -123,6 +131,7 @@ C.ACTS.forEach((a, ai) => {
     const opts = q.c.slice(0, 4);
     if (new Set(opts).size !== opts.length) return;
     if (q.th !== 'wbreak' && q.q.toLowerCase().includes(String(opts[0]).toLowerCase())) return;   // a question that gives its answer away
+    if (q.th === 'wmeaning' && !opts.every((o) => GLOSS_OK(o))) return;                          // an option that is a raw gloss
     put({ id: 'pq-' + q.id, kind: 'play', bands: q.lv >= 4 ? from('11-13') : undefined, topics: ['word:' + w], key: 'word:' + w,
       src: 'trivia:' + q.id, route: '#/word/' + w, cta: 'Open “' + w + '”', title: q.th === 'wmeaning' ? 'What does it mean?' : q.th === 'wroots' ? 'Which word?' : 'Break it down',
       play: { q: q.q, opts, after: q.f || '' } });
@@ -134,6 +143,7 @@ C.ACTS.forEach((a, ai) => {
     const r = C.WORD[w];
     if (!r || !LOWER.test(w) || chapterWord.has(w) || usedWord.has(w) || wordLevel[w] !== L || !r.d || !r.p) return;
     if (r.d.toLowerCase().includes(w)) return;                                           // a meaning that spells its word
+    if (!GLOSS_OK(r.d, w)) return;                                                       // a raw gloss
     avail++; if (n >= SPOT_WORDS) return;
     usedWord.add(w); n++;
     const t = ['stop:' + u.id, 'word:' + w], key = 'word:' + w, rt = '#/word/' + w, bands = (r.y || 1) >= 4 ? from('11-13') : undefined, clipOk = C.VOICED.has(w) ? 1 : 0;

@@ -1211,7 +1211,16 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'undeflowered','unmaiden','unorgasmic','unprostituted','unretarded','unsexed','unsexualized',
   'untermensch','unvirginal','upskirt','upskirting','uranist','urning','urophilia','vajazzle',
   'venereous','voetsek','voyeuristic','vulvae','vulvas','wapanese','wasbian','whigger','whitey',
-  'wigger','wog','wops','yid','yids','yoni','yonic','zionazi','zoosexual']);
+  'wigger','wog','wops','yid','yids','yoni','yonic','zionazi','zoosexual',
+/* ---- the owner's call on the words under review, 4 Oct 2026 ----
+   The v4 audit found the served corpus still defining idiot, moron and retard as "a person of
+   subnormal intelligence". These six go everywhere (cretins and morons were already above).
+   `retard` had been KEPT under its verb sense through CORE_FIX; the owner chose deletion, because
+   the app says each word aloud to a child, which is the reasoning block 1c records for `rape`.
+   `retarding` and `retardant` stay — tests/word-bank.cjs holds them. Sixteen more (autism,
+   heathen, lunatic, dumb, pygmy…) were KEPT and their glosses rewritten: CORE_FIX below. Deleted
+   from the served stores at rest by tools/strike-served.cjs; tests/struck-words.cjs guards both. */
+  'retard','retards','idiots','idiotic','moronic','imbeciles']);
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
    should ever be set: bare given names and surnames, misspellings, mechanical affix
@@ -1517,13 +1526,33 @@ const CORE_FIX = {
   madhouses: 'places full of noise and wild confusion',
   nuthouse: 'a scene of complete uproar and confusion',
   nuthouses: 'scenes of complete uproar and confusion',
-  /* the generated gloss was the noun sense, which is a slur for a disabled
-     person; the verb is an ordinary word and the spelling is worth knowing */
-  retard: 'to slow something down or hold back its progress',
+  /* retard / retards were repaired here under their verb sense until 4 Oct 2026, when the owner
+     had them deleted (CORE_STRIKE, above) — a repair written for a struck word is dead code. */
   /* the bank glosses this as sexual violence; the everyday sense is the only
      one a child needs, and repairing it keeps a real word in the library */
   ravishing: 'delightfully beautiful; lovely enough to take your breath away',
-  retards: 'slows something down or holds back its progress'
+  /* ---- KEPT AND REWRITTEN, the owner's call, 4 Oct 2026 ----
+     Real words a speller meets, glossed by the generator in clinical or contemptuous terms
+     ("an abnormal absorption with the self", "a person who does not acknowledge your god", "an
+     insane person"). Plain, accurate, kind; no clinical stigma; the mainstream dictionary sense.
+     The served shards carry the same text at rest (and words-patch.js's DEF holds it there), so
+     the word card says the same thing whichever bank answers. tests/struck-words.cjs holds it. */
+  autism: 'a lifelong developmental difference that affects how a person communicates and experiences the world',
+  autistic: 'having a lifelong developmental difference that affects how a person communicates and experiences the world',
+  schizophrenia: 'a serious long-term mental illness that can change how a person thinks, feels and sees what is real',
+  schizophrenic: 'a person who lives with a serious long-term mental illness that can change how they think, feel and see what is real',
+  heathen: 'an old word, often used unkindly, for someone who does not follow a widely held religion, as seen by people who do',
+  heathens: 'an old word, often used unkindly, for people who do not follow a widely held religion, as seen by people who do',
+  infidel: 'an old word, often used unkindly, for someone who does not follow a particular religion, usually the speaker’s own',
+  infidels: 'an old word, often used unkindly, for people who do not follow a particular religion, usually the speaker’s own',
+  lunatic: 'an informal and often unkind word for someone who behaves in a wild, foolish or reckless way',
+  lunatics: 'an informal and often unkind word for people who behave in a wild, foolish or reckless way',
+  maniac: 'an informal and often unkind word for someone who behaves in a wild or reckless way; also someone who is extremely keen on something',
+  insane: 'wildly foolish or unreasonable (an informal use); it is unkind when used to describe a person who is ill',
+  pygmy: 'a kind of animal or plant that is much smaller than the usual kind',
+  dumb: 'not able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolish',
+  hysteria: 'wild, uncontrollable fear or excitement, often spreading through a crowd',
+  hysterical: 'overcome by wild, uncontrollable feeling such as fear or excitement; informally, also extremely funny'
 };
 /* ---- slurs ----
    SB_UNSAFE_RE is a list of specific strings, so it caught 22 of the 210 entries
@@ -1694,13 +1723,25 @@ function settled(key,period,pick){
 }
 // Word of the hour — a rich, difficult word that rotates every hour, deterministically,
 // so every speller on the same hour sees the same gem. Pool = hard, fully-described words.
+/* WHAT HOME MAY PUT IN FRONT OF EVERY CHILD (audit v4, B8: 68 raw-gloss defects and
+   `schizophrenia` were in this pool). A gloss must pass SB_GLOSS_OK (words-patch.js — no
+   "(domain)" label, no "is …" fragment, no WordNet quote marks, no spelling of its own word);
+   nothing struck (CORE_STRIKE / CORE_CUT) or held for the owner (SB_WORDS_HELD); no
+   capitalised headword; and rarity band `y` 6 or under — the bands above that are dictionary
+   tail (abdominoscopy, adscititious) that no eight-year-old's Home should open on. The pool is
+   ~700 words, a month of hours. No definition is written here. Guard: tests/struck-words.cjs. */
+function wohFit(e){ if(!e||!e.w||!e.d||!e.p) return false; const k=String(e.w).toLowerCase();
+  if(/^[A-Z]/.test(e.w)||CORE_STRIKE.has(k)||CORE_CUT.has(k)) return false;
+  if((window.SB_WORDS_HELD||[]).indexOf(k)>=0) return false;
+  if(typeof window.SB_GLOSS_OK==='function'&&!SB_GLOSS_OK(e.d,e.w)) return false;
+  return !(e.y>6); }
 let _wohPool=null;
 function wohPool(){ if(_wohPool) return _wohPool; const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const out=[];
   for(const e of src){ if(!e||!e.w||!e.d||!e.p||!e.s) continue; if(/[^a-zA-Z]/.test(e.w)) continue;
     const len=e.w.length; if(len<7||len>13) continue;
     // Prefer vetted bee words (bee-probability score) at a challenging-but-real level.
-    const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good) out.push(e); }
-  _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7); return _wohPool; }
+    const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good&&wohFit(e)) out.push(e); }
+  _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7&&wohFit(e)); return _wohPool; }
 function wordOfHour(){
   const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
   return settled('woh',hr,()=>{ const pool=wohPool(); if(!pool.length) return null;
