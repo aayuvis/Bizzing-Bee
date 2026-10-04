@@ -19,7 +19,8 @@
      never shown: the word is in no element, attribute or live line before the round ends (and IS
           there after it, so the check can see it).
    Every check here was watched failing with its fault put back (see the commit message).
-   Run: NODE_PATH=/opt/node22/lib/node_modules node tests/daily-bee.cjs                          */
+   Run: NODE_PATH=/opt/node22/lib/node_modules node tests/daily-bee.cjs
+        ONLY=db1,stage,db3,route runs some of the four parts (stage = shapes, never-shown, DB2).    */
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
@@ -29,9 +30,12 @@ let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 0, band: 3, bandSeed: 3,
   lists: { journey: { xp: 30 } }, activeList: 'journey' };
-/* the engine kit's stage checks, when its branch has landed them (contract: T14/T15 helpers) */
+const ONLY = (process.env.ONLY || '').split(',').filter(Boolean), part = k => !ONLY.length || ONLY.includes(k);
+/* the engine kit's stage checks (tests/lib/stage-check.cjs, g-engine), used whenever the Daily Bee stands
+   on SGUI.stage; until that has landed, the same rules measured here */
 let KIT = null;
-for (const n of ['stage-check.cjs', 'stage.cjs', 'stage-checks.cjs']) { const f = path.join(__dirname, 'lib', n); if (!KIT && fs.existsSync(f)) { try { KIT = require(f); } catch (e) { KIT = null; } } }
+{ const f = path.join(__dirname, 'lib', 'stage-check.cjs'); if (fs.existsSync(f)) { try { KIT = require(f); } catch (e) { KIT = null; } } }
+const onKit = pg => KIT ? pg.evaluate(() => !!document.querySelector('.db-wrap .sg-stage')) : false;
 
 async function open(b, o) {
   o = o || {};
@@ -60,7 +64,6 @@ function crafted(w) {
 
 /* ---- T14 / T15, measured ---- */
 async function t14(pg) {
-  if (KIT && typeof KIT.t14 === 'function') return KIT.t14(pg, '.db-wrap > *');
   /* the stage is redrawn on every app render, so it is clipped by its rectangle, not held as an element */
   const q = await pg.evaluate(() => { const r = document.querySelector('.db-wrap > *').getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; });
   const png = await pg.screenshot({ clip: q });
@@ -76,7 +79,6 @@ async function t14(pg) {
   }, png.toString('base64'));
 }
 async function t15(pg) {
-  if (KIT && typeof KIT.t15 === 'function') return KIT.t15(pg, '.db-wrap > *');
   return pg.evaluate(() => {
     const st = document.querySelector('.db-wrap > *').getBoundingClientRect(), mid = (st.left + st.right) / 2;
     const R = s => { const e = document.querySelector(s); return e && e.getClientRects().length ? e.getBoundingClientRect() : null; };
@@ -102,7 +104,7 @@ async function t15(pg) {
   const DAY0 = new Date(2026, 9, 5, 10, 0, 0);   // Mon 5 Oct 2026, 10am local
 
   /* ---- DB1: the same date and band give the same word ---- */
-  {
+  if (part('db1')) {
     let { ctx, pg, errs: e1 } = await open(b, { time: DAY0 }); errs.push(...e1);
     await W.lazy(pg, 'daily');
     const P = await pg.evaluate(() => { const ds = ['2026-10-05', '2026-10-06', '2026-11-30']; const bs = ['1-2', '3-5', '6-9'];
@@ -126,7 +128,7 @@ async function t15(pg) {
   }
 
   /* ---- shapes on every state, the word never shown before the end, and DB2 at both sizes ---- */
-  for (const [vw, vh] of [[390, 844], [1280, 800]]) {
+  if (part('stage')) for (const [vw, vh] of [[390, 844], [1280, 800]]) {
     for (const mode of ['dusk', 'light']) {
       const { ctx, pg, errs: e1 } = await open(b, { vp: { width: vw, height: vh }, mode, time: DAY0, hash: '#/play' }); errs.push(...e1);
       const tag = vw + 'px ' + (mode === 'dusk' ? 'dark' : 'light') + ': ';
@@ -160,11 +162,12 @@ async function t15(pg) {
         if (sh.touch) ok(sh.kAny >= 3 && sh.kHit && sh.kNear && sh.kMiss, tag + 'and so does every letter key it has touched');
       } else ok(atOpen, tag + 'the word is nowhere on the stage when the board opens' + (S.hits.length ? ' — ' + S.hits.join(' | ') : ''));
       /* DB2 — measured mid-round: one try on the board, keys up */
-      const A = await t14(pg), B = await t15(pg);
+      if (await onKit(pg)) { KIT.report(ok, tag + 'DB2 (stage-check)', await KIT.geometry(pg), await KIT.pixels(pg), { play: true }); }
+      else { const A = await t14(pg), B = await t15(pg);
       ok(A.flat <= 0.06 && A.white <= 0.02 && A.black <= 0.02, tag + `T14 — largest flat colour ${(A.flat * 100).toFixed(1)}% (${A.flatColour}), pure white ${(A.white * 100).toFixed(2)}%, pure black ${(A.black * 100).toFixed(2)}%`);
       ok(B.statW <= 4 && B.hud <= 4 && B.gutters <= 4 && B.centre <= 4, tag + `T15 — HUD stats ${B.statW.toFixed(1)}px apart in width, HUD gutters ${B.hud.toFixed(1)}, board/controls gutters ${B.gutters.toFixed(1)}, centre line ${B.centre.toFixed(1)}px`);
       ok(B.scroll <= 1 && B.stageScroll <= 1 && !B.under && Math.abs(B.stageBottom - Math.min(B.tabTop, vh)) <= 2, tag + `T15 — no scroll (page ${B.scroll}px, stage ${B.stageScroll}px), no control under the tab bar (${B.under}), the stage reaches it (${Math.round(B.stageBottom)} / ${Math.round(Math.min(B.tabTop, vh))})`);
-      if (vw < 500) ok(B.keys >= 26 && B.keyMin >= 40, tag + `T11 — the letter keys are on screen and ${B.keyMin && B.keyMin.toFixed(1)}px tall (≥ 40)`);
+      if (vw < 500) ok(B.keys >= 26 && B.keyMin >= 40, tag + `T11 — the letter keys are on screen and ${B.keyMin && B.keyMin.toFixed(1)}px tall (≥ 40)`); }
       if (mode === 'dusk') {
         /* play it out: the end always shows the word, with its meaning, origin and sentence */
         const notIn = 'zqxjvkwyfbhpmgu'.split('').find(ch => !w.includes(ch));
@@ -184,7 +187,7 @@ async function t15(pg) {
   }
 
   /* ---- DB3: a random guesser earns 0 over 30 simulated days; a solver earns 1 a day, once ---- */
-  {
+  if (part('db3')) {
     const { ctx, pg, errs: e1 } = await open(b, { vp: { width: 390, height: 844 }, time: DAY0 }); errs.push(...e1);
     /* SB_LEVEL.after is recorded (the real one when the foundations have landed, else a stub) */
     await pg.evaluate(() => { window._lv = []; if (!window.SB_LEVEL) window.SB_LEVEL = { get: () => 'auto', set() {}, chip: () => '', after: () => ({ level: 'auto', dropped: false }) };
@@ -224,17 +227,19 @@ async function t15(pg) {
   }
 
   /* ---- the route, and Back ---- */
-  {
+  if (part('route')) {
     const { ctx, pg, errs: e1 } = await open(b, { vp: { width: 390, height: 844 }, hash: '#/play', time: DAY0 }); errs.push(...e1);
     const look = () => pg.evaluate(() => { const tab = document.querySelector('nav.sb-tabbar [data-arg="games"]');
       return { h: location.hash, nav: state.nav, stage: !!document.querySelector('#root .db-wrap .db-grid, #root .db-wrap #db-end'), bar: !!document.querySelector('#root .sb-fam-bar'),
         tabbar: !!document.querySelector('#root nav.sb-tabbar'), play: !!tab && tab.getAttribute('aria-current') === 'page',
         loose: [...document.body.children].filter(e => /(^|\s)db-/.test(e.className || '')).length }; });
-    await W.until(pg, () => !!document.querySelector('[data-act="openDaily"]'), null, 15000);
-    await pg.click('[data-act="openDaily"]');
+    /* the Play tab's door to it: Daily Bee's card in the lineup (g-found), or the banner before that */
+    const DOOR = '[data-act="playCard"][data-arg="dailyBee"], [data-act="openDailyBee"], [data-act="openDaily"]';
+    await W.until(pg, s => !!document.querySelector(s), DOOR, 15000);
+    await pg.click(DOOR);
     await W.until(pg, () => !!document.querySelector('#root .db-wrap .db-grid'), null, 60000);
     let L = await look();
-    ok(L.h === '#/daily' && L.nav === 'daily' && L.stage && L.bar && L.tabbar && L.play && !L.loose, 'the Play banner opens Daily Bee at #/daily, inside the shell (top bar, tab bar, Play marked) (' + JSON.stringify(L) + ')');
+    ok(L.h === '#/daily' && L.nav === 'daily' && L.stage && L.bar && L.tabbar && L.play && !L.loose, 'the Play tab opens Daily Bee at #/daily, inside the shell (top bar, tab bar, Play marked) (' + JSON.stringify(L) + ')');
     await pg.goBack(); await W.until(pg, () => location.hash === '#/play' && state.nav === 'games', null, 8000);
     L = await look();
     ok(L.h === '#/play' && L.nav === 'games' && !L.stage && !L.loose, 'Back returns to #/play and leaves nothing of it on screen (' + L.h + ')');

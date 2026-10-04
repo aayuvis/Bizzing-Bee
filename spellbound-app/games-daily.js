@@ -43,7 +43,10 @@
     + '#root div:has(>.sb-content>.db-host),#root>div:has(.db-host){min-height:0!important}'
     + '.db-host{position:relative;width:100%}'
     + '.db-wrap{position:relative;width:100%;height:calc(100dvh - 120px);min-height:420px}'
-    + '.db-wrap>*{height:100%}'
+    + '.db-wrap>.dbs-stage{height:100%}'
+    /* the play area holds one centred column: the prompt, the board, the shapes' key, and the buttons */
+    + '.db-play{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;min-height:0;box-sizing:border-box}'
+    + '.db-kb{width:100%}'
     /* the fallback stage (SGUI.stage draws its own when the engine kit is in) */
     + '.dbs-stage{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr) auto;width:100%;height:100%;overflow:hidden;color:var(--text);'
     + 'background:var(--dbs-plate,none) center/cover no-repeat,radial-gradient(70% 55% at 50% 8%,color-mix(in srgb,var(--treasure) 40%,transparent),transparent 72%),'
@@ -87,7 +90,12 @@
     + '.db-key{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:8px;font:700 12px/1.3 var(--ui);color:var(--muted)}'
     + '.db-key span{display:inline-flex;align-items:center;gap:4px}'
     /* the controls: three buttons mirrored about "Hear it again" */
-    + '.db-acts{display:grid;grid-template-columns:1fr minmax(0,1.5fr) 1fr;gap:8px;margin:0 auto 8px;max-width:560px}'
+    + '.db-acts{display:grid;grid-template-columns:1fr minmax(0,1.5fr) 1fr;gap:8px;margin:10px auto 0;width:100%;max-width:560px;flex:none}'
+    + '.db-stat .db-ic,.sg-st-stat .db-ic{display:inline-grid;place-items:center;color:var(--treasure-deep,#8A5B00)}[data-mode="dusk"] .db-ic{color:var(--treasure,#F0B429)}'
+    /* the kit's keys learn the board's shapes (tintKit) */
+    + '.sg-key.db-k-hit{background:linear-gradient(180deg,color-mix(in srgb,var(--mastered) 80%,#fff),var(--mastered));color:#fff;border-color:var(--mastered)}'
+    + '.sg-key.db-k-near{background:linear-gradient(180deg,color-mix(in srgb,var(--medium) 78%,#fff),var(--medium));color:#fff;border-color:var(--medium)}'
+    + '.sg-key.db-k-miss{background:color-mix(in srgb,var(--paper) 36%,transparent);color:var(--muted);border-style:dashed}'
     + '.db-b{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:6px 10px;border-radius:999px;box-sizing:border-box;'
     + 'font:800 14px/1.15 var(--ui);color:var(--text);background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 92%,transparent),color-mix(in srgb,var(--paper) 72%,transparent));border:1.5px solid var(--line);cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}'
     + '.db-b.go{background:var(--action);color:var(--action-ink,#fff);border-color:transparent;box-shadow:var(--edge)}'
@@ -121,7 +129,7 @@
     + '@media (prefers-reduced-motion:reduce){.db-cell.flip,.db-row.shake{animation:none}}'
     + '[data-a11y-motion] .db-cell.flip,[data-a11y-motion] .db-row.shake{animation:none}'
     + '@media(max-width:560px){.dbs-hud{gap:6px;padding:8px 10px 4px}.db-stat{width:min(100%,92px);min-height:42px}.db-stat b{font-size:17px}.db-stat span{font-size:9.5px}'
-    + '.db-title{font-size:16px}.dbs-play{padding:2px 10px}.dbs-ctl{padding:4px 8px 8px}.db-acts{gap:6px;margin-bottom:6px}.db-b{font-size:13px;padding:6px 8px}.db-k{height:44px;font-size:15px}.db-krow{gap:4px}.db-keys{gap:5px}.db-msg{font-size:12.5px;margin-bottom:6px}.db-key{display:none}}';
+    + '.db-title{font-size:16px}.dbs-play{padding:2px 10px}.dbs-ctl{padding:4px 8px 8px}.db-acts{gap:6px;margin-top:8px}.db-b{font-size:13px;padding:6px 8px}.db-k{height:44px;font-size:15px}.db-krow{gap:4px}.db-keys{gap:5px}.db-msg{font-size:12.5px;margin-bottom:6px}.db-key{display:none}}';
 
   /* ------------------------------------------------------------------ the word */
   function fnv(s) { var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
@@ -189,7 +197,8 @@
   /* the foundations' picker when it is in (it owns the level window and the kid-safe door), else ours */
   function choose(c, date, band) {
     if (typeof window.nextWords === 'function') {
-      try { var r = window.nextWords(c, 1, { purpose: 'daily', minLen: MINL, maxLen: MAXL }); if (r && r[0] && fits(r[0])) return r[0]; } catch (e) {}
+      try { var r = window.nextWords(c, 24, { purpose: 'daily', minLen: MINL, maxLen: MAXL, lemmaOnly: true, date: date }) || [];
+        for (var i = 0; i < r.length; i++) if (fits(r[i])) return r[i]; } catch (e) {}
     }
     return pick(date, band);
   }
@@ -256,14 +265,18 @@
   }
   function dateLabel() { try { return new Date().toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return today(); } }
   function levelChip() {
-    try { if (window.SB_LEVEL && typeof SB_LEVEL.chip === 'function') return SB_LEVEL.chip(KEY, 'Level'); } catch (e) {}
+    try { if (window.SB_LEVEL && typeof SB_LEVEL.chip === 'function') return SB_LEVEL.chip(KEY, 'the Daily Bee'); } catch (e) {}
     return '<span class="db-lv">' + esc(LV_NAME[levelNow()] || 'Auto') + '</span>';
   }
   /* the stage: the engine kit's when it is in (contract §5.0), else the same three rows here */
+  function statIn(x) { return '<span class="db-ic sg-st-ic" aria-hidden="true">' + x.ic + '</span><span class="sg-st-n" aria-label="' + esc(x.n + ' ' + x.t) + '">' + x.n + '</span><span class="sg-st-t">' + esc(x.t) + '</span>'; }
   function stage(o) {
-    if (window.SGUI && typeof SGUI.stage === 'function') { try { var h = SGUI.stage(o); if (h) return h; } catch (e) {} }
+    if (window.SGUI && typeof SGUI.stage === 'function') {
+      try { var h = SGUI.stage({ plate: 'daily', name: 'daily', label: 'Daily Bee', hud: { left: statIn(o.hud.left), center: '<div class="db-mid">' + o.hud.center + '</div>', right: statIn(o.hud.right) }, play: o.play, controls: o.controls }); if (h) return h; } catch (e) {}
+    }
+    var st = function (x, side) { return '<div class="db-stat ' + side + '" aria-label="' + esc(x.n + ' ' + x.t) + '"><b>' + x.n + '</b><span>' + esc(x.t) + '</span></div>'; };
     return '<div class="dbs-stage" style="' + plateVar(o.plate) + '">'
-      + '<div class="dbs-hud">' + o.hud.left + '<div class="db-mid">' + o.hud.center + '</div>' + o.hud.right + '</div>'
+      + '<div class="dbs-hud">' + st(o.hud.left, 'l') + '<div class="db-mid">' + o.hud.center + '</div>' + st(o.hud.right, 'r') + '</div>'
       + '<div class="dbs-play">' + o.play + '</div><div class="dbs-ctl">' + o.controls + '</div></div>';
   }
 
@@ -315,7 +328,7 @@
       + (w.s ? '<div class="db-fact"><b>In a sentence</b>' + esc(w.s) + '</div>' : '')
       + '</div>';
     var L = D.lvr;
-    if (L && L.dropped) h += '<div class="db-kind">Tomorrow’s word comes from ' + esc(LV_NAME[L.level] || L.level || 'an easier level') + '. You can move back up any time.</div>';
+    if (L && L.dropped) h += '<div class="db-kind">' + esc(L.line || ('Let’s warm up on ' + (LV_NAME[L.level] || 'an easier level') + '. You can move back up any time.')) + '</div>';
     else if (L && L.up) h += '<div class="db-kind">Ready for ' + esc(LV_NAME[L.up] || L.up) + '? <button type="button" class="db-b" data-db="up" style="min-height:36px;margin-left:6px">Try it tomorrow</button></div>';
     return h + '</div>';
   }
@@ -333,21 +346,24 @@
     var c = kid(); if (!c) return;
     if (curKid !== c) { curKid = c; cur = ''; msgT = ''; spoke = ''; }
     if (!corpusReady()) {
-      host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-msg" data-live-prompt="Getting today’s word ready.">Getting today’s word ready…</div>', controls: '' }) + '</div>';
+      host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-play"><div class="db-msg" data-live-prompt="Getting today’s word ready.">Getting today’s word ready…</div></div>', controls: '' }) + '</div>';
       try { SB_LAZY.need('daily', function () { draw(); }); } catch (e) {}
       fit(); return;
     }
     var D = rec(c);
-    if (!ensureWord(c, D)) { host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-msg">No word is ready for today. Try again in a moment.</div>', controls: actsHtml({ g: [] }) }) + '</div>'; wire(); fit(); return; }
+    if (!ensureWord(c, D)) { host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-play"><div class="db-msg">No word is ready for today. Try again in a moment.</div>' + actsHtml({ g: [] }) + '</div>', controls: '' }) + '</div>'; wire(); fit(); return; }
     var w = recOf(D.word), n = D.word.length;
     if (curDay !== D.day + '|' + D.word) { curDay = D.day + '|' + D.word; cur = ''; msgT = ''; }
     if (D.over) cur = '';
     var intro = n + ' letters. Listen, then type your first try.';
     var msg = D.over ? '' : (msgT || (D.g.length ? '' : intro));
-    var play = D.over ? endHtml(D, w, n)
+    var play = '<div class="db-play">' + (D.over ? endHtml(D, w, n)
       : '<div class="db-msg" id="db-msg" data-live-prompt="' + esc(msg) + '">' + esc(msg) + '</div>' + boardHtml(D, n, false)
-        + '<div class="db-key" aria-hidden="true"><span>' + SHAPE.hit + ' right place</span><span>' + SHAPE.near + ' in the word</span><span>' + SHAPE.miss + ' not in it</span></div>';
-    var controls = actsHtml(D) + (D.over ? '' : '<div class="db-kb" id="db-kb"></div>');
+        + '<div class="db-key" aria-hidden="true"><span>' + SHAPE.hit + ' right place</span><span>' + SHAPE.near + ' in the word</span><span>' + SHAPE.miss + ' not in it</span></div>')
+      + actsHtml(D) + '</div>';
+    /* "Hear it again" sits right above the keys, at the foot of the play area, so on a phone the keys
+       alone are the controls row and it stays in the bottom 38% of the stage */
+    var controls = D.over ? '' : '<div class="db-kb" id="db-kb"></div>';
     host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(D), play: play, controls: controls }) + '</div>';
     flipRow = -1; shakeRow = false;
     wire(); keyboard(D); fit();
@@ -358,12 +374,14 @@
     else if (!spoke) spoke = sayKey;
     try { if (typeof liveScan === 'function') liveScan(host); } catch (e) {}
   }
+  var IC_TRY = '<svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 2.6l6.4 3.7v7.4L10 17.4l-6.4-3.7V6.3z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M10 6.8l2.8 1.6v3.2L10 13.2l-2.8-1.6V8.4z" fill="currentColor"/></svg>';
+  var IC_SUN = '<svg viewBox="0 0 20 20" width="18" height="18"><circle cx="10" cy="10" r="3.6" fill="currentColor"/><path d="M10 2.4v2.2M10 15.4v2.2M2.4 10h2.2M15.4 10h2.2M4.6 4.6l1.5 1.5M13.9 13.9l1.5 1.5M15.4 4.6l-1.5 1.5M6.1 13.9l-1.5 1.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
   function hudFor(D) {
-    var left = D ? Math.max(0, TRIES - D.g.length) : TRIES;
+    var left = D ? Math.max(0, TRIES - D.g.length) : TRIES, good = D ? goodDays(D) : 0;
     return {
-      left: '<div class="db-stat l" aria-label="' + left + ' tries left"><b>' + left + '</b><span>tries left</span></div>',
+      left: { n: left, t: left === 1 ? 'try left' : 'tries left', ic: IC_TRY },
       center: '<div class="db-title">Daily Bee</div><div class="db-when">' + esc(dateLabel()) + ' · ' + levelChip() + '</div>',
-      right: '<div class="db-stat r" aria-label="' + (D ? goodDays(D) : 0) + ' good days this week"><b>' + (D ? goodDays(D) : 0) + '</b><span>good days this week</span></div>'
+      right: { n: good, t: good === 1 ? 'good day this week' : 'good days this week', ic: IC_SUN }
     };
   }
 
@@ -402,7 +420,7 @@
     D.days[D.day] = { s: D.won ? 1 : 0, t: D.g.length };
     var ks = Object.keys(D.days).sort(); if (ks.length > 60) ks.slice(0, ks.length - 60).forEach(function (k) { delete D.days[k]; });
     if (!D.lv) { D.lv = 1;
-      try { if (window.SB_LEVEL && typeof SB_LEVEL.after === 'function') { var r = SB_LEVEL.after(KEY, D.won ? 1 : 0) || {}; D.lvr = { dropped: !!r.dropped, level: r.level || '', up: r.offerUp ? (typeof r.offerUp === 'string' ? r.offerUp : nextUp(r.level)) : '' }; } } catch (e) {} }
+      try { if (window.SB_LEVEL && typeof SB_LEVEL.after === 'function') { var r = SB_LEVEL.after(KEY, D.won ? 1 : 0) || {}; D.lvr = { dropped: !!r.dropped, level: r.level || '', line: r.line || '', up: r.offerUp ? (typeof r.offerUp === 'string' ? r.offerUp : nextUp(r.level)) : '' }; } } catch (e) {} }
     try { if (typeof sfx === 'function') sfx(D.won ? 'win' : 'level'); } catch (e) {}
     try { if (typeof logActivity === 'function') logActivity('daily', 'Daily Bee', { done: 1, right: D.won ? 1 : 0, coins: D.coins || 0 }, []); } catch (e) {}
     try { if (typeof save === 'function') save(); } catch (e) {}
@@ -430,7 +448,7 @@
     var kb = host && host.querySelector('#db-kb'); if (!kb || D.over) return;
     if (window.SGUI && typeof SGUI.keys === 'function') {
       try {
-        keysApi = SGUI.keys(kb, {
+        keysApi = SGUI.keys(kb, { physical: false,
           onKey: function (ch) { if (!quiet()) input(lc(ch), 'kit'); },
           onBack: function () { if (!quiet()) input('back', 'kit'); },
           onEnter: function () { if (!quiet()) input('enter', 'kit'); }

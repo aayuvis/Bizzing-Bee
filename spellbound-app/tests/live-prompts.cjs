@@ -9,7 +9,9 @@
      3. Word Quiz says "Question 1 of 10" and the question; a wrong pick adds only the miss line;
         the next question is said afresh;
      4. a typed game says which word and what to do — and never the word it is asking for;
-     5. Bizzillionaire says its question; Daily Buzz says its message ("Five letters, please.").
+     5. Bizzillionaire says its question; the daily game says its message and its "N letters, please."
+        (REWRITTEN 4 Oct 2026: Daily Bee replaced Daily Buzz — games spec §5.2. Its prompt names the
+        length of the day's word, never the word, and it loads lazily, so the check waits on its board.)
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/live-prompts.cjs                     */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -67,9 +69,14 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   await pg.waitForFunction(() => document.querySelector('.bz-q'), null, { timeout: 8000 }).catch(() => {}); await pg.waitForTimeout(300);
   const bz = await pg.evaluate(() => ({ said: (document.getElementById('sb-live') || {}).textContent || '', q: (document.querySelector('.bz-q') || {}).textContent || '' }));
   ok(bz.q && bz.said === 'Question 1. ' + bz.q, `Bizzillionaire says its question ("${bz.said.slice(0, 60)}")`);
-  await pg.evaluate(() => { const x = document.querySelector('#bz-back'); if (x) x.click(); app.openDaily(); }); await pg.waitForTimeout(600);
-  const d1 = await said(); await pg.keyboard.press('Enter'); await pg.waitForTimeout(200); const d2 = await said();
-  ok(/morning word/.test(d1) && d2 === 'Five letters, please.', `Daily Buzz says its message, and its "Five letters, please." (${d2})`);
+  await pg.evaluate(() => { const x = document.querySelector('#bz-back'); if (x) x.click(); app.openDaily(); });
+  await pg.waitForFunction(() => !!document.querySelector('#db-host .db-grid') && /Listen, then type/.test((document.getElementById('sb-live') || {}).textContent || ''), null, { timeout: 60000 }).catch(() => {});
+  const dn = await pg.evaluate(() => window.SB_DBEE ? SB_DBEE.len() : 0), dw = await pg.evaluate(() => (active().dbee || {}).word || '');
+  const d1 = await said(); await pg.keyboard.press('Enter');
+  await pg.waitForFunction(() => /letters, please\.$/.test((document.getElementById('sb-live') || {}).textContent || ''), null, { timeout: 5000 }).catch(() => {});
+  const d2 = await said();
+  ok(dn > 0 && d1 === dn + ' letters. Listen, then type your first try.' && d2 === dn + ' letters, please.' && dw && !new RegExp('\\b' + dw + '\\b', 'i').test(d1 + ' ' + d2),
+    `Daily Bee says its message, and its "${dn} letters, please." — never the word (${d1} / ${d2})`);
   const tiny = await pg.evaluate(() => [...document.querySelectorAll('.sb-sr')].every(e => { const r = e.getBoundingClientRect(); return r.width <= 1 && r.height <= 1; }));
   ok(tiny, 'every spoken-only line is visually hidden');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
