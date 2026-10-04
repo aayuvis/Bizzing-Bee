@@ -2738,6 +2738,21 @@
   Object.defineProperty(window,'localStorage',{configurable:true,get:function(){ return box; }});
   window.SB_DEMO=true;
 }catch(e){} })();
+/* HOME'S PICTURES, ASKED FOR WITH THE SCRIPTS (audit v4 B6). For a speller who has been here, Home's
+   avatar and journey plates (the ones app3's homeArtHint noted last visit, device key sb_home_art) are
+   preloaded at parse time instead of after ~1MB of script has run. Read-only; only those two folders;
+   only when the address is Home's. A first visit has no note and loads exactly as before. */
+(function(){ try{
+  if(window.SB_DEMO) return;
+  var h=location.hash||''; if(h && h!=='#' && h!=='#/' && h!=='#/home') return;
+  var st={}; try{ st=JSON.parse(localStorage.getItem('sb_saas_v2')||'{}')||{}; }catch(e){}
+  if(!st.children || !st.children.length) return;
+  var art=[]; try{ art=JSON.parse(localStorage.getItem('sb_home_art')||'[]')||[]; }catch(e){}
+  for(var i=0;i<art.length && i<5;i++){ var u=String(art[i]||'');
+    if(!/^(avatars|app-art)\/[a-z0-9\/._-]+\.(png|webp|jpe?g)$/i.test(u)) continue;
+    var l=document.createElement('link'); l.rel='preload'; l.as='image'; l.href=u; l.setAttribute('fetchpriority','high'); l.setAttribute('data-home-art','');
+    document.head.appendChild(l); }
+}catch(e){} })();
 (function(){
   try{
     if(window.SB_DEMO) return;

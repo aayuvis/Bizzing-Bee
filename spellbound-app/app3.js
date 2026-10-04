@@ -6702,9 +6702,9 @@ function atlasWorld(c){ try{ const T=window.SB_TRAIL; if(!T) return 'meadow';
       if(!us.length) continue; world=a.world;
       if(!us.every(u=>(done[u.id]||{})[tr.lap||1])) break; }
     return world; }catch(e){ return 'meadow'; } }
-function paintedTileArt(world,h){
+function paintedTileArt(world,h,eager){   /* eager: Home's first screen — a lazy image above the fold waits its turn (audit v4 B6) */
   return `<span style="position:relative;display:block;width:100%;height:${h}px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-    <img src="app-art/w-${world}-r2.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <img src="app-art/w-${world}-r2.jpg" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.42))"></span></span>`;
 }
 function viewHome(){
@@ -6747,7 +6747,7 @@ function viewHome(){
     return `<button class="sb-lift" data-act="openCoach" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
       <div style="position:relative;width:100%">
         <span style="position:relative;display:block;width:100%;height:92px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-          <img src="app-art/${art}.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <img src="app-art/${art}.jpg" alt="" loading="${innerWidth>=640?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
           <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.44))"></span></span>
         <span style="position:absolute;left:14px;bottom:-13px">${wayTile('quest',40,2.5)}</span>
       </div>
@@ -6800,7 +6800,7 @@ function viewHome(){
           /* 1.5x the original 94/84 — the buddy is the first thing on Home and read small.
              avSrc switches to the full-size .webp above 96px, so the bigger draw is also a
              sharper source rather than an upscale of the 192px thumb. */
-          const art=hasCard?avatarSVG(c.avatar,141):mascotSVG(S.mood);
+          const art=hasCard?String(avatarSVG(c.avatar,141)||'').replace('loading="lazy"','loading="eager"'):mascotSVG(S.mood);   /* first screen: never lazy (audit v4 B6) */
           const inner=`<div style="width:144px;height:150px;flex-shrink:0;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
           return deckN?`<button data-act="openAvDeck" data-arg="${escA(c.avatar||'')}" title="Flip through your avatar cards — ${deckN} owned" aria-label="Your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                       :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
@@ -6878,7 +6878,7 @@ function viewHome(){
         const pct=nx?nx.pct:0;
         return `<button class="sb-lift sb-home-next" ${go} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
         <div style="position:relative;width:100%">
-          ${paintedTileArt(world,92)}
+          ${paintedTileArt(world,92,true)}
           <span style="position:absolute;left:14px;bottom:-13px">${wayTile('trail',40,-2.5)}</span>
         </div>
         <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
@@ -12627,6 +12627,7 @@ function render(){
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
   if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
+  if(state.nav==='home'&&state.screen==='app') homeArtHint();
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the
@@ -12642,6 +12643,20 @@ function render(){
   trapFocusAfterRender();
   save();
 }
+/* HOME'S PICTURES ARRIVE WITH ITS WORDS (audit v4 B6: "avatar and journey banners blank for ~6 s").
+   Home's avatar and its two painted journey plates are asked for only when Home is drawn — after
+   ~1MB of script — so on a phone network the words sat there for seconds over empty frames. Each
+   Home render notes which of those pictures it showed (device key homeArt, through the store); next
+   visit, index.html's parse-time peek preloads exactly those, alongside the scripts. Nothing is
+   added to a first load: the same files, asked for sooner, and only for a speller who has been here. */
+let _homeArtWas=null;
+function homeArtHint(){ try{
+  const urls=[...document.querySelectorAll('#root .sb-home-greet img, #root .sb-home-r2 img')].filter(i=>i.getBoundingClientRect().top<innerHeight).map(i=>i.getAttribute('src')||'')
+    .filter(u=>/^(avatars|app-art)\/[a-z0-9\/._-]+\.(png|webp|jpe?g)$/i.test(u)).filter((u,i,a)=>a.indexOf(u)===i).slice(0,5);
+  if(!urls.length) return; const k=JSON.stringify(urls);
+  if(_homeArtWas==null) _homeArtWas=JSON.stringify(SB_STORE.getJSON('homeArt',[]));
+  if(k!==_homeArtWas){ _homeArtWas=k; SB_STORE.setJSON('homeArt',urls); }
+}catch(e){} }
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
 root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; callAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
 root.addEventListener('dblclick', e=>{ const el=e.target.closest('[data-dbl]'); if(!el) return;
