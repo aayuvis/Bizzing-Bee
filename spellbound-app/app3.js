@@ -82,9 +82,12 @@ const _DYNAMIC_LISTS = { missed:1, custom:1, ai:1, review:1 }; // recompute (don
    A word joins a theme when its DEFINITION matches the theme's keyword classifier, so the
    themes stay in sync with the library and need no hand-tagging. Theme lists ride the same
    Level ladder as every other list (th_<id> keys). ===== */
-function themeDefs(){ return (window.SB_THEMES&&SB_THEMES.themes)||[]; }
+/* a theme with a minBand (themes-data.js) is not offered to a younger child anywhere — the catalogue,
+   a Squares board, a game's draw (games spec §1.2). One gate, here, so no door can forget it. */
+function themeDefs(){ const all=(window.SB_THEMES&&SB_THEMES.themes)||[]; let c=null; try{ c=active(); }catch(e){}
+  return c?all.filter(t=>!t.minBand||bandAllows(t.minBand,c)):all; }
 function themeClusters(){ return (window.SB_THEMES&&SB_THEMES.clusters)||[]; }
-function themeOf(id){ return themeDefs().find(t=>t.id===id); }
+function themeOf(id){ return ((window.SB_THEMES&&SB_THEMES.themes)||[]).find(t=>t.id===id); }   /* by id, ungated: the gate is the catalogue (themeDefs) and the picker (themeOpen) */
 let _themeCache={};
 // The pool themes classify over: the 40k core library normally, deepening to the full 130k
 // library automatically once it has been loaded (via "Entire library"). Cache keys on pool size.
@@ -886,6 +889,7 @@ function loadConcepts(){
    The 40k core list is cleaned at rest; this guards the premium 130k library too. ---- */
 const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus|\bnazi(?!r)|feminazi|japanazi|islamonazi|denazif|hitler|gestapo|swastika|goebbels|wehrmacht|anschluss|gammadion)/i;
 function safeWord(w){ if(!w||!w.w) return false; if(SB_UNSAFE_RE.test(w.w)) return false; if(w.d&&SB_UNSAFE_RE.test(w.d)) return false; return true; }
+window.SB_UNSAFE_RE=SB_UNSAFE_RE;   /* kid-safe.js reads it (games spec §1.2) */
 /* ---- full library: 130k words live in words-full.js + words-hard.js, loaded on demand (file too big for startup) ---- */
 let _fullState='idle'; // idle | loading | loaded | error
 /* words-full.js defines SB_FULL as a JSON STRING (it always has, including on main), but
@@ -1243,6 +1247,7 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'retard','retards','idiots','idiotic','moronic','imbeciles',
   /* and the insult forms of words already struck, same day, same decision */
   'idiotically','imbecilic','cretinous','cretinism']);
+window.SB_CORE_STRIKE=CORE_STRIKE;   /* kid-safe.js reads it (games spec §1.2): a struck word is never a game word */
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
    should ever be set: bare given names and surnames, misspellings, mechanical affix
@@ -2517,7 +2522,7 @@ const app = {
   // ===== Subscription tiers (PIN-gated from Settings) =====
   openTiers:()=>set({showTiers:true}),   // render()'s plan guard asks for the PIN
   closeTiers:()=>set({showTiers:false, tierUpsell:null}),
-  chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tap':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
+  chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tick':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
   buyAddon:(k)=>{ const c=active(); if(!window.SB_ADDONS||!SB_ADDONS[k]) return;
     if(!SB_ADDONS[k].built){ flash(SB_ADDONS[k].name+' is coming soon — you’ll be first to know'); return; }
     c.addons=c.addons||{}; c.addons[k]=1; save();
@@ -3160,7 +3165,7 @@ const app = {
   b2TGrp:(v)=>{ const B=b2State(); B.tgrp=(B.tgrp===v)?'':String(v||''); B.qtag=''; render(); },
   b2OGrp:(v)=>{ const B=b2State(); B.ogrp=(B.ogrp===v)?'':String(v||''); B.qorig=''; render(); },
   b2Tab:(k)=>{ b2State().tab = (k==='all')?'all':'list'; render(); },
-  b2Shuffle:()=>{ const B=b2State(); B.seed=(B.seed*7919+104729)&0x7fffffff || 1; sfx('tap'); render(); },
+  b2Shuffle:()=>{ const B=b2State(); B.seed=(B.seed*7919+104729)&0x7fffffff || 1; sfx('tick'); render(); },
   b2Clear:()=>{ state.b2=null; b2State(); state.bldNaming=false; render(); },
   bldNameOpen:()=>{ if(!bldPick().length) return;
     set({bldNaming:true, bldNameVal:''});
@@ -3357,10 +3362,10 @@ const app = {
   duelKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.duelEnter(); } },
   duelEnter:()=>{ const g=state.game; const w=g.list[g.i]; if(!w) return;
     const ok=sameSpelling(state.typed,w.w); if(g.turn===0) logBand(w,ok); /* only the profile owner's turn counts toward their Band */
-    if(ok){ g.p[g.turn].right++; sfx('right'); } else sfx('wrong');
+    if(ok){ g.p[g.turn].right++; sfx('correct'); } else sfx('wrong');
     state.typed=''; g.i++;
     if(g.i>=g.list.length){ if(g.turn===0){ g.phase='pass'; render(); return; }
-      g.phase='done'; const a=g.p[0].right,b=g.p[1].right; addCoins('contest'); sfx('win'); burstConfetti(120); render(); return; }
+      g.phase='done'; sfx('win');   /* no coin for finishing a duel (games spec §1.3): the old 'contest' here paid two players for reaching the end */ burstConfetti(120); render(); return; }
     render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[gg.i]) say(gg.list[gg.i].w); },300); },
   duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
   /* The Coach explains; openCoach (nav 'coach') drills. Two different screens — keep the
@@ -3502,12 +3507,12 @@ const app = {
     document.addEventListener('keydown',key); paint(); document.body.appendChild(ov); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
     c.gameDiff = gameDiffFor(c, type);           // this game's own level drives the word pick
-    if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    if(type==='buzz'){ const list=nextWords(null,10,{purpose:'drill'}); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
     else if(type==='wordquiz'){ state.game={type:'wordquiz',phase:'pick'}; set({nav:'games',screen:'app'}); return; }
-    else if(type==='duel'){ const list=pickFresh(gameWordsD(),10); if(list.length<5){ flash('No words yet — try a list first'); return; }
+    else if(type==='duel'){ const list=nextWords(null,10,{purpose:'drill'}); if(list.length<5){ flash('No words yet — try a list first'); return; }
       state.game={type,list:list.slice(0,10),phase:'setup',p:[{name:c.name||'Player 1',right:0},{name:'Player 2',right:0}],turn:0,i:0,status:'play'}; state.typed=''; }
-    else if(type==='boss'){ const list=pickFresh(gameWordsD(), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    else if(type==='boss'){ const list=nextWords(null,60,{purpose:'drill'}); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='magic'){ magicNewBoard(); }
     else return;
     set({nav:'games', screen:'app'}); },
@@ -3515,7 +3520,11 @@ const app = {
      tile's pill row updates. Does not launch the game — Play does that. */
   setGameDiff:(arg)=>{ const c=active(); const [type,k]=String(arg).split('|');
     if(!k){ c.gameDiff=type; save(); render(); return; }     // legacy single-arg call
-    c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[type]=k; c.gameDiff=k; save(); render(); },
+    if(window.SB_LEVEL) SB_LEVEL.set(type,k,c); c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[type]=k; c.gameDiff=k; save(); render(); },
+  /* the §1.7 level chip (SB_LEVEL.chip): one tap steps Auto → Easy → Medium → Hard → Champ → Auto */
+  levelChip:(key)=>{ if(!window.SB_LEVEL||!key) return; SB_LEVEL.set(key, SB_LEVEL.next(key)); render(); },
+  /* "Ready for Hard?" — the offer two rounds at 80% make (data-arg "<key>|<level>") */
+  levelUp:(arg)=>{ const [key,lv]=String(arg||'').split('|'); if(!window.SB_LEVEL||!key||!SB_LEVEL.LABEL[lv]) return; SB_LEVEL.set(key,lv); flash('Level '+SB_LEVEL.LABEL[lv]+' it is.'); render(); },
   /* Launch one of the 14 engines directly on its play-field, story-free. Mounts into a
      self-managed fullscreen overlay (like the saga's, minus the story) so it does not
      depend on app3's string render or on saga2's board/beats. */
@@ -3578,7 +3587,7 @@ const app = {
     bizzNext();
   },
   champTen:()=>{ const c=active(); const keep=c.gameDiff; c.gameDiff='champ';
-    const list=pickFresh(gameWordsD(),10); c.gameDiff=keep;
+    const list=nextWords(null,10,{purpose:'drill'}); c.gameDiff=keep;
     if(list.length<3){ flash('Not enough champ words yet — play a little first'); return; }
     state.game={type:'buzz',list,i:0,right:0,ans:[],status:'idle'};
     set({nav:'games', screen:'app'}); setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); },
@@ -3586,7 +3595,7 @@ const app = {
   // Beat the Buzzer now hosts a mode picker: a relaxed 10-word warm-up (the old
   // Buzz of the Day) or the 60-second sprint.
   beatStart:(mode)=>{ clearGTimer(); if(mode==='warmup'){ app.playGame('buzz'); return; }
-    const c=active(); const list=pickFresh(gameWordsD(),240); if(list.length<3){ flash('No words yet — try a list first'); return; }
+    const c=active(); const list=nextWords(null,240,{purpose:'drill'}); if(list.length<3){ flash('No words yet — try a list first'); return; }
     let _t=60; if(((c.pow||{}).time||0)>0){ c.pow.time--; _t=75; save(); setTimeout(()=>flash('⚡ +15s boost active!'),200); }
     state.game={type:'beat',mode:'sprint',list,i:0,right:0,wrong:0,timeLeft:_t,status:'play'}; startGTimer();
     setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); set({nav:'games',screen:'app'}); },
@@ -3615,7 +3624,7 @@ const app = {
     if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); }
     else { addMiss(w); sfx('wrong'); }
     if(!g.rw) g.rw=[]; g.rw.push({w:w.w, ok});
-    const advance=()=>{ g.fb=null; g.wait=false; g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWordsD(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
+    const advance=()=>{ g.fb=null; g.wait=false; g.i++; if(g.i>=g.list.length){ const fresh=nextWords(null,g.list.length,{purpose:'drill'}); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
     // on a miss, EVERY game stops to show the word big and say it — that's how the word sticks
     /* A MISS HOLDS UNTIL TAPPED (FIX-BEE D3). It used to move on after 1.4-3.6s on a timer;
        now the word stays, letter by letter with the why, until Next (tap or Enter). `ms` is
@@ -11132,7 +11141,7 @@ function magicConceptCells(){ try{ loadConcepts(); }catch(e){}
   return (state.conceptData||[]).map((ch,ci)=>({kind:'concept', id:'c:'+ci, label:conceptShort(ch.title), ci}))
     .filter(x=>isConceptUnlocked(x.ci) && conceptWordsOf((state.conceptData||[])[x.ci]).length>=5); }
 function magicNewBoard(){ clearGTimer();
-  const ok=t=>themeWords(t.id).length>=10;
+  const ok=t=>nextWords.pool(null,{purpose:'drill',theme:t.id,needDef:true}).length>=10;   /* through the door: kid-safe, band-gated themes */
   const used=state._magicUsed||(state._magicUsed=new Set());
   const fresh=t=>ok(t)&&!used.has(t.id);
   // every round deals different themes; when the deck runs out, reshuffle it
@@ -11154,8 +11163,8 @@ function magicClusterOf(cell){ if(cell&&cell.kind==='concept') return {id:'conce
   return themeClusters().find(x=>x.id===cell.cluster)||themeClusters()[0]; }
 function magicCellWords(id){
   if(String(id).slice(0,2)==='c:'){ const ch=(state.conceptData||[])[+String(id).slice(2)];
-    return conceptWordsOf(ch||{}).map(x=>({w:x.w, d:x.def||'', s:x.ex||''})); }
-  return themeWords(id); }
+    return conceptWordsOf(ch||{}).map(x=>({w:x.w, d:x.def||'', s:x.ex||''})).filter(w=>kidSafe(w)); }
+  return nextWords.pool(null,{purpose:'drill',theme:id}); }
 function magicBuildQs(id){ const all=diffSlice(magicCellWords(id).filter(w=>w.d&&w.d.length>4));
   let ws=pickFresh(all,5); if(ws.length<5) ws=ws.concat(sample(all.filter(w=>!ws.some(x=>nkey(x.w)===nkey(w.w))),5-ws.length));
   return ws.slice(0,5).map(w=>{ logGameWord(nkey(w.w));
@@ -11358,9 +11367,14 @@ function gameWords(opts){ opts=opts||{}; const c=active(); const key=c.activeLis
    small working set, so Easy is genuinely easy (even for an 8-year-old), Champ is
    genuinely championship-tier, and no two games fight over the same 30 words. ---- */
 let _corpusBands = null;
-function corpusBands(){ if(_corpusBands) return _corpusBands;
-  const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const by={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]};
+function corpusBands(){ const src=(window.SB_DATA&&SB_DATA.nsf)||[];
+  /* keyed on the library's LENGTH: the second word shard lands after boot, and a memo built from
+     the boot tier alone kept every game on 8,000 words for the whole visit */
+  if(_corpusBands && _corpusBands._n===src.length) return _corpusBands;
+  const by={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]};
+  try{ Object.defineProperty(by,'_n',{value:src.length,enumerable:false}); }catch(e){}
   for(const w of src){ if(!w||!w.w||!(w.d&&w.d.length>4)) continue; if(!/^[a-z]+$/i.test(w.w)) continue;
+    if(!kidSafeAll(w)) continue;   /* games spec §1.2: the kid-safe list sits AT the corpus — the every-age half here, the age half in nextWords */
     const y=Math.max(1,Math.min(9,w.y||3)); by[y].push(w); }
   _corpusBands=by; return by; }
 // difficulty → an absolute y-range anchored on the child's proven Bee Band and age
@@ -11368,7 +11382,7 @@ function corpusBands(){ if(_corpusBands) return _corpusBands;
    each game's own choice; gameDiffFor reads it. The live engines still read the single
    c.gameDiff (saga2.js does, mid-play), so launching a game copies its per-game choice
    into c.gameDiff for that session — the same trick champTen already used. */
-function gameDiffFor(c,type){ c=c||active(); return (c && c.gameDiffBy && c.gameDiffBy[type]) || 'auto'; }
+function gameDiffFor(c,type){ c=c||active(); if(window.SB_LEVEL) return SB_LEVEL.get(type,c); return (c && c.gameDiffBy && c.gameDiffBy[type]) || 'auto'; }   /* the §1.7 record first (it moves after a round), then the old per-game choice */
 function diffRange(c,dOver){ c=c||active(); const d=dOver||c.gameDiff||'auto'; const band=beeBand(c).band; const age=c.age||9;
   if(d==='easy')   return [1, Math.max(1, Math.min(age<=8?2:3, band))];
   if(d==='medium') return [Math.max(1,band-1), Math.min(9,band+1)];
@@ -11384,15 +11398,10 @@ function corpusSlice(lo,hi,cap){ const by=corpusBands(); let out=[];
 /* ---- arcade difficulty: personal words first (misses + this Level), then the corpus
    guarantees depth at the chosen difficulty — pools never collapse to a 10-word pot ---- */
 function wordDiffScore(w){ return (w.y||3)*2 + Math.min(3, Math.max(0, ((w.w||'').length-5)/2)); }
-function gameWordsD(opts){ opts=opts||{}; const c=active(); const [lo,hi]=diffRange(c);
-  const personal=gameWords(opts);
-  const inRange=personal.filter(w=>{ const y=w.y||3; return (y>=lo&&y<=hi) || (state.missedWords||[]).some(m=>nkey(m.w)===nkey(w.w)); });
-  // corpus extension: about 3× the personal pool, at least 150, at most 450 fresh library words
-  let ext=corpusSlice(lo,hi, Math.min(450, Math.max(150, inRange.length*3)));
-  if(opts.needSent) ext=ext.filter(w=>w.s&&/[a-z]/i.test(w.s));
-  const seen=new Set(inRange.map(w=>nkey(w.w))); const out=inRange.slice();
-  for(const w of ext){ const k=nkey(w.w); if(!seen.has(k)){ seen.add(k); out.push(w); } }
-  return out.length?out:personal; }
+/* gameWordsD is the door's old name (games spec §1.1): every caller now gets nextWords' pool —
+   personal words in the window, then the corpus, kid-safe for this child. New code calls
+   nextWords(child, n, {purpose}) and never this. */
+function gameWordsD(opts){ opts=opts||{}; return nextWords.pool(null, Object.assign({purpose:'drill'}, opts)); }
 function diffSlice(pool){ const c=active(); const [lo,hi]=diffRange(c);
   const f=pool.filter(w=>{ const y=w.y||3; return y>=lo&&y<=hi; });
   return f.length>=10?f:pool; }
@@ -11407,6 +11416,187 @@ function pickFresh(pool, n){ const c=active(); const recent=recentGameKeys(c); c
   if(fresh.length>=n) return sample(fresh, n);
   const used=valid.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
   return sample(fresh).concat(used).slice(0, n); }
+/* =====================================================================================
+   THE WORD DOOR — nextWords() and kidSafe() (games spec §1.1–1.2, 4 Oct 2026)
+   Every word a game puts in front of a child comes through nextWords(). It is gameWordsD's
+   successor and sits beside it: the same level window (diffRange), the same 150-word no-repeat
+   log (c.gameLog), and two things gameWordsD never had — the kid-safe list (kid-safe.js) and a
+   PURPOSE, so a race's item box, a bee and a review round each draw the right kind of word.
+     nextWords(child, n, {purpose, tier, origin, minLen, maxLen, lemmaOnly,
+                          level, key, theme, needDef, needSent, filter, date})
+       purpose  gate · drill · contest · review · daily · lore · forge · paths   (default drill)
+       tier     -1 / 0 / +1 — one step below, at, or above the level being played (§1.7)
+       level    the level being played ('auto'|'easy'|'medium'|'hard'|'champ'); else SB_LEVEL.get(key);
+                else the child's c.gameDiff
+       origin   a string or RegExp matched against the word's origin (lore)
+       theme    a Theme Journey id — gated by its minBand (Drugs, War, Diseases are 11+)
+     → word records {w,d,s,p,o,y,…}: kid-safe for THIS child, inside the window, none of them among
+       the child's last 150 game words (a pool too small to avoid it backfills the least recent).
+       `daily` is the exception on purpose: one deterministic pick per date and age band, the same
+       for every child in that band, and it neither reads nor writes the window. `review` reads the
+       child's own missed and due words (the Leitner gap is up) and ignores the window, because a
+       word is due BECAUSE it was met; it still logs what it serves.
+     nextWords.pool(child, opts) → the whole candidate pool, unpicked (distractors, previews).
+   T7 (tests/word-door.cjs) fails on any game that reads corpusSlice, the 130k library or a theme
+   list itself; tests/next-words.cjs holds the contract in the page. ============================ */
+const LEVEL_ORDER=['easy','medium','hard','champ'];
+const LEVEL_LABEL={auto:'Auto',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
+/* a child's age for the kid-safe rule: the LOW end of their band (an 11–13 child is eleven) */
+function childAge(c){ c=c||active(); try{ const b=ageBandOf(c); if(b&&b.lo) return b.lo; }catch(e){} return +(c&&c.age)||9; }
+function kidSafeAll(w){ try{ return window.SB_KID_SAFE ? SB_KID_SAFE.checkAll(w) : safeWord(w); }catch(e){ return safeWord(w); } }
+function kidSafe(w, c){ if(!w||!w.w) return false;
+  try{ return window.SB_KID_SAFE ? SB_KID_SAFE.check(w, childAge(c)) : safeWord(w); }catch(e){ return safeWord(w); } }
+window.kidSafe=kidSafe;
+/* minBand '11-15' (the family's band) means "eleven and over" */
+function bandAllows(minBand, c){ if(!minBand) return true; const lo=parseInt(String(minBand),10)||0; return childAge(c)>=lo; }
+function themeOpen(t, c){ return !!t && bandAllows(t.minBand, c); }
+window.SB_THEME_OPEN=themeOpen;
+const NW_PURPOSES={gate:1,drill:1,contest:1,review:1,daily:1,lore:1,forge:1,paths:1};
+function nwLevel(c,o){ let lv=o.level; if(!lv&&o.key&&window.SB_LEVEL) lv=SB_LEVEL.get(o.key); if(!lv) lv=(c&&c.gameDiff)||'auto'; return LEVEL_LABEL[lv]?lv:'auto'; }
+function nwRange(c,o){ const r=diffRange(c, nwLevel(c,o)); let lo=r[0], hi=r[1]; const t=Math.max(-1,Math.min(1,Math.round(+o.tier||0)));
+  if(t){ lo=Math.max(1,Math.min(9,lo+t)); hi=Math.max(1,Math.min(9,hi+t)); } return [lo,hi]; }
+let _nwIdx=null;
+function nwIndex(){ const src=(window.SB_DATA&&SB_DATA.nsf)||[]; if(_nwIdx&&_nwIdx._n===src.length) return _nwIdx;
+  const m=Object.create(null); for(const w of src){ if(w&&w.w){ const k=nkey(w.w); if(!m[k]) m[k]=w; } }
+  try{ Object.defineProperty(m,'_n',{value:src.length,enumerable:false}); }catch(e){} _nwIdx=m; return m; }
+/* a headword, not an inflection: no "plural of …" gloss, and no stem in the library that carries the
+   SAME definition (the generated library repeats a gloss on blockhead / blockheads) */
+function nwLemma(w){ const d=String(w.d||'').trim(); if(/^(an? )?(plural|past tense|past participle|present participle|third[- ]person|simple past|comparative|superlative)\b[^.;]*\bof\b/i.test(d)) return false;
+  const k=nkey(w.w), idx=nwIndex();
+  for(const s2 of [k.replace(/ies$/,'y'), k.replace(/es$/,''), k.replace(/s$/,''), k.replace(/ed$/,''), k.replace(/ed$/,'e'), k.replace(/ing$/,''), k.replace(/ing$/,'e')]){
+    if(s2!==k && s2.length>=3 && idx[s2] && String(idx[s2].d||'').trim()===d) return false; }
+  return true; }
+function nwRecent(c){ const log=(c&&c.gameLog)||[]; return new Set(log.slice(-NO_REPEAT_WINDOW)); }
+function nwLog(c,w){ if(!c||!w||!w.w) return; if(!Array.isArray(c.gameLog)) c.gameLog=[]; c.gameLog.push(nkey(w.w)); if(c.gameLog.length>600) c.gameLog=c.gameLog.slice(-600); }
+function nwFilters(c,o){ const minL=+o.minLen||0, maxL=+o.maxLen||0;
+  const ore=o.origin? (o.origin instanceof RegExp? o.origin : new RegExp(String(o.origin).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i')) : null;
+  return w=>{ if(!w||!w.w) return false; const L=String(w.w).replace(/[^a-z]/gi,'').length;
+    if(minL&&L<minL) return false; if(maxL&&L>maxL) return false;
+    if(ore&&!ore.test(String(w.o||''))) return false;
+    if(o.needDef&&!(w.d&&w.d.length>4)) return false;
+    if(o.needSent&&!(w.s&&/[a-z]/i.test(w.s))) return false;
+    if(o.lemmaOnly&&!nwLemma(w)) return false;
+    if(typeof o.filter==='function'&&!o.filter(w)) return false;
+    return kidSafe(w,c); }; }
+function nwDedupe(list){ const seen=new Set(), out=[]; for(const w of list){ if(!w||!w.w) continue; const k=nkey(w.w); if(!seen.has(k)){ seen.add(k); out.push(w); } } return out; }
+/* a word table a game owns (Word Forge's morphemes, Sound Paths' alignments): an array of words or
+   rows {w}, a Set, or an object keyed by word — resolved against the library */
+function nwTable(T){ if(!T) return []; const idx=nwIndex(); let rows=[];
+  if(Array.isArray(T)) rows=T; else if(T instanceof Set) rows=[...T]; else if(typeof T==='object') rows=Object.keys(T);
+  return rows.map(x=>{ const k=typeof x==='string'?x:(x&&x.w); if(!k) return null; return idx[nkey(k)]||(typeof x==='object'&&x.w?x:null); }).filter(Boolean); }
+/* the review pile: missed words, and words in the mastery record whose Leitner gap is up */
+function nwReview(c){ const idx=nwIndex(), out=[]; let wi=null; try{ wi=wordIndex(); }catch(e){}
+  const rec=k=>idx[k]||(wi&&wi[k])||null; const today=(typeof mastDay==='function')?mastDay():0;
+  const miss=(c===active()?(state.missedWords||[]):[]).concat(Array.isArray(c.missed)?c.missed:[]);
+  for(const m of miss){ const k=nkey(m&&m.w?m.w:m); const r=rec(k)||(m&&m.w?m:null); if(r) out.push(r); }
+  const M=c.mast||{}; for(const k of Object.keys(M)){ const e=M[k]; if(e&&typeof e==='object'&&(e.due==null||e.due<=today)&&(e.b|0)<=2){ const r=rec(k); if(r) out.push(r); } }
+  return nwDedupe(out); }
+function nwPool(c,o){ const purpose=NW_PURPOSES[o.purpose]?o.purpose:'drill'; const [lo,hi]=nwRange(c,o); const keep=nwFilters(c,o);
+  if(purpose==='review') return nwReview(c).filter(keep);
+  if(purpose==='forge') return nwTable(window.SB_FORGE_TABLE).filter(keep);
+  if(purpose==='paths') return nwTable(window.SB_PATHS_TABLE).filter(keep);
+  const inWin=w=>{ const y=w.y||3; return y>=lo&&y<=hi; };
+  if(o.theme){ const t=themeOf(o.theme); if(!themeOpen(t,c)) return [];
+    const all=themeWords(o.theme).filter(keep); const f=all.filter(inWin); return f.length>=10?f:all; }
+  let personal=[];
+  if(c===active()&&purpose!=='lore'){ try{ const miss=new Set((state.missedWords||[]).map(m=>nkey(m.w)));
+    personal=gameWords({}).filter(w=>inWin(w)||miss.has(nkey(w.w))); }catch(e){ personal=[]; } }
+  let pool=nwDedupe(personal.concat(corpusSlice(lo,hi))).filter(keep);
+  if(purpose==='lore') pool=pool.filter(w=>w.o&&w.d&&w.d.length>4);
+  if(purpose==='contest'){ const bee=pool.filter(w=>w.nt); if(bee.length>=60) pool=bee; }   /* real competition words first (mockbee's beeList reads the same tag) */
+  return pool; }
+/* the same word for every child in a band on a date: rendezvous hashing, so the pick holds as the
+   library grows under it unless a NEW word outranks it (wait for the second shard, 'words2') */
+function nwHash(s){ let h=0x811c9dc5; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return h>>>0; }
+const NW_DAILY_Y={'5-7':[1,2],'8-10':[2,4],'11-13':[3,6],'14-18':[4,8]};
+function nwDaily(c,n,o){ const band=(ageBandOf(c)||{}).k||'8-10'; const d=o.date||(()=>{ const t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); })();
+  const r=NW_DAILY_Y[band]||[2,4]; const age=parseInt(band,10)||9;
+  const safe=w=>(window.SB_KID_SAFE?SB_KID_SAFE.check(w,age):safeWord(w));
+  const pool=corpusSlice(r[0],r[1]).filter(w=>w.d&&w.d.length>4&&w.s&&/[a-z]/i.test(w.s)&&w.w.length>=4&&safe(w));
+  return pool.map(w=>({w, h:nwHash(d+'|'+band+'|'+nkey(w.w))})).sort((a,b)=>a.h-b.h||(a.w.w<b.w.w?-1:1)).slice(0,n).map(x=>x.w); }
+function nextWords(child, n, opts){ opts=opts||{}; const c=child||active(); n=Math.max(0,Math.floor(+n||0)); if(!c||!n) return [];
+  if(opts.purpose==='daily') return nwDaily(c,n,opts);
+  const pool=nwPool(c,opts); let out;
+  if(opts.purpose==='review') out=pool.slice(0,n);
+  else { const recent=nwRecent(c); const fresh=pool.filter(w=>!recent.has(nkey(w.w)));
+    if(fresh.length>=n) out=sample(fresh,n);
+    else { const log=c.gameLog||[]; const used=pool.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
+      out=sample(fresh).concat(used).slice(0,n); } }
+  out.forEach(w=>nwLog(c,w)); return out; }
+nextWords.pool=(child,opts)=>{ const c=child||active(); return c?nwPool(c,opts||{}):[]; };
+window.nextWords=nextWords;
+
+/* =====================================================================================
+   LEVELS — chosen by the child, re-checked every round (games spec §1.7, owner's rule)
+   window.SB_LEVEL.get(key) → 'auto'|'easy'|'medium'|'hard'|'champ'; set(key, level);
+   after(key, pct) → {level, dropped, offerUp, line, pct}; chip(key, label?) → the chip's HTML.
+   Kept per CHILD as c.levels[key] = {level, history:[pct…], hand}, through the store (step
+   v9→v10 seeds it from the old per-game choice, c.gameDiffBy). Keys: mockbee, beeGrandPrix,
+   typeBlaster, honeycombRun, wordForge, dailyBee, and 'gym/<mode>', 'lore/<mode>', 'hive/<mode>'
+   — a mode with no level of its own takes its hub's ('gym'), the hub card's chip.
+   The rule: 50% or more keeps the level; under 50% drops one (floor Easy) with a kind line; a
+   hand-set level sticks until the next round's check; two rounds in a row at 80%+ offer the next
+   level as a tap (OFFER_UP — the owner may switch it off). pct is a percent (0–100), or a
+   fraction when it is 1 or less. Guard: tests/levels.cjs (T13). ================== */
+window.SB_LEVEL=(function(){
+  const CYCLE=['auto'].concat(LEVEL_ORDER);
+  const API={ OFFER_UP:true, ORDER:LEVEL_ORDER.slice(), LABEL:LEVEL_LABEL };
+  const ok=v=>Object.prototype.hasOwnProperty.call(LEVEL_LABEL,v);
+  function rec(key,c){ if(!c.levels||typeof c.levels!=='object'||Array.isArray(c.levels)) c.levels={};
+    let r=c.levels[key]; if(!r||typeof r!=='object'){ r={level:API.get(key,c),history:[]}; c.levels[key]=r; }
+    if(!ok(r.level)) r.level='auto'; if(!Array.isArray(r.history)) r.history=[]; return r; }
+  function sync(c,key,lv){ c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[key]=lv; }   /* the engines still read the old per-game choice */
+  API.get=(key,c)=>{ c=c||active(); if(!c||!key) return 'auto'; key=String(key);
+    const r=c.levels&&c.levels[key]; if(r&&ok(r.level)) return r.level;
+    const g=c.gameDiffBy&&c.gameDiffBy[key]; if(ok(g)) return g;
+    const i=key.indexOf('/'); return i>0?API.get(key.slice(0,i),c):'auto'; };
+  /* 'auto' as a concrete level, from the child's word difficulty (the arcade's own mapping) */
+  API.resolve=(key,c)=>{ c=c||active(); const lv=API.get(key,c); if(lv!=='auto') return lv;
+    let band=4; try{ band=beeBand(c).band; }catch(e){} return band<=3?'easy':band<=6?'medium':band<=8?'hard':'champ'; };
+  API.set=(key,level,c)=>{ c=c||active(); if(!c||!key||!ok(level)) return API.get(key,c); const r=rec(String(key),c);
+    r.level=level; r.hand=level==='auto'?0:1; sync(c,key,level); try{ save(); }catch(e){}
+    try{ window.dispatchEvent(new CustomEvent('sb-level',{detail:{key,level}})); }catch(e){} return level; };
+  API.line=(res)=>res&&res.dropped?('Let’s warm up on '+LEVEL_LABEL[res.level]+'. You can move back up any time.'):'';
+  API.after=(key,pct,c)=>{ c=c||active(); if(!c||!key) return {level:'auto',dropped:false,offerUp:null,line:'',pct:0}; key=String(key);
+    let p=+pct; if(!isFinite(p)) p=0; if(p<=1) p*=100; p=Math.max(0,Math.min(100,Math.round(p)));
+    const r=rec(key,c); r.history.push(p); if(r.history.length>10) r.history=r.history.slice(-10);
+    let dropped=false;
+    if(p<50){ const cur=r.level==='auto'?API.resolve(key,c):r.level; const i=LEVEL_ORDER.indexOf(cur);
+      if(i>0){ r.level=LEVEL_ORDER[i-1]; dropped=true; sync(c,key,r.level); } else if(r.level==='auto'){ r.level='easy'; sync(c,key,'easy'); } }
+    r.hand=0;   /* the check has run: a hand-set level stuck until now, and the rule owns it from here */
+    let offerUp=null; const h=r.history;
+    if(API.OFFER_UP&&!dropped&&h.length>=2&&h[h.length-1]>=80&&h[h.length-2]>=80){ const cur=r.level==='auto'?API.resolve(key,c):r.level; const i=LEVEL_ORDER.indexOf(cur); if(i>=0&&i<LEVEL_ORDER.length-1) offerUp=LEVEL_ORDER[i+1]; }
+    try{ save(); }catch(e){}
+    const res={level:r.level,dropped,offerUp,pct:p}; res.line=API.line(res); return res; };
+  /* the chip: Auto ▾ → Easy → Medium → Hard → Champ → Auto, one tap each (keyboard: it is a button) */
+  API.chip=(key,label)=>{ const lv=API.get(key); const nx=CYCLE[(CYCLE.indexOf(lv)+1)%CYCLE.length];
+    return `<button type="button" data-act="levelChip" data-arg="${escA(key)}" class="sb-lvchip" aria-label="${escA('Word level for '+(label||key)+': '+LEVEL_LABEL[lv]+'. Tap for '+LEVEL_LABEL[nx])}" title="Word level: ${LEVEL_LABEL[lv]} — tap to change">${LEVEL_LABEL[lv]} ▾</button>`; };
+  /* "Ready for Hard?" — the tap an offerUp shows (data-act="levelUp" data-arg="<key>|<level>") */
+  API.upButton=(key,res)=>res&&res.offerUp?`<button type="button" data-act="levelUp" data-arg="${escA(key+'|'+res.offerUp)}" class="sb-lvup">Ready for ${LEVEL_LABEL[res.offerUp]}?</button>`:'';
+  API.next=(key)=>{ const lv=API.get(key); return CYCLE[(CYCLE.indexOf(lv)+1)%CYCLE.length]; };
+  return API; })();
+
+/* =====================================================================================
+   BESTS that outlive their game (games spec §3, T12). c.bests['<card or hub>/<mode>'] =
+   {right, of, at, from}. Store step v10→v11 carried the bests of the games that left the Play tab
+   (Beat the Buzzer, Magic Squares, Word Quiz, Bee Trivia) to their new homes in the hubs; a hub
+   mode reads and writes them here, and the hub's card shows its best mode. ===================== */
+window.SB_BESTS={
+  get(key,c){ c=c||active(); const b=c&&c.bests&&c.bests[key]; return (b&&typeof b==='object')?b:null; },
+  ratio(b){ return b?(b.of?b.right/b.of:b.right):0; },
+  put(key,right,of,c){ c=c||active(); if(!c||!key) return false; right=Math.max(0,+right||0); of=of==null?null:Math.max(1,+of||1);
+    if(!c.bests||typeof c.bests!=='object') c.bests={}; const old=c.bests[key];
+    const better=!old||(of&&old.of?(right/of>old.right/old.of||(right/of===old.right/old.of&&of>old.of)):right>(old.right||0));
+    if(better){ c.bests[key]={right,of,at:Date.now()}; try{ save(); }catch(e){} } return better; },
+  /* the best mode under a hub prefix, for its card: "Best 8/10 · Roots" */
+  top(prefix,c){ c=c||active(); const B=(c&&c.bests)||{}; let best=null, bk='';
+    for(const k of Object.keys(B)){ if(k.indexOf(prefix+'/')!==0) continue; const b=B[k]; if(!b) continue;
+      if(!best||(this.ratio(b)>this.ratio(best))) { best=b; bk=k; } }
+    return best?{key:bk,mode:bk.slice(prefix.length+1),best}:null; }
+};
+/* The three hubs' names — the owner may rename them (spec §3.3); nothing may hard-code one. */
+window.SB_HUB_NAMES=Object.assign({gym:'Spelling Gym', lore:'Word Lore', hive:'Hive Mind'}, window.SB_HUB_NAMES||{});
+function hubName(k){ return (window.SB_HUB_NAMES&&SB_HUB_NAMES[k])||k; }
 /* n distinct distractor strings, none equal to the answer (case- and space-blind). Every
    multiple-choice generator goes through this: two identical options is two right answers, and
    a "last-resort filler" pushed three times was three identical wrong ones (FIX-BEE D8). */
@@ -11435,7 +11625,7 @@ function buildFigQs(mode,n){ const pool=figPool(); if(pool.length<8) return [];
     return {kind:'simile2', word:x.p, wordObj:{w:x.p,y:3}, answer:x.vehicle, choices:sample([x.vehicle].concat(others)), prompt:esc(blanked), say:blanked.replace('____','hmm'), m:x.m}; });
 }
 /* NSF vocabulary-bee round: hear/see the word, pick the meaning. */
-function buildVocabQs(n){ const pool=gameWordsD({needDef:true}); if(pool.length<8) return [];
+function buildVocabQs(n){ const pool=nextWords.pool(null,{purpose:'drill',needDef:true}); if(pool.length<8) return [];
   const cand=pickFresh(pool,n); const ws=cand.length>=Math.min(n,5)?cand:sample(pool,Math.min(n,pool.length));
   return ws.map(w=>{ logGameWord(nkey(w.w));
     const near=pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d&&Math.abs((x.y||3)-(w.y||3))<=1);
@@ -11445,7 +11635,7 @@ function buildVocabQs(n){ const pool=gameWordsD({needDef:true}); if(pool.length<
     const others=mcDistinct(ans, sample(near.length>=3?near:pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d)).slice(0,24).map(x=>maskTxt(x.d,w.w)), 3);
     return {kind:'vocab', word:w.w, wordObj:w, answer:ans, choices:sample([ans].concat(others)), prompt:esc(w.w), say:w.w, p2:w.p||''}; });
 }
-function buildMC(mode,n){ const all=gameWordsD();
+function buildMC(mode,n){ const all=nextWords.pool(null,{purpose:mode==='origin'?'lore':'drill'});
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
       const choices=sample([w.o].concat(sample(MC_ORIGINS.filter(o=>o!==w.o),3)));
@@ -11513,7 +11703,7 @@ function beatModePicker(){ return gamePickerShell('Beat the Buzzer','Pick how yo
   pickerCard('beatStart','warmup','#E0922E','flame','10-Word Warm-Up','A relaxed, untimed round of ten mixed words — your daily warm-up.')+
   pickerCard('openChallenge','journey','#7C5CFF','trophy','Stage Challenge','Beat the clock or a set number — pass your Stage to test out.')+
   pickerCard('playGame','duel','#C43D5A','swords','Spelling Duel','Pass the device — same 10 words, two spellers. Who takes the crown?')+
-  (advModeOn()?pickerCard('arcAdvDict','','#3A2A72','bolt','◆ Rapid Dictation','90 seconds — hear & type the hardest words in the library.'):'')); }
+  ''); }   /* ◆ Rapid Dictation left (games spec §3.1): Spelling Gym · Champ Dictation is its home */
 function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round — each is 10 questions.',
   pickerCard('wqStart','meaning','#13A892','book','Meanings','Match a word to its meaning or fill the blank in a sentence.')+
   pickerCard('wqStart','spell','#3D7DF0','spark','Spellings','Pick the correctly-spelled word from look-alikes.')+
@@ -11522,7 +11712,7 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
   pickerCard('wqStart','vocab','#2E8FB8','book','Vocabulary','Bee-style: hear the word, pick the right meaning.')+
   pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')+
-  (advModeOn()?pickerCard('arcAdvMem','','#3A2A72','grid','◆ Memory Match','Pair the hardest words with their meanings — trains recall.'):'')); }
+  ''); }   /* ◆ Memory Match left (games spec §3.1): it paid for luck; Spelling Gym · Word Doctor is in for it */
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">${backPill('exitGame','Arcade',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px">Spelling Duel</span></div>${inner}</div>`;
@@ -11763,7 +11953,7 @@ function arcadeMenu(k){
   el.querySelector('#arcm-go').onclick=()=>{
     // remember the per-game choices, but DON'T overwrite the child's app-wide avatar
     c.arcGame=c.arcGame||{}; c.arcGame[k]={av:cfg.noHero?null:selAv,diff:selDiff,opts:{...selOpt}};
-    c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
+    if(window.SB_LEVEL) SB_LEVEL.set(k,selDiff,c); c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
     try{ save(); }catch(e){}
     arcadeClose();
     // no colour tint — each kart carries its own colour

@@ -1,10 +1,10 @@
 /* Bizzing Bee — SAGA v2 · "Bizzy and the Great Unspelling" · Act I engines.
-   Placeholder vector art (swaps for Claude Design drops). Words via gameWordsD/pickFresh; audio via voice/d + say(). */
+   Placeholder vector art (swaps for Claude Design drops). Words via nextWords (app3); audio via voice/d + say(). */
 (function(){
   const W=()=>window;
-  function pool(n){ try{ const l=pickFresh(gameWordsD(),n)||[];
-    l.forEach(w=>{ try{ if(typeof logGameWord==='function'&&w&&w.w) logGameWord(nkey(w.w)); }catch(e){} });
-    return l; }catch(e){ return []; } }
+  /* every engine's words come through the one door (app3 nextWords, games spec §1.1): kid-safe for
+     this child, inside the level window, none of the last 150 again — and it logs what it serves */
+  function pool(n,o){ try{ return window.nextWords(null,n,Object.assign({purpose:'drill'},o||{}))||[]; }catch(e){ return []; } }
   /* Every word an arcade game asked for, and whether it was spelled right.
      A game used to swallow its words: miss one mid-flight and the correct spelling went by
      in the same breath as the crash, so the one word you most needed to see was the one you

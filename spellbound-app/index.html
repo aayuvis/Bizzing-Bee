@@ -1188,6 +1188,10 @@
   /* a game's word level, as one chip on the tile's picture (top right, across from its badge) */
   .arc-lvl{position:absolute;top:10px;right:10px;z-index:2;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.94);color:#2A2244;font-weight:800;font-size:11.5px;line-height:1.3;box-shadow:0 2px 6px rgba(0,0,0,.18)}
   .arc-lvl:hover{background:#fff}
+  /* the §1.7 level chip (SB_LEVEL.chip) — the arcade chip's look, placed by whoever draws it */
+  .sb-lvchip{position:relative;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.94);color:#2A2244;font-weight:800;font-size:11.5px;line-height:1.3;box-shadow:0 2px 6px rgba(0,0,0,.18);white-space:nowrap}
+  .sb-lvchip:hover{background:#fff}
+  .sb-lvup{display:inline-flex;align-items:center;padding:8px 14px;border-radius:99px;background:var(--accent);color:#fff;font-weight:800;font-size:13px}
   /* the character sits behind the copy, so a scrim keeps antennae and props off the words */
   .arc-hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(96deg,rgba(18,11,42,.84) 0%,rgba(18,11,42,.72) 46%,rgba(18,11,42,.3) 72%,transparent 90%)}
   .arc-hero-in{display:block;position:relative;z-index:2;padding:18px 20px;max-width:min(72%,100% - 108px)}
@@ -3312,6 +3316,7 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="words-data.js?v=20261004a"></script>
 <script defer src="words-extra.js?v=20261004a"></script>
 <script defer src="words-patch.js?v=20261004a"></script>
+<script defer src="kid-safe.js?v=20261004a"></script>
 <script defer src="themes-data.js?v=20261004a"></script>
 <script defer src="quotes.js?v=20261004a"></script>
 <script defer src="trivia-icons.js?v=20261004a"></script>
