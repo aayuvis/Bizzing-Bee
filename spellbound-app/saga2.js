@@ -1,10 +1,10 @@
 /* Bizzing Bee — SAGA v2 · "Bizzy and the Great Unspelling" · Act I engines.
-   Placeholder vector art (swaps for Claude Design drops). Words via gameWordsD/pickFresh; audio via voice/d + say(). */
+   Placeholder vector art (swaps for Claude Design drops). Words via nextWords (app3); audio via voice/d + say(). */
 (function(){
   const W=()=>window;
-  function pool(n){ try{ const l=pickFresh(gameWordsD(),n)||[];
-    l.forEach(w=>{ try{ if(typeof logGameWord==='function'&&w&&w.w) logGameWord(nkey(w.w)); }catch(e){} });
-    return l; }catch(e){ return []; } }
+  /* every engine's words come through the one door (app3 nextWords, games spec §1.1): kid-safe for
+     this child, inside the level window, none of the last 150 again — and it logs what it serves */
+  function pool(n,o){ try{ return window.nextWords(null,n,Object.assign({purpose:'drill'},o||{}))||[]; }catch(e){ return []; } }
   /* Every word an arcade game asked for, and whether it was spelled right.
      A game used to swallow its words: miss one mid-flight and the correct spelling went by
      in the same breath as the crash, so the one word you most needed to see was the one you
@@ -432,6 +432,328 @@
   const esc2=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   W().SGUI = SGUI;
 
+  /* ==========================================================================
+     THE ENGINE KIT (games spec §1.4, §1.5, §1.6, §4.0, §5.0) — one clock, one miss
+     card, one on-screen keyboard, one stage and one hub screen, shared by every game.
+     Everything here is exported on window and reads nothing from the engines below,
+     so a game, a hub or a test can use one piece without the others.
+     ========================================================================== */
+
+  /* ---- 1. ONE CLOCK (§1.4). Physics at a fixed 1/120 s, as many steps as real time needs
+     (at most 12 a frame), render once per animation frame. It pauses while the page is
+     hidden, while the caller holds it, and while a miss card is up (SGUI.held): a clock
+     that runs under the card a child is reading takes the time it was meant to give. The
+     body is the spec's, word for word, plus that one SGUI.held term. Every timed thing in
+     the games — a moving kart, a draining ring, a Sprint's seconds — runs on real time
+     through this, never on `dt = Math.min(0.05, …)` (which slows the game on a slow phone)
+     or on a setInterval that counts its own ticks (which slows the clock). */
+  function sgLoop(update, render){ let acc=0, last=performance.now(), raf, held=false;
+    function tick(now){ raf=requestAnimationFrame(tick); if(document.hidden||held||SGUI.held){ last=now; return; }
+      acc+=Math.min(0.25,(now-last)/1000); last=now; let n=0;
+      while(acc>=1/120 && n<12){ update(1/120); acc-=1/120; n++; } render(acc*120); }
+    raf=requestAnimationFrame(tick);
+    return { hold(v){ held=!!v; }, stop(){ cancelAnimationFrame(raf); } }; }
+  W().sgLoop=sgLoop;
+
+  /* A countdown for the timed text modes (Sprint, Level Challenge, timed trivia), on sgLoop.
+     It writes the seconds into `el.textContent` IN PLACE and calls onTick only when the
+     whole second changes — never a re-render of the view each second, which is what drops
+     a phone's keyboard focus mid-word (gTick → render). onEnd fires once. */
+  /* A countdown is not physics: it reads the real clock every frame rather than counting
+     sgLoop's capped steps, so a phone that can only draw eight frames a second still ends a
+     60-second Sprint after 60 seconds. It stops counting while hidden, held, or under a miss
+     card, exactly like sgLoop. */
+  function sgClock(secs, o){ o=o||{}; let left=+secs||0, shown=null, over=false, held=false, raf=0, last=performance.now();
+    const vis=()=>{ last=performance.now(); }; document.addEventListener('visibilitychange',vis);   // time spent hidden is not play
+    const fmt=o.fmt||(s=>String(s));
+    function paint(){ const s=Math.max(0,Math.ceil(left-1e-9));
+      if(s!==shown){ shown=s; try{ if(o.el) o.el.textContent=fmt(s); }catch(e){} try{ if(o.onTick) o.onTick(s,left); }catch(e){} } }
+    function tick(now){ if(over) return; raf=requestAnimationFrame(tick);
+      if(document.hidden||held||SGUI.held){ last=now; return; }
+      left-=Math.min(1,Math.max(0,(now-last)/1000)); last=now;   // a slow frame still counts in full; only a stall over 1s is clipped
+      if(left<=0){ left=0; over=true; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange',vis); paint(); try{ if(o.onEnd) o.onEnd(); }catch(e){} return; }
+      paint(); }
+    paint(); raf=requestAnimationFrame(tick);
+    return { left:()=>left, hold(v){ held=!!v; }, add(s){ left+=s; }, stop(){ over=true; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange',vis); } }; }
+
+  /* ---- 2. ONE MISS CARD (§1.5). From the Warm-Up's miss screen: the child's letters over
+     the word's, the letters that differ marked by SHAPE as well as colour (a wrong letter is
+     struck through, a missing one is a dashed empty box, the right letter is underlined with
+     a bar and a caret), the word spoken again, a note about THIS error — never the word's
+     family in general — and Continue by Enter or a tap. Clocks hold while it is up.
+     "aerial" typed "arial" used to get the Greek f→ph tip because the word is Greek; the
+     note now comes from where the letters actually part company. */
+  const SG_SOUNDS=[ /* one sound, several spellings — both halves of a miss must sit in ONE row */
+    ['f',['f','ff','ph','gh']], ['k',['c','k','ck','ch','cc','q','qu','que']], ['s',['s','ss','c','sc','ce','se']],
+    ['j',['j','g','dg','dge','ge','gi']], ['sh',['sh','ti','ci','ch','ssi','si','s','sci']], ['z',['z','zz','s','se','x']],
+    ['air',['air','are','ar','ear','ere','eir','aer','ai','ae','a']], ['er',['er','ir','ur','or','ear','our','ar','yr','re']],
+    ['ay',['a','ai','ay','ei','eigh','ey','ae']], ['ee',['e','ee','ea','ie','ei','y','ey','i','ae','oe']],
+    ['oh',['o','oa','ow','oe','ou','ough','eau']], ['oo',['oo','u','ew','ue','ou','ui','o','eu']],
+    ['eye',['i','y','igh','ie','ye','ei','ai']], ['ow',['ow','ou']], ['oy',['oi','oy']], ['aw',['aw','au','a','augh','ough','or','our','oa']],
+    ['shun',['tion','sion','cian','ssion','tian','cion']], ['w',['w','wh']], ['n',['n','kn','gn','pn','nn']],
+    ['m',['m','mb','mn','mm']], ['r',['r','wr','rh','rr']], ['g',['g','gh','gu','gg']], ['uh',['a','e','i','o','u','ou']],
+  ];
+  const SG_SUFFIX=/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede|ise|ize|ful|less|ness|ment|ly|er|or|ar)$/;
+  function sgAlign(typed, word){ const a=String(typed||'').toLowerCase().slice(0,60), b=String(word||'').toLowerCase();
+    const m=a.length, n=b.length, D=[]; for(let i=0;i<=m;i++){ D.push(new Array(n+1).fill(0)); D[i][0]=i; } for(let j=0;j<=n;j++) D[0][j]=j;
+    for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) D[i][j]=Math.min(D[i-1][j]+1, D[i][j-1]+1, D[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    const cols=[]; let i=m, j=n;
+    while(i>0||j>0){
+      if(i>0&&j>0&&a[i-1]===b[j-1]&&D[i][j]===D[i-1][j-1]){ cols.push({t:a[i-1],w:b[j-1],op:'ok'}); i--; j--; }
+      else if(i>0&&j>0&&D[i][j]===D[i-1][j-1]+1){ cols.push({t:a[i-1],w:b[j-1],op:'sub'}); i--; j--; }
+      else if(j>0&&D[i][j]===D[i][j-1]+1){ cols.push({t:'',w:b[j-1],op:'del'}); j--; }
+      else { cols.push({t:a[i-1],w:'',op:'ins'}); i--; } }
+    return cols.reverse(); }
+  /* Classify ONE miss by where the letters differ. Returns {k, label, line, rule}:
+     k ∈ double | single | silent | sound | ie | suffix | vowel | letters | none. */
+  function sgMissKind(word, typed){
+    const w=String((word&&word.w)||word||'').toLowerCase(), t=String(typed||'').toLowerCase().trim();
+    const rec=(word&&typeof word==='object')?word:{w:w};
+    const R=(W().SB_COACH_RULES||{});
+    const rule=k=>(R[k]&&R[k].check)||'';
+    if(!w) return {k:'none',label:'',line:'',rule:''};
+    if(!t) return {k:'letters',label:'Letter by letter',line:'Here it is, one letter at a time. Say each beat as you read it.',rule:''};
+    if(t===w) return {k:'none',label:'',line:'',rule:''};
+    const cols=sgAlign(t,w);
+    /* word-index span of the differing zone, and the typed letters across it */
+    let wi=0, ws=-1, we=-1, ts='', dbl=null, sgl=null, vow=0, nonVow=0;
+    cols.forEach(c=>{
+      if(c.op==='ok'){ wi++; return; }
+      const at=wi; if(ws<0) ws=at; we=Math.max(we, c.op==='ins'?at:at+1);
+      if(c.op==='del'){ if(w[at-1]===c.w||w[at+1]===c.w) dbl=c.w; }
+      if(c.op==='ins'){ if(c.t===w[at-1]||c.t===w[at]) sgl=c.t; }
+      const lt=c.t||'', lw=c.w||'';
+      if((lt===''||/[aeiouy]/.test(lt))&&(lw===''||/[aeiouy]/.test(lw))) vow++; else nonVow++;
+      if(c.op!=='ok') ts+=lt;
+      if(c.op!=='ins') wi++; });
+    if(ws<0) return {k:'none',label:'',line:'',rule:''};
+    const seg=w.slice(ws,Math.max(we,ws));
+    /* doubled or single letter */
+    if(dbl && nonVow<=1) return {k:'double',label:'Double letters',line:'This word doubles the '+dbl+': '+dbl+dbl+'.',rule:rule('double')};
+    if(sgl && nonVow<=1 && !(w.indexOf(sgl+sgl)>=0)) return {k:'single',label:'Double letters',line:'Only one '+sgl+' here, not '+sgl+sgl+'.',rule:rule('double')};
+    /* a silent letter the child left out */
+    const dropped=cols.filter(c=>c.op==='del'); const onlyDrop=dropped.length===1 && cols.every(c=>c.op==='ok'||c.op==='del');
+    if(onlyDrop){ const L=dropped[0].w; const at=ws;
+      const SIL=[[/^(k)n/,0],[/^(w)r/,0],[/^(g)n/,0],[/^(p)[sn]/,0],[/^(m)n/,0],[/^r(h)/,1],[/^(h)o(nest|nou|ur|ei)/,0],[/^g(h)/,1],[/^w(h)/,1],
+        [/m(b)$/,1],[/m(n)$/,1],[/(g)n$/,0],[/s(t)(le|en)$/,1],[/f(t)en$/,1],[/(b)t/,0],[/s(c)[eiy]/,1],[/g(u)[eiy]/,1],[/(l)[km]/,0],[/ou(l)d/,2],
+        [/i(g)h/,1],[/(w)ord|ans(w)er|(w)o$/,0],[/is(l)/,2],[/p(s)/,1],[/(c)h(t)/,0]];
+      for(const [re] of SIL){ const m=w.match(re); if(!m) continue; const off=m.index+m[0].indexOf(m.slice(1).find(Boolean)||'');
+        const g=m.slice(1).find(Boolean); if(g&&g.length===1&&g===L&&Math.abs(off-at)<=1)
+          return {k:'silent',label:'Silent letters',line:'The '+L+' in '+w+' is silent: you cannot hear it, but it is written.',rule:rule('silent')}; } }
+    /* a suffix at the end of the word */
+    const sm=w.match(SG_SUFFIX);
+    if(sm && w.length-sm[0].length>=3 && ws>=w.length-sm[0].length){
+      const tm=t.slice(Math.max(0,t.length-sm[0].length-1)).match(/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede|ise|ize|ful|less|ness|ment|ly|er|or|ar|al|el|le)$/);
+      const R2=/^(able|ible)$/.test(sm[0])?rule('endings'):/^(ance|ence|ancy|ency|ant|ent)$/.test(sm[0])?'An -ance word has an -ant partner and an -ence word an -ent one (importance, important; confidence, confident). If you know one, you know the other.':'';
+      return {k:'suffix',label:'Suffix endings',line:'The ending is -'+sm[0]+(tm&&tm[0]!==sm[0]?' (you wrote -'+tm[0]+')':'')+'.',rule:R2}; }
+    /* ie / ei */
+    if(/ie|ei/.test(w.slice(Math.max(0,ws-1),we+1)) && /ie|ei/.test(t)) return {k:'ie',label:'ie or ei',line:'This word is spelled with '+(w.match(/ie|ei/)[0])+'.',rule:rule('ieei')};
+    /* one vowel written for another, same length: the vowel (the schwa), never an "er" reading */
+    if(vow>0 && nonVow===0 && cols.every(c=>c.op==='ok'||c.op==='sub'))
+      return {k:'vowel',label:'The vowel',line:'The vowel here is spelled '+seg+'. In a quiet syllable every vowel sounds like "uh", so the sound cannot tell you which one.',rule:rule('schwa')};
+    /* one sound, several spellings: widen the window round the zone until both halves are
+       spellings of the same sound */
+    for(let pad=0; pad<=2; pad++){ for(let l=0; l<=pad; l++){ const r=pad-l;
+      const a=Math.max(0,ws-l), b=Math.min(w.length, Math.max(we,ws)+r);
+      const wseg=w.slice(a,b); const tPre=w.slice(0,a), tPost=w.slice(b);
+      if(!t.startsWith(tPre)||!t.endsWith(tPost)||t.length<tPre.length+tPost.length) continue;
+      const tseg=t.slice(tPre.length, t.length-tPost.length); if(!wseg||wseg===tseg) continue;
+      const hit=SG_SOUNDS.find(([,sp])=>sp.indexOf(wseg)>=0&&sp.indexOf(tseg)>=0);
+      if(hit && !(hit[0]==='uh')){ let o='';
+        const og=String(rec.o||'');
+        if(/^(f|k|eye)$/.test(hit[0]) && /greek/i.test(og) && /ph|ch|y/.test(wseg)) o=' That is a Greek spelling, like phone, chorus and myth.';
+        else if(/french/i.test(og) && /eau|que|ch|et/.test(wseg)) o=' That is a French spelling, kept from the language it came from.';
+        return {k:'sound',label:'One sound, several spellings',line:'The "'+hit[0]+'" sound here is spelled '+wseg+(tseg?', not '+tseg:'')+'.'+o,rule:''}; } } }
+    /* a vowel: the quiet "uh" sound (the schwa) and its cousins */
+    if(vow>0 && nonVow===0) return {k:'vowel',label:'The vowel',line:seg?('The vowel here is spelled '+seg+'. In a quiet syllable every vowel sounds like "uh", so the sound cannot tell you which one.'):'A vowel is missing here.',rule:rule('schwa')};
+    return {k:'letters',label:'Letter by letter',line:'Look at the marked letters, then say the word slowly, one beat at a time, and spell each beat.',rule:''};
+  }
+
+  let _missUp=0;
+  Object.defineProperty(SGUI,'held',{get(){ return _missUp>0; }, configurable:true});
+  const SPK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" stroke="none"/><path d="M15.6 9a4.2 4.2 0 0 1 0 6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>';
+  const BULB='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.4.3.6.75.6 1.25h4c0-.5.2-.95.6-1.25A4.4 4.4 0 0 0 8 1.6z" fill="currentColor" opacity=".9"/><path d="M6.4 12.6h3.2M6.9 14.2h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  const TICK='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3 8.6l3.2 3L13 4.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const CROSS='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+  /* the shared shell of both miss cards: a scrim over the host, the card, Continue by Enter
+     or a tap, every other key swallowed so nothing types into the game underneath */
+  function missShell(host, inner, o){
+    host=host||document.body;
+    /* on a stage the card covers the whole stage, keyboard and all (the keys are dead while it is
+       up): a phone's play region above the keys is too short to hold the letters, the note and
+       Continue */
+    try{ const st=host.closest&&host.closest('.sb-stage'); if(st) host=st; }catch(e){}
+    const fixed=(host===document.body);
+    try{ if(!fixed && getComputedStyle(host).position==='static') host.style.position='relative'; }catch(e){}
+    const wrap=document.createElement('div'); wrap.className='sg-misswrap'+(fixed?' fixed':'');
+    wrap.innerHTML='<div class="sg-misscard sb-miss" role="dialog" aria-modal="true" aria-labelledby="sg-miss-h">'+inner+
+      '<button class="sg-rbtn go sg-miss-go" type="button">Continue <span class="sg-kbd" aria-hidden="true">Enter</span></button></div>';
+    host.appendChild(wrap); _missUp++;
+    const t0=performance.now(); let closed=false;
+    function close(){ if(closed) return; closed=true; _missUp=Math.max(0,_missUp-1);
+      removeEventListener('keydown',onKey,true); try{ wrap.remove(); }catch(e){}
+      try{ if(o.onContinue) o.onContinue(); }catch(e){} }
+    function onKey(e){ if(closed) return;
+      if(e.key==='Tab') return;                                   // focus may still move inside the card
+      e.stopPropagation();
+      if(e.key==='Enter'||e.key===' '&&e.target&&e.target.closest&&e.target.closest('.sg-misscard')){
+        e.preventDefault(); if(e.repeat||performance.now()-t0<250) return;   // the Enter that submitted the answer is not a Continue
+        close(); return; }
+      if(e.key&&e.key.length===1) e.preventDefault(); }
+    addEventListener('keydown',onKey,true);
+    wrap.querySelector('.sg-miss-go').onclick=close;
+    wrap.querySelectorAll('[data-sg-say]').forEach(b=>{ b.onclick=()=>{ try{ say(b.getAttribute('data-sg-say')); }catch(e){} }; });
+    try{ setTimeout(()=>{ if(!closed){ const b=wrap.querySelector('.sg-miss-go'); if(b) b.focus({preventScroll:true}); } },30); }catch(e){}
+    return { el:wrap, close, get held(){ return !closed; } };
+  }
+  /* word: a word record {w,d,o,h…} or a string; typed: what the child wrote ('' = nothing). */
+  SGUI.miss=function(host, word, typed, o){ o=o||{};
+    const w=String((word&&word.w)||word||''), t=String(typed||'').trim();
+    const cols=sgAlign(t,w), why=sgMissKind(word,t), rec=(word&&typeof word==='object')?word:{};
+    const cell=(ch,op,row)=>{ const diff=op!=='ok', gap=(row==='t'&&op==='del')||(row==='w'&&op==='ins');
+      const cls=gap?'gap':!diff?'':row==='t'?(op==='ins'?'bad extra':'bad'):'good';
+      return '<span class="sg-mc '+cls+'">'+(gap?'':esc2(ch))+'</span>'; };
+    const rowT=t?cols.map(c=>cell(c.t,c.op,'t')).join(''):'';
+    const rowW=cols.map(c=>c.w?cell(c.w,t?c.op:'ok','w'):(t?cell('','ins','w'):'')).join('');
+    const nDiff=cols.filter(c=>c.op!=='ok').length;
+    const summary=(t?'You wrote '+t+'. ':'')+'The word is spelled '+w.split('').join(' ')+'.'+(t?' '+nDiff+' letter'+(nDiff===1?'':'s')+' differ.':'');
+    const note=o.note||why.line;
+    const inner='<div class="sg-miss-h" id="sg-miss-h" data-live-prompt>'+(o.head||(t?'Not this time. Here is the word.':'Here is the word.'))+'</div>'+
+      '<div class="sg-mdiff" role="img" aria-label="'+esc2(summary)+'">'+
+        (t?'<div class="sg-mrow t"><span class="sg-mlbl">You</span><span class="sg-mlet">'+rowT+'</span></div>':'')+
+        '<div class="sg-mrow w"><span class="sg-mlbl">Word</span><span class="sg-mlet">'+rowW+'</span></div></div>'+
+      '<div class="sg-mtools"><button type="button" class="sg-msay" data-sg-say="'+esc2(w)+'">'+SPK+' Hear it again</button></div>'+
+      (note?'<div class="sg-mwhy" data-why="'+esc2(why.k)+'"><span class="sg-mwhy-ic">'+BULB+'</span><span><b>'+esc2(why.label||'How to get it next time')+'</b> — '+esc2(note)+
+        (why.rule&&!o.note?'<span class="sg-mrule">'+esc2(why.rule)+'</span>':'')+
+        (rec.h?'<span class="sg-mrule">Memory hook: '+esc2(rec.h)+'</span>':'')+'</span></div>':'');
+    const h=missShell(host, inner, o);
+    try{ setTimeout(()=>{ if(h.held) say(w); },220); }catch(e){}
+    return h; };
+  /* q: a bank question {q, c:[right, …], f} (c[0] is the right answer, as in the trivia bank)
+     or {q, a, f}; picked: the option text the child chose (or its index into q.c). */
+  SGUI.missQ=function(host, q, picked, o){ o=o||{}; q=q||{};
+    const right=String(q.a!=null?q.a:(q.c&&q.c[0])||''); let pk=picked;
+    if(typeof pk==='number'&&q.c) pk=q.c[pk]; pk=String(pk==null?'':pk);
+    const inner='<div class="sg-miss-h" id="sg-miss-h" data-live-prompt>'+(o.head||'Not this one. Here is the answer.')+'</div>'+
+      (q.q?'<div class="sg-mq">'+esc2(q.q)+'</div>':'')+
+      '<div class="sg-mans">'+(pk?'<div class="sg-mopt bad"><span class="sg-mopt-ic">'+CROSS+'</span><span class="sg-mlbl">You chose</span><s>'+esc2(pk)+'</s></div>':'')+
+      '<div class="sg-mopt good"><span class="sg-mopt-ic">'+TICK+'</span><span class="sg-mlbl">Answer</span><b>'+esc2(right)+'</b></div></div>'+
+      (q.f?'<div class="sg-mwhy"><span class="sg-mwhy-ic">'+BULB+'</span><span><b>Did you know?</b> '+esc2(q.f)+'</span></div>':'');
+    return missShell(host, inner, o); };
+  SGUI.missKind=sgMissKind; SGUI.align=sgAlign; SGUI.clock=sgClock;
+
+  /* ---- 3. ONE ON-SCREEN KEYBOARD (§1.6). For touch only: a coarse pointer gets keys, a
+     desktop gets nothing drawn and uses the real keyboard (which works on both — a tablet
+     with a keyboard case types either way). Keys are at least 40px at 390px: QWERTY needs
+     ten across, which a 390px phone cannot give at 40px under #root's 1.09 zoom, so a narrow
+     screen gets the alphabet in four rows of seven (a–g · h–n · o–u · v–z ⌫ ⏎) and a wide one
+     gets QWERTY. Mount it in the stage's controls row, which sits above the tab bar. */
+  const KB_QWERTY=[['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['z','x','c','v','b','n','m','⌫','⏎']];
+  const KB_ABC=[['a','b','c','d','e','f','g'],['h','i','j','k','l','m','n'],['o','p','q','r','s','t','u'],['v','w','x','y','z','⌫','⏎']];
+  SGUI.keys=function(host, o){ o=o||{};
+    const touch=o.touch!=null?!!o.touch:(()=>{ try{ return matchMedia('(pointer:coarse)').matches; }catch(e){ return false; } })();
+    const fire=k=>{ if(SGUI.held) return; try{ if(k==='⌫'){ o.onBack&&o.onBack(); } else if(k==='⏎'){ o.onEnter&&o.onEnter(); } else { o.onKey&&o.onKey(k); } }catch(e){} };
+    let el=null;
+    if(touch && host){
+      const wpx=host.getBoundingClientRect().width||innerWidth;
+      const rows=(o.layout==='qwerty'||(o.layout!=='abc'&&wpx>=480))?KB_QWERTY:KB_ABC;
+      el=document.createElement('div'); el.className='sg-keys'+(rows===KB_ABC?' abc':' qwerty'); el.setAttribute('role','group'); el.setAttribute('aria-label','Letter keys');
+      el.innerHTML=rows.map(r=>'<div class="sg-krow">'+r.map(k=>'<button type="button" class="sg-key'+(k==='⌫'?' back':k==='⏎'?' enter':'')+'" data-k="'+k+'" aria-label="'+(k==='⌫'?'Delete':k==='⏎'?'Enter':k)+'">'+
+        (k==='⌫'?'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5h10.5A1.5 1.5 0 0 1 21 6.5v11a1.5 1.5 0 0 1-1.5 1.5H9l-6-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+        :k==='⏎'?'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 5v6.5a2 2 0 0 1-2 2H6M9.5 9.5L5.5 13.5l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':k)+'</button>').join('')+'</div>').join('');
+      el.addEventListener('pointerdown',e=>{ const b=e.target.closest('.sg-key'); if(!b) return; e.preventDefault(); b.classList.add('down'); setTimeout(()=>b.classList.remove('down'),120); fire(b.dataset.k); });
+      el.addEventListener('click',e=>{ const b=e.target.closest('.sg-key'); if(b&&e.detail===0) fire(b.dataset.k); });   // a key reached by Tab and pressed with Enter
+      host.appendChild(el); }
+    const onDoc=e=>{ if(o.physical===false||SGUI.held||e.defaultPrevented) return; const tg=e.target;
+      if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return;   // a game with its own input handles its own typing
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      if(/^[a-z]$/i.test(e.key)){ e.preventDefault(); fire(e.key.toLowerCase()); }
+      else if(e.key==='Backspace'){ e.preventDefault(); fire('⌫'); }
+      else if(e.key==='Enter'){ if(tg&&tg.closest&&tg.closest('button,a')&&!tg.closest('.sg-keys')) return; e.preventDefault(); fire('⏎'); } };
+    addEventListener('keydown',onDoc);
+    return { el, touch, destroy(){ removeEventListener('keydown',onDoc); try{ if(el) el.remove(); }catch(e){} } }; };
+
+  /* ---- 4. ONE STAGE (§5.0). Grid rows auto 1fr auto between the shell bar and the tab bar
+     (or the window's bottom): a mirrored HUD with equal-width stats round a centred title,
+     the play area on a painted plate edge to edge (a centred 4:3 play region on a desktop,
+     full width on a phone, the plate continuing behind), and the controls centred — on a
+     phone in the bottom 38%. Panels are translucent tokens, never solid white. The plate is
+     a CSS variable pair, so a Light ↔ Dusk switch swaps the painting without a re-render.
+     The stage is position:fixed and FITTED to the shell: #root is zoomed, so a 100dvh box
+     inside it runs 9% past the window; stageFit() measures the header and the tab bar on
+     screen and writes the insets back in #root's own pixels, after every render and resize. */
+  const AV=()=>(W().SB_ASSET_V?('?v='+W().SB_ASSET_V):'');
+  function plateUrl(name, half){ return 'app-art/stage/'+name+'-'+half+'.webp'+AV(); }
+  W().SB_PLATE=function(name){ const dark=(document.documentElement.getAttribute('data-mode')==='dusk');
+    return 'app-art/stage/'+name+'-'+(dark?'night':'day')+'.webp'; };
+  function plateVars(plate){ if(!plate) return '';
+    if(/[\/.]/.test(plate)) return "--sg-plate-d:url('"+esc2(plate)+"');--sg-plate-n:url('"+esc2(plate)+"')";
+    return "--sg-plate-d:url('"+plateUrl(plate,'day')+"');--sg-plate-n:url('"+plateUrl(plate,'night')+"')"; }
+  SGUI.stage=function(o){ o=o||{}; const hud=o.hud||{};
+    const side=(x,cls)=>'<div class="sg-st-side '+cls+'">'+(x==null||x===''?'':'<div class="sg-st-stat sg-panel">'+x+'</div>')+'</div>';
+    return '<section class="sb-stage'+(o.cls?' '+o.cls:'')+(o.region===false?' free':'')+'" data-sb-stage="'+esc2(o.name||o.plate||'')+'" style="'+plateVars(o.plate)+'"'+(o.label?' aria-label="'+esc2(o.label)+'"':'')+'>'+
+      '<div class="sg-st-hud">'+side(hud.left,'l')+'<div class="sg-st-c">'+(hud.center||'')+'</div>'+side(hud.right,'r')+'</div>'+
+      '<div class="sg-st-play"><div class="sg-st-region">'+(o.play||'')+'</div></div>'+
+      '<div class="sg-st-ctl">'+(o.controls||'')+'</div></section>'; };
+  function stageFit(){ try{
+    const st=document.querySelectorAll('.sb-stage'); if(!st.length) return;
+    const root=document.getElementById('root'); const z=root?(parseFloat(getComputedStyle(root).zoom)||1):1;
+    const hdr=document.querySelector('.sb-header-sticky'); const top=hdr?Math.max(0,hdr.getBoundingClientRect().bottom):0;
+    const tb=document.querySelector('.sb-tabbar'); let bot=0;
+    if(tb&&getComputedStyle(tb).display!=='none'){ const r=tb.getBoundingClientRect(); if(r.height) bot=Math.max(0,innerHeight-r.top); }
+    st.forEach(s=>{ s.style.top=(top/z).toFixed(2)+'px'; s.style.bottom=(bot/z).toFixed(2)+'px'; });
+    document.documentElement.classList.add('sb-stage-on');
+  }catch(e){} }
+  SGUI.stageFit=stageFit;
+  (function watch(){ try{
+    const root=document.getElementById('root'); if(!root) return;
+    let raf=0; const kick=()=>{ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0;
+      if(!document.querySelector('.sb-stage')) document.documentElement.classList.remove('sb-stage-on'); else stageFit(); }); };
+    new MutationObserver(kick).observe(root,{childList:true});
+    addEventListener('resize',kick); kick();
+  }catch(e){} })();
+
+  /* ---- 5. ONE HUB SCREEN (§4.0). A painted plate; the HUD mirrored — good days this week on
+     the left (never a streak), the hub's name in the centre, coins earned today on the right;
+     and a symmetric grid of mode tiles (three across on a desktop, two on a phone, a short
+     last row centred), each with its art, a one-line promise, its level chip, its best and a
+     "new" dot until first played. The order is the hub's own, simplest first, and never
+     changes with play; the mode played last carries a mark instead. A tile is a div holding
+     ONE stretched button (data-act="hubMode", data-arg="<hub>/<mode>") so the level chip — a
+     button of its own — never nests inside it. */
+  W().SB_HUB_OPEN=W().SB_HUB_OPEN||{};
+  function coinsToday(){ try{ const c=active(), Wl=W().BZ_WALLET; const who=String((c&&c.name)||'').trim(); if(!Wl||!who) return 0;
+    const d=new Date().toDateString();
+    return (Wl.ledger(who)||[]).filter(x=>x.a==='bee'&&x.n>0&&x.why!=='migrated'&&new Date(x.t).toDateString()===d).reduce((a,x)=>a+x.n,0); }catch(e){ return 0; } }
+  function goodDays(){ try{ return goodDaysThisWeek(active()); }catch(e){ return 0; } }
+  function hubLast(key){ try{ const c=active(); return (c.hubLast&&c.hubLast[key])||''; }catch(e){ return ''; } }
+  function levelChip(k){ try{ if(W().SB_LEVEL&&SB_LEVEL.chip) return SB_LEVEL.chip(k); }catch(e){}
+    return '<span class="sg-hub-lvl">Auto</span>'; }
+  const COINI='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="8.2" fill="#F0B429" stroke="#B57F06" stroke-width="1.6"/><path d="M10 5.6l3.8 2.2v4.4L10 14.4l-3.8-2.2V7.8z" fill="none" stroke="#8A5B00" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+  const SUNI='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="currentColor"/><path d="M10 2.4v2.2M10 15.4v2.2M2.4 10h2.2M15.4 10h2.2M4.6 4.6l1.5 1.5M13.9 13.9l1.5 1.5M15.4 4.6l-1.5 1.5M6.1 13.9l-1.5 1.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
+  W().SB_HUB=function(def){ def=def||{}; const key=def.key||'hub', modes=def.modes||[], last=def.last!=null?def.last:hubLast(key);
+    const gd=goodDays(), ct=coinsToday();
+    const left=(def.hud&&def.hud.left!=null)?def.hud.left:('<span class="sg-st-ic">'+SUNI+'</span><span class="sg-st-n">'+gd+'</span><span class="sg-st-t">good day'+(gd===1?'':'s')+' this week</span>');
+    const right=(def.hud&&def.hud.right!=null)?def.hud.right:('<span class="sg-st-ic">'+COINI+'</span><span class="sg-st-n">'+ct+'</span><span class="sg-st-t">coin'+(ct===1?'':'s')+' today</span>');
+    const art=a=>!a?'<span class="sg-hub-art none" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 7l14.7 8.5v17L24 41 9.3 32.5v-17z" fill="color-mix(in srgb,var(--treasure,#F0B429) 55%,transparent)" stroke="var(--treasure-deep,#8A5B00)" stroke-width="2.2" stroke-linejoin="round"/><path d="M24 15.5l7.4 4.25v8.5L24 32.5l-7.4-4.25v-8.5z" fill="none" stroke="var(--treasure-deep,#8A5B00)" stroke-width="1.8" stroke-linejoin="round" opacity=".6"/></svg></span>':/^</.test(String(a).trim())?'<span class="sg-hub-art" aria-hidden="true">'+a+'</span>'
+      :'<span class="sg-hub-art" aria-hidden="true"><img src="'+esc2(a)+'" alt="" loading="lazy"></span>';
+    const tiles=modes.map(m=>{ const k=key+'/'+m.id, isLast=(m.id===last);
+      return '<div class="sg-hub-tile sg-panel'+(isLast?' last':'')+'" data-mode="'+esc2(m.id)+'">'+
+        (isLast?'<span class="sg-hub-lastmark">Last played</span>':'')+
+        '<button type="button" class="sg-hub-go" data-act="hubMode" data-arg="'+esc2(k)+'" aria-label="'+esc2(m.title+(m.isNew?', new':'')+(m.promise?'. '+m.promise:'')+(isLast?'. Played last':''))+'">'+art(m.art)+
+          '<span class="sg-hub-name">'+esc2(m.title)+(m.isNew?'<i class="sg-hub-new" title="Not played yet"><span class="sg-sr">new</span></i>':'')+'</span>'+
+          '<span class="sg-hub-promise">'+esc2(m.promise||'')+'</span></button>'+
+        '<div class="sg-hub-meta">'+levelChip(k)+'<span class="sg-hub-best">'+(m.best?esc2(m.best):'No best yet')+'</span></div></div>'; }).join('');
+    const center='<h1 class="sg-st-title">'+esc2(def.title||'')+'</h1>';
+    const n=modes.length, rd=Math.max(1,Math.ceil(n/(n===4||n<=2?2:3)));
+    return SGUI.stage({plate:def.plate||key, name:key, cls:'sg-hub', region:false, label:def.title||'',
+      hud:{left, center, right}, play:'<div class="sg-hub-grid n'+n+'" style="--rd:'+rd+';--rp:'+Math.ceil(n/2)+'">'+tiles+'</div>', controls:def.controls||''}); };
+  /* a tile → the hub's own opener for that mode, and the mode remembered as played last */
+  if(typeof app!=='undefined' && app){ app.hubMode=function(arg){ const s=String(arg||''); const i=s.indexOf('/'); if(i<1) return;
+    const key=s.slice(0,i), id=s.slice(i+1);
+    try{ const c=active(); c.hubLast=c.hubLast||{}; c.hubLast[key]=id; }catch(e){}
+    const fn=W().SB_HUB_OPEN[key]; if(typeof fn==='function') fn(id); }; }
+
   function opt_size(t){ return String(t||'').length>10?20:26; }
 
   /* A polished vector moth drawn straight onto the canvas — dusty scalloped wings,
@@ -473,12 +795,22 @@
     cx.restore();
   }
 
-  /* ---------- ENGINE A · HONEYCOMB RUN (Pac-Man) ---------- */
-  // grid maze; arrows/swipe; moth patrols; nectar dots; golden flower spell-cards.
+  /* ---------- ENGINE A · HONEYCOMB RUN (spec §4.6) ----------
+     THE MAZE IS FOUR ZONES behind four HONEY GATES, and the hive sits behind the last.
+     A gate opens only when the flower word beside it is spelt, so the only way home is
+     four words. Clearing the dots used to win the round without a single one; the dots
+     are honey now (score), nothing more. Zones run as a pinwheel round the centre:
+     start top-left → gate 1 → top-right → gate 2 → bottom-right → gate 3 → bottom-left →
+     gate 4 → the hive, tucked in the corner of the last zone by the centre.
+     The clock is fixed per level (Easy 3:00 → Champ 2:00) and a word adds SCORE, never
+     time — a good speller's round used to run for ever. Three lives on every level;
+     moths chase faster as the level goes up. A spell card never closes on its own, and a
+     miss holds with the word shown until Continue. Pay: one coin per flower word. */
   function honeycombRun(host, opts, done){
     const diff=opts.diff||'medium';
     const HERO=opts.hero||heroAv();     // the chosen runner is the hero, not always Bizzy
     const LAYOUT=opts.layout||'classic';// 3 maze layouts
+    const KEY='honeycombRun';
     // 3 world styles: wall palette + backdrop plate. Default keeps the golden hive look.
     const STYLES={
       hive:  {world:'hive',   wall:['rgba(255,214,122,.96)','rgba(233,168,32,.94)','rgba(168,113,14,.94)'],edge:'rgba(255,243,206,.55)',core:'rgba(120,72,8,.34)'},
@@ -487,14 +819,48 @@
     };
     const STY=STYLES[opts.style]||{world:(opts.world||'meadow'),wall:STYLES.hive.wall,edge:STYLES.hive.edge,core:STYLES.hive.core};
     const world=STY.world;
-    // Gameplay hardness scales the MAZE itself: bigger grid at higher levels, and a
-    // staggered honeycomb wall pattern at Champion. (Spelling words still match the speller.)
-    const DIM={easy:[11,9,false],medium:[13,11,false],hard:[15,11,false],champ:[17,13,true]}[diff]||[13,11,false];
-    const COLS=DIM[0], ROWS=DIM[1], HEX=DIM[2];
+    /* Odd sizes whose half-way lines are EVEN, so the two walls that cut the maze into four
+       zones sit on pillar lines and every zone stays fully connected inside. A portrait
+       play area (a phone held upright) gets the same maze turned on its side. */
+    const DIM={easy:[13,9,false],medium:[17,9,false],hard:[17,13,false],champ:[21,13,true]}[diff]||[17,9,false];
+    const HEX=DIM[2];
     sgTexPreload(['bee-fly','moth']);   // canonical bee + moth, decoded before first frame
-    const CELL=Math.max(24,Math.min(104, Math.floor(Math.min(innerWidth-16,1600)/COLS), Math.floor((innerHeight-208)/ROWS)));
+    /* SPEED IS IN CELLS PER SECOND; the bee runs at speed x 1.25. `moth` is the chasers' own
+       speed, and it climbs with the level faster than the bee's does. `time` is the round's
+       fixed clock in seconds: 3:00 on Easy down to 2:00 on Champ. */
+    const CFG=calmCFG({easy:{moths:2,speed:1.5,moth:1.2,time:180},medium:{moths:3,speed:1.95,moth:1.65,time:160},
+               hard:{moths:4,speed:2.35,moth:2.1,time:140},champ:{moths:5,speed:2.75,moth:2.6,time:120}}[diff]||{moths:3,speed:1.95,moth:1.65,time:160});
+    if(window.SB_CALM) CFG.moth=+(CFG.moth*0.66).toFixed(2);
+    /* how often a moth at a junction turns toward the bee instead of wandering — and
+       only within CHASE_R cells, so pressure means "that moth noticed you", never the
+       whole pack converging from across the board. */
+    const CHASE={easy:0.22,medium:0.32,hard:0.4,champ:0.45}[diff]||0.32;
+    const CHASE_R=8;
+    /* at most this many moths HUNT at once (the nearest ones) */
+    const HUNTERS={easy:1,medium:2,hard:2,champ:2}[diff]||2;
+    const LIVES=3, GATES=4;
+    const LVL={easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'}[diff]||'';
+    const touch=AK.touch();
+    const heart=on=>'<svg viewBox="0 0 24 22" width="18" height="17" aria-hidden="true" class="hc-heart'+(on?' up':'')+'"><path d="M12 20.5s-8.5-5.2-8.5-11A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 8.5 2.9c0 5.8-8.5 11-8.5 11z" fill="'+(on?'#E8458C':'none')+'" stroke="'+(on?'#B42F6B':'currentColor')+'" stroke-width="1.8" opacity="'+(on?1:.35)+'"/></svg>';
+    const dpad='<div class="sg-dpad hc-dpad" id="sg-dpad">'+
+        '<button type="button" class="sg-dbtn" data-d="up" aria-label="Up">'+SGUI.chev(0).replace('M9 5l7 7-7 7','M5 15l7-7 7 7')+'</button>'+
+        '<div class="sg-dmid"><button type="button" class="sg-dbtn" data-d="left" aria-label="Left">'+SGUI.chev(-1)+'</button>'+
+        '<button type="button" class="sg-dbtn" data-d="down" aria-label="Down">'+SGUI.chev(0).replace('M9 5l7 7-7 7','M5 9l7 7 7-7')+'</button>'+
+        '<button type="button" class="sg-dbtn" data-d="right" aria-label="Right">'+SGUI.chev(1)+'</button></div></div>';
+    host.innerHTML=AK.stage({ plate:'app-art/sgw-'+(world==='cosmos'?'cosmos':world==='hive'?'hive':'meadow')+'.jpg', name:'honeycomb', cls:'hc-stage', region:false, label:'Honeycomb Run',
+      hud:{ left:'<span class="arcx-stat hc-lives" id="hc-lives" aria-label="Lives"></span>',
+            center:'<span class="arcx-hc"><span class="arcx-title">Honeycomb Run</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="hc-time"></span><span class="arcx-prog" id="hc-gates"></span></span>',
+            right:'<span class="arcx-stat hc-score"><b id="hc-score">0</b><i>honey</i></span>' },
+      play:'<div class="hc-wrap" id="hc-wrap"><canvas id="sg-cv"></canvas><div class="hc-cardhost" id="hc-cardhost"></div></div>',
+      controls:'<div class="hc-ctl" id="hc-ctl">'+dpad+'</div><div class="hc-keys" id="hc-keys"></div>' })+'<div id="sg-card"></div>';
+    const wrap=host.querySelector('#hc-wrap');
+    let COLS=DIM[0], ROWS=DIM[1];
+    const PW=Math.max(200, wrap.clientWidth||Math.min(innerWidth,1200)), PH=Math.max(160, wrap.clientHeight||(innerHeight-260));
+    if(PH>PW*1.15){ const t=COLS; COLS=ROWS; ROWS=t; }            // upright phone: the same maze on its side
+    const CELL=Math.max(12, Math.min(104, Math.floor(Math.min(PW/COLS, PH/ROWS))));
+    const MC=(COLS-1)/2, MR=(ROWS-1)/2;
     // Every layout keeps odd rows / odd columns open, so the maze is always fully connected.
-    function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty
+    function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty · 3 gate (shut)
       for(let r=0;r<rows;r++){ const row=[];
         for(let c=0;c<cols;c++){
           if(r===0||r===rows-1||c===0||c===cols-1){ row.push(0); continue; }  // border wall
@@ -509,74 +875,64 @@
           row.push(wall?0:1);
         } M.push(row); } return M; }
     const MAZE=makeMaze(COLS,ROWS,HEX);
-    /* SPEED IS IN CELLS PER SECOND, and the bee moves at speed x 1.25. It used to run at
-       2.5 (easy) to 4.5 (champ) cells/s, against about 1.5-2.0 for the arcade maze game
-       everyone is comparing it to — play-tested as "the avatar is moving too fast", and it
-       is: at 3.25 cells/s a 13-wide maze crosses in four seconds and a junction arrives
-       before you have decided. Cut 25%, which lands the bee at 1.9 to 3.4. The moths keep
-       their 0.8 relative disadvantage because the bee's 1.25 multiplier is unchanged, and
-       the round is not made harder by the cut: the moth swarm fix above already removed
-       far more pressure than a slower bee adds. */
-    const CFG={easy:{moths:2,speed:1.5,target:900,time:150},medium:{moths:3,speed:1.95,target:1200,time:180},
-               hard:{moths:4,speed:2.35,target:1500,time:180},champ:{moths:5,speed:2.75,target:1800,time:180}}[diff];
-    /* how often a moth at a junction turns toward the bee instead of wandering — and
-       only within CHASE_R cells, so pressure means "that moth noticed you", never the
-       whole pack converging from across the board. First cut (0.45 at medium, no range)
-       wiped a random-walking test bee out in EIGHT seconds. */
-    const CHASE={easy:0.22,medium:0.32,hard:0.4,champ:0.45}[diff]||0.32;
-    const CHASE_R=8;
-    /* at most this many moths HUNT at once (the nearest ones) — five converging
-       chasers gang-wiped a play-tested evader in half a minute at champ. The rest
-       wander: crowd pressure without the pincer. */
-    const HUNTERS={easy:1,medium:2,hard:2,champ:2}[diff]||2;
-    // bee starts on the centre corridor row (odd row = always open)
-    let scr=Math.floor(ROWS/2); if(scr%2===0) scr=Math.max(1,scr-1); let scc=Math.floor(COLS/2);
-    try{ if(MAZE[scr][scc]===0) scc=Math.max(1,scc-1); MAZE[scr][scc]=2; }catch(e){}
+    for(let r=0;r<ROWS;r++) MAZE[r][MC]=0;                  // the two walls that make the zones
+    for(let c=0;c<COLS;c++) MAZE[MR][c]=0;
+    /* the four gates, each with its flower on the side the bee arrives from */
+    const G=[ {c:MC,     r:1,      fc:MC-1,   fr:1},          // 1: top-left → top-right
+              {c:COLS-2, r:MR,     fc:COLS-2, fr:MR-1},       // 2: top-right → bottom-right
+              {c:MC,     r:ROWS-2, fc:MC+1,   fr:ROWS-2},     // 3: bottom-right → bottom-left
+              {c:1,      r:MR+2,   fc:1,      fr:MR+3} ];     // 4: the hive's own door
+    const HIVE={c:1, r:MR+1};                                 // the hive: the far corner of the last zone, just under the start
+    MAZE[HIVE.r][HIVE.c+1]=0;                                 // shut in on every side but its door
+    G.forEach(g=>{ g.open=false; g.w=null; g.arm=true; MAZE[g.r][g.c]=3; MAZE[g.fr][g.fc]=2; });
+    MAZE[HIVE.r][HIVE.c]=2;
+    const ZC=[[1,1,MC-1,MR-1],[MC+1,1,COLS-2,MR-1],[MC+1,MR+1,COLS-2,ROWS-2],[1,MR+1,MC-1,ROWS-2]];   // zone boxes
+    const zoneOf=(c,r)=>ZC.findIndex(z=>c>=z[0]&&c<=z[2]&&r>=z[1]&&r<=z[3]);
+    const words=AK.words(GATES+10, 3, 12); let wi=0;
+    const nextWord=()=>words[wi++]||fillWords(1,3,12)[0]||{w:'honey',d:'the sweet golden food that bees make'};
+    G.forEach(g=>{ g.w=nextWord(); });
+    let scr=MR-1, scc=1;                                      // the bee starts in the top-left zone
+    MAZE[scr][scc]=2;
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
-    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, grace=0, flower=null, flowerT=2, card=null, over=false, fx=[];
-    let lateMoth=false, spelled=0;
+    let moths=[], score=0, lives=LIVES, t=CFG.time, flee=0, grace=0, flower=null, flowerT=2, flowers=0, card=null, over=false, fx=[];
+    let lateMoth=false, spelled=0, met=0, right=0, started=false, bz=0;
     const hcRound=[];                      // the round's words, for the result screen
-    /* A flower is the ONLY way to spell in this game, so it is placed within reach and
-       there is always one on the board. It used to pick a uniformly random open cell —
-       on a medium maze that averages a dozen cells of corridor away, often past a moth —
-       and only reappeared every nine seconds. Now: 3 to 6 cells from the bee, never on top
-       of a moth, and re-seeded the instant one is taken. */
+    // moths start in the zones AHEAD of the bee, never in hers (outer corners first)
+    const MSTART=[[COLS-2,1],[COLS-2,ROWS-2],[1,ROWS-2],[MC+1,MR-1],[MC+1,MR+1],[MC-1,ROWS-2]];
+    for(let i=0;i<CFG.moths;i++){ const p=MSTART[i%MSTART.length]; moths.push({c:p[0],r:p[1],px:p[0],py:p[1],dir:[1,0]}); }
+    /* one royal jelly, in the second zone, on a corridor no moth or flower starts on */
+    const jc=[]; for(let r=ZC[1][1];r<=ZC[1][3];r+=2) for(let c=ZC[1][0];c<=ZC[1][2];c+=2)
+      if(open(c,r) && !MSTART.some(p=>p[0]===c&&p[1]===r) && !G.some(g=>g.fc===c&&g.fr===r) && !(c===MC+1&&r===1)) jc.push({c,r});
+    let J=Object.assign({got:false}, jc[Math.floor(jc.length/2)]||{c:ZC[1][0],r:ZC[1][3]});
+    /* A bonus flower keeps words coming between the gates: 2 to 6 cells from the bee, inside
+       the zones she can reach, never on a moth. Picked by a fixed stride, not a dice roll. */
+    function reach(){ const seen=new Set(), q=[[Math.round(bee.px),Math.round(bee.py)]]; seen.add(q[0][0]+','+q[0][1]);
+      while(q.length){ const [c,r]=q.shift(); for(const d of [[1,0],[-1,0],[0,1],[0,-1]]){ const nc=c+d[0], nr=r+d[1], k=nc+','+nr;
+        if(!seen.has(k) && open(nc,nr)){ seen.add(k); q.push([nc,nr]); } } } return seen; }
     function placeFlower(){
-      const bc=Math.round(bee.px), br=Math.round(bee.py);
+      const bc=Math.round(bee.px), br=Math.round(bee.py), ok=reach();
       const near=[], far=[];
       for(let r=1;r<ROWS-1;r++) for(let c=1;c<COLS-1;c++){
-        if(!open(c,r)) continue;
+        if(!open(c,r) || !ok.has(c+','+r) || MAZE[r][c]===3) continue;
+        if(G.some(g=>g.fc===c&&g.fr===r) || (c===HIVE.c&&r===HIVE.r)) continue;
         const d=Math.abs(c-bc)+Math.abs(r-br); if(d<2) continue;
         if(moths.some(m=>Math.abs(Math.round(m.px)-c)+Math.abs(Math.round(m.py)-r)<2)) continue;
         (d<=6?near:far).push({c,r}); }
       const pool=near.length?near:(far.length?far:null);
-      if(pool) flower=pool[Math.floor(Math.random()*pool.length)]; }
-    // Celebratory splash — petal burst + shockwave ring + "+1 LIFE" pop, drawn in the loop.
-    const trail=SGFX.trail(), shake=SGFX.shake(), motes=SGFX.motes(26,COLS*CELL,ROWS*CELL);
-    function spawnSplash(){ const cw=COLS*CELL, ch=ROWS*CELL;
-      SGFX.spark(fx,cw/2,ch/2,28,['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'],{speed:4.4,up:1.4});
-      SGFX.ring(fx,cw/2,ch/2,'255,209,63',{grow:8});
-      SGFX.ring(fx,cw/2,ch/2,'255,255,255',{grow:5,decay:0.034});
-      SGFX.say(fx,cw/2,ch/2-4,'+1 LIFE'); shake.hit(7); }
-    const words=pool(14); let wi=0;
-    for(let i=0;i<CFG.moths;i++){ const mc=1+(i*3)%(COLS-2); moths.push({c:mc,r:1,px:mc,py:1,dir:[1,0]}); }
-    // one royal jelly + dot bookkeeping
+      if(pool){ flowers++; flower=pool[(flowers*7)%pool.length]; } }
+    const trail=SGFX.trail(), shake=SGFX.shake();
+    let cv=host.querySelector('#sg-cv'); const BW=COLS*CELL, BH=ROWS*CELL;
+    const motes=SGFX.motes(26,BW,BH);
+    function spawnSplash(txt){ SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,28,['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'],{speed:4.4,up:1.4});
+      SGFX.ring(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,'255,209,63',{grow:8});
+      SGFX.say(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2-4,txt||'+1'); if(!AK.calm()) shake.hit(7); }
     let dots=0; MAZE.forEach(r=>r.forEach(v=>{ if(v===1) dots++; }));
-    const J={c:11,r:9}; 
-    host.innerHTML='<div class="sg-hud"><span id="sg-score">0</span><span id="sg-time"></span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas>'+
-      '<div class="sg-dpad" id="sg-dpad">'+
-        '<button class="sg-dbtn" data-d="up" aria-label="Up">▲</button>'+
-        '<div class="sg-dmid"><button class="sg-dbtn" data-d="left" aria-label="Left">◀</button>'+
-        '<button class="sg-dbtn" data-d="down" aria-label="Down">▼</button>'+
-        '<button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div>'+
-      '</div><div id="sg-card"></div>';
-    const cv=host.querySelector('#sg-cv'); const BW=COLS*CELL, BH=ROWS*CELL;
     const dpr=Math.min(2.5,window.devicePixelRatio||1);
     cv.width=Math.round(BW*dpr); cv.height=Math.round(BH*dpr);
     cv.style.width=BW+'px'; cv.style.height=BH+'px';
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     const DIR={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
-    const key=e=>{ if(card) return;                       // spelling box open — let the letters through
+    const key=e=>{ if(card||over||!started) return;          // a spell card owns the keyboard while it is up
       const tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return;
       const m={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
       w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]}[e.key]; if(m){ bee.want=m; e.preventDefault(); } };
@@ -588,35 +944,20 @@
     pad.addEventListener('pointerdown',e=>{ const b=e.target.closest('.sg-dbtn'); if(b){ setDir(b); e.preventDefault(); } },{passive:false});
     let tx=0,ty=0; cv.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
     cv.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
-      bee.want=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)]; },{passive:true});
-    function open(c,r){ return MAZE[r]&&MAZE[r][c]!==0; }
+      if(Math.abs(dx)+Math.abs(dy)<12) return; bee.want=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)]; },{passive:true});
+    function open(c,r){ const v=MAZE[r]&&MAZE[r][c]; return v!==undefined && v!==0 && v!==3; }
     /* Which cell this thing will arrive at next along one axis. Handles being exactly on a
        centre, where floor and ceil both name the cell you are already standing in. */
     function nextCell(v,d){ return d>0?Math.floor(v)+1 : d<0?Math.ceil(v)-1 : Math.round(v); }
     const TURNWIN=0.4;      // cells: how early a turn may be entered before the junction
-    /* Grid mover with desired-turn buffering. `sp` is CELLS PER SECOND and `dt` is the
-       real elapsed seconds — it used to be `sp/60`, a fixed distance PER FRAME on the
-       assumption that every frame is exactly 1/60s. It is not: the loop below was a
-       setInterval drifting against the display refresh, so the bee covered the same
-       distance in frames of different lengths and read as jumping rather than gliding.
-       Distance per second is now constant whatever the frame does. `thr` scales with the
-       step, which keeps the snap window smaller than it — the invariant that stops the
-       bee vibrating in place at a cell centre. dt is clamped at TWO frames (34ms): a
-       hitched frame otherwise paints several frames of travel in one hop, which on a
-       device that hitches often IS the jumping. Under the clamp the game runs a shade
-       slow through a hitch instead — invisible; the hop was not. */
+    /* Grid mover with desired-turn buffering. `sp` is CELLS PER SECOND and `dt` the step's
+       real seconds (the shared fixed step, 1/120 s). `thr` scales with the step, which keeps
+       the snap window smaller than it — the invariant that stops the bee vibrating in place
+       at a cell centre. */
     function step(ent,sp,dt){
       const spd=sp*Math.max(0.001,Math.min(0.034,dt||1/60)), thr=spd*0.6;
-      /* A turn used to be accepted ONLY within one step of a cell centre, so an arrow
-         pressed a moment late was dropped in silence and the player waited out a whole
-         cell — often a whole corridor — before it took. Play-testing read that as the
-         controls being unresponsive, which it was. Two standard maze fixes:
-           1. a REVERSE takes effect at once, since turning back needs no repositioning;
-           2. a turn entered while approaching a junction is accepted early — and the bee
-              GLIDES onto the new corridor diagonally at running speed (the Pac-Man
-              cornering rule). It used to be teleported to the corner, a snap of up to
-              0.4 cells — ~40px on a big board — on every early turn, which is exactly
-              the "jumping, not smooth" that play-testing kept reporting. */
+      /* 1. a REVERSE takes effect at once; 2. a turn entered while approaching a junction is
+         accepted early, and the bee GLIDES onto the new corridor (the cornering rule). */
       if(ent===bee && (bee.want[0]||bee.want[1]) && (ent.dir[0]||ent.dir[1])){
         const rev = bee.want[0]===-ent.dir[0] && bee.want[1]===-ent.dir[1];
         if(rev){
@@ -635,12 +976,9 @@
         if(!open(ent.px+ent.dir[0], ent.py+ent.dir[1])){ if(ent===bee) ent.dir=[0,0]; else {
           const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
           ent.dir=ops[Math.floor(Math.random()*ops.length)]||[-ent.dir[0],-ent.dir[1]]; } }
-        /* MOTHS HUNT, THEY DO NOT WANDER. With the swarm gone, a purely random moth at
-           80% of the bee's speed effectively never catches anyone — the game's only
-           danger was your own cornering. The Pac-Man answer: at a junction a moth turns
-           TOWARD the bee (away from her while she has royal jelly) with a per-difficulty
-           probability, and wanders the rest of the time so it never becomes a perfect
-           shadow that parks on your tail. Danger scales with the level, count does not. */
+        /* MOTHS HUNT, THEY DO NOT WANDER: at a junction a moth turns TOWARD the bee (away
+           from her while she has royal jelly) with a per-level probability, and wanders the
+           rest of the time so it never becomes a perfect shadow. */
         if(ent!==bee){ const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
           if(ops.length){
             const near=ent._hunt && Math.abs(ent.px-bee.px)+Math.abs(ent.py-bee.py)<=CHASE_R;
@@ -651,99 +989,109 @@
             } else if(Math.random()<0.25) ent.dir=ops[Math.floor(Math.random()*ops.length)];
           } } }
       ent.px+=ent.dir[0]*spd; ent.py+=ent.dir[1]*spd;
-      /* cornering glide: after an early turn the bee sits a little off the new
-         corridor's centreline. Slide onto it at the SAME speed it runs at — a short
-         diagonal, finished in a few frames, instead of a snap. (TURNWIN < 0.5 keeps
-         Math.round pointing at the junction the turn was accepted for.) */
+      /* cornering glide: slide onto the new corridor's centreline at running speed */
       if(ent.dir[0]!==0 && ent.py!==Math.round(ent.py)){ const ty=Math.round(ent.py);
         ent.py+=Math.sign(ty-ent.py)*Math.min(spd,Math.abs(ty-ent.py)); }
       else if(ent.dir[1]!==0 && ent.px!==Math.round(ent.px)){ const tx=Math.round(ent.px);
         ent.px+=Math.sign(tx-ent.px)*Math.min(spd,Math.abs(tx-ent.px)); }
     }
-    function spellCard(){
-      if(wi>=words.length) wi=0; const w=words[wi++]; card={w,typed:'',t:12};
-      const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
-      el.style.display='grid'; try{ say(w.w); }catch(e){}
-      const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); hcRound.push({w:w.w,ok:ok});
-        if(ok){ spelled++; score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins('answer'); }catch(_){}
-          el.style.display='none'; card=null; spawnSplash();
-          try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
-        else { try{flash('Not quite — the moth got that one.');}catch(_){} }
-        el.style.display='none'; card=null; }
-      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
-      el.querySelector('#sg-cgo').onclick=submit;
-      el.querySelector('#sg-cw').onclick=()=>{ try{ say(w.w); }catch(e){} };
-      const tick=setInterval(()=>{ if(!card){ clearInterval(tick); return; } card.t--; el.querySelector('#sg-ct').textContent=card.t;
-        if(card.t<=0){ clearInterval(tick); el.style.display='none'; card=null; } },1000);
+    /* THE SPELL CARD. It holds the clock and the moths, and it never closes on its own
+       (a 12-second fuse used to shut it on a child still thinking). A miss holds the word
+       on screen until Continue; that gate then asks for a NEW word, because the old one has
+       just been read out letter by letter. */
+    const cardHost=host.querySelector('#hc-cardhost'), keysHost=host.querySelector('#hc-keys'), ctl=host.querySelector('#hc-ctl');
+    let keys=null;
+    function spellCard(kind, g){
+      const w=kind==='gate'?g.w:nextWord(); card={kind,g,w,typed:''}; loop.hold(true); wall=null;
+      const head=kind==='gate'?('Gate '+(G.indexOf(g)+1)+' of '+GATES+' — spell it to open the gate'):'A flower! Spell it to bloom';
+      cardHost.innerHTML='<div class="hc-card sg-cardbox" role="dialog" aria-modal="true" aria-label="Spell the word">'+
+        '<b>'+esc(head)+'</b><button type="button" class="sg-cardw" id="sg-cw" aria-label="Hear the word">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
+        '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Spell the word you hear"'+(touch?' inputmode="none" readonly':'')+'>'+
+        '<button type="button" class="sg-rbtn go" id="sg-cgo">'+(kind==='gate'?'Open':'Bloom')+'</button></div>'+
+        '<button type="button" class="hc-later" id="hc-later">Not now</button></div>';
+      cardHost.style.display='grid'; try{ say(w.w); }catch(e){}
+      const inp=cardHost.querySelector('#sg-ci'); if(!touch) try{ inp.focus(); }catch(e){}
+      if(touch){ ctl.style.display='none'; keys=AK.keys(keysHost,{ onKey:ch=>{ inp.value+=ch; }, onBack:()=>{ inp.value=inp.value.slice(0,-1); }, onEnter:()=>submit() }); }
+      const close=()=>{ cardHost.style.display='none'; cardHost.innerHTML=''; if(keys){ try{ keys.destroy(); }catch(e){} keys=null; } keysHost.innerHTML=''; ctl.style.display=''; };
+      function submit(){ if(!card) return; const typed=inp.value.trim(); if(!typed){ try{ say(w.w); }catch(e){} return; }
+        const ok=sameSpelling(typed,w.w); met++; wlog(w,ok); hcRound.push({w:w.w,ok});
+        if(ok){ right++; spelled++; AK.pay(); try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
+          if(kind==='gate'){ g.open=true; MAZE[g.r][g.c]=2; stillDirty=true; score+=200; spawnSplash('Gate '+(G.indexOf(g)+1)+' open');
+            try{ flash('The honey gate swings open · +1 🪙'); }catch(e){} }
+          else { score+=150; if(lives<LIVES) lives++; spawnSplash('+1');
+            try{ flash('The flower blooms · +150 honey · +1 🪙'); }catch(e){} }
+          close(); card=null; if(!over) loop.hold(false); return; }
+        try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
+        close();
+        AK.miss(wrap, w, typed, { note: kind==='gate'?'The gate stays shut. It will ask for a new word.':'', onContinue(){
+          if(kind==='gate'){ g.w=nextWord(); g.arm=false; }
+          card=null; if(!over) loop.hold(false); } }); }
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } else if(e.key==='Escape'){ e.preventDefault(); later(); } };
+      const later=()=>{ close(); if(kind==='gate') g.arm=false; else { flower=null; flowerT=2; } card=null; if(!over) loop.hold(false); };
+      cardHost.querySelector('#sg-cgo').onclick=submit;
+      cardHost.querySelector('#hc-later').onclick=later;
+      cardHost.querySelector('#sg-cw').onclick=()=>{ try{ say(w.w); }catch(e){} };
+      if(touch){ const kd=e=>{ if(!card){ removeEventListener('keydown',kd,true); return; } if(e.ctrlKey||e.metaKey||e.altKey) return;
+          if(/^[a-zA-Z]$/.test(e.key)) inp.value+=e.key.toLowerCase(); else if(e.key==='Backspace') inp.value=inp.value.slice(0,-1);
+          else if(e.key==='Enter') submit(); else return; e.preventDefault(); e.stopPropagation(); };
+        addEventListener('keydown',kd,true); }
     }
-    /* Every other engine in this file drives on requestAnimationFrame; this one was the
-       last on setInterval(1000/60), which free-runs against the display refresh and lands
-       frames unevenly — visible judder even at a nominal 60fps. */
-    /* the clock is the rAF TIMESTAMP, not Date.now(): Date.now() is whole milliseconds,
-       so at 60Hz the frame delta alternates 16/17ms — a permanent ±3% speed shimmer
-       that reads as micro-judder. The rAF timestamp is sub-millisecond and is the
-       display's own clock. */
-    let last=performance.now(), dotTimer=0, loop=null, raf=null;
-    function frame(ts){
-      if(over){ if(loop){ clearInterval(loop); loop=null; } if(raf){ cancelAnimationFrame(raf); raf=null; } return; }
-      try{
-        // the clock ticks through a spell card too — otherwise the first frame after
-        // the card closes gets the whole pause as its dt (clamped to 50ms: a visible lurch)
-        const now=(ts!==undefined?ts:performance.now()), dt=Math.min(34, now-last); last=now;
-        if(!card){                                   // paused during a spell card
-          const ds=dt/1000;
-          // the HUNTERS nearest moths get the chase brain this frame; the rest wander
-          moths.map(m=>({m,d:Math.abs(m.px-bee.px)+Math.abs(m.py-bee.py)})).sort((a,b)=>a.d-b.d)
-            .forEach((x,i)=>{ x.m._hunt = i<HUNTERS; });
-          step(bee,CFG.speed*1.25,ds); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed, ds));
-          flee=Math.max(0,flee-dt/1000); grace=Math.max(0,grace-dt/1000);
-          const bc=Math.round(bee.px), br=Math.round(bee.py);
-          if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
-            SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6});
-            if(dots<=0){ over=true; finish(true); return; } }          // maze cleared → win the round
-          if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
-          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; spellCard(); }
-          moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
-            if(flee>0){ score+=50; m.px=6;m.py=1; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
-            // two seconds of grace after a hit — a moth camped near the respawn point
-            // used to chain three deaths in eight seconds
-            else if(grace<=0){ grace=2; lives--; shake.hit(11); trail.clear();
-              SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
-              bee.px=6;bee.py=5;bee.dir=[0,0];
-              if(lives<=0){ over=true; finish(false); } } } });
-          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--;
-            if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
-            /* Moths no longer breed. This line used to add one on a 16% roll every second
-               up to CFG.moths+6, which saturated in 38 seconds and left EVERY difficulty
-               with a swarm: easy 8 moths, champ 11, in a maze of 51 to 130 open cells. The
-               per-difficulty counts above stopped meaning anything, and the round stopped
-               being about words — you spent it running. One late arrival, once, at the
-               halfway mark, is enough to keep the maze from going stale. */
-            if(!lateMoth && t<=Math.floor(CFG.time/2)){ lateMoth=true;
-              moths.push({c:scc,r:1,px:scc,py:1,dir:[[1,0],[-1,0]][Math.floor(Math.random()*2)]}); }
-            /* Time-out: the score alone used to decide it, and score comes from dots and
-               eaten moths — so it was possible to win without spelling a word. Two words is
-               a low bar and it makes the point: this is a spelling game with a maze in it. */
-            if(t<=0){ over=true; finish(score>=CFG.target && spelled>=2); } }
-          draw();
-        }
-      }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
-    }
-    function draw(){
-      shake.begin(cx);
-      cx.clearRect(-40,-40,BW+80,BH+80);
-      const T=Date.now();
-      // painted play field, scrimmed so the maze reads on top of it
-      if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#4C7A54'; cx.fillRect(0,0,BW,BH); }
-      SGFX.scrim(cx,BW,BH,0.34);
-      SGFX.drawMotes(cx,motes,BW,BH,T);
-      /* the walls are HONEYCOMB - six sides, a light source above, a shadow under
-         each cell. They used to be rounded squares at 30% opacity, which is
-         neither a honeycomb nor a wall. */
-      for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c];
-        const px=c*CELL+CELL/2, py=r*CELL+CELL/2;
+    function update(dt){ if(over||!started||card) return;
+      moths.map(m=>({m,d:Math.abs(m.px-bee.px)+Math.abs(m.py-bee.py)})).sort((a,b)=>a.d-b.d)
+        .forEach((x,i)=>{ x.m._hunt = i<HUNTERS; });
+      step(bee,CFG.speed*1.25,dt); moths.forEach(m=>step(m, flee>0?CFG.moth*0.6:CFG.moth, dt));
+      flee=Math.max(0,flee-dt); grace=Math.max(0,grace-dt);
+      const bc=Math.round(bee.px), br=Math.round(bee.py);
+      { const zz=zoneOf(bc,br); if(zz>=0) bz=zz; }
+      if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
+        SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6}); }   // honey is score — the hive is the only way to win
+      if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
+      /* the gates: standing on a shut gate's flower asks for its word; stepping off re-arms it */
+      for(const g of G){ if(g.open) continue; const on=(g.fc===bc&&g.fr===br);
+        if(on && g.arm){ g.arm=false; spellCard('gate',g); return; } if(!on) g.arm=true; }
+      if(bc===HIVE.c && br===HIVE.r && G.every(g=>g.open)){ over=true; finish(true,'home'); return; }   // home, through all four gates
+      if(flower && flower.c===bc && flower.r===br){ flower=null; flowerT=3; spellCard('flower'); return; }
+      moths.forEach(m=>{ if(over) return; if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
+        if(flee>0){ score+=50; const z=ZC[1]; m.px=z[2]; m.py=z[1]; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
+        // two seconds of grace after a hit — a moth camped near the respawn point used to chain deaths
+        else if(grace<=0){ grace=2; lives--; if(!AK.calm()) shake.hit(11); trail.clear();
+          SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
+          const z=ZC[bz]; bee.px=z[0]; bee.py=z[1]; bee.dir=[0,0];   // back to the top corner of the zone she was in
+          if(lives<=0){ over=true; finish(false,'lives'); } } } });
+      if(over) return;
+      flowerT-=dt;
+      if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
+      /* one late moth, once, at the halfway mark — in the zone corner furthest from the bee */
+      if(!lateMoth && t<=CFG.time/2){ lateMoth=true;
+        const cs=[[1,1],[COLS-2,1],[COLS-2,ROWS-2],[1,ROWS-2]].filter(p=>open(p[0],p[1]));
+        const far=cs.sort((a,b)=>(Math.abs(b[0]-bc)+Math.abs(b[1]-br))-(Math.abs(a[0]-bc)+Math.abs(a[1]-br)))[0]||[COLS-2,1];
+        moths.push({c:far[0],r:far[1],px:far[0],py:far[1],dir:[0,0]}); } }
+    /* The ROUND CLOCK reads the frame's real time (capped at 0.25 s a frame, the shared clock's
+       own cap), not the sum of physics steps: on a phone slowed enough that the steps fall
+       behind, the bee may move a shade slow, but 3:00 is still three minutes (spec §8, T4). */
+    let wall=null;
+    function tickClock(){ const now=(document.timeline&&document.timeline.currentTime)||performance.now();   // the frame's own timestamp
+      if(wall!=null && started && !over && !card){ t-=Math.min(0.25,(now-wall)/1000);
+        if(t<=0){ t=0; over=true; finish(false,'time'); } }
+      wall=now; }
+    const loop=AK.loop(update, ()=>{ if(!started) return; tickClock(); if(!over) draw(); });
+    /* THE STILL PART OF THE MAZE IS PAINTED ONCE. The painting, its scrim and every wall and
+       gate used to be redrawn each frame — a hundred-odd shadowed hexes — and on a slowed phone
+       that made frames long enough for the round to fall behind real time. They go into one
+       layer, repainted only when it changes (a gate opens, the painting arrives). */
+    let still=null, stillDirty=true;
+    function paintStill(){ if(!still) still=document.createElement('canvas');
+      still.width=cv.width; still.height=cv.height; const sx=still.getContext('2d'); sx.setTransform(dpr,0,0,dpr,0,0);
+      const painted=drawWorld(sx,world,0,0,BW,BH); if(!painted){ sx.fillStyle='#4C7A54'; sx.fillRect(0,0,BW,BH); }
+      SGFX.scrim(sx,BW,BH,0.34);
+      for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c]; if(v===0||v===3) wallAt(sx,c,r,v); }
+      stillDirty=!painted; }                               // keep trying until the painting has loaded
+    /* a nectar dot is one small sprite, drawn once and stamped */
+    let dotSpr=null;
+    function dotSprite(){ if(dotSpr) return dotSpr; const R=Math.max(2,CELL*0.10), S=Math.ceil(R*2.6*2+4);
+      dotSpr=document.createElement('canvas'); dotSpr.width=Math.round(S*dpr); dotSpr.height=Math.round(S*dpr);
+      const d=dotSpr.getContext('2d'); d.setTransform(dpr,0,0,dpr,0,0); SGFX.orb(d,S/2,S/2,R,'#FFF3C4','#F0B429',Math.PI/2); dotSpr._s=S; return dotSpr; }
+    function wallAt(g,c,r,v){ const px=c*CELL+CELL/2, py=r*CELL+CELL/2; const cx=g;
         if(v===0){
           cx.save(); cx.shadowColor='rgba(8,5,20,.55)'; cx.shadowBlur=CELL*0.22; cx.shadowOffsetY=CELL*0.09;
           const g=cx.createLinearGradient(0,py-CELL*0.5,0,py+CELL*0.5);
@@ -752,12 +1100,38 @@
           cx.strokeStyle=STY.edge; cx.lineWidth=1.4; SGFX.hex(cx,px,py,CELL*0.53); cx.stroke();
           cx.fillStyle=STY.core; SGFX.hex(cx,px,py,CELL*0.30); cx.fill();
         }
-        else if(v===1) SGFX.orb(cx,px,py,CELL*0.10,'#FFF3C4','#F0B429',T/420+(c+r)*0.7);
-      }
+        else if(v===3){             // a shut honey gate: amber, banded, glowing at its edges
+          const g=cx.createLinearGradient(px-CELL/2,0,px+CELL/2,0); g.addColorStop(0,'#B36B00'); g.addColorStop(.5,'#FFC23D'); g.addColorStop(1,'#B36B00');
+          cx.fillStyle=g; SGFX.rr(cx,px-CELL*0.42,py-CELL*0.42,CELL*0.84,CELL*0.84,CELL*0.16); cx.fill();
+          cx.strokeStyle='rgba(90,46,0,.7)'; cx.lineWidth=Math.max(1.5,CELL*0.06);
+          for(let k=-1;k<=1;k++){ cx.beginPath(); cx.moveTo(px+k*CELL*0.2,py-CELL*0.36); cx.lineTo(px+k*CELL*0.2,py+CELL*0.36); cx.stroke(); } } }
+    function draw(){
+      shake.begin(cx);
+      cx.clearRect(-40,-40,BW+80,BH+80);
+      const T=performance.now();
+      if(stillDirty) paintStill();
+      cx.drawImage(still,0,0,BW,BH);
+      SGFX.drawMotes(cx,motes,BW,BH,T);
+      { const sp=dotSprite(), S=sp._s;
+        for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ if(MAZE[r][c]!==1) continue;
+          const k=0.86+0.14*Math.sin(T/420+(c+r)*0.7), w=S*k; cx.drawImage(sp,c*CELL+CELL/2-w/2,r*CELL+CELL/2-w/2,w,w); } }
+      // the hive, home: drawn as a dome of comb, lit once every gate is open
+      { const hx=HIVE.c*CELL+CELL/2, hy=HIVE.r*CELL+CELL/2, lit=G.every(g=>g.open);
+        cx.save(); if(lit){ cx.shadowColor='rgba(255,210,90,.9)'; cx.shadowBlur=CELL*0.6; }
+        cx.fillStyle=lit?'#FFC23D':'#C98A08'; cx.beginPath(); cx.ellipse(hx,hy+CELL*0.05,CELL*0.4,CELL*0.42,0,0,7); cx.fill(); cx.restore();
+        cx.strokeStyle='rgba(90,46,0,.75)'; cx.lineWidth=Math.max(1.4,CELL*0.05);
+        for(let k=-2;k<=2;k++){ cx.beginPath(); cx.ellipse(hx,hy+CELL*0.05+k*CELL*0.13,CELL*0.4*Math.sqrt(1-(k*0.3)*(k*0.3)),CELL*0.02,0,0,7); cx.stroke(); }
+        cx.fillStyle='#4A2A06'; cx.beginPath(); cx.arc(hx,hy+CELL*0.24,CELL*0.09,0,7); cx.fill(); }
       if(!J.got) SGFX.orb(cx,J.c*CELL+CELL/2,J.r*CELL+CELL/2,CELL*0.24,'#FFFFFF','#FFC93F',T/260);
-      if(flower){ const fi=sgImg('env-meadow'); cx.font=(CELL*0.72)+'px serif'; cx.fillText('🌼',flower.c*CELL+CELL*0.14,flower.r*CELL+CELL*0.8); }
+      // the gate flowers, and the bonus flower: drawn petals, not an emoji
+      const bloom=(c,r,col,big)=>{ const x=c*CELL+CELL/2, y=r*CELL+CELL/2, s=CELL*(big?0.34:0.28), ph=T/500;
+        cx.save(); cx.translate(x,y); cx.rotate(Math.sin(ph+c)*0.15);
+        for(let k=0;k<6;k++){ cx.fillStyle=col; cx.beginPath(); cx.ellipse(Math.cos(k*Math.PI/3)*s*0.62,Math.sin(k*Math.PI/3)*s*0.62,s*0.42,s*0.26,k*Math.PI/3,0,7); cx.fill(); }
+        cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(0,0,s*0.34,0,7); cx.fill(); cx.restore(); };
+      G.forEach(g=>{ if(!g.open) bloom(g.fc,g.fr,'#FFFFFF',true); });
+      if(flower) bloom(flower.c,flower.r,'#FF9CC6',false);
       // moths — the Gemini purple moth sprite (blue glow when edible); SGART grey-moth then vector fallback
-      const mtex=sgTex('moth'), mi=sgImg('grey-moth'), _ph=Date.now()/90;
+      const mtex=sgTex('moth'), mi=sgImg('grey-moth'), _ph=T/90;
       moths.forEach((m,i)=>{ const mx=m.px*CELL, my=m.py*CELL;
         if(flee>0){ cx.fillStyle='rgba(120,150,255,.45)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.44,0,7); cx.fill(); }
         let md=false; const bob=Math.sin(_ph+i)*CELL*0.03;
@@ -768,9 +1142,8 @@
       trail.push(bee.px*CELL+CELL/2, bee.py*CELL+CELL/2, 16);
       trail.draw(cx,'255,205,80',CELL*0.30);
       // the RUNNER is the chosen hero avatar (falls back to the bee-fly sprite / Bizzy)
-      const usingAv=!!avImg(HERO);
       const bi=avImg(HERO)||sgTex('bee-fly')||sgImg('bizzy-side-fly')||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
-      if(bi){ try{ const bob=1+0.05*Math.sin(Date.now()/110), s=CELL*1.12*bob, hh=bi.height&&bi.width?s*(bi.height/bi.width):s;
+      if(bi){ try{ const bob=1+0.05*Math.sin(T/110), s=CELL*1.12*bob, hh=bi.height&&bi.width?s*(bi.height/bi.width):s;
         cx.save(); cx.translate(bx+CELL/2,by+CELL/2);
         if(bee.dir[0]<0) cx.scale(-1,1);              // flip when flying left
         cx.drawImage(bi,-s/2,-hh/2,s,hh); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
@@ -779,27 +1152,48 @@
       SGFX.run(cx,fx);
       SGFX.vignette(cx,BW,BH,0.40);
       shake.end(cx);
-      host.querySelector('#sg-score').textContent='🍯 '+score+' / '+CFG.target;
-      host.querySelector('#sg-time').textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
-      host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
+      hud();
     }
-    function finish(win){ if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key);
-      const stars=win?(score>=CFG.target*1.5?3:score>=CFG.target*1.2?2:1):0; endCard(win,stars); }
-    function endCard(win,stars){
+    let _hud='';
+    function hud(){ const tt=Math.max(0,Math.ceil(t)), open=G.filter(g=>g.open).length;
+      const k=score+'|'+tt+'|'+lives+'|'+open; if(k===_hud) return; _hud=k;
+      host.querySelector('#hc-score').textContent=score.toLocaleString();
+      host.querySelector('#hc-time').textContent=Math.floor(tt/60)+':'+String(tt%60).padStart(2,'0');
+      host.querySelector('#hc-gates').textContent='Gates '+open+'/'+GATES;
+      host.querySelector('#hc-lives').innerHTML=Array.from({length:LIVES},(_,i)=>heart(i<lives)).join(''); }
+    function finish(win,why){ over=true; try{ loop.stop(); }catch(e){} removeEventListener('keydown',key);
+      if(win) score+=Math.ceil(t)*5;                      // time left becomes honey, not more time
+      const stars=win?(lives>=3&&met===right?3:lives>=2?2:1):0;
+      endCard(win,stars,why); }
+    function endCard(win,stars,why){
+      const line=AK.level(KEY, right, met);
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
-      /* This screen used to hand back a honey count and ★★☆ typed as glyphs, and never
-         said which words the round had been about — the one thing a child needs from it.
-         SGUI.result prints the log, right and wrong marked, each chip tappable. */
       el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'honey', words:hcRound,
-        title: win?'The meadow is free':'Out of time' });
+        title: win?'Home to the hive':why==='lives'?'Out of lives':'Out of time',
+        sub: [win?'All four gates, spelled open':(G.filter(g=>g.open).length+' of '+GATES+' gates open'), line].filter(Boolean).join(' · ') });
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; honeycombRun(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
-    if(window.SB_DEBUG) window._maze={ state:()=>({px:bee.px,py:bee.py,dir:bee.dir.slice(),lives,cell:CELL,cols:COLS,rows:ROWS,moths:moths.map(m=>({px:m.px,py:m.py}))}),
-      want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r) };   // capture tooling: watch the bee glide
-    (function pump(){ raf=requestAnimationFrame(ts=>{ frame(ts); if(!over) pump(); }); })();
-    return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
+    function begin(){ started=true; draw(); }
+    function howto(){ const el=host.querySelector('#sg-card');
+      el.innerHTML=SGUI.howto({ title:'Honeycomb Run', art:'',
+        sub:'Four honey gates stand between you and the hive.',
+        steps:[ 'Run the maze with the arrow keys, WASD, the pad or a swipe',
+                'Stand on the white flower by a gate and spell its word to open it',
+                'Open all four gates and fly home to the hive before the clock runs out',
+                'Moths cost a life (you have three). Pink flowers are bonus words' ],
+        go:'Into the maze' });
+      el.style.display='grid';
+      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML=''; begin(); }; }
+    draw(); howto();
+    if(window.SB_DEBUG) window._maze={ state:()=>({px:bee.px,py:bee.py,dir:bee.dir.slice(),lives,cell:CELL,cols:COLS,rows:ROWS,t,started,over,card:card?card.kind:null,
+        gates:G.map(g=>({c:g.c,r:g.r,fc:g.fc,fr:g.fr,open:g.open})),hive:HIVE,dots,score,met,right,moths:moths.map(m=>({px:m.px,py:m.py}))}),
+      want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r), word:()=>card?card.w.w:'',
+      warp:(c,r)=>{ bee.px=bee.c=c; bee.py=bee.r=r; bee.dir=[0,0]; bee.want=[0,0]; },
+      setTime:s=>{ t=s; }, clearDots:(keep)=>{ keep=keep||[]; dots=0; for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(MAZE[r][c]===1){ if(keep.some(k=>k[0]===c&&k[1]===r)) dots++; else MAZE[r][c]=2; } },
+      noMoths:()=>{ moths=[]; lateMoth=true; }, rearm:()=>{ G.forEach(g=>{ g.arm=true; }); }, reachHive:()=>reach().has(HIVE.c+','+HIVE.r), begin:()=>{ if(!started){ const el=host.querySelector('#sg-card'); el.style.display='none'; el.innerHTML=''; begin(); } } };
+    return { destroy(){ over=true; try{ loop.stop(); }catch(e){} removeEventListener('keydown',key); if(keys){ try{ keys.destroy(); }catch(e){} } } };
   }
 
 
@@ -1455,6 +1849,71 @@
       bolt:g=>{ g.beginPath(); g.moveTo(0.06,-0.32); g.lineTo(-0.16,0.03); g.lineTo(0,0.03); g.lineTo(-0.06,0.32); g.lineTo(0.17,-0.05); g.lineTo(0.01,-0.05); g.closePath(); g.fill(); } };
     /* kind -> (variant, world) -> { bw, bh (box, half-widths), foot (footprint half-width), paint(g) } */
     const P={
+      /* ===== THE BAZAAR (the Cup's fourth track, owner 4 Oct): a market street. Awning stalls,
+         spice sacks, lantern posts, sandstone gateways, date palms, rug racks. No signs at all,
+         so nothing on this street can spell anything. Sizes held by tests/gp-world.cjs. ===== */
+      stall:(v)=>{ const cols=[['#E8A33A','#FFF3DC'],['#2FA39A','#FFF3DC'],['#C94F6D','#FFF3DC'],['#5B5FC7','#F6E7C8']][v%4], R=rng(v*41+9);
+        return {bw:1.6,bh:1.4,foot:0.64,paint:g=>{ foot(g,0.68,0.2);
+          g.fillStyle='#7A5536'; g.fillRect(-0.62,-1.0,1.24,1.0); g.fillStyle='rgba(0,0,0,.28)'; g.fillRect(-0.62,-1.0,1.24,0.14);
+          g.fillStyle='#5E3F27'; g.fillRect(-0.55,-0.8,1.1,0.03);
+          for(let i=0;i<4;i++) dot(g,-0.4+i*0.27,-0.87,0.065,['#D9783A','#3E8E8A','#C9A227','#B94D63'][(i+v)%4]);
+          g.fillStyle='#5A3B24'; g.fillRect(-0.68,-1.18,0.05,1.18); g.fillRect(0.63,-1.18,0.05,1.18);
+          const cg=g.createLinearGradient(0,-0.5,0,0); cg.addColorStop(0,'#C08A55'); cg.addColorStop(1,'#8C5E36'); g.fillStyle=cg; g.fillRect(-0.62,-0.5,1.24,0.5);
+          g.strokeStyle='rgba(60,30,10,.35)'; g.lineWidth=0.015; for(let x=-0.42;x<0.62;x+=0.21){ g.beginPath(); g.moveTo(x,-0.5); g.lineTo(x,0); g.stroke(); }
+          for(let i=0;i<5;i++){ const x=-0.5+i*0.25, c=['#E2522F','#F2B630','#7A9A3A','#B5462E','#E8C547'][(i+v)%5];
+            g.fillStyle='#6B4426'; g.beginPath(); g.ellipse(x,-0.52,0.1,0.035,0,0,7); g.fill();
+            g.fillStyle=c; g.beginPath(); g.moveTo(x-0.09,-0.52); g.quadraticCurveTo(x,-0.68-R()*0.05,x+0.09,-0.52); g.closePath(); g.fill(); }
+          const top=-1.4, bot=-1.12;
+          for(let i=0;i<8;i++){ const x0=-0.78+i*0.195; g.fillStyle=i%2?cols[1]:cols[0]; g.beginPath(); g.moveTo(x0+0.05,top); g.lineTo(x0+0.245,top); g.lineTo(x0+0.195,bot); g.lineTo(x0,bot); g.closePath(); g.fill();
+            g.beginPath(); g.arc(x0+0.0975,bot,0.0975,0,Math.PI); g.fill(); }
+          g.fillStyle='rgba(0,0,0,.14)'; g.fillRect(-0.73,top,1.5,0.035); }}; },
+      sacks:(v)=>{ const R=rng(v*23+5), sp=[['#D9481F','#F2A33A','#E8C547'],['#B5462E','#7A9A3A','#F2B630'],['#C9762E','#8B3A2E','#E8C547']][v%3];
+        return {bw:0.95,bh:0.42,foot:0.42,paint:g=>{ foot(g,0.44,0.2);
+          [[-0.28,0.17],[0.02,0.2],[0.3,0.16]].forEach((q,i)=>{ const x=q[0], r=q[1], h=0.26+R()*0.05;
+            const sg=g.createLinearGradient(x-r,0,x+r,0); sg.addColorStop(0,'#E6D3A8'); sg.addColorStop(1,'#B89B66');
+            g.fillStyle=sg; g.beginPath(); g.moveTo(x-r,0); g.quadraticCurveTo(x-r*1.12,-h*0.6,x-r*0.85,-h); g.lineTo(x+r*0.85,-h); g.quadraticCurveTo(x+r*1.12,-h*0.6,x+r,0); g.closePath(); g.fill();
+            g.fillStyle='#D8C292'; g.beginPath(); g.ellipse(x,-h,r*0.88,r*0.22,0,0,7); g.fill();
+            g.fillStyle=sp[i]; g.beginPath(); g.moveTo(x-r*0.75,-h); g.quadraticCurveTo(x,-h-0.12,x+r*0.75,-h); g.closePath(); g.fill();
+            g.fillStyle='rgba(255,255,255,.25)'; g.beginPath(); g.ellipse(x-r*0.25,-h-0.04,r*0.2,0.018,0,0,7); g.fill(); }); }}; },
+      lantern:(v)=>{ const lc=[['#F2A33A','#E2522F','#F2C94C'],['#E85D75','#F2A33A','#7FC8C0'],['#F2C94C','#C94F6D','#E8823A']][(v>>1)%3], d=v%2?-1:1;
+        return {bw:1.0,bh:1.66,foot:0.08,paint:g=>{ g.scale(d,1); foot(g,0.12,0.22);
+          g.fillStyle='#4A3424'; g.fillRect(-0.03,-1.58,0.06,1.58); g.fillRect(-0.07,-0.08,0.14,0.08);
+          g.strokeStyle='#4A3424'; g.lineWidth=0.035; g.beginPath(); g.moveTo(0,-1.52); g.quadraticCurveTo(0.25,-1.64,0.46,-1.52); g.stroke();
+          g.strokeStyle='rgba(60,40,20,.8)'; g.lineWidth=0.012; g.beginPath(); g.moveTo(0,-1.44); g.quadraticCurveTo(0.23,-1.22,0.46,-1.44); g.stroke();
+          [0.09,0.23,0.37].forEach((x,i)=>{ const t=x/0.46, y=-1.44+0.22*2*t*(1-t);
+            g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+0.04); g.stroke();
+            const gl=g.createRadialGradient(x,y+0.11,0.01,x,y+0.11,0.14); gl.addColorStop(0,'rgba(255,230,150,.55)'); gl.addColorStop(1,'rgba(255,230,150,0)');
+            g.fillStyle=gl; g.beginPath(); g.arc(x,y+0.11,0.14,0,7); g.fill();
+            g.fillStyle=lc[i]; g.beginPath(); g.ellipse(x,y+0.11,0.055,0.075,0,0,7); g.fill();
+            g.fillStyle='rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(x-0.018,y+0.09,0.015,0.04,0,0,7); g.fill();
+            g.fillStyle='#4A3424'; g.fillRect(x-0.03,y+0.03,0.06,0.012); g.fillRect(x-0.03,y+0.18,0.06,0.012); }); }}; },
+      arch:(v)=>{ const st=['#E2B77E','#D9A86C','#EBC48E'][v%3], tile=['#2E7F86','#B5462E','#3E5FA0'][v%3];
+        return {bw:2.3,bh:2.66,foot:1.08,paint:g=>{ foot(g,1.12,0.22);
+          const sg=g.createLinearGradient(-1.1,0,1.1,0); sg.addColorStop(0,sh(st,0.14)); sg.addColorStop(1,sh(st,-0.22));
+          g.fillStyle=sg; g.beginPath(); g.moveTo(-1.05,0); g.lineTo(-1.05,-2.35); g.lineTo(1.05,-2.35); g.lineTo(1.05,0); g.lineTo(0.55,0); g.lineTo(0.55,-1.25);
+          g.quadraticCurveTo(0.55,-1.85,0,-1.98); g.quadraticCurveTo(-0.55,-1.85,-0.55,-1.25); g.lineTo(-0.55,0); g.closePath(); g.fill();
+          g.fillStyle=sh(st,0.05); for(let x=-1.05;x<1.0;x+=0.3) g.fillRect(x,-2.62,0.18,0.3);
+          g.fillStyle=sh(st,-0.12); g.fillRect(-1.12,-2.38,2.24,0.08);
+          g.strokeStyle=tile; g.lineWidth=0.07; g.beginPath(); g.moveTo(-0.62,0); g.lineTo(-0.62,-1.25); g.quadraticCurveTo(-0.62,-1.92,0,-2.06); g.quadraticCurveTo(0.62,-1.92,0.62,-1.25); g.lineTo(0.62,0); g.stroke();
+          [[-0.82,-1.75],[0.82,-1.75]].forEach(p=>{ g.fillStyle=tile; for(let i=0;i<4;i++){ const a=i*Math.PI/2; g.beginPath(); g.ellipse(p[0]+Math.cos(a)*0.06,p[1]+Math.sin(a)*0.06,0.06,0.035,a,0,7); g.fill(); } dot(g,p[0],p[1],0.03,'#F2E3C0'); });
+          g.strokeStyle='rgba(80,40,10,.22)'; g.lineWidth=0.012; for(let y=-0.3;y>-2.3;y-=0.3){ g.beginPath(); g.moveTo(-1.05,y); g.lineTo(-0.56,y); g.moveTo(0.56,y); g.lineTo(1.05,y); g.stroke(); } }}; },
+      palm:(v)=>{ const R=rng(v*67+3), lean=(v%2?-1:1)*(0.08+R()*0.06), H=1.62+(v%3)*0.12;
+        return {bw:1.5,bh:H+0.32,foot:0.1,paint:g=>{ foot(g,0.16,0.22);
+          const tx=lean*H; g.strokeStyle='#8A6A44'; g.lineWidth=0.1; g.lineCap='round'; g.beginPath(); g.moveTo(0,0); g.quadraticCurveTo(tx*0.2,-H*0.55,tx,-H); g.stroke();
+          g.strokeStyle='rgba(60,40,20,.45)'; g.lineWidth=0.012; for(let i=1;i<12;i++){ const t=i/12, x=tx*t*t, y=-H*t; g.beginPath(); g.moveTo(x-0.05,y); g.lineTo(x+0.05,y+0.02); g.stroke(); }
+          for(let i=0;i<7;i++){ const a=-Math.PI/2+(i-3)*0.48+(R()-0.5)*0.1, L=0.62+R()*0.15, ex=tx+Math.cos(a)*L, ey=-H+Math.sin(a)*L*0.55+0.12;
+            g.strokeStyle=i%2?'#3E7F3A':'#4E9A44'; g.lineWidth=0.05; g.beginPath(); g.moveTo(tx,-H); g.quadraticCurveTo(tx+Math.cos(a)*L*0.5,-H+Math.sin(a)*L*0.5-0.12,ex,ey); g.stroke();
+            g.strokeStyle='rgba(60,120,50,.8)'; g.lineWidth=0.012;
+            for(let k=1;k<7;k++){ const t=k/7, bx=tx+(ex-tx)*t, by=-H+(ey+H)*t-0.08*Math.sin(Math.PI*t); g.beginPath(); g.moveTo(bx,by); g.lineTo(bx+0.06,by+0.08); g.moveTo(bx,by); g.lineTo(bx-0.06,by+0.08); g.stroke(); } }
+          for(let i=0;i<5;i++) dot(g,tx+(i-2)*0.04,-H+0.08+(i%2)*0.03,0.03,'#B5652A'); }}; },
+      rugs:(v)=>{ const pal=[['#B5462E','#F2C94C','#2E5E8C'],['#2E7F86','#F2E3C0','#C94F6D'],['#7A3B6E','#E8A33A','#F2E3C0']][v%3];
+        return {bw:1.2,bh:0.98,foot:0.52,paint:g=>{ foot(g,0.55,0.2);
+          g.fillStyle='#5A3B24'; g.fillRect(-0.56,-0.95,0.04,0.95); g.fillRect(0.52,-0.95,0.04,0.95); g.fillRect(-0.58,-0.96,1.16,0.04);
+          [-0.5,-0.16,0.18].forEach((x,i)=>{ const w=0.32, top=-0.92, h=0.62+(i%2)*0.08;
+            g.fillStyle=pal[i%3]; g.fillRect(x,top,w,h);
+            g.strokeStyle=pal[(i+1)%3]; g.lineWidth=0.025; g.strokeRect(x+0.03,top+0.03,w-0.06,h-0.06);
+            g.fillStyle=pal[(i+2)%3]; const c0=x+w/2, c1=top+h/2; g.beginPath(); g.moveTo(c0,c1-0.14); g.lineTo(c0+0.09,c1); g.lineTo(c0,c1+0.14); g.lineTo(c0-0.09,c1); g.closePath(); g.fill();
+            g.strokeStyle='rgba(255,255,255,.5)'; g.lineWidth=0.008; for(let k=1;k<6;k++){ g.beginPath(); g.moveTo(x+w*k/6,top+h); g.lineTo(x+w*k/6,top+h+0.04); g.stroke(); } }); }}; },
       bush:(v,world)=>{ const pal=world==='cactus'?['#6F6E38','#8F8C4A','#B3AF66']:world==='building'?['#1E4632','#2B6142','#3D7F55']:['#2E763C','#45A04E','#6CC768'];
         const R=rng(v*97+3), fl=world==='tree'&&v%2===1, fc=['#FF8FB8','#FFD54A','#FFFFFF'][v%3];
         const pts=[[-0.19,-0.11,0.12],[0.19,-0.11,0.12],[-0.06,-0.19,0.15],[0.1,-0.21,0.13],[0,-0.1,0.14]];
@@ -1699,10 +2158,17 @@
       downtown:{dense:1, lamps:1, props:[{k:'tower',gap:[8,13],off:[3.0,4.4]}]},
       avenue:{dense:1, lamps:1, props:[{k:'shop',gap:[7,11],off:[2.4,2.9]},{k:'billboard',gap:[40,62],off:[3.5,3.9]},{k:'tower',gap:[18,28],off:[4.4,5.4]}]},
       park:{grass:['#2F5A3E','#2A5238'], lamps:1, props:[{k:'parktree',gap:[18,28],off:[2.0,3.0],group:[1,2]},{k:'hedge',gap:[24,36],off:[1.8,2.4]}]},
-      bridge:{water:'both', verge:'#4A5068', strip:'rail', lamps:1, props:[]} }} };
+      bridge:{water:'both', verge:'#4A5068', strip:'rail', lamps:1, props:[]} }},
+    /* the market street: a souk of stalls (dense on purpose, like the city's avenue), a lantern
+       walk, the sandstone gates, and an open square of palms */
+    bazaar:{ list:['souk','lanterns','gates','square'], z:{
+      souk:{dense:1, grass:['#D9B07A','#CFA670'], verge:'#E2C79A', props:[{k:'stall',gap:[9,14],off:[2.3,2.8]},{k:'sacks',gap:[16,26],off:[1.9,2.1]}]},
+      lanterns:{grass:['#D6AA72','#CCA068'], lanterns:1, props:[{k:'rugs',gap:[40,60],off:[2.1,2.6]},{k:'palm',gap:[50,80],off:[2.4,3.4]}]},
+      gates:{grass:['#DDB47C','#D3AA72'], props:[{k:'arch',gap:[36,54],off:[2.6,3.0]},{k:'palm',gap:[32,50],off:[1.9,2.8],group:[1,2]},{k:'sacks',gap:[26,40],off:[1.9,2.4]}]},
+      square:{grass:['#E0BC86','#D6B27C'], verge:'#EBD3A8', props:[{k:'palm',gap:[28,46],off:[1.9,3.2],group:[1,2]},{k:'stall',gap:[44,70],off:[2.3,3.0]},{k:'arch',once:0.5,off:[3.0,3.4]}]} }} };
   /* how far up the road each kind is still drawn (bands); small things stop sooner */
-  const GP_FAR={formation:1300,shop:600,bush:350,flowers:300,reeds:300,haybale:420,rock:380,hedge:350,signpost:420,lamp:320,tree:800,parktree:700,cactus:800,boulders:700,deadtree:700,billboard:900,tower:1100,barn:1500,windmill:1600,watertower:1500,butte:1800};
-  const GP_VAR={formation:4,shop:4,bush:4,flowers:3,haybale:3,barn:2,windmill:1,reeds:3,cactus:6,rock:4,boulders:3,deadtree:3,butte:1,watertower:1,signpost:2,tower:6,lamp:2,billboard:4,hedge:1,tree:2,parktree:2};
+  const GP_FAR={stall:600,sacks:350,lantern:400,arch:1300,palm:800,rugs:450,formation:1300,shop:600,bush:350,flowers:300,reeds:300,haybale:420,rock:380,hedge:350,signpost:420,lamp:320,tree:800,parktree:700,cactus:800,boulders:700,deadtree:700,billboard:900,tower:1100,barn:1500,windmill:1600,watertower:1500,butte:1800};
+  const GP_VAR={stall:4,sacks:3,lantern:6,arch:3,palm:6,rugs:3,formation:4,shop:4,bush:4,flowers:3,haybale:3,barn:2,windmill:1,reeds:3,cactus:6,rock:4,boulders:3,deadtree:3,butte:1,watertower:1,signpost:2,tower:6,lamp:2,billboard:4,hedge:1,tree:2,parktree:2};
 
   /* ===== PHONES RACE EITHER WAY UP (4 Oct, owner: the race must play upright) =====
      1 Oct made a phone race SIDEWAYS only: held upright it showed "Turn your phone sideways"
@@ -1717,6 +2183,117 @@
      lets go of every input; nothing restarts and nothing pauses. */
   const gpPhone=()=>{ try{ return matchMedia('(pointer:coarse)').matches && Math.min(innerWidth,innerHeight)<560; }catch(e){ return false; } };
   const gpUpright=()=>innerHeight>innerWidth;
+
+  /* ===== BEE GRAND PRIX — THE RULES THAT ARE NOT THE ROAD (games spec §2, 4 Oct 2026) =====
+     "A great kart race first. Spelling is the fuel." Everything here is a TABLE, and nothing in
+     it rolls a die (FAMILY-STANDARD: nothing random in a reward): the grade is a clock, the
+     power-up is your place in the race, the combo is a count. tests/gp-rules.cjs reads these
+     through window.SB_GP and greps them for Math.random (GP4, GP5). */
+  const GP_SEED=s=>{ let h=2166136261; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; };
+  /* one seeded stream per track: the same track, hazards and boxes every time you race it, which
+     is what makes a ghost of your best lap mean anything */
+  const gpRng=seed=>{ let s=seed>>>0; return ()=>{ s=s+0x6D2B79F5|0; let t=Math.imul(s^s>>>15,1|s); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; };
+  /* SPELLING QUALITY. Clean = right inside par (1.2s + 0.45s a letter; Calm mode gives half as
+     long again), Right = right but slower, Miss = wrong. There is one try at a box. */
+  const GP_PAR=(letters,calm)=>(1.2+0.45*letters)*(calm?1.5:1);
+  function gpGrade(ok,secs,letters,calm){ return !ok?'miss':(secs<=GP_PAR(letters,calm)?'clean':'right'); }
+  /* WHICH POWER-UP: your place when you hit the box. The leader gets a Shield, the back of the
+     field gets speed, and a racer more than a quarter of a lap behind the leader in last gets the
+     honey that slows everyone ahead. Clean is full strength, Right is standard (§2.4). */
+  const GP_TABLE=['shield','oil','gust','turbo','rocket'];
+  const GP_STR={ shield:{full:{t:10},std:{t:6}}, oil:{full:{t:2.8},std:{t:1.8}}, gust:{full:{t:2.0},std:{t:1.3}},
+    turbo:{full:{mul:1.45,t:4},std:{mul:1.3,t:3}}, rocket:{full:{mul:1.75,t:2.6},std:{mul:1.5,t:2}}, honey:{full:{t:2.8},std:{t:1.8}} };
+  function gpPowerFor(place,field,behindLap){ if(place>=field && behindLap>0.25) return 'honey';
+    return GP_TABLE[Math.min(GP_TABLE.length,Math.max(1,place|0))-1]; }
+  const GP_COMBO=3;                  // three Clean in a row: a free Turbo (standard strength)
+  /* THE CAST IS THE MOCK BEE'S (mockbee.js BOTS) — one hall of rivals across both flagships.
+     A rival never wears the child's own face: `alt` stands in, exactly as faceOf() does there.
+     pw is how often they turn a box into a power-up (deterministic: every 1/pw boxes, never a
+     dice roll); their pace is their place on the grid (GP_GRID order, the engine's spread). */
+  const GP_CAST={
+    pixel:{name:'Pip',alt:'germy',pw:0.60,kart:'kart-rocket',col:'#E5484D'},  koi:{name:'Nova',alt:'luna',pw:0.75,kart:'kart',col:'#3B93D6'},
+    beaker:{name:'Rafi',alt:'atom',pw:0.75,kart:'kart-buggy',col:'#2FB98A'},   panda:{name:'Suki',alt:'neko',pw:0.83,kart:'kart-cruiser',col:'#8B63D6'},
+    comet:{name:'Dax',alt:'rocket',pw:0.68,kart:'kart-red',col:'#F0803C'},       astro:{name:'Mira',alt:'saturn',pw:0.90,kart:'kart-rocket',col:'#EC6BB0'},
+    scopey:{name:'Theo',alt:'robo',pw:0.95,kart:'kart',col:'#5A6B8C'},        melody:{name:'Ines',alt:'fae',pw:0.90,kart:'kart-cruiser',col:'#C9A227'},
+    samurai:{name:'Kwame',alt:'ninja',pw:0.90,kart:'kart-red',col:'#2E86D1'},    goldlegend:{name:'Vesper',alt:'crystal',pw:0.95,kart:'kart-buggy',col:'#B8860B'} };
+  const GP_GRID={easy:['pixel','koi','beaker'], medium:['comet','astro','panda','scopey'], hard:['samurai','melody','astro','comet'], champ:['goldlegend','samurai','melody','astro']};
+  /* THE CUP: four races in one sitting, each track's box words from one origin family (they are
+     the families Word Forge builds on). The fourth track is ONE entry here — the owner chose the
+     Bazaar (4 Oct). */
+  const GP_CUP=[
+    {scene:'meadow', origin:'english', label:'English words', re:/english|germanic|norse/i},
+    {scene:'sunset', origin:'greek',   label:'Greek roots',   re:/greek/i},
+    {scene:'city',   origin:'latin',   label:'Latin roots',   re:/latin/i},
+    {scene:'bazaar', origin:'french',  label:'French words',  re:/french|anglo-norman/i} ];
+  const GP_CUP_PTS=[10,8,6,4,2];
+  const GP_TRACK_NAME={meadow:'Sunny Meadow',sunset:'Sunset Canyon',city:'Neon City',bazaar:'Spice Bazaar'};
+  /* THE GARAGE: printed prices, bought through the family wallet like an avatar (spendCoins);
+     three trails open with a named learning milestone instead of a price. Nothing random. */
+  const GP_PAINTS=[ {id:'factory',n:'Factory finish',col:null,price:0}, {id:'honey',n:'Honey gold',col:'#F0B429',price:40},
+    {id:'cherry',n:'Cherry',col:'#EC5C67',price:40}, {id:'ocean',n:'Ocean',col:'#3B93D6',price:60}, {id:'mint',n:'Mint',col:'#2FB98A',price:60},
+    {id:'grape',n:'Grape',col:'#8B63D6',price:80}, {id:'midnight',n:'Midnight',col:'#2E3566',price:80} ];
+  const GP_TRAILS=[ {id:'dust',n:'Road dust',col:'225,225,232',price:0}, {id:'sky',n:'Sky puffs',col:'150,205,255',price:60},
+    {id:'peach',n:'Peach puffs',col:'255,190,150',price:60}, {id:'violet',n:'Violet haze',col:'190,160,255',price:90},
+    {id:'gold',n:'Golden comet',col:'255,214,90',ms:{k:'clean',n:25,txt:'Spell 25 box words Clean'}},
+    {id:'beeline',n:'Bee line',col:'255,236,140',ms:{k:'right',n:50,txt:'Spell 50 box words right'}},
+    {id:'rainbow',n:'Rainbow',col:'rainbow',ms:{k:'cups',n:1,txt:'Finish a whole Cup'}} ];
+  const gpKid=()=>{ try{ return (typeof active==='function'&&active())||null; }catch(e){ return null; } };
+  const gpGar=c=>{ c=c||gpKid()||{}; const g=c.gpGar||(c.gpGar={own:{paint:['factory'],trail:['dust']},paint:'factory',trail:'dust'}); return g; };
+  const gpStat=c=>{ c=c||gpKid()||{}; return c.gpStat||(c.gpStat={right:0,clean:0,cups:0,races:0}); };
+  const gpMsMet=(ms,c)=>!!ms && (gpStat(c)[ms.k]||0)>=ms.n;
+  function gpOwns(kind,id,c){ const it=(kind==='paint'?GP_PAINTS:GP_TRAILS).find(x=>x.id===id); if(!it) return false;
+    if(!it.price&&!it.ms) return true; if(it.ms) return gpMsMet(it.ms,c); return (gpGar(c).own[kind]||[]).indexOf(id)>=0; }
+  /* the garage, drawn into `host` (the arcade start menu): buttons, so Tab/Enter work as well as a tap */
+  function gpGarage(host,onClose){
+    const c=gpKid(); if(!c||!host) return; const G=gpGar(c);
+    const el=document.createElement('div'); el.className='gp-gar'; el.setAttribute('role','dialog'); el.setAttribute('aria-label','Garage');
+    const coins=()=>{ try{ return (c.coins|0); }catch(e){ return 0; } };
+    const row=(kind,it)=>{ const own=gpOwns(kind,it.id,c), on=G[kind]===it.id;
+      const sw=kind==='paint'?'<i class="gp-sw" style="background:'+(it.col||'linear-gradient(135deg,#ddd,#999)')+'"></i>'
+        :'<i class="gp-sw gp-sw-t" style="background:'+(it.col==='rainbow'?'linear-gradient(90deg,#f66,#fd5,#6d6,#6cf,#c8f)':'rgb('+it.col+')')+'"></i>';
+      const act=on?'<span class="gp-gar-on">In use</span>'
+        :own?'<button class="gp-gar-b" data-gp-use="'+kind+'|'+it.id+'">Use</button>'
+        :it.ms?'<span class="gp-gar-ms">'+esc2(it.ms.txt)+'</span>'
+        :'<button class="gp-gar-b buy" data-gp-buy="'+kind+'|'+it.id+'"'+(coins()<it.price?' disabled':'')+'>Buy · '+it.price+' coins</button>';
+      return '<div class="gp-gar-row'+(on?' on':'')+'">'+sw+'<b>'+esc2(it.n)+'</b>'+act+'</div>'; };
+    const draw=()=>{ el.innerHTML='<div class="gp-gar-card"><div class="gp-gar-h"><b>Garage</b><span>'+coins()+' coins</span>'+
+      '<button class="gp-gar-x" data-gp-x="1" aria-label="Close the garage">'+SGUI.chev(-1)+'</button></div>'+
+      '<div class="gp-gar-sec">Paint</div>'+GP_PAINTS.map(p=>row('paint',p)).join('')+
+      '<div class="gp-gar-sec">Trail</div>'+GP_TRAILS.map(t=>row('trail',t)).join('')+'</div>'; };
+    const close=()=>{ removeEventListener('keydown',kd,true); el.remove(); if(onClose) onClose(); };
+    const kd=e=>{ if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); close(); } };
+    el.onclick=e=>{ const x=e.target.closest('[data-gp-x]'); if(x){ close(); return; }
+      const u=e.target.closest('[data-gp-use]'); if(u){ const [k,id]=u.dataset.gpUse.split('|'); if(gpOwns(k,id,c)){ G[k]=id; try{ save(); }catch(_){} draw(); } return; }
+      const b=e.target.closest('[data-gp-buy]'); if(b){ const [k,id]=b.dataset.gpBuy.split('|'); const it=(k==='paint'?GP_PAINTS:GP_TRAILS).find(x=>x.id===id);
+        if(!it||it.ms||gpOwns(k,id,c)) return;
+        let ok=false; try{ ok=typeof spendCoins==='function'&&spendCoins(it.price,'Grand Prix garage: '+it.n); }catch(_){ ok=false; }
+        if(ok){ (G.own[k]=G.own[k]||[]).push(id); G[k]=id; try{ save(); }catch(_){} } else { try{ flash('Not enough coins yet — every box word you spell right is one.'); }catch(_){} }
+        draw(); } };
+    addEventListener('keydown',kd,true); draw(); host.appendChild(el);
+    try{ const f=el.querySelector('button'); if(f) f.focus(); }catch(e){}
+    return { close }; }
+  W().SB_GP={ grade:gpGrade, par:GP_PAR, powerFor:gpPowerFor, STR:GP_STR, TABLE:GP_TABLE, COMBO:GP_COMBO, CAST:GP_CAST, GRID:GP_GRID,
+    CUP:GP_CUP, CUP_PTS:GP_CUP_PTS, PAINTS:GP_PAINTS, TRAILS:GP_TRAILS, owns:gpOwns, garage:gpGarage, trackName:GP_TRACK_NAME };
+
+  /* THE BOX WORDS: one door — nextWords(child, n, {purpose:'gate'}), kid-safe, inside the level
+     window of the Grand Prix's word level (key 'beeGrandPrix'), no repeat in the 150-word window.
+     The Cup asks for its track's origin family, one tier up if the level is short of it (§1.1:
+     an eight-year-old's band holds few Greek words, and a Greek track of English words is not
+     one). `avoid` keeps a Cup from repeating a word across its four races. */
+  function gpDrawWords(n,org,avoid){ const out=[], seen=new Set(avoid||[]), c=gpKid();
+    const ks=w=>{ try{ return typeof window.kidSafe==='function'?!!window.kidSafe(w):(typeof safeWord==='function'?safeWord(w):true); }catch(e){ return true; } };
+    const take=w=>{ if(!w||!w.w||!/^[a-z]+$/i.test(w.w)||w.w.length<3||!ks(w)) return; const k=String(w.w).toLowerCase(); if(seen.has(k)) return; seen.add(k); out.push(w); };
+    const ask=(o)=>{ try{ (window.nextWords(c,n+seen.size+4,Object.assign({purpose:'gate',key:'beeGrandPrix'},o))||[]).forEach(w=>{ if(out.length<n) take(w); }); }catch(e){} };
+    if(typeof window.nextWords==='function'){ if(org){ ask({origin:org.re}); if(out.length<n) ask({origin:org.re,tier:1}); } ask({}); }
+    else pool(n*2).forEach(w=>{ if(out.length<n) take(w); });   /* only before the foundations load */
+    return out; }
+  W().SB_GP.drawWords=gpDrawWords;
+  let gpKill=null;                     // stops the race that is running now (see the engine's return)
+  /* A MISS HOLDS (§2.4, GP8): the engine kit's miss card — the child's letters against the word,
+     the differing ones marked, the word said again, a note that matches the error — over the
+     race until Continue (Enter or a tap). sgLoop holds while it is up. */
+  function gpMiss(el,w,typed,cont){ if(!el) return cont(); el.style.display='grid';
+    SGUI.miss(el,w,typed,{head:'No power-up this time. Here is the word.',onContinue:()=>{ el.style.display='none'; el.innerHTML=''; cont(); }}); }
 
   function beeGrandPrix(host, opts, done){
     /* THE LAYOUT IS MEASURED, AND MEASURED AGAIN WHEN THE PHONE TURNS (gpLayout).
@@ -1743,21 +2320,31 @@
       horizonY=Math.round(Ht*0.30);
       host.style.setProperty('--sg-gut',(LAND?Math.floor((innerWidth-Wd)/2):0)+'px');
       host.style.setProperty('--sg-ctl',CTL+'px'); }
-    const diff=opts.diff||'medium';
+    /* DRIVING difficulty and WORD level are two choices (§2.6): opts.drive is how hard the road
+       is, opts.diff is the word level the arcade resolved (c.gameDiff, read by the word picker). */
+    const DIFFS=['easy','medium','hard','champ'];
+    const diff=DIFFS.indexOf(opts.drive)>=0?opts.drive:(DIFFS.indexOf(opts.diff)>=0?opts.diff:'medium');
+    /* THE CUP: opts.scene 'cup' starts it; each next race carries the standings in opts.cup */
+    const opts0=opts;
+    const CUP=opts.cup||(opts.scene==='cup'?{i:0,pts:null,races:[]}:null);
+    if(CUP) opts={...opts, scene:GP_CUP[CUP.i].scene};
+    let loop=null, boxesOff=false, noRivalPw=false, noHaz=false;
     const HERO=(opts.hero)||heroAv();            // the chosen racer shows as the driver + the position marker
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
     // three scenarios: each is its own painted sky + road/grass palette
     const SCENES={
       meadow:{sky:'gp-sky',  prop:'tree',    light:{road:'#6C6C74',roadWear:'#65656E',verge:'#93A86B',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',roadWear:'#5E5E66',verge:'#8B9E64',grass:'#72B461',rumble:'#C7413F',lane:''}},
       sunset:{sky:'gp-sunset',prop:'cactus',  light:{road:'#6B5A63',roadWear:'#64545C',verge:'#D8A96E',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',roadWear:'#5D4D55',verge:'#CB9C63',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
-      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',roadWear:'#4B4B58',verge:'#3E4870',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',roadWear:'#43434D',verge:'#374063',grass:'#2C3452',rumble:'#C452C4',lane:''}}
+      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',roadWear:'#4B4B58',verge:'#3E4870',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',roadWear:'#43434D',verge:'#374063',grass:'#2C3452',rumble:'#C452C4',lane:''}},
+      /* the Cup's fourth track (owner, 4 Oct): a market street — sandstone flags, a saffron-and-white kerb */
+      bazaar:{sky:'gp-bazaar',prop:'bazaar',  light:{road:'#7A6A5C',roadWear:'#726355',verge:'#D9B98A',grass:'#D2A86E',rumble:'#FFF4DE',lane:'#FFF4DE'}, dark:{road:'#726254',roadWear:'#6A5B4E',verge:'#CDAD7E',grass:'#C79C62',rumble:'#E0A030',lane:''}}
     };
     const SCN=SCENES[opts.scene]||SCENES.meadow;
     const SKY=SCN.sky, NIGHT=(opts.scene==='city');
     /* DISTANCE FOG — the colour the world dissolves INTO at the horizon. One value per
        scene, used by both the per-segment fog and the haze band, so the road and the sky
        agree about how far away "far" looks. */
-    const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
+    const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235', bazaar:'255,222,178'}[opts.scene]||'214,232,242';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
     /* `pull` is how hard a bend pushes you out, in road half-widths a second per unit of
        curve, FLAT OUT. It is the difficulty dial that changes the driving: rivals and
@@ -1766,10 +2353,18 @@
        105% on medium, 118% on hard and 130% on champ — so easy holds flat out, medium only
        just, hard wants a lift and champ wants the brake. Hands-off, medium is on the grass
        at the first bend (4.7s); easy gives a small child about thirteen seconds. */
-    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280,pull:0.33},
-               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300,pull:0.46},
-               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320,pull:0.52},
-               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340,pull:0.57}}[diff]);
+    /* §2.6: two laps, a lap of len bands with `zones` box zones, `card` seconds on the spelling
+       clock. The lengths are §2.6's ×1.2 (1600/2000/2300/2600 → 1900/2400/2750/3100): at §2.6's
+       own numbers a Medium race took 2.7 minutes for a child-like driver, and GP12 asks 3–4. `rival` is the field's pace as a share of top speed (calibrated by the bots in
+       tests/gp-race.cjs — GP1/GP2); `pull` stays LAST on each line (arcade-geometry reads it). */
+    const CFG=calmCFG({easy:{len:1900,laps:2,zones:4,rivals:3,rival:0.89,haz:0.014,card:14,pull:0.33},
+               medium:{len:2400,laps:2,zones:5,rivals:4,rival:0.934,haz:0.026,card:12,pull:0.46},
+               hard:{len:2750,laps:2,zones:5,rivals:4,rival:0.905,haz:0.04,card:10,pull:0.52},
+               champ:{len:3100,laps:2,zones:6,rivals:4,rival:0.885,haz:0.055,card:9,pull:0.57}}[diff]);
+    /* the whole track — zones, props, hazards, boxes — comes from ONE seeded stream: the same
+       track every time you race it (a ghost lap needs that), and a test can race twenty */
+    const SEED=opts.seed!=null?(opts.seed>>>0):GP_SEED(opts.scene+'|'+diff);
+    const R=gpRng(SEED);
     host.innerHTML=
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
@@ -1783,7 +2378,7 @@
       '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div></div>'+
       '<div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
-    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const dpr=Math.min(gpPhone()?1.5:2,window.devicePixelRatio||1);   // §2.9: 1.5 on a phone
     const cx=cv.getContext('2d');
     function gpLayout(){ gpMeasure();
       cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);   // a new size clears the canvas and its transform
@@ -1795,7 +2390,7 @@
     // drawDist is the count of road segments projected AND drawn every frame — the
     // dominant per-frame cost. 130 segments is 2.8s of road at top speed; 100 is 2.2s and
     // still well past the horizon haze, for 23% less work on every frame.
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=100, camH=3600, fov=62;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
+    const segLen=200, roadW=2200, rumbleLen=3, camH=3600, fov=62; let drawDist=100;   // drawDist adapts to the frame rate (render)   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     // horizonY is Ht*0.30, set by gpMeasure because Ht changes when a phone turns.
@@ -1839,7 +2434,7 @@
        spacing, landmarks, strips and water. */
     const COP_W=0.46, OIL_W=0.34, BOX_W=0.27, POST_H=0.24;   // on the road: a car a touch wider than a kart; oil and the box sized to CATCH; a post half a kart high
     const WORLD=SCN.prop, ZONES=GP_ZONES[WORLD]||GP_ZONES.tree;
-    const zoneCycle=ZONES.list.slice().sort(()=>Math.random()-0.5);
+    const zoneCycle=ZONES.list.slice(); for(let i=zoneCycle.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [zoneCycle[i],zoneCycle[j]]=[zoneCycle[j],zoneCycle[i]]; }
     sectors.forEach((r,i)=>{ for(let n=r[0];n<r[1];n++) segs[n].zone=zoneCycle[i%zoneCycle.length]; });
     const lerpHex=(a,b,t)=>{ const p=parseInt(a.slice(1),16), q=parseInt(b.slice(1),16), m=k=>Math.round(((p>>k)&255)*(1-t)+((q>>k)&255)*t);
       return '#'+((1<<24)+(m(16)<<16)+(m(8)<<8)+m(0)).toString(16).slice(1); };
@@ -1852,25 +2447,26 @@
           sg.color={...here, grass:lerpHex(pz.grass,here.grass,t), verge:lerpHex(pz.verge,here.verge,t)}; }
         else sg.color=here; } }
     const runs=[]; segs.forEach((sg,n)=>{ if(!n||sg.zone!==segs[n-1].zone) runs.push({name:sg.zone,a:n,b:n+1}); else runs[runs.length-1].b=n+1; });
-    const rnd=(a,b)=>a+Math.random()*(b-a);
+    const rnd=(a,b)=>a+R()*(b-a);
     /* every prop's footprint clears the verge (1.42) by construction — a wide variant is
        pushed out rather than trusted to the zone's offset range */
-    const put=(n,kind,off,far,v)=>{ if(n<4||n>=segs.length-2) return; const vv=v!=null?v:Math.floor(Math.random()*GP_VAR[kind]);
+    const put=(n,kind,off,far,v)=>{ if(n<4||n>=segs.length-2) return; const vv=v!=null?v:Math.floor(R()*GP_VAR[kind]);
       if(kind!=='tree'&&kind!=='parktree'&&kind!=='lamp'){ const ft=GPS.box(kind,vv,WORLD).foot; if(Math.abs(off)<1.46+ft) off=Math.sign(off||1)*(1.46+ft); }
-      segs[n].sprites.push({kind:'prop',p:kind,v:vv,off,k:Math.random(),far:far||GP_FAR[kind]}); };
+      segs[n].sprites.push({kind:'prop',p:kind,v:vv,off,k:R(),far:far||GP_FAR[kind]}); };
     runs.forEach(run=>{ const z=ZONES.z[run.name], len=run.b-run.a;
-      run.water=z.water==='one'?(Math.random()<0.5?-1:1):z.water==='both'?2:0;
+      run.water=z.water==='one'?(R()<0.5?-1:1):z.water==='both'?2:0;
       for(let n=run.a;n<run.b;n++){ const sg=segs[n]; sg.water=run.water; sg.strip=z.strip||null;
         }
       (z.props||[]).forEach(rule=>{
-        const side=()=>{ if(rule.side==='water') return run.water===2?(Math.random()<0.5?-1:1):(run.water||1);
-          if(rule.side==='dry') return run.water&&run.water!==2?-run.water:(Math.random()<0.5?-1:1);
-          return Math.random()<0.5?-1:1; };
+        const side=()=>{ if(rule.side==='water') return run.water===2?(R()<0.5?-1:1):(run.water||1);
+          if(rule.side==='dry') return run.water&&run.water!==2?-run.water:(R()<0.5?-1:1);
+          return R()<0.5?-1:1; };
         if(rule.once!=null){ put(run.a+Math.round(len*rule.once),rule.k,side()*rnd(rule.off[0],rule.off[1])); return; }
         for(let n=run.a+Math.round(rnd(0,rule.gap[0])); n<run.b-2; n+=Math.round(rnd(rule.gap[0],rule.gap[1]))){
           const sd=side(), g=rule.group?Math.round(rnd(rule.group[0],rule.group[1]+0.49)):1;
           for(let q=0;q<g;q++) put(Math.min(run.b-1,n+q*Math.round(rnd(2,5))),rule.k,sd*(rnd(rule.off[0],rule.off[1])+q*0.55)); } });
-      if(z.lamps) for(let n=run.a+3;n<run.b-1;n+=14){ put(n,'lamp',-1.62,0,0); put(n,'lamp',1.62,0,1); } });   // each lamp's arm reaches over the road
+      if(z.lamps) for(let n=run.a+3;n<run.b-1;n+=14){ put(n,'lamp',-1.62,0,0); put(n,'lamp',1.62,0,1); }
+      if(z.lanterns) for(let n=run.a+5,i=0;n<run.b-1;n+=26,i++){ put(n,'lantern',-1.75,0,2*(i%3)); put(n,'lantern',1.75,0,2*(i%3)+1); } });   // each arm reaches toward the road   // each lamp's arm reaches over the road
     /* MARKER POSTS, BOTH VERGES, EVERY 5 SEGMENTS. This is the oldest trick in pseudo-3D
        racing and the one thing this track had nothing of: at 46 segments a second a post
        every five is nine a second flicking past your shoulder, and THAT is what speed
@@ -1882,10 +2478,27 @@
                                      segs[n].sprites.push({kind:'post',off:1.06,k:n}); }
     // mixed hazards + crazy distractions: oil slicks and patrol cops
     const HKINDS=['oil','oil','oil','cop'];
-    const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){
-      const kind=HKINDS[Math.floor(Math.random()*HKINDS.length)];
-      hazards.push({seg:n,off:(Math.random()*1.4-0.7),kind:kind}); } }
-    const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
+    /* THE RACING LINE: lean into the bend coming up — the average curve over the next thirty
+       bands, weighted to the nearest, as an offset toward the inside. The Easy overlay draws it,
+       the box zones put their middle box on it, and the racing-line bot drives it. */
+    const LINE=new Float32Array(segs.length);
+    for(let n=0;n<segs.length;n++){ let c=0,w=0; for(let k=0;k<30;k++){ const q=1-k/30; c+=(segs[(n+k)%segs.length].curve||0)*q; w+=q; } LINE[n]=Math.max(-0.6,Math.min(0.6,0.11*c/w)); }
+    const idealX=n=>LINE[((n%segs.length)+segs.length)%segs.length];
+    /* BOX ZONES, PLACED BY DESIGN (§2.2): `zones` a lap, evenly spread and nudged onto the
+       calmest band nearby, each THREE boxes across the road — left, the racing line, right.
+       The racing-line box is on the fastest path, the outer two cost a line change, and
+       missing the zone is a driving miss. 0.62 apart against a CATCH of 0.34: one box a zone. */
+    const ZGAP=0.62, zoneSegs=[];
+    for(let z=0;z<CFG.zones;z++){ const at=Math.round(70+(z+0.5)*(segs.length-130)/CFG.zones); let best=at, bc=1e9;
+      for(let d=-40;d<=40;d++){ const n=at+d, c=Math.abs(segs[n].curve||0)*3+Math.abs(d)*0.02; if(c<bc){ bc=c; best=n; } }
+      zoneSegs.push(best); }
+    const items=[]; zoneSegs.forEach((n,z)=>{ const mid=Math.max(-0.2,Math.min(0.2,idealX(n)));
+      [-1,0,1].forEach(k=>items.push({seg:n,off:+(mid+k*ZGAP).toFixed(3),gone:false,k:z*1.7+k,zone:z,line:k===0})); });
+    /* hazards keep clear of the box zones: a box is a choice, not an ambush */
+    const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+R()*16)){ if(R()<CFG.haz*8){
+      if(zoneSegs.some(zn=>Math.abs(zn-n)<14)) continue;
+      const kind=HKINDS[Math.floor(R()*HKINDS.length)];
+      hazards.push({seg:n,off:(R()*1.4-0.7),kind:kind}); } }
 
     /* ---- racers: the villains ---- */
     const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2;
@@ -1907,20 +2520,36 @@
     let yawS=0, wheelPh=0, bumpT=0;
     const KART_W=0.38;                // a kart is 38% of the road's half-width: ~19% of the road, as a kart game's are
     const parts=[];                   // screen-space puffs behind the kart: exhaust, dust, tyre smoke
-    const DUST={meadow:'150,128,88', sunset:'214,168,108', city:'150,160,190'}[opts.scene]||'150,128,88';
-    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
+    const DUST={meadow:'150,128,88', sunset:'214,168,108', city:'150,160,190', bazaar:'206,170,120'}[opts.scene]||'150,128,88';
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, gpCombo=0, offGrass=false;
+    /* a rival's power-up on YOU: a spin (oil) or a slow (gust, honey); your Shield stops both */
+    let pSpinT=0, pSlowT=0;
+    /* §2.3 driving: the drift mini-turbo (hold the brake into a bend, let go after 0.8s / 1.6s),
+       and the clean-line bonus (a bend finished inside the edge at >85% of top speed charges the
+       next drift half as fast again). Both score driving points. */
+    let driftT=0, drifting=false, cleanBoost=0, drivePts=0, cleanBends=0, drifts=0, bendIn=null;
+    let raceT=0, lapT=0, lapTimes=[], countFrom=0;
     const heroKart=HERO;
-    const VILL=[
-      {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm',        kart:'kart-cruiser'},
-      {name:'Glitch',    col:'#7B5CE0',glyph:'👾',sprite:'glitch-corrupt-glee', kart:'kart-rocket'},
-      {name:'Vex',       col:'#C9A227',glyph:'🐝',sprite:'vex-full',            kart:'kart-red'},
-      {name:'The Bramble',col:'#4A7A3A',glyph:'🌿',sprite:null,                kart:'kart-buggy'}];
+    /* the garage: your paint and your exhaust trail (bought or earned, never random) */
+    const GAR=(()=>{ try{ return gpGar(); }catch(e){ return {}; } })();
+    const PAINT=(()=>{ const p=GP_PAINTS.find(x=>x.id===GAR.paint); return (p&&gpOwns('paint',p.id)&&p.col)||opts.tint||null; })();
+    const TRAILC=(()=>{ const t=GP_TRAILS.find(x=>x.id===GAR.trail); return (t&&gpOwns('trail',t.id))?t.col:'225,225,232'; })();
+    const RAINBOW=['255,120,120','255,200,90','150,220,120','120,200,255','190,150,255'];
+    const trailCol=()=>TRAILC==='rainbow'?RAINBOW[Math.floor(bumpT*6)%RAINBOW.length]:TRAILC;
+    const GP_NAME={shield:'Shield',oil:'Oil slick',gust:'Gust',turbo:'Turbo',rocket:'Rocket',honey:'Sticky honey'};
+    /* THE FIELD: the Mock Bee's spellers (GP_GRID by difficulty), each in the face the hall gives
+       them — never the child's own (alt stands in) */
+    const myAv=(()=>{ try{ return (gpKid()||{}).avatar||'bizzy'; }catch(e){ return 'bizzy'; } })();
+    const facesMB=(()=>{ try{ return window.MOCKBEE&&MOCKBEE.faces?MOCKBEE.faces():null; }catch(e){ return null; } })();
+    const faceFor=id=>{ const f=facesMB&&facesMB.find(x=>x.id===id); if(f&&f.face) return f.face; return id===myAv?GP_CAST[id].alt:id; };
     const rivals=[];
-    for(let i=0;i<CFG.rivals;i++){ const vd=VILL[i%VILL.length];
-      rivals.push({z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*(0.92+i*0.035),
-        name:vd.name, col:vd.col, glyph:vd.glyph, sprite:vd.sprite, kart:vd.kart, spin:0, slow:0, fin:false, ph:Math.random()}); }
+    (GP_GRID[diff]||GP_GRID.medium).slice(0,CFG.rivals).forEach((id,i)=>{ const P=GP_CAST[id];
+      /* the field is SPREAD (1, .975, .95, .925 of the difficulty's pace, in grid order): bunched
+         within 3.5% the draft welded them into one pack, and a race was either won or lost to it */
+      rivals.push({id, z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*(1-0.025*i)*(window.SB_CALM?0.92:1), pw:P.pw, name:P.name, col:P.col, face:faceFor(id), kart:P.kart,
+        spin:0, slow:0, shield:0, boostT:0, boostMul:1, fin:false, finT:0, ph:(i*0.37)%1, zk:0, lastPm:0, v:0}); });
 
-    /* ---- power-ups: spell a ? box to UNLOCK one, tap the slot (or Space) to FIRE ---- */
+    /* ---- power-ups: spell a box to EARN one, tap the slot (or Space) to FIRE it ---- */
     const PWSVG={
       rocket:'<svg viewBox="0 0 40 40"><path d="M20 3c6 5 8 13 8 19l-4 5h-8l-4-5c0-6 2-14 8-19Z" fill="#E5484D"/><path d="M20 3c3 4 5 9 5 19h-5V3Z" fill="#FF8A8E" opacity=".7"/><circle cx="20" cy="15" r="3.4" fill="#BFE3FF" stroke="#2B3A67" stroke-width="1.2"/><path d="M12 24l-5 7 7-2M28 24l5 7-7-2" fill="#C43D5A"/><path d="M16 29h8l-1.6 6h-4.8Z" fill="#F5A623"/><path d="M17.5 35c.8 3 4.2 3 5 0l-2.5 4Z" fill="#FF6B35"/></svg>',
       turbo:'<svg viewBox="0 0 40 40"><path d="M8 22 22 5l-4 12h9L13 35l4-13H8Z" fill="#36D1FF" stroke="#0E7EA8" stroke-width="1.6" stroke-linejoin="round"/><path d="M25 9l6 2-4 4M27 22l6 2-4 4" stroke="#9BE7FF" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
@@ -1928,51 +2557,106 @@
       gust:'<svg viewBox="0 0 40 40"><path d="M33 12c0 7-8 8-17 8m19 2c-2 6-11 7-18 5m14-19c-4-3-12-3-16 2" fill="none" stroke="#39C6A5" stroke-width="3.4" stroke-linecap="round"/><circle cx="9" cy="11" r="2" fill="#39C6A5"/><circle cx="12" cy="29" r="2" fill="#8FE8D2"/><circle cx="30" cy="33" r="2" fill="#8FE8D2"/></svg>',
       honey:'<svg viewBox="0 0 40 40"><path d="M11 14c-3 3-3 12 1 16h16c4-4 4-13 1-16Z" fill="#F5B32B" stroke="#8A5A10" stroke-width="1.4"/><ellipse cx="20" cy="13" rx="10" ry="3.4" fill="#FFCF5C" stroke="#8A5A10" stroke-width="1.2"/><path d="M15 17c-1 3 0 7 1 9" stroke="#FFE49B" stroke-width="2.6" stroke-linecap="round"/><path d="M24 30c0 3 2 4 2 6 0 1.8-2.6 1.8-2.6 0 0-2 .6-3 .6-6Z" fill="#D89614"/></svg>',
       shield:'<svg viewBox="0 0 40 40"><path d="M20 4l12 5v9c0 8-5 14-12 18-7-4-12-10-12-18V9Z" fill="#5AB5F7" opacity=".35" stroke="#2E86D1" stroke-width="2"/><path d="M20 9l8 3.4v6c0 5.4-3.4 9.6-8 12.4-4.6-2.8-8-7-8-12.4v-6Z" fill="none" stroke="#BFE3FF" stroke-width="1.8"/><path d="M15 19l4 4 7-8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
-    const POWERS=[
-      {id:'rocket',name:'Rocket boost',msg:'🚀 ROCKET! Hold on!',run(){ boostT=2.6; boostMul=1.75; }},
-      {id:'turbo', name:'Turbo',msg:'⚡ TURBO!',run(){ boostT=4.0; boostMul=1.45; }},
-      {id:'oil',   name:'Oil slick',msg:'🛢️ Oil dropped — chaser spun out!',run(){ let best=null,bd=1e9;
-                     rivals.forEach(r=>{ const d=pos-r.z; if(d>0&&d<bd){bd=d;best=r;} }); if(best){best.spin=2.8;} else { boostT=1.5;boostMul=1.4; } }},
-      {id:'gust',  name:'Gust push',msg:'🌪️ Gust — shoved them wide!',run(){ let best=null,bd=1e9;
-                     rivals.forEach(r=>{ const d=r.z-pos; if(d>0&&d<bd){bd=d;best=r;} }); if(best){ best.x+=(best.x>=0?1:-1)*0.9; best.slow=2.0; } else { boostT=1.7;boostMul=1.4; } }},
-      {id:'honey', name:'Sticky honey',msg:'🍯 Honey — every racer ahead slowed!',run(){ rivals.forEach(r=>{ if(r.z>pos) r.slow=2.8; }); }},
-      {id:'shield',name:'Bubble shield',msg:'🛡️ Shield up!',run(){ shieldT=8; }}];
-    let held=null;
+    const placeOf=z=>1+rivals.filter(r=>r.z>z).length;
+    const placeNow=()=>placeOf(pos);
+    const leadZ=()=>Math.max(pos,...rivals.map(r=>r.z));
+    const behindLap=z=>(leadZ()-z)/trackLen;
+    /* the racers as one list, so a power-up treats you and a rival alike */
+    const ME={me:true}; Object.defineProperty(ME,'z',{get:()=>pos});
+    const field=()=>[ME].concat(rivals);
+    function nearest(z0,dir,who){ let best=null,bd=1e18; field().forEach(t=>{ if(t===who||t.fin) return; const d=(t.z-z0)*dir; if(d>0&&d<bd){ bd=d; best=t; } }); return best; }
+    function hitWith(t,kind,secs,from){
+      if(t===ME){ if(shieldT>0){ blocked++; try{ flash('Your Shield held!'); }catch(_){} return; }
+        hitsOnMe.push(kind);
+        if(kind==='spin'){ pSpinT=Math.max(pSpinT,secs); spinFlashT=0.5; } else pSlowT=Math.max(pSlowT,secs);
+        try{ flash(from&&from.name?(from.name+(kind==='spin'?' oiled the road — you spun!':' slowed you down!')):'Slowed!'); }catch(_){} return; }
+      if(t.shield>0) return;
+      if(kind==='spin') t.spin=Math.max(t.spin,secs); else { t.slow=Math.max(t.slow,secs); if(from===ME&&kind==='gust') t.x+=(t.x>=0?1:-1)*0.6; } }
+    /* one function fires every power-up, yours or a rival's, by the §2.4 strengths */
+    function usePower(id,full,who){ const S=GP_STR[id][full?'full':'std'], z0=who.z;
+      if(id==='shield'){ if(who===ME) shieldT=S.t; else who.shield=S.t; }
+      else if(id==='turbo'||id==='rocket'){ if(who===ME){ boostT=S.t; boostMul=S.mul; } else { who.boostT=S.t; who.boostMul=S.mul; } }
+      else if(id==='oil'){ const t=nearest(z0,-1,who); if(t) hitWith(t,'spin',S.t,who); }
+      else if(id==='gust'){ const t=nearest(z0,1,who); if(t) hitWith(t,'gust',S.t,who); }
+      else if(id==='honey'){ field().forEach(t=>{ if(t!==who&&!t.fin&&t.z>z0) hitWith(t,'honey',S.t,who); }); } }
+    let held=null, earned=[], used=[], hitsOnMe=[], blocked=0;
     const holdBtn=host.querySelector('#sg-hold');
-    function renderHold(){ holdBtn.innerHTML=held?PWSVG[held.id]:'<span class="sg-hold-empty">?</span>';
-      holdBtn.classList.toggle('ready',!!held); }
-    function fireHeld(){ if(!held||mode!=='race') return; const p=held; held=null; renderHold();
-      try{flash(p.msg);}catch(_){ } try{p.run();}catch(e){} }
+    /* THE SLOT SHOWS WHAT THE NEXT BOX WOULD GIVE — a ghost of it — so a power-up is a plan, not
+       a gamble. Holding one, it shows that one, with a ring when it is full strength. */
+    let _ghostId='';
+    const nextPower=()=>gpPowerFor(placeNow(),CFG.rivals+1,behindLap(pos));
+    function renderHold(){
+      if(held){ holdBtn.innerHTML=PWSVG[held.id]+(held.full?'<i class="gp-full" aria-hidden="true"></i>':''); holdBtn.classList.add('ready'); holdBtn.classList.remove('ghost');
+        holdBtn.setAttribute('aria-label','Use '+GP_NAME[held.id]+(held.full?', full strength':'')); holdBtn.dataset.p=held.id; _ghostId=''; return; }
+      const g=nextPower(); if(g===_ghostId) return; _ghostId=g;
+      holdBtn.innerHTML='<span class="gp-ghost">'+PWSVG[g]+'</span>'; holdBtn.classList.remove('ready'); holdBtn.classList.add('ghost');
+      holdBtn.setAttribute('aria-label','Next box gives: '+GP_NAME[g]); holdBtn.dataset.p='ghost:'+g; }
+    function fireHeld(){ if(!held||mode!=='race') return; const p=held; held=null; used.push(p.id);
+      usePower(p.id,p.full,ME); try{ flash(GP_NAME[p.id]+(p.full?' — full strength!':'!')); }catch(_){ } renderHold(); }
     holdBtn.onclick=fireHeld;
 
-    /* ---- spelling gate: hitting a ? box pauses the race ---- */
-    const feed=wordFeed(60);
-    const gpRound=[];                      // the race's words, read by finish()
+    /* ---- the words: drawn up front, so none repeats inside a race (§2.6) ---- */
+    const ORG=CUP?GP_CUP[CUP.i]:null;
+    const WORDS=gpDrawWords(CFG.zones*CFG.laps+2, ORG, ORG?CUP.seen:null);
+    function nextWord(){ if(!WORDS.length){ const more=gpDrawWords(4,ORG,new Set(gpRound.map(r=>String(r.w).toLowerCase()))); WORDS.push(...more); }
+      const w=WORDS.shift()||{w:'honey',d:'the sweet golden food that bees make'};
+      if(CUP){ (CUP.seen=CUP.seen||new Set()).add(String(w.w).toLowerCase()); }
+      return w; }
+    const gpRound=[];                      // the race's words, read by finish(): {w, ok, grade, power}
+    let met=0, right=0, clean=0, payN=0, bot=null, curW=null;
+    const gpPay={bonus:0};
+    const CALM=!!window.SB_CALM, CARD_T=Math.round((CFG.card||12)*(CALM?1.5:1));
+    /* phones type on SGUI.keys (no native keyboard over the road); desktop types for real */
+    const softKeys=()=>gpPhone();
+    let _cardKeys=null;
+    function cardOff(el){ if(_cardKeys){ try{ _cardKeys.destroy(); }catch(e){} _cardKeys=null; } el.style.display='none'; el.innerHTML=''; host.classList.remove('gp-spelling'); }
+    /* ---- the box: the race stops, the word is said, and the clock that grades it starts ---- */
     function spellGate(){
       mode='spell'; letGo();
-      const w=feed.next();
-      const p=POWERS[Math.floor(Math.random()*POWERS.length)];
+      const w=nextWord(), L=String(w.w).length, field_n=CFG.rivals+1; curW=w;
+      const power=gpPowerFor(placeNow(),field_n,behindLap(pos));
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>Item box — spell it to unlock the power-up</b>'+
-        '<button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
-        '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
-      el.style.display='grid'; try{ say(w.w); }catch(e){}
-      const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
-      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); gpRound.push({w:w.w,ok:ok});
-        el.style.display='none'; el.innerHTML='';
-        if(ok){ held=p; renderHold();
-          // spell combo: unbroken correct spells stack an instant extra boost
-          gpCombo++; if(gpCombo>=2){ boostT=Math.max(boostT,1.2); boostMul=Math.max(boostMul,1.22+Math.min(gpCombo,6)*0.06); }
-          const uc=host.querySelector('#sg-card');
-          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[p.id]+'</span><b>'+p.name+(gpCombo>=2?(' · '+gpCombo+'x combo'):'')+' unlocked!</b><i>tap the slot (or Space) to use it</i></div>';
-          uc.style.display='grid';
-          setTimeout(()=>{ uc.style.display='none'; uc.innerHTML=''; resume(); },1300);
-        } else { gpCombo=0; try{flash('The box fizzles… next one is coming!');}catch(_){ } resume(); } }
+      const t0=performance.now(); let doneG=false, ringT=0;
+      /* the bot driver (tests) answers here, synchronously, with the time it says it took */
+      if(bot&&bot.spell){ const a=bot.spell(w,{par:GP_PAR(L,CALM),power}); return grade(a.typed,a.secs); }
+      el.innerHTML='<div class="sg-cardbox gp-card"><div class="gp-card-top"><span class="gp-card-ring" id="gp-ring"></span>'+
+        '<b>Spell it for a power-up</b><span class="gp-card-p" title="'+GP_NAME[power]+'">'+PWSVG[power]+'</span></div>'+
+        '<button class="sg-cardw" id="sg-cspk" aria-label="Hear the word again">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
+        '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type the word"'+(softKeys()?' inputmode="none" readonly':'')+'>'+
+        '<button class="sg-rbtn go" id="sg-cgo">Go</button></div></div>';
+      el.style.display='grid'; host.classList.add('gp-spelling'); try{ loop&&loop.hold(true); }catch(e){} try{ say(w.w); }catch(e){}
+      const inp=el.querySelector('#sg-ci'), ring=el.querySelector('#gp-ring');
+      const tick=()=>{ if(doneG) return; const left=Math.max(0,CARD_T-(performance.now()-t0)/1000);
+        if(ring) ring.innerHTML=SGUI.ring(left/CARD_T,Math.ceil(left)); if(left<=0){ submit(); return; } ringT=setTimeout(tick,250); };
+      tick();
+      if(softKeys()){ const K=SGUI.keys(el.querySelector('.gp-card'),{ onKey:ch=>{ inp.value+=ch; }, onBack:()=>{ inp.value=inp.value.slice(0,-1); }, onEnter:()=>submit() }); _cardKeys=K; }
+      else { try{ inp.focus(); }catch(e){} }
+      function submit(){ if(doneG) return; doneG=true; clearTimeout(ringT); const secs=(performance.now()-t0)/1000; cardOff(el); grade(inp.value,secs); }
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
       el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
+      function grade(typed,secs){
+        const ok=sameSpelling(typed||'',w.w), g=gpGrade(ok,secs,L,CALM);
+        met++; wlog(w,ok); gpRound.push({w:w.w,d:w.d||'',ok,grade:g,power:ok?power:null});
+        const st=gpStat();
+        if(ok){ right++; payN+=payG(gpPay)?1:0; st.right=(st.right||0)+1;
+          if(g==='clean'){ clean++; st.clean=(st.clean||0)+1; gpCombo++; } else gpCombo=0;
+          held={id:power,full:g==='clean'}; earned.push(power); renderHold();
+          let combo=false; if(gpCombo>=GP_COMBO){ gpCombo=0; combo=true; usePower('turbo',false,ME); }
+          if(bot&&bot.spell) return resume();
+          const uc=host.querySelector('#sg-card');
+          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[power]+'</span><b>'+GP_NAME[power]+(g==='clean'?' · full strength':'')+'</b>'+
+            '<i>'+(g==='clean'?'Clean — spelled inside the clock':'Right — a little slower than Clean')+(combo?' · three Clean in a row: a free Turbo!':'')+'</i><i>Tap the slot (or Space) to use it</i></div>';
+          uc.style.display='grid';
+          setTimeout(()=>{ if(mode!=='spell') return; uc.style.display='none'; uc.innerHTML=''; resume(); },1100);
+        } else { gpCombo=0;
+          if(bot&&bot.spell) return resume();
+          /* A MISS HOLDS (§2.4, GP8): no power-up, the word on screen with the letters marked,
+             and the race stays stopped until Continue (Enter or a tap) */
+          host.classList.add('gp-spelling');   // the miss card sits where the spell card was, over the thumb band
+          gpMiss(host.querySelector('#sg-card'),w,typed||'',()=>{ host.classList.remove('gp-spelling'); resume(); }); } }
     }
-    function resume(){ countT=1.0; mode='count'; if(_rotWait){ _rotWait=false; onRot(); } }
+    function resume(){ curW=null; try{ loop&&loop.hold(false); }catch(e){} countT=1.0; countFrom=1.0; mode='count'; if(_rotWait){ _rotWait=false; onRot(); } }
 
     /* ---- steering ----
        WHAT IS HELD, NOT WHAT HAPPENED LAST. The old handlers set steer on a press and zeroed
@@ -2101,6 +2785,7 @@
         if(si%(isF?2:3)===0){ const pw=0.035*w1, ph=(isF?0.3:0.34)*w1; cx.fillStyle=col; cx.fillRect(ax-pw/2,y1-ph,pw,ph); } }
       cx.globalAlpha=a0; }
     const farItems=[];                       // far props, collected near-to-far, drawn far-to-near
+    let _skyCv=null;                         // the backdrop, pre-scaled for this layout
     function drawBG(){
       const hz=horizonY;
       const sky=sgTex(SKY);
@@ -2122,7 +2807,12 @@
         const par=Math.sin(pos/2600)*16 - playerX*26;         // gentle parallax
         const groundH=Ht-hz;
         const srcH=sky.height*0.68, iw=Wd*1.12;
-        try{ cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, hz+2); }catch(e){}
+        /* the painting is scaled ONCE into an offscreen canvas at this layout's size (§2.9), then
+           one unscaled blit a frame — a 1280px image resampled every frame was the dearest draw */
+        const sk=Math.round(iw)+'|'+Math.round(hz)+'|'+dpr;
+        if(!_skyCv||_skyCv.k!==sk){ try{ const c2=document.createElement('canvas'); c2.width=Math.ceil(iw*dpr); c2.height=Math.ceil((hz+2)*dpr);
+          c2.getContext('2d').drawImage(sky,0,0,sky.width,srcH,0,0,c2.width,c2.height); c2.k=sk; _skyCv=c2; }catch(e){ _skyCv=null; } }
+        try{ if(_skyCv) cx.drawImage(_skyCv, -(iw-Wd)/2 + par*0.35, 0, iw, hz+2); else cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, hz+2); }catch(e){}
         const gg=cx.createLinearGradient(0,hz,0,Ht);
         gg.addColorStop(0,  hx(LIGHT.grass,1.14));            // lit at the horizon
         gg.addColorStop(0.5,hx(LIGHT.grass,1.0));
@@ -2166,7 +2856,8 @@
     /* _vis is written only for bands inside this frame's draw range, so a band the camera
        jumped past keeps last time's true. Anything placed by band (rivals, hazards, boxes)
        checks the band was visited THIS frame, or a jump leaves ghosts drawn at old positions. */
-    let _frameN=0;
+    let _frameN=0, _ghostN=0;
+    const LINE_ON=diff==='easy';
     function draw(){ _frameN++;
       drawBG();
       const posm=pos%trackLen;
@@ -2231,6 +2922,9 @@
           poly(s1.x-s1.w*EO-e1,s1.y, s2.x-s2.w*EO-e2,s2.y, s2.x-s2.w*EO+e2,s2.y, s1.x-s1.w*EO+e1,s1.y, el);
           poly(s1.x+s1.w*EO-e1,s1.y, s2.x+s2.w*EO-e2,s2.y, s2.x+s2.w*EO+e2,s2.y, s1.x+s1.w*EO+e1,s1.y, el); }
         if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, fogged(c.lane,n)); }
+        /* EASY ONLY: the racing line, a pale ribbon on the tarmac (§2.3) */
+        if(LINE_ON && n<70 && s1.w>8){ const q1=idealX(seg.index), q2=idealX(seg.index+1), lw1=s1.w*0.05, lw2=s2.w*0.05, a1=s1.x+q1*s1.w, a2=s2.x+q2*s2.w;
+          cx.globalAlpha=0.30*Math.min(1,(70-n)/20); poly(a1-lw1,s1.y, a2-lw2,s2.y, a2+lw2,s2.y, a1+lw1,s1.y, '#FFFDF0'); cx.globalAlpha=1; }
         // checkered finish strip
         if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
@@ -2315,6 +3009,12 @@
         const sc=camDepth/cz2, sx=Wd/2+sc*(a.x+(b.x-a.x)*f)*Wd/2+sc*roadW*Wd/2*r.x, sy=horizonY-sc*(a.y+(b.y-a.y)*f)*Ht/2;
         r._sx=sx; r._sy=sy;
         order.push({y:sy,scale:sc,sx:sx,sy:sy,t:'rival',r:r,clip:seg._clip,far:seg._far}); });
+      /* THE GHOST of your best lap on this track at this difficulty: where you were at this lap time */
+      if(ghost&&ghost.s&&mode==='race'&&lap<=CFG.laps){ const gi=lapT/0.1, i0=Math.floor(gi), A=ghost.s[i0], B=ghost.s[i0+1]||A;
+        if(A&&B[0]>=A[0]){ const f2=gi-i0, gz=(A[0]+(B[0]-A[0])*f2)*segLen, gx=A[1]+(B[1]-A[1])*f2, si=Math.floor(gz/segLen)%segs.length, seg=segs[si];
+          if(seg&&seg._vis&&seg._vf===_frameN){ const f=(gz-si*segLen)/segLen, a=seg.p1.camera, b=seg.p2.camera, cz2=a.z+(b.z-a.z)*f;
+            if(cz2>camDepth){ const sc=camDepth/cz2, sx=Wd/2+sc*(a.x+(b.x-a.x)*f)*Wd/2+sc*roadW*Wd/2*gx, sy=horizonY-sc*(a.y+(b.y-a.y)*f)*Ht/2;
+              order.push({y:sy,scale:sc,sx,sy,t:'ghost',clip:seg._clip,far:seg._far}); _ghostN++; } } } }
       order.sort((a,b)=>a.y-b.y);
       order.forEach(o=>{ if(o.t!=='prop' && o.t!=='strip' && (o.far||0)>95) return;   // beyond this they are sub-pixel; props carry on in the far loop
         const hw=o.scale*roadW*Wd/2;            // the road's half-width at this depth, px
@@ -2369,11 +3069,16 @@
             cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
             cx.textAlign='left'; cx.textBaseline='alphabetic'; }
           cx.restore(); }
+        else if(o.t==='ghost'){ const kw=w*(KART_W/0.11); cx.globalAlpha*=0.42;
+          kartDraw(cx,o.sx,o.sy,kw,{style:KART,body:'#E8F4FF',driver:avImg(heroKart),yaw:0,wheel:wheelPh,t:bumpT,lift:0}); }
         else { const r=o.r, kw=w*(KART_W/0.11), sp=r.spin>0;
-          kartDraw(cx,o.sx,o.sy,kw,{style:r.kart,body:r.col,driver:r.sprite?sgImg(r.sprite):null,glyph:r.sprite?null:r.glyph,
+          kartDraw(cx,o.sx,o.sy,kw,{style:r.kart,body:r.col,driver:avImg(r.face),glyph:null,
             yaw:sp?Math.sin(bumpT*14)*0.9:Math.sin(bumpT*0.9+r.ph*6)*0.12, wheel:(wheelPh+r.ph)%1, t:bumpT+r.ph*9,
             lift:-Math.sin(bumpT*8.5+r.ph*7)*0.25});
-          if(sp){ cx.font='700 '+Math.round(kw*0.4)+'px serif'; cx.textAlign='center'; cx.fillText('💫',o.sx,o.sy-kw*1.25); cx.textAlign='left'; } }
+          /* a spin is drawn (two arcs over the kart), never an emoji */
+          if(sp){ cx.strokeStyle='rgba(255,255,255,.9)'; cx.lineWidth=Math.max(1.5,kw*0.05); const a0=bumpT*9;
+            for(const k of [0,Math.PI]){ cx.beginPath(); cx.arc(o.sx,o.sy-kw*1.2,kw*0.28,a0+k,a0+k+1.9); cx.stroke(); } }
+          if(r.shield>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=2; cx.beginPath(); cx.ellipse(o.sx,o.sy-kw*0.6,kw*0.66,kw*0.72,0,0,7); cx.stroke(); } }
         cx.globalAlpha=1; cx.restore();
       });
       /* THE KART IS DRAWN WHERE IT IS. Its offset from centre is measured in the same
@@ -2393,7 +3098,7 @@
       const px=Wd/2 + (playerX-camLag)*hwK;
       _kartPx=px; _kpy=py; _kpw=pw;       // for the feel probe, and where the puffs leave from
       const vfk=v/maxV, rough=offGrass&&v>1?(Math.sin(bumpT*23)*1.1+Math.sin(bumpT*37)*0.6):0;
-      kartDraw(cx,px,py,pw,{style:KART,body:opts.tint||null,driver:avImg(heroKart),
+      kartDraw(cx,px,py,pw,{style:KART,body:PAINT,driver:avImg(heroKart),
         yaw:yawS, roll:-yawS*0.07+Math.max(-1,Math.min(1,push/2.5))*0.03,
         lift:-(Math.sin(bumpT*9)*0.3+Math.sin(bumpT*5.7)*0.2)*vfk+rough,
         wheel:wheelPh, brake:braking&&v>maxV*0.3, boost:boostT>0, t:bumpT, lod:false});
@@ -2459,23 +3164,37 @@
     /* position bar: everyone's progress at a glance */
     function updateHud(){
       const ahead=rivals.filter(r=>r.z>pos).length; const place=ahead+1;
-      host.querySelector('#sg-pos').innerHTML=['🥇 1st','🥈 2nd','🥉 3rd','4th','5th'][place-1]+' <i>/ '+(CFG.rivals+1)+'</i>';
+      host.querySelector('#sg-pos').innerHTML=['1st','2nd','3rd','4th','5th'][place-1]+' <i>/ '+(CFG.rivals+1)+'</i>';
+      if(!held) renderHold();
       host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,lap)+'/'+CFG.laps;
-      host.querySelector('#sg-spd').textContent='💨 '+Math.round(v/maxV*180);
+      host.querySelector('#sg-spd').textContent=Math.round(v/maxV*180)+' km/h';
       const pb=host.querySelector('#sg-pb');
       let dots='<i class="sg-pb-road"></i><b class="sg-pb-flag">'+GP_FLAG()+'</b>';
       rivals.forEach((r,i)=>{ const pct=Math.min(99,r.z/TOTAL*100);
-        dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+r.name+'">'+r.glyph+'</span>'; });
+        if(r._av==null){ try{ r._av=(window.SB_AVATAR&&SB_AVATAR(r.face,16))||''; }catch(e){ r._av=''; } }
+        dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+esc2(r.name)+'">'+r._av+'</span>'; });
       dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/TOTAL*100).toFixed(1)+'%">'+meMark+'</span>';
       pb.innerHTML=dots;
     }
 
     /* ---- loop ---- */
-    let last=0;
-    function frame(ts){ if(over) return; const dt=Math.min(0.05,(ts-last)/1000)||0.016; last=ts;
-      if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } }
-      if(mode==='race') update(dt);
-      draw(); requestAnimationFrame(frame); }
+    /* ---- loop: real time, fixed step (spec §1.4, sgLoop) ----
+       Physics advances in 1/120 s steps, as many as real time needs, so a race takes the same
+       time on a slow phone as on a fast laptop (GP7); the picture is drawn once a frame, the
+       world carried forward by the part-step left over so nothing judders between steps. */
+    const loopFn=window.sgLoop;   // the engine kit's one clock (it also holds while a miss card is up)
+    function step(dt){ if(over) return;
+      if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } return; }
+      if(mode==='race') update(dt); }
+    /* PERFORMANCE (§2.9): drawDist 100 → 70 under 50fps and back above 58; puffs capped 120,
+       halved while slow. Measured on the frame clock, not guessed from the device. */
+    let _fps=60, _fT=0, _slow=false, _ddPin=0;   // _ddPin: a test measuring the world at a fixed range pins it (window._race.pinDraw)
+    function render(alpha){ const now=performance.now(); if(_fT){ const f=1000/Math.max(1,now-_fT); _fps+=(Math.min(120,f)-_fps)*0.05; } _fT=now;
+      if(_ddPin) drawDist=_ddPin; else if(!_slow&&_fps<50){ _slow=true; drawDist=70; } else if(_slow&&_fps>58){ _slow=false; drawDist=100; }
+      if(mode!=='race'){ draw(); return; }
+      const a=Math.max(0,Math.min(1,alpha||0))/120, p0=pos, z0=rivals.map(r=>r.z);
+      pos+=v*a; rivals.forEach(r=>{ r.z+=(r.v||0)*a; });
+      try{ draw(); } finally { pos=p0; rivals.forEach((r,i)=>{ r.z=z0[i]; }); } }
     /* Puffs are spawned where the kart was DRAWN (last frame's px/py/pw), so they leave
        from the pipes and the tyres, then drift toward the camera and fade. */
     let _kpy=0, _kpw=0;
@@ -2486,19 +3205,46 @@
       const rg=g2.createRadialGradient(32,32,0,32,32,32);
       rg.addColorStop(0,'rgba('+col+',1)'); rg.addColorStop(0.45,'rgba('+col+',.7)'); rg.addColorStop(1,'rgba('+col+',0)');
       g2.fillStyle=rg; g2.fillRect(0,0,64,64); return (_puffTex[col]=pc); }
-    function puff(x,y,vx,vy,r,gr,life,col,a){ if(parts.length<110) parts.push({x,y,vx,vy,r,gr,life,max:life,col,a}); }
+    function puff(x,y,vx,vy,r,gr,life,col,a){ if(parts.length<(_slow?60:120)) parts.push({x,y,vx,vy,r,gr,life,max:life,col,a}); }
     function kartFx(dt){
       for(let i=parts.length-1;i>=0;i--){ const q=parts[i]; q.life-=dt; if(q.life<=0){ parts.splice(i,1); continue; }
         q.x+=q.vx*dt; q.y+=q.vy*dt; q.r+=q.gr*dt; q.vx*=0.97; }
       if(!_kpw) return; const vf=v/maxV, P=_kpw, X=_kartPx, Y=_kpy;
       const rate=(r)=>Math.random()<r*dt;
-      if(vf>0.05 && rate(boostT>0?34:10+vf*8)) [-0.08,0.08].forEach(k=>puff(X+k*P,Y-0.11*P,(Math.random()-0.5)*P*0.3,P*(0.5+Math.random()*0.4),P*0.04,P*0.16,0.45,boostT>0?'255,190,120':'225,225,232',boostT>0?0.4:0.28));
+      if(vf>0.05 && rate(boostT>0?34:10+vf*8)) [-0.08,0.08].forEach(k=>puff(X+k*P,Y-0.11*P,(Math.random()-0.5)*P*0.3,P*(0.5+Math.random()*0.4),P*0.04,P*0.16,0.45,boostT>0?'255,190,120':trailCol(),boostT>0?0.4:0.28));
       const onVerge=Math.abs(playerX)>0.9;
       if(vf>0.08 && onVerge && rate(34)) [-1,1].forEach(k=>puff(X+k*0.37*P,Y-0.03*P,k*P*(0.3+Math.random()*0.5),P*(0.7+Math.random()*0.6),P*0.06,P*0.34,0.6,DUST,0.5));
       if(braking && vf>0.45 && rate(26)) [-1,1].forEach(k=>puff(X+k*0.37*P,Y-0.02*P,k*P*0.2,P*(0.6+Math.random()*0.4),P*0.05,P*0.28,0.5,'245,245,248',0.45));
     }
-    function update(dt){
+    /* the bot drivers the acceptance tests race with (window._race.bot): a racing-line driver
+       that steers onto LINE and lifts for the tight bends, and a random one. Never in play. */
+    function botDrive(dt){ const n=Math.floor(pos/segLen), vf=v/maxV, sg=segs[n%segs.length];
+      if(bot.drive==='human'){ /* a child at the wheel: sees where the kart was 0.3s ago, steers full or not at all,
+           lifts late for the tight bends (the 300ms-reaction driver of tools/game-bench) */
+        (bot.hist=bot.hist||[]).push([playerX,idealX(n+4)]); const old=bot.hist.length>36?bot.hist.shift():bot.hist[0];
+        const err=old[1]-old[0]; steer=Math.abs(err)>0.14?Math.sign(err):0;
+        let c=0; for(let k=4;k<16;k++) c=Math.max(c,Math.abs(segs[(n+k)%segs.length].curve||0));
+        braking=c>=4&&vf>0.8; }
+      else if(bot.drive==='random'){ bot.t=(bot.t||0)-dt; if(bot.t<=0){ const r=bot.rng(); steer=r<0.36?-1:r<0.72?1:0; bot.t=0.25+bot.rng()*0.45; } braking=false; }
+      else { let tgt=idealX(n+4); const pushNow=(sg.curve||0)*vf*vf*PULL;
+        /* a racing driver steps round a hazard on its line and back */
+        const pm=pos%trackLen; hazards.forEach(h=>{ let d=h.seg*segLen-pm; if(d<0) d+=trackLen; if(d>0&&d<segLen*14&&Math.abs(h.off-tgt)<0.5) tgt=h.off>tgt?h.off-0.55:h.off+0.55; });
+        tgt=Math.max(-0.85,Math.min(0.85,tgt));
+        const want=(tgt-playerX)/0.25+pushNow, cap=2.2*Math.max(0.42,vf);
+        steer=Math.max(-1,Math.min(1,want/cap));
+        let c=0; for(let k=0;k<22;k++) c=Math.max(c,Math.abs(segs[(n+k)%segs.length].curve||0));
+        braking=c*vf*PULL>2.2*0.86; }
+      if(held){ const id=held.id; let go=id!=='oil'&&id!=='gust';
+        if(id==='oil') go=rivals.some(r=>!r.fin&&pos-r.z>0&&pos-r.z<segLen*6);
+        if(id==='gust') go=rivals.some(r=>!r.fin&&r.z-pos>0&&r.z-pos<segLen*25);
+        if(go) fireHeld(); } }
+    let ghost=null, gSamp=[], gBest=null, gAcc=0;
+    const GKEY=opts.scene+'|'+diff;
+    try{ ghost=((window.SB_STORE&&SB_STORE.getJSON('gpGhost',{}))||{})[GKEY]||null; }catch(e){ ghost=null; }
+    function update(dt){ raceT+=dt; lapT+=dt; if(!held) renderHold();   // the slot's ghost follows your place (a DOM write only when it changes)
+      if(bot&&bot.drive) botDrive(dt);
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
+      pSpinT=Math.max(0,pSpinT-dt); pSlowT=Math.max(0,pSlowT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
       /* Steering was halved in an earlier tuning pass to stop a tap leaping across the
          road. It overshot: at 1.1 a full crossing took 1.8 SECONDS of holding, which is
@@ -2506,38 +3252,40 @@
          2.2 — the road crosses in 0.9s, a tap still nudges, and the kart answers. */
       const dxs=dt*2.2*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
-      /* THE ROAD PUSHES YOU OUT — WHILE IT BENDS, AND ONLY THEN.
-         For a while the push had MEMORY: a bend built up a sideways slide that outlived it,
-         with a 2.4s half-life. Measured in the simulator: an unsteered kart moved 0.17
-         road-half-widths a second ON STRAIGHTS, a kart parked in the grass kept being shoved
-         sideways, and a counter-steer at a standstill lost to the stored slide for most of a
-         second. Play-tested in one line: "the car is veering in all random directions". It
-         was — the push you felt belonged to a bend you had already left.
-         So the push has no memory. It is the bend under the kart NOW, times speed squared,
-         times PULL. What that model has to prove is that it is not self-driving — the reason
-         memoryless was dropped the first time is that a weak push pendulums across
-         alternating bends and never leaves the road. PULL is set so it cannot: hands-off,
-         every difficulty is in the grass by the first sector. SQUARED is what makes the brake
-         the answer to a corner (lifting to 80% cuts the push by a third), and what makes a
-         kart that has stopped in the grass steerable straight back out.
-         Against a child who reacts 300ms late and steers back only once clearly drifting,
-         grass time fell 9.6→5.9% on easy, 13.5→6.4% medium, 16.7→7.7% hard, 20.4→11% champ. */
+      /* THE ROAD PUSHES YOU OUT — WHILE IT BENDS, AND ONLY THEN. No memory (see CLAUDE.md
+         "THE PUSH HAS NO MEMORY"): the bend under the kart NOW, times speed squared, times PULL. */
       const vf=v/maxV;
       push=(seg.curve||0)*vf*vf*PULL;
       playerX-=push*dt;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       /* the kart's LOOK: nose into the steer (not a card tilting), treads rolling with the
          road, springs working harder the faster you go and hard on the grass */
-      yawS += (steer*0.85 - yawS)*(1-Math.pow(0.5,dt/0.09));
+      yawS += ((steer*0.85+(pSpinT>0?Math.sin(raceT*16)*0.9:0)) - yawS)*(1-Math.pow(0.5,dt/0.09));
       wheelPh = (wheelPh + (v/maxV)*dt*5.5)%1; bumpT+=dt;
       kartFx(dt);
       camLag += ((playerX*CAM_FOLLOW)-camLag)*(1-Math.pow(0.5, dt/CAM_HALF));
+      /* ±2% RUBBER BAND and a symmetric DRAFT (§2.5, owner): more than 12 bands behind the
+         leader, +2% of top speed; within 3 bands behind any racer, +2% more. That is all —
+         a lead earned by driving stays a lead (GP3). */
+      const lead=Math.max(0,...rivals.map(r=>r.fin?-1:r.z));
+      const band=lead-pos>segLen*12?0.02:0, draft=rivals.some(r=>!r.fin&&r.z-pos>0&&r.z-pos<segLen*3)?0.02:0;
+      const cap=pSpinT>0?0.35:pSlowT>0?0.6:1;
+      const topV=maxV*boostMul*(1+band+draft)*cap;
       const offRoad=(playerX<-0.95||playerX>0.95);
+      const curveNow=Math.abs(seg.curve||0);
+      const wasDrift=drifting;
+      drifting=!offRoad&&braking&&curveNow>=2&&steer*(seg.curve||0)>0&&v>maxV*0.55;
       if(offRoad){
         // the grass rolls the kart to a FULL STOP — no throttle off the tarmac; steering
         // still works at a standstill, so you steer back on and pull away again
         v=Math.max(0, v-(maxV/0.9)*dt);
-        if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('🌿 Off the track — steer back on!');}catch(_){} }
+        if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('Off the track — steer back on!');}catch(_){} }
+      } else if(drifting){
+        /* A DRIFT: the brake held INTO a bend, steering with it. It scrubs speed gently (to 62%)
+           instead of braking hard, and charges the mini-turbo; a clean previous bend charges it
+           half as fast again. */
+        offGrass=false; driftT+=dt*(cleanBoost?1.5:1);
+        v=Math.max(maxV*0.62, v-(maxV/2.4)*dt);
       } else if(braking){
         offGrass=false;
         /* a real lift, not a tap: down to ~46% in about a second, which is what a
@@ -2546,15 +3294,24 @@
         v=Math.max(maxV*0.34, v-(maxV/1.05)*dt);
       } else {
         offGrass=false;
-        v=Math.min(maxV*boostMul, v+accel*dt);   // tarmac: accelerate up to top speed
+        if(v>topV) v=Math.max(topV, v-maxV*1.6*dt);   // a spin or a slow bites; a boost ending eases off
+        else v=Math.min(topV, v+accel*dt);             // tarmac: accelerate up to top speed
       }
+      /* let go of a drift after 0.8s or 1.6s: ×1.15 or ×1.3 for a second */
+      if(wasDrift&&!drifting){ const m=driftT>=1.6?1.3:driftT>=0.8?1.15:0;
+        if(m){ if(boostT<=0||boostMul<=m){ boostT=Math.max(boostT,1); boostMul=Math.max(boostMul,m); } drivePts+=m>1.2?20:10; drifts++; cleanBoost=0;
+          try{ flash(m>1.2?'Big drift — mini-turbo!':'Drift — mini-turbo!'); }catch(_){} }
+        driftT=0; }
+      /* CLEAN-LINE BONUS: a bend (curve 2+) taken without touching the edge, left at >85% */
+      if(curveNow>=2){ if(!bendIn) bendIn={clean:true}; if(Math.abs(playerX)>0.9) bendIn.clean=false; }
+      else if(bendIn){ if(bendIn.clean&&v>maxV*0.85){ cleanBends++; drivePts+=25; cleanBoost=1; } else cleanBoost=0; bendIn=null; }
       const pm=pos%trackLen;
       // tol ≈ half a kart-width in lane units — so a hit needs a real overlap, matching what you see
       const CATCH=0.34;
-      if(shieldT<=0){ hazards.forEach(h=>{ if(h.hit) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
-        if(d<segLen*0.9 && Math.abs(playerX-h.off)<CATCH && v>maxV*0.25){ h.hit=true; setTimeout(()=>{h.hit=false;},1400);
-          if(h.kind==='cop'){ v*=0.5; spinFlashT=0.5; try{flash('🚓 Pulled over — the cops!');}catch(_){} }
-          else { v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){} } } }); }
+      /* hazards cost speed (×0.55, §2.3); the Shield rides through them */
+      if(shieldT<=0&&!noHaz){ hazards.forEach(h=>{ if(h.hitT>raceT) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
+        if(d<segLen*0.9 && Math.abs(playerX-h.off)<CATCH && v>maxV*0.25){ h.hitT=raceT+1.4;
+          v*=0.55; spinFlashT=0.5; try{flash(h.kind==='cop'?'Pulled over — the cops!':'Slipped on oil!');}catch(_){} } }); }
       /* THE BOX IS SWEPT, NOT SAMPLED. This used to ask "is the box inside a 1.6-segment
          window THIS frame?", which is a point test against a fixed window and therefore
          frame-rate dependent: at 60fps the kart covers 0.77 of a segment per frame and you
@@ -2567,59 +3324,120 @@
       pos+=v*dt;
       const _pm2=pos%trackLen;
       const _wrapped=_pm2<_prevPm;                    // crossed the start/finish this frame
+      let gate=null;
       items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen;
         const crossed=_wrapped ? (iz>_prevPm || iz<=_pm2) : (iz>_prevPm && iz<=_pm2);
-        if(crossed && Math.abs(playerX-it.off)<CATCH){ it.gone=true; spellGate(); } });
+        if(crossed && Math.abs(playerX-it.off)<CATCH){ it.gone=true; gate=it; } });
+      /* the ghost of this lap, ten samples a second: where you were and how far across */
+      gAcc+=dt; if(gAcc>=0.1){ gAcc-=0.1; gSamp.push([+(_pm2/segLen).toFixed(1),+playerX.toFixed(2)]); }
       const nl=1+Math.floor(pos/trackLen);
-      if(nl>lap&&nl<=CFG.laps){ lap=nl; items.forEach(it=>it.gone=false); try{flash('🏁 Lap '+lap+' of '+CFG.laps+'!');}catch(_){ } }
-      if(pos>=TOTAL){ over=true; return finish(); }
-      rivals.forEach(r=>{ r.spin=Math.max(0,r.spin-dt); r.slow=Math.max(0,r.slow-dt);
-        let rs=r.spd; if(r.spin>0) rs*=0.28; else if(r.slow>0) rs*=0.55;
-        const gap=pos-r.z; rs+= gap>segLen*12?maxV*0.07: gap<-segLen*12?-maxV*0.06:0;
-        r.z+=Math.max(0,rs)*dt; if(r.z>=TOTAL) r.fin=true;
+      if(nl>lap){ lapTimes.push(+lapT.toFixed(2)); if(!gBest||lapT<gBest.t) gBest={t:+lapT.toFixed(2),s:gSamp}; gSamp=[]; lapT=0;
+        if(nl<=CFG.laps){ lap=nl; items.forEach(it=>it.gone=boxesOff); try{flash('Lap '+lap+' of '+CFG.laps+'!');}catch(_){ } } }
+      rivals.forEach(r=>{ r.spin=Math.max(0,r.spin-dt); r.slow=Math.max(0,r.slow-dt); r.shield=Math.max(0,r.shield-dt); r.boostT=Math.max(0,r.boostT-dt); if(!r.boostT) r.boostMul=1;
+        let rs=r.spd*r.boostMul; if(r.spin>0) rs*=0.28; else if(r.slow>0) rs*=0.55;
+        const gap=pos-r.z; rs+= gap>segLen*12?maxV*0.02: gap<-segLen*12?-maxV*0.02:0;
+        if([ME].concat(rivals).some(o=>o!==r&&!o.fin&&o.z-r.z>0&&o.z-r.z<segLen*3)) rs+=maxV*0.02;
+        r.v=Math.max(0,rs); const pz=r.z%trackLen; r.z+=r.v*dt; const nz=r.z%trackLen;
+        /* a rival's box: it turns one into a power-up every 1/pw boxes, chosen by the same
+           table from ITS place — deterministic, never a dice roll */
+        zoneSegs.forEach(zn=>{ const iz=zn*segLen; if(nz<pz ? (iz>pz||iz<=nz) : (iz>pz&&iz<=nz)){ r.zk++;
+          if(!r.fin&&!noRivalPw&&Math.floor(r.zk*r.pw)>Math.floor((r.zk-1)*r.pw)){ const id=gpPowerFor(1+rivals.filter(o=>o!==r&&o.z>r.z).length+(pos>r.z?1:0),CFG.rivals+1,behindLap(r.z)); usePower(id,false,r); r.used=(r.used||0)+1; } } });
+        if(!r.fin&&r.z>=TOTAL){ r.fin=true; r.finT=raceT; }
         r.x+= (Math.sin((r.z+r.name.length*99)/1400)*0.6 - r.x)*dt*0.6; });
+      if(pos>=TOTAL){ over=true; return finish(); }
+      if(gate) spellGate();
     }
-    /* A race that ends by calling done() hands the child straight back to the app's
-       generic text card — no placing, no words, nothing to read. The finish IS the
-       race, and this one did not have one. */
-    function finish(){ unbind();
+    /* THE FINISH (§2.6). Stars by place. Score = place points + driving points (clean bends,
+       drift mini-turbos) + 50 for each box word right. Coins only for words: one per box word
+       right as it was spelled (payG), and the contest coin only for a podium with 70% or more
+       of the box words right — never for finishing. The card prints the coins the LEDGER moved
+       (GP11). The word level hears box words right ÷ box words met; the place never moves it. */
+    const E0=(()=>{ try{ return typeof earnedSoFar==='function'?earnedSoFar():0; }catch(e){ return 0; } })();
+    let result=null;
+    function finish(){ unbind(); try{ loop&&loop.stop(); }catch(e){}
+      try{ updateHud(); }catch(e){}
       const place=1+rivals.filter(r=>r.fin).length;
-      const win=place===1, score=(6-place)*250+Math.round(pos/segLen);
-      const stars=place===1?3:place===2?2:place===3?1:0;
+      const win=place===1, stars=place===1?3:place===2?2:place===3?1:0;
+      const placePts=Math.max(0,6-place)*250, wordPts=50*right, score=placePts+drivePts+wordPts;
+      const pct=met?right/met:0;
+      const podium=place<=3&&met>0&&pct>=0.7;   // the contest coin: a podium with 70% of the box words right — never for finishing
+      let contest=0; try{ contest=podium?addCoins('contest'):0; }catch(e){ contest=0; }
+      const coins=Math.max(0,((()=>{ try{ return earnedSoFar(); }catch(e){ return E0; } })())-E0);
+      let lvl=null; if(met>0&&window.SB_LEVEL&&typeof SB_LEVEL.after==='function'){ try{ lvl=SB_LEVEL.after('beeGrandPrix',pct); }catch(e){ lvl=null; } }
+      const st=gpStat(); st.races=(st.races||0)+1;
+      /* the ghost: this race's best lap, kept if it beats the one on this device */
+      const laps=lapTimes.filter(t=>t>5&&t<9999), best=laps.length?Math.min(...laps):null;
+      let newBest=false; if(gBest&&best!=null&&gBest.t===best&&gBest.s.length>20&&(!ghost||best<ghost.t)){ newBest=true;
+        try{ const all=SB_STORE.getJSON('gpGhost',{})||{}; all[GKEY]={t:best,s:gBest.s}; SB_STORE.setJSON('gpGhost',all); }catch(e){} }
+      /* the Cup: points for the finishing order (rivals still racing are placed by how far they got) */
+      let cupDone=false;
+      if(CUP){ const order=rivals.filter(r=>r.fin).sort((a,b)=>a.finT-b.finT).map(r=>r.id);
+        const rest=rivals.filter(r=>!r.fin).sort((a,b)=>b.z-a.z).map(r=>r.id);
+        const all=order.concat(['me'],rest); CUP.pts=CUP.pts||{};
+        all.forEach((id,i)=>{ CUP.pts[id]=(CUP.pts[id]||0)+(GP_CUP_PTS[i]||0); });
+        CUP.races=(CUP.races||[]).concat([{scene:opts.scene,place}]); cupDone=CUP.i>=GP_CUP.length-1;
+        if(cupDone){ st.cups=(st.cups||0)+1; } }
+      try{ save(); }catch(e){}
+      result={ place, win, stars, score, placePts, drivePts, wordPts, met, right, clean, pct, coins, contest, best, newBest, earned:earned.slice(), used:used.slice(), lvl, laps, raceT:+raceT.toFixed(1), cup:CUP?{i:CUP.i,pts:{...CUP.pts},done:cupDone}:null };
       const ORD=['','1st','2nd','3rd','4th','5th','6th'];
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
-      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:gpRound,
-        title: (ORD[place]||(place+'th'))+' across the line' });
+      /* words: missed first — they are the reason to look */
+      const words=gpRound.slice().sort((a,b)=>(a.ok?1:0)-(b.ok?1:0));
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words,
+        title:(ORD[place]||(place+'th'))+' across the line', sub:CUP?('The Cup · race '+(CUP.i+1)+' of '+GP_CUP.length+' · '+GP_CUP[CUP.i].label):'',
+        contLabel:CUP&&!cupDone?('Next race: '+GP_TRACK_NAME[GP_CUP[CUP.i+1].scene]):(CUP?'See the Cup':'Done') });
+      const fmt=t=>t==null?'—':(Math.floor(t/60)+':'+String((t%60).toFixed(1)).padStart(4,'0'));
+      const miss=gpRound.filter(r=>!r.ok);
+      const pw=a=>a.length?a.map(id=>'<span class="gp-pw-i" title="'+GP_NAME[id]+'">'+PWSVG[id]+'</span>').join(''):'<i>none</i>';
+      const extra=document.createElement('div'); extra.className='gp-fin';
+      extra.innerHTML=
+        '<div class="gp-fin-row"><span>Best lap</span><b>'+fmt(best)+(newBest?' <em class="gp-fin-new">new ghost</em>':'')+'</b></div>'+
+        '<div class="gp-fin-row"><span>Box words</span><b data-gp-words>'+right+' of '+met+' right'+(clean?' · '+clean+' Clean':'')+'</b></div>'+
+        '<div class="gp-fin-row"><span>Power-ups</span><b>earned '+earned.length+' '+pw(earned)+' · used '+used.length+'</b></div>'+
+        '<div class="gp-fin-row"><span>Driving</span><b>'+cleanBends+' clean bends · '+drifts+' drifts · '+drivePts+' points</b></div>'+
+        '<div class="gp-fin-row"><span>Coins</span><b data-gp-coins="'+coins+'">'+coins+' coin'+(coins===1?'':'s')+(contest?' (a podium with 70% of the words right)':'')+'</b></div>'+
+        (lvl&&lvl.dropped?'<div class="gp-fin-kind">'+esc2(lvl.line||('Let’s warm up on '+lvl.level+'. You can move back up any time.'))+'</div>':'')+
+        (lvl&&lvl.offerUp?'<button class="sg-rbtn" id="gp-up">Ready for '+esc2((SB_LEVEL.LABEL&&SB_LEVEL.LABEL[lvl.offerUp])||lvl.offerUp)+'?</button>':'')+
+        (miss.length?'<button class="sg-rbtn" id="gp-revise">Add missed words to revision</button>':'');
+      if(CUP&&cupDone){ const tab=Object.entries(CUP.pts).sort((a,b)=>b[1]-a[1]);
+        extra.innerHTML+='<div class="gp-cup"><b>The Cup — final standings</b>'+tab.map(([id,p],i)=>'<div class="gp-cup-r'+(id==='me'?' me':'')+'"><span>'+(i+1)+'</span><span>'+(id==='me'?'You':esc2((GP_CAST[id]||{}).name||id))+'</span><b>'+p+'</b></div>').join('')+'</div>'; }
+      const btns=el.querySelector('.sg-end-btns'); if(btns) btns.parentNode.insertBefore(extra,btns); else el.querySelector('.sg-endcard').appendChild(extra);
       el.style.display='grid'; SGUI.bind(el);
-      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; beeGrandPrix(host,opts,done); };
-      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
+      const up=el.querySelector('#gp-up'); if(up) up.onclick=()=>{ try{ SB_LEVEL.set('beeGrandPrix',lvl.offerUp); }catch(e){} up.disabled=true; up.textContent='Next race: '+((SB_LEVEL.LABEL&&SB_LEVEL.LABEL[lvl.offerUp])||lvl.offerUp)+' words'; };
+      const rv=el.querySelector('#gp-revise'); if(rv) rv.onclick=()=>{ miss.forEach(m=>{ try{ addMiss({w:m.w,d:m.d||''},'mark'); }catch(e){} }); rv.disabled=true; rv.textContent='On your revision list'; };
+      const again=el.querySelector('#sg-again'); if(CUP&&!cupDone&&again) again.textContent='Race it again';
+      again.onclick=()=>{ el.style.display='none'; el.innerHTML=''; beeGrandPrix(host,{...opts0,cup:CUP?{...CUP,pts:CUP.ptsBefore||{},races:(CUP.races||[]).slice(0,-1)}:undefined},done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML='';
+        if(CUP&&!cupDone){ beeGrandPrix(host,{...opts0,autoGo:true,cup:{...CUP,i:CUP.i+1,ptsBefore:{...CUP.pts}}},done); return; }
+        done({win,score,stars}); }; }
 
     /* ---- how to play ---- */
     host.style.position='relative';
     const intro=document.createElement('div'); intro.className='sg-howto';
     intro.innerHTML='<div class="sg-howto-card">'+
       '<div class="sg-howto-h">Bee Grand Prix</div>'+
-      '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
+      '<div class="sg-howto-sub">'+(CUP?('The Cup, race '+(CUP.i+1)+' of '+GP_CUP.length+': '+GP_TRACK_NAME[opts.scene]+' · '+GP_CUP[CUP.i].label+'. '):'')+'Two laps against '+rivals.map(r=>esc2(r.name)).join(', ').replace(/, ([^,]*)$/,' and $1')+' from the Mock Bee.</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li><b>Steer</b> with the two arrow buttons, or the <b>arrow keys</b> — dodge the oil slicks and the cops.</li>'+
-      '<li><b>The ⊗ button is the brake</b> (or <b>↓</b>). Flat out the big bends will throw you into the grass — lift for those, and you keep the road.</li>'+
-      '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
-      '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
-      '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
+      '<li><b>Steer</b> with the arrow buttons or <b>← →</b>. The round button is the <b>brake</b> (or <b>↓</b>): lift for the big bends and you keep the road.</li>'+
+      '<li>Every box zone has <b>three boxes</b> — left, the racing line, right. Drive through one and the race stops while you <b>spell its word</b>.</li>'+
+      '<li>Right is a <b>power-up</b>; right and quick is <b>Clean</b>, full strength. Your place picks which one — the slot shows the next.</li>'+
+      '<li>Tap the slot (or <b>Space</b>) to use it. Hold the brake into a bend and let go for a <b>drift mini-turbo</b>.</li>'+
+      (diff==='easy'?'<li>The pale line on the road is the <b>racing line</b>.</li>':'')+
       '</ol>'+
       '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">To the grid! →</button></div>';
     host.appendChild(intro);
-    intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
+    intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; countFrom=1.0; mode='count'; };
     /* launched from the start menu, which already explained the race — and a race that
        waited for the phone to turn has no click left to skip this with */
-    if(opts.autoGo){ intro.remove(); countT=1.0; mode='count'; }
+    if(opts.autoGo){ intro.remove(); countT=1.0; countFrom=1.0; mode='count'; }
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,land:LAND,port:PORT,size:[Wd,Ht],hz:horizonY,rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,full:!!(held&&held.full),slot:holdBtn.dataset.p||'',met,right,clean,combo:gpCombo,earned:earned.slice(),used:used.slice(),
+      drivePts,cleanBends,drifts,driftT,raceT,lapT,lapTimes:lapTimes.slice(),hitsOnMe:hitsOnMe.slice(),blocked,diff,scene:opts.scene,seed:SEED,word:curW&&curW.w,drawDist,fps:Math.round(_fps),boost:[boostT,boostMul],shieldT,pSpinT,pSlowT,ghost:!!ghost,ghostDrawn:_ghostN,paint:PAINT,trail:TRAILC,cup:CUP?{i:CUP.i,pts:CUP.pts}:null,origin:ORG?ORG.origin:null,place:1+rivals.filter(r=>r.z>pos).length,v,over,land:LAND,port:PORT,size:[Wd,Ht],hz:horizonY,rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       /* the size of everything, in road half-widths — what tests/gp-scale.cjs audits */
       scale:()=>{ const tr=sgTex('tree'), kinds={};
-        ZONES.list.forEach(nm=>{ const z=ZONES.z[nm]; (z.props||[]).concat(z.lamps?[{k:'lamp',off:[1.62,1.62]}]:[]).forEach(r=>{
+        ZONES.list.forEach(nm=>{ const z=ZONES.z[nm]; (z.props||[]).concat(z.lamps?[{k:'lamp',off:[1.62,1.62]}]:[]).concat(z.lanterns?[{k:'lantern',off:[1.75,1.75]}]:[]).forEach(r=>{
           let w,h,f; if(r.k==='tree'||r.k==='parktree'){ const s0=r.k==='tree'?1.1:0.78; w=s0*1.2; h=tr?s0*(tr.height/tr.width):null; f=0.15; }
           else { let bw=0,bh=0,ft=0, hmin=1e9; for(let v=0;v<GP_VAR[r.k];v++){ const b=GPS.box(r.k,v,WORLD); bw=Math.max(bw,b.bw); bh=Math.max(bh,b.bh); hmin=Math.min(hmin,b.bh); ft=Math.max(ft,b.foot); } w=bw; h=[hmin,bh]; f=ft; }
           const k=kinds[r.k]||(kinds[r.k]={w,h,foot:f,offMin:9,zones:[]}); k.offMin=Math.min(k.offMin,r.off[0]); k.zones.push(nm); }); });
@@ -2634,7 +3452,7 @@
       pace:(i,dz,x)=>{ const r=rivals[i]; if(r){ r.z=pos+dz; if(x!=null) r.x=x; } },
       rivZ:()=>rivals.map(r=>Math.round(r.z)),
       toZone:(nm,into)=>{ const r=runs.find(q=>q.name===nm); if(!r) return false; pos=(r.a+(into==null?Math.min(30,(r.b-r.a)>>2):into))*segLen; return true; },
-      steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
+      steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i,full)=>{held={id:typeof i==='string'?i:GP_TABLE[i||0],full:full!==false};renderHold();},
       setV:(f)=>{v=maxV*f;}, curveHere:()=>(segs[Math.floor((pos%trackLen)/segLen)]||{}).curve||0,
       /* handling probes: park the kart at the start of a long straight, or just inside the
          held part of a tight bend — first-lap positions, measured from the track itself */
@@ -2652,11 +3470,33 @@
         if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
       toHaz:(kind)=>{ const pm=pos%trackLen, h=hazards.find(x=>!x.hit&&(!kind||x.kind===kind)&&x.seg*segLen>pm+segLen*12);   // capture tooling: line up the next hazard
         if(h){ pos+= (h.seg-9)*segLen - pm; playerX=h.off; } },
-      clearBoxes:()=>{ items.forEach(i=>i.gone=true); },                 // capture tooling: no unplanned spell gates
+      clearBoxes:()=>{ boxesOff=true; items.forEach(i=>i.gone=true); },   // capture tooling: no unplanned spell gates
       gateNow:()=>{ const pm=pos%trackLen, it=items.find(x=>x.seg*segLen>pm+segLen*14);   // capture tooling: summon ONE gate ahead
-        if(it){ it.gone=false; pos+= (it.seg-8)*segLen - pm; playerX=it.off; } } };
-    requestAnimationFrame(frame);
-    return { destroy(){ over=true; unbind(); } };
+        if(it){ it.gone=false; pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
+      /* ---- the acceptance hooks (games spec §2.10) ---- */
+      /* answer the open box: the right word when called with nothing (an oracle), else `typed` */
+      spell:(typed)=>{ const i=host.querySelector('#sg-ci'); if(mode!=='spell'||!i||!curW) return false; i.value=typed==null?curW.w:typed;
+        i.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); return true; },
+      /* steer the racing line from now on (on=false hands the wheel back) */
+      steerLine:(on)=>{ if(on===false){ if(bot) bot.drive=null; steer=0; braking=false; return; } bot=bot||{}; bot.drive='line'; },
+      line:n=>idealX(n==null?Math.floor(pos/segLen):n), zones:()=>zoneSegs.slice(), boxes:()=>items.map(it=>({seg:it.seg,off:it.off,line:it.line,zone:it.zone})),
+      /* a bot for the whole race: drive 'line'|'random', spell(word,{par,power}) → {typed,secs} */
+      bot:(cfg)=>{ bot=cfg?{...cfg,rng:gpRng(cfg.seed||1)}:null; },
+      /* run the race as fast as the machine allows: physics steps, no drawing, bots answer */
+      fast:(secs)=>{ const lim=raceT+(secs||600); if(mode==='howto'){ intro.remove(); countT=1.0; mode='count'; } if(loop) loop.hold(true);
+        let n=0; while(!over&&raceT<lim&&n<2e6){ if(mode==='spell') break; step(1/120); n++; }
+        if(loop&&!over&&mode!=='spell') loop.hold(false);   // hand the clock back: the race goes on drawing and running
+        return over?result:null; },
+      result:()=>result, rivalsAt:()=>rivals.map(r=>({id:r.id,name:r.name,face:r.face,z:r.z,fin:r.fin,spd:r.spd,shield:r.shield,spin:r.spin,slow:r.slow})),
+      forcePlace:(p)=>{ /* line the field up so you are in place p: rivals ahead step in front by 2 bands */ rivals.forEach((r,i)=>{ r.z=i<p-1?pos+segLen*(2+i*2):pos-segLen*(3+i*2); }); },
+      usePower:(id,full,who)=>usePower(id,full!==false,who==null?ME:rivals[who]),
+      rivalPowers:(on)=>{ noRivalPw=on===false; }, hazards:(on)=>{ noHaz=on===false; }, pinDraw:(n)=>{ _ddPin=n|0; if(n) drawDist=n|0; }, setRival:(i,z)=>{ if(rivals[i]) rivals[i].z=z; } };
+    loop=loopFn(step,render);
+    /* ONE race lives at a time: a Cup's next race and Play again start a new engine in this
+       host, and the arcade's handle (from the first) must stop whichever one is running */
+    try{ if(gpKill) gpKill(); }catch(e){}
+    gpKill=()=>{ over=true; try{ loop.stop(); }catch(e){} unbind(); };
+    return { destroy(){ try{ if(gpKill) gpKill(); }catch(e){} gpKill=null; } };
   }
 
   function whackAMoth(host, opts, done){
@@ -3283,107 +4123,255 @@
     return { destroy(){ over=true; } };
   }
 
-  /* ---------- ENGINE M · TYPE BLASTER (arcade dictation shooter) ---------- */
+  /* ======================================================================
+     THE ARCADE'S DOORS TO THE SHARED KIT (games spec 4 Oct 2026): sgLoop, SGUI.miss,
+     SGUI.keys, SGUI.stage and SB_PLATE are the engine kit's (above). nextWords and
+     SB_LEVEL belong to the foundations and are reached guarded, with the smallest
+     stand-in that keeps their contract until that branch lands — delete it then.
+     ====================================================================== */
+  const AK={
+    /* §1.4: the shared fixed-step clock */
+    loop(update, render){ return W().sgLoop(update, render); },
+    /* §1.5: the shared miss card. The word goes over as a String that also carries the record's
+       fields (definition, origin, memory hook), so the card can read it either way. */
+    miss(host, w, typed, o){ return SGUI.miss(host, Object.assign(new String(w.w), w), typed, o||{}); },
+    /* §1.6: the shared on-screen keys. This game decides touch for itself (any coarse pointer)
+       and reads the real keyboard itself, so a letter is never typed twice. */
+    keys(el, o){ return SGUI.keys(el, Object.assign({ touch:true, physical:false }, o)); },
+    /* §5.0: the shared stage */
+    stage(o){ return SGUI.stage(o); },
+    plate(name){ try{ if(typeof W().SB_PLATE==='function') return W().SB_PLATE(name)||''; }catch(e){} return ''; },
+    pay(){ try{ if(typeof payG==='function') return payG(); if(typeof addCoins==='function') return addCoins('answer'); }catch(e){} return 0; },
+    /* §1.1: the one word door for drills; the old draw only while it is not merged */
+    words(n, minLen, maxLen){ let out=[];
+      try{ if(typeof W().nextWords==='function') out=(W().nextWords(active(), n, {purpose:'drill', minLen, maxLen})||[])
+        .filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&w.w.length>=minLen&&w.w.length<=maxLen); }catch(e){ out=[]; }
+      if(out.length<n){ const seen=new Set(out.map(w=>String(w.w).toLowerCase()));
+        fillWords(n+4, minLen, maxLen).forEach(w=>{ const k=String(w.w).toLowerCase(); if(out.length<n && !seen.has(k)){ seen.add(k); out.push(w); } }); }
+      return out.slice(0,n); },
+    /* mixed lengths inside a level: short and long alternate (presentation only) */
+    mix(ws){ const s=ws.slice().sort((a,b)=>a.w.length-b.w.length), out=[]; let i=0, j=s.length-1, lo=true;
+      while(i<=j){ out.push(lo?s[i++]:s[j--]); lo=!lo; } return out; },
+    /* §1.7: one round, one check; the kind line when the level drops */
+    level(key, right, met){ let r=null; try{ if(W().SB_LEVEL && typeof SB_LEVEL.after==='function') r=SB_LEVEL.after(key, met?right/met:0); }catch(e){ r=null; }
+      if(!r) return ''; const L={easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
+      if(r.dropped) return 'Let’s warm up on '+(L[r.level]||r.level)+'. You can move back up any time.';
+      if(r.offerUp) return 'Two strong rounds. Ready for the next level? Pick it on the start screen.';
+      return ''; },
+    touch(){ try{ return matchMedia('(pointer:coarse)').matches || matchMedia('(any-pointer:coarse)').matches; }catch(e){ return false; } },
+    calm(){ try{ return !!W().SB_CALM || matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } },
+  };
+  W().SB_ARCADE_KIT=AK;
+
+  /* ---------- ENGINE M · TYPE BLASTER — with Spell Scene merged in (spec §4.5) ----------
+     Spell Scene had the better rule and Type Blaster the better feel, so one game has both:
+       · the WHOLE word is committed, then Enter fires. Letter-by-letter acceptance (only the
+         right next letter went in) let a child find a spelling by trying keys; now a wrong
+         commit costs a shield, and the word is shown and held until Continue;
+       · REPAINT AS PROGRESS: the level opens on a grey world, and every word blasted
+         repaints one region of it. A cleared level is a restored world;
+       · the cannon, the combo, the danger state and the falling glitches stay.
+     Levels are how many glitches fall at once and how fast (Easy 1 slow · Medium 2 ·
+     Hard 2 fast · Champ 3 faster), with long and short words mixed inside each. Movement
+     is on the shared fixed-step clock, so a slow phone gets the same seconds as a fast one.
+     Pay: one coin for each word blasted clean (first commit right); none for clearing. */
   function typeBlaster(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG=calmCFG({easy:{n:5,v:0.09},medium:{n:6,v:0.115},hard:{n:7,v:0.14},champ:{n:8,v:0.165}}[diff]||{n:6,v:0.115});
-    const words=fillWords(CFG.n,3,9);
-    if(!words.length){ done({win:true,score:0,stars:1}); return; }
-    const art=(window.SGART&&SGART.ready());
-    const plate=art?SGART.plateForWorld(opts.world||'Arcade'):'';
-    /* Both fallbacks used to be emoji escapes — a 👾 for the foe and a 🐝 for the
-       cannon. The two things a player looks at most became a different picture on
-       every platform whenever the WebP failed to load. Drawn instead. */
-    const foeSvg='<img src="app-art/gart/glitch.webp" class="sg-tbimg sg-tbglitch" alt="glitch" '
-      +'onerror="this.outerHTML=window.TB_GLITCH();">';
-    const beeSvg='<img src="app-art/gart/bee-fly.webp" alt="bee" '
-      +'onerror="this.outerHTML=window.TB_BEE();">';
-    let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null, combo=0, best=0;
-    let wordPerfect=true, danger=false, started=false;
-    const round=[];                       // the round, for a result screen that shows the words
-    host.innerHTML='<div class="sg-hud sg-tb-hud">'+
-        '<span class="sg-tb-wave" id="sg-tw">1<i>/'+CFG.n+'</i></span>'+
-        '<span class="sg-tb-shield" id="sg-tsh"></span>'+
-        '<span class="sg-tb-combo" id="sg-tc"></span>'+
-        '<span class="sg-tb-score" id="sg-ts">0</span></div>'+
-      '<div class="sg-tbstage" id="sg-tbs"><div class="sg-tbstage-bg">'+plate+'</div>'+
-        '<div class="sg-tbfoe" id="sg-tbf">'+foeSvg+'<div class="sg-tbslots" id="sg-tbslots"></div></div>'+
-        '<div class="sg-tbbeam" id="sg-tbbeam"></div>'+
-        '<div class="sg-tbshield" id="sg-tbshieldbar"></div>'+
-        '<div class="sg-tbcannon">'+beeSvg+'</div></div>'+
-      '<div class="sg-rword"><button class="sg-sbtn" id="sg-tsay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="sg-race-mean" id="sg-tmean"></span></div>'+
-      '<div class="ss-key sg-tbkey" id="sg-tkey"></div><div id="sg-card"></div>';
-    const stage=host.querySelector('#sg-tbs'), foe=host.querySelector('#sg-tbf'), beam=host.querySelector('#sg-tbbeam');
-    const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
-    host.querySelector('#sg-tkey').innerHTML=rows.map(r=>'<div class="ss-krow">'+r.split('').map(ch=>'<button class="ss-kb" data-k="'+ch+'">'+ch+'</button>').join('')+'</div>').join('');
-    function cur(){ return words[wi]||words[words.length-1]||{w:'honey'}; }   // never index past the end
-    /* Drawn shield pips, not the 🛡 glyph repeated three times. A pip can empty and
-       animate; a glyph can only be present or absent, at whatever weight the
-       platform's emoji font decides. */
-    function shieldPips(){ return [0,1,2].map(i=>
+    /* `fall` is the share of the drop a glitch covers in one second: Easy ~15 s from the top
+       to the shield line, Champ ~8 s. `at` is how many fall at once. */
+    const LV={easy:{n:6,at:1,fall:0.066,min:3,max:6},medium:{n:8,at:2,fall:0.08,min:4,max:8},
+              hard:{n:10,at:2,fall:0.104,min:5,max:10},champ:{n:12,at:3,fall:0.125,min:6,max:12}};
+    const CFG=calmCFG(Object.assign({},LV[diff]||LV.medium));
+    const SHIELDS=3;
+    const words=AK.mix(AK.words(CFG.n+SHIELDS, CFG.min, CFG.max));
+    if(!words.length){ done({win:false,score:0,stars:0}); return; }
+    const N=Math.min(CFG.n, words.length);
+    const HERO=opts.hero||heroAv();
+    const KEY='typeBlaster';
+    let foes=[], fid=0, target=null, typed='', shield=SHIELDS, score=0, combo=0, best=0;
+    let blasted=0, met=0, spawnT=0, over=false, started=false, holding=false, danger=false, painted=0;
+    const round=[];                       // the round, for the result screen
+    const touch=AK.touch();
+    /* the world: the painted pair from the stage kit (grey + restored, one composition), or —
+       until those exist — one painting shown grey and in colour, which is the same promise */
+    const FALLBACK='app-art/sgw-meadow.jpg';
+    let greyUrl=AK.plate('blaster-grey'), colUrl=AK.plate('blaster-color'), filtered=false;
+    if(!greyUrl||!colUrl){ greyUrl=colUrl=FALLBACK; filtered=true; }
+    /* regions: a jittered grid with shared corners, so the pieces tile the scene exactly */
+    const GR={6:[3,2],8:[4,2],10:[5,2],12:[4,3]}[N]||[Math.ceil(N/2),2];
+    const RC=GR[0], RR=GR[1];
+    const jit=(i,j)=>{ if(i===0||j===0||i===RC||j===RR) return [0,0];
+      const h=Math.sin(i*12.9898+j*78.233)*43758.5453; const f=h-Math.floor(h), g=(h*1.7)-Math.floor(h*1.7);
+      return [(f-0.5)*0.42*100/RC,(g-0.5)*0.42*100/RR]; };
+    const V=(i,j)=>{ const d=jit(i,j); return [(i*100/RC+d[0]).toFixed(2),(j*100/RR+d[1]).toFixed(2)]; };
+    const cells=[]; for(let j=0;j<RR;j++) for(let i=0;i<RC;i++){ const p=[V(i,j),V(i+1,j),V(i+1,j+1),V(i,j+1)];
+      cells.push({i,j,poly:p.map(q=>q[0]+'% '+q[1]+'%').join(','),d:Math.abs(i+0.5-RC/2)+(RR-1-j)*0.9}); }
+    cells.sort((a,b)=>a.d-b.d);            // repaint from just above the cannon outward
+    const regs=cells.slice(0,N);
+    const shieldPips=()=>Array.from({length:SHIELDS},(_,i)=>
       '<svg class="sg-pip'+(i<shield?' up':'')+'" viewBox="0 0 20 22" width="17" height="19" aria-hidden="true">'+
       '<path d="M10 1.4l7.6 3v7.2c0 4.6-3.2 7.6-7.6 9-4.4-1.4-7.6-4.4-7.6-9V4.4z" '+
       'fill="'+(i<shield?'#2FB39E':'none')+'" fill-opacity="'+(i<shield?'.9':'0')+'" '+
       'stroke="'+(i<shield?'#0E8A78':'currentColor')+'" stroke-width="1.8" stroke-linejoin="round" '+
-      'opacity="'+(i<shield?1:.3)+'"/></svg>').join(''); }
-    function renderSlots(){ const w=cur().w.toLowerCase();
-      host.querySelector('#sg-tbslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
-      host.querySelector('#sg-tsh').innerHTML=shieldPips();
-      host.querySelector('#sg-tc').textContent=combo>=2?(combo+'x'):'';
-      host.querySelector('#sg-ts').textContent=score; }
-    function newWord(){ li=0; foeY=0; wordPerfect=true; const w=cur();
-      host.querySelector('#sg-tw').innerHTML=(wi+1)+'<i>/'+CFG.n+'</i>';
-      host.querySelector('#sg-tmean').innerHTML=meaningHTML(w);
-      foe.style.top='0%'; renderSlots(); try{ say(w.w); }catch(e){} }
-    function zap(){ beam.classList.remove('fire'); void beam.offsetWidth; beam.classList.add('fire');
-      foe.classList.remove('hitfx'); void foe.offsetWidth; foe.classList.add('hitfx'); }
-    function type(ch){ if(over||!started) return; const w=cur().w.toLowerCase();
-      if(ch===w[li]){ li++; score+=15; foeY=Math.max(0,foeY-7); zap(); renderSlots();
+      'opacity="'+(i<shield?1:.3)+'"/></svg>').join('');
+    const LVL={easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'}[diff]||'';
+    const pilot=(()=>{ try{ return (W().SB_AVATAR&&SB_AVATAR(HERO,46))||''; }catch(e){ return ''; } })();
+    const foeArt='<img src="app-art/gart/glitch.webp" class="tb-glitch" alt="" draggable="false" onerror="this.outerHTML=window.TB_GLITCH(72);">';
+    host.innerHTML=AK.stage({ plate:filtered?greyUrl:'blaster-grey', name:'blaster', cls:'tb-stage', label:'Type Blaster',
+      hud:{ left:'<span class="arcx-stat tb-shields" id="tb-sh" aria-label="Shields">'+shieldPips()+'</span>',
+            center:'<span class="arcx-hc"><span class="arcx-title">Type Blaster</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="tb-prog">0/'+N+'</span></span>',
+            right:'<span class="arcx-stat tb-score"><b id="tb-score">0</b><i id="tb-combo"></i></span>' },
+      play:'<div class="tb-wrap"><div class="tb-scene" id="tb-scene">'+
+          '<div class="tb-grey'+(filtered?' tb-filter':'')+'" id="tb-grey" style="background-image:url(\''+greyUrl+'\')"></div>'+
+          regs.map((r,k)=>'<div class="tb-reg" data-r="'+k+'" style="clip-path:polygon('+r.poly+');background-image:url(\''+colUrl+'\')"></div>').join('')+
+          '<div class="tb-clue"><span class="tb-mean" id="tb-mean"></span></div>'+
+          '<div class="tb-line" aria-hidden="true"></div><div class="tb-foes" id="tb-foes"></div>'+
+          '<div class="tb-beam" id="tb-beam" aria-hidden="true"></div>'+
+          '<div class="tb-cannon" id="tb-cannon" aria-label="Your cannon"><span class="tb-barrel" id="tb-barrel"></span><span class="tb-pilot">'+pilot+'</span></div>'+
+        '</div></div>',
+      controls:'<div class="tb-entry'+(touch?' nofire':'')+'">'+
+          /* mirrored: Hear on the left, Fire on the right, the word between (a phone fires from its keys) */
+          '<button type="button" class="tb-say" id="tb-say" aria-label="Hear the word again">'+iconSVG('volume',18)+'</button>'+
+          '<div class="tb-typed" id="tb-typed" aria-live="off"></div>'+
+          (touch?'<span aria-hidden="true"></span>':'<button type="button" class="sg-rbtn go tb-fire" id="tb-fire">Fire</button>')+
+        '</div><div class="tb-keys" id="tb-keys"></div>' })+'<div id="sg-card"></div>';
+    const scene=host.querySelector('#tb-scene'), foesEl=host.querySelector('#tb-foes'), beam=host.querySelector('#tb-beam');
+    const barrel=host.querySelector('#tb-barrel'), cannon=host.querySelector('#tb-cannon');
+    const typedEl=host.querySelector('#tb-typed'), meanEl=host.querySelector('#tb-mean');
+    const playEl=scene.closest('.sb-stage')||host;
+    if(filtered){ /* a painted pair may arrive later; until then the one painting carries both */ }
+    else { const probe=new Image(); probe.onerror=()=>{ try{ host.querySelector('#tb-grey').style.backgroundImage='url(\''+FALLBACK+'\')';
+        host.querySelector('#tb-grey').classList.add('tb-filter'); host.querySelectorAll('.tb-reg').forEach(r=>{ r.style.backgroundImage='url(\''+FALLBACK+'\')'; }); }catch(e){} };
+      probe.src=colUrl; }
+    let keys=null;
+    if(touch) keys=AK.keys(host.querySelector('#tb-keys'), { onKey:ch=>typeCh(ch), onBack:()=>backCh(), onEnter:()=>commit() });
+
+    const lanes=CFG.at===1?[0.5]:CFG.at===2?[0.3,0.7]:[0.2,0.5,0.8];
+    let laneTurn=0;
+    function freeLane(){ for(let k=0;k<lanes.length;k++){ const l=(laneTurn+k)%lanes.length; if(!foes.some(f=>f.lane===l)){ laneTurn=l+1; return l; } } return 0; }
+    let queue=words.slice();
+    function spawn(){ const w=queue.shift(); if(!w) return null;
+      const f={id:++fid, w, lane:freeLane(), y:0, el:document.createElement('button')};
+      f.el.type='button'; f.el.className='tb-foe'; f.el.dataset.id=f.id; f.el.setAttribute('aria-label','Glitch — tap to hear its word');
+      f.el.innerHTML=foeArt+'<span class="tb-ftag">'+iconSVG('volume',13)+'<i>'+w.w.length+'</i></span>';
+      f.el.style.left=(lanes[f.lane]*100)+'%';
+      foesEl.appendChild(f.el); foes.push(f);
+      if(!target) aim(f);
+      return f; }
+    function aim(f, quiet){ if(target===f) { try{ say(f.w.w); }catch(e){} return; }
+      target=f; typed=''; foes.forEach(x=>x.el.classList.toggle('on',x===f));
+      meanEl.innerHTML=f?meaningHTML(f.w):''; paintTyped();
+      if(f && !quiet) setTimeout(()=>{ try{ if(target===f && !over) say(f.w.w); }catch(e){} },120); }
+    function retarget(){ const live=foes.filter(f=>!f.dead); if(!live.length){ target=null; meanEl.innerHTML=''; typed=''; paintTyped(); return; }
+      aim(live.reduce((a,b)=>b.y>a.y?b:a)); }
+    function paintTyped(){ const n=Math.max(target?target.w.w.length:0, typed.length);
+      typedEl.innerHTML=Array.from({length:n},(_,i)=>'<span class="sg-slot'+(i<typed.length?' fill':'')+'">'+(i<typed.length?esc(typed[i].toUpperCase()):'')+'</span>').join('');
+      typedEl.setAttribute('aria-label', typed?('Typed: '+typed.split('').join(' ')):'Type the word'); }
+    function hud(){ host.querySelector('#tb-sh').innerHTML=shieldPips();
+      host.querySelector('#tb-score').textContent=score.toLocaleString();
+      host.querySelector('#tb-combo').textContent=combo>=2?(combo+'x'):'';
+      host.querySelector('#tb-prog').textContent=blasted+'/'+N; }
+    function typeCh(ch){ if(over||!started||holding||!target) return; if(typed.length>=24) return; typed+=ch; paintTyped(); }
+    function backCh(){ if(over||!started||holding) return; typed=typed.slice(0,-1); paintTyped(); }
+    function zap(f){ try{ const s=scene.getBoundingClientRect(), a=cannon.getBoundingClientRect(), b=f.el.getBoundingClientRect();
+        const x0=a.left+a.width/2-s.left, y0=a.top+a.height*0.3-s.top, x1=b.left+b.width/2-s.left, y1=b.top+b.height/2-s.top;
+        const len=Math.hypot(x1-x0,y1-y0), ang=Math.atan2(y1-y0,x1-x0)*180/Math.PI;
+        beam.style.left=x0+'px'; beam.style.top=y0+'px'; beam.style.width=len+'px'; beam.style.transform='rotate('+ang+'deg)';
+        beam.classList.remove('fire'); void beam.offsetWidth; beam.classList.add('fire'); }catch(e){} }
+    function paint(){ const r=host.querySelector('.tb-reg[data-r="'+painted+'"]'); if(r) r.classList.add('on'); painted++; }
+    function commit(){ if(over||!started||holding) return; const f=target; if(!f) return;
+      if(!typed){ try{ say(f.w.w); }catch(e){} return; }
+      const ok=sameSpelling(typed, f.w.w);
+      met++; round.push({w:f.w.w, ok}); wlog(f.w, ok);
+      if(ok){ blasted++; combo++; best=Math.max(best,combo); score+=50+f.w.w.length*10+(combo>=2?combo*15:0);
+        AK.pay(); zap(f); paint(); f.dead=true; f.el.classList.add('boom');
         try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
-        if(li>=w.length){ score+=50; round.push({w:cur().w,ok:wordPerfect}); wlog(cur(),wordPerfect);
-          if(wordPerfect){ combo++; best=Math.max(best,combo); if(combo>=2){ score+=combo*10; } } else combo=0;
-          foe.classList.add('boom'); stage.classList.remove('sg-tb-danger'); danger=false;
-          try{ flash(combo>=2?(combo+'x combo — '+w.toUpperCase()):(w.toUpperCase()+' — glitch zapped')); }catch(e){}
-          wi++; if(wi>=CFG.n){ finish(true); return; }
-          setTimeout(()=>{ foe.classList.remove('boom'); newWord(); },650); } }
-      else { score=Math.max(0,score-5); foeY+=3; wordPerfect=false; combo=0; renderSlots();
-        foe.classList.remove('gloatfx'); void foe.offsetWidth; foe.classList.add('gloatfx');
-        try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){} } }
-    function frame(){ if(over||!started) return;
-      if(foe.classList.contains('boom')) return;
-      foeY+=CFG.v; foe.style.top=Math.min(78,foeY)+'%';
-      const d=foeY>=58; if(d!==danger){ danger=d; stage.classList.toggle('sg-tb-danger',d); }
-      if(foeY>=78){ shield--; foeY=0; foe.style.top='0%'; danger=false; stage.classList.remove('sg-tb-danger');
-        stage.classList.remove('breach'); void stage.offsetWidth; stage.classList.add('breach');
-        renderSlots(); try{ flash('The firewall took a hit — keep spelling'); }catch(e){}
-        if(shield<=0){ round.push({w:cur().w,ok:false}); finish(false); return; } } }
-    const kb=e=>{ if(over) return; if(/^[a-zA-Z]$/.test(e.key)){ type(e.key.toLowerCase()); e.preventDefault(); } };
-    addEventListener('keydown',kb);
-    host.querySelector('#sg-tkey').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(bt) type(bt.dataset.k); };
-    host.querySelector('#sg-tsay').onclick=()=>{ try{ say(cur().w); }catch(e){} };
-    function finish(win){ if(over) return; over=true;
-      if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb);
+        setTimeout(()=>{ try{ f.el.remove(); }catch(e){} },560);
+        foes=foes.filter(x=>x!==f); typed=''; hud();
+        if(blasted>=N){ over=true; setTimeout(()=>finish(true),700); return; }
+        spawnT=Math.min(spawnT,0.6); retarget(); return; }
+      miss(f, typed, ''); }
+    /* A miss HOLDS: every glitch freezes and the word is shown, letter against letter,
+       until Continue. The glitch it belonged to then dissolves — its word has been read
+       out on screen, so it is not asked again as if it were still a test. */
+    function miss(f, t, note){ holding=true; loop.hold(true); wall=null; shield--; combo=0; f.el.classList.add('frozen');
+      try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
+      scene.classList.remove('breach'); void scene.offsetWidth; scene.classList.add('breach'); hud();
+      AK.miss(playEl, f.w, t, { note, onContinue(){
+        f.dead=true; foes=foes.filter(x=>x!==f); try{ f.el.remove(); }catch(e){} typed='';
+        holding=false; if(shield<=0){ over=true; finish(false); return; }
+        wall=null; loop.hold(false); spawnT=Math.min(spawnT,0.8); retarget(); } }); }
+    /* THE FALL IS A CLOCK, so it reads the frame's real time (capped at 0.25 s a frame, as the
+       shared loop caps it) rather than summing physics steps: the shared loop makes up at most
+       0.1 s of steps a frame, so on a phone too slow for 10 fps the glitches would drift slow
+       against the child's real seconds. Movement is still driven by the shared loop's frames. */
+    let wall=null;
+    function frameDt(){ const now=(document.timeline&&document.timeline.currentTime)||performance.now();
+      const d=wall==null?0:Math.min(0.25,Math.max(0,(now-wall)/1000)); wall=now; return d; }
+    function update(dt){ if(over||!started||holding) return;
+      for(const f of foes){ f.y+=CFG.fall*dt; }
+      const hit=foes.find(f=>f.y>=1);
+      if(hit){ hit.y=1; met++; round.push({w:hit.w.w, ok:false}); wlog(hit.w,false);
+        miss(hit, target===hit?typed:'', 'It reached the shield line.'); return; }
+      spawnT-=dt;
+      const need=N-blasted;
+      if(queue.length && foes.length<Math.min(CFG.at, need) && (foes.length===0 || spawnT<=0)){
+        spawn(); spawnT=(1/CFG.fall)/CFG.at*0.8; }
+      if(!foes.length && !queue.length && blasted<N){ over=true; finish(false); } }
+    let H=0, FH=0;
+    function measure(){ H=scene.clientHeight; const f=foes[0]; FH=f?f.el.offsetHeight:Math.min(110,H*0.2); }
+    function render(){ if(!started) return; const fd=frameDt(); if(fd>0) update(fd); if(over||!started) return; if(!H) measure();
+      const line=H*0.80, top0=Math.min(60,H*0.1);        // glitches enter below the clue
+      for(const f of foes){ if(f.dead) continue; f.el.style.transform='translate(-50%,'+Math.round(top0+f.y*(line-FH-top0))+'px)'; }
+      const d=foes.some(f=>!f.dead&&f.y>=0.62); if(d!==danger){ danger=d; scene.classList.toggle('tb-danger',d); }
+      if(target&&!target.dead){ const dx=(lanes[target.lane]-0.5)*scene.clientWidth, dy=line-top0-target.y*(line-FH-top0);
+        barrel.style.transform='rotate('+(Math.atan2(dx,dy)*180/Math.PI).toFixed(1)+'deg)'; } }
+    const onResize=()=>{ H=0; };
+    addEventListener('resize',onResize);
+    const loop=AK.loop(()=>{}, render);
+    /* the real keyboard, on capture, and only the keys this game uses — so a letter is
+       typed once even if the shared on-screen keyboard also listens */
+    const kb=e=>{ if(over||!started||holding) return; if(e.ctrlKey||e.metaKey||e.altKey) return; const k=e.key;
+      if(/^[a-zA-Z]$/.test(k)){ typeCh(k.toLowerCase()); }
+      else if(k==='Backspace'){ backCh(); }
+      else if(k==='Enter'){ commit(); }
+      else if(k==='Tab'){ const live=foes.filter(f=>!f.dead); if(live.length>1){ const i=live.indexOf(target); aim(live[(i+1)%live.length]); } }
+      else if(k===' '){ if(target) try{ say(target.w.w); }catch(_){} }
+      else return;
+      e.preventDefault(); e.stopPropagation(); e._arcDone=true; };
+    addEventListener('keydown',kb,true);
+    foesEl.addEventListener('click',e=>{ const b=e.target.closest('.tb-foe'); if(!b||over||holding) return; const f=foes.find(x=>String(x.id)===b.dataset.id&&!x.dead); if(f) aim(f); });
+    host.querySelector('#tb-say').onclick=()=>{ if(target) try{ say(target.w.w); }catch(e){} };
+    const fire=host.querySelector('#tb-fire'); if(fire) fire.onclick=()=>commit();
+    function cleanup(){ try{ loop.stop(); }catch(e){} removeEventListener('keydown',kb,true); removeEventListener('resize',onResize); try{ keys&&keys.destroy(); }catch(e){} }
+    function finish(win){ over=true; cleanup();
+      const right=round.filter(r=>r.ok).length;
+      const line=AK.level(KEY, right, met);
       const stars=win?(shield>=3?3:shield===2?2:1):0;
+      if(win){ scene.classList.add('tb-restored'); }
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
       el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:round,
-        title: win ? (best>=3?'Firewall held — '+best+'x best combo':'Firewall held') : 'The glitch broke through' });
+        title: win ? 'The world is restored' : 'The glitches broke through',
+        sub: [best>=3?best+'x best combo':'', line].filter(Boolean).join(' · ') });
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; typeBlaster(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
+    function begin(){ started=true; H=0; wall=null; spawn(); spawnT=(1/CFG.fall)/CFG.at*0.8; hud(); }
     function howto(){ const el=host.querySelector('#sg-card');
       el.innerHTML=SGUI.howto({ title:'Type Blaster', art:TB_GLITCH(64),
-        sub:'A glitch is falling on the hive firewall. Every letter you get right fires the cannon and drives it back.',
-        steps:[ 'Hear the word, then type it — your keyboard or the keys on screen',
-                'Each correct letter pushes the glitch back; a wrong one lets it drop',
-                'Spell a whole word with no mistakes to keep the combo alive',
-                'Three shields. Let it reach the floor three times and the firewall falls' ],
+        sub:'The glitches have greyed the world. Every word you blast paints a piece of it back.',
+        steps:[ 'Hear the word, type ALL of it, then press Enter to fire',
+                touch?'Tap a glitch to hear its word':'Tab or a tap picks another glitch · Space hears the word again',
+                'A wrong word costs a shield, and you see how it is spelled',
+                'Three shields. Blast every word and the world is whole again' ],
         go:'Man the cannon' });
       el.style.display='grid';
-      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML='';
-        started=true; newWord(); }; }
-    renderSlots(); howto(); loop=setInterval(frame,1000/60);
-    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;}
-      removeEventListener('keydown',kb); } };
+      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML=''; begin(); }; }
+    hud(); paintTyped(); howto();
+    if(window.SB_DEBUG) W()._tb={ state:()=>({started,over,holding,shield,blasted,met,N,score,painted,typed,at:CFG.at,fall:CFG.fall,
+        foes:foes.filter(f=>!f.dead).map(f=>({id:f.id,y:f.y,lane:f.lane,len:f.w.w.length})),target:target?target.id:null,regs:regs.length}),
+      target:()=>target?target.w.w:'', words:()=>words.map(w=>w.w), begin:()=>{ if(!started){ const el=host.querySelector('#sg-card'); el.style.display='none'; el.innerHTML=''; begin(); } } };
+    return { destroy(){ over=true; cleanup(); } };
   }
   /* The glitch and the cannon bee, drawn — the img fallbacks and the start card's
      art come from here, so a child meets the same creature in both places. */
@@ -3412,7 +4400,12 @@
      spoke one word seventeen times, which is repetition, not practice — and it had no
      keyboard path either. They are unreachable rather than deleted so the measurement
      that condemned them can be re-run against the source if the pacing is ever fixed. */
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, beeGrandPrix, whackAMoth, spellShield, unscrambleStars, wordSnake, combCatcher, stageRhythm, typeBlaster };
+  /* Word Snake and Unscramble Stars are RETIRED (games spec 4 Oct 2026, §3.1): the snake's
+     glowing next tile spelled the word for the child, and Unscramble gave every letter away —
+     a random tapper scored 96%. Spell Scene is merged INTO Type Blaster (its whole-word commit
+     and its grey world repainting word by word). All three engines stay below, unexported and
+     unreachable, like the three above, so the measurements that retired them can be re-run. */
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, beeGrandPrix, whackAMoth, spellShield, combCatcher, stageRhythm, typeBlaster };
 
 
   /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */
@@ -3705,7 +4698,8 @@
     newWord();
     return { destroy(){ over=true; removeEventListener('keydown',kb); } };
   }
-  W().SB_SAGA_ENGINES = Object.assign(W().SB_SAGA_ENGINES||{}, { spellScene });
+  /* spellScene is not exported: merged into Type Blaster (see SB_SAGA_ENGINES above) */
+  void spellScene;
 
 
   /* The story controller (map / board / dialogue beats / CH_META / ACTS) was removed

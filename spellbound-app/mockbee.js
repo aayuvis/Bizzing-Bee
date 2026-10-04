@@ -1,36 +1,51 @@
 /* ============================================================
-   MOCK SPELLING BEE — the Arcade's competition game.
+   MOCK SPELLING BEE — the flagship of Compete (games spec §4.1, 4 Oct 2026).
 
-   Spelling Quest was fifteen seasons of story with a boss at the end of each.
-   It was a story mode wearing a spelling bee's clothes. This is the thing the
-   child is actually training for: eleven spellers on a stage, one word each,
-   miss and you sit down.
+   A bee is a field of spellers on a stage, one word each, miss and you sit down.
+   The rivals are real competitors rather than difficulty numbers — an age, a skill,
+   a temperament and a speciality — and an announcer calls it like a final.
 
-   Ten rivals, each a real competitor rather than a difficulty number — an age,
-   a skill, a temperament and a speciality. Pip is eight and fast and reckless.
-   Theo asks for every legal question and takes forever. Vesper is fifteen, has
-   won this before, and does not get nervous. They spell in draw order, they
-   misspell in plausible ways, and they go out when they miss.
+   WHAT THE SPEC CHANGED, and the rule each change keeps:
+   - EIGHT MINUTES. The field and the rounds are sized by the child's age band
+     (6–7: four rivals, three rounds · 8–10: six, four · 11–15: eight, five) and then
+     it is sudden death, where every round costs the rivals more. A perfect speller's
+     bee used to run past 704 s; tests/mockbee-sim.cjs plays perfect spellers on a
+     simulated clock and holds the median under the cap. Past 60% of the cap the
+     write-along windows close, and at the cap the bee ends with co-champions — the
+     old Scripps rule — so no bee can run long.
+   - WHEN YOU ARE OUT you choose: Finish now (the rivals are resolved at once from
+     their own profiles) or Watch the rest (2×, write-alongs off). Nobody waits
+     through a spell-off they are not in.
+   - THE PRONOUNCER'S CHAIR, in every turn: Definition · Part of speech · Origin ·
+     Sentence · Say it again · Alternate pronunciation, in that order, one size. Each
+     question costs 3 s of the 30 s turn clock; a question with no answer on file is
+     not drawn at all. Every answer is masked so it can never show the spelling. On
+     Hard and Champ a thinking strip says what an answer implies, in the words of the
+     Coach's own rulebook (coach-rules.js), matched to the word.
+   - MODES: Bee (the chosen level, SB_LEVEL key 'mockbee'), Champ (the old Advanced
+     Mock Rounds — a written list, a meaning round, a lightning round — and the only
+     place Finals words are served) and Family Bee night (2–4 players on one device,
+     each with a band; the names live in memory for the evening and are never
+     written anywhere; only the profile child is paid).
+   - PAY: payG per word spelt right; the contest event for the podium at a 70% pass
+     mark; nothing for finishing. The rivals are drawn from a SEEDED generator, so the
+     placing — and the contest coin that rides on it — never touches Math.random().
 
-   And an announcer who calls it like a final: introduces the round, names the
-   speller, holds the pause, rings the bell, and gets louder as the field thins.
-
-   Uses app3 globals: state, render, active, save, addCoins, sfx, burstConfetti,
-   flash, say, deviceSpeak, corpusSlice, esc, escA, iconSVG, SB_AVATAR, logBand,
-   markMastered, nkey, fmtN. Registers actions on `app` (a top-level const in
-   app3's scope, NOT window.app) and renders via the nav hook.
+   Uses app3 globals: state, render, active, save, addCoins, payG, sfx, burstConfetti,
+   esc, escA, iconSVG, SB_AVATAR, logBand, markMastered, mastEvidence, addMiss, nkey,
+   fmtN, sameSpelling, maskTxt, missFeedbackHTML, logGameWord, recentGameKeys,
+   wordClip, altPron, trickAnal, vocBuildCheck, gameWordsD, nextWords. Registers
+   actions on `app` (a top-level const in app3's scope, NOT window.app).
    ============================================================ */
 (function () {
   'use strict';
   const app2 = app;                       /* app3's top-level const */
-  const LS = 'sb_mockbee';
+  const LS = 'sb_mockbee';                /* store.js names this key; only SB_STORE touches it */
+  const CAP_MS = 8 * 60 * 1000;           /* §4.1: the length cap */
+  const TURN_MS = 30000, CALM_TURN_MS = 45000, Q_COST = 3000;
+  const PLATE = 'app-art/sgw-stage.jpg';  /* the painted stage the arcade already ships: curtains, lamps, empty seats */
 
-  /* ---------------- the field ----------------
-     Ten rivals. skill is the base chance of getting a word of their own level
-     right; nerve is how much late-round pressure moves that number (high nerve =
-     barely at all, low nerve = a lot); spec is an origin they are unusually good
-     at; pace is how long they take at the microphone, which is characterisation
-     as much as timing. */
+  /* ---------------- the field ---------------- */
   /* `alt` is a rival's stand-in face. A rival must never wear the child's own avatar — "Suki" in
      the panda the child picked read as the child spelling against themselves — so when the two
      collide the rival wears `alt` (faceOf). Each alt is a live avatar no rival and no other alt
@@ -49,14 +64,14 @@
       note: 'Unshakeable. The lights do nothing to her.', vary: .07,
       tell: 'breathes out, then spells' },
     { id: 'comet', alt: 'rocket', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not define at gunpoint', spec: null, pace: 700,
-      note: 'Fastest here in round one. Watch him in round six.', vary: .16,
+      note: 'Fastest here in round one. Watch him late on.', vary: .16,
       tell: 'rocks on his heels' },
     { id: 'astro', alt: 'saturn', lvl: .44, name: 'Mira', age: 12, skill: .70, nerve: .66, voc: 0.79, vtell: 'Greek gives her the meaning before the spelling', spec: /greek/i, pace: 1250,
       note: 'Greek is her language. Ask her for the origin and smile.', vary: .09,
       tell: 'asks for the language of origin every time' },
     { id: 'scopey', alt: 'robo', lvl: .43, name: 'Theo', age: 12, skill: .69, nerve: .80, voc: 0.85, vtell: 'asks for the definition every time — and remembers it', spec: null, pace: 2100,
-      note: 'Asks all four questions. Every word. No exceptions.', vary: .06,
-      tell: 'asks all four questions, every single word' },
+      note: 'Asks every question. Every word. No exceptions.', vary: .06,
+      tell: 'asks every question, every single word' },
     { id: 'melody', alt: 'fae', lvl: .52, name: 'Ines', age: 13, skill: .74, nerve: .72, voc: 0.71, vtell: 'French roots, French meanings', spec: /french/i, pace: 1200,
       note: 'French endings hold no silence she has not heard.', vary: .08,
       tell: 'mouths the word in French first' },
@@ -70,105 +85,103 @@
   /* the face a rival wears in this hall: their own, unless it is the child's (see `alt`) */
   function myFace() { try { const g = state.mb; return (g && g.avatar) || (active() || {}).avatar || 'bizzy'; } catch (e) { return 'bizzy'; } }
   function faceOf(b) { return b && b.id === myFace() ? b.alt : (b && b.id); }
+  const botById = id => BOTS.find(b => b.id === id);
 
-  /* ---------------- the rounds, in the Scripps shape ----------------
-     A national bee is not a single ladder of spelling rounds. It runs in
-     SEGMENTS, and every segment is the same three things: you spell, then you
-     answer for meaning, then — when the field is small enough to need deciding
-     rather than thinning — you go to the spell-off. Scripps stages that as
-     Preliminaries, Quarterfinals, Semifinals and Finals, and this does the same,
-     except the stage advances when the field thins rather than when a calendar
-     day ends, because this is one sitting with eleven spellers.
-
-     `pct` is the slice of the ranked bee list a round draws from — a percentile
-     window rather than a library y-band, because the library's y only reaches 7
-     with any depth and a band of [8,9] has almost nothing in it. Windows overlap
-     the way a real list does. `press` is the pressure multiplier: what turns a
-     nervous speller's fifth round into a coin toss.
-     The opening round does not eliminate — the announcer says so, so it is true. */
-  const STAGES = [
-    { name: 'Preliminaries', pct: [0, .30], press: .25,
-      open: 'Eleven spellers. The preliminaries decide who is still here at lunch.' },
-    { name: 'Quarterfinals', pct: [.26, .58], press: .55,
-      open: 'Quarterfinals. The list gets longer and the room gets quieter.' },
-    { name: 'Semifinals', pct: [.54, .82], press: .8,
-      open: 'Semifinals. Everything from here is a word that has ended somebody’s bee.' },
-    { name: 'Finals', pct: [.78, 1], press: 1,
-      open: 'The finals. Championship words, and one microphone left.' },
-  ];
-  /* The three parts of a segment, in the order a bee actually runs them. Spelling
-     opens because that is what a bee is; the vocabulary round is second, the way
-     Scripps puts the meaning segment after the spelling one; the spell-off closes
-     because it decides rather than thins, and a decider makes no sense as an
-     opener. */
-  const SEGMENT = [
-    { kind: 'spell', sub: 'oral spelling',
-      line: 'Spell it as you hear it. Miss it and you sit down.' },
-    { kind: 'vocab', sub: 'word meanings',
-      line: 'Now the meanings. Four choices, one right, and no second guess.' },
-    { kind: 'lightning', sub: 'the spell-off',
-      line: 'Ninety seconds. Spell as many as you can. The lowest score goes out.' },
-  ];
-  const SEG_LEN = SEGMENT.length;
-  /* The stage a round belongs to. It climbs with the segment, but it also jumps
-     when the field collapses — with eleven spellers a run of bad luck can leave
-     three standing in the second segment, and calling that "Quarterfinals" while
-     three people fight for a title reads as a bug. */
-  function stageFor(seg, liveN) {
-    let i = Math.min(seg, STAGES.length - 1);
-    if (liveN <= 2) i = STAGES.length - 1;
-    else if (liveN <= 4) i = Math.max(i, STAGES.length - 2);
-    else if (liveN <= 6) i = Math.max(i, 1);
-    return i;
+  /* ---------------- the size of a bee: by age band (§4.1) ----------------
+     The app's age bands are 5–7 / 8–10 / 11–13 / 14–18; the bee's are the spec's three.
+     `win` is the write-along window on a rival's word: shorter for older spellers, who
+     type faster, so the field and the clock come out about the same length. */
+  const BANDS = {
+    '6-7':   { label: '6–7',   rivals: 4, rounds: 3, win: 12000, ids: ['pixel', 'koi', 'beaker', 'panda'] },
+    '8-10':  { label: '8–10',  rivals: 6, rounds: 4, win: 10000, ids: ['pixel', 'koi', 'beaker', 'panda', 'comet', 'astro'] },
+    '11-15': { label: '11–15', rivals: 8, rounds: 5, win: 7000, ids: ['beaker', 'panda', 'comet', 'astro', 'scopey', 'melody', 'samurai', 'goldlegend'] },
+  };
+  /* Family Bee night: each player picks one. Grown-ups get grown-up words — but never the
+     Finals words, which belong to Champ alone. */
+  const FAM_BANDS = [['6-7', '6–7'], ['8-10', '8–10'], ['11-15', '11–15'], ['adult', 'Grown-up']];
+  const FAM_ROUNDS = 3;
+  function bandKey(c) {
+    c = c || (typeof active === 'function' ? active() : null);
+    const k = c && c.ageBand;
+    if (k === '5-7') return '6-7';
+    if (k === '8-10') return '8-10';
+    if (k === '11-13' || k === '14-18') return '11-15';
+    const a = +(c && c.age) || 9;
+    return a <= 7 ? '6-7' : a <= 10 ? '8-10' : '11-15';
   }
-  const NUMERAL = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
-    'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen'];
-  /* Two spellers trading championship words under the two-word rule can go on all
-     night — the simulator once found a bee that reached round fifty-three. So the
-     hall escalates: past the last stage the list climbs to its very top, and after
-     three further segments the championship rule is suspended and the next miss
-     ends it. Sudden death is how real bees close, and it guarantees this one does. */
-  const SUDDEN_AT = 3;
-  function roundAt(n, liveN) {
-    const seg = Math.floor(n / SEG_LEN);
-    const part = SEGMENT[n % SEG_LEN];
-    const si = stageFor(seg, liveN == null ? 99 : liveN);
-    const st = STAGES[si];
-    const over = Math.max(0, seg - (STAGES.length - 1));
-    const sudden = over >= SUDDEN_AT && part.kind === 'spell';
-    return {
-      kind: part.kind, sub: part.sub, stage: st.name, stageI: si, seg: seg,
-      name: st.name + ' · ' + (part.kind === 'spell' ? 'Round ' + (NUMERAL[seg] || (seg + 1))
-        : part.kind === 'vocab' ? 'Vocabulary' : 'Spell-off'),
-      pct: [Math.min(.94, st.pct[0] + over * .03), Math.min(1, st.pct[1] + over * .01)],
-      press: st.press + over * .2,
-      safe: n === 0 ? 1 : 0,
-      sudden: sudden ? 1 : 0,
-      line: n === 0 ? 'Everybody gets one, and nobody goes out. Find your feet.'
-        : sudden ? 'Sudden death. The championship rule is suspended — the next miss ends this bee.'
-        : (n % SEG_LEN === 0 && seg <= STAGES.length - 1) ? st.open : part.line,
-    };
+  const MODES = ['bee', 'champ', 'family'];
+
+  /* ---------------- the level (§1.7, SB_LEVEL) ----------------
+     The child chooses it on the chip; SB_LEVEL.after() re-checks it at the end of every Bee.
+     Until that contract is in the build, a tiny local fallback keeps the old chip's choice. */
+  const LEVELS = ['easy', 'medium', 'hard', 'champ'];
+  function lvlGet() {
+    try { if (window.SB_LEVEL && typeof SB_LEVEL.get === 'function') return SB_LEVEL.get('mockbee') || 'auto'; } catch (e) {}
+    try { return (active() && active().mbDiff) || 'auto'; } catch (e) { return 'auto'; }
+  }
+  const lvlConcrete = (lv, band) => LEVELS.indexOf(lv) >= 0 ? lv : band === '6-7' ? 'easy' : band === '8-10' ? 'medium' : 'hard';
+  const LVL_NAME = { auto: 'Auto', easy: 'Easy', medium: 'Medium', hard: 'Hard', champ: 'Champ' };
+
+  /* ---------------- one seeded generator per bee ----------------
+     The rivals' words, slips and bells all come from it. A bee is reproducible from its seed,
+     and nothing the child can be paid for depends on Math.random() (FAMILY-STANDARD, T5). */
+  function mkRng(seed) {
+    let a = seed >>> 0;
+    return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  let _idleRng = mkRng(20261004);
+  const rnd = () => { const g = state.mb; return (g && typeof g.rnd === 'function') ? g.rnd() : _idleRng(); };
+  const shuffle = (a, r) => { r = r || rnd; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  /* ---------------- the rounds ----------------
+     Bee and Family: oral rounds, the first one forgiving (nobody goes out — the announcer says
+     so, so it is true), then the band's count of rounds, then sudden death. Champ runs the old
+     Advanced Mock Rounds inside the same count: a written list, a meaning round, oral rounds on
+     Finals words and a lightning round, then sudden death. */
+  const STAGE_NAMES = ['Preliminaries', 'Quarterfinals', 'Semifinals', 'Finals'];
+  const STAGE_OPEN = ['The preliminaries decide who is still here at the end.',
+    'Quarterfinals. The list gets longer and the room gets quieter.',
+    'Semifinals. Everything from here is a word that has ended somebody’s bee.',
+    'The finals. Championship words, and one microphone left.'];
+  const NUMERAL = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+  function roundsFor(g) { return g && g.mode === 'family' ? FAM_ROUNDS : (BANDS[(g && g.band) || '8-10'] || BANDS['8-10']).rounds; }
+  function champSeq(K) {
+    return K <= 3 ? ['written', 'vocab', 'spell'] : K === 4 ? ['written', 'vocab', 'spell', 'lightning']
+      : ['written', 'vocab', 'spell', 'spell', 'lightning'];
+  }
+  function roundAt(n, g) {
+    g = g || state.mb || {};
+    const K = roundsFor(g);
+    const sudden = n >= K;
+    const kind = (g.mode === 'champ' && !sudden) ? champSeq(K)[n] : 'spell';
+    const frac = K > 1 ? Math.min(1, n / (K - 1)) : 1;
+    const si = Math.min(3, Math.round(frac * 3));
+    const sdN = sudden ? n - K : -1;
+    const name = sudden ? 'Sudden death' : kind === 'written' ? 'Written round' : kind === 'vocab' ? 'Vocabulary'
+      : kind === 'lightning' ? 'Lightning round' : STAGE_NAMES[si] + ' · Round ' + (NUMERAL[n] || (n + 1));
+    const sub = kind === 'written' ? 'a list, written down' : kind === 'vocab' ? 'word meanings'
+      : kind === 'lightning' ? 'the spell-off' : sudden ? 'the next miss ends it' : 'oral spelling';
+    const safe = n === 0 && kind === 'spell';
+    const line = safe ? 'Everybody gets one, and nobody goes out. Find your feet.'
+      : sudden ? (sdN === 0 ? 'Sudden death. The championship rule is suspended — the next miss ends this bee.' : 'Sudden death, and the words keep climbing.')
+      : kind === 'written' ? 'A written list first. The lowest scores sit down.'
+      : kind === 'vocab' ? 'Now the meanings. Four choices, one right, and no second guess.'
+      : kind === 'lightning' ? 'One minute. Spell as many as you can. The lowest score goes out.'
+      : STAGE_OPEN[si];
+    return { n, kind, sub, name, stageI: sudden ? 3 : si, sudden: sudden ? 1 : 0, sdN, safe: safe ? 1 : 0,
+      press: sudden ? 1 : frac, tier: n === 0 ? -1 : (n >= K - 1 ? 1 : 0), line, K };
   }
 
   /* ---------------- the announcer ----------------
-     Authored pools rather than one line per event, because the child will hear
-     these many times and a bee announcer who repeats himself is a robot. */
-  /* THE ANNOUNCER, CUT TO SIZE.
-     Seventy-eight lines across twenty-four pools, which was written for variety
-     when the announcer was only ever going to be read. If any of it is to be
-     RECORDED, every line is a clip and every placeholder multiplies it — a single
-     "Number {n}, {name}. {age}, and {tell}." is ten spellers by eleven draw
-     numbers, a hundred and ten recordings for one sentence. Cutting to two lines
-     a pool takes the set from 78 to 41 without losing the voice: a bee announcer
-     repeats himself anyway, and a child hears these many times.
-
-     AND {name} NOW SITS AT A SENTENCE BOUNDARY, always first or last, never
-     buried mid-clause. That is what lets the name be spoken separately — by the
-     device's own voice, live — while the rest of the line stays fixed. It is the
-     one part that can never be pre-recorded without a clip per speller, so it is
-     the one part that is deliberately detachable. Do not move a {name} back into
-     the middle of a sentence. */
+     Authored pools rather than one line per event, because the child will hear these many
+     times. {name} sits at a sentence boundary so it can be spoken live by the device while
+     the rest of the line stays fixed. Lines that are RECORDED (ANN_HAVE) keep their exact
+     words: the clip says them. */
   const SAY = {
+    /* open-0's recording says "eleven spellers". No field is eleven any more, so the bee opens
+       on open-1 (see mbStart) and open-0 is kept only because its clip is on disk. */
     open: ['Ladies and gentlemen — eleven spellers, one microphone. Only one of you walks out with it.',
       'The lights are up. Somewhere in this room is a champion who does not know it yet.'],
     draw: ['You have drawn number {n}. Remember it — it is your place in every round tonight.',
@@ -176,11 +189,11 @@
     roundIn: ['{round}. {line}', '{round} — {sub}. {line}'],
     callMe: ['Speller number {n}. Your word, please.', 'Number {n} — this one is yours.'],
     callBot: ['{name} — {age}, and {tell}.', '{name}, number {n}, to the microphone.'],
-    /* the meaning round has its own calls — a bee announcer does not ask you to
-       spell a word and then read you four definitions in the same breath */
     callVocMe: ['Speller number {n}. Not the spelling this time — the meaning.',
       'Number {n}. Four meanings on the board. One of them is yours.'],
     callVocBot: ['{name}, for the meaning.', '{name} — {vtell}.'],
+    /* boltIn-0's recording says "ninety seconds"; the lightning round is one minute, so it
+       always opens on boltIn-1 */
     boltIn: ['Ninety seconds on the clock. Spell everything you can.',
       'This is the spell-off. No turns, no order — just the clock.'],
     boltEnd: ['Time. Pencils down.', 'Time is called.'],
@@ -189,7 +202,6 @@
     meRight: ['Correct! You are still in.', 'Right — one more round survived.'],
     meWrong: ['No — I am sorry. The word was {word}.',
       'That is not it. {word}. Take a seat, and take it proudly.'],
-    /* round one takes nobody, so a miss there gets a different bell */
     botSafe: ['Not quite — but this is the warm-up, and the warm-up forgives.',
       'Incorrect, and it costs nothing tonight. Not yet.'],
     meSafe: ['Not quite. The word was {word} — but the warm-up forgives. You are still in.',
@@ -207,17 +219,13 @@
     winMe: ['THAT IS IT! Ladies and gentlemen — your champion!',
       'That is the championship word, spelled correctly. It is over!'],
     winBot: ['{name} is your champion.', '{name} spells the championship word. It is over.'],
-    outMe: ['You finish {place}. Out of eleven — that is a real result.',
+    outMe: ['You finish {place}. Out of {count} — that is a real result.',
       '{place} place. The hall applauds; they know how far that is.'],
     allMiss: ['Nobody spelled it. Under the rules, everybody stays. We go again.',
       'A clean sweep of misses — so nobody goes out. Back to the top of the order.'],
   };
   const fill = (t, v) => String(t).replace(/\{(\w+)\}/g, (m, k) => (v && v[k] != null) ? v[k] : m);
-  /* pick() also remembers WHICH line it chose, so announce() can find the matching
-     recording without every call site having to name it. The pool is resolved from
-     the array itself rather than passed in — the call sites already read
-     `pick(SAY.botRight, seed)` and adding an argument to forty of them would be a
-     lot of churn for a lookup the array reference already answers. */
+  /* pick() remembers WHICH line it chose, so announce() can find the matching recording */
   const POOL_OF = new Map();
   let _pick = null;
   const pick = (arr, seed) => {
@@ -230,48 +238,52 @@
 
   /* ---------------- state ---------------- */
   const mb = () => state.mb;
-  function prog() { try { return SB_STORE.getJSON('mockbee', {}) || {}; } catch (e) { return {}; } }   // LS names the key; store.js owns it
+  function prog() { try { return SB_STORE.getJSON('mockbee', {}) || {}; } catch (e) { return {}; } }
   function saveProg(p) { try { SB_STORE.setJSON('mockbee', p); } catch (e) {} }
+  const isHuman = s => !!s && (s.kind === 'me' || s.kind === 'player');
+  /* the profile child — the only speller whose words are paid and whose progress moves */
+  const isProfile = s => !!s && (s.kind === 'me' || (s.kind === 'player' && s.profile));
+  const alive = () => ((mb() && mb().field) || []).filter(s => s.in);
+  const profileIn = () => alive().some(isProfile);
 
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
-
-  /* How hard is this word, 0..1. Words drawn from the ranked bee list carry
-     their own percentile in `_h`, which is the honest answer; anything that
-     arrives from elsewhere falls back to the library's y plus a length tax,
-     because a nine-letter y-5 word beats a five-letter y-5 word at the mic. */
+  /* How hard is this word, 0..1: the library's y plus a length tax (a word that carries its
+     own percentile in `_h` is judged on that). */
   function hardness(w) {
+    if (!w) return .5;
     if (typeof w._h === 'number') return w._h;
     const y = clamp((w.y || 3), 1, 9);
     return clamp((y - 1) / 8 * .82 + clamp(((w.w || '').length - 6) / 12, 0, 1) * .18, 0, 1);
   }
+  /* Finals words (skeuomorph, ballabile…) are Champ's alone */
+  const isFinals = w => !!w && (typeof w._h === 'number' ? w._h >= .78 : (w.y || 0) >= 8);
 
-  /* Does this bot get it? Everyone starts from the same steady hand (BASE) and
-     the answer turns on the gap between the word and the level they are
-     comfortable at: inside their range they are near-certain, above it they
-     fall away fast. Pressure is always a cost, and nerve is what buys it off —
-     which is why Dax leads round one and loses round six. Vary is the
-     day-to-day wobble that stops a bot being a lookup table. */
-  const BASE = .84, SPREAD = 1.5, PRESS = .55;
-  function botSpells(bot, w, press) {
-    const spec = (bot.spec && bot.spec.test(w.o || '')) ? .10 : 0;
-    const fit = ((bot.lvl != null ? bot.lvl : .4) - hardness(w)) * SPREAD;
-    const nerve = -press * (1 - bot.nerve) * PRESS;
-    const wobble = (Math.random() - .5) * bot.vary * 2;
-    return Math.random() < clamp(BASE + spec + fit + nerve + wobble, .04, .97);
+  /* Does a rival get it? A steady hand set by their skill, a cost for every round the bee has
+     run, nerve against the pressure, a nudge for their speciality and for how hard this word
+     is against the round's own words — and in sudden death every round costs more, which is
+     what ends a bee a perfect speller is still standing in. */
+  function botSpells(bot, w, R) {
+    R = R || {};
+    const base = .80 + (bot.skill - .52) * .4;
+    const spec = (bot.spec && bot.spec.test((w && w.o) || '')) ? .05 : 0;
+    const g = mb();
+    const mid = g && typeof g.mid === 'number' ? g.mid : hardness(w);
+    const word = -(hardness(w) - mid) * .5;
+    const nerve = -(R.press || 0) * (1 - bot.nerve) * .35;
+    const drop = -.045 * Math.min(R.n || 0, 6);
+    const sd = R.sdN >= 0 ? -.14 * (R.sdN + 1) : 0;
+    const wobble = (rnd() - .5) * bot.vary * 2;
+    return rnd() < clamp(base + spec + word + nerve + drop + sd + wobble, .04, .97);
   }
 
-  /* A wrong answer should look like something a child would actually write, not
-     like noise: the doubles, the schwa endings, the silent letters and the ie/ei
-     flip are where bees are lost. */
+  /* A wrong answer should look like something a child would actually write */
   const SLIPS = [
-    [/([bcdfglmnprst])\1/, m => m[0]],                 // doubled -> single
+    [/([bcdfglmnprst])\1/, m => m[0]],
     [/ie/, 'ei'], [/ei/, 'ie'],
     [/ance$/, 'ence'], [/ence$/, 'ance'],
     [/ible$/, 'able'], [/able$/, 'ible'],
     [/ph/, 'f'], [/ough/, 'uff'],
-    [/([aeiou])r([aeiou])/, '$1rr$2'],                 // single -> doubled
-    [/^(k)(n)/, '$2'], [/^(w)(r)/, '$2'],              // drop a silent head
+    [/([aeiou])r([aeiou])/, '$1rr$2'],
+    [/^(k)(n)/, '$2'], [/^(w)(r)/, '$2'],
     [/e$/, ''], [/([^aeiou])y$/, '$1ie'],
     [/tion$/, 'sion'], [/sion$/, 'tion'],
     [/c([ei])/, 's$1'], [/s([ei])/, 'c$1'],
@@ -280,108 +292,58 @@
     const w = String(word || '');
     const cands = SLIPS.filter(([re]) => re.test(w));
     if (cands.length) {
-      const [re, to] = cands[Math.floor(Math.random() * cands.length)];
-      const out = typeof to === 'function' ? w.replace(re, to) : w.replace(re, to);
+      const [re, to] = cands[Math.floor(rnd() * cands.length)];
+      const out = w.replace(re, to);
       if (out && out.toLowerCase() !== w.toLowerCase()) return out;
     }
-    /* nothing bit — drop a middle vowel, which is the schwa mistake */
     const i = w.slice(1, -1).search(/[aeiou]/);
     return i >= 0 ? w.slice(0, i + 1) + w.slice(i + 2) : w + 'e';
   }
 
   /* ---------------- word supply ----------------
-     A bee is only as good as its list. Drawing on the whole 40k library by y-band
-     puts dictionary tail on the stage — `abidingness` is a y-5 word and no bee has
-     ever asked for it. So the hall keeps its own list: the ~4,650 words the library
-     has actually tagged as competition words (`nt` — the finals lists and the
-     Primary / Junior / Advanced / Senior tiers), ranked once by difficulty. Each
-     round takes a percentile window of that ranking, which is how the ladder runs
-     pie → hobbit → dogma → oregano → melee → dhole → harmattan → benthamite. */
-  const BEE_TIER = /North South Finals|Senior|Advanced|Junior|Primary|NWFinal/i;
-  let _beeList = null, _beeFrom = 0;
-  function beeList() {
-    const src = (window.SB_DATA && SB_DATA.nsf) || [];
-    /* the library arrives in shards, so a list built at boot would be the first
-       shard only — rebuild whenever the corpus has grown underneath us */
-    if (_beeList && src.length === _beeFrom) return _beeList;
-    _beeFrom = src.length;
-    const out = [];
-    for (const w of src) {
-      if (!w || !w.w || !w.d || w.d.length < 5) continue;
-      if (!/^[a-z]{3,}$/i.test(w.w)) continue;
-      if (!w.nt || !BEE_TIER.test(w.nt)) continue;
-      out.push(w);
-    }
-    /* rank: the library's own difficulty first, length as the tie-break */
-    const sc = w => clamp(w.y || 3, 1, 9) * 10 + Math.min(20, (w.w.length - 4) * 1.6);
-    out.sort((a, b) => sc(a) - sc(b) || a.w.length - b.w.length);
-    /* every word carries its own percentile, which is what the bots are judged on */
-    _beeList = out.map((w, i) => ({ ...w, _h: out.length > 1 ? i / (out.length - 1) : .5 }));
-    return _beeList;
+     ONE DOOR: nextWords(child, n, {purpose:'contest'}) (games spec §1.1) — kid-safe for this
+     child, inside the level window, none of their last 150 game words, competition-tagged words
+     first. The bee asks for the round's tier (−1 for the forgiving first round, +1 for the last
+     round and sudden death) at the level being played (SB_LEVEL key 'mockbee'). Finals words —
+     the top of the list, skeuomorph and its kind — are Champ's alone: Champ asks for the Champ
+     level a tier up and keeps only those; every other bee keeps everything but them. A Family
+     Bee night guest's words come through the same door at the level their band stands for. */
+  const BAND_LEVEL = { '6-7': 'easy', '8-10': 'medium', '11-15': 'hard', adult: 'champ' };
+  function nw(n, o) {
+    try { if (typeof window.nextWords === 'function') return window.nextWords(active(), n, o) || []; } catch (e) {}
+    try { return (typeof gameWordsD === 'function' ? gameWordsD() : []).filter(w => !o.filter || o.filter(w)); } catch (e) { return []; }
   }
-
-  /* Optional player-chosen hardness — shifts the whole percentile window the child's
-     words are drawn from, easier (down) or harder (up). 'auto' keeps the bee's own ramp. */
-  function mbDiffShift() { try { const d = (active() && active().mbDiff) || 'auto';
-    return { auto: 0, easy: -0.24, medium: -0.08, hard: 0.12, champ: 0.26 }[d] || 0; } catch (e) { return 0; } }
-  function roundWords(R, n) {
-    const list = beeList();
-    let pool = [];
-    if (list.length > 60 && R.pct) {
-      const sh = mbDiffShift();
-      const p0 = Math.max(0, Math.min(0.9, R.pct[0] + sh)), p1 = Math.max(0.1, Math.min(1, R.pct[1] + sh));
-      const a = Math.floor(p0 * list.length);
-      const b = Math.max(a + n * 4, Math.ceil(p1 * list.length));
-      pool = list.slice(a, Math.min(b, list.length));
-    }
-    /* the tagged list has not loaded yet (or a build stripped it) — fall back to
-       the y-bands so the bee still runs rather than dying on an empty stage */
-    if (pool.length < n) {
-      const band = R.band || [Math.max(1, Math.round(1 + (R.pct ? R.pct[0] : 0) * 8)),
-        Math.min(9, Math.round(2 + (R.pct ? R.pct[1] : 1) * 8))];
-      try { pool = pool.concat(corpusSlice(band[0], band[1], 600) || []); } catch (e) {}
-      pool = pool.filter(w => w && w.w && w.d && /^[a-z][a-z-]{2,}$/i.test(w.w));
-    }
-    /* NO-REPEAT ACROSS BEES.
-       The app already keeps a per-child log of served words (c.gameLog) and the
-       Arcade games pick around it with pickFresh(). The bee was not part of that:
-       it shuffled a percentile window of beeList() and never looked at the log or
-       wrote to it, so consecutive bees drew from the same few hundred words and a
-       child saw the same ones every time.
-       Words already served are pushed to the BACK rather than dropped, so a thin
-       window still fills — a bee that cannot find a word is worse than one that
-       repeats — but everything fresh comes first. */
-    let recent = null;
-    try { recent = recentGameKeys(active()); } catch (e) {}
-    const seen = new Set(); const fresh = [], stale = [];
-    for (const w of shuffle(pool.slice())) {
-      if (!w || !w.w) continue;
-      const k = nkey(w.w); if (seen.has(k)) continue; seen.add(k);
-      ((recent && recent.has(k)) ? stale : fresh).push(w);
-      if (fresh.length >= n) break;
-    }
-    const out = fresh.concat(stale).slice(0, n);
-    /* last resort: a bee with no list is not a bee, so take anything spellable */
-    if (!out.length && list.length) out.push(list[Math.floor(Math.random() * list.length)]);
+  /* n words for this round and this speller, never one already given in this bee */
+  function drawWords(n, R, who) {
+    const g = mb(); const out = [];
+    const used = g.used || (g.used = new Set());
+    const champ = g.mode === 'champ';
+    const take = (arr, loose) => {
+      for (const w of arr || []) {
+        if (out.length >= n) break;
+        if (!w || !w.w || !w.d || !/^[a-z][a-z-]{2,}$/i.test(w.w)) continue;
+        const k = nkey(w.w); if ((used.has(k) && !loose) || out.some(x => nkey(x.w) === k)) continue;
+        used.add(k); out.push(w);
+      }
+    };
+    const guest = g.mode === 'family' && who && !who.profile;
+    const level = champ ? 'champ' : guest ? (BAND_LEVEL[who.band] || 'medium') : (g.mode === 'family' && who ? (BAND_LEVEL[who.band] || g.lvl) : g.lvl);
+    const tier = champ ? 1 : (R.sdN >= 0 ? 1 : (R.tier || 0));
+    const fin = champ && R.kind !== 'vocab' ? isFinals : (champ ? null : w => !isFinals(w));
+    const o = { purpose: 'contest', key: 'mockbee', level, tier, needDef: true, filter: fin || undefined };
+    take(nw(n + 6, o));
+    if (out.length < n) take(nw(n + 6, { ...o, tier: 0 }));
+    if (out.length < n) take(nw(n + 6, { purpose: 'contest', key: 'mockbee', level, needDef: true, filter: fin || undefined }), true);
+    if (out.length < n) take(nw(n + 6, { purpose: 'contest', needDef: true }), true);
     return out;
   }
 
-  /* ---------------- the vocabulary round ----------------
-     The app already has a meaning question: vocBuildCheck() in app3, which is
-     what the Vocabulary section asks. Reusing it means the child meets exactly
-     the question they have been practising, and there is one implementation
-     rather than two drifting apart.
-
-     The one thing it cannot do unchanged is the late rounds. Its distractors
-     come from gameWordsD(), which is scoped to THIS CHILD's difficulty band —
-     about 180 words for a level-four speller. Put a championship word against
-     three level-four definitions and the right answer is obvious from its
-     register alone, without knowing anything. So the bee widens the pool itself
-     rather than touching the shared function, whose behaviour the Vocabulary
-     section's headless test pins down.
-
-     SB_VOCAB26 is the natural source: 997 words, every one carrying a
-     definition, and it is the actual national vocabulary list. */
+  /* ---------------- the vocabulary round (Champ) ----------------
+     The app already has a meaning question: vocBuildCheck() — the Vocabulary section's. The bee
+     widens the distractor pool (SB_VOCAB26, the national list) so a championship word is not
+     given away by the register of three easy definitions. Every choice is punctuated and cut
+     the same way, and distractors are chosen CLOSE IN LENGTH, so neither tidiness nor length
+     is a tell. A meaning answered right never calls logBand or markMastered. */
   let _vocPool = null;
   function vocPool() {
     if (_vocPool) return _vocPool;
@@ -393,61 +355,26 @@
     for (const w of out) { const k = nkey(w.w); if (seen.has(k)) continue; seen.add(k); _vocPool.push(w); }
     return _vocPool;
   }
-  /* EVERY CHOICE IS PUNCTUATED THE SAME WAY, and this is not cosmetic.
-     The answer comes from the round's word and the distractors from wherever the
-     pool found them, and the two banks are written differently: SB_VOCAB26
-     definitions are sentence-cased and end in a period, the library's are
-     lowercase fragments that do not. Printed side by side, the right answer was
-     the only tidy one — a child could learn to pick it without knowing the word,
-     which is a quiz that tests nothing. Normalising all four identically is what
-     makes the question honest. */
-  /* A choice has to be READABLE on a phone, four at a time, under a clock.
-     The raw definitions are not: "necklace" ships as "Jewelry consisting of a
-     cord or chain (often bearing gems) worn about the neck as an ornament
-     (especially by women)", and once the length-matcher pairs that with three
-     equally long ones the screen is a wall of text nobody reads — they just pick
-     the one with a familiar noun in it. So each choice is reduced to the part
-     that actually distinguishes it: parentheticals dropped, one sentence only,
-     and clamped at a word boundary. */
   const DEF_MAX = 92;
   function defText(d) {
     let t = String(d || '').trim().replace(/\s+/g, ' ');
-    /* Asides in brackets are almost never the distinguishing part, and they are
-       where most of the length lives — but a few entries are ENTIRELY bracketed
-       ("(chiefly British) …", "(see also …)"), and stripping those leaves an
-       empty string, which silently drops the question. Keep the strip only when
-       something usable survives it. */
     const bare = t.replace(/\s*\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
     if (bare.length >= 12) t = bare;
     t = t.replace(/[.;,]+$/, '');
-    /* one sentence: some definitions run to three, and length is a tell */
     const cut = t.search(/\.\s+[A-Z]/);
     if (cut > 24) t = t.slice(0, cut);
-    /* still long — cut at a comma or semicolon clause if there is one late
-       enough to stand alone, otherwise at the last whole word */
     if (t.length > DEF_MAX) {
       const clause = t.slice(0, DEF_MAX).lastIndexOf(';');
       const comma = t.slice(0, DEF_MAX).lastIndexOf(',');
       const at = clause > 34 ? clause : comma > 40 ? comma : -1;
       if (at > 0) t = t.slice(0, at);
-      else {
-        const sp = t.lastIndexOf(' ', DEF_MAX);
-        t = t.slice(0, sp > 30 ? sp : DEF_MAX).replace(/[,;]$/, '') + '…';
-      }
+      else { const sp = t.lastIndexOf(' ', DEF_MAX); t = t.slice(0, sp > 30 ? sp : DEF_MAX).replace(/[,;]$/, '') + '…'; }
     }
     t = t.replace(/[.;,]+$/, '');
     return t.charAt(0).toUpperCase() + t.slice(1);
   }
-  /* One meaning question. Falls back to the app's own builder when the wide pool
-     is unavailable, so a missing data file costs a good question, not the round. */
   function vocQuestion(w) {
     const pool = vocPool();
-    /* LENGTH IS THE OTHER TELL. "Pick the longest one" is the oldest trick a
-       child brings to a multiple-choice paper, and it works whenever the right
-       answer is a careful full definition and the wrong ones are three-word
-       stubs. So the distractors are chosen for being CLOSE IN LENGTH to the
-       answer — from a wider candidate list, sorted by how near they land, with
-       enough slack left that the three are not identical in shape. */
     const mk = (ans, others) => {
       const A = defText(ans);
       if (!A) return null;
@@ -456,8 +383,6 @@
         .filter((x, i, a) => a.indexOf(x) === i)
         .sort((x, y) => Math.abs(x.length - A.length) - Math.abs(y.length - A.length));
       if (O.length < 3) return null;
-      /* take from the nearest six rather than the nearest three, so the set is
-         well-matched without being mechanically so */
       return { w, answer: A, choices: shuffle([A].concat(shuffle(O.slice(0, 6)).slice(0, 3))) };
     };
     if (pool.length >= 8) {
@@ -473,13 +398,11 @@
     } catch (e) {}
     return null;
   }
-  /* A round's worth of questions, one per speller. Words come from the round's
-     own difficulty window, and only ones that carry a usable definition. */
   function vocWordsFor(R, n) {
-    const from = roundWords(R, n * 4).filter(w => w && String(w.d || '').trim().length > 8);
+    const from = drawWords(n * 3, R).filter(w => String(w.d || '').trim().length > 8);
     const qs = [];
     for (const w of from) { const q = vocQuestion(w); if (q) qs.push(q); if (qs.length >= n) break; }
-    if (qs.length < n) {           /* the round list was thin on definitions */
+    if (qs.length < n) {
       for (const w of shuffle(vocPool().slice())) {
         if (qs.some(q => nkey(q.w.w) === nkey(w.w))) continue;
         const q = vocQuestion(w); if (q) qs.push(q);
@@ -488,133 +411,41 @@
     }
     return qs;
   }
-  /* Does a rival know this one? Their `voc` rather than their `skill`, nudged by
-     the round's pressure and by whether the word sits in their speciality — a
-     Latin specialist has the root, and the root is most of the meaning. */
-  function botKnows(bot, w, press) {
+  function botKnows(bot, w, R) {
     let p = bot.voc == null ? bot.skill : bot.voc;
-    if (bot.spec && bot.spec.test(String(w.o || '') + ' ' + String(w.r || ''))) p += .10;
-    p -= (1 - bot.nerve) * .12 * (press || 0);
-    p -= Math.max(0, ((w.y || 3) - 4)) * .05;
-    p += (Math.random() - .5) * (bot.vary || .1) * 1.4;
-    return Math.random() < clamp(p, .05, .97);
+    if (bot.spec && bot.spec.test(String((w && w.o) || '') + ' ' + String((w && w.r) || ''))) p += .10;
+    p -= (1 - bot.nerve) * .12 * ((R && R.press) || 0);
+    p += .10;                                  /* Finals words: the meaning is easier than the spelling */
+    p += (rnd() - .5) * (bot.vary || .1) * 1.4;
+    return rnd() < clamp(p, .05, .97);
   }
 
-  /* ---------------- the run ---------------- */
-  app2.mbOpen = () => {
-    state.nav = 'mockbee'; state.screen = 'app';
-    state.mb = { view: 'lobby', field: null, round: 0, seed: (Date.now() / 1000) | 0 };
-    try { window.scrollTo(0, 0); } catch (e) {}
-    render();
-  };
-
-  app2.mbStart = () => {
-    aqStop();          /* a previous bee must not talk over this one */
-    const c = active();
-    /* the draw: eleven numbers in a hat, and one of them is yours */
-    const order = shuffle(BOTS.map((b, i) => ({ kind: 'bot', bot: b, i })).concat([{ kind: 'me' }]));
-    order.forEach((s, i) => { s.n = i + 1; s.in = true; s.hist = []; });
-    const me = order.find(s => s.kind === 'me');
-    state.mb = {
-      view: 'stage', field: order, round: 0, turn: 0, myN: me.n,
-      phase: 'roundIn', word: null, typed: '', asked: {}, log: [],
-      announce: '', busy: false, place: 0, seed: (Date.now() / 1000) | 0,
-      avatar: (c && c.avatar) || 'bizzy', name: (c && c.name) || 'You',
-    };
-    announce(fill(pick(SAY.open, state.mb.seed), {}));
-    after(1400, () => { if (!state.mb || state.mb.view !== 'stage') return;   /* quit during the draw: nothing to call */
-      announce(fill(pick(SAY.draw, state.mb.seed + 1), { n: me.n })); beginRound(); });
-    render();
-  };
-
-  /* ---------------- the announcer's voice ----------------
-     Two faults lived here. The hall spoke at a flat .98 while the whole rest of
-     the app speaks at 0.95 x the child's rate, so the announcer ran faster than
-     everything else and ignored Settings -> Slow entirely. And deviceSpeak
-     cancels whatever is mid-sentence, so every beat scheduled sooner than the
-     line takes to read chopped it — a stream of half-sentences, which is what a
-     glitch sounds like.
-
-     So: the hall speaks at the app's rate, a shade slower because an announcer
-     should be unhurried, and NOTHING is scheduled inside a line that is still
-     being read. `after()` is the only timer this file uses from here on. */
-  const rateOf = () => { try { return 0.90 * (state.voiceRate || 1); } catch (e) { return 0.90; } };
-  /* about 2.8 words a second at that rate, plus a breath at each end */
+  /* ---------------- the clock ----------------
+     after() is the only timer the turn machinery uses. A timer belongs to the bee that set
+     it and runs only while the hall is on screen: quit, start another, or leave by the tab
+     bar, and it does nothing (tests/mockbee-faces.cjs). It always waits long enough for the
+     line on the card to be read, and Watch the rest runs it at double speed. */
+  const speedOf = g => (g && g.speed) || 1;
+  function after(ms, fn) {
+    const g = mb();
+    const left = g && g.spokeAt ? Math.max(0, (g.spokeAt + g.spokeMs) - Date.now()) : 0;
+    return setTimeout(() => { if (mb() === g && state.nav === 'mockbee') fn(); }, Math.max(ms, left) / speedOf(g));
+  }
+  const elapsed = g => Date.now() - ((g && g.t0) || Date.now());
+  /* past 60% of the cap the write-along windows close; at the cap time is called */
+  const late = g => elapsed(g) > CAP_MS * .6;
   function speakMs(text) {
     const w = String(text || '').trim().split(/\s+/).filter(Boolean).length;
     let r = 1; try { r = state.voiceRate || 1; } catch (e) {}
     return Math.min(8000, 320 + w * 330 / r);
   }
-  /* wait at least ms, and always long enough for the line in the air to land.
-     A timer belongs to the bee that set it: one still pending when that bee is quit or a new
-     one is started does nothing. It used to run on the NEXT bee — quit during the draw, take
-     the stage again within ~5s, and the old draw's timer opened the new bee's round early,
-     then its own opened it again, two nextTurn chains running at once. Guard:
-     tests/mockbee-faces.cjs. */
-  function after(ms, fn) {
-    const g = mb();
-    const left = g && g.spokeAt ? Math.max(0, (g.spokeAt + g.spokeMs) - Date.now()) : 0;
-    return setTimeout(() => { if (mb() === g) fn(); }, Math.max(ms, left));
-  }
-
-  /* announce(shown, spoken)
-       shown   what the card on the stage reads
-       spoken  what the announcer actually says — '' to say nothing
-
-     Reading every line in full is correct and unplayable: a bee where the hall
-     reads a sentence about each of ten rivals before each of them spells takes
-     five minutes to reach round four. So the voice is spent where it earns its
-     keep — the open, the draw, every round, YOUR call and YOUR verdict, the
-     field thinning, championship rules, the finish — and the routine rival
-     chatter is shown on the card and given a two-word call instead, the way a
-     real pronouncer says "Correct." and moves on. */
-  /* THE ANNOUNCER IS VISUAL. THE ONLY AUDIO IN THIS HALL IS THE WORD.
-     He used to be read aloud by the device voice, which fought the word
-     pronunciation for the same channel: deviceSpeak cancels whatever is already
-     speaking, so a called word could be cut off by the next piece of commentary,
-     and on a phone the two voices were indistinguishable anyway. The commentary
-     is on screen where it can be read at leisure; say() keeps the word.
-
-     The `spoken` argument is now only a length hint. Do not delete it: the
-     announcer's speech duration WAS the bee's pacing — after() waits for
-     spokeAt + spokeMs before advancing — so removing the speech without keeping
-     a duration collapses every pause and the bee runs as a blur. It is now the
-     time the line takes to READ, which is close enough to the time it took to
-     hear that the rhythm is unchanged. */
-  /* THE ONE PIECE OF THE ANNOUNCER THAT IS SPOKEN: the speller's name.
-     A pronouncer calling a name aloud is most of what makes a hall feel like a
-     hall, and it is also the one part that could never be pre-recorded — a clip
-     per speller per line, which is where the 827-clip estimate came from. So it
-     is said live by the device's own voice while everything else stays on screen.
-
-     Deliberately NOT deviceSpeak(): that looks for a word clip first, and several
-     of these names are real words in the 41k library (Vesper, Nova, Comet), so a
-     name would sometimes come out in the pronouncer's recorded voice and
-     sometimes in the device's. One voice for names, always, and it is audibly a
-     different one from the word — which is correct, because a name and a word are
-     different things being said.
-
-     Rate 0.95 matches the word library, which was synthesised at 0.95 — so the
-     name and the word land at the same pace and the hall sounds like one person
-     talking, even though one is a recording and one is live. */
 
   /* ================= ONE VOICE AT A TIME =================
-     The hall has three sound sources and they were all firing independently: the
-     announcer's recorded clips (<audio>), the speller's name (speechSynthesis)
-     and the word (<audio> again). Nothing serialised them, and the two KINDS do
-     not block each other — so announce() started a clip and speakName() started
-     the name over the top of it in the same tick, and deviceSpeak's own
-     speechSynthesis.cancel() then chopped the name off part way through.
-
-     Delays cannot fix that. Two channels playing at once is not a timing problem,
-     it is a missing queue. Everything the bee says now goes through ONE queue, in
-     order, each item waiting for the previous to actually finish — onended for a
-     clip, onend for an utterance — with a duration-derived safety timer under
-     both, because neither event fires reliably on every mobile browser and a hall
-     that goes permanently silent is worse than one that overlaps by a hair.
-
-     `token` invalidates everything in flight when the bee is left or restarted,
-     so an abandoned game cannot talk over the next one. */
+     Everything the bee says goes through ONE queue, in order, each item waiting for the last
+     to finish (onended / onend, with a duration-derived safety timer). `token` invalidates
+     everything in flight when the bee is left or restarted. The only audio here is the word
+     (its recorded clip, or the device voice), a recorded announcer line, a name, and the
+     alternate pronunciation read by the device voice — no new recordings. */
   const AQ = { q: [], busy: false, token: 0, cur: null };
   function aqStop() {
     AQ.token++; AQ.q.length = 0; AQ.busy = false;
@@ -624,8 +455,7 @@
   }
   function aqPush(item) { AQ.q.push(item); aqPump(); }
   function aqPump() {
-    /* the hall is only heard IN the hall. Leaving by the tab bar, Back or Home (anything but
-       "Leave the hall", which stops it) left the bee's timers announcing over the next screen. */
+    /* the hall is only heard IN the hall */
     if (state.nav !== 'mockbee') { if (AQ.q.length || AQ.busy) aqStop(); return; }
     if (AQ.busy) return;
     const it = AQ.q.shift(); if (!it) return;
@@ -634,9 +464,9 @@
     let fired = false;
     const done = () => {
       if (fired) return; fired = true;
-      if (tok !== AQ.token) return;              /* the bee moved on; drop the rest */
+      if (tok !== AQ.token) return;
       AQ.cur = null; AQ.busy = false;
-      setTimeout(aqPump, it.gap == null ? 140 : it.gap);   /* a breath between lines */
+      setTimeout(aqPump, it.gap == null ? 140 : it.gap);
     };
     const missed = () => { if (it.miss) { try { it.miss(); } catch (e) {} } done(); };
     try {
@@ -645,7 +475,7 @@
         if (!window.speechSynthesis) return done();
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(it.text);
-        u.rate = 0.95 * (Number(state.voiceRate) || 1);
+        u.rate = (it.rate || 0.95) * (Number(state.voiceRate) || 1);
         u.onend = done; u.onerror = done;
         window.speechSynthesis.speak(u);
         const syl = Math.max(1, (String(it.text).match(/[aeiouy]+/gi) || [1]).length);
@@ -655,70 +485,53 @@
         AQ.cur = a;
         a.onended = done; a.onerror = missed;
         a.play().catch(missed);
-        setTimeout(done, it.max || 9000);        /* rescues a stalled load only */
+        setTimeout(done, it.max || 9000);
       }
     } catch (e) { done(); }
   }
-  /* the word, through the queue — a recorded clip when the library has one, the
-     device voice when it does not, which is the same decision deviceSpeak makes */
   function aqWord(w) {
     const t = String(w || '').trim(); if (!t) return;
     let clip = null; try { clip = wordClip(t); } catch (e) {}
     aqPush(clip ? { kind: 'clip', src: clip, gap: 220 } : { kind: 'tts', text: t, gap: 220 });
   }
-  /* Seventeen of the fifty lines are deliberately not recorded. Without a memory
-     this asked the network for each of them every time — ten dead requests in one
-     bee. One failure is enough. Not a manifest: it stays correct on its own as
-     clips are added or removed. */
+  /* the recorded announcer lines are exactly the files in voice/ann/ (tests/console-clean.cjs
+     holds this list to the folder). An unrecorded line is shown and never asked for. */
   const _annGone = new Set();
-  /* …but that one failure was a 404 in the console of every bee, seventeen times. The recorded
-     lines are exactly the files in voice/ann/ (and its manifest.json); this lists them, and
-     tests/console-clean.cjs holds the list to the folder, so it cannot drift as clips come and go.
-     An unrecorded line is shown on the stage card and never asked for. */
   const ANN_HAVE = new Set(('allMiss-0 allMiss-1 boltEnd-0 boltEnd-1 boltIn-0 boltIn-1 botRight-0 botRight-1 botSafe-0 botSafe-1 '
     + 'botWrong-0 botWrong-1 c2Champ-0 c2Champ-1 c2First-0 c2First-1 callVocBot-0 finalTwo-0 finalTwo-1 meRight-0 meRight-1 '
     + 'meWrong-0 open-0 open-1 outMe-1 thin-0 thin-1 thin-2 thin-3 winBot-0 winBot-1 winMe-0 winMe-1').split(' '));
-  function playAnn(pick) {
-    if (!pick || !pick.pool) return;
-    const key = pick.pool + '-' + pick.i;
+  function playAnn(p) {
+    if (!p || !p.pool) return;
+    const g = mb(); if (g && g.speed > 1) return;        /* watching at 2×: the card, not the voice */
+    const key = p.pool + '-' + p.i;
     if (!ANN_HAVE.has(key) || _annGone.has(key)) return;
-    aqPush({ kind: 'clip', src: 'voice/ann/' + key + '.mp3', gap: 160,
-             miss: () => _annGone.add(key) });
+    aqPush({ kind: 'clip', src: 'voice/ann/' + key + '.mp3', gap: 160, miss: () => _annGone.add(key) });
   }
-
   function speakName(n, then) {
     const t = String(n || '').trim();
     if (t) aqPush({ kind: 'tts', text: t, gap: 170 });
-    /* the callback is queued too, so `then` runs when the name has actually been
-       said rather than when it was scheduled — the queue is the ordering now */
     if (then) aqPush({ kind: 'cb', fn: then, gap: 0 });
   }
-
+  /* announce(shown, spoken): the card reads `shown`; `spoken` is only a LENGTH hint — the
+     time the line takes to read is the bee's pacing (after() waits for it). */
   function announce(text, spoken) {
     const g = mb(); if (!g) return;
     const beat = spoken === undefined ? text : spoken;
     g.announce = text;
-    g.log = (g.log || []).concat([text]).slice(-40);
     g.spokeAt = Date.now();
     g.spokeMs = beat ? Math.max(900, speakMs(beat)) : 0;
-    const p = _pick; _pick = null;     /* consume it — one announce, one line */
+    const p = _pick; _pick = null;
     playAnn(p);
-    /* a line that ends where {word} goes finishes on the word's own clip, queued
-       straight after it so the sentence lands as one continuous piece of speech */
-    if (p && /\{word\}\s*\.?\s*$/.test(p.raw || '')) {
-      const w = g.word && g.word.w; if (w) aqWord(w);
-    }
+    if (p && /\{word\}\s*\.?\s*$/.test(p.raw || '')) { const w = g.word && g.word.w; if (w && g.speed === 1) aqWord(w); }
     render();
   }
 
-  const alive = () => (mb().field || []).filter(s => s.in);
-
-  /* Going out is recorded in the order it happened, because that order IS the
-     final placing — the last speller to sit down finished second. Round one is
-     a warm-up and takes nobody. */
+  /* ---------------- going out ----------------
+     Out is recorded in the order it happened, because that order IS the final placing.
+     The first round forgives. */
   function sitDown(s) {
     const g = mb();
-    if (roundAt(g.round, alive().length).safe) return false;
+    if (roundAt(g.round).safe) return false;
     s.in = false;
     g.outSeq = (g.outSeq || []).concat([s]);
     g.roundOut = (g.roundOut || []).concat([s]);
@@ -726,51 +539,37 @@
   }
 
   /* ---------------- championship rules ----------------
-     The announcer states them at the final two, so the hall has to honour them:
-     with two spellers left, a miss does NOT end the bee. The rival must spell the
-     missed word AND then one more — the championship word — to take it. Miss
-     either and the speller who sat down is back on their feet and it goes on.
-     This is the single most dramatic rule in the sport and it was the announcer
-     making a promise the engine did not keep. */
+     With two left, a miss does NOT end it: the rival must spell the missed word AND one more.
+     Miss either and the speller who sat down is back on their feet. Suspended in sudden death. */
   function champTry(misser, missedWord) {
     const g = mb();
-    if (roundAt(g.round, alive().length).sudden) return false;     /* sudden death: a miss is the end */
+    if (roundAt(g.round).sudden) return false;
     const rival = g.field.find(s => s.in && s !== misser);
     if (!rival || !missedWord || !missedWord.w) return false;
-    const extra = (g.words || []).find(w => w && nkey(w.w) !== nkey(missedWord.w))
-      || roundWords(roundAt(g.round, alive().length), 1)[0] || missedWord;
+    const extra = drawWords(1, roundAt(g.round), rival)[0] || missedWord;
     g.c2 = { rival, misser, words: [missedWord, extra], step: 0 };
     after(900, champRun);
     return true;
   }
-
   function champRun() {
     const g = mb(); if (!g || g.view !== 'stage' || !g.c2) return;
     const c2 = g.c2, s = c2.rival;
     g.word = c2.words[c2.step];
     if (!g.word || !g.word.w) { g.c2 = null; return finish(); }
-    g.typed = ''; g.asked = {}; g.atMic = s; g.lastPractice = null;
-    const name = s.kind === 'me' ? 'You' : s.bot.name;
-    announce(fill(pick(c2.step === 0 ? SAY.c2First : SAY.c2Champ, g.seed + c2.step * 3), { name }));
-    if (s.kind === 'me') {
-      g.phase = 'me';
-      after(700, () => aqWord(g.word.w));
-      render();
-    } else {
-      g.phase = 'bot'; g.botStep = 0; g.botOut = '';
-      callBotToMic(s, clamp(s.bot.pace * .5, 600, 1200));
-    }
+    g.typed = ''; g.asked = {}; g.atMic = s; g.lastPractice = null; g.turnAsks = [];
+    announce(fill(pick(c2.step === 0 ? SAY.c2First : SAY.c2Champ, g.seed + c2.step * 3), { name: nameOf(s) }));
+    if (isHuman(s)) return humanTurn(s, true);
+    g.phase = 'bot'; g.botOut = '';
+    callBotToMic(s, clamp(s.bot.pace * .5, 600, 1200));
   }
-
   function champAfter(ok) {
     const g = mb(); const c2 = g.c2; if (!c2) return;
     if (!ok) {
       g.c2 = null;
       const m = c2.misser; m.in = true;
       g.outSeq = (g.outSeq || []).filter(s => s !== m);
-      announce(fill(pick(SAY.c2Miss, g.seed + g.round), {
-        name: c2.rival.kind === 'me' ? 'You' : c2.rival.bot.name,
-        back: m.kind === 'me' ? 'You are' : (m.bot.name + ' is') }));
+      announce(fill(pick(SAY.c2Miss, g.seed + g.round), { back: isProfile(m) && g.mode !== 'family' ? 'You are' : (nameOf(m) + ' is') }));
+      if (isProfile(m)) { g.outAsk = false; g.speed = 1; }
       g.round++; g.redo = 0;
       after(1200, beginRound); return;
     }
@@ -779,334 +578,453 @@
     after(800, finish);
   }
 
+  /* ================= the run ================= */
+  /* Family names are for the evening: they live in this closure and in state.mb, never in the
+     household, a device key, a backup or a request. Player 1 is always the profile child. */
+  let _fam = null;
+  function famPlayers() {
+    const c = active() || {};
+    if (!_fam) _fam = [{ profile: true, band: bandKey(c) }, { name: '', band: 'adult' }];
+    _fam[0].profile = true;
+    return _fam;
+  }
+
+  app2.mbOpen = (mode) => {
+    aqStop(); dropMiss(state.mb);
+    const m = MODES.indexOf(mode) >= 0 ? mode : ((state.mb && state.mb.mode) || 'bee');
+    state.nav = 'mockbee'; state.screen = 'app';
+    state.mb = { view: m === 'family' ? 'family' : 'lobby', mode: m, field: null, round: 0 };
+    /* what the Chair reads: sentences, alternate pronunciations, the Coach's rulebook — and
+       the arcade kit, which carries the shared stage */
+    try { if (window.SB_LAZY) {
+      SB_LAZY.need('arcade', () => { if (state.nav === 'mockbee' && state.mb) render(); });   /* the stage, the miss card, the keys */
+      SB_LAZY.need(['sents', 'sounds', 'coachRules', 'vocab26'], () => { if (state.nav === 'mockbee' && state.mb && state.mb.view !== 'stage') render(); }); } } catch (e) {}
+    try { window.scrollTo(0, 0); } catch (e) {}
+    render();
+  };
+  app2.mbMode = (m) => {
+    const g = mb(); if (!g || g.view === 'stage' || MODES.indexOf(m) < 0) return;
+    g.mode = m; g.view = m === 'family' ? 'family' : 'lobby'; render();
+  };
+  /* Family setup: up to four players, each with a band */
+  app2.mbFamAdd = () => { const P = famPlayers(); if (P.length < 4) P.push({ name: '', band: 'adult' }); render(); };
+  app2.mbFamDel = (i) => { const P = famPlayers(); i = +i; if (i > 0 && i < P.length && P.length > 2) P.splice(i, 1); render(); };
+  app2.mbFamName = (arg) => { const s = String(arg || ''); const k = s.indexOf('|'); const i = +s.slice(0, k);
+    const P = famPlayers(); if (P[i] && !P[i].profile) P[i].name = s.slice(k + 1).slice(0, 18); };
+  app2.mbFamBand = (arg) => { const [i, b] = String(arg || '').split('|'); const P = famPlayers();
+    if (P[+i] && FAM_BANDS.some(x => x[0] === b)) P[+i].band = b; render(); };
+
+  app2.mbStart = () => {
+    aqStop(); dropMiss(state.mb);
+    const c = active();
+    const prev = mb();
+    const mode = (prev && MODES.indexOf(prev.mode) >= 0) ? prev.mode : 'bee';
+    const band = bandKey(c);
+    const t0 = Date.now();
+    const seed = (((t0 / 1000) | 0) ^ (t0 % 1000) * 2654435761) >>> 0;
+    const g = {
+      view: 'stage', mode, band, lvl: lvlGet(), seed, rnd: mkRng(seed), t0, speed: 1,
+      field: null, round: 0, turn: 0, phase: 'roundIn', word: null, typed: '', asked: {},
+      announce: '', place: 0, bonus: 0, mine: [], log: [],
+      avatar: (c && c.avatar) || 'bizzy', name: (c && c.name) || 'You',
+    };
+    let order;
+    if (mode === 'family') {
+      const P = famPlayers().slice(0, 4);
+      order = P.map((p, i) => ({ kind: 'player', profile: !!p.profile, band: p.band || 'adult',
+        name: p.profile ? g.name : (String(p.name || '').trim() || 'Player ' + (i + 1)), pid: i }));
+    } else {
+      const B = BANDS[band] || BANDS['8-10'];
+      order = B.ids.map(id => ({ kind: 'bot', bot: botById(id) })).concat([{ kind: 'me' }]);
+    }
+    shuffle(order, g.rnd);
+    order.forEach((s, i) => { s.n = i + 1; s.in = true; s.hist = []; });
+    g.field = order;
+    g.myN = (order.find(isProfile) || {}).n || 1;
+    state.mb = g;
+    /* open-1: open-0's recording names a field of eleven (see SAY.open) */
+    announce(pick(SAY.open, 1));
+    after(1400, () => {
+      if (mode === 'family') announce('Family Bee night. ' + order.length + ' spellers, one device — pass it to whoever is called.');
+      else announce(fill(pick(SAY.draw, g.seed + 1), { n: g.myN }));
+      beginRound();
+    });
+    render();
+  };
+
   function beginRound() {
-    const g = mb(); if (!g) return;
+    const g = mb(); if (!g || g.view !== 'stage') return;
     const live = alive();
-    const R = roundAt(g.round, live.length);
+    /* THE CAP. A bee still running at eight minutes ends: everyone standing shares the title,
+       the way Scripps crowned co-champions when it ran out of words. */
+    if (elapsed(g) >= CAP_MS - 20000 && live.length > 1) return timeCalled();
+    const R = roundAt(g.round);
     g.turn = 0; g.roundMissed = 0; g.roundTook = 0; g.roundOut = [];
     g.kind = R.kind;
-    /* The spell-off is the one round that is not taken in turn: everybody spells
-       at once against the same clock, so it needs no per-speller word list and it
-       opens straight into the timer rather than calling a name. */
+    g.roster = live.slice();
     if (R.kind === 'lightning') {
-      g.words = roundWords(R, 40);
+      if (live.length <= 2) { g.round++; return beginRound(); }   /* the last two are decided on words */
+      g.words = drawWords(40, R);
+      g.mid = avgHard(g.words);
       g.phase = 'boltIn';
       announce(fill(pick(SAY.roundIn, g.seed + g.round * 7), { round: R.name, sub: R.sub, line: R.line }));
-      render();
+      if (!profileIn()) { after(900, endBolt); return; }          /* no clock for a speller who is out */
       after(1400, startBolt); return;
+    }
+    if (R.kind === 'written') {
+      g.words = drawWords(WRITTEN_N, R);
+      g.mid = avgHard(g.words);
+      g.phase = 'writtenIn';
+      announce(fill(pick(SAY.roundIn, g.seed + g.round * 7), { round: R.name, sub: R.sub, line: R.line }));
+      after(1400, startWritten); return;
     }
     if (R.kind === 'vocab') {
       g.vqs = vocWordsFor(R, live.length + 2);
-      /* No usable meaning questions — skip rather than stall the bee on a round
-         it cannot ask. A thin definition set is a data problem, not a bee. */
       if (!g.vqs.length) { g.round++; return after(200, beginRound); }
       g.words = g.vqs.map(q => q.w);
+    } else if (g.mode === 'family') {
+      /* each player's word from their own band, dealt in draw order */
+      g.words = g.roster.map(s => drawWords(1, R, s)[0]).concat(drawWords(2, R, g.roster[0]));
     } else {
-      g.words = roundWords(R, live.length + 2);
+      g.words = drawWords(live.length + 2, R);
     }
+    g.mid = avgHard(g.words);
     g.phase = 'call';
     announce(fill(pick(SAY.roundIn, g.seed + g.round * 7), { round: R.name, sub: R.sub, line: R.line }));
-    if (live.length === 2 && !g.saidFinal) { g.saidFinal = true;
-      after(600, () => announce(pick(SAY.finalTwo, g.seed))); }
+    if (live.length === 2 && !g.saidFinal && !R.sudden) { g.saidFinal = true; after(600, () => announce(pick(SAY.finalTwo, g.seed))); }
     after(900, nextTurn);
   }
+  const avgHard = ws => { const a = (ws || []).filter(Boolean); return a.length ? a.reduce((t, w) => t + hardness(w), 0) / a.length : .5; };
 
   function nextTurn() {
     const g = mb(); if (!g || g.view !== 'stage') return;
+    if (g.outAsk) return;                                   /* waiting on Finish now / Watch the rest */
     const live = alive();
-    if (!live.length) { return finish(); }
-    if (g.turn >= live.length) {
-      /* round over. Real bee rule: if every speller in a round missed, nobody
-         goes out and the round runs again. */
-      if (!roundAt(g.round, live.length).safe && g.roundMissed && g.roundTook
-          && g.roundMissed >= g.roundTook && (g.redo = (g.redo || 0) + 1) <= 2) {
-        (g.roundOut || []).forEach(s => { s.in = true; });
-        g.outSeq = (g.outSeq || []).filter(s => s.in === false);
-        g.roundOut = [];
-        announce(pick(SAY.allMiss, g.seed + g.round));
-        after(900, () => { beginRound(); }); return;
-      }
-      const left = alive();
-      if (left.length <= 1) return finish();
-      /* the field-thinning call lands once per threshold, not every round the
-         count happens to sit there */
-      if (left.length <= 5) {
-        const li = left.length === 5 ? 0 : left.length === 4 ? 1 : left.length === 3 ? 2 : 3;
-        g.saidThin = g.saidThin || {};
-        if (!g.saidThin[li]) { g.saidThin[li] = 1; announce(SAY.thin[li] || ''); }
-      }
-      g.round++; g.redo = 0;
-      after(700, beginRound); return;
-    }
-    const s = live[g.turn];
-    g.atMic = s;                     /* who is actually at the microphone, which
-                                        is NOT live[turn] once turn advances */
-    const R = roundAt(g.round, live.length);
-    g.typed = ''; g.asked = {}; g.lastPractice = null;
-
-    /* ---- the vocabulary round takes its turns the same way, but the question
-            is a meaning rather than a spelling, so it branches here rather than
-            duplicating the whole turn machinery. ---- */
-    if (R.kind === 'vocab') {
-      g.vq = (g.vqs && g.vqs.length) ? g.vqs[g.turn % g.vqs.length] : null;
-      if (!g.vq) return finish();
-      /* a new question wipes the last one's feedback, or the child reads someone
-         else's result under their own word */
-      g.word = g.vq.w; g.vPick = null; g.vprac = null; g.lastVPrac = null;
-      try { logGameWord(nkey(g.vq.w.w)); } catch (e) {}
-      if (s.kind === 'me') {
-        g.phase = 'vme';
-        announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
-        speakName(g.name, () => aqWord(g.vq.w.w));
-        render();
-      } else {
-        /* A rival's meaning question is the child's question too — exactly the way
-           a rival's WORD is, with the thirty-second window before they spell it.
-           Before this, the word was never pronounced and the four choices were
-           never shown on a rival's turn: the child watched a letter appear beside
-           a name and learned nothing. Now they hear it, see the options, and have
-           thirty seconds to choose before the rival answers. */
-        g.phase = 'vprac';
-        g.vprac = { pick: null, deadline: Date.now() + 30000, forBot: s };
-        announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round),
-          { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }));
-        speakName(s.bot.name, () => aqWord(g.vq.w.w));
-        render();
-        vpracTick();
-      }
+    if (!live.length) return finish();
+    /* the round runs over a ROSTER fixed when it began, so a speller who sits down does not
+       shift the order and skip the one after them */
+    while (g.turn < g.roster.length && !g.roster[g.turn].in) g.turn++;
+    if (g.turn >= g.roster.length) return endRound();
+    const s = g.roster[g.turn];
+    /* THE CAP, strictly: a turn that could not finish inside eight minutes is not started */
+    if (live.length > 1 && !g.c2 && elapsed(g) + (isHuman(s) ? turnMs() + 6000 : 9000) / speedOf(g) > CAP_MS) return timeCalled();
+    const R = roundAt(g.round);
+    g.atMic = s; g.typed = ''; g.asked = {}; g.lastPractice = null; g.turnAsks = [];
+    if (R.kind === 'vocab') return vocTurn(s, R);
+    g.word = (g.words && g.words.length) ? g.words[g.turn % g.words.length] : null;
+    if (!g.word || !g.word.w) return finish();
+    try { if (isProfile(s)) logGameWord(nkey(g.word.w)); } catch (e) {}
+    if (isHuman(s)) return humanTurn(s);
+    g.phase = 'bot'; g.botOut = '';
+    if (g.speed > 1) {                                        /* watching: the card, the word, the letters */
+      announce(s.bot.name + ', number ' + s.n + '.', 'Go.');
+      aqWord(g.word.w);
+      after(500, () => botTurn(s));
       return;
     }
+    announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
+      s.bot.name + ', number ' + s.n + '.');
+    speakName(s.bot.name, () => callBotToMic(s, clamp(s.bot.pace * .3, 300, 700)));
+  }
 
-    g.word = (g.words && g.words.length) ? g.words[g.turn % g.words.length] : null;
-    /* the list came back empty — end the bee on the spellers still standing
-       rather than putting a speller in front of a word that does not exist */
-    if (!g.word || !g.word.w) return finish();
-    /* served — record it so the next bee, and every other game, picks around it */
-    try { logGameWord(nkey(g.word.w)); } catch (e) {}
-    if (s.kind === 'me') {
-      g.phase = 'me';
-      announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }));
-      /* the word waits for the name to finish, not for a guessed delay */
-      speakName(g.name, () => aqWord(g.word.w));
-      render();
-    } else {
-      g.phase = 'bot'; g.botStep = 0; g.botOut = '';
-      announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
-        s.bot.name + ', number ' + s.n + '.');
-      /* the rival's word waits on their name too — callBotToMic keeps its own
-         pacing delay on top, so the beat is name, pause, word */
-      speakName(s.bot.name, () => callBotToMic(s, clamp(s.bot.pace * .3, 300, 700)));
+  function endRound() {
+    const g = mb(); const live = alive();
+    const R = roundAt(g.round);
+    /* real bee rule: if every speller in a round missed, nobody goes out and it runs again */
+    if (!R.safe && g.roundMissed && g.roundTook && g.roundMissed >= g.roundTook && (g.redo = (g.redo || 0) + 1) <= 2) {
+      (g.roundOut || []).forEach(s => { s.in = true; if (isProfile(s)) { g.outAsk = false; g.speed = 1; g.watch = false; } });
+      g.outSeq = (g.outSeq || []).filter(s => s.in === false);
+      g.roundOut = [];
+      announce(pick(SAY.allMiss, g.seed + g.round));
+      after(900, beginRound); return;
     }
+    if (live.length <= 1) return finish();
+    if (live.length <= 5) {
+      const li = live.length === 5 ? 0 : live.length === 4 ? 1 : live.length === 3 ? 2 : 3;
+      g.saidThin = g.saidThin || {};
+      if (!g.saidThin[li]) { g.saidThin[li] = 1; announce(SAY.thin[li] || ''); }
+    }
+    g.round++; g.redo = 0;
+    after(700, beginRound);
   }
 
-  /* ---------------- the spell-off ----------------
-     The one round that is not taken in turn. Scripps runs it when a traditional
-     finish is needed: every remaining speller gets the same ninety seconds and
-     spells as many as they can off a prepared list, and the count decides it.
-     Here it closes every segment, which is what gives the bee its rhythm —
-     spell, define, then race — and it is the only round that ranks rather than
-     merely eliminating, so it is the one that can break a tie between two
-     spellers who never miss.
-     The rivals are simulated rather than animated: eleven progress bars ticking
-     at once is noise, and the child has ninety seconds of their own to spend. */
-  const BOLT_MS = 90000;
-  function startBolt() {
-    const g = mb(); if (!g) return;
-    const live = alive();
-    const R = roundAt(g.round, live.length);
-    g.phase = 'bolt';
-    g.bolt = { i: 0, typed: '', got: 0, miss: 0, deadline: Date.now() + BOLT_MS, done: [], tick: 1 };
-    announce(pick(SAY.boltIn, g.seed + g.round));
-    render();
-    aqWord((g.words[0] || {}).w || '');
-    boltTick(1);
+  /* ---------------- a human at the microphone ---------------- */
+  function humanTurn(s, c2) {
+    const g = mb();
+    g.atMic = s;
+    /* Family night: the device goes round the table. Whoever is called taps Ready, so the
+       last player's word is never in front of the next one. */
+    if (g.mode === 'family' && g.lastHuman !== s) {
+      g.phase = 'pass';
+      announce('Pass the device to ' + nameOf(s) + '.', 'Pass.');
+      return;
+    }
+    startMeTurn(s);
   }
-  /* One clock, not one per submitted word. mbBoltGo used to restart the tick,
-     so by the fifteenth word fifteen loops were racing the same deadline and
-     each one would have called endBolt(). The token means only the newest loop
-     survives, and submitting a word does not need to touch the clock at all. */
-  function boltTick(token) {
-    const g = mb(); if (!g || g.phase !== 'bolt' || !g.bolt) return;
-    if (token !== g.bolt.tick) return;
-    if (Date.now() >= g.bolt.deadline) return endBolt();
+  app2.mbReady = () => { const g = mb(); if (!g || g.phase !== 'pass' || !g.atMic) return; startMeTurn(g.atMic); };
+  function turnMs() { try { return state.calmMode ? CALM_TURN_MS : TURN_MS; } catch (e) { return TURN_MS; } }
+  function startMeTurn(s) {
+    const g = mb();
+    g.lastHuman = s;
+    g.phase = 'me'; g.typed = ''; g.asked = {}; g.turnAsks = [];
+    const tok = (g.clockTok = (g.clockTok || 0) + 1);
+    g.clock = { tok, ms: turnMs(), deadline: Date.now() + turnMs(), cost: 0 };
+    announce(fill(pick(SAY.callMe, g.seed + g.turn), { n: s.n }), 'Number ' + s.n + '.');
+    speakName(nameOf(s), () => aqWord(g.word.w));
+    meTick(tok);
+  }
+  /* The turn clock is patched in place, never re-rendered (a render every second drops a phone
+     keyboard's focus). Running out grades whatever is typed — an empty box is a miss. */
+  function meTick(tok) {
+    const g = mb(); if (!g || g.phase !== 'me' || !g.clock || g.clock.tok !== tok) return;
+    if (state.nav !== 'mockbee') return;
+    const left = g.clock.deadline - Date.now();
+    if (left <= 0) { g.timeUp = true; return app2.mbSpell(); }
     try {
-      const el = document.getElementById('mb-bolt-clock');
-      if (el) el.textContent = Math.ceil((g.bolt.deadline - Date.now()) / 1000) + 's';
+      const el = document.getElementById('mb-clock');
+      if (el) { el.textContent = Math.ceil(left / 1000) + 's'; el.classList.toggle('low', left <= 5000); }
+      const ring = document.getElementById('mb-ring');
+      if (ring) ring.style.strokeDashoffset = String(RING_C * (1 - clamp(left / g.clock.ms, 0, 1)));
     } catch (e) {}
-    setTimeout(() => boltTick(token), 250);
+    setTimeout(() => meTick(tok), 250);
   }
-  app2.mbBoltType = v => { const g = mb(); if (g && g.bolt) g.bolt.typed = String(v || ''); };
-  /* Submit one word: score it, move to the next, and speak it. The input is
-     patched rather than re-rendered so the caret does not jump mid-race. */
-  app2.mbBoltGo = () => {
-    const g = mb(); if (!g || g.phase !== 'bolt' || !g.bolt) return;
-    const b = g.bolt;
-    const w = g.words[b.i % g.words.length];
-    if (!w) return endBolt();
-    const ok = sameSpelling(b.typed || '', w.w);
-    if (ok) b.got++; else b.miss++;
-    b.done.push({ w: w.w, typed: b.typed, ok });
-    try { logGameWord(nkey(w.w)); } catch (e) {}
-    b.typed = ''; b.i++;
-    try { sfx(ok ? 'right' : 'wrong'); } catch (e) {}
-    const next = g.words[b.i % g.words.length];
-    render();
-    /* the spell-off is a race: the next word jumps the queue rather than
-       waiting behind the last one */
-    if (next) { aqStop(); aqWord(next.w); }
+
+  /* ---------------- THE PRONOUNCER'S CHAIR (owner decision 7) ----------------
+     Six requests a speller may make at a real bee, in a fixed order and one size. A request
+     the word has no answer for is not drawn — never an empty button. Each one costs 3 s of
+     the turn clock. Every answer is MASKED: about one definition in nine contains its own
+     headword, and an origin can quote it ("French bouquet"). */
+  const CHAIR = [['def', 'Definition', 'book'], ['ps', 'Part of speech', 'grid'], ['org', 'Origin', 'sprout'],
+    ['sent', 'Sentence', 'quote'], ['say', 'Say it again', 'volume'], ['alt', 'Alternate pronunciation', 'volume']];
+  const CHAIR_NAME = { def: 'Definition', ps: 'Part of speech', org: 'Origin', sent: 'Sentence', say: 'Say it again', alt: 'Alternate pronunciation' };
+  function altOf(w) {
+    try { if (typeof altPron === 'function') return altPron(w.w); } catch (e) {}
+    try { const o = window.SB_ALT_PRON; const k = nkey(w.w); return (o && Object.prototype.hasOwnProperty.call(o, k)) ? o[k] : null; } catch (e) { return null; }
+  }
+  const txt = v => String(v == null ? '' : v).trim();
+  function mask(t, word) {
+    let s = txt(t); if (!s) return '';
+    try { if (typeof maskTxt === 'function') s = maskTxt(s, word); } catch (e) {}
+    s = maskWord(s, word);
+    /* a plural or a past form quotes its stem: blank that too */
+    const st = String(word || '').toLowerCase().replace(/(ies|es|s|ed|ing)$/, '');
+    if (st.length >= 4 && st !== String(word).toLowerCase()) s = s.replace(new RegExp('\\b' + st.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[a-z]*', 'ig'), '▁▁▁');
+    return s;
+  }
+  const maskWord = (s, w) => String(s || '').replace(new RegExp(String(w || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[a-z]*', 'ig'), '▁▁▁');
+  /* The answer to one request, already masked — '' when there is none (the button hides). */
+  function chairAnswer(w, k) {
+    if (!w || !w.w) return '';
+    if (k === 'def') { const t = mask(w.d, w.w); return /[a-z]{3}/i.test(t) ? t : ''; }
+    if (k === 'ps') return mask(w.ps, w.w);
+    if (k === 'org') return mask(w.o, w.w);
+    if (k === 'sent') { const t = mask(w.s, w.w); return /[a-z]{3}/i.test(t) ? t : ''; }
+    if (k === 'say') return 'said';
+    if (k === 'alt') { const a = altOf(w); if (!a) return '';
+      return mask([a.a, a.b].filter(Boolean).join(' · or · ') + (a.n ? ' — ' + a.n : ''), w.w) || 'said'; }
+    return '';
+  }
+  const chairKeys = w => CHAIR.map(c => c[0]).filter(k => !!chairAnswer(w, k));
+  app2.mbAsk = (k) => {
+    const g = mb(); if (!g || g.phase !== 'me' || !g.clock || !CHAIR_NAME[k]) return;
+    const w = g.word || {};
+    if (!chairAnswer(w, k)) return;
+    const repeat = k === 'say' || k === 'alt';
+    if (g.asked && g.asked[k] && !repeat) { keepCaret(); return; }   /* already on the card */
+    g.asked = { ...(g.asked || {}), [k]: ((g.asked && g.asked[k]) || 0) + 1 };
+    (g.turnAsks = g.turnAsks || []).push(k);
+    g.clock.deadline -= Q_COST; g.clock.cost += Q_COST;
+    if (k === 'say') { aqStop(); aqWord(w.w); }
+    if (k === 'alt') { const a = altOf(w); aqStop(); aqPush({ kind: 'tts', text: (a && a.s) || w.w, rate: .88 }); }
+    render(); keepCaret();
   };
-  /* A rival's ninety seconds, in one number. Their spelling skill sets the rate
-     and their nerve sets how much the clock costs them, so the ordering is the
-     same ordering the spelling rounds would give — just resolved faster. */
-  function botBolt(bot, press) {
-    const rate = 6 + bot.skill * 16;                      /* words attempted */
-    const n = Math.max(3, Math.round(rate * (.85 + Math.random() * .3)));
-    let got = 0;
-    for (let i = 0; i < n; i++) {
-      let p = bot.skill - (1 - bot.nerve) * .18 * (press || 0) + (Math.random() - .5) * (bot.vary || .1);
-      if (Math.random() < clamp(p, .05, .97)) got++;
+  function keepCaret() {
+    setTimeout(() => {
+      const el = document.getElementById('mb-in'); if (!el) return;
+      const g = mb(); if (!g || g.phase !== 'me') return;
+      try { el.focus(); const n = el.value.length; el.setSelectionRange(n, n); } catch (e) {}
+    }, 0);
+  }
+  /* THE THINKING STRIP (Hard and Champ only): what an answer implies, in the Coach's words.
+     Matched to the word — its origin row (Greek, French, Latin, a name) for Origin, the
+     suffix-endings row for a part of speech on a word that ends that way, the sound-alike row
+     for a definition or sentence on a homophone. Text from coach-rules.js, never invented. */
+  const STRIP_FROM = {
+    greek: r => (String(r.check).split(':')[1] || r.check).trim(),
+    french: r => String(r.rule).split('. ').slice(1).join('. '),
+    latin: r => r.check, epon: r => String(r.check).split('. ').slice(1).join('. ') || r.check,
+    endings: r => r.check, hom: r => String(r.rule).split('. ').slice(1, 2).join('') || r.check,
+  };
+  function originKey(w) {
+    const o = String(w.o || '').toLowerCase();
+    if ((w.t || []).indexOf('eponyms') >= 0) return 'epon';
+    if (/greek/.test(o)) return 'greek';
+    if (/french/.test(o)) return 'french';
+    if (/latin/.test(o)) return 'latin';
+    return null;
+  }
+  function isHom(w) { try { return typeof homPartners === 'function' && homPartners(w.w).length > 0; } catch (e) { return false; } }
+  function stripFor(w, k) {
+    const R = window.SB_COACH_RULES; if (!R || !w) return '';
+    let key = null, lead = '';
+    if (k === 'org') { key = originKey(w); lead = 'Origin: ' + txt(w.o).split(/[ ,;(]/)[0]; }
+    else if (k === 'ps') { if (/(able|ible|ance|ence|ant|ent)$/i.test(w.w)) { key = 'endings'; lead = 'Part of speech: ' + txt(w.ps); } }
+    else if (k === 'def' || k === 'sent') { if (isHom(w)) { key = 'hom'; lead = 'A sound-alike'; } }
+    const r = key && R[key]; if (!r) return '';
+    let body = txt((STRIP_FROM[key] || (x => x.check))(r));
+    /* one line: the first sentence, cut at a clause if it runs long */
+    body = body.split(/(?<=\.)\s+/)[0];
+    if (body.length > 84) { const c = Math.max(body.lastIndexOf(', ', 84), body.lastIndexOf(' — ', 84)); if (c > 30) body = body.slice(0, c) + '.'; }
+    return body ? mask(lead + ' → ' + body, w.w) : '';
+  }
+  const stripOn = (g, s) => g.mode === 'champ' || (g.mode === 'family' ? (s && (s.band === '11-15' || s.band === 'adult'))
+    : /^(hard|champ)$/.test(lvlConcrete(g.lvl, g.band)));
+
+  app2.mbType = v => { const g = mb(); if (g) g.typed = String(v || ''); };
+  app2.mbSpell = () => {
+    const g = mb(); if (!g || g.phase !== 'me') return;
+    const s = g.atMic && isHuman(g.atMic) ? g.atMic : alive().find(isProfile);
+    if (!s || !g.word) return;
+    const ok = sameSpelling(g.typed || '', g.word.w);
+    g.phase = 'meDone'; g.meOk = ok; g.meTry = g.typed || ''; g.clock = null;
+    record(s, g.word, ok, g.meTry, 'oral', g.turnAsks || []);
+    /* A MISS HOLDS (FIX-BEE D3): the letters and the why stay at the microphone until
+       Continue (or Enter). */
+    if (!ok) { g.hold = () => { const gg = mb(); if (gg !== g || !g.hold) return; g.hold = null;
+        const mc = g.missCard; g.missCard = null; try { if (mc && mc.held) mc.close(); } catch (e) {}
+        humanVerdict(g, s, ok); };
+      try { sfx('wrong'); } catch (e) {} render(); mountMiss(g); return; }
+    humanVerdict(g, s, ok);
+  };
+  app2.mbGoOn = () => { const g = mb(); if (g && g.hold) g.hold(); };
+  /* The ledger of the profile child's words: what they were given, what they wrote, what they
+     asked — the recap, the level and the pay all read it. Only the profile child is paid, and
+     only the profile child's progress moves; a guest's word touches nothing. */
+  function record(s, w, ok, typed, kind, asks) {
+    const g = mb();
+    if (!isProfile(s)) { (g.guests = g.guests || []).push({ pid: s.pid, w: w.w, ok }); return; }
+    g.mine.push({ w: w.w, ok, typed: typed || '', kind, asks: (asks || []).slice(), rec: w });
+    try { logBand(w, ok, 1); } catch (e) {}
+    if (ok) { try { markMastered(nkey(w.w)); } catch (e) {} try { payG(g); } catch (e) {} }
+    else { try { mastEvidence(w.w, false); } catch (e) {} }
+  }
+  function humanVerdict(g, s, ok) {
+    if (g.c2) {
+      try { if (ok) { sfx('correct'); burstConfetti(24); } } catch (e) {}
+      announce(fill(pick(ok ? SAY.meRight : SAY.meWrong, g.seed + g.round), { n: s.n, word: g.word.w }));
+      s.hist.push(ok);
+      after(900, () => champAfter(ok));
+      return;
     }
-    return got;
-  }
-  function endBolt() {
-    const g = mb(); if (!g || !g.bolt) return;
-    const live = alive();
-    const R = roundAt(g.round, live.length);
-    g.phase = 'boltDone';
-    announce(pick(SAY.boltEnd, g.seed + g.round));
-    /* score everybody, then sit down the lowest — the spell-off ranks, so it
-       takes exactly one speller regardless of how many missed */
-    const board = live.map(s => ({ s, score: s.kind === 'me' ? g.bolt.got : botBolt(s.bot, R.press) }));
-    board.forEach(r => { r.s.boltScore = r.score; });
-    board.sort((a, b) => a.score - b.score || Math.random() - .5);
-    g.boltBoard = board.map(r => ({ name: nameOf(r.s), me: r.s.kind === 'me', score: r.score }))
-      .slice().sort((a, b) => b.score - a.score);
-    /* nobody goes out if that would end the bee early — the last two are decided
-       by spelling, not by a race */
-    const loser = live.length > 2 ? board[0].s : null;
-    render();
-    after(2200, () => {
-      const gg = mb(); if (!gg) return;
-      if (loser) {
-        loser.hist.push(false);
-        sitDown(loser);
-        announce(nameOf(loser) + ' spelled the fewest. Thank you, speller.');
-      } else {
-        announce('Both of you held. We go back to the words.');
-      }
-      gg.boltBoard = null; gg.bolt = null;
-      const left = alive();
-      if (left.length <= 1) return finish();
-      gg.round++; gg.redo = 0;
-      after(1200, beginRound);
-    });
+    g.roundTook++;
+    let out = false;
+    if (ok) { try { sfx('correct'); burstConfetti(24); } catch (e) {}
+      announce(g.mode === 'family' ? 'Correct, ' + nameOf(s) + '.' : fill(pick(SAY.meRight, g.seed + g.turn), { n: s.n }));
+    } else {
+      out = sitDown(s); g.roundMissed++;
+      if (g.mode === 'family') announce(out ? 'No — the word was ' + g.word.w + '. Thank you, ' + nameOf(s) + '.' : 'No — ' + g.word.w + '. Round one forgives.');
+      else announce(fill(pick(out ? SAY.meWrong : SAY.meSafe, g.seed + g.turn), { word: g.word.w }));
+      if (out && alive().length === 1 && champTry(s, g.word)) { s.hist.push(ok); return; }
+    }
+    s.hist.push(ok);
+    g.turn++;
+    g.phase = 'call';
+    /* out, with rivals still standing: the child chooses how the rest goes */
+    if (out && isProfile(s) && g.mode !== 'family' && alive().length > 1) { g.outAsk = true; g.phase = 'outChoice'; render(); return; }
+    after(900, nextTurn);
   }
 
-  /* ---- the child's thirty seconds on a rival's meaning question ----
-     Mirrors practiceTick/endPractice for the spelling round: the clock is patched
-     in place rather than re-rendered, because a full render on every tick would
-     throw away the child's selection highlight and, on the spelling side, their
-     half-typed word. */
-  function vpracTick() {
-    const g = mb(); if (!g || g.phase !== 'vprac' || !g.vprac) return;
-    const left = g.vprac.deadline - Date.now();
-    if (left <= 0) return endVprac();
-    try { const el = document.getElementById('mb-vcount'); if (el) el.textContent = Math.ceil(left / 1000) + 's'; } catch (e) {}
-    setTimeout(vpracTick, 400);
-  }
-  app2.mbVPracPick = i => {
-    const g = mb(); if (!g || g.phase !== 'vprac' || !g.vprac || g.vprac.pick != null || !g.vq) return;
-    g.vprac.pick = g.vq.choices[+i];
-    render();                       /* show the choice; the answer stays hidden */
+  /* ---------------- when the child is out ---------------- */
+  app2.mbWatch = () => {
+    const g = mb(); if (!g || !g.outAsk) return;
+    g.outAsk = false; g.watch = true; g.speed = 2; g.phase = 'call';
+    announce('Watching the rest — at double speed.', 'Go.');
+    after(400, resume);
   };
-  app2.mbVPracSkip = () => { if (mb() && mb().phase === 'vprac') endVprac(); };
-  function endVprac() {
-    const g = mb(); if (!g || !g.vprac) return;
-    const s = g.vprac.forBot, mine = g.vprac.pick;
-    const live = alive();
-    const R = roundAt(g.round, live.length);
-    /* what the child chose, kept to show beside the rival's answer */
-    g.lastVPrac = mine ? { pick: mine, correct: mine === g.vq.answer } : null;
-    g.vprac = null; g.phase = 'vbot'; g.vPick = null;
-    render();
-    after(clamp(s.bot.pace * .7, 800, 2000), () => {
-      const gg = mb(); if (!gg || gg.phase !== 'vbot') return;
-      const ok = botKnows(s.bot, gg.vq.w, R.press);
-      gg.vPick = ok ? gg.vq.answer : shuffle(gg.vq.choices.filter(c => c !== gg.vq.answer))[0];
-      render();
-      after(900, () => verdict(s, ok));
-    });
-  }
-
-  /* the child's answer in a meaning round */
-  app2.mbVocPick = i => {
-    const g = mb(); if (!g || g.phase !== 'vme' || g.vPick != null || !g.vq) return;
-    const me = alive().find(s => s.kind === 'me'); if (!me) return;
-    g.vPick = g.vq.choices[+i];
-    const ok = g.vPick === g.vq.answer;
-    g.phase = 'vmeDone'; g.meOk = ok;
-    try { sfx(ok ? 'right' : 'wrong'); if (ok) burstConfetti(18); } catch (e) {}
-    /* DELIBERATELY no logBand and no markMastered here. Those move spelling
-       progress, and a meaning answered right is not a word spelt right — the
-       same separation the Vocabulary section keeps, and there is a headless test
-       over there that asserts it. */
-    /* a wrong meaning HOLDS until Continue, like a wrong spelling (FIX-BEE D3) */
-    const goOn = () => {
-      const gg = mb(); if (!gg) return;
-      /* your shot at the title runs on its own rails, exactly as in mbSpell */
-      if (gg.c2) {
-        announce(ok ? 'Correct — and that is the title.' : 'That is not the meaning.');
-        me.hist.push(ok);
-        after(900, () => champAfter(ok));
-        return;
+  app2.mbFinishNow = () => {
+    const g = mb(); if (!g || (!g.outAsk && !g.watch)) return;
+    g.outAsk = false; aqStop();
+    resolveRest();
+  };
+  /* Finish now: the rest of the bee in one go, from each rival's own profile — the same
+     botSpells, the same rules (the forgiving round, all-miss, two-word championship, sudden
+     death) and the same seeded generator. If everybody misses the round the child went out
+     in, the rules put the child back on their feet, and the bee resumes with them in it. */
+  function resolveRest() {
+    const g = mb(); let guard = 0;
+    while (alive().length > 1 && guard++ < 400) {
+      const R = roundAt(g.round);
+      if (!g.roster || !g.roster.length || g.turn >= g.roster.length) {
+        /* a round that has just been played out ends here; an empty or missing roster means the
+           round counter already stands on the next round */
+        if (g.roster && g.roster.length) {
+          if (!R.safe && g.roundMissed && g.roundTook && g.roundMissed >= g.roundTook && (g.redo = (g.redo || 0) + 1) <= 2) {
+            (g.roundOut || []).forEach(s => { s.in = true; });
+            g.outSeq = (g.outSeq || []).filter(s => s.in === false);
+            if (profileIn()) {
+              g.speed = 1; g.watch = false; g.roster = [];
+              announce(pick(SAY.allMiss, g.seed + g.round) + ' You are back in.');
+              after(1200, beginRound); return;
+            }
+          } else { g.round++; g.redo = 0; }
+        }
+        g.roster = alive().slice(); g.turn = 0; g.roundMissed = 0; g.roundTook = 0; g.roundOut = [];
+        g.mid = .5;
+        const RL = roundAt(g.round);
+        if (RL.kind === 'lightning' && g.roster.length > 2) {
+          const board = g.roster.filter(s => !isHuman(s)).map(s => ({ s, score: botBolt(s.bot, RL) })).sort((a, b) => a.score - b.score);
+          if (board.length) { board[0].s.hist.push(false); sitDown(board[0].s); }
+          g.turn = g.roster.length;
+        }
+        continue;
       }
-      gg.roundTook++;
-      if (ok) { announce('Correct.'); }
-      else {
-        const out = sitDown(me); gg.roundMissed++;
-        announce(out ? 'That is not the meaning. Thank you, speller.'
-          : 'Not that one — but nobody goes out this round.');
-        /* the championship rule: if your miss leaves one speller standing, they
-           still have to win it on a word of their own */
-        if (out && alive().length === 1 && champTry(me, gg.vq.w)) {
-          me.hist.push(ok); render(); return;
+      const s = g.roster[g.turn];
+      if (!s.in || isHuman(s)) { g.turn++; continue; }
+      const synth = { _h: clamp(.5 + R.press * .2, 0, 1), o: '' };
+      const ok = R.kind === 'vocab' ? botKnows(s.bot, synth, R) : botSpells(s.bot, synth, R);
+      g.roundTook++;
+      s.hist.push(ok);
+      if (!ok) {
+        const out = sitDown(s); g.roundMissed++;
+        if (out && alive().length === 1 && !R.sudden) {
+          const rival = alive()[0];
+          const two = isHuman(rival) ? false : (botSpells(rival.bot, synth, R) && botSpells(rival.bot, synth, R));
+          if (!two) { s.in = true; g.outSeq = g.outSeq.filter(x => x !== s); g.round++; g.roster = null; continue; }
         }
       }
-      me.hist.push(ok);
-      gg.turn++; gg.phase = 'call';
-      after(900, nextTurn);
-    };
-    if (ok) { render(); after(1100, goOn); }
-    else { g.hold = () => { if (mb() !== g || !g.hold) return; g.hold = null; render(); after(300, goOn); }; render(); }
-  };
+      g.turn++;
+    }
+    if (alive().length > 1) {        /* the guard: the steadiest hand takes it */
+      const best = alive().slice().sort((a, b) => ((b.bot && b.bot.skill) || 0) - ((a.bot && a.bot.skill) || 0));
+      best.slice(1).forEach(s => { s.in = false; g.outSeq = (g.outSeq || []).concat([s]); });
+    }
+    finish();
+  }
 
-  /* ---------------- a rival's word, pronounced ----------------
-     The pronouncer used to only NAME the rival ("Vesper, number four.") and
-     never actually said the word — the child heard who was spelling but never
-     what they were spelling, which is a spelling bee with the one useful part
-     missing. Now the word is spoken the same way it is for the child's own
-     turn, and there is a 30-second window to write it down before the rival
-     spells it: practice, whether or not it is your turn. */
+  /* ---------------- a rival's word ----------------
+     The word is spoken and the child has a window to write it down before the rival spells
+     it — practice, unpaid, whether or not it is their turn. The window is the band's, it
+     closes as soon as the child presses Enter, and it is off when the child is out (Watch the
+     rest) and in the last 30% of the cap. */
   function callBotToMic(s, delay) {
     after(delay, () => {
       const g = mb(); if (!g || g.view !== 'stage') return;
       aqWord(g.word.w);
-      startPractice(s);
+      if (profileIn() && !g.watch && !late(g)) startPractice(s);
+      else after(1200, () => botTurn(s));
     });
   }
   function startPractice(s) {
     const g = mb(); if (!g) return;
     g.phase = 'practice';
-    g.practice = { typed: '', deadline: Date.now() + 30000, forBot: s };
+    const W = (BANDS[g.band] || BANDS['8-10']).win;
+    g.practice = { typed: '', deadline: Date.now() + W, forBot: s };
     render();
     practiceTick();
   }
-  /* Ticks the countdown by writing straight to the DOM, not by calling render():
-     a full re-render every 400ms would rebuild the input the child is typing
-     into and throw away their cursor (and half-typed word) five times over the
-     30 seconds. Only the number moves; the input is left alone. */
   function practiceTick() {
     const g = mb(); if (!g || g.phase !== 'practice' || !g.practice) return;
+    if (state.nav !== 'mockbee') return;
     const left = g.practice.deadline - Date.now();
     if (left <= 0) { endPractice(); return; }
     try { const el = document.getElementById('mb-countdown'); if (el) el.textContent = Math.ceil(left / 1000) + 's'; } catch (e) {}
@@ -1126,544 +1044,859 @@
   function botTurn(s) {
     const g = mb(); if (!g || g.view !== 'stage') return;
     if (!g.word || !g.word.w) return finish();
-    const R = roundAt(g.round, alive().length);
-    const ok = botSpells(s.bot, g.word, R.press);
+    const R = roundAt(g.round);
+    const ok = botSpells(s.bot, g.word, R);
     const shown = ok ? g.word.w : misspell(g.word.w);
     g.botOut = ''; g.botOk = ok; g.phase = 'botSpell';
     g.botLen = shown.length; g.botStep = 0;
-    /* Letters one at a time, because that is how it feels in the hall — but
-       PATCHED IN PLACE, not re-rendered.
-       This used to call render() per letter, which rebuilds the whole view: the
-       podium node is replaced ten to twenty times a second, so its
-       `animation:sb-rise` restarts every time and the box visibly jitters. The
-       announcement line and the practice-feedback line are rebuilt in the same
-       pass, and any change in their height shoves the podium up or down. Writing
-       one text node leaves every other box exactly where it is.
-       render() still runs once at the end, so the correct/wrong colour lands. */
+    /* letters one at a time, PATCHED IN PLACE — a render per letter made the podium jitter */
     let i = 0;
+    const sp = speedOf(g);
     const step = () => {
-      const gg = mb(); if (!gg || gg.view !== 'stage' || gg.phase !== 'botSpell') return;
+      const gg = mb(); if (gg !== g || gg.view !== 'stage' || gg.phase !== 'botSpell' || state.nav !== 'mockbee') return;
       gg.botStep = ++i;
       gg.botOut = shown.slice(0, i).toUpperCase().split('').join(' ');
       let live = null;
       try { live = document.getElementById('mb-live'); } catch (e) {}
       if (live) live.textContent = gg.botOut; else render();
-      if (i < shown.length) setTimeout(step, clamp(s.bot.pace / shown.length, 55, 150));
-      else { render(); setTimeout(() => verdict(s, ok), 460); }
+      if (i < shown.length) setTimeout(step, clamp(s.bot.pace / shown.length, 55, 150) / sp);
+      else { render(); setTimeout(() => { if (mb() === g) verdict(s, ok); }, 460 / sp); }
     };
     step();
   }
 
   function verdict(s, ok) {
     const g = mb(); if (!g) return;
-    /* the rival's shot at the title runs on its own rails */
     if (g.c2) {
-      try { sfx(ok ? 'right' : 'wrong'); } catch (e) {}
+      try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
       announce(ok ? fill(pick(SAY.botRight, g.seed + g.round * 5), { name: s.bot.name })
-        : fill(pick(SAY.botWrong, g.seed + g.round * 5), { name: s.bot.name, word: g.word.w }));   /* spoken in full: this is the title */
+        : fill(pick(SAY.botWrong, g.seed + g.round * 5), { name: s.bot.name, word: g.word.w }));
       s.hist.push(ok); g.phase = 'call';
       after(800, () => champAfter(ok)); return;
     }
     g.roundTook++;
-    /* "The word was {word}" is the right bell for a spelling miss and the wrong
-       one for a meaning miss — the word was on the board the whole time. */
     const isVoc = g.kind === 'vocab';
-    if (ok) { try { sfx('right'); } catch (e) {}
+    if (ok) { try { sfx('correct'); } catch (e) {}
       announce(fill(pick(SAY.botRight, g.seed + g.turn * 5), { name: s.bot.name }), 'Correct.');
     } else {
       const out = sitDown(s); g.roundMissed++;
       try { sfx('wrong'); } catch (e) {}
       announce(isVoc
-        ? (out ? 'No — that is not what it means. Thank you, ' + s.bot.name + '.'
-               : 'Not the meaning — but nobody goes out this round.')
+        ? (out ? 'No — that is not what it means. Thank you, ' + s.bot.name + '.' : 'Not the meaning — but nobody goes out this round.')
         : out ? fill(pick(SAY.botWrong, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w })
         : fill(pick(SAY.botSafe, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w }),
         isVoc ? (out ? 'No.' : 'No — but this round forgives.')
         : out ? 'No. ' + g.word.w + '.' : 'No — but round one forgives.');
-      /* that miss left one speller standing — championship rules, not a win */
-      if (out && alive().length === 1 && champTry(s, g.word)) {
-        s.hist.push(ok); g.phase = 'call'; return;
-      }
+      if (out && alive().length === 1 && champTry(s, g.word)) { s.hist.push(ok); g.phase = 'call'; return; }
     }
     s.hist.push(ok);
     g.turn++; g.phase = 'call';
     after(700, nextTurn);
   }
 
-  /* ---------------- the speller's turn ---------------- */
-  /* "Hear it again" has to know which word is in front of the speller. In the
-     spell-off that is the one the race has reached, not g.word — which is the
-     last word of the previous round and would pronounce the wrong thing. */
-  app2.mbSay = () => {
-    const g = mb(); if (!g) return;
-    let w = g.word;
-    if (g.phase === 'bolt' && g.bolt && g.words && g.words.length) w = g.words[g.bolt.i % g.words.length];
-    else if (g.vq && /^v(me|meDone|prac|bot)$/.test(g.phase)) w = g.vq.w;
-    if (w && w.w) { aqStop(); aqWord(w.w); }   /* a deliberate tap jumps the queue */
-  };
-  app2.mbAsk = k => { const g = mb(); if (!g) return; g.asked = { ...(g.asked || {}), [k]: 1 };
-    const w = g.word || {};
-    const txt = k === 'def' ? (w.d || 'No definition on file for that one.')
-      : k === 'org' ? ('From ' + (w.o || 'an origin not recorded'))
-      : k === 'sent' ? (w.s || 'No sentence on file.')
-      : (w.ps || 'Part of speech not recorded');
-    /* The pronouncer's answers are printed, not spoken — the same rule as the
-       announcer. They already render in .mb-answers directly under the controls,
-       and reading a definition beats hearing the device voice race through it.
-       The word itself is still spoken; that is the one thing a bee is for.
-       The beat is kept so the next turn does not arrive while it is being read. */
-    try { const gg = mb(); if (gg) { gg.spokeAt = Date.now(); gg.spokeMs = Math.max(900, speakMs(txt)); } } catch (e) {}
-    render(); keepCaret(); };
-  /* asking the pronouncer a question re-renders the hall, which throws away the
-     caret. Put it back where it was, or the speller loses their place mid-word. */
-  function keepCaret() {
-    setTimeout(() => {
-      const el = document.getElementById('mb-in'); if (!el) return;
-      const g = mb(); if (!g || g.phase !== 'me') return;
-      el.focus(); const n = el.value.length; try { el.setSelectionRange(n, n); } catch (e) {}
-    }, 0);
-  }
-  app2.mbType = v => { const g = mb(); if (g) { g.typed = String(v || ''); } };
-  app2.mbSpell = () => {
-    const g = mb(); if (!g || g.phase !== 'me') return;
-    const me = alive().find(s => s.kind === 'me'); if (!me) return;
-    const ok = sameSpelling(g.typed || '', g.word.w);
-    g.phase = 'meDone'; g.meOk = ok; g.meTry = g.typed || '';
-    try { logBand(g.word, ok, 1); } catch (e) {}
-    if (ok) { try { markMastered(nkey(g.word.w)); } catch (e) {} }
-    else { try { mastEvidence(g.word.w, false); } catch (e) {} }
-    /* A MISS HOLDS (FIX-BEE D3). The hall used to ring the bell and call the next speller
-       900ms later, so the one moment a child most needs — the word they just got wrong — was
-       gone before it could be read. Now the letters and the why stay at the microphone until
-       the child taps Continue (or Enter); the verdict and the next turn follow from there. */
-    if (!ok) { g.hold = () => { const gg = mb(); if (gg !== g || !g.hold) return; g.hold = null; mbVerdict(g, me, ok); };
-      try { sfx('wrong'); } catch (e) {} render(); return; }
-    mbVerdict(g, me, ok);
-  };
-  app2.mbGoOn = () => { const g = mb(); if (g && g.hold) g.hold(); };
-  function mbVerdict(g, me, ok) {
-    /* your shot at the title */
-    if (g.c2) {
-      try { if (ok) { sfx('right'); burstConfetti(24); } } catch (e) {}
-      announce(fill(pick(ok ? SAY.meRight : SAY.meWrong, g.seed + g.round), { n: me.n, word: g.word.w }));
-      me.hist.push(ok);
-      after(900, () => champAfter(ok));
-      render(); return;
-    }
-    g.roundTook++;
-    if (ok) { try { sfx('right'); burstConfetti(24); } catch (e) {}
-      announce(fill(pick(SAY.meRight, g.seed + g.turn), { n: me.n }));
-    } else {
-      const out = sitDown(me); g.roundMissed++;
-      announce(fill(pick(out ? SAY.meWrong : SAY.meSafe, g.seed + g.turn), { word: g.word.w }));
-      if (out && alive().length === 1 && champTry(me, g.word)) {
-        me.hist.push(ok); render(); return;
-      }
-    }
-    me.hist.push(ok);
-    g.turn++;
-    after(900, () => { const gg = mb(); if (!gg) return; gg.phase = 'call'; nextTurn(); });
+  /* ---------------- Champ: the written round ----------------
+     The old Advanced Mock Rounds' written list, inside the bee: the words are spoken one at a
+     time, the child writes each, and the rivals' papers are marked from their profiles. The
+     lowest third sit down (never the last two). Paid per word right, like every word here. */
+  const WRITTEN_N = 6, WRITTEN_MS = 75000;
+  function startWritten() {
+    const g = mb(); if (!g || g.view !== 'stage') return;
+    if (!profileIn()) return endWritten();
+    g.phase = 'written';
+    g.wr = { i: 0, typed: '', got: 0, done: [], deadline: Date.now() + WRITTEN_MS, tick: (g.wrTick = (g.wrTick || 0) + 1) };
+    g.word = g.words[0];
     render();
+    aqWord(g.word.w);
+    writtenTick(g.wr.tick);
+  }
+  function writtenTick(tok) {
+    const g = mb(); if (!g || g.phase !== 'written' || !g.wr || g.wr.tick !== tok || state.nav !== 'mockbee') return;
+    const left = g.wr.deadline - Date.now();
+    if (left <= 0) return endWritten();
+    try { const el = document.getElementById('mb-wr-clock'); if (el) el.textContent = Math.ceil(left / 1000) + 's'; } catch (e) {}
+    setTimeout(() => writtenTick(tok), 300);
+  }
+  app2.mbWrType = v => { const g = mb(); if (g && g.wr) g.wr.typed = String(v || ''); };
+  app2.mbWrGo = () => {
+    const g = mb(); if (!g || g.phase !== 'written' || !g.wr) return;
+    const w = g.words[g.wr.i]; if (!w) return endWritten();
+    const ok = sameSpelling(g.wr.typed || '', w.w);
+    if (ok) g.wr.got++;
+    g.wr.done.push({ w: w.w, ok });
+    record(alive().find(isProfile), w, ok, g.wr.typed, 'written', []);
+    try { logGameWord(nkey(w.w)); sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+    g.wr.typed = ''; g.wr.i++;
+    if (g.wr.i >= g.words.length) return endWritten();
+    g.word = g.words[g.wr.i];
+    render();
+    aqStop(); aqWord(g.word.w);
+  };
+  function endWritten() {
+    const g = mb(); if (!g) return;
+    const R = roundAt(g.round);
+    const live = alive();
+    const n = (g.words || []).length || WRITTEN_N;
+    /* a paper not finished in time is marked on what was written */
+    const board = live.map(s => ({ s, score: isProfile(s) ? ((g.wr && g.wr.got) || 0)
+      : Array.from({ length: n }, (_, i) => botSpells(s.bot, g.words[i] || {}, R)).filter(Boolean).length }));
+    board.forEach(r => { r.tb = rnd(); });
+    board.sort((a, b) => a.score - b.score || a.tb - b.tb);
+    const cut = Math.max(0, Math.min(Math.floor(live.length / 3), live.length - 2));
+    g.phase = 'writtenDone'; g.wr = null;
+    g.board = board.map(r => ({ name: nameOf(r.s), me: isProfile(r.s), score: r.score, of: n })).reverse();
+    board.slice(0, cut).forEach(r => { r.s.hist.push(false); r.s.in = false; g.outSeq = (g.outSeq || []).concat([r.s]); });
+    const meOut = board.slice(0, cut).some(r => isProfile(r.s));
+    announce(cut ? 'The papers are marked. ' + board.slice(0, cut).map(r => nameOf(r.s)).join(', ') + (cut > 1 ? ' sit down.' : ' sits down.') : 'The papers are marked. Everybody stays.');
+    after(2600, () => {
+      const gg = mb(); if (!gg) return;
+      gg.board = null;
+      if (alive().length <= 1) return finish();
+      gg.round++; gg.redo = 0;
+      if (meOut && alive().length > 1) { gg.outAsk = true; gg.phase = 'outChoice'; gg.roster = []; gg.turn = 0; render(); return; }
+      beginRound();
+    });
+  }
+  /* after the out-choice: mid-round the next turn is called (nextTurn ends the round itself);
+     at a round boundary — the written paper, the lightning board — the next round opens */
+  const resume = () => { const g = mb(); if (!g) return; if (!g.roster || !g.roster.length) beginRound(); else nextTurn(); };
+
+  /* ---------------- Champ: the meaning round ---------------- */
+  function vocTurn(s, R) {
+    const g = mb();
+    g.vq = (g.vqs && g.vqs.length) ? g.vqs[g.turn % g.vqs.length] : null;
+    if (!g.vq) return finish();
+    g.word = g.vq.w; g.vPick = null; g.vprac = null; g.lastVPrac = null;
+    if (isHuman(s)) {
+      g.phase = 'vme';
+      announce(fill(pick(SAY.callVocMe, g.seed + g.turn), { n: s.n }));
+      speakName(nameOf(s), () => aqWord(g.vq.w.w));
+      return;
+    }
+    if (!profileIn() || g.watch || late(g)) {               /* nobody to practise: straight to the answer */
+      g.phase = 'vbot';
+      announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }));
+      return vocBotAnswer(s, R);
+    }
+    g.phase = 'vprac';
+    g.vprac = { pick: null, deadline: Date.now() + 8000, forBot: s };
+    announce(fill(pick(SAY.callVocBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, n: s.n, vtell: s.bot.vtell || 'thinks about it' }));
+    speakName(s.bot.name, () => aqWord(g.vq.w.w));
+    vpracTick();
+  }
+  function vpracTick() {
+    const g = mb(); if (!g || g.phase !== 'vprac' || !g.vprac || state.nav !== 'mockbee') return;
+    const left = g.vprac.deadline - Date.now();
+    if (left <= 0) return endVprac();
+    try { const el = document.getElementById('mb-vcount'); if (el) el.textContent = Math.ceil(left / 1000) + 's'; } catch (e) {}
+    setTimeout(vpracTick, 400);
+  }
+  app2.mbVPracPick = i => {
+    const g = mb(); if (!g || g.phase !== 'vprac' || !g.vprac || g.vprac.pick != null || !g.vq) return;
+    g.vprac.pick = g.vq.choices[+i];
+    render();
+  };
+  app2.mbVPracSkip = () => { if (mb() && mb().phase === 'vprac') endVprac(); };
+  function endVprac() {
+    const g = mb(); if (!g || !g.vprac) return;
+    const s = g.vprac.forBot, mine = g.vprac.pick;
+    g.lastVPrac = mine ? { pick: mine, correct: mine === g.vq.answer } : null;
+    g.vprac = null; g.phase = 'vbot'; g.vPick = null;
+    render();
+    vocBotAnswer(s, roundAt(g.round));
+  }
+  function vocBotAnswer(s, R) {
+    const g = mb();
+    after(clamp(s.bot.pace * .7, 800, 2000), () => {
+      const gg = mb(); if (!gg || gg.phase !== 'vbot') return;
+      const ok = botKnows(s.bot, gg.vq.w, R);
+      gg.vPick = ok ? gg.vq.answer : shuffle(gg.vq.choices.filter(c => c !== gg.vq.answer))[0];
+      render();
+      after(900, () => verdict(s, ok));
+    });
+  }
+  app2.mbVocPick = i => {
+    const g = mb(); if (!g || g.phase !== 'vme' || g.vPick != null || !g.vq) return;
+    const me = g.atMic && isHuman(g.atMic) ? g.atMic : alive().find(isProfile); if (!me) return;
+    g.vPick = g.vq.choices[+i];
+    const ok = g.vPick === g.vq.answer;
+    g.phase = 'vmeDone'; g.meOk = ok;
+    try { sfx(ok ? 'correct' : 'wrong'); if (ok) burstConfetti(18); } catch (e) {}
+    /* DELIBERATELY no logBand, no markMastered and no pay: a meaning is not a word spelt */
+    const goOn = () => {
+      const gg = mb(); if (!gg) return;
+      if (gg.c2) { announce(ok ? 'Correct — and that is the title.' : 'That is not the meaning.'); me.hist.push(ok); after(900, () => champAfter(ok)); return; }
+      gg.roundTook++;
+      let out = false;
+      if (ok) announce('Correct.');
+      else {
+        out = sitDown(me); gg.roundMissed++;
+        announce(out ? 'That is not the meaning. Thank you, speller.' : 'Not that one — but nobody goes out this round.');
+        if (out && alive().length === 1 && champTry(me, gg.vq.w)) { me.hist.push(ok); render(); return; }
+      }
+      me.hist.push(ok);
+      gg.turn++; gg.phase = 'call';
+      if (out && isProfile(me) && alive().length > 1) { gg.outAsk = true; gg.phase = 'outChoice'; render(); return; }
+      after(900, nextTurn);
+    };
+    if (ok) { render(); after(1100, goOn); }
+    else { g.hold = () => { if (mb() !== g || !g.hold) return; g.hold = null; render(); after(300, goOn); }; render(); }
+  };
+
+  /* ---------------- Champ: the lightning round ----------------
+     One minute, everybody at once, lowest score out. The rivals are simulated at the bell. A
+     speller who is out never sits through it: it resolves at once (§4.1). */
+  const BOLT_MS = 60000;
+  function startBolt() {
+    const g = mb(); if (!g || g.view !== 'stage') return;
+    if (!profileIn()) return endBolt();
+    g.phase = 'bolt';
+    g.bolt = { i: 0, typed: '', got: 0, miss: 0, deadline: Date.now() + BOLT_MS, done: [], tick: (g.boltTok = (g.boltTok || 0) + 1) };
+    announce(pick(SAY.boltIn, 1));
+    aqWord((g.words[0] || {}).w || '');
+    boltTick(g.bolt.tick);
+  }
+  function boltTick(token) {
+    const g = mb(); if (!g || g.phase !== 'bolt' || !g.bolt || state.nav !== 'mockbee') return;
+    if (token !== g.bolt.tick) return;
+    if (Date.now() >= g.bolt.deadline) return endBolt();
+    try { const el = document.getElementById('mb-bolt-clock'); if (el) el.textContent = Math.ceil((g.bolt.deadline - Date.now()) / 1000) + 's'; } catch (e) {}
+    setTimeout(() => boltTick(token), 250);
+  }
+  app2.mbBoltType = v => { const g = mb(); if (g && g.bolt) g.bolt.typed = String(v || ''); };
+  app2.mbBoltGo = () => {
+    const g = mb(); if (!g || g.phase !== 'bolt' || !g.bolt) return;
+    const b = g.bolt;
+    const w = g.words[b.i % g.words.length];
+    if (!w) return endBolt();
+    const ok = sameSpelling(b.typed || '', w.w);
+    if (ok) b.got++; else b.miss++;
+    b.done.push({ w: w.w, typed: b.typed, ok });
+    record(alive().find(isProfile), w, ok, b.typed, 'lightning', []);
+    try { logGameWord(nkey(w.w)); } catch (e) {}
+    b.typed = ''; b.i++;
+    try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+    const next = g.words[b.i % g.words.length];
+    render();
+    if (next) { aqStop(); aqWord(next.w); }
+  };
+  function botBolt(bot, R) {
+    const rate = 5 + bot.skill * 11;
+    const n = Math.max(3, Math.round(rate * (.85 + rnd() * .3)));
+    let got = 0;
+    for (let i = 0; i < n; i++) {
+      const p = bot.skill - (1 - bot.nerve) * .18 * ((R && R.press) || 0) + (rnd() - .5) * (bot.vary || .1);
+      if (rnd() < clamp(p, .05, .97)) got++;
+    }
+    return got;
+  }
+  function endBolt() {
+    const g = mb(); if (!g) return;
+    const live = alive();
+    const R = roundAt(g.round);
+    g.phase = 'boltDone';
+    announce(pick(SAY.boltEnd, g.seed + g.round));
+    const board = live.map(s => ({ s, score: isHuman(s) ? ((g.bolt && g.bolt.got) || 0) : botBolt(s.bot, R), tb: rnd() }));
+    board.sort((a, b) => a.score - b.score || a.tb - b.tb);
+    g.boltBoard = board.map(r => ({ name: nameOf(r.s), me: isProfile(r.s), score: r.score })).reverse();
+    const loser = live.length > 2 ? board[0].s : null;
+    render();
+    after(2200, () => {
+      const gg = mb(); if (!gg) return;
+      if (loser) { loser.hist.push(false); sitDown(loser); announce(nameOf(loser) + ' spelled the fewest. Thank you, speller.'); }
+      else announce('Both of you held. We go back to the words.');
+      gg.boltBoard = null; gg.bolt = null;
+      if (alive().length <= 1) return finish();
+      gg.round++; gg.redo = 0;
+      if (loser && isProfile(loser) && alive().length > 1) { gg.outAsk = true; gg.phase = 'outChoice'; gg.turn = 0; gg.roster = []; render(); return; }
+      after(1200, beginRound);
+    });
   }
 
   /* ---------------- the finish ---------------- */
-  function finish() {
-    const g = mb(); if (!g) return;
+  function timeCalled() {
+    const g = mb();
+    g.coChamps = alive().slice();
+    announce('Time is called. Everyone still standing shares the title.', 'Time.');
+    after(1200, () => finish(true));
+  }
+  function finish(co) {
+    const g = mb(); if (!g || g.view === 'result') return;
     const left = alive();
     const champ = left[0] || null;
-    const meIn = !!left.find(s => s.kind === 'me');
-    /* placing: everyone still standing is 1st; otherwise you placed at the size
-       of the field when you went out */
-    g.view = 'result'; g.champ = champ; g.meWon = meIn;
-    g.atMic = champ;                 /* the row of chairs marks the champion now */
-    /* placing comes from the order spellers sat down, not from where they stood
-       in the draw: the last one out finished second, the first one out eleventh */
+    const meIn = left.some(isProfile);
+    g.view = 'result'; g.phase = 'over'; g.champ = champ; g.meWon = meIn; g.co = co && left.length > 1 ? left.slice() : null;
+    g.atMic = champ; g.clock = null; g.practice = null; g.outAsk = false;
+    g.ms = elapsed(g);
     const seq = g.outSeq || [];
-    const i = seq.findIndex(s => s.kind === 'me');
-    const place = meIn ? 1 : i < 0 ? 11 : Math.max(2, g.field.length - i);
+    const size = g.field.length;
+    const placeOf = s => s.in ? 1 : Math.max(2, size - seq.indexOf(s));
+    g.places = g.field.map(s => ({ s, place: placeOf(s) })).sort((a, b) => a.place - b.place);
+    const me = g.field.find(isProfile);
+    const place = me ? placeOf(me) : size;
     g.place = place;
-    /* coins: reaching the last few is worth something even without the trophy */
-    /* a mock bee completed is the standard's contest event — the same 10 for every finish,
-       because a placing in a field of rivals is partly the draw (FAMILY-STANDARD §1) */
-    let pay = 0; try { pay = addCoins('contest'); } catch (e) {}
-    g.pay = pay;
-    const p = prog();
-    p.played = (p.played || 0) + 1;
-    p.best = p.best ? Math.min(p.best, place) : place;
-    if (meIn) p.wins = (p.wins || 0) + 1;
-    saveProg(p);
+    /* PAY (§6): the words were paid as they were spelt (payG, into g.bonus). The contest event
+       is the podium at a pass mark — 70% of the profile child's words right, and a top-three
+       place that is not last. Nothing is paid for finishing. */
+    const given = g.mine.length, right = g.mine.filter(m => m.ok).length;
+    g.pct = given ? right / given : 0;
+    let contest = 0;
+    const podium = !!me && given > 0 && g.pct >= .7 && place <= 3 && place < size;
+    if (podium) contest = addCoins('contest') || 0;
+    g.contest = contest;
+    g.pay = (g.bonus || 0) + contest;
+    /* the level rule (§1.7): one Bee is one round; words right ÷ words given */
+    g.lvlNote = '';
+    if (g.mode === 'bee' && given) {
+      try {
+        if (window.SB_LEVEL && typeof SB_LEVEL.after === 'function') {
+          const r = SB_LEVEL.after('mockbee', g.pct) || {};
+          if (r.dropped) g.lvlNote = 'Let’s warm up on ' + (LVL_NAME[r.level] || r.level) + '. You can move back up any time.';
+          else if (r.offerUp) {             /* two rounds at 80%: a step up is offered, never taken for the child */
+            const cur = LEVELS.indexOf(lvlConcrete(r.level || g.lvl, g.band));
+            g.lvlUp = typeof r.offerUp === 'string' ? r.offerUp : (cur >= 0 && cur < LEVELS.length - 1 ? LEVELS[cur + 1] : null);
+          }
+        }
+      } catch (e) {}
+    }
+    if (g.mode !== 'family') {
+      const p = prog();
+      p.played = (p.played || 0) + 1;
+      p.best = p.best ? Math.min(p.best, place) : place;
+      if (meIn) p.wins = (p.wins || 0) + 1;
+      saveProg(p);
+    }
+    try { save(); } catch (e) {}
     if (meIn) { try { burstConfetti(120); sfx('win'); } catch (e) {}
-      announce(pick(SAY.winMe, g.seed));
-    } else { try { sfx('lose'); } catch (e) {}
-      announce(fill(pick(SAY.winBot, g.seed), { name: champ ? champ.bot.name : 'Nobody', age: champ ? champ.bot.age : '' }));
-      after(1200, () => announce(fill(pick(SAY.outMe, g.seed), { place: ordinal(place) })));
+      announce(g.co ? 'Time is called — and you are one of the champions.' : pick(SAY.winMe, g.seed));
+    } else {
+      try { sfx('lose'); } catch (e) {}
+      announce(g.co ? 'Time is called. ' + g.co.map(nameOf).join(', ') + ' share the title.'
+        : fill(pick(SAY.winBot, g.seed), { name: champ ? nameOf(champ) : 'Nobody' }));
     }
     render();
   }
-  const ordinal = n => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
+  const ordinal = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
 
-  app2.mbQuit = () => { aqStop(); state.mb = null; state.nav = 'games'; render(); };
+  app2.mbQuit = () => { aqStop(); dropMiss(state.mb); if (_kb) { try { _kb.destroy(); } catch (e) {} _kb = null; } state.mb = null; state.nav = 'games'; render(); };
   app2.mbAgain = () => { app2.mbStart(); };
+  app2.mbLobby = () => { const g = mb(); app2.mbOpen(g && g.mode); };
+  /* the old chip, kept only for a build without SB_LEVEL */
   app2.mbSetDiff = (k) => { const c = active(); if (!c) return; c.mbDiff = k; try { save(); } catch (e) {} render(); };
+  app2.mbLevelUp = (lv) => { try { if (window.SB_LEVEL && LEVELS.indexOf(lv) >= 0) SB_LEVEL.set('mockbee', lv); } catch (e) {} const g = mb(); if (g) { g.lvlUp = null; g.lvlNote = 'Moved up to ' + (LVL_NAME[lv] || lv) + '.'; } render(); };
+  /* the recap's one action: the words missed go on the revision pile, marked as the child's
+     own filing (the miss itself was already recorded as evidence when it happened) */
+  app2.mbAddMissed = () => {
+    const g = mb(); if (!g || g.addedMissed) return;
+    const seen = new Set();
+    g.mine.filter(m => !m.ok).forEach(m => { const k = nkey(m.w); if (seen.has(k)) return; seen.add(k); try { addMiss(m.rec || { w: m.w }, 'mark'); } catch (e) {} });
+    g.addedMissed = seen.size || -1;
+    try { save(); } catch (e) {}
+    render();
+  };
 
   /* ================= rendering ================= */
-  const face = (s, size) => s.kind === 'me'
-    ? (window.SB_AVATAR ? SB_AVATAR(mb().avatar, size) : '')
-    : (window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), size) : '');
-  const nameOf = s => s.kind === 'me' ? (mb().name || 'You') : s.bot.name;
-
-  function fieldRow() {
-    const g = mb();
-    const now = g.atMic;
-    return `<div class="mb-field">${g.field.map(s => {
-      const on = s === now && g.view === 'stage';
-      return `<span class="mb-chip${s.in ? '' : ' out'}${on ? ' now' : ''}" title="${escA(nameOf(s) + (s.kind === 'bot' ? ' · ' + s.bot.age : '') + (s.in ? '' : ' — out'))}">
-        <span class="mb-face">${face(s, 34)}</span>
-        <b>${esc(nameOf(s))}</b><i>${s.n}</i></span>`;
-    }).join('')}</div>`;
+  const nameOf = s => !s ? '' : s.kind === 'me' ? ((mb() && mb().name) || 'You') : s.kind === 'player' ? s.name : s.bot.name;
+  const initials = n => String(n || '?').trim().split(/\s+/).map(x => x[0] || '').join('').slice(0, 2).toUpperCase() || '?';
+  function face(s, size) {
+    if (!s) return '';
+    if (s.kind === 'me' || (s.kind === 'player' && s.profile)) return window.SB_AVATAR ? SB_AVATAR(mb().avatar, size) : '';
+    if (s.kind === 'player') return `<span class="mb-init" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .38)}px">${esc(initials(s.name))}</span>`;
+    return window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), size) : '';
   }
+  /* THE SHARED STAGE (§5.0): SGUI.stage, from the engine kit in saga2.js (lazy, group 'arcade' —
+     mbOpen asks for it). The hall uses the whole play area (region:false) because its benches
+     flank the microphone; the hall's own dark ink rides in .mb-in, since the stage's is the
+     theme's. Until the kit has landed, a local stage of the same three bands stands in. */
+  const kitStage = () => !!(window.SGUI && typeof SGUI.stage === 'function');
+  function stageHTML(o) {
+    const play = '<div class="mb-in mb-playin">' + (o.play || '') + '</div>';
+    const controls = o.controls ? '<div class="mb-in mb-ctlin">' + o.controls + '</div>' : '';
+    if (kitStage()) {
+      try { return SGUI.stage({ plate: o.plate, name: 'mockbee', cls: 'mb-stage', region: false, label: 'Mock Spelling Bee', hud: o.hud, play, controls }); } catch (e) {}
+    }
+    setTimeout(fitStage, 0);
+    return `<div class="mb-st" style="--mb-plate:url('${o.plate}')">
+      <div class="mb-st-hud"><div class="mb-st-l">${o.hud.left || ''}</div><div class="mb-st-c">${o.hud.center || ''}</div><div class="mb-st-r">${o.hud.right || ''}</div></div>
+      <div class="mb-st-play">${play}</div>
+      <div class="mb-st-ctrl">${controls}</div></div>`;
+  }
+  /* THE MISS CARD (§1.5): SGUI.miss on the stage — the letters, the why, the word said again,
+     Continue or Enter. The hall re-renders around it (an announcement, a lazy file landing), so
+     a card whose stage was rebuilt is put back on the new one; and a card left behind when the
+     child leaves the hall is closed without moving the bee, so the kit's hold never sticks. */
+  const kitMiss = () => !!(window.SGUI && typeof SGUI.miss === 'function' && kitStage());
+  function mountMiss(g) {
+    if (!kitMiss() || mb() !== g || g.phase !== 'meDone' || !g.hold || state.nav !== 'mockbee') return;
+    const host = document.querySelector('.sb-stage') || document.body;
+    /* app3 hides any toast while a miss panel is on screen, checking after each render — which ran
+       before this card was (re)mounted, so the check runs again here */
+    const quiet = () => { try { if (typeof _toastVsMiss === 'function') _toastVsMiss(); } catch (e) {} };
+    if (g.missCard && g.missCard.held) { if (!document.body.contains(g.missCard.el)) host.appendChild(g.missCard.el); quiet(); return; }
+    g.missCard = SGUI.miss(host, g.word, g.meTry || '', { onContinue: () => { if (mb() === g && g.hold) g.hold(); } });
+    quiet();
+    const iv = setInterval(() => { if (!g.missCard) return clearInterval(iv); if (mb() !== g || state.nav !== 'mockbee') { clearInterval(iv); dropMiss(g); } }, 400);
+  }
+  function dropMiss(g) {
+    if (!g || !g.missCard) return;
+    const mc = g.missCard; g.missCard = null; g.hold = null;
+    try { if (mc.held) mc.close(); } catch (e) {}
+  }
+  /* THE ON-SCREEN KEYBOARD (§1.6): SGUI.keys on a touch screen, typing into the bee's own field
+     (the box shows the letters and keeps the phone's keyboard down); a desktop types into the
+     input with the real keyboard. Re-mounted after every render, which rebuilds its host. */
+  let _kb = null;
+  const coarse = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
+  const kitKeys = () => !!(window.SGUI && typeof SGUI.keys === 'function') && coarse();
+  function typing(g) {
+    if (!g) return null;
+    if (g.phase === 'me') return { id: 'mb-in', get: () => g.typed || '', set: v => { g.typed = v; }, go: () => app2.mbSpell() };
+    if (g.phase === 'practice' && g.practice) return { id: 'mb-prac-in', get: () => g.practice.typed || '', set: v => { g.practice.typed = v; }, go: () => app2.mbPracSkip() };
+    if (g.phase === 'written' && g.wr) return { id: 'mb-in', get: () => g.wr.typed || '', set: v => { g.wr.typed = v; }, go: () => app2.mbWrGo() };
+    if (g.phase === 'bolt' && g.bolt) return { id: 'mb-in', get: () => g.bolt.typed || '', set: v => { g.bolt.typed = v; }, go: () => app2.mbBoltGo() };
+    return null;
+  }
+  function mountKeys() {
+    if (_kb) { try { _kb.destroy(); } catch (e) {} _kb = null; }
+    const g = mb(); if (!g || state.nav !== 'mockbee' || g.view !== 'stage' || !kitKeys()) return;
+    const f = typing(g); const host = document.getElementById('mb-keys'); if (!f || !host) return;
+    const show = () => { try { const el = document.getElementById(f.id); if (el) el.value = f.get(); } catch (e) {} };
+    _kb = SGUI.keys(host, { touch: true, physical: false,
+      onKey: ch => { if (typing(mb()) && f.get().length < 40) { f.set(f.get() + ch); show(); } },
+      onBack: () => { f.set(f.get().slice(0, -1)); show(); },
+      onEnter: () => f.go() });
+  }
+  /* the input a typing phase draws: on a touch screen it only shows the letters */
+  const inputAttrs = () => kitKeys() ? ' readonly inputmode="none"' : '';
+  const keysHost = () => kitKeys() ? '<div id="mb-keys" class="mb-keys"></div>' : '';
+  const plate = () => { try { return PLATE; } catch (e) { return ''; } };
+  /* The local stage fills the window between the shell's bar and its foot (the tab bar on a
+     phone) and never makes the page scroll (§5.0 rule 1): measured, because #root is zoomed
+     and the shell's bars differ by width. If the hall is ever taller than that, the play area
+     scrolls inside the stage rather than the page. */
+  function fitStage() {
+    try {
+      const st = document.querySelector('.mb-st'); if (!st || state.nav !== 'mockbee') return;
+      st.style.height = '';
+      const r = st.getBoundingClientRect(); const z = (r.height / (st.offsetHeight || r.height)) || 1;
+      const top = r.top + window.scrollY;
+      /* the foot: the phone's fixed tab bar when it is showing, else the window's bottom edge */
+      let foot = 0; const tb = document.querySelector('.sb-tabbar');
+      if (tb && getComputedStyle(tb).display !== 'none') foot = tb.getBoundingClientRect().height;
+      const avail = window.innerHeight - top - foot - 10;
+      st.style.height = Math.max(420, avail / z) + 'px';
+    } catch (e) {}
+  }
+  try { window.addEventListener('resize', () => setTimeout(fitStage, 60)); } catch (e) {}
+  const lvlChip = () => {
+    try { if (window.SB_LEVEL && typeof SB_LEVEL.chip === 'function') return SB_LEVEL.chip('mockbee', 'Level'); } catch (e) {}
+    const c = active() || {}; const cur = c.mbDiff || 'auto';
+    const nxt = ['auto', 'easy', 'medium', 'hard', 'champ'];
+    return `<button class="mb-lvl" data-act="mbSetDiff" data-arg="${nxt[(nxt.indexOf(cur) + 1) % nxt.length]}" aria-label="Word level: ${LVL_NAME[cur]}. Tap to change.">${LVL_NAME[cur]} ▾</button>`;
+  };
 
+  /* ---------- the lobby: three modes, the field, one button ---------- */
   function viewLobby() {
-    const p = prog(); const c = active();
-    return `<div class="mb-wrap" style="animation:sb-rise .35s ease both">
-      <div class="mb-top">
-        <button data-act="mbQuit" class="mb-back">← Arcade</button>
-        <span class="mb-title">Mock Spelling Bee</span>
-        ${p.played ? `<span class="mb-rec">${p.wins ? p.wins + (p.wins === 1 ? ' win' : ' wins') + ' · ' : ''}best ${ordinal(p.best || 11)} of 11</span>` : ''}
-      </div>
-      <div class="mb-hero">
-        <span class="mb-hero-art">${window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 96) : ''}</span>
-        <span>
-          <span class="mb-kick">Eleven spellers · one microphone</span>
-          <h2>Ten rivals, and a number in a hat</h2>
-          <p>You draw a number and take your turn in that order. It runs the way the national
-             bee runs — three parts, over and over, and it gets harder every time round.</p>
-          <div class="mb-format">
-            ${[['Spell', 'One word each, out loud. Miss it and you sit down.'],
-               ['Meaning', 'Four definitions, one right. Knowing how to spell it is not the same as knowing what it is.'],
-               ['Spell-off', 'Ninety seconds, everybody at once. The lowest score goes out.']]
-              .map(([t, d], i) => `<div class="mb-fstep"><span class="mb-fnum">${i + 1}</span>
-                <span><b>${t}</b>${esc(d)}</span></div>`).join('')}
-          </div>
-          <p class="mb-stages">Preliminaries &rarr; Quarterfinals &rarr; Semifinals &rarr; Finals.
-             The last speller standing takes it.</p>
-          <div class="mb-diffrow"><span class="mb-difflbl">Word hardness</span>
-            <div class="mb-diff" role="group" aria-label="Word hardness">${
-              [['auto','Bee ramp'],['easy','Easy'],['medium','Medium'],['hard','Hard'],['champ','Champ']]
-              .map(([k,l])=>`<button data-act="mbSetDiff" data-arg="${k}" class="${((c.mbDiff||'auto')===k)?'on':''}">${l}</button>`).join('')}</div></div>
-          <button data-act="mbStart" class="mb-go">${iconSVG('crown', 17)} Take the stage</button>
-        </span>
-      </div>
-      <div class="mb-sech">The field</div>
-      <div class="mb-cards">${BOTS.map(b => `<div class="mb-card">
-        <span class="mb-card-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(b), 54) : ''}</span>
-        <span class="mb-card-in">
-          <b>${esc(b.name)}<i>${b.age}</i></b>
-          <span class="mb-note">${esc(b.note)}</span>
-          <span class="mb-bars">
-            <span title="Skill — spelling">${bar('skill', b.skill)}</span>
-            <span title="Vocab — how well they know what a word MEANS, which is not the same thing">${bar('vocab', b.voc == null ? b.skill : b.voc)}</span>
-            <span title="Nerve — how little the late rounds move them">${bar('nerve', b.nerve)}</span>
-          </span>
-          <!-- the vocab tell earns its place on the card: it is the only thing that
-               tells a reader why Theo is dangerous in a round Dax will lose -->
-          ${b.vtell ? `<span class="mb-vnote">Meanings: ${esc(b.vtell)}</span>` : ''}
-        </span></div>`).join('')}</div>
-    </div>`;
+    const g = mb() || {}; const p = prog(); const c = active() || {};
+    const band = bandKey(c), B = BANDS[band];
+    const mode = g.mode || 'bee';
+    const tiles = [['bee', 'Bee', B.rivals + ' rivals at your level. Sudden death after round ' + NUMERAL[B.rounds - 1].toLowerCase() + '.'],
+      ['champ', 'Champ', 'A written list, the meanings, a lightning round — and Finals words.'],
+      ['family', 'Family Bee night', '2–4 players on one device. Pass it round.']];
+    const rivals = B.ids.map(botById);
+    const play = `<div class="mb-lobby">
+        <div class="mb-modes" role="radiogroup" aria-label="Kind of bee">${tiles.map(([k, t, d]) =>
+          `<button class="mb-mode${mode === k ? ' on' : ''}" role="radio" aria-checked="${mode === k}" data-act="mbMode" data-arg="${k}">
+            <b>${t}</b><span>${esc(d)}</span></button>`).join('')}</div>
+        ${mode === 'bee' ? `<div class="mb-lvlrow mb-narrow">Word level ${lvlChip()}</div>` : ''}
+        <div class="mb-field-h">${mode === 'champ' ? 'The field — Finals words tonight' : 'The field'}</div>
+        <div class="mb-cards">${rivals.map(b => `<div class="mb-card">
+          <span class="mb-card-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(b), 48) : ''}</span>
+          <span class="mb-card-in"><b>${esc(b.name)}<i>${b.age}</i></b><span class="mb-note">${esc(b.note)}</span></span></div>`).join('')}</div>
+      </div>`;
+    const controls = `<div class="mb-go-row"><button data-act="mbStart" class="mb-go">${iconSVG('crown', 17)} Take the stage</button></div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(),
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`,
+        center: `<span class="sg-st-title mb-ttl"><span class="mb-title">Mock <span class="mb-wide">Spelling </span>Bee</span>${mode === 'bee' ? '<span class="mb-wide"> ' + lvlChip() + '</span>' : ''}</span>`,
+        right: `<span class="mb-rec">${p.played ? (p.wins || 0) + ' won · best ' + ordinal(p.best || (B.rivals + 1)) : (B.rivals + 1) + ' spellers'}</span>` },
+      play, controls })}</div>`;
   }
-  const bar = (label, v) => `<span class="mb-bar"><i>${label}</i><b><s style="width:${Math.round(v * 100)}%"></s></b></span>`;
 
-  /* The write-along window: a rival's word has just been said aloud, and the
-     child has 30 seconds to write it down before the rival spells it — good
-     practice whether or not it is their turn. Skippable with Enter or the
-     button, because a hall where every rival takes 30 forced seconds is not
-     a game anyone finishes. */
-  /* ---- the meaning round, the child's turn ----
-     Four choices, one shot. The word is shown as well as spoken: this round is
-     about what it means, so hiding the spelling would be testing the wrong
-     thing — and the child has just heard it pronounced. */
+  /* ---------- Family Bee night: who is playing ---------- */
+  function viewFamily() {
+    const P = famPlayers();
+    const c = active() || {};
+    const row = (p, i) => `<div class="mb-prow">
+        <span class="mb-pface">${p.profile ? (window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 40) : '') : `<span class="mb-init" style="width:40px;height:40px;font-size:15px">${esc(initials(p.name || ('P' + (i + 1))))}</span>`}</span>
+        ${p.profile ? `<span class="mb-pname"><b>${esc(c.name || 'You')}</b><i>the one whose words count</i></span>`
+          : `<input class="mb-pin" data-fkey="mbFam${i}" maxlength="18" autocomplete="off" spellcheck="false" aria-label="Player ${i + 1}'s name"
+              placeholder="Player ${i + 1}" value="${escA(p.name || '')}" oninput="callAct('mbFamName','${i}|'+this.value)">`}
+        <span class="mb-pbands" role="group" aria-label="Word band">${FAM_BANDS.map(([k, l]) =>
+          `<button class="${p.band === k ? 'on' : ''}" data-act="mbFamBand" data-arg="${i}|${k}">${l}</button>`).join('')}</span>
+        ${p.profile || P.length <= 2 ? '<span class="mb-pdel"></span>' : `<button class="mb-pdel" data-act="mbFamDel" data-arg="${i}" aria-label="Remove player ${i + 1}">${iconSVG('close', 14)}</button>`}
+      </div>`;
+    const play = `<div class="mb-lobby">
+        <div class="mb-modes slimrow" role="radiogroup" aria-label="Kind of bee">${[['bee', 'Bee'], ['champ', 'Champ'], ['family', 'Family Bee night']].map(([k, t]) =>
+          `<button class="mb-mode slim${k === 'family' ? ' on' : ''}" role="radio" aria-checked="${k === 'family'}" data-act="mbMode" data-arg="${k}"><b>${t}</b></button>`).join('')}</div>
+        <p class="mb-fam-note">Everyone spells on this device, in turn. Names are just for tonight — the app does not keep them.
+          Grown-ups get grown-up words. Only ${esc(c.name || 'the speller')}’s words earn coins.</p>
+        <div class="mb-players">${P.map(row).join('')}</div>
+      </div>`;
+    const controls = `<div class="mb-go-row">${P.length < 4 ? `<button data-act="mbFamAdd" class="mb-back2">+ Add a player</button>` : ''}
+      <button data-act="mbStart" class="mb-go">${iconSVG('users', 17)} Start the bee</button></div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(),
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">Family Bee night</span></span>`,
+        right: `<span class="mb-rec">${P.length} players</span>` }, play, controls })}</div>`;
+  }
+
+  /* ---------- the stage ---------- */
+  const RING_C = 2 * Math.PI * 21;
+  function clockHTML(g) {
+    const ms = (g.clock && g.clock.ms) || turnMs();
+    const left = g.clock ? Math.max(0, g.clock.deadline - Date.now()) : ms;
+    return `<span class="mb-clockw" aria-label="Time left on this turn"><svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+      <circle cx="25" cy="25" r="21" class="mb-ring-bg"/><circle id="mb-ring" cx="25" cy="25" r="21" class="mb-ring"
+        style="stroke-dasharray:${RING_C.toFixed(2)};stroke-dashoffset:${(RING_C * (1 - clamp(left / ms, 0, 1))).toFixed(2)}"/></svg>
+      <b id="mb-clock" class="${left <= 5000 ? 'low' : ''}">${Math.ceil(left / 1000)}s</b></span>`;
+  }
+  function benchChip(s, g) {
+    const on = s === g.atMic && g.view === 'stage';
+    return `<span class="mb-chip${s.in ? '' : ' out'}${on ? ' now' : ''}${isProfile(s) ? ' mine' : ''}" title="${escA(nameOf(s) + (s.in ? '' : ' — out'))}">
+      <span class="mb-face">${face(s, 34)}</span><b>${esc(nameOf(s))}</b><i>${s.n}</i></span>`;
+  }
+  /* symmetric benches: the profile child's chair in the middle, everyone else split evenly */
+  function benches(g) {
+    const others = g.field.filter(s => !(isProfile(s) && g.mode !== 'family'));
+    const half = Math.ceil(others.length / 2);
+    return [others.slice(0, half), others.slice(half)];
+  }
+  const MIC_SVG = `<svg class="mb-micsvg" viewBox="0 0 40 92" width="34" height="78" aria-hidden="true"><rect x="13" y="2" width="14" height="24" rx="7" fill="#3a3346" stroke="#cdb98a" stroke-width="2"/>
+    <path d="M9 18v4a11 11 0 0 0 22 0v-4" fill="none" stroke="#cdb98a" stroke-width="2.4" stroke-linecap="round"/><path d="M20 33v50" stroke="#8a7a58" stroke-width="3"/><path d="M8 88h24" stroke="#8a7a58" stroke-width="4" stroke-linecap="round"/></svg>`;
+
+  function podiumHTML(g) {
+    const w = g.word || {};
+    const s = g.atMic;
+    const meNow = g.phase === 'me';
+    if (meNow || g.phase === 'pass') {
+      const who = (s && isHuman(s)) ? s : g.field.find(isProfile);
+      return `<div class="mb-mic me">
+        <span class="mb-mic-face">${face(who, 64)}</span>
+        <div class="mb-mic-in"><span class="mb-mic-name">${esc(nameOf(who))} · number ${who ? who.n : g.myN}</span>
+          ${g.phase === 'pass' ? `<div class="mb-truth">Your turn is next — take the device.</div>` : `<div class="mb-truth">Listen, ask, then spell it.</div>`}</div>
+        ${meNow ? clockHTML(g) : ''}</div>`;
+    }
+    if (g.phase === 'meDone') {
+      const who = (s && isHuman(s)) ? s : g.field.find(isProfile);
+      return `<div class="mb-mic ${g.meOk ? 'ok' : 'no'}">
+        <span class="mb-mic-face">${face(who, 64)}</span>
+        <div class="mb-mic-in"><span class="mb-mic-name">${esc(nameOf(who))}</span>
+          <div class="mb-letters">${esc((g.meTry || '—').toUpperCase().split('').join(' '))}</div>
+          <div class="mb-truth">${g.meOk ? 'Correct' : (g.timeUp && !g.meTry ? 'Time ran out. ' : '') + 'The word was <b>' + esc(w.w || '') + '</b>'}</div>
+          ${!g.meOk && g.hold && !kitMiss() && window.missFeedbackHTML ? `<div class="mb-why">${missFeedbackHTML(w, g.meTry || '')}</div>` : ''}</div></div>`;
+    }
+    if (g.phase === 'vme' || g.phase === 'vmeDone') return vocMeUI();
+    if (g.phase === 'vprac') return vocPracUI();
+    if (g.phase === 'vbot') return vocBotUI();
+    if (/^bolt/.test(g.phase || '')) return boltUI();
+    if (/^written/.test(g.phase || '')) return writtenUI();
+    if (g.phase === 'practice') {
+      const pr = g.practice || {}; const b = pr.forBot;
+      return `<div class="mb-mic practice">
+        <span class="mb-mic-face">${b ? face(b, 64) : ''}</span>
+        <div class="mb-mic-in"><span class="mb-mic-name">${esc(nameOf(b))} is up · number ${b ? b.n : ''}</span>
+          <div class="mb-prac-row"><span class="mb-prac-note">Write it down before ${esc(nameOf(b))} spells it — practice, nothing counts.</span>
+          <span class="mb-countdown" id="mb-countdown">${Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000))}s</span></div></div></div>`;
+    }
+    if (g.phase === 'outChoice') {
+      return `<div class="mb-mic out-card"><div class="mb-mic-in" style="align-items:center;text-align:center">
+        <span class="mb-mic-name">You finish ${ordinal(alive().length + 1)} of ${g.field.length} — so far.</span>
+        <div class="mb-truth">The others are still standing. Finish the bee now, or watch the rest at double speed.</div></div></div>`;
+    }
+    if (!s || isHuman(s)) return `<div class="mb-mic idle"><div class="mb-mic-in"><span class="mb-mic-name">${g.phase === 'roundIn' ? 'The hall settles…' : '…'}</span></div></div>`;
+    const lp = g.lastPractice;
+    /* the box is sized by a hidden ghost of X's (never the word, which would sit in the DOM) */
+    const done = g.phase === 'botSpell' && g.botStep >= g.botLen;
+    const ghost = new Array(Math.max(1, g.botLen || (w.w || '').length || 1)).fill('X').join(' ');
+    return `<div class="mb-mic ${done ? (g.botOk ? 'ok' : 'no') : ''}">
+      <span class="mb-mic-face">${face(s, 64)}</span>
+      <div class="mb-mic-in"><span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
+        <div class="mb-letters"><span class="mb-l-ghost" aria-hidden="true">${ghost}</span>
+          <span class="mb-l-live" id="mb-live">${g.botOut || ''}</span>${g.botOut ? '' : '<span class="mb-thinking">thinking…</span>'}</div>
+        ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You wrote <b>${esc(lp.typed.toUpperCase())}</b> — ${lp.correct ? 'you had it too.' : 'not quite that time.'}</div>` : ''}
+      </div></div>`;
+  }
+
+  /* the controls band: the Chair and the input on a turn; the write-along; the choices */
+  function controlsHTML(g) {
+    const w = g.word || {};
+    if (g.phase === 'me') {
+      if (kitKeys()) return keysHost();          /* the box and the Chair sit in the play area; the keys own the controls */
+      return chairHTML(g) + spellRow(g);
+    }
+    return controlsRest(g);
+  }
+  function spellRow(g) {
+    return `<div class="mb-spellrow">
+          <input class="mb-input" id="mb-in" data-fkey="mbIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Spell the word"${inputAttrs()}
+            placeholder="spell it" value="${escA(g.typed || '')}" oninput="callAct('mbType',this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbSpell');}">
+          <button data-act="mbSpell" class="mb-submit">Spell it →</button></div>`;
+  }
+  function chairHTML(g) {
+    const w = g.word || {};
+    {
+      const asked = g.asked || {};
+      const keys = chairKeys(w);
+      const who = g.atMic && isHuman(g.atMic) ? g.atMic : g.field.find(isProfile);
+      const answers = ['def', 'ps', 'org', 'sent', 'alt'].filter(k => asked[k] && keys.indexOf(k) >= 0).map(k =>
+        `<div><b>${CHAIR_NAME[k]}.</b> ${esc(k === 'alt' ? chairAnswer(w, k).replace(/^said$/, 'said aloud') : chairAnswer(w, k))}</div>`).join('');
+      const strip = stripOn(g, who) ? ['org', 'ps', 'def', 'sent'].filter(k => asked[k]).map(k => stripFor(w, k)).filter(Boolean)
+        .filter((x, i, a) => a.indexOf(x) === i) : [];
+      return `<div class="mb-chair" role="group" aria-label="The pronouncer's chair — each question uses 3 seconds">${CHAIR.filter(c => keys.indexOf(c[0]) >= 0).map(([k, l, ic]) =>
+          `<button data-act="mbAsk" data-arg="${k}" class="mb-ask${asked[k] ? ' on' : ''}" data-q="${k}">${iconSVG(ic, 15)}<span>${l}</span></button>`).join('')}</div>
+        ${answers ? `<div class="mb-answers">${answers}</div>` : ''}
+        ${strip.length ? `<div class="mb-strip">${strip.map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}`;
+    }
+  }
+  /* the typing row of the phase on screen: in the controls with a real keyboard, in the play
+     area over the on-screen keys on a touch screen */
+  const rowFor = g => g.phase === 'me' ? spellRow(g) : controlsRest(g, true);
+  function controlsRest(g, rowOnly) {
+    const w = g.word || {};
+    if (!rowOnly && kitKeys() && typing(g)) return keysHost();
+    if (g.phase === 'meDone' && !g.meOk && g.hold) return kitMiss() ? '' : `<div class="mb-go-row"><button data-act="mbGoOn" class="mb-submit">Continue →</button></div>`;
+    if (g.phase === 'vmeDone' && !g.meOk && g.hold) return `<div class="mb-go-row"><button data-act="mbGoOn" class="mb-submit">Continue →</button></div>`;
+    if (g.phase === 'pass') return `<div class="mb-go-row"><button data-act="mbReady" class="mb-go">${iconSVG('play', 16)} ${esc(nameOf(g.atMic))} — ready</button></div>`;
+    if (g.phase === 'outChoice') return `<div class="mb-go-row">
+        <button data-act="mbFinishNow" class="mb-go">${iconSVG('flag', 16)} Finish now</button>
+        <button data-act="mbWatch" class="mb-back2">${iconSVG('play', 15)} Watch the rest (2×)</button></div>`;
+    if (g.watch && g.view === 'stage') return `<div class="mb-go-row"><span class="mb-watching">Watching at 2×</span><button data-act="mbFinishNow" class="mb-back2">${iconSVG('flag', 15)} Finish now</button></div>`;
+    if (g.phase === 'practice') {
+      const pr = g.practice || {}; const b = pr.forBot;
+      return `<div class="mb-spellrow">
+          <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 16)} Again</button>
+          <input class="mb-input" id="mb-prac-in" data-fkey="mbPrac" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Write the rival's word"${inputAttrs()}
+            placeholder="write it here" value="${escA(pr.typed || '')}" oninput="callAct('mbPracType',this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbPracSkip');}">
+          <button data-act="mbPracSkip" class="mb-submit">${esc(nameOf(b))}, spell it →</button></div>`;
+    }
+    if (g.phase === 'written') {
+      const r = g.wr || {};
+      return `<div class="mb-spellrow">
+          <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 16)} Again</button>
+          <input class="mb-input" id="mb-in" data-fkey="mbIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Write the word"
+            placeholder="write it — Enter for the next" value="${escA(r.typed || '')}" oninput="callAct('mbWrType',this.value)"${inputAttrs()}
+            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbWrGo');}">
+          <button data-act="mbWrGo" class="mb-submit">Next →</button></div>`;
+    }
+    if (g.phase === 'bolt') {
+      const b = g.bolt || {};
+      return `<div class="mb-spellrow">
+          <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 16)} Again</button>
+          <input class="mb-input" id="mb-in" data-fkey="mbIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Spell the word"
+            placeholder="spell it — Enter for the next" value="${escA(b.typed || '')}" oninput="callAct('mbBoltType',this.value)"${inputAttrs()}
+            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbBoltGo');}">
+          <button data-act="mbBoltGo" class="mb-submit">Next →</button></div>`;
+    }
+    if (g.phase === 'vprac') return `<div class="mb-go-row"><button data-act="mbVPracSkip" class="mb-submit">${esc(nameOf(g.vprac && g.vprac.forBot))}, answer it →</button></div>`;
+    return `<div class="mb-go-row"><span class="mb-watching">${esc(roundAt(g.round).sub)}</span></div>`;
+  }
+
+  function viewStage() {
+    const g = mb(); const R = roundAt(g.round); const live = alive();
+    const [L, Rb] = benches(g);
+    const mine = g.mode !== 'family' ? g.field.find(isProfile) : null;
+    /* the entrance plays ONCE: render() rebuilds this wrapper, and a replayed slide on every
+       repaint made the whole hall drift while a rival spelled */
+    /* (no entrance slide on the kit's stage: a transform on its wrapper would unfix it) */
+    const rise = g.rose || kitStage() ? '' : ' rise';
+    g.rose = 1;
+    setTimeout(() => { mountKeys(); if (g.phase === 'meDone' && g.hold) mountMiss(g); }, 0);
+    const atmic = /^(me|meDone)$/.test(g.phase || '');   /* a phone folds the benches away while the child spells */
+    const touchChair = kitKeys() && typing(g) ? `<div class="mb-touchchair">${g.phase === 'me' ? chairHTML(g) : ''}${rowFor(g)}</div>` : '';
+    const play = `<div class="mb-hall${g.mode === 'family' ? ' fam' : ''}${atmic ? ' atmic' : ''}">
+        <div class="mb-bench l">${L.map(s => benchChip(s, g)).join('')}</div>
+        <div class="mb-centre${/^(me|meDone|pass)$/.test(g.phase || '') ? ' atmic' : ''}">
+          <div class="mb-ann"><span class="mb-ann-ic">${iconSVG('volume', 15)}</span><p>${esc(g.announce || '')}</p></div>
+          <div class="mb-podium">${podiumHTML(g)}${MIC_SVG}</div>${touchChair}
+          ${mine ? `<div class="mb-mychair">${benchChip(mine, g)}</div>` : ''}
+        </div>
+        <div class="mb-bench r">${Rb.map(s => benchChip(s, g)).join('')}</div>
+      </div>`;
+    return `<div class="mb-wrap${rise}">${stageHTML({ plate: plate(),
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Leave</button>`,
+        center: `<span class="sg-st-title mb-ttl"><span class="mb-round">${R.name.indexOf(' · ') > 0 ? `<span class="mb-wide">${esc(R.name.split(' · ')[0])} · </span>${esc(R.name.split(' · ')[1])}` : esc(R.name)}<i>${esc(R.sub)}</i></span></span>`,
+        right: `<span class="mb-rec">${live.length} of ${g.field.length}<span class="mb-wide"> standing</span></span>` },
+      play, controls: controlsHTML(g) })}</div>`;
+  }
+
+  /* ---------- Champ's three rounds, drawn in the centre ---------- */
+  function writtenUI() {
+    const g = mb();
+    if (g.phase === 'writtenIn') return `<div class="mb-mic mb-bolt"><div class="mb-mic-in" style="align-items:center;text-align:center">
+      <div class="mb-bolt-big">${(g.words || []).length || WRITTEN_N}</div><div class="mb-mic-name">words to write — listen for each one</div></div></div>`;
+    if (g.phase === 'writtenDone') return boardUI('The papers are marked.', g.board || [], true);
+    const r = g.wr || {};
+    return `<div class="mb-mic mb-bolt"><div class="mb-mic-in">
+      <div class="mb-bolt-top"><span class="mb-bolt-clock" id="mb-wr-clock">${Math.max(0, Math.ceil((r.deadline - Date.now()) / 1000))}s</span>
+        <span class="mb-bolt-score">Word ${Math.min((r.i || 0) + 1, (g.words || []).length)} of ${(g.words || []).length}</span></div>
+      <div class="mb-bolt-trail">${(r.done || []).map(d => `<span class="mb-bt ${d.ok ? 'ok' : 'no'}">${esc(d.w)}</span>`).join('')}</div></div></div>`;
+  }
+  function boardUI(title, rows, of) {
+    return `<div class="mb-mic mb-bolt"><div class="mb-mic-in"><span class="mb-mic-name">${esc(title)}</span>
+      <div class="mb-boltboard">${rows.map((r, i) => `<div class="mb-brow${r.me ? ' me' : ''}${i === rows.length - 1 ? ' last' : ''}">
+        <span class="mb-brank">${i + 1}</span><span class="mb-bname">${esc(r.name)}</span>
+        <span class="mb-bscore">${r.score}${of && r.of ? '/' + r.of : ''}</span></div>`).join('')}</div></div></div>`;
+  }
+  function boltUI() {
+    const g = mb();
+    if (g.phase === 'boltIn') return `<div class="mb-mic mb-bolt"><div class="mb-mic-in" style="align-items:center;text-align:center">
+      <div class="mb-bolt-big">60</div><div class="mb-mic-name">The lightning round — get ready</div></div></div>`;
+    if (g.phase === 'boltDone') return boardUI('Time. The lightning board.', g.boltBoard || []);
+    const b = g.bolt || {};
+    return `<div class="mb-mic mb-bolt"><div class="mb-mic-in">
+      <div class="mb-bolt-top"><span class="mb-bolt-clock" id="mb-bolt-clock">${Math.max(0, Math.ceil((b.deadline - Date.now()) / 1000))}s</span>
+        <span class="mb-bolt-score">${b.got || 0} spelled</span></div>
+      <div class="mb-bolt-trail">${(b.done || []).slice(-7).map(d => `<span class="mb-bt ${d.ok ? 'ok' : 'no'}">${esc(d.w)}</span>`).join('')}</div></div></div>`;
+  }
+  /* the meaning round shows the WORD — it is about what it means, and it has been said aloud.
+     The choices are masked all the same. */
   function vocMeUI() {
     const g = mb(); const q = g.vq; if (!q) return '';
     const done = g.phase === 'vmeDone';
     return `<div class="mb-mic me${done ? (g.meOk ? ' ok' : ' no') : ''}">
-      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(g.avatar, 74) : ''}</span>
       <div class="mb-mic-in">
         <span class="mb-mic-name">${esc(g.name)} · number ${g.myN}</span>
-        <div class="mb-vword">${esc(q.w.w)}
-          <button data-act="mbSay" class="mb-hear mb-vhear">${iconSVG('volume', 16)} Hear it</button></div>
+        <div class="mb-vword">${esc(q.w.w)} <button data-act="mbSay" class="mb-hear mb-vhear">${iconSVG('volume', 15)} Hear it</button></div>
         <div class="mb-vq">What does it mean?</div>
-        <div class="mb-vopts">
-          ${q.choices.map((c, i) => {
-            const chosen = done && g.vPick === c, right = done && c === q.answer;
-            return `<button class="mb-vopt${right ? ' right' : chosen ? ' wrong' : ''}"
-              ${done ? '' : `data-act="mbVocPick" data-arg="${i}"`}>
-              <span class="mb-vletter">${String.fromCharCode(65 + i)}</span>
-              <span>${esc(maskTxt(c, q.w.w))}</span></button>`;
-          }).join('')}
-        </div>
-        ${done && !g.meOk && g.hold ? `<p style="margin:10px 0 4px;font-weight:700;font-size:13.5px">Not this time — the green one is what it means.</p><button data-act="mbGoOn" class="mb-submit">Continue →</button>` : ''}
+        <div class="mb-vopts">${q.choices.map((c, i) => {
+          const chosen = done && g.vPick === c, right = done && c === q.answer;
+          return `<button class="mb-vopt${right ? ' right' : chosen ? ' wrong' : ''}" ${done ? '' : `data-act="mbVocPick" data-arg="${i}"`}>
+            <span class="mb-vletter">${String.fromCharCode(65 + i)}</span><span>${esc(maskTxt(c, q.w.w))}</span></button>`; }).join('')}</div>
+        ${done && !g.meOk && g.hold ? `<p class="mb-truth">Not this time — the green one is what it means.</p>` : ''}
       </div></div>`;
   }
-  /* ---- a rival's meaning question, with the child's own thirty seconds ----
-     The word is spoken and all four choices are on the board, exactly as on the
-     child's own turn. Nothing is graded: this is the meaning-round twin of the
-     write-it-down window in the spelling round. */
   function vocPracUI() {
     const g = mb(); const pr = g.vprac, q = g.vq; if (!pr || !q) return '';
     const s = pr.forBot;
-    const left = Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000));
-    return `<div class="mb-mic practice">
-      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
-      <div class="mb-mic-in">
-        <span class="mb-mic-name">${esc(s.bot.name)} is up next · number ${s.n}</span>
-        <div class="mb-vword">${esc(q.w.w)}
-          <button data-act="mbSay" class="mb-hear mb-vhear">${iconSVG('volume', 16)} Hear it</button></div>
-        <div class="mb-prac-row">
-          <span class="mb-prac-note">Pick one before ${esc(s.bot.name)} answers — good practice, nothing counts.</span>
-          <span class="mb-countdown" id="mb-vcount">${left}s</span>
-        </div>
-        <div class="mb-vopts">
-          ${q.choices.map((c, i) => `<button class="mb-vopt${pr.pick === c ? ' picked' : ''}"
-            ${pr.pick == null ? `data-act="mbVPracPick" data-arg="${i}"` : ''}>
-            <span class="mb-vletter">${String.fromCharCode(65 + i)}</span><span>${esc(maskTxt(c, q.w.w))}</span></button>`).join('')}
-        </div>
-        <button data-act="mbVPracSkip" class="mb-submit" style="align-self:flex-start">${esc(s.bot.name)}, answer it &rarr;</button>
-      </div></div>`;
+    return `<div class="mb-mic practice"><div class="mb-mic-in">
+      <span class="mb-mic-name">${esc(s.bot.name)} is up · number ${s.n}</span>
+      <div class="mb-vword">${esc(q.w.w)} <button data-act="mbSay" class="mb-hear mb-vhear">${iconSVG('volume', 15)} Hear it</button></div>
+      <div class="mb-prac-row"><span class="mb-prac-note">Pick one before ${esc(s.bot.name)} answers — nothing counts.</span>
+        <span class="mb-countdown" id="mb-vcount">${Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000))}s</span></div>
+      <div class="mb-vopts">${q.choices.map((c, i) => `<button class="mb-vopt${pr.pick === c ? ' picked' : ''}" ${pr.pick == null ? `data-act="mbVPracPick" data-arg="${i}"` : ''}>
+        <span class="mb-vletter">${String.fromCharCode(65 + i)}</span><span>${esc(maskTxt(c, q.w.w))}</span></button>`).join('')}</div>
+    </div></div>`;
   }
-  /* ---- the rival answering ----
-     Their pick is shown as a letter, the way a bee answers aloud ("B, please"),
-     and once it lands the board marks the right one — with the child's own
-     choice beside it, so a rival's turn teaches something either way. */
   function vocBotUI() {
     const g = mb(); const s = g.atMic, q = g.vq;
-    if (!s || !q || s.kind === 'me') return '';
+    if (!s || !q || isHuman(s)) return '';
     const i = g.vPick == null ? -1 : q.choices.indexOf(g.vPick);
-    const done = i >= 0;
-    const lp = g.lastVPrac;
-    return `<div class="mb-mic${done ? (g.vPick === q.answer ? ' ok' : ' no') : ''}">
-      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
-      <div class="mb-mic-in">
-        <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
-        <div class="mb-vword">${esc(q.w.w)}</div>
-        <div class="mb-letters">
-          <span class="mb-l-ghost" aria-hidden="true">X</span>
-          <span class="mb-l-live">${done ? String.fromCharCode(65 + i) : ''}</span>
-          ${done ? '' : '<span class="mb-thinking">thinking…</span>'}
-        </div>
-        <div class="mb-vopts">
-          ${q.choices.map((c, k) => {
-            const right = done && c === q.answer, theirs = done && c === g.vPick && c !== q.answer;
-            return `<button class="mb-vopt small${right ? ' right' : theirs ? ' wrong' : ''}${lp && lp.pick === c ? ' mine' : ''}">
-              <span class="mb-vletter">${String.fromCharCode(65 + k)}</span><span>${esc(maskTxt(c, q.w.w))}</span></button>`;
-          }).join('')}
-        </div>
-        ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You picked ${esc(lp.pick.slice(0, 40))}${lp.pick.length > 40 ? '…' : ''} — ${lp.correct ? 'you had it too.' : 'not that one.'}</div>` : ''}
-      </div></div>`;
+    const done = i >= 0; const lp = g.lastVPrac;
+    return `<div class="mb-mic${done ? (g.vPick === q.answer ? ' ok' : ' no') : ''}"><div class="mb-mic-in">
+      <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
+      <div class="mb-vword">${esc(q.w.w)}</div>
+      <div class="mb-letters"><span class="mb-l-ghost" aria-hidden="true">X</span><span class="mb-l-live">${done ? String.fromCharCode(65 + i) : ''}</span>${done ? '' : '<span class="mb-thinking">thinking…</span>'}</div>
+      <div class="mb-vopts">${q.choices.map((c, k) => {
+        const right = done && c === q.answer, theirs = done && c === g.vPick && c !== q.answer;
+        return `<button class="mb-vopt small${right ? ' right' : theirs ? ' wrong' : ''}${lp && lp.pick === c ? ' mine' : ''}">
+          <span class="mb-vletter">${String.fromCharCode(65 + k)}</span><span>${esc(maskTxt(c, q.w.w))}</span></button>`; }).join('')}</div>
+      ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">${lp.correct ? 'You had it too.' : 'Not the one you picked.'}</div>` : ''}
+    </div></div>`;
   }
-  /* ---- the spell-off ----
-     One input, one clock, and a running count. The rivals are not shown racing:
-     their scores land at the bell, because eleven bars ticking at once is noise
-     and the child has ninety seconds of their own to spend. */
-  function boltUI() {
-    const g = mb();
-    if (g.phase === 'boltIn') return `<div class="mb-mic mb-bolt">
-      <div class="mb-mic-in" style="align-items:center;text-align:center">
-        <div class="mb-bolt-big">90</div>
-        <div class="mb-mic-name">The spell-off — get ready</div></div></div>`;
-    if (g.phase === 'boltDone') {
-      const b = g.boltBoard || [];
-      return `<div class="mb-mic mb-bolt">
-        <div class="mb-mic-in">
-          <span class="mb-mic-name">Time. The spell-off board.</span>
-          <div class="mb-boltboard">${b.map((r, i) => `<div class="mb-brow${r.me ? ' me' : ''}${i === b.length - 1 ? ' last' : ''}">
-            <span class="mb-brank">${i + 1}</span><span class="mb-bname">${esc(r.name)}</span>
-            <span class="mb-bscore">${r.score}</span></div>`).join('')}</div>
-        </div></div>`;
-    }
-    const b = g.bolt || {}; const w = (g.words || [])[(b.i || 0) % Math.max(1, (g.words || []).length)] || {};
-    return `<div class="mb-mic mb-bolt">
-      <div class="mb-mic-in">
-        <div class="mb-bolt-top">
-          <span class="mb-bolt-clock" id="mb-bolt-clock">90s</span>
-          <span class="mb-bolt-score">${b.got || 0} spelled</span>
-        </div>
-        <div class="mb-controls"><button data-act="mbSay" class="mb-hear">${iconSVG('volume', 18)} Hear it again</button></div>
-        <div class="mb-spellrow">
-          <input class="mb-input" id="mb-in" autocomplete="off" autocapitalize="off" spellcheck="false"
-            placeholder="spell it — Enter for the next" value="${escA(b.typed || '')}" oninput="callAct('mbBoltType',this.value)"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbBoltGo');}">
-          <button data-act="mbBoltGo" class="mb-submit">Next →</button>
-        </div>
-        <div class="mb-bolt-trail">${(b.done || []).slice(-7).map(d =>
-          `<span class="mb-bt ${d.ok ? 'ok' : 'no'}">${esc(d.w)}</span>`).join('')}</div>
-      </div></div>`;
+  /* "Hear it again" knows which word is in front of the speller */
+  app2.mbSay = () => {
+    const g = mb(); if (!g) return;
+    let w = g.word;
+    if (g.phase === 'bolt' && g.bolt && g.words && g.words.length) w = g.words[g.bolt.i % g.words.length];
+    else if (g.phase === 'written' && g.wr && g.words) w = g.words[g.wr.i];
+    else if (g.vq && /^v(me|meDone|prac|bot)$/.test(g.phase)) w = g.vq.w;
+    if (g.phase === 'me') return app2.mbAsk('say');            /* on a turn it is a Chair question, and costs its 3 s */
+    if (w && w.w) { aqStop(); aqWord(w.w); }
+  };
+
+  /* ---------- the result and the recap ---------- */
+  /* which questions helped: the Chair's requests on each word, and the letters the answer
+     pointed at when the word was spelt right ("You asked Origin on chimera — Greek — and spelt
+     the ch right"). Nothing is scored for asking; the reward is the word. */
+  const POINTS = { greek: /ph|ch|rh|y/, french: /eau|ette|esque|oir|que$|et$|ille/, endings: /(able|ible|ance|ence|ant|ent)$/ };
+  function helpedLine(m) {
+    const qs = (m.asks || []).filter((k, i, a) => a.indexOf(k) === i && k !== 'say');
+    if (!qs.length) return '';
+    const w = m.rec || { w: m.w };
+    let point = '';
+    if (qs.indexOf('org') >= 0) { const k = originKey(w); const re = k && POINTS[k]; const mm = re && String(m.w).match(re); if (mm) point = mm[0]; }
+    if (!point && qs.indexOf('ps') >= 0) { const mm = String(m.w).match(POINTS.endings); if (mm) point = mm[0]; }
+    const names = qs.map(k => CHAIR_NAME[k]).join(' and ');
+    const org = qs.indexOf('org') >= 0 && w.o ? ' — ' + esc(txt(w.o).split(/[ ,;(]/)[0]) : '';
+    return `You asked ${names} on <b>${esc(m.w)}</b>${org}${m.ok ? (point ? ` — and spelt the <b>${esc(point)}</b> right.` : ' — and spelt it right.') : ' — one to practise.'}`;
   }
-
-  function practiceUI() {
-    const g = mb(); const pr = g.practice; if (!pr) return '';
-    const s = pr.forBot;
-    const left = Math.max(0, Math.ceil((pr.deadline - Date.now()) / 1000));
-    return `<div class="mb-mic practice">
-      <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
-      <div class="mb-mic-in">
-        <span class="mb-mic-name">${esc(s.bot.name)} is up next · number ${s.n}</span>
-        <div class="mb-prac-row">
-          <span class="mb-prac-note">Write it down before ${esc(s.bot.name)} spells it — good practice, no pressure.</span>
-          <span class="mb-countdown" id="mb-countdown">${left}s</span>
-        </div>
-        <div class="mb-controls">
-          <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 18)} Hear it again</button>
-        </div>
-        <div class="mb-spellrow">
-          <input class="mb-input" id="mb-prac-in" autocomplete="off" autocapitalize="off" spellcheck="false"
-            placeholder="write it here" value="${escA(pr.typed || '')}" oninput="callAct('mbPracType',this.value)"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbPracSkip');}">
-          <button data-act="mbPracSkip" class="mb-submit">${esc(s.bot.name)}, spell it →</button>
-        </div>
-      </div></div>`;
-  }
-
-  function viewStage() {
-    const g = mb(); const R = roundAt(g.round, alive().length); const live = alive();
-    const meTurn = g.phase === 'me';
-    const w = g.word || {};
-    const asked = g.asked || {};
-    const askBtn = (k, label, ic) => `<button data-act="mbAsk" data-arg="${k}" class="mb-ask${asked[k] ? ' on' : ''}">${iconSVG(ic, 14)} ${label}</button>`;
-    const answer = asked.def || asked.org || asked.sent || asked.ps ? `<div class="mb-answers">
-      ${/* the sentence was masked but the definition was not, and about one core
-            definition in nine contains its own headword ("aardvarks: plural of
-            aardvark"). Asking the pronouncer what a word means then handed the
-            speller its spelling, at the microphone, in the app's own bee. */''}
-      ${asked.def ? `<div><b>Definition.</b> ${esc(maskWord(w.d || '—', w.w))}</div>` : ''}
-      ${asked.org ? `<div><b>Origin.</b> ${esc(w.o || 'not recorded')}</div>` : ''}
-      ${asked.sent ? `<div><b>Sentence.</b> ${esc(maskWord(w.s || '—', w.w))}</div>` : ''}
-      ${asked.ps ? `<div><b>Part of speech.</b> ${esc(w.ps || 'not recorded')}</div>` : ''}</div>` : '';
-
-    const podium = meTurn ? `<div class="mb-mic me">
-        <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(g.avatar, 74) : ''}</span>
-        <div class="mb-mic-in">
-          <span class="mb-mic-name">${esc(g.name)} · number ${g.myN}</span>
-          <div class="mb-controls">
-            <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 18)} Hear it again</button>
-            ${askBtn('def', 'Definition', 'book')}${askBtn('org', 'Origin', 'sprout')}
-            ${askBtn('sent', 'Sentence', 'quote')}${askBtn('ps', 'Part of speech', 'grid')}
-          </div>
-          ${answer}
-          <div class="mb-spellrow">
-            <input class="mb-input" id="mb-in" autocomplete="off" autocapitalize="off" spellcheck="false"
-              placeholder="spell it" value="${escA(g.typed || '')}" oninput="callAct('mbType',this.value)"
-              onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbSpell');}">
-            <button data-act="mbSpell" class="mb-submit">Spell it →</button>
-          </div>
-        </div></div>`
-      : g.phase === 'meDone' ? `<div class="mb-mic ${g.meOk ? 'ok' : 'no'}">
-        <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(g.avatar, 74) : ''}</span>
-        <div class="mb-mic-in"><span class="mb-mic-name">${esc(g.name)}</span>
-          <div class="mb-letters">${(g.typed || '—').toUpperCase().split('').join(' ')}</div>
-          <div class="mb-truth">${g.meOk ? 'Correct' : 'The word was <b>' + esc(w.w) + '</b>'}</div>
-          ${!g.meOk && g.hold && window.missFeedbackHTML ? `<div class="mb-why" style="margin-top:10px">${missFeedbackHTML(w, g.meTry || '')}</div>
-            <button data-act="mbGoOn" class="mb-submit" style="margin-top:4px">Continue →</button>` : ''}</div></div>`
-      : (g.phase === 'vme' || g.phase === 'vmeDone') ? vocMeUI()
-      : g.phase === 'vprac' ? vocPracUI()
-      : g.phase === 'vbot' ? vocBotUI()
-      : (g.phase === 'bolt' || g.phase === 'boltIn' || g.phase === 'boltDone') ? boltUI()
-      : g.phase === 'practice' ? practiceUI()
-      : (function () {
-        const s = g.atMic;
-        if (!s || s.kind === 'me') return `<div class="mb-mic idle"><div class="mb-mic-in"><span class="mb-mic-name">…</span></div></div>`;
-        const lp = g.lastPractice;
-        /* The box is sized by a hidden ghost the full length of what is being
-           spelled, and the live letters sit on top of it. Without that, the box
-           grows a letter at a time and a long word rewraps onto a second line
-           halfway through, so it changes height mid-spell.
-           The ghost is a row of X's, not the word: it is the same width in a
-           monospace face, and it keeps the answer out of the DOM where a curious
-           reader could find it before the speller gets there.
-           The done-state used to be `botOut.length >= w.w.length`, which compares
-           a string carrying a space between every letter against a plain word —
-           so it went green about halfway, and on a misspelling of a different
-           length it could go green on the wrong letter entirely. */
-        const done = g.phase === 'botSpell' && g.botStep >= g.botLen;
-        const ghost = new Array(Math.max(1, g.botLen || (w.w || '').length || 1)).fill('X').join(' ');
-        return `<div class="mb-mic ${done ? (g.botOk ? 'ok' : 'no') : ''}">
-          <span class="mb-mic-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), 74) : ''}</span>
-          <div class="mb-mic-in">
-            <span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
-            <div class="mb-letters">
-              <span class="mb-l-ghost" aria-hidden="true">${ghost}</span>
-              <span class="mb-l-live" id="mb-live">${g.botOut || ''}</span>
-              ${g.botOut ? '' : '<span class="mb-thinking">thinking…</span>'}
-            </div>
-            ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You wrote <b>${esc(lp.typed.toUpperCase())}</b> — ${lp.correct ? 'you had it too.' : 'not quite that time.'}</div>` : ''}
-          </div></div>`;
-      })();
-
-    /* The entrance plays ONCE, on the first paint of the hall.
-       render() rebuilds this wrapper, so leaving the animation on it replayed a
-       twelve-pixel slide on every repaint — and during a rival's spelling that is
-       several times a second. Everything inside inherits the movement, which is
-       why the staging box appeared to drift even after its own animation went. */
-    const rise = g.rose ? '' : 'animation:sb-rise .35s ease both';
-    g.rose = 1;
-    return `<div class="mb-wrap" style="${rise}">
-      <div class="mb-top">
-        <button data-act="mbQuit" class="mb-back">← Leave the hall</button>
-        <span class="mb-round">${esc(R.name)}<i>${esc(R.sub)}</i></span>
-        <span class="mb-rec">${live.length} of 11 still in</span>
-      </div>
-      <div class="mb-stage">
-        <div class="mb-spot"></div>
-        <div class="mb-ann"><span class="mb-ann-ic">${iconSVG('volume', 16)}</span><p>${esc(g.announce || '')}</p></div>
-        ${podium}
-      </div>
-      ${fieldRow()}
-    </div>`;
-  }
-  const maskWord = (s, w) => String(s || '').replace(new RegExp(String(w || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[a-z]*', 'ig'), '▁▁▁');
-
   function viewResult() {
     const g = mb(); const p = prog();
     const champ = g.champ;
-    return `<div class="mb-wrap" style="animation:sb-rise .35s ease both">
-      <div class="mb-top"><button data-act="mbQuit" class="mb-back">← Arcade</button>
-        <span class="mb-title">${g.meWon ? 'Champion' : 'The bee is over'}</span></div>
-      <div class="mb-result ${g.meWon ? 'won' : ''}">
-        <span class="mb-result-face">${g.meWon ? (window.SB_AVATAR ? SB_AVATAR(g.avatar, 108) : '')
-          : (champ && window.SB_AVATAR ? SB_AVATAR(champ.kind === 'me' ? g.avatar : faceOf(champ.bot), 108) : '')}</span>
-        <h2>${g.meWon ? 'You won the bee.' : esc((champ && champ.kind === 'bot' ? champ.bot.name : 'Nobody')) + ' takes it.'}</h2>
-        <p>${g.meWon ? 'Eleven spellers, and the microphone is yours.'
-          : 'You finished <b>' + ordinal(g.place) + '</b> of eleven.'}</p>
-        <div class="mb-pay">${iconSVG('coin', 16)} ${fmtN(g.pay)} coins</div>
-        <div class="mb-again">
-          <button data-act="mbAgain" class="mb-go">${iconSVG('crown', 17)} Another bee</button>
-          <button data-act="mbQuit" class="mb-back2">Back to the Arcade</button>
+    const right = g.mine.filter(m => m.ok), miss = g.mine.filter(m => !m.ok);
+    const helped = g.mine.map(helpedLine).filter(Boolean).slice(0, 5);
+    const title = g.meWon ? (g.co ? 'Co-champion' : 'Champion') : 'The bee is over';
+    const head = g.meWon ? (g.co ? 'You share the title.' : 'You won the bee.')
+      : g.co ? esc(g.co.map(nameOf).join(', ')) + ' share the title.' : esc(nameOf(champ) || 'Nobody') + ' takes it.';
+    const sub = g.mode === 'family' ? 'Family Bee night · ' + g.field.length + ' spellers'
+      : g.meWon ? g.field.length + ' spellers, and the microphone is yours.' : 'You finished <b>' + ordinal(g.place) + '</b> of ' + g.field.length + '.';
+    const chip = m => `<span class="mb-wchip ${m.ok ? 'ok' : 'no'}">${esc(m.w)}</span>`;
+    const play = `<div class="mb-result${g.meWon ? ' won' : ''}">
+        <span class="mb-result-face">${champ ? face(g.meWon ? g.field.find(isProfile) : champ, 92) : ''}</span>
+        <h2>${head}</h2><p>${sub}</p>
+        ${g.mode === 'family' ? `<div class="mb-boltboard fam">${g.places.map((r, i) => `<div class="mb-brow${isProfile(r.s) ? ' me' : ''}"><span class="mb-brank">${ordinal(r.place)}</span><span class="mb-bname">${esc(nameOf(r.s))}</span></div>`).join('')}</div>` : ''}
+        <div class="mb-recap">
+          <div class="mb-rc-h">${right.length} of ${g.mine.length} spelt right</div>
+          ${g.mine.length ? `<div class="mb-wchips">${g.mine.map(chip).join('')}</div>` : ''}
+          ${helped.length ? `<div class="mb-helped"><div class="mb-rc-h">What the Chair did</div>${helped.map(h => `<p>${h}</p>`).join('')}</div>` : ''}
+          ${g.lvlNote ? `<p class="mb-lvlnote">${esc(g.lvlNote)}</p>` : ''}
+          ${g.lvlUp ? `<p class="mb-lvlnote">Ready for ${LVL_NAME[g.lvlUp]}? <button data-act="mbLevelUp" data-arg="${g.lvlUp}" class="mb-lvl">Move up to ${LVL_NAME[g.lvlUp]}</button></p>` : ''}
         </div>
-        ${p.played ? `<div class="mb-hist">${p.played} ${p.played === 1 ? 'bee' : 'bees'} · ${p.wins || 0} won · best ${ordinal(p.best || 11)}</div>` : ''}
-      </div>
-      ${fieldRow()}
-    </div>`;
+        <div class="mb-pay">${iconSVG('coin', 16)} ${fmtN(g.pay || 0)} ${g.pay === 1 ? 'coin' : 'coins'}${g.contest ? ' · podium' : ''}</div>
+      </div>`;
+    const controls = `<div class="mb-go-row">
+        ${miss.length ? (g.addedMissed ? `<span class="mb-watching">${iconSVG('check', 15)} On your revision list</span>` : `<button data-act="mbAddMissed" class="mb-back2">${iconSVG('plus', 15)} Add missed words to revision</button>`) : ''}
+        <button data-act="mbAgain" class="mb-go">${iconSVG('crown', 17)} Another bee</button>
+        <button data-act="mbLobby" class="mb-back2">Change the bee</button></div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(),
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">${title}</span></span>`,
+        right: `<span class="mb-rec">${p.played ? p.played + (p.played === 1 ? ' bee' : ' bees') + ' · ' + (p.wins || 0) + ' won' : g.field.length + ' spellers'}</span>` },
+      play, controls })}</div>`;
   }
 
   window.MOCKBEE = {
-    open: () => app2.mbOpen(),
+    open: (m) => app2.mbOpen(m),
     view: () => { const g = mb(); if (!g) return viewLobby();
-      return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : viewLobby(); },
+      return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : g.view === 'family' ? viewFamily() : viewLobby(); },
     stats: () => prog(),
-    /* the rivals' faces against the child's avatar, and the recorded announcer lines — for the tests */
+    /* the cast, for the Atlas duel (trail.js): one table of rivals, not a copy (games spec §2.5/§4.7) */
+    rivals: () => BOTS.map(b => ({ id: b.id, name: b.name, lvl: b.lvl, nerve: b.nerve, spec: b.spec, vary: b.vary, face: (typeof faceOf === 'function' ? faceOf(b) : b.id) })),
+    /* the Play card's words, from the bee as it is now (the card itself is the lineup's) */
+    card: () => { const c = active() || {}; const B = BANDS[bandKey(c)]; const p = prog();
+      return { title: 'Mock Spelling Bee', promise: B.rivals + ' rivals, one microphone, eight minutes. Ask the pronouncer anything.',
+        best: p.played ? (p.wins || 0) + ' won · best ' + ordinal(p.best || (B.rivals + 1)) : '', route: '#/mockbee' }; },
+    /* for the tests: the rivals' faces, the recorded lines, the meaning question, the Chair, the
+       size of a bee and the cap */
     faces: () => BOTS.map(b => ({ id: b.id, name: b.name, face: faceOf(b) })),
     annHave: () => [...ANN_HAVE],
-    /* the meaning-round question for a word, exactly as the hall builds it — the generated
-       question test (tests/question-leaks.cjs) runs it over real words */
     vocQ: w => vocQuestion(w),
+    chair: w => chairKeys(w).map(k => ({ k, label: CHAIR_NAME[k], answer: chairAnswer(w, k) })),
+    strip: (w, k) => stripFor(w, k),
+    bands: () => JSON.parse(JSON.stringify(BANDS)),
+    roundAt: (n, g) => roundAt(n, g),
+    /* the words a round of the bee on stage would deal, n of them */
+    draw: (n, r) => (state.mb && state.mb.field ? drawWords(n, roundAt(r)) : []),
+    cap: CAP_MS, qCost: Q_COST, turnMs: TURN_MS,
   };
 
-  /* keyboard: Enter submits from anywhere on the speller's turn, and moves
-     the rival on from anywhere during the 30-second write-along window */
+  /* keyboard: Enter spells on a turn, continues after a miss, moves a rival on during the
+     write-along, takes Ready on Family night */
   window.addEventListener('keydown', e => { try {
     const g = mb(); if (!g || state.nav !== 'mockbee') return;
     if (e.key !== 'Enter') return;
     if (g.phase === 'me') { e.preventDefault(); app2.mbSpell(); }
     else if ((g.phase === 'meDone' || g.phase === 'vmeDone') && g.hold) { e.preventDefault(); app2.mbGoOn(); }
     else if (g.phase === 'practice') { e.preventDefault(); app2.mbPracSkip(); }
+    else if (g.phase === 'pass') { e.preventDefault(); app2.mbReady(); }
   } catch (_) {} });
 })();

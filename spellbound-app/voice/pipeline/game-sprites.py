@@ -16,7 +16,7 @@ from PIL import Image
 KEY = open(os.environ.get('GKEY_FILE', '/root/.gkey')).read().strip()
 MODEL = os.environ.get('NB_MODEL', 'gemini-3-pro-image')
 CTX = ssl.create_default_context(cafile='/root/.ccr/ca-bundle.crt')
-OUT = '/home/user/Bizzing-Bee/spellbound-app/app-art/gart'
+OUT = os.environ.get('GART_OUT', os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'app-art', 'gart')))   # this checkout's art, never a fixed path
 os.makedirs(OUT, exist_ok=True)
 
 STYLE = ("Cute modern mobile-game sprite in a clean, bold, friendly cartoon style: "
@@ -151,6 +151,17 @@ BACKDROPS = {
                              "top and far sides. ABSOLUTELY NO vehicles, NO people, NO animals, NO characters anywhere, NO readable "
                              "text or letters — only an empty glowing night city skyline. Cheerful, inviting, full-bleed edge to edge, "
                              "no border, no frame."),
+    'gp-bazaar': ('16:9', 1280, "A warm late-afternoon OLD MARKET-STREET (BAZAAR) racing backdrop for a cartoon kart game, painted in a "
+                             "soft Studio-Ghibli storybook style: a glowing apricot-and-turquoise sky with a few soft clouds up top, and "
+                             "along the horizon and far sides a friendly jumble of flat-roofed sandstone and whitewashed market houses "
+                             "with carved wooden balconies, rounded doorway ARCHES, colourful striped fabric AWNINGS in saffron, teal, "
+                             "rose and indigo, strings of glowing paper LANTERNS draped between rooftops, a few date palms and hills far "
+                             "away. Below the houses, an empty warm dusty-ochre open plaza ground. Composed with an OPEN, uncluttered "
+                             "centre and lower-middle (no road, no track, no path) so a race track can be drawn on top; all the detail "
+                             "sits toward the top half and the far sides, with the base of the buildings in a level line across the "
+                             "middle of the picture. ABSOLUTELY NO people, NO animals, NO vehicles, NO characters anywhere; NO domes, NO "
+                             "towers of worship, NO religious buildings or symbols; NO text, NO letters, NO numbers, NO signs, NO "
+                             "lettering on awnings, walls or banners. Cheerful, inviting, full-bleed edge to edge, no border, no frame."),
 }
 
 BG_STYLE = ("Full-scene painted illustration in a soft Studio-Ghibli storybook style, cheerful and warm, gentle "

@@ -29,25 +29,25 @@ const CHILD = { name: 'Ravi', avatar: 'bee', coins: 240, pow: {}, age: 11,
       app.setNav('games'); await new Promise(r => setTimeout(r, 1500));
     }, CHILD);
 
-    // ---- the Daily Buzz box: nothing may cross its own edge ----
+    // ---- every Play card: nothing may cross its own edge ----
+    /* REWRITTEN 4 Oct 2026 (games spec §3.1): the Daily Buzz banner left the Play tab — Daily Bee is a
+       card in the Train door now — so the rule that sliced its call to action is held for EVERY card */
     const daily = await pg.evaluate(() => {
-      const btn = document.querySelector('button[data-act="openDaily"]');
-      if (!btn) return null;
-      const br = btn.getBoundingClientRect();
-      let worst = 0, who = '';
-      for (const el of btn.querySelectorAll('*')) {
-        // the mascot is decorative and deliberately bleeds off the corner
-        if (el.closest('[aria-hidden="true"]')) continue;
-        const r = el.getBoundingClientRect();
-        if (!r.width) continue;
-        const over = r.right - br.right;
-        if (over > worst) { worst = over; who = (el.textContent || '').trim().slice(0, 22); }
-      }
-      return { over: Math.round(worst), who, w: Math.round(br.width) };
+      const cards = [...document.querySelectorAll('.pl-card')]; if (!cards.length || !document.querySelector('.pl-card[data-card="dailyBee"]')) return null;
+      let worst = 0, who = '', w = 0;
+      for (const card of cards) { const br = card.getBoundingClientRect(); w = Math.max(w, Math.round(br.width));
+        for (const el of card.querySelectorAll('*')) {
+          // the mascot is decorative and deliberately bleeds off the corner
+          if (el.closest('[aria-hidden="true"]') || el.closest('.arc-hero-art')) continue;
+          const r = el.getBoundingClientRect();
+          if (!r.width) continue;
+          const over = r.right - br.right;
+          if (over > worst) { worst = over; who = card.dataset.card + ': ' + (el.textContent || '').trim().slice(0, 22); } } }
+      return { over: Math.round(worst), who, w };
     });
-    ok(daily, W + 'px: the Daily Buzz box is on the Play screen');
+    ok(daily, W + 'px: the Daily Bee card is on the Play screen');
     ok(daily && daily.over <= 1,
-      W + 'px: nothing in it crosses the card edge' + (daily && daily.over > 1 ? ' — "' + daily.who + '" over by ' + daily.over + 'px' : ''));
+      W + 'px: nothing in a Play card crosses the card edge' + (daily && daily.over > 1 ? ' — "' + daily.who + '" over by ' + daily.over + 'px' : ''));
 
     // ---- the arcade hero: its CTA reads as one phrase ----
     const hero = await pg.evaluate(() => {

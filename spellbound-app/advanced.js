@@ -164,7 +164,7 @@
     mockEnd() { const g = state.adv; if (!g || g.done) return; g.done = true; if (g.timer) clearInterval(g.timer);
       const c = active(); const st = aStats(c); const total = g.round === 'lightning' ? (g.right + g.wrong) : (g.list ? g.list.length : g.qs.length);
       const pct = total ? Math.round(g.right / total * 100) : 0; g.pct = pct; g.total = total;
-      const bonus = addCoins('contest'); g.bonus = bonus;   /* a mock completed is the standard's contest event */
+      const bonus = pct >= 70 ? addCoins('contest') : 0; g.bonus = bonus;   /* the contest coin at the PASS MARK only (games spec §1.3) — finishing is not passing */
       if (g.round === 'lightning' && g.right > (st.mockBest || 0)) st.mockBest = g.right;
       try { logActivity('practice', 'Mock Bee — ' + g.round, { done: total, right: g.right, coins: bonus }, []); sfx(pct >= 70 ? 'win' : 'level'); if (pct >= 70) burstConfetti(110); } catch (e) {}
       save(); render(); },
@@ -185,19 +185,9 @@
       render(); },
 
     /* ============ ④ ADVANCED GAMES ============ */
-    memStart() { const pool = hardPool().slice(0, 3000); const words = sample(pool.filter(w => w.d && w.d.length > 8 && w.d.length < 90), 6);
-      const cards = []; words.forEach((w, k) => { cards.push({ id: k, t: 'w', label: w.w }); cards.push({ id: k, t: 'd', label: trunc(w.d, 60) }); });
-      state.adv = { mode: 'mem', cards: sample(cards), open: [], matched: [], moves: 0, done: false }; set({ advView: 'mem' }); },
-    memFlip(idx) { const g = state.adv; if (!g || g.mode !== 'mem') return; idx = +idx;
-      if (g.open.length >= 2 || g.open.includes(idx) || g.matched.includes(idx)) return;
-      g.open.push(idx); if (g.open.length === 2) { g.moves++; const [a, b] = g.open;
-        if (g.cards[a].id === g.cards[b].id && g.cards[a].t !== g.cards[b].t) { g.matched.push(a, b); g.open = []; addCoins('answer'); sfx('correct'); try { burstConfetti(20); } catch (e) {}
-          if (g.matched.length >= g.cards.length) ADV._memDone(); }
-        else { render(); setTimeout(() => { const t = state.adv; if (t) { t.open = []; render(); } }, 900); return; } }
-      render(); },
-    _memDone() { const c = active(); const st = aStats(c); g_bonus: { const g = state.adv; g.done = true;
-      const score = Math.max(1, 30 - g.moves); if (score > (st.memBest || 0)) st.memBest = score;
-      try { sfx('win'); burstConfetti(130); } catch (e) {} save(); render(); } },   /* each pair paid as it matched — no finish bonus */
+    /* Memory Match is gone (games spec 4 Oct 2026, §3.1): it paid for luck — a pair found by
+       flipping is a coin whether or not the child knew either card. Word Doctor, a Spelling Gym
+       mode, takes its slot. Old saves keep their `memBest`; nothing reads it now. */
     dictStart() { const pool = hardPool().slice(0, 6000); const list = sample(pool, 80);
       state.adv = { mode: 'dict', list, i: 0, right: 0, timeLeft: 90, done: false };
       const g = state.adv; g.timer = setInterval(() => { const t = state.adv; if (!t || t.mode !== 'dict' || t.done) { clearInterval(g.timer); return; }
@@ -230,7 +220,6 @@
       if (v === 'tips') return ADV._tipsView();
       if (v === 'tip') return ADV._tipView();
       if (v === 'games') return ADV._gamesView();
-      if (v === 'mem') return ADV._memView();
       if (v === 'dict') return ADV._dictView();
       if (v === 'concepts') return ADV._conceptsView();
       return ADV._hub(); },
@@ -285,7 +274,7 @@
         ['advmock', 'Mock Spelling Bee', 'written, vocabulary & lightning rounds'],
         ['advconcepts', 'Advanced Concepts', 'six narrated lessons — schwa rescue, stress shift, the origin tree'],
         ['advtips', 'Advanced Tips & Tricks', '36 champion techniques'],
-        ['arcade', 'Advanced Games', 'memory match & rapid dictation'],
+        ['arcade', 'Advanced Games', 'rapid dictation'],
       ].map(([k, t, d], i) => `<div style="display:flex;align-items:flex-start;gap:11px;padding:8px 0;animation:sb-rise .45s ease ${(0.05 + i * 0.07).toFixed(2)}s both">
           <span style="color:var(--accent);flex-shrink:0;display:inline-flex;margin-top:1px">${SBI(k, 20) || ''}</span>
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:13.5px;line-height:1.2">${t}</span>
@@ -326,10 +315,10 @@
         <p style="color:var(--muted);font-size:13.5px;margin:0 0 18px">National-bee prep from the library of ${countTxt('library')} words. Master the hardest words.</p>
         <div style="display:grid;gap:12px">
           ${seg('ucj', 'ultraJourney', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
-          ${seg('mock', 'mockBee', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}
           ${seg('tips', 'advTips', '#13A892', 'Tips & Tricks', 'Memory, fast reading, etymology & bee-day tactics from champion methodology.', Object.keys(st.tipsRead || {}).length + ' read')}
           ${seg('concepts', 'advanced', '#5B3FA6', 'Advanced Concepts', 'Schwa rescue, stress shift, the origin tree & question strategy — narrated.', Object.keys(st.conceptsRead || {}).length + '/' + ADV._advChapters().length)}
-          ${seg('games', 'advGames', '#E8458C', 'Advanced Games', 'Memory match & rapid dictation — the drills a national-level speller needs.', 'play')}
+          ${/* Advanced Mock Rounds, Rapid Dictation and Memory Match left the pack (games spec §3.1, GAMES-LEDGER.md):
+               Mock Bee · Champ and Spelling Gym · Champ Dictation / Word Doctor are their homes now */''}
         </div>
       </div>`; },
 
@@ -402,13 +391,14 @@
             ${card('vocab', 'book', 'Vocabulary Round', '12 hard words — pick the correct meaning.')}
             ${card('lightning', 'timer', 'Lightning Round', '60 seconds — spell as many as you can.')}
           </div>`, 'advBack'); }
-      if (g.done) { const verdict = g.pct >= 85 ? ['🏆', 'National-ready', 'var(--good,#1f9d57)'] : g.pct >= 65 ? ['🥇', 'State level', '#C8901B'] : g.pct >= 45 ? ['🥈', 'Regional level', '#3D7DF0'] : ['🥉', 'Keep drilling', 'var(--muted)'];
+      /* The national / state / regional placement verdict is RETIRED (games spec §4.2, 4 Oct 2026):
+         one mock round cannot say where a child would place, and a badge that claims it is a promise the
+         app cannot keep. The round reports what happened — the words right — and nothing more. */
+      if (g.done) {
         return ADV._shell(`<div style="max-width:520px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
-          <div style="font-size:48px">${verdict[0]}</div>
           <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:6px 0 2px">${g.round[0].toUpperCase() + g.round.slice(1)} round</h2>
           <div style="font-family:var(--display);font-weight:800;font-size:42px;color:var(--accent);line-height:1;margin-top:8px">${g.right}/${g.total}</div>
           <div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:4px">${g.pct}% right</div>
-          <div style="display:inline-block;margin-top:12px;padding:7px 16px;border-radius:999px;font-weight:800;font-size:14px;color:#fff;background:${verdict[2]}">${verdict[1]}</div>
           <div style="display:flex;gap:10px;justify-content:center;margin-top:20px"><button data-act="advGo" data-arg="mock" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Another round</button><button data-act="advMockPick" data-arg="${g.round}" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Retry →</button></div>
         </div>`, 'advExit'); }
       if (g.round === 'vocab') { const q = g.qs[g.i];
@@ -462,18 +452,10 @@
         <span style="text-align:right;flex-shrink:0"><span style="display:block;font-size:11px;font-weight:800;color:#E8458C">${best}</span><span style="color:#E8458C;font-weight:800">→</span></span></button>`;
       return ADV._shell(`
         <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px"><span style="display:inline-flex;color:#E8458C">${SBI('advGames', 26)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:21px;margin:0">Advanced Games</h2></div>
-        <p style="color:var(--muted);font-size:13px;margin:0 0 16px">Drills built for elite spellers — pattern memory and raw dictation speed.</p>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 16px">A drill built for elite spellers — raw dictation speed.</p>
         <div style="display:grid;gap:11px">
-          ${card('advMemStart', 'memoryMatch', 'Memory Match', 'Pair hard words with their meanings — trains recall.', 'best ' + (st.memBest || 0))}
           ${card('advDictStart', 'rapidDictation', 'Rapid Dictation', '90 seconds — hear &amp; type as many as you can.', 'best ' + (st.dictBest || 0))}
         </div>`, 'advBack'); },
-
-    _memView() { const g = state.adv; if (!g || g.mode !== 'mem') { set({ advView: 'games' }); return ''; }
-      if (g.done) return ADV._shell(`<div style="max-width:460px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--glow);animation:sb-pop .35s ease both"><div style="font-size:48px">🃏</div><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:8px 0 2px">All matched!</h2><p style="color:var(--muted);font-size:14px">Solved in ${g.moves} moves.</p><div style="display:flex;gap:10px;justify-content:center;margin-top:18px"><button data-act="advGo" data-arg="games" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back</button><button data-act="advMemStart" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800">Again →</button></div></div>`, 'advExit');
-      const cells = g.cards.map((c, i) => { const shown = g.open.includes(i) || g.matched.includes(i); const done = g.matched.includes(i);
-        return `<button data-act="advMemFlip" data-arg="${i}" ${done ? 'disabled' : ''} style="aspect-ratio:1;border-radius:13px;display:grid;place-items:center;padding:8px;text-align:center;font-weight:700;font-size:${c.t === 'w' ? '13px' : '10.5px'};line-height:1.25;background:${shown ? (done ? 'color-mix(in srgb,#1f9d57 18%,var(--bg2))' : 'var(--paper,var(--bg2))') : 'linear-gradient(135deg,#E8458C,#B14FC4)'};border:1px solid ${done ? '#1f9d57' : 'var(--line)'};color:${shown ? 'var(--text)' : '#fff'};overflow:hidden">${shown ? esc4(c.label) : '🐝'}</button>`; }).join('');
-      return ADV._shell(`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-family:var(--display);font-weight:800;font-size:17px">Memory Match</span><span style="font-size:12px;color:var(--muted);font-weight:700">match word ↔ meaning</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${g.moves} moves</span></div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">${cells}</div>`, 'advExit'); },
 
     _dictView() { const g = state.adv; if (!g || g.mode !== 'dict') { set({ advView: 'games' }); return ''; }
       if (g.done) return ADV._shell(`<div style="max-width:460px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--glow);animation:sb-pop .35s ease both"><div style="font-size:48px">⌨️</div><h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:8px 0 2px">Time!</h2><div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent)">${g.right}</div><p style="color:var(--muted);font-size:13px">words in 90 seconds</p><div style="display:flex;gap:10px;justify-content:center;margin-top:18px"><button data-act="advGo" data-arg="games" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Back</button><button data-act="advDictStart" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800">Again →</button></div></div>`, 'advExit');

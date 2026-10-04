@@ -843,6 +843,73 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
   converging on one hard-to-guess answer). Never clue with the answer's most famous
   fact — that belongs in `f`.
 
+## The games rebuild (4 Oct 2026, games spec "bee-games-spec") — READ BEFORE TOUCHING ANY GAME
+Owner decisions: one in, one out (the card count never goes up — `GAMES-LEDGER.md`, T16); hubs are
+**Spelling Gym · Word Lore · Hive Mind** (`SB_HUB_NAMES`; never type a hub name); Hive Mind pays like
+Word Lore; "Ready for Hard?" after two rounds ≥80% (`SB_LEVEL.OFFER_UP`); Grand Prix power-ups are a
+DETERMINISTIC position table (nothing random); the Cup's fourth track is **Spice Bazaar**; definitions
+are NOT filtered on format in games. The Play tab is `SB_PLAY_CARDS` in three doors — Compete: Mock
+Spelling Bee · Train: Spelling Gym, Word Lore, Hive Mind, Daily Bee · Play: Bee Grand Prix, Type Blaster,
+Honeycomb Run, Word Forge (hidden until its table is signed off: `SB_FORGE.signedOff || devUnlock`).
+Sound Paths waits for regenerated IPA + an owner-reviewed alignment table; its slot stays EMPTY.
+Gone: Bizzillionaire (→ Word Lore's Ladder), Daily Buzz (→ Daily Bee), Beat the Buzzer / Magic Squares /
+Word Quiz spelling rounds (→ Spelling Gym), Bee Trivia (→ Word Lore + Hive Mind), Spell Scene (→ Type
+Blaster), Word Snake, Unscramble Stars, Memory Match, the Spelling Duel (→ Family Bee night), Advanced
+Mock Rounds (→ Mock Bee · Champ; `advGo('mock')` opens it).
+- **One word door**: every game draws through `nextWords(child, n, {purpose, tier, origin, key, …})`
+  (gate · drill · contest · review · daily · lore · forge · paths) and `kidSafe(w, child)` (`kid-safe.js`,
+  the data list; themes Drugs & Pharmacy / War & Weaponry / Diseases & Symptoms are 11-15 only).
+  `tests/word-door.cjs` (`tests/lib/js-scan.cjs`) fails on any other corpus read.
+- **Levels**: `SB_LEVEL` (get/set/after/chip/resolve/upButton) in the household, store step v9→v10;
+  50%+ keeps, under 50% drops one (floor Easy) with a kind line; call `SB_LEVEL.after(key, pct)` ONCE
+  per round. Bests: `SB_BESTS` (step v10→v11) under the ledger keys (`gym/<mode>`, `lore/<mode>`, `hive/<mode>`).
+- **Coins** (§6): `payG` per right answer; `contest` only behind a pass mark/podium (`tests/pay-path.cjs`);
+  `stop` for Spelling Gym squares only; `mastery` only from the later-day record. No `Math.random()` in
+  any reward/grade/power-up/encounter path (`tests/no-random-rewards.cjs`) — Mock Bee rivals use a
+  seeded per-bee `rnd()`, the Atlas moth comes every 3rd return, the duel rival is a Mock Bee speller.
+  Finish-card coins must equal the ledger change (`tests/lib/coins.cjs`). Bots: `tests/games-bots.mjs`
+  + a driver per game in `tests/bots/<key>.mjs` (a driver file replaces the built-in one).
+- **The engine kit** (saga2.js, lazy `arcade` group): `sgLoop` (fixed 1/120 step), `SGUI.clock`
+  (timed text modes — textContent in place, never `render` each second), `SGUI.miss`/`missQ` (the one
+  miss card; holds every clock; Enter/tap continues), `SGUI.keys` (touch keyboard; A–Z four rows below
+  480px so keys stay ≥40px), `SGUI.stage` (`.sb-stage`, NEVER `.sg-stage` — Spotlight Simon's class),
+  `SB_HUB` + `app.hubMode` + `SB_HUB_OPEN`, `SB_PLATE(name)` → `app-art/stage/<name>-day|night.webp`
+  (painted by `tools/art/gen.py`; no lettering, no people; every stage wears the paper grain so no region
+  is a flat fill). T14/T15 helper: `tests/lib/stage-check.cjs`. Hubs wrap their render in
+  `SB_LAZY.need('arcade', …)`. An overlay gets an address with `data-route` + `SB_SHELL.sync()`.
+- **Mock Bee** (`mockbee.js`): eight-minute cap (rivals/rounds by band), Finish now / Watch the rest,
+  the Pronouncer's Chair in every turn (fixed order, masked answers, 3 s each, empty buttons hidden),
+  Champ, Family Bee night (names never stored; only the profile child paid). `MOCKBEE.rivals()` is the cast.
+  `tests/mockbee-sim.cjs` (fake clock), `mockbee-stage.cjs`. **It is LAZY now** (boot-lazy `mockbee` group,
+  after `saga2`; no script tag): the merged games put first load over its ratchet, and the bee is not on the
+  first screen. Every door goes through `app.mbOpen(mode)` / `app.openQuest`, which `lazyNeed('mockbee')` first;
+  the Play card and Home read `MOCKBEE.stats()` when it is loaded and `SB_STORE.getJSON('mockbee')` until then.
+  A test that calls into `MOCKBEE` waits on `SB_LAZY.need('mockbee')` first.
+- **Grand Prix**: deterministic per seed — `window._race.bot({…})` + `fast(secs)` runs a race in ~0.3 s;
+  GP1/GP2/GP12 calibrate with it; re-run `tests/gp-race.cjs` after touching `CFG.rival`, `GP_CAST`, `pull`
+  or lap lengths (laps are §2.6 × 1.2 so a Medium race is 3–4 min). Headless always drops draw distance to
+  70 (`_race.pinDraw(100)` in scale tests). The Cup is `GP_CUP` (Meadow · Sunset · City · Bazaar).
+  Ghost lap: device key `gpGhost`. A finish-card coin number carries `data-gp-coins`.
+- **Spelling Gym** (`gym.js`, lazy `gym`; `#/gym[/<mode>]`) — the Word Gym TAB is `#/practice` only.
+  Word Doctor discharges only on a later day (`c.gym.doc`). `spelling-gym.cjs`, `gym-clock.cjs`, `gym-source.cjs`.
+- **Word Lore / Hive Mind** (`lore.js`, lazy `quizhubs`, `SB_QHUB`): distractors share the part of speech
+  (and theme); Origins fixes its language set per round so chance is 25%; pay only from 6/10. `lore-hubs.cjs`.
+- **Daily Bee** (`games-daily.js`, lazy `daily`, `#/daily`, `c.dbee`): the same word per date and age band;
+  shapes as well as colour; always ends on the word; pays 1 when solved. `daily-bee.cjs`.
+- **Type Blaster** commits the whole word and repaints a grey world (`blaster-grey`/`-color`); **Honeycomb
+  Run** is four word gates to the hive; game timers read frame real time capped at 0.25 s.
+- **Word Forge** (`forge.js`/`forge-core.js`/`forge-data.js`): the table is GENERATED
+  (`tools/forge/build-table.cjs`, cited per row — never hand-edit it); `forge-review/` is the owner's
+  sign-off sheet and is NEVER deployed (it quotes etymonline). Pay rules live only in forge-core.
+  **A stage drawn inside a game's own host must call `SGUI.stageFit()` after it draws** — the kit refits
+  only when `#root`'s children change, so Forge's stage ran under the phone tab bar until something else
+  re-rendered (gym.js and games-daily.js already did this). Forge's panel token `--fg-panel` lives on
+  `.fg-on-sgui` as well as the fallback `.fg-stage`; without it every card and button under the kit stage
+  was transparent. Phone HUD: equal-width stats, the level chip steps aside in play, the definition is a
+  line in the play area. Its plate and panels wear a coarser grain than the kit's (light grain on dusk panels).
+- **The deploy's data gate** now includes the games' node checks (word-door, pay-path, no-random-rewards,
+  sfx-kinds, games-ledger, bests-migration, gp-rules, mockbee-sim, gym-source, forge-data).
+
 ## Audit v4 (4 Oct 2026) — what changed, and the rules that came with it
 Owner decisions this round: struck/slur words deleted and medical/faith glosses rewritten kindly;
 a fast DATA gate on deploys; paid continents are ONE quiet line; the Practice tab is the **Word
@@ -911,7 +978,14 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   `--node-only` is the deploy's data gate. console-clean has a 900s budget. A Mock Bee timer
   belongs to the bee that set it. **Open**: under load a reload straight after boot can lose the
   page's fresh localStorage (the seed marker too) — store-seam / medals / hive-activity /
-  family-topbar each failed once that way and pass alone; unexplained.
+  family-topbar each failed once that way and pass alone; unexplained. **daily-bee's "a solved day
+  pays one coin and coming back pays nothing" (4 Oct) is the same thing, and it is not load:** on a
+  failing run the test's own init script finds `t_seed` gone and re-seeds at ~24ms, the wallet key
+  is null, and a Storage hook saw no `clear`/`removeItem` from the app — the browser came back with
+  EMPTY storage. It failed ~half the time in the main checkout and never in a fresh worktree of the
+  same commit; any extra round-trip before `pg.reload()` (an evaluate, a console listener) made it
+  pass 6/6. A Chromium file:// reload artefact, not a coin bug. Do not "fix" it by waiting in the test
+  without first finding the mechanism.
 
 ## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
 

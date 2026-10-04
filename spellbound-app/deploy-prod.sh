@@ -36,7 +36,8 @@ die(){ printf '\n\033[31mABORT: %s\033[0m\n' "$*" >&2; exit 1; }
 # ---------- 0. the build must be syntactically sound ----------
 say "0. Syntax check"
 for f in app3.js saga2.js voice-review.js voice-words.js voice-cdn.js \
-         supabase-sync.js supabase-auth.js boot-lazy.js; do
+         supabase-sync.js supabase-auth.js boot-lazy.js family-shell.js store.js \
+         mockbee.js gym.js lore.js games-daily.js forge.js forge-core.js forge-data.js kid-safe.js trail.js; do
   [ -f "$SRC/$f" ] || continue
   node -c "$SRC/$f" >/dev/null || die "$f does not parse"
   echo "   ok  $f"
@@ -95,7 +96,7 @@ say "3. Copy build"
 tar -C "$SRC" \
     --exclude=./.git --exclude=./CNAME \
     --exclude=./voice/w --exclude=./voice/pipeline \
-    --exclude=./books --exclude=./backend.html \
+    --exclude=./books --exclude=./backend.html --exclude=./forge-review \
     --exclude='./*.sh' --exclude='./*.py' --exclude='./*.log' \
     --exclude=./tests --exclude=./qa --exclude=./pipeline \
     --exclude=./node_modules --exclude=./design-pack \

@@ -45,7 +45,10 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
     // ---- quick practice row: three tiles, honest labels ----
     state.nav = 'coach'; state.coachMode = null; state.luTab = 'revise'; render(); await W(200);
-    const tiles = ['startBuzz', 'startOral', 'coachSetupOpen'].map(a => document.querySelector(`[data-act="${a}"]`));
+    /* 4 Oct 2026 (games spec §4.2): the first tile is "Warm-up" and opens the Spelling Gym's Warm-up
+       (#/gym/warmup); it was "Daily Buzz", the old 10-word warm-up */
+    const tiles = ['openGym"][data-arg="warmup', 'startOral', 'coachSetupOpen'].map(a => document.querySelector(`[data-act="${a}"]`));
+    out.warmLabel = !!(tiles[0] && /Warm-up/.test(tiles[0].textContent || '') && !/Daily Buzz/.test(tiles[0].textContent || ''));
     out.rowThree = tiles.every(Boolean) && !document.querySelector('[data-act="startWritten"]');
     out.pickLabel = [...document.querySelectorAll('[data-act="coachSetupOpen"]')].some(el => /Pick your words/.test(el.textContent || ''));
 
@@ -81,6 +84,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   });
   ok(r.cardReset, 'a new session resets Card view to card 1 (display always matches the voice)');
   ok(r.rowThree, 'quick practice is three tiles — Written folded away');
+  ok(r.warmLabel, 'the first quick-practice tile is Warm-up and opens the Spelling Gym (no "Daily Buzz" left there)');
   ok(r.pickLabel, 'the old "Setup" tile now says "Pick your words"');
   ok(r.quizUp, 'the Atlas quiz opens');
   ok(r.spellSaid, 'a spell item SAYS its word without a tap');

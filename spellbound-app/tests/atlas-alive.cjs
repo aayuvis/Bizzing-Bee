@@ -21,7 +21,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     const R = Math.random;
 
     // 1 — ambience on a normal board AND on an Ultra landmark
-    Math.random = () => 0.9;                       // no ambush while we look around
+    Math.random = () => 0.9;                       // (steadies the chest rolls; the moth is counted now, and these are first visits)
     app.trailAct('honey|meadow'); await new Promise(res => setTimeout(res, 250));
     out.ambMeadow = !!document.querySelector('.atlas-amb.amb-bees');
     app.ultraAct(0); await new Promise(res => setTimeout(res, 250));
@@ -63,13 +63,16 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     }
     state.treG = null;
 
-    // 4 — the ambush: once per region per day, resolved only by spelling — and it never
-    //     stands in the doorway: not on a first visit, and the board always shows first
-    Math.random = () => 0.05;
-    app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 2000));
+    // 4 — the ambush. REWRITTEN 4 Oct 2026 (games spec §4.7): it comes on every THIRD return to
+    //     a region, counted, never on a 22% roll — so Math.random is left alone here and the
+    //     visits are counted instead. It still never stands in the doorway: not on a first visit,
+    //     and the board always shows first. (tests/atlas-encounters.cjs holds the count itself.)
+    const visit = async (id, ms) => { app.trailToMap(); await new Promise(res => setTimeout(res, 60)); app.trailAct('honey|' + id); await new Promise(res => setTimeout(res, ms)); };
+    await visit('library', 1900);
     out.firstQuiet = !state.villain && state.trailView === 'act';
-    app.trailToMap(); await new Promise(res => setTimeout(res, 100));
-    app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 300));
+    await visit('library', 1900); await visit('library', 1900);          // returns 1 and 2: nothing
+    out.twoQuiet = !state.villain;
+    await visit('library', 300);                                          // return 3
     out.mapFirst = !state.villain && state.trailView === 'act' && !!document.querySelector('.atlas-stop');
     await new Promise(res => setTimeout(res, 1700));
     out.ambushUp = !!state.villain && /moth of the Unspelling/.test(document.body.innerHTML);
@@ -81,18 +84,17 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     const coins1 = c.coins;
     app.villType(word); app.villGo(); await new Promise(res => setTimeout(res, 150));
     out.freed = !state.villain && c.coins === coins1 + 1;   // a right answer is one coin
-    app.trailToMap(); await new Promise(res => setTimeout(res, 150));
-    app.trailAct('honey|library'); await new Promise(res => setTimeout(res, 1900));
+    await visit('library', 1900);                                         // return 4: nothing
     out.onceADay = !state.villain;
     // Escape lets go of it, like every other layer
-    app.trailToMap(); app.trailAct('honey|forum'); await new Promise(res => setTimeout(res, 100));
-    app.trailToMap(); app.trailAct('honey|forum'); await new Promise(res => setTimeout(res, 1900));
+    for (let k = 0; k < 3; k++) await visit('forum', 80);                // first visit + returns 1, 2
+    await visit('forum', 1900);                                           // return 3
     const up2 = !!state.villain;
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await new Promise(res => setTimeout(res, 150));
     out.escCloses = up2 && !state.villain && !document.querySelector('[data-trap="villain"]') && state.trailView === 'act';
     // walking away before it lands means it never lands
-    app.trailToMap(); app.trailAct('honey|storm'); await new Promise(res => setTimeout(res, 100));
-    app.trailToMap(); app.trailAct('honey|storm'); await new Promise(res => setTimeout(res, 200));
+    for (let k = 0; k < 3; k++) await visit('storm', 80);
+    await visit('storm', 200);                                            // return 3 — and off at once
     app.trailToMap(); await new Promise(res => setTimeout(res, 1900));
     out.leftInTime = !state.villain;
     Math.random = R;
@@ -108,12 +110,13 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.giftTriv, 'a chest can hold one real 4-option trivia question');
   ok(r.trivPays !== false, 'answering it right pays one coin (a right answer) and shows the fact (' + r.trivPays + ')');
   ok(r.firstQuiet, 'a first visit to a region never springs the moth — the child meets the country');
+  ok(r.twoQuiet, 'nor do the first two returns — it comes on the third');
   ok(r.mapFirst, 'on a later visit the board renders first: the moth is never in the doorway');
   ok(r.ambushUp, 'the moth ambush appears and names the deed: spell to free your buddy');
   ok(r.closeBtn, 'the ambush has a visible Close button on screen');
   ok(r.wrongHolds, 'a wrong spelling keeps the net closed (no punishment, try again)');
   ok(r.freed, 'the RIGHT spelling frees the buddy and pays one coin (a right answer)');
-  ok(r.onceADay, 'a region ambushes at most once a day');
+  ok(r.onceADay, 'the return after an ambush is quiet again (every third, not every visit)');
   ok(r.escCloses, 'Escape lets go of the moth and leaves the child on the board');
   ok(r.leftInTime, 'a child who walks off the board before the moth arrives is not chased by it');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));

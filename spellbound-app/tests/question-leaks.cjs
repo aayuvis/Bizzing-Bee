@@ -98,6 +98,7 @@ const EVEN = (h, label) => { const n = h.reduce((a, b) => a + b, 0); const sh = 
     state.vocCheck = null; o.n.vocab = vw.length * 14;
 
     /* ---- 4. the Mock Bee: at the microphone with every question asked, and its meaning round ---- */
+    await new Promise(res => SB_LAZY.need('mockbee', res));   // mockbee.js is lazy since 4 Oct 2026
     app.mbOpen(); app.mbStart(); await W(50);
     for (const w of SAMPLE) { const g = state.mb; g.word = w; g.phase = 'me'; g.typed = ''; g.asked = { def: 1, org: 1, sent: 1, ps: 1 }; g.c2 = null; render();
       if (has(vis(), w.w)) L('mockbee-mic', w.w); }

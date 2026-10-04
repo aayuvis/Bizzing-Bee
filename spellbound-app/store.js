@@ -26,6 +26,7 @@
     splash: 'sb_splash', music: 'sb_w4_music', sound: 'sb_sound', volume: 'sb_volume', mute: 'sb_mute', greet: 'sb_greet', focus: 'sb_w4_focus', voice: 'sb_voice',
     devunlock: 'sb_devunlock', vflags: 'sb_vflags', bugs: 'sb_bugs', evofeedback: 'sb_evofeedback',
     daily: 'sb_daily', arcBest: 'sb_arc_best', bizzSeen: 'sb_bizz_seen', mockbee: 'sb_mockbee',
+    gpGhost: 'sb_gp_ghost',   /* the Grand Prix: your best lap per track + driving difficulty, replayed as a ghost (games spec §2.7) */
     homeArt: 'sb_home_art',   /* the pictures Home's first screen showed last time: index.html's parse-time peek preloads them (audit v4 B6) */
     tmLog: 'sb_tm_log', tmArm: 'sb_tm_on', accounts: 'sb_accounts_v1', session: 'sb_session_v1',
     cloudSession: 'sb_session_v2', syncMeta: 'sb_sync_v1',
@@ -116,6 +117,47 @@
     function v8_to_v9(b) {
       if (b.pin != null && b.pin !== '' && !isPinRec(b.pin)) b.pin = pinMake(String(b.pin));
       else if (b.pin === '') b.pin = null;
+      return b;
+    },
+    /* v9 → v10: a level is the CHILD's, per game and per hub mode (games spec §1.7): c.levels[key] =
+       {level, history:[pct…]}, kept by app3's SB_LEVEL. Seeded from the old per-game choice
+       (c.gameDiffBy) so nobody's chosen level resets; the games that left the Play tab hand theirs to
+       the hub modes that took their place (Beat the Buzzer → Spelling Gym's Sprint and Warm-up, Magic
+       Squares → Squares, Word Quiz → Word Lore's Meanings). gameDiffBy stays — the engines read it. */
+    function v9_to_v10(b) {
+      var MAP = { beat: ['gym/sprint', 'gym/warmup'], magic: ['gym/squares'], wordquiz: ['lore/meanings'] };
+      var OK = { auto: 1, easy: 1, medium: 1, hard: 1, champ: 1 };
+      (b.children || []).forEach(function (ch) { if (!ch) return;
+        if (!ch.levels || typeof ch.levels !== 'object' || Array.isArray(ch.levels)) ch.levels = {};
+        var by = (ch.gameDiffBy && typeof ch.gameDiffBy === 'object') ? ch.gameDiffBy : {};
+        Object.keys(by).forEach(function (k) { var lv = by[k]; if (!OK[lv] || lv === 'auto') return;
+          (MAP[k] || [k]).forEach(function (key) { if (!ch.levels[key]) ch.levels[key] = { level: lv, history: [] }; }); }); });
+      return b;
+    },
+    /* v10 → v11: a child's bests follow their games into the hubs (games spec §3.1, T12). The cards
+       that left (Beat the Buzzer, Magic Squares, Word Quiz, Bee Trivia) kept no best of their own —
+       the record is the child's activity log (c.activity: kind, done, right) and Bee Trivia's
+       c.trivia.clockBest — so each new home starts at the best the child already set there, not at 0:
+       Beat the Buzzer → gym/sprint · its Warm-Up → gym/warmup · Magic Squares → gym/squares · Spot the
+       Spelling → gym/spot · Meanings and Vocabulary → lore/meanings · Origins → lore/origins · Idioms and
+       Similes → lore/idioms · Bee Trivia, its Squares and its Beat the Clock → both lore/ and hive/
+       (one card split in two, so both halves inherit it). c.bests[key] = {right, of, at, from}; a
+       timed best has of:null. An existing better best is never overwritten. app3's SB_BESTS reads it. */
+    function v10_to_v11(b) {
+      var KIND = { beat: [['gym/sprint', 0]], buzz: [['gym/warmup', 1]], magic: [['gym/squares', 1]], spell: [['gym/spot', 1]],
+        meaning: [['lore/meanings', 1]], vocab: [['lore/meanings', 1]], origin: [['lore/origins', 1]], idiom: [['lore/idioms', 1]], simile: [['lore/idioms', 1]] };
+      var TRIV = { 'Bee Trivia': [['lore/roots', 1], ['hive/classic', 1]], 'Trivia Squares': [['lore/squares', 1], ['hive/squares', 1]],
+        'Trivia \u2014 Beat the Clock': [['lore/clock', 0], ['hive/clock', 0]] };
+      function ratio(x) { return x.of ? x.right / x.of : x.right; }
+      function put(ch, key, right, of, at, from) { right = +right || 0; if (right <= 0) return;
+        var n = { right: right, of: of ? +of : null, at: at || 0, from: from }, o = ch.bests[key];
+        if (!o || ratio(n) > ratio(o) || (ratio(n) === ratio(o) && (n.of || 0) > (o.of || 0))) ch.bests[key] = n; }
+      (b.children || []).forEach(function (ch) { if (!ch) return;
+        if (!ch.bests || typeof ch.bests !== 'object' || Array.isArray(ch.bests)) ch.bests = {};
+        (Array.isArray(ch.activity) ? ch.activity : []).forEach(function (e) { if (!e || !e.kind) return;
+          var to = e.kind === 'trivia' ? TRIV[e.label] : KIND[e.kind]; if (!to) return;
+          to.forEach(function (t) { put(ch, t[0], e.right, t[1] ? (e.done || null) : null, e.ts, e.kind === 'trivia' ? e.label : e.kind); }); });
+        var cb = ch.trivia && +ch.trivia.clockBest; if (cb) { put(ch, 'lore/clock', cb, null, 0, 'trivia.clockBest'); put(ch, 'hive/clock', cb, null, 0, 'trivia.clockBest'); } });
       return b;
     }
   ];

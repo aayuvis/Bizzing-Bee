@@ -5,7 +5,7 @@
    with a Chromium path typed into it, and "the tests pass" meant "the ones somebody
    remembered to run passed". This runs ALL of them, one at a time, and says which failed.
 
-   DISCOVERY IS A GLOB, NOT A LIST. Every tests/*.cjs and tests/*.js is a test unless it is
+   DISCOVERY IS A GLOB, NOT A LIST. Every tests/*.cjs, tests/*.js and tests/*.mjs is a test unless it is
    in SKIP below with a reason. A new test is picked up the moment it lands; nobody has to
    remember to register it. Helpers live in tests/lib/ (this folder), which is not globbed.
 
@@ -84,6 +84,7 @@ const TIMEOUT = {
   'feed-screen.cjs': 900,      // every card route (thousands of word cards) and 24 world × look contrast passes
   'result-screen.cjs': 1200,   // 70s per engine, eleven engines
   'console-clean.cjs': 900,    // three full walks (44 routes, 20 actions each); 262s in a full run, over 300 under load
+  'games-bots.mjs': 1800,      // every game and hub mode x three bots (games spec §8); ran past 300s on 4 Oct 2026
 };
 
 /* The deploy gate. Fast, and each one guards a promise made to a parent. */
@@ -124,7 +125,7 @@ function resolvePlaywright() {
 }
 
 function discover(dir) {
-  return fs.readdirSync(dir).filter(f => /\.(cjs|js)$/.test(f) && fs.statSync(path.join(dir, f)).isFile()).sort();
+  return fs.readdirSync(dir).filter(f => /\.(cjs|js|mjs)$/.test(f) && fs.statSync(path.join(dir, f)).isFile()).sort();
 }
 const isBrowser = src => /require\(\s*['"]playwright['"]\s*\)/.test(src);
 const optsIn = src => /^\s*(\/\/|\/?\*).*@check\b/m.test(src);

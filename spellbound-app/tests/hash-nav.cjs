@@ -14,9 +14,12 @@
      · ?from=hive shows "← back to my day", pointing at the Hive, and hides inside a drill;
      · (FIX2) a typed address is never swallowed by a PIN dialog or any other layer, and
        #/journeys opens Word Journeys rather than a PIN over the screen beneath;
-     · (audit v4 N2) Daily Buzz is a screen in the shell, #/daily: the top bar and tab bar around
-       its board, Play marked, Back to #/play with nothing left standing, and its keys never
-       steal what is typed into the search box.
+     · (audit v4 N2) the daily game is a screen in the shell, #/daily: the top bar and tab bar
+       around its board, Play marked, Back to #/play with nothing left standing, and its keys
+       never steal what is typed into the search box.
+       REWRITTEN 4 Oct 2026 (games spec §5.2): Daily Bee replaced Daily Buzz on #/daily. Its board
+       is 6 × the length of the day's word (not 6 × 5), the file and the corpus are lazy (so the
+       checks wait on the board, not on 700ms), and the same five promises are held for it.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/hash-nav.cjs                         */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -180,32 +183,37 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
     }
     await ctx.close();
   }
-  /* DAILY BUZZ IS A SCREEN IN THE SHELL (audit v4 N2). It opened as a full-screen overlay with only
-     "← Games" on it — no top bar, no tabs, no address — and Back left it standing over the next screen. */
+  /* THE DAILY GAME IS A SCREEN IN THE SHELL (audit v4 N2). Daily Buzz opened as a full-screen overlay
+     with only "← Games" on it — no top bar, no tabs, no address — and Back left it standing over the
+     next screen. Daily Bee replaced it on the same route (4 Oct 2026, games spec §5.2) and keeps every
+     one of these promises; its board is 6 rows × the day's word, and it loads lazily. */
   ({ ctx, pg } = await open(b, URL + '#/play', errs, { width: 390, height: 844 }));
   const daily = () => pg.evaluate(() => { const tab = document.querySelector('nav.sb-tabbar [data-arg="games"]');
     return { h: location.hash, nav: state.nav, bar: !!document.querySelector('#root .sb-fam-bar'), tabbar: !!document.querySelector('#root nav.sb-tabbar'),
-      play: !!tab && tab.getAttribute('aria-current') === 'page', inRoot: document.querySelectorAll('#root #db-host .db-cell').length,
+      play: !!tab && tab.getAttribute('aria-current') === 'page', inRoot: document.querySelectorAll('#root #db-host .db-grid:not(.db-mini) .db-cell').length,
+      want: window.SB_DBEE ? 6 * SB_DBEE.len() : -1,
       loose: [...document.body.children].filter(e => /(^|\s)db-/.test(e.className || '')).length,
-      row0: [...document.querySelectorAll('#db-host .db-row[data-r="0"] .db-cell')].map(c => c.textContent).join('') }; });
-  await pg.evaluate(() => document.querySelector('[data-act="openDaily"]').click()); await pg.waitForTimeout(700);
+      row0: [...document.querySelectorAll('#db-host .db-grid:not(.db-mini) .db-row[data-r="0"] .db-cell')].map(c => c.textContent).join('') }; });
+  const board = () => pg.waitForFunction(() => !!document.querySelector('#root #db-host .db-grid') && window.SB_DBEE && SB_DBEE.len() > 0, null, { timeout: 60000 }).catch(() => null);
+  /* its door on the Play tab: the lineup's card (games spec §3) or, before that lands, the banner */
+  await pg.evaluate(() => document.querySelector('[data-act="playCard"][data-arg="dailyBee"], [data-act="openDailyBee"], [data-act="openDaily"]').click()); await board();
   let D = await daily();
-  ok(D.h === '#/daily' && D.nav === 'daily' && D.bar && D.tabbar && D.play && D.inRoot === 30 && !D.loose,
-    'Daily Buzz opens as a screen in the shell — #/daily, the top bar and the tab bar around its board, Play marked, nothing drawn over the app (' + JSON.stringify(D) + ')');
+  ok(D.h === '#/daily' && D.nav === 'daily' && D.bar && D.tabbar && D.play && D.want >= 24 && D.inRoot === D.want && !D.loose,
+    'Daily Bee opens as a screen in the shell — #/daily, the top bar and the tab bar around its board, Play marked, nothing drawn over the app (' + JSON.stringify(D) + ')');
   for (const k of 'cat') await pg.keyboard.press(k);
-  await pg.evaluate(() => render()); await pg.waitForTimeout(150);
+  await pg.evaluate(() => render()); await pg.waitForFunction(() => !!document.querySelector('#db-host .db-grid'), null, { timeout: 5000 }).catch(() => null);
   D = await daily();
   ok(D.row0 === 'cat', 'letters typed on a keyboard land on the board and survive a re-render of the screen (' + D.row0 + ')');
-  await pg.focus('.sb-hsearch input'); await pg.keyboard.type('dog'); await pg.waitForTimeout(150);
+  await pg.focus('.sb-hsearch input'); await pg.keyboard.type('dog');
   const sv = await pg.evaluate(() => document.querySelector('.sb-hsearch input').value);
   D = await daily();
   ok(D.row0 === 'cat' && sv === 'dog', 'typing into the search box types into the search box, not the board (' + D.row0 + ' / ' + sv + ')');
   await pg.evaluate(() => { const i = document.querySelector('.sb-hsearch input'); i.value = ''; i.blur(); });
   await back(); D = await daily();
-  ok(D.h === '#/play' && D.nav === 'games' && !D.inRoot && !D.loose, 'Back goes to #/play and leaves nothing of Daily Buzz on screen (' + D.h + ')');
-  await pg.evaluate(() => { location.hash = '#/daily'; }); await pg.waitForTimeout(900);
+  ok(D.h === '#/play' && D.nav === 'games' && !D.inRoot && !D.loose, 'Back goes to #/play and leaves nothing of Daily Bee on screen (' + D.h + ')');
+  await pg.evaluate(() => { location.hash = '#/daily'; }); await board();
   D = await daily();
-  ok(D.nav === 'daily' && D.inRoot === 30 && D.bar && D.row0 === 'cat', 'the address #/daily opens it directly, today\'s letters still there (' + D.nav + ')');
+  ok(D.nav === 'daily' && D.inRoot === D.want && D.bar && D.row0 === 'cat', 'the address #/daily opens it directly, today\'s letters still there (' + D.nav + ')');
   await ctx.close();
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

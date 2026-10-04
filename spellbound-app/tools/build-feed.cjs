@@ -156,7 +156,8 @@ C.ACTS.forEach((a, ai) => {
 });
 
 /* ------------------------------------------------------------- level-agnostic */
-C.GAMES.forEach((g) => add({ id: 'gm-' + g.type, kind: 'game', topics: ['game:' + g.type], src: 'game:GAMES:' + g.type, route: '#/play', cta: 'Play', title: g.name, body: g.blurb }));
+/* the arcade games on the Play tab only: GAMES (Beat the Buzzer, Word Quiz) left the tab on 4 Oct 2026
+   (games spec §3.1) and live on inside the hubs, so a card saying "Play Beat the Buzzer" would open nothing */
 C.ARCADE.forEach((g) => add({ id: 'ga-' + g.k, kind: 'game', topics: ['game:' + g.k], src: 'game:SB_ARCADE_GAMES:' + g.k, route: '#/play', cta: 'Play', title: g.n, body: g.blurb }));
 
 /* story — the packs a child can still collect; an archived pack's story is not shown */

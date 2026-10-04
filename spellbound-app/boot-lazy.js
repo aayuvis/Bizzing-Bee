@@ -104,7 +104,25 @@
        never on the idle queue, never on the first screen. */
     feedEngine: 'bizzing-feed.js',
     feedMeta: 'feed/feed-meta.js',     // names the per-level index and body groups; bee-feed.js registers and loads those
-    feedView: 'bee-feed.js'
+    feedView: 'bee-feed.js',
+    /* Word Forge (games spec §5.1): the shared rules, the CITED morpheme table and the game. The table
+       also rides the idle queue (last) so the Play lineup can read SB_FORGE.signedOff without the game. */
+    forgeCore: 'forge-core.js',
+    forgeData: 'forge-data.js',
+    forgeUI: 'forge.js',
+    /* Word Lore + Hive Mind, the two trivia hubs (games spec §4.3/§4.4): fetched at the door of a
+       hub only (app.openLore / app.openHive below), never on the first screen or the idle queue. */
+    loreHub: 'lore.js',
+    /* The Spelling Gym (games spec §4.2): the hub and its seven modes. It stands on the arcade's
+       kit (SGUI in saga2.js), so saga2 comes first; fetched at the door (app.openGym) only. */
+    gym: 'gym.js',
+    /* Daily Bee (games spec §5.2): the game itself, fetched at its door with the engine kit it stands on
+       and the whole served corpus — the day's word is picked from it, so the same date and band give the
+       same word whatever else has loaded (the end card's sentence and origin come from sents and lore) */
+    dailyBee: 'games-daily.js',
+    /* The Mock Spelling Bee (games spec §4.1): fetched at its door (app.mbOpen) with the engine kit it stands
+       on — it left the first screen on 4 Oct 2026 (23 KB) to keep a returning speller under the first-load ceiling */
+    mockbee: 'mockbee.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -128,17 +146,23 @@
     arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
     reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes'],
-    feed: ['feedEngine', 'feedMeta', 'feedView']
+    feed: ['feedEngine', 'feedMeta', 'feedView'],
+    forge: ['saga2', 'forgeCore', 'forgeData', 'forgeUI'],
+    /* the hubs draw on the shared stage kit (SGUI.stage / SB_HUB, saga2.js), so it comes too */
+    quizhubs: ['loreHub', 'saga2'],
+    gym: ['saga2', 'gym', 'sents'],
+    mockbee: ['saga2', 'mockbee'],
+    daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'] };
 
   var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'sync'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'sync'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]
@@ -313,7 +337,7 @@
      about it. Deferred scripts have all run by DOMContentLoaded, so `app` (a top-level
      const in app3.js — a bare name, not window.app) exists by then. A tap that arrives
      before the code does simply runs when it lands. */
-  var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade' };
+  var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade', openLore: 'quizhubs', openHive: 'quizhubs' };
   /* KICKS start a screen's data the moment its door is opened but do NOT hold the screen:
      it draws at once from what is in hand and redraws as each file lands (every load
      re-renders). For screens that are useful before the whole library is in. */

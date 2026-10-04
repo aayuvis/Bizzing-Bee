@@ -97,11 +97,22 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
   ok(kl.steer === -1 && kl.x < -0.05 && kb.braking, `the keyboard still steers (← ${kl.x.toFixed(2)}) and brakes (↓ ${kb.braking})`);
   await pg.evaluate(() => { window._race.steerTo(0); window._race.setV(0.8); window._race.gateNow(); });
   await pg.waitForFunction(() => window._race.state().mode === 'spell', null, { timeout: 5000 }).catch(() => null); await pg.waitForTimeout(300);
+  /* 4 Oct 2026 (games spec §2.8, supersedes "the spelling card at the TOP"): upright, the phone
+     types on the on-screen keys (no native keyboard), so the card and the keys REPLACE the thumb
+     band at the bottom; the road stays in sight above them and nothing falls below the fold. */
   const card = await pg.evaluate(() => { const c = document.querySelector('.arc-play #sg-card .sg-cardbox'); if (!c) return null; const q = c.getBoundingClientRect();
-    return { t: q.top, b: q.bottom, mode: window._race.state().mode, input: !!c.querySelector('input') }; });
-  ok(card && card.mode === 'spell' && card.input && card.t < 60 && card.b < 844 * 0.5, `a ? box opens the spelling card at the TOP, clear of the keyboard (${card && Math.round(card.t)}–${card && Math.round(card.b)}px)`);
+    const cv = document.querySelector('.arc-play #sg-cv').getBoundingClientRect(), keys = [...c.querySelectorAll('.gp-k, [data-k], .sg-key')].map(k => k.getBoundingClientRect());
+    const steer = [...document.querySelectorAll('.arc-play .sg-sbtn')].filter(b => getComputedStyle(b).visibility !== 'hidden').length;
+    return { t: q.top, b: q.bottom, cvt: cv.top, cvb: cv.bottom, mode: window._race.state().mode, input: !!c.querySelector('input'), keys: keys.length, low: keys.filter(k => k.height < 40).length, steer }; });
+  ok(card && card.mode === 'spell' && card.input && card.b <= 844 && card.t > card.cvt + (card.cvb - card.cvt) * 0.4 && card.keys >= 26 && !card.low && !card.steer,
+    `a box opens the spelling card with its keys in the thumb band — ${card && Math.round(card.t)}–${card && Math.round(card.b)}px of 844, the road above it in sight, ${card && card.keys} keys ≥40px tall, the steering hidden (${card && card.steer} showing)`);
   await pg.evaluate(() => { const i = document.querySelector('#sg-ci'); if (!i) return; i.value = 'zz'; i.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); });
+  /* a miss now HOLDS on the word until Continue (GP8) — so the child presses it */
+  await pg.waitForTimeout(300);
+  const held2 = await pg.evaluate(() => window._race.state().mode);
+  await pg.evaluate(() => { const g = document.querySelector('#gp-miss-go') || [...document.querySelectorAll('#sg-card button')].find(b => /continue/i.test(b.textContent)); if (g) g.click(); });
   await pg.waitForTimeout(1600);
+  ok(held2 === 'spell', `a miss holds the race until Continue (${held2})`);
 
   /* 4 — TURNED MID-RACE, WITH A THUMB ON THE WHEEL: SAME RACE, SIDEWAYS, LET GO */
   await pg.evaluate(() => { window._race.clearBoxes(); window._race.toStraight(90); window._race.steerTo(0); window._race.setV(0.6); });   // on the road, so "it races on" measures the layout, not the grass
@@ -119,9 +130,12 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
   const steerOnRoad = await pg.evaluate(() => { const cv = document.querySelector('.arc-play #sg-cv').getBoundingClientRect();
     return [...document.querySelectorAll('.arc-play .sg-sbtn')].map(x => x.getBoundingClientRect()).filter(q => q.left < cv.right - 1 && q.right > cv.left + 1 && q.top < cv.bottom - 1 && q.bottom > cv.top + 1).length; });
   ok(!land.none && land.nCtl === 4 && steerOnRoad === 0 && !land.off.length, `sideways no steering control sits on the road — they live in the gutters (${steerOnRoad} overlap)`);
+  /* 4 Oct 2026: the race runs in real time now (sgLoop), so the thumb held through the turn has
+     steered the kart onto the grass by the time it is let go — back on the road, then measure */
+  const landPos = await pg.evaluate(() => { window._race.steerTo(0); window._race.setV(0.6); return window._race.state().pos; });
   await pg.waitForTimeout(1200);
   const moving = await pg.evaluate(() => window._race.state());
-  ok(moving.mode === 'race' && moving.pos > land.pos, `and it races on (${Math.round(land.pos)} → ${Math.round(moving.pos)})`);
+  ok(moving.mode === 'race' && moving.pos > landPos, `and it races on (${Math.round(landPos)} → ${Math.round(moving.pos)})`);
 
   /* 5 — UPRIGHT AGAIN: THE SAME RACE, UPRIGHT */
   await pg.evaluate(() => window._race.steerTo(0));

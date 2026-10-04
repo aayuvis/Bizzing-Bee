@@ -101,7 +101,9 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     const p2 = await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
     await p2.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await p2.waitForTimeout(2800);
     const m = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, mem: state.parentPin }));
-    ok(m.ran.join() === 'v8_to_v9' && SB_STORE_REC.test(m.disk) && m.disk === m.mem, `a pre-v9 household runs v8_to_v9 once and stores the record at once, not the digits (${m.ran.join()})`);
+    /* 4 Oct 2026 (games foundations): steps v9→v10 (levels) and v10→v11 (bests) now follow v8→v9, so
+       a pre-v9 household runs v8_to_v9 FIRST and once, then the later steps — no longer v8_to_v9 alone */
+    ok(m.ran[0] === 'v8_to_v9' && m.ran.filter(x => x === 'v8_to_v9').length === 1 && SB_STORE_REC.test(m.disk) && m.disk === m.mem, `a pre-v9 household runs v8_to_v9 once and stores the record at once, not the digits (${m.ran.join()})`);
     await p2.evaluate(() => { state.screen = 'app'; state.progTab = 'me'; app.setNav('home'); app.setNav('parent'); });
     for (const k of '1357') await p2.evaluate(k => app.pinKey(k), k);
     const opened = await p2.evaluate(() => state.nav === 'progress' && state.progTab === 'parent' && !state.pinDlg);

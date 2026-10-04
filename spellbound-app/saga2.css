@@ -213,6 +213,19 @@
 .sg-dmid{display:flex;gap:6px}
 .sg-dbtn{width:54px;height:54px;border-radius:14px;border:none;background:var(--honey,#F0B429);color:#2B2117;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #C8901B;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
 .sg-dbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #C8901B}
+/* Honeycomb Run on the arcade stage (spec §4.6): the maze fills the play area, the D-pad is
+   centred in the controls row with its bottom row on screen, and on a touch screen a spell
+   card swaps the pad for the on-screen keys */
+.hc-wrap{position:relative;width:100%;height:100%;display:grid;place-items:center}
+.hc-wrap canvas{display:block;border-radius:12px;box-shadow:0 10px 36px rgba(0,0,0,.4)}
+.hc-cardhost{position:absolute;inset:0;z-index:10;display:none;place-items:center;padding:10px;background:rgba(16,10,34,.5)}
+.hc-card{box-sizing:border-box;width:min(420px,100%);min-width:0;background:color-mix(in srgb,var(--bg2,#FFFBF2) 95%,transparent);color:var(--text,#241E33)}
+.hc-later{justify-self:center;background:none;border:0;color:var(--muted,#7A6E5C);font:700 13px var(--sans,inherit);text-decoration:underline;min-height:44px;cursor:pointer}
+.hc-dpad{margin:0 auto}
+.hc-dpad .sg-dbtn{color:#2B2117}
+.hc-lives{gap:2px}
+.hc-keys{width:100%;display:flex;justify-content:center}
+.hc-keys:empty{display:none}
 
 /* Bee Grand Prix — spell-to-nitro race controls (keyboard + tablet) */
 .sg-race-word{display:flex;gap:6px;align-items:center;width:100%;max-width:520px;margin:0 auto}
@@ -266,42 +279,80 @@
 .sg-constar.hintpulse .sg-conglow{animation:sgHintGlow .8s ease-in-out 2}
 @keyframes sgHintGlow{50%{inset:-2px;background:radial-gradient(circle,#7CF29C 0%,#3CBF66aa 55%,transparent 80%)}}
 
-/* ===== ENGINE M · Type Blaster ===== */
-.sg-tbstage{position:relative;height:max(320px,calc(100vh - 320px));max-width:1400px;margin:0 auto;background:rgba(12,10,30,.65);border-radius:16px;overflow:hidden}
-.sg-tbstage-bg{position:absolute;inset:0;z-index:0}
-.sg-tbstage-bg .sg-plate{width:100%;height:100%;object-fit:cover;opacity:.78}
-/* soft centre scrim so the falling foe + slots read clearly over the busy arcade plate,
-   while the cabinets at the sides stay bright */
-.sg-tbstage::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(115% 85% at 50% 38%, rgba(8,6,24,.55), rgba(8,6,24,.30) 34%, rgba(8,6,24,0) 64%)}
-.sg-tbstage.breach{animation:sgBreach .5s}
-/* OVERLOAD: the glitch is nearly at the floor — red alarm glow + shudder */
-.sg-tbstage.sg-tb-danger{animation:sgTbShake .28s linear infinite}
-.sg-tbstage.sg-tb-danger::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
-  box-shadow:inset 0 0 60px 6px rgba(214,69,61,.55);animation:sgTbAlarm .55s ease-in-out infinite}
+/* ===== The arcade games on the shared stage (games spec §5.0) =====
+   SGUI.stage is fitted between the app's own bar and tab bar; an arcade game lives in its own
+   full-screen overlay with its own bar, so there the stage simply fills the overlay's host. */
+.arc-play-host>.sb-stage{position:absolute;inset:0;top:0!important;bottom:0!important}
+/* a game overlay owns the screen like a stage does: the page under it does not scroll, and the
+   tab bar it covers is not there to be measured or reached */
+:root:has(>body>.arc-play),body:has(>.arc-play){overflow:hidden;overscroll-behavior:none}
+body:has(>.arc-play) .sb-tabbar{display:none}
+body:has(>.arc-play) #root{height:0;min-height:0;overflow:hidden}   /* the screen under the game is covered; it must not make the page scroll */
+/* the HUD's contents: the kit draws the panels, these are what sits in them */
+.arcx-hc{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap}
+.arcx-title{font:800 16px/1.1 var(--display,serif);white-space:nowrap;padding:7px 14px;border-radius:14px;
+  background:color-mix(in srgb,var(--paper,#fff) 84%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.arcx-lvl,.arcx-prog{font:800 12px/1 var(--display,serif);font-variant-numeric:tabular-nums;white-space:nowrap;padding:6px 10px;border-radius:99px;
+  background:color-mix(in srgb,var(--paper,#fff) 84%,transparent);border:1px solid color-mix(in srgb,var(--line,#E9E5F0) 70%,transparent)}
+.arcx-stat{box-sizing:border-box;width:clamp(64px,22cqw,150px);display:flex;align-items:center;gap:6px;justify-content:flex-start}
+.sg-st-side.r .arcx-stat{justify-content:flex-end}
+.arcx-stat b{font:800 19px/1 var(--display,serif);font-variant-numeric:tabular-nums}
+.arcx-stat i{font:700 11px/1 var(--sans,inherit);font-style:normal;color:var(--muted,#7A6E5C)}
+@container sgstage (max-width:640px){ .arcx-title{display:none} .arcx-stat{width:66px} .arcx-stat i{display:none} }
+
+/* ===== ENGINE M · Type Blaster (Spell Scene merged in) ===== */
+.tb-wrap{position:relative;width:100%;height:100%;display:grid;place-items:center}
+.tb-scene{position:relative;height:100%;aspect-ratio:4/3;max-width:100%;overflow:hidden;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+@media (max-width:640px){ .tb-scene{width:100%;border-radius:0;box-shadow:none} }
+.tb-grey,.tb-reg{position:absolute;inset:0;background-size:cover;background-position:center}
+.tb-grey.tb-filter{filter:grayscale(1) brightness(.82) contrast(.92)}
+.tb-reg{opacity:0;filter:brightness(1.7) saturate(1.5);transition:opacity .9s ease,filter 1.2s ease}
+.tb-reg.on,.tb-scene.tb-restored .tb-reg{opacity:1;filter:none}
+.tb-line{position:absolute;left:5%;right:5%;top:80%;z-index:2;border-top:3px solid rgba(54,209,255,.8);box-shadow:0 0 14px rgba(54,209,255,.55);border-radius:99px;pointer-events:none}
+.tb-foes{position:absolute;inset:0;z-index:3}
+.tb-foe{position:absolute;top:0;left:50%;transform:translate(-50%,0);display:grid;justify-items:center;gap:2px;background:none;border:0;padding:0;cursor:pointer;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));will-change:transform;-webkit-tap-highlight-color:transparent}
+.tb-glitch{width:clamp(56px,9vw,84px);height:clamp(56px,9vw,84px);object-fit:contain;animation:sgGlitchBob 1.8s ease-in-out infinite;pointer-events:none}
+@keyframes sgGlitchBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(5px) rotate(2deg)}}
+.tb-ftag{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:99px;background:rgba(20,14,40,.75);color:#FFF6E0;font:800 12px/1 var(--display,serif)}
+.tb-ftag i{font-style:normal}
+.tb-foe.on .tb-ftag{background:var(--honey,#F0B429);color:#2B2117}
+.tb-foe.on::before{content:'';position:absolute;left:50%;top:40%;width:118%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:3px dashed rgba(255,214,90,.92);animation:tbSpin 6s linear infinite;pointer-events:none}
+@keyframes tbSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.tb-foe.frozen .tb-glitch{animation:none;filter:grayscale(.6) brightness(1.2)}
+.tb-foe.boom{animation:tbBoom .55s forwards;pointer-events:none}
+@keyframes tbBoom{30%{filter:brightness(2.4)}100%{opacity:0;filter:brightness(3) blur(3px)}}
+.tb-beam{position:absolute;z-index:4;height:6px;margin-top:-3px;transform-origin:0 50%;border-radius:4px;background:linear-gradient(90deg,#36D1FF,#EAF0FF);box-shadow:0 0 12px #36D1FF;opacity:0;pointer-events:none}
+.tb-beam.fire{animation:tbBeam .28s ease-out}
+@keyframes tbBeam{0%{opacity:1}100%{opacity:0}}
+.tb-cannon{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);z-index:4;width:76px;height:72px;display:grid;place-items:end center}
+.tb-barrel{position:absolute;left:50%;bottom:40px;width:16px;height:44px;margin-left:-8px;border-radius:8px 8px 4px 4px;transform-origin:50% 100%;
+  background:linear-gradient(90deg,#3A3360,#8C83C9 45%,#3A3360);box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.tb-pilot{position:relative;width:56px;height:56px;border-radius:50%;overflow:hidden;display:grid;place-items:center;
+  background:radial-gradient(circle at 40% 35%,#FFE7A6,#F0B429 60%,#B47C0B);box-shadow:0 0 0 3px #2A2350,0 6px 16px rgba(0,0,0,.45)}
+.tb-pilot img,.tb-pilot svg{width:100%;height:100%;object-fit:cover}
+.tb-scene.tb-danger{animation:sgTbShake .28s linear infinite}
+.tb-scene.tb-danger::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;box-shadow:inset 0 0 60px 6px rgba(214,69,61,.55);animation:sgTbAlarm .55s ease-in-out infinite}
+.tb-scene.breach{animation:sgBreach .5s}
 @keyframes sgTbAlarm{0%,100%{opacity:.4}50%{opacity:.95}}
 @keyframes sgTbShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 @keyframes sgBreach{0%,60%{box-shadow:inset 0 0 0 4px #E5484D}100%{box-shadow:none}}
-.sg-tbfoe{position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:2;display:grid;place-items:center;gap:4px;transition:top .12s linear;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
-.sg-tbimg{width:74px;height:74px}
-.sg-tbglitch{width:96px;height:96px;object-fit:contain;animation:sgGlitchBob 1.8s ease-in-out infinite}
-@keyframes sgGlitchBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(5px) rotate(2deg)}}
-.sg-tbemoji{font-size:52px;line-height:1}
-.sg-tbfoe.hitfx{animation:sgFoeHit .2s}
-@keyframes sgFoeHit{40%{transform:translateX(-50%) translateY(-9px) scale(.94);filter:brightness(1.9) drop-shadow(0 0 12px #36D1FF)}}
-.sg-tbfoe.gloatfx{animation:sgFoeGloat .3s}
-@keyframes sgFoeGloat{40%{transform:translateX(-50%) scale(1.12) rotate(4deg)}}
-.sg-tbfoe.boom{animation:sgFoeBoom .6s forwards}
-@keyframes sgFoeBoom{30%{filter:brightness(2.4)}100%{transform:translateX(-50%) scale(2.1);opacity:0;filter:brightness(3) blur(3px)}}
-.sg-tbslots{display:flex;gap:4px;background:rgba(0,0,0,.4);border-radius:10px;padding:4px 8px}
-.sg-tbslots .sg-slot{width:22px;height:27px;font-size:16px}
-.sg-tbbeam{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);z-index:1;width:6px;height:0;border-radius:4px;background:linear-gradient(#36D1FF,#EAF0FF);opacity:0;pointer-events:none}
-.sg-tbbeam.fire{animation:sgBeam .22s ease-out}
-@keyframes sgBeam{0%{opacity:1;height:78%}100%{opacity:0;height:78%}}
-.sg-tbshield{position:absolute;left:6%;right:6%;bottom:38px;height:0;z-index:1;border-top:3px solid rgba(54,209,255,.75);box-shadow:0 0 14px rgba(54,209,255,.5);border-radius:99px}
-.sg-tbcannon{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);z-index:2;font-size:44px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
-.sg-tbcannon img{width:64px;height:64px;object-fit:contain;display:block}
-.sg-tbkey{max-width:560px;margin:10px auto 0}
+/* the controls are the word being typed (and Fire on a desktop) above the keys; the clue rides
+   the top of the scene, so a phone's controls stay inside the bottom 38% */
+.tb-entry{width:min(100%,560px);display:grid;grid-template-columns:96px minmax(0,1fr) 96px;gap:8px;align-items:center}
+.tb-entry.nofire{grid-template-columns:44px minmax(0,1fr) 44px}
+.tb-entry .tb-say{width:100%}
+.tb-clue{position:absolute;left:8px;right:8px;top:8px;z-index:2;display:flex;align-items:center;gap:8px;min-width:0;min-height:40px;padding:4px 12px;border-radius:12px;background:rgba(20,14,40,.66);color:#FFF6E0}
+.tb-clue:has(.tb-mean:empty){background:none}
+.tb-clue .sg-cardmean{color:#FFF6E0;font-size:13px;line-height:1.35;margin:0;max-width:none;text-align:left;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tb-mean{min-width:0}
+.tb-say{flex:none;width:44px;height:44px;border-radius:12px;border:0;background:var(--honey,#F0B429);color:#2B2117;display:grid;place-items:center;cursor:pointer}
+.tb-typed{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;min-height:44px;align-items:center;padding:4px 8px;border-radius:12px;background:rgba(20,14,40,.66)}
+.tb-typed .sg-slot{width:24px;height:30px;font-size:18px;line-height:30px;color:#FFF6E0}
+.tb-fire{min-height:44px;padding:0 12px}
+.tb-keys{width:100%;display:flex;justify-content:center}
+.tb-keys:empty{display:none}
+@media (prefers-reduced-motion:reduce){ .tb-scene.tb-danger,.tb-glitch,.tb-foe.on::before{animation:none} .tb-reg{transition:none} }
 
 /* Long Sky v3: pot progress bar with the gate at the end */
 .sg-flyprog{position:relative;flex:1;min-width:70px;max-width:180px;height:12px;border-radius:99px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);overflow:visible}
@@ -544,6 +595,143 @@
 .sg-wchip:hover{border-color:var(--honey,#F0B429)}
 .sg-end-btns{max-width:340px;margin:0 auto}
 
+/* ===== THE ENGINE KIT (saga2.js, games spec §1.5 · §1.6 · §4.0 · §5.0) ===== */
+/* THE STAGE: fixed between the shell bar and the tab bar (stageFit writes top/bottom in #root's
+   own pixels), the painted plate edge to edge, rows auto 1fr auto. */
+.sb-stage{position:fixed;left:0;right:0;top:64px;bottom:0;z-index:5;display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  container-type:size;container-name:sgstage;overflow:hidden;color:var(--text);
+  background:var(--sg-plate-d,none) center/cover no-repeat,linear-gradient(180deg,var(--tint,#FFF4DC),var(--bg2,#FBE7BE));
+  --sg-gut:clamp(10px,2.4cqw,28px)}
+:root[data-mode="dusk"] .sb-stage{background-image:var(--sg-plate-n,none),linear-gradient(180deg,var(--tint-deep,#251F42),var(--tint,#2E2750))}
+/* every plate wears the kit's paper grain (under every panel): a compressed painting's calm centre is
+   smooth enough to read as one flat colour, and on a phone the crop enlarges it — the grain is the
+   gouache paper the plates are painted to look like, and no region of a stage is a flat fill (T14).
+   Mock Bee found it first (.mb-stage); it is the default now. Reduced motion: it never moves anyway. */
+.sb-stage::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.7;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E")}
+/* a stage owns the screen: nothing under it scrolls, and the shell's own padding is not a page */
+:root.sb-stage-on,:root.sb-stage-on body{overflow:hidden;overscroll-behavior:none}
+/* the world's animated decoration is entirely covered by a stage or a game overlay, and under a
+   4x CPU throttle it was what made the frames 50-150ms instead of 16.7ms: switch it off there */
+:root.sb-stage-on .w4-bg{display:none}
+body:has(>.arc-play) .w4-bg,body:has(>.bz-play) .w4-bg{display:none}   /* its own rule: a browser without :has drops only this one */
+:root.sb-stage-on .sb-content{min-height:0}
+/* #root's first child is min-height:100dvh INSIDE #root's 1.09 zoom — 9% taller than the window,
+   so every screen scrolled ~70px; under a stage the shell is only a header, so let it be short */
+:root.sb-stage-on #root div[style*="min-height:100dvh"]{min-height:0!important}
+:root.sb-stage-on .sb-content{padding-bottom:0!important}
+.sg-panel,.sg-st-title{--sg-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E")}
+.sg-panel{background:var(--sg-grain),color-mix(in srgb,var(--paper,#fff) 84%,transparent);-webkit-backdrop-filter:blur(8px) saturate(1.1);backdrop-filter:blur(8px) saturate(1.1);
+  border:1px solid color-mix(in srgb,var(--line,#E9E5F0) 70%,transparent);border-radius:16px;box-shadow:0 6px 22px rgba(40,24,6,.12)}
+/* HUD: equal-width stats mirrored round a centred title */
+.sg-st-hud{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;padding:10px var(--sg-gut) 6px}
+.sg-st-side{display:flex;min-width:0}
+.sg-st-side.l{justify-content:flex-start}.sg-st-side.r{justify-content:flex-end}
+.sg-st-stat{width:min(100%,232px);min-height:44px;box-sizing:border-box;display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-weight:800;font-size:13px;line-height:1.15}
+.sg-st-side.r .sg-st-stat{flex-direction:row-reverse;text-align:right}
+.sg-st-ic{flex:none;display:grid;place-items:center;color:var(--treasure-deep,#8A5B00)}
+:root[data-mode="dusk"] .sg-st-ic{color:var(--treasure,#F0B429)}
+.sg-st-n{font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums}
+.sg-st-t{min-width:0;font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.sg-st-c{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;max-width:44cqw;text-align:center}
+.sg-st-title{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(18px,3.4cqw,26px);line-height:1.1;padding:7px 16px;border-radius:14px;
+  background:var(--sg-grain),color-mix(in srgb,var(--paper,#fff) 84%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* PLAY: content centred on the vertical axis; desktop a centred 4:3 region with the plate behind */
+.sg-st-play{min-height:0;display:grid;place-items:center;padding:6px var(--sg-gut);container-type:size;container-name:sgplay}
+.sg-st-region{position:relative;width:min(100cqw,133.333cqh);height:min(100cqh,75cqw);display:grid;place-items:center;min-height:0}
+.sb-stage.free .sg-st-region{width:100%;height:100%;place-items:stretch}
+.sg-st-ctl{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;padding:6px var(--sg-gut) 10px}
+.sg-st-ctl:empty{display:none}
+@container sgstage (max-width:640px){
+  .sg-st-region{width:100%;height:100%}
+  .sg-st-ctl{max-height:38cqh}
+  .sg-st-hud{gap:6px}
+  .sg-st-stat{width:auto;min-width:64px;padding:5px 10px;gap:5px;justify-content:center}
+  .sg-st-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .sg-st-c{max-width:62cqw}
+  .sg-st-title{font-size:18px;padding:7px 12px}
+}
+@media (prefers-reduced-motion:reduce){ .sb-stage,.sb-stage *{animation:none!important;transition:none!important} }
+:root[data-motion="off"] .sb-stage,:root[data-motion="off"] .sb-stage *{animation:none!important;transition:none!important}
+.sg-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* THE HUB: a symmetric grid of mode tiles — three across, two on a phone, a short row centred */
+.sg-hub .sg-st-play{place-items:stretch}
+.sg-hub-grid{--cols:3;--gap:clamp(10px,1.8cqw,18px);display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:var(--gap);
+  width:min(100%,980px);height:100%;margin:0 auto;overflow-y:auto;overscroll-behavior:contain;padding:2px}
+.sg-hub-grid.n4{--cols:2}
+.sg-hub-tile{position:relative;box-sizing:border-box;width:calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  height:calc((100% - (var(--rd,2) - 1) * var(--gap)) / var(--rd,2));max-height:260px;
+  display:flex;flex-direction:column;border-radius:18px;overflow:hidden;min-height:0}
+.sg-hub-go{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px 12px 4px;
+  background:transparent;border:0;color:inherit;text-align:center;cursor:pointer;font:inherit}
+.sg-hub-go::after{content:"";position:absolute;inset:0;border-radius:18px}
+.sg-hub-go:focus-visible{outline:none}
+.sg-hub-go:focus-visible::after{box-shadow:inset 0 0 0 3px var(--accent)}
+.sg-hub-tile:hover{box-shadow:0 10px 28px rgba(40,24,6,.2)}
+.sg-hub-art{width:min(100%,clamp(44px,14cqh,112px));aspect-ratio:1;display:grid;place-items:center;border-radius:16px;overflow:hidden;flex:none;
+  background:color-mix(in srgb,var(--treasure,#F0B429) 16%,transparent)}
+.sg-hub-art>img,.sg-hub-art>svg{width:100%;height:100%;object-fit:cover;display:block}
+.sg-hub-art.none{background:none}
+.sg-hub-name{font-family:var(--display);font-weight:800;font-size:16px;line-height:1.15;display:inline-flex;align-items:center;gap:6px}
+.sg-hub-new{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent);flex:none}
+.sg-hub-promise{font-size:12.5px;line-height:1.35;color:var(--muted);max-width:30ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sg-hub-meta{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 8px;padding:4px 10px 12px;font-size:12px;font-weight:700;color:var(--muted)}
+.sg-hub-lvl{padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800}
+.sg-hub-lastmark{position:absolute;z-index:2;pointer-events:none;top:8px;right:8px;padding:2px 8px;border-radius:999px;font-size:10.5px;background:var(--chip);border:1.5px dashed color-mix(in srgb,var(--accent) 60%,transparent);color:var(--accent);font-weight:800}
+.sg-hub-tile.last{box-shadow:0 0 0 2.5px color-mix(in srgb,var(--accent) 55%,transparent),0 6px 22px rgba(40,24,6,.12)}
+@container sgstage (max-width:640px){
+  .sg-hub-grid{--cols:2}
+  .sg-hub-tile{height:calc((100% - (var(--rp,3) - 1) * var(--gap)) / var(--rp,3))}
+  .sg-hub-art{width:clamp(36px,9cqh,64px);border-radius:12px}
+  .sg-hub-meta{padding:2px 6px 8px;font-size:11px}
+  .sg-hub-name{font-size:14.5px}
+  .sg-hub-promise{font-size:11.5px}
+  .sg-hub-go{padding:10px 8px 2px}
+}
+
+/* THE MISS CARD: the letters, the word again, the note for THIS error, Continue */
+.sg-misswrap{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:12px;background:rgba(20,12,4,.38);animation:sb-fade .18s ease both}
+.sg-misswrap.fixed{position:fixed;z-index:80}
+.sg-misscard{width:min(460px,100%);max-height:100%;overflow:auto;box-sizing:border-box;text-align:left;padding:16px 18px;border-radius:18px;
+  background:var(--paper,#fff);color:var(--text);border:1.5px solid var(--line);box-shadow:0 18px 50px rgba(20,12,4,.35)}
+.sg-miss-h{font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:10px}
+.sg-mdiff{display:flex;flex-direction:column;gap:5px}
+.sg-mrow{display:flex;align-items:flex-start;gap:8px}
+.sg-mlbl{flex:none;width:3.6em;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);line-height:1.9em}
+.sg-mlet{display:flex;flex-wrap:wrap;gap:3px 2px;font-family:var(--mono,ui-monospace,monospace);font-weight:800;font-size:clamp(18px,4.6vw,24px)}
+.sg-mc{position:relative;display:grid;place-items:center;min-width:1.1em;height:1.5em;padding:0 2px;border-radius:5px;color:var(--muted)}
+.sg-mc.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 16%,transparent);text-decoration:line-through 2.5px}
+.sg-mc.good{color:var(--good);background:color-mix(in srgb,var(--good) 18%,transparent);box-shadow:inset 0 -3px 0 currentColor}
+.sg-mc.good::before{content:"";position:absolute;top:-7px;left:50%;margin-left:-4px;border:4px solid transparent;border-bottom:5px solid currentColor;border-top:0}
+.sg-mc.gap{border:2px dashed color-mix(in srgb,var(--bad) 70%,var(--line));min-width:.9em}
+.sg-mrow.w .sg-mc.gap{border-color:var(--line)}
+.sg-mtools{display:flex;gap:8px;margin-top:10px}
+.sg-msay{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px;cursor:pointer}
+.sg-mwhy{display:flex;gap:9px;align-items:flex-start;margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font-size:14px;line-height:1.5}
+.sg-mwhy-ic{flex:none;color:var(--treasure-deep,#8A5B00);margin-top:2px}
+:root[data-mode="dusk"] .sg-mwhy-ic{color:var(--treasure,#F0B429)}
+.sg-mrule{display:block;margin-top:5px;color:var(--muted);font-size:13px}
+.sg-mq{font-weight:700;font-size:15px;line-height:1.45;margin-bottom:10px}
+.sg-mans{display:flex;flex-direction:column;gap:7px}
+.sg-mopt{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;font-size:15px}
+.sg-mopt .sg-mlbl{line-height:1.2}
+.sg-mopt.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.sg-mopt.good{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good);box-shadow:inset 3px 0 0 currentColor}
+.sg-mopt-ic{flex:none;display:grid;place-items:center}
+.sg-miss-go{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:14px;position:sticky;bottom:0}
+.sg-kbd{font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:2px 6px;border-radius:6px;border:1px solid currentColor;opacity:.7}
+@media (pointer:coarse){ .sg-kbd{display:none} }
+
+/* THE ON-SCREEN KEYBOARD: touch only, ≥40px keys at 390px, centred and mirrored */
+.sg-keys{display:flex;flex-direction:column;gap:5px;width:100%;max-width:640px;margin:0 auto;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.sg-krow{display:flex;justify-content:center;gap:5px}
+.sg-key{flex:1 1 0;min-width:0;max-width:62px;height:44px;border-radius:10px;border:1px solid color-mix(in srgb,var(--line) 80%,transparent);
+  background:color-mix(in srgb,var(--paper,#fff) 90%,transparent);color:var(--text);font:800 19px/1 var(--display);display:grid;place-items:center;
+  box-shadow:0 2px 0 color-mix(in srgb,var(--line) 90%,#000 8%);cursor:pointer;padding:0}
+.sg-keys.qwerty .sg-key{max-width:52px}
+.sg-key.back,.sg-key.enter{background:color-mix(in srgb,var(--chip,#F3EEFF) 92%,transparent);color:var(--accent)}
+.sg-key.down{transform:translateY(2px);box-shadow:none;background:var(--chip)}
+
 /* Spell Shield */
 .sg-ss-hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px 6px}
 .sg-ss-phase{font:700 12px/1 var(--sans,inherit);letter-spacing:.07em;text-transform:uppercase;color:var(--muted,#7A6E5C)}
@@ -641,3 +829,54 @@
 .sg-port .sg-hold{top:calc(100% + var(--sg-ctl,240px) * .6 - 112px);right:auto;left:50%;margin-left:-29px}
 .sg-port #sg-card{place-items:start center;padding-top:6px}
 .sg-port .sg-cardbox{padding:12px 18px;gap:6px}
+
+/* ===== Bee Grand Prix — power-ups, the box card, the miss card, the finish, the garage (games spec §2) ===== */
+/* the slot shows a GHOST of what the next box gives (shape, not just colour); a full-strength one wears a ring */
+.sg-hold.ghost{border-style:dashed;border-color:rgba(0,0,0,.22)}
+.gp-ghost{display:block;width:100%;height:100%;opacity:.38;filter:grayscale(.35)}
+.gp-ghost svg{width:100%;height:100%}
+.sg-hold{position:absolute}
+.sg-hold .gp-full{position:absolute;inset:3px;border-radius:12px;border:2px solid #F0B429;box-shadow:0 0 0 2px rgba(255,255,255,.7) inset;pointer-events:none}
+.gp-card-top{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px}
+.gp-card-ring{position:relative;width:44px;height:44px;flex:none;display:grid;place-items:center}
+.gp-card-ring .sg-ring{width:44px;height:44px;position:absolute;inset:0}
+.gp-card-ring .sg-ring-n{position:relative;font:800 13px 'Sono',monospace}
+.gp-card-p{width:40px;height:40px;flex:none;opacity:.9}
+.gp-card-p svg{width:100%;height:100%}
+/* upright phone at a box: the card and the keys REPLACE the thumb band (§2.8) */
+.gp-spelling .sg-steer,.gp-spelling #sg-hold{visibility:hidden}
+.sg-port.gp-spelling #sg-card,.sg-land.gp-spelling #sg-card{place-items:end center;padding:0 6px max(6px,env(safe-area-inset-bottom))}
+.sg-port.gp-spelling .gp-card,.sg-land.gp-spelling .gp-card{width:calc(100vw - 12px);max-width:560px;padding:10px 8px;gap:6px}
+.sg-port .gp-card .sg-cardmean{font-size:13px}
+/* the finish card's extra rows: best lap, words, power-ups, driving, coins */
+.gp-fin{width:100%;max-width:380px;margin:0 auto 12px;display:grid;gap:5px;text-align:left}
+.gp-fin-row{display:flex;justify-content:space-between;gap:10px;align-items:center;font:600 13px 'Hanken',sans-serif}
+.gp-fin-row span{color:var(--muted,#6A6478)}
+.gp-fin-row b{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.gp-fin-new{font-style:normal;font-size:11px;color:#8A5B00;background:#FFE7A6;border-radius:99px;padding:1px 7px}
+.gp-pw-i{display:inline-block;width:18px;height:18px}
+.gp-pw-i svg{width:100%;height:100%}
+.gp-fin-kind{font:600 13px 'Hanken',sans-serif;color:#5C5140;background:rgba(240,180,41,.14);border-radius:10px;padding:8px 10px}
+.gp-cup{display:grid;gap:3px;margin-top:6px}
+.gp-cup-r{display:grid;grid-template-columns:22px 1fr auto;gap:8px;font:600 13px 'Hanken',sans-serif;padding:3px 6px;border-radius:7px}
+.gp-cup-r.me{background:rgba(240,180,41,.2)}
+.sg-endcard{max-height:calc(100dvh - 24px);overflow-y:auto}
+/* the garage: drawn over the start menu; buttons, so Tab/Enter work as well as a tap */
+.gp-gar{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:rgba(20,15,35,.55);padding:12px}
+.gp-gar-card{background:var(--panel,#fff);color:var(--ink,#241E33);border-radius:16px;padding:14px 16px;width:min(420px,100%);max-height:calc(100dvh - 40px);overflow-y:auto;display:grid;gap:6px}
+.gp-gar-h{display:flex;align-items:center;gap:10px}
+.gp-gar-h b{font:800 20px 'Fraunces',serif;flex:1}
+.gp-gar-h span{font:700 13px 'Sono',monospace}
+.gp-gar-x{width:44px;height:44px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:#fff;display:grid;place-items:center}
+.gp-gar-sec{font:800 12px 'Hanken',sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#6A6478);margin-top:6px}
+.gp-gar-row{display:flex;align-items:center;gap:10px;min-height:44px;padding:2px 4px;border-radius:10px}
+.gp-gar-row.on{background:rgba(240,180,41,.16)}
+.gp-gar-row b{flex:1;font:700 14px 'Hanken',sans-serif}
+.gp-sw{width:28px;height:28px;border-radius:50%;flex:none;border:2px solid rgba(0,0,0,.12)}
+.gp-sw-t{border-radius:8px;width:34px;height:14px}
+.gp-gar-b{min-height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(0,0,0,.14);background:#fff;font:700 13px 'Hanken',sans-serif;color:#241E33}
+.gp-gar-b.buy{background:var(--honey,#F0B429);border-color:transparent}
+.gp-gar-b:disabled{opacity:.5}
+.gp-gar-on{font:700 12px 'Hanken',sans-serif;color:#8A5B00}
+.gp-gar-ms{font:600 12px 'Hanken',sans-serif;color:var(--muted,#6A6478);max-width:150px;text-align:right}
+[data-mode="dusk"] .gp-gar-card{--panel:#FFFFFF;--ink:#241E33;--muted:#6A6478}
