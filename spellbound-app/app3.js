@@ -4122,7 +4122,12 @@ function viewLanding() {
             <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 38%,transparent)">Start free — no sign-up →</button>
             <button data-act="landPlans" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">See the plans</button>
           </div>
-          <button data-act="goSignin" style="font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">I already have an account</button>
+          <span style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px">
+            <button data-act="goSignin" style="font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">I already have an account</button>
+            ${/* A5: the try-before-signup sample was reachable only by typing ?demo. It is a real link — a
+                 new page load, because the sample's storage sandbox is installed before anything else runs */''}
+            <a href="?demo" class="sb-land-demo" style="display:inline-flex;align-items:center;min-height:44px;font-size:13.5px;font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:3px">Look around a sample speller first →</a>
+          </span>
           ${(()=>{ let av=''; try{ const A=(window.SB_AVATARS&&SB_AVATARS.list)||[];
               const ids=['bizzy','pandasensei','lunastar','pixelpal','ember','papercrane','joystick','shadowninja'];
               const pick=ids.map(i=>A.find(a=>a.id===i)).filter(Boolean);
