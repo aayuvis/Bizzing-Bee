@@ -144,7 +144,7 @@ const want = k => !ONLY || ONLY.includes(k);
     const r = await pg.evaluate(() => { const out = [];
       for (let seed = 1; seed <= 10; seed++) { const h = document.createElement('div'); h.style.cssText = 'position:fixed;inset:0'; document.body.appendChild(h);
         const e = window.SB_SAGA_ENGINES.beeGrandPrix(h, { diff: 'medium', drive: 'medium', scene: 'meadow', autoGo: true, seed: seed * 101 }, () => {});
-        const R = window._race; R.clearBoxes(); R.rivalPowers(false); R.bot({ drive: 'line', seed });
+        const R = window._race; R.clearBoxes(); R.rivalPowers(false); R.hazards(false); R.bot({ drive: 'line', seed });
         R.fast(1.2); R.fast(4);
         const s0 = R.state(), L = s0.trackLen; R.rivalsAt().forEach((x, i) => R.setRival(i, s0.pos - 200 * (30 + i * 3)));
         const g0 = (s0.pos - Math.max(...R.rivalsAt().map(x => x.z))) / 200;
@@ -152,7 +152,9 @@ const want = k => !ONLY || ONLY.includes(k);
         const g1 = (R.state().pos - Math.max(...R.rivalsAt().map(x => x.z))) / 200;
         out.push(+(g1 / g0).toFixed(2)); e.destroy(); h.remove(); }
       return out; });
-    ok(r.every(k => k >= 0.9), `GP3: a 30-band lead driven on the racing line keeps ≥ 90% over a lap, the band and the draft on (kept ${r.map(k => Math.round(k * 100) + '%').join(', ')})`);
+    /* the band, isolated: no boxes, no rival power-ups, no hazards — one oil slick costs ~70 bands,
+       which is a lesson about oil, not about the band */
+    ok(r.every(k => k >= 0.9), `GP3: a 30-band lead driven on the racing line keeps ≥ 90% over a lap with the ±2% band and the draft on (kept ${r.map(k => Math.round(k * 100) + '%').join(', ')})`);
   }
 
   /* ---------------- GP1 / GP2: the pace ---------------- */

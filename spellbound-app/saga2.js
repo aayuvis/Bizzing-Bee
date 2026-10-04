@@ -2139,11 +2139,11 @@
      pw is how often they turn a box into a power-up (deterministic: every 1/pw boxes, never a
      dice roll); their pace is their place on the grid (GP_GRID order, the engine's spread). */
   const GP_CAST={
-    pixel:{name:'Pip',alt:'germy',pw:0.24,kart:'kart-rocket',col:'#E5484D'},  koi:{name:'Nova',alt:'luna',pw:0.30,kart:'kart',col:'#3B93D6'},
-    beaker:{name:'Rafi',alt:'atom',pw:0.30,kart:'kart-buggy',col:'#2FB98A'},   panda:{name:'Suki',alt:'neko',pw:0.33,kart:'kart-cruiser',col:'#8B63D6'},
-    comet:{name:'Dax',alt:'rocket',pw:0.27,kart:'kart-red',col:'#F0803C'},       astro:{name:'Mira',alt:'saturn',pw:0.36,kart:'kart-rocket',col:'#EC6BB0'},
-    scopey:{name:'Theo',alt:'robo',pw:0.39,kart:'kart',col:'#5A6B8C'},        melody:{name:'Ines',alt:'fae',pw:0.36,kart:'kart-cruiser',col:'#C9A227'},
-    samurai:{name:'Kwame',alt:'ninja',pw:0.36,kart:'kart-red',col:'#2E86D1'},    goldlegend:{name:'Vesper',alt:'crystal',pw:0.42,kart:'kart-buggy',col:'#B8860B'} };
+    pixel:{name:'Pip',alt:'germy',pw:0.60,kart:'kart-rocket',col:'#E5484D'},  koi:{name:'Nova',alt:'luna',pw:0.75,kart:'kart',col:'#3B93D6'},
+    beaker:{name:'Rafi',alt:'atom',pw:0.75,kart:'kart-buggy',col:'#2FB98A'},   panda:{name:'Suki',alt:'neko',pw:0.83,kart:'kart-cruiser',col:'#8B63D6'},
+    comet:{name:'Dax',alt:'rocket',pw:0.68,kart:'kart-red',col:'#F0803C'},       astro:{name:'Mira',alt:'saturn',pw:0.90,kart:'kart-rocket',col:'#EC6BB0'},
+    scopey:{name:'Theo',alt:'robo',pw:0.95,kart:'kart',col:'#5A6B8C'},        melody:{name:'Ines',alt:'fae',pw:0.90,kart:'kart-cruiser',col:'#C9A227'},
+    samurai:{name:'Kwame',alt:'ninja',pw:0.90,kart:'kart-red',col:'#2E86D1'},    goldlegend:{name:'Vesper',alt:'crystal',pw:0.95,kart:'kart-buggy',col:'#B8860B'} };
   const GP_GRID={easy:['pixel','koi','beaker'], medium:['comet','astro','panda','scopey'], hard:['samurai','melody','astro','comet'], champ:['goldlegend','samurai','melody','astro']};
   /* THE CUP: four races in one sitting, each track's box words from one origin family (they are
      the families Word Forge builds on). The fourth track is ONE entry here — the owner chose the
@@ -2258,7 +2258,7 @@
     const opts0=opts;
     const CUP=opts.cup||(opts.scene==='cup'?{i:0,pts:null,races:[]}:null);
     if(CUP) opts={...opts, scene:GP_CUP[CUP.i].scene};
-    let loop=null, boxesOff=false, noRivalPw=false;
+    let loop=null, boxesOff=false, noRivalPw=false, noHaz=false;
     const HERO=(opts.hero)||heroAv();            // the chosen racer shows as the driver + the position marker
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
     // three scenarios: each is its own painted sky + road/grass palette
@@ -2287,9 +2287,9 @@
        clock. The lengths are §2.6's ×1.2 (1600/2000/2300/2600 → 1900/2400/2750/3100): at §2.6's
        own numbers a Medium race took 2.7 minutes for a child-like driver, and GP12 asks 3–4. `rival` is the field's pace as a share of top speed (calibrated by the bots in
        tests/gp-race.cjs — GP1/GP2); `pull` stays LAST on each line (arcade-geometry reads it). */
-    const CFG=calmCFG({easy:{len:1900,laps:2,zones:4,rivals:3,rival:0.91,haz:0.014,card:14,pull:0.33},
-               medium:{len:2400,laps:2,zones:5,rivals:4,rival:0.95,haz:0.026,card:12,pull:0.46},
-               hard:{len:2750,laps:2,zones:5,rivals:4,rival:0.915,haz:0.04,card:10,pull:0.52},
+    const CFG=calmCFG({easy:{len:1900,laps:2,zones:4,rivals:3,rival:0.89,haz:0.014,card:14,pull:0.33},
+               medium:{len:2400,laps:2,zones:5,rivals:4,rival:0.934,haz:0.026,card:12,pull:0.46},
+               hard:{len:2750,laps:2,zones:5,rivals:4,rival:0.905,haz:0.04,card:10,pull:0.52},
                champ:{len:3100,laps:2,zones:6,rivals:4,rival:0.885,haz:0.055,card:9,pull:0.57}}[diff]);
     /* the whole track — zones, props, hazards, boxes — comes from ONE seeded stream: the same
        track every time you race it (a ghost lap needs that), and a test can race twenty */
@@ -3240,7 +3240,7 @@
       // tol ≈ half a kart-width in lane units — so a hit needs a real overlap, matching what you see
       const CATCH=0.34;
       /* hazards cost speed (×0.55, §2.3); the Shield rides through them */
-      if(shieldT<=0){ hazards.forEach(h=>{ if(h.hitT>raceT) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
+      if(shieldT<=0&&!noHaz){ hazards.forEach(h=>{ if(h.hitT>raceT) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
         if(d<segLen*0.9 && Math.abs(playerX-h.off)<CATCH && v>maxV*0.25){ h.hitT=raceT+1.4;
           v*=0.55; spinFlashT=0.5; try{flash(h.kind==='cop'?'Pulled over — the cops!':'Slipped on oil!');}catch(_){} } }); }
       /* THE BOX IS SWEPT, NOT SAMPLED. This used to ask "is the box inside a 1.6-segment
@@ -3412,11 +3412,13 @@
       bot:(cfg)=>{ bot=cfg?{...cfg,rng:gpRng(cfg.seed||1)}:null; },
       /* run the race as fast as the machine allows: physics steps, no drawing, bots answer */
       fast:(secs)=>{ const lim=raceT+(secs||600); if(mode==='howto'){ intro.remove(); countT=1.0; mode='count'; } if(loop) loop.hold(true);
-        let n=0; while(!over&&raceT<lim&&n<2e6){ if(mode==='spell') break; step(1/120); n++; } return over?result:null; },
+        let n=0; while(!over&&raceT<lim&&n<2e6){ if(mode==='spell') break; step(1/120); n++; }
+        if(loop&&!over&&mode!=='spell') loop.hold(false);   // hand the clock back: the race goes on drawing and running
+        return over?result:null; },
       result:()=>result, rivalsAt:()=>rivals.map(r=>({id:r.id,name:r.name,face:r.face,z:r.z,fin:r.fin,spd:r.spd,shield:r.shield,spin:r.spin,slow:r.slow})),
       forcePlace:(p)=>{ /* line the field up so you are in place p: rivals ahead step in front by 2 bands */ rivals.forEach((r,i)=>{ r.z=i<p-1?pos+segLen*(2+i*2):pos-segLen*(3+i*2); }); },
       usePower:(id,full,who)=>usePower(id,full!==false,who==null?ME:rivals[who]),
-      rivalPowers:(on)=>{ noRivalPw=on===false; }, pinDraw:(n)=>{ _ddPin=n|0; if(n) drawDist=n|0; }, setRival:(i,z)=>{ if(rivals[i]) rivals[i].z=z; } };
+      rivalPowers:(on)=>{ noRivalPw=on===false; }, hazards:(on)=>{ noHaz=on===false; }, pinDraw:(n)=>{ _ddPin=n|0; if(n) drawDist=n|0; }, setRival:(i,z)=>{ if(rivals[i]) rivals[i].z=z; } };
     loop=loopFn(step,render);
     /* ONE race lives at a time: a Cup's next race and Play again start a new engine in this
        host, and the arcade's handle (from the first) must stop whichever one is running */

@@ -72,10 +72,10 @@ const CHROME = process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-
         B = R(document.querySelector('.arc-play #sg-brk')), H = R(document.querySelector('.arc-play #sg-hold')), W = innerWidth;
       const all = [...document.querySelectorAll('.arc-play button')].filter(x => x.offsetParent !== null).map(R);
       return { gl: L.left, gr: W - Rt.right, bc: (B.left + B.right) / 2 - W / 2, hc: (H.left + H.right) / 2 - W / 2, vy: L.top - Rt.top,
-        below: all.filter(q => q.bottom > innerHeight + 0.5).length, scroll: document.scrollingElement.scrollHeight - innerHeight, dpr: window._race.state().dpr }; });
+        below: all.filter(q => q.bottom > innerHeight + 0.5).length, scroll: (o => o.scrollHeight - o.clientHeight)(document.querySelector('.arc-play')), dpr: window._race.state().dpr }; });
     ok(Math.abs(band.gl - band.gr) <= 4 && Math.abs(band.bc) <= 4 && Math.abs(band.hc) <= 4 && Math.abs(band.vy) <= 4,
       `GP10: the thumb band is mirrored — gutters ${band.gl.toFixed(1)} / ${band.gr.toFixed(1)}px, Brake ${band.bc.toFixed(1)}px and the slot ${band.hc.toFixed(1)}px off centre, the arrows level (${band.vy.toFixed(1)})`);
-    ok(!band.below && band.scroll <= 0, `GP10: nothing below the fold (${band.below} controls under it, ${band.scroll}px of scroll)`);
+    ok(!band.below && band.scroll <= 0, `GP10: nothing below the fold (${band.below} controls under it, ${band.scroll}px of scroll in the race overlay)`);
     ok(band.dpr === 1.5, `§2.9: a phone's canvas is capped at DPR 1.5 (device 3 → ${band.dpr})`);
     await pg.evaluate(() => { const R = window._race; R.steerTo(0); R.setV(0.8); R.gateNow(); });
     await until(pg, () => window._race.state().mode === 'spell', null, 10000);
@@ -169,9 +169,9 @@ const CHROME = process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-
       window.SB_SAGA_ENGINES.beeGrandPrix(h, { diff: 'medium', drive: 'medium', scene: 'cup', autoGo: true }, () => { seen.push('done'); });
       for (let i = 0; i < 4; i++) { const R = window._race; const s = R.state(); const fam = [];
         R.bot({ drive: 'line', seed: i + 1, spell: (w, p) => { fam.push(w.o || ''); return { typed: w.w, secs: p.par * 0.8 }; } }); R.fast(900);
-        const cont = h.querySelector('#sg-cont'); seen.push({ scene: s.scene, origin: s.origin, fam: fam.slice(), label: cont && cont.textContent, cupI: s.cup && s.cup.i });
+        const cont = h.querySelector('#sg-cont'); seen.push({ scene: s.scene, origin: s.origin, fam: fam.slice(), label: cont && cont.textContent, cupI: s.cup && s.cup.i, rows: h.querySelectorAll('.gp-cup-r').length });
         if (cont) cont.click(); }
-      const tab = h.querySelectorAll('.gp-cup-r').length; return { seen, st0, st1: (active().gpStat || {}).cups || 0, tab }; });
+      const tab = seen.filter(x => x && x.scene).map(x => x.rows).pop(); return { seen, st0, st1: (active().gpStat || {}).cups || 0, tab }; });
     const races = cup.seen.filter(x => x && x.scene);
     const famOk = races.every(r => r.fam.filter(o => window_re(r.origin).test(o)).length >= r.fam.length * 0.8);
     function window_re(o) { return { english: /english|germanic|norse/i, greek: /greek/i, latin: /latin/i, french: /french|anglo-norman/i }[o] || /./; }
