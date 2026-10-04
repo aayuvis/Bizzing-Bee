@@ -123,7 +123,7 @@
   /* What the old back-button trap did, plus the arcade overlays: a drill that is being left
      is stopped, never left running under the next screen. */
   function leaveDrill() {
-    try { if (typeof arcadeClose === 'function' && document.querySelector('.arc-play')) arcadeClose(); } catch (e) {}
+    try { if (typeof arcadeClose === 'function' && document.querySelector('.arc-play,.arc-menu')) arcadeClose(); } catch (e) {}
     try { if (typeof bizzClose === 'function' && document.querySelector('.bz-play')) bizzClose(); } catch (e) {}
     try { if (typeof clearGTimer === 'function') clearGTimer(); } catch (e) {}
     try { if (typeof tyStop === 'function') tyStop(); } catch (e) {}
@@ -247,7 +247,14 @@
     if (head === 'grownups') { app.setNav('parent'); return; }
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
     if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
-    if (head === 'play') { app.openGames(); return; }
+    if (head === 'play') {
+      app.openGames();
+      /* a game's own address opens its start screen over the Play tab, through the same opener a
+         tap uses (arcadeMenu, lazy-loaded); Back closes it and stays on Play (closeLayer) */
+      var ARC_ROUTE = { blaster: 'typeBlaster', honeycomb: 'honeycombRun' };
+      if (ARC_ROUTE[p[1]] && typeof app.arcadeMenu === 'function') app.arcadeMenu(ARC_ROUTE[p[1]]);
+      return;
+    }
     if (head === 'support') { app.setNav('home'); return; }
     var nav = ROUTE_NAV[head] || head;
     /* A tool behind the plan opens through ITS opener, the one its Library tile taps: setNav would
@@ -263,7 +270,7 @@
   /* Layers that are not screens: back closes them first and stays where it is. */
   function closeLayer() {
     try {
-      if (document.querySelector('.arc-play,.bz-play')) { leaveDrill(); render(); return true; }
+      if (document.querySelector('.arc-play,.arc-menu,.bz-play')) { leaveDrill(); render(); return true; }
       if (menuOpen()) { state.famMenu = false; render(); return true; }
       if (state.drawerOpen) { state.drawerOpen = false; render(); return true; }
       if (state.walletOpen) { state.walletOpen = false; render(); return true; }

@@ -3679,7 +3679,6 @@ const app = {
   advGo:(v)=>{ if(window.ADV) ADV.go(v); },
   /* ◆ advanced rounds inside the ordinary Arcade pickers (no separate Advanced Games room) */
   arcAdvDict:()=>{ if(!window.ADV||!advModeOn()) return; app.openAdvanced(); ADV.dictStart(); },
-  arcAdvMem:()=>{ if(!window.ADV||!advModeOn()) return; app.openAdvanced(); ADV.memStart(); },
   advConcept:(i)=>{ if(window.ADV) ADV.openConcept(i); },
   /* Deep links from the ordinary hubs straight into an Advanced Mode segment. ADV.open()
      first so the module owns nav and the full library starts loading, then jump. */
@@ -3738,8 +3737,6 @@ const app = {
   advMockVocab:(i)=>{ if(window.ADV) ADV.mockPickVocab(+i); }, advMockVocabNext:()=>{ if(window.ADV&&ADV.mockVocabNext) ADV.mockVocabNext(); },
   advOpenTip:(i)=>{ if(window.ADV) ADV.openTip(+i); },
   advTipCat:(c)=>{ if(window.ADV) ADV.tipCat(c); },
-  advMemStart:()=>{ if(window.ADV) ADV.memStart(); },
-  advMemFlip:(i)=>{ if(window.ADV) ADV.memFlip(+i); },
   advDictStart:()=>{ if(window.ADV) ADV.dictStart(); },
   advDictSubmit:()=>{ if(window.ADV) ADV.dictSubmit(); },
   advKey:(e)=>{ if(e.key!=='Enter') return; e.preventDefault(); const v=state.advView;
@@ -10574,8 +10571,6 @@ function viewDebug(){
     ['beeGrandPrix','Bee Grand Prix','🏁 Type-to-nitro race'],
     ['whackAMoth','Whack-a-Moth','🔨 Tap letters'],
     ['spellShield','Spell Shield','🛡️ Boss defence'],
-    ['unscrambleStars','Unscramble Stars','⭐ Constellation'],
-    ['wordSnake','Word Snake','🐍 Steer &amp; spell in order'],
     ['combCatcher','Comb Catcher','🧺 Catch falling letters'],
   ];
   const card=(o)=>`<button data-act="${o.act}"${o.arg?` data-arg="${o.arg}"`:''} style="text-align:left;background:var(--bg2);border:1px solid var(--line);border-left:5px solid ${o.c};border-radius:12px;padding:13px 15px;box-shadow:var(--sh-rest);color:var(--text);cursor:pointer"><div style="font-family:var(--display);font-weight:800;font-size:15px">${o.n}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${o.d}</div></button>`;
@@ -11522,7 +11517,7 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
   pickerCard('wqStart','vocab','#2E8FB8','book','Vocabulary','Bee-style: hear the word, pick the right meaning.')+
   pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')+
-  (advModeOn()?pickerCard('arcAdvMem','','#3A2A72','grid','◆ Memory Match','Pair the hardest words with their meanings — trains recall.'):'')); }
+  ''); }   /* Memory Match left with the add-on's games (games spec §3.1: Word Doctor, a Spelling Gym mode, is in for it) */
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">${backPill('exitGame','Arcade',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px">Spelling Duel</span></div>${inner}</div>`;
@@ -11630,13 +11625,12 @@ function magicView(){ const g=state.game; const S=state;
    still live in saga2.js, so any one can be re-added with a single line here. */
 const SB_ARCADE_GAMES = [
   {k:'beeGrandPrix',        n:'Bee Grand Prix',   tag:'Race',   w:'hive',      blurb:'Spell to boost past rivals in a flat-out race.'},
-  {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Race the maze — spell a word to open each gate.'},
-  {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'arcade',    blurb:'Type the words before they reach the bottom.'},
+  {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Four honey gates, four words, then home to the hive.'},
+  {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'meadow',    blurb:'Blast the falling glitches with whole words and paint the world back.'},
   /* Keep Flying is CUT from the arcade (FIX-BEE v2 G11): a Flappy loop where spelling was a toll, and
      the Grand Prix already carries "spell to keep moving". The engine stays in saga2.js — one line back. */
-  {k:'wordSnake',           n:'Word Snake',       tag:'Arcade', w:'forest',    blurb:'Grow the snake by eating the letters in order.'},
-  {k:'unscrambleStars',     n:'Unscramble Stars', tag:'Puzzle', w:'cosmos',    blurb:'Slide the scrambled letters into the right order.'},
-  {k:'spellScene',          n:'Spell Scene',      tag:'Scene',  w:'homecoming',blurb:'Spell the word that finishes each scene.'},
+  /* Word Snake and Unscramble Stars are retired and Spell Scene is merged into Type Blaster
+     (games spec 4 Oct 2026, §3.1). Their engines stay in saga2.js, unexported. */
 ];
 window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
 const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
@@ -11652,12 +11646,9 @@ function arcadeClose(){
    ========================================================================== */
 const ARCADE_HOWTO = {
   beeGrandPrix:   'Spell the word at each ⚡ gate to boost past your rivals. Steer ◀ ▶, dodge 🛢️ oil, grab ❓ boxes — finish top of the pack.',
-  honeycombRun:   'Munch the honey through the hive and clear each gate by spelling its word. Dodge the moths and fill the honey meter.',
-  typeBlaster:    'Type each word before the glitch monster reaches the bottom. Fast and perfect builds your combo — zap every glitch.',
+  honeycombRun:   'Four honey gates stand between you and the hive. Stand on the flower by a gate and spell its word to open it, dodge the moths, and fly home before the clock runs out.',
+  typeBlaster:    'Hear the word, type all of it, then press Enter to fire. Every glitch you blast paints a piece of the grey world back. A wrong word costs a shield.',
   keepFlying:     'Tap or hold to fly. Bank every honey pot by spelling it, dodge the pillars, then soar through the Hive Gates home.',
-  wordSnake:      'Steer the snake to eat the letters in spelling order. Every word makes it grow — spell without crashing into yourself.',
-  unscrambleStars:'Tap or TYPE the scrambled star-letters into the right order. Solve fast for ⚡ bonus stars and light up the constellation.',
-  spellScene:     'Read the clue, spell the word, and sweep colour back into the scene — drive the moth off and restore the whole world.',
 };
 const ARC_COLOURS = [
   {n:'Honey',v:'#F0B429'},{n:'Cherry',v:'#EC5C67'},{n:'Ocean',v:'#3B93D6'},
@@ -11678,10 +11669,6 @@ const ARC_SCENES = [
 ];
 const ARC_HCLAYOUT = [{v:'classic',n:'Classic'},{v:'spiral',n:'Spiral'},{v:'chambers',n:'Chambers'}];
 const ARC_HCSTYLE  = [{v:'hive',n:'Golden Hive'},{v:'meadow',n:'Meadow'},{v:'cavern',n:'Crystal Cavern'}];
-// Word Snake: YOU ARE THE SNAKE — the hero row offers the Serpent pack (each id maps to a
-// SERP_PAL skin in the engine), and the world choice sets the painted backdrop.
-const ARC_SNAKES=['noodle','sunny','cobra','python','rattler','viper','boa','mamba','seasnake','naga','titanoboa','vasuki'];
-const ARC_SWORLDS=[{v:'forest',n:'Deep Forest',img:'forest'},{v:'pond',n:'Lily Pond',img:'pond'},{v:'cosmos',n:'Cosmos',img:'cosmos'}];
 const ARC_CFG = {
   /* no hero row: the driver is the speller's own buddy. Choosing a champion out of thirty
      before every race was a decision in front of the game, not part of it. */
@@ -11691,10 +11678,9 @@ const ARC_CFG = {
   honeycombRun:{ groups:[
     {key:'layout',label:'Maze layout',kind:'chip', opts:ARC_HCLAYOUT},
     {key:'style', label:'World style', kind:'chip', opts:ARC_HCSTYLE} ]},
-  wordSnake:{ heroLabel:'Your snake', heroList:ARC_SNAKES, groups:[
-    {key:'world',label:'World',kind:'world', opts:ARC_SWORLDS} ]},
-  // puzzles of taps/typing/memory — an avatar adds nothing here
-  unscrambleStars:{ noHero:true, groups:[] },
+  /* no hero row: the speller's own buddy pilots the cannon (spec §4.5 — "pilots the cannon
+     or goes"); a champion picked from thirty would have been a face on a chip and nothing more */
+  typeBlaster:{ noHero:true, groups:[] },
 };
 function arcGart(img){ return 'app-art/gart/'+img+'.webp'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''); }
 function arcadeMenu(k){

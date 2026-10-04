@@ -473,12 +473,22 @@
     cx.restore();
   }
 
-  /* ---------- ENGINE A · HONEYCOMB RUN (Pac-Man) ---------- */
-  // grid maze; arrows/swipe; moth patrols; nectar dots; golden flower spell-cards.
+  /* ---------- ENGINE A · HONEYCOMB RUN (spec §4.6) ----------
+     THE MAZE IS FOUR ZONES behind four HONEY GATES, and the hive sits behind the last.
+     A gate opens only when the flower word beside it is spelt, so the only way home is
+     four words. Clearing the dots used to win the round without a single one; the dots
+     are honey now (score), nothing more. Zones run as a pinwheel round the centre:
+     start top-left → gate 1 → top-right → gate 2 → bottom-right → gate 3 → bottom-left →
+     gate 4 → the hive, tucked in the corner of the last zone by the centre.
+     The clock is fixed per level (Easy 3:00 → Champ 2:00) and a word adds SCORE, never
+     time — a good speller's round used to run for ever. Three lives on every level;
+     moths chase faster as the level goes up. A spell card never closes on its own, and a
+     miss holds with the word shown until Continue. Pay: one coin per flower word. */
   function honeycombRun(host, opts, done){
     const diff=opts.diff||'medium';
     const HERO=opts.hero||heroAv();     // the chosen runner is the hero, not always Bizzy
     const LAYOUT=opts.layout||'classic';// 3 maze layouts
+    const KEY='honeycombRun';
     // 3 world styles: wall palette + backdrop plate. Default keeps the golden hive look.
     const STYLES={
       hive:  {world:'hive',   wall:['rgba(255,214,122,.96)','rgba(233,168,32,.94)','rgba(168,113,14,.94)'],edge:'rgba(255,243,206,.55)',core:'rgba(120,72,8,.34)'},
@@ -487,14 +497,48 @@
     };
     const STY=STYLES[opts.style]||{world:(opts.world||'meadow'),wall:STYLES.hive.wall,edge:STYLES.hive.edge,core:STYLES.hive.core};
     const world=STY.world;
-    // Gameplay hardness scales the MAZE itself: bigger grid at higher levels, and a
-    // staggered honeycomb wall pattern at Champion. (Spelling words still match the speller.)
-    const DIM={easy:[11,9,false],medium:[13,11,false],hard:[15,11,false],champ:[17,13,true]}[diff]||[13,11,false];
-    const COLS=DIM[0], ROWS=DIM[1], HEX=DIM[2];
+    /* Odd sizes whose half-way lines are EVEN, so the two walls that cut the maze into four
+       zones sit on pillar lines and every zone stays fully connected inside. A portrait
+       play area (a phone held upright) gets the same maze turned on its side. */
+    const DIM={easy:[13,9,false],medium:[17,9,false],hard:[17,13,false],champ:[21,13,true]}[diff]||[17,9,false];
+    const HEX=DIM[2];
     sgTexPreload(['bee-fly','moth']);   // canonical bee + moth, decoded before first frame
-    const CELL=Math.max(24,Math.min(104, Math.floor(Math.min(innerWidth-16,1600)/COLS), Math.floor((innerHeight-208)/ROWS)));
+    /* SPEED IS IN CELLS PER SECOND; the bee runs at speed x 1.25. `moth` is the chasers' own
+       speed, and it climbs with the level faster than the bee's does. `time` is the round's
+       fixed clock in seconds: 3:00 on Easy down to 2:00 on Champ. */
+    const CFG=calmCFG({easy:{moths:2,speed:1.5,moth:1.2,time:180},medium:{moths:3,speed:1.95,moth:1.65,time:160},
+               hard:{moths:4,speed:2.35,moth:2.1,time:140},champ:{moths:5,speed:2.75,moth:2.6,time:120}}[diff]||{moths:3,speed:1.95,moth:1.65,time:160});
+    if(window.SB_CALM) CFG.moth=+(CFG.moth*0.66).toFixed(2);
+    /* how often a moth at a junction turns toward the bee instead of wandering — and
+       only within CHASE_R cells, so pressure means "that moth noticed you", never the
+       whole pack converging from across the board. */
+    const CHASE={easy:0.22,medium:0.32,hard:0.4,champ:0.45}[diff]||0.32;
+    const CHASE_R=8;
+    /* at most this many moths HUNT at once (the nearest ones) */
+    const HUNTERS={easy:1,medium:2,hard:2,champ:2}[diff]||2;
+    const LIVES=3, GATES=4;
+    const LVL={easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'}[diff]||'';
+    const touch=AK.touch();
+    const heart=on=>'<svg viewBox="0 0 24 22" width="18" height="17" aria-hidden="true" class="hc-heart'+(on?' up':'')+'"><path d="M12 20.5s-8.5-5.2-8.5-11A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 8.5 2.9c0 5.8-8.5 11-8.5 11z" fill="'+(on?'#E8458C':'none')+'" stroke="'+(on?'#B42F6B':'currentColor')+'" stroke-width="1.8" opacity="'+(on?1:.35)+'"/></svg>';
+    const dpad='<div class="sg-dpad hc-dpad" id="sg-dpad">'+
+        '<button type="button" class="sg-dbtn" data-d="up" aria-label="Up">'+SGUI.chev(0).replace('M9 5l7 7-7 7','M5 15l7-7 7 7')+'</button>'+
+        '<div class="sg-dmid"><button type="button" class="sg-dbtn" data-d="left" aria-label="Left">'+SGUI.chev(-1)+'</button>'+
+        '<button type="button" class="sg-dbtn" data-d="down" aria-label="Down">'+SGUI.chev(0).replace('M9 5l7 7-7 7','M5 9l7 7 7-7')+'</button>'+
+        '<button type="button" class="sg-dbtn" data-d="right" aria-label="Right">'+SGUI.chev(1)+'</button></div></div>';
+    host.innerHTML=AK.stage({ plate:'app-art/sgw-'+(world==='cosmos'?'cosmos':world==='hive'?'hive':'meadow')+'.jpg',
+      hud:{ left:'<span class="arcx-stat hc-lives" id="hc-lives" aria-label="Lives"></span>',
+            center:'<span class="arcx-title">Honeycomb Run</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="hc-time"></span><span class="arcx-prog" id="hc-gates"></span>',
+            right:'<span class="arcx-stat hc-score"><b id="hc-score">0</b><i>honey</i></span>' },
+      play:'<div class="hc-wrap" id="hc-wrap"><canvas id="sg-cv"></canvas><div class="hc-cardhost" id="hc-cardhost"></div></div>',
+      controls:'<div class="hc-ctl" id="hc-ctl">'+dpad+'</div><div class="hc-keys" id="hc-keys"></div>' })+'<div id="sg-card"></div>';
+    const wrap=host.querySelector('#hc-wrap');
+    let COLS=DIM[0], ROWS=DIM[1];
+    const PW=Math.max(200, wrap.clientWidth||Math.min(innerWidth,1200)), PH=Math.max(160, wrap.clientHeight||(innerHeight-260));
+    if(PH>PW*1.15){ const t=COLS; COLS=ROWS; ROWS=t; }            // upright phone: the same maze on its side
+    const CELL=Math.max(12, Math.min(104, Math.floor(Math.min(PW/COLS, PH/ROWS))));
+    const MC=(COLS-1)/2, MR=(ROWS-1)/2;
     // Every layout keeps odd rows / odd columns open, so the maze is always fully connected.
-    function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty
+    function makeMaze(cols,rows,hex){ const M=[]; // 0 wall · 1 dot · 2 empty · 3 gate (shut)
       for(let r=0;r<rows;r++){ const row=[];
         for(let c=0;c<cols;c++){
           if(r===0||r===rows-1||c===0||c===cols-1){ row.push(0); continue; }  // border wall
@@ -509,74 +553,64 @@
           row.push(wall?0:1);
         } M.push(row); } return M; }
     const MAZE=makeMaze(COLS,ROWS,HEX);
-    /* SPEED IS IN CELLS PER SECOND, and the bee moves at speed x 1.25. It used to run at
-       2.5 (easy) to 4.5 (champ) cells/s, against about 1.5-2.0 for the arcade maze game
-       everyone is comparing it to — play-tested as "the avatar is moving too fast", and it
-       is: at 3.25 cells/s a 13-wide maze crosses in four seconds and a junction arrives
-       before you have decided. Cut 25%, which lands the bee at 1.9 to 3.4. The moths keep
-       their 0.8 relative disadvantage because the bee's 1.25 multiplier is unchanged, and
-       the round is not made harder by the cut: the moth swarm fix above already removed
-       far more pressure than a slower bee adds. */
-    const CFG={easy:{moths:2,speed:1.5,target:900,time:150},medium:{moths:3,speed:1.95,target:1200,time:180},
-               hard:{moths:4,speed:2.35,target:1500,time:180},champ:{moths:5,speed:2.75,target:1800,time:180}}[diff];
-    /* how often a moth at a junction turns toward the bee instead of wandering — and
-       only within CHASE_R cells, so pressure means "that moth noticed you", never the
-       whole pack converging from across the board. First cut (0.45 at medium, no range)
-       wiped a random-walking test bee out in EIGHT seconds. */
-    const CHASE={easy:0.22,medium:0.32,hard:0.4,champ:0.45}[diff]||0.32;
-    const CHASE_R=8;
-    /* at most this many moths HUNT at once (the nearest ones) — five converging
-       chasers gang-wiped a play-tested evader in half a minute at champ. The rest
-       wander: crowd pressure without the pincer. */
-    const HUNTERS={easy:1,medium:2,hard:2,champ:2}[diff]||2;
-    // bee starts on the centre corridor row (odd row = always open)
-    let scr=Math.floor(ROWS/2); if(scr%2===0) scr=Math.max(1,scr-1); let scc=Math.floor(COLS/2);
-    try{ if(MAZE[scr][scc]===0) scc=Math.max(1,scc-1); MAZE[scr][scc]=2; }catch(e){}
+    for(let r=0;r<ROWS;r++) MAZE[r][MC]=0;                  // the two walls that make the zones
+    for(let c=0;c<COLS;c++) MAZE[MR][c]=0;
+    /* the four gates, each with its flower on the side the bee arrives from */
+    const G=[ {c:MC,     r:1,      fc:MC-1,   fr:1},          // 1: top-left → top-right
+              {c:COLS-2, r:MR,     fc:COLS-2, fr:MR-1},       // 2: top-right → bottom-right
+              {c:MC,     r:ROWS-2, fc:MC+1,   fr:ROWS-2},     // 3: bottom-right → bottom-left
+              {c:1,      r:MR+2,   fc:1,      fr:MR+3} ];     // 4: the hive's own door
+    const HIVE={c:1, r:MR+1};                                 // the hive: the far corner of the last zone, just under the start
+    MAZE[HIVE.r][HIVE.c+1]=0;                                 // shut in on every side but its door
+    G.forEach(g=>{ g.open=false; g.w=null; g.arm=true; MAZE[g.r][g.c]=3; MAZE[g.fr][g.fc]=2; });
+    MAZE[HIVE.r][HIVE.c]=2;
+    const ZC=[[1,1,MC-1,MR-1],[MC+1,1,COLS-2,MR-1],[MC+1,MR+1,COLS-2,ROWS-2],[1,MR+1,MC-1,ROWS-2]];   // zone boxes
+    const zoneOf=(c,r)=>ZC.findIndex(z=>c>=z[0]&&c<=z[2]&&r>=z[1]&&r<=z[3]);
+    const words=AK.words(GATES+10, 3, 12); let wi=0;
+    const nextWord=()=>words[wi++]||fillWords(1,3,12)[0]||{w:'honey',d:'the sweet golden food that bees make'};
+    G.forEach(g=>{ g.w=nextWord(); });
+    let scr=MR-1, scc=1;                                      // the bee starts in the top-left zone
+    MAZE[scr][scc]=2;
     let bee={c:scc,r:scr,px:scc,py:scr,dir:[0,0],want:[0,0]};
-    let moths=[], score=0, lives=3, t=CFG.time, jelly=null, flee=0, grace=0, flower=null, flowerT=2, card=null, over=false, fx=[];
-    let lateMoth=false, spelled=0;
+    let moths=[], score=0, lives=LIVES, t=CFG.time, flee=0, grace=0, flower=null, flowerT=2, flowers=0, card=null, over=false, fx=[];
+    let lateMoth=false, spelled=0, met=0, right=0, started=false, bz=0;
     const hcRound=[];                      // the round's words, for the result screen
-    /* A flower is the ONLY way to spell in this game, so it is placed within reach and
-       there is always one on the board. It used to pick a uniformly random open cell —
-       on a medium maze that averages a dozen cells of corridor away, often past a moth —
-       and only reappeared every nine seconds. Now: 3 to 6 cells from the bee, never on top
-       of a moth, and re-seeded the instant one is taken. */
+    // moths start in the zones AHEAD of the bee, never in hers (outer corners first)
+    const MSTART=[[COLS-2,1],[COLS-2,ROWS-2],[1,ROWS-2],[MC+1,MR-1],[MC+1,MR+1],[MC-1,ROWS-2]];
+    for(let i=0;i<CFG.moths;i++){ const p=MSTART[i%MSTART.length]; moths.push({c:p[0],r:p[1],px:p[0],py:p[1],dir:[1,0]}); }
+    /* one royal jelly, in the second zone, on a corridor no moth or flower starts on */
+    const jc=[]; for(let r=ZC[1][1];r<=ZC[1][3];r+=2) for(let c=ZC[1][0];c<=ZC[1][2];c+=2)
+      if(open(c,r) && !MSTART.some(p=>p[0]===c&&p[1]===r) && !G.some(g=>g.fc===c&&g.fr===r) && !(c===MC+1&&r===1)) jc.push({c,r});
+    let J=Object.assign({got:false}, jc[Math.floor(jc.length/2)]||{c:ZC[1][0],r:ZC[1][3]});
+    /* A bonus flower keeps words coming between the gates: 2 to 6 cells from the bee, inside
+       the zones she can reach, never on a moth. Picked by a fixed stride, not a dice roll. */
+    function reach(){ const seen=new Set(), q=[[Math.round(bee.px),Math.round(bee.py)]]; seen.add(q[0][0]+','+q[0][1]);
+      while(q.length){ const [c,r]=q.shift(); for(const d of [[1,0],[-1,0],[0,1],[0,-1]]){ const nc=c+d[0], nr=r+d[1], k=nc+','+nr;
+        if(!seen.has(k) && open(nc,nr)){ seen.add(k); q.push([nc,nr]); } } } return seen; }
     function placeFlower(){
-      const bc=Math.round(bee.px), br=Math.round(bee.py);
+      const bc=Math.round(bee.px), br=Math.round(bee.py), ok=reach();
       const near=[], far=[];
       for(let r=1;r<ROWS-1;r++) for(let c=1;c<COLS-1;c++){
-        if(!open(c,r)) continue;
+        if(!open(c,r) || !ok.has(c+','+r) || MAZE[r][c]===3) continue;
+        if(G.some(g=>g.fc===c&&g.fr===r) || (c===HIVE.c&&r===HIVE.r)) continue;
         const d=Math.abs(c-bc)+Math.abs(r-br); if(d<2) continue;
         if(moths.some(m=>Math.abs(Math.round(m.px)-c)+Math.abs(Math.round(m.py)-r)<2)) continue;
         (d<=6?near:far).push({c,r}); }
       const pool=near.length?near:(far.length?far:null);
-      if(pool) flower=pool[Math.floor(Math.random()*pool.length)]; }
-    // Celebratory splash — petal burst + shockwave ring + "+1 LIFE" pop, drawn in the loop.
-    const trail=SGFX.trail(), shake=SGFX.shake(), motes=SGFX.motes(26,COLS*CELL,ROWS*CELL);
-    function spawnSplash(){ const cw=COLS*CELL, ch=ROWS*CELL;
-      SGFX.spark(fx,cw/2,ch/2,28,['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'],{speed:4.4,up:1.4});
-      SGFX.ring(fx,cw/2,ch/2,'255,209,63',{grow:8});
-      SGFX.ring(fx,cw/2,ch/2,'255,255,255',{grow:5,decay:0.034});
-      SGFX.say(fx,cw/2,ch/2-4,'+1 LIFE'); shake.hit(7); }
-    const words=pool(14); let wi=0;
-    for(let i=0;i<CFG.moths;i++){ const mc=1+(i*3)%(COLS-2); moths.push({c:mc,r:1,px:mc,py:1,dir:[1,0]}); }
-    // one royal jelly + dot bookkeeping
+      if(pool){ flowers++; flower=pool[(flowers*7)%pool.length]; } }
+    const trail=SGFX.trail(), shake=SGFX.shake();
+    let cv=host.querySelector('#sg-cv'); const BW=COLS*CELL, BH=ROWS*CELL;
+    const motes=SGFX.motes(26,BW,BH);
+    function spawnSplash(txt){ SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,28,['#F0B429','#FF7FB0','#8FA0F5','#4FC98A','#FFD13F'],{speed:4.4,up:1.4});
+      SGFX.ring(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,'255,209,63',{grow:8});
+      SGFX.say(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2-4,txt||'+1'); if(!AK.calm()) shake.hit(7); }
     let dots=0; MAZE.forEach(r=>r.forEach(v=>{ if(v===1) dots++; }));
-    const J={c:11,r:9}; 
-    host.innerHTML='<div class="sg-hud"><span id="sg-score">0</span><span id="sg-time"></span><span id="sg-lives"></span></div><canvas id="sg-cv"></canvas>'+
-      '<div class="sg-dpad" id="sg-dpad">'+
-        '<button class="sg-dbtn" data-d="up" aria-label="Up">▲</button>'+
-        '<div class="sg-dmid"><button class="sg-dbtn" data-d="left" aria-label="Left">◀</button>'+
-        '<button class="sg-dbtn" data-d="down" aria-label="Down">▼</button>'+
-        '<button class="sg-dbtn" data-d="right" aria-label="Right">▶</button></div>'+
-      '</div><div id="sg-card"></div>';
-    const cv=host.querySelector('#sg-cv'); const BW=COLS*CELL, BH=ROWS*CELL;
     const dpr=Math.min(2.5,window.devicePixelRatio||1);
     cv.width=Math.round(BW*dpr); cv.height=Math.round(BH*dpr);
     cv.style.width=BW+'px'; cv.style.height=BH+'px';
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     const DIR={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
-    const key=e=>{ if(card) return;                       // spelling box open — let the letters through
+    const key=e=>{ if(card||over||!started) return;          // a spell card owns the keyboard while it is up
       const tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return;
       const m={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
       w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]}[e.key]; if(m){ bee.want=m; e.preventDefault(); } };
@@ -588,35 +622,20 @@
     pad.addEventListener('pointerdown',e=>{ const b=e.target.closest('.sg-dbtn'); if(b){ setDir(b); e.preventDefault(); } },{passive:false});
     let tx=0,ty=0; cv.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
     cv.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
-      bee.want=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)]; },{passive:true});
-    function open(c,r){ return MAZE[r]&&MAZE[r][c]!==0; }
+      if(Math.abs(dx)+Math.abs(dy)<12) return; bee.want=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)]; },{passive:true});
+    function open(c,r){ const v=MAZE[r]&&MAZE[r][c]; return v!==undefined && v!==0 && v!==3; }
     /* Which cell this thing will arrive at next along one axis. Handles being exactly on a
        centre, where floor and ceil both name the cell you are already standing in. */
     function nextCell(v,d){ return d>0?Math.floor(v)+1 : d<0?Math.ceil(v)-1 : Math.round(v); }
     const TURNWIN=0.4;      // cells: how early a turn may be entered before the junction
-    /* Grid mover with desired-turn buffering. `sp` is CELLS PER SECOND and `dt` is the
-       real elapsed seconds — it used to be `sp/60`, a fixed distance PER FRAME on the
-       assumption that every frame is exactly 1/60s. It is not: the loop below was a
-       setInterval drifting against the display refresh, so the bee covered the same
-       distance in frames of different lengths and read as jumping rather than gliding.
-       Distance per second is now constant whatever the frame does. `thr` scales with the
-       step, which keeps the snap window smaller than it — the invariant that stops the
-       bee vibrating in place at a cell centre. dt is clamped at TWO frames (34ms): a
-       hitched frame otherwise paints several frames of travel in one hop, which on a
-       device that hitches often IS the jumping. Under the clamp the game runs a shade
-       slow through a hitch instead — invisible; the hop was not. */
+    /* Grid mover with desired-turn buffering. `sp` is CELLS PER SECOND and `dt` the step's
+       real seconds (the shared fixed step, 1/120 s). `thr` scales with the step, which keeps
+       the snap window smaller than it — the invariant that stops the bee vibrating in place
+       at a cell centre. */
     function step(ent,sp,dt){
       const spd=sp*Math.max(0.001,Math.min(0.034,dt||1/60)), thr=spd*0.6;
-      /* A turn used to be accepted ONLY within one step of a cell centre, so an arrow
-         pressed a moment late was dropped in silence and the player waited out a whole
-         cell — often a whole corridor — before it took. Play-testing read that as the
-         controls being unresponsive, which it was. Two standard maze fixes:
-           1. a REVERSE takes effect at once, since turning back needs no repositioning;
-           2. a turn entered while approaching a junction is accepted early — and the bee
-              GLIDES onto the new corridor diagonally at running speed (the Pac-Man
-              cornering rule). It used to be teleported to the corner, a snap of up to
-              0.4 cells — ~40px on a big board — on every early turn, which is exactly
-              the "jumping, not smooth" that play-testing kept reporting. */
+      /* 1. a REVERSE takes effect at once; 2. a turn entered while approaching a junction is
+         accepted early, and the bee GLIDES onto the new corridor (the cornering rule). */
       if(ent===bee && (bee.want[0]||bee.want[1]) && (ent.dir[0]||ent.dir[1])){
         const rev = bee.want[0]===-ent.dir[0] && bee.want[1]===-ent.dir[1];
         if(rev){
@@ -635,12 +654,9 @@
         if(!open(ent.px+ent.dir[0], ent.py+ent.dir[1])){ if(ent===bee) ent.dir=[0,0]; else {
           const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
           ent.dir=ops[Math.floor(Math.random()*ops.length)]||[-ent.dir[0],-ent.dir[1]]; } }
-        /* MOTHS HUNT, THEY DO NOT WANDER. With the swarm gone, a purely random moth at
-           80% of the bee's speed effectively never catches anyone — the game's only
-           danger was your own cornering. The Pac-Man answer: at a junction a moth turns
-           TOWARD the bee (away from her while she has royal jelly) with a per-difficulty
-           probability, and wanders the rest of the time so it never becomes a perfect
-           shadow that parks on your tail. Danger scales with the level, count does not. */
+        /* MOTHS HUNT, THEY DO NOT WANDER: at a junction a moth turns TOWARD the bee (away
+           from her while she has royal jelly) with a per-level probability, and wanders the
+           rest of the time so it never becomes a perfect shadow. */
         if(ent!==bee){ const ops=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>open(ent.px+d[0],ent.py+d[1])&&!(d[0]===-ent.dir[0]&&d[1]===-ent.dir[1]));
           if(ops.length){
             const near=ent._hunt && Math.abs(ent.px-bee.px)+Math.abs(ent.py-bee.py)<=CHASE_R;
@@ -651,97 +667,94 @@
             } else if(Math.random()<0.25) ent.dir=ops[Math.floor(Math.random()*ops.length)];
           } } }
       ent.px+=ent.dir[0]*spd; ent.py+=ent.dir[1]*spd;
-      /* cornering glide: after an early turn the bee sits a little off the new
-         corridor's centreline. Slide onto it at the SAME speed it runs at — a short
-         diagonal, finished in a few frames, instead of a snap. (TURNWIN < 0.5 keeps
-         Math.round pointing at the junction the turn was accepted for.) */
+      /* cornering glide: slide onto the new corridor's centreline at running speed */
       if(ent.dir[0]!==0 && ent.py!==Math.round(ent.py)){ const ty=Math.round(ent.py);
         ent.py+=Math.sign(ty-ent.py)*Math.min(spd,Math.abs(ty-ent.py)); }
       else if(ent.dir[1]!==0 && ent.px!==Math.round(ent.px)){ const tx=Math.round(ent.px);
         ent.px+=Math.sign(tx-ent.px)*Math.min(spd,Math.abs(tx-ent.px)); }
     }
-    function spellCard(){
-      if(wi>=words.length) wi=0; const w=words[wi++]; card={w,typed:'',t:12};
-      const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>🌼 Spell it to bloom — earn time &amp; coins!</b><button class="sg-cardw" id="sg-cw">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+'<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off"><button class="sg-rbtn go" id="sg-cgo">Bloom</button></div><div id="sg-ct">12</div></div>';
-      el.style.display='grid'; try{ say(w.w); }catch(e){}
-      const inp=el.querySelector('#sg-ci'); inp.focus();
-      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); hcRound.push({w:w.w,ok:ok});
-        if(ok){ spelled++; score+=150; t+=15; lives=Math.min(5,lives+1); try{ if(typeof addCoins==='function') addCoins('answer'); }catch(_){}
-          el.style.display='none'; card=null; spawnSplash();
-          try{flash('🌸 +1 life ❤ · +150 · +15 seconds · +20 🪙 — the meadow blooms!');}catch(_){} return; }
-        else { try{flash('Not quite — the moth got that one.');}catch(_){} }
-        el.style.display='none'; card=null; }
-      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
-      el.querySelector('#sg-cgo').onclick=submit;
-      el.querySelector('#sg-cw').onclick=()=>{ try{ say(w.w); }catch(e){} };
-      const tick=setInterval(()=>{ if(!card){ clearInterval(tick); return; } card.t--; el.querySelector('#sg-ct').textContent=card.t;
-        if(card.t<=0){ clearInterval(tick); el.style.display='none'; card=null; } },1000);
+    /* THE SPELL CARD. It holds the clock and the moths, and it never closes on its own
+       (a 12-second fuse used to shut it on a child still thinking). A miss holds the word
+       on screen until Continue; that gate then asks for a NEW word, because the old one has
+       just been read out letter by letter. */
+    const cardHost=host.querySelector('#hc-cardhost'), keysHost=host.querySelector('#hc-keys'), ctl=host.querySelector('#hc-ctl');
+    let keys=null;
+    function spellCard(kind, g){
+      const w=kind==='gate'?g.w:nextWord(); card={kind,g,w,typed:''}; loop.hold(true);
+      const head=kind==='gate'?('Gate '+(G.indexOf(g)+1)+' of '+GATES+' — spell it to open the gate'):'A flower! Spell it to bloom';
+      cardHost.innerHTML='<div class="hc-card sg-cardbox" role="dialog" aria-modal="true" aria-label="Spell the word">'+
+        '<b>'+esc(head)+'</b><button type="button" class="sg-cardw" id="sg-cw" aria-label="Hear the word">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
+        '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Spell the word you hear"'+(touch?' inputmode="none" readonly':'')+'>'+
+        '<button type="button" class="sg-rbtn go" id="sg-cgo">'+(kind==='gate'?'Open':'Bloom')+'</button></div>'+
+        '<button type="button" class="hc-later" id="hc-later">Not now</button></div>';
+      cardHost.style.display='grid'; try{ say(w.w); }catch(e){}
+      const inp=cardHost.querySelector('#sg-ci'); if(!touch) try{ inp.focus(); }catch(e){}
+      if(touch){ ctl.style.display='none'; keys=AK.keys(keysHost,{ onKey:ch=>{ inp.value+=ch; }, onBack:()=>{ inp.value=inp.value.slice(0,-1); }, onEnter:()=>submit() }); }
+      const close=()=>{ cardHost.style.display='none'; cardHost.innerHTML=''; if(keys){ try{ keys.destroy(); }catch(e){} keys=null; } keysHost.innerHTML=''; ctl.style.display=''; };
+      function submit(){ if(!card) return; const typed=inp.value.trim(); if(!typed){ try{ say(w.w); }catch(e){} return; }
+        const ok=sameSpelling(typed,w.w); met++; wlog(w,ok); hcRound.push({w:w.w,ok});
+        if(ok){ right++; spelled++; AK.pay(); try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
+          if(kind==='gate'){ g.open=true; MAZE[g.r][g.c]=2; score+=200; spawnSplash('Gate '+(G.indexOf(g)+1)+' open');
+            try{ flash('The honey gate swings open · +1 🪙'); }catch(e){} }
+          else { score+=150; if(lives<LIVES) lives++; spawnSplash('+1');
+            try{ flash('The flower blooms · +150 honey · +1 🪙'); }catch(e){} }
+          close(); card=null; if(!over) loop.hold(false); return; }
+        try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
+        close();
+        AK.miss(wrap, w, typed, { note: kind==='gate'?'The gate stays shut. It will ask for a new word.':'', onContinue(){
+          if(kind==='gate'){ g.w=nextWord(); g.arm=false; }
+          card=null; if(!over) loop.hold(false); } }); }
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } else if(e.key==='Escape'){ e.preventDefault(); later(); } };
+      const later=()=>{ close(); if(kind==='gate') g.arm=false; else { flower=null; flowerT=2; } card=null; if(!over) loop.hold(false); };
+      cardHost.querySelector('#sg-cgo').onclick=submit;
+      cardHost.querySelector('#hc-later').onclick=later;
+      cardHost.querySelector('#sg-cw').onclick=()=>{ try{ say(w.w); }catch(e){} };
+      if(touch){ const kd=e=>{ if(!card){ removeEventListener('keydown',kd,true); return; } if(e.ctrlKey||e.metaKey||e.altKey) return;
+          if(/^[a-zA-Z]$/.test(e.key)) inp.value+=e.key.toLowerCase(); else if(e.key==='Backspace') inp.value=inp.value.slice(0,-1);
+          else if(e.key==='Enter') submit(); else return; e.preventDefault(); e.stopPropagation(); };
+        addEventListener('keydown',kd,true); }
     }
-    /* Every other engine in this file drives on requestAnimationFrame; this one was the
-       last on setInterval(1000/60), which free-runs against the display refresh and lands
-       frames unevenly — visible judder even at a nominal 60fps. */
-    /* the clock is the rAF TIMESTAMP, not Date.now(): Date.now() is whole milliseconds,
-       so at 60Hz the frame delta alternates 16/17ms — a permanent ±3% speed shimmer
-       that reads as micro-judder. The rAF timestamp is sub-millisecond and is the
-       display's own clock. */
-    let last=performance.now(), dotTimer=0, loop=null, raf=null;
-    function frame(ts){
-      if(over){ if(loop){ clearInterval(loop); loop=null; } if(raf){ cancelAnimationFrame(raf); raf=null; } return; }
-      try{
-        // the clock ticks through a spell card too — otherwise the first frame after
-        // the card closes gets the whole pause as its dt (clamped to 50ms: a visible lurch)
-        const now=(ts!==undefined?ts:performance.now()), dt=Math.min(34, now-last); last=now;
-        if(!card){                                   // paused during a spell card
-          const ds=dt/1000;
-          // the HUNTERS nearest moths get the chase brain this frame; the rest wander
-          moths.map(m=>({m,d:Math.abs(m.px-bee.px)+Math.abs(m.py-bee.py)})).sort((a,b)=>a.d-b.d)
-            .forEach((x,i)=>{ x.m._hunt = i<HUNTERS; });
-          step(bee,CFG.speed*1.25,ds); moths.forEach(m=>step(m, flee>0?CFG.speed*0.6:CFG.speed, ds));
-          flee=Math.max(0,flee-dt/1000); grace=Math.max(0,grace-dt/1000);
-          const bc=Math.round(bee.px), br=Math.round(bee.py);
-          if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
-            SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6});
-            if(dots<=0){ over=true; finish(true); return; } }          // maze cleared → win the round
-          if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
-          if(flower && Math.round(flower.c)===bc && Math.round(flower.r)===br){ flower=null; flowerT=2; spellCard(); }
-          moths.forEach(m=>{ if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
-            if(flee>0){ score+=50; m.px=6;m.py=1; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
-            // two seconds of grace after a hit — a moth camped near the respawn point
-            // used to chain three deaths in eight seconds
-            else if(grace<=0){ grace=2; lives--; shake.hit(11); trail.clear();
-              SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
-              bee.px=6;bee.py=5;bee.dir=[0,0];
-              if(lives<=0){ over=true; finish(false); } } } });
-          dotTimer+=dt/1000; if(dotTimer>=1){ dotTimer=0; t--; flowerT--;
-            if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
-            /* Moths no longer breed. This line used to add one on a 16% roll every second
-               up to CFG.moths+6, which saturated in 38 seconds and left EVERY difficulty
-               with a swarm: easy 8 moths, champ 11, in a maze of 51 to 130 open cells. The
-               per-difficulty counts above stopped meaning anything, and the round stopped
-               being about words — you spent it running. One late arrival, once, at the
-               halfway mark, is enough to keep the maze from going stale. */
-            if(!lateMoth && t<=Math.floor(CFG.time/2)){ lateMoth=true;
-              moths.push({c:scc,r:1,px:scc,py:1,dir:[[1,0],[-1,0]][Math.floor(Math.random()*2)]}); }
-            /* Time-out: the score alone used to decide it, and score comes from dots and
-               eaten moths — so it was possible to win without spelling a word. Two words is
-               a low bar and it makes the point: this is a spelling game with a maze in it. */
-            if(t<=0){ over=true; finish(score>=CFG.target && spelled>=2); } }
-          draw();
-        }
-      }catch(err){ /* never let a render/logic error stop the loop — the bee must keep moving */ }
-    }
+    function update(dt){ if(over||!started||card) return;
+      moths.map(m=>({m,d:Math.abs(m.px-bee.px)+Math.abs(m.py-bee.py)})).sort((a,b)=>a.d-b.d)
+        .forEach((x,i)=>{ x.m._hunt = i<HUNTERS; });
+      step(bee,CFG.speed*1.25,dt); moths.forEach(m=>step(m, flee>0?CFG.moth*0.6:CFG.moth, dt));
+      flee=Math.max(0,flee-dt); grace=Math.max(0,grace-dt);
+      const bc=Math.round(bee.px), br=Math.round(bee.py);
+      { const zz=zoneOf(bc,br); if(zz>=0) bz=zz; }
+      if(MAZE[br]&&MAZE[br][bc]===1){ MAZE[br][bc]=2; score+=10; dots--;
+        SGFX.spark(fx,bc*CELL+CELL/2,br*CELL+CELL/2,4,['#FFE9A8','#F0B429'],{speed:1.9,decay:0.06,rx:2,ry:2.6}); }   // honey is score — the hive is the only way to win
+      if(J.c===bc&&J.r===br&&!J.got){ J.got=true; flee=6; }
+      /* the gates: standing on a shut gate's flower asks for its word; stepping off re-arms it */
+      for(const g of G){ if(g.open) continue; const on=(g.fc===bc&&g.fr===br);
+        if(on && g.arm){ g.arm=false; spellCard('gate',g); return; } if(!on) g.arm=true; }
+      if(bc===HIVE.c && br===HIVE.r && G.every(g=>g.open)){ over=true; finish(true,'home'); return; }   // home, through all four gates
+      if(flower && flower.c===bc && flower.r===br){ flower=null; flowerT=3; spellCard('flower'); return; }
+      moths.forEach(m=>{ if(over) return; if(Math.abs(m.px-bee.px)<0.5&&Math.abs(m.py-bee.py)<0.5){
+        if(flee>0){ score+=50; const z=ZC[1]; m.px=z[2]; m.py=z[1]; SGFX.ring(fx,m.px*CELL+CELL/2,m.py*CELL+CELL/2,'150,180,255',{grow:9}); }
+        // two seconds of grace after a hit — a moth camped near the respawn point used to chain deaths
+        else if(grace<=0){ grace=2; lives--; if(!AK.calm()) shake.hit(11); trail.clear();
+          SGFX.spark(fx,bee.px*CELL+CELL/2,bee.py*CELL+CELL/2,14,['#E0553C','#FF9C7A'],{speed:4});
+          const z=ZC[bz]; bee.px=z[0]; bee.py=z[1]; bee.dir=[0,0];   // back to the top corner of the zone she was in
+          if(lives<=0){ over=true; finish(false,'lives'); } } } });
+      if(over) return;
+      t-=dt; flowerT-=dt;
+      if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
+      /* one late moth, once, at the halfway mark — in the zone corner furthest from the bee */
+      if(!lateMoth && t<=CFG.time/2){ lateMoth=true;
+        const cs=[[1,1],[COLS-2,1],[COLS-2,ROWS-2],[1,ROWS-2]].filter(p=>open(p[0],p[1]));
+        const far=cs.sort((a,b)=>(Math.abs(b[0]-bc)+Math.abs(b[1]-br))-(Math.abs(a[0]-bc)+Math.abs(a[1]-br)))[0]||[COLS-2,1];
+        moths.push({c:far[0],r:far[1],px:far[0],py:far[1],dir:[0,0]}); }
+      if(t<=0){ t=0; over=true; finish(false,'time'); } }
+    const loop=AK.loop(update, ()=>{ if(started) draw(); });
     function draw(){
       shake.begin(cx);
       cx.clearRect(-40,-40,BW+80,BH+80);
-      const T=Date.now();
+      const T=performance.now();
       // painted play field, scrimmed so the maze reads on top of it
       if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#4C7A54'; cx.fillRect(0,0,BW,BH); }
       SGFX.scrim(cx,BW,BH,0.34);
       SGFX.drawMotes(cx,motes,BW,BH,T);
-      /* the walls are HONEYCOMB - six sides, a light source above, a shadow under
-         each cell. They used to be rounded squares at 30% opacity, which is
-         neither a honeycomb nor a wall. */
+      /* the walls are HONEYCOMB - six sides, a light source above, a shadow under each cell */
       for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c];
         const px=c*CELL+CELL/2, py=r*CELL+CELL/2;
         if(v===0){
@@ -752,12 +765,30 @@
           cx.strokeStyle=STY.edge; cx.lineWidth=1.4; SGFX.hex(cx,px,py,CELL*0.53); cx.stroke();
           cx.fillStyle=STY.core; SGFX.hex(cx,px,py,CELL*0.30); cx.fill();
         }
+        else if(v===3){             // a shut honey gate: amber, banded, glowing at its edges
+          const g=cx.createLinearGradient(px-CELL/2,0,px+CELL/2,0); g.addColorStop(0,'#B36B00'); g.addColorStop(.5,'#FFC23D'); g.addColorStop(1,'#B36B00');
+          cx.fillStyle=g; SGFX.rr(cx,px-CELL*0.42,py-CELL*0.42,CELL*0.84,CELL*0.84,CELL*0.16); cx.fill();
+          cx.strokeStyle='rgba(90,46,0,.7)'; cx.lineWidth=Math.max(1.5,CELL*0.06);
+          for(let k=-1;k<=1;k++){ cx.beginPath(); cx.moveTo(px+k*CELL*0.2,py-CELL*0.36); cx.lineTo(px+k*CELL*0.2,py+CELL*0.36); cx.stroke(); } }
         else if(v===1) SGFX.orb(cx,px,py,CELL*0.10,'#FFF3C4','#F0B429',T/420+(c+r)*0.7);
       }
+      // the hive, home: drawn as a dome of comb, lit once every gate is open
+      { const hx=HIVE.c*CELL+CELL/2, hy=HIVE.r*CELL+CELL/2, lit=G.every(g=>g.open);
+        cx.save(); if(lit){ cx.shadowColor='rgba(255,210,90,.9)'; cx.shadowBlur=CELL*0.6; }
+        cx.fillStyle=lit?'#FFC23D':'#C98A08'; cx.beginPath(); cx.ellipse(hx,hy+CELL*0.05,CELL*0.4,CELL*0.42,0,0,7); cx.fill(); cx.restore();
+        cx.strokeStyle='rgba(90,46,0,.75)'; cx.lineWidth=Math.max(1.4,CELL*0.05);
+        for(let k=-2;k<=2;k++){ cx.beginPath(); cx.ellipse(hx,hy+CELL*0.05+k*CELL*0.13,CELL*0.4*Math.sqrt(1-(k*0.3)*(k*0.3)),CELL*0.02,0,0,7); cx.stroke(); }
+        cx.fillStyle='#4A2A06'; cx.beginPath(); cx.arc(hx,hy+CELL*0.24,CELL*0.09,0,7); cx.fill(); }
       if(!J.got) SGFX.orb(cx,J.c*CELL+CELL/2,J.r*CELL+CELL/2,CELL*0.24,'#FFFFFF','#FFC93F',T/260);
-      if(flower){ const fi=sgImg('env-meadow'); cx.font=(CELL*0.72)+'px serif'; cx.fillText('🌼',flower.c*CELL+CELL*0.14,flower.r*CELL+CELL*0.8); }
+      // the gate flowers, and the bonus flower: drawn petals, not an emoji
+      const bloom=(c,r,col,big)=>{ const x=c*CELL+CELL/2, y=r*CELL+CELL/2, s=CELL*(big?0.34:0.28), ph=T/500;
+        cx.save(); cx.translate(x,y); cx.rotate(Math.sin(ph+c)*0.15);
+        for(let k=0;k<6;k++){ cx.fillStyle=col; cx.beginPath(); cx.ellipse(Math.cos(k*Math.PI/3)*s*0.62,Math.sin(k*Math.PI/3)*s*0.62,s*0.42,s*0.26,k*Math.PI/3,0,7); cx.fill(); }
+        cx.fillStyle='#F0B429'; cx.beginPath(); cx.arc(0,0,s*0.34,0,7); cx.fill(); cx.restore(); };
+      G.forEach(g=>{ if(!g.open) bloom(g.fc,g.fr,'#FFFFFF',true); });
+      if(flower) bloom(flower.c,flower.r,'#FF9CC6',false);
       // moths — the Gemini purple moth sprite (blue glow when edible); SGART grey-moth then vector fallback
-      const mtex=sgTex('moth'), mi=sgImg('grey-moth'), _ph=Date.now()/90;
+      const mtex=sgTex('moth'), mi=sgImg('grey-moth'), _ph=T/90;
       moths.forEach((m,i)=>{ const mx=m.px*CELL, my=m.py*CELL;
         if(flee>0){ cx.fillStyle='rgba(120,150,255,.45)'; cx.beginPath(); cx.arc(mx+CELL/2,my+CELL/2,CELL*0.44,0,7); cx.fill(); }
         let md=false; const bob=Math.sin(_ph+i)*CELL*0.03;
@@ -768,9 +799,8 @@
       trail.push(bee.px*CELL+CELL/2, bee.py*CELL+CELL/2, 16);
       trail.draw(cx,'255,205,80',CELL*0.30);
       // the RUNNER is the chosen hero avatar (falls back to the bee-fly sprite / Bizzy)
-      const usingAv=!!avImg(HERO);
       const bi=avImg(HERO)||sgTex('bee-fly')||sgImg('bizzy-side-fly')||avImg('bizzy'), bx=bee.px*CELL, by=bee.py*CELL; let beeDrew=false;
-      if(bi){ try{ const bob=1+0.05*Math.sin(Date.now()/110), s=CELL*1.12*bob, hh=bi.height&&bi.width?s*(bi.height/bi.width):s;
+      if(bi){ try{ const bob=1+0.05*Math.sin(T/110), s=CELL*1.12*bob, hh=bi.height&&bi.width?s*(bi.height/bi.width):s;
         cx.save(); cx.translate(bx+CELL/2,by+CELL/2);
         if(bee.dir[0]<0) cx.scale(-1,1);              // flip when flying left
         cx.drawImage(bi,-s/2,-hh/2,s,hh); cx.restore(); beeDrew=true; }catch(e){ try{cx.restore();}catch(_){} } }
@@ -779,27 +809,48 @@
       SGFX.run(cx,fx);
       SGFX.vignette(cx,BW,BH,0.40);
       shake.end(cx);
-      host.querySelector('#sg-score').textContent='🍯 '+score+' / '+CFG.target;
-      host.querySelector('#sg-time').textContent='⏱ '+Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
-      host.querySelector('#sg-lives').textContent='❤'.repeat(Math.max(0,lives));
+      hud();
     }
-    function finish(win){ if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key);
-      const stars=win?(score>=CFG.target*1.5?3:score>=CFG.target*1.2?2:1):0; endCard(win,stars); }
-    function endCard(win,stars){
+    let _hud='';
+    function hud(){ const tt=Math.max(0,Math.ceil(t)), open=G.filter(g=>g.open).length;
+      const k=score+'|'+tt+'|'+lives+'|'+open; if(k===_hud) return; _hud=k;
+      host.querySelector('#hc-score').textContent=score.toLocaleString();
+      host.querySelector('#hc-time').textContent=Math.floor(tt/60)+':'+String(tt%60).padStart(2,'0');
+      host.querySelector('#hc-gates').textContent='Gates '+open+'/'+GATES;
+      host.querySelector('#hc-lives').innerHTML=Array.from({length:LIVES},(_,i)=>heart(i<lives)).join(''); }
+    function finish(win,why){ over=true; try{ loop.stop(); }catch(e){} removeEventListener('keydown',key);
+      if(win) score+=Math.ceil(t)*5;                      // time left becomes honey, not more time
+      const stars=win?(lives>=3&&met===right?3:lives>=2?2:1):0;
+      endCard(win,stars,why); }
+    function endCard(win,stars,why){
+      const line=AK.level(KEY, right, met);
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
-      /* This screen used to hand back a honey count and ★★☆ typed as glyphs, and never
-         said which words the round had been about — the one thing a child needs from it.
-         SGUI.result prints the log, right and wrong marked, each chip tappable. */
       el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'honey', words:hcRound,
-        title: win?'The meadow is free':'Out of time' });
+        title: win?'Home to the hive':why==='lives'?'Out of lives':'Out of time',
+        sub: [win?'All four gates, spelled open':(G.filter(g=>g.open).length+' of '+GATES+' gates open'), line].filter(Boolean).join(' · ') });
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; honeycombRun(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); };
     }
-    if(window.SB_DEBUG) window._maze={ state:()=>({px:bee.px,py:bee.py,dir:bee.dir.slice(),lives,cell:CELL,cols:COLS,rows:ROWS,moths:moths.map(m=>({px:m.px,py:m.py}))}),
-      want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r) };   // capture tooling: watch the bee glide
-    (function pump(){ raf=requestAnimationFrame(ts=>{ frame(ts); if(!over) pump(); }); })();
-    return { destroy(){ over=true; if(loop){ clearInterval(loop); loop=null; } removeEventListener('keydown',key); } };
+    function begin(){ started=true; draw(); }
+    function howto(){ const el=host.querySelector('#sg-card');
+      el.innerHTML=SGUI.howto({ title:'Honeycomb Run', art:'',
+        sub:'Four honey gates stand between you and the hive.',
+        steps:[ 'Run the maze with the arrow keys, WASD, the pad or a swipe',
+                'Stand on the white flower by a gate and spell its word to open it',
+                'Open all four gates and fly home to the hive before the clock runs out',
+                'Moths cost a life (you have three). Pink flowers are bonus words' ],
+        go:'Into the maze' });
+      el.style.display='grid';
+      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML=''; begin(); }; }
+    draw(); howto();
+    if(window.SB_DEBUG) window._maze={ state:()=>({px:bee.px,py:bee.py,dir:bee.dir.slice(),lives,cell:CELL,cols:COLS,rows:ROWS,t,started,over,card:card?card.kind:null,
+        gates:G.map(g=>({c:g.c,r:g.r,fc:g.fc,fr:g.fr,open:g.open})),hive:HIVE,dots,score,met,right,moths:moths.map(m=>({px:m.px,py:m.py}))}),
+      want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r), word:()=>card?card.w.w:'',
+      warp:(c,r)=>{ bee.px=bee.c=c; bee.py=bee.r=r; bee.dir=[0,0]; bee.want=[0,0]; },
+      setTime:s=>{ t=s; }, clearDots:()=>{ for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(MAZE[r][c]===1){ MAZE[r][c]=2; } dots=0; },
+      noMoths:()=>{ moths=[]; lateMoth=true; }, reachHive:()=>reach().has(HIVE.c+','+HIVE.r), begin:()=>{ if(!started){ const el=host.querySelector('#sg-card'); el.style.display='none'; el.innerHTML=''; begin(); } } };
+    return { destroy(){ over=true; try{ loop.stop(); }catch(e){} removeEventListener('keydown',key); if(keys){ try{ keys.destroy(); }catch(e){} } } };
   }
 
 
@@ -3283,107 +3334,284 @@
     return { destroy(){ over=true; } };
   }
 
-  /* ---------- ENGINE M · TYPE BLASTER (arcade dictation shooter) ---------- */
+  /* ======================================================================
+     ARCADE KIT GUARDS (games spec 4 Oct 2026). g-engine owns sgLoop, SGUI.miss,
+     SGUI.keys, SGUI.stage and SB_PLATE; g-found owns nextWords and SB_LEVEL. Until
+     those branches are merged each one is reached through here, with the smallest
+     local stand-in that keeps the same contract. Once they are, every call goes to
+     the shared piece and the stand-in below it is dead — delete it then.
+     ====================================================================== */
+  const AK={
+    /* §1.4: physics at a fixed 1/120 s, as many steps as real time needs (max 12 a
+       frame), render once a frame; holds on document.hidden and while a card is up */
+    loop(update, render){ if(typeof W().sgLoop==='function') return W().sgLoop(update, render);
+      let acc=0, last=performance.now(), raf=0, held=false, dead=false;
+      function tick(now){ if(dead) return; raf=requestAnimationFrame(tick);
+        if(document.hidden||held){ last=now; return; }
+        acc+=Math.min(0.25,(now-last)/1000); last=now; let n=0;
+        while(acc>=1/120 && n<12){ update(1/120); acc-=1/120; n++; } render(acc*120); }
+      raf=requestAnimationFrame(tick);
+      return { hold(v){ held=!!v; }, stop(){ dead=true; cancelAnimationFrame(raf); } }; },
+    /* §1.5: the child's letters against the word, the why, Continue (Enter or tap).
+       The word goes over as a String that also carries the record's fields, so the kit's
+       miss card reads it whether it takes a string or a record. */
+    miss(host, w, typed, o){ o=o||{};
+      const arg=Object.assign(new String(w.w), w);
+      const S=W().SGUI; if(S && typeof S.miss==='function') return S.miss(host, arg, typed, o);
+      const el=document.createElement('div'); el.className='arcx-miss';
+      el.innerHTML='<div class="arcx-misscard" role="dialog" aria-modal="true" aria-label="The word">'+
+        (typeof missFeedbackHTML==='function'?missFeedbackHTML(w, typed||'', {foot:o.note?esc(o.note):''}):'<b>'+esc(w.w)+'</b>')+
+        '<button class="sg-rbtn go arcx-mgo" type="button">Continue</button></div>';
+      host.appendChild(el); try{ say(w.w); }catch(e){}
+      let gone=false, armed=false; setTimeout(()=>{ armed=true; },250);
+      const go=()=>{ if(gone) return; gone=true; removeEventListener('keydown',kd,true); el.remove(); if(o.onContinue) o.onContinue(); };
+      const kd=e=>{ if(e.key!=='Enter'&&e.key!==' ') return; e.preventDefault(); e.stopPropagation(); if(armed&&!e.repeat) go(); };
+      addEventListener('keydown',kd,true);
+      el.querySelector('.arcx-mgo').onclick=go;
+      return { close:go }; },
+    /* §1.6: one on-screen keyboard for touch; a desktop types on its own keyboard */
+    keys(el, o){ const S=W().SGUI; if(S && typeof S.keys==='function') return S.keys(el, o);
+      const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
+      const back='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5h11v14H9l-6-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9l5 6M17 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+      const box=document.createElement('div'); box.className='arcx-keys'; box.setAttribute('role','group'); box.setAttribute('aria-label','Letters');
+      box.innerHTML=rows.map((r,i)=>'<div class="arcx-krow">'+
+        (i===2?'<button type="button" tabindex="-1" class="arcx-k arcx-kw" data-k="enter">Enter</button>':'')+
+        r.split('').map(c=>'<button type="button" tabindex="-1" class="arcx-k" data-k="'+c+'">'+c+'</button>').join('')+
+        (i===2?'<button type="button" tabindex="-1" class="arcx-k arcx-kw" data-k="back" aria-label="Delete">'+back+'</button>':'')+'</div>').join('');
+      box.addEventListener('click',e=>{ const b=e.target.closest('[data-k]'); if(!b) return; e.preventDefault(); const k=b.dataset.k;
+        if(k==='enter'){ if(o.onEnter) o.onEnter(); } else if(k==='back'){ if(o.onBack) o.onBack(); } else if(o.onKey) o.onKey(k); });
+      el.appendChild(box);
+      return { destroy(){ box.remove(); } }; },
+    /* §5.0: HUD (mirrored) · play area (the plate, edge to edge) · controls */
+    stage(o){ const S=W().SGUI; if(S && typeof S.stage==='function') return S.stage(o);
+      const h=o.hud||{};
+      return '<div class="arcx-stage"'+(o.plate?' style="--arcx-plate:url(\''+o.plate+'\')"':'')+'>'+
+        '<div class="arcx-hud"><div class="arcx-hl">'+(h.left||'')+'</div><div class="arcx-hc">'+(h.center||'')+'</div><div class="arcx-hr">'+(h.right||'')+'</div></div>'+
+        '<div class="arcx-play">'+(o.play||'')+'</div><div class="arcx-ctl">'+(o.controls||'')+'</div></div>'; },
+    plate(name){ try{ if(typeof W().SB_PLATE==='function') return W().SB_PLATE(name)||''; }catch(e){} return ''; },
+    /* §1.3: a word spelled right is one coin, through the one pay path */
+    pay(){ try{ if(typeof payG==='function') return payG(); if(typeof addCoins==='function') return addCoins('answer'); }catch(e){} return 0; },
+    /* §1.1: the one word door for drills; the old draw only while it is not merged */
+    words(n, minLen, maxLen){ let out=[];
+      try{ if(typeof W().nextWords==='function') out=(W().nextWords(active(), n, {purpose:'drill', minLen, maxLen})||[])
+        .filter(w=>w&&/^[a-z]+$/i.test(w.w||'')&&w.w.length>=minLen&&w.w.length<=maxLen); }catch(e){ out=[]; }
+      if(out.length<n){ const seen=new Set(out.map(w=>String(w.w).toLowerCase()));
+        fillWords(n+4, minLen, maxLen).forEach(w=>{ const k=String(w.w).toLowerCase(); if(out.length<n && !seen.has(k)){ seen.add(k); out.push(w); } }); }
+      return out.slice(0,n); },
+    /* mixed lengths inside a level: short and long alternate (presentation only) */
+    mix(ws){ const s=ws.slice().sort((a,b)=>a.w.length-b.w.length), out=[]; let i=0, j=s.length-1, lo=true;
+      while(i<=j){ out.push(lo?s[i++]:s[j--]); lo=!lo; } return out; },
+    /* §1.7: one round, one check; the kind line when the level drops */
+    level(key, right, met){ let r=null; try{ if(W().SB_LEVEL && typeof SB_LEVEL.after==='function') r=SB_LEVEL.after(key, met?right/met:0); }catch(e){ r=null; }
+      if(!r) return ''; const L={easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
+      if(r.dropped) return 'Let’s warm up on '+(L[r.level]||r.level)+'. You can move back up any time.';
+      if(r.offerUp) return 'Two strong rounds. Ready for the next level? Pick it on the start screen.';
+      return ''; },
+    touch(){ try{ return matchMedia('(pointer:coarse)').matches || matchMedia('(any-pointer:coarse)').matches; }catch(e){ return false; } },
+    calm(){ try{ return !!W().SB_CALM || matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } },
+  };
+  W().SB_ARCADE_KIT=AK;
+
+  /* ---------- ENGINE M · TYPE BLASTER — with Spell Scene merged in (spec §4.5) ----------
+     Spell Scene had the better rule and Type Blaster the better feel, so one game has both:
+       · the WHOLE word is committed, then Enter fires. Letter-by-letter acceptance (only the
+         right next letter went in) let a child find a spelling by trying keys; now a wrong
+         commit costs a shield, and the word is shown and held until Continue;
+       · REPAINT AS PROGRESS: the level opens on a grey world, and every word blasted
+         repaints one region of it. A cleared level is a restored world;
+       · the cannon, the combo, the danger state and the falling glitches stay.
+     Levels are how many glitches fall at once and how fast (Easy 1 slow · Medium 2 ·
+     Hard 2 fast · Champ 3 faster), with long and short words mixed inside each. Movement
+     is on the shared fixed-step clock, so a slow phone gets the same seconds as a fast one.
+     Pay: one coin for each word blasted clean (first commit right); none for clearing. */
   function typeBlaster(host, opts, done){
     const diff=opts.diff||'medium';
-    const CFG=calmCFG({easy:{n:5,v:0.09},medium:{n:6,v:0.115},hard:{n:7,v:0.14},champ:{n:8,v:0.165}}[diff]||{n:6,v:0.115});
-    const words=fillWords(CFG.n,3,9);
-    if(!words.length){ done({win:true,score:0,stars:1}); return; }
-    const art=(window.SGART&&SGART.ready());
-    const plate=art?SGART.plateForWorld(opts.world||'Arcade'):'';
-    /* Both fallbacks used to be emoji escapes — a 👾 for the foe and a 🐝 for the
-       cannon. The two things a player looks at most became a different picture on
-       every platform whenever the WebP failed to load. Drawn instead. */
-    const foeSvg='<img src="app-art/gart/glitch.webp" class="sg-tbimg sg-tbglitch" alt="glitch" '
-      +'onerror="this.outerHTML=window.TB_GLITCH();">';
-    const beeSvg='<img src="app-art/gart/bee-fly.webp" alt="bee" '
-      +'onerror="this.outerHTML=window.TB_BEE();">';
-    let wi=0, li=0, shield=3, score=0, foeY=0, over=false, loop=null, combo=0, best=0;
-    let wordPerfect=true, danger=false, started=false;
-    const round=[];                       // the round, for a result screen that shows the words
-    host.innerHTML='<div class="sg-hud sg-tb-hud">'+
-        '<span class="sg-tb-wave" id="sg-tw">1<i>/'+CFG.n+'</i></span>'+
-        '<span class="sg-tb-shield" id="sg-tsh"></span>'+
-        '<span class="sg-tb-combo" id="sg-tc"></span>'+
-        '<span class="sg-tb-score" id="sg-ts">0</span></div>'+
-      '<div class="sg-tbstage" id="sg-tbs"><div class="sg-tbstage-bg">'+plate+'</div>'+
-        '<div class="sg-tbfoe" id="sg-tbf">'+foeSvg+'<div class="sg-tbslots" id="sg-tbslots"></div></div>'+
-        '<div class="sg-tbbeam" id="sg-tbbeam"></div>'+
-        '<div class="sg-tbshield" id="sg-tbshieldbar"></div>'+
-        '<div class="sg-tbcannon">'+beeSvg+'</div></div>'+
-      '<div class="sg-rword"><button class="sg-sbtn" id="sg-tsay" aria-label="Hear the word">'+iconSVG('volume',18)+'</button><span class="sg-race-mean" id="sg-tmean"></span></div>'+
-      '<div class="ss-key sg-tbkey" id="sg-tkey"></div><div id="sg-card"></div>';
-    const stage=host.querySelector('#sg-tbs'), foe=host.querySelector('#sg-tbf'), beam=host.querySelector('#sg-tbbeam');
-    const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
-    host.querySelector('#sg-tkey').innerHTML=rows.map(r=>'<div class="ss-krow">'+r.split('').map(ch=>'<button class="ss-kb" data-k="'+ch+'">'+ch+'</button>').join('')+'</div>').join('');
-    function cur(){ return words[wi]||words[words.length-1]||{w:'honey'}; }   // never index past the end
-    /* Drawn shield pips, not the 🛡 glyph repeated three times. A pip can empty and
-       animate; a glyph can only be present or absent, at whatever weight the
-       platform's emoji font decides. */
-    function shieldPips(){ return [0,1,2].map(i=>
+    /* `fall` is the share of the drop a glitch covers in one second: Easy ~15 s from the top
+       to the shield line, Champ ~8 s. `at` is how many fall at once. */
+    const LV={easy:{n:6,at:1,fall:0.066,min:3,max:6},medium:{n:8,at:2,fall:0.08,min:4,max:8},
+              hard:{n:10,at:2,fall:0.104,min:5,max:10},champ:{n:12,at:3,fall:0.125,min:6,max:12}};
+    const CFG=calmCFG(Object.assign({},LV[diff]||LV.medium));
+    const SHIELDS=3;
+    const words=AK.mix(AK.words(CFG.n+SHIELDS, CFG.min, CFG.max));
+    if(!words.length){ done({win:false,score:0,stars:0}); return; }
+    const N=Math.min(CFG.n, words.length);
+    const HERO=opts.hero||heroAv();
+    const KEY='typeBlaster';
+    let foes=[], fid=0, target=null, typed='', shield=SHIELDS, score=0, combo=0, best=0;
+    let blasted=0, met=0, spawnT=0, over=false, started=false, holding=false, danger=false, painted=0;
+    const round=[];                       // the round, for the result screen
+    const touch=AK.touch();
+    /* the world: the painted pair from the stage kit (grey + restored, one composition), or —
+       until those exist — one painting shown grey and in colour, which is the same promise */
+    const FALLBACK='app-art/sgw-meadow.jpg';
+    let greyUrl=AK.plate('blaster-grey'), colUrl=AK.plate('blaster-color'), filtered=false;
+    if(!greyUrl||!colUrl){ greyUrl=colUrl=FALLBACK; filtered=true; }
+    /* regions: a jittered grid with shared corners, so the pieces tile the scene exactly */
+    const GR={6:[3,2],8:[4,2],10:[5,2],12:[4,3]}[N]||[Math.ceil(N/2),2];
+    const RC=GR[0], RR=GR[1];
+    const jit=(i,j)=>{ if(i===0||j===0||i===RC||j===RR) return [0,0];
+      const h=Math.sin(i*12.9898+j*78.233)*43758.5453; const f=h-Math.floor(h), g=(h*1.7)-Math.floor(h*1.7);
+      return [(f-0.5)*0.42*100/RC,(g-0.5)*0.42*100/RR]; };
+    const V=(i,j)=>{ const d=jit(i,j); return [(i*100/RC+d[0]).toFixed(2),(j*100/RR+d[1]).toFixed(2)]; };
+    const cells=[]; for(let j=0;j<RR;j++) for(let i=0;i<RC;i++){ const p=[V(i,j),V(i+1,j),V(i+1,j+1),V(i,j+1)];
+      cells.push({i,j,poly:p.map(q=>q[0]+'% '+q[1]+'%').join(','),d:Math.abs(i+0.5-RC/2)+(RR-1-j)*0.9}); }
+    cells.sort((a,b)=>a.d-b.d);            // repaint from just above the cannon outward
+    const regs=cells.slice(0,N);
+    const shieldPips=()=>Array.from({length:SHIELDS},(_,i)=>
       '<svg class="sg-pip'+(i<shield?' up':'')+'" viewBox="0 0 20 22" width="17" height="19" aria-hidden="true">'+
       '<path d="M10 1.4l7.6 3v7.2c0 4.6-3.2 7.6-7.6 9-4.4-1.4-7.6-4.4-7.6-9V4.4z" '+
       'fill="'+(i<shield?'#2FB39E':'none')+'" fill-opacity="'+(i<shield?'.9':'0')+'" '+
       'stroke="'+(i<shield?'#0E8A78':'currentColor')+'" stroke-width="1.8" stroke-linejoin="round" '+
-      'opacity="'+(i<shield?1:.3)+'"/></svg>').join(''); }
-    function renderSlots(){ const w=cur().w.toLowerCase();
-      host.querySelector('#sg-tbslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
-      host.querySelector('#sg-tsh').innerHTML=shieldPips();
-      host.querySelector('#sg-tc').textContent=combo>=2?(combo+'x'):'';
-      host.querySelector('#sg-ts').textContent=score; }
-    function newWord(){ li=0; foeY=0; wordPerfect=true; const w=cur();
-      host.querySelector('#sg-tw').innerHTML=(wi+1)+'<i>/'+CFG.n+'</i>';
-      host.querySelector('#sg-tmean').innerHTML=meaningHTML(w);
-      foe.style.top='0%'; renderSlots(); try{ say(w.w); }catch(e){} }
-    function zap(){ beam.classList.remove('fire'); void beam.offsetWidth; beam.classList.add('fire');
-      foe.classList.remove('hitfx'); void foe.offsetWidth; foe.classList.add('hitfx'); }
-    function type(ch){ if(over||!started) return; const w=cur().w.toLowerCase();
-      if(ch===w[li]){ li++; score+=15; foeY=Math.max(0,foeY-7); zap(); renderSlots();
+      'opacity="'+(i<shield?1:.3)+'"/></svg>').join('');
+    const LVL={easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'}[diff]||'';
+    const pilot=(()=>{ try{ return (W().SB_AVATAR&&SB_AVATAR(HERO,46))||''; }catch(e){ return ''; } })();
+    const foeArt='<img src="app-art/gart/glitch.webp" class="tb-glitch" alt="" draggable="false" onerror="this.outerHTML=window.TB_GLITCH(72);">';
+    host.innerHTML=AK.stage({ plate:greyUrl,
+      hud:{ left:'<span class="arcx-stat tb-shields" id="tb-sh" aria-label="Shields">'+shieldPips()+'</span>',
+            center:'<span class="arcx-title">Type Blaster</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="tb-prog">0/'+N+'</span>',
+            right:'<span class="arcx-stat tb-score"><b id="tb-score">0</b><i id="tb-combo"></i></span>' },
+      play:'<div class="tb-wrap"><div class="tb-scene" id="tb-scene">'+
+          '<div class="tb-grey'+(filtered?' tb-filter':'')+'" id="tb-grey" style="background-image:url(\''+greyUrl+'\')"></div>'+
+          regs.map((r,k)=>'<div class="tb-reg" data-r="'+k+'" style="clip-path:polygon('+r.poly+');background-image:url(\''+colUrl+'\')"></div>').join('')+
+          '<div class="tb-line" aria-hidden="true"></div><div class="tb-foes" id="tb-foes"></div>'+
+          '<div class="tb-beam" id="tb-beam" aria-hidden="true"></div>'+
+          '<div class="tb-cannon" id="tb-cannon" aria-label="Your cannon"><span class="tb-barrel" id="tb-barrel"></span><span class="tb-pilot">'+pilot+'</span></div>'+
+        '</div></div>',
+      controls:'<div class="tb-entry'+(touch?' nofire':'')+'">'+
+          '<div class="tb-clue"><button type="button" class="tb-say" id="tb-say" aria-label="Hear the word again">'+iconSVG('volume',18)+'</button><span class="tb-mean" id="tb-mean"></span></div>'+
+          '<div class="tb-typed" id="tb-typed" aria-live="off"></div>'+
+          (touch?'':'<button type="button" class="sg-rbtn go tb-fire" id="tb-fire">Fire</button>')+
+        '</div><div class="tb-keys" id="tb-keys"></div>' })+'<div id="sg-card"></div>';
+    const scene=host.querySelector('#tb-scene'), foesEl=host.querySelector('#tb-foes'), beam=host.querySelector('#tb-beam');
+    const barrel=host.querySelector('#tb-barrel'), cannon=host.querySelector('#tb-cannon');
+    const typedEl=host.querySelector('#tb-typed'), meanEl=host.querySelector('#tb-mean');
+    const playEl=scene.closest('.arcx-play')||scene.parentElement.parentElement||host;
+    if(filtered){ /* a painted pair may arrive later; until then the one painting carries both */ }
+    else { const probe=new Image(); probe.onerror=()=>{ try{ host.querySelector('#tb-grey').style.backgroundImage='url(\''+FALLBACK+'\')';
+        host.querySelector('#tb-grey').classList.add('tb-filter'); host.querySelectorAll('.tb-reg').forEach(r=>{ r.style.backgroundImage='url(\''+FALLBACK+'\')'; }); }catch(e){} };
+      probe.src=colUrl; }
+    let keys=null;
+    if(touch) keys=AK.keys(host.querySelector('#tb-keys'), { onKey:ch=>typeCh(ch), onBack:()=>backCh(), onEnter:()=>commit() });
+
+    const lanes=CFG.at===1?[0.5]:CFG.at===2?[0.3,0.7]:[0.2,0.5,0.8];
+    let laneTurn=0;
+    function freeLane(){ for(let k=0;k<lanes.length;k++){ const l=(laneTurn+k)%lanes.length; if(!foes.some(f=>f.lane===l)){ laneTurn=l+1; return l; } } return 0; }
+    let queue=words.slice();
+    function spawn(){ const w=queue.shift(); if(!w) return null;
+      const f={id:++fid, w, lane:freeLane(), y:0, el:document.createElement('button')};
+      f.el.type='button'; f.el.className='tb-foe'; f.el.dataset.id=f.id; f.el.setAttribute('aria-label','Glitch — tap to hear its word');
+      f.el.innerHTML=foeArt+'<span class="tb-ftag">'+iconSVG('volume',13)+'<i>'+w.w.length+'</i></span>';
+      f.el.style.left=(lanes[f.lane]*100)+'%';
+      foesEl.appendChild(f.el); foes.push(f);
+      if(!target) aim(f);
+      return f; }
+    function aim(f, quiet){ if(target===f) { try{ say(f.w.w); }catch(e){} return; }
+      target=f; typed=''; foes.forEach(x=>x.el.classList.toggle('on',x===f));
+      meanEl.innerHTML=f?meaningHTML(f.w):''; paintTyped();
+      if(f && !quiet) setTimeout(()=>{ try{ if(target===f && !over) say(f.w.w); }catch(e){} },120); }
+    function retarget(){ const live=foes.filter(f=>!f.dead); if(!live.length){ target=null; meanEl.innerHTML=''; typed=''; paintTyped(); return; }
+      aim(live.reduce((a,b)=>b.y>a.y?b:a)); }
+    function paintTyped(){ const n=Math.max(target?target.w.w.length:0, typed.length);
+      typedEl.innerHTML=Array.from({length:n},(_,i)=>'<span class="sg-slot'+(i<typed.length?' fill':'')+'">'+(i<typed.length?esc(typed[i].toUpperCase()):'')+'</span>').join('');
+      typedEl.setAttribute('aria-label', typed?('Typed: '+typed.split('').join(' ')):'Type the word'); }
+    function hud(){ host.querySelector('#tb-sh').innerHTML=shieldPips();
+      host.querySelector('#tb-score').textContent=score.toLocaleString();
+      host.querySelector('#tb-combo').textContent=combo>=2?(combo+'x'):'';
+      host.querySelector('#tb-prog').textContent=blasted+'/'+N; }
+    function typeCh(ch){ if(over||!started||holding||!target) return; if(typed.length>=24) return; typed+=ch; paintTyped(); }
+    function backCh(){ if(over||!started||holding) return; typed=typed.slice(0,-1); paintTyped(); }
+    function zap(f){ try{ const s=scene.getBoundingClientRect(), a=cannon.getBoundingClientRect(), b=f.el.getBoundingClientRect();
+        const x0=a.left+a.width/2-s.left, y0=a.top+a.height*0.3-s.top, x1=b.left+b.width/2-s.left, y1=b.top+b.height/2-s.top;
+        const len=Math.hypot(x1-x0,y1-y0), ang=Math.atan2(y1-y0,x1-x0)*180/Math.PI;
+        beam.style.left=x0+'px'; beam.style.top=y0+'px'; beam.style.width=len+'px'; beam.style.transform='rotate('+ang+'deg)';
+        beam.classList.remove('fire'); void beam.offsetWidth; beam.classList.add('fire'); }catch(e){} }
+    function paint(){ const r=host.querySelector('.tb-reg[data-r="'+painted+'"]'); if(r) r.classList.add('on'); painted++; }
+    function commit(){ if(over||!started||holding) return; const f=target; if(!f) return;
+      if(!typed){ try{ say(f.w.w); }catch(e){} return; }
+      const ok=sameSpelling(typed, f.w.w);
+      met++; round.push({w:f.w.w, ok}); wlog(f.w, ok);
+      if(ok){ blasted++; combo++; best=Math.max(best,combo); score+=50+f.w.w.length*10+(combo>=2?combo*15:0);
+        AK.pay(); zap(f); paint(); f.dead=true; f.el.classList.add('boom');
         try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
-        if(li>=w.length){ score+=50; round.push({w:cur().w,ok:wordPerfect}); wlog(cur(),wordPerfect);
-          if(wordPerfect){ combo++; best=Math.max(best,combo); if(combo>=2){ score+=combo*10; } } else combo=0;
-          foe.classList.add('boom'); stage.classList.remove('sg-tb-danger'); danger=false;
-          try{ flash(combo>=2?(combo+'x combo — '+w.toUpperCase()):(w.toUpperCase()+' — glitch zapped')); }catch(e){}
-          wi++; if(wi>=CFG.n){ finish(true); return; }
-          setTimeout(()=>{ foe.classList.remove('boom'); newWord(); },650); } }
-      else { score=Math.max(0,score-5); foeY+=3; wordPerfect=false; combo=0; renderSlots();
-        foe.classList.remove('gloatfx'); void foe.offsetWidth; foe.classList.add('gloatfx');
-        try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){} } }
-    function frame(){ if(over||!started) return;
-      if(foe.classList.contains('boom')) return;
-      foeY+=CFG.v; foe.style.top=Math.min(78,foeY)+'%';
-      const d=foeY>=58; if(d!==danger){ danger=d; stage.classList.toggle('sg-tb-danger',d); }
-      if(foeY>=78){ shield--; foeY=0; foe.style.top='0%'; danger=false; stage.classList.remove('sg-tb-danger');
-        stage.classList.remove('breach'); void stage.offsetWidth; stage.classList.add('breach');
-        renderSlots(); try{ flash('The firewall took a hit — keep spelling'); }catch(e){}
-        if(shield<=0){ round.push({w:cur().w,ok:false}); finish(false); return; } } }
-    const kb=e=>{ if(over) return; if(/^[a-zA-Z]$/.test(e.key)){ type(e.key.toLowerCase()); e.preventDefault(); } };
-    addEventListener('keydown',kb);
-    host.querySelector('#sg-tkey').onclick=e=>{ const bt=e.target.closest('.ss-kb'); if(bt) type(bt.dataset.k); };
-    host.querySelector('#sg-tsay').onclick=()=>{ try{ say(cur().w); }catch(e){} };
-    function finish(win){ if(over) return; over=true;
-      if(loop){clearInterval(loop);loop=null;} removeEventListener('keydown',kb);
+        setTimeout(()=>{ try{ f.el.remove(); }catch(e){} },560);
+        foes=foes.filter(x=>x!==f); typed=''; hud();
+        if(blasted>=N){ over=true; setTimeout(()=>finish(true),700); return; }
+        spawnT=Math.min(spawnT,0.6); retarget(); return; }
+      miss(f, typed, ''); }
+    /* A miss HOLDS: every glitch freezes and the word is shown, letter against letter,
+       until Continue. The glitch it belonged to then dissolves — its word has been read
+       out on screen, so it is not asked again as if it were still a test. */
+    function miss(f, t, note){ holding=true; loop.hold(true); shield--; combo=0; f.el.classList.add('frozen');
+      try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
+      scene.classList.remove('breach'); void scene.offsetWidth; scene.classList.add('breach'); hud();
+      AK.miss(playEl, f.w, t, { note, onContinue(){
+        f.dead=true; foes=foes.filter(x=>x!==f); try{ f.el.remove(); }catch(e){} typed='';
+        holding=false; if(shield<=0){ over=true; finish(false); return; }
+        loop.hold(false); spawnT=Math.min(spawnT,0.8); retarget(); } }); }
+    function update(dt){ if(over||!started||holding) return;
+      for(const f of foes){ f.y+=CFG.fall*dt; }
+      const hit=foes.find(f=>f.y>=1);
+      if(hit){ hit.y=1; met++; round.push({w:hit.w.w, ok:false}); wlog(hit.w,false);
+        miss(hit, target===hit?typed:'', 'It reached the shield line.'); return; }
+      spawnT-=dt;
+      const need=N-blasted;
+      if(queue.length && foes.length<Math.min(CFG.at, need) && (foes.length===0 || spawnT<=0)){
+        spawn(); spawnT=(1/CFG.fall)/CFG.at*0.8; }
+      if(!foes.length && !queue.length && blasted<N){ over=true; finish(false); } }
+    let H=0, FH=0;
+    function measure(){ H=scene.clientHeight; const f=foes[0]; FH=f?f.el.offsetHeight:Math.min(110,H*0.2); }
+    function render(){ if(!started) return; if(!H) measure();
+      const line=H*0.80;
+      for(const f of foes){ if(f.dead) continue; f.el.style.transform='translate(-50%,'+Math.round(f.y*(line-FH))+'px)'; }
+      const d=foes.some(f=>!f.dead&&f.y>=0.62); if(d!==danger){ danger=d; scene.classList.toggle('tb-danger',d); }
+      if(target&&!target.dead){ const dx=(lanes[target.lane]-0.5)*scene.clientWidth, dy=line-target.y*(line-FH);
+        barrel.style.transform='rotate('+(Math.atan2(dx,dy)*180/Math.PI).toFixed(1)+'deg)'; } }
+    const onResize=()=>{ H=0; };
+    addEventListener('resize',onResize);
+    const loop=AK.loop(update, render);
+    /* the real keyboard, on capture, and only the keys this game uses — so a letter is
+       typed once even if the shared on-screen keyboard also listens */
+    const kb=e=>{ if(over||!started||holding) return; if(e.ctrlKey||e.metaKey||e.altKey) return; const k=e.key;
+      if(/^[a-zA-Z]$/.test(k)){ typeCh(k.toLowerCase()); }
+      else if(k==='Backspace'){ backCh(); }
+      else if(k==='Enter'){ commit(); }
+      else if(k==='Tab'){ const live=foes.filter(f=>!f.dead); if(live.length>1){ const i=live.indexOf(target); aim(live[(i+1)%live.length]); } }
+      else if(k===' '){ if(target) try{ say(target.w.w); }catch(_){} }
+      else return;
+      e.preventDefault(); e.stopPropagation(); e._arcDone=true; };
+    addEventListener('keydown',kb,true);
+    foesEl.addEventListener('click',e=>{ const b=e.target.closest('.tb-foe'); if(!b||over||holding) return; const f=foes.find(x=>String(x.id)===b.dataset.id&&!x.dead); if(f) aim(f); });
+    host.querySelector('#tb-say').onclick=()=>{ if(target) try{ say(target.w.w); }catch(e){} };
+    const fire=host.querySelector('#tb-fire'); if(fire) fire.onclick=()=>commit();
+    function cleanup(){ try{ loop.stop(); }catch(e){} removeEventListener('keydown',kb,true); removeEventListener('resize',onResize); try{ keys&&keys.destroy(); }catch(e){} }
+    function finish(win){ over=true; cleanup();
+      const right=round.filter(r=>r.ok).length;
+      const line=AK.level(KEY, right, met);
       const stars=win?(shield>=3?3:shield===2?2:1):0;
+      if(win){ scene.classList.add('tb-restored'); }
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
       el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:round,
-        title: win ? (best>=3?'Firewall held — '+best+'x best combo':'Firewall held') : 'The glitch broke through' });
+        title: win ? 'The world is restored' : 'The glitches broke through',
+        sub: [best>=3?best+'x best combo':'', line].filter(Boolean).join(' · ') });
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; typeBlaster(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
+    function begin(){ started=true; H=0; spawn(); spawnT=(1/CFG.fall)/CFG.at*0.8; hud(); }
     function howto(){ const el=host.querySelector('#sg-card');
       el.innerHTML=SGUI.howto({ title:'Type Blaster', art:TB_GLITCH(64),
-        sub:'A glitch is falling on the hive firewall. Every letter you get right fires the cannon and drives it back.',
-        steps:[ 'Hear the word, then type it — your keyboard or the keys on screen',
-                'Each correct letter pushes the glitch back; a wrong one lets it drop',
-                'Spell a whole word with no mistakes to keep the combo alive',
-                'Three shields. Let it reach the floor three times and the firewall falls' ],
+        sub:'The glitches have greyed the world. Every word you blast paints a piece of it back.',
+        steps:[ 'Hear the word, type ALL of it, then press Enter to fire',
+                touch?'Tap a glitch to hear its word':'Tab or a tap picks another glitch · Space hears the word again',
+                'A wrong word costs a shield, and you see how it is spelled',
+                'Three shields. Blast every word and the world is whole again' ],
         go:'Man the cannon' });
       el.style.display='grid';
-      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML='';
-        started=true; newWord(); }; }
-    renderSlots(); howto(); loop=setInterval(frame,1000/60);
-    return { destroy(){ over=true; if(loop){clearInterval(loop);loop=null;}
-      removeEventListener('keydown',kb); } };
+      el.querySelector('#sg-howgo').onclick=()=>{ el.style.display='none'; el.innerHTML=''; begin(); }; }
+    hud(); paintTyped(); howto();
+    if(window.SB_DEBUG) W()._tb={ state:()=>({started,over,holding,shield,blasted,met,N,score,painted,typed,at:CFG.at,fall:CFG.fall,
+        foes:foes.filter(f=>!f.dead).map(f=>({id:f.id,y:f.y,lane:f.lane,len:f.w.w.length})),target:target?target.id:null,regs:regs.length}),
+      target:()=>target?target.w.w:'', words:()=>words.map(w=>w.w), begin:()=>{ if(!started){ const el=host.querySelector('#sg-card'); el.style.display='none'; el.innerHTML=''; begin(); } } };
+    return { destroy(){ over=true; cleanup(); } };
   }
   /* The glitch and the cannon bee, drawn — the img fallbacks and the start card's
      art come from here, so a child meets the same creature in both places. */
@@ -3412,7 +3640,12 @@
      spoke one word seventeen times, which is repetition, not practice — and it had no
      keyboard path either. They are unreachable rather than deleted so the measurement
      that condemned them can be re-run against the source if the pacing is ever fixed. */
-  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, beeGrandPrix, whackAMoth, spellShield, unscrambleStars, wordSnake, combCatcher, stageRhythm, typeBlaster };
+  /* Word Snake and Unscramble Stars are RETIRED (games spec 4 Oct 2026, §3.1): the snake's
+     glowing next tile spelled the word for the child, and Unscramble gave every letter away —
+     a random tapper scored 96%. Spell Scene is merged INTO Type Blaster (its whole-word commit
+     and its grey world repainting word by word). All three engines stay below, unexported and
+     unreachable, like the three above, so the measurements that retired them can be re-run. */
+  W().SB_SAGA_ENGINES = { honeycombRun, keepFlying, beeGrandPrix, whackAMoth, spellShield, combCatcher, stageRhythm, typeBlaster };
 
 
   /* ---------- ENGINE G · SPOTLIGHT SIMON (memory sequence) ---------- */
@@ -3705,7 +3938,8 @@
     newWord();
     return { destroy(){ over=true; removeEventListener('keydown',kb); } };
   }
-  W().SB_SAGA_ENGINES = Object.assign(W().SB_SAGA_ENGINES||{}, { spellScene });
+  /* spellScene is not exported: merged into Type Blaster (see SB_SAGA_ENGINES above) */
+  void spellScene;
 
 
   /* The story controller (map / board / dialogue beats / CH_META / ACTS) was removed

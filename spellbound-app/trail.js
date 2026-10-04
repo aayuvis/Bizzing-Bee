@@ -1329,7 +1329,10 @@
         : (actsOf(course()).find(a => a.id === key) || { units: [] }).units
             .flatMap(uid => { try { return lapWords(unit(uid), lapOf(active()), 24); } catch (e) { return []; } })
       ).filter(w => w && /^[a-z]+$/i.test(w.w) && w.w.length >= 4 && (longOk || w.w.length <= 12));
-      for (let i = 0; i < n && ws.length; i++) out.push(ws.splice(Math.floor(Math.random() * ws.length), 1)[0]); } catch (e) {}
+      /* a seeded draw, not Math.random: the same child meets the same words at the same secret
+         (an encounter path — games spec §1.3, T5) */
+      const rnd = uRand(active(), 'w|' + key + '|' + n + '|' + (longOk ? 1 : 0));
+      for (let i = 0; i < n && ws.length; i++) out.push(ws.splice(Math.floor(rnd() * ws.length), 1)[0]); } catch (e) {}
     while (out.length < n) out.push({ w: ['champion', 'courage', 'explore', 'mystery', 'legend'][out.length % 5], d: '' });
     return out; }
   function uCheckEmblem(c, key) { const u = uP(c);
@@ -1365,17 +1368,15 @@
   app2.uqSay = () => { try { const q = state.uq; q && say(q.kind === 'duel' || q.kind === 'gate' ? q.words[q.i].w : q.w); } catch (e) {} };
   app2.uqClose = () => { state.uq = null; render(); };
   app2.uqGo = () => { const q = state.uq; if (!q) return; const c = active(); const key = uKey();
-    const cur = q.words[q.i]; const okW = sameSpelling(q.typed || '', cur.w); q.typed = '';
+    const cur = q.words[Math.min(q.i, q.words.length - 1)]; const okW = sameSpelling(q.typed || '', cur.w); q.typed0 = q.typed || ''; q.typed = '';
     if (q.kind === 'duel') {
-      if (okW) { q.me++; try { sfx('correct'); } catch (e) {} } else { q.riv++; try { sfx('wrong'); } catch (e) {} flash('It was “' + cur.w + '” — ' + q.rival + ' takes the point.'); }
-      q.i++;
-      if (q.me >= 2 || q.riv >= 2 || q.i >= q.words.length) {
-        const won = q.me > q.riv; state.uq = null;
-        const f = uP(c).finds[key] = uP(c).finds[key] || {}; f.duel = 1; uP(c).duel[key] = won ? 1 : -1; save();
-        if (won) { const p2 = addCoins('contest'); try { sfx('win'); burstConfetti(120); } catch (e) {} flash('🏆 ' + q.rival + ' bows — the duel is yours!' + (p2 ? ' +' + p2 + ' 🪙' : '')); }
-        else flash('🎭 ' + q.rival + ' wins this one — champions come back.');
-        uCheckEmblem(c, key);
-      } else setTimeout(() => { try { state.uq && say(state.uq.words[state.uq.i].w); } catch (e) {} }, 400);
+      if (q.phase !== 'me') { app2.uqNext(); return; }
+      if (!String(q.typed0 || '').trim()) { try { say(cur.w); } catch (e) {} render(); return; }
+      q.mine.push({ w: cur.w, ok: okW, typed: q.typed0 });
+      if (okW) { q.me++; addCoins('answer'); try { sfx('correct'); } catch (e) {} }   /* a word spelled right is one coin, duel or not */
+      else { try { sfx('wrong'); } catch (e) {} }
+      q.phase = okW ? 'rival' : 'miss';                    /* a miss HOLDS on the word until Continue */
+      if (okW) uRivalTurn(q);
       render(); return;
     }
     if (q.kind === 'gate') {
@@ -1393,10 +1394,58 @@
       } else setTimeout(() => { try { state.uq && say(state.uq.words[state.uq.i].w); } catch (e) {} }, 400);
       render(); return;
     } };
+  /* THE RIVAL CHAMPION DUEL (games spec §4.7). The rival is a speller from the Mock Bee hall
+     and spells ITS OWN word each round, right or wrong by that speller's own profile — the
+     hall's model (a steady hand, minus how far the word sits above their level), decided by a
+     seeded draw so the same child meets the same duel. It used to score a point whenever the
+     child missed, which made it the child's mistakes wearing a name. Each word the child
+     spells right pays one coin as it lands; the duel itself pays nothing more (it was
+     `contest` 10 for two words). A miss holds on the word until Continue. */
+  const U_DUEL_FB = [{ id: 'koi', name: 'Nova', lvl: .24 }, { id: 'beaker', name: 'Rafi', lvl: .32 }, { id: 'comet', name: 'Dax', lvl: .42 },
+    { id: 'melody', name: 'Ines', lvl: .52 }, { id: 'goldlegend', name: 'Vesper', lvl: .72 }];
+  function uRival(key) {
+    const ai = uAiOf(key), slot = ai >= 0 ? ai : String(key).length % U_DUEL_FB.length;
+    let pro = null;
+    try { if (window.MOCKBEE && typeof MOCKBEE.rivals === 'function') {
+      const all = (MOCKBEE.rivals() || []).filter(r => r && r.name && typeof r.lvl === 'number').sort((x, y) => x.lvl - y.lvl);
+      if (all.length) pro = all[Math.min(all.length - 1, Math.round(slot * (all.length - 1) / 4))]; } } catch (e) {}
+    pro = pro || U_DUEL_FB[slot] || U_DUEL_FB[0];
+    let face = pro.face || pro.id;
+    try { if (!pro.face && window.MOCKBEE && MOCKBEE.faces) { const f = MOCKBEE.faces().find(x => x.id === pro.id); if (f) face = f.face; } } catch (e) {}
+    return { id: pro.id, name: pro.name, lvl: pro.lvl, nerve: pro.nerve, spec: pro.spec, face };
+  }
+  function uHard(w) { const y = Math.max(1, Math.min(9, +w.y || 3)); return Math.max(0, Math.min(1, (y - 1) / 8 * .82 + Math.max(0, Math.min(1, ((w.w || '').length - 6) / 12)) * .18)); }
+  /* a slip a child might really make — never noise */
+  function uSlip(w, r) { const SL = [[/([bcdfglmnprst])\1/, '$1'], [/ie/, 'ei'], [/ei/, 'ie'], [/ance$/, 'ence'], [/ence$/, 'ance'], [/ible$/, 'able'], [/able$/, 'ible'], [/ph/, 'f'], [/e$/, '']];
+    const hits = SL.filter(([re]) => re.test(w)); if (hits.length) { const [re, to] = hits[Math.floor(r * hits.length)]; const o = w.replace(re, to); if (o !== w) return o; }
+    for (let k = 0; k < w.length - 2; k++) { const i = 1 + (Math.floor(r * 97) + k) % (w.length - 2); if (w[i] !== w[i + 1]) return w.slice(0, i) + w[i + 1] + w[i] + w.slice(i + 2); }
+    return w.slice(0, -1); }
+  function uRivalTurn(q) { const w = q.rw[q.mine.length - 1] || q.rw[0];
+    const rnd = uRand(active(), 'duel|' + uKey() + '|' + q.mine.length);
+    const spec = (q.rival.spec && q.rival.spec.test && q.rival.spec.test(w.o || '')) ? .10 : 0;
+    const p = Math.max(.04, Math.min(.97, .84 + spec + ((q.rival.lvl != null ? q.rival.lvl : .4) - uHard(w)) * 1.5));
+    const ok = rnd() < p; if (ok) q.riv++;
+    q.theirs.push({ w: w.w, ok, said: ok ? w.w : uSlip(w.w.toLowerCase(), rnd()) }); }
+  app2.uqNext = () => { const q = state.uq; if (!q || q.kind !== 'duel') return; const c = active(); const key = uKey();
+    if (q.phase === 'miss') { uRivalTurn(q); q.phase = 'rival'; render(); return; }
+    if (q.phase === 'done') { state.uq = null; uCheckEmblem(c, key); render(); return; }
+    if (q.phase !== 'rival') return;
+    q.i = q.mine.length;
+    const settled = q.i >= 3 && (q.me !== q.riv || q.i >= q.words.length);
+    if (settled) {
+      const res = q.me > q.riv ? 1 : q.me < q.riv ? -1 : 0;
+      const f = uP(c).finds[key] = uP(c).finds[key] || {}; f.duel = 1; uP(c).duel[key] = res; save();
+      q.phase = 'done'; q.res = res;
+      try { sfx(res > 0 ? 'win' : 'correct'); if (res > 0) burstConfetti(120); } catch (e) {}
+      render(); return; }
+    q.phase = 'me'; render();
+    setTimeout(() => { try { state.uq && state.uq.phase === 'me' && say(state.uq.words[state.uq.i].w); } catch (e) {} }, 400); };
   app2.uDuel = () => { const key = uKey(); if (state.uq) return;
     const f = uP(active()).finds[key] || {}; if (f.duel) { flash('That duel is settled.'); return; }
-    const ai = uAiOf(key);
-    state.uq = { kind: 'duel', rival: (ai >= 0 ? U_RIVALS[ai] : U_RIVALS[Math.abs(String(key).length) % U_RIVALS.length]) || 'The Rival', words: uWordPick(key, 3), i: 0, me: 0, riv: 0, typed: '' };
+    const all = uWordPick(key, 10);
+    /* three words each, and two more each held back for a tie */
+    state.uq = { kind: 'duel', rival: uRival(key), words: [all[0], all[2], all[4], all[6], all[8]], rw: [all[1], all[3], all[5], all[7], all[9]],
+      i: 0, me: 0, riv: 0, typed: '', phase: 'me', mine: [], theirs: [] };
     render(); setTimeout(() => { try { state.uq && say(state.uq.words[0].w); } catch (e) {} }, 400); };
   app2.uGate = () => { const key = uKey(); if (state.uq) return;
     const f = uP(active()).finds[key] || {}; if (f.gate) { flash('This pass already stands open.'); return; }
@@ -1433,12 +1482,30 @@
     const hear = `<button data-act="uqSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">🔊 Hear the word</button>`;
     const frame = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(14,10,26,.62)">
       <div style="box-sizing:border-box;width:min(440px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">${inner}</div></div>`;
-    if (q.kind === 'duel') return frame(`<div style="font-size:40px">🎭</div>
-      <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">${esc(q.rival)} challenges you!</h3>
-      <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Best of three words. Win two and the clearing is yours.</p>
-      <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">You ${q.me} · ${q.riv} them <span style="color:var(--muted);font-weight:700">— word ${Math.min(q.i + 1, 3)} of 3</span></div>
-      ${hear}${input}
-      <button data-act="uqGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">⚔️ Spell it!</button>`);
+    if (q.kind === 'duel') {
+      const R = q.rival || { name: 'The Rival' }, rn = esc(R.name);
+      const face = (function () { try { return SB_AVATAR(R.face || R.id, 64) || ''; } catch (e) { return ''; } })();
+      const score = `<div class="sb-duel-score" style="font-family:var(--display);font-weight:800;font-size:15px;margin:2px 0 10px">You ${q.me} · ${q.riv} ${rn} <span style="color:var(--muted);font-weight:700">— word ${Math.min(q.mine.length + (q.phase === 'me' ? 1 : 0), q.words.length)}${q.mine.length >= 3 ? ' (tie-break)' : ' of 3'}</span></div>`;
+      const head = `<div style="width:64px;height:64px;margin:0 auto;border-radius:50%;overflow:hidden">${face}</div>
+        <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">${rn} challenges you!</h3>`;
+      const next = lbl => `<button data-act="uqNext" class="sb-duel-next" style="padding:13px 24px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">${lbl}</button>`;
+      if (q.phase === 'me') return frame(`${head}
+        <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Three words each. You spell yours, ${rn} spells theirs. Most right takes the clearing.</p>
+        ${score}${hear}${input}
+        <button data-act="uqGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Spell it!</button>`);
+      if (q.phase === 'miss') { const m = q.mine[q.mine.length - 1];
+        return frame(`${head}${score}${missFeedbackHTML(m.w, m.typed || '')}${next('Continue')}`); }
+      if (q.phase === 'rival') { const t = q.theirs[q.theirs.length - 1] || { w: '', ok: false, said: '' }, m = q.mine[q.mine.length - 1] || {};
+        return frame(`${head}${score}
+        <p style="font-size:13px;color:var(--muted);margin:0 0 6px">${m.ok ? 'Yours was right. ' : ''}${rn}’s word was <b style="color:var(--text)">${esc(t.w)}</b>. ${rn} spells it:</p>
+        <div class="sb-duel-said ${t.ok ? 'ok' : 'no'}" style="font-family:var(--mono,ui-monospace,monospace);font-weight:800;font-size:clamp(18px,5vw,24px);letter-spacing:.14em;margin:4px 0 6px;color:${t.ok ? 'var(--good)' : 'var(--bad)'}">${esc(t.said.toUpperCase())}</div>
+        <p style="font-size:13px;font-weight:700;margin:0 0 12px;color:${t.ok ? 'var(--good)' : 'var(--bad)'}">${t.ok ? 'Right — a point to ' + rn + '.' : 'Not quite — no point for ' + rn + '.'}</p>
+        ${next('Next')}`); }
+      const res = q.res;
+      return frame(`${head}${score}
+        <p style="font-size:14px;font-weight:800;margin:0 0 12px">${res > 0 ? rn + ' bows — the clearing is yours!' : res < 0 ? rn + ' takes this one. Champions come back.' : 'Honours even — a draw.'}</p>
+        ${next('Back to the map')}`);
+    }
     // gate
     return frame(`<div style="font-size:40px">⛩️</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">The Hidden Pass</h3>
@@ -2554,28 +2621,35 @@
      the ✕ and the heading's last word fell off the right edge. Guards: tests/atlas-alive.cjs
      (first visit, map first, ✕, Escape) and tests/atlas-layout.cjs (on screen at 360/390). */
   const AMB_DELAY = 1600;
+  /* EVERY THIRD RETURN, NOT A DICE ROLL (games spec 4 Oct 2026, §4.7). It was a 22% roll on
+     each visit, once a region a day — an encounter decided by Math.random, which the family
+     standard forbids anywhere a coin can follow. tr(c).ambV[key] counts this child's visits to
+     the region (1 = the first; old saves hold 1 for "visited", which reads the same): the moth
+     comes on the 3rd, 6th, 9th… return, never on a first visit, and still only after the board
+     has shown for AMB_DELAY with nothing else open. */
+  const AMB_EVERY = 3;
   let _ambT = 0;
-  function ambushWord(c) {
+  function ambushWord(c, key, n) {
     try { const s = seq(c); const fr = s[Math.min(frontier(c), s.length - 1)];
-      const u = fr && fr.kind === 'unit' ? fr.u : (s.find(n => n.kind === 'unit') || {}).u;
+      const u = fr && fr.kind === 'unit' ? fr.u : (s.find(n2 => n2.kind === 'unit') || {}).u;
       const ws = lapWords(u, lapOf(c), 24).filter(w => /^[a-z]+$/i.test(w.w) && w.w.length >= 3 && w.w.length <= 9);
-      if (ws.length) return ws[Math.floor(Math.random() * ws.length)].w; } catch (e) {}
-    return ['meadow', 'honey', 'friend', 'journey', 'bright'][Math.floor(Math.random() * 5)];
+      if (ws.length) return ws[(n * 7 + String(key || '').length) % ws.length].w; } catch (e) {}
+    return ['meadow', 'honey', 'friend', 'journey', 'bright'][(n | 0) % 5];
   }
   function maybeAmbush(c, key) {
-    try { const day = Math.floor(Date.now() / 864e5);
-      const am = tr(c).ambD = tr(c).ambD || {};
+    try {
       const seen = tr(c).ambV = tr(c).ambV || {};
       if (!seen[key]) { seen[key] = 1; save(); return; }   // a first visit meets the country, not the moth
-      if (state.villain || state.treG || am[key] === day || Math.random() >= 0.22) return;
-      am[key] = day; save();
+      seen[key] = (+seen[key] || 1) + 1; save();
+      const returns = seen[key] - 1;
+      if (returns % AMB_EVERY !== 0 || state.villain || state.treG) return;
       clearTimeout(_ambT);
       _ambT = setTimeout(() => { try {
         const here = state.nav !== 'trail' ? null : state.trailView === 'act' ? state.trailAct
           : state.trailView === 'ultra' ? 'ultra' + state.ultraAct : null;
-        if (here !== key || active() !== c || state.villain || state.treG || state.tq || state.pinDlg
+        if (here !== key || active() !== c || state.villain || state.treG || state.tq || state.uq || state.pinDlg
           || state.settingsOpen || state.drawerOpen || state.walletOpen || state.showTiers || state.wordCard) return;
-        state.villain = { w: ambushWord(c), typed: '', wrong: 0 }; render();
+        state.villain = { w: ambushWord(c, key, returns / AMB_EVERY), typed: '', wrong: 0, tried: '', shown: false }; render();
         setTimeout(() => { try { if (state.villain) say(state.villain.w); } catch (e) {} }, 650);
       } catch (e) {} }, AMB_DELAY);
     } catch (e) {}
@@ -2583,37 +2657,55 @@
   app2.villType = v => { if (state.villain) state.villain.typed = String(v == null ? '' : v); };
   app2.villKey = e => { if (e.key === 'Enter') { e.preventDefault(); app2.villGo(); } };
   app2.villSay = () => { try { state.villain && say(state.villain.w); } catch (e) {} };
-  app2.villFlee = () => { state.villain = null; flash('The moth keeps its prize… this time. 🦇'); render(); };
+  app2.villFlee = () => { const V = state.villain; state.villain = null;
+    flash(V && V.shown ? 'The moth lets go. Now you know the word.' : 'The moth keeps its prize… this time.'); render(); };
+  /* A right spelling cuts the net: one coin, the family's `answer`, and the copy says +1.
+     A first miss keeps the net shut and shows the child what they wrote; a SECOND miss shows
+     the word itself, letter against letter, and holds until Continue — no coin after that,
+     because the word has been read out on screen. */
   app2.villGo = () => { const V = state.villain; if (!V) return;
+    if (V.shown) { app2.villFlee(); return; }
     if (sameSpelling(V.typed || '', V.w)) {
-      state.villain = null; addCoins('answer');
+      state.villain = null; const n = addCoins('answer');
       try { sfx('win'); burstConfetti(90); } catch (e) {}
-      flash('✂️ ' + V.w + ' — the net bursts and the moth flees! +12 🪙');
+      flash(V.w + ' — the net bursts and the moth flees!' + (n ? ' +' + n + ' 🪙' : ''));
     } else {
-      V.wrong = (V.wrong || 0) + 1; V.typed = '';
+      if (!String(V.typed || '').trim()) { try { say(V.w); } catch (e) {} return; }
+      V.wrong = (V.wrong || 0) + 1; V.tried = V.typed || ''; V.typed = '';
       try { sfx('wrong'); } catch (e) {}
-      flash('The net holds — listen again!'); try { say(V.w); } catch (e) {}
+      if (V.wrong >= 2) V.shown = true;
+      else { flash('The net holds — listen again!'); try { say(V.w); } catch (e) {} }
     }
     render(); };
+  /* the moth is the game's own moth (app-art/gart/moth.webp, the Honeycomb and Spell Scene
+     sprite), not a 🦇; and the net is drawn only once the buddy inside it has loaded, so a
+     slow avatar never shows an empty net */
   function villainCard(c) {
     const V = state.villain; if (!V) return '';
-    const av = (function () { try { return SB_AVATAR(c.avatar || 'bizzy', 56) || ''; } catch (e) { return ''; } })();
-    return `<div data-act="villFlee" style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(16,10,28,.6)">
-      <div data-act="noop" data-trap="villain" role="dialog" aria-modal="true" aria-labelledby="sb-vill-h" style="position:relative;box-sizing:border-box;width:min(430px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">
-        <div style="font-size:42px;line-height:1" aria-hidden="true">🦇</div>
-        <div style="position:relative;width:76px;height:76px;margin:8px auto 2px;display:grid;place-items:center">
-          <span style="width:56px;height:56px;display:block;filter:saturate(.65) brightness(.92)">${av || '🐝'}</span>
-          <span style="position:absolute;inset:0;border-radius:50%;border:3px dashed rgba(130,96,210,.85)"></span>
-        </div>
-        <h3 id="sb-vill-h" style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">A moth of the Unspelling strikes!</h3>
+    let av = (function () { try { return SB_AVATAR(c.avatar || 'bizzy', 56) || ''; } catch (e) { return ''; } })();
+    const isImg = /<img\b/i.test(av);
+    if (isImg) av = av.replace(/<img\b/i, '<img onload="var n=this.closest(\'.sb-vnet\');if(n)n.classList.add(\'ready\')" onerror="var n=this.closest(\'.sb-vnet\');if(n)n.classList.add(\'ready\')"');
+    const body = V.shown
+      ? `<h3 id="sb-vill-h" style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 8px">Here is the word</h3>
+        ${missFeedbackHTML(V.w, V.tried || '', { head: 'Two tries — here is the word, letter by letter' })}
+        <button data-act="villGo" style="padding:13px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Continue</button>`
+      : `<h3 id="sb-vill-h" style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">A moth of the Unspelling strikes!</h3>
         <p style="font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5">It has your buddy in a net. <b>Spell the word you hear</b> to cut them free.</p>
-        <button data-act="villSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">🔊 Hear the word</button>
+        <button data-act="villSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">${iconSVG('volume', 16)} Hear the word</button>
         <input data-inp="villType" data-key="villKey" data-fkey="villType" value="${escA(V.typed || '')}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="spell it…" aria-label="Spell the word you hear" style="width:100%;max-width:300px;display:block;margin:0 auto 10px;padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--text);font-size:17px;font-weight:800;text-align:center;letter-spacing:.08em;outline:none">
-        ${V.wrong >= 2 ? `<p style="font-size:12.5px;font-weight:700;color:var(--muted);margin:0 0 10px">Hint: it starts with “${esc(V.w.slice(0, 2))}…” and has ${V.w.length} letters.</p>` : ''}
+        ${V.wrong === 1 ? `<p class="sb-vill-tried" style="font-size:12.5px;font-weight:700;color:var(--muted);margin:0 0 10px">You wrote “${esc(V.tried || '')}”. Not quite — listen once more.</p>` : ''}
         <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
-          <button data-act="villGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;text-shadow:0 0 2px rgba(20,10,30,.9),0 1px 2px rgba(20,10,30,.75);font-weight:800;font-size:14.5px;box-shadow:var(--edge)">✂️ Cut them free!</button>
+          <button data-act="villGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;text-shadow:0 0 2px rgba(20,10,30,.9),0 1px 2px rgba(20,10,30,.75);font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Cut them free!</button>
           <button data-act="villFlee" style="padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13.5px">Run away</button>
+        </div>`;
+    return `<div data-act="villFlee" style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(16,10,28,.6)">
+      <div data-act="noop" data-trap="villain" role="dialog" aria-modal="true" aria-labelledby="sb-vill-h" style="position:relative;box-sizing:border-box;width:min(430px,100%);max-height:100%;overflow:auto;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">
+        <img class="sb-vill-moth" src="app-art/gart/moth.webp" alt="" aria-hidden="true" style="width:64px;height:64px;object-fit:contain;display:block;margin:0 auto" onerror="this.style.display='none'">
+        <div class="sb-vnet${isImg ? '' : ' ready'}" style="position:relative;width:76px;height:76px;margin:6px auto 2px;display:grid;place-items:center">
+          <span style="width:56px;height:56px;display:block;filter:saturate(.65) brightness(.92)">${av || ''}</span>
+          <span class="sb-vnet-mesh" aria-hidden="true"></span>
         </div>
+        ${body}
         <button data-act="villFlee" class="sb-vill-x" aria-label="Close" title="Close (Esc)" style="position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);border:1px solid var(--line);color:var(--text)">${iconSVG('close', 16)}</button>
       </div></div>`;
   }
@@ -2956,6 +3048,13 @@
     return v === 'unit' ? viewUnit() : v === 'words' ? viewWords() : v === 'quiz' ? viewQuiz()
       : v === 'ultra' ? viewUltraAct() : v === 'act' ? viewAct() : viewAtlas(); } };
 
+  /* Enter moves on from a held card (the moth's word shown; a duel's miss, the rival's turn,
+     the result) — the cards carry no input then, so the key is caught here */
+  window.addEventListener('keydown', e => { try {
+    if (e.key !== 'Enter' || state.pinDlg || state.settingsOpen) return;
+    if (state.villain && state.villain.shown) { e.preventDefault(); app2.villGo(); }
+    else if (state.uq && state.uq.kind === 'duel' && state.uq.phase && state.uq.phase !== 'me') { e.preventDefault(); app2.uqNext(); }
+  } catch (_) {} });
   /* Escape lets go of the moth (and closes a chest), like every other layer in the app */
   window.addEventListener('keydown', e => { try {
     if (e.key !== 'Escape' || state.pinDlg || state.settingsOpen) return;
