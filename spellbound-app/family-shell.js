@@ -117,6 +117,7 @@
       /* a classic game is live once past its menu and until its result */
       if (S.game && !/^(mode|pick|setup)$/.test(S.game.phase || '') && !/^(over|done|result|board)$/.test(S.game.status || '')) return true;
       if (S.nav === 'mockbee' && S.mb && S.mb.view === 'stage') return true;
+      if ((S.nav === 'lore' || S.nav === 'hive') && S.qz && S.qz.mode && S.qz.phase === 'play') return true;
       return !!document.querySelector('.arc-play,.bz-play');
     } catch (e) { return false; }
   }
@@ -141,6 +142,7 @@
   /* screens with a gated opener — an address goes through it: the trainTools plan lock
      (gateFeature) and the Advanced Pack's sales page, which asks for the PIN first (T3) */
   var DOOR = { quotes: 'openQuotes', vocab: 'openVocab', typing: 'openTyping', ipatrain: 'openIpaTrain', trivtrain: 'openTrivTrain', adv: 'openAdvanced' };
+  var HUB_HIVE = { classic: 1, squares: 1, clock: 1 };   // Hive Mind's modes (lore.js MODES.hive)
   var PARENT = { train: 'coach', levelup: 'coach', leveltest: 'home', mockbee: 'games', sq: 'games', reader: 'explore',
     debug: 'home', voicetest: 'home', evofeedback: 'home', parent: 'progress' };
 
@@ -166,7 +168,10 @@
       if (S.conceptSel) { var i = (S.conceptData || []).findIndex(function (ch) { return ch === S.conceptSel || (ch && ch.title && ch.title === S.conceptSel.title); }); return 'concepts' + (i >= 0 ? '/' + i : ''); }
       return 'concepts';
     }
-    if (n === 'collection') return 'hive' + (S.collTab ? '/' + S.collTab : '');
+    /* My Hive (the collection) always names its tab: a bare #/hive is Hive Mind now (games spec §4.4) */
+    if (n === 'collection') return 'hive/' + (S.collTab || 'badges');
+    /* the two trivia hubs: #/lore, #/lore/<mode>, #/hive, #/hive/<mode> */
+    if (n === 'lore' || n === 'hive') return n + (S.qz && S.qz.hub === n && S.qz.mode ? '/' + S.qz.mode : '');
     if (n === 'shop') return 'shop/' + (S.shopTab || 'avatars');
     if (n === 'progress' || n === 'parent') return S.progTab === 'parent' ? 'grownups' : 'progress';
     if (n === 'train') return 'practice/drill';
@@ -215,6 +220,7 @@
       S.wordCard = null; S.qWord = null; S.listView = null; S.deckOpen = false; S.ttList = null;
       S.authSheet = null; S.cloudSheet = null; S.celebrate = null;
     } catch (e) {}
+    try { if (window.SB_QHUB && SB_QHUB.drop) SB_QHUB.drop(); } catch (e) {}   // Word Lore / Hive Mind: a held miss card and its clock
     try {
       [].forEach.call(document.querySelectorAll('.avc-ov'), function (ov) {
         var x = ov.querySelector('[data-avd="close"]');   // the deck holds a key listener; its own close lets it go
@@ -257,6 +263,11 @@
     }
     /* a word's own card (My Feed's word cards open here): the same door as a search suggestion */
     if (head === 'word' && p[1]) { var w = decodeURIComponent(p.slice(1).join('/')); lazyNeed('words', function () { app.hqPick(w); }); return; }
+    /* Word Lore and Hive Mind (games spec §4.3/§4.4) open through their own doors, which load lore.js.
+       #/hive/<collection tab> (avatars, badges, worlds — My Feed links there) is still My Hive. */
+    if (head === 'lore') { app.openLore(p[1] || null); return; }
+    if (head === 'hive' && (!p[1] || HUB_HIVE[p[1]])) { app.openHive(p[1] || null); return; }
+    if (head === 'trivia') { app.openLore('roots'); return; }   // Bee Trivia's old address: its word stories live in Roots
     if (head === 'hive') { if (p[1]) state.collTab = p[1]; app.openCollection(); return; }
     if (head === 'shop') { app.openShop(p[1] || 'avatars'); return; }
     if (head === 'grownups') { app.setNav('parent'); return; }

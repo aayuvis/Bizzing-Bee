@@ -2759,7 +2759,9 @@ const app = {
     const rec=ttRec(c,k); rec.r=rec.r?0:1; ttPut(c,k,rec); save();
     flash(rec.r?'↓ Added to your revision pile':'Removed from revision'); render(); },
   // hand the speller straight to the Arcade, pre-tuned to this chapter's theme
-  ttPlay:(th)=>{ try{ if(window.STV){ state.trv=state.trv||{}; state.trv.ths=[th]; state.trv.th=th; } app.openTrivia(); }catch(e){ app.openTrivia(); } },
+  /* a studied chapter goes to play in its own hub: word chapters to Word Lore, the rest to Hive Mind's Classic on that theme */
+  ttPlay:(th)=>{ const w={wroots:1,wbreak:1,wstories:1,eponyms:1,words:1,wmeaning:1}; if(w[th]){ app.openTrivia(th); return; }
+    try{ const c=active(); (c.qzHive=c.qzHive||{}).ths=[th]; }catch(e){} app.openHive('classic'); },
   tyStart:(id)=>{ tyStop(); const l=TY_LESSONS.find(x=>x.id===id)||TY_LESSONS[0];
     state.ty={mode:'lesson', lesson:l.id, title:l.name, tip:l.tip, seq:tySeqFor(l), pos:0, typed:0, errors:0, startT:0, done:false};
     set({nav:'typing', screen:'app'}); app._tyArm(); },
@@ -3304,8 +3306,14 @@ const app = {
       const ag=ov.querySelector('#dbg-again'); if(ag) ag.onclick=()=>app.dbgSaga(name);
     }); }catch(e){ flash('Engine error: '+e.message); }
   },
-  // ----- Bee Trivia (window.STV) -----
-  openTrivia:()=>{ clearGTimer(); if(window.STV) STV.open(); },
+  // ----- Word Lore + Hive Mind (lore.js, lazy group `quizhubs`; games spec §4.3/§4.4) -----
+  /* Bee Trivia split in two (owner decision 3). boot-lazy's DOORS hold these until lore.js is in,
+     so a tap or an address that arrives first simply runs when it lands. */
+  openLore:(mode)=>{ clearGTimer(); if(window.SB_QHUB) SB_QHUB.open('lore', mode||null); },
+  openHive:(mode)=>{ clearGTimer(); if(window.SB_QHUB) SB_QHUB.open('hive', mode||null); },
+  /* the old Bee Trivia door: word themes go to Word Lore, everything else to Hive Mind */
+  openTrivia:(th)=>{ const w={wroots:1,wbreak:1,wstories:1,eponyms:1,words:1,wmeaning:1}; if(typeof th==='string'&&w[th]) app.openLore(th==='wmeaning'?'meanings':'roots'); else app.openHive(); },
+  // ----- Bee Trivia (window.STV) — unreachable now; kept for the trivia bank's leak checks -----
   trvTh:(a)=>{ if(window.STV) STV.setTh(a); },
   trvLv:(a)=>{ if(window.STV) STV.setLv(a); },
   trvQuiz:()=>{ if(window.STV) STV.startQuiz(); },
@@ -3586,20 +3594,8 @@ const app = {
     // launched from the start menu → skip the engine's own how-to gate (the menu explained it)
     if(extra.fromMenu){ setTimeout(()=>{ try{ const go=host.querySelector('#sg-howgo'); if(go) go.click(); }catch(_){}} , 90); }
   },
-  /* Who Wants to Be a Bizzillionaire — the money-ladder quiz. Overlay, decoupled. */
-  openBizz:()=>{
-    if(!window.SB_TRIVIA){ flash('Trivia is still loading — one moment'); return; }
-    clearGTimer(); bizzClose();
-    const el=document.createElement('div'); el.className='bz-play'; _bizzEl=el;
-    el.innerHTML='<div class="bz-top"><button class="bz-back" id="bz-back">← Arcade</button>'
-      +'<span class="bz-title"><span class="bz-title-pre">Who Wants to Be a </span>Bizzillionaire</span></div>'
-      +'<div class="bz-body"><div class="bz-stage"></div><div class="bz-ladder"></div></div>';
-    document.body.appendChild(el);
-    el.querySelector('#bz-back').onclick=bizzClose;
-    _bizzS={ rung:0, used:new Set(), cur:null, picked:null, locked:false, reveal:false,
-             hidden:[], hint:null, over:false, lifelines:{fifty:true,ask:true,skip:true} };
-    bizzNext();
-  },
+  /* Bizzillionaire is Word Lore's Ladder now (games spec §4.3): twelve honeycomb rungs, no cash. */
+  openBizz:()=>app.openLore('ladder'),
   champTen:()=>{ const c=active(); const keep=c.gameDiff; c.gameDiff='champ';
     const list=nextWords(null,10,{purpose:'drill'}); c.gameDiff=keep;
     if(list.length<3){ flash('Not enough champ words yet — play a little first'); return; }
@@ -3615,6 +3611,10 @@ const app = {
     setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); set({nav:'games',screen:'app'}); },
   // Word Quiz hosts a round picker: Meanings / Spellings / Origins, or a Mixed set.
   wqStart:(round)=>{ clearGTimer(); state.gInfo=false; state.typed='';
+    /* Word Quiz's meaning, origin and idiom rounds moved into Word Lore (games spec §3.2); the
+       spelling round stays here for the Spelling Gym */
+    const LORE={meaning:'meanings',vocab:'meanings',origin:'origins',idiom:'idioms',simile:'idioms',mixed:'meanings'};
+    if(LORE[round]){ app.openLore(LORE[round]); return; }
     let qs=[];
     if(round==='mixed'){ qs=[].concat(buildMC('meaning',4),buildMC('spell',3),buildMC('origin',3)); qs=sample(qs, Math.min(10,qs.length)); }
     else if(round==='idiom'||round==='simile'){ qs=buildFigQs(round,10); }
@@ -4191,6 +4191,13 @@ const SB_COUNT = {
 /* How a count is PRINTED, so a floor reads the same everywhere: '' while a lazy one is on its
    way (say the sentence without a number), "over 31,000" for trivia, the exact figure else. */
 const SB_FLOOR = { trivia: 1, library: 1, voiced: 1 };
+/* A hub's name (games spec §3.3, owner to choose): SB_HUB_NAMES, never typed into copy here. */
+function hubNameOf(k) { try { return (window.SB_HUB_NAMES && SB_HUB_NAMES[k]) || (window.SB_QHUB ? SB_QHUB.hubName(k) : ''); } catch (e) { return ''; } }
+/* Word Lore's and Hive Mind's mode names, at boot, for the Play card's best line (playCardBest →
+   SB_BESTS.top: "Best 8/10 · Roots"). lore.js (lazy) carries the same titles in its MODES. */
+window.SB_HUB_MODES = window.SB_HUB_MODES || {};
+SB_HUB_MODES.lore = { meanings: 'Meanings', roots: 'Roots', origins: 'Origins', idioms: 'Idioms & Similes', ladder: 'Ladder', squares: 'Squares', clock: 'Against the Clock' };
+SB_HUB_MODES.hive = { classic: 'Classic', squares: 'Squares', clock: 'Against the Clock' };
 function countTxt(k) { const n = SB_COUNT[k] ? SB_COUNT[k]() : null; if (!n) return '';
   return SB_FLOOR[k] ? sbOver(n) : sbFmt(n); }
 /* the same, starting a sentence ("Over …") */
@@ -6663,7 +6670,7 @@ function viewApp(){
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
       :key==='trail'?(S.nav==='trail'||atlasDrill())
-      :key==='games'?(S.nav==='games'||S.nav==='daily'||S.nav==='forge')
+      :key==='games'?(S.nav==='games'||S.nav==='daily'||S.nav==='forge'||S.nav==='lore'||S.nav==='hive')
       :S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -6705,6 +6712,7 @@ function viewApp(){
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
   else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
+  else if(S.nav==='lore'||S.nav==='hive') content=(window.SB_QHUB?SB_QHUB.view():hiveLoader('opening '+(hubNameOf(S.nav)||'the quiz')+'…'));
   else if(S.nav==='adv') content=(window.ADV?ADV.view():viewHome());
   else if(S.nav==='themes') content=viewThemes();
   else if(S.nav==='progress') content=viewProgressShell();
@@ -7921,6 +7929,7 @@ function drillLive(){ try{ const S=state; if(S.screen!=='app') return false;
     if(S.vocCheck && !S.vocCheck.done && S.nav==='vocab') return true;
     if(S.nav==='mockbee' && S.mb && S.mb.view==='stage') return true;
     if(S.nav==='trivia' && S.trv && /^(quiz|clock|square)$/.test(S.trv.view||'') && !S.trv.done) return true;
+    if((S.nav==='lore'||S.nav==='hive') && S.qz && S.qz.mode && S.qz.phase==='play') return true;   /* a hub round: Origins asks for a spelling */
     if(S.nav==='games' && S.game && S.game.status==='play') return true;
     if(S.nav==='adv' && S.adv && /^(drill|scan|mock)$/.test(S.adv.mode||'') && !S.adv.done) return true;
     if(S.nav==='leveltest' && S.lt && S.lt.placed==null) return true;
@@ -10582,7 +10591,8 @@ function viewDebug(){
   const hubs=[
     {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
     {act:'mbOpen',      arg:'', c:'#7C5CFF', n:'Mock Spelling Bee', d:'11 spellers, 8 rounds'},
-    {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
+    {act:'openLore',    arg:'', c:'#13A892', n:hubNameOf('lore')||'Word trivia', d:'Word trivia + the ladder'},
+    {act:'openHive',    arg:'', c:'#2A63D6', n:hubNameOf('hive')||'General knowledge', d:'General knowledge'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
     {act:'playGame',    arg:'magic', c:'#B14FC4', n:'Magic Squares', d:'3×3 spell-a-line'},
     {act:'playGame',    arg:'beat',  c:'#FF5FA2', n:'Beat the Buzzer', d:'60s sprint'},
@@ -11718,13 +11728,9 @@ function beatModePicker(){ return gamePickerShell('Beat the Buzzer','Pick how yo
   pickerCard('playGame','duel','#C43D5A','swords','Spelling Duel','Pass the device — same 10 words, two spellers. Who takes the crown?')+
   ''); }   /* ◆ Rapid Dictation left (games spec §3.1): Spelling Gym · Champ Dictation is its home */
 function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round — each is 10 questions.',
-  pickerCard('wqStart','meaning','#13A892','book','Meanings','Match a word to its meaning or fill the blank in a sentence.')+
   pickerCard('wqStart','spell','#3D7DF0','spark','Spellings','Pick the correctly-spelled word from look-alikes.')+
-  pickerCard('wqStart','origin','#4F9E6A','grid','Origins','Guess each word’s language of origin.')+
-  pickerCard('wqStart','idiom','#9C6A08','bulb','Idioms','What does “break the ice” really mean?')+
-  pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
-  pickerCard('wqStart','vocab','#2E8FB8','book','Vocabulary','Bee-style: hear the word, pick the right meaning.')+
-  pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')+
+  /* meanings, origins, idioms and similes are Word Lore's modes now (games spec §4.3) */
+  pickerCard('openLore','','#13A892','book',hubNameOf('lore')||'Word trivia','Meanings, roots, origins, idioms and the ladder.')+
   ''); }   /* ◆ Memory Match left (games spec §3.1): it paid for luck; Spelling Gym · Word Doctor is in for it */
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
@@ -12041,153 +12047,11 @@ function arcadeResult(g, res){
     try{ flash('Marked for revision ⚑'); }catch(e){}
   }; });
 }
-/* ============================================================================
-   WHO WANTS TO BE A BIZZILLIONAIRE — a 15-rung money ladder over the 31k trivia
-   bank. Difficulty rises with the ladder (levels 1..5, three rungs each), two safe
-   havens, three one-shot lifelines. Self-managed overlay like the arcade games; a
-   quiz, so it is DOM-driven — no engine, no canvas. c[0] is the correct answer in
-   the bank (SB_TRIVIA shuffles for its own UI; here we shuffle our own order).
-   ============================================================================ */
-const SB_BIZZ_LADDER=[
-  {v:100},{v:200},{v:300},{v:500},{v:1000,safe:1},
-  {v:2000},{v:4000},{v:8000},{v:16000},{v:32000,safe:1},
-  {v:64000},{v:125000},{v:250000},{v:500000},{v:1000000}
-];
-const _bizzLevelOf=r=> r<3?1 : r<6?2 : r<9?3 : r<12?4 : 5;   // rung 0..14 -> trivia level (the difficulty ramp)
-let _bizzEl=null, _bizzS=null, _bizzSeen=null;
-/* Cross-game no-repeat: the ids of every trivia question the ladder has already asked,
-   persisted so a second, third, tenth playthrough serves NEW questions rather than the
-   same fifteen. It is recycled one level at a time — only when a whole level's bank has
-   been exhausted do we forget that level, so the game can keep running forever without
-   ever repeating until it truly has to. */
-function _bizzSeenLoad(){ if(_bizzSeen) return _bizzSeen;
-  try{ _bizzSeen=new Set(SB_STORE.getJSON('bizzSeen',[])||[]); }catch(e){ _bizzSeen=new Set(); }
-  return _bizzSeen; }
-function _bizzSeenSave(){ try{ SB_STORE.setJSON('bizzSeen', [..._bizzSeen].slice(-6000)); }catch(e){} }
-function bizzMoney(n){ return n.toLocaleString('en-US'); }
-function bizzClose(){ if(_bizzEl){ _bizzEl.remove(); _bizzEl=null; } _bizzS=null;
-  try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){} }
-function bizzSafe(rung){ let s=0; for(let i=0;i<rung;i++) if(SB_BIZZ_LADDER[i].safe) s=SB_BIZZ_LADDER[i].v; return s; }
-/* Pull a fresh question for this rung's level. Returns {q, order, correctIdx} or null.
-   Draws RANDOMLY from the whole level pool (not a fixed index), skipping anything asked
-   in this game (S.used) or any past game (_bizzSeen), so the trivia bank is spread across
-   plays instead of cycling the same slice. */
-const BIZZ_WORD_TH={ words:1, eponyms:1, langs:1, wmeaning:1, wroots:1, wbreak:1, wstories:1 };   /* the w* themes are the generated word bank: meanings, roots, word breakdowns */
-function bizzDraw(){
-  const S=_bizzS; const lv=_bizzLevelOf(S.rung); const seen=_bizzSeenLoad();
-  const all=(window.SB_TRIVIA&&SB_TRIVIA.questions)||[];
-  /* G11 (FIX-BEE v2): a spelling app's quiz asks about WORDS — meanings, roots, origins and the
-     people words are named after — never "what number comes after 9". */
-  const atLv=all.filter(x=>x.lv===lv && x.ty==='mc' && x.c && x.c.length>=4 && BIZZ_WORD_TH[x.th]);
-  let pool=atLv.filter(x=>!S.used.has(x.id) && !seen.has(x.id));
-  if(!pool.length && atLv.length){          // this whole level has been seen across plays — recycle just this level
-    atLv.forEach(x=>seen.delete(x.id)); _bizzSeenSave();
-    pool=atLv.filter(x=>!S.used.has(x.id));
-  }
-  if(!pool.length){                          // level not loaded yet, or genuinely dry — any fresh mc, seen-aware then not
-    pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&BIZZ_WORD_TH[x.th]&&!S.used.has(x.id)&&!seen.has(x.id));
-    if(!pool.length) pool=all.filter(x=>x.ty==='mc'&&x.c&&x.c.length>=4&&BIZZ_WORD_TH[x.th]&&!S.used.has(x.id));
-    if(!pool.length) return null;
-  }
-  return bizzShape(pool[Math.floor(Math.random()*pool.length)]);
-}
-function bizzShape(q){ const S=_bizzS; S.used.add(q.id);
-  const seen=_bizzSeenLoad(); seen.add(q.id); _bizzSeenSave();
-  const choices=q.c.slice(0,4);
-  // random answer order (Fisher-Yates) so the correct slot moves every play
-  const order=[0,1,2,3]; for(let i=3;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=order[i]; order[i]=order[j]; order[j]=t; }
-  return { q, choices, order, correctIdx: order.indexOf(0) };
-}
-function bizzNext(){
-  const S=_bizzS; const lv=_bizzLevelOf(S.rung);
-  const go=()=>{ const d=bizzDraw(); if(!d){ bizzResult(true, 'ranout'); return; }
-    S.cur=d; S.picked=null; S.locked=false; S.hidden=[]; S.hint=null; bizzRender(); };
-  if(window.SB_TRIVIA && !SB_TRIVIA.loaded(lv)){
-    bizzRender('loading');
-    SB_TRIVIA.need(lv, ()=>{ if(_bizzS) go(); });
-  } else go();
-}
-function bizzAnswer(i){
-  const S=_bizzS; if(!S||S.locked||S.over||S.hidden.indexOf(i)>=0) return;
-  S.picked=i; S.locked=true; bizzRender();
-  setTimeout(()=>{ if(!_bizzS) return;
-    const right = i===S.cur.correctIdx;
-    S.reveal=true; bizzRender();
-    setTimeout(()=>{ if(!_bizzS) return;
-      if(right){
-        if(S.rung>=SB_BIZZ_LADDER.length-1){ bizzResult(true,'won'); return; }
-        try{ S.paid=(S.paid||0)+addCoins('answer'); }catch(e){}
-        S.rung++; S.reveal=false; bizzNext();
-      } else { bizzResult(false,'wrong'); }
-    }, 950);
-  }, 550);
-}
-function bizzLifeline(kind){
-  const S=_bizzS; if(!S||S.locked||S.over||!S.lifelines[kind]) return;
-  S.lifelines[kind]=false;
-  if(kind==='fifty'){ const wrong=[0,1,2,3].filter(i=>i!==S.cur.correctIdx); // hide 2 wrong
-    wrong.sort((a,b)=>((a*7+S.rung)%3)-((b*7+S.rung)%3)); S.hidden=wrong.slice(0,2); }
-  else if(kind==='ask'){ S.hint=(S.cur.q.f)||('Bizzy thinks it starts with “'+String(S.cur.choices[S.cur.order.indexOf(0)]).charAt(0)+'”'); }
-  else if(kind==='skip'){ S.picked=null; S.locked=false; bizzNext(); return; }
-  bizzRender();
-}
-function bizzResult(won, why){
-  const S=_bizzS; if(!S) return; S.over=true;
-  const banked = won ? SB_BIZZ_LADDER[SB_BIZZ_LADDER.length-1].v
-    : (why==='ranout' ? (S.rung>0?SB_BIZZ_LADDER[S.rung-1].v:0) : bizzSafe(S.rung));
-  /* Coins reward the CLIMB, not the money (which is exponential flavour): a child who
-     reaches rung 6 should not walk away with nothing because 1,000 ÷ big number rounds
-     to zero. ~12 per rung cleared, +150 for going all the way, capped so the ladder
-     can't out-earn a day of real practice. */
-  /* each rung climbed was a right answer and paid one coin as it was climbed; reaching the top
-     is a contest completed. The "money" on the ladder is flavour and never becomes coins. */
-  let coins = S.paid||0; if(won) try{ coins+=addCoins('contest'); }catch(e){}
-  bizzRender('result', {won, banked, coins, why});
-}
-function bizzRender(mode, data){
-  if(!_bizzEl) return; const S=_bizzS;
-  const money=v=>bizzMoney(v);
-  const ladder=SB_BIZZ_LADDER.map((r,i)=>{ const on=S&&i===S.rung&&!(mode==='result');
-    const passed=S&&i<S.rung;
-    return `<div class="bz-rung${on?' on':''}${r.safe?' safe':''}${passed?' passed':''}">
-      <span class="bz-rn">${i+1}</span><span class="bz-rv">${money(r.v)}</span></div>`; }).reverse().join('');
-  let main='';
-  if(mode==='loading'){ main=`<div class="bz-load">Loading round ${_bizzS?_bizzS.rung+1:1}…</div>`; }
-  else if(mode==='result'){ const d=data;
-    main=`<div class="bz-result">
-      <div style="font-size:44px">${d.won?'🏆':(d.banked>0?'💰':'💫')}</div>
-      <div class="bz-rh" data-live-prompt="">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
-      <div class="bz-rmoney" data-live-prompt="">${money(d.banked)}</div>
-      <div class="bz-rsub" data-live-prompt="">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
-      <div style="display:flex;gap:9px;margin-top:18px;justify-content:center;flex-wrap:wrap">
-        <button class="bz-again" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Play again</button>
-        <button class="bz-quit" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Arcade</button>
-      </div></div>`;
-  } else if(S&&S.cur){ const q=S.cur; const L=['A','B','C','D'];
-    const answers=[0,1,2,3].map(i=>{ if(S.hidden.indexOf(i)>=0) return `<div class="bz-ans hidden"></div>`;
-      const txt=q.choices[q.order.indexOf(i)]; const picked=S.picked===i;
-      const showRight=S.reveal&&i===q.correctIdx; const showWrong=S.reveal&&picked&&i!==q.correctIdx;
-      return `<button class="bz-ans${picked?' picked':''}${showRight?' right':''}${showWrong?' wrong':''}" data-bz="${i}">
-        <span class="bz-al">${L[i]}</span><span class="bz-at">${esc(txt)}</span></button>`; }).join('');
-    main=`<div class="bz-q" data-live-prompt="${escA('Question '+(S.rung+1)+'. '+q.q.q)}">${esc(q.q.q)}</div>
-      ${S.reveal?`<span class="sb-sr" data-live-prompt="${escA(S.picked===q.correctIdx?'Right.':'Not this time. The answer is '+q.choices[q.order.indexOf(q.correctIdx)]+'.')}"></span>`:''}
-      ${S.hint?`<div class="bz-hint">🐝 ${esc(S.hint)}</div>`:''}
-      <div class="bz-answers">${answers}</div>
-      <div class="bz-lifelines">
-        <button class="bz-ll${S.lifelines.fifty?'':' used'}" data-ll="fifty" ${S.lifelines.fifty?'':'disabled'}>50:50</button>
-        <button class="bz-ll${S.lifelines.ask?'':' used'}" data-ll="ask" ${S.lifelines.ask?'':'disabled'}>Ask Bizzy</button>
-        <button class="bz-ll${S.lifelines.skip?'':' used'}" data-ll="skip" ${S.lifelines.skip?'':'disabled'}>Skip</button>
-      </div>`;
-  }
-  _bizzEl.querySelector('.bz-stage').innerHTML=main;
-  _bizzEl.querySelector('.bz-ladder').innerHTML=ladder;
-  liveScan(_bizzEl.querySelector('.bz-stage'));
-  // wire
-  _bizzEl.querySelectorAll('[data-bz]').forEach(b=>b.onclick=()=>bizzAnswer(+b.getAttribute('data-bz')));
-  _bizzEl.querySelectorAll('[data-ll]').forEach(b=>b.onclick=()=>bizzLifeline(b.getAttribute('data-ll')));
-  const again=_bizzEl.querySelector('.bz-again'); if(again) again.onclick=()=>{ bizzClose(); if(window.app) app.openBizz(); };
-  const quit=_bizzEl.querySelector('.bz-quit'); if(quit) quit.onclick=bizzClose;
-}
+/* Who Wants to Be a Bizzillionaire is Word Lore's LADDER now (lore.js, games spec §4.3): twelve
+   honeycomb rungs and no money — "You walk away with" went with the overlay, its 15-rung cash table
+   (SB_BIZZ_LADDER), the two safe havens and the Skip lifeline. The lifelines are 50:50 · Hear it in a
+   sentence · Ask a rival; a miss holds with the answer and why, then the climb ends. */
+
 /* ============================================================================
    THE PLAY TAB — the lineup (games spec §3.1, owner decision 1: one in, one out)
    Three doors — Compete · Train · Play — and the cards in SB_PLAY_CARDS, nothing else.
@@ -12678,7 +12542,7 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
       <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 9px;display:flex;align-items:center;gap:7px"><span style="width:18px;height:18px;flex-shrink:0">${ttIcon({id:'world'},18)}</span>World chapters</div>${grid(otherIds)}
       <button data-act="openTrivia" class="sb-lift" style="width:100%;text-align:left;margin-top:16px;border-radius:16px;padding:15px 17px;background:linear-gradient(135deg,#F0A93C,#DC7A18);color:#fff;display:flex;align-items:center;gap:13px;box-shadow:var(--sh-rest)">
         <span style="width:30px;height:30px;flex-shrink:0;display:inline-flex">${(window.SB_ICON_ART&&SB_ICON_ART.arcade)?SB_ICON_ART('arcade',{size:30}):''}</span><span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:16px">Ready to play?</span>
-        <span style="display:block;font-size:12.5px;opacity:.92">Take what you've studied into Bee Trivia in the Arcade.</span></span><span style="font-weight:800">→</span></button>
+        <span style="display:block;font-size:12.5px;opacity:.92">Take what you've studied into ${esc(hubNameOf('hive')||'the quiz')}${hubNameOf('lore')?' or '+esc(hubNameOf('lore')):''} on the Play tab.</span></span><span style="font-weight:800">→</span></button>
     </div>`; }
   // ---------- flip-card deck ----------
   const th=ths.find(x=>x.id===t.th)||ths[0]; const deck=ttDeck(t.th); const col=TT_COL[t.th]||'#7C5CFF';
@@ -13077,7 +12941,7 @@ function render(){
   try{ document.body.classList.toggle('sb-forge-on', state.nav==='forge'&&state.screen==='app'); }catch(e){}
   if(state.nav==='forge'&&state.screen==='app'){ try{ const h=document.getElementById('fg-host'); if(h){ if(window.SB_FORGE_UI) SB_FORGE_UI.mount(h); else lazyNeed('forge', ()=>{ const h2=document.getElementById('fg-host'); if(h2&&window.SB_FORGE_UI) SB_FORGE_UI.mount(h2); }); } }catch(e){} }   /* Word Forge draws its own stage into the shell */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
-  if(state.screen==='app'&&(state.game||state.nav==='daily')) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
+  if(state.screen==='app'&&(state.game||state.nav==='daily'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the

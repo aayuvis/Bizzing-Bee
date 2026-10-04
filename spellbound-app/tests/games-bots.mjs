@@ -13,6 +13,8 @@
    THE HOOK SHAPE. A game adds a file tests/bots/<key>.mjs (loaded automatically) whose default export is
      {
        key:    'gym/sprint',             // the SB_PLAY_CARDS key, or '<hub>/<mode>'
+       chance: 0.25,                     // optional (choice drivers): the share a guess wins — T2 then holds
+                                         //   the random bot to chance, not under a quarter of perfect
        kind:   'type' | 'choice',        // a typed word, or an index into options
        level:  'medium',                 // optional; set through SB_LEVEL before the round
        secs:   20,                       // optional; how long a bot plays if the round does not end itself
@@ -109,7 +111,13 @@ async function play(pg, d, b) {
     for (const name of BOTS) { out[name] = await play(pg, d, bot(name, 7 + name.length)); }
     const R = out.random, P = out.perfect;
     if (R) ok(R.r.earned === 0 && R.r.balance === 0, `T1 ${d.key}: the random bot earns 0 coins (${R.r.earned}${R.r.events.length ? ': ' + R.r.events.join(', ') : ''}; ${R.steps} answers)`);
-    if (R && P && R.res && P.res && P.res.asked) ok((R.res.right / Math.max(1, R.res.asked)) < 0.25 * (P.res.right / P.res.asked), `T2 ${d.key}: the random bot scores under 25% of the perfect bot (${R.res.right}/${R.res.asked} vs ${P.res.right}/${P.res.asked})`);
+    /* 4 Oct 2026 (g-lore): a four-option quiz's random bot scores 25% BY CONSTRUCTION — chance — so on ten
+       answers "under 25%" is a coin toss (3 of 10 happens 47% of the time). A driver that declares
+       `chance` (the share a guess wins) is held to it: the random bot no higher than chance plus two
+       standard errors of its own sample, and the perfect bot at 100%. Typed drivers keep the rule above. */
+    if (R && P && R.res && P.res && P.res.asked && d.chance) { const n = Math.max(1, R.res.asked), acc = R.res.right / n, cap = d.chance + 2 * Math.sqrt(d.chance * (1 - d.chance) / n);
+      ok(acc <= cap && P.res.right === P.res.asked, `T2 ${d.key}: the random bot is at chance and no higher — ${R.res.right}/${R.res.asked} (${Math.round(acc * 100)}%, chance ${Math.round(d.chance * 100)}%, ceiling ${Math.round(cap * 100)}% at this sample) vs perfect ${P.res.right}/${P.res.asked}`); }
+    else if (R && P && R.res && P.res && P.res.asked) ok((R.res.right / Math.max(1, R.res.asked)) < 0.25 * (P.res.right / P.res.asked), `T2 ${d.key}: the random bot scores under 25% of the perfect bot (${R.res.right}/${R.res.asked} vs ${P.res.right}/${P.res.asked})`);
     for (const name of Object.keys(out)) { const o = out[name]; if (o.r.card != null) coins.check(ok, `T6 ${d.key} (${name})`, o.r.card, o.r);
       if (name !== 'random') console.log(`       ${d.key} · ${name}: ${o.steps} answers, ${o.r.earned} coins (${o.r.events.join(', ') || 'none'})`); }
   }

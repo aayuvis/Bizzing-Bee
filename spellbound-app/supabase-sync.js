@@ -90,6 +90,7 @@
     'coins', 'karma', 'band', 'level', 'addons', 'tier', 'gameDiffBy', 'arcGame',
     'hive', 'evo', 'world', 'seenTips', 'ttLvSel', 'advOn', 'lastPlayed',
     'mast', // the mastery evidence record (FIX-BEE D5): word keys and day numbers, nothing about the child
+    'qzLore', 'qzHive', // Word Lore / Hive Mind (lore.js): bests per mode, the last mode, chosen themes
   ];
 
   /* The label a backed-up speller wears. It is derived from the AVATAR, never from
