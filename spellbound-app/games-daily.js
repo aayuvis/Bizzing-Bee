@@ -84,7 +84,7 @@
   function render() {
     var b = overlay.querySelector('#db-body');
     var rowsN = 6;
-    var html = '<div class="db-msg" id="db-msg">' + GREET + '</div><div class="db-grid" id="db-grid">';
+    var html = '<div class="db-msg" id="db-msg" data-live-prompt="">' + GREET + '</div><div class="db-grid" id="db-grid">';
     for (var r = 0; r < rowsN; r++) {
       html += '<div class="db-row" data-r="' + r + '">';
       var g = guesses[r], ev = g ? evalGuess(g) : null;
@@ -116,7 +116,7 @@
   }
   function doneHtml() {
     var st = load();
-    return '<div class="db-done"><h3>' + (won ? '✨ Solved it!' : 'The word was ' + answer.toUpperCase()) + '</h3>'
+    return '<div class="db-done"><h3 data-live-prompt="">' + (won ? '✨ Solved it!' : 'The word was ' + answer.toUpperCase()) + '</h3>'
       + '<div class="db-stats">'
       + '<div class="db-stat"><b>' + (st.wins || 0) + '</b><span>solved</span></div>'
       + '<div class="db-stat"><b>' + (st.played || 0) + '</b><span>played</span></div>'
@@ -157,7 +157,7 @@
     return lines.join('\n');
   }
 
-  function msg(t) { var m = overlay && overlay.querySelector('#db-msg'); if (m) m.textContent = t; }
+  function msg(t) { var m = overlay && overlay.querySelector('#db-msg'); if (m) m.textContent = t; try { if (t && window.SB_LIVE) SB_LIVE.say([t]); } catch (e) {} }
   function flashRow() { var row = overlay.querySelector('.db-row[data-r="' + guesses.length + '"]'); if (row) { row.classList.remove('shake'); void row.offsetWidth; row.classList.add('shake'); } }
   function typeCh(ch) { if (over || cur.length >= 5) return; cur += ch; paintCur(); }
   function backCh() { if (over) return; cur = cur.slice(0, -1); paintCur(); }

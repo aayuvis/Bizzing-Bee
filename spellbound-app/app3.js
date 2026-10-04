@@ -3414,6 +3414,9 @@ const app = {
     document.body.appendChild(el);
     el.querySelector('#arc-back').onclick=arcadeClose;
     const host=el.querySelector('#arc-host');
+    /* P6: the engine draws its own clue and end card; say them as they change */
+    try{ let lt=0; const mo=new MutationObserver(()=>{ if(!lt) lt=setTimeout(()=>{ lt=0; liveScanArc(host); },160); });   /* throttled, not debounced: a HUD ticking every frame must not starve it */
+      mo.observe(el,{subtree:true,childList:true,characterData:true}); el._liveMo=mo; _liveSaid=''; }catch(e){}
     const onUnlock=()=>{};   /* a stage reached inside a game pays nothing extra — its words paid as they were spelled */
     g._e0=earnedSoFar();
     // one round = one word log, so the result card reports this play and not the last one
@@ -11444,7 +11447,7 @@ const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',c
 let _arcHandle=null, _arcEl=null;
 function arcadeClose(){
   if(_arcHandle){ try{ _arcHandle.destroy(); }catch(e){} _arcHandle=null; }
-  if(_arcEl){ _arcEl.remove(); _arcEl=null; }
+  if(_arcEl){ try{ if(_arcEl._liveMo) _arcEl._liveMo.disconnect(); }catch(e){} _arcEl.remove(); _arcEl=null; }
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
 }
 /* ============================================================================
@@ -11619,7 +11622,7 @@ function arcadeResult(g, res){
   const card=document.createElement('div'); card.className='arc-play-result';
   card.innerHTML=`<div class="arc-play-rcard">
       <div style="font-size:34px;line-height:1">${isBest?'🌟':win?'🏆':'💪'}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px" data-live-prompt="">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
       <div style="font-size:13px;color:var(--muted)">${win?((coins?'+'+coins+' 🪙 · ':'')+'play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
       ${bestLine}
       ${recap}
@@ -11752,9 +11755,9 @@ function bizzRender(mode, data){
   else if(mode==='result'){ const d=data;
     main=`<div class="bz-result">
       <div style="font-size:44px">${d.won?'🏆':(d.banked>0?'💰':'💫')}</div>
-      <div class="bz-rh">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
-      <div class="bz-rmoney">${money(d.banked)}</div>
-      <div class="bz-rsub">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
+      <div class="bz-rh" data-live-prompt="">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
+      <div class="bz-rmoney" data-live-prompt="">${money(d.banked)}</div>
+      <div class="bz-rsub" data-live-prompt="">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
       <div style="display:flex;gap:9px;margin-top:18px;justify-content:center;flex-wrap:wrap">
         <button class="bz-again" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Play again</button>
         <button class="bz-quit" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Arcade</button>
@@ -11765,7 +11768,8 @@ function bizzRender(mode, data){
       const showRight=S.reveal&&i===q.correctIdx; const showWrong=S.reveal&&picked&&i!==q.correctIdx;
       return `<button class="bz-ans${picked?' picked':''}${showRight?' right':''}${showWrong?' wrong':''}" data-bz="${i}">
         <span class="bz-al">${L[i]}</span><span class="bz-at">${esc(txt)}</span></button>`; }).join('');
-    main=`<div class="bz-q">${esc(q.q.q)}</div>
+    main=`<div class="bz-q" data-live-prompt="${escA('Question '+(S.rung+1)+'. '+q.q.q)}">${esc(q.q.q)}</div>
+      ${S.reveal?`<span class="sb-sr" data-live-prompt="${escA(S.picked===q.correctIdx?'Right.':'Not this time. The answer is '+q.choices[q.order.indexOf(q.correctIdx)]+'.')}"></span>`:''}
       ${S.hint?`<div class="bz-hint">🐝 ${esc(S.hint)}</div>`:''}
       <div class="bz-answers">${answers}</div>
       <div class="bz-lifelines">
@@ -11776,6 +11780,7 @@ function bizzRender(mode, data){
   }
   _bizzEl.querySelector('.bz-stage').innerHTML=main;
   _bizzEl.querySelector('.bz-ladder').innerHTML=ladder;
+  liveScan(_bizzEl.querySelector('.bz-stage'));
   // wire
   _bizzEl.querySelectorAll('[data-bz]').forEach(b=>b.onclick=()=>bizzAnswer(+b.getAttribute('data-bz')));
   _bizzEl.querySelectorAll('[data-ll]').forEach(b=>b.onclick=()=>bizzLifeline(b.getAttribute('data-ll')));
@@ -11904,10 +11909,10 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   else statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
   const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No meaning for this one — listen closely!':''}${(S.gInfo|0)>=2?`<br><b>Shape</b> — ${String(w.w).replace(/[^a-z]/gi,'').length} letters${w.p?' · '+String(w.p).split(/[-\s]+/).filter(Boolean).length+' beat'+(String(w.p).split(/[-\s]+/).filter(Boolean).length===1?'':'s'):''}`:''}${(S.gInfo|0)>=3&&String(w.w).length>3?`<br><b>Starts with</b> — “${esc(String(w.w)[0].toUpperCase())}”`:''}</div>` : '';
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
-  if(g.fb&&!g.fb.ok){ bossFb=missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
+  if(g.fb&&!g.fb.ok){ bossFb=`<span class="sb-sr" data-live-prompt="Not this time. The word is shown letter by letter, then Next word."></span>`+missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
       +`<button data-act="gMissGo" style="width:100%;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">Next word →</button>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
-      <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
+      <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px" data-live-prompt="${escA('Word '+(g.i+1)+'. '+(g.type==='boss'?'Spell it to attack.':'Listen and type.'))}">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${g.type==='boss'&&((active().pow||{}).reveal||0)>0?`<button data-act="gReveal" style="padding:9px 14px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">💡 Reveal letter × ${(active().pow||{}).reveal}</button>`:''}<button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}" aria-label="Hint, step ${(S.gInfo|0)+1} of 3">${iconSVG('bulb',14)} ${['Hint','More help','One more','Hide help'][S.gInfo|0]}</button></div>
       ${hint}${bossFb}
@@ -11945,9 +11950,9 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
   return `<div style="max-width:560px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG(g.status==='lost'?'oops':'love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${title}</h2>
-      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${big}</div>
-      <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px" data-live-prompt="">${title}</h2>
+      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1" data-live-prompt="">${big}</div>
+      <p style="color:var(--muted);font-weight:700;margin-top:6px" data-live-prompt="">${sub}</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
@@ -11969,10 +11974,10 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   else if(q.kind==='vocab') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:.02em">${q.prompt}</div>${q.p2?`<div style=\"font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);margin-top:4px\">${esc(q.p2)}</div>`:''}${hearBtn('Hear the word')}`;
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
   const wrongPick=g.picked!=null && q.choices[g.picked]!==q.answer;
-  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
+  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center"><span class="sb-sr" data-live-prompt="${escA('Question '+(g.i+1)+' of '+g.qs.length)}"></span><div data-live-prompt="">${prompt}</div></div>
     ${wrongPick?(q.kind==='spell'
-        ? missFeedbackHTML(q.wordObj||q.answer, q.choices[g.picked]||'', {head:'Not this time — the right spelling, letter by letter'})
-        : `<div style="background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">Not this time — the answer is: <span style="color:var(--good)">${esc(trunc(q.answer,90))}</span></div>`):''}
+        ? '<span class="sb-sr" data-live-prompt="Not this time. The right spelling is shown, letter by letter."></span>'+missFeedbackHTML(q.wordObj||q.answer, q.choices[g.picked]||'', {head:'Not this time — the right spelling, letter by letter'})
+        : `<div data-live-prompt="" style="background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">Not this time — the answer is: <span style="color:var(--good)">${esc(trunc(q.answer,90))}</span></div>`):''}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>
     ${wrongPick?`<button data-act="gMcNext" style="width:100%;margin-top:12px;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>`:''}`;
   return gameShell(statusBar, inner); }
@@ -11980,9 +11985,9 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
   return `<div style="max-width:560px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG('love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
-      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${g.right}/${g.qs.length}</div>
-      <p style="color:var(--muted);font-weight:700;margin-top:6px">${pct}% correct</p>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px" data-live-prompt="">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
+      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1" data-live-prompt="${g.right} of ${g.qs.length} right">${g.right}/${g.qs.length}</div>
+      <p style="color:var(--muted);font-weight:700;margin-top:6px" data-live-prompt="">${pct}% correct</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
@@ -12660,6 +12665,7 @@ function render(){
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
   if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
+  if(state.screen==='app'&&(state.game||state.nav==='daily')) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the
@@ -12689,6 +12695,39 @@ function homeArtHint(){ try{
   if(_homeArtWas==null) _homeArtWas=JSON.stringify(SB_STORE.getJSON('homeArt',[]));
   if(k!==_homeArtWas){ _homeArtWas=k; SB_STORE.setJSON('homeArt',urls); }
 }catch(e){} }
+/* P6 (audit v4): A GAME'S PROMPT AND ITS RESULT ARE SPOKEN TO A SCREEN READER. One polite live
+   region, #sb-live (visually hidden, on <body>, so no render ever replaces it — a live region rebuilt
+   with its new text is not announced). Screens mark what to say with data-live-prompt (its value, or
+   the element's text without its buttons); the arcade engines, which this file does not draw, are
+   read by selector (their clue line .sg-cardmean / #ss-hint, their end card). Said once per change,
+   never a spelling the screen does not already show, and nothing on screen moves. */
+const LIVE_STRIP=/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]\uFE0F?/gu;
+let _liveEl=null, _liveSaid='';
+function liveEl(){ if(_liveEl&&_liveEl.isConnected) return _liveEl; if(!document.body) return null;
+  _liveEl=document.getElementById('sb-live')||document.createElement('div');
+  _liveEl.id='sb-live'; _liveEl.className='sb-sr'; _liveEl.setAttribute('role','status'); _liveEl.setAttribute('aria-live','polite'); _liveEl.setAttribute('aria-atomic','true');
+  if(!_liveEl.isConnected) document.body.appendChild(_liveEl); return _liveEl; }
+function liveText(el){ const v=el.getAttribute&&el.getAttribute('data-live-prompt'); if(v) return v;
+  const k=el.cloneNode(true); k.querySelectorAll('button,[aria-hidden="true"],svg').forEach(x=>x.remove());
+  return [...k.childNodes].map(n=>(n.textContent||'').trim()).filter(Boolean).join('. '); }
+function liveSay(parts){ try{ const t=parts.map(x=>String(x||'').replace(LIVE_STRIP,'').replace(/\s+/g,' ').trim()).filter(Boolean).join('. ').replace(/([.?!:;—…])\s*\.(?=\s|$)/g,'$1');
+    if(t===_liveSaid) return;
+    /* the same prompt with something added (a miss under its question) says only what was added */
+    const say=(_liveSaid&&t.indexOf(_liveSaid)===0)?t.slice(_liveSaid.length).replace(/^[\s.]+/,''):t;
+    _liveSaid=t; const el=liveEl(); if(el&&say) el.textContent=say; }catch(e){} }
+function liveScan(scope){ try{ scope=scope||root; const els=[...scope.querySelectorAll('[data-live-prompt]')].filter(e=>e.getClientRects().length);
+    liveSay(els.map(liveText)); }catch(e){} }
+/* the arcade engines: their end card, else their clue line */
+function liveScanArc(host){ try{ if(!host||!host.isConnected) return;
+    const vis=e=>e&&e.getClientRects().length;
+    const res=[...document.querySelectorAll('.arc-play-result [data-live-prompt]')].filter(vis);
+    if(res.length){ liveSay(res.map(liveText)); return; }
+    const end=host.querySelector('.sg-endcard');
+    if(vis(end)){ liveSay(['.sg-end-h','.sg-end-sub','.sg-end-score','.sg-wordsum-h'].map(q=>{ const e=end.querySelector(q); return e?e.textContent:''; })); return; }
+    const clue=[...host.querySelectorAll('.sg-cardmean, #ss-hint')].filter(vis).map(e=>e.textContent.trim()).filter((t,i,a)=>t&&a.indexOf(t)===i);
+    if(clue.length) liveSay(['Clue: '+clue[0]]); }catch(e){} }
+try{ liveEl(); }catch(e){}
+window.SB_LIVE={ say:liveSay, scan:liveScan };
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
 root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; callAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
 root.addEventListener('dblclick', e=>{ const el=e.target.closest('[data-dbl]'); if(!el) return;
