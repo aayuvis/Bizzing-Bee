@@ -1,21 +1,33 @@
-/* THE ARCADE HUB HAS NO BLANK SPACE (2 Oct 2026, owner: "dont like the blank space in the game hub") — @check
+/* THE PLAY TAB IS THE LINEUP, AND IT HAS NO BLANK SPACE — @check
+   (2 Oct 2026, owner: "dont like the blank space in the game hub"; REWRITTEN 4 Oct 2026 for the games
+   spec §3.1 lineup — owner decision 1, "one in, one out". The old version pinned four large tiles
+   (Mock Bee, Bizzillionaire, Grand Prix, Honeycomb) over one grid with no headings; the lineup replaces
+   that hub on purpose, so this test was rewritten deliberately, not loosened. The rules it kept:
+   every row full, large painted tiles for the flagships, no hollow tile, the child's own best and no
+   "beat it", one level chip per card that really steps.)
 
-   - no section headings ("The games — pick your level on each", "More to play" are gone)
-   - Bee Grand Prix and Honeycomb Run are LARGE painted tiles beside the Mock Bee and the
-     Bizzillionaire ladder: four large tiles, all the same height, both paintings load
-   - one game grid with fixed columns (4, or 2 on a phone) and a tile count that fills every row
-   - no small tile is hollow (the per-game level is one chip on the picture, not a two-row
-     strip that stretched its row and left a gap above the Play button in the others)
-   - (audit v4 G9) each game the child has scored in shows their own best on its tile, quietly —
-     "Best 1,240" — and a game they have not scored in shows none; no "beat it" on any tile
+   - three doors in order — Compete · Train · Play — and the cards in SB_PLAY_CARDS, in that order:
+     Mock Spelling Bee · the three hubs (named from SB_HUB_NAMES, never typed) and Daily Bee · Bee Grand
+     Prix, Type Blaster, Honeycomb Run (Word Forge only when its table is signed)
+   - none of the cards that left: Bizzillionaire, Daily Buzz, Beat the Buzzer, Magic Squares, Word Quiz,
+     Bee Trivia, Word Snake, Unscramble Stars, Spell Scene
+   - every row of every door is full at 1180 (4 columns) and 390 (2), with Word Forge hidden AND shown
+   - the flagships are large painted tiles (Mock Bee the whole row, the Grand Prix two columns, its
+     painting loads); cards in a row are one height; no small tile is hollow
+   - a level chip on every card (SB_LEVEL.chip), labelled, and a tap steps it
+   - a card says "Coming" exactly when its opener is not on the page yet
+   - (audit v4 G9) a game the child has scored in shows their best, quietly; none where they have not
+   - renaming a hub (SB_HUB_NAMES) renames its card
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/arcade-hub.cjs                       */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
+const { booted, until, still } = require('./lib/wait.cjs');
 const ROOT = process.env.SB_ROOT || path.resolve(__dirname, '..');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
   children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 40, lists: { journey: { xp: 12 } }, activeList: 'journey' }] };
+const GONE = ['Bizzillionaire', 'Daily Buzz', 'Beat the Buzzer', 'Magic Squares', 'Word Quiz', 'Bee Trivia', 'Word Snake', 'Unscramble Stars', 'Spell Scene'];
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined) });
@@ -24,42 +36,61 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
     const ctx = await b.newContext({ viewport: { width: vp.w, height: vp.h }, isMobile: !!vp.m, hasTouch: !!vp.m });
     await ctx.addInitScript(s => { try { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('sb_arc_best', JSON.stringify({ beeGrandPrix: 1240, typeBlaster: 87 })); localStorage.setItem('t_seed', '1'); } } catch (e) {} }, SEED);
     const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(vp.n + ': ' + e.message));
-    await pg.goto('file://' + ROOT + '/index.html'); await pg.waitForTimeout(2500);
-    await pg.evaluate(() => { state.screen = 'app'; app.setNav('games'); }); await pg.waitForTimeout(1500);
-    const r = await pg.evaluate(async () => {
-      const heroes = [...document.querySelectorAll('.arc-hero')];
-      const imgs = heroes.map(h => h.querySelector('.arc-hero-img')).filter(Boolean).map(e => (getComputedStyle(e).backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1]);
-      const loaded = await Promise.all(imgs.map(u => new Promise(res => { const i = new Image(); i.onload = () => res(i.naturalWidth > 0); i.onerror = () => res(false); i.src = u; })));
-      const grid = document.querySelector('.arc-grid');
-      const tiles = grid ? [...grid.children] : [];
-      const cols = grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0;
-      /* a hollow tile: the gap between the end of its words and the top of its Play button */
-      const gaps = tiles.map(t => { const bl = t.querySelector('.arc-tile-blurb'), cta = t.querySelector('.arc-cta'); if (!bl || !cta) return -1;
-        return Math.round(cta.getBoundingClientRect().top - bl.getBoundingClientRect().bottom); });
-      const txt = document.body.innerText;
-      return { titles: heroes.map(h => h.querySelector('.arc-hero-title').textContent.trim()), heights: heroes.map(h => Math.round(h.getBoundingClientRect().height)),
-        painted: heroes.filter(h => h.querySelector('.arc-hero-img')).map(h => h.querySelector('.arc-hero-title').textContent.trim()), loaded,
-        sech: document.querySelectorAll('.arc-sech').length + (/The games — pick your level|More to play/.test(txt) ? 1 : 0),
-        cols, n: tiles.length, gaps, smallGP: tiles.some(t => /Bee Grand Prix|Honeycomb Run/.test(t.textContent)),
-        strips: document.querySelectorAll('.arc-diff').length, chips: [...document.querySelectorAll('.arc-lvl')].map(e => e.getAttribute('aria-label')),
-        best: Object.fromEntries([...document.querySelectorAll('.arc-hero, .arc-grid > *')].map(t => { const ti = t.querySelector('.arc-hero-title, .arc-tile-title');
-          const m = (t.innerText || '').match(/Best [\d,]+/); return [ti ? ti.textContent.trim() : '?', m ? m[0] : '']; })),
-        pressure: [...document.querySelectorAll('.arc-hero, .arc-grid > *')].filter(t => /beat (it|your|that)|new record|can you beat|try to beat|to beat/i.test(t.innerText)).length };
-    });
-    const T = vp.n;
-    ok(r.sech === 0, `${T}: no section headings on the hub`);
-    ok(JSON.stringify(r.titles) === JSON.stringify(['Mock Spelling Bee', 'Who Wants to Be a Bizzillionaire', 'Bee Grand Prix', 'Honeycomb Run']), `${T}: four large tiles — ${r.titles.join(' · ')}`);
-    ok(new Set(r.heights).size === 1, `${T}: the large tiles are all one height (${r.heights.join(', ')})`);
-    ok(r.painted.join() === 'Bee Grand Prix,Honeycomb Run' && r.loaded.length === 2 && r.loaded.every(Boolean), `${T}: the race and the maze wear their paintings, and both load`);
-    ok(!r.smallGP, `${T}: the race and the maze are not repeated as small tiles`);
-    ok(r.cols === vp.cols && r.n > 0 && r.n % r.cols === 0, `${T}: ${r.n} small tiles in ${r.cols} columns — every row full, no blank cells`);
-    ok(r.gaps.every(g => g >= 0 && g <= 60), `${T}: no small tile is hollow (≤ three lines of slack) — words to Play button ${Math.max(...r.gaps)}px at most (${r.gaps.join(', ')})`);
-    ok(r.strips === 0 && r.chips.length >= 1 && r.chips.every(a => /Word level for .+: \w+\. Tap for \w+/.test(a)), `${T}: the word level is one labelled chip per game, not a strip (${r.chips.length})`);
-    ok(r.best['Bee Grand Prix'] === 'Best 1,240' && r.best['Type Blaster'] === 'Best 87' && r.best['Word Snake'] === '' && r.best['Honeycomb Run'] === '' && !r.pressure,
-      `${T}: a game's tile shows the child's own best where they have one (Grand Prix ${r.best['Bee Grand Prix'] || '—'}, Type Blaster ${r.best['Type Blaster'] || '—'}), none where they have not, and no "beat it" anywhere`);
-    /* the chip really steps the level */
-    const step = await pg.evaluate(() => { const ch = document.querySelector('.arc-lvl'); if (!ch) return null; const before = ch.textContent.trim(); ch.click(); return { before, after: (document.querySelector('.arc-lvl') || {}).textContent.trim() }; });
-    ok(step && step.before !== step.after, `${T}: tapping the chip steps the level (${step && step.before} → ${step && step.after})`);
+    await pg.goto('file://' + ROOT + '/index.html'); await booted(pg);
+    await pg.evaluate(() => { state.screen = 'app'; app.setNav('games'); });
+    await until(pg, () => document.querySelectorAll('.pl-door').length >= 3); await still(pg);
+    const measure = () => pg.evaluate(async (GONE) => {
+      const doors = [...document.querySelectorAll('.pl-door')].map(d => {
+        const grid = d.querySelector('.pl-grid'); const gr = grid.getBoundingClientRect();
+        const cards = [...grid.children]; const rows = {};
+        cards.forEach(el => { const r = el.getBoundingClientRect(); const k = Math.round(r.top); (rows[k] = rows[k] || []).push(r); });
+        const full = Object.values(rows).every(rs => { const l = Math.min(...rs.map(r => r.left)), rr = Math.max(...rs.map(r => r.right)); return Math.abs(l - gr.left) <= 2 && Math.abs(rr - gr.right) <= 2; });
+        const even = Object.values(rows).every(rs => new Set(rs.map(r => Math.round(r.height))).size === 1);
+        return { id: d.dataset.door, head: (d.querySelector('.pl-door-h') || {}).textContent, keys: cards.map(el => el.dataset.card), full, even, rows: Object.keys(rows).length };
+      });
+      const cards = [...document.querySelectorAll('.pl-card')];
+      const titles = cards.map(el => (el.querySelector('.arc-hero-title, .arc-tile-title') || {}).textContent.trim());
+      const gaps = [...document.querySelectorAll('.pl-grid > .arc-tile')].map(t => { const bl = t.querySelector('.arc-tile-blurb'), cta = t.querySelector('.arc-cta'); return Math.round(cta.getBoundingClientRect().top - bl.getBoundingClientRect().bottom); });
+      const big = async k => { const el = document.querySelector('.pl-card[data-card="' + k + '"]'); if (!el) return null; const r = el.getBoundingClientRect(), g = el.parentElement.getBoundingClientRect();
+        const img = el.querySelector('.arc-hero-img'); const u = img ? (getComputedStyle(img).backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1] : null;
+        const loaded = u ? await new Promise(res => { const i = new Image(); i.onload = () => res(i.naturalWidth > 0); i.onerror = () => res(false); i.src = u; }) : null;
+        return { hero: !!el.querySelector('.arc-hero'), share: r.width / g.width, painted: !!u, loaded }; };
+      const coming = cards.map(el => { const k = el.dataset.card, o = SB_PLAY_CARDS.find(x => x.k === k);
+        return { k, says: /\bComing\b/.test(el.innerText), live: o.arcade ? !!SB_ARCADE_GAMES.find(x => x.k === k) : typeof app[o.open] === 'function' }; });
+      const best = Object.fromEntries(cards.map(el => [el.dataset.card, ((el.innerText || '').match(/Best [\d,]+/) || [''])[0]]));
+      return { doors, titles, gaps, mb: await big('mockbee'), gp: await big('beeGrandPrix'), coming, best,
+        chips: cards.map(el => (el.querySelector('.sb-lvchip') || {}).getAttribute ? el.querySelector('.sb-lvchip').getAttribute('aria-label') : ''),
+        gone: (() => { const t = document.querySelector('.sb-content, #root').innerText; return GONE.filter(n => t.includes(n)); })(),
+        names: ['gym', 'lore', 'hive'].map(k => SB_HUB_NAMES[k]),
+        pressure: cards.filter(t => /beat (it|your|that)|new record|can you beat|try to beat|to beat/i.test(t.innerText)).length };
+    }, GONE);
+    const T = vp.n; const r = await measure();
+    ok(r.doors.map(d => d.id + ':' + d.head).join() === 'compete:Compete,train:Train,play:Play', `${T}: three doors in order — ${r.doors.map(d => d.head).join(' · ')}`);
+    const want = { compete: ['mockbee'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun'] };
+    ok(r.doors.every(d => JSON.stringify(d.keys) === JSON.stringify(want[d.id])), `${T}: the lineup, door by door — ${r.doors.map(d => d.keys.join('/')).join(' | ')}`);
+    ok(r.titles.slice(1, 4).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(1, 4).join(', ')})`);
+    ok(!r.gone.length, `${T}: none of the cards that left are on the tab` + (r.gone.length ? ' — ' + r.gone.join(', ') : ''));
+    ok(r.doors.every(d => d.full), `${T}: every row of every door is full (${r.doors.map(d => d.id + ' ' + d.rows + ' row' + (d.rows > 1 ? 's' : '')).join(', ')})`);
+    ok(r.doors.every(d => d.even), `${T}: the cards in a row are one height`);
+    ok(r.mb && r.mb.hero && r.mb.share > 0.97, `${T}: Mock Spelling Bee is a large tile the width of its door (${r.mb && Math.round(r.mb.share * 100)}%)`);
+    ok(r.gp && r.gp.hero && r.gp.painted && r.gp.loaded && r.gp.share > (vp.cols === 4 ? 0.45 : 0.97), `${T}: the Grand Prix is a large painted tile and its painting loads (${r.gp && Math.round(r.gp.share * 100)}% of the row)`);
+    ok(r.gaps.length && r.gaps.every(g => g >= 0 && g <= 60), `${T}: no small tile is hollow (≤ three lines of slack) — words to Play button ${Math.max(...r.gaps)}px at most`);
+    ok(r.chips.length === r.titles.length && r.chips.every(a => /^Word level for .+: \w+\. Tap for \w+$/.test(a)), `${T}: a labelled level chip on every card (${r.chips.filter(Boolean).length}/${r.titles.length})`);
+    ok(r.coming.every(x => x.says === !x.live), `${T}: a card says "Coming" exactly when its opener is missing — coming: ${r.coming.filter(x => x.says).map(x => x.k).join(', ') || 'none'}`);
+    ok(r.best.beeGrandPrix === 'Best 1,240' && r.best.typeBlaster === 'Best 87' && r.best.honeycombRun === '' && !r.pressure,
+      `${T}: a game's card shows the child's own best (Grand Prix ${r.best.beeGrandPrix || '—'}, Type Blaster ${r.best.typeBlaster || '—'}), none where they have none, and no "beat it" anywhere`);
+    /* the chip really steps the level, and the level is the child's (SB_LEVEL) */
+    const step = await pg.evaluate(() => { const ch = document.querySelector('.pl-card[data-card="typeBlaster"] .sb-lvchip'); const before = ch.textContent.trim(); ch.click();
+      return { before, after: document.querySelector('.pl-card[data-card="typeBlaster"] .sb-lvchip').textContent.trim(), rec: SB_LEVEL.LABEL[SB_LEVEL.get('typeBlaster')] }; });
+    ok(step.before !== step.after && step.after.startsWith(step.rec), `${T}: tapping a chip steps the level (${step.before} → ${step.after})`);
+    /* Word Forge, signed: still every row full */
+    await pg.evaluate(() => { window.SB_FORGE_SIGNED = true; render(); }); await still(pg);
+    const f = await measure();
+    ok(f.doors.find(d => d.id === 'play').keys.includes('wordForge') && f.doors.every(d => d.full), `${T}: with Word Forge's table signed it joins Play, and every row is still full (${f.doors.find(d => d.id === 'play').keys.join('/')})`);
+    /* a renamed hub */
+    await pg.evaluate(() => { window.SB_FORGE_SIGNED = false; SB_HUB_NAMES.gym = 'Buzz Lab'; render(); });
+    const rn = await pg.evaluate(() => (document.querySelector('.pl-card[data-card="gym"] .arc-tile-title') || {}).textContent);
+    ok(rn === 'Buzz Lab', `${T}: renaming a hub in SB_HUB_NAMES renames its card (${rn})`);
     await ctx.close();
   }
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

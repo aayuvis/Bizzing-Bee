@@ -1756,9 +1756,8 @@ function placeIndex(){ if(_placeIdx) return _placeIdx;
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.acts||[]).forEach(a=>add('Word Atlas region',String(a.title||'').replace(/^Act [IVXLC]+\s*·\s*/,''),'r|honey|'+a.id)); } }catch(e){}
   LIB_DOORS.forEach(([t,a,g])=>add('Library',t,'a|'+a+'|'+g));
-  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Buzz','openDaily',''],['Bee Trivia','openTrivia',''],['Magic Squares','playGame','magic']]
-      .concat((window.SB_ARCADE_GAMES||[]).map(g=>[g.n,'arcadeMenu',g.k]), GAMES.map(g=>[g.name,'playGame',g.type]))
-      .forEach(([t,a,g])=>{ if(typeof app[a]==='function') add('Arcade game',t,'a|'+a+'|'+g); }); }catch(e){}
+  /* the Play tab's own cards (SB_PLAY_CARDS), each through its card's door — a card still "coming" is not a place yet */
+  try{ playCardsShown().forEach(o=>{ if(playCardLive(o)) add('Arcade game',playCardName(o.k),'a|playCard|'+o.k); }); }catch(e){}
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.units||[]).forEach(u=>{ const raw=String(u.title||''); const cut=raw.indexOf(' — '); add('Word Atlas stop',cut>0?raw.slice(0,cut):raw,'u|'+u.id); }); } }catch(e){}
   try{ const ch=((window.SB_CONCEPTS||{}).chapters||[]).concat(((window.SB_ADV_CONCEPTS||{}).chapters||[]));   // state.conceptData's order — the route's index
@@ -3529,6 +3528,11 @@ const app = {
      self-managed fullscreen overlay (like the saga's, minus the story) so it does not
      depend on app3's string render or on saga2's board/beats. */
   arcadeMenu:(k)=>{ try{ arcadeMenu(k); }catch(e){ try{ app.arcadePlay(k); }catch(_){} } },
+  /* a Play-tab card (SB_PLAY_CARDS): its own opener, the arcade start menu, or "coming" */
+  playCard:(k)=>{ const card=SB_PLAY_CARDS.find(x=>x.k===k); if(!card) return;
+    if(card.arcade){ app.arcadeMenu(k); return; }
+    if(typeof app[card.open]==='function'){ app[card.open](); return; }
+    flash(playCardName(k)+' is coming soon'); },
   arcadePlay:(k,extra)=>{
     extra=extra||{};
     const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); if(!g) return;
@@ -4159,7 +4163,7 @@ const sbOver = n => 'over ' + sbFmt(Math.floor(n / (n >= 10000 ? 1000 : 10)) * (
    Never type a count into copy: add a line here. tests/one-count.cjs loads the screens. */
 const SB_COUNT = {
   avatars: () => { try { return SB_AVATARS.catalogue().length; } catch (e) { return 0; } },
-  games: () => (window.SB_ARCADE_GAMES || []).length,
+  games: () => { try { return playCardsShown().filter(o => o.door !== 'compete').length; } catch (e) { return 0; } },   /* the Play tab's cards beside the mock bee (games spec §3.1) */
   /* worlds4.js registers three of the eight worlds and runs AFTER app3's first render: until it
      has (SB_W4), the honest count is "not yet", not five */
   worlds: () => { try { return window.SB_W4 ? THEMES.length : null; } catch (e) { return null; } },
@@ -4273,7 +4277,7 @@ function viewLanding() {
     </figure>`).join('');
 
   const statStrip = [
-    [countTxt('games'), 'arcade games'], [countTxt('conceptsFree'), 'concept chapters'],
+    [countTxt('games'), 'word games'], [countTxt('conceptsFree'), 'concept chapters'],
     [countTxt('evoForms'), 'evolution forms'], [countTxt('avatars'), 'collectibles'],
     [countTxt('trivia'), 'trivia questions'], [countTxt('scripps'), 'champion words'],
   ].filter(([n]) => n).map(([n, t]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0">
@@ -4285,7 +4289,7 @@ function viewLanding() {
 
   const game = landSection('Why children keep opening it',
     'A game where spelling is how you&nbsp;win.',
-    `${countWord('games')} arcade games, no two the same drill. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, feeds the snake — so practice happens because they want the next thing, not because you asked.`,
+    `${countWord('games')} word games, no two the same drill. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, blasts the glitch — so practice happens because they want the next thing, not because you asked.`,
     `<div style="background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:clamp(22px,4vw,34px);margin-bottom:26px">
        <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">The one rule under every game</div>
        <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.16;margin-bottom:12px">Spelling is the cheat&nbsp;code.</div>
@@ -4323,7 +4327,7 @@ function viewLanding() {
   /* ---- 4. THE LADDER. The reason this is a subscription and not an app. ---- */
   const ladder = [
     ['4–7', 'The books', 'Read aloud by a parent. No screen, no scoring, no pressure — just affection for words, and for a character they will follow.'],
-    ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Buzz every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
+    ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Bee word every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
     ['9–12', 'The ladder', 'The highest-value words, an avatar that evolves the whole way up, and Champ Challenges to test out and skip ahead.'],
     ['12–15', 'The library', `${countCap('library')} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
   ].map(([age, t, b], i) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative">
@@ -11823,10 +11827,11 @@ const SB_ARCADE_GAMES = [
   {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Race the maze — spell a word to open each gate.'},
   {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'arcade',    blurb:'Type the words before they reach the bottom.'},
   /* Keep Flying is CUT from the arcade (FIX-BEE v2 G11): a Flappy loop where spelling was a toll, and
-     the Grand Prix already carries "spell to keep moving". The engine stays in saga2.js — one line back. */
-  {k:'wordSnake',           n:'Word Snake',       tag:'Arcade', w:'forest',    blurb:'Grow the snake by eating the letters in order.'},
-  {k:'unscrambleStars',     n:'Unscramble Stars', tag:'Puzzle', w:'cosmos',    blurb:'Slide the scrambled letters into the right order.'},
-  {k:'spellScene',          n:'Spell Scene',      tag:'Scene',  w:'homecoming',blurb:'Spell the word that finishes each scene.'},
+     the Grand Prix already carries "spell to keep moving". The engine stays in saga2.js — one line back.
+     Word Snake, Unscramble Stars and Spell Scene left on 4 Oct 2026 (games spec §3.1, GAMES-LEDGER.md):
+     the snake's glowing tile spelled the word for the child, a random tapper scored 96% at Unscramble,
+     and Spell Scene merges into Type Blaster. Re-adding a line here is a new card: it needs a named
+     "out" in the ledger first (tests/games-ledger.cjs). */
 ];
 window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
 const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
@@ -12173,114 +12178,120 @@ function bizzRender(mode, data){
   const again=_bizzEl.querySelector('.bz-again'); if(again) again.onclick=()=>{ bizzClose(); if(window.app) app.openBizz(); };
   const quit=_bizzEl.querySelector('.bz-quit'); if(quit) quit.onclick=bizzClose;
 }
-function gamesHub(){ const S=state; const c=active();
-  // ---- graphical tile helpers ----
-  const heroTile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-hero" ${o.span?'style="grid-column:span 2"':''}>
-      <span aria-hidden="true" style="position:absolute;inset:0;background:${o.grad}"></span>
-      ${o.img?`<span aria-hidden="true" class="arc-hero-img" style="background-image:url('${o.img}${window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''}')"></span>`:''}
-      ${o.art?`<span class="arc-hero-art">${o.art}</span>`:''}
-      <span class="arc-hero-in">
-        <span class="arc-tag" style="color:${o.tagC||'#FFD98A'};background:${o.tagBg||'rgba(255,194,61,.14)'};border:1px solid ${o.tagBd||'rgba(255,194,61,.35)'}">${o.tag}</span>
-        <span class="arc-hero-title" style="display:block">${esc(o.title)}</span>
-        <span class="arc-hero-blurb" style="display:block">${esc(o.blurb)}</span>
-        <span class="arc-hero-cta"><span class="arc-hero-go">${esc(o.cta)} →</span>${o.sub?`<span class="arc-hero-sub">${esc(o.sub)}</span>`:''}</span>
-      </span></button>`;
-  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-tile">
-      <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
-      <span class="arc-tile-body">
-        <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
-        <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
-        <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
-      </span></button>`;
-  /* A game tile that owns its difficulty. The card is the Play button; the strip below it
-     sets THIS game's word level (auto/easy/medium/hard/champ) and is remembered per game. */
-  const DIFFS=[['auto','Auto'],['easy','Easy'],['medium','Med'],['hard','Hard'],['champ','Champ']];
-  const gtile=(o)=>{ const cur=gameDiffFor(c,o.arg);
-    return `<div class="arc-tile">
-      <button data-act="${o.act}" data-arg="${escA(o.arg)}" class="arc-tile-play">
-        <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
+/* ============================================================================
+   THE PLAY TAB — the lineup (games spec §3.1, owner decision 1: one in, one out)
+   Three doors — Compete · Train · Play — and the cards in SB_PLAY_CARDS, nothing else.
+   GAMES-LEDGER.md is the record of what each card came in for; tests/games-ledger.cjs (T16)
+   fails if this registry ever outgrows the ledger or a key arrives without a named "out".
+   Out, 4 Oct 2026: Bizzillionaire, Daily Buzz, Beat the Buzzer, Magic Squares, Word Quiz, Bee
+   Trivia, Word Snake, Unscramble Stars, Spell Scene (and the add-on's Memory Match, Rapid
+   Dictation, mock rounds). Their engines may live on inside a hub; their cards do not.
+   A card opens through ONE opener on `app` (`open`) or the arcade start menu (`arcade`). A card
+   whose opener is not on the page yet still stands, saying "Coming", so the doors never re-flow
+   as the hubs land. Word Forge stays hidden while its table is unsigned (window.SB_FORGE_SIGNED).
+   Hub names come from SB_HUB_NAMES — never typed here. Every card carries the §1.7 level chip.
+   Rows are always full: 4 columns (2 below 720px), flagships span two, and a door whose cards
+   would leave a hole widens its last small cards instead (tests/arcade-hub.cjs).
+   ============================================================================ */
+const SB_PLAY_CARDS = [
+  {k:'mockbee',      door:'compete', size:'full', open:'mbOpen',       tag:'Competition'},
+  {k:'gym',          door:'train',   open:'openGym',      hub:1,       tag:'Train'},
+  {k:'lore',         door:'train',   open:'openLore',     hub:1,       tag:'Words'},
+  {k:'hive',         door:'train',   open:'openHive',     hub:1,       tag:'Quiz'},
+  {k:'dailyBee',     door:'train',   open:'openDailyBee',              tag:'Today'},
+  {k:'beeGrandPrix', door:'play',    size:'big', arcade:1,             tag:'Race'},
+  {k:'typeBlaster',  door:'play',    arcade:1,                         tag:'Speed'},
+  {k:'honeycombRun', door:'play',    arcade:1,                         tag:'Maze'},
+  {k:'wordForge',    door:'play',    size:'big', open:'openForge',     tag:'Forge'},
+];
+window.SB_PLAY_CARDS = SB_PLAY_CARDS;
+const PLAY_DOORS = [['compete','Compete'],['train','Train'],['play','Play']];
+const PLAY_TEXT = {
+  mockbee:  {n:'Mock Spelling Bee', p:'Your rivals, one microphone, real bee rules. Miss your word and you sit down.'},
+  gym:      {p:'Warm-up, Sprint, Squares and more: every way to drill a spelling, in one hall.'},
+  lore:     {p:'Roots, origins, meanings and idioms: the story inside every word.'},
+  hive:     {p:'General-knowledge trivia, with a fact to keep from every question.'},
+  dailyBee: {n:'Daily Bee', p:'One new word a day: hear it, learn it, spell it.'},
+  wordForge:{n:'Word Forge', p:'Build words from their parts at the honey forge.'},
+};
+const PLAY_ART = {
+  mockbee:{grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)'},
+  gym:{grad:'linear-gradient(135deg,#FF5FA2,#C8458C)', plate:'gym', game:'beat'},
+  lore:{grad:'linear-gradient(135deg,#13A892,#0E7A6A)', plate:'lore', game:'wordquiz'},
+  hive:{grad:'linear-gradient(135deg,#F0A93C,#C8791B)', plate:'hive', game:'trivia'},
+  dailyBee:{grad:'linear-gradient(135deg,#2FA35C,#1E7D45)', plate:'daily', game:'daily'},
+  beeGrandPrix:{grad:'linear-gradient(150deg,#2A1A4A,#1B1235)', img:'app-art/arc-grandprix.jpg', cta:'Start your engine'},
+  typeBlaster:{grad:'linear-gradient(150deg,#1B2A4A,#121B35)', shot:'typeBlaster'},
+  honeycombRun:{grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)', img:'app-art/arc-honeycomb.jpg', cta:'Enter the maze'},
+  wordForge:{grad:'linear-gradient(150deg,#5A2A10,#2E140A)', plate:'forge', cta:'Light the forge'},
+};
+function playCardName(k){ if(k==='gym'||k==='lore'||k==='hive') return hubName(k);
+  const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); return (PLAY_TEXT[k]&&PLAY_TEXT[k].n)||(g&&g.n)||k; }
+function playCardLive(card){ if(card.arcade) return !!(window.SB_ARCADE_GAMES||[]).find(x=>x.k===card.k); return typeof app[card.open]==='function'; }
+function playCardShown(card){ return card.k==='wordForge' ? window.SB_FORGE_SIGNED===true : true; }
+function playCardsShown(){ return SB_PLAY_CARDS.filter(playCardShown); }
+/* the child's own best on a card, quietly — a number they set, never a target the card sets (G9) */
+function playCardBest(card,c){
+  if(card.arcade){ const v=Math.round(+arcBestMap()[card.k]||0); return v>0?'Best '+fmtN(v):''; }
+  if(card.k==='mockbee'){ try{ const st=window.MOCKBEE?MOCKBEE.stats():{}; return st.played&&st.best?('Best finish: '+st.best+(st.wins?' · '+st.wins+' won':'')):''; }catch(e){ return ''; } }
+  if(card.hub){ try{ if(window.SB_HUB_BEST&&typeof SB_HUB_BEST[card.k]==='function'){ const s=SB_HUB_BEST[card.k](); if(s) return String(s); } }catch(e){}
+    const t=SB_BESTS.top(card.k,c); if(!t) return '';
+    const mode=((window.SB_HUB_MODES&&SB_HUB_MODES[card.k]&&SB_HUB_MODES[card.k][t.mode])||t.mode.charAt(0).toUpperCase()+t.mode.slice(1));
+    return 'Best '+(t.best.of?t.best.right+'/'+t.best.of:t.best.right)+' · '+mode; }
+  return ''; }
+function playCardPicture(card,big){ const A=PLAY_ART[card.k]||{}; const V=window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'';
+  if(A.img) return A.img+V;
+  if(A.shot) return 'app-art/shots/game-'+A.shot+'.jpg'+V;
+  if(A.plate&&typeof window.SB_PLATE==='function'){ try{ const u=SB_PLATE(A.plate); if(u) return u; }catch(e){} }
+  return ''; }
+function gamesHub(){ const c=active();
+  const shown=playCardsShown();
+  const card=(o,span)=>{ const A=PLAY_ART[o.k]||{}; const name=playCardName(o.k); const live=playCardLive(o);
+    const promise=(PLAY_TEXT[o.k]&&PLAY_TEXT[o.k].p)||(((window.SB_ARCADE_GAMES||[]).find(x=>x.k===o.k)||{}).blurb)||'';
+    const best=live?playCardBest(o,c):''; const pic=playCardPicture(o,span>1);
+    const chip=SB_LEVEL.chip(o.k,name);
+    const go=live?(A.cta||'Play'):'Coming';
+    if(span>1){   /* a flagship: the large painted tile */
+      let art=''; if(!pic&&o.k==='mockbee'&&window.SB_AVATAR){ try{ const hid=SB_AVATARS.byId['goldlegend']?'goldlegend':((SB_AVATARS.list[0]||{}).id); art=SB_AVATAR(hid,116,{dark:true}); }catch(e){} }
+      if(!pic&&!art&&A.game) art=gameArtSVG(A.game,96);
+      return `<div class="pl-card pl-big" data-card="${o.k}" style="grid-column:${span>=4?'1 / -1':'span 2'}">
+        <button data-act="playCard" data-arg="${escA(o.k)}" class="arc-hero${live?'':' pl-coming'}">
+          <span aria-hidden="true" style="position:absolute;inset:0;background:${A.grad||'var(--accent)'}"></span>
+          ${pic?`<span aria-hidden="true" class="arc-hero-img" style="background-image:url('${pic}')"></span>`:''}
+          ${art?`<span class="arc-hero-art">${art}</span>`:''}
+          <span class="arc-hero-in">
+            <span class="arc-tag" style="color:#FFD98A;background:rgba(255,194,61,.14);border:1px solid rgba(255,194,61,.35)">${iconSVG(o.door==='compete'?'trophy':'joystick',12,2.4)} ${esc(live?o.tag:'Coming')}</span>
+            <span class="arc-hero-title" style="display:block">${esc(name)}</span>
+            <span class="arc-hero-blurb" style="display:block">${esc(promise)}</span>
+            <span class="arc-hero-cta"><span class="arc-hero-go">${esc(go)}${live?' →':''}</span>${best?`<span class="arc-hero-sub">${esc(best)}</span>`:''}</span>
+          </span></button>
+        <span class="pl-chip">${chip}</span></div>`; }
+    const top=pic?`background:linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('${pic}') center/cover`:(A.grad||'var(--accent)');
+    return `<div class="arc-tile pl-card" data-card="${o.k}"${span>1?` style="grid-column:span ${span}"`:''}>
+      <button data-act="playCard" data-arg="${escA(o.k)}" class="arc-tile-play${live?'':' pl-coming'}">
+        <span class="arc-tile-top" style="background:${top}"><span class="arc-badge">${esc(live?o.tag:'Coming')}</span>${pic?'':`<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${A.game?gameArtSVG(A.game,48):''}</span>`}</span>
         <span class="arc-tile-body">
-          <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
-          <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
-          <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
+          <span class="arc-tile-title" style="display:block">${esc(name)}</span>
+          <span class="arc-tile-blurb" style="display:block">${esc(promise)}</span>
+          <span class="arc-tile-foot"><span class="arc-cta" style="background:${live?'var(--accent)':'var(--muted)'}">${live?iconSVG('joystick',14)+' Play':'Coming soon'}</span>${best?`<span class="arc-stat">${esc(best)}</span>`:''}</span>
         </span></button>
-      ${/* the level is ONE chip on the picture that steps Auto → Easy → Med → Hard → Champ on each
-           tap (keyboard: it is a button). It used to be a two-row strip under the card, which made
-           these two cards taller than the rest of their row and left blank space in the others. */''}
-      ${(()=>{ const i=Math.max(0,DIFFS.findIndex(d=>d[0]===cur)), nx=DIFFS[(i+1)%DIFFS.length], lab=DIFFS[i][1];
-        return `<button data-act="setGameDiff" data-arg="${escA(o.arg)}|${nx[0]}" class="arc-lvl" aria-label="${escA('Word level for '+o.title+': '+lab+'. Tap for '+nx[1])}" title="Word level: ${lab} — tap to change">${lab} ▾</button>`; })()}
+      ${chip}
     </div>`; };
-  const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
-  // ---- HEROES: the two marquee games ----
-  /* The 'Bizzy & the Great Unspelling' story hero is gone. Its games became the arcade
-     grid below (now the culled eight) — the story arc, the word-eater plot and the
-     chapter gates went with it. The two heroes are the things a child actually comes back
-     for: the mock bee they are training toward, and the quiz ladder. */
-  const heroes=[];
-  if(window.MOCKBEE){ const st=MOCKBEE.stats();
-    const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
-    heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:iconSVG('trophy',12,2.4)+' Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
-  if(window.SB_TRIVIA){ const bhid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
-    heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:iconSVG('steps',12,2.4)+' Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen word questions — meanings, roots and the people words are named after. Two safe rungs, three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
-  /* The race and the maze are the two biggest games, so they stand with the bee and the
-     ladder as large painted tiles (app-art/arc-grandprix.jpg, arc-honeycomb.jpg — painted for
-     these cards, no lettering) instead of two small cards in the grid. They open the same
-     start menu (arcadeMenu) the small tile did, where the level is picked. */
-  const HERO_GAMES={ beeGrandPrix:{img:'app-art/arc-grandprix.jpg',grad:'linear-gradient(150deg,#2A1A4A,#1B1235)',tag:'Race',cta:'Start your engine'},
-    honeycombRun:{img:'app-art/arc-honeycomb.jpg',grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)',tag:'Maze',cta:'Enter the maze'} };
-  /* G9: the child's own best on each game's tile, quietly — a number they set, never a target the
-     tile sets for them (arcBest, saved by arcadeResult; nothing shows before a first scored round) */
-  const BEST=arcBestMap(), bestOf=k=>{ const v=Math.round(+BEST[k]||0); return v>0?'Best '+fmtN(v):''; };
-  (SB_ARCADE_GAMES||[]).forEach(g=>{ const H=HERO_GAMES[g.k]; if(!H) return;
-    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:bestOf(g.k)||H.sub})); });
-  // ---- FEATURE TILES: daily, trivia, champ, magic ----
-  const feats=[];
-  /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
-     full-width banner under the two story adventures. It shows no run of days: a day off costs nothing. */
-  let dailyBanner='';
-  if(window.SB_DAILY){ let st={}; try{ st=SB_STORE.getJSON('daily',{})||{}; }catch(e){}
-    const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
-    const doneToday=st.day===today&&st.over;
-    dailyBanner=`<button data-act="openDaily" class="sb-lift sb-daily" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
-        background:linear-gradient(110deg,#1E7D45,#2FA35C 46%,#3FBF6E);box-shadow:0 8px 22px rgba(24,96,55,.28)">
-      <span aria-hidden="true" style="position:absolute;inset:0;opacity:.22;background:radial-gradient(320px 150px at 88% 30%,#FFF6D6,transparent 70%)"></span>
-      <span class="sb-daily-art" aria-hidden="true">${gameArtSVG('daily',92)}</span>
-      <span class="sb-daily-in">
-        <span style="min-width:0;flex:1">
-          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono,monospace);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#EAFBEF;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:3px 10px">Today only</span>
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;color:#fff;margin-top:8px">Daily Buzz</span>
-          <span style="display:block;font-size:13px;line-height:1.45;color:rgba(255,255,255,.92);margin-top:4px;max-width:34em">Six tries to spell today&rsquo;s mystery word, then share your grid. A new word every day at midnight.</span>
-        </span>
-        <span class="sb-daily-cta">
-          <span class="sb-daily-go">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
-        </span>
-      </span></button>`; }
-  if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=countTxt('trivia');   /* SB_COUNT's floor — the themes list grows when the word chapters land, so it is not counted here */
-    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?nQ+' questions · ':'')+'picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
-  /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
-  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — every square you claim is a finished round.',cta:'#7E2E9E',stat:''}));
-  // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
-  /* Tile banner is a REAL screenshot of the game (app-art/shots/game-<k>.jpg), not the
-     generic painted world plate — so the picture on the Bee Grand Prix tile is the race,
-     not a hive. Same images the landing uses; regenerate both with qa/shots.cjs. */
-  // Difficulty is chosen in each game's START MENU now (arcadeMenu), so the tile is just a
-  // single Play button + its screenshot — no difficulty strip. Lighter scrim so the shot reads.
-  const arcadeGames=SB_ARCADE_GAMES.filter(g=>!HERO_GAMES[g.k]).map(g=>tile({act:'arcadeMenu',arg:g.k,
-    grad:"linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
-    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:bestOf(g.k)})).join('');
-  // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
-  const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
+  /* spans that fill every row: full = the row, big = two, small = one; bigs first, and a door that
+     would leave a hole widens its last small cards (4 columns; 2 below 720px — a big is a phone row) */
+  const doorHTML=([id,label])=>{ const cards=shown.filter(x=>x.door===id); if(!cards.length) return '';
+    let items=cards.map(x=>({x,span:x.size==='full'?4:x.size==='big'?2:1}));
+    items=items.filter(i=>i.span===4).concat(items.filter(i=>i.span===2),items.filter(i=>i.span===1));
+    let tot=items.reduce((t,i)=>t+i.span,0);
+    for(let j=items.length-1;j>=0&&tot%4;j--){ if(items[j].span===1){ items[j].span=2; tot++; } }
+    for(let j=items.length-1;j>=0&&tot%4;j--){ if(items[j].span===2){ items[j].span=4; tot+=2; } }
+    items=items.filter(i=>i.span===4).concat(items.filter(i=>i.span===2),items.filter(i=>i.span===1));
+    return `<section class="pl-door" data-door="${id}" aria-label="${escA(label)}">
+      <h2 class="pl-door-h">${esc(label)}</h2>
+      <div class="pl-grid">${items.map(i=>card(i.x,i.span)).join('')}</div></section>`; };
   return `<div style="max-width:860px;margin:0 auto">
-    <!-- No global difficulty row: each game sets its own level, on its own tile. A single
-         Arcade-wide selector was redundant with that and misleading (it did nothing for
-         the games that carry their own level, like Trivia). -->
     ${pageHead('Bizzy&rsquo;s Great Spelling Arcade','','',coinChip(),'goHome','Home',null,arcadeLogoSVG(34))}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));grid-auto-rows:1fr;gap:14px;margin-bottom:16px">${heroes.join('')}</div>
-    ${dailyBanner}
-    ${/* ONE grid, no section headings, FIXED columns (4, or 2 on a phone): the tiles come in a
-         multiple of four, so every row is full at every width — auto-fill left two empty
-         cells at the end of the first section and a heading floating over blank space. */''}
-    <div class="arc-grid">${arcadeGames}${feats.join('')}${quick}</div>
+    ${PLAY_DOORS.map(doorHTML).join('')}
   </div>`;
 }
 /* The pack reel and the drop reveal are deleted with the draw (FIX-BEE I3). */
