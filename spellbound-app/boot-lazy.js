@@ -104,7 +104,11 @@
        never on the idle queue, never on the first screen. */
     feedEngine: 'bizzing-feed.js',
     feedMeta: 'feed/feed-meta.js',     // names the per-level index and body groups; bee-feed.js registers and loads those
-    feedView: 'bee-feed.js'
+    feedView: 'bee-feed.js',
+    /* Daily Bee (games spec §5.2): the game itself, fetched at its door with the whole served corpus —
+       the day's word is picked from it, so the same date and band give the same word whatever else has
+       loaded (the end card's sentence and origin come from sents and lore) */
+    dailyBee: 'games-daily.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -128,7 +132,8 @@
     arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
     reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes'],
-    feed: ['feedEngine', 'feedMeta', 'feedView']
+    feed: ['feedEngine', 'feedMeta', 'feedView'],
+    daily: ['dailyBee', 'sents', 'words2', 'lore']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and

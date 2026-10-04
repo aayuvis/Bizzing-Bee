@@ -1751,7 +1751,7 @@ function placeIndex(){ if(_placeIdx) return _placeIdx;
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.acts||[]).forEach(a=>add('Word Atlas region',String(a.title||'').replace(/^Act [IVXLC]+\s*·\s*/,''),'r|honey|'+a.id)); } }catch(e){}
   LIB_DOORS.forEach(([t,a,g])=>add('Library',t,'a|'+a+'|'+g));
-  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Buzz','openDaily',''],['Bee Trivia','openTrivia',''],['Magic Squares','playGame','magic']]
+  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Bee','openDailyBee',''],['Bee Trivia','openTrivia',''],['Magic Squares','playGame','magic']]
       .concat((window.SB_ARCADE_GAMES||[]).map(g=>[g.n,'arcadeMenu',g.k]), GAMES.map(g=>[g.name,'playGame',g.type]))
       .forEach(([t,a,g])=>{ if(typeof app[a]==='function') add('Arcade game',t,'a|'+a+'|'+g); }); }catch(e){}
   try{ const T=window.SB_TRAIL;
@@ -3270,9 +3270,13 @@ const app = {
      now played straight from the arcade (arcadePlay). This is kept as a safe no-op so any
      stale saved deep-link or cached handler lands somewhere harmless rather than throwing. */
   openSaga:()=>{ set({nav:'games', screen:'app'}); },
-  /* Daily Buzz is a screen in the shell (audit v4 N2): nav 'daily', #/daily, the top bar and tabs around
-     it, Back to Play. The board is games-daily.js's own, drawn into #db-host after each render. */
-  openDaily:()=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; app.setNav('daily'); },
+  /* DAILY BEE (games spec §5.2, in for Daily Buzz) is a screen in the shell (audit v4 N2): nav 'daily',
+     #/daily, the top bar and tabs around a full-height stage, Back to Play. games-daily.js is lazy (the
+     `daily` group brings it and the whole corpus the day's word is picked from) and draws into #db-host
+     after each render. A tap here is a gesture, so the word is said as the board appears. */
+  openDailyBee:(arg)=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; state.dbeeSpeak=arg==='route'?0:1;
+    lazyNeed('daily'); app.setNav('daily'); },
+  openDaily:()=>app.openDailyBee(),   /* the old name: every door that opened Daily Buzz opens Daily Bee */
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
     const old=document.getElementById('dbg-eng'); if(old) old.remove();
@@ -4314,7 +4318,7 @@ function viewLanding() {
   /* ---- 4. THE LADDER. The reason this is a subscription and not an app. ---- */
   const ladder = [
     ['4–7', 'The books', 'Read aloud by a parent. No screen, no scoring, no pressure — just affection for words, and for a character they will follow.'],
-    ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Buzz every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
+    ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Bee every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
     ['9–12', 'The ladder', 'The highest-value words, an avatar that evolves the whole way up, and Champ Challenges to test out and skip ahead.'],
     ['12–15', 'The library', `${countCap('library')} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
   ].map(([age, t, b], i) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative">
@@ -10558,7 +10562,7 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
 function viewDebug(){
   if(!state.devUnlock) return viewSettings();
   const hubs=[
-    {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
+    {act:'openDailyBee',arg:'', c:'#2E8B57', n:'Daily Bee',       d:'Hear it, find its spelling'},
     {act:'mbOpen',      arg:'', c:'#7C5CFF', n:'Mock Spelling Bee', d:'11 spellers, 8 rounds'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
@@ -11485,13 +11489,11 @@ function gFinishMC(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
 function coinIc(sz){ return (window.SB_ICON_ART&&SB_ICON_ART.coin)?SB_ICON_ART('coin',{size:sz||14}):SB_ICON('coin',{size:sz||14}); }
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${coinIc(sz)} ${n}</span>`; }
 function coinChip(){ return `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
-/* DAILY BUZZ, IN THE SHELL (audit v4 N2). The page head is the app's (back to Play); the board under it
-   is games-daily.js's, mounted into #db-host by render(). */
+/* DAILY BEE, IN THE SHELL (audit v4 N2, games spec §5.2). The whole screen is games-daily.js's stage —
+   HUD, board and keys on the morning-hive plate, edge to edge between the top bar and the tab bar —
+   mounted into #db-host by render(). Until the lazy file lands the host holds the hive loader. */
 function viewDaily(){
-  let when=''; try{ when=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}); }catch(e){}
-  return `<div class="sb-dailypage" style="max-width:560px;margin:0 auto">
-    ${pageHead('Daily Buzz', esc(when), '', null, 'openGames', 'Play')}
-    <div id="db-host" class="db-host" role="region" aria-label="Today's Daily Buzz" style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-rest)"></div></div>`;
+  return `<div id="db-host" class="db-host" role="region" aria-label="Today's Daily Bee">${window.SB_DAILY?'':hiveLoader('getting today\u2019s word ready\u2026')}</div>`;
 }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
@@ -12045,12 +12047,11 @@ function gamesHub(){ const S=state; const c=active();
     heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:bestOf(g.k)||H.sub})); });
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
-  /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
-     full-width banner under the two story adventures. It shows no run of days: a day off costs nothing. */
+  /* Daily Bee is a once-a-day ritual, not one of nine games to browse. It rides as a
+     full-width banner under the two story adventures. It shows no run of days: a day off costs nothing.
+     games-daily.js is lazy now, so the banner does not wait for it; "done today" is the child's own record. */
   let dailyBanner='';
-  if(window.SB_DAILY){ let st={}; try{ st=SB_STORE.getJSON('daily',{})||{}; }catch(e){}
-    const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
-    const doneToday=st.day===today&&st.over;
+  { const D=c&&c.dbee; const doneToday=!!(D&&D.day===todayKey()&&D.over);
     dailyBanner=`<button data-act="openDaily" class="sb-lift sb-daily" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
         background:linear-gradient(110deg,#1E7D45,#2FA35C 46%,#3FBF6E);box-shadow:0 8px 22px rgba(24,96,55,.28)">
       <span aria-hidden="true" style="position:absolute;inset:0;opacity:.22;background:radial-gradient(320px 150px at 88% 30%,#FFF6D6,transparent 70%)"></span>
@@ -12058,8 +12059,8 @@ function gamesHub(){ const S=state; const c=active();
       <span class="sb-daily-in">
         <span style="min-width:0;flex:1">
           <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono,monospace);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#EAFBEF;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:3px 10px">Today only</span>
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;color:#fff;margin-top:8px">Daily Buzz</span>
-          <span style="display:block;font-size:13px;line-height:1.45;color:rgba(255,255,255,.92);margin-top:4px;max-width:34em">Six tries to spell today&rsquo;s mystery word, then share your grid. A new word every day at midnight.</span>
+          <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;color:#fff;margin-top:8px">Daily Bee</span>
+          <span style="display:block;font-size:13px;line-height:1.45;color:rgba(255,255,255,.92);margin-top:4px;max-width:34em">Hear today&rsquo;s word, then find its spelling in six tries &mdash; and meet the word at the end. A new word every day at midnight.</span>
         </span>
         <span class="sb-daily-cta">
           <span class="sb-daily-go">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
@@ -12859,7 +12860,8 @@ function render(){
       style="flex-shrink:0;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
-  if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
+  if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Bee draws its own stage into the shell */
+  else if(window.SB_DAILY&&SB_DAILY.close){ try{ SB_DAILY.close(); }catch(e){} }   /* …and lets its keyboard go the moment it is not the screen */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
   if(state.screen==='app'&&(state.game||state.nav==='daily')) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel

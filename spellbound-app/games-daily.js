@@ -1,219 +1,515 @@
 /* ============================================================
-   Bizzing Bee — DAILY BUZZ (game #38)
-   A Wordle-style daily spelling puzzle: one 5-letter word a day,
-   six tries, green/amber/grey deduction, and a spoiler-free
-   shareable grid. No run of days is counted (FIX-BEE J2). Kid-safe:
-   no dictionary rejection (any 5 letters is accepted), untimed,
-   no shaming. Self-contained — injects its own CSS and draws its
-   board into a host the app gives it (window.SB_DAILY.mount(el)).
-   IT LIVES IN THE APP'S SHELL (audit v4 N2). It used to cover the
-   whole screen with only "← Games" on it — no top bar, no tabs, no
-   route, and Back left it standing over whatever came next. Now it is
-   a screen like the rest: nav 'daily', #/daily, the family top bar and
-   tabs around it. app3 renders the page head and an empty #db-host;
-   after every app render, mount() draws the board again from the
-   state kept HERE (guesses, the letters being typed), so a re-render
-   never loses a word half-typed. Keys reach it only while it is the
-   screen and nothing is typed into a field or open over it.
+   Bizzing Bee — DAILY BEE (games spec §5.2, 4 Oct 2026). In for Daily Buzz.
+
+   One word a day, SPOKEN, never shown. The child types guesses of the same length and every
+   letter comes back with a SHAPE as well as a colour — ● right place · ◐ in the word ·
+   ○ not in it — six tries, and it ALWAYS ends with the word: said again, its meaning, its
+   origin, a sentence, and "Add to revision" when it got away. Daily Buzz drew five blank
+   squares over a list of 300 fixed words and never said the word at all; this one teaches it.
+
+   THE WORD is deterministic per date AND band: nextWords(child, 1, {purpose:'daily'}) when the
+   foundations have it, else an FNV hash of "<date>|<lo>-<hi>" over this child's band of the
+   corpus (diffRange at the Daily Bee's level), kid-safe, letters only, 4–8 long. The pick waits
+   for the whole served corpus (the `daily` lazy group), so the same date and band give the same
+   word whatever else has loaded; today's word is then kept on the child (c.dbee) so a deploy or a
+   level change after the first try never swaps it mid-game.
+
+   PAY: one `answer` coin when solved, once a day, nothing for a miss — a random guesser earns 0
+   (tests/daily-bee.cjs DB3). SB_LEVEL.after('dailyBee', solved?1:0) once a day.
+   NEVER SHOWN BEFORE THE END: the word lives in c.dbee and in this closure; nothing on screen,
+   no attribute and no live line carries it until the round is over (tests/daily-bee.cjs).
+
+   IT LIVES IN THE SHELL (audit v4 N2): nav 'daily', #/daily, the family top bar and tabs around
+   a full-height stage (SGUI.stage when the engine kit has it, else the small one here) on the
+   morning-hive plate. app3 renders an empty #db-host; after every app render mount() draws the
+   stage again from the state kept on the child and here (the letters being typed), so a
+   re-render never loses a word half-typed. Keys reach it only while it is the screen and nothing
+   is typed into a field or open over it. Lazy: boot-lazy's `daily` group brings this file and
+   the corpus at the door (app.openDailyBee).
    ============================================================ */
 (function () {
-  // Curated answer pool — common, age-8–15-friendly 5-letter words.
-  var WORDS = ("apple beach bloom brave bread brick bring brush chair chalk charm chase cheer chess chief child clean clear climb cloud coach crane crawl cream crown crumb daily dance dizzy dodge dream dress drink drive eager eagle early earth feast fetch field fight flame float flock flood floor flour focus force frame fresh frost fruit ghost giant glade glare glass gleam globe glory grace grain grand grape grasp grass great green greet grind groan group growl guard guest guide happy heart honey hound house human ivory jelly jolly juice knack knead knife knock koala laugh learn ledge lemon light lodge lucky lunar magic march match merry mirth month mouse mount music never noble ocean olive onion order otter panda paint peace pearl pedal petal photo piano pilot pixel plaid plane plant plaza pluck point polar pound power press pride prize proud pulse quack quart queen query quest quick quiet quilt quote raise ranch reach react ready realm rhyme river roast robin round royal salad scale scarf scene scent scoop score scout scrub sense serve shade shake shape share sharp sheep shelf shine shore short shout shrub siren skate skill slate sleek sleep slice slime slope small smart smile smoke snack snail sneak solar solid sound south space spark speak spell spend spice spine spoke spoon sport spray sprig squad stack staff stage stair stalk stamp stand stare steam steel stern stick sting stone store storm story stove strap straw strip study sugar suite sunny swarm sweat sweep sweet swift swirl table taste teach thank theme thick thief thing think thorn three throw thumb tiger toast token torch tower track trade trail train tramp trash treat trend trial tribe trick troop trout truce truck trunk trust truth twist ulcer uncle under unite upper urban usher valid value vapor vault verse video vigor vivid vocal voice vowel wagon waltz waste watch water weave wheat wheel where which whisk white whole world worth wound woven wrist write yield young youth zebra zesty").split(/\s+/);
-  var GREET = "The morning word is greying — spell it back before the sixth try.";
+  var TRIES = 6, MINL = 4, MAXL = 8, KEY = 'dailyBee';
+  var SHAPE = { hit: '●', near: '◐', miss: '○' };            // ● ◐ ○
+  var SAYS = { hit: 'right place', near: 'in the word', miss: 'not in it' };
+  var LV_NAME = { auto: 'Auto', easy: 'Easy', medium: 'Medium', hard: 'Hard', champ: 'Champ' };
 
+  /* Theme tokens only (Daily Buzz painted var(--bg,#FBF7EC) and #fff panels, unreadable at dusk).
+     Panels are translucent paper over the plate; a filled cell is a soft ramp, never a flat
+     block, so the stage carries no flat-colour region (T14). */
   var css = ''
-    + '.db-ov{position:fixed;inset:0;z-index:80;background:var(--bg,#FBF7EC);overflow:auto;display:flex;flex-direction:column;font-family:var(--body,"Hanken Grotesk",system-ui,sans-serif);color:var(--text,#241E33)}'
-    + '.db-top{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:2px solid var(--honey,#F0B429)}'
-    + '.db-top .db-back{font:600 14px var(--body,sans-serif);border:1px solid var(--line,#EADFC8);background:var(--panel,#fff);border-radius:999px;padding:6px 14px;cursor:pointer;color:inherit}'
-    + '.db-title{font:800 18px var(--display,"Fraunces",serif);letter-spacing:-.01em}'
-    + '.db-sub{font:600 11px var(--mono,monospace);letter-spacing:.14em;text-transform:uppercase;color:var(--honey,#B8860B);margin-left:auto}'
-    + '.db-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;max-width:520px;margin:0 auto;width:100%;padding:10px 14px 18px}'
-    + '.db-msg{min-height:26px;font:600 14px var(--body,sans-serif);color:var(--muted,#7A6E5C);text-align:center;padding:6px 0}'
-    + '.db-grid{display:grid;grid-template-rows:repeat(6,1fr);gap:7px;margin:4px 0}'
-    + '.db-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}'
-    + '.db-cell{width:56px;height:56px;display:grid;place-items:center;font:800 28px var(--mono,"Sono",monospace);text-transform:uppercase;'
-    + 'border:2px solid var(--line,#D7CDB6);border-radius:10px;color:var(--text,#241E33);background:transparent;transition:transform .12s ease}'
-    + '.db-cell.pop{animation:db-pop .12s ease}'
-    + '.db-cell.flip{animation:db-flip .5s ease forwards}'
-    + '.db-cell.hit{background:#3AA55C;border-color:#3AA55C;color:#fff}'
-    + '.db-cell.near{background:#E8A33D;border-color:#E8A33D;color:#fff}'
-    + '.db-cell.miss{background:#8B857B;border-color:#8B857B;color:#fff}'
-    + '.db-row.shake{animation:db-shake .4s}'
-    + '@keyframes db-pop{50%{transform:scale(1.12)}}'
+    /* edge to edge, and no taller than the window: the app frame's min-height:100dvh sits inside #root's
+       zoom, so on a phone it is 9% taller than the screen and the page would scroll under the stage */
+    + '.sb-content:has(>.db-host){max-width:none!important;padding:0!important}'
+    + '#root div:has(>.sb-content>.db-host),#root>div:has(.db-host){min-height:0!important}'
+    + '.db-host{position:relative;width:100%}'
+    + '.db-wrap{position:relative;width:100%;height:calc(100dvh - 120px);min-height:420px}'
+    + '.db-wrap>*{height:100%}'
+    /* the fallback stage (SGUI.stage draws its own when the engine kit is in) */
+    + '.dbs-stage{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr) auto;width:100%;height:100%;overflow:hidden;color:var(--text);'
+    + 'background:var(--dbs-plate,none) center/cover no-repeat,radial-gradient(70% 55% at 50% 8%,color-mix(in srgb,var(--treasure) 40%,transparent),transparent 72%),'
+    + 'radial-gradient(60% 50% at 12% 100%,color-mix(in srgb,var(--mastered) 18%,transparent),transparent 70%),'
+    + 'linear-gradient(180deg,color-mix(in srgb,var(--treasure) 24%,var(--tint)) 0%,var(--tint) 46%,var(--tint-deep) 100%)}'
+    + '[data-mode="dusk"] .dbs-stage{background:var(--dbs-plate,none) center/cover no-repeat,radial-gradient(70% 55% at 50% 6%,color-mix(in srgb,var(--treasure) 22%,transparent),transparent 72%),'
+    + 'radial-gradient(60% 50% at 88% 100%,color-mix(in srgb,var(--action) 22%,transparent),transparent 70%),linear-gradient(180deg,var(--tint-deep) 0%,var(--tint) 52%,var(--tint-deep) 100%)}'
+    + '.dbs-hud,.dbs-play,.dbs-ctl{width:min(100%,var(--dbs-w,960px));margin:0 auto;box-sizing:border-box}'
+    + '.dbs-hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:10px 12px 6px}'
+    + '.dbs-play{position:relative;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 12px}'
+    + '.dbs-ctl{padding:6px 12px 10px}'
+    /* the HUD: two stats of one width, mirrored about the centre */
+    + '.db-stat{width:min(100%,148px);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;padding:4px 8px;border-radius:14px;'
+    + 'background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid color-mix(in srgb,var(--line) 80%,transparent);text-align:center}'
+    + '.db-stat.l{justify-self:start}.db-stat.r{justify-self:end}'
+    + '.db-stat b{font:800 19px/1 var(--display);color:var(--text)}'
+    + '.db-stat span{font:700 10.5px/1.2 var(--ui);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:3px}'
+    + '.db-mid{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;min-width:0}'
+    + '.db-title{font:800 18px/1.1 var(--display);color:var(--text);white-space:nowrap}'
+    + '.db-when{display:flex;align-items:center;gap:6px;font:700 12px/1.2 var(--ui);color:var(--muted);white-space:nowrap}'
+    + '.db-lv{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--paper) 80%,transparent);border:1px solid var(--line);color:var(--text);font:800 11.5px/1.4 var(--ui)}'
+    /* the board */
+    + '.db-msg{min-height:22px;max-width:36em;margin:0 auto 8px;padding:3px 12px;border-radius:999px;font:700 13.5px/1.35 var(--ui);color:var(--text);text-align:center;background:color-mix(in srgb,var(--paper) 72%,transparent)}'
+    + '.db-msg:empty{visibility:hidden}'
+    + '.db-grid{--cell:52px;--gap:6px;display:grid;gap:var(--gap)}'
+    + '.db-row{display:grid;grid-template-columns:repeat(var(--n),var(--cell));gap:var(--gap);justify-content:center}'
+    + '.db-cell{position:relative;width:var(--cell);height:var(--cell);box-sizing:border-box;display:grid;place-items:center;border-radius:calc(var(--cell)*.2);'
+    + 'font:800 calc(var(--cell)*.5)/1 var(--mono);text-transform:uppercase;color:var(--text);border:2px solid color-mix(in srgb,var(--line) 90%,var(--text) 10%);'
+    + 'background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 66%,transparent),color-mix(in srgb,var(--paper) 46%,transparent))}'
+    + '.db-cell.cur{border-color:color-mix(in srgb,var(--action) 55%,var(--line))}'
+    + '.db-cell.fill{background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 94%,transparent),color-mix(in srgb,var(--paper) 78%,transparent))}'
+    + '.db-cell .db-sh{position:absolute;right:calc(var(--cell)*.07);top:calc(var(--cell)*.03);font:400 calc(var(--cell)*.24)/1 var(--ui);opacity:.95}'
+    + '.db-cell.hit{background:linear-gradient(180deg,color-mix(in srgb,var(--mastered) 80%,#fff),var(--mastered) 70%);border-color:var(--mastered);color:#fff}'
+    + '.db-cell.near{background:linear-gradient(180deg,color-mix(in srgb,var(--medium) 78%,#fff),var(--medium) 70%);border-color:var(--medium);color:#fff}'
+    + '.db-cell.miss{background:color-mix(in srgb,var(--paper) 40%,transparent);border-style:dashed;color:var(--muted)}'
+    + '.db-cell.hit,.db-cell.near{text-shadow:0 1px 1px rgb(0 0 0 / .25)}'
+    + '.db-cell.flip{animation:db-flip .42s ease both}'
+    + '.db-row.shake{animation:db-shake .38s}'
     + '@keyframes db-flip{0%{transform:rotateX(0)}45%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}'
     + '@keyframes db-shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}'
-    + '.db-keys{display:flex;flex-direction:column;gap:6px;align-items:center;width:100%}'
+    + '.db-key{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:8px;font:700 12px/1.3 var(--ui);color:var(--muted)}'
+    + '.db-key span{display:inline-flex;align-items:center;gap:4px}'
+    /* the controls: three buttons mirrored about "Hear it again" */
+    + '.db-acts{display:grid;grid-template-columns:1fr minmax(0,1.5fr) 1fr;gap:8px;margin:0 auto 8px;max-width:560px}'
+    + '.db-b{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:6px 10px;border-radius:999px;box-sizing:border-box;'
+    + 'font:800 14px/1.15 var(--ui);color:var(--text);background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 92%,transparent),color-mix(in srgb,var(--paper) 72%,transparent));border:1.5px solid var(--line);cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}'
+    + '.db-b.go{background:var(--action);color:var(--action-ink,#fff);border-color:transparent;box-shadow:var(--edge)}'
+    + '.db-b[disabled]{opacity:.7;cursor:default}'
+    + '.db-b svg{flex:none}'
+    /* the fallback keyboard (SGUI.keys replaces it when the engine kit is in) */
+    + '.db-keys{display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;max-width:560px;margin:0 auto}'
     + '.db-krow{display:flex;gap:5px;justify-content:center;width:100%}'
-    + '.db-k{flex:1;max-width:38px;height:50px;border:none;border-radius:8px;background:var(--surface2,#EDE7D8);color:var(--text,#241E33);'
-    + 'font:700 15px var(--body,sans-serif);text-transform:uppercase;cursor:pointer;display:grid;place-items:center;transition:.1s}'
-    + '.db-k.wide{max-width:64px;font-size:12px;font-weight:800}'
-    + '.db-k.hit{background:#3AA55C;color:#fff}.db-k.near{background:#E8A33D;color:#fff}.db-k.miss{background:#8B857B;color:#fff}'
+    + '.db-k{position:relative;flex:1 1 0;min-width:0;max-width:48px;height:46px;border:1px solid color-mix(in srgb,var(--line) 80%,transparent);border-radius:9px;'
+    + 'background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 92%,transparent),color-mix(in srgb,var(--paper) 70%,transparent));color:var(--text);font:800 16px var(--ui);text-transform:uppercase;cursor:pointer;display:grid;place-items:center;padding:0}'
+    + '.db-k.wide{flex:1.5 1 0;max-width:74px;font-size:12px}'
+    + '.db-k .db-sh{position:absolute;right:3px;top:2px;font:400 9px/1 var(--ui)}'
+    + '.db-k.hit{background:linear-gradient(180deg,color-mix(in srgb,var(--mastered) 80%,#fff),var(--mastered));color:#fff;border-color:var(--mastered)}'
+    + '.db-k.near{background:linear-gradient(180deg,color-mix(in srgb,var(--medium) 78%,#fff),var(--medium));color:#fff;border-color:var(--medium)}'
+    + '.db-k.miss{background:color-mix(in srgb,var(--paper) 36%,transparent);color:var(--muted);border-style:dashed}'
     + '.db-k:active{transform:translateY(1px)}'
-    + '.db-done{text-align:center;padding:14px 0}'
-    + '.db-done h3{font:800 24px var(--display,serif);margin:0 0 6px}'
-    + '.db-stats{display:flex;gap:10px;justify-content:center;margin:12px 0}'
-    + '.db-stat{background:var(--panel,#fff);border:1px solid var(--line,#EADFC8);border-radius:12px;padding:8px 14px;min-width:66px}'
-    + '.db-stat b{display:block;font:800 22px var(--display,serif);line-height:1}'
-    + '.db-stat span{font:600 10px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#7A6E5C)}'
-    + '.db-share{font:700 15px var(--body,sans-serif);background:var(--honey,#F0B429);color:#2B2117;border:none;border-radius:999px;padding:12px 26px;cursor:pointer;box-shadow:0 4px 0 #C8891B}'
-    + '@media(max-width:400px){.db-cell{width:48px;height:48px;font-size:24px}.db-k{height:46px}}'
-    /* in the shell the top bar and the tab bar share a phone's height with the board: the whole
-       keyboard stays above the tab bar on a 390x844 phone (keys stay 44px targets) */
-    + '@media(max-width:440px) and (max-height:900px){.db-cell{width:44px;height:44px;font-size:22px}.db-grid,.db-row{gap:6px}.db-k{height:44px}.db-body{padding:6px 10px 12px}.db-msg{font-size:13px;padding:4px 0}}';
+    /* the end: the word, always */
+    + '.db-end{width:min(100%,560px);max-height:100%;overflow:auto;box-sizing:border-box;padding:14px 16px;border-radius:20px;text-align:center;'
+    + 'background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:var(--sh-raised)}'
+    + '.db-endh{font:800 15px/1.3 var(--ui);color:var(--muted);margin:0 0 8px}'
+    + '.db-word{display:flex;justify-content:center;gap:5px;margin:0 0 6px}'
+    + '.db-word .db-cell{--cell:40px}'
+    + '.db-pron{font:700 13px var(--ui);color:var(--muted);margin-bottom:8px}'
+    + '.db-facts{text-align:left;display:grid;gap:7px;margin:8px 0 2px}'
+    + '.db-fact{font:500 14px/1.45 var(--ui);color:var(--text)}'
+    + '.db-fact b{display:block;font:800 11px/1.3 var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}'
+    + '.db-mini{display:inline-grid;gap:3px;margin:2px auto 8px}'
+    + '.db-mini .db-row{--cell:18px;--gap:3px}'
+    + '.db-mini .db-cell{border-width:1px;font-size:0}.db-mini .db-cell .db-sh{position:static;font-size:11px;color:inherit}'
+    + '.db-kind{margin-top:8px;font:700 13px/1.4 var(--ui);color:var(--text);background:color-mix(in srgb,var(--treasure) 18%,transparent);border-radius:12px;padding:7px 10px}'
+    + '@media (prefers-reduced-motion:reduce){.db-cell.flip,.db-row.shake{animation:none}}'
+    + '[data-a11y-motion] .db-cell.flip,[data-a11y-motion] .db-row.shake{animation:none}'
+    + '@media(max-width:560px){.dbs-hud{gap:6px;padding:8px 10px 4px}.db-stat{width:min(100%,92px);min-height:42px}.db-stat b{font-size:17px}.db-stat span{font-size:9.5px}'
+    + '.db-title{font-size:16px}.dbs-play{padding:2px 10px}.dbs-ctl{padding:4px 8px 8px}.db-acts{gap:6px;margin-bottom:6px}.db-b{font-size:13px;padding:6px 8px}.db-k{height:44px;font-size:15px}.db-krow{gap:4px}.db-keys{gap:5px}.db-msg{font-size:12.5px;margin-bottom:6px}.db-key{display:none}}';
 
-  function todayIndex() {
-    var d = new Date();
-    var epoch = Date.UTC(2026, 0, 1);
-    var day = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - epoch) / 86400000);
-    return ((day % WORDS.length) + WORDS.length) % WORDS.length;
+  /* ------------------------------------------------------------------ the word */
+  function fnv(s) { var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
+  function lc(s) { return String(s == null ? '' : s).toLowerCase(); }
+  /* A word a child may be asked for on a Daily Bee: letters only, 4–8 long (the board must fit a
+     390px phone), a meaning to end on, a respelling, and clean — kidSafe() when the foundations
+     have it, else the same gates the word of the hour uses (struck, cut, held, the gloss test). */
+  /* The screen's own words. If the day's word were "listen" or "letters", the prompt above the board would
+     print it — so a word the stage itself says (its copy, its labels, a weekday or a month in the date) is
+     never the day's word. */
+  var OWN = {};
+  ('daily bee tries left good days this week letters listen then type your first right place word play hear again slowly '
+    + 'enter delete letter empty level auto easy medium hard champ group getting ready today tomorrow solved meaning origin '
+    + 'sentence revision added back from move time added comes ready letters monday tuesday wednesday thursday friday '
+    + 'saturday sunday january february march april june july august september sept october november december').split(' ').forEach(function (x) { OWN[x] = 1; });
+  function fits(e) {
+    if (!e || !e.w || !e.d || !e.p || !e.s) return false;
+    var w = String(e.w); if (!/^[a-z]+$/.test(w) || w.length < MINL || w.length > MAXL || OWN[w]) return false;
+    if (typeof window.kidSafe === 'function') { try { return !!window.kidSafe(e); } catch (x) { return false; } }
+    try { if (typeof CORE_STRIKE !== 'undefined' && CORE_STRIKE.has(w)) return false; } catch (x) {}
+    try { if (typeof CORE_CUT !== 'undefined' && CORE_CUT.has(w)) return false; } catch (x) {}
+    if ((window.SB_WORDS_HELD || []).indexOf(w) >= 0) return false;
+    /* a word of the day is a showcase: none from the themes the spec holds back from young children
+       (War & Weaponry, Drugs & Pharmacy, Diseases & Symptoms — §1.2), whoever is playing */
+    var t = e.t || []; for (var j = 0; j < t.length; j++) if (t[j] === 'war' || t[j] === 'pharmacy' || t[j] === 'disease') return false;
+    if (typeof window.SB_GLOSS_OK === 'function' && !window.SB_GLOSS_OK(e.d, e.w)) return false;
+    return true;
   }
-  function todayKey() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
-  function load() { try { return SB_STORE.getJSON('daily', {}) || {}; } catch (e) { return {}; } }
-  function save(s) { try { SB_STORE.setJSON('daily', s); } catch (e) {} }
+  var _pools = {}, _all = null, _allN = -1;
+  /* a headword, not a form of one: "locals", "jumped", "racing" are the day's word only if the
+     corpus has no "local", "jump", "race" to be the word instead (lemmaOnly, by the corpus itself) */
+  function lemma(w) {
+    var src = (window.SB_DATA && window.SB_DATA.nsf) || [];
+    if (!_all || _allN !== src.length) { _all = {}; for (var i = 0; i < src.length; i++) if (src[i] && src[i].w) _all[src[i].w] = 1; _allN = src.length; }
+    var A = _all;
+    if (/s$/.test(w) && (A[w.slice(0, -1)] || /es$/.test(w) && A[w.slice(0, -2)] || /ies$/.test(w) && A[w.slice(0, -3) + 'y'])) return false;
+    if (/ed$/.test(w) && (A[w.slice(0, -2)] || A[w.slice(0, -1)] || /ied$/.test(w) && A[w.slice(0, -3) + 'y'] || w.length > 5 && w[w.length - 3] === w[w.length - 4] && A[w.slice(0, -3)])) return false;
+    if (/ing$/.test(w) && (A[w.slice(0, -3)] || A[w.slice(0, -3) + 'e'] || w.length > 6 && w[w.length - 4] === w[w.length - 5] && A[w.slice(0, -4)])) return false;
+    if (/(er|est)$/.test(w) && (A[w.replace(/(er|est)$/, '')] || A[w.replace(/(r|st)$/, '')] || A[w.replace(/i(er|est)$/, 'y')])) return false;
+    return true;
+  }
+  /* the band's words, sorted by spelling, so the pool does not depend on the order shards landed */
+  function bandPool(lo, hi) {
+    var src = (window.SB_DATA && window.SB_DATA.nsf) || [], k = lo + '-' + hi + '|' + src.length;
+    if (_pools[k]) return _pools[k];
+    var seen = {}, out = [];
+    for (var i = 0; i < src.length; i++) { var e = src[i]; if (!fits(e)) continue; var y = Math.max(1, Math.min(9, e.y || 3));
+      if (y < lo || y > hi || seen[e.w] || !lemma(e.w)) continue; seen[e.w] = 1; out.push(e); }
+    out.sort(function (a, b) { return a.w < b.w ? -1 : a.w > b.w ? 1 : 0; });
+    return (_pools[k] = out);
+  }
+  /* THE PICK: same date and band → same word. `band` is "lo-hi", the corpus y-range. */
+  function pick(date, band) {
+    var p = String(band || '').split('-'), lo = +p[0] || 1, hi = +p[1] || lo, pool = bandPool(lo, hi);
+    if (!pool.length) return null;
+    return pool[fnv(String(date) + '|' + lo + '-' + hi) % pool.length];
+  }
+  function levelNow() { try { if (window.SB_LEVEL && typeof SB_LEVEL.get === 'function') return SB_LEVEL.get(KEY) || 'auto'; } catch (e) {} return 'auto'; }
+  function bandFor(c, lvl) {
+    try { if (typeof diffRange === 'function') { var r = diffRange(c, lvl || 'auto'); return r[0] + '-' + r[1]; } } catch (e) {}
+    return '1-3';
+  }
+  function today() { try { if (typeof todayKey === 'function') return todayKey(); } catch (e) {} var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function corpusReady() { try { return !window.SB_LAZY || SB_LAZY.ready('daily'); } catch (e) { return true; } }
+  /* the foundations' picker when it is in (it owns the level window and the kid-safe door), else ours */
+  function choose(c, date, band) {
+    if (typeof window.nextWords === 'function') {
+      try { var r = window.nextWords(c, 1, { purpose: 'daily', minLen: MINL, maxLen: MAXL }); if (r && r[0] && fits(r[0])) return r[0]; } catch (e) {}
+    }
+    return pick(date, band);
+  }
+  var _byW = null, _byN = -1;
+  function recOf(w) {
+    var src = (window.SB_DATA && window.SB_DATA.nsf) || [];
+    if (!_byW || _byN !== src.length) { _byW = {}; for (var i = 0; i < src.length; i++) { var e = src[i]; if (e && e.w && !_byW[e.w]) _byW[e.w] = e; } _byN = src.length; }
+    return _byW[w] || { w: w };
+  }
 
-  var overlay = null, answer = '', guesses = [], cur = '', over = false, won = false, kbState = {}, day = '', flipRow = -1, keyOn = false;
-
-  function evalGuess(g) {
-    var res = ['miss', 'miss', 'miss', 'miss', 'miss'], pool = answer.split('');
-    for (var i = 0; i < 5; i++) { if (g[i] === answer[i]) { res[i] = 'hit'; pool[pool.indexOf(g[i])] = null; } }
-    for (var j = 0; j < 5; j++) { if (res[j] === 'hit') continue; var k = pool.indexOf(g[j]); if (k > -1) { res[j] = 'near'; pool[k] = null; } }
+  /* ------------------------------------------------------------------ today's game, on the child */
+  function kid() { try { return active(); } catch (e) { return null; } }
+  function rec(c) {
+    if (!c) return null;
+    var D = c.dbee; if (!D || typeof D !== 'object') D = c.dbee = { days: {} };
+    if (!D.days) D.days = {};
+    var t = today();
+    if (D.day !== t) { D.day = t; D.word = ''; D.key = ''; D.g = []; D.over = 0; D.won = 0; D.paid = 0; D.lv = 0; D.lvr = null; D.rev = 0; }
+    return D;
+  }
+  /* (re)choose today's word: once a day, and again only if the level moved before the first try */
+  function ensureWord(c, D) {
+    var lvl = levelNow(), band = bandFor(c, lvl), key = D.day + '|' + lvl + '|' + band;
+    if (D.word && (D.key === key || (D.g && D.g.length) || D.over)) return true;
+    var r = choose(c, D.day, band); if (!r) return false;
+    D.word = r.w; D.key = key; D.g = []; try { if (typeof save === 'function') save(); } catch (e) {}
+    return true;
+  }
+  /* two passes, so a doubled letter is only marked as often as the word holds it */
+  function grade(guess, word) {
+    var n = word.length, res = [], pool = word.split(''), i;
+    for (i = 0; i < n; i++) res[i] = 'miss';
+    for (i = 0; i < n; i++) if (guess[i] === word[i]) { res[i] = 'hit'; pool[i] = null; }
+    for (i = 0; i < n; i++) { if (res[i] === 'hit') continue; var k = pool.indexOf(guess[i]); if (k > -1) { res[i] = 'near'; pool[k] = null; } }
     return res;
   }
-  function rank(a, b) { var o = { miss: 0, near: 1, hit: 2 }; return o[b] > o[a] ? b : a; }
-
-  function render() {
-    var b = overlay.querySelector('#db-body');
-    var rowsN = 6;
-    var html = '<div class="db-msg" id="db-msg" data-live-prompt="">' + GREET + '</div><div class="db-grid" id="db-grid">';
-    for (var r = 0; r < rowsN; r++) {
-      html += '<div class="db-row" data-r="' + r + '">';
-      var g = guesses[r], ev = g ? evalGuess(g) : null;
-      for (var c = 0; c < 5; c++) {
-        var ch = g ? g[c] : (r === guesses.length ? (cur[c] || '') : '');
-        /* only the row just played turns over: a re-render of the screen must not flip them all again */
-        var fl = ev && r === flipRow, cls = ev ? ((fl ? ' flip ' : ' ') + ev[c]) : '';
-        html += '<div class="db-cell' + cls + '"' + (fl ? ' style="animation-delay:' + (c * 90) + 'ms"' : '') + '>' + (ch || '') + '</div>';
-      }
-      html += '</div>';
-    }
-    html += '</div>';
-    html += '<div id="db-foot" style="width:100%">' + (over ? doneHtml() : keyboardHtml()) + '</div>';
-    b.innerHTML = html; flipRow = -1;
-    if (!over) wireKeys();
-    else wireShare();
+  function better(a, b) { var o = { miss: 0, near: 1, hit: 2 }; return (o[b] || 0) > (o[a] || 0) ? b : a; }
+  /* "good days this week": days THIS week (Mon–Sun) the Daily Bee was played to its word.
+     Never a run — a day off costs nothing and nothing counts consecutive days. */
+  function goodDays(D) {
+    var keys = []; try { keys = typeof weekDayKeys === 'function' ? weekDayKeys() : []; } catch (e) {}
+    var n = 0; for (var i = 0; i < keys.length; i++) if (D.days[keys[i]]) n++; return n;
   }
-  function keyboardHtml() {
-    var rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
-    var h = '<div class="db-keys">';
+
+  /* ------------------------------------------------------------------ screen state (between renders) */
+  var host = null, cur = '', curDay = '', curKid = null, msgT = '', flipRow = -1, shakeRow = false, keysApi = null, keyOn = false, lastIn = { k: '', t: 0, s: '' }, sizeOn = false, spoke = '';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function ico(n, sz) { try { if (typeof iconSVG === 'function') return iconSVG(n, sz || 18); } catch (e) {} return ''; }
+  function sayWord(w, slow) { try { if (typeof deviceSpeak === 'function') deviceSpeak(w, slow ? 0.55 : 0.9); else if (typeof say === 'function') say(w); } catch (e) {} }
+  function live(t) { try { if (t && window.SB_LIVE) SB_LIVE.say([t]); } catch (e) {} }
+  function plate() {
+    try { if (typeof window.SB_PLATE === 'function') return window.SB_PLATE('daily'); } catch (e) {}
+    var dusk = false; try { dusk = state.mode === 'dusk'; } catch (e) {}
+    return 'app-art/stage/daily-' + (dusk ? 'night' : 'day') + '.webp';
+  }
+  /* the fallback stage asks for its plate ONCE and paints it only when it has arrived; until then (or if
+     the engine kit has not painted it yet) the token gradient under it is the morning */
+  var plates = {};
+  function plateVar(u) {
+    if (plates[u] === 1) return '--dbs-plate:url(\'' + esc(u) + '\')';
+    if (plates[u] == null) { plates[u] = 0; var im = new Image(); im.onload = function () { plates[u] = 1; var st = host && host.querySelector('.dbs-stage'); if (st) st.style.setProperty('--dbs-plate', 'url(\'' + u + '\')'); }; im.onerror = function () { plates[u] = -1; }; im.src = u; }
+    return '';
+  }
+  function dateLabel() { try { return new Date().toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return today(); } }
+  function levelChip() {
+    try { if (window.SB_LEVEL && typeof SB_LEVEL.chip === 'function') return SB_LEVEL.chip(KEY, 'Level'); } catch (e) {}
+    return '<span class="db-lv">' + esc(LV_NAME[levelNow()] || 'Auto') + '</span>';
+  }
+  /* the stage: the engine kit's when it is in (contract §5.0), else the same three rows here */
+  function stage(o) {
+    if (window.SGUI && typeof SGUI.stage === 'function') { try { var h = SGUI.stage(o); if (h) return h; } catch (e) {} }
+    return '<div class="dbs-stage" style="' + plateVar(o.plate) + '">'
+      + '<div class="dbs-hud">' + o.hud.left + '<div class="db-mid">' + o.hud.center + '</div>' + o.hud.right + '</div>'
+      + '<div class="dbs-play">' + o.play + '</div><div class="dbs-ctl">' + o.controls + '</div></div>';
+  }
+
+  function cellHtml(ch, st, extra) {
+    var lab = ch ? ch.toUpperCase() + (st ? ', ' + SAYS[st] : '') : 'empty';
+    return '<div class="db-cell' + (st ? ' ' + st : '') + (extra || '') + '" role="img" aria-label="' + lab + '">' + (ch ? esc(ch) : '')
+      + (st ? '<i class="db-sh" aria-hidden="true">' + SHAPE[st] + '</i>' : '') + '</div>';
+  }
+  function boardHtml(D, n, mini) {
+    var h = '<div class="db-grid' + (mini ? ' db-mini' : '') + '" style="--n:' + n + '" role="group" aria-label="Your tries">';
+    var rows = mini ? D.g.length : TRIES;
+    for (var r = 0; r < rows; r++) {
+      var g = D.g[r], ev = g ? grade(g, D.word) : null, live = !g && r === D.g.length && !D.over;
+      h += '<div class="db-row' + (live && shakeRow ? ' shake' : '') + '" data-r="' + r + '" aria-label="Try ' + (r + 1) + '">';
+      for (var i = 0; i < n; i++) {
+        if (g) h += cellHtml(g[i], ev[i], r === flipRow ? ' flip" style="animation-delay:' + (i * 80) + 'ms' : '');
+        else if (live) h += cellHtml(cur[i] || '', '', ' cur' + (cur[i] ? ' fill' : ''));
+        else h += cellHtml('', '', '');
+      }
+      h += '</div>';
+    }
+    return h + '</div>';
+  }
+  function keyState(D) {
+    var ks = {}; (D.g || []).forEach(function (g) { var ev = grade(g, D.word); for (var i = 0; i < g.length; i++) ks[g[i]] = better(ks[g[i]] || 'miss', ev[i]); });
+    return ks;
+  }
+  function keysHtml(D) {
+    var ks = keyState(D), rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], h = '<div class="db-keys" role="group" aria-label="Letters">';
     rows.forEach(function (row, i) {
       h += '<div class="db-krow">';
-      if (i === 2) h += '<button class="db-k wide" data-k="enter">Enter</button>';
-      row.split('').forEach(function (ch) { h += '<button class="db-k ' + (kbState[ch] || '') + '" data-k="' + ch + '">' + ch + '</button>'; });
-      if (i === 2) h += '<button class="db-k wide" data-k="back">⌫</button>';
+      if (i === 2) h += '<button type="button" class="db-k wide" data-k="enter" aria-label="Try this word">Enter</button>';
+      row.split('').forEach(function (ch) { var st = ks[ch];
+        h += '<button type="button" class="db-k' + (st ? ' ' + st : '') + '" data-k="' + ch + '" aria-label="' + ch.toUpperCase() + (st ? ', ' + SAYS[st] : '') + '">' + ch + (st ? '<i class="db-sh" aria-hidden="true">' + SHAPE[st] + '</i>' : '') + '</button>'; });
+      if (i === 2) h += '<button type="button" class="db-k wide" data-k="back" aria-label="Delete a letter">Del</button>';
       h += '</div>';
     });
     return h + '</div>';
   }
-  function doneHtml() {
-    var st = load();
-    return '<div class="db-done"><h3 data-live-prompt="">' + (won ? '✨ Solved it!' : 'The word was ' + answer.toUpperCase()) + '</h3>'
-      + '<div class="db-stats">'
-      + '<div class="db-stat"><b>' + (st.wins || 0) + '</b><span>solved</span></div>'
-      + '<div class="db-stat"><b>' + (st.played || 0) + '</b><span>played</span></div>'
-      + '<div class="db-stat"><b>' + Math.round(((st.wins || 0) / Math.max(1, st.played || 0)) * 100) + '%</b><span>won</span></div>'
-      + '</div>'
-      + '<button class="db-share" id="db-share">Share your grid</button>'
-      + '<div class="db-msg" id="db-share-note" style="min-height:18px"></div></div>';
+  function endHtml(D, w, n) {
+    var won = !!D.won, head = won ? 'Solved in ' + D.g.length + (D.g.length === 1 ? ' try' : ' tries') + '. Today’s word:' : 'Today’s word was:';
+    var h = '<div class="db-end" id="db-end">' + boardHtml(D, n, true)
+      + '<p class="db-endh" data-live-prompt="' + esc(head + ' ' + w.w + '.') + '">' + esc(head) + '</p>'
+      + '<div class="db-word" aria-label="' + esc(w.w) + '">' + w.w.split('').map(function (ch) { return cellHtml(ch, won ? 'hit' : '', ''); }).join('') + '</div>'
+      + (w.p ? '<div class="db-pron">' + esc(w.p) + '</div>' : '')
+      + '<div class="db-facts">'
+      + (w.d ? '<div class="db-fact"><b>Meaning</b>' + esc(w.d) + '</div>' : '')
+      + ((w.o || w.r) ? '<div class="db-fact"><b>Origin</b>' + esc(w.o || '') + (w.o && w.r ? '. ' : '') + esc(w.r || '') + '</div>' : '')
+      + (w.s ? '<div class="db-fact"><b>In a sentence</b>' + esc(w.s) + '</div>' : '')
+      + '</div>';
+    var L = D.lvr;
+    if (L && L.dropped) h += '<div class="db-kind">Tomorrow’s word comes from ' + esc(LV_NAME[L.level] || L.level || 'an easier level') + '. You can move back up any time.</div>';
+    else if (L && L.up) h += '<div class="db-kind">Ready for ' + esc(LV_NAME[L.up] || L.up) + '? <button type="button" class="db-b" data-db="up" style="min-height:36px;margin-left:6px">Try it tomorrow</button></div>';
+    return h + '</div>';
+  }
+  function actsHtml(D) {
+    var back = '<button type="button" class="db-b" data-db="back" aria-label="Back to Play">' + '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>Play</button>';
+    var hear = '<button type="button" class="db-b go" data-db="hear">' + ico('volume', 17) + 'Hear it again</button>';
+    var right;
+    if (D.over && !D.won) right = D.rev ? '<button type="button" class="db-b" data-db="rev" disabled>Added to revision</button>' : '<button type="button" class="db-b" data-db="rev">Add to revision</button>';
+    else right = '<button type="button" class="db-b" data-db="slow" aria-label="Hear it slowly">' + (typeof tortoiseSVG === 'function' ? tortoiseSVG(18) : '') + 'Slowly</button>';
+    return '<div class="db-acts">' + back + hear + right + '</div>';
   }
 
-  function paintKb() {
-    guesses.forEach(function (g) { var ev = evalGuess(g); for (var i = 0; i < 5; i++) kbState[g[i]] = rank(kbState[g[i]] || 'miss', ev[i]); });
-  }
-  function submit() {
-    if (cur.length < 5) { flashRow(); msg('Five letters, please.'); return; }
-    var g = cur.toLowerCase(); guesses.push(g); cur = '';
-    var solved = g === answer; if (solved) won = true;
-    if (solved || guesses.length >= 6) { over = true; finish(); }
-    paintKb();
-    var st = load(); st.day = todayKey(); st.guesses = guesses; st.over = over; st.won = won; save(st);
-    flipRow = guesses.length - 1;
-    render();
-    if (!over) msg('');
-  }
-  function finish() {
-    var st = load(); var last = st.lastWin;
-    if (won) {
-      // no streak: solved days are counted, never a run of them (FIX-BEE J2)
-      st.lastWin = todayKey(); st.wins = (st.wins || 0) + 1;
+  function draw() {
+    if (!host || !host.isConnected) return;
+    var c = kid(); if (!c) return;
+    if (curKid !== c) { curKid = c; cur = ''; msgT = ''; spoke = ''; }
+    if (!corpusReady()) {
+      host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-msg" data-live-prompt="Getting today’s word ready.">Getting today’s word ready…</div>', controls: '' }) + '</div>';
+      try { SB_LAZY.need('daily', function () { draw(); }); } catch (e) {}
+      fit(); return;
     }
-    st.played = (st.played || 0) + (st.playedDay === todayKey() ? 0 : 1); st.playedDay = todayKey();
-    save(st);
-    try { if (won && typeof addCoins === 'function') addCoins('answer'); } catch (e) {}   /* one word solved is one right answer */
-    try { if (typeof logActivity === 'function') logActivity('daily', { won: won, tries: guesses.length }); } catch (e) {}
+    var D = rec(c);
+    if (!ensureWord(c, D)) { host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-msg">No word is ready for today. Try again in a moment.</div>', controls: actsHtml({ g: [] }) }) + '</div>'; wire(); fit(); return; }
+    var w = recOf(D.word), n = D.word.length;
+    if (curDay !== D.day + '|' + D.word) { curDay = D.day + '|' + D.word; cur = ''; msgT = ''; }
+    if (D.over) cur = '';
+    var intro = n + ' letters. Listen, then type your first try.';
+    var msg = D.over ? '' : (msgT || (D.g.length ? '' : intro));
+    var play = D.over ? endHtml(D, w, n)
+      : '<div class="db-msg" id="db-msg" data-live-prompt="' + esc(msg) + '">' + esc(msg) + '</div>' + boardHtml(D, n, false)
+        + '<div class="db-key" aria-hidden="true"><span>' + SHAPE.hit + ' right place</span><span>' + SHAPE.near + ' in the word</span><span>' + SHAPE.miss + ' not in it</span></div>';
+    var controls = actsHtml(D) + (D.over ? '' : '<div class="db-kb" id="db-kb"></div>');
+    host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(D), play: play, controls: controls }) + '</div>';
+    flipRow = -1; shakeRow = false;
+    wire(); keyboard(D); fit();
+    /* the word is said when the board first appears after a tap, and once more at the end */
+    var sayKey = D.day + '|' + D.word + '|' + (D.over ? 'end' : 'play');
+    var tapped = false; try { tapped = !!state.dbeeSpeak; } catch (e) {}
+    if (spoke !== sayKey && (tapped || D.over && spoke)) { spoke = sayKey; try { state.dbeeSpeak = 0; } catch (e) {} sayWord(D.word); }
+    else if (!spoke) spoke = sayKey;
+    try { if (typeof liveScan === 'function') liveScan(host); } catch (e) {}
   }
-  function shareGrid() {
-    var lines = ['Bizzing Bee — Daily Buzz', (won ? guesses.length : 'X') + '/6'];
-    guesses.forEach(function (g) { var ev = evalGuess(g); lines.push(ev.map(function (e) { return e === 'hit' ? '🟩' : e === 'near' ? '🟨' : '⬜'; }).join('')); });
-    return lines.join('\n');
-  }
-
-  function msg(t) { var m = overlay && overlay.querySelector('#db-msg'); if (m) m.textContent = t; try { if (t && window.SB_LIVE) SB_LIVE.say([t]); } catch (e) {} }
-  function flashRow() { var row = overlay.querySelector('.db-row[data-r="' + guesses.length + '"]'); if (row) { row.classList.remove('shake'); void row.offsetWidth; row.classList.add('shake'); } }
-  function typeCh(ch) { if (over || cur.length >= 5) return; cur += ch; paintCur(); }
-  function backCh() { if (over) return; cur = cur.slice(0, -1); paintCur(); }
-  function paintCur() {
-    var row = overlay.querySelector('.db-row[data-r="' + guesses.length + '"]'); if (!row) return;
-    var cells = row.querySelectorAll('.db-cell');
-    for (var i = 0; i < 5; i++) { var ch = cur[i] || ''; if (cells[i].textContent !== ch) { cells[i].textContent = ch; if (ch) { cells[i].classList.remove('pop'); void cells[i].offsetWidth; cells[i].classList.add('pop'); } } }
-  }
-  function wireKeys() {
-    var foot = overlay.querySelector('#db-foot');
-    foot.onclick = function (e) { var b = e.target.closest('.db-k'); if (!b) return; var k = b.dataset.k; if (k === 'enter') submit(); else if (k === 'back') backCh(); else typeCh(k); };
-  }
-  function wireShare() {
-    var s = overlay.querySelector('#db-share'); if (!s) return;
-    s.onclick = function () {
-      var txt = shareGrid();
-      var note = overlay.querySelector('#db-share-note');
-      try { if (navigator.clipboard) { navigator.clipboard.writeText(txt); note.textContent = 'Copied to clipboard!'; return; } } catch (e) {}
-      try { if (navigator.share) { navigator.share({ text: txt }); return; } } catch (e) {}
-      note.textContent = txt;
+  function hudFor(D) {
+    var left = D ? Math.max(0, TRIES - D.g.length) : TRIES;
+    return {
+      left: '<div class="db-stat l" aria-label="' + left + ' tries left"><b>' + left + '</b><span>tries left</span></div>',
+      center: '<div class="db-title">Daily Bee</div><div class="db-when">' + esc(dateLabel()) + ' · ' + levelChip() + '</div>',
+      right: '<div class="db-stat r" aria-label="' + (D ? goodDays(D) : 0) + ' good days this week"><b>' + (D ? goodDays(D) : 0) + '</b><span>good days this week</span></div>'
     };
   }
+
+  /* ------------------------------------------------------------------ input */
+  function input(k, src) {
+    var t = (window.performance && performance.now) ? performance.now() : 0;
+    /* the engine kit's keyboard may hear the real keyboard too: one key press is one letter */
+    if (lastIn.k === k && lastIn.s !== src && t - lastIn.t < 40) return;
+    lastIn = { k: k, t: t, s: src };
+    var c = kid(); if (!c) return; var D = rec(c); if (!D.word || D.over) return;
+    if (k === 'enter') return submit(c, D);
+    if (k === 'back') { cur = cur.slice(0, -1); return paintCur(D); }
+    if (/^[a-z]$/.test(k) && cur.length < D.word.length) { cur += k; paintCur(D); }
+  }
+  function paintCur(D) {
+    var row = host && host.querySelector('.db-grid:not(.db-mini) .db-row[data-r="' + D.g.length + '"]'); if (!row) return draw();
+    var cells = row.querySelectorAll('.db-cell');
+    for (var i = 0; i < cells.length; i++) { var ch = cur[i] || ''; if (cells[i].textContent !== ch) { cells[i].textContent = ch; cells[i].className = 'db-cell cur' + (ch ? ' fill' : ''); cells[i].setAttribute('aria-label', ch ? ch.toUpperCase() : 'empty'); } }
+  }
+  function say(t) { msgT = t; var m = host && host.querySelector('#db-msg'); if (m) { m.textContent = t; m.setAttribute('data-live-prompt', t); } live(t); }
+  function submit(c, D) {
+    var n = D.word.length;
+    if (cur.length < n) { shakeRow = true; say(n + ' letters, please.'); var row = host && host.querySelector('.db-grid:not(.db-mini) .db-row[data-r="' + D.g.length + '"]'); if (row) { row.classList.remove('shake'); void row.offsetWidth; row.classList.add('shake'); } return; }
+    var g = cur; cur = ''; D.g.push(g); flipRow = D.g.length - 1;
+    var ev = grade(g, D.word), hits = ev.filter(function (x) { return x === 'hit'; }).length, nears = ev.filter(function (x) { return x === 'near'; }).length;
+    if (g === D.word) D.won = 1;
+    if (D.won || D.g.length >= TRIES) finish(c, D);
+    else { msgT = 'Try ' + D.g.length + ': ' + hits + ' in the right place, ' + nears + ' in the word. ' + (TRIES - D.g.length) + ' left.'; try { if (typeof save === 'function') save(); } catch (e) {} }
+    draw();
+  }
+  /* THE END: pay once when solved (never for a miss, never for finishing), the level's round
+     score once a day, the day recorded for "good days this week" */
+  function finish(c, D) {
+    D.over = 1; msgT = '';
+    if (D.won && !D.paid) { D.paid = 1; try { D.coins = typeof payG === 'function' ? payG(null) : (typeof addCoins === 'function' ? addCoins('answer') : 0); } catch (e) {} }
+    D.days[D.day] = { s: D.won ? 1 : 0, t: D.g.length };
+    var ks = Object.keys(D.days).sort(); if (ks.length > 60) ks.slice(0, ks.length - 60).forEach(function (k) { delete D.days[k]; });
+    if (!D.lv) { D.lv = 1;
+      try { if (window.SB_LEVEL && typeof SB_LEVEL.after === 'function') { var r = SB_LEVEL.after(KEY, D.won ? 1 : 0) || {}; D.lvr = { dropped: !!r.dropped, level: r.level || '', up: r.offerUp ? (typeof r.offerUp === 'string' ? r.offerUp : nextUp(r.level)) : '' }; } } catch (e) {} }
+    try { if (typeof sfx === 'function') sfx(D.won ? 'win' : 'level'); } catch (e) {}
+    try { if (typeof logActivity === 'function') logActivity('daily', 'Daily Bee', { done: 1, right: D.won ? 1 : 0, coins: D.coins || 0 }, []); } catch (e) {}
+    try { if (typeof save === 'function') save(); } catch (e) {}
+  }
+  function nextUp(l) { var o = ['easy', 'medium', 'hard', 'champ']; var i = o.indexOf(l); return i >= 0 && i < 3 ? o[i + 1] : ''; }
+  function act(a) {
+    var c = kid(); var D = c ? rec(c) : null;
+    if (a === 'back') { try { app.openGames(); } catch (e) {} return; }
+    if (!D || !D.word) return;
+    if (a === 'hear') return sayWord(D.word);
+    if (a === 'slow') return sayWord(D.word, true);
+    if (a === 'rev' && D.over && !D.won && !D.rev) { try { addMiss(recOf(D.word), 'mark'); } catch (e) {} D.rev = 1; try { save(); } catch (e) {} live('Added to your revision pile.'); return draw(); }
+    if (a === 'up' && D.lvr && D.lvr.up) { try { SB_LEVEL.set(KEY, D.lvr.up); } catch (e) {} D.lvr.up = ''; try { save(); } catch (e) {} return draw(); }
+  }
+  function wire() {
+    if (!host) return;
+    host.onclick = function (e) {
+      var b = e.target.closest && e.target.closest('[data-db],[data-k]'); if (!b || !host.contains(b) || b.disabled) return;
+      if (b.hasAttribute('data-db')) return act(b.getAttribute('data-db'));
+      input(b.getAttribute('data-k'), 'tap');
+    };
+  }
+  function keyboard(D) {
+    if (keysApi) { try { keysApi.destroy(); } catch (e) {} keysApi = null; }
+    var kb = host && host.querySelector('#db-kb'); if (!kb || D.over) return;
+    if (window.SGUI && typeof SGUI.keys === 'function') {
+      try {
+        keysApi = SGUI.keys(kb, {
+          onKey: function (ch) { if (!quiet()) input(lc(ch), 'kit'); },
+          onBack: function () { if (!quiet()) input('back', 'kit'); },
+          onEnter: function () { if (!quiet()) input('enter', 'kit'); }
+        });
+        if (keysApi) { tintKit(kb, D); return; }
+      } catch (e) { keysApi = null; }
+    }
+    /* the fallback keys are for touch; a desktop types on its own keyboard (as SGUI.keys does) */
+    var touch = false; try { touch = matchMedia('(any-pointer: coarse)').matches || ('ontouchstart' in window); } catch (e) {}
+    kb.innerHTML = touch ? keysHtml(D) : '';
+  }
+  /* the kit's keyboard learns the board's shapes too, by its letter keys' own text */
+  function tintKit(kb, D) {
+    var ks = keyState(D);
+    [].forEach.call(kb.querySelectorAll('button'), function (b) { var t = lc((b.textContent || '').trim()); if (t.length !== 1 || !ks[t]) return;
+      b.classList.add('db-k-' + ks[t]); if (!b.querySelector('.db-sh')) b.insertAdjacentHTML('beforeend', '<i class="db-sh" aria-hidden="true" style="position:absolute;right:3px;top:2px;font-size:9px">' + SHAPE[ks[t]] + '</i>');
+      if (getComputedStyle(b).position === 'static') b.style.position = 'relative'; });
+  }
+  /* the board takes keys only while it IS the screen, with nothing open over it and nothing typed
+     into a field (the top bar's search box sits right above it) */
+  function quiet() {
+    try { if (typeof state !== 'undefined' && (state.nav !== 'daily' || state.pinDlg || state.settingsOpen || state.drawerOpen || state.walletOpen || state.famMenu)) return true; } catch (x) {}
+    var a = document.activeElement;
+    return !!(a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable));
+  }
   function onKey(e) {
-    if (!overlay || !overlay.isConnected) return;
-    /* only while Daily Buzz IS the screen, with nothing open over it and nothing typed into a field
-       (the top bar's search box sits right above it now) */
-    try { if (typeof state !== 'undefined' && (state.nav !== 'daily' || state.pinDlg || state.settingsOpen || state.drawerOpen || state.walletOpen || state.famMenu)) return; } catch (x) {}
+    if (!host || !host.isConnected || quiet()) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var t = e.target, k = e.key;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
-    /* Enter on a focused control of the app (Back, a tab) presses that control, not the word */
-    if (k === 'Enter' && t && t.closest && t.closest('button,a,[role="button"]') && !overlay.contains(t)) return;
-    if (/^[a-zA-Z]$/.test(k)) { typeCh(k.toLowerCase()); }
-    else if (k === 'Backspace') { e.preventDefault(); backCh(); }
-    else if (k === 'Enter') { e.preventDefault(); submit(); }
+    /* Enter on a focused control (Back, a tab, Hear it again) presses that control, not the word */
+    if (k === 'Enter' && t && t.closest && t.closest('button,a,[role="button"]')) return;
+    if (/^[a-zA-Z]$/.test(k)) input(k.toLowerCase(), 'phys');
+    else if (k === 'Backspace') { e.preventDefault(); input('back', 'phys'); }
+    else if (k === 'Enter') { e.preventDefault(); input('enter', 'phys'); }
   }
 
-  function begin() {
-    answer = WORDS[todayIndex()];
-    var s = load(); guesses = (s.day === todayKey() && s.guesses) ? s.guesses.slice() : []; cur = '';
-    over = (s.day === todayKey() && s.over) || false; won = (s.day === todayKey() && s.won) || false;
-    kbState = {}; paintKb(); day = todayKey(); flipRow = -1;
+  /* ------------------------------------------------------------------ the stage fills the screen */
+  /* Full height between the top bar and the tab bar (or the window's foot), measured, because
+     #root is zoomed (1.09, or the text-size setting) and a dvh inside it is the wrong size. Then
+     the board's cell is the largest that fits both ways — eight letters still fit a 390px phone. */
+  function fit() {
+    var wrap = host && host.querySelector('.db-wrap'); if (!wrap) return;
+    try {
+      var r = wrap.getBoundingClientRect(), z = wrap.offsetHeight ? r.height / wrap.offsetHeight : 1;
+      var bottom = window.innerHeight, tab = document.querySelector('nav.sb-tabbar');
+      if (tab && getComputedStyle(tab).display !== 'none') bottom = Math.min(bottom, tab.getBoundingClientRect().top);
+      var top = r.top + (window.scrollY || 0);
+      var h = Math.max(380, Math.floor((bottom - top) / (z || 1)));
+      wrap.style.height = h + 'px';
+      var st = wrap.firstElementChild; if (st && st.classList.contains('dbs-stage')) st.style.setProperty('--dbs-w', Math.round(Math.max(360, h * 4 / 3)) + 'px');
+      var grid = wrap.querySelector('.db-grid:not(.db-mini)'), play = grid && grid.parentElement;
+      if (grid && play) {
+        var n = +(grid.style.getPropertyValue('--n')) || 5, gap = 6;
+        var cs = getComputedStyle(play), pw = play.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        var used = 0; [].forEach.call(play.children, function (ch) { if (ch !== grid) used += ch.offsetHeight + parseFloat(getComputedStyle(ch).marginTop) + parseFloat(getComputedStyle(ch).marginBottom); });
+        var ph = play.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - used;
+        var cell = Math.floor(Math.min(84, (pw - (n - 1) * gap) / n, (ph - (TRIES - 1) * gap) / TRIES));
+        grid.style.setProperty('--cell', Math.max(26, cell) + 'px');
+      }
+    } catch (e) {}
+    if (!sizeOn) { sizeOn = true; window.addEventListener('resize', function () { if (host && host.isConnected) fit(); }); }
   }
-  /* Draw the board into the app's #db-host. Called after every app render while nav is 'daily';
-     today's game is read from storage once a day, then lives here between renders. */
+
+  /* ------------------------------------------------------------------ the shell's door */
   function mount(el) {
     if (!el) return;
     if (!document.getElementById('db-css')) { var st = document.createElement('style'); st.id = 'db-css'; st.textContent = css; document.head.appendChild(st); }
-    if (day !== todayKey()) begin();
-    overlay = el;
-    el.innerHTML = '<div class="db-body" id="db-body"></div>';
-    render();
+    host = el;
     if (!keyOn) { document.addEventListener('keydown', onKey); keyOn = true; }
+    draw();
   }
-  function close() { document.removeEventListener('keydown', onKey); keyOn = false; overlay = null; day = ''; }
-  /* the old entry point: Daily Buzz is a screen now, so opening it is going there */
-  function open() { day = ''; try { if (typeof app !== 'undefined' && app.openDaily) { app.openDaily(); return; } } catch (e) {} }
-  window.SB_DAILY = { open: open, close: close, mount: mount };
+  /* leaving the screen lets the keyboard go; the letters being typed wait for the child to come back */
+  function close() { if (keysApi) { try { keysApi.destroy(); } catch (e) {} keysApi = null; } host = null; }
+  /* the old entry point: opening it is going there */
+  function open() { try { if (typeof app !== 'undefined' && app.openDailyBee) { app.openDailyBee(); return; } } catch (e) {} }
+  function doneToday(c) { var D = c && c.dbee; return !!(D && D.day === today() && D.over); }
+  window.SB_DAILY = { open: open, close: close, mount: mount, doneToday: doneToday };
+  /* for the tests and the foundations: the pure pick, the grade, and how long today's word is */
+  window.SB_DBEE = { pick: pick, grade: grade, band: function (c, l) { return bandFor(c || kid(), l || levelNow()); }, fits: fits, shapes: SHAPE,
+    len: function () { var c = kid(), D = c && c.dbee; return D && D.day === today() && D.word ? D.word.length : 0; } };
 })();

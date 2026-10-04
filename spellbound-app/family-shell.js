@@ -248,6 +248,7 @@
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
     if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
     if (head === 'play') { app.openGames(); return; }
+    if (head === 'daily' && typeof app.openDailyBee === 'function') { app.openDailyBee('route'); return; }   // Daily Bee (games spec §5.2) replaces Daily Buzz here
     if (head === 'support') { app.setNav('home'); return; }
     var nav = ROUTE_NAV[head] || head;
     /* A tool behind the plan opens through ITS opener, the one its Library tile taps: setNav would
