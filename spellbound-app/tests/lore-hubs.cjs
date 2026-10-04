@@ -90,7 +90,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
      order every run: a bot that is random and a test that is reproducible. Chance still has its due —
      a 10-question round pays only from 6 right, which a guesser reaches 2% of the time — so T1 is also
      checked on the RULE itself, for every possible score, below. */
-  await pg.evaluate(() => { let s = 4102026; Math.random = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; });
+  await pg.evaluate(() => { window.__realRandom = Math.random; let s = 4102026; Math.random = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; });
   const bots = await pg.evaluate(async (MODES) => {
     const W = ms => new Promise(r => setTimeout(r, ms));
     const U = async (f, ms) => { for (const t0 = Date.now(); Date.now() - t0 < (ms || 30000);) { try { if (f()) return true; } catch (e) {} await W(30); } return false; };
@@ -135,6 +135,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
       for (let r = 0; r < (m === 'ladder' ? 16 : m === 'origins' || m === 'clock' ? 3 : 7); r++) out.random[k].push(await round(h, m, 'random'));
     }
     return out; }, MODES);
+  await pg.evaluate(() => { Math.random = window.__realRandom; });   // the shuffles after this are the page's own
   const keys = Object.keys(bots.perfect);
   const rule = await pg.evaluate(() => { const own = SB_QHUB._owed; const bad = [];
     for (let r = 0; r <= 10; r++) { const o = own({ hub: 'lore', mode: 'roots', right: r, asked: 10, paid: 0 }); if ((r < 6 && o !== 0) || (r >= 6 && o !== r)) bad.push('10q ' + r + '→' + o); }
