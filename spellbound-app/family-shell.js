@@ -220,6 +220,7 @@
       S.wordCard = null; S.qWord = null; S.listView = null; S.deckOpen = false; S.ttList = null;
       S.authSheet = null; S.cloudSheet = null; S.celebrate = null;
     } catch (e) {}
+    try { if (window.SB_QHUB && SB_QHUB.drop) SB_QHUB.drop(); } catch (e) {}   // Word Lore / Hive Mind: a held miss card and its clock
     try {
       [].forEach.call(document.querySelectorAll('.avc-ov'), function (ov) {
         var x = ov.querySelector('[data-avd="close"]');   // the deck holds a key listener; its own close lets it go

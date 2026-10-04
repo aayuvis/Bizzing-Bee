@@ -18,11 +18,13 @@
      • Origins' language options are weighted so any guessing rule wins one in four (≤25%, not 40%);
      • Idioms & Similes loads its phrases at the door (fresh boot, SB_FIG absent) and never says
        "train a list first";
-     • T14/T15 on both hubs when g-engine's stage check is in (guarded: skipped, saying why, until then).
+     • T14/T15 with the shared stage check (tests/lib/stage-check.cjs): both hubs at 1280×800 and 390×844,
+       light and dusk, and four rounds in play — painted, not flat, symmetric, no scroll, nothing under
+       the tab bar (guarded: skipped, saying why, on a branch without the engine kit).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/lore-hubs.cjs                              */
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
-const { booted, until, still } = require('./lib/wait.cjs');
+const { booted, until, still, frames } = require('./lib/wait.cjs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const APP = path.resolve(process.env.SRC || path.join(__dirname, '..'));
@@ -173,10 +175,10 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   await until(pg, () => state.qz.phase === 'play', null, 15000);
   const miss0 = await pg.evaluate(() => { const g = state.qz, q = SB_QHUB._cur(); const w = (q.ans + 1) % q.opts.length; app.qzPick(w); return { i: g.i, ans: q.opts[q.ans] }; });
   const moved = await until(pg, i => state.qz.i !== i, miss0.i, 3200);   // longer than a right answer's 2.1 s advance
-  const held = await pg.evaluate(a => ({ text: document.querySelector('#root').innerText.indexOf(a) >= 0, card: !!document.querySelector('.qz-miss, #qz-missq *'), go: !!document.querySelector('[data-act="qzGo"], #qz-missq button') }), miss0.ans);
+  const held = await pg.evaluate(a => ({ text: document.querySelector('#root').innerText.indexOf(a) >= 0, card: !!document.querySelector('.qz-miss, .sg-misscard'), go: !!document.querySelector('[data-act="qzGo"], .sg-miss-go') }), miss0.ans);
   ok(!moved && held.text && held.card, `T3: a wrong pick HOLDS — 3 s later the right answer ("${miss0.ans.slice(0, 40)}") and its card are still up, the question has not moved`);
   await pg.keyboard.press('Enter');
-  ok(await until(pg, i => state.qz.i === i + 1 && !document.querySelector('.qz-miss'), miss0.i, 5000), '…and Enter continues to the next question');
+  ok(await until(pg, i => state.qz.i === i + 1 && !document.querySelector('.qz-miss, .sg-misscard'), miss0.i, 5000), '…and Enter continues to the next question, and the card goes');
   await pg.evaluate(() => app.openLore('clock')); await until(pg, () => state.qz && state.qz.mode === 'clock' && state.qz.phase === 'play', null, 30000);
   const ck = await pg.evaluate(async () => { const W = ms => new Promise(r => setTimeout(r, ms)); const g = state.qz; await W(400);
     const q = SB_QHUB._cur(); const before = g.left; app.qzPick((q.ans + 1) % q.opts.length); const after = g.left;
@@ -256,42 +258,27 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(ch.n >= 3000 && ch.shown && ch.top.length && ch.top[0][1] <= 0.28 && ch.slot <= 0.28,
     `Origins: over ${ch.n} questions in ${ch.langs} languages, "always pick ${ch.top[0] && ch.top[0][0]}" wins ${(ch.top[0][1] * 100).toFixed(1)}% and the likeliest slot ${(ch.slot * 100).toFixed(1)}% — chance is 25%, not 40%`);
 
-  /* ---- T14/T15 on both hubs: g-engine's stage check, when it is in ---- */
-  const helper = ['stage-check.cjs', 'stage.cjs', 'sgui-stage.cjs'].map(f => path.join(__dirname, 'lib', f)).find(f => fs.existsSync(f));
-  const plates = ['lore', 'hive'].every(h => fs.existsSync(path.join(APP, 'app-art/stage/' + h + '-day.webp')));
-  if (helper && plates) {
-    const H = require(helper); const fn = H.checkStage || H.stageCheck || H.check;
-    if (typeof fn !== 'function') console.log('  SKIP T14/T15 — ' + path.basename(helper) + ' exports no check function');
-    else for (const [w, h] of [[1280, 800], [390, 844]]) for (const hub of ['lore', 'hive']) {
-      await pg.setViewportSize({ width: w, height: h }); await pg.evaluate(hb => (hb === 'lore' ? app.openLore : app.openHive)(), hub);
-      await until(pg, hb => state.nav === hb && document.querySelector('[data-act="hubMode"]'), hub); await still(pg);
-      const r = await fn(pg, { name: hub + ' ' + w }); const bad = Array.isArray(r) ? r : (r && r.fails) || [];
-      ok(!bad.length, `T14/T15: the ${hub} hub at ${w}×${h} — no flat region over 6%, no pure white or black over 2%, symmetric within 4 px` + (bad.length ? ' — ' + JSON.stringify(bad).slice(0, 200) : ''));
+  /* ---- T14/T15: the shared stage check (tests/lib/stage-check.cjs) on both hubs, light and dusk, desktop
+     and phone, and on four rounds in play. Until the kit is on the branch it is skipped, saying so. ---- */
+  const SCp = path.join(__dirname, 'lib', 'stage-check.cjs');
+  if (!fs.existsSync(SCp) || !await pg.evaluate(() => !!(window.SGUI && SGUI.stage && window.SB_HUB))) console.log('  SKIP T14/T15 — the engine kit (SGUI.stage, SB_HUB, tests/lib/stage-check.cjs) is not on this branch');
+  else { const SC = require(SCp);
+    const look = (m) => pg.evaluate(m => { state.mode = m; try { document.documentElement.setAttribute('data-mode', m); } catch (e) {} render(); }, m);
+    for (const [w, h] of [[1280, 800], [390, 844]]) {
+      await pg.setViewportSize({ width: w, height: h });
+      for (const mode of ['light', 'dusk']) { await look(mode);
+        for (const hub of ['lore', 'hive']) {
+          await pg.evaluate(hb => (hb === 'lore' ? app.openLore : app.openHive)(), hub);
+          await until(pg, hb => state.nav === hb && document.querySelector('.sb-stage [data-act="hubMode"]'), hub, 20000); await frames(pg, 3);
+          SC.report(ok, `T14/T15 ${hub} hub · ${w} · ${mode}`, await SC.geometry(pg), await SC.pixels(pg), { play: false }); } }
+      await look('light');
+      for (const [hub, m] of [['lore', 'meanings'], ['lore', 'ladder'], ['hive', 'squares'], ['lore', 'origins']]) {
+        await pg.evaluate(([hb, mm]) => (hb === 'lore' ? app.openLore : app.openHive)(mm), [hub, m]);
+        await until(pg, mm => state.qz && state.qz.mode === mm && state.qz.phase === 'play' && document.querySelector('.sb-stage .qz-card, .sb-stage .qz-board'), m, 30000); await frames(pg, 3);
+        SC.report(ok, `T14/T15 ${hub}/${m} in play · ${w}`, await SC.geometry(pg), await SC.pixels(pg), { play: true }); }
     }
-  } else console.log(`  SKIP T14/T15 — g-engine's ${helper ? '' : 'stage check (tests/lib/stage-check.cjs) and '}${plates ? '' : 'painted plates (app-art/stage/lore|hive-day.webp) '}are not on this branch yet`);
-
-  /* ---- our own share of T15, which needs no plate: the play stage holds still and fits ---- */
-  const fit = [];
-  for (const [w, h] of [[1280, 800], [390, 844]]) {
-    await pg.setViewportSize({ width: w, height: h });
-    for (const [hub, m] of [['lore', 'meanings'], ['lore', 'ladder'], ['hive', 'squares']]) {
-      await pg.evaluate(([hb, mm]) => (hb === 'lore' ? app.openLore : app.openHive)(mm), [hub, m]);
-      await until(pg, mm => state.qz && state.qz.mode === mm && state.qz.phase === 'play' && document.querySelector('.qz-stage, .sg-stage'), m, 30000); await still(pg);
-      const r = await pg.evaluate(() => { const st = document.querySelector('#root .qz-stage, #root .sg-stage'); const s = st.getBoundingClientRect();
-        const L = st.querySelector('.qz-hl'), R = st.querySelector('.qz-hr'), C = st.querySelector('.qz-title');
-        const bar = document.querySelector('.sb-tabbar'); const bt = bar && bar.getClientRects().length ? bar.getBoundingClientRect().top : innerHeight;
-        const ctl = [...st.querySelectorAll('button')].filter(e => e.getClientRects().length).map(e => e.getBoundingClientRect().bottom);
-        /* the stage ends above the fold (or the tab bar) and nothing inside it scrolls. (The page itself can
-           scroll ~72px on every screen: worlds4's hive-glow decoration overhangs the window — not this stage.) */
-        const play = st.querySelector('.qz-play'); const inner = play ? play.scrollHeight - play.clientHeight : 0;
-        return { scroll: Math.max(Math.round(s.bottom - bt), inner), gut: Math.abs(s.left - (innerWidth - s.right)),
-          hud: L && R ? Math.abs(L.getBoundingClientRect().width - R.getBoundingClientRect().width) : 0,
-          mid: C ? Math.abs((C.getBoundingClientRect().left + C.getBoundingClientRect().right) / 2 - (s.left + s.right) / 2) : 0,
-          under: Math.max(...ctl) - bt }; });
-      if (r.scroll > 1 || r.gut > 4 || r.hud > 4 || r.mid > 4 || r.under > 0) fit.push(`${hub}/${m} ${w}: ${JSON.stringify(r)}`);
-    }
+    await pg.setViewportSize({ width: 1280, height: 800 });
   }
-  ok(!fit.length, 'T15 (our share): at 1280×800 and 390×844 a round never scrolls, the gutters, HUD flanks and title sit within 4 px of symmetric, and no control is under the tab bar' + (fit.length ? ' — ' + fit.join(' | ') : ''));
 
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();

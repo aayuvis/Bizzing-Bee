@@ -55,7 +55,7 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   await pg.evaluate(() => app.qzGo()); await pg.waitForTimeout(400);
   const q2 = await said();
   ok(/^Question 1 of \d+\. \S/.test(q1), `Word Lore says the question with its number ("${q1.slice(0, 70)}")`);
-  ok(/^Not this time/.test(miss) && !/Question 1/.test(miss), `a wrong pick adds only the miss line ("${miss.slice(0, 70)}")`);
+  ok(/^Not this (time|one)/.test(miss) && !/Question 1/.test(miss), `a wrong pick adds only the miss line ("${miss.slice(0, 70)}")`);
   ok(/^Question 2 of /.test(q2), `and the next question is said afresh ("${q2.slice(0, 40)}")`);
 
   /* 4 */

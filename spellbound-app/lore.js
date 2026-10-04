@@ -28,12 +28,12 @@
   /* ------------------------------------------------------------------ the modes */
   const MODES = {
     lore: [
-      { id: 'meanings', title: 'Meanings', ic: 'book', promise: () => 'Word to meaning, and meaning back to word.' },
-      { id: 'roots', title: 'Roots', ic: 'sprout', promise: () => 'What a root means, and who a word is named after.' },
-      { id: 'origins', title: 'Origins', ic: 'compass', promise: () => 'Hear a word, name its language, then spell it.' },
-      { id: 'idioms', title: 'Idioms & Similes', ic: 'bulb', promise: () => { const n = cnt('idioms'); return (n ? n + ' sayings' : 'Sayings') + ': what they mean, and how a simile ends.'; } },
-      { id: 'ladder', title: 'Ladder', ic: 'steps', promise: () => 'Twelve honeycomb rungs and three lifelines.' },
-      { id: 'squares', title: 'Squares', ic: 'grid', promise: () => 'Claim a 3×3 board of word themes, line by line.' },
+      { id: 'meanings', title: 'Meanings', ic: 'book', promise: () => 'Word to meaning, and back again.' },
+      { id: 'roots', title: 'Roots', ic: 'sprout', promise: () => 'Roots, and the people in words.' },
+      { id: 'origins', title: 'Origins', ic: 'compass', promise: () => 'Name its language, then spell it.' },
+      { id: 'idioms', title: 'Idioms & Similes', ic: 'bulb', promise: () => { const n = cnt('idioms'); return (n ? n + ' sayings' : 'Sayings') + ' and similes.'; } },
+      { id: 'ladder', title: 'Ladder', ic: 'steps', promise: () => 'Twelve rungs, three lifelines.' },
+      { id: 'squares', title: 'Squares', ic: 'grid', promise: () => 'A 3×3 board of word themes.' },
       { id: 'clock', title: 'Against the Clock', ic: 'timer', promise: () => 'Sixty seconds of word questions.' }],
     hive: [
       { id: 'classic', title: 'Classic', art: 'space', promise: () => 'Ten questions, and a fact with every answer.' },
@@ -213,14 +213,14 @@
   /* state.qz = { hub, mode, phase: 'loading'|'intro'|'play'|'done'|'empty', … } — ONE live round */
   const G = () => state.qz;
   function stopClock(g) { try { if (g && g.loop) { g.loop.stop(); g.loop = null; } } catch (e) {} }
-  function open(h, mode) { stopClock(G()); stopAud();
+  function open(h, mode) { const o = G(); if (o) { o.phase = o.phase === 'play' ? 'left' : o.phase; dropMiss(o); dropKeys(o); } stopClock(o); stopAud();
     if (mode && !modeOf(h, mode)) mode = null;
     state.qz = { hub: h, mode: null, phase: 'hub' };
     try { (W.SB_HUB_OPEN = W.SB_HUB_OPEN || {})[h] = h === 'lore' ? (id) => app.openLore(id) : (id) => app.openHive(id); } catch (e) {}
     if (mode) { start(h, mode); return; }
     set({ nav: h, screen: 'app', conceptSel: null, game: null }); }
 
-  function start(h, m) { stopClock(G()); stopAud();
+  function start(h, m) { const o = G(); if (o) { if (o.phase === 'play') o.phase = 'left'; dropMiss(o); dropKeys(o); } stopClock(o); stopAud();
     const g = state.qz = { hub: h, mode: m, phase: 'loading', i: 0, asked: 0, right: 0, two: 0, paid: 0, e0: (W.earnedSoFar ? earnedSoFar() : 0), log: [] };
     const r = rec(h); r.last = m; r.seen[m] = 1; try { save(); } catch (e) {}
     state.nav = h; state.screen = 'app'; state.game = null;
@@ -293,6 +293,13 @@
     const upd = (dt) => { if (G() !== g || g.phase !== 'play' || state.nav !== g.hub) { stopClock(g); return; } if (g.held || state.settingsOpen) return;
       g.left -= dt * 1000; if (g.left <= 0) { g.left = 0; stopClock(g); finish(g); } };
     const draw = () => { const el = document.getElementById('qz-time'); if (el) { const t = fmtT(g.left); if (el.textContent !== t) el.textContent = t; el.classList.toggle('low', g.left <= 10000); } };
+    if (W.SGUI && SGUI.clock) {
+      const c = SGUI.clock(g.left / 1000, { fmt: (sec) => sec + 's',
+        onTick: (sec) => { if (G() !== g || g.phase !== 'play' || state.nav !== g.hub) { c.stop(); return; }
+          const el = document.getElementById('qz-time'); if (el) { el.textContent = sec + 's'; el.classList.toggle('low', sec <= 10); } },
+        onEnd: () => { if (G() === g && g.phase === 'play' && state.nav === g.hub) finish(g); } });
+      g.clock = c; Object.defineProperty(g, 'left', { get: () => c.left() * 1000, set: () => {}, configurable: true });
+      g.loop = { hold: (v) => c.hold(v), stop: () => c.stop() }; return; }
     if (W.sgLoop) { g.loop = sgLoop(upd, draw); return; }
     /* the kit's loop is not in yet (g-engine): the same contract in miniature — real time, paused when hidden */
     let last = performance.now(), raf = 0, on = true;
@@ -336,17 +343,19 @@
       render(); if (ok) after(g, 1200, () => { g.picked = null; g.hidden = []; g.hint = ''; g.sentShown = false; if (g.rung >= RUNGS) finish(g); else { render(); speakCur(g); } }); return; }
     if (g.mode === 'squares') { const cell = g.cells[g.sel]; cell.st = ok ? 1 : 2; if (!ok) g.held = true; render();
       if (ok) after(g, 1500, () => nextCell(g)); return; }
-    if (g.mode === 'clock') { if (!ok) { g.left = Math.max(0, g.left - 2000); hold(g, true); } render(); if (ok) after(g, 450, () => advance(g)); return; }
+    if (g.mode === 'clock') { if (!ok) { if (g.clock) g.clock.add(-Math.min(2, g.clock.left())); else g.left = Math.max(0, g.left - 2000); hold(g, true); } render(); if (ok) after(g, 450, () => advance(g)); return; }
     if (!ok) g.held = true; render(); if (ok) after(g, 2100, () => advance(g)); }
   /* a right answer may move on by itself; a miss never does (FIX-BEE D3) */
   function after(g, ms, fn) { const tok = g.tok = (g.tok || 0) + 1; g.go = () => { if (G() !== g || g.tok !== tok) return; g.tok++; g.go = null; fn(); };
     setTimeout(() => { if (g.go && g.tok === tok) g.go(); }, ms); }
-  function cont() { const g = G(); if (!g) return;
+  function dropMiss(g) { if (g && g.missH) { const h = g.missH; g.missH = null; try { h.close(); } catch (e) {} } }
+  function dropKeys(g) { if (g && g.keys) { try { g.keys.destroy(); } catch (e) {} g.keys = null; } }
+  function cont() { const g = G(); if (!g) return; dropMiss(g);
     if (g.phase === 'done') { start(g.hub, g.mode); return; }
     if (g.phase === 'intro') { begin(); return; }
     if (g.phase !== 'play') return;
     const q = curQ(g);
-    if (q && q.kind === 'origin' && q.stage === 'done') { advance(g); return; }
+    if (q && q.kind === 'origin' && q.stage === 'done') { g.held = false; advance(g); return; }
     if (q && q.kind === 'origin') return;
     if (g.go) { g.go(); return; }
     if (!g.held) return;
@@ -433,34 +442,43 @@
       const d = new Date().toDateString(); return L.filter((x) => x.a === BEE_APP && x.n > 0 && x.why !== 'migrated' && new Date(x.t).toDateString() === d).reduce((a, x) => a + x.n, 0); } catch (e) { return 0; } }
   function goodDays() { try { return W.goodDaysThisWeek ? goodDaysThisWeek(active()) : 0; } catch (e) { return 0; } }
   const coin = (n) => (W.coinAmt ? coinAmt(n, 15) : n + ' coins');
+  const kit = () => !!(W.SGUI && SGUI.stage && W.SB_HUB);
   function stage(h, o) {
-    if (W.SGUI && SGUI.stage) { try { return SGUI.stage({ plate: plate(h), hud: o.hud, play: o.play, controls: o.controls || '' }); } catch (e) {} }
+    /* the shared stage (§5.0): the painted plate by name, so Light and Dusk each get their own painting */
+    if (kit()) { try { return SGUI.stage({ plate: h, name: h, cls: 'qz-kit qz-' + h + (o.cls ? ' ' + o.cls : ''), label: hubName(h), hud: o.hud, play: o.play, controls: o.controls || '' }); } catch (e) {} }
     const p = plate(h);
     return `<div class="qz-stage qz-${h}${o.cls ? ' ' + o.cls : ''}"${p ? ` data-plate style="--qz-plate:url('${escA(p)}')"` : ''}>
       <div class="qz-hud"><div class="qz-hl">${o.hud.left || ''}</div><div class="qz-hc">${o.hud.center || ''}</div><div class="qz-hr">${o.hud.right || ''}</div></div>
       <div class="qz-play">${o.play}</div>${o.controls ? `<div class="qz-ctl">${o.controls}</div>` : ''}</div>`; }
-  const top = (act, label) => `<div class="qz-top">${W.backPill ? backPill(act, label, null) : `<button data-act="${act}">← ${esc(label)}</button>`}</div>`;
-  const stat = (k, v, id) => `<span class="qz-stat"><span class="qz-sk">${k}</span><span class="qz-sv"${id ? ` id="${id}"` : ''}>${v}</span></span>`;
+  const top = (act, label) => kit() ? '' : `<div class="qz-top">${W.backPill ? backPill(act, label, null) : `<button data-act="${act}">← ${esc(label)}</button>`}</div>`;
+  /* a HUD stat in the kit's shape (icon · number · label; the label hides on a phone) */
+  const stat = (k, v, id, icn) => `<span class="sg-st-ic">${ic(icn || 'star', 16)}</span><span class="sg-st-n qz-sv"${id ? ` id="${id}"` : ''}>${v}</span><span class="sg-st-t">${k}</span>`;
+  /* the way back to the hub sits in the left stat, so the mirrored HUD stays mirrored */
+  const backIn = (h) => `<button class="qz-back" data-act="qzBack" aria-label="${escA('Back to ' + hubName(h))}">${ic('arrowLeft', 16)}</button>`;
+  const pad = '<span class="qz-pad" aria-hidden="true"></span>';
+  const title = (t, short, chipHtml) => `<h1 class="sg-st-title qz-ttl"><span class="qz-tl">${esc(t)}</span>${short ? `<span class="qz-ts">${esc(short)}</span>` : ''}${chipHtml || ''}</h1>`;
 
   function hubView(h) { const r = rec(h);
     const modes = MODES[h].map((m) => ({ id: m.id, title: m.title, promise: m.promise(), art: art(h, m, 64), best: bestTxt(h, m.id), isNew: !r.seen[m.id], last: r.last === m.id }));
-    const hud = { left: stat('Good days', goodDays() + ' this week'), right: stat('Today', coin(coinsToday())) };
+    const hud = { left: stat('good days this week', goodDays(), '', 'sparkle'), right: stat('coins today', coinsToday(), '', 'star') };
     try { (W.SB_HUB_OPEN = W.SB_HUB_OPEN || {})[h] = h === 'lore' ? (id) => app.openLore(id) : (id) => app.openHive(id); } catch (e) {}
-    if (W.SB_HUB) { try { return top('openGames', 'Play') + SB_HUB({ key: h, title: hubName(h), plate: plate(h), modes, hud }); } catch (e) {} }
+    /* the shared hub screen (§4.0): its own HUD — good days on the left, coins today on the right */
+    if (kit()) { try { return SB_HUB({ key: h, title: hubName(h), plate: h, last: r.last || '', modes: modes.map((m) => Object.assign({}, m, { last: undefined })) }); } catch (e) {} }
     const tiles = modes.map((m) => `<div class="qz-tile${m.last ? ' last' : ''}">
         <button class="qz-tile-go" data-act="hubMode" data-arg="${h}/${m.id}" aria-label="${escA(m.title + '. ' + m.promise + (m.best ? ' ' + m.best : ''))}">
           ${m.isNew ? '<span class="qz-new" aria-hidden="true"></span>' : ''}${m.art}
           <span class="qz-tt">${esc(m.title)}</span><span class="qz-tp">${esc(m.promise)}</span>
           <span class="qz-tb">${m.best ? esc(m.best) : (m.last ? 'Last played' : '&nbsp;')}</span></button>
         <span class="qz-chip">${chip(h, m.id)}</span></div>`).join('');
-    return top('openGames', 'Play') + stage(h, { hud: { left: hud.left, center: `<span class="qz-title">${esc(hubName(h))}</span>`, right: hud.right },
+    return top('openGames', 'Play') + stage(h, { hud: { left: hud.left, center: title(hubName(h)), right: hud.right },
       play: `<div class="qz-tiles qz-n${modes.length}">${tiles}</div>`, cls: 'qz-hubst' }); }
 
-  function hudFor(g) { const m = modeOf(g.hub, g.mode); const center = `<span class="qz-title">${esc(m.title)}</span>${chip(g.hub, g.mode)}`;
-    if (g.mode === 'clock') return { left: stat('Time', fmtT(g.left), 'qz-time'), center, right: stat('Right', String(g.right)) };
-    if (g.mode === 'ladder') return { left: stat('Rung', Math.min(RUNGS, g.rung + 1) + ' of ' + RUNGS), center, right: stat('Climbed', String(g.rung)) };
-    if (g.mode === 'squares') return { left: stat('Claimed', g.cells.filter((x) => x.st === 1).length + ' of 9'), center, right: stat('Lines', String(g.lines)) };
-    return { left: stat('Question', Math.min(g.n, g.i + 1) + ' of ' + g.n), center, right: stat('Right', String(g.right)) }; }
+  const SHORT = { 'Idioms & Similes': 'Idioms', 'Against the Clock': 'Clock' };
+  function hudFor(g) { const m = modeOf(g.hub, g.mode); const center = title(m.title, SHORT[m.title], chip(g.hub, g.mode)); const bk = backIn(g.hub);
+    if (g.mode === 'clock') return { left: bk + stat('left', fmtT(g.left), 'qz-time', 'timer'), center, right: stat('right', String(g.right), '', 'check') + pad };
+    if (g.mode === 'ladder') return { left: bk + stat('rung', Math.min(RUNGS, g.rung + 1) + '/' + RUNGS, '', 'steps'), center, right: stat('climbed', String(g.rung), '', 'check') + pad };
+    if (g.mode === 'squares') return { left: bk + stat('claimed', g.cells.filter((x) => x.st === 1).length + '/9', '', 'grid'), center, right: stat('lines', String(g.lines), '', 'sparkle') + pad };
+    return { left: bk + stat('question', Math.min(g.n, g.i + 1) + '/' + g.n, '', 'target'), center, right: stat('right', String(g.right), '', 'check') + pad }; }
 
   function visual(q) { if (q.svg) return `<div class="qz-vis">${q.svg}</div>`;
     if (q.vis) return `<div class="qz-vis qz-emo"${q.sil ? ' style="filter:brightness(0) opacity(.82)"' : ''}>${esc(q.vis)}</div>`; return ''; }
@@ -472,7 +490,7 @@
       return hid ? `<span class="qz-opt gone" aria-hidden="true"></span>` : `<button class="qz-opt${st}${String(o).length > 60 ? ' long' : ''}" data-act="qzPick" data-arg="${i}"${done ? ' disabled' : ''}><span class="qz-k" aria-hidden="true">${i + 1}</span><span class="qz-ot">${esc(o)}</span>${mark ? `<span class="qz-mk">${mark}</span>` : ''}</button>`; }).join('')}</div>`; }
   /* the miss card: the question, the right answer, and why — SGUI.missQ when the kit is in */
   function missHTML(g, q) {
-    if (W.SGUI && SGUI.missQ) return `<div id="qz-missq" class="qz-missq"></div>`;
+    if (W.SGUI && SGUI.missQ) return optsHTML(g, q);   // the kit's card covers the window; the marked answers stay under it
     return `<div class="qz-miss" data-live-prompt="${escA('Not this time. The answer is ' + q.opts[q.ans] + '.')}">
       <div class="qz-mans">${ic('close', 16)} Not this time. The answer: <b>${esc(q.opts[q.ans])}</b></div>
       ${g.picked != null && q.opts[g.picked] != null ? `<div class="qz-mpick">You picked: ${esc(clip(q.opts[g.picked], 90))}</div>` : ''}
@@ -482,7 +500,7 @@
   const isHeld = (g, q) => g.held && g.picked != null && g.picked !== q.ans;
   function qCard(g, q, extra) { const held = g.held && g.picked != null && g.picked !== q.ans; const right = g.picked != null && g.picked === q.ans;
     const num = g.mode === 'ladder' ? 'Rung ' + (g.rung + 1) + ' of ' + RUNGS + '. ' : g.mode === 'clock' || g.mode === 'squares' ? '' : 'Question ' + (g.i + 1) + ' of ' + g.n + '. ';
-    return `<div class="qz-card" data-live-prompt="${escA(num + (q.big ? q.prompt + '. ' + (q.sub || '') : (q.sub ? q.sub + ' ' : '') + q.prompt))}">
+    return `<div class="qz-card sg-panel" data-live-prompt="${escA(num + (q.big ? q.prompt + '. ' + (q.sub || '') : (q.sub ? q.sub + ' ' : '') + q.prompt))}">
       <div class="qz-tag">${esc(q.label || '')}</div>${visual(q)}
       ${q.aud || q.say ? `<button class="qz-hear" data-act="qzHear" aria-label="Hear it">${ic('volume', 17)} <span class="qz-hlab">Hear it</span></button>` : ''}
       ${q.big ? `<div class="qz-big">${esc(q.prompt)}</div><div class="qz-sub">${esc(q.sub || '')}</div>` : `${q.sub ? `<div class="qz-sub">${esc(q.sub)}</div>` : ''}<div class="qz-q">${esc(q.prompt)}</div>`}
@@ -496,13 +514,13 @@
       const line = g.lineFlash ? `<div class="qz-line" role="status">${ic('sparkle', 16)} Line ${g.lineFlash}! ${g.lineFlash === 1 ? 'Your first line.' : 'Another line.'}</div>` : '';
       return stage(h, { hud, play: `<div class="qz-board">${cells}</div>${line}`, controls: `<div class="qz-hint">Pick a square — keys 1–9 or tap</div>` }); }
     const q = curQ(g); if (!q) return stage(h, { hud, play: W.hiveLoader ? hiveLoader('…') : '' });
-    if (q.kind === 'origin') return stage(h, { hud, play: originCard(g, q), controls: q.stage === 'pick' ? optsHTML(g, q) : '' });
+    if (q.kind === 'origin') return stage(h, { hud, play: originCard(g, q), controls: q.stage === 'pick' ? optsHTML(g, q) : q.stage === 'type' && kbd() ? '<div id="qz-keys" class="qz-keys"></div>' : '' });
     let extra = '';
     if (m === 'ladder') { const rv = g.rival && g.picked == null ? `<div class="qz-rival">${g.rival.id && W.SB_AVATAR ? `<span class="qz-rav">${SB_AVATAR(g.rival.id, 34)}</span>` : ''}<span><b>${esc(g.rival.name)}:</b> ${g.rival.sure ? 'I’m fairly sure it’s' : 'I think it might be'} <b>${g.rival.pick + 1}</b>.</span></div>` : '';
       extra = (g.sentShown && q.sent ? `<div class="qz-sent">${ic('volume', 15)} ${esc(q.sent)}</div>` : '') + rv; }
     /* a held miss takes the answers' place: the question stays, the answer and why sit where the child was looking */
-    const ctl = isHeld(g, q) ? missHTML(g, q) : optsHTML(g, q) + (m === 'ladder' ? ladderCtl(g) : '');
-    const play = m === 'ladder' ? `<div class="qz-ladwrap">${qCard(g, q, extra)}${comb(g)}</div>` : qCard(g, q, extra);
+    const ctl = isHeld(g, q) ? missHTML(g, q) : optsHTML(g, q);
+    const play = m === 'ladder' ? `<div class="qz-ladcol"><div class="qz-ladwrap">${qCard(g, q, extra)}${comb(g)}</div>${ladderCtl(g)}</div>` : qCard(g, q, extra);
     return stage(h, { hud, play, controls: ctl }); }
   const CELL_IC = { meanings: 'book', idioms: 'bulb', similes: 'sparkle' };
   function cellArt(th) { try { const A = (W.SB_TT_ICON_ART || {})[th];
@@ -519,14 +537,13 @@
     let body = `<div class="qz-sub">Listen. Where does this word come from?</div><button class="qz-hear big" data-act="qzHear">${ic('volume', 20)} Hear the word</button>`;
     if (q.stage !== 'pick') body += `<div class="qz-lang ${q.langOk ? 'ok' : 'no'}">${ic(q.langOk ? 'check' : 'close', 16)} ${q.langOk ? 'Yes — it came into English from' : 'It came into English from'} <b>${esc(q.lang)}</b>.</div>`;
     if (q.stage === 'type') body += `<div class="qz-sub">Now spell it.</div>
-      ${kbd() ? '<div id="qz-keys" class="qz-keys"></div>' : ''}
       <input class="qz-in" data-inp="qzType" data-key="qzKey" data-fkey="qzTyped"${kbd() ? ' readonly inputmode="none"' : ''} value="${escA(g.typed || '')}" placeholder="type the word" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Type the word you heard">
       <button class="qz-go" data-act="qzSubmit">Check <span class="qz-kb" aria-hidden="true">Enter</span></button>`;
     if (q.stage === 'done') { const note = [q.lang + (q.fact ? ' — ' + q.fact : '')];
       if (q.ok) body += `<div class="qz-ok" role="status">${ic('check', 16)} <b>${esc(w.w)}</b> — spelled right. <span class="qz-okf">${esc(note[0])}</span></div><button class="qz-go" data-act="qzGo">Next <span class="qz-kb" aria-hidden="true">Enter</span></button>`;
-      else { body += (W.SGUI && SGUI.miss) ? `<div id="qz-miss" class="qz-missq"></div>` : ((W.missFeedbackHTML ? missFeedbackHTML(w, q.typed, { head: 'Here is the word, letter by letter' }) : `<div class="qz-mans">The word: <b>${esc(w.w)}</b></div>`)
+      else { body += (W.SGUI && SGUI.miss) ? `<div class="qz-lang no">${ic('close', 16)} Not this time.</div>` : ((W.missFeedbackHTML ? missFeedbackHTML(w, q.typed, { head: 'Here is the word, letter by letter' }) : `<div class="qz-mans">The word: <b>${esc(w.w)}</b></div>`)
           + `<div class="qz-fact"><b>${ic('bulb', 15)} Where it comes from</b> ${esc(note[0])}</div><button class="qz-go" data-act="qzGo">Continue <span class="qz-kb" aria-hidden="true">Enter</span></button>`); } }
-    return `<div class="qz-card" data-live-prompt="Listen, then pick the language the word came from.">${body}</div>`; }
+    return `<div class="qz-card sg-panel" data-live-prompt="Listen, then pick the language the word came from.">${body}</div>`; }
 
   /* touch screens type on the kit's keyboard (§1.6: keys ≥ 40px, never under the tab bar); desktops on their own */
   function kbd() { try { return !!(W.SGUI && SGUI.keys && W.matchMedia && matchMedia('(pointer: coarse)').matches); } catch (e) { return false; } }
@@ -535,9 +552,9 @@
       const A = (W.SB_TT_ICON_ART || {})[id]; const pic = A ? `<span class="qz-thic" aria-hidden="true">${A.replace('<svg ', '<svg width="22" height="22" ')}</span>` : '';
       return `<button class="qz-th${on ? ' on' : ''}" data-act="qzTh" data-arg="${id}" aria-pressed="${on}">${pic}${esc(label)}</button>`; }).join('');
     const m = modeOf(g.hub, g.mode);
-    return stage(g.hub, { hud: { left: stat('Themes', sel.length ? String(sel.length) : 'All'), center: `<span class="qz-title">${esc(m.title)}</span>${chip(g.hub, g.mode)}`, right: stat('Best', esc(bestTxt(g.hub, g.mode).replace(/^Best: /, '') || '–')) },
+    return stage(g.hub, { hud: { left: backIn(g.hub) + stat('themes', sel.length ? String(sel.length) : 'All', '', 'grid'), center: title(m.title, SHORT[m.title], chip(g.hub, g.mode)), right: stat('best', esc(bestTxt(g.hub, g.mode).replace(/^Best: /, '') || '–'), '', 'trophy') + pad },
       /* the bank's ONE count (SB_COUNT, from the index — never "0 questions" before a shard lands) */
-      play: `<div class="qz-card qz-intro"><div class="qz-sub">${esc(m.promise())}</div><div class="qz-cnt">${esc([cnt('trivia') ? cnt('trivia') + ' questions' : '', ths.length + ' themes'].filter(Boolean).join(' · '))}</div><div class="qz-ths">${chips}</div></div>`,
+      play: `<div class="qz-card sg-panel qz-intro"><div class="qz-sub">${esc(m.promise())}</div><div class="qz-cnt">${esc([cnt('trivia') ? cnt('trivia') + ' questions' : '', ths.length + ' themes'].filter(Boolean).join(' · '))}</div><div class="qz-ths">${chips}</div></div>`,
       controls: `<button class="qz-go big" data-act="qzBegin">Start <span class="qz-kb" aria-hidden="true">Enter</span></button>` }); }
 
   function doneView(g) { const m = modeOf(g.hub, g.mode);
@@ -550,8 +567,8 @@
     const lvl = L.dropped ? `<div class="qz-lvl">Let’s warm up on ${esc(names[L.level] || L.level)}. You can move back up any time.</div>`
       : L.offerUp ? `<div class="qz-lvl"><button class="qz-up" data-act="qzUp">Ready for ${esc(names[nextUp(L.level)] || 'the next level')}?</button></div>` : '';
     const best = bestTxt(g.hub, g.mode);
-    return stage(g.hub, { hud: { left: stat('Mode', esc(m.title)), center: `<span class="qz-title">${esc(hubName(g.hub))}</span>`, right: stat('Best', esc(best.replace(/^Best: /, '') || '–')) },
-      play: `<div class="qz-card qz-done" data-live-prompt="${escA(big + '. ' + sub)}"><div class="qz-dh">${g.newBest ? 'A new best' : 'Round complete'}</div><div class="qz-db">${esc(big)}</div><div class="qz-sub">${esc(sub)}</div>${pay}${lvl}</div>`,
+    return stage(g.hub, { hud: { left: backIn(g.hub) + stat('right', g.mode === 'ladder' ? g.rung : g.right, '', 'check'), center: title(m.title, SHORT[m.title], chip(g.hub, g.mode)), right: stat('best', esc(best.replace(/^Best: /, '') || '–'), '', 'trophy') + pad },
+      play: `<div class="qz-card sg-panel qz-done" data-live-prompt="${escA(big + '. ' + sub)}"><div class="qz-dh">${g.newBest ? 'A new best' : 'Round complete'}</div><div class="qz-db">${esc(big)}</div><div class="qz-sub">${esc(sub)}</div>${pay}${lvl}</div>`,
       controls: `<div class="qz-btns"><button class="qz-go alt" data-act="qzBack">${ic('grid', 15)} All modes</button><button class="qz-go" data-act="qzGo">Play again <span class="qz-kb" aria-hidden="true">Enter</span></button></div>` }); }
   const ORDER = ['easy', 'medium', 'hard', 'champ'];
   function nextUp(l) { const i = ORDER.indexOf(l); return ORDER[Math.min(ORDER.length - 1, i + 1)] || 'medium'; }
@@ -562,9 +579,10 @@
     setTimeout(mount, 0);
     if (!g.mode) return hubView(h);
     const back = top('qzBack', hubName(h));
-    if (g.phase === 'loading') return back + stage(h, { hud: { left: '', center: `<span class="qz-title">${esc(modeOf(h, g.mode).title)}</span>`, right: '' }, play: (W.hiveLoader ? hiveLoader('getting the questions ready…') : 'Loading…') });
-    if (g.phase === 'empty') return back + stage(h, { hud: { left: '', center: `<span class="qz-title">${esc(modeOf(h, g.mode).title)}</span>${chip(h, g.mode)}`, right: '' },
-      play: `<div class="qz-card"><div class="qz-q">There are not enough questions at this level yet.</div><div class="qz-sub">Try another level on the chip above, or another mode.</div></div>`,
+    const mt = modeOf(h, g.mode).title;
+    if (g.phase === 'loading') return back + stage(h, { hud: { left: backIn(h) + stat('getting ready', '…', '', 'timer'), center: title(mt, SHORT[mt]), right: stat('best', esc(bestTxt(h, g.mode).replace(/^Best: /, '') || '–'), '', 'trophy') + pad }, play: (W.hiveLoader ? hiveLoader('getting the questions ready…') : 'Loading…') });
+    if (g.phase === 'empty') return back + stage(h, { hud: { left: backIn(h) + stat('questions', '0', '', 'target'), center: title(mt, SHORT[mt], chip(h, g.mode)), right: stat('best', esc(bestTxt(h, g.mode).replace(/^Best: /, '') || '–'), '', 'trophy') + pad },
+      play: `<div class="qz-card sg-panel"><div class="qz-q">There are not enough questions at this level yet.</div><div class="qz-sub">Try another level on the chip above, or another mode.</div></div>`,
       controls: `<button class="qz-go" data-act="qzBack">All modes</button>` });
     if (g.phase === 'intro') return back + introView(g);
     if (g.phase === 'done') return back + doneView(g);
@@ -579,18 +597,25 @@
       if (st.classList.contains('qz-hubst')) { st.style.minHeight = h + 'px'; return; }
       st.style.height = h + 'px'; } catch (e) {} }
   if (!W._qzFit) { W._qzFit = 1; window.addEventListener('resize', () => { if (state && (state.nav === 'lore' || state.nav === 'hive')) fit(); }); }
-  function mount() { fit(); const g = G(); if (!g || g.phase !== 'play') return; const q = curQ(g); if (!q) return;
-    try { const host = document.getElementById('qz-missq'); if (host && !host.childElementCount && W.SGUI && SGUI.missQ) {
-        g.kitHold = true; const tok = g.tok;
-        SGUI.missQ(host, { q: q.prompt, c: [q.opts[q.ans]].concat(q.opts.filter((x, i) => i !== q.ans)), answer: q.opts[q.ans], f: q.fact, fact: q.fact },
-          q.opts[g.picked], { onContinue: () => { if (G() === g && g.tok === tok && g.held) cont(); } }); } } catch (e) {}
-    try { const host = document.getElementById('qz-miss'); if (host && !host.childElementCount && W.SGUI && SGUI.miss && q.kind === 'origin') {
-        g.kitHold = true; SGUI.miss(host, q.word, q.typed, { note: q.lang + (q.fact ? ' — ' + q.fact : ''), onContinue: () => { if (G() === g && curQ(g) === q) advance(g); } }); } } catch (e) {}
+  function mount() { if (!kit()) fit(); const g = G(); if (!g || g.phase !== 'play') { if (g) dropKeys(g); return; } const q = curQ(g); if (!q) return;
+    if (!(q.kind === 'origin' && q.stage === 'type')) dropKeys(g);
+    /* the shared miss cards go on <body>: an app re-render (a lazy file landing, a toast) cannot take them
+       away mid-read, and SGUI.held keeps every clock still until Continue (Enter or a tap) */
+    try { if (W.SGUI && SGUI.missQ && !g.missH && q.kind !== 'origin' && isHeld(g, q)) { let h = null;
+        h = SGUI.missQ(document.body, { q: q.prompt, a: q.opts[q.ans], f: q.fact }, q.opts[g.picked],
+          { head: g.mode === 'ladder' ? 'The climb ends here. Here is the answer.' : undefined, onContinue: () => { if (G() === g && g.missH === h) { g.missH = null; cont(); } } });
+        g.missH = h; } } catch (e) {}
+    try { if (W.SGUI && SGUI.miss && !g.missH && q.kind === 'origin' && q.stage === 'done' && !q.ok && g.held) { let h = null;
+        h = SGUI.miss(document.body, q.word, q.typed, { note: 'It came into English from ' + q.lang + '.' + (q.fact ? ' ' + q.fact : ''),
+          onContinue: () => { if (G() === g && g.missH === h) { g.missH = null; cont(); } } });
+        g.missH = h; } } catch (e) {}
     try { const host = document.getElementById('qz-keys'); if (host && !host.childElementCount && q.kind === 'origin' && q.stage === 'type' && kbd()) {
         const box = () => document.querySelector('[data-fkey="qzTyped"]'); const put = () => { const b = box(); if (b) b.value = g.typed || ''; };
-        if (g.keys && g.keys.destroy) { try { g.keys.destroy(); } catch (e) {} }
-        g.keys = SGUI.keys(host, { onKey: (ch) => { g.typed = (g.typed || '') + ch; put(); }, onBack: () => { g.typed = String(g.typed || '').slice(0, -1); put(); }, onEnter: () => submitType() }); } } catch (e) {}
-    try { if (W.liveScan) liveScan(); } catch (e) {} }
+        dropKeys(g);
+        g.keys = SGUI.keys(host, { touch: true, onKey: (ch) => { g.typed = (g.typed || '') + ch; put(); }, onBack: () => { g.typed = String(g.typed || '').slice(0, -1); put(); }, onEnter: () => submitType() }); } } catch (e) {}
+    try { if (W.liveScan) liveScan(document.body); } catch (e) {} }   // body: the kit's card lives outside #root
+  /* a route away (family-shell dropLayers) takes the card with it */
+  function drop() { const g = G(); if (g) { dropMiss(g); dropKeys(g); } }   // the round itself stays; a render back onto it re-opens the card
 
   /* ---- keys: 1–4 pick (1–9 a square), Enter continues — never while a sheet or the PIN is up ---- */
   function onKey(e) { try {
@@ -601,8 +626,6 @@
     const t = e.target; const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
     if (typing) return;   // the Origins box handles its own Enter
     if (e.key === 'Enter') { if (t && t.tagName === 'BUTTON' && !t.closest('.qz-stage')) return;
-      /* the kit's miss card takes its own Enter; ours handles the rest */
-      if (g.kitHold && g.held && document.querySelector('#qz-missq *, #qz-miss *')) return;
       e.preventDefault(); cont(); return; }
     if (/^[1-9]$/.test(e.key) && g.phase === 'play') { const n = +e.key - 1;
       if (g.mode === 'squares' && g.sel == null) { e.preventDefault(); cell(n); return; }
@@ -626,7 +649,8 @@
 .qz-stage:not(.qz-hubst) .qz-play{container-type:size}
 .qz-ctl{display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 clamp(12px,3vw,24px) 16px}
 .qz-ctl .qz-miss{width:min(760px,100%);margin-top:0}
-.qz-card{width:min(720px,100%);background:color-mix(in srgb,var(--bg2) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,3.4vw,28px);text-align:center;box-shadow:var(--glow,var(--sh-rest));color:var(--text)}
+.qz-stage .qz-card{background:color-mix(in srgb,var(--bg2) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.qz-card{width:min(720px,100%);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,3.4vw,28px);text-align:center;box-shadow:var(--glow,var(--sh-rest));color:var(--text)}
 .qz-tag{display:inline-block;padding:3px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-weight:800;font-size:12px;margin-bottom:8px}
 .qz-big{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,44px);line-height:1.1;margin:4px 0}
 .qz-q{font-size:clamp(16px,2.6vw,20px);font-weight:700;line-height:1.45}.qz-sub{color:var(--muted);font-weight:700;font-size:14px;margin:4px 0}
@@ -693,6 +717,14 @@
 .qz-nopay,.qz-lvl{margin-top:10px;font-size:13px;color:var(--muted);font-weight:700}
 .qz-up{padding:9px 16px;border-radius:999px;background:var(--surface2);border:1.5px solid var(--accent);color:var(--accent);font-weight:800}
 .qz-short{display:none}
+.qz-kit .sg-st-region{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;overflow:auto}
+.qz-ladcol{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.qz-back{flex:none;position:relative;width:34px;height:34px;margin-right:2px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);border:1px solid var(--line);color:var(--text)}
+.qz-back::after{content:"";position:absolute;inset:-5px}
+.qz-ttl{display:inline-flex;align-items:center;gap:8px}.qz-ttl .qz-ts{display:none}
+.qz-keys{width:100%}
+.qz-pad{display:none;flex:none;width:34px;height:1px}
+@media (max-width:640px){.qz-kit .sg-st-side .sg-st-stat{min-width:106px;justify-content:space-between}.qz-kit .sg-st-side .sg-st-ic{display:none}.qz-pad{display:block}.qz-ttl:has(.qz-ts) .qz-tl{display:none}.qz-ttl .qz-ts{display:inline}}
 @media (max-width:560px){.qz-opt{min-height:46px;padding:8px 11px;font-size:14px}.qz-opt.long{font-size:13px}.qz-card{padding:12px 14px}.qz-hear{margin:2px 0 6px;padding:8px 14px}
   .qz-tag{display:none}.qz-long{display:none}.qz-short{display:inline}.qz-ll{padding:8px 10px;font-size:12.5px;gap:4px}.qz-lls{flex-wrap:nowrap;gap:6px}
   .qz-ot{-webkit-line-clamp:2}.qz-opts{gap:7px}.qz-sub{margin:2px 0}.qz-hear{padding:6px 12px;font-size:13px;margin:0 0 4px}.qz-tile-go{min-height:150px}.qz-hud{padding:8px 12px}.qz-big{font-size:clamp(24px,8vw,34px)}}
@@ -703,7 +735,7 @@
     document.head.appendChild(s); }
 
   /* ------------------------------------------------------------------ the doors */
-  const API = { open, view, best: cardBest, start, finish, modes: MODES, hubName,
+  const API = { open, view, best: cardBest, start, finish, drop, modes: MODES, hubName,
     /* for the tests: the generators and the pay rule, so a bot can play them without a screen */
     _meaningRound: meaningRound, _originRound: originRound, _figRound: figRound, _trivDraw: trivDraw, _owed: owed, _words: words, _topical: topical, _posOf: posOf, _rivalSays: rivalSays, _G: G, _cur: () => curQ(G()),
     _ladder: (lv) => { const g = { hub: 'lore', mode: 'ladder' }; buildLadder(g, lv); return g.qs || []; } };
