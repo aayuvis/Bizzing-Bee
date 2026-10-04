@@ -40,6 +40,9 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const APP = path.resolve(__dirname, '..');
 const SRC = process.env.MB_SRC || path.join(APP, 'mockbee.js');
 let fails = 0;
+/* MB_ONLY=CAP,PAY… runs only those sections (for proving a check by breaking it, quickly) */
+const ONLY = (process.env.MB_ONLY || '').split(',').filter(Boolean);
+const on = k => !ONLY.length || ONLY.indexOf(k) >= 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
 /* ---------------- the data, loaded once ---------------- */
@@ -180,6 +183,7 @@ const median = a => { const s = a.slice().sort((x, y) => x - y); return s[Math.f
 
 /* ================= CAP and SIZE ================= */
 const CAP = 8 * 60 * 1000;
+if (on('CAP')) {
 const SIZES = { '5-7': [4, 3], '8-10': [6, 4], '11-13': [8, 5], '14-18': [8, 5] };
 for (const [ab, [rv, rd]] of Object.entries(SIZES)) {
   const r = bee({ ageBand: ab, bot: 'perfect-keen', t0: 7 });
@@ -201,9 +205,10 @@ ok(capRows.every(c => c.med <= CAP), 'CAP: a perfect speller\'s bee has a median
 ok(capRows.every(c => c.max <= CAP), 'CAP: and no bee of the ' + capRows.length * 9 + ' runs past 8 minutes');
 ok(capRows.every(c => c.won === 9), 'CAP: the perfect speller finishes first every time (alone, or sharing it when time is called)');
 ok(capRows.filter(c => c.mode === 'bee').every(c => c.co <= 2), 'CAP: in Bee, time is rarely called — sudden death decides it (≤2 co-champion finishes in 9)');
+}
 
 /* ================= PAY ================= */
-{
+if (on('PAY')) {
   const rr = bee({ bot: 'random', t0: 11 });
   const sl = bee({ bot: 'silent', t0: 12 });
   ok(rr.W.ledger.length === 0 && rr.g.pay === 0, `PAY: a random typist earns 0 coins (ledger ${rr.W.ledger.length}, finish card ${rr.g.pay})`);
@@ -218,7 +223,7 @@ ok(capRows.filter(c => c.mode === 'bee').every(c => c.co <= 2), 'CAP: in Bee, ti
 }
 
 /* ================= OUT: Finish now / Watch the rest ================= */
-{
+if (on('OUT')) {
   const W = world({ t0: 21 }); W.A.mbOpen('bee'); W.A.mbStart();
   drive(W, 'perfect-keen', { missRound: 1, out: 'none' });
   W.run(() => W.S.mb.phase === 'outChoice');
@@ -237,7 +242,7 @@ ok(capRows.filter(c => c.mode === 'bee').every(c => c.co <= 2), 'CAP: in Bee, ti
 }
 
 /* ================= CHAIR ================= */
-{
+if (on('CHAIR')) {
   const W = world({ t0: 31 });
   const M = W.ctx.MOCKBEE;
   const names = new Set(['pip', 'nova', 'rafi', 'suki', 'dax', 'mira', 'theo', 'ines', 'kwame', 'vesper', 'ahana']);
@@ -294,7 +299,7 @@ ok(capRows.filter(c => c.mode === 'bee').every(c => c.co <= 2), 'CAP: in Bee, ti
 }
 
 /* ================= FAMILY BEE NIGHT ================= */
-{
+if (on('FAMILY')) {
   const guests = [{ name: 'Auntie Zanzibar', band: 'adult' }, { name: 'Grandpa Quixote', band: '6-7' }];
   const r = bee({ mode: 'family', family: [{}].concat(guests), bot: 'perfect-keen', guestMiss: 'Grandpa Quixote', t0: 41 });
   const g = r.g; const W = r.W;
@@ -310,7 +315,7 @@ ok(capRows.filter(c => c.mode === 'bee').every(c => c.co <= 2), 'CAP: in Bee, ti
 }
 
 /* ================= RANDOM, LEVEL, SFX ================= */
-{
+if (on('RANDOM')) {
   let calls = 0, runs = 0;
   for (const mode of ['bee', 'champ']) for (let i = 0; i < 4; i++) { const r = bee({ mode, bot: i % 2 ? 'random' : 'perfect-passive', t0: 51 + i, level: 'medium' }); calls += r.W.random; runs++; }
   const fam = bee({ mode: 'family', family: [{}, { name: 'B', band: 'adult' }], t0: 59 }); calls += fam.W.random;
@@ -328,9 +333,11 @@ ok(capRows.filter(c => c.mode === 'bee').every(c => c.co <= 2), 'CAP: in Bee, ti
   const bad = [...new Set(all.filter(k => !VALID_SFX.has(k)))];
   ok(all.length && !bad.length, `SFX: every sound the bee asks for exists (${all.length} calls${bad.length ? '; unknown: ' + bad.join(', ') : ''})`);
   const fin = ch.g.mine.filter(m => m.kind === 'oral' || m.kind === 'written').map(m => m.rec);
-  const bee8 = bee({ bot: 'perfect-keen', t0: 65, ageBand: '14-18', level: 'champ' });
-  const finalsInBee = bee8.g.mine.map(m => m.rec).filter(w => typeof w._h === 'number' ? w._h >= .78 : (w.y || 0) >= 8).length;
-  ok(fin.length && fin.every(w => (typeof w._h === 'number' ? w._h >= .78 : (w.y || 0) >= 8)) && finalsInBee === 0, `WORDS: Finals words only in Champ (${fin.length} Champ words all Finals; ${finalsInBee} in a Bee at Champ level)`);
+  /* a Bee at the Champ level, every round up to the third of sudden death, 40 words a round */
+  const W8 = world({ t0: 65, ageBand: '14-18', level: 'champ' }); W8.A.mbOpen('bee'); W8.A.mbStart();
+  const dealt = []; for (let r = 0; r < 8; r++) dealt.push(...W8.ctx.MOCKBEE.draw(40, r));
+  const finalsInBee = dealt.filter(w => typeof w._h === 'number' ? w._h >= .78 : (w.y || 0) >= 8).length;
+  ok(fin.length && fin.every(w => (typeof w._h === 'number' ? w._h >= .78 : (w.y || 0) >= 8)) && finalsInBee === 0, `WORDS: Finals words only in Champ (${fin.length} Champ words all Finals; ${finalsInBee} of ${dealt.length} dealt in a Bee at Champ level)`);
   const mineWords = a.g.mine.map(m => m.w);
   ok(new Set(mineWords).size === mineWords.length, 'WORDS: no word twice in one bee');
 }

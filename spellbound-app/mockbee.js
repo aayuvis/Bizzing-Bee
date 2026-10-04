@@ -1670,7 +1670,7 @@
        repaint made the whole hall drift while a rival spelled */
     const rise = g.rose ? '' : ' rise';
     g.rose = 1;
-    const play = `<div class="mb-hall">
+    const play = `<div class="mb-hall${g.mode === 'family' ? ' fam' : ''}">
         <div class="mb-bench l">${L.map(s => benchChip(s, g)).join('')}</div>
         <div class="mb-centre${/^(me|meDone|pass)$/.test(g.phase || '') ? ' atmic' : ''}">
           <div class="mb-ann"><span class="mb-ann-ic">${iconSVG('volume', 15)}</span><p>${esc(g.announce || '')}</p></div>
@@ -1834,6 +1834,8 @@
     strip: (w, k) => stripFor(w, k),
     bands: () => JSON.parse(JSON.stringify(BANDS)),
     roundAt: (n, g) => roundAt(n, g),
+    /* the words a round of the bee on stage would deal, n of them */
+    draw: (n, r) => (state.mb && state.mb.field ? drawWords(n, roundAt(r)) : []),
     cap: CAP_MS, qCost: Q_COST, turnMs: TURN_MS,
   };
 

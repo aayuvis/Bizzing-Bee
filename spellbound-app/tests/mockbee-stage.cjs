@@ -1,0 +1,123 @@
+/* THE MOCK BEE ON THE STAGE, IN A REAL PAGE (games spec §4.1 and §5.0, 4 Oct 2026)
+
+   tests/mockbee-sim.cjs holds the rules on a simulated clock. This holds what only a browser
+   can show, at a desktop and on a phone:
+     ROUTE   #/mockbee opens the lobby through its opener; its Back says Play and lands on #/play.
+     CHAIR   on the child's turn the requests are drawn in their fixed order and at ONE size;
+             a word with no sentence and no alternate pronunciation draws neither button (never
+             an empty one); asking a question takes 3 s off the clock on screen; with every
+             answer open, the hall's visible text never contains the word.
+     INPUT   the real keyboard spells (type + Enter) on a desktop; on a touch phone the Chair
+             and Spell it are tapped; Chair buttons are at least 40 px tall and every control
+             sits above the tab bar, in the window, with the page not scrolled.
+     STAGE   the HUD's two side columns are the same width, the centre column is centred on
+             the stage, and the two benches are the same width — mirrored, within 4 px.
+     FAMILY  names typed for Family Bee night are on the stage and nowhere in localStorage.
+   Every wait is on state (lib/wait.cjs). Run: NODE_PATH=/opt/node22/lib/node_modules node tests/mockbee-stage.cjs */
+const { chromium } = require('playwright');
+const path = require('path');
+const { booted, until } = require('./lib/wait.cjs');
+const ROOT = path.resolve(__dirname, '..');
+let fails = 0;
+const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
+const seed = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
+  children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'bizzy', theme: 'spellbound', coins: 40, mbDiff: 'hard' }] };
+
+(async () => {
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  for (const [vw, vh, phone] of [[1280, 800, false], [390, 844, true]]) {
+    const tag = phone ? 'phone 390×844' : 'desktop 1280×800';
+    const ctx = await b.newContext({ viewport: { width: vw, height: vh }, hasTouch: phone, isMobile: phone });
+    await ctx.addInitScript(s => { if (!localStorage.getItem('t_mbs')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_mbs', '1'); } }, seed);
+    const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+    await pg.goto('file://' + ROOT + '/index.html#/play'); await booted(pg);
+    await pg.evaluate(() => { window.Audio = function () { return { play: () => Promise.resolve(), pause: () => {} }; }; try { speechSynthesis.speak = () => {}; } catch (e) {} });
+
+    /* ---- ROUTE ---- */
+    await pg.evaluate(() => { location.hash = '#/mockbee'; });
+    const lobby = await until(pg, () => state.nav === 'mockbee' && state.mb && state.mb.view === 'lobby' && !!document.querySelector('.mb-mode'));
+    const backTxt = await pg.evaluate(() => (document.querySelector('.mb-st-hud .mb-back, .mb-back') || {}).innerText || '');
+    if (lobby) await pg.click('.mb-back');
+    const back = lobby && await until(pg, () => state.nav === 'games' && /#\/play/.test(location.hash));
+    ok(lobby && /Play/.test(backTxt) && back, `${tag} ROUTE: #/mockbee opens the lobby (modes drawn), its Back says "${backTxt.trim()}" and lands on #/play`);
+    if (!lobby) { await ctx.close(); continue; }
+
+    /* ---- a turn at the microphone ---- */
+    await pg.evaluate(() => { location.hash = '#/mockbee'; });
+    await until(pg, () => state.nav === 'mockbee' && state.mb && state.mb.view === 'lobby');
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need(['sents', 'sounds', 'coachRules'], r)));
+    await pg.evaluate(() => app.mbStart());
+    await until(pg, () => state.mb && state.mb.phase === 'call', null, 30000);
+    await pg.evaluate(() => { const m = state.mb; m.turn = m.roster.findIndex(s => s.kind === 'me'); });
+    const meUp = await until(pg, () => state.mb.phase === 'me', null, 30000);
+    /* a word with every answer on file, and one with no sentence and no alternate pronunciation */
+    const words = await pg.evaluate(() => {
+      const A = window.SB_ALT_PRON || {}; const all = (SB_DATA.nsf || []).filter(w => w && w.w && w.d && w.ps && w.o && /^[a-z]{4,}$/.test(w.w));
+      const full = all.find(w => w.s && Object.prototype.hasOwnProperty.call(A, w.w) && !/Ahana|Pip|Nova|Rafi|Suki|Dax|Mira/i.test(w.w));
+      const bare = all.find(w => !w.s && !Object.prototype.hasOwnProperty.call(A, w.w));
+      return { full: full && full.w, bare: bare && bare.w }; });
+    const setWord = w => pg.evaluate(w => { const g = state.mb; g.word = SB_DATA.nsf.find(x => x.w === w); g.asked = {}; render(); }, w);
+    await setWord(words.full);
+    const chair = await pg.evaluate(() => [...document.querySelectorAll('.mb-chair .mb-ask')].map(b => { const r = b.getBoundingClientRect(); return { q: b.dataset.q, w: Math.round(r.width), h: Math.round(r.height), t: b.innerText.trim() }; }));
+    const order = chair.map(c => c.q).join(' ');
+    const oneSize = chair.length && chair.every(c => Math.abs(c.w - chair[0].w) <= 1 && Math.abs(c.h - chair[0].h) <= 1);
+    ok(meUp && order === 'def ps org sent say alt' && oneSize && chair.every(c => c.t.length > 2),
+      `${tag} CHAIR: six requests in order (${order}) at one size (${chair[0] ? chair[0].w + '×' + chair[0].h : '-'}) for "${words.full}"`);
+    await setWord(words.bare);
+    const bareQ = await pg.evaluate(() => [...document.querySelectorAll('.mb-chair .mb-ask')].map(b => b.dataset.q).join(' '));
+    ok(!/sent|alt/.test(bareQ) && /def/.test(bareQ) && /say/.test(bareQ), `${tag} CHAIR: no sentence and no alternate pronunciation on file — those buttons are not drawn (${bareQ})`);
+    await setWord(words.full);
+    /* 3 s a question, on the clock the child sees */
+    const before = await pg.evaluate(() => ({ dl: state.mb.clock.deadline, txt: (document.getElementById('mb-clock') || {}).textContent }));
+    if (phone) await pg.tap('.mb-chair [data-q="def"]'); else await pg.click('.mb-chair [data-q="def"]');
+    await until(pg, () => state.mb.asked && state.mb.asked.def);
+    const after = await pg.evaluate(() => ({ dl: state.mb.clock.deadline, txt: (document.getElementById('mb-clock') || {}).textContent, ans: (document.querySelector('.mb-answers') || {}).innerText || '' }));
+    const secs = t => parseInt(String(t || '0'), 10);
+    ok(before.dl - after.dl === 3000 && secs(before.txt) - secs(after.txt) >= 3 && after.ans.length > 4,
+      `${tag} CHAIR: ${phone ? 'tapping' : 'clicking'} Definition answers it and takes 3 s off the clock (${before.txt} → ${after.txt})`);
+    for (const q of ['ps', 'org', 'sent', 'alt']) { if (phone) await pg.tap(`.mb-chair [data-q="${q}"]`); else await pg.click(`.mb-chair [data-q="${q}"]`); }
+    await until(pg, () => state.mb.asked && state.mb.asked.alt);
+    const vis = await pg.evaluate(() => (document.querySelector('.mb-wrap') || document.body).innerText);
+    const leak = new RegExp('(^|[^a-z])' + words.full + '($|[^a-z])', 'i').test(vis);
+    ok(!leak && /Definition\./.test(vis) && /Sentence\./.test(vis), `${tag} CHAIR: every answer open and the word "${words.full}" is nowhere in the hall's visible text`);
+
+    /* ---- the stage: mirrored and inside the window ---- */
+    const geo = await pg.evaluate(() => {
+      const R = s => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom, w: r.width }; };
+      const st = R('.mb-st') || R('.mb-wrap'), hl = R('.mb-st-l'), hr = R('.mb-st-r'), hc = R('.mb-st-c'), bl = R('.mb-bench.l'), br = R('.mb-bench.r'), cen = R('.mb-centre');
+      const tb = document.querySelector('.sb-tabbar'); const tbTop = tb && getComputedStyle(tb).display !== 'none' ? tb.getBoundingClientRect().top : innerHeight;
+      const ctrls = [...document.querySelectorAll('.mb-st-ctrl button, .mb-st-ctrl input')].map(e => e.getBoundingClientRect());
+      const asks = [...document.querySelectorAll('.mb-chair .mb-ask')].map(e => e.getBoundingClientRect().height);
+      return { st, hl, hr, hc, bl, br, cen, tbTop, ih: innerHeight, sy: scrollY, lowest: Math.max(...ctrls.map(r => r.bottom)), highest: Math.min(...ctrls.map(r => r.top)), minAsk: Math.min(...asks) }; });
+    const mid = geo.st.l + geo.st.w / 2;
+    ok(Math.abs(geo.hl.w - geo.hr.w) <= 4 && Math.abs((geo.hc.l + geo.hc.w / 2) - mid) <= 4 && Math.abs(geo.bl.w - geo.br.w) <= 4 && Math.abs((geo.cen.l + geo.cen.w / 2) - mid) <= 4,
+      `${tag} STAGE: HUD sides ${Math.round(geo.hl.w)}/${Math.round(geo.hr.w)}px, benches ${Math.round(geo.bl.w)}/${Math.round(geo.br.w)}px, the title and the microphone on the centre line`);
+    ok(geo.lowest <= geo.tbTop && geo.lowest <= geo.ih && geo.highest >= 0 && geo.minAsk >= 40,
+      `${tag} STAGE: every control is in the window and above the tab bar (lowest ${Math.round(geo.lowest)} ≤ ${Math.round(geo.tbTop)}), Chair buttons ≥ 40px (${Math.round(geo.minAsk)})`);
+
+    /* ---- spelling: the keyboard on a desktop, a tap on a phone ---- */
+    const target = await pg.evaluate(() => state.mb.word.w);
+    if (phone) { await pg.tap('#mb-in'); await pg.keyboard.type(target); await pg.tap('[data-act="mbSpell"]'); }
+    else { await pg.click('#mb-in'); await pg.keyboard.type(target); await pg.keyboard.press('Enter'); }
+    const spelt = await until(pg, () => state.mb.phase !== 'me' && state.mb.mine.length && state.mb.mine[state.mb.mine.length - 1].ok);
+    ok(spelt, `${tag} INPUT: ${phone ? 'tapping Spell it' : 'typing and Enter'} spells the word, and it counts`);
+    await pg.evaluate(() => app.mbQuit());
+
+    /* ---- Family Bee night: the names stay on the stage ---- */
+    await pg.evaluate(() => { location.hash = '#/mockbee/family'; });
+    await until(pg, () => state.mb && state.mb.view === 'family' && !!document.querySelector('.mb-pin'));
+    if (phone) await pg.tap('.mb-pin'); else await pg.click('.mb-pin');
+    await pg.keyboard.type('Zanzibar');
+    await pg.evaluate(() => app.mbStart());
+    await until(pg, () => state.mb && state.mb.view === 'stage' && state.mb.phase === 'pass', null, 30000);
+    const onStage = await pg.evaluate(() => (document.querySelector('.mb-wrap') || {}).innerText || '');
+    await pg.evaluate(() => { try { save(); } catch (e) {} });
+    const stored = await pg.evaluate(() => { const out = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/zanzibar/i.test(localStorage.getItem(k) || '')) out.push(k); } return out; });
+    ok(/Zanzibar/.test(onStage) && !stored.length, `${tag} FAMILY: the name typed is on the stage and in no localStorage key${stored.length ? ' — found in ' + stored.join(', ') : ''}`);
+    await pg.evaluate(() => app.mbQuit());
+    ok(errs.length === 0, `${tag}: no page errors` + (errs.length ? ' — ' + errs.slice(0, 3).join(' | ') : ''));
+    await ctx.close();
+  }
+  await b.close();
+  console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
+})();
