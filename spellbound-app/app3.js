@@ -3699,7 +3699,8 @@ const app = {
     if(!advModeOn(active()) && !state._advPinOk){ pinGate(()=>{ state._advPinOk=true; app.openAdvanced(); state._advPinOk=false; },'The Advanced Pack — grown-ups only'); return; }
     ADV.open();
     if(state.advView!=='gate' && !window.SB_FULL) loadFullLibrary(()=>{ try{ render(); }catch(e){} }); },
-  advGo:(v)=>{ if(window.ADV) ADV.go(v); },
+  /* the Advanced Pack's mock rounds live in the Mock Bee now (games spec §3.1: Champ absorbs them) */
+  advGo:(v)=>{ if(v==='mock'&&typeof app.mbOpen==='function'){ app.mbOpen('champ'); return; } if(window.ADV) ADV.go(v); },
   /* ◆ advanced rounds inside the ordinary Arcade pickers (no separate Advanced Games room) */
   arcAdvDict:()=>{ if(!window.ADV||!advModeOn()) return; app.openAdvanced(); ADV.dictStart(); },
   arcAdvMem:()=>{ if(!window.ADV||!advModeOn()) return; app.openAdvanced(); ADV.memStart(); },
@@ -12256,7 +12257,7 @@ function playCardsShown(){ return SB_PLAY_CARDS.filter(playCardShown); }
 /* the child's own best on a card, quietly — a number they set, never a target the card sets (G9) */
 function playCardBest(card,c){
   if(card.arcade){ const v=Math.round(+arcBestMap()[card.k]||0); return v>0?'Best '+fmtN(v):''; }
-  if(card.k==='mockbee'){ try{ const st=window.MOCKBEE?MOCKBEE.stats():{}; return st.played&&st.best?('Best finish: '+st.best+(st.wins?' · '+st.wins+' won':'')):''; }catch(e){ return ''; } }
+  if(card.k==='mockbee'){ try{ const st=window.MOCKBEE?MOCKBEE.stats():{}; return st.played&&st.best?('Best finish: '+(n=>n+(n%100>10&&n%100<14?'th':({1:'st',2:'nd',3:'rd'})[n%10]||'th'))(+st.best)+(st.wins?' · '+st.wins+' won':'')):''; }catch(e){ return ''; } }
   if(card.hub){ try{ if(window.SB_HUB_BEST&&typeof SB_HUB_BEST[card.k]==='function'){ const s=SB_HUB_BEST[card.k](); if(s) return String(s); } }catch(e){}
     const t=SB_BESTS.top(card.k,c); if(!t) return '';
     const mode=((window.SB_HUB_MODES&&SB_HUB_MODES[card.k]&&SB_HUB_MODES[card.k][t.mode])||t.mode.charAt(0).toUpperCase()+t.mode.slice(1));
