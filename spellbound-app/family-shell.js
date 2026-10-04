@@ -118,7 +118,7 @@
      sub-state (a running drill, an open book) and is restored to its parent screen. */
   var RESTORABLE = { shop: 1, help: 1, home: 1, concepts: 1, coach: 1, quest: 1, explore: 1, themes: 1, figurative: 1, vocab: 1, quotes: 1,
     trivtrain: 1, ipatrain: 1, typing: 1, builder: 1, beeband: 1, coachdesk: 1, traps: 1, revisions: 1, evolution: 1,
-    collection: 1, finder: 1, games: 1, trivia: 1, journeys: 1, adv: 1, progress: 1, feed: 1 };
+    collection: 1, finder: 1, games: 1, trivia: 1, journeys: 1, adv: 1, progress: 1, feed: 1, daily: 1 };
   var PARENT = { train: 'coach', levelup: 'coach', leveltest: 'home', mockbee: 'games', sq: 'games', reader: 'explore',
     debug: 'home', voicetest: 'home', evofeedback: 'home', parent: 'progress' };
 
