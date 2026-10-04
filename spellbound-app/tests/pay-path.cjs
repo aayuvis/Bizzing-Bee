@@ -41,7 +41,7 @@ for (const f of files) {
     const stmt = src.slice(i, at + m[0].length - m[1].length);
     /* an `if (…)` that opens the block the call is in counts as its condition */
     const blockHead = src.slice(Math.max(0, i - 160), i + 1);
-    const guarded = PASS.test(stmt) || /if\s*\([^)]*\b(won|win|pass|passed|podium|pct|top3)\b[^)]*\)\s*(try\s*)?\{?\s*$/.test(blockHead);
+    const guarded = PASS.test(stmt) || /if\s*\([^)]*\b(won|win|pass|passed|podium|pct|top3)\b[^)]*\)\s*\{?\s*(try\s*)?\{?\s*$/.test(blockHead);   // `if (R.pass) { try {` too (gym.js, 4 Oct)
     if (!guarded) finishPay.push(`${f}:${ln} ${fn}() — "${stmt.replace(/\s+/g, ' ').trim().slice(-70)}"`);
   }
 }

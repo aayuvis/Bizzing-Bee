@@ -39,13 +39,13 @@ async function open(b, o) {
   await pg.goto(URL + (o.hash || '')); await W.booted(pg);
   return { ctx, pg, errs };
 }
-const stage = pg => W.until(pg, () => !!document.querySelector('#fg-host .sg-stage, #fg-host .fg-stage') && !!window.SB_FORGE_UI && !!SB_FORGE_UI.state(), null, 25000);
+const stage = pg => W.until(pg, () => !!document.querySelector('#fg-host .sb-stage, #fg-host .fg-stage') && !!window.SB_FORGE_UI && !!SB_FORGE_UI.state(), null, 25000);
 const phase = pg => pg.evaluate(() => SB_FORGE_UI.state() && SB_FORGE_UI.state().phase);
 
 /* T14/T15, measured from a screenshot of the stage (transitions off, so no colour is mid-fade) */
 async function measure(pg) {
   await W.still(pg);
-  const box = await pg.evaluate(() => { const s = document.querySelector('#fg-host .sg-stage, #fg-host .fg-stage'), r = s.getBoundingClientRect();
+  const box = await pg.evaluate(() => { const s = document.querySelector('#fg-host .sb-stage, #fg-host .fg-stage'), r = s.getBoundingClientRect();
     return { x: r.left, y: r.top, width: r.width, height: r.height }; });
   const png = await pg.screenshot({ clip: box });
   const px = await pg.evaluate(async b64 => {
@@ -60,7 +60,7 @@ async function measure(pg) {
   }, png.toString('base64'));
   const geo = await pg.evaluate(() => {
     const q = s => document.querySelector(s), R = e => e && e.getBoundingClientRect();
-    const st = R(q('#fg-host .sg-stage, #fg-host .fg-stage')), L = R(q('#fg-host .fg-mean')), Rt = R(q('#fg-host .fg-heat'));
+    const st = R(q('#fg-host .sb-stage, #fg-host .fg-stage')), L = R(q('#fg-host .fg-mean')), Rt = R(q('#fg-host .fg-heat'));
     const ctl = R(q('#fg-host .fg-ctl')), bar = q('nav.sb-tabbar'), barTop = bar && getComputedStyle(bar).display !== 'none' ? R(bar).top : innerHeight;
     return { vw: document.documentElement.clientWidth, st: { l: st.left, r: st.right, w: st.width }, hl: L.width, hr: Rt.width,
       scroll: document.scrollingElement.scrollHeight - innerHeight, ctlBottom: ctl.bottom, barTop };
@@ -170,7 +170,7 @@ async function measure(pg) {
     await W.until(pg, () => SB_FORGE_UI.state().phase === 'forge', null, 3000);
     const tag = (phone ? '390x844' : '1280x800') + ' ' + mode;
     if (STAGECHECK && STAGECHECK.check) {
-      const res = await STAGECHECK.check(pg, '#fg-host .sg-stage, #fg-host .fg-stage');
+      const res = await STAGECHECK.check(pg, '#fg-host .sb-stage, #fg-host .fg-stage');
       ok(!res.length, `${tag}: shared stage check (${res.join(' | ') || 'clean'})`);
     } else {
       const m = await measure(pg);

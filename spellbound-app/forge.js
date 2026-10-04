@@ -373,7 +373,7 @@
     try {
       if (window.SGUI && typeof SGUI.stage === 'function') return '<div class="fg-stage-wrap fg-on-sgui">' + SGUI.stage({ plate: plate(), hud: hud, play: play, controls: ctl }) + '</div>';
     } catch (e) {}
-    return '<div class="fg-stage sg-stage" style="--fg-plate:url(\'' + plate() + '\')">' +
+    return '<div class="fg-stage" style="--fg-plate:url(\'' + plate() + '\')">' +
       '<div class="fg-hud sg-hud"><div class="fg-hl">' + hud.left + '</div><div class="fg-hc">' + hud.center + '</div><div class="fg-hr">' + hud.right + '</div></div>' +
       play + ctl + '</div>';
   }
