@@ -111,7 +111,7 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
       const ctr = el => { const q = el.getBoundingClientRect(); return (q.top + q.bottom) / 2; };
       const bk = document.querySelector('.qz-back'); let backH = 0;
       if (bk) { const q = bk.getBoundingClientRect(), cx = (q.left + q.right) / 2, cy = (q.top + q.bottom) / 2;
-        backH = [[-21, -21], [21, -21], [-21, 21], [21, 21], [0, 0]].every(([dx, dy]) => { const e = document.elementFromPoint(cx + dx, cy + dy); return e && e.closest('.qz-back') === bk; }) ? 44 : Math.round(q.height); }
+        backH = [[-21, -21], [21, -21], [-21, 21], [21, 21], [0, 0]].every(([dx, dy]) => { const e = document.elementFromPoint(cx + dx, cy + dy); return e && e.closest('.qz-back') === bk; }) ? 44 : Math.round(Math.min(q.width, q.height)); }
       return { name: (bar.querySelector('.qz-tl, .qz-ts') || {}).textContent, wrapped: parts.filter(k => lines(k) > 1).map(k => k.textContent.trim().slice(0, 18)),
         offRow: kids.filter(k => Math.abs(ctr(k) - ctr(kids[0])) > 6).map(k => k.textContent.trim().slice(0, 18)),
         past: kids.filter(k => k.getBoundingClientRect().right > innerWidth + 0.5).map(k => k.textContent.trim().slice(0, 18)), backH }; });
