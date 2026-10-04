@@ -188,7 +188,9 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
       play: !!tab && tab.getAttribute('aria-current') === 'page', inRoot: document.querySelectorAll('#root #db-host .db-cell').length,
       loose: [...document.body.children].filter(e => /(^|\s)db-/.test(e.className || '')).length,
       row0: [...document.querySelectorAll('#db-host .db-row[data-r="0"] .db-cell')].map(c => c.textContent).join('') }; });
-  await pg.evaluate(() => document.querySelector('[data-act="openDaily"]').click()); await pg.waitForTimeout(700);
+  /* 4 Oct 2026 (games spec §3.1): the Daily Buzz banner left the Play tab (Daily Bee is the Train door's
+     card and takes #/daily when it lands), so the screen is opened through its opener, not the banner */
+  await pg.evaluate(() => app.openDaily()); await pg.waitForTimeout(700);
   let D = await daily();
   ok(D.h === '#/daily' && D.nav === 'daily' && D.bar && D.tabbar && D.play && D.inRoot === 30 && !D.loose,
     'Daily Buzz opens as a screen in the shell — #/daily, the top bar and the tab bar around its board, Play marked, nothing drawn over the app (' + JSON.stringify(D) + ')');

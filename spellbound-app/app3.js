@@ -82,9 +82,12 @@ const _DYNAMIC_LISTS = { missed:1, custom:1, ai:1, review:1 }; // recompute (don
    A word joins a theme when its DEFINITION matches the theme's keyword classifier, so the
    themes stay in sync with the library and need no hand-tagging. Theme lists ride the same
    Level ladder as every other list (th_<id> keys). ===== */
-function themeDefs(){ return (window.SB_THEMES&&SB_THEMES.themes)||[]; }
+/* a theme with a minBand (themes-data.js) is not offered to a younger child anywhere — the catalogue,
+   a Squares board, a game's draw (games spec §1.2). One gate, here, so no door can forget it. */
+function themeDefs(){ const all=(window.SB_THEMES&&SB_THEMES.themes)||[]; let c=null; try{ c=active(); }catch(e){}
+  return c?all.filter(t=>!t.minBand||bandAllows(t.minBand,c)):all; }
 function themeClusters(){ return (window.SB_THEMES&&SB_THEMES.clusters)||[]; }
-function themeOf(id){ return themeDefs().find(t=>t.id===id); }
+function themeOf(id){ return ((window.SB_THEMES&&SB_THEMES.themes)||[]).find(t=>t.id===id); }   /* by id, ungated: the gate is the catalogue (themeDefs) and the picker (themeOpen) */
 let _themeCache={};
 // The pool themes classify over: the 40k core library normally, deepening to the full 130k
 // library automatically once it has been loaded (via "Entire library"). Cache keys on pool size.
@@ -886,6 +889,7 @@ function loadConcepts(){
    The 40k core list is cleaned at rest; this guards the premium 130k library too. ---- */
 const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus|\bnazi(?!r)|feminazi|japanazi|islamonazi|denazif|hitler|gestapo|swastika|goebbels|wehrmacht|anschluss|gammadion)/i;
 function safeWord(w){ if(!w||!w.w) return false; if(SB_UNSAFE_RE.test(w.w)) return false; if(w.d&&SB_UNSAFE_RE.test(w.d)) return false; return true; }
+window.SB_UNSAFE_RE=SB_UNSAFE_RE;   /* kid-safe.js reads it (games spec §1.2) */
 /* ---- full library: 130k words live in words-full.js + words-hard.js, loaded on demand (file too big for startup) ---- */
 let _fullState='idle'; // idle | loading | loaded | error
 /* words-full.js defines SB_FULL as a JSON STRING (it always has, including on main), but
@@ -1243,6 +1247,7 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'retard','retards','idiots','idiotic','moronic','imbeciles',
   /* and the insult forms of words already struck, same day, same decision */
   'idiotically','imbecilic','cretinous','cretinism']);
+window.SB_CORE_STRIKE=CORE_STRIKE;   /* kid-safe.js reads it (games spec §1.2): a struck word is never a game word */
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
    should ever be set: bare given names and surnames, misspellings, mechanical affix
@@ -1751,9 +1756,8 @@ function placeIndex(){ if(_placeIdx) return _placeIdx;
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.acts||[]).forEach(a=>add('Word Atlas region',String(a.title||'').replace(/^Act [IVXLC]+\s*·\s*/,''),'r|honey|'+a.id)); } }catch(e){}
   LIB_DOORS.forEach(([t,a,g])=>add('Library',t,'a|'+a+'|'+g));
-  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Buzz','openDaily',''],['Bee Trivia','openTrivia',''],['Magic Squares','playGame','magic']]
-      .concat((window.SB_ARCADE_GAMES||[]).map(g=>[g.n,'arcadeMenu',g.k]), GAMES.map(g=>[g.name,'playGame',g.type]))
-      .forEach(([t,a,g])=>{ if(typeof app[a]==='function') add('Arcade game',t,'a|'+a+'|'+g); }); }catch(e){}
+  /* the Play tab's own cards (SB_PLAY_CARDS), each through its card's door — a card still "coming" is not a place yet */
+  try{ playCardsShown().forEach(o=>{ if(playCardLive(o)) add('Arcade game',playCardName(o.k),'a|playCard|'+o.k); }); }catch(e){}
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.units||[]).forEach(u=>{ const raw=String(u.title||''); const cut=raw.indexOf(' — '); add('Word Atlas stop',cut>0?raw.slice(0,cut):raw,'u|'+u.id); }); } }catch(e){}
   try{ const ch=((window.SB_CONCEPTS||{}).chapters||[]).concat(((window.SB_ADV_CONCEPTS||{}).chapters||[]));   // state.conceptData's order — the route's index
@@ -2517,7 +2521,7 @@ const app = {
   // ===== Subscription tiers (PIN-gated from Settings) =====
   openTiers:()=>set({showTiers:true}),   // render()'s plan guard asks for the PIN
   closeTiers:()=>set({showTiers:false, tierUpsell:null}),
-  chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tap':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
+  chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tick':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
   buyAddon:(k)=>{ const c=active(); if(!window.SB_ADDONS||!SB_ADDONS[k]) return;
     if(!SB_ADDONS[k].built){ flash(SB_ADDONS[k].name+' is coming soon — you’ll be first to know'); return; }
     c.addons=c.addons||{}; c.addons[k]=1; save();
@@ -3160,7 +3164,7 @@ const app = {
   b2TGrp:(v)=>{ const B=b2State(); B.tgrp=(B.tgrp===v)?'':String(v||''); B.qtag=''; render(); },
   b2OGrp:(v)=>{ const B=b2State(); B.ogrp=(B.ogrp===v)?'':String(v||''); B.qorig=''; render(); },
   b2Tab:(k)=>{ b2State().tab = (k==='all')?'all':'list'; render(); },
-  b2Shuffle:()=>{ const B=b2State(); B.seed=(B.seed*7919+104729)&0x7fffffff || 1; sfx('tap'); render(); },
+  b2Shuffle:()=>{ const B=b2State(); B.seed=(B.seed*7919+104729)&0x7fffffff || 1; sfx('tick'); render(); },
   b2Clear:()=>{ state.b2=null; b2State(); state.bldNaming=false; render(); },
   bldNameOpen:()=>{ if(!bldPick().length) return;
     set({bldNaming:true, bldNameVal:''});
@@ -3364,10 +3368,10 @@ const app = {
   duelKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.duelEnter(); } },
   duelEnter:()=>{ const g=state.game; const w=g.list[g.i]; if(!w) return;
     const ok=sameSpelling(state.typed,w.w); if(g.turn===0) logBand(w,ok); /* only the profile owner's turn counts toward their Band */
-    if(ok){ g.p[g.turn].right++; sfx('right'); } else sfx('wrong');
+    if(ok){ g.p[g.turn].right++; sfx('correct'); } else sfx('wrong');
     state.typed=''; g.i++;
     if(g.i>=g.list.length){ if(g.turn===0){ g.phase='pass'; render(); return; }
-      g.phase='done'; const a=g.p[0].right,b=g.p[1].right; addCoins('contest'); sfx('win'); burstConfetti(120); render(); return; }
+      g.phase='done'; sfx('win');   /* no coin for finishing a duel (games spec §1.3): the old 'contest' here paid two players for reaching the end */ burstConfetti(120); render(); return; }
     render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[gg.i]) say(gg.list[gg.i].w); },300); },
   duelP2:()=>{ const g=state.game; g.turn=1; g.i=0; g.phase='play'; state.typed=''; render(); setTimeout(()=>{ const gg=state.game; if(gg&&gg.type==='duel'&&gg.phase==='play'&&gg.list[0]) say(gg.list[0].w); },350); },
   /* The Coach explains; openCoach (nav 'coach') drills. Two different screens — keep the
@@ -3509,12 +3513,12 @@ const app = {
     document.addEventListener('keydown',key); paint(); document.body.appendChild(ov); },
   playGame:(type)=>{ clearGTimer(); const c=active(); ensureLists(c); state.gInfo=false; state.typed='';
     c.gameDiff = gameDiffFor(c, type);           // this game's own level drives the word pick
-    if(type==='buzz'){ const list=pickFresh(gameWordsD(),10); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    if(type==='buzz'){ const list=nextWords(null,10,{purpose:'drill'}); if(!list.length){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,right:0,ans:[],status:'idle'}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='beat'){ state.game={type:'beat',phase:'mode'}; set({nav:'games',screen:'app'}); return; }
     else if(type==='wordquiz'){ state.game={type:'wordquiz',phase:'pick'}; set({nav:'games',screen:'app'}); return; }
-    else if(type==='duel'){ const list=pickFresh(gameWordsD(),10); if(list.length<5){ flash('No words yet — try a list first'); return; }
+    else if(type==='duel'){ const list=nextWords(null,10,{purpose:'drill'}); if(list.length<5){ flash('No words yet — try a list first'); return; }
       state.game={type,list:list.slice(0,10),phase:'setup',p:[{name:c.name||'Player 1',right:0},{name:'Player 2',right:0}],turn:0,i:0,status:'play'}; state.typed=''; }
-    else if(type==='boss'){ const list=pickFresh(gameWordsD(), 60); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
+    else if(type==='boss'){ const list=nextWords(null,60,{purpose:'drill'}); if(list.length<3){ flash('No words yet — try a list first'); return; } state.game={type,list,i:0,hp:8,maxhp:8,lives:3,maxlives:3,right:0,status:'play',last:null}; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); }
     else if(type==='magic'){ magicNewBoard(); }
     else return;
     set({nav:'games', screen:'app'}); },
@@ -3522,11 +3526,20 @@ const app = {
      tile's pill row updates. Does not launch the game — Play does that. */
   setGameDiff:(arg)=>{ const c=active(); const [type,k]=String(arg).split('|');
     if(!k){ c.gameDiff=type; save(); render(); return; }     // legacy single-arg call
-    c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[type]=k; c.gameDiff=k; save(); render(); },
+    if(window.SB_LEVEL) SB_LEVEL.set(type,k,c); c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[type]=k; c.gameDiff=k; save(); render(); },
+  /* the §1.7 level chip (SB_LEVEL.chip): one tap steps Auto → Easy → Medium → Hard → Champ → Auto */
+  levelChip:(key)=>{ if(!window.SB_LEVEL||!key) return; SB_LEVEL.set(key, SB_LEVEL.next(key)); render(); },
+  /* "Ready for Hard?" — the offer two rounds at 80% make (data-arg "<key>|<level>") */
+  levelUp:(arg)=>{ const [key,lv]=String(arg||'').split('|'); if(!window.SB_LEVEL||!key||!SB_LEVEL.LABEL[lv]) return; SB_LEVEL.set(key,lv); flash('Level '+SB_LEVEL.LABEL[lv]+' it is.'); render(); },
   /* Launch one of the 14 engines directly on its play-field, story-free. Mounts into a
      self-managed fullscreen overlay (like the saga's, minus the story) so it does not
      depend on app3's string render or on saga2's board/beats. */
   arcadeMenu:(k)=>{ try{ arcadeMenu(k); }catch(e){ try{ app.arcadePlay(k); }catch(_){} } },
+  /* a Play-tab card (SB_PLAY_CARDS): its own opener, the arcade start menu, or "coming" */
+  playCard:(k)=>{ const card=SB_PLAY_CARDS.find(x=>x.k===k); if(!card) return;
+    if(card.arcade){ app.arcadeMenu(k); return; }
+    if(typeof app[card.open]==='function'){ app[card.open](); return; }
+    flash(playCardName(k)+' is coming soon'); },
   arcadePlay:(k,extra)=>{
     extra=extra||{};
     const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); if(!g) return;
@@ -3588,7 +3601,7 @@ const app = {
     bizzNext();
   },
   champTen:()=>{ const c=active(); const keep=c.gameDiff; c.gameDiff='champ';
-    const list=pickFresh(gameWordsD(),10); c.gameDiff=keep;
+    const list=nextWords(null,10,{purpose:'drill'}); c.gameDiff=keep;
     if(list.length<3){ flash('Not enough champ words yet — play a little first'); return; }
     state.game={type:'buzz',list,i:0,right:0,ans:[],status:'idle'};
     set({nav:'games', screen:'app'}); setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); },
@@ -3596,7 +3609,7 @@ const app = {
   // Beat the Buzzer now hosts a mode picker: a relaxed 10-word warm-up (the old
   // Buzz of the Day) or the 60-second sprint.
   beatStart:(mode)=>{ clearGTimer(); if(mode==='warmup'){ app.playGame('buzz'); return; }
-    const c=active(); const list=pickFresh(gameWordsD(),240); if(list.length<3){ flash('No words yet — try a list first'); return; }
+    const c=active(); const list=nextWords(null,240,{purpose:'drill'}); if(list.length<3){ flash('No words yet — try a list first'); return; }
     let _t=60; if(((c.pow||{}).time||0)>0){ c.pow.time--; _t=75; save(); setTimeout(()=>flash('⚡ +15s boost active!'),200); }
     state.game={type:'beat',mode:'sprint',list,i:0,right:0,wrong:0,timeLeft:_t,status:'play'}; startGTimer();
     setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[0]) say(state.game.list[0].w); },320); set({nav:'games',screen:'app'}); },
@@ -3625,7 +3638,7 @@ const app = {
     if(ok){ markMastered(nkey(w.w)); clearMiss(w.w); sfx('correct'); }
     else { addMiss(w); sfx('wrong'); }
     if(!g.rw) g.rw=[]; g.rw.push({w:w.w, ok});
-    const advance=()=>{ g.fb=null; g.wait=false; g.i++; if(g.i>=g.list.length){ const fresh=pickFresh(gameWordsD(), g.list.length); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
+    const advance=()=>{ g.fb=null; g.wait=false; g.i++; if(g.i>=g.list.length){ const fresh=nextWords(null,g.list.length,{purpose:'drill'}); g.list=fresh.length?fresh:sample(g.list); g.i=0; } state.typed=''; state.gInfo=false; setTimeout(()=>{ if(state.game&&state.game.list&&state.game.list[state.game.i]) say(state.game.list[state.game.i].w); },180); };
     // on a miss, EVERY game stops to show the word big and say it — that's how the word sticks
     /* A MISS HOLDS UNTIL TAPPED (FIX-BEE D3). It used to move on after 1.4-3.6s on a timer;
        now the word stays, letter by letter with the why, until Next (tap or Enter). `ms` is
@@ -4160,7 +4173,7 @@ const sbOver = n => 'over ' + sbFmt(Math.floor(n / (n >= 10000 ? 1000 : 10)) * (
    Never type a count into copy: add a line here. tests/one-count.cjs loads the screens. */
 const SB_COUNT = {
   avatars: () => { try { return SB_AVATARS.catalogue().length; } catch (e) { return 0; } },
-  games: () => (window.SB_ARCADE_GAMES || []).length,
+  games: () => { try { return playCardsShown().filter(o => o.door !== 'compete').length; } catch (e) { return 0; } },   /* the Play tab's cards beside the mock bee (games spec §3.1) */
   /* worlds4.js registers three of the eight worlds and runs AFTER app3's first render: until it
      has (SB_W4), the honest count is "not yet", not five */
   worlds: () => { try { return window.SB_W4 ? THEMES.length : null; } catch (e) { return null; } },
@@ -4274,7 +4287,7 @@ function viewLanding() {
     </figure>`).join('');
 
   const statStrip = [
-    [countTxt('games'), 'arcade games'], [countTxt('conceptsFree'), 'concept chapters'],
+    [countTxt('games'), 'word games'], [countTxt('conceptsFree'), 'concept chapters'],
     [countTxt('evoForms'), 'evolution forms'], [countTxt('avatars'), 'collectibles'],
     [countTxt('trivia'), 'trivia questions'], [countTxt('scripps'), 'champion words'],
   ].filter(([n]) => n).map(([n, t]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0">
@@ -4286,7 +4299,7 @@ function viewLanding() {
 
   const game = landSection('Why children keep opening it',
     'A game where spelling is how you&nbsp;win.',
-    `${countWord('games')} arcade games, no two the same drill. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, feeds the snake — so practice happens because they want the next thing, not because you asked.`,
+    `${countWord('games')} word games, no two the same drill. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, blasts the glitch — so practice happens because they want the next thing, not because you asked.`,
     `<div style="background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:clamp(22px,4vw,34px);margin-bottom:26px">
        <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">The one rule under every game</div>
        <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.16;margin-bottom:12px">Spelling is the cheat&nbsp;code.</div>
@@ -4324,7 +4337,7 @@ function viewLanding() {
   /* ---- 4. THE LADDER. The reason this is a subscription and not an app. ---- */
   const ladder = [
     ['4–7', 'The books', 'Read aloud by a parent. No screen, no scoring, no pressure — just affection for words, and for a character they will follow.'],
-    ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Buzz every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
+    ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Bee word every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
     ['9–12', 'The ladder', 'The highest-value words, an avatar that evolves the whole way up, and Champ Challenges to test out and skip ahead.'],
     ['12–15', 'The library', `${countCap('library')} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
   ].map(([age, t, b], i) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative">
@@ -11143,7 +11156,7 @@ function magicConceptCells(){ try{ loadConcepts(); }catch(e){}
   return (state.conceptData||[]).map((ch,ci)=>({kind:'concept', id:'c:'+ci, label:conceptShort(ch.title), ci}))
     .filter(x=>isConceptUnlocked(x.ci) && conceptWordsOf((state.conceptData||[])[x.ci]).length>=5); }
 function magicNewBoard(){ clearGTimer();
-  const ok=t=>themeWords(t.id).length>=10;
+  const ok=t=>nextWords.pool(null,{purpose:'drill',theme:t.id,needDef:true}).length>=10;   /* through the door: kid-safe, band-gated themes */
   const used=state._magicUsed||(state._magicUsed=new Set());
   const fresh=t=>ok(t)&&!used.has(t.id);
   // every round deals different themes; when the deck runs out, reshuffle it
@@ -11165,8 +11178,8 @@ function magicClusterOf(cell){ if(cell&&cell.kind==='concept') return {id:'conce
   return themeClusters().find(x=>x.id===cell.cluster)||themeClusters()[0]; }
 function magicCellWords(id){
   if(String(id).slice(0,2)==='c:'){ const ch=(state.conceptData||[])[+String(id).slice(2)];
-    return conceptWordsOf(ch||{}).map(x=>({w:x.w, d:x.def||'', s:x.ex||''})); }
-  return themeWords(id); }
+    return conceptWordsOf(ch||{}).map(x=>({w:x.w, d:x.def||'', s:x.ex||''})).filter(w=>kidSafe(w)); }
+  return nextWords.pool(null,{purpose:'drill',theme:id}); }
 function magicBuildQs(id){ const all=diffSlice(magicCellWords(id).filter(w=>w.d&&w.d.length>4));
   let ws=pickFresh(all,5); if(ws.length<5) ws=ws.concat(sample(all.filter(w=>!ws.some(x=>nkey(x.w)===nkey(w.w))),5-ws.length));
   return ws.slice(0,5).map(w=>{ logGameWord(nkey(w.w));
@@ -11369,9 +11382,14 @@ function gameWords(opts){ opts=opts||{}; const c=active(); const key=c.activeLis
    small working set, so Easy is genuinely easy (even for an 8-year-old), Champ is
    genuinely championship-tier, and no two games fight over the same 30 words. ---- */
 let _corpusBands = null;
-function corpusBands(){ if(_corpusBands) return _corpusBands;
-  const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const by={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]};
+function corpusBands(){ const src=(window.SB_DATA&&SB_DATA.nsf)||[];
+  /* keyed on the library's LENGTH: the second word shard lands after boot, and a memo built from
+     the boot tier alone kept every game on 8,000 words for the whole visit */
+  if(_corpusBands && _corpusBands._n===src.length) return _corpusBands;
+  const by={1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[]};
+  try{ Object.defineProperty(by,'_n',{value:src.length,enumerable:false}); }catch(e){}
   for(const w of src){ if(!w||!w.w||!(w.d&&w.d.length>4)) continue; if(!/^[a-z]+$/i.test(w.w)) continue;
+    if(!kidSafeAll(w)) continue;   /* games spec §1.2: the kid-safe list sits AT the corpus — the every-age half here, the age half in nextWords */
     const y=Math.max(1,Math.min(9,w.y||3)); by[y].push(w); }
   _corpusBands=by; return by; }
 // difficulty → an absolute y-range anchored on the child's proven Bee Band and age
@@ -11379,7 +11397,7 @@ function corpusBands(){ if(_corpusBands) return _corpusBands;
    each game's own choice; gameDiffFor reads it. The live engines still read the single
    c.gameDiff (saga2.js does, mid-play), so launching a game copies its per-game choice
    into c.gameDiff for that session — the same trick champTen already used. */
-function gameDiffFor(c,type){ c=c||active(); return (c && c.gameDiffBy && c.gameDiffBy[type]) || 'auto'; }
+function gameDiffFor(c,type){ c=c||active(); if(window.SB_LEVEL) return SB_LEVEL.get(type,c); return (c && c.gameDiffBy && c.gameDiffBy[type]) || 'auto'; }   /* the §1.7 record first (it moves after a round), then the old per-game choice */
 function diffRange(c,dOver){ c=c||active(); const d=dOver||c.gameDiff||'auto'; const band=beeBand(c).band; const age=c.age||9;
   if(d==='easy')   return [1, Math.max(1, Math.min(age<=8?2:3, band))];
   if(d==='medium') return [Math.max(1,band-1), Math.min(9,band+1)];
@@ -11395,15 +11413,10 @@ function corpusSlice(lo,hi,cap){ const by=corpusBands(); let out=[];
 /* ---- arcade difficulty: personal words first (misses + this Level), then the corpus
    guarantees depth at the chosen difficulty — pools never collapse to a 10-word pot ---- */
 function wordDiffScore(w){ return (w.y||3)*2 + Math.min(3, Math.max(0, ((w.w||'').length-5)/2)); }
-function gameWordsD(opts){ opts=opts||{}; const c=active(); const [lo,hi]=diffRange(c);
-  const personal=gameWords(opts);
-  const inRange=personal.filter(w=>{ const y=w.y||3; return (y>=lo&&y<=hi) || (state.missedWords||[]).some(m=>nkey(m.w)===nkey(w.w)); });
-  // corpus extension: about 3× the personal pool, at least 150, at most 450 fresh library words
-  let ext=corpusSlice(lo,hi, Math.min(450, Math.max(150, inRange.length*3)));
-  if(opts.needSent) ext=ext.filter(w=>w.s&&/[a-z]/i.test(w.s));
-  const seen=new Set(inRange.map(w=>nkey(w.w))); const out=inRange.slice();
-  for(const w of ext){ const k=nkey(w.w); if(!seen.has(k)){ seen.add(k); out.push(w); } }
-  return out.length?out:personal; }
+/* gameWordsD is the door's old name (games spec §1.1): every caller now gets nextWords' pool —
+   personal words in the window, then the corpus, kid-safe for this child. New code calls
+   nextWords(child, n, {purpose}) and never this. */
+function gameWordsD(opts){ opts=opts||{}; return nextWords.pool(null, Object.assign({purpose:'drill'}, opts)); }
 function diffSlice(pool){ const c=active(); const [lo,hi]=diffRange(c);
   const f=pool.filter(w=>{ const y=w.y||3; return y>=lo&&y<=hi; });
   return f.length>=10?f:pool; }
@@ -11418,6 +11431,187 @@ function pickFresh(pool, n){ const c=active(); const recent=recentGameKeys(c); c
   if(fresh.length>=n) return sample(fresh, n);
   const used=valid.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
   return sample(fresh).concat(used).slice(0, n); }
+/* =====================================================================================
+   THE WORD DOOR — nextWords() and kidSafe() (games spec §1.1–1.2, 4 Oct 2026)
+   Every word a game puts in front of a child comes through nextWords(). It is gameWordsD's
+   successor and sits beside it: the same level window (diffRange), the same 150-word no-repeat
+   log (c.gameLog), and two things gameWordsD never had — the kid-safe list (kid-safe.js) and a
+   PURPOSE, so a race's item box, a bee and a review round each draw the right kind of word.
+     nextWords(child, n, {purpose, tier, origin, minLen, maxLen, lemmaOnly,
+                          level, key, theme, needDef, needSent, filter, date})
+       purpose  gate · drill · contest · review · daily · lore · forge · paths   (default drill)
+       tier     -1 / 0 / +1 — one step below, at, or above the level being played (§1.7)
+       level    the level being played ('auto'|'easy'|'medium'|'hard'|'champ'); else SB_LEVEL.get(key);
+                else the child's c.gameDiff
+       origin   a string or RegExp matched against the word's origin (lore)
+       theme    a Theme Journey id — gated by its minBand (Drugs, War, Diseases are 11+)
+     → word records {w,d,s,p,o,y,…}: kid-safe for THIS child, inside the window, none of them among
+       the child's last 150 game words (a pool too small to avoid it backfills the least recent).
+       `daily` is the exception on purpose: one deterministic pick per date and age band, the same
+       for every child in that band, and it neither reads nor writes the window. `review` reads the
+       child's own missed and due words (the Leitner gap is up) and ignores the window, because a
+       word is due BECAUSE it was met; it still logs what it serves.
+     nextWords.pool(child, opts) → the whole candidate pool, unpicked (distractors, previews).
+   T7 (tests/word-door.cjs) fails on any game that reads corpusSlice, the 130k library or a theme
+   list itself; tests/next-words.cjs holds the contract in the page. ============================ */
+const LEVEL_ORDER=['easy','medium','hard','champ'];
+const LEVEL_LABEL={auto:'Auto',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
+/* a child's age for the kid-safe rule: the LOW end of their band (an 11–13 child is eleven) */
+function childAge(c){ c=c||active(); try{ const b=ageBandOf(c); if(b&&b.lo) return b.lo; }catch(e){} return +(c&&c.age)||9; }
+function kidSafeAll(w){ try{ return window.SB_KID_SAFE ? SB_KID_SAFE.checkAll(w) : safeWord(w); }catch(e){ return safeWord(w); } }
+function kidSafe(w, c){ if(!w||!w.w) return false;
+  try{ return window.SB_KID_SAFE ? SB_KID_SAFE.check(w, childAge(c)) : safeWord(w); }catch(e){ return safeWord(w); } }
+window.kidSafe=kidSafe;
+/* minBand '11-15' (the family's band) means "eleven and over" */
+function bandAllows(minBand, c){ if(!minBand) return true; const lo=parseInt(String(minBand),10)||0; return childAge(c)>=lo; }
+function themeOpen(t, c){ return !!t && bandAllows(t.minBand, c); }
+window.SB_THEME_OPEN=themeOpen;
+const NW_PURPOSES={gate:1,drill:1,contest:1,review:1,daily:1,lore:1,forge:1,paths:1};
+function nwLevel(c,o){ let lv=o.level; if(!lv&&o.key&&window.SB_LEVEL) lv=SB_LEVEL.get(o.key); if(!lv) lv=(c&&c.gameDiff)||'auto'; return LEVEL_LABEL[lv]?lv:'auto'; }
+function nwRange(c,o){ const r=diffRange(c, nwLevel(c,o)); let lo=r[0], hi=r[1]; const t=Math.max(-1,Math.min(1,Math.round(+o.tier||0)));
+  if(t){ lo=Math.max(1,Math.min(9,lo+t)); hi=Math.max(1,Math.min(9,hi+t)); } return [lo,hi]; }
+let _nwIdx=null;
+function nwIndex(){ const src=(window.SB_DATA&&SB_DATA.nsf)||[]; if(_nwIdx&&_nwIdx._n===src.length) return _nwIdx;
+  const m=Object.create(null); for(const w of src){ if(w&&w.w){ const k=nkey(w.w); if(!m[k]) m[k]=w; } }
+  try{ Object.defineProperty(m,'_n',{value:src.length,enumerable:false}); }catch(e){} _nwIdx=m; return m; }
+/* a headword, not an inflection: no "plural of …" gloss, and no stem in the library that carries the
+   SAME definition (the generated library repeats a gloss on blockhead / blockheads) */
+function nwLemma(w){ const d=String(w.d||'').trim(); if(/^(an? )?(plural|past tense|past participle|present participle|third[- ]person|simple past|comparative|superlative)\b[^.;]*\bof\b/i.test(d)) return false;
+  const k=nkey(w.w), idx=nwIndex();
+  for(const s2 of [k.replace(/ies$/,'y'), k.replace(/es$/,''), k.replace(/s$/,''), k.replace(/ed$/,''), k.replace(/ed$/,'e'), k.replace(/ing$/,''), k.replace(/ing$/,'e')]){
+    if(s2!==k && s2.length>=3 && idx[s2] && String(idx[s2].d||'').trim()===d) return false; }
+  return true; }
+function nwRecent(c){ const log=(c&&c.gameLog)||[]; return new Set(log.slice(-NO_REPEAT_WINDOW)); }
+function nwLog(c,w){ if(!c||!w||!w.w) return; if(!Array.isArray(c.gameLog)) c.gameLog=[]; c.gameLog.push(nkey(w.w)); if(c.gameLog.length>600) c.gameLog=c.gameLog.slice(-600); }
+function nwFilters(c,o){ const minL=+o.minLen||0, maxL=+o.maxLen||0;
+  const ore=o.origin? (o.origin instanceof RegExp? o.origin : new RegExp(String(o.origin).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i')) : null;
+  return w=>{ if(!w||!w.w) return false; const L=String(w.w).replace(/[^a-z]/gi,'').length;
+    if(minL&&L<minL) return false; if(maxL&&L>maxL) return false;
+    if(ore&&!ore.test(String(w.o||''))) return false;
+    if(o.needDef&&!(w.d&&w.d.length>4)) return false;
+    if(o.needSent&&!(w.s&&/[a-z]/i.test(w.s))) return false;
+    if(o.lemmaOnly&&!nwLemma(w)) return false;
+    if(typeof o.filter==='function'&&!o.filter(w)) return false;
+    return kidSafe(w,c); }; }
+function nwDedupe(list){ const seen=new Set(), out=[]; for(const w of list){ if(!w||!w.w) continue; const k=nkey(w.w); if(!seen.has(k)){ seen.add(k); out.push(w); } } return out; }
+/* a word table a game owns (Word Forge's morphemes, Sound Paths' alignments): an array of words or
+   rows {w}, a Set, or an object keyed by word — resolved against the library */
+function nwTable(T){ if(!T) return []; const idx=nwIndex(); let rows=[];
+  if(Array.isArray(T)) rows=T; else if(T instanceof Set) rows=[...T]; else if(typeof T==='object') rows=Object.keys(T);
+  return rows.map(x=>{ const k=typeof x==='string'?x:(x&&x.w); if(!k) return null; return idx[nkey(k)]||(typeof x==='object'&&x.w?x:null); }).filter(Boolean); }
+/* the review pile: missed words, and words in the mastery record whose Leitner gap is up */
+function nwReview(c){ const idx=nwIndex(), out=[]; let wi=null; try{ wi=wordIndex(); }catch(e){}
+  const rec=k=>idx[k]||(wi&&wi[k])||null; const today=(typeof mastDay==='function')?mastDay():0;
+  const miss=(c===active()?(state.missedWords||[]):[]).concat(Array.isArray(c.missed)?c.missed:[]);
+  for(const m of miss){ const k=nkey(m&&m.w?m.w:m); const r=rec(k)||(m&&m.w?m:null); if(r) out.push(r); }
+  const M=c.mast||{}; for(const k of Object.keys(M)){ const e=M[k]; if(e&&typeof e==='object'&&(e.due==null||e.due<=today)&&(e.b|0)<=2){ const r=rec(k); if(r) out.push(r); } }
+  return nwDedupe(out); }
+function nwPool(c,o){ const purpose=NW_PURPOSES[o.purpose]?o.purpose:'drill'; const [lo,hi]=nwRange(c,o); const keep=nwFilters(c,o);
+  if(purpose==='review') return nwReview(c).filter(keep);
+  if(purpose==='forge') return nwTable(window.SB_FORGE_TABLE).filter(keep);
+  if(purpose==='paths') return nwTable(window.SB_PATHS_TABLE).filter(keep);
+  const inWin=w=>{ const y=w.y||3; return y>=lo&&y<=hi; };
+  if(o.theme){ const t=themeOf(o.theme); if(!themeOpen(t,c)) return [];
+    const all=themeWords(o.theme).filter(keep); const f=all.filter(inWin); return f.length>=10?f:all; }
+  let personal=[];
+  if(c===active()&&purpose!=='lore'){ try{ const miss=new Set((state.missedWords||[]).map(m=>nkey(m.w)));
+    personal=gameWords({}).filter(w=>inWin(w)||miss.has(nkey(w.w))); }catch(e){ personal=[]; } }
+  let pool=nwDedupe(personal.concat(corpusSlice(lo,hi))).filter(keep);
+  if(purpose==='lore') pool=pool.filter(w=>w.o&&w.d&&w.d.length>4);
+  if(purpose==='contest'){ const bee=pool.filter(w=>w.nt); if(bee.length>=60) pool=bee; }   /* real competition words first (mockbee's beeList reads the same tag) */
+  return pool; }
+/* the same word for every child in a band on a date: rendezvous hashing, so the pick holds as the
+   library grows under it unless a NEW word outranks it (wait for the second shard, 'words2') */
+function nwHash(s){ let h=0x811c9dc5; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return h>>>0; }
+const NW_DAILY_Y={'5-7':[1,2],'8-10':[2,4],'11-13':[3,6],'14-18':[4,8]};
+function nwDaily(c,n,o){ const band=(ageBandOf(c)||{}).k||'8-10'; const d=o.date||(()=>{ const t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); })();
+  const r=NW_DAILY_Y[band]||[2,4]; const age=parseInt(band,10)||9;
+  const safe=w=>(window.SB_KID_SAFE?SB_KID_SAFE.check(w,age):safeWord(w));
+  const pool=corpusSlice(r[0],r[1]).filter(w=>w.d&&w.d.length>4&&w.s&&/[a-z]/i.test(w.s)&&w.w.length>=4&&safe(w));
+  return pool.map(w=>({w, h:nwHash(d+'|'+band+'|'+nkey(w.w))})).sort((a,b)=>a.h-b.h||(a.w.w<b.w.w?-1:1)).slice(0,n).map(x=>x.w); }
+function nextWords(child, n, opts){ opts=opts||{}; const c=child||active(); n=Math.max(0,Math.floor(+n||0)); if(!c||!n) return [];
+  if(opts.purpose==='daily') return nwDaily(c,n,opts);
+  const pool=nwPool(c,opts); let out;
+  if(opts.purpose==='review') out=pool.slice(0,n);
+  else { const recent=nwRecent(c); const fresh=pool.filter(w=>!recent.has(nkey(w.w)));
+    if(fresh.length>=n) out=sample(fresh,n);
+    else { const log=c.gameLog||[]; const used=pool.filter(w=>recent.has(nkey(w.w))).sort((a,b)=>log.lastIndexOf(nkey(a.w))-log.lastIndexOf(nkey(b.w)));
+      out=sample(fresh).concat(used).slice(0,n); } }
+  out.forEach(w=>nwLog(c,w)); return out; }
+nextWords.pool=(child,opts)=>{ const c=child||active(); return c?nwPool(c,opts||{}):[]; };
+window.nextWords=nextWords;
+
+/* =====================================================================================
+   LEVELS — chosen by the child, re-checked every round (games spec §1.7, owner's rule)
+   window.SB_LEVEL.get(key) → 'auto'|'easy'|'medium'|'hard'|'champ'; set(key, level);
+   after(key, pct) → {level, dropped, offerUp, line, pct}; chip(key, label?) → the chip's HTML.
+   Kept per CHILD as c.levels[key] = {level, history:[pct…], hand}, through the store (step
+   v9→v10 seeds it from the old per-game choice, c.gameDiffBy). Keys: mockbee, beeGrandPrix,
+   typeBlaster, honeycombRun, wordForge, dailyBee, and 'gym/<mode>', 'lore/<mode>', 'hive/<mode>'
+   — a mode with no level of its own takes its hub's ('gym'), the hub card's chip.
+   The rule: 50% or more keeps the level; under 50% drops one (floor Easy) with a kind line; a
+   hand-set level sticks until the next round's check; two rounds in a row at 80%+ offer the next
+   level as a tap (OFFER_UP — the owner may switch it off). pct is a percent (0–100), or a
+   fraction when it is 1 or less. Guard: tests/levels.cjs (T13). ================== */
+window.SB_LEVEL=(function(){
+  const CYCLE=['auto'].concat(LEVEL_ORDER);
+  const API={ OFFER_UP:true, ORDER:LEVEL_ORDER.slice(), LABEL:LEVEL_LABEL };
+  const ok=v=>Object.prototype.hasOwnProperty.call(LEVEL_LABEL,v);
+  function rec(key,c){ if(!c.levels||typeof c.levels!=='object'||Array.isArray(c.levels)) c.levels={};
+    let r=c.levels[key]; if(!r||typeof r!=='object'){ r={level:API.get(key,c),history:[]}; c.levels[key]=r; }
+    if(!ok(r.level)) r.level='auto'; if(!Array.isArray(r.history)) r.history=[]; return r; }
+  function sync(c,key,lv){ c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[key]=lv; }   /* the engines still read the old per-game choice */
+  API.get=(key,c)=>{ c=c||active(); if(!c||!key) return 'auto'; key=String(key);
+    const r=c.levels&&c.levels[key]; if(r&&ok(r.level)) return r.level;
+    const g=c.gameDiffBy&&c.gameDiffBy[key]; if(ok(g)) return g;
+    const i=key.indexOf('/'); return i>0?API.get(key.slice(0,i),c):'auto'; };
+  /* 'auto' as a concrete level, from the child's word difficulty (the arcade's own mapping) */
+  API.resolve=(key,c)=>{ c=c||active(); const lv=API.get(key,c); if(lv!=='auto') return lv;
+    let band=4; try{ band=beeBand(c).band; }catch(e){} return band<=3?'easy':band<=6?'medium':band<=8?'hard':'champ'; };
+  API.set=(key,level,c)=>{ c=c||active(); if(!c||!key||!ok(level)) return API.get(key,c); const r=rec(String(key),c);
+    r.level=level; r.hand=level==='auto'?0:1; sync(c,key,level); try{ save(); }catch(e){}
+    try{ window.dispatchEvent(new CustomEvent('sb-level',{detail:{key,level}})); }catch(e){} return level; };
+  API.line=(res)=>res&&res.dropped?('Let’s warm up on '+LEVEL_LABEL[res.level]+'. You can move back up any time.'):'';
+  API.after=(key,pct,c)=>{ c=c||active(); if(!c||!key) return {level:'auto',dropped:false,offerUp:null,line:'',pct:0}; key=String(key);
+    let p=+pct; if(!isFinite(p)) p=0; if(p<=1) p*=100; p=Math.max(0,Math.min(100,Math.round(p)));
+    const r=rec(key,c); r.history.push(p); if(r.history.length>10) r.history=r.history.slice(-10);
+    let dropped=false;
+    if(p<50){ const cur=r.level==='auto'?API.resolve(key,c):r.level; const i=LEVEL_ORDER.indexOf(cur);
+      if(i>0){ r.level=LEVEL_ORDER[i-1]; dropped=true; sync(c,key,r.level); } else if(r.level==='auto'){ r.level='easy'; sync(c,key,'easy'); } }
+    r.hand=0;   /* the check has run: a hand-set level stuck until now, and the rule owns it from here */
+    let offerUp=null; const h=r.history;
+    if(API.OFFER_UP&&!dropped&&h.length>=2&&h[h.length-1]>=80&&h[h.length-2]>=80){ const cur=r.level==='auto'?API.resolve(key,c):r.level; const i=LEVEL_ORDER.indexOf(cur); if(i>=0&&i<LEVEL_ORDER.length-1) offerUp=LEVEL_ORDER[i+1]; }
+    try{ save(); }catch(e){}
+    const res={level:r.level,dropped,offerUp,pct:p}; res.line=API.line(res); return res; };
+  /* the chip: Auto ▾ → Easy → Medium → Hard → Champ → Auto, one tap each (keyboard: it is a button) */
+  API.chip=(key,label)=>{ const lv=API.get(key); const nx=CYCLE[(CYCLE.indexOf(lv)+1)%CYCLE.length];
+    return `<button type="button" data-act="levelChip" data-arg="${escA(key)}" class="sb-lvchip" aria-label="${escA('Word level for '+(label||key)+': '+LEVEL_LABEL[lv]+'. Tap for '+LEVEL_LABEL[nx])}" title="Word level: ${LEVEL_LABEL[lv]} — tap to change">${LEVEL_LABEL[lv]} ▾</button>`; };
+  /* "Ready for Hard?" — the tap an offerUp shows (data-act="levelUp" data-arg="<key>|<level>") */
+  API.upButton=(key,res)=>res&&res.offerUp?`<button type="button" data-act="levelUp" data-arg="${escA(key+'|'+res.offerUp)}" class="sb-lvup">Ready for ${LEVEL_LABEL[res.offerUp]}?</button>`:'';
+  API.next=(key)=>{ const lv=API.get(key); return CYCLE[(CYCLE.indexOf(lv)+1)%CYCLE.length]; };
+  return API; })();
+
+/* =====================================================================================
+   BESTS that outlive their game (games spec §3, T12). c.bests['<card or hub>/<mode>'] =
+   {right, of, at, from}. Store step v10→v11 carried the bests of the games that left the Play tab
+   (Beat the Buzzer, Magic Squares, Word Quiz, Bee Trivia) to their new homes in the hubs; a hub
+   mode reads and writes them here, and the hub's card shows its best mode. ===================== */
+window.SB_BESTS={
+  get(key,c){ c=c||active(); const b=c&&c.bests&&c.bests[key]; return (b&&typeof b==='object')?b:null; },
+  ratio(b){ return b?(b.of?b.right/b.of:b.right):0; },
+  put(key,right,of,c){ c=c||active(); if(!c||!key) return false; right=Math.max(0,+right||0); of=of==null?null:Math.max(1,+of||1);
+    if(!c.bests||typeof c.bests!=='object') c.bests={}; const old=c.bests[key];
+    const better=!old||(of&&old.of?(right/of>old.right/old.of||(right/of===old.right/old.of&&of>old.of)):right>(old.right||0));
+    if(better){ c.bests[key]={right,of,at:Date.now()}; try{ save(); }catch(e){} } return better; },
+  /* the best mode under a hub prefix, for its card: "Best 8/10 · Roots" */
+  top(prefix,c){ c=c||active(); const B=(c&&c.bests)||{}; let best=null, bk='';
+    for(const k of Object.keys(B)){ if(k.indexOf(prefix+'/')!==0) continue; const b=B[k]; if(!b) continue;
+      if(!best||(this.ratio(b)>this.ratio(best))) { best=b; bk=k; } }
+    return best?{key:bk,mode:bk.slice(prefix.length+1),best}:null; }
+};
+/* The three hubs' names — the owner may rename them (spec §3.3); nothing may hard-code one. */
+window.SB_HUB_NAMES=Object.assign({gym:'Spelling Gym', lore:'Word Lore', hive:'Hive Mind'}, window.SB_HUB_NAMES||{});
+function hubName(k){ return (window.SB_HUB_NAMES&&SB_HUB_NAMES[k])||k; }
 /* n distinct distractor strings, none equal to the answer (case- and space-blind). Every
    multiple-choice generator goes through this: two identical options is two right answers, and
    a "last-resort filler" pushed three times was three identical wrong ones (FIX-BEE D8). */
@@ -11446,7 +11640,7 @@ function buildFigQs(mode,n){ const pool=figPool(); if(pool.length<8) return [];
     return {kind:'simile2', word:x.p, wordObj:{w:x.p,y:3}, answer:x.vehicle, choices:sample([x.vehicle].concat(others)), prompt:esc(blanked), say:blanked.replace('____','hmm'), m:x.m}; });
 }
 /* NSF vocabulary-bee round: hear/see the word, pick the meaning. */
-function buildVocabQs(n){ const pool=gameWordsD({needDef:true}); if(pool.length<8) return [];
+function buildVocabQs(n){ const pool=nextWords.pool(null,{purpose:'drill',needDef:true}); if(pool.length<8) return [];
   const cand=pickFresh(pool,n); const ws=cand.length>=Math.min(n,5)?cand:sample(pool,Math.min(n,pool.length));
   return ws.map(w=>{ logGameWord(nkey(w.w));
     const near=pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d&&Math.abs((x.y||3)-(w.y||3))<=1);
@@ -11456,7 +11650,7 @@ function buildVocabQs(n){ const pool=gameWordsD({needDef:true}); if(pool.length<
     const others=mcDistinct(ans, sample(near.length>=3?near:pool.filter(x=>nkey(x.w)!==nkey(w.w)&&x.d)).slice(0,24).map(x=>maskTxt(x.d,w.w)), 3);
     return {kind:'vocab', word:w.w, wordObj:w, answer:ans, choices:sample([ans].concat(others)), prompt:esc(w.w), say:w.w, p2:w.p||''}; });
 }
-function buildMC(mode,n){ const all=gameWordsD();
+function buildMC(mode,n){ const all=nextWords.pool(null,{purpose:mode==='origin'?'lore':'drill'});
   if(mode==='origin'){ const pool=all.filter(w=>w.o && MC_ORIGINS.indexOf(w.o)>=0); if(pool.length<4) return [];
     return pickFresh(pool, Math.min(n,pool.length)).map(w=>{
       const choices=sample([w.o].concat(sample(MC_ORIGINS.filter(o=>o!==w.o),3)));
@@ -11526,7 +11720,7 @@ function beatModePicker(){ return gamePickerShell('Beat the Buzzer','Pick how yo
   pickerCard('beatStart','warmup','#E0922E','flame','10-Word Warm-Up','A relaxed, untimed round of ten mixed words — your daily warm-up.')+
   pickerCard('openChallenge','journey','#7C5CFF','trophy','Stage Challenge','Beat the clock or a set number — pass your Stage to test out.')+
   pickerCard('playGame','duel','#C43D5A','swords','Spelling Duel','Pass the device — same 10 words, two spellers. Who takes the crown?')+
-  (advModeOn()?pickerCard('arcAdvDict','','#3A2A72','bolt','◆ Rapid Dictation','90 seconds — hear & type the hardest words in the library.'):'')); }
+  ''); }   /* ◆ Rapid Dictation left (games spec §3.1): Spelling Gym · Champ Dictation is its home */
 function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round — each is 10 questions.',
   pickerCard('wqStart','meaning','#13A892','book','Meanings','Match a word to its meaning or fill the blank in a sentence.')+
   pickerCard('wqStart','spell','#3D7DF0','spark','Spellings','Pick the correctly-spelled word from look-alikes.')+
@@ -11535,7 +11729,7 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
   pickerCard('wqStart','vocab','#2E8FB8','book','Vocabulary','Bee-style: hear the word, pick the right meaning.')+
   pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')+
-  (advModeOn()?pickerCard('arcAdvMem','','#3A2A72','grid','◆ Memory Match','Pair the hardest words with their meanings — trains recall.'):'')); }
+  ''); }   /* ◆ Memory Match left (games spec §3.1): it paid for luck; Spelling Gym · Word Doctor is in for it */
 /* ---- Spelling Duel: pass-the-device, same 10 words, two spellers ---- */
 function duelView(){ const S=state; const g=S.game; const shell=(inner)=>`<div style="max-width:560px;margin:0 auto;animation:sb-rise .3s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">${backPill('exitGame','Arcade',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px">Spelling Duel</span></div>${inner}</div>`;
@@ -11646,10 +11840,11 @@ const SB_ARCADE_GAMES = [
   {k:'honeycombRun',        n:'Honeycomb Run',    tag:'Maze',   w:'meadow',    blurb:'Race the maze — spell a word to open each gate.'},
   {k:'typeBlaster',         n:'Type Blaster',     tag:'Speed',  w:'arcade',    blurb:'Type the words before they reach the bottom.'},
   /* Keep Flying is CUT from the arcade (FIX-BEE v2 G11): a Flappy loop where spelling was a toll, and
-     the Grand Prix already carries "spell to keep moving". The engine stays in saga2.js — one line back. */
-  {k:'wordSnake',           n:'Word Snake',       tag:'Arcade', w:'forest',    blurb:'Grow the snake by eating the letters in order.'},
-  {k:'unscrambleStars',     n:'Unscramble Stars', tag:'Puzzle', w:'cosmos',    blurb:'Slide the scrambled letters into the right order.'},
-  {k:'spellScene',          n:'Spell Scene',      tag:'Scene',  w:'homecoming',blurb:'Spell the word that finishes each scene.'},
+     the Grand Prix already carries "spell to keep moving". The engine stays in saga2.js — one line back.
+     Word Snake, Unscramble Stars and Spell Scene left on 4 Oct 2026 (games spec §3.1, GAMES-LEDGER.md):
+     the snake's glowing tile spelled the word for the child, a random tapper scored 96% at Unscramble,
+     and Spell Scene merges into Type Blaster. Re-adding a line here is a new card: it needs a named
+     "out" in the ledger first (tests/games-ledger.cjs). */
 ];
 window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
 const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
@@ -11777,7 +11972,7 @@ function arcadeMenu(k){
   el.querySelector('#arcm-go').onclick=()=>{
     // remember the per-game choices, but DON'T overwrite the child's app-wide avatar
     c.arcGame=c.arcGame||{}; c.arcGame[k]={av:cfg.noHero?null:selAv,diff:selDiff,opts:{...selOpt}};
-    c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
+    if(window.SB_LEVEL) SB_LEVEL.set(k,selDiff,c); c.gameDiffBy=c.gameDiffBy||{}; c.gameDiffBy[k]=selDiff; c.gameDiff=selDiff;
     try{ save(); }catch(e){}
     arcadeClose();
     // no colour tint — each kart carries its own colour
@@ -11997,114 +12192,123 @@ function bizzRender(mode, data){
   const again=_bizzEl.querySelector('.bz-again'); if(again) again.onclick=()=>{ bizzClose(); if(window.app) app.openBizz(); };
   const quit=_bizzEl.querySelector('.bz-quit'); if(quit) quit.onclick=bizzClose;
 }
-function gamesHub(){ const S=state; const c=active();
-  // ---- graphical tile helpers ----
-  const heroTile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-hero" ${o.span?'style="grid-column:span 2"':''}>
-      <span aria-hidden="true" style="position:absolute;inset:0;background:${o.grad}"></span>
-      ${o.img?`<span aria-hidden="true" class="arc-hero-img" style="background-image:url('${o.img}${window.SB_ASSET_V?('?v='+window.SB_ASSET_V):''}')"></span>`:''}
-      ${o.art?`<span class="arc-hero-art">${o.art}</span>`:''}
-      <span class="arc-hero-in">
-        <span class="arc-tag" style="color:${o.tagC||'#FFD98A'};background:${o.tagBg||'rgba(255,194,61,.14)'};border:1px solid ${o.tagBd||'rgba(255,194,61,.35)'}">${o.tag}</span>
-        <span class="arc-hero-title" style="display:block">${esc(o.title)}</span>
-        <span class="arc-hero-blurb" style="display:block">${esc(o.blurb)}</span>
-        <span class="arc-hero-cta"><span class="arc-hero-go">${esc(o.cta)} →</span>${o.sub?`<span class="arc-hero-sub">${esc(o.sub)}</span>`:''}</span>
-      </span></button>`;
-  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-tile">
-      <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
-      <span class="arc-tile-body">
-        <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
-        <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
-        <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
-      </span></button>`;
-  /* A game tile that owns its difficulty. The card is the Play button; the strip below it
-     sets THIS game's word level (auto/easy/medium/hard/champ) and is remembered per game. */
-  const DIFFS=[['auto','Auto'],['easy','Easy'],['medium','Med'],['hard','Hard'],['champ','Champ']];
-  const gtile=(o)=>{ const cur=gameDiffFor(c,o.arg);
-    return `<div class="arc-tile">
-      <button data-act="${o.act}" data-arg="${escA(o.arg)}" class="arc-tile-play">
-        <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
+/* ============================================================================
+   THE PLAY TAB — the lineup (games spec §3.1, owner decision 1: one in, one out)
+   Three doors — Compete · Train · Play — and the cards in SB_PLAY_CARDS, nothing else.
+   GAMES-LEDGER.md is the record of what each card came in for; tests/games-ledger.cjs (T16)
+   fails if this registry ever outgrows the ledger or a key arrives without a named "out".
+   Out, 4 Oct 2026: Bizzillionaire, Daily Buzz, Beat the Buzzer, Magic Squares, Word Quiz, Bee
+   Trivia, Word Snake, Unscramble Stars, Spell Scene (and the add-on's Memory Match, Rapid
+   Dictation, mock rounds). Their engines may live on inside a hub; their cards do not.
+   A card opens through ONE opener on `app` (`open`) or the arcade start menu (`arcade`). A card
+   whose opener is not on the page yet still stands, saying "Coming", so the doors never re-flow
+   as the hubs land. Word Forge stays hidden while its table is unsigned (SB_FORGE.signedOff; devUnlock shows it).
+   Hub names come from SB_HUB_NAMES — never typed here. Every card carries the §1.7 level chip.
+   Rows are always full: 4 columns (2 below 720px), flagships span two, and a door whose cards
+   would leave a hole widens its last small cards instead (tests/arcade-hub.cjs).
+   ============================================================================ */
+const SB_PLAY_CARDS = [
+  {k:'mockbee',      door:'compete', size:'full', open:'mbOpen',       tag:'Competition'},
+  {k:'gym',          door:'train',   open:'openGym',      hub:1,       tag:'Train'},
+  {k:'lore',         door:'train',   open:'openLore',     hub:1,       tag:'Words'},
+  {k:'hive',         door:'train',   open:'openHive',     hub:1,       tag:'Quiz'},
+  {k:'dailyBee',     door:'train',   open:'openDailyBee',              tag:'Today'},
+  {k:'beeGrandPrix', door:'play',    size:'big', arcade:1,             tag:'Race'},
+  {k:'typeBlaster',  door:'play',    arcade:1,                         tag:'Speed'},
+  {k:'honeycombRun', door:'play',    arcade:1,                         tag:'Maze'},
+  {k:'wordForge',    door:'play',    size:'big', open:'openForge',     tag:'Forge'},
+];
+window.SB_PLAY_CARDS = SB_PLAY_CARDS;
+const PLAY_DOORS = [['compete','Compete'],['train','Train'],['play','Play']];
+const PLAY_TEXT = {
+  mockbee:  {n:'Mock Spelling Bee', p:'Your rivals, one microphone, real bee rules. Miss your word and you sit down.'},
+  gym:      {p:'Warm-up, Sprint, Squares and more: every way to drill a spelling, in one hall.'},
+  lore:     {p:'Roots, origins, meanings and idioms: the story inside every word.'},
+  hive:     {p:'General-knowledge trivia, with a fact to keep from every question.'},
+  dailyBee: {n:'Daily Bee', p:'One new word a day: hear it, learn it, spell it.'},
+  wordForge:{n:'Word Forge', p:'Build words from their parts at the honey forge.'},
+};
+const PLAY_ART = {
+  mockbee:{grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)'},
+  gym:{grad:'linear-gradient(135deg,#FF5FA2,#C8458C)', plate:'gym', game:'beat'},
+  lore:{grad:'linear-gradient(135deg,#13A892,#0E7A6A)', plate:'lore', game:'wordquiz'},
+  hive:{grad:'linear-gradient(135deg,#F0A93C,#C8791B)', plate:'hive', game:'trivia'},
+  dailyBee:{grad:'linear-gradient(135deg,#2FA35C,#1E7D45)', plate:'daily', game:'daily'},
+  beeGrandPrix:{grad:'linear-gradient(150deg,#2A1A4A,#1B1235)', img:'app-art/arc-grandprix.jpg', cta:'Start your engine'},
+  typeBlaster:{grad:'linear-gradient(150deg,#1B2A4A,#121B35)', shot:'typeBlaster'},
+  honeycombRun:{grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)', img:'app-art/arc-honeycomb.jpg', cta:'Enter the maze'},
+  wordForge:{grad:'linear-gradient(150deg,#5A2A10,#2E140A)', plate:'forge', cta:'Light the forge'},
+};
+function playCardName(k){ if(k==='gym'||k==='lore'||k==='hive') return hubName(k);
+  const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); return (PLAY_TEXT[k]&&PLAY_TEXT[k].n)||(g&&g.n)||k; }
+function playCardLive(card){ if(card.arcade) return !!(window.SB_ARCADE_GAMES||[]).find(x=>x.k===card.k); return typeof app[card.open]==='function'; }
+/* Word Forge stands on the tab only once its morpheme table is signed off (g-forge's SB_FORGE.signedOff), or under the testing unlock */
+function playCardShown(card){ return card.k==='wordForge' ? !!((window.SB_FORGE&&SB_FORGE.signedOff)||state.devUnlock) : true; }
+function playCardsShown(){ return SB_PLAY_CARDS.filter(playCardShown); }
+/* the child's own best on a card, quietly — a number they set, never a target the card sets (G9) */
+function playCardBest(card,c){
+  if(card.arcade){ const v=Math.round(+arcBestMap()[card.k]||0); return v>0?'Best '+fmtN(v):''; }
+  if(card.k==='mockbee'){ try{ const st=window.MOCKBEE?MOCKBEE.stats():{}; return st.played&&st.best?('Best finish: '+st.best+(st.wins?' · '+st.wins+' won':'')):''; }catch(e){ return ''; } }
+  if(card.hub){ try{ if(window.SB_HUB_BEST&&typeof SB_HUB_BEST[card.k]==='function'){ const s=SB_HUB_BEST[card.k](); if(s) return String(s); } }catch(e){}
+    const t=SB_BESTS.top(card.k,c); if(!t) return '';
+    const mode=((window.SB_HUB_MODES&&SB_HUB_MODES[card.k]&&SB_HUB_MODES[card.k][t.mode])||t.mode.charAt(0).toUpperCase()+t.mode.slice(1));
+    return 'Best '+(t.best.of?t.best.right+'/'+t.best.of:t.best.right)+' · '+mode; }
+  return ''; }
+function playCardPicture(card,big){ const A=PLAY_ART[card.k]||{}; const V=window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'';
+  if(A.img) return A.img+V;
+  if(A.shot) return 'app-art/shots/game-'+A.shot+'.jpg'+V;
+  if(A.plate){ try{ if(typeof window.SB_PLATE==='function'){ const u=SB_PLATE(A.plate); if(u) return u; } }catch(e){}
+    /* saga2 (and SB_PLATE) loads with the arcade, after this tab first draws: the same rule, here */
+    return 'app-art/stage/'+A.plate+'-'+(document.documentElement.getAttribute('data-mode')==='dusk'?'night':'day')+'.webp'; }
+  return ''; }
+function gamesHub(){ const c=active();
+  const shown=playCardsShown();
+  const card=(o,span)=>{ const A=PLAY_ART[o.k]||{}; const name=playCardName(o.k); const live=playCardLive(o);
+    const promise=(PLAY_TEXT[o.k]&&PLAY_TEXT[o.k].p)||(((window.SB_ARCADE_GAMES||[]).find(x=>x.k===o.k)||{}).blurb)||'';
+    const best=live?playCardBest(o,c):''; const pic=playCardPicture(o,span>1);
+    const chip=SB_LEVEL.chip(o.k,name);
+    const go=live?(A.cta||'Play'):'Coming';
+    if(span>1){   /* a flagship: the large painted tile */
+      let art=''; if(!pic&&o.k==='mockbee'&&window.SB_AVATAR){ try{ const hid=SB_AVATARS.byId['goldlegend']?'goldlegend':((SB_AVATARS.list[0]||{}).id); art=SB_AVATAR(hid,116,{dark:true}); }catch(e){} }
+      if(!pic&&!art&&A.game) art=gameArtSVG(A.game,96);
+      return `<div class="pl-card pl-big" data-card="${o.k}" style="grid-column:${span>=4?'1 / -1':'span 2'}">
+        <button data-act="playCard" data-arg="${escA(o.k)}" class="arc-hero${live?'':' pl-coming'}">
+          <span aria-hidden="true" style="position:absolute;inset:0;background:${A.grad||'var(--accent)'}"></span>
+          ${pic?`<span aria-hidden="true" class="arc-hero-img" style="background-image:url('${pic}')"></span>`:''}
+          ${art?`<span class="arc-hero-art">${art}</span>`:''}
+          <span class="arc-hero-in">
+            <span class="arc-tag" style="color:#FFD98A;background:rgba(255,194,61,.14);border:1px solid rgba(255,194,61,.35)">${iconSVG(o.door==='compete'?'trophy':'joystick',12,2.4)} ${esc(live?o.tag:'Coming')}</span>
+            <span class="arc-hero-title" style="display:block">${esc(name)}</span>
+            <span class="arc-hero-blurb" style="display:block">${esc(promise)}</span>
+            <span class="arc-hero-cta"><span class="arc-hero-go">${esc(go)}${live?' →':''}</span>${best?`<span class="arc-hero-sub">${esc(best)}</span>`:''}</span>
+          </span></button>
+        <span class="pl-chip">${chip}</span></div>`; }
+    const top=pic?`linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('${pic}') center/cover`:(A.grad||'var(--accent)');
+    return `<div class="arc-tile pl-card" data-card="${o.k}"${span>1?` style="grid-column:span ${span}"`:''}>
+      <button data-act="playCard" data-arg="${escA(o.k)}" class="arc-tile-play${live?'':' pl-coming'}">
+        <span class="arc-tile-top" style="background:${top}"><span class="arc-badge">${esc(live?o.tag:'Coming')}</span>${(!pic||A.plate)&&A.game?`<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.38))">${gameArtSVG(A.game,48)}</span>`:''}</span>
         <span class="arc-tile-body">
-          <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
-          <span class="arc-tile-blurb" style="display:block">${esc(o.blurb)}</span>
-          <span class="arc-tile-foot"><span class="arc-cta" style="background:${o.cta||'var(--accent)'}">${iconSVG('joystick',14)} Play</span>${o.stat?`<span class="arc-stat">${esc(o.stat)}</span>`:''}</span>
+          <span class="arc-tile-title" style="display:block">${esc(name)}</span>
+          <span class="arc-tile-blurb" style="display:block">${esc(promise)}</span>
+          <span class="arc-tile-foot"><span class="arc-cta" style="background:${live?'var(--accent)':'var(--muted)'}">${live?iconSVG('joystick',14)+' Play':'Coming soon'}</span>${best?`<span class="arc-stat">${esc(best)}</span>`:''}</span>
         </span></button>
-      ${/* the level is ONE chip on the picture that steps Auto → Easy → Med → Hard → Champ on each
-           tap (keyboard: it is a button). It used to be a two-row strip under the card, which made
-           these two cards taller than the rest of their row and left blank space in the others. */''}
-      ${(()=>{ const i=Math.max(0,DIFFS.findIndex(d=>d[0]===cur)), nx=DIFFS[(i+1)%DIFFS.length], lab=DIFFS[i][1];
-        return `<button data-act="setGameDiff" data-arg="${escA(o.arg)}|${nx[0]}" class="arc-lvl" aria-label="${escA('Word level for '+o.title+': '+lab+'. Tap for '+nx[1])}" title="Word level: ${lab} — tap to change">${lab} ▾</button>`; })()}
+      ${chip}
     </div>`; };
-  const ART=(k,sz,fb)=>(window.SB_ICON_ART&&SB_ICON_ART[k])?SB_ICON_ART(k,{size:sz||44}):(fb||'');
-  // ---- HEROES: the two marquee games ----
-  /* The 'Bizzy & the Great Unspelling' story hero is gone. Its games became the arcade
-     grid below (now the culled eight) — the story arc, the word-eater plot and the
-     chapter gates went with it. The two heroes are the things a child actually comes back
-     for: the mock bee they are training toward, and the quiz ladder. */
-  const heroes=[];
-  if(window.MOCKBEE){ const st=MOCKBEE.stats();
-    const hid=(function(){ try{ return (SB_AVATARS.byId['goldlegend']?'goldlegend':(SB_AVATARS.list[0]||{}).id); }catch(e){ return 'goldlegend'; } })();
-    heroes.push(heroTile({act:'mbOpen',grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)',art:SB_AVATAR(hid,116,{dark:true}),tag:iconSVG('trophy',12,2.4)+' Competition',title:'Mock Spelling Bee',blurb:'Ten rivals, eight rounds, one microphone. Miss your word and you sit down.',cta:st.played?'Take the stage again':'Take the stage',sub:st.played?((st.wins||0)+' won · best '+(st.best||11)+'/11'):'11 spellers'})); }
-  if(window.SB_TRIVIA){ const bhid=(function(){ try{ return SB_AVATARS.byId['bizzy']?'bizzy':((SB_AVATARS.list[0]||{}).id||null); }catch(e){ return null; } })();
-    heroes.push(heroTile({act:'openBizz',grad:'linear-gradient(150deg,#12324E,#0E2540 58%,#0A1A30)',art:bhid?SB_AVATAR(bhid,116,{dark:true}):'',tag:iconSVG('steps',12,2.4)+' Quiz ladder',title:'Who Wants to Be a Bizzillionaire',blurb:'Fifteen word questions — meanings, roots and the people words are named after. Two safe rungs, three lifelines. How far can you climb?',cta:'Play the ladder',sub:'50:50 · Ask Bizzy · Skip'})); }
-  /* The race and the maze are the two biggest games, so they stand with the bee and the
-     ladder as large painted tiles (app-art/arc-grandprix.jpg, arc-honeycomb.jpg — painted for
-     these cards, no lettering) instead of two small cards in the grid. They open the same
-     start menu (arcadeMenu) the small tile did, where the level is picked. */
-  const HERO_GAMES={ beeGrandPrix:{img:'app-art/arc-grandprix.jpg',grad:'linear-gradient(150deg,#2A1A4A,#1B1235)',tag:'Race',cta:'Start your engine'},
-    honeycombRun:{img:'app-art/arc-honeycomb.jpg',grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)',tag:'Maze',cta:'Enter the maze'} };
-  /* G9: the child's own best on each game's tile, quietly — a number they set, never a target the
-     tile sets for them (arcBest, saved by arcadeResult; nothing shows before a first scored round) */
-  const BEST=arcBestMap(), bestOf=k=>{ const v=Math.round(+BEST[k]||0); return v>0?'Best '+fmtN(v):''; };
-  (SB_ARCADE_GAMES||[]).forEach(g=>{ const H=HERO_GAMES[g.k]; if(!H) return;
-    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:bestOf(g.k)||H.sub})); });
-  // ---- FEATURE TILES: daily, trivia, champ, magic ----
-  const feats=[];
-  /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
-     full-width banner under the two story adventures. It shows no run of days: a day off costs nothing. */
-  let dailyBanner='';
-  if(window.SB_DAILY){ let st={}; try{ st=SB_STORE.getJSON('daily',{})||{}; }catch(e){}
-    const today=(()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); })();
-    const doneToday=st.day===today&&st.over;
-    dailyBanner=`<button data-act="openDaily" class="sb-lift sb-daily" style="position:relative;display:block;width:100%;text-align:left;overflow:hidden;border-radius:18px;margin-bottom:16px;
-        background:linear-gradient(110deg,#1E7D45,#2FA35C 46%,#3FBF6E);box-shadow:0 8px 22px rgba(24,96,55,.28)">
-      <span aria-hidden="true" style="position:absolute;inset:0;opacity:.22;background:radial-gradient(320px 150px at 88% 30%,#FFF6D6,transparent 70%)"></span>
-      <span class="sb-daily-art" aria-hidden="true">${gameArtSVG('daily',92)}</span>
-      <span class="sb-daily-in">
-        <span style="min-width:0;flex:1">
-          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono,monospace);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#EAFBEF;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:3px 10px">Today only</span>
-          <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1;color:#fff;margin-top:8px">Daily Buzz</span>
-          <span style="display:block;font-size:13px;line-height:1.45;color:rgba(255,255,255,.92);margin-top:4px;max-width:34em">Six tries to spell today&rsquo;s mystery word, then share your grid. A new word every day at midnight.</span>
-        </span>
-        <span class="sb-daily-cta">
-          <span class="sb-daily-go">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
-        </span>
-      </span></button>`; }
-  if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=countTxt('trivia');   /* SB_COUNT's floor — the themes list grows when the word chapters land, so it is not counted here */
-    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?nQ+' questions · ':'')+'picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
-  /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
-  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — every square you claim is a finished round.',cta:'#7E2E9E',stat:''}));
-  // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
-  /* Tile banner is a REAL screenshot of the game (app-art/shots/game-<k>.jpg), not the
-     generic painted world plate — so the picture on the Bee Grand Prix tile is the race,
-     not a hive. Same images the landing uses; regenerate both with qa/shots.cjs. */
-  // Difficulty is chosen in each game's START MENU now (arcadeMenu), so the tile is just a
-  // single Play button + its screenshot — no difficulty strip. Lighter scrim so the shot reads.
-  const arcadeGames=SB_ARCADE_GAMES.filter(g=>!HERO_GAMES[g.k]).map(g=>tile({act:'arcadeMenu',arg:g.k,
-    grad:"linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
-    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:bestOf(g.k)})).join('');
-  // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
-  const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
+  /* spans that fill every row: full = the row, big = two, small = one; bigs first, and a door that
+     would leave a hole widens its last small cards (4 columns; 2 below 720px — a big is a phone row) */
+  const doorHTML=([id,label])=>{ const cards=shown.filter(x=>x.door===id); if(!cards.length) return '';
+    let items=cards.map(x=>({x,span:x.size==='full'?4:x.size==='big'?2:1}));
+    items=items.filter(i=>i.span===4).concat(items.filter(i=>i.span===2),items.filter(i=>i.span===1));
+    let tot=items.reduce((t,i)=>t+i.span,0);
+    for(let j=items.length-1;j>=0&&tot%4;j--){ if(items[j].span===1){ items[j].span=2; tot++; } }
+    for(let j=items.length-1;j>=0&&tot%4;j--){ if(items[j].span===2){ items[j].span=4; tot+=2; } }
+    items=items.filter(i=>i.span===4).concat(items.filter(i=>i.span===2),items.filter(i=>i.span===1));
+    return `<section class="pl-door" data-door="${id}" aria-label="${escA(label)}">
+      <h2 class="pl-door-h">${esc(label)}</h2>
+      <div class="pl-grid">${items.map(i=>card(i.x,i.span)).join('')}</div></section>`; };
   return `<div style="max-width:860px;margin:0 auto">
-    <!-- No global difficulty row: each game sets its own level, on its own tile. A single
-         Arcade-wide selector was redundant with that and misleading (it did nothing for
-         the games that carry their own level, like Trivia). -->
     ${pageHead('Bizzy&rsquo;s Great Spelling Arcade','','',coinChip(),'goHome','Home',null,arcadeLogoSVG(34))}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));grid-auto-rows:1fr;gap:14px;margin-bottom:16px">${heroes.join('')}</div>
-    ${dailyBanner}
-    ${/* ONE grid, no section headings, FIXED columns (4, or 2 on a phone): the tiles come in a
-         multiple of four, so every row is full at every width — auto-fill left two empty
-         cells at the end of the first section and a heading floating over blank space. */''}
-    <div class="arc-grid">${arcadeGames}${feats.join('')}${quick}</div>
+    ${PLAY_DOORS.map(doorHTML).join('')}
   </div>`;
 }
 /* The pack reel and the drop reveal are deleted with the draw (FIX-BEE I3). */
