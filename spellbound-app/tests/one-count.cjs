@@ -141,8 +141,10 @@ for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's ow
   /* ---- 5. Home's stop is the Atlas's stop ---- */
   await go(() => app.setNav('home'), 700);
   const home = await pg.evaluate(() => { const c = document.querySelector('.sb-home-next'); return c ? c.textContent.replace(/\s+/g, ' ') : ''; });
-  const badge = (home.match(/stop (\d+) · Tier/) || [])[1], strip = home.match(/stop (\d+) of (\d+)/) || [];
-  ok(badge && strip[1] && badge === strip[1], `Home's badge and strip name the same stop — "stop ${badge}" / "stop ${strip[1]} of ${strip[2]}"`);
+  /* the owner's Home (4 Oct): ONE count on the "You are here" card, "Stop n of N", taken from
+     SB_TRAIL_NEXT (stop / stops — the region's own stops and checkpoints for this tier) */
+  const strip = home.match(/stop (\d+) of (\d+)/i) || [];
+  ok(strip[1] && strip[2] && +strip[1] <= +strip[2], `Home names one stop, as "Stop n of N" — "${strip[0] || home.slice(0, 80)}"`);
   await go(() => app.openTrail(), 1500);
   const pinNow = await pg.evaluate(() => { const p = [...document.querySelectorAll('.atlas-pin')].find(e => /Meadow/.test(e.getAttribute('aria-label') || ''));
     return p ? p.getAttribute('aria-label') : ''; });
@@ -159,26 +161,20 @@ for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's ow
     const pin = [...document.querySelectorAll('.atlas-pin')].map(e => e.getAttribute('aria-label') || '').find(l => /Great Library/.test(l)) || '';
     return { home: home.replace(/\s+/g, ' '), pin };
   });
-  const lb = (lib.home.match(/stop (\d+) · Tier/) || [])[1], ls = lib.home.match(/stop (\d+) of (\d+)/) || [], lpin = lib.pin.match(/(\d+)\/(\d+) stops/) || [];
-  ok(/Great Library/.test(lib.home) && lb === ls[1] && ls[2] === lpin[2] && +ls[1] === +lpin[1] + 1,
-    `in the Great Library Home's badge, strip and the Atlas pin agree — "stop ${lb}" / "stop ${ls[1]} of ${ls[2]}" / pin "${lpin[1]}/${lpin[2]}"`);
+  const ls = lib.home.match(/stop (\d+) of (\d+)/i) || [], lpin = lib.pin.match(/(\d+)\/(\d+) stops/) || [];
+  ok(/Great Library/.test(lib.home) && ls[2] === lpin[2] && +ls[1] === +lpin[1] + 1,
+    `in the Great Library Home's card and the Atlas pin agree — "Stop ${ls[1]} of ${ls[2]}" / pin "${lpin[1]}/${lpin[2]}"`);
   for (const lap of [1, 2, 3]) {
     const r = await pg.evaluate(async lap => {
-      const c = active(); const was = c.trail.lap; c.trail.lap = lap; state.trailCourse = 'honey'; app.openTrail(); render();
-      await new Promise(res => setTimeout(res, 300));
+      const c = active(); const was = c.trail.lap; c.trail.lap = lap; state.trailCourse = 'honey';
+      const nx = window.SB_TRAIL_NEXT && SB_TRAIL_NEXT();
+      app.openTrail(); render(); await new Promise(res => setTimeout(res, 300));
       const pins = {}; [...document.querySelectorAll('.atlas-pin')].forEach(e => { const m = (e.getAttribute('aria-label') || '').match(/^\S+ (.+), (\d+)\/(\d+) stops$/); if (m) pins[m[1]] = +m[3]; });
-      const out = [];
-      for (const act of SB_TRAIL.honey.acts) {
-        const name = ((act.title || '').split('·').slice(1).join('·').trim() || act.title).replace(/^The\s+/i, '');
-        const u = act.units.map(id => SB_TRAIL.honey.units.find(x => x.id === id)).find(u => u && (u.laps || [u.lap || 1]).includes(lap));
-        const rp = u ? regionPos({ kind: 'unit', arg: u.id, lap }) : null;
-        out.push({ name, home: rp ? rp.of : null, atlas: pins[name] == null ? null : pins[name] });
-      }
-      c.trail.lap = was; return out;
+      const act = nx && SB_TRAIL.honey.acts.find(a => a.id === nx.actId);
+      const name = act ? ((act.title || '').split('·').slice(1).join('·').trim() || act.title).replace(/^The\s+/i, '') : '';
+      c.trail.lap = was; return { name, home: nx ? nx.stops : null, atlas: pins[name] == null ? null : pins[name] };
     }, lap);
-    const bad = r.filter(x => x.home !== x.atlas);
-    ok(r.length === 9 && !bad.length, `Tier ${lap}: every region's count on Home is its Atlas pin's — ` +
-      (bad.length ? bad.map(x => `${x.name} Home ${x.home} / Atlas ${x.atlas}`).join('; ') : r.map(x => x.name.split(' ')[0] + ' ' + x.atlas).join(', ')));
+    ok(r.name && r.home != null && r.home === r.atlas, `Tier ${lap}: Home's "of N" for ${r.name || '?'} is its Atlas pin's (${r.home} / ${r.atlas})`);
   }
   await b.close();
   ok(!errs.length, 'no page errors' + (errs.length ? ' — ' + errs.slice(0, 3).join(' | ') : ''));

@@ -38,7 +38,12 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
       if (r2 && !M.text) { M.text = performance.now();
         M.atText = [...document.querySelectorAll('#root .sb-home-greet img, #root .sb-home-r2 img')].filter(i => i.getBoundingClientRect().top < innerHeight)
           .map(i => (i.complete && i.naturalWidth ? '+' : '-') + i.getAttribute('src')); }
-      if (!M.text) requestAnimationFrame(tick); }; requestAnimationFrame(tick); }, KID);
+      /* the owner's Home (4 Oct): row 2 is the "You are here" card, which holds until the Atlas lands —
+         so its own pictures are read the moment IT first paints */
+      const here = document.querySelector('#root .sb-home-r2 .sb-here');
+      if (here && !M.card) M.card = [...document.querySelectorAll('#root .sb-home-greet img, #root .sb-here img')].filter(i => i.getBoundingClientRect().top < innerHeight)
+          .map(i => (i.complete && i.naturalWidth ? '+' : '-') + i.getAttribute('src'));
+      if (!M.text || !M.card) requestAnimationFrame(tick); }; requestAnimationFrame(tick); }, KID);
   const visit = async () => {
     const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
     const cdp = await ctx.newCDPSession(pg); await cdp.send('Network.enable'); await cdp.send('Network.clearBrowserCache');
@@ -68,8 +73,9 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   ok(v1.hint && v1.hint.every(u => v2.links.includes(u)) && v2.links.length === v1.hint.length, 'the next visit preloads exactly those pictures (' + v2.links.join(', ') + ')');
   const early = (v1.hint || []).filter(u => v2.imgs[u] != null && v2.app3 && v2.imgs[u] < v2.app3.end);
   ok(v1.hint && early.length === v1.hint.length, `they are fetched alongside the scripts, before app3.js has even arrived (${(v1.hint || []).map(u => u.split('/').pop() + ' @' + v2.imgs[u]).join(', ')}; app3 done @${v2.app3 && v2.app3.end})`);
-  const atText = v2.fp.atText || [];
-  ok(atText.length >= 2 && atText.every(s => s[0] === '+'), 'when Home\'s words first paint, its avatar and plates are already there (' + atText.join(' ') + ')');
+  const atText = v2.fp.atText || [], atCard = v2.fp.card || [];
+  ok(atText.length >= 1 && atText.every(s => s[0] === '+'), 'when Home\'s words first paint, its avatar is already there (' + atText.join(' ') + ')');
+  ok(atCard.length >= 3 && atCard.every(s => s[0] === '+'), 'when the "You are here" card paints, its map and avatar are already there (' + atCard.join(' ') + ')');
 
   /* ---- a new visitor and ?demo preload nothing ---- */
   for (const [label, url] of [['new visitor', 'index.html'], ['?demo', 'index.html?demo']]) {

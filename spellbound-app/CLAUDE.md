@@ -884,6 +884,20 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   check compares against the REQUESTED width (an overflowing page widens its own innerWidth).
 - **Announcements**: one polite `#sb-live` on `<body>`; mark a prompt with `data-live-prompt`
   (`tests/live-prompts.cjs`). A region inside `#root` is rebuilt every render and never announced.
+- **Home's journey card is "You are here"** (owner: "HOME screen should take to world atlas and show
+  kids where they are"): `homeHereCard` (app3) on `SB_TRAIL_HERE(crs)` (trail.js) — the World Atlas
+  overview painting (`atlas-map.jpg`, 113 KB, chosen over the 0.6–1 MB region panoramas for the
+  first-load budget) cropped round the child's region, their avatar on its pin, walked regions
+  starred, "Stop n of N" from `SB_TRAIL_NEXT().stop/.stops` (stops + checkpoints, the board's own
+  count), one Continue. The training-journey card left Home (it lives in the Word Gym).
+  **Continue (`goNext`) opens the Atlas on the child's stop** (`app.trailHere`: region, camera on the
+  avatar, stop selected, its card open, no moth); the drawer, `#/continue` and `?from=hive` share it.
+  Setup and placement still go straight INTO the stop through `app.goStep`. `mwClamp` keeps an owed
+  homing (`_mwHome`) until layout is real; `.atlas-pop.rider` lifts the card clear of the avatar.
+  Guards: `home-here.cjs` (@check), `home-continue.cjs`, `one-count.cjs` §5, `home-first-paint.cjs`
+  (the card's map and avatar are already loaded the moment it paints). The family's shell-check REF
+  still describes the old two-card row — feed-screen allows exactly that difference until upstream
+  re-measures Bee.
 - **Word Gym**: tab name only — key `coach`, route `#/practice` (+ `#/gym` alias). `tests/word-gym.cjs`.
 - **Grand Prix upright** (supersedes "ON A PHONE THE GRAND PRIX RACES SIDEWAYS"): road full width,
   62% of the play area; Steer Left / Brake / Steer Right in the thumb zone BELOW the road; spelling

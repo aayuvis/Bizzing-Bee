@@ -6942,7 +6942,9 @@ function homeHereCard(c,nx){
   const walked=pins.slice(0,hi+1).map((p,i)=>(i?'L':'M')+pt(p)).join(' ');
   /* Bizzy and the plain bee are the mascot, drawn inline as the greeting draws them — no extra
      picture on Home's first screen; everyone else wears their own portrait */
-  let av=''; try{ const own=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'; av=(own&&window.SB_AVATAR)?(SB_AVATAR(c.avatar,48)||''):''; if(!av) av=mascotSVG('happy'); }catch(e){}
+  let av=''; try{ const own=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'; av=(own&&window.SB_AVATAR)?(SB_AVATAR(c.avatar,48)||''):''; if(!av) av=mascotSVG('happy');
+    /* above the fold on Home: never lazy (audit v4 B6 — a lazy image on the first screen waits) */
+    av=av.replace(/\sloading="lazy"/g,' loading="eager"'); }catch(e){}
   const marks=pins.map((p,i)=>i===hi?'':`<span class="sb-here-pin is-${p.st}" style="left:${p.x}%;top:${p.y}%">${p.st==='done'?'★':''}</span>`).join('');
   const all=!!(nx&&nx.allDone);
   const label=nx&&nx.done?'Continue':'Start';

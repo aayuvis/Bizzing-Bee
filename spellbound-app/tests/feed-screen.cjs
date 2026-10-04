@@ -349,6 +349,10 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const { ctx, pg } = await open({ touch: true });
     /* the browser's REAL storage (the demo sandbox wraps localStorage inside the page, so the page cannot be asked) */
     const dump = async () => { const st = await ctx.storageState(); const o = {}; st.origins.forEach(x => x.localStorage.forEach(kv => { o[x.origin + ' ' + kv.name] = kv.value; })); return o; };
+    /* stop the ordinary page first: since the hello waits for the Atlas (audit v4 B5) it notes the
+       greeting and Home's pictures a moment after boot, and those device writes belong to it — the
+       snapshot must hold only what the DEMO page could change */
+    await pg.goto('about:blank');
     const before = await dump();
     await pg.goto(BASE + '?demo'); await ready(pg); await openFeed(pg);
     const n = await pg.evaluate(() => document.querySelectorAll('.bzf-card:not(.bzf-end)').length);
