@@ -22,7 +22,10 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
 const H = { tree: [2.2, 4.5], parktree: [1.5, 3.5], bush: [0.6, 1.3], flowers: [0, 0.6], haybale: [0.7, 1.9],
   barn: [4, 6], windmill: [6, 9], reeds: [0.9, 1.6], cactus: [2, 4], rock: [0.6, 1.3], boulders: [1.4, 2.4],
   deadtree: [2.5, 4], butte: [4, 7], watertower: [6, 8.5], signpost: [1.8, 2.6], formation: [4, 8],
-  tower: [6, 20], lamp: [2.8, 4.2], billboard: [4.5, 6.5], shop: [2.5, 3.6], hedge: [0.8, 1.4] };
+  tower: [6, 20], lamp: [2.8, 4.2], billboard: [4.5, 6.5], shop: [2.5, 3.6], hedge: [0.8, 1.4],
+  /* the Bazaar (4 Oct 2026, the Cup's fourth track): a stall is a shop, a lantern post a lamp,
+     a gateway a barn-and-a-half, a date palm a tall tree, a rug rack chest-high to a grown-up */
+  stall: [2.5, 3.6], sacks: [0.6, 1.3], lantern: [2.8, 4.2], arch: [4, 7], palm: [3.5, 5.2], rugs: [1.5, 2.5] };
 
 async function race(pg, scene) {
   await pg.evaluate((scene) => {
@@ -32,7 +35,10 @@ async function race(pg, scene) {
     window.SB_SAGA_ENGINES.beeGrandPrix(h, { diff: 'medium', scene, kart: 'kart', autoGo: true }, () => {});
   }, scene);
   for (let i = 0; i < 40; i++) { if (await pg.evaluate(() => window._race && window._race.state().mode === 'race')) break; await pg.waitForTimeout(150); }
-  await pg.evaluate(() => window._race.clearBoxes());
+  /* 4 Oct 2026: drawDist now drops 100 → 70 under 50fps (games spec §2.9), and headless chromium
+     draws in software at 10–25fps, so it always drops here. These checks measure the WORLD at the
+     full range, not the adaptation, so they pin it (tests/gp-perf.cjs holds the adaptation). */
+  await pg.evaluate(() => { window._race.clearBoxes(); window._race.pinDraw(100); });
   await pg.waitForTimeout(600);   // let the tree sprite decode: its aspect is part of the audit
 }
 const frames = (pg, n, f) => pg.evaluate(([n, f]) => new Promise(res => { const out = []; const g = new Function('s', 'return ' + f);
@@ -57,7 +63,12 @@ const frames = (pg, n, f) => pg.evaluate(([n, f]) => new Promise(res => { const 
   /* a rival we are pulling away from moves every frame — never frozen, never a hop */
   /* 45 bands ahead is mid-screen (the road only comes into view ~21 bands out); the kart is
      slowed so the rival pulls away and has to move on screen every frame */
-  await pg.evaluate(() => { window._race.toStraight(100); window._race.setV(0.4); window._race.pace(0, 9000, 0.3); });
+  /* 4 Oct 2026: the race runs in REAL time now (sgLoop, games spec §1.4), so on a 15fps headless
+     frame clock the kart caught the rival up inside the 70 frames and the gap stopped changing —
+     a rival keeping pace is not a frozen one; held on the brake instead, the rival left the range
+     in ~20 frames. Now the kart runs flat out and closes on a rival 30 bands ahead: it is in range
+     the whole 70 frames and still has to move on screen every one of them. */
+  await pg.evaluate(() => { window._race.toStraight(100); window._race.setV(1); window._race.pace(0, 6000, 0.3); });
   await pg.waitForTimeout(120);
   const rv = await frames(pg, 70, 's.rivScr.map(q=>q&&q[1])');
   let worst = null;
@@ -78,7 +89,7 @@ const frames = (pg, n, f) => pg.evaluate(([n, f]) => new Promise(res => { const 
   ok(before >= 3 && ghosts === 0, `no rival out of draw range is drawn after a jump — ${ghosts} ghosts (${before} were on screen before it; a band's stale 'visible' flag drew them where they used to be)`);
 
   /* ---- 2. the world fits the kart, in every world ---- */
-  for (const scene of ['meadow', 'sunset', 'city']) {
+  for (const scene of ['meadow', 'sunset', 'city', 'bazaar']) {   // bazaar joined 4 Oct 2026 (games spec §2.7)
     await race(pg, scene);
     const S = await pg.evaluate(() => window._race.scale());
     const K = S.kartW, KH = S.kartH, bad = [];

@@ -2165,9 +2165,9 @@
     /* the garage: your paint and your exhaust trail (bought or earned, never random) */
     const GAR=(()=>{ try{ return gpGar(); }catch(e){ return {}; } })();
     const PAINT=(()=>{ const p=GP_PAINTS.find(x=>x.id===GAR.paint); return (p&&gpOwns('paint',p.id)&&p.col)||opts.tint||null; })();
-    const TRAIL=(()=>{ const t=GP_TRAILS.find(x=>x.id===GAR.trail); return (t&&gpOwns('trail',t.id))?t.col:'225,225,232'; })();
+    const TRAILC=(()=>{ const t=GP_TRAILS.find(x=>x.id===GAR.trail); return (t&&gpOwns('trail',t.id))?t.col:'225,225,232'; })();
     const RAINBOW=['255,120,120','255,200,90','150,220,120','120,200,255','190,150,255'];
-    const trailCol=()=>TRAIL==='rainbow'?RAINBOW[Math.floor(bumpT*6)%RAINBOW.length]:TRAIL;
+    const trailCol=()=>TRAILC==='rainbow'?RAINBOW[Math.floor(bumpT*6)%RAINBOW.length]:TRAILC;
     const GP_NAME={shield:'Shield',oil:'Oil slick',gust:'Gust',turbo:'Turbo',rocket:'Rocket',honey:'Sticky honey'};
     /* THE FIELD: the Mock Bee's spellers (GP_GRID by difficulty), each in the face the hall gives
        them — never the child's own (alt stands in) */
@@ -2824,9 +2824,9 @@
       if(mode==='race') update(dt); }
     /* PERFORMANCE (§2.9): drawDist 100 → 70 under 50fps and back above 58; puffs capped 120,
        halved while slow. Measured on the frame clock, not guessed from the device. */
-    let _fps=60, _fT=0, _slow=false;
+    let _fps=60, _fT=0, _slow=false, _ddPin=0;   // _ddPin: a test measuring the world at a fixed range pins it (window._race.pinDraw)
     function render(alpha){ const now=performance.now(); if(_fT){ const f=1000/Math.max(1,now-_fT); _fps+=(Math.min(120,f)-_fps)*0.05; } _fT=now;
-      if(!_slow&&_fps<50){ _slow=true; drawDist=70; } else if(_slow&&_fps>58){ _slow=false; drawDist=100; }
+      if(_ddPin) drawDist=_ddPin; else if(!_slow&&_fps<50){ _slow=true; drawDist=70; } else if(_slow&&_fps>58){ _slow=false; drawDist=100; }
       if(mode!=='race'){ draw(); return; }
       const a=Math.max(0,Math.min(1,alpha||0))/120, p0=pos, z0=rivals.map(r=>r.z);
       pos+=v*a; rivals.forEach(r=>{ r.z+=(r.v||0)*a; });
@@ -3121,7 +3121,7 @@
       result:()=>result, rivalsAt:()=>rivals.map(r=>({id:r.id,name:r.name,face:r.face,z:r.z,fin:r.fin,spd:r.spd,shield:r.shield,spin:r.spin,slow:r.slow})),
       forcePlace:(p)=>{ /* line the field up so you are in place p: rivals ahead step in front by 2 bands */ rivals.forEach((r,i)=>{ r.z=i<p-1?pos+segLen*(2+i*2):pos-segLen*(3+i*2); }); },
       usePower:(id,full,who)=>usePower(id,full!==false,who==null?ME:rivals[who]),
-      rivalPowers:(on)=>{ noRivalPw=on===false; }, setRival:(i,z)=>{ if(rivals[i]) rivals[i].z=z; } };
+      rivalPowers:(on)=>{ noRivalPw=on===false; }, pinDraw:(n)=>{ _ddPin=n|0; if(n) drawDist=n|0; }, setRival:(i,z)=>{ if(rivals[i]) rivals[i].z=z; } };
     loop=loopFn(step,render);
     /* ONE race lives at a time: a Cup's next race and Play again start a new engine in this
        host, and the arcade's handle (from the first) must stop whichever one is running */

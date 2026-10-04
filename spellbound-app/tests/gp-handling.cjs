@@ -148,7 +148,7 @@ const key = (pg, type, k) => pg.evaluate(([type, k]) => dispatchEvent(new Keyboa
      the verdict is the margin at the MEDIAN step — the same "median, so one sample cannot
      fake it" the four points already used, applied across time. A real seam (~290) fails
      at every step; the worst step is printed beside it. */
-  for (const scene of ['meadow', 'sunset', 'city']) {
+  for (const scene of ['meadow', 'sunset', 'city', 'bazaar']) {   // bazaar joined 4 Oct 2026 (games spec §2.7)
     await mount(pg, scene, 'medium');
     const sweep = await pg.evaluate(async () => {
       const R = window._race; R.toStraight(90); R.setV(0); R.steerTo(0);
