@@ -102,7 +102,7 @@ const log = (persona, type, sev, step, msg) => { F.push({ persona, type, sev, st
     log(pg._persona, home.scr === 'app' ? 'POS' : 'ISSUE', home.scr === 'app' ? '' : 'HIGH', 'onboarding done', `landed on ${home.scr}/${home.nav} as "${home.name}" ageBand=${home.band} (midpoint ${home.age})`);
     if (home.age && (home.age < 5 || home.age > 7)) log(pg._persona, 'ISSUE', 'MED', 'onboarding', 'picked band 5-7 but stored age midpoint is ' + home.age);
     // phone: the bottom tab bar must be there, the top nav may hide
-    const tabs = await pg.evaluate(() => { const bar = [...document.querySelectorAll('button')].filter(x => /Home|Atlas|Practice|Library|Play/i.test(x.textContent) && x.offsetParent); return bar.length; });
+    const tabs = await pg.evaluate(() => { const bar = [...document.querySelectorAll('button')].filter(x => /Home|Atlas|Word Gym|Library|Play/i.test(x.textContent) && x.offsetParent); return bar.length; });
     log(pg._persona, tabs >= 4 ? 'POS' : 'ISSUE', tabs >= 4 ? '' : 'HIGH', 'phone nav', tabs >= 4 ? 'nav tabs reachable on a 390px phone' : 'nav tabs NOT visible on phone (' + tabs + ')');
     await probe(pg, 'home on phone');
     // rings → Coach and back

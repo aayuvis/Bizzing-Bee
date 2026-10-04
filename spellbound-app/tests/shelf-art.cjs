@@ -78,7 +78,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
   const home = await pg.evaluate(() => [...document.querySelectorAll('button,a')]
     .map(x => (x.textContent || '').trim())
-    .filter(t => /^(Home|Word Atlas|Practice|Library|Play)$/.test(t)));
+    .filter(t => /^(Home|Word Atlas|Word Gym|Library|Play)$/.test(t)));   // the Practice tab is the Word Gym (owner, 4 Oct 2026)
   ok(new Set(home).size === 5, `the five tabs are there after onboarding — ${[...new Set(home)].join(' · ') || 'NONE'}`);
 
   await pg.evaluate(() => {
