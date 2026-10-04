@@ -7,7 +7,7 @@
      const p = await SC.pixels(pg);     // T14: flat-colour regions, pure white, pure black
      SC.report(ok, 'gym hub · phone · dusk', g, p, {play:true});
 
-   GEOMETRY (T15), measured on screen inside the first .sg-stage:
+   GEOMETRY (T15), measured on screen inside the first .sb-stage (SGUI.stage):
      hud      — the left and right HUD stats are the same width (≤ 4px apart) and the
                 centre title sits on the stage's centre line (≤ 4px)
      gutters  — the play region's left and right gutters agree (≤ 4px), and so do the
@@ -30,7 +30,7 @@ const STILL = '*,*::before,*::after{transition:none!important;animation:none!imp
 
 async function geometry(pg) {
   return pg.evaluate(() => {
-    const st = document.querySelector('.sg-stage'); if (!st) return { none: true };
+    const st = document.querySelector('.sb-stage'); if (!st) return { none: true };
     const R = e => e.getBoundingClientRect();
     const s = R(st), out = { stage: { x: s.left, y: s.top, w: s.width, h: s.height } };
     const zoom = parseFloat(getComputedStyle(document.getElementById('root') || document.body).zoom) || 1;
@@ -57,7 +57,7 @@ async function geometry(pg) {
 }
 
 async function pixels(pg) {
-  const rect = await pg.evaluate(() => { const s = document.querySelector('.sg-stage'); if (!s) return null; const r = s.getBoundingClientRect();
+  const rect = await pg.evaluate(() => { const s = document.querySelector('.sb-stage'); if (!s) return null; const r = s.getBoundingClientRect();
     return { x: Math.max(0, r.left), y: Math.max(0, r.top), width: Math.min(innerWidth, r.right) - Math.max(0, r.left), height: Math.min(innerHeight, r.bottom) - Math.max(0, r.top) }; });
   if (!rect || rect.width < 10 || rect.height < 10) return { none: true };
   const css = await pg.addStyleTag({ content: STILL });
@@ -94,7 +94,7 @@ async function pixels(pg) {
 function report(ok, label, g, p, opts) {
   opts = opts || {}; const f = n => (n == null ? '—' : Math.round(n * 10) / 10);
   if (g) {
-    ok(!g.none, `${label}: a .sg-stage is on screen`);
+    ok(!g.none, `${label}: a .sb-stage is on screen`);
     if (g.none) return;
     ok(Math.abs(g.hudL - g.hudR) <= 4, `${label}: HUD stats are the same width (${f(g.hudL)} / ${f(g.hudR)}px)`);
     if (g.hudSides.l != null && g.hudSides.r != null) ok(Math.abs(g.hudSides.l - g.hudSides.r) <= 4, `${label}: HUD stats sit the same distance from each edge (${f(g.hudSides.l)} / ${f(g.hudSides.r)}px)`);

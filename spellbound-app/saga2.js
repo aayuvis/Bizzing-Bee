@@ -578,7 +578,12 @@
   /* the shared shell of both miss cards: a scrim over the host, the card, Continue by Enter
      or a tap, every other key swallowed so nothing types into the game underneath */
   function missShell(host, inner, o){
-    host=host||document.body; const fixed=(host===document.body);
+    host=host||document.body;
+    /* on a stage the card covers the whole stage, keyboard and all (the keys are dead while it is
+       up): a phone's play region above the keys is too short to hold the letters, the note and
+       Continue */
+    try{ const st=host.closest&&host.closest('.sb-stage'); if(st) host=st; }catch(e){}
+    const fixed=(host===document.body);
     try{ if(!fixed && getComputedStyle(host).position==='static') host.style.position='relative'; }catch(e){}
     const wrap=document.createElement('div'); wrap.className='sg-misswrap'+(fixed?' fixed':'');
     wrap.innerHTML='<div class="sg-misscard sb-miss" role="dialog" aria-modal="true" aria-labelledby="sg-miss-h">'+inner+
@@ -686,24 +691,24 @@
     return "--sg-plate-d:url('"+plateUrl(plate,'day')+"');--sg-plate-n:url('"+plateUrl(plate,'night')+"')"; }
   SGUI.stage=function(o){ o=o||{}; const hud=o.hud||{};
     const side=(x,cls)=>'<div class="sg-st-side '+cls+'">'+(x==null||x===''?'':'<div class="sg-st-stat sg-panel">'+x+'</div>')+'</div>';
-    return '<section class="sg-stage'+(o.cls?' '+o.cls:'')+(o.region===false?' free':'')+'" data-sg-stage="'+esc2(o.name||o.plate||'')+'" style="'+plateVars(o.plate)+'"'+(o.label?' aria-label="'+esc2(o.label)+'"':'')+'>'+
+    return '<section class="sb-stage'+(o.cls?' '+o.cls:'')+(o.region===false?' free':'')+'" data-sb-stage="'+esc2(o.name||o.plate||'')+'" style="'+plateVars(o.plate)+'"'+(o.label?' aria-label="'+esc2(o.label)+'"':'')+'>'+
       '<div class="sg-st-hud">'+side(hud.left,'l')+'<div class="sg-st-c">'+(hud.center||'')+'</div>'+side(hud.right,'r')+'</div>'+
       '<div class="sg-st-play"><div class="sg-st-region">'+(o.play||'')+'</div></div>'+
       '<div class="sg-st-ctl">'+(o.controls||'')+'</div></section>'; };
   function stageFit(){ try{
-    const st=document.querySelectorAll('.sg-stage'); if(!st.length) return;
+    const st=document.querySelectorAll('.sb-stage'); if(!st.length) return;
     const root=document.getElementById('root'); const z=root?(parseFloat(getComputedStyle(root).zoom)||1):1;
     const hdr=document.querySelector('.sb-header-sticky'); const top=hdr?Math.max(0,hdr.getBoundingClientRect().bottom):0;
     const tb=document.querySelector('.sb-tabbar'); let bot=0;
     if(tb&&getComputedStyle(tb).display!=='none'){ const r=tb.getBoundingClientRect(); if(r.height) bot=Math.max(0,innerHeight-r.top); }
     st.forEach(s=>{ s.style.top=(top/z).toFixed(2)+'px'; s.style.bottom=(bot/z).toFixed(2)+'px'; });
-    document.documentElement.classList.add('sg-stage-on');
+    document.documentElement.classList.add('sb-stage-on');
   }catch(e){} }
   SGUI.stageFit=stageFit;
   (function watch(){ try{
     const root=document.getElementById('root'); if(!root) return;
     let raf=0; const kick=()=>{ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0;
-      if(!document.querySelector('.sg-stage')) document.documentElement.classList.remove('sg-stage-on'); else stageFit(); }); };
+      if(!document.querySelector('.sb-stage')) document.documentElement.classList.remove('sb-stage-on'); else stageFit(); }); };
     new MutationObserver(kick).observe(root,{childList:true});
     addEventListener('resize',kick); kick();
   }catch(e){} })();
@@ -735,7 +740,7 @@
     const tiles=modes.map(m=>{ const k=key+'/'+m.id, isLast=(m.id===last);
       return '<div class="sg-hub-tile sg-panel'+(isLast?' last':'')+'" data-mode="'+esc2(m.id)+'">'+
         (isLast?'<span class="sg-hub-lastmark">Last played</span>':'')+
-        '<button type="button" class="sg-hub-go" data-act="hubMode" data-arg="'+esc2(k)+'" aria-label="'+esc2(m.title+(m.promise?'. '+m.promise:''))+'">'+art(m.art)+
+        '<button type="button" class="sg-hub-go" data-act="hubMode" data-arg="'+esc2(k)+'" aria-label="'+esc2(m.title+(m.isNew?', new':'')+(m.promise?'. '+m.promise:'')+(isLast?'. Played last':''))+'">'+art(m.art)+
           '<span class="sg-hub-name">'+esc2(m.title)+(m.isNew?'<i class="sg-hub-new" title="Not played yet"><span class="sg-sr">new</span></i>':'')+'</span>'+
           '<span class="sg-hub-promise">'+esc2(m.promise||'')+'</span></button>'+
         '<div class="sg-hub-meta">'+levelChip(k)+'<span class="sg-hub-best">'+(m.best?esc2(m.best):'No best yet')+'</span></div></div>'; }).join('');

@@ -64,7 +64,7 @@ async function mount(pg, html, plate) {
     await pg.evaluate(() => { SB_HUB_OPEN.gymtest = id => window.__hubOpened(id); });
     await mount(pg, await pg.evaluate(M => SB_HUB({ key: 'gymtest', title: 'Spelling Gym', plate: 'gym', modes: M, last: 'spot' }), MODES), 'gym');
     const hub = await pg.evaluate(() => {
-      const st = document.querySelector('.sg-stage'), r = st.getBoundingClientRect(), hdr = document.querySelector('.sb-header-sticky').getBoundingClientRect();
+      const st = document.querySelector('.sb-stage'), r = st.getBoundingClientRect(), hdr = document.querySelector('.sb-header-sticky').getBoundingClientRect();
       const tb = document.querySelector('.sb-tabbar'); const tbTop = tb && getComputedStyle(tb).display !== 'none' ? tb.getBoundingClientRect().top : innerHeight;
       const bg = getComputedStyle(st).backgroundImage;
       return { top: r.top - hdr.bottom, bot: tbTop - r.bottom, left: r.left, right: innerWidth - r.right, bg,
@@ -117,7 +117,7 @@ async function mount(pg, html, plate) {
     await until(pg, () => true);
     ok(typed.join('') === 'cat<!', `${T}: ${vp.m ? 'taps on the keys' : 'the real keyboard'} type, delete and submit (${typed.join('')})`);
     await pg.emulateMedia({ reducedMotion: 'reduce' });
-    const anim = await pg.evaluate(() => document.querySelector('.sg-stage').getAnimations({ subtree: true }).filter(a => a.playState === 'running').length);
+    const anim = await pg.evaluate(() => document.querySelector('.sb-stage').getAnimations({ subtree: true }).filter(a => a.playState === 'running').length);
     ok(anim === 0, `${T}: reduced motion — nothing on the stage animates (${anim})`);
     await ctx.close();
   }

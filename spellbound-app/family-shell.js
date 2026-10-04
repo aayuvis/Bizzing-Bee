@@ -523,7 +523,7 @@
     nextStep: nextStep, goNext: goNext, goStep: goStep, levelWords: levelWords,
     inDrill: inDrill, leaveDrill: leaveDrill,
     routeOf: routeOf, applyRoute: applyRoute, boot: boot, afterRender: afterRender,
-    sync: syncHash, playRoute: playRoute, leaveOverlay: leaveOverlay,
+    sync: function () { if (R.booted) syncHash(); }, playRoute: playRoute, leaveOverlay: leaveOverlay,
     startActivity: startActivity, milestone: milestone, watch: watch,
     bookOut: bookOut, bookIn: bookIn, switchChild: switchChild,
     hiveBtn: hiveBtn, lockBtn: lockBtn, kidBtn: kidBtn, kidMenu: kidMenu, demoBar: demoBar,
