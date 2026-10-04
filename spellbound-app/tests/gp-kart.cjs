@@ -65,13 +65,17 @@ const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEven
     const r = [-1, 1].map(k => { const x = Math.round((K.x + k * 18 * u) * s.dpr), y = Math.round((K.y - 32 * u) * s.dpr);
       const d = g.getImageData(x - 2, y - 2, 5, 5).data; let R = 0, G = 0; for (let i = 0; i < d.length; i += 4) { R += d[i]; G += d[i + 1]; } return { R: R / 25, G: G / 25 }; });
     return r; });
-  await pg.evaluate(() => { window._race.toStraight(90); window._race.setV(1); window._race.steerTo(0); });
+  /* the rivals are sent a long way back first: a rival kart drawn across the player's tail
+     would be read as the lamp (rivals are wherever the clock left them) */
+  await pg.evaluate(() => { const R = window._race; R.toStraight(90); R.setV(1); R.steerTo(0); R.state().rivScr.forEach((_, i) => R.pace(i, -6000)); });
   await raceTime(pg, 0.3); const off = await lamp();
   /* read the lamps only once braking has been DRAWN: under load 150ms can be two frames,
-     and a pixel read before the frame that lit them measures the timer, not the lamp */
+     and a pixel read before the frame that lit them measures the timer, not the lamp. And
+     read them after the same 50ms of RACE that three frames are on an idle machine — three
+     frames of a throttled run are 150ms of race (a 4x run read 102 → 190, under the 200 bar) */
   await key(pg, 'keydown', 'ArrowDown');
   await pg.waitForFunction(() => window._race.state().braking, null, { timeout: 2000 });
-  await pg.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r)))));
+  await raceTime(pg, 0.05);
   const on = await lamp(); await key(pg, 'keyup', 'ArrowDown');
   const lit = on.every((q, i) => q.R > 200 && q.R - off[i].R > 50 && q.R - q.G > 80);
   ok(lit, `both brake lamps are red and brighten under braking — R ${off.map(q => Math.round(q.R)).join('/')} → ${on.map(q => Math.round(q.R)).join('/')}`);

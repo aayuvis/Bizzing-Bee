@@ -80,7 +80,8 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
     return { kids: (s.children || []).length, screen: state.screen, daily: localStorage.getItem('sb_daily'), tm: localStorage.getItem('sb_tm_log'),
       act: JSON.parse(localStorage.getItem('bizzing.activity') || '{}').s, wallet: localStorage.getItem('bizzing.wallet') }; });
   if (process.env.DBG) console.log(JSON.stringify(afterErase));
-  ok(afterErase.kids === 0 && afterErase.screen === 'landing' && !afterErase.daily && !afterErase.tm, 'erase leaves no household and no sb_ data; the app opens on the welcome page');
+  ok(afterErase.kids === 0 && afterErase.screen === 'landing' && !afterErase.daily && !afterErase.tm, 'erase leaves no household and no sb_ data; the app opens on the welcome page'
+    + (afterErase.kids === 0 && afterErase.screen === 'landing' && !afterErase.daily && !afterErase.tm ? '' : ' — ' + JSON.stringify({ kids: afterErase.kids, screen: afterErase.screen, daily: !!afterErase.daily, tm: !!afterErase.tm, act: (afterErase.act || []).length })));
   ok(afterErase.act && afterErase.act.length === 1 && afterErase.act[0].a === 'maths', "Bee's rows leave the activity feed; Bizzing Maths' rows stay");
   ok(walletBefore != null && afterErase.wallet && JSON.parse(afterErase.wallet).kids.ahana.coins === walletBefore, `the shared family wallet is left alone, as the screen says (${walletBefore} before, ${afterErase.wallet && JSON.parse(afterErase.wallet).kids.ahana.coins} after)`);
 
