@@ -89,7 +89,7 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
   headings free of emoji.
 
 ## My Feed (2 Oct 2026, FAMILY-STANDARD §6a) — the sixth tab, LAST, after Play
-- **Tabs: Home · Word Atlas · Practice · Library · Play · My Feed** (`NAV_TABS()` in app3.js draws both
+- **Tabs: Home · Word Atlas · Word Gym · Library · Play · My Feed** (`NAV_TABS()` in app3.js draws both
   bars; `navIcon('feed')`/`iconSVG('feed')`). The family's `checkShell(page,{phone,bee:true})` still returns
   [] with six (`tests/feed-screen.cjs`). A grown-up's switch behind the PIN (`toggleFeed`, household `fo`)
   takes the tab and the ☰ row away; `#/feed` then says it is off.
@@ -842,6 +842,62 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
   *breadcrumb* style (2–3 independently-true clues from different angles, hardest first,
   converging on one hard-to-guess answer). Never clue with the answer's most famous
   fact — that belongs in `f`.
+
+## Audit v4 (4 Oct 2026) — what changed, and the rules that came with it
+Owner decisions this round: struck/slur words deleted and medical/faith glosses rewritten kindly;
+a fast DATA gate on deploys; paid continents are ONE quiet line; the Practice tab is the **Word
+Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "You are here" Atlas card.
+- **Words**: to strike a word add it to `CORE_STRIKE` and the words-patch remove list, run
+  `node tools/strike-served.cjs`, then `node tools/build-feed.cjs`, and add it to
+  `tests/struck-words.cjs` (@check — shards, sentences, lore, synonyms, alternates, sounds, stop
+  pools, voice index, search source, feed, word of the hour, chapter lists, journeys, quiz and
+  trivia options). A word awaiting a decision goes in `SB_WORDS_HELD` (words-patch.js): out of the
+  feed and the word of the hour until decided. Store files are edited only through
+  `tools/word-stores.cjs` (refuses any line that does not round-trip). Clips of deleted words stay
+  in voice/w. Two Word Journeys (L56 euphemism treadmill, L18) name insults to TEACH them and are
+  exempt. The Advanced Pack's seven struck words are held at seven.
+- **Glosses**: `SB_GLOSS_OK` (words-patch.js) is the one cleanliness test (feed build + word of the
+  hour). `tools/clean-glosses.cjs` (served shards, chapter word meanings, trivia meaning options)
+  turns "(law) …" into "in law, …", drops "is …" fragments, backticks and "; - Author" credits.
+  Guard `tests/gloss-clean.cjs` is a ratchet. The word of the hour draws only `wohFit()` words.
+- **Counts**: `SB_COUNT` / `countTxt` / `factFill` are the only source of a printed count; never type
+  a count into copy (use `{key}` tokens in SB_FAQ / SB_COMPARE). LIBRARY and VOICE are both
+  "over 125,000" — the voice claim counts library words with a clip, NOT manifest keys (the manifest
+  holds ~4,600 struck words no child can reach). worlds4.js lands after app3's first render, so a
+  world count read at first paint is 5, not 8. Guard `tests/one-count.cjs` (@check); word-bank.cjs
+  holds the floors to the live data.
+- **Search finds places** (`placeIndex`/`headerSuggest`/`openPlace`): regions, stops, games, chapters,
+  tools; a place opens through its tap opener, so locks and the PIN hold. `header-places.cjs` (slow).
+- **Addresses to gated screens go through the DOOR map** in family-shell.js `applyRoute`
+  (#/quotes, #/vocab, #/typing, #/ipatrain, #/trivtrain, #/adv) — never straight to setNav.
+- **The PIN is a salted SHA-256 record** (store.js `pinMake`/`pinCheck`, step v8→v9; backups carry
+  the record). Tests may still seed plain digits — the migration takes them.
+- **My Feed**: the session is per VISIT (`c.feed.vis`), not per day; "why" lines come from the real
+  signal; the build drops cards whose gloss fails `SB_GLOSS_OK`.
+- **Daily Buzz is a screen** (nav `daily`, `#/daily`, `viewDaily` + `SB_DAILY.mount`), not an overlay.
+- **Home's first screen**: the pictures it showed are remembered in device key `homeArt` and
+  preloaded by a second read-only IIFE in the parse-time script; boot-lazy fetches `trail` at
+  DOMContentLoaded when Home was drawn (inside boot-lazy `state` is the loader's own). The hello waits
+  for `SB_LAZY.ready('trail')`. Guard `home-first-paint.cjs` (throttled, not @check).
+- **Phone**: 44px minimum targets (`a11y.css` §6; exempt and stated in `tests/touch-targets.cjs`:
+  the family top bar, Daily Buzz keys, Atlas medallions, inline links). `mobile-layout`'s overflow
+  check compares against the REQUESTED width (an overflowing page widens its own innerWidth).
+- **Announcements**: one polite `#sb-live` on `<body>`; mark a prompt with `data-live-prompt`
+  (`tests/live-prompts.cjs`). A region inside `#root` is rebuilt every render and never announced.
+- **Word Gym**: tab name only — key `coach`, route `#/practice` (+ `#/gym` alias). `tests/word-gym.cjs`.
+- **Grand Prix upright** (supersedes "ON A PHONE THE GRAND PRIX RACES SIDEWAYS"): road full width,
+  62% of the play area; Steer Left / Brake / Steer Right in the thumb zone BELOW the road; spelling
+  card at the top; turning the phone re-lays out the same race, releases held inputs, and waits for an
+  open spelling card. Sideways/tablet/desktop unchanged. `tests/gp-landscape.cjs`.
+- **Paid continents** (supersedes the "Locked continents" bullet below): one quiet line, "More
+  continents come with the Advanced Pack", one "Show a grown-up" button (atlasAdvDoor → PIN).
+- **Tests wait on state, never on a sleep** (`tests/lib/wait.cjs`: `booted`, `until`, `raceTime`,
+  `still`); measure colour with transitions off; any free port, never a fixed one;
+  `node tests/lib/run.cjs --cpu 4 --repeat 3 <names>` finds a sleep before a loaded machine does;
+  `--node-only` is the deploy's data gate. console-clean has a 900s budget. A Mock Bee timer
+  belongs to the bee that set it. **Open**: under load a reload straight after boot can lose the
+  page's fresh localStorage (the seed marker too) — store-seam / medals / hive-activity /
+  family-topbar each failed once that way and pass alone; unexplained.
 
 ## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
 
