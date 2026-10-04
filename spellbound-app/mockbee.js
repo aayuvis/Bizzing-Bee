@@ -632,13 +632,15 @@
   }
 
   app2.mbOpen = (mode) => {
-    aqStop();
+    aqStop(); dropMiss(state.mb);
     const m = MODES.indexOf(mode) >= 0 ? mode : ((state.mb && state.mb.mode) || 'bee');
     state.nav = 'mockbee'; state.screen = 'app';
     state.mb = { view: m === 'family' ? 'family' : 'lobby', mode: m, field: null, round: 0 };
     /* what the Chair reads: sentences, alternate pronunciations, the Coach's rulebook — and
        the arcade kit, which carries the shared stage */
-    try { if (window.SB_LAZY) SB_LAZY.need(['sents', 'sounds', 'coachRules', 'vocab26', 'saga2'], () => { if (state.nav === 'mockbee' && state.mb && state.mb.view !== 'stage') render(); }); } catch (e) {}
+    try { if (window.SB_LAZY) {
+      SB_LAZY.need('arcade', () => { if (state.nav === 'mockbee' && state.mb) render(); });   /* the stage, the miss card, the keys */
+      SB_LAZY.need(['sents', 'sounds', 'coachRules', 'vocab26'], () => { if (state.nav === 'mockbee' && state.mb && state.mb.view !== 'stage') render(); }); } } catch (e) {}
     try { window.scrollTo(0, 0); } catch (e) {}
     render();
   };
@@ -655,7 +657,7 @@
     if (P[+i] && FAM_BANDS.some(x => x[0] === b)) P[+i].band = b; render(); };
 
   app2.mbStart = () => {
-    aqStop();
+    aqStop(); dropMiss(state.mb);
     const c = active();
     const prev = mb();
     const mode = (prev && MODES.indexOf(prev.mode) >= 0) ? prev.mode : 'bee';
@@ -930,8 +932,10 @@
     record(s, g.word, ok, g.meTry, 'oral', g.turnAsks || []);
     /* A MISS HOLDS (FIX-BEE D3): the letters and the why stay at the microphone until
        Continue (or Enter). */
-    if (!ok) { g.hold = () => { const gg = mb(); if (gg !== g || !g.hold) return; g.hold = null; humanVerdict(g, s, ok); };
-      try { sfx('wrong'); } catch (e) {} render(); return; }
+    if (!ok) { g.hold = () => { const gg = mb(); if (gg !== g || !g.hold) return; g.hold = null;
+        const mc = g.missCard; g.missCard = null; try { if (mc && mc.held) mc.close(); } catch (e) {}
+        humanVerdict(g, s, ok); };
+      try { sfx('wrong'); } catch (e) {} render(); mountMiss(g); return; }
     humanVerdict(g, s, ok);
   };
   app2.mbGoOn = () => { const g = mb(); if (g && g.hold) g.hold(); };
@@ -1414,7 +1418,7 @@
   }
   const ordinal = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
 
-  app2.mbQuit = () => { aqStop(); state.mb = null; state.nav = 'games'; render(); };
+  app2.mbQuit = () => { aqStop(); dropMiss(state.mb); if (_kb) { try { _kb.destroy(); } catch (e) {} _kb = null; } state.mb = null; state.nav = 'games'; render(); };
   app2.mbAgain = () => { app2.mbStart(); };
   app2.mbLobby = () => { const g = mb(); app2.mbOpen(g && g.mode); };
   /* the old chip, kept only for a build without SB_LEVEL */
@@ -1440,15 +1444,67 @@
     if (s.kind === 'player') return `<span class="mb-init" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .38)}px">${esc(initials(s.name))}</span>`;
     return window.SB_AVATAR ? SB_AVATAR(faceOf(s.bot), size) : '';
   }
-  /* the shared stage (§5.0) when the build has it; the same three bands locally until then */
+  /* THE SHARED STAGE (§5.0): SGUI.stage, from the engine kit in saga2.js (lazy, group 'arcade' —
+     mbOpen asks for it). The hall uses the whole play area (region:false) because its benches
+     flank the microphone; the hall's own dark ink rides in .mb-in, since the stage's is the
+     theme's. Until the kit has landed, a local stage of the same three bands stands in. */
+  const kitStage = () => !!(window.SGUI && typeof SGUI.stage === 'function');
   function stageHTML(o) {
-    try { if (window.SGUI && typeof SGUI.stage === 'function') return SGUI.stage(o); } catch (e) {}
+    const play = '<div class="mb-in mb-playin">' + (o.play || '') + '</div>';
+    const controls = o.controls ? '<div class="mb-in mb-ctlin">' + o.controls + '</div>' : '';
+    if (kitStage()) {
+      try { return SGUI.stage({ plate: o.plate, name: 'mockbee', cls: 'mb-stage', region: false, label: 'Mock Spelling Bee', hud: o.hud, play, controls }); } catch (e) {}
+    }
     setTimeout(fitStage, 0);
     return `<div class="mb-st" style="--mb-plate:url('${o.plate}')">
       <div class="mb-st-hud"><div class="mb-st-l">${o.hud.left || ''}</div><div class="mb-st-c">${o.hud.center || ''}</div><div class="mb-st-r">${o.hud.right || ''}</div></div>
-      <div class="mb-st-play">${o.play || ''}</div>
-      <div class="mb-st-ctrl">${o.controls || ''}</div></div>`;
+      <div class="mb-st-play">${play}</div>
+      <div class="mb-st-ctrl">${controls}</div></div>`;
   }
+  /* THE MISS CARD (§1.5): SGUI.miss on the stage — the letters, the why, the word said again,
+     Continue or Enter. The hall re-renders around it (an announcement, a lazy file landing), so
+     a card whose stage was rebuilt is put back on the new one; and a card left behind when the
+     child leaves the hall is closed without moving the bee, so the kit's hold never sticks. */
+  const kitMiss = () => !!(window.SGUI && typeof SGUI.miss === 'function' && kitStage());
+  function mountMiss(g) {
+    if (!kitMiss() || mb() !== g || g.phase !== 'meDone' || !g.hold || state.nav !== 'mockbee') return;
+    const host = document.querySelector('.sb-stage') || document.body;
+    if (g.missCard && g.missCard.held) { if (!document.body.contains(g.missCard.el)) host.appendChild(g.missCard.el); return; }
+    g.missCard = SGUI.miss(host, g.word, g.meTry || '', { onContinue: () => { if (mb() === g && g.hold) g.hold(); } });
+    const iv = setInterval(() => { if (!g.missCard) return clearInterval(iv); if (mb() !== g || state.nav !== 'mockbee') { clearInterval(iv); dropMiss(g); } }, 400);
+  }
+  function dropMiss(g) {
+    if (!g || !g.missCard) return;
+    const mc = g.missCard; g.missCard = null; g.hold = null;
+    try { if (mc.held) mc.close(); } catch (e) {}
+  }
+  /* THE ON-SCREEN KEYBOARD (§1.6): SGUI.keys on a touch screen, typing into the bee's own field
+     (the box shows the letters and keeps the phone's keyboard down); a desktop types into the
+     input with the real keyboard. Re-mounted after every render, which rebuilds its host. */
+  let _kb = null;
+  const coarse = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
+  const kitKeys = () => !!(window.SGUI && typeof SGUI.keys === 'function') && coarse();
+  function typing(g) {
+    if (!g) return null;
+    if (g.phase === 'me') return { id: 'mb-in', get: () => g.typed || '', set: v => { g.typed = v; }, go: () => app2.mbSpell() };
+    if (g.phase === 'practice' && g.practice) return { id: 'mb-prac-in', get: () => g.practice.typed || '', set: v => { g.practice.typed = v; }, go: () => app2.mbPracSkip() };
+    if (g.phase === 'written' && g.wr) return { id: 'mb-in', get: () => g.wr.typed || '', set: v => { g.wr.typed = v; }, go: () => app2.mbWrGo() };
+    if (g.phase === 'bolt' && g.bolt) return { id: 'mb-in', get: () => g.bolt.typed || '', set: v => { g.bolt.typed = v; }, go: () => app2.mbBoltGo() };
+    return null;
+  }
+  function mountKeys() {
+    if (_kb) { try { _kb.destroy(); } catch (e) {} _kb = null; }
+    const g = mb(); if (!g || state.nav !== 'mockbee' || g.view !== 'stage' || !kitKeys()) return;
+    const f = typing(g); const host = document.getElementById('mb-keys'); if (!f || !host) return;
+    const show = () => { try { const el = document.getElementById(f.id); if (el) el.value = f.get(); } catch (e) {} };
+    _kb = SGUI.keys(host, { touch: true, physical: false,
+      onKey: ch => { if (typing(mb()) && f.get().length < 40) { f.set(f.get() + ch); show(); } },
+      onBack: () => { f.set(f.get().slice(0, -1)); show(); },
+      onEnter: () => f.go() });
+  }
+  /* the input a typing phase draws: on a touch screen it only shows the letters */
+  const inputAttrs = () => kitKeys() ? ' readonly inputmode="none"' : '';
+  const keysHost = () => kitKeys() ? '<div id="mb-keys" class="mb-keys"></div>' : '';
   const plate = () => { try { return PLATE; } catch (e) { return ''; } };
   /* The local stage fills the window between the shell's bar and its foot (the tab bar on a
      phone) and never makes the page scroll (§5.0 rule 1): measured, because #root is zoomed
@@ -1488,6 +1544,7 @@
         <div class="mb-modes" role="radiogroup" aria-label="Kind of bee">${tiles.map(([k, t, d]) =>
           `<button class="mb-mode${mode === k ? ' on' : ''}" role="radio" aria-checked="${mode === k}" data-act="mbMode" data-arg="${k}">
             <b>${t}</b><span>${esc(d)}</span></button>`).join('')}</div>
+        ${mode === 'bee' ? `<div class="mb-lvlrow mb-narrow">Word level ${lvlChip()}</div>` : ''}
         <div class="mb-field-h">${mode === 'champ' ? 'The field — Finals words tonight' : 'The field'}</div>
         <div class="mb-cards">${rivals.map(b => `<div class="mb-card">
           <span class="mb-card-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(b), 48) : ''}</span>
@@ -1496,7 +1553,7 @@
     const controls = `<div class="mb-go-row"><button data-act="mbStart" class="mb-go">${iconSVG('crown', 17)} Take the stage</button></div>`;
     return `<div class="mb-wrap">${stageHTML({ plate: plate(),
       hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`,
-        center: `<span class="mb-title">Mock Spelling Bee</span>${mode === 'bee' ? ' ' + lvlChip() : ''}`,
+        center: `<span class="sg-st-title mb-ttl"><span class="mb-title">Mock <span class="mb-wide">Spelling </span>Bee</span>${mode === 'bee' ? '<span class="mb-wide"> ' + lvlChip() + '</span>' : ''}</span>`,
         right: `<span class="mb-rec">${p.played ? (p.wins || 0) + ' won · best ' + ordinal(p.best || (B.rivals + 1)) : (B.rivals + 1) + ' spellers'}</span>` },
       play, controls })}</div>`;
   }
@@ -1524,7 +1581,7 @@
     const controls = `<div class="mb-go-row">${P.length < 4 ? `<button data-act="mbFamAdd" class="mb-back2">+ Add a player</button>` : ''}
       <button data-act="mbStart" class="mb-go">${iconSVG('users', 17)} Start the bee</button></div>`;
     return `<div class="mb-wrap">${stageHTML({ plate: plate(),
-      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`, center: `<span class="mb-title">Family Bee night</span>`,
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">Family Bee night</span></span>`,
         right: `<span class="mb-rec">${P.length} players</span>` }, play, controls })}</div>`;
   }
 
@@ -1571,7 +1628,7 @@
         <div class="mb-mic-in"><span class="mb-mic-name">${esc(nameOf(who))}</span>
           <div class="mb-letters">${esc((g.meTry || '—').toUpperCase().split('').join(' '))}</div>
           <div class="mb-truth">${g.meOk ? 'Correct' : (g.timeUp && !g.meTry ? 'Time ran out. ' : '') + 'The word was <b>' + esc(w.w || '') + '</b>'}</div>
-          ${!g.meOk && g.hold && window.missFeedbackHTML ? `<div class="mb-why">${missFeedbackHTML(w, g.meTry || '')}</div>` : ''}</div></div>`;
+          ${!g.meOk && g.hold && !kitMiss() && window.missFeedbackHTML ? `<div class="mb-why">${missFeedbackHTML(w, g.meTry || '')}</div>` : ''}</div></div>`;
     }
     if (g.phase === 'vme' || g.phase === 'vmeDone') return vocMeUI();
     if (g.phase === 'vprac') return vocPracUI();
@@ -1609,6 +1666,21 @@
   function controlsHTML(g) {
     const w = g.word || {};
     if (g.phase === 'me') {
+      if (kitKeys()) return keysHost();          /* the box and the Chair sit in the play area; the keys own the controls */
+      return chairHTML(g) + spellRow(g);
+    }
+    return controlsRest(g);
+  }
+  function spellRow(g) {
+    return `<div class="mb-spellrow">
+          <input class="mb-input" id="mb-in" data-fkey="mbIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Spell the word"${inputAttrs()}
+            placeholder="spell it" value="${escA(g.typed || '')}" oninput="callAct('mbType',this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbSpell');}">
+          <button data-act="mbSpell" class="mb-submit">Spell it →</button></div>`;
+  }
+  function chairHTML(g) {
+    const w = g.word || {};
+    {
       const asked = g.asked || {};
       const keys = chairKeys(w);
       const who = g.atMic && isHuman(g.atMic) ? g.atMic : g.field.find(isProfile);
@@ -1619,14 +1691,16 @@
       return `<div class="mb-chair" role="group" aria-label="The pronouncer's chair — each question uses 3 seconds">${CHAIR.filter(c => keys.indexOf(c[0]) >= 0).map(([k, l, ic]) =>
           `<button data-act="mbAsk" data-arg="${k}" class="mb-ask${asked[k] ? ' on' : ''}" data-q="${k}">${iconSVG(ic, 15)}<span>${l}</span></button>`).join('')}</div>
         ${answers ? `<div class="mb-answers">${answers}</div>` : ''}
-        ${strip.length ? `<div class="mb-strip">${strip.map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
-        <div class="mb-spellrow">
-          <input class="mb-input" id="mb-in" data-fkey="mbIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Spell the word"
-            placeholder="spell it" value="${escA(g.typed || '')}" oninput="callAct('mbType',this.value)"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbSpell');}">
-          <button data-act="mbSpell" class="mb-submit">Spell it →</button></div>`;
+        ${strip.length ? `<div class="mb-strip">${strip.map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}`;
     }
-    if (g.phase === 'meDone' && !g.meOk && g.hold) return `<div class="mb-go-row"><button data-act="mbGoOn" class="mb-submit">Continue →</button></div>`;
+  }
+  /* the typing row of the phase on screen: in the controls with a real keyboard, in the play
+     area over the on-screen keys on a touch screen */
+  const rowFor = g => g.phase === 'me' ? spellRow(g) : controlsRest(g, true);
+  function controlsRest(g, rowOnly) {
+    const w = g.word || {};
+    if (!rowOnly && kitKeys() && typing(g)) return keysHost();
+    if (g.phase === 'meDone' && !g.meOk && g.hold) return kitMiss() ? '' : `<div class="mb-go-row"><button data-act="mbGoOn" class="mb-submit">Continue →</button></div>`;
     if (g.phase === 'vmeDone' && !g.meOk && g.hold) return `<div class="mb-go-row"><button data-act="mbGoOn" class="mb-submit">Continue →</button></div>`;
     if (g.phase === 'pass') return `<div class="mb-go-row"><button data-act="mbReady" class="mb-go">${iconSVG('play', 16)} ${esc(nameOf(g.atMic))} — ready</button></div>`;
     if (g.phase === 'outChoice') return `<div class="mb-go-row">
@@ -1637,7 +1711,7 @@
       const pr = g.practice || {}; const b = pr.forBot;
       return `<div class="mb-spellrow">
           <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 16)} Again</button>
-          <input class="mb-input" id="mb-prac-in" data-fkey="mbPrac" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Write the rival's word"
+          <input class="mb-input" id="mb-prac-in" data-fkey="mbPrac" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Write the rival's word"${inputAttrs()}
             placeholder="write it here" value="${escA(pr.typed || '')}" oninput="callAct('mbPracType',this.value)"
             onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbPracSkip');}">
           <button data-act="mbPracSkip" class="mb-submit">${esc(nameOf(b))}, spell it →</button></div>`;
@@ -1647,7 +1721,7 @@
       return `<div class="mb-spellrow">
           <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 16)} Again</button>
           <input class="mb-input" id="mb-in" data-fkey="mbIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Write the word"
-            placeholder="write it — Enter for the next" value="${escA(r.typed || '')}" oninput="callAct('mbWrType',this.value)"
+            placeholder="write it — Enter for the next" value="${escA(r.typed || '')}" oninput="callAct('mbWrType',this.value)"${inputAttrs()}
             onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbWrGo');}">
           <button data-act="mbWrGo" class="mb-submit">Next →</button></div>`;
     }
@@ -1656,7 +1730,7 @@
       return `<div class="mb-spellrow">
           <button data-act="mbSay" class="mb-hear">${iconSVG('volume', 16)} Again</button>
           <input class="mb-input" id="mb-in" data-fkey="mbIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Spell the word"
-            placeholder="spell it — Enter for the next" value="${escA(b.typed || '')}" oninput="callAct('mbBoltType',this.value)"
+            placeholder="spell it — Enter for the next" value="${escA(b.typed || '')}" oninput="callAct('mbBoltType',this.value)"${inputAttrs()}
             onkeydown="if(event.key==='Enter'){event.preventDefault();callAct('mbBoltGo');}">
           <button data-act="mbBoltGo" class="mb-submit">Next →</button></div>`;
     }
@@ -1670,20 +1744,24 @@
     const mine = g.mode !== 'family' ? g.field.find(isProfile) : null;
     /* the entrance plays ONCE: render() rebuilds this wrapper, and a replayed slide on every
        repaint made the whole hall drift while a rival spelled */
-    const rise = g.rose ? '' : ' rise';
+    /* (no entrance slide on the kit's stage: a transform on its wrapper would unfix it) */
+    const rise = g.rose || kitStage() ? '' : ' rise';
     g.rose = 1;
-    const play = `<div class="mb-hall${g.mode === 'family' ? ' fam' : ''}">
+    setTimeout(() => { mountKeys(); if (g.phase === 'meDone' && g.hold) mountMiss(g); }, 0);
+    const atmic = /^(me|meDone)$/.test(g.phase || '');   /* a phone folds the benches away while the child spells */
+    const touchChair = kitKeys() && typing(g) ? `<div class="mb-touchchair">${g.phase === 'me' ? chairHTML(g) : ''}${rowFor(g)}</div>` : '';
+    const play = `<div class="mb-hall${g.mode === 'family' ? ' fam' : ''}${atmic ? ' atmic' : ''}">
         <div class="mb-bench l">${L.map(s => benchChip(s, g)).join('')}</div>
         <div class="mb-centre${/^(me|meDone|pass)$/.test(g.phase || '') ? ' atmic' : ''}">
           <div class="mb-ann"><span class="mb-ann-ic">${iconSVG('volume', 15)}</span><p>${esc(g.announce || '')}</p></div>
-          <div class="mb-podium">${podiumHTML(g)}${MIC_SVG}</div>
+          <div class="mb-podium">${podiumHTML(g)}${MIC_SVG}</div>${touchChair}
           ${mine ? `<div class="mb-mychair">${benchChip(mine, g)}</div>` : ''}
         </div>
         <div class="mb-bench r">${Rb.map(s => benchChip(s, g)).join('')}</div>
       </div>`;
     return `<div class="mb-wrap${rise}">${stageHTML({ plate: plate(),
       hud: { left: `<button data-act="mbQuit" class="mb-back">← Leave</button>`,
-        center: `<span class="mb-round">${R.name.indexOf(' · ') > 0 ? `<span class="mb-wide">${esc(R.name.split(' · ')[0])} · </span>${esc(R.name.split(' · ')[1])}` : esc(R.name)}<i>${esc(R.sub)}</i></span>`,
+        center: `<span class="sg-st-title mb-ttl"><span class="mb-round">${R.name.indexOf(' · ') > 0 ? `<span class="mb-wide">${esc(R.name.split(' · ')[0])} · </span>${esc(R.name.split(' · ')[1])}` : esc(R.name)}<i>${esc(R.sub)}</i></span></span>`,
         right: `<span class="mb-rec">${live.length} of ${g.field.length}<span class="mb-wide"> standing</span></span>` },
       play, controls: controlsHTML(g) })}</div>`;
   }
@@ -1818,7 +1896,7 @@
         <button data-act="mbAgain" class="mb-go">${iconSVG('crown', 17)} Another bee</button>
         <button data-act="mbLobby" class="mb-back2">Change the bee</button></div>`;
     return `<div class="mb-wrap">${stageHTML({ plate: plate(),
-      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`, center: `<span class="mb-title">${title}</span>`,
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">${title}</span></span>`,
         right: `<span class="mb-rec">${p.played ? p.played + (p.played === 1 ? ' bee' : ' bees') + ' · ' + (p.wins || 0) + ' won' : g.field.length + ' spellers'}</span>` },
       play, controls })}</div>`;
   }

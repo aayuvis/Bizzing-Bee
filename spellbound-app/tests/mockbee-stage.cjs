@@ -10,13 +10,19 @@
      INPUT   the real keyboard spells (type + Enter) on a desktop; on a touch phone the Chair
              and Spell it are tapped; Chair buttons are at least 40 px tall and every control
              sits above the tab bar, in the window, with the page not scrolled.
-     STAGE   the HUD's two side columns are the same width, the centre column is centred on
-             the stage, and the two benches are the same width — mirrored, within 4 px.
+     STAGE   the hall stands on the engine kit's SGUI.stage (.sb-stage) and passes the shared
+             T14/T15 checks (tests/lib/stage-check.cjs: mirrored HUD, centred title and
+             controls, equal gutters, no page scroll, nothing under the tab bar, a phone's
+             controls in the bottom 38%, keys ≥ 40 px, no flat fill, no pure white or black);
+             the two benches are the same width and the microphone is on the centre line.
+     KEYS    on a touch phone the word is typed on SGUI.keys (the box only shows the letters);
+             a miss opens the kit's miss card, and Continue lets the bee go on.
      FAMILY  names typed for Family Bee night are on the stage and nowhere in localStorage.
    Every wait is on state (lib/wait.cjs). Run: NODE_PATH=/opt/node22/lib/node_modules node tests/mockbee-stage.cjs */
 const { chromium } = require('playwright');
 const path = require('path');
 const { booted, until } = require('./lib/wait.cjs');
+const SC = require('./lib/stage-check.cjs');
 const ROOT = path.resolve(__dirname, '..');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
@@ -32,10 +38,12 @@ const seed = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
     const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
     await pg.goto('file://' + ROOT + '/index.html#/play'); await booted(pg);
     await pg.evaluate(() => { window.Audio = function () { return { play: () => Promise.resolve(), pause: () => {} }; }; try { speechSynthesis.speak = () => {}; } catch (e) {} });
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   /* the engine kit: the stage, the miss card, the keys */
 
     /* ---- ROUTE ---- */
     await pg.evaluate(() => { location.hash = '#/mockbee'; });
-    const lobby = await until(pg, () => state.nav === 'mockbee' && state.mb && state.mb.view === 'lobby' && !!document.querySelector('.mb-mode'));
+    const lobby = await until(pg, () => state.nav === 'mockbee' && state.mb && state.mb.view === 'lobby' && !!document.querySelector('.sb-stage .mb-mode'));
+    if (lobby) { await pg.waitForTimeout(0); const lg = await SC.geometry(pg); const lp = await SC.pixels(pg); SC.report(ok, tag + ' lobby', lg, lp, { play: true }); }
     const backTxt = await pg.evaluate(() => (document.querySelector('.mb-st-hud .mb-back, .mb-back') || {}).innerText || '');
     if (lobby) await pg.click('.mb-back');
     const back = lobby && await until(pg, () => state.nav === 'games' && /#\/play/.test(location.hash));
@@ -81,26 +89,42 @@ const seed = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
     const leak = new RegExp('(^|[^a-z])' + words.full + '($|[^a-z])', 'i').test(vis);
     ok(!leak && /Definition\./.test(vis) && /Sentence\./.test(vis), `${tag} CHAIR: every answer open and the word "${words.full}" is nowhere in the hall's visible text`);
 
-    /* ---- the stage: mirrored and inside the window ---- */
+    /* ---- the stage: the shared T14/T15 checks on the turn itself, and the hall's own mirror ---- */
+    const tg = await SC.geometry(pg); const tp = await SC.pixels(pg);
+    SC.report(ok, tag + ' turn', tg, tp, { play: true });
     const geo = await pg.evaluate(() => {
-      const R = s => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom, w: r.width }; };
-      const st = R('.mb-st') || R('.mb-wrap'), hl = R('.mb-st-l'), hr = R('.mb-st-r'), hc = R('.mb-st-c'), bl = R('.mb-bench.l'), br = R('.mb-bench.r'), cen = R('.mb-centre');
-      const tb = document.querySelector('.sb-tabbar'); const tbTop = tb && getComputedStyle(tb).display !== 'none' ? tb.getBoundingClientRect().top : innerHeight;
-      const ctrls = [...document.querySelectorAll('.mb-st-ctrl button, .mb-st-ctrl input')].map(e => e.getBoundingClientRect());
-      const asks = [...document.querySelectorAll('.mb-chair .mb-ask')].map(e => e.getBoundingClientRect().height);
-      return { st, hl, hr, hc, bl, br, cen, tbTop, ih: innerHeight, sy: scrollY, lowest: Math.max(...ctrls.map(r => r.bottom)), highest: Math.min(...ctrls.map(r => r.top)), minAsk: Math.min(...asks) }; });
+      const R = s => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return { l: r.left, w: r.width }; };
+      return { st: R('.sb-stage'), cen: R('.mb-centre'), bl: R('.mb-bench.l'), br: R('.mb-bench.r'), asks: [...document.querySelectorAll('.mb-chair .mb-ask')].map(e => e.getBoundingClientRect().height) }; });
     const mid = geo.st.l + geo.st.w / 2;
-    ok(Math.abs(geo.hl.w - geo.hr.w) <= 4 && Math.abs((geo.hc.l + geo.hc.w / 2) - mid) <= 4 && Math.abs(geo.bl.w - geo.br.w) <= 4 && Math.abs((geo.cen.l + geo.cen.w / 2) - mid) <= 4,
-      `${tag} STAGE: HUD sides ${Math.round(geo.hl.w)}/${Math.round(geo.hr.w)}px, benches ${Math.round(geo.bl.w)}/${Math.round(geo.br.w)}px, the title and the microphone on the centre line`);
-    ok(geo.lowest <= geo.tbTop && geo.lowest <= geo.ih && geo.highest >= 0 && geo.minAsk >= 40,
-      `${tag} STAGE: every control is in the window and above the tab bar (lowest ${Math.round(geo.lowest)} ≤ ${Math.round(geo.tbTop)}), Chair buttons ≥ 40px (${Math.round(geo.minAsk)})`);
+    const benchOk = phone ? true : (geo.bl && geo.br && Math.abs(geo.bl.w - geo.br.w) <= 4);   /* a phone hides the benches while the child is at the microphone */
+    ok(benchOk && Math.abs((geo.cen.l + geo.cen.w / 2) - mid) <= 4 && Math.min(...geo.asks) >= 40,
+      `${tag} STAGE: ${phone ? '' : 'benches ' + Math.round(geo.bl.w) + '/' + Math.round(geo.br.w) + 'px, '}the microphone on the centre line, Chair buttons ≥ 40px (${Math.round(Math.min(...geo.asks))})`);
 
     /* ---- spelling: the keyboard on a desktop, a tap on a phone ---- */
     const target = await pg.evaluate(() => state.mb.word.w);
-    if (phone) { await pg.tap('#mb-in'); await pg.keyboard.type(target); await pg.tap('[data-act="mbSpell"]'); }
-    else { await pg.click('#mb-in'); await pg.keyboard.type(target); await pg.keyboard.press('Enter'); }
-    const spelt = await until(pg, () => state.mb.phase !== 'me' && state.mb.mine.length && state.mb.mine[state.mb.mine.length - 1].ok);
-    ok(spelt, `${tag} INPUT: ${phone ? 'tapping Spell it' : 'typing and Enter'} spells the word, and it counts`);
+    if (phone) {
+      const keys = await pg.evaluate(() => document.querySelectorAll('#mb-keys .sg-key').length);
+      for (const ch of target) await pg.tap(`#mb-keys .sg-key[data-k="${ch}"]`);
+      const shown = await pg.evaluate(() => (document.getElementById('mb-in') || {}).value);
+      await pg.tap('#mb-keys .sg-key.enter');
+      const spelt = await until(pg, () => state.mb.phase !== 'me' && state.mb.mine.length && state.mb.mine[state.mb.mine.length - 1].ok);
+      ok(keys >= 26 && shown === target && spelt, `${tag} KEYS: the word typed on the on-screen keys (${keys}) shows in the box ("${shown}") and Enter spells it`);
+    } else {
+      await pg.click('#mb-in'); await pg.keyboard.type(target); await pg.keyboard.press('Enter');
+      const spelt = await until(pg, () => state.mb.phase !== 'me' && state.mb.mine.length && state.mb.mine[state.mb.mine.length - 1].ok);
+      ok(spelt, `${tag} INPUT: typing and Enter spells the word, and it counts`);
+    }
+    /* a miss: the kit's card on the stage, held until Continue */
+    await until(pg, () => state.mb.phase === 'call', null, 30000);
+    await pg.evaluate(() => { const m = state.mb; m.turn = m.roster.findIndex(s => s.kind === 'me'); });
+    await until(pg, () => state.mb.phase === 'me', null, 60000);
+    await pg.evaluate(() => { app.mbType('zzqq'); app.mbSpell(); });
+    const card = await until(pg, () => !!document.querySelector('.sb-stage .sg-misswrap .sb-miss'));
+    await pg.evaluate(() => render());   /* a render under the card (a lazy file landing) must not lose it */
+    const kept = await until(pg, () => !!document.querySelector('.sb-stage .sg-misswrap .sb-miss') && state.mb.phase === 'meDone' && !!state.mb.hold);
+    if (phone) await pg.tap('.sg-miss-go'); else await pg.click('.sg-miss-go');
+    const went = await until(pg, () => !state.mb.hold && !document.querySelector('.sg-misswrap') && !(window.SGUI && SGUI.held));
+    ok(card && kept && went, `${tag} MISS: the kit's miss card covers the stage, survives a render, and Continue clears it and the hold`);
     await pg.evaluate(() => app.mbQuit());
 
     /* ---- Family Bee night: the names stay on the stage ---- */
