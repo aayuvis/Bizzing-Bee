@@ -186,15 +186,18 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     'hints come in steps: the meaning, then letters and beats, then the first letter — and a fourth tap hides them');
   ok(e6 && e6.every(x => !x.leak), 'no hint step ever prints the word');
 
-  /* ---- 14. (G11) Bizzillionaire asks word questions, and there are enough of them at every rung ----
-     Behaviour, not source text: this file also runs against the MINIFIED deploy tree, where the
-     filter's parameter names are renamed. Draw every rung many times and read what came out. */
-  const g11 = await pg.evaluate(async () => { for (let lv = 1; lv <= 5; lv++) await new Promise(r => { try { SB_TRIVIA.need(lv, r); } catch (e) { r(); } setTimeout(r, 8000); });
-    const ths = {}, per = {}; let n = 0;
-    for (let rung = 0; rung < 15; rung++) for (let k = 0; k < 12; k++) { _bizzS = { rung, used: new Set(), cur: null }; const d = bizzDraw(); if (!d) continue; n++; ths[d.q.th] = 1; }
+  /* ---- 14. (G11) The Ladder asks word questions, and there are enough of them at every level ----
+     REWRITTEN 4 Oct 2026 (games spec §4.3): Bizzillionaire's 15-rung overlay is gone; its climb is Word
+     Lore's Ladder (lore.js), twelve rungs over a step below, at and above the child's level. Behaviour,
+     not source text: this file also runs against the MINIFIED deploy tree. Build every level's ladder
+     several times and read what came out. */
+  const g11 = await pg.evaluate(async () => { await new Promise(r => { try { SB_LAZY.need(['quizhubs', 'sents'], r); } catch (e) { r(); } setTimeout(r, 20000); });
+    for (let lv = 1; lv <= 5; lv++) await new Promise(r => { try { SB_TRIVIA.need(lv, r); } catch (e) { r(); } setTimeout(r, 8000); });
+    const ths = {}, per = {}; let n = 0, ladders = 0, full = 0;
+    for (let lv = 1; lv <= 5; lv++) for (let k = 0; k < 3; k++) { const qs = SB_QHUB._ladder(lv); ladders++; if (qs.length === 12) full++; qs.forEach(q => { n++; ths[q.th] = 1; }); }
     for (const q of SB_TRIVIA.questions || []) if (q.ty === 'mc' && /^(words|eponyms|langs|wmeaning|wroots|wbreak|wstories)$/.test(q.th)) per[q.lv] = (per[q.lv] || 0) + 1;
-    _bizzS = null; try { localStorage.removeItem('sb_bizz_seen'); } catch (e) {} return { n, ths: Object.keys(ths), per }; });
-  ok(g11.n >= 150 && g11.ths.every(t => /^(words|eponyms|langs|wmeaning|wroots|wbreak|wstories)$/.test(t)), `${g11.n} Bizzillionaire draws across all 15 rungs are all word questions (${g11.ths.join(', ')})`);
+    return { n, ths: Object.keys(ths), per, ladders, full }; });
+  ok(g11.n >= 150 && g11.full === g11.ladders && g11.ths.every(t => /^(meanings|eponyms|wroots|wbreak|wstories)$/.test(t)), `${g11.n} Ladder rungs across ${g11.ladders} climbs at all five levels, every climb twelve rungs, all of them word questions (${g11.ths.join(', ')})`);
   ok([1, 2, 3, 4, 5].every(l => (g11.per[l] || 0) >= 150), 'and every level holds 150+ of them: ' + [1, 2, 3, 4, 5].map(l => g11.per[l]).join(' · '));
 
   /* ---- 6. Spell Scene's result ---- */
