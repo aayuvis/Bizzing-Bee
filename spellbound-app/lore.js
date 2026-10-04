@@ -587,7 +587,7 @@
     const big = g.mode === 'ladder' ? 'Rung ' + g.rung + ' of ' + RUNGS : g.mode === 'clock' ? g.right + ' right' : g.right + ' / ' + (g.n - g.two);
     const sub = g.mode === 'ladder' ? (g.rung >= RUNGS ? 'The whole ladder — every rung.' : g.missed ? 'The climb ends on a miss — the answer is above it now.' : 'You stopped climbing.')
       : g.mode === 'clock' ? (g.asked ? g.asked + ' answered in 60 seconds' : 'No answers this time') : g.mode === 'squares' ? g.lines + (g.lines === 1 ? ' line' : ' lines') + ' scored' : 'right first try';
-    const pay = g.coins > 0 ? `<div class="qz-pay">${coin(g.coins)} into your wallet</div>`
+    const pay = g.coins > 0 ? `<div class="qz-pay">${ic('star', 15)} +${g.coins} coin${g.coins === 1 ? '' : 's'} into your wallet</div>`
       : `<div class="qz-nopay">${g.hub === 'hive' && !hivePays() ? 'Just for fun — no coins in this hub.' : g.mode === 'ladder' ? 'Climb four rungs and every rung pays a coin.' : g.mode === 'clock' ? 'Six right, at least six in ten, and every right answer pays a coin.' : 'Six right and every right answer pays a coin.'}</div>`;
     const L = g.lvl || {}; const names = LVL_NAME;
     const up = L.offerUp ? (LV() && LV().upButton ? LV().upButton(lkey(g.hub, g.mode), L) : `<button class="qz-up" data-act="qzUp">Ready for ${esc(names[L.offerUp] || names[nextUp(L.level)] || 'the next level')}?</button>`) : '';
