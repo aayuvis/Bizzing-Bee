@@ -84,6 +84,7 @@ const TIMEOUT = {
   'feed-screen.cjs': 900,      // every card route (thousands of word cards) and 24 world × look contrast passes
   'result-screen.cjs': 1200,   // 70s per engine, eleven engines
   'console-clean.cjs': 900,    // three full walks (44 routes, 20 actions each); 262s in a full run, over 300 under load
+  'games-bots.mjs': 1800,      // every game and hub mode x three bots (games spec §8); ran past 300s on 4 Oct 2026
 };
 
 /* The deploy gate. Fast, and each one guards a promise made to a parent. */
