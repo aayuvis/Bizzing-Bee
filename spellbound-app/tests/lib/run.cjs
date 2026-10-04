@@ -31,6 +31,8 @@
                                             removed afterwards — "test the tree you pushed"
      --browser-only                         skip the node tests (they read SOURCE text and
                                             data, which a minified deploy tree no longer is)
+     --node-only                            only the node tests: the word data, the lists, the
+                                            counts — the deploy's data gate (owner, 4 Oct 2026)
    Env: SB_CHROME overrides the browser; SB_TEST_TIMEOUT (seconds) overrides every timeout. */
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
@@ -90,6 +92,7 @@ const flag = f => args.includes(f);
 const opt = f => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] : null; };
 const CHECK_ONLY = flag('--check');
 const BROWSER_ONLY = flag('--browser-only');
+const NODE_ONLY = flag('--node-only');
 const ROOT = opt('--root') ? path.resolve(opt('--root')) : null;
 const filters = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--root');
 
@@ -154,6 +157,7 @@ function runOne(dir, file, env, limit) {
   if (CHECK_ONLY) picked = picked.filter(f => CHECK.includes(f) || optsIn(fs.readFileSync(path.join(dir, f), 'utf8')));
   if (filters.length) picked = picked.filter(f => filters.some(q => f.includes(q)));
   if (BROWSER_ONLY) picked = picked.filter(f => isBrowser(fs.readFileSync(path.join(dir, f), 'utf8')));
+  if (NODE_ONLY) picked = picked.filter(f => !isBrowser(fs.readFileSync(path.join(dir, f), 'utf8')));
   const textSkipped = ROOT ? picked.filter(f => SOURCE_TEXT[f]) : [];
   if (ROOT) picked = picked.filter(f => !SOURCE_TEXT[f]);
   const missingCheck = CHECK_ONLY ? CHECK.filter(f => !all.includes(f)) : [];

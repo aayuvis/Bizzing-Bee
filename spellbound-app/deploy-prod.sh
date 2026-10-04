@@ -42,13 +42,15 @@ for f in app3.js saga2.js voice-review.js voice-words.js voice-cdn.js \
   echo "   ok  $f"
 done
 
-# ---------- 0b. no test gate (owner, 3 Oct 2026) ----------
-# "remove the gate as all changes will only pass through this chat": every change is made and
-# verified in the working session, which runs the tests that touch it before committing, so the
-# deploy no longer re-runs `npm run check`. The tests stay in tests/ and CI still runs them on
-# every push; they just do not stand between a commit and the live site. What remains below is
-# structural and takes seconds: syntax, stamp, CNAME, asset references, art trees, size.
+# ---------- 0b. THE DATA GATE (owner, 4 Oct 2026: "fast data-only gate") ----------
+# On 3 Oct the owner removed the full test gate ("all changes will only pass through this chat");
+# on 4 Oct, asked again after the v4 audit, chose a fast DATA gate instead. Every node test runs —
+# the word data, the slur / Nazi / struck-word lists, trivia and library counts, the feed corpus,
+# the data lints — about 30 seconds, and a failure ends the deploy here. The browser tests stay
+# with the session that makes a change. A new node test joins this gate automatically.
+say "0b. Data gate (node tests)"
 cd "$SRC"
+node tests/lib/run.cjs --node-only || die "the DATA GATE failed — read tests/build/logs/. Nothing was copied or pushed."
 # the minifier (3b) needs esbuild
 if [ ! -d node_modules/esbuild ]; then
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --no-audit --no-fund >/dev/null || die "npm ci failed — the minifier cannot run, so nothing is deployed"

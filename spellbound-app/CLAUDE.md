@@ -184,10 +184,13 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
 - **Tests run from one command**: `npm test` (everything, sequential, summary table) and
   `npm run check` (the fast subset; a test joins it with an `@check` comment). Tests take the
   browser from `SB_CHROME`. CI (`.github/workflows/bee-tests.yml`) runs on every push except
-  gh-pages. **The deploy scripts no longer run the tests** (owner, 3 Oct 2026: "remove the gate
-  as all changes will only pass through this chat"). The session that makes a change runs the
-  tests that touch it before committing; the deploy keeps only its seconds-long structural
-  guards (syntax, stamp, CNAME, asset references, art trees, size), then minifies a COPY
+  gh-pages. **The deploy runs a DATA GATE only** (owner: 3 Oct removed the full gate — "all
+  changes will only pass through this chat" — and on 4 Oct chose "a fast data-only gate"):
+  `node tests/lib/run.cjs --node-only`, every node test, ~30s, and a red one ends the deploy
+  before anything is copied. A new node test joins it automatically. Browser tests stay with the
+  session that makes a change, which runs the ones it touches before committing. Then the
+  seconds-long structural guards (syntax, stamp, CNAME, asset references, art trees, size), and
+  a minified COPY
   (`tools/minify.cjs`, esbuild) — the source stays readable and no-build. Nothing now tests the
   minified tree, so after a deploy that touches minify.cjs or adds a new script, run
   `node tests/lib/run.cjs --check --browser-only --root <deploy tree>` by hand. Tests that read
@@ -887,8 +890,8 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
   Guard: `tests/world-decor.cjs` (@check, all 8 worlds, light + dusk, 1280 + 390).
 - **Measure colour with transitions off**: `family-check` once saw zero primaries on a phone Home
   that had one — Continue carries `transition: all` and was caught mid-fade on a loaded machine.
-- **Deploys no longer run the tests** (see "Tests run from one command" above): the guards above
-  are run here, one at a time, before a commit.
+- **Deploys run only the node tests** (the data gate, see "Tests run from one command" above): the
+  browser guards above are run here, one at a time, before a commit.
 
 ## Nazi vocabulary is deleted (3 Oct 2026, owner: "remove words like nazi nazism nazis" — "delete these words from the repo")
 - **32 records deleted from every store** — the Nazi family (nazi/nazis/nazism/naziism/nazify…,
