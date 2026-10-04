@@ -13,6 +13,7 @@
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/store-seam.cjs                       */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
+const { booted, until } = require('./lib/wait.cjs');
 const ROOT = path.resolve(__dirname, '..');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
@@ -38,7 +39,7 @@ ok(firstDefer === 'store.js', 'store.js is the first deferred script (' + firstD
     const ctx = await b.newContext({ viewport: { width: 1000, height: 800 } });
     await ctx.addInitScript(([s, x]) => { try { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', typeof s === 'string' ? s : JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); if (x) Object.keys(x).forEach(k => localStorage.setItem(k, x[k])); localStorage.setItem('t_seed', '1'); } } catch (e) {} }, [blob, extra || null]);
     const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
-    await pg.goto(URL); await pg.waitForTimeout(2800); return { ctx, pg };
+    await pg.goto(URL); await booted(pg); return { ctx, pg };   // booted, not a 2.8s guess: on a loaded box boot ran past it
   };
 
   /* ---- 2. a household from before the seam: every step once, in order ---- */
@@ -55,7 +56,7 @@ ok(firstDefer === 'store.js', 'store.js is the first deferred script (' + firstD
     ok(r.wallet === 30 + 120 + 400 + 400 && r.themes.join() === 'spellbound' && r.theme === 'spellbound' && r.top === 'spellbound' && !r.acc,
       `the refunds that used to be ad-hoc init blocks still pay — crown 120 + origami 400 + aurora 400 + 30 = ${r.wallet} 🪙, and a removed world moves to the Hive`);
     ok(r.mast === 'cat,dog', 'the shared mastery map is carried onto the child once (' + r.mast + ')');
-    await pg.reload(); await pg.waitForTimeout(2600);
+    await pg.reload(); await booted(pg);
     const r2 = await pg.evaluate(() => ({ ran: SB_STORE.migrated(), wallet: BZ_WALLET.balance('Ahana') }));
     ok(r2.ran.length === 0 && r2.wallet === r.wallet, `a second boot runs nothing and pays nothing (${r2.ran.length} steps, ${r2.wallet} 🪙)`);
     await ctx.close(); }
@@ -68,7 +69,8 @@ ok(firstDefer === 'store.js', 'store.js is the first deferred script (' + firstD
     const r = await pg.evaluate(() => { const ro = SB_STORE.readOnly(); try { state.theme = 'aurora'; save(); app.setNav('home'); } catch (e) {}
       return { ro, raw: localStorage.getItem('sb_saas_v2'), toast: document.body.textContent };
     });
-    await pg.waitForTimeout(1600);
+    await until(pg, () => !!document.querySelector('.sb-ro'), null, 10000);
+    await pg.waitForTimeout(1600);   // drawn, and still there 1.6s on (the hold this check always had): a banner, not a flash
     const said = await pg.evaluate(() => { const el = document.querySelector('.sb-ro'); return !!el && /newer version/.test(el.textContent); });
     ok(r.ro && r.raw === raw0, 'a household saved by a newer build is opened read-only and stays byte-identical after a save()');
     ok(said, 'and a banner that stays says why nothing is being saved');

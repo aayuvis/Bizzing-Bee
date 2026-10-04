@@ -33,7 +33,13 @@
                                             data, which a minified deploy tree no longer is)
      --node-only                            only the node tests: the word data, the lists, the
                                             counts — the deploy's data gate (owner, 4 Oct 2026)
-   Env: SB_CHROME overrides the browser; SB_TEST_TIMEOUT (seconds) overrides every timeout. */
+     --cpu <n>                              slow every page down n times (Chromium's own CPU
+                                            throttle, tests/lib/throttle.cjs) — how a test that
+                                            sleeps instead of waiting is caught BEFORE a loaded
+                                            machine catches it; timeouts are scaled to match
+     --repeat <n>                           run the picked tests n times (a flake is a rate)
+   Env: SB_CHROME overrides the browser; SB_TEST_TIMEOUT (seconds) overrides every timeout;
+   SB_CPU_THROTTLE is the same as --cpu. */
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 
@@ -75,8 +81,9 @@ const TIMEOUT = {
   'mobile-layout.cjs': 600,
   'reader.cjs': 600,
   'a11y-axe.cjs': 600,
-  'result-screen.cjs': 1200,
-  'feed-screen.cjs': 900,      // every card route (thousands of word cards) and 24 world × look contrast passes   // 70s per engine, eleven engines
+  'feed-screen.cjs': 900,      // every card route (thousands of word cards) and 24 world × look contrast passes
+  'result-screen.cjs': 1200,   // 70s per engine, eleven engines
+  'console-clean.cjs': 900,    // three full walks (44 routes, 20 actions each); 262s in a full run, over 300 under load
 };
 
 /* The deploy gate. Fast, and each one guards a promise made to a parent. */
@@ -94,7 +101,9 @@ const CHECK_ONLY = flag('--check');
 const BROWSER_ONLY = flag('--browser-only');
 const NODE_ONLY = flag('--node-only');
 const ROOT = opt('--root') ? path.resolve(opt('--root')) : null;
-const filters = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--root');
+const CPU = +(opt('--cpu') || process.env.SB_CPU_THROTTLE || 0);
+const REPEAT = Math.max(1, +(opt('--repeat') || 1));
+const filters = args.filter((a, i) => !a.startsWith('--') && !['--root', '--cpu', '--repeat'].includes(args[i - 1]));
 
 /* The browser: SB_CHROME if set; else the machine's pinned Chromium if it exists; else
    whatever Playwright installed (that is the CI path — `npx playwright install chromium`).
@@ -126,7 +135,8 @@ function runOne(dir, file, env, limit) {
   return new Promise(resolve => {
     const t0 = Date.now();
     // detached = its own process group, so a timeout takes the browser down with the test
-    const child = spawn(process.execPath, [path.join(dir, file)], { cwd: path.dirname(dir), env, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+    const pre = CPU > 1 ? ['--require', path.join(__dirname, 'throttle.cjs')] : [];
+    const child = spawn(process.execPath, [...pre, path.join(dir, file)], { cwd: path.dirname(dir), env, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
     current = child;
     let out = '';
     child.stdout.on('data', d => { out += d; });
@@ -168,6 +178,7 @@ function runOne(dir, file, env, limit) {
     NODE_PATH: [path.join(APP, 'node_modules'), '/opt/node22/lib/node_modules', process.env.NODE_PATH || ''].filter(Boolean).join(path.delimiter),
   });
   if (ROOT) { env.SRC = ROOT; env.SHELF_SRC = ROOT; }
+  if (CPU > 1) env.SB_CPU_THROTTLE = String(CPU);
   const kinds = {};
   for (const f of picked) kinds[f] = isBrowser(fs.readFileSync(path.join(dir, f), 'utf8')) ? 'browser' : 'node';
   // node tests first: a broken data file should fail in seconds, not after the browsers
@@ -175,19 +186,23 @@ function runOne(dir, file, env, limit) {
 
   const logDir = path.join(HERE, 'build', 'logs');
   fs.mkdirSync(logDir, { recursive: true });
+  if (REPEAT > 1) picked = [].concat(...Array.from({ length: REPEAT }, () => picked));
   console.log(`${CHECK_ONLY ? 'CHECK' : 'FULL'} run: ${picked.length} tests (${picked.filter(f => kinds[f] === 'node').length} node, ${picked.filter(f => kinds[f] === 'browser').length} browser), one at a time` +
-    `${ROOT ? ' against ' + ROOT : ''}\nbrowser: ${chrome || '(Playwright default)'}\nlogs: ${logDir}\n`);
+    `${ROOT ? ' against ' + ROOT : ''}${CPU > 1 ? ', CPU throttled ' + CPU + 'x' : ''}\nbrowser: ${chrome || '(Playwright default)'}\nlogs: ${logDir}\n`);
   const rows = [];
   const T0 = Date.now();
+  const nth = {};
   for (const f of picked) {
-    const limit = +process.env.SB_TEST_TIMEOUT || TIMEOUT[f] || DEFAULT_TIMEOUT;
+    nth[f] = (nth[f] || 0) + 1;
+    const log = f.replace(/\.(c?js)$/, REPEAT > 1 ? '.' + nth[f] + '.log' : '.log');
+    const limit = +process.env.SB_TEST_TIMEOUT || (TIMEOUT[f] || DEFAULT_TIMEOUT) * Math.max(1, CPU);
     process.stdout.write(`  ${f.padEnd(30)} ${kinds[f].padEnd(8)}`);
     const r = await runOne(dir, f, env, limit);
-    fs.writeFileSync(path.join(logDir, f.replace(/\.(c?js)$/, '.log')), r.out);
+    fs.writeFileSync(path.join(logDir, log), r.out);
     const res = r.timedOut ? 'TIMEOUT' : r.code === 0 ? 'PASS' : 'FAIL';
     const why = res === 'PASS' ? '' : (r.timedOut ? `over ${limit}s` :
       (r.out.split('\n').filter(l => /FAIL|Error|error|✗|ISSUE|not ok/.test(l))[0] || r.out.trim().split('\n').slice(-1)[0] || '').trim().slice(0, 110));
-    rows.push({ f, kind: kinds[f], res, secs: r.secs, why });
+    rows.push({ f, kind: kinds[f], res, secs: r.secs, why, log });
     console.log(`${res.padEnd(8)} ${r.secs.toFixed(1).padStart(6)}s ${why}`);
   }
   if (cleanup) cleanup();
@@ -202,8 +217,8 @@ function runOne(dir, file, env, limit) {
   if (missingCheck.length) console.log(`  NOTE: check list names ${missingCheck.join(', ')} — not found`);
   for (const f of textSkipped) console.log(`  ${f.padEnd(30)}skipped on a deploy tree — ${SOURCE_TEXT[f]}`);
   for (const r of bad) {
-    console.log(`\n--- ${r.f} (${r.res}) — last lines of ${path.join('tests/build/logs', r.f.replace(/\.(c?js)$/, '.log'))}`);
-    const out = fs.readFileSync(path.join(logDir, r.f.replace(/\.(c?js)$/, '.log')), 'utf8').trim().split('\n');
+    console.log(`\n--- ${r.f} (${r.res}) — last lines of ${path.join('tests/build/logs', r.log)}`);
+    const out = fs.readFileSync(path.join(logDir, r.log), 'utf8').trim().split('\n');
     console.log(out.slice(-15).map(l => '    ' + l.slice(0, 200)).join('\n'));
   }
   process.exit(bad.length || !rows.length ? 1 : 0);

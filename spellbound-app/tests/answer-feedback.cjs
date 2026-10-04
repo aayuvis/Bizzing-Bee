@@ -13,9 +13,13 @@
    the Mock Spelling Bee at the microphone, a typed game card (Daily Buzz) and a multiple-choice
    game card (Word Quiz · Spellings). Each: right advances, wrong holds (checked after 4s, longer
    than any old timer) and shows why, Next moves on.
+   Every step waits for the STATE it needs (`U`, below) — the screen drawn, the panel up, the
+   card moved on — never for a guessed number of milliseconds. The 4s holds stay: they are the
+   check that nothing moves on by itself.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/answer-feedback.cjs               */
 const { chromium } = require('playwright');
 const path = require('path');
+const { booted } = require('./lib/wait.cjs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234',
@@ -27,10 +31,12 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const ctx = await b.newContext({ viewport: { width: 1000, height: 900 } });
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, seed);
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
-  await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(2800);
+  await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await booted(pg);
 
   const r = await pg.evaluate(async () => {
     const W = ms => new Promise(res => setTimeout(res, ms)); const o = {}; state.sound = false;
+    /* wait for a condition, not for a time: true when it holds, false after ms (the check after it then fails with its own message) */
+    const U = async (f, ms) => { for (const t0 = Date.now(); Date.now() - t0 < (ms || 15000);) { try { if (f()) return true; } catch (e) {} await W(30); } return false; };
     const RealAudio = window.Audio; window.Audio = function () { return { play: () => Promise.resolve(), pause: () => {}, set onerror(v) {}, get onerror() { return null; } }; };
     try { window.speechSynthesis.speak = () => {}; } catch (e) {}
     const TEAR = '#5EC2FF';   // the old 'oops' face drew a tear in this colour
@@ -55,8 +61,8 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
 
     /* ---- 1. the practice card ---- */
     state.sessionWords = [{ w: 'committee', d: 'a group chosen to decide things' }, { w: 'knight', d: 'a soldier on horseback' }, { w: 'harbour', d: 'a place for ships' }];
-    app.startTrain(); await W(200);
-    state.typed = 'comitee'; app.check(); await W(150);
+    app.startTrain(); await U(() => state.nav === 'train' && state.gi === 0 && state.status === 'idle');
+    state.typed = 'comitee'; app.check(); await U(() => !!missOn());
     o.pcPanel = missOn(); o.pcMood = state.mood; o.pcCover = await toastOver();
     const pcFace = (document.querySelector('[data-act="speak"]') || {}).closest ? document.querySelector('#root').innerHTML : '';
     o.pcNoTear = pcFace.indexOf(TEAR) < 0;
@@ -64,28 +70,29 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     await W(4000);
     o.pcHeld = state.status === 'wrong' && state.gi === 0 && !!missOn();
     state.typed = 'knigh'; app.check(); await W(80);   // retyping does not change the panel's record of the attempt
-    app.next(); await W(150);
+    app.next(); await U(() => state.gi === 1 && state.status === 'idle' && !missOn(), 5000);
     o.pcNext = state.gi === 1 && state.status === 'idle' && !missOn();
-    state.typed = 'nite'; app.check(); await W(100);
+    state.typed = 'nite'; app.check(); await U(() => !!missOn());
     o.pcSilent = (missOn() || {}).why;
-    app.next(); await W(150);
-    state.typed = 'harbour'; app.check(); await W(1500);
+    app.next(); await U(() => state.gi === 2 && state.status === 'idle');
+    state.typed = 'harbour'; app.check(); await U(() => state.sessionOver === true || state.gi > 2, 10000);
     o.pcRightAdvances = state.sessionOver === true || state.gi > 2;
 
     /* ---- 2. the Atlas quiz gate ---- */
-    await new Promise(res => SB_LAZY.need('atlas', res)); await W(400);
-    app.trailAct('honey|meadow'); await W(250);
+    await new Promise(res => SB_LAZY.need('atlas', res));
+    app.trailAct('honey|meadow'); await U(() => !!document.querySelector('[data-act="trailUnit"]'));
     const uid = document.querySelector('[data-act="trailUnit"]').getAttribute('data-arg');
-    app.trailUnit(uid); await W(250); app.trailQuiz(); await W(700);
+    app.trailUnit(uid); await U(() => state.trailUnit === uid); app.trailQuiz();
+    await U(() => state.tq && state.tq.items && state.tq.items.some(it => it.ty === 'spell') && state.tq.items.some(it => it.ty === 'mc' || it.ty === 'mean'));
     const q2 = state.tq; let spellAt = -1, mcAt = -1;
     q2.items.forEach((it, i) => { if (spellAt < 0 && it.ty === 'spell') spellAt = i; if (mcAt < 0 && (it.ty === 'mc' || it.ty === 'mean')) mcAt = i; });
     // a spell item, wrong
     q2.i = spellAt; q2.picked = null; render(); await W(100);
-    const sw = q2.items[spellAt].w; app.tqInput(sw.slice(0, -1) + (sw.slice(-1) === 'x' ? 'y' : 'x')); app.tqSpell(); await W(150);
+    const sw = q2.items[spellAt].w; app.tqInput(sw.slice(0, -1) + (sw.slice(-1) === 'x' ? 'y' : 'x')); app.tqSpell(); await U(() => !!missOn());
     o.qgPanel = missOn(); o.qgCover = await toastOver();
     await W(4000);
     o.qgHeld = state.tq.i === spellAt && state.tq.picked != null && !!missOn();
-    app.tqNext(); await W(150);
+    app.tqNext(); await U(() => state.tq.i === spellAt + 1, 5000);
     o.qgNext = state.tq.i === spellAt + 1;
     // a concept MCQ, wrong then (another) right
     const mcIt = state.tq.items[mcAt]; state.tq.i = mcAt; state.tq.picked = null; render(); await W(80);
@@ -94,44 +101,52 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     let rightAt = -1; state.tq.items.forEach((it, i) => { if (rightAt < 0 && i !== mcAt && (it.ty === 'mc' || it.ty === 'mean')) rightAt = i; });
     if (rightAt < 0) rightAt = mcAt;
     state.tq.i = rightAt; state.tq.picked = null; render(); await W(80);
-    app.tqPick(String(state.tq.items[rightAt].ans)); await W(1500);
+    app.tqPick(String(state.tq.items[rightAt].ans)); await U(() => state.tq.i === rightAt + 1 || state.tq.over, 10000);
     o.qgRightAdvances = state.tq.i === rightAt + 1 || state.tq.over;
     state.tq = null; state.trailView = null;
 
     /* ---- 3. the Mock Spelling Bee, at the microphone ---- */
-    app.mbOpen(); await W(150); app.mbStart(); await W(200);
-    const g = state.mb; g.word = { w: 'meringue', d: 'a sweet topping of whipped egg whites', y: 3 }; g.phase = 'me'; g.typed = ''; g.asked = {}; render(); await W(100);
-    app.mbType('merang'); app.mbSpell(); await W(150);
+    /* The child is handed the microphone BY THE HALL. Setting phase 'me' during the draw (as
+       this did) left the draw's own timer pending — it opens round one (beginRound sets the
+       phase to 'call') whenever the opening line ends — and on a loaded machine that landed
+       inside the 4s hold and called the next speller over a miss the hall was waiting on.
+       So: let the round open, give the child the next turn, and let nextTurn call them. */
+    app.mbOpen(); await U(() => state.nav === 'mockbee' && state.mb && state.mb.view === 'lobby');
+    app.mbStart(); await U(() => state.mb && state.mb.view === 'stage' && state.mb.phase === 'call', 30000);
+    { const m = state.mb; m.turn = m.field.filter(s => s.in).findIndex(s => s.kind === 'me'); }
+    await U(() => state.mb.phase === 'me', 30000);
+    const g = state.mb; g.word = { w: 'meringue', d: 'a sweet topping of whipped egg whites', y: 3 }; g.phase = 'me'; g.typed = ''; g.asked = {}; render();
+    app.mbType('merang'); app.mbSpell(); await U(() => !!missOn() && state.mb.phase === 'meDone');
     o.mbPanel = missOn(); o.mbHeldPhase = state.mb.phase; o.mbCover = await toastOver();
     await W(4000);
     o.mbHeld = state.mb.phase === 'meDone' && !!state.mb.hold && !!missOn();
-    app.mbGoOn(); await W(200);
+    app.mbGoOn(); await U(() => !state.mb.hold, 5000);
     o.mbGoesOn = !state.mb.hold;
     state.nav = 'home'; render();   // leave the hall standing: its own timers finish against a live state
 
     /* ---- 4. a typed game card: Daily Buzz ---- */
-    app.playGame('buzz'); await W(200);
+    app.playGame('buzz'); await U(() => state.game && state.game.type === 'buzz' && state.game.list);
     const gb = state.game; gb.list = [{ w: 'rhythm', d: 'a strong regular repeated pattern' }, { w: 'island', d: 'land with water all round' }, { w: 'harbour', d: '' }]; gb.i = 0; render();
-    state.typed = 'rythm'; app.gSubmit(); await W(150);
+    state.typed = 'rythm'; app.gSubmit(); await U(() => !!missOn());
     o.gbPanel = missOn(); o.gbCover = await toastOver();
     await W(4000);
     o.gbHeld = state.game.i === 0 && state.game.wait === true && !!missOn() && !!document.querySelector('[data-act="gMissGo"]');
-    app.gMissGo(); await W(200);
+    app.gMissGo(); await U(() => state.game.i === 1 && !state.game.wait && !missOn(), 5000);
     o.gbNext = state.game.i === 1 && !state.game.wait && !missOn();
-    state.typed = 'island'; app.gSubmit(); await W(200);
+    state.typed = 'island'; app.gSubmit(); await U(() => state.game.i === 2, 10000);
     o.gbRightAdvances = state.game.i === 2;
     app.exitGame && app.exitGame();
 
     /* ---- 5. a multiple-choice game card: Word Quiz · Spellings ---- */
-    app.wqStart('spell'); await W(250);
+    app.wqStart('spell'); await U(() => state.game && state.game.qs && state.game.qs.length > 1);
     const gm = state.game; const q0 = gm.qs[0]; const wrongIdx = q0.choices.findIndex(c => c !== q0.answer);
-    app.gPick(String(wrongIdx)); await W(150);
+    app.gPick(String(wrongIdx)); await U(() => !!missOn());
     o.mcPanel = missOn(); o.mcCover = await toastOver();
     await W(4000);
     o.mcHeld = state.game.i === 0 && state.game.picked != null && !!document.querySelector('[data-act="gMcNext"]');
-    app.gMcNext(); await W(200);
+    app.gMcNext(); await U(() => state.game.i === 1 && state.game.picked == null, 5000);
     o.mcNext = state.game.i === 1 && state.game.picked == null;
-    const q1 = state.game.qs[1]; app.gPick(String(q1.choices.indexOf(q1.answer))); await W(1400);
+    const q1 = state.game.qs[1]; app.gPick(String(q1.choices.indexOf(q1.answer))); await U(() => state.game.i === 2 || state.game.status !== 'play', 10000);
     o.mcRightAdvances = state.game.i === 2 || state.game.status !== 'play';
     window.Audio = RealAudio; return o;
   });
@@ -166,17 +181,21 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const ctxP = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   await ctxP.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, seed);
   const pp = await ctxP.newPage(); pp.on('pageerror', e => errs.push('phone ' + e.message));
-  await pp.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pp.waitForTimeout(2800);
+  await pp.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await booted(pp);
   const ph = await pp.evaluate(async () => { const W = ms => new Promise(res => setTimeout(res, ms)); state.sound = false;
+    const U = async (f, ms) => { for (const t0 = Date.now(); Date.now() - t0 < (ms || 15000);) { try { if (f()) return true; } catch (e) {} await W(30); } return false; };
     window.Audio = function () { return { play: () => Promise.resolve(), pause: () => {} }; }; try { window.speechSynthesis.speak = () => {}; } catch (e) {}
     const covered = () => { const ms = [...document.querySelectorAll('.sb-miss')].filter(m => m.getClientRects().length); if (!ms.length) return 'no panel';
       const hit = [...document.querySelectorAll('.sb-toast')].filter(t => { if (!t.getClientRects().length || getComputedStyle(t).display === 'none' || getComputedStyle(t).visibility === 'hidden') return false;
         const r = t.getBoundingClientRect(); return ms.some(m => { const a = m.getBoundingClientRect(); return !(r.right <= a.left || r.left >= a.right || r.bottom <= a.top || r.top >= a.bottom); }); });
       return hit.length ? 'covered by "' + hit[0].textContent.trim().slice(0, 40) + '"' : ''; };
     state.sessionWords = [{ w: 'committee', d: 'a group chosen to decide things' }, { w: 'knight', d: 'a soldier on horseback' }];
-    app.startTrain(); await W(200); state.typed = 'comitee'; app.check(); await W(200);
+    app.startTrain(); await U(() => state.nav === 'train' && state.gi === 0 && state.status === 'idle');
+    state.typed = 'comitee'; app.check(); await U(() => [...document.querySelectorAll('.sb-miss')].some(m => m.getClientRects().length));
     const onMiss = covered(); flash('A message while the panel is up'); await W(80); const raised = covered();
-    app.next(); await W(150); const back = [...document.querySelectorAll('.sb-toast')].some(t => getComputedStyle(t).display !== 'none');
+    /* read the moment the panel is gone: the toast lives 2.2s from when it was raised, so a
+       read that waits on the clock is a read of whether the machine was quick */
+    app.next(); await U(() => state.gi === 1 && !document.querySelector('.sb-miss'), 5000); const back = [...document.querySelectorAll('.sb-toast')].some(t => getComputedStyle(t).display !== 'none');
     return { onMiss, raised, back }; });
   ok(ph.onMiss === '' && ph.raised === '', `phone (390×844): no toast covers the practice card's panel, on the miss or raised after (${ph.onMiss || 'clear'} / ${ph.raised || 'clear'})`);
   ok(ph.back, 'phone: once the panel goes (Next), a toast still in its time shows again — toasts are held back, not lost');

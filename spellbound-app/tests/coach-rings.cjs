@@ -2,8 +2,11 @@
    Tapping the rings on Home opens the Coach (they used to jump straight to Progress,
    skipping the screen that explains them). The Coach carries them in its header band
    at 2:1 beside Bizzy'''s read, stacking below 760px. Coach rings still open Progress.
+   Waits on state, not time (lib/wait.cjs): the Coach opens through a lazy door (its rulebook and
+   the concept course), and 1.4s of a loaded machine was not always long enough for it.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/coach-rings.cjs */
 const { chromium } = require('playwright');
+const { booted, until, frames } = require('./lib/wait.cjs');
 (async()=>{
   const b=await chromium.launch({executablePath:process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p))});
   const errs=[];
@@ -11,16 +14,19 @@ const { chromium } = require('playwright');
     const pg=await b.newPage({viewport:{width:vp.width,height:vp.height}});
     pg.on('pageerror',e=>errs.push(vp.n+' pageerror: '+e.message));
     await pg.goto('file://'+require('path').resolve(__dirname,'..')+'/index.html');
-    await pg.waitForTimeout(2800);
+    await booted(pg);
     await pg.evaluate(()=>{ state.children=[{name:'Tester',avatar:'bee',coins:400,pow:{},lists:{default:{xp:30}},
       activeList:'default',missed:[{w:'necessary',n:3,ts:Date.now()},{w:'rhythm',n:2,ts:Date.now()}],
       unlockedThemes:['spellbound'],beeAcc:{},unlockedConcepts:{},unlockedLists:{},streak:4}];
       state.activeIdx=0; state.screen='app'; app.setNav('home'); });
-    await pg.waitForTimeout(700);
+    await until(pg,()=>state.nav==='home'&&!!document.querySelector('[data-act="openCoachDesk"]'));
     // Home rings tile now opens the Coach
     const hit=await pg.evaluate(()=>{ const el=document.querySelector('[data-act="openCoachDesk"]'); if(!el) return 'no rings tile'; el.click(); return null; });
     if(hit) errs.push(vp.n+' '+hit);
-    await pg.waitForTimeout(1400);
+    /* the Coach is up when its data has landed (openCoachDesk redraws the moment SB_LAZY's 'coach'
+       group is in) and its hero band carries the rings; then two frames so its grid is laid out */
+    await until(pg,()=>state.nav==='coachdesk'&&SB_LAZY.ready('coach')&&!!document.querySelector('.sb-coach-hero [data-act="openMetrics"]'),null,30000);
+    await frames(pg,2);
     const r=await pg.evaluate(()=>({ nav:state.nav, txt:document.body.innerText,
       ow:document.documentElement.scrollWidth>document.documentElement.clientWidth+2,
       heroCols:(()=>{ const e=document.querySelector('.sb-coach-hero'); return e?getComputedStyle(e).gridTemplateColumns:null; })(),
@@ -35,7 +41,7 @@ const { chromium } = require('playwright');
     else if(cols.length!==1) errs.push('phone hero did not stack: '+r.heroCols);
     // the coach rings still reach the 30-day chart
     await pg.evaluate(()=>{ const e=document.querySelector('.sb-coach-hero [data-act="openMetrics"]'); if(e) e.click(); });
-    await pg.waitForTimeout(800);
+    await until(pg,()=>state.nav==='progress',null,10000);
     if(await pg.evaluate(()=>state.nav)!=='progress') errs.push(vp.n+' coach rings did not open Progress');
     await pg.close();
   }

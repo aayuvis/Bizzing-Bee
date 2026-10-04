@@ -25,7 +25,12 @@
               says it is off, and the choice survives a reload
    demo       ?demo shows a sample feed and leaves the real household's storage untouched
    Tests BEHAVIOUR through the app's globals (state, app, SB_FEED, BZ_FEED) — never source text,
-   so it holds on the minified deploy tree. Port 5120 (SB_FEED_PORT overrides).
+   so it holds on the minified deploy tree. Any free port (SB_FEED_PORT pins one): a fixed 5120
+   meant two suites on one machine — another session's, a deploy's — collided, and the loser
+   either crashed on EADDRINUSE or tested the OTHER tree's app through the winner's server.
+   It waits on STATE, never on a sleep (lib/wait.cjs): the contrast pass measures with
+   transitions off — body fades its colours over .35s, and the old 350ms pause read a world
+   mid-fade on a loaded machine (audit v4, R5: race/light).
    Proved by breaking (2 Oct 2026), each put back: the tab drawn whatever the switch says → "leaves the
    tabs" and "survives a reload" fail; every body chunk fetched at the door → both "only the groups its
    session needs" fail (39 of 39); focus left where render() drops it → the three keyboard checks fail;
@@ -35,11 +40,11 @@
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
 const { serve } = require('./lib/serve.cjs');
+const { booted, until, frames, still } = require('./lib/wait.cjs');
 const SRC = process.env.SRC || path.resolve(__dirname, '..');
-const PORT = +(process.env.SB_FEED_PORT || 5120);
+const PORT = +(process.env.SB_FEED_PORT || 0);
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
-const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const kidOf = (o) => Object.assign({ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 0, lists: { journey: { xp: 12 } }, activeList: 'journey',
   missed: [], unlockedThemes: ['spellbound'], trail: { lap: 1, done: { u1: { 1: 90 } }, chk: {}, seen: {}, st: {}, elap: 1, edone: {}, echk: {} } }, o || {});
@@ -47,7 +52,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
 
 (async () => {
   const srv = await serve(SRC, { port: PORT });
-  const BASE = `http://127.0.0.1:${PORT}/index.html`;
+  const BASE = `${srv.url}index.html`;
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
   const { checkShell } = await import(path.join(__dirname, 'lib', 'family', 'shell-check.mjs'));
   const errs = [];
@@ -61,15 +66,26 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
       try { const sp = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { window.__snd++; return sp(u); }; } catch (e) {} });
     const pg = await ctx.newPage();
     pg.on('pageerror', e => errs.push(e.message.slice(0, 200)));
-    await pg.goto(BASE + (o.q || '')); await wait(2600);
+    await pg.goto(BASE + (o.q || '')); await ready(pg);
     return { ctx, pg };
   }
-  const openFeed = async pg => { await pg.evaluate(() => app.setNav('feed')); await pg.waitForSelector('.bzf-end', { timeout: 30000 }).catch(() => {}); await wait(300); };
+  /* booted, and the Atlas frontier in hand (trail-data.js, the idle queue's FIRST file): the
+     feed's level IS the child's Atlas region, so a feed drawn before it lands is drawn for
+     nobody in particular — the old 2.6s pause stood for exactly this */
+  const ready = async pg => { await booted(pg); await until(pg, () => { try { return SB_SHELL.nextStep().ready; } catch (e) { return false; } }, null, 30000); };
+  /* the feed is open when its finished card is drawn, its two stylesheets have arrived (bee-feed.js
+     adds them at the door) and the list on screen is today's session */
+  const openFeed = async pg => { await pg.evaluate(() => app.setNav('feed'));
+    await until(pg, () => { const end = document.querySelector('.bzf-end'), css = [...document.querySelectorAll('link[data-feed-css]')];
+      const ids = (active().feed || {}).ids || [];
+      return !!end && css.length >= 2 && css.every(l => !!l.sheet) && ids.length > 0 && !!document.querySelector(`.bzf-card[data-id="${ids[0].id}"]`); }, null, 30000);
+    await frames(pg, 2); };
 
   /* ---- shell: Bee's chrome with six tabs, measured by the family's own check ---- */
   for (const dark of [false, true]) for (const phone of [false, true]) {
     const { ctx, pg } = await open({ phone, dark, seed: seedOf(dark ? 'dusk' : 'light') });
-    await pg.evaluate(() => app.setNav('home')); await wait(600);
+    await pg.evaluate(() => app.setNav('home'));
+    await until(pg, () => state.nav === 'home' && !!document.querySelector('.sb-fam-bar') && !!document.querySelector('.sb-content')); await frames(pg, 2);
     const f = await checkShell(pg, { phone, bee: true });
     const tabs = await pg.evaluate(ph => [...document.querySelectorAll(ph ? 'nav.sb-tabbar button' : '.sb-topnav button')].map(x => x.textContent.trim()), phone);
     ok(!f.length, `checkShell on Home, ${phone ? 'phone' : 'desktop'}, ${dark ? 'dark' : 'light'}: [] ${f.length ? JSON.stringify(f) : ''}`);
@@ -158,7 +174,9 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const pre = await pg.evaluate(id => { const c = document.querySelector(`.bzf-card[data-id="${id}"]`); return { html: c.innerHTML, n: c.querySelectorAll('[data-bzf="ans"]').length, first: c.querySelector('[data-bzf="ans"]').getAttribute('data-o') }; }, id);
     ok(!/\bok\b|\bno\b/.test((pre.html.match(/class="bzf-opt[^"]*"/g) || []).join(' ')), 'before an answer, no option is marked');
     const c0 = await pg.evaluate(() => active().coins || 0);
-    await pg.focus(sel(1)); await pg.keyboard.press('Enter'); await wait(250);
+    const card = id => `.bzf-card[data-id="${id}"]`;
+    await pg.focus(sel(1)); await pg.keyboard.press('Enter');
+    await until(pg, c => { const e = document.querySelector(c); return !!e && !!e.querySelector('[data-bzf="cont"]'); }, card(id), 10000);
     const held = await pg.evaluate(id => { const c = document.querySelector(`.bzf-card[data-id="${id}"]`); return { text: c.innerText, cont: !!c.querySelector('[data-bzf="cont"]'), coins: active().coins || 0,
       focus: !!document.activeElement.closest(`.bzf-card[data-id="${id}"]`) }; }, id);
     ok(/Not this time — it is “/.test(held.text) && held.cont, 'keyboard: a wrong answer holds — "Not this time — it is …" and a Continue');
@@ -166,15 +184,18 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     ok(held.focus, 'focus stays on the card, so the keyboard can carry on');
     const onCont = await pg.evaluate(() => document.activeElement.getAttribute('data-bzf'));
     ok(onCont === 'cont', 'after a wrong answer, focus sits on Continue (' + onCont + ')');
-    await pg.keyboard.press('Enter'); await wait(250);
+    await pg.keyboard.press('Enter');
+    await until(pg, c => { const e = document.querySelector(c); return !!e && !e.querySelector('[data-bzf="cont"]'); }, card(id), 10000);
     const after = await pg.evaluate(id => { const c = document.querySelector(`.bzf-card[data-id="${id}"]`); return { cont: !!c.querySelector('[data-bzf="cont"]'), dis: [...c.querySelectorAll('[data-bzf="ans"]')].every(x => x.disabled) }; }, id);
     ok(!after.cont && after.dis, 'Continue moves on; the question stays answered');
     const id2 = qs[1];
-    await pg.tap(`.bzf-card[data-id="${id2}"] [data-bzf="ans"][data-o="0"]`); await wait(300);
+    await pg.tap(`.bzf-card[data-id="${id2}"] [data-bzf="ans"][data-o="0"]`);
+    await until(pg, c => { const e = document.querySelector(c); return !!e && /^Right\./m.test(e.innerText); }, card(id2), 10000);
     const r = await pg.evaluate(id => ({ coins: active().coins || 0, text: document.querySelector(`.bzf-card[data-id="${id}"]`).innerText, ledger: BZ_WALLET.ledger(active().name).filter(x => x.n > 0).length }), id2);
     ok(r.coins === c0 + 1 && /^Right\./m.test(r.text), `touch: a right answer pays exactly one coin (${c0} → ${r.coins})`);
-    await pg.evaluate(() => { app.setNav('home'); SB_FEED.reset(); }); await wait(200); await openFeed(pg);
-    await pg.evaluate(id => { const x = document.querySelector(`.bzf-card[data-id="${id}"] [data-bzf="ans"][data-o="0"]`); if (x) x.click(); }, id2); await wait(300);
+    await pg.evaluate(() => { app.setNav('home'); SB_FEED.reset(); }); await until(pg, () => state.nav === 'home'); await openFeed(pg);
+    const again = await pg.evaluate(id => { const x = document.querySelector(`.bzf-card[data-id="${id}"] [data-bzf="ans"][data-o="0"]`); if (x) x.click(); return !!x; }, id2);
+    if (again) await until(pg, c => { const e = document.querySelector(c); return !!e && /^Right\./m.test(e.innerText); }, card(id2), 10000);
     ok((await pg.evaluate(() => active().coins || 0)) === c0 + 1, 'the same question answered again on a later visit pays nothing');
     /* keys */
     await pg.focus('.bzf-card'); await pg.keyboard.press('j'); await pg.keyboard.press('ArrowDown');
@@ -185,7 +206,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     /* the recorded clip plays only on a tap */
     const s0 = await pg.evaluate(() => window.__snd);
     const hear = await pg.evaluate(() => { const x = document.querySelector('[data-bzf="hear"]'); if (x) x.click(); return !!x; });
-    if (hear) { await wait(2500); ok((await pg.evaluate(() => window.__snd)) > s0, 'a word card\'s Hear it plays the word on a tap'); }
+    if (hear) { await until(pg, s0 => window.__snd > s0, s0, 15000); ok((await pg.evaluate(() => window.__snd)) > s0, 'a word card\'s Hear it plays the word on a tap'); }
     await ctx.close();
   }
 
@@ -230,15 +251,16 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     /* every screen route is OPENED; of the word routes (thousands), every one must find its word in the
        library the word card is drawn from, and a spread of them — every 25th — is opened as well */
     const words = routes.filter(r => /^#\/word\//.test(r));
-    await pg.evaluate(() => new Promise(r => SB_LAZY.need('words', r))); await wait(400);
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('words', r)));
     const lost = await pg.evaluate(ws => ws.filter(r => { const w = r.slice(7), db = wordDB(); return !(db.get && db.get(nkey(w))); }), words);
     ok(!lost.length, `all ${words.length} word routes name a word the library holds` + (lost.length ? ' — ' + lost.slice(0, 5).join(' ') : ''));
     const todo = routes.filter((r, i) => !/^#\/word\//.test(r) || words.indexOf(r) % 25 === 0).slice(0, +(process.env.FEED_ROUTES || 1e9));
     for (const r of todo) {
       const res = await pg.evaluate(async r => {
         const W = ms => new Promise(ok => setTimeout(ok, ms));
+        /* polled until the screen is up, for as long as a loaded machine needs (was a 3s cap) */
         location.hash = r; await W(40);
-        for (let i = 0; i < 60; i++) {
+        for (const t0 = Date.now(); Date.now() - t0 < 20000;) {
           const S = state, p = r.slice(2).split('/');
           const good = p[0] === 'word' ? S.nav === 'finder' && S.finderSel && S.finderSel.w === p[1]
             : p[0] === 'stop' ? S.nav === 'trail' && S.trailUnit === p[1]
@@ -265,12 +287,15 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const { ctx, pg } = await open();
     await openFeed(pg);
     await pg.addScriptTag({ path: AXE });
+    await still(pg);   // transitions off: a colour is read at its final value, never mid-fade
     const worlds = await pg.evaluate(() => THEMES.map(t => t.id));
     const viol = [];
     for (const wld of worlds) for (const mode of ['light', 'white', 'dusk']) {
       const v = await pg.evaluate(async ([wld, mode]) => {
         state.devUnlock = true; state.theme = wld; app.setModePref(mode); app.setNav('feed'); render();
-        await new Promise(r => setTimeout(r, 350));
+        /* drawn in this world and look: the root says so and two frames have painted it */
+        for (const t0 = Date.now(); Date.now() - t0 < 10000;) { if (document.documentElement.getAttribute('data-theme') === wld && document.querySelector('.sb-feedpage .bzf-end')) break; await new Promise(r => setTimeout(r, 30)); }
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
         const res = await axe.run(document.querySelector('.sb-feedpage'), { runOnly: { type: 'rule', values: ['color-contrast'] } });
         return res.violations.flatMap(x => x.nodes.map(n => n.target.join(' ') + ' ' + (n.any[0] || {}).message));
       }, [wld, mode]);
@@ -283,22 +308,31 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
   /* ---- pin: the grown-up's switch ---- */
   {
     const { ctx, pg } = await open();
-    const before = await pg.evaluate(async () => { app.setNav('settings'); await new Promise(r => setTimeout(r, 150));
-      return !!document.querySelector('#sb-set-ov [data-act="toggleFeed"]'); });
+    await pg.evaluate(() => app.setNav('settings'));
+    await until(pg, () => !!document.querySelector('#sb-set-ov'));      // the sheet is drawn: now its absence of the switch means something
+    const before = await pg.evaluate(() => !!document.querySelector('#sb-set-ov [data-act="toggleFeed"]'));
     ok(!before, 'the switch is not on the child\'s side of Settings — it waits behind the PIN');
-    await pg.evaluate(async () => { app.setGrownOpen(); await new Promise(r => setTimeout(r, 100)); for (const k of '2468') app.pinKey(k); await new Promise(r => setTimeout(r, 150));
-      document.querySelector('#sb-set-ov [data-act="toggleFeed"]').click(); await new Promise(r => setTimeout(r, 150)); app.closeSettings(); app.setNav('home'); });
-    await wait(300);
-    const gone = async () => pg.evaluate(async () => { app.openDrawer(); await new Promise(r => setTimeout(r, 150));
-      const o = { tabs: [...document.querySelectorAll('.sb-topnav button, nav.sb-tabbar button')].map(x => x.textContent.trim()),
-        drawer: [...document.querySelectorAll('.bz-drawer button, .bz-drawer a')].map(x => x.textContent.replace(/\s+/g, ' ').trim()) };
-      app.closeDrawer && app.closeDrawer(); state.drawerOpen = false;
-      location.hash = '#/feed'; await new Promise(r => setTimeout(r, 400));
-      o.cards = document.querySelectorAll('.bzf-card').length; o.text = (document.querySelector('.sb-content') || {}).innerText || ''; return o; });
+    await pg.evaluate(() => app.setGrownOpen());
+    await until(pg, () => !!state.pinDlg);
+    await pg.evaluate(() => { for (const k of '2468') app.pinKey(k); });
+    await until(pg, () => !!document.querySelector('#sb-set-ov [data-act="toggleFeed"]'));
+    await pg.evaluate(() => { const x = document.querySelector('#sb-set-ov [data-act="toggleFeed"]'); if (x) x.click(); });
+    await until(pg, () => state.feedOff === true, null, 10000);   // the switch has been thrown
+    await pg.evaluate(() => { app.closeSettings(); app.setNav('home'); });
+    await until(pg, () => state.nav === 'home' && !state.settingsOpen);
+    const gone = async () => {
+      await pg.evaluate(() => app.openDrawer());
+      await until(pg, () => !!document.querySelector('.bz-drawer button, .bz-drawer a'));
+      const o = await pg.evaluate(() => ({ tabs: [...document.querySelectorAll('.sb-topnav button, nav.sb-tabbar button')].map(x => x.textContent.trim()),
+        drawer: [...document.querySelectorAll('.bz-drawer button, .bz-drawer a')].map(x => x.textContent.replace(/\s+/g, ' ').trim()) }));
+      await pg.evaluate(() => { app.closeDrawer && app.closeDrawer(); state.drawerOpen = false; location.hash = '#/feed'; });
+      await until(pg, () => state.nav === 'feed' && !!document.querySelector('.sb-feedpage'));
+      await frames(pg, 2);
+      return Object.assign(o, await pg.evaluate(() => ({ cards: document.querySelectorAll('.bzf-card').length, text: (document.querySelector('.sb-content') || {}).innerText || '' }))); };
     let g = await gone();
     ok(!g.tabs.some(t => /My Feed/.test(t)) && !g.drawer.some(t => /^My Feed/.test(t)), 'switched off, My Feed leaves the tabs and the ☰ drawer');
     ok(g.cards === 0 && /switched off/.test(g.text), '#/feed says it is switched off and shows no cards');
-    await pg.reload(); await wait(2600); g = await gone();
+    await pg.reload(); await ready(pg); g = await gone();
     ok(!g.tabs.some(t => /My Feed/.test(t)) && g.cards === 0, 'the choice survives a reload');
     await ctx.close();
   }
@@ -309,10 +343,11 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     /* the browser's REAL storage (the demo sandbox wraps localStorage inside the page, so the page cannot be asked) */
     const dump = async () => { const st = await ctx.storageState(); const o = {}; st.origins.forEach(x => x.localStorage.forEach(kv => { o[x.origin + ' ' + kv.name] = kv.value; })); return o; };
     const before = await dump();
-    await pg.goto(BASE + '?demo'); await wait(2600); await openFeed(pg);
+    await pg.goto(BASE + '?demo'); await ready(pg); await openFeed(pg);
     const n = await pg.evaluate(() => document.querySelectorAll('.bzf-card:not(.bzf-end)').length);
-    await pg.evaluate(() => { const x = document.querySelector('[data-bzf="ans"][data-o="0"]'); if (x) x.click(); });
-    await wait(300);
+    const qid = await pg.evaluate(() => { const x = document.querySelector('[data-bzf="ans"][data-o="0"]'); if (!x) return null; x.click(); return x.closest('.bzf-card').getAttribute('data-id'); });
+    /* answered — the card says so — before the storage is read, so a write it made would be there to see */
+    if (qid) await until(pg, id => { const c = document.querySelector(`.bzf-card[data-id="${id}"]`); return !!c && /^Right\./m.test(c.innerText); }, qid, 10000);
     const after = await dump();
     const changed = Object.keys(Object.assign({}, before, after)).filter(k => before[k] !== after[k]);
     ok(n >= 12, `?demo shows a sample feed (${n} cards)`);

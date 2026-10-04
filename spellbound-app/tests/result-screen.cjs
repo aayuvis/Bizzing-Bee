@@ -35,6 +35,7 @@
 
    USAGE  node tests/result-screen.cjs   [RS_SECS=70 RS_ONLY=typeBlaster]        */
 const { chromium } = require('playwright');
+const { booted } = require('./lib/wait.cjs');
 const SRC = require('path').resolve(__dirname, '..');
 const SECS = +(process.env.RS_SECS || 70);
 const FLOOR_SECS = 15;          // long enough for the word floor to have fired twice
@@ -48,7 +49,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   const errs = []; pg.on('pageerror', e => errs.push(String(e.message).slice(0, 120)));
   await pg.addInitScript(() => { window.SB_DEBUG = true; });
   await pg.goto('file://' + SRC + '/index.html');
-  await pg.waitForTimeout(3200);
+  await booted(pg);
   await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
 
   let names = await pg.evaluate(() => Object.keys(window.SB_SAGA_ENGINES || {}));
@@ -104,10 +105,19 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       setTimeout(() => { try { if (window._race) window._race.jump(9e9); } catch (e) {} }, 30000);
       setTimeout(() => { try { if (window._fly) window._fly.steer(5000); } catch (e) {} }, 30000);
 
+      /* GAME time, counted the way the engines count it: every engine advances by its frame's
+         dt clamped to 34-50ms, so on a loaded machine 15s of wall clock can be 6s of game — the
+         word floor had fired once, nothing had resolved, and "lasted 15s, listed no words" was a
+         report on the machine. Clamped at the tightest engine's 34ms: never more than the game
+         saw, and on an idle machine (16ms frames) exactly the wall clock it used to be. */
+      let game = 0, gLast = null, gOn = true;
+      const gTick = ts => { if (gLast != null) game += Math.min(34, ts - gLast); gLast = ts; if (gOn) requestAnimationFrame(gTick); };
+      requestAnimationFrame(gTick);
       const t0 = Date.now();
       while (Date.now() - t0 < secs * 1000 && !host.querySelector('.sg-endcard')) {
         await new Promise(r => setTimeout(r, 200));
       }
+      gOn = false;
       clearInterval(iv); window.say = realSay;
       const el = host.querySelector('.sg-endcard');
       const res = {
@@ -120,6 +130,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
         chips: el ? el.querySelectorAll('.sg-wchip').length : 0,
         glyph: el ? /[★☆]/.test(el.textContent || '') : false,
         secs: Math.round((Date.now() - t0) / 1000),
+        gameSecs: Math.round(game / 1000),
       };
       try { host.remove(); } catch (e) {}
       return res;
@@ -144,11 +155,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
       console.log(`  --     ${r.name} — no ending inside ${r.secs}s of generic play (phase A holds it)`);
       continue;
     }
-    const mustList = r.secs >= FLOOR_SECS && r.asked > 0;
+    const mustList = r.gameSecs >= FLOOR_SECS && r.asked > 0;
     const why = [
       r.stars !== 3 && `drew ${r.stars} stars, not 3`,
       r.glyph && 'still prints ★☆ as glyphs',
-      mustList && !r.chips && `lasted ${r.secs}s and listed NO words`,
+      mustList && !r.chips && `lasted ${r.gameSecs}s of play and listed NO words`,
     ].filter(Boolean).join('; ');
     ok(!why, `${r.name} — "${r.title}" · ${r.chips} word${r.chips === 1 ? '' : 's'} listed` +
       (why ? '  BUT ' + why : ''));
