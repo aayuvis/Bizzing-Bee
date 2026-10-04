@@ -444,7 +444,8 @@ window.SB_WORDS_PATCH = function () {
     paretic: 'a person who has paresis, a weakness or partial loss of movement in part of the body',
     igloo: 'a dome-shaped shelter built from blocks of snow, traditionally by the Inuit',
     tupek: 'tent that is an Inuit summer dwelling',
-    tupik: 'tent that is an Inuit summer dwelling'
+    tupik: 'tent that is an Inuit summer dwelling',
+    flirtatious: 'behaving in a playful way that shows you like someone'
   });
 
   var removed = 0, sPatched = 0, dPatched = 0;

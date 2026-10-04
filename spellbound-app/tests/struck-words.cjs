@@ -58,7 +58,8 @@ const REWRITTEN = {                                                           //
   dumbness: /mentally slow/i, madman: /^an insane person$/i, madmen: /^an insane person$/i, maniacs: /^an insane person$/i,
   lunacy: /legal insanity/i, bedlamite: /term for a lunatic/i, gentile: /your god/i, gentiles: /your god/i,
   psychotic: /afflicted/i, paranoid: /afflicted/i, paranoiac: /afflicted/i, leper: /afflicted/i, lepers: /afflicted/i,
-  lazar: /afflicted/i, arthritic: /afflicted/i, paretic: /afflicted/i, igloo: /eskimo/i, tupek: /eskimo/i, tupik: /eskimo/i };
+  lazar: /afflicted/i, arthritic: /afflicted/i, paretic: /afflicted/i, igloo: /eskimo/i, tupek: /eskimo/i, tupik: /eskimo/i,
+  flirtatious: /coquette/i };
 const SERVED_KEEP = new Set(['dike']);
 
 /* app3's strike lists and library filter, read out of the source the page runs */
@@ -128,7 +129,7 @@ for (const [w, old] of Object.entries(REWRITTEN)) {
 }
 ok(!/your god/i.test(JSON.stringify([st.SB_LORE.infidels, st.SB_ALT.heathen])) && !/Neurotic|psychoneurotic/.test(JSON.stringify([st.SB_ALT.hysteria, st.SB_ALT.hysterical])) &&
    !/abnormal mind|troubled mind|fears everything/i.test(JSON.stringify([st.SB_LORE.paranoid, st.SB_LORE.psychotic, st.SB_LORE.paranoiac])) &&
-   !/suffering/i.test(JSON.stringify([st.SB_ALT.paranoid, st.SB_ALT.psychotic])) && !st.SB_SYN.gentile && !st.SB_SYN.psychotic && !st.SB_SYN.lazar,
+   !/suffering/i.test(JSON.stringify([st.SB_ALT.paranoid, st.SB_ALT.psychotic])) && !/Mormons and Hindus/.test(JSON.stringify([st.SB_ALT.gentile, st.SB_ALT.gentiles])) && !st.SB_SYN.gentile && !st.SB_SYN.psychotic && !st.SB_SYN.lazar,
   'decided: the lore, "other meanings" and synonym chips under them dropped the old wording too');
 bad = Object.keys(REWRITTEN).filter((w) => { const r = srvBy[w]; return !r || /Christians refer to themselves|elderly arthritic|escaped from the city asylum|defense attorney|His dumbness/.test(r.s || ''); });
 ok(!bad.length, 'decided: their example sentences are kind and true' + some(bad));
@@ -171,8 +172,30 @@ ok(!bad.length, 'quiz: no Atlas quiz option is a struck word or names one decide
    the array they were handed — read both */
 const ALLQ = T.SB_TRIVIA.questions === TQ ? TQ : TQ.concat(T.SB_TRIVIA.questions);
 ok(ALLQ.some((q) => q.id === 'w5068') && ALLQ.some((q) => q.id === 't10162'), 'trivia: the word bank and the level shards are both read');
-bad = ALLQ.filter((q) => (q.c || []).some((o) => TAUGHT.has(String(o).toLowerCase()) || INSULT.includes(String(o).toLowerCase()))).map((q) => q.id);
-ok(ALLQ.length > 30000 && !bad.length, `trivia: no option of ${ALLQ.length} questions is one of the insults or the words decided here` + some(bad));
+/* EVERY LEVEL, ANSWERS AND OPTIONS. The level shards hold exactly what trivia-data.js's byLevel says
+   (seven questions about lynching, sadism, masochism, the Kamasutra, a testicle and Oedipus were
+   deleted on 4 Oct 2026 and the counts moved with them; six more lost only a distractor). No answer
+   and no option, at any level or in the word bank, is an insult, a word decided here or one of
+   those. Every OTHER option that happens to be on the strike lists is a name or a spelling foil —
+   Disney, Hebe, Galen, the ABC, "Tooths" in a plurals question — and they are a RATCHET below. */
+const TRIVIA_GONE = ['lynch', 'lynching', 'sadism', 'masochism', 'kamasutra', 'testicle', 'oedipal'];
+const lvN = {}; TQ.forEach((q) => { lvN[q.lv] = (lvN[q.lv] || 0) + 1; });
+const TD = { console: { log() {} } }; TD.window = TD; vm.createContext(TD);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'trivia-data.js'), 'utf8').replace(/\bdocument\b/g, 'undefined'), TD);
+const byLevel = (TD.SB_TRIVIA || {}).byLevel || {};
+ok([1, 2, 3, 4, 5].every((l) => lvN[l] > 1000 && lvN[l] === byLevel[l]), 'trivia: all five level shards are read, and each holds what byLevel says — ' + JSON.stringify(lvN));
+bad = ['t30368', 't30789', 't30778', 't30779', 't27024', 't22587', 't30223'].filter((id) => ALLQ.some((q) => q.id === id));
+ok(!bad.length, 'trivia: the seven questions built on a struck word are gone' + some(bad));
+const opt = (o) => String(o).toLowerCase();
+bad = ALLQ.filter((q) => (q.c || []).some((o) => TAUGHT.has(opt(o)) || INSULT.includes(opt(o)) || TRIVIA_GONE.includes(opt(o)))).map((q) => q.id);
+ok(ALLQ.length > 30000 && !bad.length, `trivia: no answer or option of ${ALLQ.length} questions, any level, is an insult or a word decided here` + some(bad));
+/* 112 on 4 Oct 2026: names (Disney, Hebe, Galen, Bede, Meg, Fagin, Shylock as Shakespeare's
+   character), acronyms (ABC, UFO, GPS, DDT), spelling foils in plural questions (Tooths, Womans,
+   Leafs) — plus a handful left for a person: Casanova and Saturnalia as answers, Lothario, Ricin,
+   Shotgun, mauser, Hebephrenia, Snot, and Mentorless (a coinage) as the answer to t30510. */
+const TRIVIA_STRUCK_MAX = 112;
+const hits = []; ALLQ.forEach((q) => (q.c || []).forEach((o, i) => { if (gone(o)) hits.push(q.id + (i ? '' : '*') + ':' + o); }));
+ok(hits.length <= TRIVIA_STRUCK_MAX, `trivia: at most ${TRIVIA_STRUCK_MAX} options sit on the strike lists as names or foils (${hits.length}; * = the answer)` + some(hits));
 
 /* the feed: no card on a struck, deleted or held word */
 const HELD = new Set((W.SB_WORDS_HELD || []).map((w) => String(w).toLowerCase()));
