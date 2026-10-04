@@ -12,9 +12,10 @@ const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
-const CORE = 126555;   // SB_FULL as it ships, before the shard
+const CORE = 126551;   // SB_FULL as it ships, before the shard
 /* 126,562 until 4 Oct 2026, when the owner had retard, retards, idiots, idiotic, moronic,
-   imbeciles and morons deleted from every store (tests/struck-words.cjs) — seven library records. */
+   imbeciles and morons deleted from every store (tests/struck-words.cjs) — seven library records —
+   and then idiotically, imbecilic, cretinous and cretinism, four more, the same day. */
 /* 126,594 until 3 Oct 2026, when the owner had the 32 Nazi-vocabulary records deleted
    (tests/no-nazi-words.cjs). */
 /* 128,197 until 5 Sep 2026, when the library sweep deleted 1,528 records and one

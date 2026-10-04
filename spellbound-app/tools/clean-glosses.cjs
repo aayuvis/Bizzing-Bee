@@ -18,8 +18,10 @@
       "in truth; certainly; - Ps 37:3". WordNet printed an example and its source; the example was
       dropped and the "; - Source" tail was left behind. The tail goes.
 
-   Only the served shards (words-data.js, words-data-2.js) — the records a child is set, searched
-   and shown. Idempotent: a second run changes nothing. The guard is tests/gloss-clean.cjs.
+   Over the served shards (words-data.js, words-data-2.js) — the records a child is set, searched
+   and shown — the free course's chapter word meanings (concepts-data.js) and the options of the
+   word-meaning trivia questions (trivia-words.js), each of which is some word's gloss. Idempotent: a
+   second run changes nothing. The guard is tests/gloss-clean.cjs.
    Run: node tools/clean-glosses.cjs [--dry] [--list]                                            */
 'use strict';
 const { open } = require('./word-stores.cjs');
@@ -50,8 +52,9 @@ const LEAVE = new Set(['levantine']);
 const IS_KEEP = new Set(['called', 'used', 'sometimes', 'as', 'on', 'also', 'when', 'where', 'what', 'how', 'for', 'by', 'at']);
 
 const fixQuotes = (d) => d.replace(/`([^`'\n]{1,60})'/g, '‘$1’');
-const CREDIT = /;\s*-\s+[A-Z][^;]*$/;
-const fixCredit = (d) => { let o = d; while (CREDIT.test(o)) o = o.replace(CREDIT, '').trim(); return o; };
+const CREDIT = /(?:;\s*)+-\s*[A-Z][^;]*$/;          // "; - John Milton", "; ; -Dr. Johnson"
+const CREDIT_MID = /;\s*-\s*[A-Z][^;()]*(?=;)/g;     // "wordy; -T.S.Eliot; (‘ambagious’ is archaic)"
+const fixCredit = (d) => { let o = d.replace(CREDIT_MID, ''); while (CREDIT.test(o)) o = o.replace(CREDIT, '').trim(); return o; };
 function fixLabel(d) {
   const m = d.match(/^\s*\(([^()]{1,90})\)\s*(.*)$/);
   if (!m) return null;
@@ -70,27 +73,44 @@ function fixIs(d) {
   return (m[2] + m[3]).trim();
 }
 
-const before = { label: 0, is: 0, tick: 0, credit: 0 }, after = { label: 0, is: 0, tick: 0, credit: 0 }, changed = { quotes: 0, label: 0, is: 0, credit: 0 }, left = { label: [], is: [] };
-const count = (o, d) => { if (/^\s*\(/.test(d)) o.label++; if (/^\s*(is|are)\s/i.test(d)) o.is++; if (/`/.test(d)) o.tick++; if (CREDIT.test(d)) o.credit++; };
+/* the gloss stores this runs over. Each yields [record, field, its headword] for every gloss in it. */
+const TARGETS = [
+  /* the served shards: the records a child is set, searched and shown */
+  { name: 'served shards (words-data.js, words-data-2.js)', files: ['words-data.js', 'words-data-2.js'],
+    each: (o, fn) => { for (const a of o.records()) for (const r of a) if (r && typeof r.d === 'string') fn(r, 'd', r.w); } },
+  /* the free course's chapter words: the meaning a lesson card and the "Meet the words" step show */
+  { name: 'chapter word meanings (concepts-data.js)', files: ['concepts-data.js'],
+    each: (o, fn) => { for (const ch of o.get('SB_CONCEPTS').chapters) for (const x of ch.words || []) if (x && typeof x.def === 'string') fn(x, 'def', x.w); } },
+  /* the word-meaning questions: every option is some word's gloss, cut from the corpus */
+  { name: 'trivia meaning options (trivia-words.js)', files: ['trivia-words.js'],
+    each: (o, fn) => { for (const a of o.records()) for (const q of a) if (q && q.th === 'wmeaning' && Array.isArray(q.c)) q.c.forEach((_, i) => fn(q.c, i, null)); } },
+];
 const saves = [];
-for (const f of ['words-data.js', 'words-data-2.js']) {
-  const o = open(f);
-  for (const a of o.records()) for (const r of a) {
-    if (!r || typeof r.d !== 'string' || LEAVE.has(String(r.w).toLowerCase())) { if (r && typeof r.d === 'string') { count(before, r.d); count(after, r.d); } continue; }
-    let d = r.d; count(before, d);
-    const q = fixQuotes(d); if (q !== d) { d = q; changed.quotes++; }
-    const c = fixCredit(d); if (c !== d && c.length >= 3) { d = c; changed.credit++; }
-    const l = fixLabel(d); if (l != null) { d = l; changed.label++; } else if (/^\s*\(/.test(d)) left.label.push(r.w + ' — ' + d);
-    const i = fixIs(d); if (i != null) { d = i; changed.is++; } else if (/^\s*(is|are)\s/i.test(d)) left.is.push(r.w + ' — ' + d);
-    count(after, d);
-    if (d !== r.d) r.d = d;
+for (const T of TARGETS) {
+  const before = { label: 0, is: 0, tick: 0, credit: 0 }, after = { label: 0, is: 0, tick: 0, credit: 0 }, changed = { quotes: 0, label: 0, is: 0, credit: 0 }, left = { label: [], is: [] };
+  const count = (o, d) => { if (/^\s*\(/.test(d)) o.label++; if (/^\s*(is|are)\s/i.test(d)) o.is++; if (/`/.test(d)) o.tick++; if (/;\s*-\s*[A-Z]/.test(d)) o.credit++; };
+  for (const f of T.files) {
+    const o = open(f);
+    T.each(o, (rec, k, w) => {
+      let d = rec[k]; count(before, d);
+      if (w && LEAVE.has(String(w).toLowerCase())) { count(after, d); return; }
+      const q = fixQuotes(d); if (q !== d) { d = q; changed.quotes++; }
+      const c = fixCredit(d); if (c !== d && c.length >= 3) { d = c; changed.credit++; }
+      const l = fixLabel(d); if (l != null) { d = l; changed.label++; } else if (/^\s*\(/.test(d)) left.label.push((w || '') + ' — ' + d);
+      const i = fixIs(d); if (i != null) { d = i; changed.is++; } else if (/^\s*(is|are)\s/i.test(d)) left.is.push((w || '') + ' — ' + d);
+      count(after, d);
+      if (d !== rec[k]) rec[k] = d;
+    });
+    saves.push(o);
   }
-  saves.push(o);
+  console.log((DRY ? '[dry] ' : '') + 'clean-glosses — ' + T.name + ':');
+  console.log('  opens with a (label):  ' + before.label + ' → ' + after.label + '   (' + changed.label + ' moved into words)');
+  console.log('  opens with is/are:     ' + before.is + ' → ' + after.is + '   (' + changed.is + ' trimmed)');
+  console.log('  carries a backtick:    ' + before.tick + ' → ' + after.tick + '   (' + changed.quotes + ' re-quoted)');
+  console.log('  ends on a lost credit: ' + before.credit + ' → ' + after.credit + '   (' + changed.credit + ' tails cut)');
+  if (LIST) { console.log('  left as they were — a (label):'); left.label.forEach((x) => console.log('    ' + x)); console.log('  left as they were — is/are:'); left.is.forEach((x) => console.log('    ' + x)); }
 }
+/* a meaning question must still have four different options after cleaning */
+for (const o of saves) if (o.file === 'trivia-words.js') for (const a of o.records()) for (const q of a)
+  if (q && q.th === 'wmeaning' && new Set(q.c.map((x) => x.toLowerCase())).size !== q.c.length) throw new Error('cleaning made two options of ' + q.id + ' the same');
 if (!DRY) saves.forEach((o) => o.save());
-console.log((DRY ? '[dry] ' : '') + 'clean-glosses (served shards, at rest):');
-console.log('  opens with a (label):  ' + before.label + ' → ' + after.label + '   (' + changed.label + ' moved into words)');
-console.log('  opens with is/are:     ' + before.is + ' → ' + after.is + '   (' + changed.is + ' trimmed)');
-console.log('  carries a backtick:    ' + before.tick + ' → ' + after.tick + '   (' + changed.quotes + ' glosses re-quoted)');
-console.log('  ends on a lost credit: ' + before.credit + ' → ' + after.credit + '   (' + changed.credit + ' tails cut)');
-if (LIST) { console.log('\n  left as they were — a (label):'); left.label.forEach((x) => console.log('    ' + x)); console.log('\n  left as they were — is/are:'); left.is.forEach((x) => console.log('    ' + x)); }

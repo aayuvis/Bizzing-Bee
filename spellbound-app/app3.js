@@ -1220,7 +1220,9 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
    `retarding` and `retardant` stay — tests/word-bank.cjs holds them. Sixteen more (autism,
    heathen, lunatic, dumb, pygmy…) were KEPT and their glosses rewritten: CORE_FIX below. Deleted
    from the served stores at rest by tools/strike-served.cjs; tests/struck-words.cjs guards both. */
-  'retard','retards','idiots','idiotic','moronic','imbeciles']);
+  'retard','retards','idiots','idiotic','moronic','imbeciles',
+  /* and the insult forms of words already struck, same day, same decision */
+  'idiotically','imbecilic','cretinous','cretinism']);
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
    should ever be set: bare given names and surnames, misspellings, mechanical affix
@@ -1552,7 +1554,28 @@ const CORE_FIX = {
   pygmy: 'a kind of animal or plant that is much smaller than the usual kind',
   dumb: 'not able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolish',
   hysteria: 'wild, uncontrollable fear or excitement, often spreading through a crowd',
-  hysterical: 'overcome by wild, uncontrollable feeling such as fear or excitement; informally, also extremely funny'
+  hysterical: 'overcome by wild, uncontrollable feeling such as fear or excitement; informally, also extremely funny',
+  /* the same decision, applied to the forms the first pass left: a word that names a person by a
+     condition says "a person who has …", and a word used unkindly says so */
+  dumbness: 'the state of not being able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolishness',
+  madman: 'an informal and often unkind word for a man who behaves in a wild or reckless way',
+  madmen: 'an informal and often unkind word for men who behave in a wild or reckless way',
+  maniacs: 'an informal and often unkind word for people who behave in a wild or reckless way; also people who are extremely keen on something',
+  lunacy: 'wild foolishness; an old word for madness, from a belief that the moon could affect people’s minds',
+  bedlamite: 'an old, unkind word for a person thought to be mad; it comes from the name of a London hospital for people with mental illness',
+  gentile: 'a person who is not Jewish',
+  gentiles: 'people who are not Jewish',
+  psychotic: 'a person who has psychosis, an illness that can make it hard to tell what is real from what is not',
+  paranoid: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+  paranoiac: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+  leper: 'a person who has leprosy; the word is now considered hurtful, and “a person with leprosy” is preferred',
+  lepers: 'people who have leprosy; the word is now considered hurtful, and “people with leprosy” is preferred',
+  lazar: 'an old word for a person who has leprosy',
+  arthritic: 'a person who has arthritis, a condition that makes the joints painful and stiff',
+  paretic: 'a person who has paresis, a weakness or partial loss of movement in part of the body',
+  igloo: 'a dome-shaped shelter built from blocks of snow, traditionally by the Inuit',
+  tupek: 'tent that is an Inuit summer dwelling',
+  tupik: 'tent that is an Inuit summer dwelling'
 };
 /* ---- slurs ----
    SB_UNSAFE_RE is a list of specific strings, so it caught 22 of the 210 entries

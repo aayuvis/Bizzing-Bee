@@ -1,7 +1,8 @@
 /* word-stores.cjs — read and rewrite the JSON literals the word stores are made of, ROUND-TRIP SAFE.
 
    Every word store is a classic script whose data line is `window.SB_X = <JSON>;` (or the shard's
-   `window.SB_DATA.nsf.push.apply(window.SB_DATA.nsf, <JSON>);`, or words-full.js's JSON *string*
+   `window.SB_DATA.nsf.push.apply(window.SB_DATA.nsf, <JSON>);`, the trivia word bank's
+   `window.SB_TRIVIA.questions=window.SB_TRIVIA.questions.concat(<JSON>);`, or words-full.js's JSON *string*
    holding JSON). open() parses each such line and refuses the file unless JSON.stringify gives the
    line back byte for byte — so an edit touches only the records it changes, and the header
    comments, the line order and every other record stay exactly as they were.
@@ -14,13 +15,13 @@
 const fs = require('fs'), path = require('path');
 const APP = path.resolve(__dirname, '..');
 
-const LINE = /^(window\.SB_DATA\.nsf\.push\.apply\(window\.SB_DATA\.nsf, |window\.SB_[A-Z_0-9]+ ?= ?)(.*?)(\);?|;?)\s*$/;
+const LINE = /^(window\.SB_DATA\.nsf\.push\.apply\(window\.SB_DATA\.nsf, |window\.SB_TRIVIA\.questions=window\.SB_TRIVIA\.questions\.concat\(|window\.SB_[A-Z_0-9]+ ?= ?)(.*?)(\);?|;?)\s*$/;
 function open(file, root) {
   const p = path.join(root || APP, file), text = fs.readFileSync(p, 'utf8'), lines = text.split('\n'), parts = [];
   lines.forEach((ln, i) => {
     if (ln.length < 2 || !/^window\.SB_/.test(ln)) return;
     const m = ln.match(LINE); if (!m) return;
-    const push = /push\.apply/.test(m[1]);
+    const push = /(push\.apply\(window\.SB_DATA\.nsf, |concat\()$/.test(m[1]);
     if (push !== (m[3][0] === ')')) return;
     let v; try { v = JSON.parse(m[2]); } catch (e) { return; }
     const dbl = typeof v === 'string' && /^\s*[[{]/.test(v);

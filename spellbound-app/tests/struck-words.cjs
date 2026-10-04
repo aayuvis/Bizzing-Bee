@@ -19,6 +19,8 @@
                 index; each rewritten word is still served, its gloss is the SAME in the shard and the
                 library, passes the gloss check, and does not carry the old wording
      feed       no My Feed card is keyed on, titled with or quotes a struck, deleted or held word
+     lessons    no chapter word list (free course, South Asia), Word Journey list, lesson text, Atlas quiz
+                option or trivia option teaches one; the Advanced Pack's seven are a ratchet (ADV_PENDING)
      hour       the word-of-the-hour pool (app3 wohPool, read out of app3.js) holds nothing struck,
                 nothing held, no gloss that fails SB_GLOSS_OK, nothing above rarity band 6
      held       SB_WORDS_HELD (words-patch.js) is the ONE list for words awaiting a decision: put a
@@ -30,7 +32,8 @@
    goes in SB_WORDS_HELD. dike is the one struck word deliberately served (an embankment).
    Proved by breaking (4 Oct 2026): the base commit's shards → shards/stores/feed fail; autism back to
    its old gloss → decided fails; 'autism' put in SB_WORDS_HELD without a rebuild → feed fails;
-   wohFit's gloss test removed → hour fails.
+   wohFit's gloss test removed → hour fails; the previous commit's concepts, journeys, South Asia,
+   trail and trivia files → lessons, quiz and trivia fail (5); gentile back to "your god" → decided fails.
    Run: node tests/struck-words.cjs                                                             */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -40,7 +43,8 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
 const some = (a) => (a.length ? ' — ' + a.slice(0, 10).join(' ') + (a.length > 10 ? ' …(' + a.length + ')' : '') : '');
 
 /* the decisions */
-const DELETED = ['retard', 'retards', 'idiots', 'idiotic', 'moronic', 'imbeciles', 'cretins', 'morons'];
+const DELETED = ['retard', 'retards', 'idiots', 'idiotic', 'moronic', 'imbeciles', 'cretins', 'morons',
+  'idiotically', 'imbecilic', 'cretinous', 'cretinism'];                     // the second pass, same day
 const CONFIRMED = ['idiot', 'moron', 'cretin', 'imbecile', 'mongolism', 'negro', 'negroes', 'negroid', 'gypsy', 'gipsy',
   'midget', 'cripple', 'eskimo', 'hottentot'];                                // the audit's examples, served at rest until 4 Oct
 const REWRITTEN = {                                                           // word → what the old gloss said
@@ -49,7 +53,12 @@ const REWRITTEN = {                                                           //
   heathen: /your god/i, heathens: /your god/i, infidel: /your god/i, infidels: /your god/i,
   lunatic: /^an insane person$/i, lunatics: /^an insane person$/i, maniac: /^an insane person$/i,
   insane: /mental derangement/i, pygmy: /unusually small individual/i, dumb: /slow to learn|intellectual acuity/i,
-  hysteria: /violent mental agitation/i, hysterical: /pertaining to hysteria/i };
+  hysteria: /violent mental agitation/i, hysterical: /pertaining to hysteria/i,
+  /* the second pass: the same decision applied to the forms the first left */
+  dumbness: /mentally slow/i, madman: /^an insane person$/i, madmen: /^an insane person$/i, maniacs: /^an insane person$/i,
+  lunacy: /legal insanity/i, bedlamite: /term for a lunatic/i, gentile: /your god/i, gentiles: /your god/i,
+  psychotic: /afflicted/i, paranoid: /afflicted/i, paranoiac: /afflicted/i, leper: /afflicted/i, lepers: /afflicted/i,
+  lazar: /afflicted/i, arthritic: /afflicted/i, paretic: /afflicted/i, igloo: /eskimo/i, tupek: /eskimo/i, tupik: /eskimo/i };
 const SERVED_KEEP = new Set(['dike']);
 
 /* app3's strike lists and library filter, read out of the source the page runs */
@@ -62,6 +71,11 @@ const STRUCK = new Set([...CORE_STRIKE, ...CORE_CUT].map((w) => String(w).toLowe
 DELETED.forEach((w) => ok(CORE_STRIKE.has(w), `CORE_STRIKE names the deleted "${w}"`));
 const GONE = new Set([...STRUCK, ...DELETED]);
 const gone = (w) => GONE.has(String(w || '').toLowerCase());
+const toks = (s) => String(s || '').toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g) || [];
+/* in a card's TEXT only the words that cannot be innocent: `retards` is a verb in "…and retards your
+   fall", `negro` is the Rio Negro, `gypsy` a moth — those are judged as headwords, above */
+const INSULT = ['idiot', 'idiots', 'idiotic', 'moron', 'morons', 'moronic', 'cretin', 'cretins', 'imbecile', 'imbeciles',
+  'mongolism', 'negroid', 'midget', 'midgets', 'hottentot', 'hottentots'];
 
 /* the stores, as files */
 const load = (files, pre) => { const c = Object.assign({ console: { log() {}, warn() {}, error() {} } }, pre || {}); c.window = c; c.self = c; vm.createContext(c);
@@ -112,8 +126,53 @@ for (const [w, old] of Object.entries(REWRITTEN)) {
   ok(s && l && r && s.d === l.d && r.d === s.d && s.d === CORE_FIX[w] && W.SB_GLOSS_OK(s.d, w) && !old.test(s.d),
     `decided: "${w}" is kept, one gloss everywhere — "${s ? s.d.slice(0, 64) : '(missing)'}…"`);
 }
-ok(!/your god/i.test(JSON.stringify([st.SB_LORE.infidels, st.SB_ALT.heathen])) && !/Neurotic|psychoneurotic/.test(JSON.stringify([st.SB_ALT.hysteria, st.SB_ALT.hysterical])),
-  'decided: the lore and "other meanings" under them dropped the old wording too');
+ok(!/your god/i.test(JSON.stringify([st.SB_LORE.infidels, st.SB_ALT.heathen])) && !/Neurotic|psychoneurotic/.test(JSON.stringify([st.SB_ALT.hysteria, st.SB_ALT.hysterical])) &&
+   !/abnormal mind|troubled mind|fears everything/i.test(JSON.stringify([st.SB_LORE.paranoid, st.SB_LORE.psychotic, st.SB_LORE.paranoiac])) &&
+   !/suffering/i.test(JSON.stringify([st.SB_ALT.paranoid, st.SB_ALT.psychotic])) && !st.SB_SYN.gentile && !st.SB_SYN.psychotic && !st.SB_SYN.lazar,
+  'decided: the lore, "other meanings" and synonym chips under them dropped the old wording too');
+bad = Object.keys(REWRITTEN).filter((w) => { const r = srvBy[w]; return !r || /Christians refer to themselves|elderly arthritic|escaped from the city asylum|defense attorney|His dumbness/.test(r.s || ''); });
+ok(!bad.length, 'decided: their example sentences are kind and true' + some(bad));
+
+/* the lessons: a struck word is not TAUGHT. The word lists of the free course's chapters, the South
+   Asia chapters and the Word Journeys hold no struck word; the lesson text (cards, concepts, journeys)
+   names none of the words this decision was about; no Atlas quiz option is one; no trivia option is
+   one of the insults. The Advanced Pack's chapters still list seven struck words — ADV_PENDING, a
+   ratchet waiting for a decision (they are what those chapters teach: -cide, -latry…). */
+const TAUGHT = new Set(['vasectomy', 'coquette', 'niggardly', 'klan', 'hussy', 'yogi', 'imbecile', 'midget'].concat(DELETED, CONFIRMED));
+const ADV_PENDING = new Set(['matricide', 'parricide', 'patricide', 'goniolatry', 'dagga', 'abdominohysterectomy', 'dumdum']);
+const T = { console: { log() {}, warn() {}, error() {} } }; T.window = T; const TQ = [];
+T.SB_TRIVIA = { questions: TQ, themes: [], byLevel: {}, _add: (lv, a) => TQ.push(...a) }; vm.createContext(T);
+for (const f of ['concepts-data.js', 'adv-concepts-data.js', 'southasia-data.js', 'trail-data.js', 'lessons-data.js', 'trivia-words.js',
+  'trivia-q1.js', 'trivia-q2.js', 'trivia-q3.js', 'trivia-q4.js', 'trivia-q5.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), T, { filename: f });
+const words = (chs) => (chs || []).flatMap((ch, i) => (ch.words || []).map((x) => [i, String(x.w || '').toLowerCase()]));
+bad = words(T.SB_CONCEPTS.chapters).concat(words(Array.isArray(T.SB_SOUTHASIA) ? T.SB_SOUTHASIA : Object.values(T.SB_SOUTHASIA || {}))).filter(([, w]) => gone(w) || TAUGHT.has(w)).map(([i, w]) => i + ':' + w);
+ok(T.SB_CONCEPTS.chapters.length > 100 && !bad.length, 'lessons: no chapter word list (free course, South Asia) holds a struck word' + some(bad));
+bad = words(T.SB_ADV_CONCEPTS.chapters).filter(([, w]) => (gone(w) || TAUGHT.has(w)) && !ADV_PENDING.has(w)).map(([i, w]) => i + ':' + w);
+const advLeft = words(T.SB_ADV_CONCEPTS.chapters).filter(([, w]) => ADV_PENDING.has(w)).length;
+ok(!bad.length, `lessons: the Advanced Pack's word lists hold no struck word beyond the ${advLeft} awaiting a decision` + some(bad));
+bad = (T.SB_LESSONS.lessons || []).flatMap((l) => (l.words || []).map((x) => l.id + ':' + String(x.w).toLowerCase())).filter((x) => { const w = x.split(':')[1]; return gone(w) || TAUGHT.has(w); });
+ok(T.SB_LESSONS.lessons.length >= 100 && !bad.length && T.SB_LESSONS.lessons.every((l) => (l.words || []).length === 5), 'lessons: no Word Journey lists a struck word, and every journey still has its five' + some(bad));
+const say = (k, v) => (k === 'say' || k === 'pron' || k === 'syll' || k === 'sy' || k === 'p' ? undefined : v);
+const text = (o) => JSON.stringify(o, say);
+bad = [];
+T.SB_CONCEPTS.chapters.forEach((ch, i) => { toks(text(ch)).forEach((t) => { if (TAUGHT.has(t)) bad.push('chapter ' + i + ':' + t); }); });
+(Array.isArray(T.SB_SOUTHASIA) ? T.SB_SOUTHASIA : []).forEach((ch, i) => { toks(text(ch)).forEach((t) => { if (TAUGHT.has(t)) bad.push('south asia ' + i + ':' + t); }); });
+/* two journeys name these words in order to TEACH about them, and are left for a person: L56 is the
+   euphemism treadmill itself ("idiot → imbecile → moron … medical terms became insults"), and L18
+   traces Latin baculum, a staff, into imbecile. A new mention anywhere else fails. */
+const MENTION_OK = new Set(['L56:idiot', 'L56:imbecile', 'L56:moron', 'L18:imbecile']);
+T.SB_LESSONS.lessons.forEach((l) => { toks(text(l)).forEach((t) => { if (TAUGHT.has(t) && !MENTION_OK.has(l.id + ':' + t)) bad.push(l.id + ':' + t); }); });
+ok(!bad.length, 'lessons: no chapter card, concept or Word Journey text names one of the words decided here (two journeys that teach about them excepted)' + some(bad));
+bad = [];
+for (const c of ['honey', 'expedition']) (T.SB_TRAIL[c].units || []).forEach((u) => (u.qs || []).forEach((q, j) => (q.c || []).forEach((o) => {
+  if (gone(o) || TAUGHT.has(String(o).toLowerCase()) || toks(o).some((t) => TAUGHT.has(t))) bad.push(u.id + ':' + j + ':' + String(o).slice(0, 30)); })));
+ok(!bad.length, 'quiz: no Atlas quiz option is a struck word or names one decided here' + some(bad));
+/* trivia-words.js REASSIGNS SB_TRIVIA.questions (…questions.concat([…])) while the level shards _add to
+   the array they were handed — read both */
+const ALLQ = T.SB_TRIVIA.questions === TQ ? TQ : TQ.concat(T.SB_TRIVIA.questions);
+ok(ALLQ.some((q) => q.id === 'w5068') && ALLQ.some((q) => q.id === 't10162'), 'trivia: the word bank and the level shards are both read');
+bad = ALLQ.filter((q) => (q.c || []).some((o) => TAUGHT.has(String(o).toLowerCase()) || INSULT.includes(String(o).toLowerCase()))).map((q) => q.id);
+ok(ALLQ.length > 30000 && !bad.length, `trivia: no option of ${ALLQ.length} questions is one of the insults or the words decided here` + some(bad));
 
 /* the feed: no card on a struck, deleted or held word */
 const HELD = new Set((W.SB_WORDS_HELD || []).map((w) => String(w).toLowerCase()));
@@ -128,11 +187,6 @@ const onWord = (c, test) => { const w = c.key ? c.key.slice(5) : '';
   return (w && test(w)) || !!(c.route && /^#\/word\//.test(c.route) && test(decodeURIComponent(c.route.slice(7)))); };
 bad = cards.filter((c) => onWord(c, gone)).map((c) => c.id);
 ok(cards.length > 10000 && !bad.length, `feed: none of ${cards.length} cards is on a struck or deleted word` + some(bad));
-const toks = (s) => String(s || '').toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g) || [];
-/* in a card's TEXT only the words that cannot be innocent: `retards` is a verb in "…and retards your
-   fall", `negro` is the Rio Negro, `gypsy` a moth — those are judged as headwords, above */
-const INSULT = ['idiot', 'idiots', 'idiotic', 'moron', 'morons', 'moronic', 'cretin', 'cretins', 'imbecile', 'imbeciles',
-  'mongolism', 'negroid', 'midget', 'midgets', 'hottentot', 'hottentots'];
 bad = cards.filter((c) => [c.body, c.title, c.source, c.play && c.play.q].concat(c.play ? c.play.opts : []).some((x) => toks(x).some((t) => INSULT.includes(t)))).map((c) => c.id);
 ok(!bad.length, 'feed: no card calls anyone an idiot, a moron or worse in its text' + some(bad));
 bad = cards.filter((c) => onWord(c, (w) => HELD.has(w))).map((c) => c.id);

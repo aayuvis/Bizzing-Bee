@@ -143,7 +143,8 @@ window.SB_WORDS_PATCH = function () {
   /* 1f) The owner's call on the words under review, 4 Oct 2026: deleted, with app3's CORE_STRIKE.
      The served shards no longer hold them at all (tools/strike-served.cjs); listed here so a
      regenerated shard cannot bring one back. `retard` was repaired in DEF until today. */
-  ['retard', 'retards', 'idiots', 'idiotic', 'moronic', 'imbeciles', 'cretins', 'morons'
+  ['retard', 'retards', 'idiots', 'idiotic', 'moronic', 'imbeciles', 'cretins', 'morons',
+   'idiotically', 'imbecilic', 'cretinous', 'cretinism'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
   /* 1e) RACIST AND ANTISEMITIC TERMS, struck 5 Sep 2026. Most carry glosses
@@ -208,7 +209,14 @@ window.SB_WORDS_PATCH = function () {
     sensitively:'The teacher sensitively helped the nervous new student feel welcome.',
     allegedly:  'The puppy allegedly buried the missing sock somewhere in the garden.',
     /* was "During hysterical conditions various functions of the human body are disordered." */
-    hysterical: 'The crowd grew hysterical with excitement when the band finally walked onto the stage.'
+    hysterical: 'The crowd grew hysterical with excitement when the band finally walked onto the stage.',
+    /* unkind or inaccurate sentences under the 4 Oct rewrites */
+    dumbness:   'The dumbness of the plan became clear the moment the paper boat began to sink.',
+    bedlamite:  'In the old novel, the villagers unkindly called the wandering stranger a bedlamite.',
+    gentile:    'Jewish and gentile neighbours worked side by side to clean up the park.',
+    gentiles:   'The synagogue opened its doors to Jews and gentiles alike for the summer concert.',
+    psychotic:  'The doctor explained that with the right care, a psychotic illness can often be treated.',
+    arthritic:  'Warm water soothed her arthritic knees after the long walk.'
   });
 
   // 3) Rewrite spelling-leak definitions (target word must NOT appear in the definition text).
@@ -417,7 +425,26 @@ window.SB_WORDS_PATCH = function () {
     pygmy: 'a kind of animal or plant that is much smaller than the usual kind',
     dumb: 'not able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolish',
     hysteria: 'wild, uncontrollable fear or excitement, often spreading through a crowd',
-    hysterical: 'overcome by wild, uncontrollable feeling such as fear or excitement; informally, also extremely funny'
+    hysterical: 'overcome by wild, uncontrollable feeling such as fear or excitement; informally, also extremely funny',
+    dumbness: 'the state of not being able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolishness',
+    madman: 'an informal and often unkind word for a man who behaves in a wild or reckless way',
+    madmen: 'an informal and often unkind word for men who behave in a wild or reckless way',
+    maniacs: 'an informal and often unkind word for people who behave in a wild or reckless way; also people who are extremely keen on something',
+    lunacy: 'wild foolishness; an old word for madness, from a belief that the moon could affect people’s minds',
+    bedlamite: 'an old, unkind word for a person thought to be mad; it comes from the name of a London hospital for people with mental illness',
+    gentile: 'a person who is not Jewish',
+    gentiles: 'people who are not Jewish',
+    psychotic: 'a person who has psychosis, an illness that can make it hard to tell what is real from what is not',
+    paranoid: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+    paranoiac: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+    leper: 'a person who has leprosy; the word is now considered hurtful, and “a person with leprosy” is preferred',
+    lepers: 'people who have leprosy; the word is now considered hurtful, and “people with leprosy” is preferred',
+    lazar: 'an old word for a person who has leprosy',
+    arthritic: 'a person who has arthritis, a condition that makes the joints painful and stiff',
+    paretic: 'a person who has paresis, a weakness or partial loss of movement in part of the body',
+    igloo: 'a dome-shaped shelter built from blocks of snow, traditionally by the Inuit',
+    tupek: 'tent that is an Inuit summer dwelling',
+    tupik: 'tent that is an Inuit summer dwelling'
   });
 
   var removed = 0, sPatched = 0, dPatched = 0;
@@ -447,7 +474,7 @@ window.SB_WORDS_HELD = [];
 window.SB_GLOSS_OK = function (d, w) {
   d = String(d == null ? '' : d).trim();
   if (d.length < 3) return false;
-  if (/^\(/.test(d) || /^(is|are)\s/i.test(d) || /`/.test(d) || /;\s*-\s+[A-Z]/.test(d)) return false;
+  if (/^\(/.test(d) || /^(is|are)\s/i.test(d) || /`/.test(d) || /;\s*-\s*[A-Z]/.test(d)) return false;
   if (w && new RegExp('\\b' + String(w).replace(/[^a-z0-9]/gi, '\\$&') + '\\b', 'i').test(d)) return false;
   return true;
 };
