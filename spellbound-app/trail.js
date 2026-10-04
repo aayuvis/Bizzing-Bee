@@ -380,6 +380,9 @@
       const act = (actsOf(course()) || []).find(a => a.id === node.act) || {};
       const raw = node.kind === 'unit' ? String(node.u.title || '') : 'Checkpoint';
       const cut = raw.indexOf(' — ');
+      /* where the stop sits in its OWN region, counted the way the region's board counts it
+         ("Stop 3 of 13": this tier's stops AND its checkpoints) — Home quotes these */
+      const inAct = s.map((n, k) => k).filter(k => s[k].act === node.act);
       return {
         kind: node.kind,
         title: cut > 0 ? raw.slice(0, cut) : raw,
@@ -388,7 +391,42 @@
         done: Math.min(i, s.length), total: s.length, lap: lapOf(c), allDone: atEnd,
         go: node.kind === 'unit' ? 'trailUnit' : 'trailChk',
         arg: node.kind === 'unit' ? node.u.id : (course() + '|' + node.id),
+        crs: course(), actId: node.act, node: atEnd ? null : i,
+        stop: inAct.indexOf(atEnd ? s.length - 1 : i) + 1, stops: inAct.length,
+        stopsDone: inAct.filter(k => passedNode(c, s[k])).length,
       };
+    } catch (e) { return null; }
+  };
+  /* HOME'S "YOU ARE HERE" (owner, 4 Oct 2026: "HOME screen should take to world atlas and show
+     kids where they are"). The World Atlas the overview draws — its painting, its region
+     medallions, its road — and where this child stands on it, read from the same pins, frontier
+     and stop records atlasBoard uses, so the card on Home is a window onto the Atlas and never a
+     second map that could disagree with it. `stops` is the child's region as its own board counts
+     it (this tier's stops and checkpoints): 2 passed, 1 the frontier, 0 ahead. Display only —
+     where Continue GOES is SB_NEXT_STEP's (family-shell). Before trail-data.js lands it still
+     answers, for a speller with nothing walked: the first region, nothing passed. */
+  window.SB_TRAIL_HERE = function (crs) {
+    try {
+      crs = crs === 'exp' ? 'exp' : 'honey';
+      const P = ATLAS_PINS[crs] || [], img = crs === 'exp' ? 'atlas-adv.jpg' : 'atlas-map.jpg';
+      const c = active();
+      if (!c || !T()) return { img, crs, ready: false, here: 0, stops: [],
+        pins: P.map(([id, x, y], i) => ({ id, x, y, st: i ? 'ahead' : 'here' })) };
+      const prev = state.trailCourse; state.trailCourse = crs;
+      try {
+        const s = seq(c), fr = frontier(c);
+        let here = -1, stops = [];
+        const pins = P.map(([id, x, y], i) => {
+          const ns = s.map((n, k) => ({ n, k })).filter(z => z.n.act === id);
+          const dn = ns.filter(z => passedNode(c, z.n)).length, at = ns.some(z => z.k === fr);
+          if (at) { here = i; stops = ns.map(z => passedNode(c, z.n) ? 2 : z.k === fr ? 1 : 0); }
+          return { id, x, y, st: ns.length && dn >= ns.length ? 'done' : at ? 'here' : dn ? 'part' : 'ahead' };
+        });
+        /* every stop of the tier walked: the child stands at the end of the road */
+        if (here < 0) { here = Math.max(0, pins.length - 1);
+          const last = pins[here] && s.filter(n => n.act === pins[here].id); stops = (last || []).map(() => 2); }
+        return { img, crs, ready: true, here, stops, pins };
+      } finally { state.trailCourse = prev; }
     } catch (e) { return null; }
   };
 
@@ -536,6 +574,18 @@
     try { window.scrollTo(0, 0); } catch (e) {}
     maybeAmbush(active(), id);
     set({ nav: 'trail', screen: 'app', trailView: 'act', trailAct: id, trailActCrs: crs, tq: null }); };
+  /* CONTINUE LANDS HERE (owner, 4 Oct 2026). Home's Continue, the drawer and #/continue
+     (family-shell goNext) open the child's region on the Atlas with THEIR stop selected and its
+     card open — one tap from Start — and the camera homed on their avatar: the view key, the
+     card key and the remembered scroll are dropped, or a region last seen at another stop would
+     reopen on that old camera. The lock is a tap's (trailAct): the Advanced Rounds need the pack,
+     and its door asks for the PIN. No moth: the child asked for their stop. */
+  app2.trailHere = (arg, node) => { const [crs, id] = String(arg || '').split('|');
+    if (crs === 'exp' && !advOn() && !devOn()) { app2.atlasAdvDoor(); return; }
+    state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
+    _vk = ''; _popK = ''; _mwScroll = null;
+    try { window.scrollTo(0, 0); } catch (e) {}
+    set({ nav: 'trail', screen: 'app', trailView: 'act', trailAct: id, trailActCrs: crs, trailStop: node == null ? null : +node, trailUnit: null, tq: null }); };
   app2.trailToMap = () => set({ nav: 'trail', screen: 'app', trailView: 'map', trailAct: null, trailStop: null, tq: null });
   app2.trailLesson = () => { const u = unit(state.trailUnit); const ch = chOf(u);
     try { stRec(active(), u, lapOf(active())).l = 1; save(); } catch (e) {}
@@ -2052,12 +2102,19 @@
     /* above or below: whichever side the board actually has room for */
     const top = br.top + p.offsetTop * z, T = Math.max(wr.top, br.top) + 4, B = Math.min(wr.bottom, br.bottom) - 4;
     const below = p.classList.contains('below');
-    const fitsUp = top - 24 * z - h >= T, fitsDown = top + 24 * z + h <= B;
-    if (below && !fitsDown && fitsUp) { p.classList.remove('below'); p.style.setProperty('--ty', 'calc(-100% - 24px)'); }
+    /* above the child's own stop the card clears their avatar (--pg, index.html .atlas-pop.rider) */
+    const up = (p.classList.contains('rider') && parseFloat(getComputedStyle(p).getPropertyValue('--pg'))) || 24;
+    const fitsUp = top - up * z - h >= T, fitsDown = top + 24 * z + h <= B;
+    if (below && !fitsDown && fitsUp) { p.classList.remove('below'); p.style.setProperty('--ty', 'calc(-100% - var(--pg, 24px))'); }
     else if (!below && !fitsUp && fitsDown) { p.classList.add('below'); p.style.setProperty('--ty', '24px'); }
   } catch (_) {} }
   window.addEventListener('resize', popFitSoon);
-  function mwClamp(edge, homeX) { setTimeout(() => { try {
+  /* a homing the camera still OWES: a fresh view asks to open on the child's stop, but the
+     panorama may not have its real width yet — and if anything re-renders before it lands (a
+     lazy file arriving, a toast), the new render's clamp passes no home and the old image the
+     ask was waiting on is gone. The ask is kept until a clamp with real layout pays it. */
+  let _mwHome = null;
+  function mwClamp(edge, homeX) { if (homeX != null) _mwHome = homeX; setTimeout(() => { try {
     const el = document.getElementById('sb-pan'); if (!el) { _mwMax = Infinity; return; }
     const bd = el.firstElementChild, img = bd && bd.querySelector('img');
     const apply = () => { try {
@@ -2068,7 +2125,7 @@
       /* open the camera AT the child's stop on a fresh view; on every OTHER
          render (a coin flash, a save, a toast) RESTORE where they were — a
          re-render must never send the camera back to the west end */
-      if (homeX != null) _mwScroll = Math.max(0, Math.min(_mwMax, bd2.clientWidth * homeX / 100 - el2.clientWidth / 2));
+      if (_mwHome != null) { _mwScroll = Math.max(0, Math.min(_mwMax, bd2.clientWidth * _mwHome / 100 - el2.clientWidth / 2)); _mwHome = null; }
       el2.scrollLeft = Math.max(0, Math.min(_mwMax, _mwScroll == null ? el2.scrollLeft : _mwScroll));
     } catch (_) {} };
     if (img && !img.complete) { _mwMax = Infinity; img.addEventListener('load', apply, { once: true }); }
@@ -2806,10 +2863,13 @@
     const _side = _P.x < (isMW ? 7 : 27) ? 'l' : _P.x > _edge - _cardW ? 'r' : 'c';
     const _below = _P.y < 44;
     const _tx = _side === 'l' ? '-16px' : _side === 'r' ? 'calc(-100% + 16px)' : '-50%';
-    const _ty = _below ? '24px' : 'calc(-100% - 24px)';
+    const _ty = _below ? '24px' : 'calc(-100% - var(--pg, 24px))';
+    /* the stop the child stands on carries their avatar above its pin: a card opening upward
+       stands clear of it, so a child sent here by Continue sees themselves on the road */
+    const _rider = st(sel) === 'now' && !!window.SB_AVATAR;
     const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
     setTimeout(() => { if (!shut) popFit(); signFit(); }, 0);   // after panTo/mwClamp have moved the camera
-    const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}" data-act="popKeep" data-side="${_side}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
+    const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}${_rider ? ' rider' : ''}" data-act="popKeep" data-side="${_side}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
       <div class="atlas-pop-in">
         <div style="display:flex;align-items:flex-start;gap:13px">
           <span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;${st(sel) === 'done' ? 'background:linear-gradient(160deg,#FFE49B,#E8A81C);color:#4A3306' : st(sel) === 'now' ? 'background:#FFFBEF;border:2px solid #F0B429;color:#7A5300' : 'background:var(--surface2);color:var(--muted)'}">${st(sel) === 'done' ? '✓' : (sel + 1)}</span>

@@ -86,7 +86,14 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const { ctx, pg } = await open({ phone, dark, seed: seedOf(dark ? 'dusk' : 'light') });
     await pg.evaluate(() => app.setNav('home'));
     await until(pg, () => state.nav === 'home' && !!document.querySelector('.sb-fam-bar') && !!document.querySelector('.sb-content')); await frames(pg, 2);
-    const f = await checkShell(pg, { phone, bee: true });
+    /* THE OWNER'S HOME (4 Oct 2026, "HOME screen should take to world atlas and show kids where they
+       are"): the "You are here" card takes row 2 alone and the training-journey card has left Home.
+       The family's REF in shell-check.mjs (vendored byte for byte) was measured on the old two-card
+       row, so until upstream re-measures Bee exactly these findings are that change, not drift —
+       the card must span the row (1107px at 1280) — and anything else still fails. */
+    const ownerHome = m => /^second journey card: missing$|^second missing on phone home$/.test(m)
+      || (/^next-on-your-journey card width is (\d+)px, Bee's is 547px$/.test(m) && Math.abs(+RegExp.$1 - 1107) <= 5);
+    const f = (await checkShell(pg, { phone, bee: true })).filter(m => !ownerHome(m));
     const tabs = await pg.evaluate(ph => [...document.querySelectorAll(ph ? 'nav.sb-tabbar button' : '.sb-topnav button')].map(x => x.textContent.trim()), phone);
     ok(!f.length, `checkShell on Home, ${phone ? 'phone' : 'desktop'}, ${dark ? 'dark' : 'light'}: [] ${f.length ? JSON.stringify(f) : ''}`);
     ok(tabs.length === 6 && /My Feed$/.test(tabs[5]) && /Play$/.test(tabs[4]), `six tabs, My Feed last: ${tabs.join(' · ')}`);

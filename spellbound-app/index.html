@@ -725,7 +725,8 @@
      on a phone, then the stop card and a 2x2 tile block side by side. */
   .sb-home-r2{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;align-items:start}
   .sb-home-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-  @media (min-width:900px){ .sb-home-r2{grid-template-columns:minmax(300px,1fr) minmax(300px,1fr)} }
+  /* one card in row 2 now — "You are here" — and it takes the row (owner, 4 Oct 2026: the training
+     journey card left Home; it lives in Practice) */
   /* ONE Continue, above the fold on a phone (FIX-BEE B1, family standard §2). The home keeps
      its look and its source order; below 640px the two rows dissolve (display:contents) into
      one column and Continue is moved up to sit straight under the greeting — at 390x844 it
@@ -742,6 +743,64 @@
     .sb-home>:not(.sb-home-r1):not(.sb-home-r2){order:6}
     .sb-home>:last-child:not(.sb-home-r2){order:7;margin-top:14px!important}
   }
+  /* HOME: "YOU ARE HERE" (owner, 4 Oct 2026) — a window onto the World Atlas, cropped around the
+     child's region (app3 homeHereCard, trail.js SB_TRAIL_HERE). The board is the overview painting
+     at a fixed zoom (--hz of the window's width, never less than the window's height), slid so the
+     child's pin sits mid-window and clamped so the window never runs past the painting's edge:
+     left in the window's %, up/down in the board's own % (translate). The whole card is the
+     Continue button; nothing on the map takes a tap of its own. */
+  .sb-here{--hh:150px;--hz:170%;--ha:1.7915;display:flex;flex-direction:column;align-items:stretch;padding:0;width:100%;
+    text-align:left;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-rest)}
+  .sb-here-map{position:relative;display:block;height:var(--hh);overflow:hidden;flex:none;background:#EADFC4;isolation:isolate}
+  .sb-here-board{position:absolute;top:0;display:block;aspect-ratio:1100/614;
+    --rt-guide:rgba(104,68,26,.6);--rt-walk:#B4620E;--rt-sh:rgba(255,255,255,.6);
+    width:max(var(--hz),calc(var(--hh) * var(--ha)));
+    left:clamp(calc(100% - max(var(--hz),calc(var(--hh) * var(--ha)))),calc(50% - max(var(--hz),calc(var(--hh) * var(--ha))) * var(--x) / 100),0px);
+    transform:translateY(clamp(calc(var(--hh) - 100%),calc(var(--hh) * .64 - var(--y) * 1%),0px))}
+  :root[data-mode="dusk"] .sb-here-board{--rt-guide:rgba(255,250,235,.75);--rt-walk:rgba(255,206,88,.95);--rt-sh:rgba(24,14,4,.55)}
+  .sb-here-board>img{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .sb-here-road{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .sb-here-road path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .sb-here-ghost{stroke:var(--rt-guide);stroke-width:2.4;stroke-dasharray:2 6;filter:drop-shadow(0 1px 2px var(--rt-sh))}
+  .sb-here-walk{stroke:var(--rt-walk);stroke-width:2.8;filter:drop-shadow(0 1px 2px var(--rt-sh))}
+  .sb-here-pin{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+    font:800 12px/1 var(--display);border:2px solid rgba(255,255,255,.85);box-shadow:0 3px 8px rgba(10,6,26,.4)}
+  .sb-here-pin.is-done{background:linear-gradient(160deg,#FFD24D,#C8791B);color:#4A3306}
+  .sb-here-pin.is-part{background:linear-gradient(160deg,#FFF3CC,#F0B429)}
+  .sb-here-pin.is-ahead{width:16px;height:16px;background:rgba(36,30,51,.55);border-color:rgba(255,255,255,.6)}
+  .sb-here-me{position:absolute;width:0;height:0}
+  .sb-here-dot{position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;
+    background:#FFFBEF;border:3px solid #F0B429;box-shadow:0 0 0 5px rgba(240,180,41,.32),0 4px 10px rgba(10,6,26,.45);
+    animation:sb-here-ping 2.4s ease-in-out infinite}
+  @keyframes sb-here-ping{0%,100%{box-shadow:0 0 0 4px rgba(240,180,41,.38),0 4px 10px rgba(10,6,26,.45)}50%{box-shadow:0 0 0 10px rgba(240,180,41,0),0 4px 10px rgba(10,6,26,.45)}}
+  .sb-here-av{position:absolute;left:0;top:-9px;transform:translate(-50%,-100%);width:48px;height:50px;display:block;
+    filter:drop-shadow(0 3px 6px rgba(8,5,22,.5))}
+  .sb-here-av>svg,.sb-here-av>img{width:100%!important;height:100%!important;display:block;object-fit:contain}
+  /* a region at the very top of the painting: the window cannot climb above the art, so the
+     child stands below their pin instead of being cut off by the frame */
+  .sb-here-me.is-low .sb-here-av{top:12px;transform:translate(-50%,0)}
+  .sb-here-tag,.sb-here-tier{position:absolute;top:10px;padding:4px 11px;border-radius:999px;font-size:11px;font-weight:800;line-height:1.3;
+    white-space:nowrap;box-shadow:0 2px 8px rgba(10,6,26,.25)}
+  .sb-here-tag{left:10px;background:#FFFFFF;color:#241E33;letter-spacing:.05em;text-transform:uppercase}
+  .sb-here-tier{right:10px;background:#241E33;color:#FFFFFF}
+  .sb-here-body{display:flex;flex-direction:column;padding:11px 15px 14px;min-width:0;flex:1}
+  .sb-here-region{display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))}
+  .sb-here-stop{display:block;font-size:13px;line-height:1.4;color:var(--muted)}
+  .sb-here-stop b{color:var(--ink,var(--text));font-weight:800}
+  .sb-here-go{margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:12px;width:100%}
+  .sb-here .sb-home-where{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+  .sb-here .sb-home-pos{display:block;font-size:11px;font-weight:700;color:var(--muted);line-height:1.3}
+  .sb-here-rail{display:flex;gap:3px;height:7px}
+  .sb-here-rail>i{flex:1;min-width:2px;border-radius:999px;background:var(--tint-deep,var(--surface2))}
+  .sb-here-rail>i.d{background:var(--action,var(--accent))}
+  .sb-here-rail>i.n{background:var(--treasure,#F0B429);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--treasure,#F0B429) 45%,transparent)}
+  @media (min-width:640px){ .sb-here{--hh:176px} }
+  @media (min-width:900px){
+    .sb-here{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);--hh:232px;--hz:160%}
+    .sb-here-body{padding:18px 20px;justify-content:center}
+    .sb-here-go{margin-top:14px}
+  }
+  @media (prefers-reduced-motion:reduce){ .sb-here-dot{animation:none} }
   /* mobile chrome: bottom tab bar replaces the top nav; mode switcher collapses to a cycle button */
   .sb-tabbar{display:none}
   @media(min-width:640px) and (hover:hover){
@@ -1909,6 +1968,9 @@
   .atlas-pop .atlas-pop-in>div:last-child{margin-top:10px !important;gap:7px !important}
   .atlas-pop .atlas-pop-in>div:last-child>*{padding:9px 12px !important;font-size:12.5px !important}
   @media (prefers-reduced-motion:reduce){ .atlas-pop{animation:none} }
+  /* above the stop the child stands on, the card clears their avatar (.atlas-rider) — popFit reads --pg */
+  .atlas-pop.rider{--pg:76px}
+  @media (max-width:640px){ .atlas-pop.rider{--pg:62px} }
   /* ── THE LIVING MEADOW (Act I pilot): the four-plate panorama the camera
      unrolls. The board is as wide as the painting; the scroll clamp does the
      revealing — nothing on screen is ever veiled. ── */

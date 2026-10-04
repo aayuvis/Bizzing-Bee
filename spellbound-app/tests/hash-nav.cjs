@@ -9,7 +9,8 @@
        stops a drill it leaves, and at the bottom of the stack climbs back onto Home instead of
        leaving the app;
      · #/atlas and #/stop/u1 open where they say; a locked stop is NOT opened by its address;
-     · #/continue lands exactly where Home's Continue goes;
+     · #/continue lands exactly where Home's Continue goes — the Atlas, on the child's region
+       with their stop selected (owner, 4 Oct 2026) — and Back from there is Home;
      · ?from=hive shows "← back to my day", pointing at the Hive, and hides inside a drill;
      · (FIX2) a typed address is never swallowed by a PIN dialog or any other layer, and
        #/journeys opens Word Journeys rather than a PIN over the screen beneath;
@@ -37,7 +38,7 @@ async function open(b, url, errs, vp) {
 }
 /* off the app entirely (Back left it) there is no `state` — report the page we landed on */
 const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: location.href, h: location.hash, screen: null } : ({ h: location.hash, url: location.href, screen: state.screen, nav: state.nav, tv: state.trailView, tu: state.trailUnit || state.trailReturn,
-  drawer: !!state.drawerOpen, settings: !!state.settingsOpen, sel: !!state.conceptSel }));
+  drawer: !!state.drawerOpen, settings: !!state.settingsOpen, sel: !!state.conceptSel, act: state.trailAct, stop: state.trailStop }));
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
@@ -109,8 +110,8 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   ({ ctx, pg } = await open(b, URL + '#/continue', errs));
   await pg.waitForTimeout(800);
   w = await where(pg);
-  const want = await pg.evaluate(() => SB_NEXT_STEP().arg);
-  ok((w.nav === 'trail' || (w.nav === 'concepts' && w.sel)) && w.tu === want, `#/continue opens the Continue target directly (${w.nav} ${w.tu} = ${want})`);
+  const want = await pg.evaluate(() => { const n = SB_NEXT_STEP(); return { act: n.actId, node: n.node, h: '#/atlas/' + n.crs + '/' + n.actId }; });
+  ok(w.nav === 'trail' && w.tv === 'act' && w.act === want.act && w.stop === want.node && w.h === want.h, `#/continue opens where Continue goes — the Atlas region, the stop selected (${w.h} stop ${w.stop} = ${want.h} stop ${want.node})`);
   w = await back(); if (w.nav !== 'home') w = await back();
   ok(w.nav === 'home' && w.screen === 'app', 'and Back from there walks back to Home, not out to the Hive');
   await ctx.close();
@@ -121,6 +122,8 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   const chip = await pg.evaluate(() => { const a = document.querySelector('a.sb-fam-day'); if (!a) return null; const r = a.getBoundingClientRect();
     return { href: a.getAttribute('href'), txt: a.textContent, vis: r.width > 0 && r.top >= 0 && r.bottom <= innerHeight, ow: document.documentElement.scrollWidth > innerWidth + 1 }; });
   ok(!!chip && chip.href === HIVE && /my day/.test(chip.txt) && chip.vis && !chip.ow, '?from=hive shows "← back to my day" in the top bar, pointing at the Hive, with no overflow at 390px');
+  w = await where(pg);
+  ok(w.nav === 'trail' && w.tv === 'act' && w.stop === await pg.evaluate(() => SB_NEXT_STEP().node), `and ?from=hive#/continue lands on the Atlas region too, the stop selected (${w.h})`);
   await pg.evaluate(() => { app.trailPractice && app.trailUnit(SB_NEXT_STEP().arg); }); await pg.waitForTimeout(600);
   await pg.evaluate(() => app.trailPractice()); await pg.waitForTimeout(1500);
   ok(await pg.evaluate(() => state.nav === 'train' && !document.querySelector('a.sb-fam-day')), 'and the chip hides inside a drill');

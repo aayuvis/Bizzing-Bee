@@ -4,12 +4,13 @@
    together and so app3.js only has to call into them:
 
      1. THE NEXT STEP. `SB_NEXT_STEP()` is the ONE reading of "what should this child do
-        next", and `app.goNext` the one way to go there. Home's Continue card, the drawer,
-        the end of onboarding, the end of placement and the Hive's `#/continue` deep link all
-        go through it, so no two screens can ever offer next steps that disagree. It is built
-        on trail.js's `SB_TRAIL_NEXT` (the Atlas frontier) and adds the one thing the frontier
-        does not know: an untouched stop opens on its LESSON, because the why comes before
-        the drill.
+        next". Home's Continue card, the drawer and the Hive's `#/continue` deep link go there
+        through `app.goNext` — the Atlas, on the child's region with their stop selected — and
+        the end of onboarding and of placement through `app.goStep`, straight into it; both
+        read the same next step, so no two screens can ever offer next steps that disagree. It
+        is built on trail.js's `SB_TRAIL_NEXT` (the Atlas frontier) and adds the one thing the
+        frontier does not know: an untouched stop opens on its LESSON, because the why comes
+        before the drill.
      2. THE HASH. `state` is mirrored into `location.hash` after every render, and `popstate`
         maps the hash back onto the same openers the buttons use (so a deep link can never
         skip a lock). History has a ROOT entry under the first screen: backing onto it pushes
@@ -58,7 +59,29 @@
     }
     return r;
   }
+  /* CONTINUE GOES TO THE ATLAS (owner, 4 Oct 2026: "HOME screen should take to world atlas and
+     show kids where they are"). Home's Continue, the drawer's next step and #/continue (the
+     Hive's ?from=hive too) open the child's region with their stop selected and its card open,
+     the camera on their avatar — the stop's Start is one tap away, and the child sees where it
+     is first (trail.js trailHere: the same lock a tap on the region meets). A new speller is at
+     the first region's first stop. Every stop of the tier walked: the Atlas itself, saying so. */
   function goNext() {
+    var run = function () {
+      var n = nextStep();
+      if (n.ready && !n.allDone && n.actId && app.trailHere) { app.trailHere(n.crs + '|' + n.actId, n.node); return; }
+      app.openTrail ? app.openTrail() : app.setNav('trail');
+      if (n.ready && n.allDone) { try { flash('Every stop on Tier ' + n.lap + ' is walked. ✓'); } catch (e) {} }
+    };
+    leaveDrill();
+    /* the WHOLE atlas group, not just trail-data.js: the region board reads the concept course
+       and the Advanced Rounds (chOf), and one next step means one answer, whenever it is asked —
+       Home's Continue once ran before the course was in and disagreed with #/continue. */
+    lazyNeed('atlas', run);
+  }
+  /* STRAIGHT INTO THE STEP — the end of setup and of placement only. A first run still ends
+     INSIDE the first lesson (FIX-BEE A3, A8): a child who has just made a speller is not shown a
+     map first. The same next step as goNext; an untouched stop opens on its LESSON. */
+  function goStep() {
     var run = function () {
       var n = nextStep();
       if (!n.ready || n.allDone || !app[n.go]) { app.openTrail ? app.openTrail() : app.setNav('trail'); return; }
@@ -69,11 +92,7 @@
       }
     };
     leaveDrill();
-    /* the WHOLE atlas group, not just trail-data.js: nextStep()'s "untouched stop opens on its
-       lesson" reads the concept course, and trail-data.js alone lands first (boot-lazy's FIRST,
-       for Home's card). Gating on SB_TRAIL.honey let Home's Continue run before the course was
-       in, read every stop as lesson-less and open #/stop/u2, while #/continue — which waited for
-       the group — opened #/concepts/1. One next step means one answer, whenever it is asked. */
+    /* the WHOLE atlas group: nextStep()'s "untouched stop opens on its lesson" reads the concept course */
     lazyNeed('atlas', run);
   }
   /* The child's place, said in words for the progress strip beside Continue. The level half is
@@ -469,6 +488,7 @@
   /* app3 calls this once its `app` object exists; the actions live here beside the code they serve */
   function install() {
     app.goNext = goNext;
+    app.goStep = goStep;
     app.famMenu = function () { state.famMenu = menuOpen() ? false : routeOf(); render(); };
     app.famMenuClose = function () { if (!state.famMenu) return; state.famMenu = false; render(); };
     app.famSwitch = switchChild;
@@ -480,7 +500,7 @@
 
   window.SB_SHELL = {
     HIVE_URL: HIVE_URL, demo: DEMO, fromHive: FROM_HIVE, ymd: ymd,
-    nextStep: nextStep, goNext: goNext, levelWords: levelWords,
+    nextStep: nextStep, goNext: goNext, goStep: goStep, levelWords: levelWords,
     inDrill: inDrill, leaveDrill: leaveDrill,
     routeOf: routeOf, applyRoute: applyRoute, boot: boot, afterRender: afterRender,
     startActivity: startActivity, milestone: milestone, watch: watch,

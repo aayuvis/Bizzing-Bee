@@ -2331,7 +2331,7 @@ const app = {
     app._finishOnb(); set({screen:'app', nav:'home'});
     /* A8 (FIX-BEE v2): the first thing a new speller does is SPELL — one spoken word, right inside
        the first minute, celebrated — and then the first Atlas lesson through the one next step. */
-    try{ app.firstWord(); }catch(e){ try{ app.goNext(); }catch(e2){} }
+    try{ app.firstWord(); }catch(e){ try{ app.goStep(); }catch(e2){} }
     /* If they picked a paid plan on the landing page, land them back on it rather
        than dropping them at the bottom of the ladder to find it again. The tier is
        NOT applied here — nobody has paid yet; the sheet is where that happens. */
@@ -2362,11 +2362,11 @@ const app = {
     if(ok){ f.done=true; f.miss=false; addCoins('answer'); sfx('correct'); try{ burstConfetti(200); }catch(e){} try{ SB_SHELL.milestone&&SB_SHELL.milestone('first-word'); }catch(e){} save(); render(); return; }
     /* a miss HOLDS: the letters and the why, and the child types it again */
     f.miss=f.typed||' '; f.typed=''; sfx('wrong'); render(); },
-  fwDone:()=>{ state.fw=null; try{ app.goNext(); }catch(e){ app.setNav('home'); } },
+  fwDone:()=>{ state.fw=null; try{ app.goStep(); }catch(e){ app.setNav('home'); } },
   ltSay:()=>{ const lt=state.lt; if(lt&&lt.words[lt.i]) say(lt.words[lt.i].w); },
   ltType:(v)=>{ state.lt.typed=v; },
   ltKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.ltEnter(); } },
-  ltSkip:()=>{ state.lt=null; flash('No problem — starting at Level 1. You can climb fast!'); app.goNext(); },
+  ltSkip:()=>{ state.lt=null; flash('No problem — starting at Level 1. You can climb fast!'); app.goStep(); },
   ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=sameSpelling(lt.typed,w.w);
     logBand(w,ok);
     if(ok){ lt.ok++; sfx('correct'); } else { lt.fails++; sfx('wrong'); }
@@ -2380,7 +2380,7 @@ const app = {
     c.band=c.bandSeed=Math.max(1,Math.min(9,lt.placed||1));            // one result, one truth: the test IS the Band
     getList(c,'journey').stage=ltStageForBand(c.band); c.activeList='journey'; save();
     sfx('win'); burstConfetti(110); lt.done=true; render(); },
-  ltGo:()=>{ state.lt=null; app.goNext(); },
+  ltGo:()=>{ state.lt=null; app.goStep(); },
   // theme / mode
   pickTheme:(id)=>{ if(!isThemeUnlocked(id)){ app.buyTheme(id); return; } const children=state.children.slice(); if(children[state.activeIdx]) children[state.activeIdx]={...children[state.activeIdx],theme:id}; set({theme:id, children}); },
   /* A locked world goes to the Shop's Worlds tab, where its fixed price is printed (FIX-BEE v2). */
@@ -6923,6 +6923,64 @@ function paintedTileArt(world,h,eager){   /* eager: Home's first screen — a la
     <img src="app-art/w-${world}-r2.jpg" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.42))"></span></span>`;
 }
+/* YOU ARE HERE (owner, 4 Oct 2026: "HOME screen should take to world atlas and show kids where they
+   are instead of this"). Home's one Continue card is a window onto the WORLD ATLAS: the overview's
+   own painting, cropped around the child's region, their avatar standing on it, the road walked to
+   it in gold and the regions behind them starred — then the region, "Stop 3 of 13" counted the way
+   that region's board counts it (stops and checkpoints of this tier), and the stop's name, with a
+   rail of the region's stops beside Continue. The WHOLE card is one button (app.goNext: the region
+   opens with this stop selected); the pill inside it is the one filled primary on Home.
+   The picture is the overview's (atlas-map.jpg, 116KB, one for every child), not a region's own
+   panorama (0.6–1MB each): Home's first screen has a budget (tests/first-load.cjs), and the region
+   painting is what Continue opens. Where the pins and road are is trail.js's (SB_TRAIL_HERE). */
+function homeHereCard(c,nx){
+  const S=state; const crs=nx&&nx.crs==='exp'?'exp':'honey';
+  const H=(typeof window.SB_TRAIL_HERE==='function')?SB_TRAIL_HERE(crs):null;
+  const pins=(H&&H.pins)||[]; const hi=H?Math.max(0,H.here|0):0; const at=pins[hi]||{x:12.5,y:70};
+  const pt=p=>(+p.x).toFixed(1)+' '+(+p.y).toFixed(1);
+  const road=pins.map((p,i)=>(i?'L':'M')+pt(p)).join(' ');
+  const walked=pins.slice(0,hi+1).map((p,i)=>(i?'L':'M')+pt(p)).join(' ');
+  /* Bizzy and the plain bee are the mascot, drawn inline as the greeting draws them — no extra
+     picture on Home's first screen; everyone else wears their own portrait */
+  let av=''; try{ const own=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'; av=(own&&window.SB_AVATAR)?(SB_AVATAR(c.avatar,48)||''):''; if(!av) av=mascotSVG('happy'); }catch(e){}
+  const marks=pins.map((p,i)=>i===hi?'':`<span class="sb-here-pin is-${p.st}" style="left:${p.x}%;top:${p.y}%">${p.st==='done'?'★':''}</span>`).join('');
+  const all=!!(nx&&nx.allDone);
+  const label=nx&&nx.done?'Continue':'Start';
+  const region=nx?nx.act:'The Word Atlas';
+  const n=nx?(nx.stop|0):0, of=nx?(nx.stops|0):0;
+  const where=all?`Tier ${nx.lap} complete — every stop walked`:(nx&&n&&of?`Stop ${n} of ${of}`:'Your first stop');
+  const title=all?'':(nx?(nx.title||''):'Start at the Meadow');
+  /* the rail: the region's own stops — walked, the one you are on, the road ahead */
+  const rail=(H&&H.stops)||[];
+  const rdone=nx?(all?of:(nx.stopsDone|0)):0; const rpct=of?Math.round(rdone/of*100):0;
+  const wk=weekProgress(c);
+  const aria=`You are here: ${region}${where?', '+where:''}${title?': '+title:''}. ${label}`;
+  return `<button class="sb-lift sb-home-next sb-here" data-act="goNext" aria-label="${escA(aria)}">
+    <span class="sb-here-map" aria-hidden="true">
+      <span class="sb-here-board" style="--x:${(+at.x).toFixed(2)};--y:${(+at.y).toFixed(2)}">
+        <img src="app-art/${H&&H.img||'atlas-map.jpg'}" alt="" decoding="async">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="sb-here-road">
+          ${road?`<path d="${road}" class="sb-here-ghost" vector-effect="non-scaling-stroke"/>`:''}
+          ${hi>0?`<path d="${walked}" class="sb-here-walk" vector-effect="non-scaling-stroke"/>`:''}</svg>
+        ${marks}
+        <span class="sb-here-me${at.y<26?' is-low':''}" style="left:${at.x}%;top:${at.y}%"><span class="sb-here-dot"></span><span class="sb-here-av">${av}</span></span>
+      </span>
+      <span class="sb-here-tag">You are here</span>
+      ${nx?`<span class="sb-here-tier">Tier ${nx.lap}</span>`:''}
+    </span>
+    <span class="sb-here-body">
+      <span class="sb-cs">Your place on the Word Atlas</span>
+      <span class="sb-here-region">${trunc(region,44)}</span>
+      <span class="sb-here-stop">${where?`<b>${esc(where)}</b>`:''}${where&&title?' · ':''}${title?trunc(title,48):''}</span>
+      <span class="sb-here-go">
+        <span class="sb-continue" style="flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${label}</span>
+        <span class="sb-home-where">
+          <span class="sb-here-rail" role="progressbar" aria-label="${escA('How far along '+region)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${rpct}">${rail.map(v=>`<i class="${v===2?'d':v===1?'n':''}"></i>`).join('')||'<i></i>'}</span>
+          <span class="sb-home-pos">${esc(SB_SHELL.levelWords(c))}<br>${esc('This week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered')}</span>
+        </span>
+      </span>
+    </span></button>`;
+}
 function viewHome(){
   const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const focusedH=((c.ageMode)||((c.age||9)<=11?'playful':'focused'))==='focused';
@@ -6950,35 +7008,6 @@ function viewHome(){
   const atlas=nx?{done:nx.done,total:nx.total,lap:nx.lap}:(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
       const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
     catch(e){ return {done:0,total:0,lap:1}; } })();
-  /* The Atlas stop's companion: the journey you are actually training. Same card
-     shape, same art language, same height — a champion sees the Ultra journey,
-     everyone else the Bizzing Bee Journey. */
-  const trainCard=(()=>{
-    const ultra=advModeOn(c);
-    const art=ultra?'atlas-ultra':'w-stage-r2';
-    const title=ultra?'Ultra Champions Journey':journeyName();
-    const sub=ultra?'Every word in the library, hardest first, in day-sized blocks.'
-      :'Twenty Stages to Bizzing Bee Champ — climb them with Revise and Practice.';
-    const pct=Math.min(100,Math.round(aLvlNew/20*100));
-    return `<button class="sb-lift" data-act="openCoach" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
-      <div style="position:relative;width:100%">
-        <span style="position:relative;display:block;width:100%;height:92px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-          <img src="app-art/${art}.jpg" alt="" loading="${innerWidth>=640?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
-          <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.44))"></span></span>
-        <span style="position:absolute;left:14px;bottom:-13px">${wayTile('quest',40,2.5)}</span>
-      </div>
-      <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
-        <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;background:${S.mode==='dusk'?'#FFFFFF':'#241E33'};color:${S.mode==='dusk'?'#241E33':'#FFFFFF'}">Stage ${aLvlNew} of 20${ultra?'':' to Champ'}</span>
-      </div>
-      <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
-        <span class="sb-cs">Your training journey</span>
-        <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${trunc(title,34)}</div>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(sub)}</div>
-        <span style="margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:10px">
-          <span style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil',15)} Practise</span>
-          <span style="flex:1;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
-        </span>
-      </div></button>`; })();
   return `<div class="sb-home">
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
@@ -7070,55 +7099,14 @@ function viewHome(){
       ${wohTile}
     </div>
     <div class="sb-home-r2">
-      ${(()=>{ /* Next on your journey — the Atlas frontier, straight from trail.js.
-          trail-data.js is deferred. It used to fall back to "Start at the Meadow"
-          in the meantime, which is the wrong destination for anyone already on
-          the road — a second later the card silently became their real stop. A
-          speller who has started holds the card's space instead and it fills in
-          once, correctly; only a speller with no progress sees the invitation. */
+      ${(()=>{ /* YOU ARE HERE — the World Atlas, the child's place on it, and Continue (homeHereCard).
+          trail-data.js is deferred. A speller who has started holds the card's space until it
+          lands (it fills in once, correctly — "Home must not rewrite itself"); a speller with
+          nothing walked is at the first region's first stop, which needs no data to draw. */
         const started=(()=>{ try{ const tr=c.trail||{}; return Object.keys(tr.done||{}).length>0
           ||Object.keys(tr.chk||{}).length>0||Object.keys(tr.seen||{}).length>0; }catch(e){ return false; } })();
-        if(!nx&&started) return cardHold('Next on your journey',218);
-        const world=nx?nx.world:atlasWorld(c);
-        const kick=nx?(nx.allDone?('Tier '+nx.lap+' complete'):trunc(nx.act,30)):'The Word Atlas';
-        const title=nx?(nx.allDone?'Start the next tier':nx.title):'Start at the Meadow';
-        const sub=nx?(nx.allDone?'Every stop cleared at this tier — the same map returns with harder words.'
-              :(nx.kind==='chk'?'Checkpoint — a mixed quiz over everything so far, no new words.':(nx.sub||'')))
-            :'One guided journey through nine worlds — learn the idea, meet the words, clear the quiz gate.';
-        /* every way forward goes through app.goNext, which reads SB_NEXT_STEP again at the tap */
-        const go='data-act="goNext"';
-        // Not "0/102 stops": where you are, not how long the road is. (See tierBar in trail.js.)
-        /* the stop number is the REGION's, the one the strip below and the Atlas pin count in
-           (regionPos) — it was the whole road's index, so the badge said "stop 9" over "stop 8 of 11" */
-        const rp0=nx?regionPos(nx):null;
-        const meta=nx?((rp0?('stop '+rp0.n):(nx.done?('stop '+Math.min(nx.done+1,nx.total)):'first stop'))+' · Tier '+nx.lap):'nine acts, then the Advanced Rounds';
-        /* ONE progress strip beside Continue (FIX-BEE B3): the region you are in, a bar for how
-           far along this tier, and your level — the bar carries the distance, so no total is printed */
-        const region=nx?(nx.allDone?('Tier '+nx.lap+' complete'):nx.act):'The Word Atlas';
-        const pct=nx?nx.pct:0;
-        return `<button class="sb-lift sb-home-next" ${go} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
-        <div style="position:relative;width:100%">
-          ${paintedTileArt(world,92,true)}
-          <span style="position:absolute;left:14px;bottom:-13px">${wayTile('trail',40,-2.5)}</span>
-        </div>
-        <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
-          <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;background:${S.mode==='dusk'?'#FFFFFF':'#241E33'};color:${S.mode==='dusk'?'#241E33':'#FFFFFF'}">${esc(meta)}</span>
-        </div>
-        <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
-          <span class="sb-cs">Next on your journey</span>
-          <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${trunc(title,40)}</div>
-          <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${trunc(nx?(sub||kick):(kick+(sub?' · '+sub:'')),96)}</div>
-          <span style="margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:12px;width:100%">
-            <span class="sb-continue" style="flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${nx&&nx.done?'Continue':'Start'}</span>
-            <span class="sb-home-where" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
-              <span style="display:block;font-size:11.5px;font-weight:800;color:var(--ink,var(--text));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(region)}</span>
-              <span role="progressbar" aria-label="How far along this tier of the Word Atlas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" style="display:block;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
-              <span class="sb-home-pos" style="display:block;font-size:11px;font-weight:700;color:var(--muted);line-height:1.3">${(()=>{ const rp=regionPos(nx); const wk=weekProgress(c);
-                return esc((rp?('stop '+rp.n+' of '+rp.of+' · '):'')+SB_SHELL.levelWords(c))+'<br>'+esc('This week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered'); })()}</span>
-            </span>
-          </span>
-        </div></button>`; })()}
-      ${trainCard}
+        if(!nx&&started) return cardHold('You are here',innerWidth>=900?238:300);
+        return homeHereCard(c,nx); })()}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${qohTile}</div>`; })()}
     <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a>${tmLine()}</div>

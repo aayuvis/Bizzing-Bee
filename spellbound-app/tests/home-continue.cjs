@@ -1,15 +1,21 @@
-/* ONE CONTINUE ON HOME (FIX-BEE B1/B2/B3, family standard §2).
+/* ONE CONTINUE ON HOME, AND IT GOES TO THE ATLAS (FIX-BEE B1/B2/B3, family standard §2; owner
+   4 Oct 2026: "HOME screen should take to world atlas and show kids where they are").
 
-   Bee's home is the family template and keeps its look; what changed is the buttons. The audit
-   saw three calls to action that competed — "Find your level · Start", the Atlas "Start" and
-   the journey "Practise". Now:
-     · exactly ONE filled primary button on Home — "Next on your journey" — in every look
-       (light / white / dusk), on a desktop and on a phone; every other card is secondary;
+   Bee's home is the family template. The audit saw three calls to action that competed — "Find
+   your level · Start", the Atlas "Start" and the journey "Practise". Then the owner asked for Home
+   to show the child WHERE they are and for Continue to take them to the World Atlas. Now:
+     · exactly ONE filled primary button on Home — the "You are here" card's Continue — in every
+       look (light / white / dusk), on a desktop and on a phone; the training-journey card (Ultra
+       Champions Journey / Practise) has left Home — it lives in Practice;
      · on a 390×844 phone that Continue is above the fold, clear of the bottom tab bar;
-     · beside it, one progress strip says where the child is: the Atlas region, a bar for how
-       far along the tier (no "N/102" total), and the level;
-     · every "next" in the app goes through ONE function, SB_NEXT_STEP / app.goNext: Home,
-       the drawer, the end of placement and the Hive's #/continue all land on the same stop;
+     · the card names the region (as SB_NEXT_STEP does) and, beside Continue, one strip carries
+       the region's stops as a rail (a bar, no "N/102" total) and the level;
+     · every "next" in the app reads ONE function, SB_NEXT_STEP: Home's Continue, the drawer and
+       #/continue all land on the SAME place — the Atlas, on the child's region, with their stop
+       selected and its card open (its Start one tap away) and the stop on screen; the end of
+       placement goes straight INTO that stop (app.goStep);
+     · the camera is still on the stop when something re-renders before the region's panorama
+       has landed (the homing used to be dropped with the image it was waiting on);
      · the home anatomy: greeting first, then Continue, Today's row of at most three, and no
        more than six ways-in tiles.
    "Filled primary" is measured, not declared: a control counts when it, or a labelled part
@@ -48,6 +54,23 @@ function filledPrimaries() {
   return out;
 }
 
+/* runs in the page: where a "next" landed, against what SB_NEXT_STEP says */
+function landing() {
+  const ns = SB_NEXT_STEP(); const S = state;
+  const pop = document.querySelector('.atlas-pop');
+  const go = pop && pop.querySelector('[data-act="' + ns.go + '"][data-arg="' + ns.arg + '"]');
+  const on = document.querySelector('.atlas-stop.on'), pan = document.getElementById('sb-pan');
+  const r = on && on.getBoundingClientRect(), w = pan && pan.getBoundingClientRect();
+  const seen = !!(r && w && r.left >= w.left - 1 && r.right <= w.right + 1 && r.left >= 0 && r.right <= innerWidth);
+  return { h: location.hash, nav: S.nav, view: S.trailView, act: S.trailAct, want: ns.actId, stop: S.trailStop, node: ns.node,
+    on: on && on.getAttribute('aria-label'), wantOn: 'Stop ' + ns.stop + ' of ' + ns.stops, card: !!pop, start: !!go,
+    rider: (() => { const a = on && on.querySelector('.atlas-rider'); if (!a) return false; const q = a.getBoundingClientRect(), p = pop && pop.getBoundingClientRect();
+      const under = !!p && !(q.right <= p.left || q.left >= p.right || q.bottom <= p.top - 7 || q.top >= p.bottom + 7);   // nor its 7px pointer
+      return !under && !!w && q.left >= w.left - 1 && q.right <= w.right + 1 && q.top >= w.top - 1 && q.width > 10; })(), seen,
+    ok: S.nav === 'trail' && S.trailView === 'act' && S.trailAct === ns.actId && S.trailStop === ns.node && !!pop && !!go && !!on
+      && on.getAttribute('aria-label') === 'Stop ' + ns.stop + ' of ' + ns.stops && location.hash === '#/atlas/' + ns.crs + '/' + ns.actId };
+}
+
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const errs = [];
@@ -75,46 +98,51 @@ function filledPrimaries() {
         const tab = document.querySelector('.sb-tabbar'); const tabTop = tab && getComputedStyle(tab).display !== 'none' ? tab.getBoundingClientRect().top : innerHeight;
         const cr = cont && cont.getBoundingClientRect(), sr = strip && strip.getBoundingClientRect();
         const ns = SB_NEXT_STEP();
-        const prac = document.querySelector('.sb-content [data-act="openCoach"]');
-        const pracCta = prac && [...prac.querySelectorAll('span')].find(s => s.textContent.trim() === 'Practise' && s.children.length === 1);
-        const probe = document.createElement('span'); probe.style.cssText = 'position:absolute;background:var(--action,var(--accent))';
-        document.body.appendChild(probe); const actCol = getComputedStyle(probe).backgroundColor; probe.remove();
         const greet = document.querySelector('.sb-content .sb-home-greet');
         const today = document.querySelectorAll('.sb-home > div:not(.sb-home-r1):not(.sb-home-r2):not(:last-child) > *').length;
+        const txt = (document.querySelector('.sb-content') || {}).textContent || '';
         return { has: !!next, nextTxt: next && next.textContent.replace(/\s+/g, ' '),
           above: !!cr && cr.top >= 0 && cr.bottom <= Math.min(innerHeight, tabTop) + 0.5, contBottom: cr && Math.round(cr.bottom), fold: Math.round(Math.min(innerHeight, tabTop)),
           beside: !!(cr && sr && sr.left >= cr.right - 1 && sr.top < cr.bottom && sr.bottom > cr.top),
-          region: strip && strip.textContent, pct: bar && +bar.getAttribute('aria-valuenow'), want: ns.ready ? ns.pct : 0, act: ns.ready ? ns.act : 'The Word Atlas',
+          region: ((next && next.querySelector('.sb-here-region')) || {}).textContent, act: ns.ready ? ns.act : 'The Word Atlas',
+          pct: bar && +bar.getAttribute('aria-valuenow'), want: ns.ready && ns.stops ? Math.round(ns.stopsDone / ns.stops * 100) : 0,
+          rail: bar && bar.children.length, stops: ns.ready ? ns.stops : 0,
           level: strip && /Level \d|level/i.test(strip.textContent),
-          bigTotal: strip && [...strip.textContent.matchAll(/(\d+)\s*(\/|of)\s*(\d+)/g)].some(m => !(/stop\s*$/i.test(strip.textContent.slice(0, m.index)) && +m[3] <= 30)),   /* B3 (FIX-BEE v2): "stop 3 of 11" — the position in its own region — is allowed; the road's total never */
-          pracOutline: !!(pracCta && getComputedStyle(pracCta).borderTopStyle !== 'none' && getComputedStyle(pracCta).backgroundColor !== actCol),
+          bigTotal: strip && [...strip.textContent.matchAll(/(\d+)\s*(\/|of)\s*(\d+)/g)].length > 0,
+          training: !!document.querySelector('.sb-content [data-act="openCoach"]') || /Your training journey|Ultra Champions Journey/.test(txt),
           greetFirst: !!(greet && next && (greet.compareDocumentPosition(next) & Node.DOCUMENT_POSITION_FOLLOWING)),
           today, tiles: document.querySelectorAll('.sb-content .sb-home-tiles > *').length,
           placement: !!document.querySelector('.sb-content [data-act="startLevelTest"],.sb-content .sb-band-call') };
       });
       ok(g.has, `${tag}: the Continue card is on Home`);
       ok(g.above, `${tag}: Continue is above the fold and clear of the tab bar (bottom ${g.contBottom}px, fold ${g.fold}px)`);
-      ok(g.beside && g.region && g.region.indexOf(g.act) >= 0 && g.level && g.pct === g.want && !g.bigTotal,
-        `${tag}: beside Continue, one strip says the region ("${g.act}"), the level, and draws a bar at ${g.pct}% — no total printed` + (g.beside && g.level && !g.bigTotal ? "" : " " + JSON.stringify({ beside: g.beside, level: g.level, big: g.bigTotal, strip: (g.region || "").slice(0, 160) })));
-      ok(g.pracOutline, `${tag}: the journey card's Practise is an outline button, not a second primary`);
+      ok(g.region === g.act, `${tag}: the card names the child's region, as SB_NEXT_STEP does ("${g.region}" = "${g.act}")`);
+      ok(g.beside && g.level && g.pct === g.want && g.rail === g.stops && !g.bigTotal,
+        `${tag}: beside Continue, one strip carries the region's ${g.rail} stops as a rail at ${g.pct}% and the level — no total printed` + (g.beside && g.level && !g.bigTotal ? "" : " " + JSON.stringify({ beside: g.beside, level: g.level, big: g.bigTotal })));
+      ok(!g.training, `${tag}: the training-journey card (Ultra Champions Journey / Practise) is not on Home`);
       ok(!g.placement, `${tag}: "Find your level" is not a call to action on Home`);
       ok(g.greetFirst && g.today <= 3 && g.tiles <= 6, `${tag}: anatomy — greeting before Continue, Today's row of ${g.today} (≤3), ${g.tiles} ways-in tiles (≤6)`);
 
       /* ---- every next goes through the one function ---- */
-      if (vp.n === 'desktop') {
-        const want = await pg.evaluate(() => SB_NEXT_STEP().arg);
+      /* Home's Continue (a real tap), the drawer's row and the end of placement */
+      {
         await pg.click('.sb-content [data-act="goNext"]'); await pg.waitForTimeout(1800);
-        const viaHome = await pg.evaluate(() => state.trailUnit || state.trailReturn);
-        ok(viaHome === want, `${tag}: Home's Continue opens SB_NEXT_STEP's stop (${viaHome} = ${want})`);
-        await pg.evaluate(() => { state.trailUnit = null; state.trailReturn = null; app.setNav('home'); state.drawerOpen = true; render(); }); await pg.waitForTimeout(300);
-        const row = await pg.evaluate(() => { const r = document.querySelector('aside [data-act="drawer"][data-arg="next"]'); return r && r.textContent.replace(/\s+/g, ' '); });
-        await pg.evaluate(() => app.drawer('next')); await pg.waitForTimeout(1500);
-        const viaDrawer = await pg.evaluate(() => state.trailUnit || state.trailReturn);
-        ok(!!row && /Next on your journey/.test(row) && viaDrawer === want, `${tag}: the drawer's jump-back-in row is the same next step (${viaDrawer})`);
-        await pg.evaluate(() => { state.trailUnit = null; state.trailReturn = null; state.lt = { done: true, placed: 3, words: [] }; app.setNav('leveltest'); }); await pg.waitForTimeout(300);
-        await pg.evaluate(() => app.ltGo()); await pg.waitForTimeout(1500);
-        const viaPlace = await pg.evaluate(() => state.trailUnit || state.trailReturn);
-        ok(viaPlace === want, `${tag}: finishing placement goes on through the same next step (${viaPlace})`);
+        const viaHome = await pg.evaluate(landing);
+        ok(viaHome.ok && viaHome.seen && viaHome.rider, `${tag}: Home's Continue opens the Atlas on the child's region (${viaHome.h}) with their stop selected (${viaHome.on}), its card and Start open, the stop on screen with the avatar on it, not under the card` + (viaHome.ok && viaHome.seen && viaHome.rider ? '' : ' ' + JSON.stringify(viaHome)));
+        await pg.goBack(); await pg.waitForTimeout(900);
+        ok(await pg.evaluate(() => state.nav === 'home' && location.hash === '#/home'), `${tag}: Back from there returns to Home`);
+        if (vp.n === 'desktop') {
+          await pg.evaluate(() => { state.drawerOpen = true; render(); }); await pg.waitForTimeout(300);
+          const row = await pg.evaluate(() => { const r = document.querySelector('aside [data-act="drawer"][data-arg="next"]'); return r && r.textContent.replace(/\s+/g, ' '); });
+          await pg.evaluate(() => app.drawer('next')); await pg.waitForTimeout(1500);
+          const viaDrawer = await pg.evaluate(landing);
+          ok(!!row && /Next on your journey/.test(row) && viaDrawer.ok && viaDrawer.h === viaHome.h && viaDrawer.stop === viaHome.stop, `${tag}: the drawer's jump-back-in row lands on the same place (${viaDrawer.h}, ${viaDrawer.on})`);
+          const want = await pg.evaluate(() => SB_NEXT_STEP().arg);
+          await pg.evaluate(() => { state.trailUnit = null; state.trailReturn = null; state.lt = { done: true, placed: 3, words: [] }; app.setNav('leveltest'); }); await pg.waitForTimeout(300);
+          await pg.evaluate(() => app.ltGo()); await pg.waitForTimeout(1500);
+          const viaPlace = await pg.evaluate(() => state.trailUnit || state.trailReturn);
+          ok(viaPlace === want, `${tag}: finishing placement goes straight into the same next step (${viaPlace})`);
+        }
       }
       await ctx.close();
     }
@@ -125,9 +153,11 @@ function filledPrimaries() {
      decide that an untouched stop opens on its lesson. Asked at once — the moment Home's card
      appears, before the rest of the Atlas has landed — Home, the drawer and #/continue must all
      end on the same screen. */
+  const FAR = { name: 'Kofi', age: 10, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 10, lists: { journey: { xp: 40 } }, activeList: 'journey',
+    trail: { lap: 1, done: {}, chk: {}, seen: {}, st: {}, elap: 1, edone: {}, echk: {} } };
   const FRESH_U2 = { name: 'Mira', age: 9, ageBand: '8-10', avatar: 'koi', theme: 'spellbound', coins: 10, lists: { journey: { xp: 12 } }, activeList: 'journey',
     trail: { lap: 1, done: { u1: { 1: 90 } }, chk: {}, seen: {}, st: { 'u1:1': { l: 1, w: 1, p: 90 } }, elap: 1, edone: {}, echk: {} } };
-  const landing = async (how) => {
+  const arrive = async (how) => {
     const ctx = await b.newContext({ viewport: { width: 1180, height: 900 } });
     await ctx.addInitScript(k => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, FRESH_U2);
     const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push('fix2 ' + e.message));
@@ -140,12 +170,40 @@ function filledPrimaries() {
       if (how === 'home') await pg.click('.sb-content [data-act="goNext"]'); else await pg.evaluate(() => app.drawer('next'));
     }
     await pg.waitForTimeout(3500);
-    const r = await pg.evaluate(() => ({ h: location.hash, nav: state.nav }));
+    const r = await pg.evaluate(landing);
     await ctx.close(); return Object.assign(r, { early });
   };
-  const viaHome = await landing('home'), viaDrawer = await landing('drawer'), viaLink = await landing('link');
-  ok(viaHome.h === viaLink.h && viaDrawer.h === viaLink.h && viaLink.nav === 'concepts',
-    `asked at once (Atlas still landing: ${viaHome.early}), Home's Continue, the drawer and #/continue end on the same screen — the untouched stop's lesson (${viaHome.h} · ${viaDrawer.h} · ${viaLink.h})`);
+  const viaHome = await arrive('home'), viaDrawer = await arrive('drawer'), viaLink = await arrive('link');
+  ok(viaHome.h === viaLink.h && viaDrawer.h === viaLink.h && viaHome.stop === viaLink.stop && viaDrawer.stop === viaLink.stop && viaHome.ok && viaDrawer.ok && viaLink.ok,
+    `asked at once (Atlas still landing: ${viaHome.early}), Home's Continue, the drawer and #/continue end on the same place — the Atlas region with the stop selected (${viaHome.h} ${viaHome.on} · ${viaDrawer.h} ${viaDrawer.on} · ${viaLink.h} ${viaLink.on})`);
+
+  /* ---- the camera stays on the stop until the board has really laid out ----
+     A fresh region view asks the camera to open on the child's stop, but the clamp only trusts a
+     panorama with its real width; asked too early it gave up, and the next render (a lazy file
+     landing, a toast — three to seven of them follow a landing) passed no home at all. The board
+     sat at its west end with the stop and its card off screen; on a loaded machine about one phone
+     landing in five. Here the board is held narrow for the first clamp, then let go with a render:
+     the stop must still end up on screen. */
+  {
+    const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    await ctx.addInitScript(k => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, FAR);
+    const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push('camera ' + e.message));
+    await pg.goto(URL); await pg.waitForTimeout(2500);
+    await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r)));
+    /* fifty-two stops and checkpoints walked: the Storm of Elements, well east on its panorama */
+    await pg.evaluate(() => { const c = active(), T = SB_TRAIL, per = T.rules.checkpointEvery || 4; let k = 0;
+      for (const act of T.honey.acts) { let n = 0; for (const id of act.units) { const u = T.honey.units.find(x => x.id === id); if (!(u.laps || [u.lap || 1]).includes(1)) continue;
+        if (k++ < 52) c.trail.done[id] = { 1: 90 }; if (++n % per === 0 && k++ < 52) c.trail.chk['1:' + act.id + ':' + n] = 90; } }
+      save(); app.trailAct('honey|storm'); }); await pg.waitForTimeout(1500);   // the panorama is in the cache
+    await pg.evaluate(() => app.setNav('home')); await pg.waitForTimeout(400);
+    await pg.addStyleTag({ content: '#sb-pan>.atlas-board{width:100px!important;min-width:0!important}' });
+    await pg.click('.sb-content [data-act="goNext"]'); await pg.waitForTimeout(500);
+    await pg.evaluate(() => { document.querySelectorAll('style').forEach(t => { if (/width:100px!important/.test(t.textContent)) t.remove(); }); render(); });
+    await pg.waitForTimeout(1200);
+    const cam = await pg.evaluate(landing);
+    ok(cam.ok && cam.seen, `the camera homes on the stop once the board has really laid out, through a render (${cam.on} on screen: ${cam.seen})`);
+    await ctx.close();
+  }
 
   /* ---- and nobody else reads the frontier for a call to action ---- */
   const files = fs.readdirSync(ROOT).filter(f => /\.js$/.test(f) && f !== 'trail.js');   // trail.js owns it
