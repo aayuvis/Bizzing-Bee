@@ -32,6 +32,18 @@ All bundled fonts are open-licensed under the SIL Open Font License, Version 1.1
   runtime). Only the generated MP3 audio ships with the app; the model itself is not
   distributed here.
 
+## Word Forge's etymology sources (`forge-data.js`, review sheet in `forge-review/`)
+
+- **Online Etymology Dictionary** (Douglas Harper, https://www.etymonline.com/). Each row of the
+  Word Forge table cites the entry it was checked against by URL. The table stores facts drawn
+  from those entries (a word's parts, its Latin or Greek form, the part's gloss), not the entries'
+  text. The owner's review sheet quotes a short excerpt of each cited entry beside its link so a
+  row can be verified; that sheet is excluded from both deploys and never ships.
+- **Etymological Wordnet** (Gerard de Melo, 2014; CC BY-SA 3.0, mined from Wiktionary), via the
+  `ety` 1.4.0 package, is used only as a cross-check of a row's origin language at build time.
+- Not used, and why: MorphoLex-en (CC BY-NC-SA 4.0 — non-commercial, so it cannot feed a paid
+  app); Wiktionary and Wikipedia directly (not reachable from the build machine).
+
 ## Not affiliated
 
 Bizzing Bee is an independent study tool. It is not affiliated with, sponsored by, or

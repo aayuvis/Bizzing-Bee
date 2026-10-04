@@ -1,0 +1,1083 @@
+{
+ "_": "Word Forge build spec. NOTHING HERE IS A FACT ABOUT A WORD. It names WHERE each meaning is stated (a concepts-data.js chapter and the title or card line that states it) and which spellings to look for. Meanings are read out of concepts-data.js by tools/forge/build-table.cjs; every word's parts and origin are checked against the cited etymological source (tools/forge/evidence.json). 'forms' are the spellings the chapter title (or a named card) gives for the root. 'stems' are only search keys for the root's Latin or Greek etymon inside the cited text; 'keys' are only search keys for the root's meaning inside that text's glosses.",
+ "roots": [
+  {
+   "id": "aud",
+   "lang": "Latin",
+   "ch": 68,
+   "forms": [
+    "aud"
+   ],
+   "stems": [
+    "aud"
+   ],
+   "keys": [
+    "hear"
+   ]
+  },
+  {
+   "id": "dict",
+   "lang": "Latin",
+   "ch": 69,
+   "forms": [
+    "dict",
+    "dic"
+   ],
+   "stems": [
+    "dic"
+   ],
+   "keys": [
+    "say",
+    "speak",
+    "tell",
+    "declar",
+    "pronounc"
+   ]
+  },
+  {
+   "id": "duc",
+   "lang": "Latin",
+   "ch": 70,
+   "forms": [
+    "duct",
+    "duc"
+   ],
+   "stems": [
+    "duc"
+   ],
+   "keys": [
+    "lead"
+   ]
+  },
+  {
+   "id": "fer",
+   "lang": "Latin",
+   "ch": 71,
+   "forms": [
+    "fer"
+   ],
+   "stems": [
+    "fer"
+   ],
+   "keys": [
+    "carry",
+    "bear",
+    "bring"
+   ]
+  },
+  {
+   "id": "scrib",
+   "lang": "Latin",
+   "ch": 72,
+   "forms": [
+    "script",
+    "scrib"
+   ],
+   "stems": [
+    "scrib",
+    "script"
+   ],
+   "keys": [
+    "writ"
+   ]
+  },
+  {
+   "id": "port",
+   "lang": "Latin",
+   "ch": 73,
+   "forms": [
+    "port"
+   ],
+   "stems": [
+    "port"
+   ],
+   "keys": [
+    "carry",
+    "carri"
+   ]
+  },
+  {
+   "id": "mit",
+   "lang": "Latin",
+   "ch": 74,
+   "forms": [
+    "miss",
+    "mit"
+   ],
+   "stems": [
+    "mitt",
+    "miss",
+    "mit"
+   ],
+   "keys": [
+    "send",
+    "sent",
+    "let go",
+    "release"
+   ]
+  },
+  {
+   "id": "vert",
+   "lang": "Latin",
+   "ch": 75,
+   "forms": [
+    "vert",
+    "vers"
+   ],
+   "stems": [
+    "vert",
+    "vers"
+   ],
+   "keys": [
+    "turn"
+   ]
+  },
+  {
+   "id": "spec",
+   "lang": "Latin",
+   "ch": 76,
+   "forms": [
+    "spect",
+    "spec",
+    "spic"
+   ],
+   "stems": [
+    "spec",
+    "spic"
+   ],
+   "keys": [
+    "look",
+    "see",
+    "watch",
+    "observ"
+   ]
+  },
+  {
+   "id": "ten",
+   "lang": "Latin",
+   "ch": 77,
+   "forms": [
+    "tent",
+    "tain",
+    "ten"
+   ],
+   "stems": [
+    "ten",
+    "tin"
+   ],
+   "keys": [
+    "hold",
+    "keep"
+   ]
+  },
+  {
+   "id": "cred",
+   "lang": "Latin",
+   "ch": 78,
+   "forms": [
+    "cred"
+   ],
+   "stems": [
+    "cred"
+   ],
+   "keys": [
+    "believ",
+    "trust"
+   ]
+  },
+  {
+   "id": "graph",
+   "lang": "Greek",
+   "ch": 58,
+   "forms": [
+    "grapher",
+    "graphy",
+    "graph",
+    "gram"
+   ],
+   "stems": [
+    "graph",
+    "gram"
+   ],
+   "keys": [
+    "writ",
+    "draw",
+    "record",
+    "letter",
+    "descri"
+   ]
+  },
+  {
+   "id": "phon",
+   "lang": "Greek",
+   "ch": 59,
+   "forms": [
+    "phone",
+    "phon"
+   ],
+   "stems": [
+    "phon"
+   ],
+   "keys": [
+    "sound",
+    "voice"
+   ]
+  },
+  {
+   "id": "path",
+   "lang": "Greek",
+   "ch": 60,
+   "forms": [
+    "pathy",
+    "path"
+   ],
+   "stems": [
+    "path"
+   ],
+   "keys": [
+    "feel",
+    "suffer",
+    "disease",
+    "emotion"
+   ]
+  },
+  {
+   "id": "chron",
+   "lang": "Greek",
+   "ch": 61,
+   "forms": [
+    "chron"
+   ],
+   "stems": [
+    "chron",
+    "khron"
+   ],
+   "keys": [
+    "time"
+   ]
+  },
+  {
+   "id": "morph",
+   "lang": "Greek",
+   "ch": 62,
+   "forms": [
+    "morph"
+   ],
+   "stems": [
+    "morph"
+   ],
+   "keys": [
+    "form",
+    "shape"
+   ]
+  },
+  {
+   "id": "scop",
+   "lang": "Greek",
+   "ch": 63,
+   "forms": [
+    "scope",
+    "scop"
+   ],
+   "stems": [
+    "skop",
+    "scop"
+   ],
+   "keys": [
+    "look",
+    "see",
+    "watch",
+    "examin",
+    "observ"
+   ]
+  },
+  {
+   "id": "log",
+   "lang": "Greek",
+   "ch": 64,
+   "forms": [
+    "logue",
+    "logy",
+    "log"
+   ],
+   "stems": [
+    "log"
+   ],
+   "keys": [
+    "word",
+    "reason",
+    "study",
+    "speech",
+    "speak",
+    "discourse",
+    "account",
+    "treat"
+   ]
+  },
+  {
+   "id": "phil",
+   "lang": "Greek",
+   "ch": 65,
+   "forms": [
+    "philia",
+    "phile",
+    "phil"
+   ],
+   "stems": [
+    "phil"
+   ],
+   "keys": [
+    "lov",
+    "fond",
+    "friend"
+   ]
+  },
+  {
+   "id": "gen",
+   "lang": "Greek",
+   "ch": 66,
+   "forms": [
+    "genesis",
+    "genic",
+    "gen"
+   ],
+   "stems": [
+    "gen",
+    "gignesth"
+   ],
+   "keys": [
+    "birth",
+    "born",
+    "origin",
+    "produc",
+    "creat",
+    "kind",
+    "race",
+    "begett",
+    "bring forth"
+   ],
+   "alsoLang": "Latin",
+   "alsoLangFrom": "chapter 66 opening line: \"Greek genos = birth, race, kind → Latin borrowed it as genus\""
+  },
+  {
+   "id": "dem",
+   "lang": "Greek",
+   "ch": 67,
+   "forms": [
+    "demo",
+    "dem"
+   ],
+   "stems": [
+    "dem"
+   ],
+   "keys": [
+    "people",
+    "commons",
+    "district"
+   ]
+  },
+  {
+   "id": "tele",
+   "lang": "Greek",
+   "ch": 35,
+   "card": "^tele- = (.+)$",
+   "forms": [
+    "tele"
+   ],
+   "stems": [
+    "tele"
+   ],
+   "keys": [
+    "far",
+    "distan"
+   ]
+  },
+  {
+   "id": "micro",
+   "lang": "Greek",
+   "ch": 35,
+   "body": "micro- vs macro-",
+   "bodyRe": "mikros = (\\w+)",
+   "forms": [
+    "micro"
+   ],
+   "stems": [
+    "mikro",
+    "micro"
+   ],
+   "keys": [
+    "small",
+    "little"
+   ]
+  },
+  {
+   "id": "auto",
+   "lang": "Greek",
+   "ch": 35,
+   "card": "^auto- = (.+)$",
+   "forms": [
+    "auto"
+   ],
+   "stems": [
+    "auto"
+   ],
+   "keys": [
+    "self"
+   ]
+  },
+  {
+   "id": "bio",
+   "lang": "Greek",
+   "ch": 36,
+   "card": "^bio- = (.+)$",
+   "forms": [
+    "bio"
+   ],
+   "stems": [
+    "bio"
+   ],
+   "keys": [
+    "life",
+    "living"
+   ]
+  },
+  {
+   "id": "geo",
+   "lang": "Greek",
+   "ch": 36,
+   "card": "^geo- = (.+)$",
+   "forms": [
+    "geo"
+   ],
+   "stems": [
+    "geo",
+    "gaia"
+   ],
+   "keys": [
+    "earth",
+    "land"
+   ]
+  },
+  {
+   "id": "photo",
+   "lang": "Greek",
+   "ch": 36,
+   "card": "^photo- = (.+)$",
+   "forms": [
+    "photo"
+   ],
+   "stems": [
+    "phot"
+   ],
+   "keys": [
+    "light"
+   ]
+  },
+  {
+   "id": "hydro",
+   "lang": "Greek",
+   "ch": 36,
+   "card": "^hydro- = (.+)$",
+   "forms": [
+    "hydro"
+   ],
+   "stems": [
+    "hydr"
+   ],
+   "keys": [
+    "water"
+   ]
+  },
+  {
+   "id": "thermo",
+   "lang": "Greek",
+   "ch": 36,
+   "card": "^thermo- = (.+)$",
+   "forms": [
+    "thermo"
+   ],
+   "stems": [
+    "therm"
+   ],
+   "keys": [
+    "heat",
+    "hot",
+    "warm"
+   ]
+  },
+  {
+   "id": "psycho",
+   "lang": "Greek",
+   "ch": 37,
+   "card": "psycho- = (\\w+)",
+   "forms": [
+    "psycho"
+   ],
+   "stems": [
+    "psych"
+   ],
+   "keys": [
+    "mind",
+    "soul",
+    "spirit"
+   ]
+  }
+ ],
+ "affixes": [
+  {
+   "kind": "pre",
+   "fam": "in",
+   "ch": 19,
+   "forms": [
+    "in",
+    "im",
+    "il",
+    "ir"
+   ],
+   "mean": "title",
+   "glossOnly": true
+  },
+  {
+   "kind": "pre",
+   "fam": "un",
+   "ch": 20,
+   "forms": [
+    "un"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "dis",
+   "ch": 21,
+   "forms": [
+    "dis"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "de",
+   "ch": 22,
+   "forms": [
+    "de"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "ex",
+   "ch": 23,
+   "forms": [
+    "ex",
+    "ef",
+    "e"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "re",
+   "ch": 24,
+   "forms": [
+    "re"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "pre",
+   "ch": 25,
+   "forms": [
+    "pre"
+   ],
+   "mean": "card",
+   "re": "^pre- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "pro",
+   "ch": 25,
+   "forms": [
+    "pro"
+   ],
+   "mean": "card",
+   "re": "^pro- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "sub",
+   "ch": 26,
+   "forms": [
+    "sub",
+    "suc",
+    "suf",
+    "sug",
+    "sup",
+    "sus",
+    "sur"
+   ],
+   "mean": "body",
+   "body": "sub- Assimilation",
+   "re": "sub- = (\\w+)"
+  },
+  {
+   "kind": "pre",
+   "fam": "super",
+   "ch": 26,
+   "forms": [
+    "super"
+   ],
+   "mean": "card",
+   "re": "^super- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "com",
+   "ch": 27,
+   "forms": [
+    "com",
+    "con",
+    "col",
+    "cor",
+    "co"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "mal",
+   "ch": 28,
+   "forms": [
+    "mal"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "mis",
+   "ch": 29,
+   "forms": [
+    "mis"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "inter",
+   "ch": 30,
+   "forms": [
+    "inter"
+   ],
+   "mean": "body",
+   "body": "The Essential Distinction",
+   "re": "inter- = (\\w+)"
+  },
+  {
+   "kind": "pre",
+   "fam": "intra",
+   "ch": 30,
+   "forms": [
+    "intra"
+   ],
+   "mean": "body",
+   "body": "The Essential Distinction",
+   "re": "intra- = (\\w+)"
+  },
+  {
+   "kind": "pre",
+   "fam": "trans",
+   "ch": 31,
+   "forms": [
+    "trans"
+   ],
+   "mean": "card",
+   "re": "^trans- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "per",
+   "ch": 31,
+   "forms": [
+    "per"
+   ],
+   "mean": "card",
+   "re": "^per- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "ab",
+   "ch": 32,
+   "forms": [
+    "abs",
+    "ab"
+   ],
+   "mean": "card",
+   "re": "^ab- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "ad",
+   "ch": 33,
+   "forms": [
+    "ad",
+    "ac",
+    "af",
+    "ag",
+    "al",
+    "an",
+    "ap",
+    "ar",
+    "as",
+    "at"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "pre",
+   "fam": "anti",
+   "ch": 34,
+   "forms": [
+    "anti"
+   ],
+   "mean": "card",
+   "re": "^anti- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "hyper",
+   "ch": 34,
+   "forms": [
+    "hyper"
+   ],
+   "mean": "card",
+   "re": "^hyper- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "hypo",
+   "ch": 34,
+   "forms": [
+    "hypo"
+   ],
+   "mean": "card",
+   "re": "^hypo- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "meta",
+   "ch": 38,
+   "forms": [
+    "meta"
+   ],
+   "mean": "card",
+   "re": "^meta- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "para",
+   "ch": 38,
+   "forms": [
+    "para"
+   ],
+   "mean": "card",
+   "re": "^para- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "epi",
+   "ch": 38,
+   "forms": [
+    "epi"
+   ],
+   "mean": "card",
+   "re": "^epi- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "syn",
+   "ch": 38,
+   "forms": [
+    "syn",
+    "sym"
+   ],
+   "mean": "card",
+   "re": "^syn-/sym- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "peri",
+   "ch": 38,
+   "forms": [
+    "peri"
+   ],
+   "mean": "card",
+   "re": "^peri- = (.+)$"
+  },
+  {
+   "kind": "pre",
+   "fam": "poly",
+   "ch": 40,
+   "forms": [
+    "poly"
+   ],
+   "mean": "card",
+   "re": "^poly- = (\\w+)"
+  },
+  {
+   "kind": "pre",
+   "fam": "multi",
+   "ch": 40,
+   "forms": [
+    "multi"
+   ],
+   "mean": "card",
+   "re": "^multi- = (\\w+)"
+  },
+  {
+   "kind": "pre",
+   "fam": "omni",
+   "ch": 40,
+   "forms": [
+    "omni"
+   ],
+   "mean": "card",
+   "re": "^omni- = (\\w+)"
+  },
+  {
+   "kind": "pre",
+   "fam": "pan",
+   "ch": 40,
+   "forms": [
+    "pan"
+   ],
+   "mean": "card",
+   "re": "^pan- = (\\w+)"
+  },
+  {
+   "kind": "pre",
+   "fam": "macro",
+   "ch": 35,
+   "forms": [
+    "macro"
+   ],
+   "mean": "body",
+   "body": "micro- vs macro-",
+   "re": "Macroscopic = (visible[^.]*)"
+  },
+  {
+   "kind": "pre",
+   "fam": "mega",
+   "ch": 35,
+   "forms": [
+    "mega"
+   ],
+   "mean": "card",
+   "re": "^mega- = (.+)$"
+  },
+  {
+   "kind": "suf",
+   "fam": "able",
+   "ch": 43,
+   "forms": [
+    "able",
+    "ible"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "tion",
+   "ch": 41,
+   "forms": [
+    "tion",
+    "sion",
+    "cion"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "ous",
+   "ch": 42,
+   "forms": [
+    "ous",
+    "ious",
+    "eous",
+    "uous"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "ance",
+   "ch": 44,
+   "forms": [
+    "ance",
+    "ence"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "ancy",
+   "ch": 44,
+   "forms": [
+    "ancy",
+    "ency"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "ity",
+   "ch": 45,
+   "forms": [
+    "ity"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "ness",
+   "ch": 45,
+   "forms": [
+    "ness"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "ism",
+   "ch": 46,
+   "forms": [
+    "ism"
+   ],
+   "mean": "body",
+   "body": "The Pair",
+   "re": "-ism = (the [^.]+)"
+  },
+  {
+   "kind": "suf",
+   "fam": "ist",
+   "ch": 49,
+   "forms": [
+    "ist"
+   ],
+   "mean": "card",
+   "re": "^-ist \\(Greek\\) = (.+)$"
+  },
+  {
+   "kind": "suf",
+   "fam": "ology",
+   "ch": 47,
+   "forms": [
+    "ology",
+    "ologist"
+   ],
+   "mean": "title"
+  },
+  {
+   "kind": "suf",
+   "fam": "or",
+   "ch": 49,
+   "forms": [
+    "or",
+    "er"
+   ],
+   "mean": "concept",
+   "re": "\"(a person who does something),?\""
+  },
+  {
+   "kind": "suf",
+   "fam": "ian",
+   "ch": 49,
+   "forms": [
+    "ian"
+   ],
+   "mean": "card",
+   "re": "^-ian / -an \\(Latin\\) = (.+)$"
+  },
+  {
+   "kind": "suf",
+   "fam": "meter",
+   "ch": 48,
+   "forms": [
+    "meter"
+   ],
+   "mean": "body",
+   "body": "-scope and -meter",
+   "re": "-metron = (\\w+)"
+  },
+  {
+   "kind": "suf",
+   "fam": "itis",
+   "ch": 48,
+   "forms": [
+    "itis"
+   ],
+   "mean": "card",
+   "re": "^-itis = (.+)$"
+  },
+  {
+   "kind": "suf",
+   "fam": "osis",
+   "ch": 48,
+   "forms": [
+    "osis"
+   ],
+   "mean": "card",
+   "re": "^-osis = (.+)$"
+  }
+ ],
+ "rules": {
+  "able": {
+   "ch": 43,
+   "card": "The Main Rule"
+  },
+  "ance": {
+   "ch": 44,
+   "card": "The Core Rule"
+  },
+  "ancy": {
+   "ch": 44,
+   "card": "-ancy/-ency (Dynamic Forms)"
+  },
+  "tion": {
+   "ch": 41,
+   "card": "The Decision Rule"
+  },
+  "ous": {
+   "ch": 42,
+   "card": "The Four Forms"
+  },
+  "or": {
+   "ch": 49,
+   "card": "-or (Latin) vs -er (Old English/Germanic)"
+  },
+  "in": {
+   "ch": 19,
+   "card": "The Assimilation Rule"
+  },
+  "com": {
+   "ch": 27,
+   "card": "The Assimilation Rule"
+  },
+  "ad": {
+   "ch": 33,
+   "card": "The Full Assimilation Chart"
+  },
+  "sub": {
+   "ch": 26,
+   "card": "sub- Assimilation"
+  },
+  "ex": {
+   "ch": 23,
+   "card": "Three Forms"
+  },
+  "un-in": {
+   "ch": 20,
+   "card": "un- vs in-"
+  }
+ }
+}
