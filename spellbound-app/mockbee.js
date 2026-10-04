@@ -1388,8 +1388,10 @@
         if (window.SB_LEVEL && typeof SB_LEVEL.after === 'function') {
           const r = SB_LEVEL.after('mockbee', g.pct) || {};
           if (r.dropped) g.lvlNote = 'Let’s warm up on ' + (LVL_NAME[r.level] || r.level) + '. You can move back up any time.';
-          else if (r.offerUp) g.lvlUp = r.offerUp === true ? null : r.offerUp;
-          g.lvlOffer = !!r.offerUp;
+          else if (r.offerUp) {             /* two rounds at 80%: a step up is offered, never taken for the child */
+            const cur = LEVELS.indexOf(lvlConcrete(r.level || g.lvl, g.band));
+            g.lvlUp = typeof r.offerUp === 'string' ? r.offerUp : (cur >= 0 && cur < LEVELS.length - 1 ? LEVELS[cur + 1] : null);
+          }
         }
       } catch (e) {}
     }
@@ -1417,7 +1419,7 @@
   app2.mbLobby = () => { const g = mb(); app2.mbOpen(g && g.mode); };
   /* the old chip, kept only for a build without SB_LEVEL */
   app2.mbSetDiff = (k) => { const c = active(); if (!c) return; c.mbDiff = k; try { save(); } catch (e) {} render(); };
-  app2.mbLevelUp = (lv) => { try { if (window.SB_LEVEL && LEVELS.indexOf(lv) >= 0) SB_LEVEL.set('mockbee', lv); } catch (e) {} const g = mb(); if (g) g.lvlOffer = false; render(); };
+  app2.mbLevelUp = (lv) => { try { if (window.SB_LEVEL && LEVELS.indexOf(lv) >= 0) SB_LEVEL.set('mockbee', lv); } catch (e) {} const g = mb(); if (g) { g.lvlUp = null; g.lvlNote = 'Moved up to ' + (LVL_NAME[lv] || lv) + '.'; } render(); };
   /* the recap's one action: the words missed go on the revision pile, marked as the child's
      own filing (the miss itself was already recorded as evidence when it happened) */
   app2.mbAddMissed = () => {
@@ -1785,7 +1787,7 @@
     if (!point && qs.indexOf('ps') >= 0) { const mm = String(m.w).match(POINTS.endings); if (mm) point = mm[0]; }
     const names = qs.map(k => CHAIR_NAME[k]).join(' and ');
     const org = qs.indexOf('org') >= 0 && w.o ? ' — ' + esc(txt(w.o).split(/[ ,;(]/)[0]) : '';
-    return `You asked ${names} on <b>${esc(m.w)}</b>${org}${m.ok ? (point ? ` — and spelt the <b>${esc(point)}</b> right.` : ' — and spelt it right.') : ' — it was a hard one; it is on your list now.'}`;
+    return `You asked ${names} on <b>${esc(m.w)}</b>${org}${m.ok ? (point ? ` — and spelt the <b>${esc(point)}</b> right.` : ' — and spelt it right.') : ' — one to practise.'}`;
   }
   function viewResult() {
     const g = mb(); const p = prog();
@@ -1807,8 +1809,9 @@
           ${g.mine.length ? `<div class="mb-wchips">${g.mine.map(chip).join('')}</div>` : ''}
           ${helped.length ? `<div class="mb-helped"><div class="mb-rc-h">What the Chair did</div>${helped.map(h => `<p>${h}</p>`).join('')}</div>` : ''}
           ${g.lvlNote ? `<p class="mb-lvlnote">${esc(g.lvlNote)}</p>` : ''}
+          ${g.lvlUp ? `<p class="mb-lvlnote">Ready for ${LVL_NAME[g.lvlUp]}? <button data-act="mbLevelUp" data-arg="${g.lvlUp}" class="mb-lvl">Move up to ${LVL_NAME[g.lvlUp]}</button></p>` : ''}
         </div>
-        <div class="mb-pay">${iconSVG('coin', 16)} ${fmtN(g.pay || 0)} coins${g.contest ? ' · podium' : ''}</div>
+        <div class="mb-pay">${iconSVG('coin', 16)} ${fmtN(g.pay || 0)} ${g.pay === 1 ? 'coin' : 'coins'}${g.contest ? ' · podium' : ''}</div>
       </div>`;
     const controls = `<div class="mb-go-row">
         ${miss.length ? (g.addedMissed ? `<span class="mb-watching">${iconSVG('check', 15)} On your revision list</span>` : `<button data-act="mbAddMissed" class="mb-back2">${iconSVG('plus', 15)} Add missed words to revision</button>`) : ''}
@@ -1825,6 +1828,10 @@
     view: () => { const g = mb(); if (!g) return viewLobby();
       return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : g.view === 'family' ? viewFamily() : viewLobby(); },
     stats: () => prog(),
+    /* the Play card's words, from the bee as it is now (the card itself is the lineup's) */
+    card: () => { const c = active() || {}; const B = BANDS[bandKey(c)]; const p = prog();
+      return { title: 'Mock Spelling Bee', promise: B.rivals + ' rivals, one microphone, eight minutes. Ask the pronouncer anything.',
+        best: p.played ? (p.wins || 0) + ' won · best ' + ordinal(p.best || (B.rivals + 1)) : '', route: '#/mockbee' }; },
     /* for the tests: the rivals' faces, the recorded lines, the meaning question, the Chair, the
        size of a bee and the cap */
     faces: () => BOTS.map(b => ({ id: b.id, name: b.name, face: faceOf(b) })),
