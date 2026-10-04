@@ -123,7 +123,7 @@
   /* What the old back-button trap did, plus the arcade overlays: a drill that is being left
      is stopped, never left running under the next screen. */
   function leaveDrill() {
-    try { if (typeof arcadeClose === 'function' && document.querySelector('.arc-play')) arcadeClose(); } catch (e) {}
+    try { if (typeof arcadeClose === 'function' && document.querySelector('.arc-play,.arc-menu')) arcadeClose(); } catch (e) {}
     try { if (typeof bizzClose === 'function' && document.querySelector('.bz-play')) bizzClose(); } catch (e) {}
     try { if (typeof clearGTimer === 'function') clearGTimer(); } catch (e) {}
     try { if (typeof tyStop === 'function') tyStop(); } catch (e) {}
@@ -171,6 +171,8 @@
     if (n === 'progress' || n === 'parent') return S.progTab === 'parent' ? 'grownups' : 'progress';
     if (n === 'train') return 'practice/drill';
     if (n === 'games' && S.game) return 'play/game';
+    /* the Grand Prix lives in an overlay over Play: its address is its own (GP13) */
+    if (n === 'games') { try { var gpo = document.querySelector('.arc-play[data-route],.arc-menu[data-route]'); if (gpo) return gpo.getAttribute('data-route'); } catch (e) {} }
     return NAV_ROUTE[n] || n;
   }
   function routeOf() { return state.settingsOpen && state.screen === 'app' ? 'settings' : baseRoute(); }
@@ -247,6 +249,9 @@
     if (head === 'grownups') { app.setNav('parent'); return; }
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
     if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
+    if (head === 'play' && p[1] === 'grandprix') {   /* GP13: the Grand Prix's own address opens its start menu over Play */
+      app.openGames(); lazyNeed('arcade', function () { try { app.arcadeMenu('beeGrandPrix'); } catch (e) {} }); return;
+    }
     if (head === 'play') { app.openGames(); return; }
     if (head === 'support') { app.setNav('home'); return; }
     var nav = ROUTE_NAV[head] || head;
@@ -263,7 +268,7 @@
   /* Layers that are not screens: back closes them first and stays where it is. */
   function closeLayer() {
     try {
-      if (document.querySelector('.arc-play,.bz-play')) { leaveDrill(); render(); return true; }
+      if (document.querySelector('.arc-play,.bz-play,.arc-menu')) { leaveDrill(); render(); return true; }
       if (menuOpen()) { state.famMenu = false; render(); return true; }
       if (state.drawerOpen) { state.drawerOpen = false; render(); return true; }
       if (state.walletOpen) { state.walletOpen = false; render(); return true; }
@@ -281,7 +286,9 @@
        used to be swallowed by the open layer and pushed straight back to the old route. */
     var fresh = !(e && e.state);
     if (fresh) { try { history.replaceState({ sb: 1 }, '', location.href); } catch (x) {} }
-    if (!fresh && closeLayer()) { try { history.pushState({ sb: 1 }, '', urlFor(here)); } catch (x) {} return; }
+    /* the address after a layer closes is the screen's own — the same as before, unless the layer
+       had an address of its own (the Grand Prix's #/play/grandprix closes back to #/play) */
+    if (!fresh && closeLayer()) { var now = routeOf(); try { history.pushState({ sb: 1 }, '', urlFor(now)); } catch (x) {} R.last = now; return; }
     var st = (e && e.state) || {};
     var r = String(location.hash || '').replace(/^#\/?/, '');
     if (st.sbRoot || !r) {
