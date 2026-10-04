@@ -2842,7 +2842,8 @@
         <span style="width:46px;height:46px;flex-shrink:0">${window.SB_AVATAR ? SB_AVATAR(guide, 46) : ''}</span>
         <span style="min-width:0;flex:1">
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(act.title)}</span>
-          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops${treFound(c, act.id) ? ' · ' + treFound(c, act.id) + '/3 caches' : ''}</span></span>
+          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops${treFound(c, act.id) ? ' · ' + treFound(c, act.id) + '/3 caches' : ''}</span>
+          ${masterLine(nodes)}</span>
       </div>
       ${/* The stop card used to be a sibling BELOW the board, and the board is as tall as
             the viewport — so the two buttons that are the whole point of the screen sat
@@ -2859,6 +2860,16 @@
         isMW ? { pano: { img: LV.img, extra: mwExtra } } : null)}
       ${villainCard(c)}${treGiftCard()}${uQuestCard()}
     </div>`;
+  }
+  /* D2 (audit v4): WHAT THIS REGION TEACHES, said on its board. There is no authored "you'll master"
+     line per region, so none is invented: the line is read from the region's own stops at this tier —
+     each stop is named for the pattern it teaches ("Vowels & Magic E", "ie / ei Rule and Exceptions") —
+     the first three, then how many more. Guard: tests/atlas-layout.cjs. */
+  function masterLine(nodes) {
+    const ts = nodes.filter(x => x.n.kind === 'unit').map(x => String(x.n.u.title || '').split(' — ')[0].replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
+    if (!ts.length) return '';
+    const shown = ts.slice(0, 3), more = ts.length - shown.length;
+    return `<span class="atlas-master" style="display:block;font-size:12.5px;color:var(--text);font-weight:650;line-height:1.4;margin-top:3px">What you’ll master here: ${esc(shown.join(', '))}${more > 0 ? ' and ' + more + ' more' : ''}</span>`;
   }
   /* one line of flavour per world, so an act page says where you are */
   const WORLD_LINE = { meadow: 'first words, first wins', library: 'every rule English wrote down',

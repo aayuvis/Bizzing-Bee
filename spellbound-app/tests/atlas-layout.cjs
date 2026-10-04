@@ -17,6 +17,7 @@
       price, and never the words "ask a grown-up" (FIX-BEE v2 T3). A tester or a pack holder
       still sees all three continents and no line.
    4. The road sign at a region's earned edge is never cut by a phone's window (audit v4 §4).
+   5. A region's board says what it teaches (audit v4 D2), read from its own stops.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/atlas-layout.cjs */
 const { chromium } = require('playwright');
 const SRC = process.env.SRC || __dirname + '/..';
@@ -141,6 +142,19 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
       return out; });
     ok(sign.seen >= 2 && !sign.cut.length, W + 'px: the road sign at the earned edge is never cut by the window as the board pans (' + sign.steps + ' camera stops, sign in view at ' + sign.seen + ')'
       + (sign.cut.length ? ' — cut at ' + sign.cut.slice(0, 3).join(' | ') : ''));
+    /* D2: each region's board says what it teaches — read from its own stops, never authored per region */
+    const master = await pg.evaluate(async () => { const out = [];
+      for (const act of ['meadow', 'forum', 'stage']) {
+        app.trailToMap(); app.trailAct('honey|' + act); await new Promise(res => setTimeout(res, 500));
+        const el = document.querySelector('.atlas-master'); const A = SB_TRAIL.honey.acts.find(a => a.id === act);
+        const lap = (active().trail || {}).lap || 1; const U = Object.fromEntries(SB_TRAIL.honey.units.map(u => [u.id, u]));
+        const ts = A.units.map(id => U[id]).filter(u => (u.laps || [u.lap || 1]).includes(lap)).map(u => String(u.title).split(' — ')[0].replace(/\s*\([^)]*\)\s*$/, '').trim());
+        const want = 'What you’ll master here: ' + ts.slice(0, 3).join(', ') + (ts.length > 3 ? ' and ' + (ts.length - 3) + ' more' : '');
+        const r = el && el.getBoundingClientRect();
+        out.push({ act, got: el ? el.textContent.trim() : null, want, fits: !!r && r.left >= 0 && r.right <= innerWidth + 0.5 }); }
+      return out; });
+    const mbad = master.filter(m => m.got !== m.want || !m.fits);
+    ok(!mbad.length, W + 'px: a region\'s board says what it teaches, from its own stops ("' + (master[0] && master[0].got) + '")' + (mbad.length ? ' — ' + JSON.stringify(mbad[0]) : ''));
     /* the moth and the chest: their cards fit the phone, ✕ included (94vw under #root's zoom did not) */
     const dlg = await pg.evaluate(async () => { const W2 = ms => new Promise(r => setTimeout(r, ms)); const out = {};
       const R = Math.random; Math.random = () => 0.05; state.devUnlock = false;
