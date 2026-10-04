@@ -3535,7 +3535,7 @@ const app = {
     const band=(function(){ try{ return beeBand(c).band; }catch(e){ return 4; } })();
     const eDiff = pick!=='auto' ? pick : (band<=3?'easy':band<=6?'medium':band<=8?'hard':'champ');
     c.gameDiff=eDiff; clearGTimer(); arcadeClose();
-    const el=document.createElement('div'); el.className='arc-play'; _arcEl=el; if(ARC_ROUTE[k]) el.setAttribute('data-route',ARC_ROUTE[k]);
+    const el=document.createElement('div'); el.className='arc-play'; _arcEl=el;
     const heroAvId=extra.hero||((c.arcGame&&c.arcGame[k]&&c.arcGame[k].av))||c.avatar||'bizzy';
     const avChip=(()=>{ try{ return '<span class="arc-play-av">'+(SB_AVATAR(heroAvId,26)||'')+'</span>'; }catch(e){ return ''; } })();
     el.innerHTML='<div class="arc-play-top">'
@@ -3543,8 +3543,11 @@ const app = {
       +'<span class="arc-play-name">'+esc(g.n)+'</span>'+avChip
       +'<span class="arc-play-diff">'+(_arcDiffLabel[pick]||'')+'</span></div>'
       +'<div class="arc-play-host" id="arc-host"></div>';
-    document.body.appendChild(el); if(ARC_ROUTE[k]) arcRouteSync();
-    el.querySelector('#arc-back').onclick=arcadeClose;
+    document.body.appendChild(el);
+    /* the overlay has an address (#/play/grandprix …, games spec T9): the router reads it off
+       data-route, and ← Arcade steps back over it so Back does not reopen the game */
+    try{ const r=window.SB_SHELL&&SB_SHELL.playRoute&&SB_SHELL.playRoute(k); if(r){ el.setAttribute('data-route',r); SB_SHELL.sync(); } }catch(e){}
+    el.querySelector('#arc-back').onclick=arcadeLeave;
     const host=el.querySelector('#arc-host');
     /* P6: the engine draws its own clue and end card; say them as they change */
     try{ let lt=0; const mo=new MutationObserver(()=>{ if(!lt) lt=setTimeout(()=>{ lt=0; liveScanArc(host); },160); });   /* throttled, not debounced: a HUD ticking every frame must not starve it */
@@ -11641,15 +11644,10 @@ const SB_ARCADE_GAMES = [
 window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
 const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
 let _arcHandle=null, _arcEl=null;
-/* GP13: the Grand Prix's overlays carry their own address (data-route → #/play/grandprix,
-   family-shell baseRoute); opening or closing one re-syncs the hash */
-const ARC_ROUTE={ beeGrandPrix:'play/grandprix' };
-function arcRouteSync(){ try{ if(window.SB_SHELL&&SB_SHELL.afterRender) SB_SHELL.afterRender(); }catch(e){} }
+function arcadeLeave(){ arcadeClose(); try{ if(window.SB_SHELL&&SB_SHELL.leaveOverlay){ SB_SHELL.leaveOverlay(); return; } }catch(e){} }
 function arcadeClose(){
   if(_arcHandle){ try{ _arcHandle.destroy(); }catch(e){} _arcHandle=null; }
-  const routed=!!(_arcEl&&_arcEl.getAttribute&&_arcEl.getAttribute('data-route'));
   if(_arcEl){ try{ if(_arcEl._liveMo) _arcEl._liveMo.disconnect(); }catch(e){} _arcEl.remove(); _arcEl=null; }
-  if(routed) arcRouteSync();
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
 }
 /* ============================================================================
@@ -11730,7 +11728,7 @@ function arcadeMenu(k){
   let selDiff=saved.diff||gameDiffFor(c,k);
   const selOpt={}; (cfg.groups||[]).forEach(gr=>{ selOpt[gr.key]=(saved.opts&&saved.opts[gr.key])||(gr.opts[0]&&gr.opts[0].v); });
   const avSVG=(id,sz)=>{ try{ return (window.SB_AVATAR&&SB_AVATAR(id,sz))||''; }catch(e){ return ''; } };
-  const el=document.createElement('div'); el.className='arc-menu'; _arcEl=el; if(ARC_ROUTE[k]) el.setAttribute('data-route',ARC_ROUTE[k]);
+  const el=document.createElement('div'); el.className='arc-menu'; _arcEl=el;
   const groupHTML=(cfg.groups||[]).map(gr=>`<div class="arcm-sec"><div class="arcm-lbl">${esc(gr.label)}</div><div class="arcm-opts arcm-opts-${gr.kind}" id="arcm-gr-${gr.key}"></div></div>`).join('');
   el.innerHTML=`<div class="arcm-card">
     <button class="arcm-x" aria-label="Back to arcade">✕</button>
@@ -11744,7 +11742,7 @@ function arcadeMenu(k){
     ${cfg.garage?`<button class="arcm-d" id="arcm-gar" style="margin:4px auto 10px;display:block;min-height:44px;padding:0 18px">Garage — paint and trails</button>`:''}
     <button class="arcm-go" id="arcm-go">${iconSVG('joystick',18)} Start</button>
   </div>`;
-  document.body.appendChild(el); if(ARC_ROUTE[k]) arcRouteSync();
+  document.body.appendChild(el);
   const prev=el.querySelector('#arcm-prev');
   const drawPrev=()=>{ if(!prev) return; prev.innerHTML=avSVG(selAv,120); prev.style.boxShadow='0 0 0 4px rgba(255,216,115,.55), 0 10px 30px rgba(0,0,0,.4)'; };
   const avs=el.querySelector('#arcm-avs');
@@ -11843,7 +11841,7 @@ function arcadeResult(g, res){
       </div></div>`;
   _arcEl.appendChild(card);
   card.querySelector('.arc-r-again').onclick=()=>{ arcadeClose(); if(window.app) app.arcadePlay(g.k); };
-  card.querySelector('.arc-r-back').onclick=arcadeClose;
+  card.querySelector('.arc-r-back').onclick=arcadeLeave;
   card.querySelectorAll('.arc-r-say').forEach(b=>{ b.onclick=()=>{ try{ say(b.dataset.w); }catch(e){} }; });
   card.querySelectorAll('.arc-r-rev').forEach(b=>{ b.onclick=()=>{
     try{ addMiss({w:b.dataset.w, d:b.dataset.d||''},'mark'); }catch(e){}

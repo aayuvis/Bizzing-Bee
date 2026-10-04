@@ -88,7 +88,7 @@ const CHROME = process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-
     /* the keys type: tap the word in, letter by letter */
     const word = await pg.evaluate(() => window._race.state().word);
     for (const ch of word.toLowerCase()) await pg.evaluate(ch => { const k = document.querySelector('#sg-card [data-k="' + ch + '"]'); if (k) k.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); }, ch);
-    await pg.evaluate(() => { const k = document.querySelector('#sg-card [data-k="enter"]'); if (k) k.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); });
+    await pg.evaluate(() => { const k = document.querySelector('#sg-card [data-k="⏎"],#sg-card [data-k="enter"]'); if (k) k.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); });
     await until(pg, () => window._race.state().met === 1, null, 5000);
     const after = await pg.evaluate(() => window._race.state());
     ok(after.right === 1 && !!after.held, `the on-screen keys spell "${word}" into the box — ${after.right} right, a ${after.held} in the slot`);
@@ -126,23 +126,24 @@ const CHROME = process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-
     await pg.close();
   }
 
-  /* ---------------- GP13: the address ---------------- */
+  /* ---------------- GP13: the address (the engine kit's #/play/<slug> overlay route) ---------------- */
   if (want('GP13')) {
     const pg = await b.newPage({ viewport: { width: 1100, height: 760 } }); pg.on('pageerror', e => errs.push(e.message));
     await pg.addInitScript(SEED()); await pg.goto('file://' + ROOT + '/index.html'); await booted(pg);
+    await pg.evaluate(() => { location.hash = '#/play'; }); await until(pg, () => state.nav === 'games', null, 10000);
     await pg.evaluate(() => { location.hash = '#/play/grandprix'; });
-    const opened = await until(pg, () => !!document.querySelector('.arc-menu') && location.hash === '#/play/grandprix', null, 15000);
-    ok(opened, `GP13: #/play/grandprix opens the Grand Prix (${await pg.evaluate(() => (document.querySelector('.arc-menu h2') || {}).textContent + ' at ' + location.hash)})`);
+    const opened = await until(pg, () => !!document.querySelector('.arc-play[data-route="play/grandprix"] #sg-cv') && location.hash === '#/play/grandprix', null, 20000);
+    ok(opened, `GP13: #/play/grandprix opens the Grand Prix (${await pg.evaluate(() => !!document.querySelector('.arc-play #sg-cv') + ' at ' + location.hash)})`);
     await pg.goBack();
-    const back1 = await until(pg, () => !document.querySelector('.arc-menu,.arc-play') && state.nav === 'games' && location.hash === '#/play', null, 10000);
-    ok(back1, `GP13: Back from its menu returns to Play (${await pg.evaluate(() => state.nav + ' ' + location.hash)})`);
-    /* and from a race */
-    await pg.evaluate(() => { location.hash = '#/play/grandprix'; }); await until(pg, () => !!document.querySelector('.arc-menu #arcm-go'), null, 15000);
+    const back1 = await until(pg, () => !document.querySelector('.arc-play') && state.nav === 'games' && location.hash === '#/play', null, 10000);
+    ok(back1, `GP13: Back returns to Play and the race is gone (${await pg.evaluate(() => state.nav + ' ' + location.hash + ' ' + !!document.querySelector('.arc-play'))})`);
+    /* and opened by a tap from the start menu, Back still lands on Play */
+    await pg.evaluate(() => arcadeMenu('beeGrandPrix')); await until(pg, () => !!document.querySelector('.arc-menu #arcm-go'), null, 15000);
     await pg.evaluate(() => document.querySelector('#arcm-go').click());
     const racing = await until(pg, () => !!document.querySelector('.arc-play') && location.hash === '#/play/grandprix', null, 15000);
     await pg.goBack();
     const back2 = await until(pg, () => !document.querySelector('.arc-menu,.arc-play') && state.nav === 'games' && location.hash === '#/play', null, 10000);
-    ok(racing && back2, `GP13: Back from a race returns to Play, and the race is gone (${await pg.evaluate(() => state.nav + ' ' + location.hash)})`);
+    ok(racing && back2, `GP13: a race started from the menu has the address too, and Back returns to Play (${await pg.evaluate(() => state.nav + ' ' + location.hash)})`);
     await pg.close();
   }
 
