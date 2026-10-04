@@ -12266,7 +12266,7 @@ function gamesHub(){ const c=active();
             <span class="arc-hero-cta"><span class="arc-hero-go">${esc(go)}${live?' →':''}</span>${best?`<span class="arc-hero-sub">${esc(best)}</span>`:''}</span>
           </span></button>
         <span class="pl-chip">${chip}</span></div>`; }
-    const top=pic?`background:linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('${pic}') center/cover`:(A.grad||'var(--accent)');
+    const top=pic?`linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('${pic}') center/cover`:(A.grad||'var(--accent)');
     return `<div class="arc-tile pl-card" data-card="${o.k}"${span>1?` style="grid-column:span ${span}"`:''}>
       <button data-act="playCard" data-arg="${escA(o.k)}" class="arc-tile-play${live?'':' pl-coming'}">
         <span class="arc-tile-top" style="background:${top}"><span class="arc-badge">${esc(live?o.tag:'Coming')}</span>${pic?'':`<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${A.game?gameArtSVG(A.game,48):''}</span>`}</span>
