@@ -60,7 +60,11 @@ async function boot(b, W, H) {
   await pg.goto('file://' + SRC + '/index.html'); await pg.waitForTimeout(2400);
   await pg.evaluate(async () => {
     try { SB_STORE.set('splash', '0'); } catch (e) {}
-    Math.random = () => 0.9;      // no moth underfoot while measuring
+    Math.random = () => 0.9;      // steadies the chest rolls while measuring
+    /* REWRITTEN 4 Oct 2026 (games spec §4.7): the moth comes on every third return to a region,
+       counted, not on a roll — so Math.random no longer keeps it away. While measuring, each visit
+       is made a FIRST visit (the counts are cleared), and the first visit never meets the moth. */
+    for (const k of ['trailAct', 'ultraAct']) { const real = app[k]; app[k] = a => { try { if (!window.__mothOn && active().trail) active().trail.ambV = {}; } catch (e) {} return real(a); }; }
     state.children = [{ name: 'Ravi', avatar: 'bizzy', coins: 0, pow: {}, age: 10, lists: { default: { xp: 10 } }, activeList: 'default',
       missed: [], unlockedThemes: ['spellbound'], unlockedConcepts: {}, unlockedLists: {}, questPath: 'journey' }];
     state.activeIdx = 0; state.screen = 'app';
@@ -157,13 +161,15 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
     ok(!mbad.length, W + 'px: a region\'s board says what it teaches, from its own stops ("' + (master[0] && master[0].got) + '")' + (mbad.length ? ' — ' + JSON.stringify(mbad[0]) : ''));
     /* the moth and the chest: their cards fit the phone, ✕ included (94vw under #root's zoom did not) */
     const dlg = await pg.evaluate(async () => { const W2 = ms => new Promise(r => setTimeout(r, ms)); const out = {};
-      const R = Math.random; Math.random = () => 0.05; state.devUnlock = false;
-      app.trailToMap(); app.trailAct('honey|forum'); await W2(150); app.trailToMap(); app.trailAct('honey|forum'); await W2(1900);
+      const R = Math.random; state.devUnlock = false;
+      /* the third return to the Forum: the counted moth arrives (first visit + two returns already made) */
+      window.__mothOn = true; active().trail.ambV = { forum: 3 };
+      app.trailToMap(); app.trailAct('honey|forum'); await W2(1900);
       const fit = sel => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect();
         return r.left >= 0 && r.right <= innerWidth + 0.5 && r.top >= 0 && r.bottom <= innerHeight + 0.5; };
       out.moth = fit('[data-trap="villain"]'); out.x = fit('[data-trap="villain"] [aria-label="Close"]'); app.villFlee(); await W2(150);
       Math.random = () => 0.8; app.trailTre('forum:0'); await W2(250); out.chest = fit('[data-act="treClose"] > [data-act="popKeep"]'); app.treClose();
-      Math.random = R; return out; });
+      Math.random = R; window.__mothOn = false; return out; });
     ok(dlg.moth && dlg.x && dlg.chest, W + 'px: the moth\'s card, its ✕ and a chest\'s card are wholly on screen ' + JSON.stringify(dlg));
     ok(!errs.length, W + 'px: no page errors' + (errs.length ? ': ' + errs[0] : ''));
     await pg.close();

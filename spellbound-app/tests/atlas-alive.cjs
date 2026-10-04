@@ -21,7 +21,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     const R = Math.random;
 
     // 1 — ambience on a normal board AND on an Ultra landmark
-    Math.random = () => 0.9;                       // no ambush while we look around
+    Math.random = () => 0.9;                       // (steadies the chest rolls; the moth is counted now, and these are first visits)
     app.trailAct('honey|meadow'); await new Promise(res => setTimeout(res, 250));
     out.ambMeadow = !!document.querySelector('.atlas-amb.amb-bees');
     app.ultraAct(0); await new Promise(res => setTimeout(res, 250));

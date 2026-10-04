@@ -46,7 +46,7 @@ async function open(b, { w = 1280, h = 800, touch = false, mode = 'light' } = {}
     window._sfx = []; const rs = window.sfx; window.sfx = k => { _sfx.push(k); try { return rs && rs(k); } catch (e) {} }; });
   return { ctx, pg, errs };
 }
-const launch = (pg, diff) => pg.evaluate(d => { const c = active(); c.gameDiffBy = Object.assign(c.gameDiffBy || {}, { typeBlaster: d });
+const launch = (pg, diff) => pg.evaluate(d => { const c = active(); c.gameDiffBy = Object.assign(c.gameDiffBy || {}, { typeBlaster: d }); if (window.SB_LEVEL && SB_LEVEL.set) SB_LEVEL.set('typeBlaster', d);
   app.arcadePlay('typeBlaster', { fromMenu: true }); }, diff).then(() => until(pg, () => window._tb && _tb.state().started && !!_tb.target(), null, 15000));
 const wallet = pg => pg.evaluate(() => { try { return BZ_WALLET.balance(walletWho(active())); } catch (e) { return -1; } });
 const close = pg => pg.evaluate(() => { try { arcadeClose(); } catch (e) {} });

@@ -50,7 +50,7 @@ async function open(b, { w = 1280, h = 800, touch = false } = {}) {
       await _U(() => !_maze.state().card, 3000); }; });
   return { ctx, pg, errs };
 }
-const launch = (pg, diff) => pg.evaluate(d => { const c = active(); c.gameDiffBy = Object.assign(c.gameDiffBy || {}, { honeycombRun: d });
+const launch = (pg, diff) => pg.evaluate(d => { const c = active(); c.gameDiffBy = Object.assign(c.gameDiffBy || {}, { honeycombRun: d }); if (window.SB_LEVEL && SB_LEVEL.set) SB_LEVEL.set('honeycombRun', d);
   app.arcadePlay('honeycombRun', { fromMenu: true }); }, diff).then(() => until(pg, () => window._maze && _maze.state().started, null, 15000));
 const close = pg => pg.evaluate(() => { try { arcadeClose(); } catch (e) {} });
 const wallet = pg => pg.evaluate(() => { try { return BZ_WALLET.balance(walletWho(active())); } catch (e) { return -1; } });
