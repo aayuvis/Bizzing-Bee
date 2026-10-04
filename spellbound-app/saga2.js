@@ -1191,7 +1191,7 @@
         gates:G.map(g=>({c:g.c,r:g.r,fc:g.fc,fr:g.fr,open:g.open})),hive:HIVE,dots,score,met,right,moths:moths.map(m=>({px:m.px,py:m.py}))}),
       want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r), word:()=>card?card.w.w:'',
       warp:(c,r)=>{ bee.px=bee.c=c; bee.py=bee.r=r; bee.dir=[0,0]; bee.want=[0,0]; },
-      setTime:s=>{ t=s; }, clearDots:()=>{ for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(MAZE[r][c]===1){ MAZE[r][c]=2; } dots=0; },
+      setTime:s=>{ t=s; }, clearDots:(keep)=>{ keep=keep||[]; dots=0; for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(MAZE[r][c]===1){ if(keep.some(k=>k[0]===c&&k[1]===r)) dots++; else MAZE[r][c]=2; } },
       noMoths:()=>{ moths=[]; lateMoth=true; }, rearm:()=>{ G.forEach(g=>{ g.arm=true; }); }, reachHive:()=>reach().has(HIVE.c+','+HIVE.r), begin:()=>{ if(!started){ const el=host.querySelector('#sg-card'); el.style.display='none'; el.innerHTML=''; begin(); } } };
     return { destroy(){ over=true; try{ loop.stop(); }catch(e){} removeEventListener('keydown',key); if(keys){ try{ keys.destroy(); }catch(e){} } } };
   }

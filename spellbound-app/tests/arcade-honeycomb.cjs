@@ -43,8 +43,8 @@ async function open(b, { w = 1280, h = 800, touch = false } = {}) {
     window._U = (f, ms) => new Promise(r => { const t0 = performance.now(); (function w() { let v = false; try { v = f(); } catch (e) {} if (v || performance.now() - t0 > (ms || 8000)) r(v); else setTimeout(w, 30); })(); });
     window._gate = async (i, typed) => { const g = _maze.state().gates[i]; _maze.rearm(); _maze.warp(g.fc, g.fr);
       if (!await _U(() => _maze.state().card === 'gate', 4000)) return { card: false };
-      const w = _maze.word(); const inp = document.querySelector('#sg-ci'); inp.value = typed === undefined ? w : typed;
-      document.querySelector('#sg-cgo').click(); await _U(() => !_maze.state().card || document.querySelector('#arc-host .arcx-miss, #arc-host .sb-miss'), 3000);
+      const w = _maze.word(); const inp = document.querySelector('#sg-ci'), go = document.querySelector('#sg-cgo'); if (!inp || !go) return { card: false };
+      inp.value = typed === undefined ? w : typed; go.click(); await _U(() => !_maze.state().card || document.querySelector('#arc-host .arcx-miss, #arc-host .sb-miss'), 3000);
       return { card: true, w, open: _maze.state().gates[i].open }; };
     window._cont = async () => { await new Promise(r => setTimeout(r, 300)); window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
       await _U(() => !_maze.state().card, 3000); }; });
@@ -71,15 +71,18 @@ const wallet = pg => pg.evaluate(() => { try { return BZ_WALLET.balance(walletWh
   await pg.evaluate(() => { _maze.noMoths(); _lvCalls.length = 0; });
   const g = await pg.evaluate(async () => { const out = {};
     out.t0 = _maze.state().t; out.lives0 = _maze.state().lives;
-    _maze.clearDots(); await new Promise(r => setTimeout(r, 900));
-    out.dotsWin = _maze.state().over || !!document.querySelector('#arc-host .sg-endcard');
+    /* every dot gone but the one beside the bee — then she eats the last one */
+    { const s0 = _maze.state(), bx = Math.round(s0.px), by = Math.round(s0.py); _maze.clearDots([[bx + 1, by]]); _maze.want([1, 0]);
+      await _U(() => _maze.state().dots === 0 || _maze.state().over, 4000); await new Promise(r => setTimeout(r, 300));
+      out.ateLast = _maze.state().dots === 0; _maze.want([0, 0]); }
+    out.dotsWin = !out.ateLast || _maze.state().over || !!document.querySelector('#arc-host .sg-endcard');
     out.reach0 = _maze.reachHive();
     const e0 = earnedSoFar();
     for (let i = 0; i < 3; i++) { const r = await _gate(i); out['g' + i] = r.open; }
     out.reach3 = _maze.reachHive();
     /* three open: stand at the last gate's flower, decline the card, push into the shut gate */
     const g4 = _maze.state().gates[3]; _maze.warp(g4.fc, g4.fr); await _U(() => _maze.state().card === 'gate', 4000);
-    document.querySelector('#hc-later').click(); _maze.want([0, -1]); await new Promise(r => setTimeout(r, 1200));
+    (document.querySelector('#hc-later') || { click() {} }).click(); _maze.want([0, -1]); await new Promise(r => setTimeout(r, 1200));
     out.shutHolds = !_maze.state().over && Math.round(_maze.state().py) === g4.fr;
     const r4 = await _gate(3); out.g3 = r4.open;
     out.reach4 = _maze.reachHive();
@@ -92,7 +95,7 @@ const wallet = pg => pg.evaluate(() => { try { return BZ_WALLET.balance(walletWh
   const w1 = await wallet(pg);
   ok(g.t0 >= 179 && g.t0 <= 180, `C · Easy's clock starts at 3:00 (${g.t0.toFixed(1)} s)`);
   ok(g.lives0 === 3, 'C · three lives');
-  ok(!g.dotsWin, 'clearing every honey dot wins nothing');
+  ok(!g.dotsWin, 'eating the last honey dot wins nothing');
   ok(!g.reach0 && g.g0 && g.g1 && g.g2 && !g.reach3, 'each gate opens on its word, and with three open the hive is still unreachable');
   ok(g.shutHolds, 'the fourth gate holds shut: pushing into it goes nowhere and wins nothing');
   ok(g.g3 && g.reach4, 'the fourth word opens the last gate, and only then can the hive be reached');
@@ -109,6 +112,7 @@ const wallet = pg => pg.evaluate(() => { try { return BZ_WALLET.balance(walletWh
     /* a card left alone stays: the old one had a 12 s fuse */
     const tCard = _maze.state().t; await new Promise(r => setTimeout(r, 2500));
     out.cardStays = _maze.state().card === 'gate' && !!document.querySelector('#hc-cardhost .hc-card') && _maze.state().t === tCard;
+    if (!document.querySelector('#sg-ci')) return out;    // the card closed on its own: every check below fails, as it should
     const w = _maze.word(); document.querySelector('#sg-ci').value = 'qzqzx'; document.querySelector('#sg-cgo').click();
     await new Promise(r => setTimeout(r, 200));
     const miss = () => [...document.querySelectorAll('#arc-host .arcx-miss, #arc-host .sb-miss')].find(e => e.getClientRects().length);
@@ -121,7 +125,7 @@ const wallet = pg => pg.evaluate(() => { try { return BZ_WALLET.balance(walletWh
     /* stand off and back on: the gate asks again, with a new word */
     _maze.warp(g.fc + (g.fc > 1 ? -1 : 1), g.fr); await new Promise(r => setTimeout(r, 150));
     _maze.warp(g.fc, g.fr); await _U(() => _maze.state().card === 'gate', 4000); out.newWord = _maze.word() && _maze.word() !== w;
-    document.querySelector('#hc-later').click(); await _U(() => !_maze.state().card, 2000);
+    (document.querySelector('#hc-later') || { click() {} }).click(); await _U(() => !_maze.state().card, 2000);
     /* the random bot: each gate, a random answer, Continue */
     let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     for (let k = 0; k < 8; k++) { const i = k % 4; const gg = _maze.state().gates[i]; _maze.warp(gg.fc + (gg.fc > 1 ? -1 : 1), gg.fr); await new Promise(r => setTimeout(r, 60));
