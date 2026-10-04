@@ -629,6 +629,7 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
   try{ const wp=weekProgress(c); if(wp.stops||wp.words) out.push({k:'week',t:`This week: ${wp.stops} stop${wp.stops===1?'':'s'} and ${wp.words} word${wp.words===1?'':'s'} mastered. Nice work, ${nm}.`}); }catch(e){}
   try{ const tb=Object.keys(c.trapsBeaten||{}).length; if(tb) out.push({k:'trap',t:`You have beaten ${tb} trap word${tb===1?'':'s'} — words that once tripped you up.`}); }catch(e){}
   try{ const nx=SB_SHELL.nextStep(); if(nx&&nx.ready&&!nx.allDone&&nx.title) out.push({k:'next',t:`Next up: ${trunc(nx.title,40)}. Ready when you are, ${nm}.`}); }catch(e){}
+  try{ const lv=oneLevel(c); if(lv&&lv.label) out.push({k:'level',t:`You are at ${lv.label}, ${nm}. Every word you spell right moves it.`}); }catch(e){}
   let line=''; const who=c.avatar||'bizzy';
   try{ const G=window.SB_AV_GREETINGS||{}; line=G[who]||''; }catch(e){}
   if(!line){ try{ if(typeof SB_AV_CARD==='function'){ const d=SB_AV_CARD(who); line=(d&&d.greeting)||''; } }catch(e){} }
@@ -638,6 +639,11 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
 let _greetVisit=null;   /* one pick per visit to Home — a re-render keeps it */
 function homeGreet(c){ c=c||active(); const C=homeGreetCands(c); const key=(c&&c.name||'')+'|'+state.nav;
   if(_greetVisit&&_greetVisit.key===key&&C.some(x=>x.k===_greetVisit.k)) return C.find(x=>x.k===_greetVisit.k).t;
+  /* PICK FROM ALL THE EVIDENCE, OR WAIT (audit v4 B5). The next stop is known only once trail-data.js
+     lands, which is after Home's first paint — so a visit's one pick, made at that paint, chose from
+     what boot had. On a quiet day that was the buddy's line alone, and the same hello came back every
+     visit. Until the trail is in (loaded or failed), the bubble holds its place instead (null). */
+  try{ if(window.SB_LAZY&&!SB_LAZY.ready('trail')) return null; }catch(e){}
   /* the rotation is a DEVICE note (sb_greet: {name:[n,k]}), not part of the child's record — a hello
      must never change what a backup holds */
   let G={}; try{ G=JSON.parse(SB_STORE.get('greet')||'{}')||{}; }catch(e){}
@@ -3264,7 +3270,9 @@ const app = {
      now played straight from the arcade (arcadePlay). This is kept as a safe no-op so any
      stale saved deep-link or cached handler lands somewhere harmless rather than throwing. */
   openSaga:()=>{ set({nav:'games', screen:'app'}); },
-  openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
+  /* Daily Buzz is a screen in the shell (audit v4 N2): nav 'daily', #/daily, the top bar and tabs around
+     it, Back to Play. The board is games-daily.js's own, drawn into #db-host after each render. */
+  openDaily:()=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; app.setNav('daily'); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
     const old=document.getElementById('dbg-eng'); if(old) old.remove();
@@ -3538,6 +3546,9 @@ const app = {
     document.body.appendChild(el);
     el.querySelector('#arc-back').onclick=arcadeClose;
     const host=el.querySelector('#arc-host');
+    /* P6: the engine draws its own clue and end card; say them as they change */
+    try{ let lt=0; const mo=new MutationObserver(()=>{ if(!lt) lt=setTimeout(()=>{ lt=0; liveScanArc(host); },160); });   /* throttled, not debounced: a HUD ticking every frame must not starve it */
+      mo.observe(el,{subtree:true,childList:true,characterData:true}); el._liveMo=mo; _liveSaid=''; }catch(e){}
     const onUnlock=()=>{};   /* a stage reached inside a game pays nothing extra — its words paid as they were spelled */
     g._e0=earnedSoFar();
     // one round = one word log, so the result card reports this play and not the last one
@@ -3558,7 +3569,7 @@ const app = {
     clearGTimer(); bizzClose();
     const el=document.createElement('div'); el.className='bz-play'; _bizzEl=el;
     el.innerHTML='<div class="bz-top"><button class="bz-back" id="bz-back">← Arcade</button>'
-      +'<span class="bz-title">Who Wants to Be a Bizzillionaire</span></div>'
+      +'<span class="bz-title"><span class="bz-title-pre">Who Wants to Be a </span>Bizzillionaire</span></div>'
       +'<div class="bz-body"><div class="bz-stage"></div><div class="bz-ladder"></div></div>';
     document.body.appendChild(el);
     el.querySelector('#bz-back').onclick=bizzClose;
@@ -5639,7 +5650,7 @@ function viewVocab(){ const S=state; const c=active();
         ${w.sy?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${esc(w.sy)}</div>`:''}
         ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:22px">Tap to reveal the meaning ▾</div>`}
       </button>
-      <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
+      <div class="voc-nav" style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
         <button data-act="vocNav" data-arg="-1" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;${i===0?'opacity:.4':''}">← Back</button>
         <button data-act="vocSayWord" style="height:44px;padding:0 14px;border-radius:12px;background:var(--chip);color:var(--accent);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',17)} Hear it</button>
         <button data-act="vocSayCard" title="Hear the word and its meaning" style="height:44px;padding:0 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',15)} + meaning</button>
@@ -6631,6 +6642,7 @@ function viewApp(){
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
       :key==='trail'?(S.nav==='trail'||atlasDrill())
+      :key==='games'?(S.nav==='games'||S.nav==='daily')
       :S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -6666,6 +6678,7 @@ function viewApp(){
   else if(S.nav==='help') content=viewHelp();
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
+  else if(S.nav==='daily') content=viewDaily();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
@@ -6794,7 +6807,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='games'&&S.nav==='daily')||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -6905,9 +6918,9 @@ function atlasWorld(c){ try{ const T=window.SB_TRAIL; if(!T) return 'meadow';
       if(!us.length) continue; world=a.world;
       if(!us.every(u=>(done[u.id]||{})[tr.lap||1])) break; }
     return world; }catch(e){ return 'meadow'; } }
-function paintedTileArt(world,h){
+function paintedTileArt(world,h,eager){   /* eager: Home's first screen — a lazy image above the fold waits its turn (audit v4 B6) */
   return `<span style="position:relative;display:block;width:100%;height:${h}px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-    <img src="app-art/w-${world}-r2.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <img src="app-art/w-${world}-r2.jpg" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.42))"></span></span>`;
 }
 function viewHome(){
@@ -6950,7 +6963,7 @@ function viewHome(){
     return `<button class="sb-lift" data-act="openCoach" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
       <div style="position:relative;width:100%">
         <span style="position:relative;display:block;width:100%;height:92px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-          <img src="app-art/${art}.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <img src="app-art/${art}.jpg" alt="" loading="${innerWidth>=640?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
           <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.44))"></span></span>
         <span style="position:absolute;left:14px;bottom:-13px">${wayTile('quest',40,2.5)}</span>
       </div>
@@ -7003,7 +7016,7 @@ function viewHome(){
           /* 1.5x the original 94/84 — the buddy is the first thing on Home and read small.
              avSrc switches to the full-size .webp above 96px, so the bigger draw is also a
              sharper source rather than an upscale of the 192px thumb. */
-          const art=hasCard?avatarSVG(c.avatar,141):mascotSVG(S.mood);
+          const art=hasCard?String(avatarSVG(c.avatar,141)||'').replace('loading="lazy"','loading="eager"'):mascotSVG(S.mood);   /* first screen: never lazy (audit v4 B6) */
           const inner=`<div style="width:144px;height:150px;flex-shrink:0;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
           return deckN?`<button data-act="openAvDeck" data-arg="${escA(c.avatar||'')}" title="Flip through your avatar cards — ${deckN} owned" aria-label="Your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                       :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
@@ -7013,6 +7026,7 @@ function viewHome(){
           ${(()=>{ /* Your buddy says hello, whoever your buddy is — Bizzy included. The
               line comes from SB_AV_GREETINGS, with the avatar card as a second source. */
             const line=homeGreet(c);
+            if(line==null) return `<div class="sb-home-greet sb-greet-hold" aria-hidden="true" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:10px 11px;display:flex;flex-direction:column;gap:7px;min-height:52px">${['86%','64%'].map(w=>`<span class="sb-hold" style="width:${w};background:color-mix(in srgb,var(--line) 75%,transparent)"></span>`).join('')}</div>`;
             return `<div class="sb-home-greet" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${trunc(line,104)}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
@@ -7084,7 +7098,7 @@ function viewHome(){
         const pct=nx?nx.pct:0;
         return `<button class="sb-lift sb-home-next" ${go} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
         <div style="position:relative;width:100%">
-          ${paintedTileArt(world,92)}
+          ${paintedTileArt(world,92,true)}
           <span style="position:absolute;left:14px;bottom:-13px">${wayTile('trail',40,-2.5)}</span>
         </div>
         <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
@@ -7610,10 +7624,32 @@ function ledgerWords(x,c){ c=c||active(); const why=String(x.why||'');
   return what; }
 function walletLines(c,n){ c=c||active(); try{ if(window.SB_DEMO) return []; const W=window.BZ_WALLET; if(!W) return [];
     return W.ledger(walletWho(c)).slice().sort((x,y)=>y.t-x.t).slice(0,n||30); }catch(e){ return []; } }
-function walletRowsHTML(c,n){ const L=walletLines(c,n);
+/* K9: ONE LINE PER SITTING, NOT PER COIN. Twenty right answers wrote twenty "+1 · a right answer"
+   lines and pushed everything else off the sheet. Earnings of the same kind from the same app in one
+   sitting (no gap over 20 minutes) fold into one line: "+13 · from 13 right answers". Spending, refunds
+   and the one-off move into the family wallet always stay lines of their own. The ledger itself is the
+   family drop-in's and is only read here. */
+const LEDGER_SITTING=20*60000;
+const LEDGER_MANY={ answer:k=>'from '+k+' right answers', stop:k=>'from '+k+' finished rounds', contest:k=>'from '+k+' contests', mastery:k=>'from '+k+' words mastered on two different days' };
+function walletGroups(c,n){ c=c||active(); const L=walletLines(c,2000); const out=[]; let sit=null, prevT=null;
+  for(const x of L){   /* newest first */
+    if(prevT==null || prevT-x.t>LEDGER_SITTING) sit={};   /* a new sitting */
+    prevT=x.t;
+    const why=String(x.why||''), can=x.n>0 && LEDGER_MANY[why];
+    const key=can?(x.a+'|'+why):null, g=key&&sit[key];
+    if(g){ g.n+=x.n; g.k++; g.old=x; continue; }
+    const row={ a:x.a, t:x.t, n:x.n, why, k:1, top:x, old:x }; out.push(row); if(key) sit[key]=row; }
+  return out.slice(0,n||30); }
+function walletRowWords(g,c){ if(g.k<2) return ledgerWords(g.top,c);
+  let what=LEDGER_MANY[g.why](g.k);
+  /* name the round only when the whole sitting came from one */
+  const a=ledgerWords(g.top,c), b=ledgerWords(g.old,c), i=a.indexOf(' — ');
+  if(i>0 && a===b) what+=a.slice(i);
+  return what; }
+function walletRowsHTML(c,n){ const L=walletGroups(c,n);
   if(!L.length) return `<p class="bz-empty"><span class="bz-empty-m">${mascotSVG('think')}</span>No coins yet. Every right answer pays one — they land here.</p>`;
   return `<ol class="bz-ledger">${L.map(x=>{ const plus=x.n>0; const app=SHOP_APP_LABEL[x.a]||x.a;
-    return `<li><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(ledgerWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
+    return `<li${x.k>1?` data-k="${x.k}"`:''}><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(walletRowWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
 const WALLET_FOR='Bizzing coins come from learning — right answers, finished rounds, contests and mastery — in every Bizzing app. They buy avatars, worlds and frames at fixed prices. Never lessons, and never real money.';
 function viewWalletSheet(){ if(!state.walletOpen) return ''; const c=active();
   return `<div class="bz-sheet-ov" data-act="closeWallet"><div class="bz-sheet" data-act="noop" data-trap="wallet" role="dialog" aria-modal="true" aria-label="Your Bizzing coins">
@@ -10073,7 +10109,12 @@ function viewParent(){
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(beeBand(k).band)} — proven difficulty band across all activities">${(()=>{ const kb=beeBand(k); return `<div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.calibrating?'…':kb.band}</div><div style="font-size:12px;color:var(--muted);font-weight:700">BEE BAND</div>`; })()}</div>
+        ${(()=>{ /* A band nobody has measured yet says so in words (audit v4 §4): this tile printed '…'
+             for every child still calibrating, which read as a value that had not loaded. */
+          const kb=beeBand(k), ev=Math.round(bandEvidence(k));
+          return kb.calibrating
+            ? `<div class="sb-pz-band" data-band="none" style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="Word difficulty is measured from graded words — about ${BAND_MIN_EV} of them, or the placement test"><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.3">Not yet</div><div style="font-size:11px;color:var(--muted);font-weight:650;line-height:1.3">after ~${BAND_MIN_EV} graded words · ${Math.min(ev,BAND_MIN_EV)} so far</div><div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:2px">WORD DIFFICULTY</div></div>`
+            : `<div class="sb-pz-band" data-band="${kb.band}" style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(kb.band)} — proven difficulty band across all activities"><div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.band} of 9</div><div style="font-size:12px;color:var(--muted);font-weight:700">WORD DIFFICULTY</div></div>`; })()}
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.acc||0}%</div><div style="font-size:12px;color:var(--muted);font-weight:700">ACCURACY</div></div>
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${goodDaysThisWeek(k)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">GOOD DAYS THIS WEEK</div></div>
       </div>
@@ -11454,6 +11495,14 @@ function gFinishMC(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
 function coinIc(sz){ return (window.SB_ICON_ART&&SB_ICON_ART.coin)?SB_ICON_ART('coin',{size:sz||14}):SB_ICON('coin',{size:sz||14}); }
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${coinIc(sz)} ${n}</span>`; }
 function coinChip(){ return `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
+/* DAILY BUZZ, IN THE SHELL (audit v4 N2). The page head is the app's (back to Play); the board under it
+   is games-daily.js's, mounted into #db-host by render(). */
+function viewDaily(){
+  let when=''; try{ when=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}); }catch(e){}
+  return `<div class="sb-dailypage" style="max-width:560px;margin:0 auto">
+    ${pageHead('Daily Buzz', esc(when), '', null, 'openGames', 'Play')}
+    <div id="db-host" class="db-host" role="region" aria-label="Today's Daily Buzz" style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-rest)"></div></div>`;
+}
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();
@@ -11604,7 +11653,7 @@ const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',c
 let _arcHandle=null, _arcEl=null;
 function arcadeClose(){
   if(_arcHandle){ try{ _arcHandle.destroy(); }catch(e){} _arcHandle=null; }
-  if(_arcEl){ _arcEl.remove(); _arcEl=null; }
+  if(_arcEl){ try{ if(_arcEl._liveMo) _arcEl._liveMo.disconnect(); }catch(e){} _arcEl.remove(); _arcEl=null; }
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
 }
 /* ============================================================================
@@ -11779,7 +11828,7 @@ function arcadeResult(g, res){
   const card=document.createElement('div'); card.className='arc-play-result';
   card.innerHTML=`<div class="arc-play-rcard">
       <div style="font-size:34px;line-height:1">${isBest?'🌟':win?'🏆':'💪'}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px" data-live-prompt="">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
       <div style="font-size:13px;color:var(--muted)">${win?((coins?'+'+coins+' 🪙 · ':'')+'play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
       ${bestLine}
       ${recap}
@@ -11912,9 +11961,9 @@ function bizzRender(mode, data){
   else if(mode==='result'){ const d=data;
     main=`<div class="bz-result">
       <div style="font-size:44px">${d.won?'🏆':(d.banked>0?'💰':'💫')}</div>
-      <div class="bz-rh">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
-      <div class="bz-rmoney">${money(d.banked)}</div>
-      <div class="bz-rsub">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
+      <div class="bz-rh" data-live-prompt="">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
+      <div class="bz-rmoney" data-live-prompt="">${money(d.banked)}</div>
+      <div class="bz-rsub" data-live-prompt="">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
       <div style="display:flex;gap:9px;margin-top:18px;justify-content:center;flex-wrap:wrap">
         <button class="bz-again" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Play again</button>
         <button class="bz-quit" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Arcade</button>
@@ -11925,7 +11974,8 @@ function bizzRender(mode, data){
       const showRight=S.reveal&&i===q.correctIdx; const showWrong=S.reveal&&picked&&i!==q.correctIdx;
       return `<button class="bz-ans${picked?' picked':''}${showRight?' right':''}${showWrong?' wrong':''}" data-bz="${i}">
         <span class="bz-al">${L[i]}</span><span class="bz-at">${esc(txt)}</span></button>`; }).join('');
-    main=`<div class="bz-q">${esc(q.q.q)}</div>
+    main=`<div class="bz-q" data-live-prompt="${escA('Question '+(S.rung+1)+'. '+q.q.q)}">${esc(q.q.q)}</div>
+      ${S.reveal?`<span class="sb-sr" data-live-prompt="${escA(S.picked===q.correctIdx?'Right.':'Not this time. The answer is '+q.choices[q.order.indexOf(q.correctIdx)]+'.')}"></span>`:''}
       ${S.hint?`<div class="bz-hint">🐝 ${esc(S.hint)}</div>`:''}
       <div class="bz-answers">${answers}</div>
       <div class="bz-lifelines">
@@ -11936,6 +11986,7 @@ function bizzRender(mode, data){
   }
   _bizzEl.querySelector('.bz-stage').innerHTML=main;
   _bizzEl.querySelector('.bz-ladder').innerHTML=ladder;
+  liveScan(_bizzEl.querySelector('.bz-stage'));
   // wire
   _bizzEl.querySelectorAll('[data-bz]').forEach(b=>b.onclick=()=>bizzAnswer(+b.getAttribute('data-bz')));
   _bizzEl.querySelectorAll('[data-ll]').forEach(b=>b.onclick=()=>bizzLifeline(b.getAttribute('data-ll')));
@@ -11997,8 +12048,11 @@ function gamesHub(){ const S=state; const c=active();
      start menu (arcadeMenu) the small tile did, where the level is picked. */
   const HERO_GAMES={ beeGrandPrix:{img:'app-art/arc-grandprix.jpg',grad:'linear-gradient(150deg,#2A1A4A,#1B1235)',tag:'Race',cta:'Start your engine'},
     honeycombRun:{img:'app-art/arc-honeycomb.jpg',grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)',tag:'Maze',cta:'Enter the maze'} };
+  /* G9: the child's own best on each game's tile, quietly — a number they set, never a target the
+     tile sets for them (arcBest, saved by arcadeResult; nothing shows before a first scored round) */
+  const BEST=arcBestMap(), bestOf=k=>{ const v=Math.round(+BEST[k]||0); return v>0?'Best '+fmtN(v):''; };
   (SB_ARCADE_GAMES||[]).forEach(g=>{ const H=HERO_GAMES[g.k]; if(!H) return;
-    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:H.sub})); });
+    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:bestOf(g.k)||H.sub})); });
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
@@ -12033,7 +12087,7 @@ function gamesHub(){ const S=state; const c=active();
   // single Play button + its screenshot — no difficulty strip. Lighter scrim so the shot reads.
   const arcadeGames=SB_ARCADE_GAMES.filter(g=>!HERO_GAMES[g.k]).map(g=>tile({act:'arcadeMenu',arg:g.k,
     grad:"linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
-    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
+    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:bestOf(g.k)})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
   const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
   return `<div style="max-width:860px;margin:0 auto">
@@ -12061,10 +12115,10 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   else statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
   const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No meaning for this one — listen closely!':''}${(S.gInfo|0)>=2?`<br><b>Shape</b> — ${String(w.w).replace(/[^a-z]/gi,'').length} letters${w.p?' · '+String(w.p).split(/[-\s]+/).filter(Boolean).length+' beat'+(String(w.p).split(/[-\s]+/).filter(Boolean).length===1?'':'s'):''}`:''}${(S.gInfo|0)>=3&&String(w.w).length>3?`<br><b>Starts with</b> — “${esc(String(w.w)[0].toUpperCase())}”`:''}</div>` : '';
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
-  if(g.fb&&!g.fb.ok){ bossFb=missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
+  if(g.fb&&!g.fb.ok){ bossFb=`<span class="sb-sr" data-live-prompt="Not this time. The word is shown letter by letter, then Next word."></span>`+missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
       +`<button data-act="gMissGo" style="width:100%;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">Next word →</button>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
-      <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
+      <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px" data-live-prompt="${escA('Word '+(g.i+1)+'. '+(g.type==='boss'?'Spell it to attack.':'Listen and type.'))}">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${g.type==='boss'&&((active().pow||{}).reveal||0)>0?`<button data-act="gReveal" style="padding:9px 14px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">💡 Reveal letter × ${(active().pow||{}).reveal}</button>`:''}<button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}" aria-label="Hint, step ${(S.gInfo|0)+1} of 3">${iconSVG('bulb',14)} ${['Hint','More help','One more','Hide help'][S.gInfo|0]}</button></div>
       ${hint}${bossFb}
@@ -12102,9 +12156,9 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
   return `<div style="max-width:560px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG(g.status==='lost'?'oops':'love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${title}</h2>
-      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${big}</div>
-      <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px" data-live-prompt="">${title}</h2>
+      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1" data-live-prompt="">${big}</div>
+      <p style="color:var(--muted);font-weight:700;margin-top:6px" data-live-prompt="">${sub}</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
@@ -12126,10 +12180,10 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   else if(q.kind==='vocab') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:.02em">${q.prompt}</div>${q.p2?`<div style=\"font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);margin-top:4px\">${esc(q.p2)}</div>`:''}${hearBtn('Hear the word')}`;
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
   const wrongPick=g.picked!=null && q.choices[g.picked]!==q.answer;
-  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
+  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center"><span class="sb-sr" data-live-prompt="${escA('Question '+(g.i+1)+' of '+g.qs.length)}"></span><div data-live-prompt="">${prompt}</div></div>
     ${wrongPick?(q.kind==='spell'
-        ? missFeedbackHTML(q.wordObj||q.answer, q.choices[g.picked]||'', {head:'Not this time — the right spelling, letter by letter'})
-        : `<div style="background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">Not this time — the answer is: <span style="color:var(--good)">${esc(trunc(q.answer,90))}</span></div>`):''}
+        ? '<span class="sb-sr" data-live-prompt="Not this time. The right spelling is shown, letter by letter."></span>'+missFeedbackHTML(q.wordObj||q.answer, q.choices[g.picked]||'', {head:'Not this time — the right spelling, letter by letter'})
+        : `<div data-live-prompt="" style="background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">Not this time — the answer is: <span style="color:var(--good)">${esc(trunc(q.answer,90))}</span></div>`):''}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>
     ${wrongPick?`<button data-act="gMcNext" style="width:100%;margin-top:12px;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>`:''}`;
   return gameShell(statusBar, inner); }
@@ -12137,9 +12191,9 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
   return `<div style="max-width:560px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG('love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
-      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${g.right}/${g.qs.length}</div>
-      <p style="color:var(--muted);font-weight:700;margin-top:6px">${pct}% correct</p>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px" data-live-prompt="">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
+      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1" data-live-prompt="${g.right} of ${g.qs.length} right">${g.right}/${g.qs.length}</div>
+      <p style="color:var(--muted);font-weight:700;margin-top:6px" data-live-prompt="">${pct}% correct</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
@@ -12815,6 +12869,9 @@ function render(){
       style="flex-shrink:0;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
+  if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
+  if(state.nav==='home'&&state.screen==='app') homeArtHint();
+  if(state.screen==='app'&&(state.game||state.nav==='daily')) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the
@@ -12830,6 +12887,53 @@ function render(){
   trapFocusAfterRender();
   save();
 }
+/* HOME'S PICTURES ARRIVE WITH ITS WORDS (audit v4 B6: "avatar and journey banners blank for ~6 s").
+   Home's avatar and its two painted journey plates are asked for only when Home is drawn — after
+   ~1MB of script — so on a phone network the words sat there for seconds over empty frames. Each
+   Home render notes which of those pictures it showed (device key homeArt, through the store); next
+   visit, index.html's parse-time peek preloads exactly those, alongside the scripts. Nothing is
+   added to a first load: the same files, asked for sooner, and only for a speller who has been here. */
+let _homeArtWas=null;
+function homeArtHint(){ try{
+  const urls=[...document.querySelectorAll('#root .sb-home-greet img, #root .sb-home-r2 img')].filter(i=>i.getBoundingClientRect().top<innerHeight).map(i=>i.getAttribute('src')||'')
+    .filter(u=>/^(avatars|app-art)\/[a-z0-9\/._-]+\.(png|webp|jpe?g)$/i.test(u)).filter((u,i,a)=>a.indexOf(u)===i).slice(0,5);
+  if(!urls.length) return; const k=JSON.stringify(urls);
+  if(_homeArtWas==null) _homeArtWas=JSON.stringify(SB_STORE.getJSON('homeArt',[]));
+  if(k!==_homeArtWas){ _homeArtWas=k; SB_STORE.setJSON('homeArt',urls); }
+}catch(e){} }
+/* P6 (audit v4): A GAME'S PROMPT AND ITS RESULT ARE SPOKEN TO A SCREEN READER. One polite live
+   region, #sb-live (visually hidden, on <body>, so no render ever replaces it — a live region rebuilt
+   with its new text is not announced). Screens mark what to say with data-live-prompt (its value, or
+   the element's text without its buttons); the arcade engines, which this file does not draw, are
+   read by selector (their clue line .sg-cardmean / #ss-hint, their end card). Said once per change,
+   never a spelling the screen does not already show, and nothing on screen moves. */
+const LIVE_STRIP=/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]\uFE0F?/gu;
+let _liveEl=null, _liveSaid='';
+function liveEl(){ if(_liveEl&&_liveEl.isConnected) return _liveEl; if(!document.body) return null;
+  _liveEl=document.getElementById('sb-live')||document.createElement('div');
+  _liveEl.id='sb-live'; _liveEl.className='sb-sr'; _liveEl.setAttribute('role','status'); _liveEl.setAttribute('aria-live','polite'); _liveEl.setAttribute('aria-atomic','true');
+  if(!_liveEl.isConnected) document.body.appendChild(_liveEl); return _liveEl; }
+function liveText(el){ const v=el.getAttribute&&el.getAttribute('data-live-prompt'); if(v) return v;
+  const k=el.cloneNode(true); k.querySelectorAll('button,[aria-hidden="true"],svg').forEach(x=>x.remove());
+  return [...k.childNodes].map(n=>(n.textContent||'').trim()).filter(Boolean).join('. '); }
+function liveSay(parts){ try{ const t=parts.map(x=>String(x||'').replace(LIVE_STRIP,'').replace(/\s+/g,' ').trim()).filter(Boolean).join('. ').replace(/([.?!:;—…])\s*\.(?=\s|$)/g,'$1');
+    if(t===_liveSaid) return;
+    /* the same prompt with something added (a miss under its question) says only what was added */
+    const say=(_liveSaid&&t.indexOf(_liveSaid)===0)?t.slice(_liveSaid.length).replace(/^[\s.]+/,''):t;
+    _liveSaid=t; const el=liveEl(); if(el&&say) el.textContent=say; }catch(e){} }
+function liveScan(scope){ try{ scope=scope||root; const els=[...scope.querySelectorAll('[data-live-prompt]')].filter(e=>e.getClientRects().length);
+    liveSay(els.map(liveText)); }catch(e){} }
+/* the arcade engines: their end card, else their clue line */
+function liveScanArc(host){ try{ if(!host||!host.isConnected) return;
+    const vis=e=>e&&e.getClientRects().length;
+    const res=[...document.querySelectorAll('.arc-play-result [data-live-prompt]')].filter(vis);
+    if(res.length){ liveSay(res.map(liveText)); return; }
+    const end=host.querySelector('.sg-endcard');
+    if(vis(end)){ liveSay(['.sg-end-h','.sg-end-sub','.sg-end-score','.sg-wordsum-h'].map(q=>{ const e=end.querySelector(q); return e?e.textContent:''; })); return; }
+    const clue=[...host.querySelectorAll('.sg-cardmean, #ss-hint')].filter(vis).map(e=>e.textContent.trim()).filter((t,i,a)=>t&&a.indexOf(t)===i);
+    if(clue.length) liveSay(['Clue: '+clue[0]]); }catch(e){} }
+try{ liveEl(); }catch(e){}
+window.SB_LIVE={ say:liveSay, scan:liveScan };
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
 root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; callAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
 root.addEventListener('dblclick', e=>{ const el=e.target.closest('[data-dbl]'); if(!el) return;

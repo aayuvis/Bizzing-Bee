@@ -319,6 +319,12 @@
      re-renders). For screens that are useful before the whole library is in. */
   var KICKS = { openBuilder: ['themes', 'lists'], openFinder: 'words', openTraps: 'card' };
   document.addEventListener('DOMContentLoaded', function () {
+    /* A RETURNING SPELLER'S HOME NEEDS THE ATLAS FRONTIER NOW (audit v4 B6). Home holds "Next on your
+       journey" until trail-data.js lands, and after `load` + an idle slice that was seconds after the
+       words were up. Every deferred script has run by this event (app3's first render included), so
+       the boot JS is in: if Home is what that render drew, ask for FIRST now. (Not app3's `state` —
+       inside this file that name is the loader's own.) A new visitor still waits for `load`. */
+    try { if (document.querySelector('#root .sb-home-r2')) FIRST.forEach(function (n) { load(n); }); } catch (e) {}
     try {
       if (typeof app === 'undefined') return;
       Object.keys(DOORS).forEach(function (k) {

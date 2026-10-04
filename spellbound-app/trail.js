@@ -1589,39 +1589,24 @@
       </div>
     </div>`;
   }
-  /* A LOCKED CONTINENT HAS A DOOR, AND YOU MAY LOOK THROUGH IT.
-     The two plan-locked continents used to be one big button reading "Unlocks with the
-     Advanced Pack" over a blurred map — it named no way in, and on a child's screen it read
-     as a dead end. Each panel now says what it comes with and offers two real actions:
-     "Show a grown-up", which opens the Advanced Pack through the grown-up PIN
-     (app.openAdvanced → pinGate — the PIN dialog IS the door; the pack's page is drawn only
-     behind it), and "Look at the map", which lifts the veil so the child can see the board
-     before anyone unlocks it; its regions then lead to the same door. No price, and never
-     the words "ask a grown-up" (FIX-BEE v2 T3, tests/trust-v2.cjs). Guard:
-     tests/atlas-layout.cjs. */
-  function advLock(key, icon, title, line, blur) {
-    return `<div data-act="atlasAdvDoor" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;cursor:pointer;background:${blur ? 'linear-gradient(180deg,rgba(12,9,28,.66),rgba(12,9,28,.88));-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px)' : 'linear-gradient(180deg,rgba(10,8,26,.40),rgba(10,8,26,.80))'}">
-      <div style="text-align:center;padding:22px;max-width:26em">
-        <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG(icon, 24)}</span>
-        <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">${esc(title)}</span>
-        <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">${esc(line)} Comes with the Advanced Pack.</span>
-        <span style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px">
-          <button data-act="atlasAdvDoor" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${iconSVG('lock', 14)} Show a grown-up</button>
-          <button data-act="atlasPeek" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:11px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);color:#fff;font-weight:800;font-size:14px">Look at the map</button>
-        </span></div></div>`;
-  }
-  function advPeekBar(key) {
-    return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding:10px 12px;border-radius:14px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
-      <span style="flex:1;min-width:180px;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted)">${iconSVG('lock', 13)} Just looking — this comes with the Advanced Pack.</span>
-      <button data-act="atlasAdvDoor" style="padding:9px 14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13px">Show a grown-up</button>
-      <button data-act="atlasPeek" data-arg="${key}" style="padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Done looking</button></div>`;
+  /* THE PAID CONTINENTS ARE ONE QUIET LINE (owner, 4 Oct 2026; audit v4 C5).
+     A child without the Advanced Pack used to meet two big locked panels under the Honey map —
+     the Advanced Rounds and Ultra, each over a blurred board with "Show a grown-up" and "Look at
+     the map". The owner chose one quiet line instead: the child's Atlas is the continent they
+     can walk, and under it a single sentence, "More continents come with the Advanced Pack",
+     with one "Show a grown-up" — the same door as before (atlasAdvDoor → ultraUpsell → the
+     grown-up PIN; the pack's page is drawn only behind it). No price, no boards, no peek, and
+     never the words "ask a grown-up" (FIX-BEE v2 T3, tests/trust-v2.cjs). A region address
+     (#/atlas/exp/…, a stop) still lands on the same door. Guard: tests/atlas-layout.cjs. */
+  function advLine() {
+    return `<div class="atlas-more" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 4px;padding:10px 12px 10px 14px;border-radius:14px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
+      <span style="flex:1;min-width:190px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--muted)">${iconSVG('lock', 14)} More continents come with the Advanced Pack</span>
+      <button data-act="atlasAdvDoor" style="min-height:44px;padding:0 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Show a grown-up</button></div>`;
   }
   /* the door: the pack's own page, behind the PIN. app.openAdvanced returns silently while
      advanced.js is not in, so go through app3's ultraUpsell, which waits for it and falls back
-     to the (PIN-guarded) plan sheet — one door, never a dead tap. The whole veil is this door
-     too, as the old single button was; its two buttons are the named, focusable ways in. */
+     to the (PIN-guarded) plan sheet — one door, never a dead tap. */
   app2.atlasAdvDoor = () => { if (app2.ultraUpsell) return app2.ultraUpsell(); if (window.ADV) app2.openAdvanced(); };
-  app2.atlasPeek = k => { const p = state.atlasPeek = Object.assign({}, state.atlasPeek); p[k] = !p[k]; render(); };
   function viewAtlas() {
     const c = active();
     state.trailCourse = 'honey';
@@ -1630,9 +1615,8 @@
     state.trailCourse = 'exp';
     const expOk = advOn() || devOn();
     const x = expOk ? actSections(c, 'exp') : null;
-    const advBoard = atlasBoard(c, 'exp');
+    const advBoard = expOk ? atlasBoard(c, 'exp') : '';
     state.trailCourse = 'honey';
-    const peek = state.atlasPeek || {};
     return `<div style="${RISE()}max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
@@ -1640,36 +1624,16 @@
       ${tierBar(h.lap, h.done, h.total)}
       ${board}
       <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 22px">Tap a region to walk it. ${h.lap === 1 ? 'Tier 1 keeps every word at your level — the same continent returns tougher at Tier 2.' : 'Tier ' + h.lap + ' of 3 — the same continent, harder words.'}</p>
-      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 12px">
+      ${expOk ? `<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">${esc(T().names.expedition)}</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#37415B,#1F2A44);border-radius:999px;padding:4px 11px">90% GATES</span></div>
-      ${expOk ? tierBar(x.lap, x.done, x.total) : ''}
-      <!-- min-height only when LOCKED. The panel takes its height from the map's
-           aspect ratio, so on a phone it is about 200px (184px at 360px wide) while
-           the lock content — icon, heading, two-line paragraph, price button — is
-           272px. The button fell out of the bottom of the panel and landed on the
-           next section's heading. Desktop never showed it: there the map is 596px
-           tall and the content has room to spare. With two actions (a door and a look)
-           it is ~310px at 360px wide, so 340px — and the Ultra panel below needs the same. -->
-      <div style="position:relative${expOk || peek.exp ? '' : ';min-height:340px'}">
-        ${advBoard}
-        <!-- The scrim used to start at .34 opacity, which is nowhere near enough to
-             cover what is under it: the expedition map's region labels are white
-             pills on dark discs, and they punched straight through "Six expert
-             expeditions" and its paragraph. It read as a broken screen rather than
-             as a locked one. Stronger now, and blurred, so the map is still legibly
-             THERE — you can see there is something to unlock — without any of its
-             lettering competing with the lettering on top of it. -->
-        ${expOk ? '' : peek.exp ? advPeekBar('exp') : advLock('exp', 'lock', 'Six expert expeditions', '54 stops at national level, each on its own map, gated at 90%.', true)}
-      </div>
+      ${tierBar(x.lap, x.done, x.total)}
+      <div style="position:relative">${advBoard}</div>
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">Ultra Champions</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#241E33;background:linear-gradient(135deg,#FFE49B,#E8A81C);border-radius:999px;padding:4px 11px">THE LAST CONTINENT</span></div>
-      <div style="position:relative${expOk || peek.ultra ? '' : ';min-height:340px'}">
-        ${ultraBoard(c)}
-        ${expOk ? '' : peek.ultra ? advPeekBar('ultra') : advLock('ultra', 'crown', "The champions' journey", 'Every word in the library, hardest first, in day-sized blocks. The end of the road.', false)}
-      </div>
-      <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>
+      <div style="position:relative">${ultraBoard(c)}</div>
+      <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>` : advLine()}
     </div>`;
   }
   /* ---------------------------------------------------------------
@@ -2053,7 +2017,24 @@
      Measured from layout (offsetLeft/offsetWidth), so the pop-in's scale cannot skew it.
      Guard: tests/atlas-layout.cjs (first, middle and last stops at 360 and 390). */
   let _popRaf = 0;
-  function popFitSoon() { if (_popRaf) return; _popRaf = requestAnimationFrame(() => { _popRaf = 0; popFit(); }); }
+  function popFitSoon() { if (_popRaf) return; _popRaf = requestAnimationFrame(() => { _popRaf = 0; popFit(); signFit(); }); }
+  /* THE ROAD SIGN STAYS READABLE (audit v4 §4: "clipped at the right edge ('cl')"). The sign at the
+     earned edge is hung from that edge, so while the camera sits short of it only its first letters
+     showed at the window's right. Whenever any of it is in the window it is slid in whole (--sdx) —
+     it still points → down the road it names — and it goes back on its post at the edge. Same
+     arithmetic as popFit: screen pixels, handed back in CSS pixels. Guard: atlas-layout.cjs. */
+  function signFit() { try {
+    const pan = document.getElementById('sb-pan'), sg = pan && pan.querySelector('.mw-sign'); if (!sg) return;
+    const bd = sg.offsetParent; if (!bd || !bd.offsetWidth) return;
+    const br = bd.getBoundingClientRect(), wr = pan.getBoundingClientRect();
+    const z = br.width / bd.offsetWidth || 1, w = sg.offsetWidth * z;
+    const L = Math.max(wr.left, 0) + 6, R = Math.min(wr.right, document.documentElement.clientWidth) - 6;
+    const right = br.left + sg.offsetLeft * z, left = right - w;   // where it hangs: translateX(-100%)
+    let dx = 0;
+    if (left < R && right > R) dx = R - right;                     // cut at the window's right: slide it in
+    else if (right > L && left < L) dx = L - left;                 // cut at the left: the same, the other way
+    sg.style.setProperty('--sdx', Math.round(dx / z) + 'px');
+  } catch (_) {} }
   function popFit() { try {
     const pan = document.getElementById('sb-pan'), p = pan && pan.querySelector('.atlas-pop'); if (!p) return;
     const bd = p.offsetParent; if (!bd || !bd.offsetWidth) return;
@@ -2827,7 +2808,7 @@
     const _tx = _side === 'l' ? '-16px' : _side === 'r' ? 'calc(-100% + 16px)' : '-50%';
     const _ty = _below ? '24px' : 'calc(-100% - 24px)';
     const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
-    if (!shut) setTimeout(popFit, 0);   // after panTo/mwClamp have moved the camera
+    setTimeout(() => { if (!shut) popFit(); signFit(); }, 0);   // after panTo/mwClamp have moved the camera
     const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}" data-act="popKeep" data-side="${_side}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
       <div class="atlas-pop-in">
         <div style="display:flex;align-items:flex-start;gap:13px">
@@ -2861,7 +2842,8 @@
         <span style="width:46px;height:46px;flex-shrink:0">${window.SB_AVATAR ? SB_AVATAR(guide, 46) : ''}</span>
         <span style="min-width:0;flex:1">
           <span style="display:block;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.1">${esc(act.title)}</span>
-          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops${treFound(c, act.id) ? ' · ' + treFound(c, act.id) + '/3 caches' : ''}</span></span>
+          <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:700;margin-top:2px">${esc(WORLD_LINE[world] || 'the route continues')} · ${dn} of ${n} stops${treFound(c, act.id) ? ' · ' + treFound(c, act.id) + '/3 caches' : ''}</span>
+          ${masterLine(nodes)}</span>
       </div>
       ${/* The stop card used to be a sibling BELOW the board, and the board is as tall as
             the viewport — so the two buttons that are the whole point of the screen sat
@@ -2878,6 +2860,16 @@
         isMW ? { pano: { img: LV.img, extra: mwExtra } } : null)}
       ${villainCard(c)}${treGiftCard()}${uQuestCard()}
     </div>`;
+  }
+  /* D2 (audit v4): WHAT THIS REGION TEACHES, said on its board. There is no authored "you'll master"
+     line per region, so none is invented: the line is read from the region's own stops at this tier —
+     each stop is named for the pattern it teaches ("Vowels & Magic E", "ie / ei Rule and Exceptions") —
+     the first three, then how many more. Guard: tests/atlas-layout.cjs. */
+  function masterLine(nodes) {
+    const ts = nodes.filter(x => x.n.kind === 'unit').map(x => String(x.n.u.title || '').split(' — ')[0].replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
+    if (!ts.length) return '';
+    const shown = ts.slice(0, 3), more = ts.length - shown.length;
+    return `<span class="atlas-master" style="display:block;font-size:12.5px;color:var(--text);font-weight:650;line-height:1.4;margin-top:3px">What you’ll master here: ${esc(shown.join(', '))}${more > 0 ? ' and ' + more + ' more' : ''}</span>`;
   }
   /* one line of flavour per world, so an act page says where you are */
   const WORLD_LINE = { meadow: 'first words, first wins', library: 'every rule English wrote down',

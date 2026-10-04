@@ -50,7 +50,8 @@ const root = require('path').resolve(__dirname, '..');
       });
       if (!r.pills) errs.push(vp.n + ' ' + name + ': no back pill');
       if (r.ow) errs.push(vp.n + ' H-OVERFLOW on ' + name);
-      if (r.h && (r.h < 26 || r.h > 42)) errs.push(vp.n + ' ' + name + ': pill height ' + r.h);
+      /* a phone's pill is a 44px touch target (audit v4 P3; 48 on screen under #root's 1.09 zoom) */
+      if (r.h && (vp.n === 'phone' ? (r.h < 44 || r.h > 52) : (r.h < 26 || r.h > 42))) errs.push(vp.n + ' ' + name + ': pill height ' + r.h);
       if (r.weak && r.weak.length) errs.push(vp.n + ' ' + name + ': weak text back link — ' + r.weak.join(' | '));
       if (r.titleCentre != null && !r.stacked) {
         if (!r.pillLeftOfTitle) errs.push(vp.n + ' ' + name + ': pill is not left of the title');

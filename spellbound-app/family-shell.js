@@ -118,7 +118,7 @@
      sub-state (a running drill, an open book) and is restored to its parent screen. */
   var RESTORABLE = { shop: 1, help: 1, home: 1, concepts: 1, coach: 1, quest: 1, explore: 1, themes: 1, figurative: 1, vocab: 1, quotes: 1,
     trivtrain: 1, ipatrain: 1, typing: 1, builder: 1, beeband: 1, coachdesk: 1, traps: 1, revisions: 1, evolution: 1,
-    collection: 1, finder: 1, games: 1, trivia: 1, journeys: 1, adv: 1, progress: 1, feed: 1 };
+    collection: 1, finder: 1, games: 1, trivia: 1, journeys: 1, adv: 1, progress: 1, feed: 1, daily: 1 };
   /* screens with a gated opener — an address goes through it: the trainTools plan lock
      (gateFeature) and the Advanced Pack's sales page, which asks for the PIN first (T3) */
   var DOOR = { quotes: 'openQuotes', vocab: 'openVocab', typing: 'openTyping', ipatrain: 'openIpaTrain', trivtrain: 'openTrivTrain', adv: 'openAdvanced' };

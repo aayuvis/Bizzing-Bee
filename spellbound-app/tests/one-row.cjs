@@ -7,6 +7,7 @@
       AND the Shop, with nothing on a card spilling out of it, on a 360px phone too.
    2. The landing header is one line on a phone. At 390 and 360 "Start free" wrapped onto a line
       of its own. Now every control sits on the bar's one line, "Start free" whole and on screen.
+   3. A game's header is one line on a phone (audit v4 §4): every arcade engine and Bizzillionaire.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/one-row.cjs                         */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -66,6 +67,43 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
     await c2.close();
   }
   ok(!lbad.length, 'the landing header is one line at 1280, 414, 390 and 360 — "Start free" whole, on screen, beside the rest' + (lbad.length ? ' — ' + lbad.join(' | ') : ''));
+
+  /* ---- 3. a game's header is one line on a phone (audit v4 §4) ----
+     "← Arcade" broke after its arrow and "Unscramble Stars" took two lines at 360 and 390. Every
+     arcade engine's bar and the Bizzillionaire bar: each part on ONE line, all of them on the bar's
+     one row, nothing past the right edge, and the back button a 44px target. */
+  const hbad = [];
+  for (const w of [390, 360]) {
+    const c3 = await b.newContext({ viewport: { width: w, height: 800 }, isMobile: true, hasTouch: true });
+    await c3.addInitScript(k => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, KID);
+    const p3 = await c3.newPage(); p3.on('pageerror', e => errs.push(e.message));
+    await p3.goto(URL); await p3.waitForTimeout(2500);
+    await p3.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));
+    const games = await p3.evaluate(() => (window.SB_ARCADE_GAMES || []).map(g => g.k));
+    const measureBar = () => p3.evaluate(() => {
+      const bar = document.querySelector('.arc-play-top, .bz-top'); if (!bar) return { none: true };
+      const lines = el => { const rng = document.createRange(); rng.selectNodeContents(el);
+        return new Set([...rng.getClientRects()].filter(r => r.height > 1 && r.width > 1).map(r => Math.round(r.top))).size; };
+      const kids = [...bar.children].filter(k => k.getBoundingClientRect().width > 0 && (k.textContent || '').trim());
+      const ctr = el => { const q = el.getBoundingClientRect(); return (q.top + q.bottom) / 2; };
+      const back = bar.querySelector('.arc-play-back, .bz-back').getBoundingClientRect();
+      return { name: (bar.querySelector('.arc-play-name, .bz-title') || {}).textContent, wrapped: kids.filter(k => lines(k) > 1).map(k => k.textContent.trim().slice(0, 18)),
+        offRow: kids.filter(k => Math.abs(ctr(k) - ctr(kids[0])) > 6).map(k => k.textContent.trim().slice(0, 18)),
+        past: kids.filter(k => k.getBoundingClientRect().right > innerWidth + 0.5).map(k => k.textContent.trim().slice(0, 18)), backH: Math.round(back.height) };
+    });
+    for (const k of games) {
+      await p3.evaluate(g => app.arcadePlay(g), k); await p3.waitForTimeout(700);
+      const r = await measureBar();
+      if (r.none || r.wrapped.length || r.offRow.length || r.past.length || r.backH < 44) hbad.push(`${w}px ${k}: ${JSON.stringify(r)}`);
+      await p3.evaluate(() => { const x = document.querySelector('#arc-back'); if (x) x.click(); }); await p3.waitForTimeout(200);
+    }
+    await p3.evaluate(() => app.openBizz()); await p3.waitForTimeout(600);
+    const rb = await measureBar();
+    if (rb.none || rb.wrapped.length || rb.offRow.length || rb.past.length || rb.backH < 44) hbad.push(`${w}px bizzillionaire: ${JSON.stringify(rb)}`);
+    if (games.length < 6) hbad.push(`${w}px: only ${games.length} arcade engines found`);
+    await c3.close();
+  }
+  ok(!hbad.length, 'every game header is one line at 390 and 360 — "← Arcade" and the game\'s name each whole, on the bar\'s one row, the back button 44px tall' + (hbad.length ? ' — ' + hbad.slice(0, 4).join(' | ') : ''));
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);

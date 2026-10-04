@@ -26,6 +26,7 @@
     splash: 'sb_splash', music: 'sb_w4_music', sound: 'sb_sound', volume: 'sb_volume', mute: 'sb_mute', greet: 'sb_greet', focus: 'sb_w4_focus', voice: 'sb_voice',
     devunlock: 'sb_devunlock', vflags: 'sb_vflags', bugs: 'sb_bugs', evofeedback: 'sb_evofeedback',
     daily: 'sb_daily', arcBest: 'sb_arc_best', bizzSeen: 'sb_bizz_seen', mockbee: 'sb_mockbee',
+    homeArt: 'sb_home_art',   /* the pictures Home's first screen showed last time: index.html's parse-time peek preloads them (audit v4 B6) */
     tmLog: 'sb_tm_log', tmArm: 'sb_tm_on', accounts: 'sb_accounts_v1', session: 'sb_session_v1',
     cloudSession: 'sb_session_v2', syncMeta: 'sb_sync_v1',
     wallet: 'bizzing.wallet', activity: 'bizzing.activity'

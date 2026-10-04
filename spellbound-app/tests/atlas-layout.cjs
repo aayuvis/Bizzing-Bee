@@ -10,10 +10,14 @@
       atlasKey, index.html .atlas-wrap container queries). Wide boards are as they were.
    2. The stop callout on a region's panorama ran off the right edge of a phone ("Clear the
       earlier stops firs"). popFit() slides it into the visible window of the panning board.
-   3. The Advanced Rounds panel said "Unlocks with the Advanced Pack" and named no way in.
-      It now offers "Show a grown-up" (the PIN-gated Advanced Pack — the PIN dialog IS the
-      door) and "Look at the map" (a peek at the board; its regions lead to the same door).
-      No price, and never the words "ask a grown-up" (FIX-BEE v2 T3).
+   3. The paid continents are ONE QUIET LINE (owner, 4 Oct 2026; audit v4 C5). Two locked
+      panels (Advanced Rounds, Ultra — "Show a grown-up" + "Look at the map" over blurred
+      boards) became one sentence under the Honey map, "More continents come with the Advanced
+      Pack", and one "Show a grown-up": the same PIN-gated door. No paid board, no peek, no
+      price, and never the words "ask a grown-up" (FIX-BEE v2 T3). A tester or a pack holder
+      still sees all three continents and no line.
+   4. The road sign at a region's earned edge is never cut by a phone's window (audit v4 §4).
+   5. A region's board says what it teaches (audit v4 D2), read from its own stops.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/atlas-layout.cjs */
 const { chromium } = require('playwright');
 const SRC = process.env.SRC || __dirname + '/..';
@@ -119,6 +123,38 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
     const off = pops.flatMap(p => p.out);
     ok(pops.every(p => p.n >= 2) && !off.length, W + 'px: the stop card stays inside the visible map for the first, middle and last stops of a long panorama'
       + (off.length ? ' — ' + off.slice(0, 3).join(' | ') : ''));
+    /* the road sign at the earned edge is never cut by the window (audit v4 §4: "clipped at the
+       right edge ('cl')"): pan the board across, and at every stop it is wholly in or wholly out */
+    const sign = await pg.evaluate(async () => {
+      state.devUnlock = false; app.trailToMap(); app.trailAct('honey|meadow'); await new Promise(res => setTimeout(res, 900));
+      const pan = document.getElementById('sb-pan'); const out = { seen: 0, steps: 0, cut: [] };
+      if (!pan || !pan.querySelector('.mw-sign')) return out;
+      const max = pan.scrollWidth - pan.clientWidth;
+      for (let x = 0; x <= max + 40; x += 37) {
+        pan.scrollLeft = x; pan.dispatchEvent(new Event('scroll'));
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); out.steps++;
+        const sg = pan.querySelector('.mw-sign'); if (!sg) continue;
+        const r = sg.getBoundingClientRect(), w = pan.getBoundingClientRect();
+        const L = Math.max(0, w.left), R = Math.min(document.documentElement.clientWidth, w.right);
+        if (r.right > L + 1 && r.left < R - 1) out.seen++;
+        if ((r.left < R - 1 && r.right > R + 1) || (r.left < L - 1 && r.right > L + 1)) out.cut.push(Math.round(pan.scrollLeft) + ': ' + Math.round(r.left) + '–' + Math.round(r.right) + ' in ' + Math.round(L) + '–' + Math.round(R));
+      }
+      return out; });
+    ok(sign.seen >= 2 && !sign.cut.length, W + 'px: the road sign at the earned edge is never cut by the window as the board pans (' + sign.steps + ' camera stops, sign in view at ' + sign.seen + ')'
+      + (sign.cut.length ? ' — cut at ' + sign.cut.slice(0, 3).join(' | ') : ''));
+    /* D2: each region's board says what it teaches — read from its own stops, never authored per region */
+    const master = await pg.evaluate(async () => { const out = [];
+      for (const act of ['meadow', 'forum', 'stage']) {
+        app.trailToMap(); app.trailAct('honey|' + act); await new Promise(res => setTimeout(res, 500));
+        const el = document.querySelector('.atlas-master'); const A = SB_TRAIL.honey.acts.find(a => a.id === act);
+        const lap = (active().trail || {}).lap || 1; const U = Object.fromEntries(SB_TRAIL.honey.units.map(u => [u.id, u]));
+        const ts = A.units.map(id => U[id]).filter(u => (u.laps || [u.lap || 1]).includes(lap)).map(u => String(u.title).split(' — ')[0].replace(/\s*\([^)]*\)\s*$/, '').trim());
+        const want = 'What you’ll master here: ' + ts.slice(0, 3).join(', ') + (ts.length > 3 ? ' and ' + (ts.length - 3) + ' more' : '');
+        const r = el && el.getBoundingClientRect();
+        out.push({ act, got: el ? el.textContent.trim() : null, want, fits: !!r && r.left >= 0 && r.right <= innerWidth + 0.5 }); }
+      return out; });
+    const mbad = master.filter(m => m.got !== m.want || !m.fits);
+    ok(!mbad.length, W + 'px: a region\'s board says what it teaches, from its own stops ("' + (master[0] && master[0].got) + '")' + (mbad.length ? ' — ' + JSON.stringify(mbad[0]) : ''));
     /* the moth and the chest: their cards fit the phone, ✕ included (94vw under #root's zoom did not) */
     const dlg = await pg.evaluate(async () => { const W2 = ms => new Promise(r => setTimeout(r, ms)); const out = {};
       const R = Math.random; Math.random = () => 0.05; state.devUnlock = false;
@@ -153,7 +189,7 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
     await pg.close();
   }
 
-  /* ---------- 3. a locked continent has a door, and a look ---------- */
+  /* ---------- 3. the paid continents are one quiet line, with one door ---------- */
   {
     const { pg, errs } = await boot(b, 390, 844);
     await atlas(pg, 'light', 0);
@@ -161,22 +197,25 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
       const W = ms => new Promise(r => setTimeout(r, ms)); const o = {};
       const t = (document.querySelector('.sb-content') || document.body).innerText;
       o.price = /\$\s?\d|\/\s*yr|per year/i.test(t); o.askWords = /ask a grown-up/i.test(t);
-      const doors = [...document.querySelectorAll('button[data-act="atlasAdvDoor"]')], looks = [...document.querySelectorAll('[data-act="atlasPeek"]')];
-      o.doors = doors.length; o.looks = looks.length; o.named = doors.every(x => /grown-up/i.test(x.textContent));
-      o.inside = looks.every(x => { const ov = x.closest('[style*="inset:0"]'), pr = ov.parentElement.getBoundingClientRect(), r = x.getBoundingClientRect(); return r.top >= pr.top && r.bottom <= pr.bottom; });
+      const lines = [...document.querySelectorAll('.atlas-more')], doors = [...document.querySelectorAll('[data-act="atlasAdvDoor"]')];
+      o.lines = lines.length; o.doors = doors.length; o.boards = document.querySelectorAll('.atlas-board').length;
+      o.peek = document.querySelectorAll('[data-act="atlasPeek"]').length;
+      o.said = lines.length === 1 && /^More continents come with the Advanced Pack\s*Show a grown-up$/.test(lines[0].innerText.replace(/\s+/g, ' ').trim());
+      o.door = doors.length === 1 && doors[0].tagName === 'BUTTON' && lines[0].contains(doors[0]) && /^Show a grown-up$/.test(doors[0].textContent.trim());
+      const bd = document.querySelector('.atlas-board'); o.under = !!(bd && lines[0] && lines[0].getBoundingClientRect().top >= bd.getBoundingClientRect().bottom);
+      o.tall = doors[0] ? Math.round(doors[0].getBoundingClientRect().height) : 0;
+      o.filled = doors[0] ? getComputedStyle(doors[0]).backgroundColor : '';
+      o.paidNames = /Ultra Champions|THE LAST CONTINENT|90% GATES|Advanced Rounds/.test(t);
       state.pinDlg = null; doors[0].click(); await W(300); o.pin = !!state.pinDlg; o.noSheet = !state.showTiers && state.nav === 'trail'; state.pinDlg = null; render(); await W(200);
-      document.querySelector('[data-act="atlasPeek"][data-arg="exp"]').click(); await W(300);
-      const boards = document.querySelectorAll('.atlas-board'); const exp = boards[1];
-      o.peekOpen = !exp.parentElement.parentElement.querySelector(':scope > [style*="inset:0"]') && exp.querySelectorAll('.atlas-pin').length === 6;
-      o.peekBar = !!document.querySelector('[data-act="atlasPeek"][data-arg="exp"]') && /comes with the Advanced Pack/i.test(exp.closest('.atlas-wrap').parentElement.innerText);
-      exp.querySelector('.atlas-pin').click(); await W(300); o.pinFromPeek = !!state.pinDlg && state.trailView !== 'act'; state.pinDlg = null; render(); await W(200);
-      document.querySelector('[data-act="atlasPeek"][data-arg="exp"]').click(); await W(300);
-      o.closed = !!document.querySelectorAll('.atlas-board')[1].parentElement.parentElement.querySelector(':scope > [style*="inset:0"]');
+      /* a tester sees all three continents and no line */
+      state.devUnlock = true; render(); await W(300);
+      o.devBoards = document.querySelectorAll('.atlas-board').length; o.devLine = document.querySelectorAll('.atlas-more').length; state.devUnlock = false; render();
       return o; });
-    ok(d.doors === 2 && d.looks === 2 && d.named && d.inside, 'both locked continents offer "Show a grown-up" and "Look at the map", inside their panel ' + JSON.stringify(d));
+    ok(d.lines === 1 && d.said && d.door && d.doors === 1 && d.under, 'a free child\'s Atlas says ONE quiet line under the map — "More continents come with the Advanced Pack" — with one "Show a grown-up" ' + JSON.stringify(d));
+    ok(d.boards === 1 && !d.peek && !d.paidNames, 'and draws no paid continent: one board, no "Look at the map", no Advanced Rounds or Ultra heading');
+    ok(d.tall >= 44, 'its one button is a 44px target (' + d.tall + 'px)');
     ok(d.pin && d.noSheet, '"Show a grown-up" opens the grown-up PIN — the pack is drawn only behind it');
-    ok(d.peekOpen && d.peekBar && d.closed, '"Look at the map" lifts the veil on the expedition board, says what it comes with, and "Done looking" puts it back');
-    ok(d.pinFromPeek, 'a region tapped while looking leads to the same PIN door, not into the region');
+    ok(d.devBoards === 3 && d.devLine === 0, 'a tester (or a pack holder) still sees all three continents, and no line (' + d.devBoards + ' boards)');
     ok(!d.price && !d.askWords, 'no price and no "ask a grown-up" on the child\'s Atlas (FIX-BEE v2 T3)');
     ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
     await pg.close();

@@ -12,7 +12,10 @@
      · #/continue lands exactly where Home's Continue goes;
      · ?from=hive shows "← back to my day", pointing at the Hive, and hides inside a drill;
      · (FIX2) a typed address is never swallowed by a PIN dialog or any other layer, and
-       #/journeys opens Word Journeys rather than a PIN over the screen beneath.
+       #/journeys opens Word Journeys rather than a PIN over the screen beneath;
+     · (audit v4 N2) Daily Buzz is a screen in the shell, #/daily: the top bar and tab bar around
+       its board, Play marked, Back to #/play with nothing left standing, and its keys never
+       steal what is typed into the search box.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/hash-nav.cjs                         */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -174,6 +177,33 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
     }
     await ctx.close();
   }
+  /* DAILY BUZZ IS A SCREEN IN THE SHELL (audit v4 N2). It opened as a full-screen overlay with only
+     "← Games" on it — no top bar, no tabs, no address — and Back left it standing over the next screen. */
+  ({ ctx, pg } = await open(b, URL + '#/play', errs, { width: 390, height: 844 }));
+  const daily = () => pg.evaluate(() => { const tab = document.querySelector('nav.sb-tabbar [data-arg="games"]');
+    return { h: location.hash, nav: state.nav, bar: !!document.querySelector('#root .sb-fam-bar'), tabbar: !!document.querySelector('#root nav.sb-tabbar'),
+      play: !!tab && tab.getAttribute('aria-current') === 'page', inRoot: document.querySelectorAll('#root #db-host .db-cell').length,
+      loose: [...document.body.children].filter(e => /(^|\s)db-/.test(e.className || '')).length,
+      row0: [...document.querySelectorAll('#db-host .db-row[data-r="0"] .db-cell')].map(c => c.textContent).join('') }; });
+  await pg.evaluate(() => document.querySelector('[data-act="openDaily"]').click()); await pg.waitForTimeout(700);
+  let D = await daily();
+  ok(D.h === '#/daily' && D.nav === 'daily' && D.bar && D.tabbar && D.play && D.inRoot === 30 && !D.loose,
+    'Daily Buzz opens as a screen in the shell — #/daily, the top bar and the tab bar around its board, Play marked, nothing drawn over the app (' + JSON.stringify(D) + ')');
+  for (const k of 'cat') await pg.keyboard.press(k);
+  await pg.evaluate(() => render()); await pg.waitForTimeout(150);
+  D = await daily();
+  ok(D.row0 === 'cat', 'letters typed on a keyboard land on the board and survive a re-render of the screen (' + D.row0 + ')');
+  await pg.focus('.sb-hsearch input'); await pg.keyboard.type('dog'); await pg.waitForTimeout(150);
+  const sv = await pg.evaluate(() => document.querySelector('.sb-hsearch input').value);
+  D = await daily();
+  ok(D.row0 === 'cat' && sv === 'dog', 'typing into the search box types into the search box, not the board (' + D.row0 + ' / ' + sv + ')');
+  await pg.evaluate(() => { const i = document.querySelector('.sb-hsearch input'); i.value = ''; i.blur(); });
+  await back(); D = await daily();
+  ok(D.h === '#/play' && D.nav === 'games' && !D.inRoot && !D.loose, 'Back goes to #/play and leaves nothing of Daily Buzz on screen (' + D.h + ')');
+  await pg.evaluate(() => { location.hash = '#/daily'; }); await pg.waitForTimeout(900);
+  D = await daily();
+  ok(D.nav === 'daily' && D.inRoot === 30 && D.bar && D.row0 === 'cat', 'the address #/daily opens it directly, today\'s letters still there (' + D.nav + ')');
+  await ctx.close();
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
