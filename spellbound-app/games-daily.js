@@ -4,8 +4,17 @@
    six tries, green/amber/grey deduction, and a spoiler-free
    shareable grid. No run of days is counted (FIX-BEE J2). Kid-safe:
    no dictionary rejection (any 5 letters is accepted), untimed,
-   no shaming. Self-contained — injects its own CSS, renders a
-   full-screen overlay. Exposes window.SB_DAILY.open().
+   no shaming. Self-contained — injects its own CSS and draws its
+   board into a host the app gives it (window.SB_DAILY.mount(el)).
+   IT LIVES IN THE APP'S SHELL (audit v4 N2). It used to cover the
+   whole screen with only "← Games" on it — no top bar, no tabs, no
+   route, and Back left it standing over whatever came next. Now it is
+   a screen like the rest: nav 'daily', #/daily, the family top bar and
+   tabs around it. app3 renders the page head and an empty #db-host;
+   after every app render, mount() draws the board again from the
+   state kept HERE (guesses, the letters being typed), so a re-render
+   never loses a word half-typed. Keys reach it only while it is the
+   screen and nothing is typed into a field or open over it.
    ============================================================ */
 (function () {
   // Curated answer pool — common, age-8–15-friendly 5-letter words.
@@ -47,7 +56,10 @@
     + '.db-stat b{display:block;font:800 22px var(--display,serif);line-height:1}'
     + '.db-stat span{font:600 10px var(--mono,monospace);letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#7A6E5C)}'
     + '.db-share{font:700 15px var(--body,sans-serif);background:var(--honey,#F0B429);color:#2B2117;border:none;border-radius:999px;padding:12px 26px;cursor:pointer;box-shadow:0 4px 0 #C8891B}'
-    + '@media(max-width:400px){.db-cell{width:48px;height:48px;font-size:24px}.db-k{height:46px}}';
+    + '@media(max-width:400px){.db-cell{width:48px;height:48px;font-size:24px}.db-k{height:46px}}'
+    /* in the shell the top bar and the tab bar share a phone's height with the board: the whole
+       keyboard stays above the tab bar on a 390x844 phone (keys stay 44px targets) */
+    + '@media(max-width:440px) and (max-height:900px){.db-cell{width:44px;height:44px;font-size:22px}.db-grid,.db-row{gap:6px}.db-k{height:44px}.db-body{padding:6px 10px 12px}.db-msg{font-size:13px;padding:4px 0}}';
 
   function todayIndex() {
     var d = new Date();
@@ -59,7 +71,7 @@
   function load() { try { return SB_STORE.getJSON('daily', {}) || {}; } catch (e) { return {}; } }
   function save(s) { try { SB_STORE.setJSON('daily', s); } catch (e) {} }
 
-  var overlay = null, answer = '', guesses = [], cur = '', over = false, won = false, kbState = {};
+  var overlay = null, answer = '', guesses = [], cur = '', over = false, won = false, kbState = {}, day = '', flipRow = -1, keyOn = false;
 
   function evalGuess(g) {
     var res = ['miss', 'miss', 'miss', 'miss', 'miss'], pool = answer.split('');
@@ -72,20 +84,21 @@
   function render() {
     var b = overlay.querySelector('#db-body');
     var rowsN = 6;
-    var html = '<div class="db-msg" id="db-msg">' + GREET + '</div><div class="db-grid" id="db-grid">';
+    var html = '<div class="db-msg" id="db-msg" data-live-prompt="">' + GREET + '</div><div class="db-grid" id="db-grid">';
     for (var r = 0; r < rowsN; r++) {
       html += '<div class="db-row" data-r="' + r + '">';
       var g = guesses[r], ev = g ? evalGuess(g) : null;
       for (var c = 0; c < 5; c++) {
         var ch = g ? g[c] : (r === guesses.length ? (cur[c] || '') : '');
-        var cls = ev ? (' flip ' + ev[c]) : '';
-        html += '<div class="db-cell' + cls + '"' + (ev ? ' style="animation-delay:' + (c * 90) + 'ms"' : '') + '>' + (ch || '') + '</div>';
+        /* only the row just played turns over: a re-render of the screen must not flip them all again */
+        var fl = ev && r === flipRow, cls = ev ? ((fl ? ' flip ' : ' ') + ev[c]) : '';
+        html += '<div class="db-cell' + cls + '"' + (fl ? ' style="animation-delay:' + (c * 90) + 'ms"' : '') + '>' + (ch || '') + '</div>';
       }
       html += '</div>';
     }
     html += '</div>';
     html += '<div id="db-foot" style="width:100%">' + (over ? doneHtml() : keyboardHtml()) + '</div>';
-    b.innerHTML = html;
+    b.innerHTML = html; flipRow = -1;
     if (!over) wireKeys();
     else wireShare();
   }
@@ -103,7 +116,7 @@
   }
   function doneHtml() {
     var st = load();
-    return '<div class="db-done"><h3>' + (won ? '✨ Solved it!' : 'The word was ' + answer.toUpperCase()) + '</h3>'
+    return '<div class="db-done"><h3 data-live-prompt="">' + (won ? '✨ Solved it!' : 'The word was ' + answer.toUpperCase()) + '</h3>'
       + '<div class="db-stats">'
       + '<div class="db-stat"><b>' + (st.wins || 0) + '</b><span>solved</span></div>'
       + '<div class="db-stat"><b>' + (st.played || 0) + '</b><span>played</span></div>'
@@ -123,6 +136,7 @@
     if (solved || guesses.length >= 6) { over = true; finish(); }
     paintKb();
     var st = load(); st.day = todayKey(); st.guesses = guesses; st.over = over; st.won = won; save(st);
+    flipRow = guesses.length - 1;
     render();
     if (!over) msg('');
   }
@@ -143,7 +157,7 @@
     return lines.join('\n');
   }
 
-  function msg(t) { var m = overlay && overlay.querySelector('#db-msg'); if (m) m.textContent = t; }
+  function msg(t) { var m = overlay && overlay.querySelector('#db-msg'); if (m) m.textContent = t; try { if (t && window.SB_LIVE) SB_LIVE.say([t]); } catch (e) {} }
   function flashRow() { var row = overlay.querySelector('.db-row[data-r="' + guesses.length + '"]'); if (row) { row.classList.remove('shake'); void row.offsetWidth; row.classList.add('shake'); } }
   function typeCh(ch) { if (over || cur.length >= 5) return; cur += ch; paintCur(); }
   function backCh() { if (over) return; cur = cur.slice(0, -1); paintCur(); }
@@ -167,28 +181,39 @@
     };
   }
   function onKey(e) {
-    if (!overlay) return; var k = e.key;
+    if (!overlay || !overlay.isConnected) return;
+    /* only while Daily Buzz IS the screen, with nothing open over it and nothing typed into a field
+       (the top bar's search box sits right above it now) */
+    try { if (typeof state !== 'undefined' && (state.nav !== 'daily' || state.pinDlg || state.settingsOpen || state.drawerOpen || state.walletOpen || state.famMenu)) return; } catch (x) {}
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target, k = e.key;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    /* Enter on a focused control of the app (Back, a tab) presses that control, not the word */
+    if (k === 'Enter' && t && t.closest && t.closest('button,a,[role="button"]') && !overlay.contains(t)) return;
     if (/^[a-zA-Z]$/.test(k)) { typeCh(k.toLowerCase()); }
-    else if (k === 'Backspace') { backCh(); }
-    else if (k === 'Enter') { submit(); }
+    else if (k === 'Backspace') { e.preventDefault(); backCh(); }
+    else if (k === 'Enter') { e.preventDefault(); submit(); }
   }
 
-  function close() { document.removeEventListener('keydown', onKey); if (overlay) { overlay.remove(); overlay = null; } }
-  function open() {
-    if (!document.getElementById('db-css')) { var st = document.createElement('style'); st.id = 'db-css'; st.textContent = css; document.head.appendChild(st); }
+  function begin() {
     answer = WORDS[todayIndex()];
     var s = load(); guesses = (s.day === todayKey() && s.guesses) ? s.guesses.slice() : []; cur = '';
     over = (s.day === todayKey() && s.over) || false; won = (s.day === todayKey() && s.won) || false;
-    kbState = {}; paintKb();
-    close();
-    overlay = document.createElement('div'); overlay.className = 'db-ov';
-    overlay.innerHTML = '<div class="db-top"><button class="db-back" id="db-back">← Games</button>'
-      + '<span class="db-title">Daily Buzz</span><span class="db-sub">' + todayKey() + '</span></div>'
-      + '<div class="db-body" id="db-body"></div>';
-    document.body.appendChild(overlay);
-    overlay.querySelector('#db-back').onclick = function () { close(); try { if (typeof app !== 'undefined' && app.openGames) app.openGames(); } catch (e) {} };
-    document.addEventListener('keydown', onKey);
-    render();
+    kbState = {}; paintKb(); day = todayKey(); flipRow = -1;
   }
-  window.SB_DAILY = { open: open, close: close };
+  /* Draw the board into the app's #db-host. Called after every app render while nav is 'daily';
+     today's game is read from storage once a day, then lives here between renders. */
+  function mount(el) {
+    if (!el) return;
+    if (!document.getElementById('db-css')) { var st = document.createElement('style'); st.id = 'db-css'; st.textContent = css; document.head.appendChild(st); }
+    if (day !== todayKey()) begin();
+    overlay = el;
+    el.innerHTML = '<div class="db-body" id="db-body"></div>';
+    render();
+    if (!keyOn) { document.addEventListener('keydown', onKey); keyOn = true; }
+  }
+  function close() { document.removeEventListener('keydown', onKey); keyOn = false; overlay = null; day = ''; }
+  /* the old entry point: Daily Buzz is a screen now, so opening it is going there */
+  function open() { day = ''; try { if (typeof app !== 'undefined' && app.openDaily) { app.openDaily(); return; } } catch (e) {} }
+  window.SB_DAILY = { open: open, close: close, mount: mount };
 })();

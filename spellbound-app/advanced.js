@@ -279,7 +279,9 @@
           <span style="flex:1;font-weight:700;font-size:13.5px">${t}</span>
           <span style="font-size:12px;font-weight:800;color:${done ? 'var(--good,#1f9d57)' : 'var(--muted)'}">${done ? 'ready' : m}</span></div>`;
       const whatYouGet = [
-        ['quest', 'The full 125,000-word library', 'every word, with audio — up from 40,000'],
+        /* both figures are app3's SB_COUNT (the library, and the part of it with a recorded clip —
+           the championship words have none, so "every word, with audio" was not true) */
+        ['quest', 'The full library of ' + countTxt('library') + ' words', countCap('voiced') + ' of them in a recorded voice — up from 40,000'],
         ['advmock', 'Mock Spelling Bee', 'written, vocabulary & lightning rounds'],
         ['advconcepts', 'Advanced Concepts', 'six narrated lessons — schwa rescue, stress shift, the origin tree'],
         ['advtips', 'Advanced Tips & Tricks', '36 champion techniques'],
@@ -321,7 +323,7 @@
       return `<div style="max-width:720px;margin:0 auto;animation:sb-rise .35s ease both">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><button data-act="goHome" style="color:var(--muted);font-weight:700;font-size:13px">← Home</button></div>
         <div style="display:flex;align-items:center;gap:11px;margin:6px 0 4px"><span style="display:inline-flex;color:#5B3FA6">${SBI('advanced', 30)}</span><h2 style="font-family:var(--display);font-weight:800;font-size:24px;margin:0">Advanced Mode</h2></div>
-        <p style="color:var(--muted);font-size:13.5px;margin:0 0 18px">National-bee prep from the 125,000-word library. Master the hardest words.</p>
+        <p style="color:var(--muted);font-size:13.5px;margin:0 0 18px">National-bee prep from the library of ${countTxt('library')} words. Master the hardest words.</p>
         <div style="display:grid;gap:12px">
           ${seg('ucj', 'ultraJourney', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
           ${seg('mock', 'mockBee', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}

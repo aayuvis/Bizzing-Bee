@@ -600,10 +600,24 @@ function weekProgress(c){ c=c||active(); const t0=weekStartTs(); let stops=0, wo
   try{ const M=c.mast||{}; for(const k in M){ const r=M[k]; if(r&&r.b>=2&&!r.leg&&+r.mt>=t0) words++; } }catch(e){}
   return { stops, words }; }
 /* Where the next stop sits in its own region: "stop 3 of 12". The region's count is small and
-   concrete — not the 102-stop road (CLAUDE: never show a speller how long the whole road is). */
-function regionPos(nx){ try{ const T=window.SB_TRAIL; if(!T||!nx||nx.kind!=='unit') return null;
-    const units=(T.honey&&T.honey.units)||[]; const u=units.find(x=>x.id===nx.arg); if(!u) return null;
-    const inAct=units.filter(x=>x.act===u.act); const i=inAct.findIndex(x=>x.id===u.id); return i<0?null:{ n:i+1, of:inAct.length }; }catch(e){ return null; } }
+   concrete — not the 102-stop road (CLAUDE: never show a speller how long the whole road is).
+   It is counted EXACTLY as the Atlas counts the region's pin ("8/13 stops", trail.js seq()):
+   the stops THIS tier walks (a Honey unit is on the road only on its laps) plus the checkpoint
+   after every Nth of them. It used to count the act's units on every tier and no checkpoints,
+   so Home said "stop 8 of 11" beside a Meadow pin that said 13 (audit v4 H2). trail.js keeps
+   seq() private; tests/one-count.cjs holds this reading to the Atlas's pins on all three tiers. */
+function regionPos(nx){ try{ const T=window.SB_TRAIL; if(!T||!nx||nx.allDone) return null;
+    const isChk=nx.kind==='chk'; const arg=String(nx.arg||'');
+    const exp=isChk?arg.split('|')[0]==='exp':arg.charAt(0)==='x';
+    const acts=(exp?(T.expedition||{}).expeds:(T.honey||{}).acts)||[];
+    const units=(exp?(T.expedition||{}).units:(T.honey||{}).units)||[];
+    const chkId=isChk?arg.split('|')[1]||'':''; const every=(T.rules&&T.rules.checkpointEvery)||4;
+    const act=acts.find(a=>isChk?a.id===chkId.split(':')[0]:(a.units||[]).indexOf(arg)>=0); if(!act) return null;
+    const lap=nx.lap||1, keys=[]; let n=0;
+    for(const id of (act.units||[])){ const u=units.find(x=>x.id===id)||{};
+      if(!exp && !(u.laps||[u.lap||1]).includes(lap)) continue;
+      keys.push(id); n++; if(n%every===0) keys.push(act.id+':'+n); }
+    const i=keys.indexOf(isChk?chkId:arg); return i<0?null:{ n:i+1, of:keys.length }; }catch(e){ return null; } }
 /* THE BUDDY'S HELLO (FIX-BEE v2 B5): built from what the child last DID — the last missed word,
    words due again, this week's stops and masteries, the last trap beaten — with the buddy's own
    line as one voice among them. It changes once per visit (never on a re-render) and never says
@@ -615,6 +629,7 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
   try{ const wp=weekProgress(c); if(wp.stops||wp.words) out.push({k:'week',t:`This week: ${wp.stops} stop${wp.stops===1?'':'s'} and ${wp.words} word${wp.words===1?'':'s'} mastered. Nice work, ${nm}.`}); }catch(e){}
   try{ const tb=Object.keys(c.trapsBeaten||{}).length; if(tb) out.push({k:'trap',t:`You have beaten ${tb} trap word${tb===1?'':'s'} — words that once tripped you up.`}); }catch(e){}
   try{ const nx=SB_SHELL.nextStep(); if(nx&&nx.ready&&!nx.allDone&&nx.title) out.push({k:'next',t:`Next up: ${trunc(nx.title,40)}. Ready when you are, ${nm}.`}); }catch(e){}
+  try{ const lv=oneLevel(c); if(lv&&lv.label) out.push({k:'level',t:`You are at ${lv.label}, ${nm}. Every word you spell right moves it.`}); }catch(e){}
   let line=''; const who=c.avatar||'bizzy';
   try{ const G=window.SB_AV_GREETINGS||{}; line=G[who]||''; }catch(e){}
   if(!line){ try{ if(typeof SB_AV_CARD==='function'){ const d=SB_AV_CARD(who); line=(d&&d.greeting)||''; } }catch(e){} }
@@ -624,6 +639,11 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
 let _greetVisit=null;   /* one pick per visit to Home — a re-render keeps it */
 function homeGreet(c){ c=c||active(); const C=homeGreetCands(c); const key=(c&&c.name||'')+'|'+state.nav;
   if(_greetVisit&&_greetVisit.key===key&&C.some(x=>x.k===_greetVisit.k)) return C.find(x=>x.k===_greetVisit.k).t;
+  /* PICK FROM ALL THE EVIDENCE, OR WAIT (audit v4 B5). The next stop is known only once trail-data.js
+     lands, which is after Home's first paint — so a visit's one pick, made at that paint, chose from
+     what boot had. On a quiet day that was the buddy's line alone, and the same hello came back every
+     visit. Until the trail is in (loaded or failed), the bubble holds its place instead (null). */
+  try{ if(window.SB_LAZY&&!SB_LAZY.ready('trail')) return null; }catch(e){}
   /* the rotation is a DEVICE note (sb_greet: {name:[n,k]}), not part of the child's record — a hello
      must never change what a backup holds */
   let G={}; try{ G=JSON.parse(SB_STORE.get('greet')||'{}')||{}; }catch(e){}
@@ -1211,7 +1231,18 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'undeflowered','unmaiden','unorgasmic','unprostituted','unretarded','unsexed','unsexualized',
   'untermensch','unvirginal','upskirt','upskirting','uranist','urning','urophilia','vajazzle',
   'venereous','voetsek','voyeuristic','vulvae','vulvas','wapanese','wasbian','whigger','whitey',
-  'wigger','wog','wops','yid','yids','yoni','yonic','zionazi','zoosexual']);
+  'wigger','wog','wops','yid','yids','yoni','yonic','zionazi','zoosexual',
+/* ---- the owner's call on the words under review, 4 Oct 2026 ----
+   The v4 audit found the served corpus still defining idiot, moron and retard as "a person of
+   subnormal intelligence". These six go everywhere (cretins and morons were already above).
+   `retard` had been KEPT under its verb sense through CORE_FIX; the owner chose deletion, because
+   the app says each word aloud to a child, which is the reasoning block 1c records for `rape`.
+   `retarding` and `retardant` stay — tests/word-bank.cjs holds them. Sixteen more (autism,
+   heathen, lunatic, dumb, pygmy…) were KEPT and their glosses rewritten: CORE_FIX below. Deleted
+   from the served stores at rest by tools/strike-served.cjs; tests/struck-words.cjs guards both. */
+  'retard','retards','idiots','idiotic','moronic','imbeciles',
+  /* and the insult forms of words already struck, same day, same decision */
+  'idiotically','imbecilic','cretinous','cretinism']);
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
    should ever be set: bare given names and surnames, misspellings, mechanical affix
@@ -1517,13 +1548,56 @@ const CORE_FIX = {
   madhouses: 'places full of noise and wild confusion',
   nuthouse: 'a scene of complete uproar and confusion',
   nuthouses: 'scenes of complete uproar and confusion',
-  /* the generated gloss was the noun sense, which is a slur for a disabled
-     person; the verb is an ordinary word and the spelling is worth knowing */
-  retard: 'to slow something down or hold back its progress',
+  /* retard / retards were repaired here under their verb sense until 4 Oct 2026, when the owner
+     had them deleted (CORE_STRIKE, above) — a repair written for a struck word is dead code. */
   /* the bank glosses this as sexual violence; the everyday sense is the only
      one a child needs, and repairing it keeps a real word in the library */
   ravishing: 'delightfully beautiful; lovely enough to take your breath away',
-  retards: 'slows something down or holds back its progress'
+  /* ---- KEPT AND REWRITTEN, the owner's call, 4 Oct 2026 ----
+     Real words a speller meets, glossed by the generator in clinical or contemptuous terms
+     ("an abnormal absorption with the self", "a person who does not acknowledge your god", "an
+     insane person"). Plain, accurate, kind; no clinical stigma; the mainstream dictionary sense.
+     The served shards carry the same text at rest (and words-patch.js's DEF holds it there), so
+     the word card says the same thing whichever bank answers. tests/struck-words.cjs holds it. */
+  autism: 'a lifelong developmental difference that affects how a person communicates and experiences the world',
+  autistic: 'having a lifelong developmental difference that affects how a person communicates and experiences the world',
+  schizophrenia: 'a serious long-term mental illness that can change how a person thinks, feels and sees what is real',
+  schizophrenic: 'a person who lives with a serious long-term mental illness that can change how they think, feel and see what is real',
+  heathen: 'an old word, often used unkindly, for someone who does not follow a widely held religion, as seen by people who do',
+  heathens: 'an old word, often used unkindly, for people who do not follow a widely held religion, as seen by people who do',
+  infidel: 'an old word, often used unkindly, for someone who does not follow a particular religion, usually the speaker’s own',
+  infidels: 'an old word, often used unkindly, for people who do not follow a particular religion, usually the speaker’s own',
+  lunatic: 'an informal and often unkind word for someone who behaves in a wild, foolish or reckless way',
+  lunatics: 'an informal and often unkind word for people who behave in a wild, foolish or reckless way',
+  maniac: 'an informal and often unkind word for someone who behaves in a wild or reckless way; also someone who is extremely keen on something',
+  insane: 'wildly foolish or unreasonable (an informal use); it is unkind when used to describe a person who is ill',
+  pygmy: 'a kind of animal or plant that is much smaller than the usual kind',
+  dumb: 'not able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolish',
+  hysteria: 'wild, uncontrollable fear or excitement, often spreading through a crowd',
+  hysterical: 'overcome by wild, uncontrollable feeling such as fear or excitement; informally, also extremely funny',
+  /* the same decision, applied to the forms the first pass left: a word that names a person by a
+     condition says "a person who has …", and a word used unkindly says so */
+  dumbness: 'the state of not being able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolishness',
+  madman: 'an informal and often unkind word for a man who behaves in a wild or reckless way',
+  madmen: 'an informal and often unkind word for men who behave in a wild or reckless way',
+  maniacs: 'an informal and often unkind word for people who behave in a wild or reckless way; also people who are extremely keen on something',
+  lunacy: 'wild foolishness; an old word for madness, from a belief that the moon could affect people’s minds',
+  bedlamite: 'an old, unkind word for a person thought to be mad; it comes from the name of a London hospital for people with mental illness',
+  gentile: 'a person who is not Jewish',
+  gentiles: 'people who are not Jewish',
+  psychotic: 'a person who has psychosis, an illness that can make it hard to tell what is real from what is not',
+  paranoid: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+  paranoiac: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+  leper: 'a person who has leprosy; the word is now considered hurtful, and “a person with leprosy” is preferred',
+  lepers: 'people who have leprosy; the word is now considered hurtful, and “people with leprosy” is preferred',
+  lazar: 'an old word for a person who has leprosy',
+  arthritic: 'a person who has arthritis, a condition that makes the joints painful and stiff',
+  paretic: 'a person who has paresis, a weakness or partial loss of movement in part of the body',
+  igloo: 'a dome-shaped shelter built from blocks of snow, traditionally by the Inuit',
+  tupek: 'tent that is an Inuit summer dwelling',
+  tupik: 'tent that is an Inuit summer dwelling',
+  /* glossed "like a coquette" — a struck word — so the meaning went with it */
+  flirtatious: 'behaving in a playful way that shows you like someone'
 };
 /* ---- slurs ----
    SB_UNSAFE_RE is a list of specific strings, so it caught 22 of the 210 entries
@@ -1629,7 +1703,7 @@ function loadFullLibrary(then){ if(window.SB_FULL){ fullWords(); _fullState='loa
     h.onload=()=>{ fullWords(); _wdb=null; render(); };
     h.onerror=()=>{};
     document.head.appendChild(h);
-    if(then) then(); render(); flash('Full library ready — 125,000 words 📚'); };
+    if(then) then(); render(); flash('Full library ready — '+countTxt('library')+' words 📚'); };
   s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
   document.head.appendChild(s); }
 /* ---- Word Finder: search the whole library, open a learn card, add to lists ---- */
@@ -1657,6 +1731,52 @@ function suggestWords(q, n){ q=nkey((q||'').trim()); n=n||7; if(q.length<2) retu
       else if(contains.length<n && k.indexOf(q)>0){ seen.add(k); contains.push(r); } }
   }
   return exact.concat(starts, contains).slice(0,n); }
+/* ---- The header search finds PLACES too (audit v4 C4) ----
+   It returned dictionary words only: "meadow" found a gloss for hay, and "grand prix", "roman
+   forum" and "quotes" found nothing. A place is an Atlas region or stop, an arcade game, a
+   concept chapter or a Library tool, and its row opens it through the SAME opener a tap uses —
+   the tile's own act and arg, or the route's (#/atlas/…, #/stop/…, #/concepts/…) — so a locked
+   stop, a plan lock or the grown-up PIN stands exactly as it does for the tap. Keys, not
+   positions, go in the row: the index is rebuilt when the Atlas or the concept course lands,
+   and a row drawn before that must still open the place it names.
+   It runs per keystroke beside suggestWords, so the index (~400 short titles) is built once
+   from live data and matching is one word-prefix test per title. */
+const LIB_DOORS=[['Concepts','setNav','concepts'],['Theme Journeys','setNav','themes'],['Vocabulary','openVocab',''],
+  ['Idioms & Similes','setNav','figurative'],['Bizzing Trivia','openTrivTrain',''],['The Sound Alphabet','openIpaTrain',''],
+  ['Typing Trainer','openTyping',''],['Quotes & Poems','openQuotes','']];   // the Library's tiles, act for act (viewExplore)
+const placeKey=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+let _placeIdx=null;
+function placeIndex(){ if(_placeIdx) return _placeIdx;
+  const P=[], seen=new Set(); const add=(kind,t,go)=>{ const k=placeKey(t); if(!k||seen.has(k)) return; seen.add(k); P.push({kind,t,k,go,rank:P.length}); };
+  try{ const T=window.SB_TRAIL;
+    if(T&&T.honey){ (T.honey.acts||[]).forEach(a=>add('Word Atlas region',String(a.title||'').replace(/^Act [IVXLC]+\s*·\s*/,''),'r|honey|'+a.id)); } }catch(e){}
+  LIB_DOORS.forEach(([t,a,g])=>add('Library',t,'a|'+a+'|'+g));
+  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Buzz','openDaily',''],['Bee Trivia','openTrivia',''],['Magic Squares','playGame','magic']]
+      .concat((window.SB_ARCADE_GAMES||[]).map(g=>[g.n,'arcadeMenu',g.k]), GAMES.map(g=>[g.name,'playGame',g.type]))
+      .forEach(([t,a,g])=>{ if(typeof app[a]==='function') add('Arcade game',t,'a|'+a+'|'+g); }); }catch(e){}
+  try{ const T=window.SB_TRAIL;
+    if(T&&T.honey){ (T.honey.units||[]).forEach(u=>{ const raw=String(u.title||''); const cut=raw.indexOf(' — '); add('Word Atlas stop',cut>0?raw.slice(0,cut):raw,'u|'+u.id); }); } }catch(e){}
+  try{ const ch=((window.SB_CONCEPTS||{}).chapters||[]).concat(((window.SB_ADV_CONCEPTS||{}).chapters||[]));   // state.conceptData's order — the route's index
+    ch.forEach((x,i)=>{ if(x&&x.title) add('Concept chapter',x.title,'c|'+i); }); }catch(e){}
+  if(window.SB_TRAIL) _placeIdx=P;   // keep rebuilding until the Atlas is in
+  return P; }
+try{ window.addEventListener('sb-lazy',e=>{ if(/^(trail|concepts|advConcepts)$/.test(e&&e.detail)) _placeIdx=null; }); }catch(e){}
+function suggestPlaces(q, n){ q=placeKey(q); n=n||3; if(q.length<3) return [];
+  const out=[];
+  for(const p of placeIndex()){ const i=(' '+p.k).indexOf(' '+q); if(i<0) continue;
+    out.push({place:p.go, w:p.t, d:p.kind, s:(p.k===q?0:(i===0?1:2))*1e4+p.rank}); }
+  return out.sort((a,b)=>a.s-b.s).slice(0,n); }
+/* The bar's list: an exact word first, then up to three places, then the other words — seven rows. */
+function headerSuggest(q){ const pl=suggestPlaces(q,3); const ws=suggestWords(q,7-pl.length);
+  const k=nkey((q||'').trim()); const ex=ws.filter(r=>nkey(r.w)===k);
+  return ex.concat(pl, ws.filter(r=>nkey(r.w)!==k)).slice(0,7); }
+/* Open a place by its key, through the opener a tap on it uses. */
+function openPlace(key){ const p=String(key||'').split('|');
+  if(p[0]==='r'){ lazyNeed('atlas',()=>app.trailAct(p[1]+'|'+p[2])); return; }                 // the pin's act — #/atlas/<crs>/<act>
+  if(p[0]==='u'){ lazyNeed('atlas',()=>app.trailUnit(p[1])); return; }                         // #/stop/<id>: the frontier lock holds
+  if(p[0]==='c'){ lazyNeed('concepts',()=>{ try{ loadConcepts(); }catch(e){}                   // #/concepts/<i>: a locked chapter goes where a tap sends it
+      if(state.conceptData&&state.conceptData[+p[1]]) app.openConcept(+p[1]); else app.setNav('concepts'); }); return; }
+  if(p[0]==='a'&&typeof app[p[1]]==='function'){ if(p[2]) app[p[1]](p[2]); else app[p[1]](); } }
 /* ---- word DB / coach ---- */
 let _wdb = null;
 function wordDB(){ if(_wdb) return _wdb; const m=new Map();
@@ -1694,13 +1814,25 @@ function settled(key,period,pick){
 }
 // Word of the hour — a rich, difficult word that rotates every hour, deterministically,
 // so every speller on the same hour sees the same gem. Pool = hard, fully-described words.
+/* WHAT HOME MAY PUT IN FRONT OF EVERY CHILD (audit v4, B8: 68 raw-gloss defects and
+   `schizophrenia` were in this pool). A gloss must pass SB_GLOSS_OK (words-patch.js — no
+   "(domain)" label, no "is …" fragment, no WordNet quote marks, no spelling of its own word);
+   nothing struck (CORE_STRIKE / CORE_CUT) or held for the owner (SB_WORDS_HELD); no
+   capitalised headword; and rarity band `y` 6 or under — the bands above that are dictionary
+   tail (abdominoscopy, adscititious) that no eight-year-old's Home should open on. The pool is
+   ~700 words, a month of hours. No definition is written here. Guard: tests/struck-words.cjs. */
+function wohFit(e){ if(!e||!e.w||!e.d||!e.p) return false; const k=String(e.w).toLowerCase();
+  if(/^[A-Z]/.test(e.w)||CORE_STRIKE.has(k)||CORE_CUT.has(k)) return false;
+  if((window.SB_WORDS_HELD||[]).indexOf(k)>=0) return false;
+  if(typeof window.SB_GLOSS_OK==='function'&&!SB_GLOSS_OK(e.d,e.w)) return false;
+  return !(e.y>6); }
 let _wohPool=null;
 function wohPool(){ if(_wohPool) return _wohPool; const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const out=[];
   for(const e of src){ if(!e||!e.w||!e.d||!e.p||!e.s) continue; if(/[^a-zA-Z]/.test(e.w)) continue;
     const len=e.w.length; if(len<7||len>13) continue;
     // Prefer vetted bee words (bee-probability score) at a challenging-but-real level.
-    const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good) out.push(e); }
-  _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7); return _wohPool; }
+    const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good&&wohFit(e)) out.push(e); }
+  _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7&&wohFit(e)); return _wohPool; }
 function wordOfHour(){
   const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
   return settled('woh',hr,()=>{ const pool=wohPool(); if(!pool.length) return null;
@@ -1961,7 +2093,7 @@ function coachCatalog(){
     { key:'nsf500',     label:'The Mighty 500',          sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
     { key:'vocab26',    label:'Meaning Masters',         sub:'Practice for the 2026 junior vocabulary final · 1,000 words', words:st.vocab26 },
     { key:'nsf',        label:'The Champion’s Vault',    sub:'17,000-word competition library',       words:nsf },
-    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 125,000 (loads on first use)', words:(window.SB_FULL||nsf) },
+    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · '+countTxt('library')+' (loads on first use)', words:(window.SB_FULL||nsf) },
     { key:'hardest',    grp:'tricky', label:'Beastly Words',           sub:'Highest-difficulty spellers + championship winners', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
     { key:'trickiest',  grp:'tricky', label:'Sneaky Spellings',        sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
     { key:'latin',      grp:'origins',label:'Latin Legends',           sub:'Words with roots from Latin',           words:st.latin },
@@ -2199,7 +2331,7 @@ const app = {
     app._finishOnb(); set({screen:'app', nav:'home'});
     /* A8 (FIX-BEE v2): the first thing a new speller does is SPELL — one spoken word, right inside
        the first minute, celebrated — and then the first Atlas lesson through the one next step. */
-    try{ app.firstWord(); }catch(e){ try{ app.goNext(); }catch(e2){} }
+    try{ app.firstWord(); }catch(e){ try{ app.goStep(); }catch(e2){} }
     /* If they picked a paid plan on the landing page, land them back on it rather
        than dropping them at the bottom of the ladder to find it again. The tier is
        NOT applied here — nobody has paid yet; the sheet is where that happens. */
@@ -2230,11 +2362,11 @@ const app = {
     if(ok){ f.done=true; f.miss=false; addCoins('answer'); sfx('correct'); try{ burstConfetti(200); }catch(e){} try{ SB_SHELL.milestone&&SB_SHELL.milestone('first-word'); }catch(e){} save(); render(); return; }
     /* a miss HOLDS: the letters and the why, and the child types it again */
     f.miss=f.typed||' '; f.typed=''; sfx('wrong'); render(); },
-  fwDone:()=>{ state.fw=null; try{ app.goNext(); }catch(e){ app.setNav('home'); } },
+  fwDone:()=>{ state.fw=null; try{ app.goStep(); }catch(e){ app.setNav('home'); } },
   ltSay:()=>{ const lt=state.lt; if(lt&&lt.words[lt.i]) say(lt.words[lt.i].w); },
   ltType:(v)=>{ state.lt.typed=v; },
   ltKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.ltEnter(); } },
-  ltSkip:()=>{ state.lt=null; flash('No problem — starting at Level 1. You can climb fast!'); app.goNext(); },
+  ltSkip:()=>{ state.lt=null; flash('No problem — starting at Level 1. You can climb fast!'); app.goStep(); },
   ltEnter:()=>{ const lt=state.lt; const w=lt.words[lt.i]; if(!w) return; const ok=sameSpelling(lt.typed,w.w);
     logBand(w,ok);
     if(ok){ lt.ok++; sfx('correct'); } else { lt.fails++; sfx('wrong'); }
@@ -2248,7 +2380,7 @@ const app = {
     c.band=c.bandSeed=Math.max(1,Math.min(9,lt.placed||1));            // one result, one truth: the test IS the Band
     getList(c,'journey').stage=ltStageForBand(c.band); c.activeList='journey'; save();
     sfx('win'); burstConfetti(110); lt.done=true; render(); },
-  ltGo:()=>{ state.lt=null; app.goNext(); },
+  ltGo:()=>{ state.lt=null; app.goStep(); },
   // theme / mode
   pickTheme:(id)=>{ if(!isThemeUnlocked(id)){ app.buyTheme(id); return; } const children=state.children.slice(); if(children[state.activeIdx]) children[state.activeIdx]={...children[state.activeIdx],theme:id}; set({theme:id, children}); },
   /* A locked world goes to the Shop's Worlds tab, where its fixed price is printed (FIX-BEE v2). */
@@ -2288,6 +2420,7 @@ const app = {
     if(key==='progress'&&state.progTab!=='me') state.progTab='me';   // the Parent tab must ask for the PIN again (FIX-BEE M3)
     if(key==='concepts'){ lazyNeed('concepts'); loadConcepts(); state.conceptView='all'; state.conceptTier=currentTier(); state.conceptPage=0; }
     if(key==='figurative') lazyNeed('figurative');
+    if(key==='quotes') lazyNeed('quotes');   /* #/quotes reaches the page through here, not openQuotes */
     if(key==='feed'&&!state.feedOff) lazyNeed(['feed','atlas']);   /* My Feed: engine, cards and screen arrive at its door (boot-lazy `feed`) */
     if(key==='themes'||key==='journeys') lazyNeed(['themes','lists']);
     if(key==='adv') lazyNeed('advanced');
@@ -2300,8 +2433,8 @@ const app = {
     if(p.typed.length===4 && p.make){
       if(!p.first){ p.first=p.typed; p.typed=''; p.wrong=false; render(); return; }
       if(p.typed!==p.first){ p.first=null; p.typed=''; p.wrong=true; try{sfx('wrong');}catch(e){} render(); return; }
-      state.parentPin=p.typed; save(); flash('Grown-up PIN set ✓'); }
-    if(p.typed.length===4){ if(p.typed===state.parentPin){ const fn=p.next; state.pinDlg=null; p.wrong=false;
+      state.parentPin=SB_STORE.pinMake(p.typed); save(); flash('Grown-up PIN set ✓'); }   /* kept salted and hashed, never as the digits (store.js, audit v4 Q1) */
+    if(p.typed.length===4){ if(SB_STORE.pinCheck(p.typed,state.parentPin)){ const fn=p.next; state.pinDlg=null; p.wrong=false;
         /* a pass is good for whatever it opens on this same tick — the plan sheet's own guard in
            render() reads it, so a gated opener is not asked twice */
         state._pinPass=true; try{ fn ? fn() : render(); } finally { state._pinPass=false; } }
@@ -2450,9 +2583,11 @@ const app = {
   cloudAdd:(i)=>{ const row=(state.cloudList||[])[+i]; if(!row) return;
     const nEl=document.getElementById('cldn-'+i), aEl=document.getElementById('clda-'+i);
     const nm=((nEl&&nEl.value)||'').trim()||'Speller';
-    const age=Math.max(4,Math.min(18,+((aEl&&aEl.value)||9)||9));
+    /* an age RANGE, as onboarding and Settings ask (AGE_BANDS): c.ageBand is the value of record
+       and c.age its midpoint (setAgeBand) — this sheet used to take an exact age in a number box */
+    const band=(AGE_BANDS.find(b=>b.k===((aEl&&aEl.value)||''))||bandForAge(9)).k;
     if((state.children||[]).some(c=>c.cid===row.row.id)){ flash('That speller is already on this device'); return; }
-    const kid=Object.assign({}, row.child, {name:nm, age:age});
+    const kid=Object.assign({}, row.child, {name:nm}); setAgeBand(kid, band);
     state.children=(state.children||[]).concat([kid]); save();
     flash(esc(nm)+' restored'); set({cloudSheet:null, cloudList:null}); },
   /* Deleting a speller. COPPA gives a parent the right to delete their child's
@@ -2733,14 +2868,17 @@ const app = {
     state.finderQ=q; state.finderSel=null; state.hq=''; state.hqSel=-1; app.openFinder(); },
   hqPick:(w)=>{ if(drillLive()) return; state.finderQ=w||''; state.hq=''; state.hqSel=-1; state.finderSel=null;
     app.openFinder(); try{ app.finderPick(w); }catch(e){} },
-  hqKey:(e)=>{ if(drillLive()) return; const list=suggestWords(state.hq,7); const n=list.length;
+  /* a place row (audit v4 C4): close the bar, then open it the way a tap on it would */
+  hqPlace:(key)=>{ if(drillLive()) return; state.hq=''; state.hqSel=-1; render(); openPlace(key); },
+  hqKey:(e)=>{ if(drillLive()) return; const list=headerSuggest(state.hq); const n=list.length;
     if(e.key==='ArrowDown'){ e.preventDefault(); state.hqSel=n?((state.hqSel+1+n+1)%(n+1))-0:-1; if(state.hqSel>=n) state.hqSel=-1; render(); return; }
     if(e.key==='ArrowUp'){ e.preventDefault(); state.hqSel=n?(state.hqSel<=-1?n-1:state.hqSel-1):-1; render(); return; }
     if(e.key==='Escape'){ state.hq=''; state.hqSel=-1; render(); try{ e.target.blur(); }catch(_){} return; }
     if(e.key!=='Enter') return;
     e.preventDefault();
     // Enter takes the highlighted suggestion if there is one, otherwise the typed query
-    if(state.hqSel>=0 && list[state.hqSel]) app.hqPick(list[state.hqSel].w); else app.hqGo(); },
+    const it=state.hqSel>=0?list[state.hqSel]:null;
+    if(it&&it.place) app.hqPlace(it.place); else if(it) app.hqPick(it.w); else app.hqGo(); },
   finderPick:(w)=>{ const r=finderResults(state.finderQ).find(x=>nkey(x.w)===nkey(w)) || wordDB().get(nkey(w)); if(r){ state.finderSel=r; try{window.scrollTo(0,0);}catch(e){} render(); } },
   finderBack:()=>set({finderSel:null}),
   finderLoadFull:()=>loadFullLibrary(()=>{}),
@@ -2751,7 +2889,7 @@ const app = {
   finderCreateAdd:()=>{ const c=active(); const w=state.finderSel; if(!w) return; const name=(state.finderName||'').trim()||'My words';
     c.builtLists=c.builtLists||{}; const key='built_'+Date.now().toString(36);
     c.builtLists[key]={ label:name, ws:[w.w] }; state.finderName=''; save(); sfx('win');
-    flash('New list “'+name+'” created with “'+w.w+'” — find it in Practice ✓'); render(); },
+    flash('New list “'+name+'” created with “'+w.w+'” — find it in the Word Gym ✓'); render(); },
   reportWord:(w)=>set({reportW:w}),
   reportClose:()=>set({reportW:null}),
   /* ---- 🐞 the bug sidebar. OFFLINE by design (COPPA: the app transmits nothing):
@@ -3132,7 +3270,9 @@ const app = {
      now played straight from the arcade (arcadePlay). This is kept as a safe no-op so any
      stale saved deep-link or cached handler lands somewhere harmless rather than throwing. */
   openSaga:()=>{ set({nav:'games', screen:'app'}); },
-  openDaily:()=>{ clearGTimer(); if(window.SB_DAILY) SB_DAILY.open(); },
+  /* Daily Buzz is a screen in the shell (audit v4 N2): nav 'daily', #/daily, the top bar and tabs around
+     it, Back to Play. The board is games-daily.js's own, drawn into #db-host after each render. */
+  openDaily:()=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; app.setNav('daily'); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
     const old=document.getElementById('dbg-eng'); if(old) old.remove();
@@ -3406,6 +3546,9 @@ const app = {
     document.body.appendChild(el);
     el.querySelector('#arc-back').onclick=arcadeClose;
     const host=el.querySelector('#arc-host');
+    /* P6: the engine draws its own clue and end card; say them as they change */
+    try{ let lt=0; const mo=new MutationObserver(()=>{ if(!lt) lt=setTimeout(()=>{ lt=0; liveScanArc(host); },160); });   /* throttled, not debounced: a HUD ticking every frame must not starve it */
+      mo.observe(el,{subtree:true,childList:true,characterData:true}); el._liveMo=mo; _liveSaid=''; }catch(e){}
     const onUnlock=()=>{};   /* a stage reached inside a game pays nothing extra — its words paid as they were spelled */
     g._e0=earnedSoFar();
     // one round = one word log, so the result card reports this play and not the last one
@@ -3426,7 +3569,7 @@ const app = {
     clearGTimer(); bizzClose();
     const el=document.createElement('div'); el.className='bz-play'; _bizzEl=el;
     el.innerHTML='<div class="bz-top"><button class="bz-back" id="bz-back">← Arcade</button>'
-      +'<span class="bz-title">Who Wants to Be a Bizzillionaire</span></div>'
+      +'<span class="bz-title"><span class="bz-title-pre">Who Wants to Be a </span>Bizzillionaire</span></div>'
       +'<div class="bz-body"><div class="bz-stage"></div><div class="bz-ladder"></div></div>';
     document.body.appendChild(el);
     el.querySelector('#bz-back').onclick=bizzClose;
@@ -3958,14 +4101,23 @@ try{ const _warmGo=()=>{ ['pointerdown','keydown'].forEach(ev=>window.removeEven
   ['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev,_warmGo,{capture:true,passive:true})); }catch(e){}
 
 const SB_FACTS = {
-  clips: 128491,        // voice/w/*.mp3, every word in both libraries
-  library: 128197,      // words-full.js
+  /* Figures for data the opening page never loads. Every count of something the page DOES
+     hold — avatars, arcade games, evolution forms, trivia — is SB_COUNT's now (below), read
+     from the live data; these are checked against their files by tests/one-count.cjs. */
+  /* The LIBRARY and the VOICE are two claims and two numbers (CLAUDE.md, "The 130k
+     library"): the library is every word a child can open — the 130k library after the QC
+     strike lists and safeWord, with the championship shard and the served corpus — and the
+     voice is the part of it that has a recorded clip (the shard ships none, and the clip
+     manifest still lists words the sweeps have since struck, which no child can reach).
+     Both are kept as the honest ROUND FLOOR, not the count: tests/word-bank.cjs measures the
+     live library and its clips on every run and fails unless each is that count's floor —
+     library to 5,000s (127,907 on 4 Oct 2026 → 125,000), voice to 1,000s (125,894 →
+     125,000; it read "over 128,000" while only 125,894 of the words a child can reach had
+     a clip). */
+  library: 125000,
+  voiced: 125000,
   core: 40979,          // the core graded library
-  engines: 8,           // SB_ARCADE_GAMES — the playable arcade games
   chapters: 31, acts: 6,   // legacy story counts; kept for any remaining references, no longer marketed
-  avatars: 211, packs: 20,
-  evoForms: 120,        // 12 worlds x 10 stages
-  trivia: 31159, triviaThemes: 29,
   scripps: 108,         // SB_SCRIPPS — national winning words, 1925-2026
   journeys: 100,        // Word Journeys lessons
   techniques: 36,       // SB_ADV_TIPS
@@ -3980,6 +4132,52 @@ const sbFmt = n => n.toLocaleString('en-US');
    pinned 79 words above the real number is one cleanup away from being false,
    and cannot be wrong by one clip in a screenshot six months from now. */
 const sbOver = n => 'over ' + sbFmt(Math.floor(n / (n >= 10000 ? 1000 : 10)) * (n >= 10000 ? 1000 : 10));
+
+/* ONE COUNT FOR EVERY COLLECTION (audit v4 H2/A2). The same collection used to print a
+   different number on every screen: quotes 1,200 (typed on the Library tile) / 135 (the boot
+   file, read before the library landed) / 5,189; trivia 31,147 / 6,604 / 12,462 (whatever
+   shards happened to be in memory); idioms 2,350 / 2,370; and the opening page sold "211
+   characters" against a catalogue of 96. Every screen asks SB_COUNT now, and SB_COUNT asks
+   the live data:
+     · held on the page → exact (avatars, arcade games, evolution forms);
+     · arrives lazily → counted once it HAS arrived and not before: null means "print no
+       number", never a partial one (quotes, idioms);
+     · trivia is sharded by level and never wholly in memory, so it is a round FLOOR of the
+       index the shards are held to (data-lint) — the same figure on every screen;
+     · data the opening page never loads (the concept course, the champion words) prefers
+       the live file when it is in and falls back to SB_FACTS, which tests/one-count.cjs
+       holds equal to that file.
+   Never type a count into copy: add a line here. tests/one-count.cjs loads the screens. */
+const SB_COUNT = {
+  avatars: () => { try { return SB_AVATARS.catalogue().length; } catch (e) { return 0; } },
+  games: () => (window.SB_ARCADE_GAMES || []).length,
+  /* worlds4.js registers three of the eight worlds and runs AFTER app3's first render: until it
+     has (SB_W4), the honest count is "not yet", not five */
+  worlds: () => { try { return window.SB_W4 ? THEMES.length : null; } catch (e) { return null; } },
+  evoForms: () => { try { return window.SB_W4 ? THEMES.reduce((n, t) => n + ((EVO[t.id] || []).length), 0) : null; } catch (e) { return null; } },
+  trivia: () => { try { const B = (window.SB_TRIVIA || {}).byLevel || {}; let n = 0; for (const k in B) n += (B[k] || 0); return n; } catch (e) { return 0; } },
+  quotes: () => { try { return (window.SB_LAZY && SB_LAZY.ready('quotes')) ? (window.SB_QUOTES || []).length : null; } catch (e) { return null; } },
+  idioms: () => (window.SB_FIG ? figPool().length : null),
+  conceptsFree: () => (((window.SB_CONCEPTS || {}).chapters || []).length || SB_FACTS.conceptsFree),
+  conceptsAdv: () => (((window.SB_ADV_CONCEPTS || {}).chapters || []).length || SB_FACTS.conceptsAdv),
+  scripps: () => ((window.SB_SCRIPPS || []).length || SB_FACTS.scripps),
+  journeys: () => ((((window.SB_LESSONS || {}).lessons) || []).length || SB_FACTS.journeys),
+  techniques: () => ((window.SB_ADV_TIPS || []).length || SB_FACTS.techniques),
+  /* the 130k library and its clips are never loaded to count them — see SB_FACTS */
+  library: () => SB_FACTS.library,
+  voiced: () => SB_FACTS.voiced,
+};
+/* How a count is PRINTED, so a floor reads the same everywhere: '' while a lazy one is on its
+   way (say the sentence without a number), "over 31,000" for trivia, the exact figure else. */
+const SB_FLOOR = { trivia: 1, library: 1, voiced: 1 };
+function countTxt(k) { const n = SB_COUNT[k] ? SB_COUNT[k]() : null; if (!n) return '';
+  return SB_FLOOR[k] ? sbOver(n) : sbFmt(n); }
+/* the same, starting a sentence ("Over …") */
+function countCap(k) { const t = countTxt(k); return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
+/* the same, as a word for the start of a sentence ("Six arcade games") */
+function countWord(k) { const n = SB_COUNT[k] ? SB_COUNT[k]() : 0;
+  const W = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
+  return W[n] || countTxt(k); }
 
 function landSection(kicker, title, lede, inner, opts) {
   opts = opts || {};
@@ -4018,7 +4216,12 @@ function viewLanding() {
             <button data-act="goSignup" style="padding:15px 26px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge),0 8px 22px color-mix(in srgb,var(--accent) 38%,transparent)">Start free — no sign-up →</button>
             <button data-act="landPlans" style="padding:15px 24px;border-radius:14px;background:var(--surface2);color:var(--text);font-weight:800;font-size:15px">See the plans</button>
           </div>
-          <button data-act="goSignin" style="font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">I already have an account</button>
+          <span style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px">
+            <button data-act="goSignin" style="font-size:13.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px">I already have an account</button>
+            ${/* A5: the try-before-signup sample was reachable only by typing ?demo. It is a real link — a
+                 new page load, because the sample's storage sandbox is installed before anything else runs */''}
+            <a href="?demo" class="sb-land-demo" style="display:inline-flex;align-items:center;min-height:44px;font-size:13.5px;font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:3px">Look around a sample speller first →</a>
+          </span>
           ${(()=>{ let av=''; try{ const A=(window.SB_AVATARS&&SB_AVATARS.list)||[];
               const ids=['bizzy','pandasensei','lunastar','pixelpal','ember','papercrane','joystick','shadowninja'];
               const pick=ids.map(i=>A.find(a=>a.id===i)).filter(Boolean);
@@ -4027,7 +4230,7 @@ function viewLanding() {
             }catch(e){}
             return av ? `<div style="margin-top:22px">
               <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px">${av}</div>
-              <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${SB_FACTS.avatars} characters to collect — every one earned by practising, none for sale</div></div>` : ''; })()}
+              <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${countTxt('avatars')} characters to collect — free, or priced in coins your child earns by learning. Coins are never sold.</div></div>` : ''; })()}
         </div>
         ${landTry()}
       </div>
@@ -4048,7 +4251,8 @@ function viewLanding() {
     ['game-wordSnake',      'Word Snake',       'The trail is a word — eat the letters in order and grow.'],
     ['game-unscrambleStars','Unscramble Stars', 'Pull the word back out of the scrambled constellation.'],
     ['game-spellScene',     'Spell Scene',      'Spell the word that finishes the scene.'],
-  ].map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
+  ].filter(([f]) => (window.SB_ARCADE_GAMES || []).some(g => 'game-' + g.k === f))   /* only games the arcade still has (Keep Flying was cut, FIX-BEE v2 G11) */
+   .map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
       <span style="position:relative;display:block;aspect-ratio:16/11;overflow:hidden;background:#241E33">
         <img data-lsrc="app-art/shots/${f}.jpg" alt="${escA(name)} — gameplay from Bizzing Bee"
              loading="lazy" decoding="async"
@@ -4060,10 +4264,10 @@ function viewLanding() {
     </figure>`).join('');
 
   const statStrip = [
-    [SB_FACTS.engines, 'arcade games'], [SB_FACTS.conceptsFree, 'concept chapters'],
-    [SB_FACTS.evoForms, 'evolution forms'], [SB_FACTS.avatars, 'collectibles'],
-    [sbFmt(SB_FACTS.trivia), 'trivia questions'], [SB_FACTS.scripps, 'champion words'],
-  ].map(([n, t]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0">
+    [countTxt('games'), 'arcade games'], [countTxt('conceptsFree'), 'concept chapters'],
+    [countTxt('evoForms'), 'evolution forms'], [countTxt('avatars'), 'collectibles'],
+    [countTxt('trivia'), 'trivia questions'], [countTxt('scripps'), 'champion words'],
+  ].filter(([n]) => n).map(([n, t]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0">
       <b style="font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);line-height:1;color:var(--accent);font-variant-numeric:tabular-nums">${n}</b>
       <span style="font-size:11.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">${t}</span></span>`).join('');
 
@@ -4072,7 +4276,7 @@ function viewLanding() {
 
   const game = landSection('Why children keep opening it',
     'A game where spelling is how you&nbsp;win.',
-    `Eight arcade games, no two the same drill. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, feeds the snake — so practice happens because they want the next thing, not because you asked.`,
+    `${countWord('games')} arcade games, no two the same drill. <b style="color:var(--text)">Spelling is the cheat code</b> — it opens the gate, fires the power-up, feeds the snake — so practice happens because they want the next thing, not because you asked.`,
     `<div style="background:var(--chip);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:20px;padding:clamp(22px,4vw,34px);margin-bottom:26px">
        <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">The one rule under every game</div>
        <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.16;margin-bottom:12px">Spelling is the cheat&nbsp;code.</div>
@@ -4091,7 +4295,7 @@ function viewLanding() {
     ['&ldquo;My bee is at Forager. Two more and she&rsquo;s Queen.&rdquo;',
      'Progress that measures effort and can never be lost. That is the answer to the plateau — the exact moment most families quit.'],
     ['&ldquo;It says the word properly.&rdquo;',
-     `${sbOver(SB_FACTS.clips)} words recorded in a real neural voice, not device text-to-speech — which mispronounces exactly the French-origin borrowings that decide bees. A child can only spell what they actually heard.`],
+     `${countCap('voiced')} words recorded in a real neural voice, not device text-to-speech — which mispronounces exactly the French-origin borrowings that decide bees. A child can only spell what they actually heard.`],
     ['&ldquo;It won&rsquo;t tell me. It literally beeps it out.&rdquo;',
      'When the app reads a word inside a sentence it splices the audio and plays a beep over the target, so the example can never leak the spelling. It is engineered so it cannot be cheated.'],
     ['&ldquo;Beat your dad.&rdquo;',
@@ -4110,9 +4314,9 @@ function viewLanding() {
   /* ---- 4. THE LADDER. The reason this is a subscription and not an app. ---- */
   const ladder = [
     ['4–7', 'The books', 'Read aloud by a parent. No screen, no scoring, no pressure — just affection for words, and for a character they will follow.'],
-    ['7–9', 'The arcade', `${SB_FACTS.engines} word games where spelling is how you win, a new Daily Buzz every day, and ${sbFmt(SB_FACTS.trivia)} trivia questions. They think they are playing a game about a bee.`],
+    ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Buzz every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
     ['9–12', 'The ladder', 'The highest-value words, an avatar that evolves the whole way up, and Champ Challenges to test out and skip ahead.'],
-    ['12–15', 'The library', `${sbOver(SB_FACTS.library)} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
+    ['12–15', 'The library', `${countCap('library')} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
   ].map(([age, t, b], i) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative">
       <div style="font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent);letter-spacing:.06em">AGES ${age}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:19px;margin:6px 0 8px">${t}</div>
@@ -4134,16 +4338,21 @@ function viewLanding() {
    that never run this file. qa/audit.cjs asserts the two FAQ question lists match,
    because a table that disagrees with itself is worse than not having one.
    No competitor is named — the column is what a typical app in the category does. */
+/* Copy that names a count says {key} (or {key:Word} / {key:word} for "Six" / "six") and is
+   filled at render time from SB_COUNT ({key:Cap} for "Over 125,000" at a sentence's start) — these tables are built while app3 is still parsing,
+   before the arcade list below exists. The static mirror in index.html carries the same
+   words, and tests/one-count.cjs holds the two to the same figures. */
+function factFill(s) { return String(s).replace(/\{(\w+)(?::(Word|word|Cap))?\}/g, (m, k, w) => w === 'Cap' ? countCap(k) : w ? (w === 'word' ? countWord(k).toLowerCase() : countWord(k)) : countTxt(k)); }
 const SB_COMPARE = [
   /* Short enough to scan, not read. The first version was three columns of full
      sentences — nobody compares anything by reading nine sentences, and the whole
      value of a table is that the eye can run down it. The detail that was in the
      prose now lives in the FAQ, where somebody who wants it will go looking. */
-  ['Hearing the word',       'Robotic device text-to-speech',   'Over 128,000 words in one real recorded voice'],
-  ['Words available',        'A few hundred to ~4,000',         '125,000 · 40,000 graded by difficulty'],
-  ['Different games',        'One or two, re-skinned',          'Eight distinct games, trivia and a mock bee'],
+  ['Hearing the word',       'Robotic device text-to-speech',   '{voiced:Cap} words in one real recorded voice'],
+  ['Words available',        'A few hundred to ~4,000',         '{library:Cap} · 40,000 graded by difficulty'],
+  ['Different games',        'One or two, re-skinned',          '{games:Word} distinct games, trivia and a mock bee'],
   ['Bee practice',           'Word lists to memorise',          'Full Scripps-format mock bee'],
-  ['Roots and origins',      'Rarely covered',                  '100 journeys · 122 chapters'],
+  ['Roots and origins',      'Rarely covered',                  '{journeys} journeys · {conceptsFree} chapters'],
   ['Vocabulary',             'Bolted onto spelling',            'Its own ladder · NSF 2026 list'],
   ['Without internet',       'Needs a connection',              'Works fully offline'],
   ['Who signs in',           'Usually the child',               'The parent. Never the child.'],
@@ -4151,17 +4360,17 @@ const SB_COMPARE = [
   ['What money buys',        'Shortcuts and power-ups',         'Hats. Everything else is earned.'],
 ];
 const SB_FAQ = [
-  ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in eight word games plus a full mock bee so children keep coming back.'],
+  ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in {games:word} word games plus a full mock bee so children keep coming back.'],
   ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Beginner Bee is $9.99 a month or $99 a year for 10,000 words, and Regional Speller at $19.99 a month or $199 a year unlocks the full graded library and the book series. Monthly plans can be cancelled at any time.'],
-  ['Does my child hear the words spoken aloud?', "Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
-  ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all 108 national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
-  ['Does it teach Greek and Latin roots?', 'Yes. 100 Word Journeys lessons and 122 concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
+  ['Does my child hear the words spoken aloud?', "Yes. {voiced:Cap} words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
+  ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all {scripps} national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
+  ['Does it teach Greek and Latin roots?', 'Yes. {journeys} Word Journeys lessons and {conceptsFree} concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
   ['Does it work without internet?', 'Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on this device. Nothing leaves it unless a grown-up switches on the optional cloud backup — and a child’s name and age never leave it at all.'],
   ['What ages is it for?', 'Children aged 8 to 15. Difficulty tracks the individual child rather than their school year, so a strong eight-year-old and a struggling thirteen-year-old both get words pitched at them.'],
   ['Is it safe for children?', 'There is no chat, no leaderboard, no microphone, no ads and no strangers. Only the parent holds an account; children never sign in to anything. Practice is stored on your own device.'],
   ['Can more than one child use one account?', 'Yes. One parent account carries a profile for each child, each with their own words, progress and avatar.'],
   ['What information do you actually store?', 'Your email address, because somebody has to hold the account and be billed. For each child: a display name they invent, a spelling level, and their practice progress. We do not store a child\u2019s real name, age, photo, voice or location — the database has no column for any of it, so it cannot be collected by accident later.'],
-  ['Does it cover vocabulary and word meanings too?', 'Yes. There is a separate vocabulary ladder for meanings, the official NSF Vocabulary 2026 list, 31,000 trivia questions across 29 themes, idioms and similes, and an IPA trainer for reading pronunciation notation.'],
+  ['Does it cover vocabulary and word meanings too?', 'Yes. There is a separate vocabulary ladder for meanings, the official NSF Vocabulary 2026 list, {trivia} trivia questions, idioms and similes, and an IPA trainer for reading pronunciation notation.'],
 ];
 
 /* THE COLLECTIBLES BLOCK — the one that talks to the nine-year-old.
@@ -4224,14 +4433,16 @@ function landCollect(){
   }catch(e){}
   if(!strip) return '';                       // avatars not in yet — say nothing rather than a hole
 
-  return landSection('Collect · evolve · never buy',
-    `${SB_FACTS.avatars} characters. Not one of them for&nbsp;sale.`,
-    `No packs and no odds: every card says exactly how it is won, by a learning milestone printed on it — coins buy looks and nothing else, and nothing is ever left to chance. In a category built on pester-power purchases, that is the headline.`,
+  return landSection('Collect · evolve · earn',
+    `${countTxt('avatars')} characters. Coins buy them, and coins cannot be&nbsp;bought.`,
+    `No packs and no odds: every card says how it is won — free, a fixed price in coins, or for a Legendary the learning milestone that comes first — coins buy looks and nothing else, and nothing is ever left to chance. In a category built on pester-power purchases, that is the headline.`,
     `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(52px,7.4vw,76px),1fr));gap:10px;justify-items:center;margin-bottom:22px">${strip}</div>
      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
-       ${[['Egg to Queen Bee', SB_FACTS.evoForms + ' evolution forms across twelve worlds, each hand-drawn with its own idle animation. It measures effort, and it never goes down.'],
-          ['Coins buy looks, never words', 'Bizzing coins are earned by learning and buy a Rare avatar at its printed price — worlds open on your level and chapters on the Atlas. There is no way to pay your way past a word you cannot spell — and game artifacts are won by playing, not bought.'],
-          ['A golden reveal', 'Pack drops are the reason a nine-year-old comes back tomorrow without being asked — bought with practice, not with a card.']]
+       ${[['Egg to Queen Bee', (countTxt('evoForms') ? countTxt('evoForms') + ' evolution forms across ' + countWord('worlds').toLowerCase() + ' worlds' : 'An evolution ladder in every world') + ', each hand-drawn with its own idle animation. It measures effort, and it never goes down.'],
+          ['Coins buy looks, never words', 'Bizzing coins are earned by learning and buy an avatar, a world or a frame at its printed price — chapters open on the Atlas. There is no way to pay your way past a word you cannot spell — and game artifacts are won by playing, not bought.'],
+          /* (audit v4) this card sold "pack drops" — packs, odds and drops are gone (FIX-BEE v2). What is
+             true now: four rarity tiers, a fixed price for each, a milestone before a Legendary, no chance */
+          ['Four tiers, no luck in any of them', 'Common, Rare, Epic and Legendary. Commons are free; the rest have a fixed price in coins, and a Legendary first asks for the learning milestone it names. Nothing is drawn at random.']]
         .map(([t,b])=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
           <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">${t}</div>
           <div style="font-size:13px;line-height:1.5;color:var(--muted)">${b}</div></div>`).join('')}
@@ -4239,7 +4450,7 @@ function landCollect(){
 }
 
 function landCompare(){
-  const rows = SB_COMPARE.map(([k,a,b])=>`<tr>
+  const rows = SB_COMPARE.map(([k,a,b])=>[k,a,factFill(b)]).map(([k,a,b])=>`<tr>
       <th scope="row" style="text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);font-weight:800;font-size:14px;vertical-align:top">${esc(k)}</th>
       <td style="padding:13px 12px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.5;vertical-align:top">${esc(a)}</td>
       <td style="padding:13px 12px;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.5;vertical-align:top;background:color-mix(in srgb,var(--accent) 7%,transparent);font-weight:600">${esc(b)}</td></tr>`).join('');
@@ -4255,7 +4466,7 @@ function landCompare(){
 }
 
 function landFAQ(){
-  const items = SB_FAQ.map(([q,a],i)=>`<div style="border-bottom:1px solid var(--line);padding:18px 0">
+  const items = SB_FAQ.map(([q,a])=>[q,factFill(a)]).map(([q,a],i)=>`<div style="border-bottom:1px solid var(--line);padding:18px 0">
       <h3 style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.35;margin:0 0 7px">${esc(q)}</h3>
       <p style="font-size:14.5px;line-height:1.6;color:var(--muted);margin:0;max-width:52em">${esc(a)}</p></div>`).join('');
   return landSection('Questions parents ask', 'Everything you might reasonably want to know&nbsp;first.',
@@ -4352,7 +4563,7 @@ function landPlansSection() {
     const rows = {
       free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress reports'],
       beginner: [sbFmt(10000) + ' words', 'Concepts and Word Lists', 'The revision pile', 'Four worlds · 5 avatar packs'],
-      regional: [sbFmt(40000) + ' words — the full graded library', 'The full arcade: ' + SB_FACTS.engines + ' games, trivia and the mock bee',
+      regional: [sbFmt(40000) + ' words — the full graded library', 'The full arcade: ' + countTxt('games') + ' games, trivia and the mock bee',
                  'The book series — 19 volumes and 4 companions', 'Every world, avatar pack and game',
                  'All the Supercharge training tools'],
     }[id].map(r => `<li style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-bottom:9px">
@@ -4376,7 +4587,7 @@ function landPlansSection() {
       <div>
         <div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">Add-on · sits on top of any plan</div>
         <div style="font-family:var(--display);font-weight:800;font-size:21px;margin-bottom:7px">${esc(adv.name)} · $${adv.priceYr}/year</div>
-        <div style="font-size:13.5px;color:var(--muted);line-height:1.55">The full ${sbOver(SB_FACTS.library)}-word library, ${SB_FACTS.conceptsAdv} advanced narrated lessons, ${SB_FACTS.techniques} champion techniques, mock spelling bees and the Ultra Champions journey. For the family with a bee in the calendar.</div>
+        <div style="font-size:13.5px;color:var(--muted);line-height:1.55">The full library of ${countTxt('library')} words, ${countTxt('conceptsAdv')} advanced narrated lessons, ${countTxt('techniques')} champion techniques, mock spelling bees and the Ultra Champions journey. For the family with a bee in the calendar.</div>
       </div>
       <div style="text-align:right"><button data-act="landPick" data-arg="advanced" style="padding:13px 22px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Add the Advanced Pack</button></div>
     </div>`;
@@ -4549,7 +4760,7 @@ function viewOnboarding(){
         <p style="margin:0 0 8px;font-size:12px;color:var(--muted)">A competition coming up? Add the date — the app counts down to it and paces practice. You can set or change it in Settings any time.</p>
         <input type="date" data-chg="onbBeeDate" value="${escA(S.draft.beeDate||'')}" style="width:100%;max-width:220px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none">
       </div>
-      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Practice start in one go.</span></span></button>
+      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Word Gym start in one go.</span></span></button>
       <div style="margin-top:14px">${voiceUpgradeTip()}</div>`);
   }
   /* Three bands, not one centred stack: progress at the top, the question next to
@@ -4858,7 +5069,9 @@ function wayTile(key,size,tilt){ const w=WAYFIND[key]; size=size||48;
   const glyph=(w.sb&&window.SB_ICON)?SB_ICON(w.sb,{size:24}):iconSVG(w.ic,24,2.2);
   return `<span style="width:${size}px;height:${size}px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:${w.c};color:#fff;box-shadow:var(--edge),var(--sh-rest);transform:rotate(${tilt||-2.5}deg)">${glyph}</span>`; }
 // Explore — the hub behind the 5-item nav: Arcade, Concepts, Word Journeys, Theme Journeys.
-/* ===== Idioms & Sayings — browse 2,350 figurative phrases with honest origin stories ===== */
+/* ===== Idioms & Sayings — browse the figurative phrases (SB_COUNT.idioms) with honest origin stories ===== */
+/* the Idioms page's count line — SB_COUNT's, and nothing while the library is on its way */
+function fTxtOr(){ const t=countTxt('idioms'); return t?t+' phrases':''; }
 function figPool(){ if(!window.SB_FIG) return [];
   if(!window._figAll) window._figAll=(SB_FIG.idioms||[]).concat(SB_FIG.similes||[]).filter(x=>x.kid!==false);
   return window._figAll; }
@@ -5070,7 +5283,7 @@ function figLearnView(){ const S=state; const c=active();
 function viewFigurative(){ const S=state;
   if((S.figTab||'learn')==='learn'){
     return `<div style="max-width:980px;margin:0 auto">
-      ${pageHead('Idioms & Sayings', figPool().length+' phrases', 'Learn deck by deck like Concepts — tap a card to reveal the meaning and its true origin story. Finish a deck for +5 🪙.')}
+      ${pageHead('Idioms & Sayings', fTxtOr(), 'Learn deck by deck like Concepts — tap a card to reveal the meaning and its true origin story. Finish a deck for +5 🪙.')}
       ${figTabsBar('learn')}${figLearnView()}</div>`;
   }
   const q=(S.figQ||'').trim().toLowerCase(); const ty=S.figType||'all'; const th=S.figTheme||'all'; const world=!!S.figWorld;
@@ -5097,7 +5310,7 @@ function viewFigurative(){ const S=state;
       ${(x.eq&&x.eq.length)?`<div style="font-size:11.5px;color:var(--muted)"><b>Same idea elsewhere:</b> ${x.eq.map(e=>esc(e.lang)+': “'+esc(e.p)+'”'+(e.lit?' ('+esc(e.lit)+')':'')).join(' · ')}</div>`:''}
     </div>`; }).join('');
   return `<div style="max-width:980px;margin:0 auto">
-    ${pageHead('Idioms & Sayings', list.length+' of '+figPool().length+' phrases', 'Real meanings, true origin stories — and an honest flag when the famous story is a myth. Play the Idiom round in Word Quiz to test yourself.')}
+    ${pageHead('Idioms & Sayings', (countTxt('idioms')?(fmtN(list.length)+' of '+countTxt('idioms')+' phrases'):''), 'Real meanings, true origin stories — and an honest flag when the famous story is a myth. Play the Idiom round in Word Quiz to test yourself.')}
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
       <input data-inp="figQ" data-fkey="figQ" value="${escA(S.figQ||'')}" placeholder="Search phrases or meanings…" style="flex:1;min-width:200px;padding:11px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:14px;outline:none">
       ${seg('all','All')}${seg('idiom','Idioms')}${seg('proverb','Proverbs')}${seg('simile','Similes')}
@@ -5437,7 +5650,7 @@ function viewVocab(){ const S=state; const c=active();
         ${w.sy?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${esc(w.sy)}</div>`:''}
         ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:22px">Tap to reveal the meaning ▾</div>`}
       </button>
-      <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
+      <div class="voc-nav" style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
         <button data-act="vocNav" data-arg="-1" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;${i===0?'opacity:.4':''}">← Back</button>
         <button data-act="vocSayWord" style="height:44px;padding:0 14px;border-radius:12px;background:var(--chip);color:var(--accent);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',17)} Hear it</button>
         <button data-act="vocSayCard" title="Hear the word and its meaning" style="height:44px;padding:0 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',15)} + meaning</button>
@@ -5530,6 +5743,9 @@ function viewQuotesWordPop(){ const wp=state.qWord; if(!wp) return '';
       <button data-act="qWordClose" style="margin-top:18px;width:100%;padding:12px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Got it ✓</button>
     </div></div>`; }
 function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUOTES||[]);
+  /* the boot file holds 135 of them: draw nothing until the library is in, or the page counts
+     135 and then 5,189 a second later (audit v4 H2) */
+  if(SB_COUNT.quotes()==null){ lazyNeed('quotes'); return `<div style="max-width:640px;margin:0 auto">${pageHead('Quotes','famous people')}${beeEmpty('sleepy','The quote library is still loading — check back in a moment!')}</div>`; }
   if(!all.length) return `<div style="max-width:640px;margin:0 auto">${pageHead('Quotes','famous people')}${beeEmpty('sleepy','The quote library is still loading — check back in a moment!')}</div>`;
   const L=quoteList(); const total=L.length; let i=Math.min(Math.max(S.qi||0,0),Math.max(0,total-1));
   const x=L[i]||all[0]; const favs=(c.quoteFavs)||{}; const isFav=!!favs[(x.q||'').slice(0,60)];
@@ -5569,7 +5785,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     <div style="text-align:center;font-size:11.5px;color:var(--muted);margin-top:9px">Swipe or use ← → keys · tap ❤ to keep your favorites</div>`
    : beeEmpty('sleepy','No quotes here yet — try another category or your favorites.');
   return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
-    ${pageHead('Quotes',fmtN(all.length)+' from famous people')}
+    ${pageHead('Quotes',countTxt('quotes')+' from famous people')}
     ${chips}
     ${body}
   </div>`; }
@@ -5667,7 +5883,7 @@ const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#
   play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B', feed:'#D2553A' };
 /* The tabs, in the family order. My Feed is the LAST tab, after Play (owner, 2 Oct 2026,
    FAMILY-STANDARD §6a) — and it goes, with its ☰ row, when a grown-up switches it off. */
-function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Practice','practice'],['explore','Library','library'],['games','Play','play']];
+function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Word Gym','practice'],['explore','Library','library'],['games','Play','play']];
   if(!state.feedOff) t.push(['feed','My Feed','feed']); return t; }
 function navIcon(key,size,plain){ size=size||22;
   const tint=plain?'currentColor':(NAV_TINT[key]||'currentColor');
@@ -5698,8 +5914,10 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
      voice/pipeline/atlas-art.py). The Library had gradients and line icons before,
      which read as a settings screen; a library should look like the thing it holds. */
   const cAll=(S.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
-  const shelves=cAll.length?conceptChapters().length:13;
-  const tN=triviaTotal(); const themeN=themeDefs().length||75; const mine=myThemes().length;
+  /* every number on a tile comes from SB_COUNT or the live data — none is typed (audit v4 H2);
+     a collection still on its way shows no number rather than a guess */
+  const tTxt=countTxt('trivia'); const themeN=themeDefs().length; const mine=myThemes().length;
+  const qTxt=countTxt('quotes'), fTxt=countTxt('idioms');
   const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="lib-tile${o.lock?' lib-locked':''}"${o.lock?' aria-label="Locked — included with the Regional Speller plan"':''}>
       <span class="lib-art"><img src="app-art/${o.img}.jpg" alt="" loading="lazy" decoding="async">
         <span class="lib-kick">${esc(o.kick)}</span><span class="lib-h">${esc(o.title)}</span></span>
@@ -5709,25 +5927,25 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const tiles=[
     tile({act:'setNav',arg:'concepts',img:'lib-concepts',kick:'Explain',title:'Concepts',
       blurb:'Patterns, roots, origins and bee-day craft.',
-      c:'#5A37D6',stat:cAll.length?(cDone+'/'+cAll.length+' mastered'):(shelves+' shelves')}),
+      c:'#5A37D6',stat:cAll.length?(cDone+'/'+cAll.length+' mastered'):''}),
     tile({act:'setNav',arg:'themes',img:'lib-themes',kick:'Families',title:'Theme Journeys',
       blurb:'Words grouped by subject, or by the language they came from.',
-      c:'#C8451B',stat:mine?(mine+' picked'):(themeN+' families')}),
+      c:'#C8451B',stat:mine?(mine+' picked'):(themeN?themeN+' families':'')}),
     tile({act:'openVocab',img:'lib-vocab',kick:'Meaning',title:'Vocabulary',
       blurb:'Word to meaning, vocabulary-bee style.',
       c:'#0A6B5D',cta:'Study'}),
     tile({act:'setNav',arg:'figurative',img:'lib-figurative',kick:'Sayings',title:'Idioms & Similes',
-      blurb:'2,350 phrases and the story behind each one.',c:'#7A2F8C'}),
+      blurb:(fTxt?fTxt+' phrases':'Phrases')+' and the story behind each one.',c:'#7A2F8C'}),
     tile({act:'openTrivTrain',img:'lib-trivia',kick:'Cards',title:'Bizzing Trivia',
       blurb:'Etymology cards by chapter, then the Arcade round.',
-      c:'#C8791B',ic:'bulb',cta:'Learn',stat:tN?fmtN(tN)+' questions':''}),
+      c:'#C8791B',ic:'bulb',cta:'Learn',stat:tTxt?tTxt+' questions':''}),
     tile({act:'openIpaTrain',img:'lib-ipa',kick:'Notation',title:'The Sound Alphabet',
       blurb:'Read IPA, the notation real study lists use.',
       c:'#1C4A96',ic:'volume',cta:'Train'}),
     tile({act:'openTyping',img:'lib-typing',kick:'Speed',title:'Typing Trainer',
       blurb:'Touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
     tile({act:'openQuotes',img:'lib-quotes',kick:'Voices',title:'Quotes & Poems',
-      blurb:'1,200 lines worth knowing by heart.',
+      blurb:(qTxt?qTxt+' lines':'Lines')+' worth knowing by heart.',
       c:'#8A5B00',ic:'quote',cta:'Read'}),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
@@ -5888,10 +6106,10 @@ function advBanner(c){ if(!advModeOn(c)) return '';   /* T3: no offer on a child
   const price=(window.ADV&&ADV.price)?ADV.price():299;
   const unlocked=on;
   const sub=on
-    ? 'National-bee prep · 125,000-word library · 2-year plan, mock bees, champion tips & games'
+    ? 'National-bee prep · a library of '+countTxt('library')+' words · 2-year plan, mock bees, champion tips & games'
     : ready
-      ? 'You are ready for this — the Advanced Pack adds the full 125,000-word library, mock bees and narrated advanced lessons'
-      : 'Advanced Pack · the full 125,000-word library, mock bees, narrated advanced lessons and champion techniques';
+      ? 'You are ready for this — the Advanced Pack adds the full library of '+countTxt('library')+' words, mock bees and narrated advanced lessons'
+      : 'Advanced Pack · the full library of '+countTxt('library')+' words, mock bees, narrated advanced lessons and champion techniques';
   return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
     <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
       <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)">${SB_ICON('trophy',{size:29})}</span>
@@ -5914,7 +6132,7 @@ function viewLevelTest(){ const lt=state.lt||{}; if(lt.done) return `<div style=
       <div style="width:100px;height:110px;margin:0 auto 6px;animation:sb-bee-talk 1.6s ease-in-out infinite">${mascotSVG('excited')}</div>
       <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Placement complete</div>
       <div style="font-family:var(--display);font-weight:800;font-size:30px;margin:6px 0 4px">Band ${lt.placed} — ${bandTier(lt.placed||1)}!</div>
-      <p style="font-size:15px;color:var(--muted);margin:0 0 6px">That's exactly where champions start. Your word difficulty, your games and your Practice are all set to it — spell well and it climbs with you.</p>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 6px">That's exactly where champions start. Your word difficulty, your games and your Word Gym are all set to it — spell well and it climbs with you.</p>
       <p style="font-size:13px;color:var(--muted);margin:0 0 8px">Quest start: Stage ${ltStageForBand(lt.placed||1)+1} of the Bizzing Bee Journey.</p>
       <p style="font-size:12.5px;color:var(--muted);margin:0 0 18px;line-height:1.5">One more thing: your <b>bee</b> still hatches young — evolution measures <b>practice</b>, not skill, and it only ever climbs. Your Band is the skill part, and yours is already set. 🐝</p>
       <button data-act="ltGo" style="width:100%;max-width:280px;padding:14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Let's spell →</button>
@@ -6126,7 +6344,7 @@ function viewBeeBand(){
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start">
       <section class="sb-card">
         <div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:10px">What moves your level</div>
-        ${mover('🎯','Spell a word right','Anywhere — Practice, an Atlas stop, the Arcade, the mock bee. Each right answer is one step, and the steps add up to the next level.','var(--accent)')}
+        ${mover('🎯','Spell a word right','Anywhere — the Word Gym, an Atlas stop, the Arcade, the mock bee. Each right answer is one step, and the steps add up to the next level.','var(--accent)')}
         ${mover('🔁','Beat a word that tripped you','A word you once missed and now spell right counts the same — and it is the best practice there is.','var(--bad)')}
         ${mover('🛡️','It never goes down','A day off, a wrong answer, a lost race: none of them take a step away.','var(--good)')}
         <div style="margin-top:12px;padding:10px 12px;border-radius:11px;background:var(--surface2);font-size:12px;color:var(--muted);line-height:1.55">
@@ -6395,9 +6613,9 @@ function viewRevisions(){
   const body = tab==='history'
     ? (hist.length?`<div style="display:flex;flex-direction:column;gap:9px">${hist.map(histRow).join('')}</div>`:beeEmpty('happy','No revise history yet. When you mark a revision word ✓ Complete, it moves here so you can revisit it any time.'))
     : (list.length?`<div style="display:flex;gap:8px;margin-bottom:14px"><button data-act="practiceRevisions" style="flex:1;padding:13px;border-radius:12px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:15px;box-shadow:var(--edge)">Practice all ${list.length} →</button></div><div style="display:flex;flex-direction:column;gap:9px">${list.map(todoRow).join('')}</div>`
-      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in Practice and it will show up here.'));
+      :beeEmpty('happy','Nothing to revise — every flagged word is cleared! Mark a word for revision in the Word Gym and it will show up here.'));
   return `<div style="max-width:640px;margin:0 auto;animation:sb-rise .35s ease both">
-    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in Practice and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
+    ${pageHead('Your Revisions','words you flagged to revise','Mark a word for revision in the Word Gym and it lands here. Drill it, or mark it complete once it sticks — completed words move to Revise history so you can revisit them.')}
     ${mastDueCard()}
     <div style="display:flex;gap:6px;background:var(--surface2);border-radius:14px;padding:5px;margin-bottom:14px">${tabBtn('todo','To revise'+(list.length?' · '+list.length:''))}${tabBtn('history','Revise history'+(hist.length?' · '+hist.length:''))}</div>
     ${body}
@@ -6424,6 +6642,7 @@ function viewApp(){
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
       :key==='trail'?(S.nav==='trail'||atlasDrill())
+      :key==='games'?(S.nav==='games'||S.nav==='daily')
       :S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -6459,6 +6678,7 @@ function viewApp(){
   else if(S.nav==='help') content=viewHelp();
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
+  else if(S.nav==='daily') content=viewDaily();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
@@ -6551,12 +6771,12 @@ function viewApp(){
         ${(()=>{ /* A real search bar, not a button that goes somewhere to find one. Type
              here, suggestions drop under it, Enter opens the Finder on the query — and a
              suggestion tapped goes straight to that word's card. */
-          const _drill=drillLive(); const _q=_drill?'':(state.hq||''); const _sug=_drill?[]:suggestWords(_q,7); const _sel=state.hqSel==null?-1:state.hqSel;   // FIX-BEE D8: no search while a word is being tested
-          const _rows=_sug.map((r,i)=>`<button data-act="hqPick" data-arg="${escA(r.w)}" class="sb-hsug-row${i===_sel?' on':''}" role="option" aria-selected="${i===_sel?'true':'false'}">
+          const _drill=drillLive(); const _q=_drill?'':(state.hq||''); const _sug=_drill?[]:headerSuggest(_q); const _sel=state.hqSel==null?-1:state.hqSel;   // FIX-BEE D8: no search while a word is being tested
+          const _rows=_sug.map((r,i)=>`<button data-act="${r.place?'hqPlace':'hqPick'}" data-arg="${escA(r.place||r.w)}" class="sb-hsug-row${r.place?' sb-hsug-place':''}${i===_sel?' on':''}" role="option" aria-selected="${i===_sel?'true':'false'}">
               <span class="sb-hsug-w">${esc(r.w)}</span>${r.d?`<span class="sb-hsug-d">${esc(trunc(r.d,64))}</span>`:''}</button>`).join('');
           return `<div class="sb-hsearch">
             <span class="sb-hsearch-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg></span>
-            <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${_drill?'Search waits until you answer':'Search any word…'}"${_drill?' disabled aria-disabled="true" title="Search pauses while a word is being tested — it could give the spelling away."':''}>
+            <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words, games and places" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${_drill?'Search waits until you answer':'Search any word…'}"${_drill?' disabled aria-disabled="true" title="Search pauses while a word is being tested — it could give the spelling away."':''}>
             ${_q?`<button data-act="hqClear" class="sb-hsearch-x" aria-label="Clear search">✕</button>`:''}
             ${_sug.length?`<div class="sb-hsug" role="listbox">${_rows}<button data-act="hqGo" class="sb-hsug-all">See all matches for “${esc(_q)}” →</button></div>`
               :(_q.trim().length===1?`<div class="sb-hsug"><div class="sb-hsug-none">Keep typing — two letters and the words start arriving.</div></div>`:'')}
@@ -6587,7 +6807,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='games'&&S.nav==='daily')||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -6662,7 +6882,7 @@ function viewHelp(){ const q=(h,b)=>`<details class="sb-card bz-help"><summary>$
     ${q('What are worlds?','A world repaints the whole app and brings its own music and avatar packs. Bizzing Bee and Galaxy are open to everyone; the other six open for 240 coins each, or with the family plan.')}
     ${q('What do Common, Rare, Epic and Legendary mean?','Commons are free for everyone. Rares cost 120 coins and Epics 250 once their world is open. A Legendary costs 500 and first asks you to reach a learning milestone, which its card names.')}
     ${q('When is a word mastered?','When you spell it right on two different days. A word comes back for a check later, and if it slips it is simply practised again.')}
-    ${q('How do I look up a word?','Type it into the search bar at the top: find any of 125,000 words, hear it and read its card. While a word is being tested, search waits — it could give the spelling away.')}
+    ${q('How do I look up a word?','Type it into the search bar at the top: find any of '+countTxt('library')+' words, hear it and read its card. While a word is being tested, search waits — it could give the spelling away.')}
     ${q('What are Medals?','Medals record what you did — stops finished, traps beaten, words mastered. Each one says exactly what earned it.')}
     ${q('Who are the Grown-ups?','The lock at the top opens the grown-ups area behind a 4-digit PIN: the report card, the plan, backup and erase. The PIN keeps little hands out; it is not a bank lock.')}
   </div>`; }
@@ -6698,10 +6918,70 @@ function atlasWorld(c){ try{ const T=window.SB_TRAIL; if(!T) return 'meadow';
       if(!us.length) continue; world=a.world;
       if(!us.every(u=>(done[u.id]||{})[tr.lap||1])) break; }
     return world; }catch(e){ return 'meadow'; } }
-function paintedTileArt(world,h){
+function paintedTileArt(world,h,eager){   /* eager: Home's first screen — a lazy image above the fold waits its turn (audit v4 B6) */
   return `<span style="position:relative;display:block;width:100%;height:${h}px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-    <img src="app-art/w-${world}-r2.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <img src="app-art/w-${world}-r2.jpg" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.42))"></span></span>`;
+}
+/* YOU ARE HERE (owner, 4 Oct 2026: "HOME screen should take to world atlas and show kids where they
+   are instead of this"). Home's one Continue card is a window onto the WORLD ATLAS: the overview's
+   own painting, cropped around the child's region, their avatar standing on it, the road walked to
+   it in gold and the regions behind them starred — then the region, "Stop 3 of 13" counted the way
+   that region's board counts it (stops and checkpoints of this tier), and the stop's name, with a
+   rail of the region's stops beside Continue. The WHOLE card is one button (app.goNext: the region
+   opens with this stop selected); the pill inside it is the one filled primary on Home.
+   The picture is the overview's (atlas-map.jpg, 116KB, one for every child), not a region's own
+   panorama (0.6–1MB each): Home's first screen has a budget (tests/first-load.cjs), and the region
+   painting is what Continue opens. Where the pins and road are is trail.js's (SB_TRAIL_HERE). */
+function homeHereCard(c,nx){
+  const S=state; const crs=nx&&nx.crs==='exp'?'exp':'honey';
+  const H=(typeof window.SB_TRAIL_HERE==='function')?SB_TRAIL_HERE(crs):null;
+  const pins=(H&&H.pins)||[]; const hi=H?Math.max(0,H.here|0):0; const at=pins[hi]||{x:12.5,y:70};
+  const pt=p=>(+p.x).toFixed(1)+' '+(+p.y).toFixed(1);
+  const road=pins.map((p,i)=>(i?'L':'M')+pt(p)).join(' ');
+  const walked=pins.slice(0,hi+1).map((p,i)=>(i?'L':'M')+pt(p)).join(' ');
+  /* Bizzy and the plain bee are the mascot, drawn inline as the greeting draws them — no extra
+     picture on Home's first screen; everyone else wears their own portrait */
+  let av=''; try{ const own=c.avatar&&c.avatar!=='bizzy'&&c.avatar!=='bee'; av=(own&&window.SB_AVATAR)?(SB_AVATAR(c.avatar,48)||''):''; if(!av) av=mascotSVG('happy');
+    /* above the fold on Home: never lazy (audit v4 B6 — a lazy image on the first screen waits) */
+    av=av.replace(/\sloading="lazy"/g,' loading="eager"'); }catch(e){}
+  const marks=pins.map((p,i)=>i===hi?'':`<span class="sb-here-pin is-${p.st}" style="left:${p.x}%;top:${p.y}%">${p.st==='done'?'★':''}</span>`).join('');
+  const all=!!(nx&&nx.allDone);
+  const label=nx&&nx.done?'Continue':'Start';
+  const region=nx?nx.act:'The Word Atlas';
+  const n=nx?(nx.stop|0):0, of=nx?(nx.stops|0):0;
+  const where=all?`Tier ${nx.lap} complete — every stop walked`:(nx&&n&&of?`Stop ${n} of ${of}`:'Your first stop');
+  const title=all?'':(nx?(nx.title||''):'Start at the Meadow');
+  /* the rail: the region's own stops — walked, the one you are on, the road ahead */
+  const rail=(H&&H.stops)||[];
+  const rdone=nx?(all?of:(nx.stopsDone|0)):0; const rpct=of?Math.round(rdone/of*100):0;
+  const wk=weekProgress(c);
+  const aria=`You are here: ${region}${where?', '+where:''}${title?': '+title:''}. ${label}`;
+  return `<button class="sb-lift sb-home-next sb-here" data-act="goNext" aria-label="${escA(aria)}">
+    <span class="sb-here-map" aria-hidden="true">
+      <span class="sb-here-board" style="--x:${(+at.x).toFixed(2)};--y:${(+at.y).toFixed(2)}">
+        <img src="app-art/${H&&H.img||'atlas-map.jpg'}" alt="" decoding="async">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="sb-here-road">
+          ${road?`<path d="${road}" class="sb-here-ghost" vector-effect="non-scaling-stroke"/>`:''}
+          ${hi>0?`<path d="${walked}" class="sb-here-walk" vector-effect="non-scaling-stroke"/>`:''}</svg>
+        ${marks}
+        <span class="sb-here-me${at.y<26?' is-low':''}" style="left:${at.x}%;top:${at.y}%"><span class="sb-here-dot"></span><span class="sb-here-av">${av}</span></span>
+      </span>
+      <span class="sb-here-tag">You are here</span>
+      ${nx?`<span class="sb-here-tier">Tier ${nx.lap}</span>`:''}
+    </span>
+    <span class="sb-here-body">
+      <span class="sb-cs">Your place on the Word Atlas</span>
+      <span class="sb-here-region">${trunc(region,44)}</span>
+      <span class="sb-here-stop">${where?`<b>${esc(where)}</b>`:''}${where&&title?' · ':''}${title?trunc(title,48):''}</span>
+      <span class="sb-here-go">
+        <span class="sb-continue" style="flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${label}</span>
+        <span class="sb-home-where">
+          <span class="sb-here-rail" role="progressbar" aria-label="${escA('How far along '+region)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${rpct}">${rail.map(v=>`<i class="${v===2?'d':v===1?'n':''}"></i>`).join('')||'<i></i>'}</span>
+          <span class="sb-home-pos">${esc(SB_SHELL.levelWords(c))}<br>${esc('This week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered')}</span>
+        </span>
+      </span>
+    </span></button>`;
 }
 function viewHome(){
   const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
@@ -6730,35 +7010,6 @@ function viewHome(){
   const atlas=nx?{done:nx.done,total:nx.total,lap:nx.lap}:(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
       const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
     catch(e){ return {done:0,total:0,lap:1}; } })();
-  /* The Atlas stop's companion: the journey you are actually training. Same card
-     shape, same art language, same height — a champion sees the Ultra journey,
-     everyone else the Bizzing Bee Journey. */
-  const trainCard=(()=>{
-    const ultra=advModeOn(c);
-    const art=ultra?'atlas-ultra':'w-stage-r2';
-    const title=ultra?'Ultra Champions Journey':journeyName();
-    const sub=ultra?'Every word in the library, hardest first, in day-sized blocks.'
-      :'Twenty Stages to Bizzing Bee Champ — climb them with Revise and Practice.';
-    const pct=Math.min(100,Math.round(aLvlNew/20*100));
-    return `<button class="sb-lift" data-act="openCoach" style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
-      <div style="position:relative;width:100%">
-        <span style="position:relative;display:block;width:100%;height:92px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-          <img src="app-art/${art}.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
-          <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.44))"></span></span>
-        <span style="position:absolute;left:14px;bottom:-13px">${wayTile('quest',40,2.5)}</span>
-      </div>
-      <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
-        <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;background:${S.mode==='dusk'?'#FFFFFF':'#241E33'};color:${S.mode==='dusk'?'#241E33':'#FFFFFF'}">Stage ${aLvlNew} of 20${ultra?'':' to Champ'}</span>
-      </div>
-      <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
-        <span class="sb-cs">Your training journey</span>
-        <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${trunc(title,34)}</div>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${esc(sub)}</div>
-        <span style="margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:10px">
-          <span style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil',15)} Practise</span>
-          <span style="flex:1;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
-        </span>
-      </div></button>`; })();
   return `<div class="sb-home">
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
@@ -6796,7 +7047,7 @@ function viewHome(){
           /* 1.5x the original 94/84 — the buddy is the first thing on Home and read small.
              avSrc switches to the full-size .webp above 96px, so the bigger draw is also a
              sharper source rather than an upscale of the 192px thumb. */
-          const art=hasCard?avatarSVG(c.avatar,141):mascotSVG(S.mood);
+          const art=hasCard?String(avatarSVG(c.avatar,141)||'').replace('loading="lazy"','loading="eager"'):mascotSVG(S.mood);   /* first screen: never lazy (audit v4 B6) */
           const inner=`<div style="width:144px;height:150px;flex-shrink:0;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
           return deckN?`<button data-act="openAvDeck" data-arg="${escA(c.avatar||'')}" title="Flip through your avatar cards — ${deckN} owned" aria-label="Your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                       :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
@@ -6806,6 +7057,7 @@ function viewHome(){
           ${(()=>{ /* Your buddy says hello, whoever your buddy is — Bizzy included. The
               line comes from SB_AV_GREETINGS, with the avatar card as a second source. */
             const line=homeGreet(c);
+            if(line==null) return `<div class="sb-home-greet sb-greet-hold" aria-hidden="true" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:10px 11px;display:flex;flex-direction:column;gap:7px;min-height:52px">${['86%','64%'].map(w=>`<span class="sb-hold" style="width:${w};background:color-mix(in srgb,var(--line) 75%,transparent)"></span>`).join('')}</div>`;
             return `<div class="sb-home-greet" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${trunc(line,104)}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
@@ -6849,52 +7101,14 @@ function viewHome(){
       ${wohTile}
     </div>
     <div class="sb-home-r2">
-      ${(()=>{ /* Next on your journey — the Atlas frontier, straight from trail.js.
-          trail-data.js is deferred. It used to fall back to "Start at the Meadow"
-          in the meantime, which is the wrong destination for anyone already on
-          the road — a second later the card silently became their real stop. A
-          speller who has started holds the card's space instead and it fills in
-          once, correctly; only a speller with no progress sees the invitation. */
+      ${(()=>{ /* YOU ARE HERE — the World Atlas, the child's place on it, and Continue (homeHereCard).
+          trail-data.js is deferred. A speller who has started holds the card's space until it
+          lands (it fills in once, correctly — "Home must not rewrite itself"); a speller with
+          nothing walked is at the first region's first stop, which needs no data to draw. */
         const started=(()=>{ try{ const tr=c.trail||{}; return Object.keys(tr.done||{}).length>0
           ||Object.keys(tr.chk||{}).length>0||Object.keys(tr.seen||{}).length>0; }catch(e){ return false; } })();
-        if(!nx&&started) return cardHold('Next on your journey',218);
-        const world=nx?nx.world:atlasWorld(c);
-        const kick=nx?(nx.allDone?('Tier '+nx.lap+' complete'):trunc(nx.act,30)):'The Word Atlas';
-        const title=nx?(nx.allDone?'Start the next tier':nx.title):'Start at the Meadow';
-        const sub=nx?(nx.allDone?'Every stop cleared at this tier — the same map returns with harder words.'
-              :(nx.kind==='chk'?'Checkpoint — a mixed quiz over everything so far, no new words.':(nx.sub||'')))
-            :'One guided journey through nine worlds — learn the idea, meet the words, clear the quiz gate.';
-        /* every way forward goes through app.goNext, which reads SB_NEXT_STEP again at the tap */
-        const go='data-act="goNext"';
-        // Not "0/102 stops": where you are, not how long the road is. (See tierBar in trail.js.)
-        const meta=nx?((nx.done?('stop '+Math.min(nx.done+1,nx.total)):'first stop')+' · Tier '+nx.lap):'nine acts, then the Advanced Rounds';
-        /* ONE progress strip beside Continue (FIX-BEE B3): the region you are in, a bar for how
-           far along this tier, and your level — the bar carries the distance, so no total is printed */
-        const region=nx?(nx.allDone?('Tier '+nx.lap+' complete'):nx.act):'The Word Atlas';
-        const pct=nx?nx.pct:0;
-        return `<button class="sb-lift sb-home-next" ${go} style="text-align:left;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh-rest);display:flex;flex-direction:column;padding:0;width:100%">
-        <div style="position:relative;width:100%">
-          ${paintedTileArt(world,92)}
-          <span style="position:absolute;left:14px;bottom:-13px">${wayTile('trail',40,-2.5)}</span>
-        </div>
-        <div style="padding:9px 15px 0 62px;min-height:24px;display:flex;align-items:center;justify-content:flex-end;width:100%">
-          <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:4px 11px;border-radius:var(--r-pill,999px);font-size:11px;font-weight:800;background:${S.mode==='dusk'?'#FFFFFF':'#241E33'};color:${S.mode==='dusk'?'#241E33':'#FFFFFF'}">${esc(meta)}</span>
-        </div>
-        <div style="padding:4px 15px 14px;display:flex;flex-direction:column;flex:1;width:100%">
-          <span class="sb-cs">Next on your journey</span>
-          <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px;color:var(--ink,var(--text))">${trunc(title,40)}</div>
-          <div style="font-size:12.5px;color:var(--muted);line-height:1.4">${trunc(nx?(sub||kick):(kick+(sub?' · '+sub:'')),96)}</div>
-          <span style="margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:12px;width:100%">
-            <span class="sb-continue" style="flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${nx&&nx.done?'Continue':'Start'}</span>
-            <span class="sb-home-where" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
-              <span style="display:block;font-size:11.5px;font-weight:800;color:var(--ink,var(--text));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(region)}</span>
-              <span role="progressbar" aria-label="How far along this tier of the Word Atlas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" style="display:block;height:6px;border-radius:var(--r-pill,999px);background:var(--tint-deep,var(--surface2));overflow:hidden"><span style="display:block;height:100%;width:${pct}%;background:var(--action,var(--accent))"></span></span>
-              <span class="sb-home-pos" style="display:block;font-size:11px;font-weight:700;color:var(--muted);line-height:1.3">${(()=>{ const rp=regionPos(nx); const wk=weekProgress(c);
-                return esc((rp?('stop '+rp.n+' of '+rp.of+' · '):'')+SB_SHELL.levelWords(c))+'<br>'+esc('This week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered'); })()}</span>
-            </span>
-          </span>
-        </div></button>`; })()}
-      ${trainCard}
+        if(!nx&&started) return cardHold('You are here',innerWidth>=900?238:300);
+        return homeHereCard(c,nx); })()}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${qohTile}</div>`; })()}
     <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a>${tmLine()}</div>
@@ -7400,10 +7614,32 @@ function ledgerWords(x,c){ c=c||active(); const why=String(x.why||'');
   return what; }
 function walletLines(c,n){ c=c||active(); try{ if(window.SB_DEMO) return []; const W=window.BZ_WALLET; if(!W) return [];
     return W.ledger(walletWho(c)).slice().sort((x,y)=>y.t-x.t).slice(0,n||30); }catch(e){ return []; } }
-function walletRowsHTML(c,n){ const L=walletLines(c,n);
+/* K9: ONE LINE PER SITTING, NOT PER COIN. Twenty right answers wrote twenty "+1 · a right answer"
+   lines and pushed everything else off the sheet. Earnings of the same kind from the same app in one
+   sitting (no gap over 20 minutes) fold into one line: "+13 · from 13 right answers". Spending, refunds
+   and the one-off move into the family wallet always stay lines of their own. The ledger itself is the
+   family drop-in's and is only read here. */
+const LEDGER_SITTING=20*60000;
+const LEDGER_MANY={ answer:k=>'from '+k+' right answers', stop:k=>'from '+k+' finished rounds', contest:k=>'from '+k+' contests', mastery:k=>'from '+k+' words mastered on two different days' };
+function walletGroups(c,n){ c=c||active(); const L=walletLines(c,2000); const out=[]; let sit=null, prevT=null;
+  for(const x of L){   /* newest first */
+    if(prevT==null || prevT-x.t>LEDGER_SITTING) sit={};   /* a new sitting */
+    prevT=x.t;
+    const why=String(x.why||''), can=x.n>0 && LEDGER_MANY[why];
+    const key=can?(x.a+'|'+why):null, g=key&&sit[key];
+    if(g){ g.n+=x.n; g.k++; g.old=x; continue; }
+    const row={ a:x.a, t:x.t, n:x.n, why, k:1, top:x, old:x }; out.push(row); if(key) sit[key]=row; }
+  return out.slice(0,n||30); }
+function walletRowWords(g,c){ if(g.k<2) return ledgerWords(g.top,c);
+  let what=LEDGER_MANY[g.why](g.k);
+  /* name the round only when the whole sitting came from one */
+  const a=ledgerWords(g.top,c), b=ledgerWords(g.old,c), i=a.indexOf(' — ');
+  if(i>0 && a===b) what+=a.slice(i);
+  return what; }
+function walletRowsHTML(c,n){ const L=walletGroups(c,n);
   if(!L.length) return `<p class="bz-empty"><span class="bz-empty-m">${mascotSVG('think')}</span>No coins yet. Every right answer pays one — they land here.</p>`;
   return `<ol class="bz-ledger">${L.map(x=>{ const plus=x.n>0; const app=SHOP_APP_LABEL[x.a]||x.a;
-    return `<li><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(ledgerWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
+    return `<li${x.k>1?` data-k="${x.k}"`:''}><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(walletRowWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
 const WALLET_FOR='Bizzing coins come from learning — right answers, finished rounds, contests and mastery — in every Bizzing app. They buy avatars, worlds and frames at fixed prices. Never lessons, and never real money.';
 function viewWalletSheet(){ if(!state.walletOpen) return ''; const c=active();
   return `<div class="bz-sheet-ov" data-act="closeWallet"><div class="bz-sheet" data-act="noop" data-trap="wallet" role="dialog" aria-modal="true" aria-label="Your Bizzing coins">
@@ -7555,10 +7791,10 @@ function viewEvolution(){ const S=state; const c=active(); ensureLists(c); const
     </div>
     <div class="sb-card" style="margin-bottom:14px">
       <div class="sb-ct" style="font-size:15px;margin-bottom:6px">How your bee evolves</div>
-      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in Practice, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Bizzing coins 🪙 are different: they come from learning too, and you <i>spend</i> them on looks like a Rare avatar. They never buy a level, and spending them never costs you a step.</div>
+      <div class="sb-cs" style="line-height:1.6">Every word you spell right — in the Word Gym, the Arcade, Concepts, anywhere — moves your bee one step along. The count only grows; nothing takes it away.<br>Bizzing coins 🪙 are different: they come from learning too, and you <i>spend</i> them on looks like a Rare avatar. They never buy a level, and spending them never costs you a step.</div>
     </div>
     ${(theme==='spellbound')?`<div class="sb-card" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:26px;flex-shrink:0">👑</span><span class="sb-cs"><b style="color:var(--text)">Why a Queen at the top?</b> Every hive is ruled by its Queen — the strongest, most protected bee alive. Reaching her means you outgrew every other bee in the hive.</span></div>`:''}
-    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — Practice, the Arcade, Concepts — and every right word feeds the same evolution.')}
+    ${beeEmpty('happy','Ten forms, one bee. Practise anywhere — the Word Gym, the Arcade, Concepts — and every right word feeds the same evolution.')}
   </div>`;
 }
 
@@ -9475,7 +9711,7 @@ function viewQuest(){
       ${iconTile('advanced', advCol, {size:54, radius:16})}
       <span style="min-width:0;flex:1">
         <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Advanced Mode</span>${aUnlocked?`<span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#0a7a44;background:color-mix(in srgb,#39d98a 30%,transparent);padding:2px 8px;border-radius:999px">Unlocked</span>`:`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--muted);background:var(--surface2);padding:2px 9px;border-radius:999px">${SB_ICON('lock',{size:12})} Locked</span>`}</span>
-        <span style="display:block;font-size:13px;color:var(--text);font-weight:600;margin-top:5px;line-height:1.5">National Spelling Bee prep from the full <b>128,000-word</b> library — a 2-year sprint plan, mock bees, champion tips and advanced games.</span>
+        <span style="display:block;font-size:13px;color:var(--text);font-weight:600;margin-top:5px;line-height:1.5">National Spelling Bee prep from the full library of <b>${countTxt('library')} words</b> — a 2-year sprint plan, mock bees, champion tips and advanced games.</span>
         <span style="display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px;line-height:1.45"><span style="color:${advCol};flex-shrink:0;margin-top:1px">${SB_ICON('sparkle',{size:13})}</span>${aUnlocked?'You’ve earned it — master the very hardest words.':('Comes with the Advanced Pack.')}</span>
         <span style="display:inline-flex;align-items:center;gap:5px;margin-top:11px;font-weight:800;font-size:12.5px;color:#fff;background:${advCol};padding:9px 15px;border-radius:10px">${aUnlocked?'Enter Advanced':'See how to unlock'} ${SB_ICON('arrowRight',{size:14})}</span>
       </span>
@@ -9501,7 +9737,7 @@ function viewQuest(){
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;color:var(--treasure-deep,#8A5B00)">Story vault</span><span style="display:block;font-size:12px;color:var(--treasure-deep,#8A5B00);opacity:.85">${un.length} of ${all} word-history tales unlocked</span></span>
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
-    ${pageHead('Practice paths','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Word Atlas tab.')}
+    ${pageHead('Word Gym','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Word Atlas tab.')}
     <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):paths}</div>
     ${vault}
   </div>`;
@@ -9516,9 +9752,9 @@ function viewProgressShell(){ const t=state.progTab==='parent'?'parent':'me';
 // kid Progress screen and the Parent dashboard so the surfaces (Quotes, Journeys,
 // Typing, Idioms) are actually reflected in progress.
 function explorerTiles(c){
-  const tiles=[]; const qTotal=(window.SB_QUOTES||[]).length;
+  const tiles=[]; const qTotal=(window.SB_QUOTES||[]).length; const qTxt=countTxt('quotes');
   if(qTotal){ const favN=Object.keys(c.quoteFavs||{}).length; const seenN=Object.keys(c.qSeen||{}).length;
-    tiles.push({act:'openQuotes',ic:'quote',col:'#C8791B',label:'Quotes & poems',v:(seenN||favN||0)+'',sub:(favN?favN+' ❤ favourites · ':'')+fmtN(qTotal)+' to explore'}); }
+    tiles.push({act:'openQuotes',ic:'quote',col:'#C8791B',label:'Quotes & poems',v:(seenN||favN||0)+'',sub:(favN?favN+' ❤ favourites · ':'')+(qTxt?qTxt+' to explore':'more to explore')}); }
   try{ const lDone=lessonsDoneCount(); const lU=lessonUnits(); const lChap=lU.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length&&ls.every(L=>lessonComplete(L)); }).length;
     if(lU.length) tiles.push({act:'openJourneys',ic:'book',col:'#E0922E',label:'Word Journeys',v:lChap+'/'+(lU.length),sub:lDone+' lessons studied'}); }catch(e){}
   try{ const cAll=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
@@ -9582,7 +9818,7 @@ function metricsCard(c){
       <div style="display:flex;align-items:flex-end;gap:2px;height:${H}px">${bars}</div>
     </div>
     <div style="display:flex;gap:2px;margin-top:4px">${ticks}</div>
-    <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:8px">${sel==='prac'?'Practice time counts Practice and revisions only — the clock stops in the Arcade and everywhere else.':(sel==='app'?'Every minute spent anywhere in Bizzing Bee, counted only while the app is on screen.':'Every word you spell right, wherever you spell it.')}</div>
+    <div style="font-size:11.5px;color:var(--muted);font-weight:650;margin-top:8px">${sel==='prac'?'Practice time counts the Word Gym and revisions only — the clock stops in the Arcade and everywhere else.':(sel==='app'?'Every minute spent anywhere in Bizzing Bee, counted only while the app is on screen.':'Every word you spell right, wherever you spell it.')}</div>
   </div>`; }
 /* Study-card analytics: how the trivia cards are split across practised / tested / mastered /
    revision, chapter by chapter — and tapping a state opens the actual list of those cards. */
@@ -9710,11 +9946,11 @@ function viewProgress(){
       return `<div class="sb-card" style="margin-bottom:18px">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <span style="min-width:0;flex:1">
-            <span class="sb-cs">Practice · now training</span>
+            <span class="sb-cs">Word Gym · now training</span>
             <span style="display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;margin-top:2px">${esc(listLabel(k).split(' · ')[0])}</span>
             <span style="display:block;font-size:12.5px;color:var(--muted);font-weight:650;margin-top:2px">${k==='journey'?(si<CHAMP_LEVELS?('Stage '+(si+1)+' of '+CHAMP_LEVELS+' to Champ'):('Champion’s Library · stage '+(si+1))):('Stage '+(si+1)+(st.length?(' of '+st.length):''))} · ${m} of ${ws.length} words met are mastered</span>
           </span>
-          <button data-act="openCoach" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Open Practice →</button>
+          <button data-act="openCoach" style="padding:10px 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Open Word Gym →</button>
         </div>
         <div style="height:7px;border-radius:999px;background:var(--tint-deep,var(--surface2));overflow:hidden;margin:12px 0 0"><div style="height:100%;background:var(--good);width:${pct}%"></div></div>
         ${others.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px">${others.map(x=>`<button data-act="selectList" data-arg="${escA(x)}" style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--muted)">${esc(listLabel(x).split(' · ')[0])} · Stage ${listStageIdx(c,x)+1}</button>`).join('')}</div>`:''}
@@ -9741,7 +9977,7 @@ function viewProgress(){
           <div style="font-size:12px;font-weight:800;line-height:1.15;margin-top:3px;${on?'color:var(--accent)':''}">${label}</div></div>`; }).join('');
       return `<div class="sb-card" style="margin-bottom:18px">
         <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px"><span style="font-family:var(--display);font-weight:800;font-size:15px">Your word difficulty</span><span style="font-size:12px;color:var(--muted);font-weight:650">${bb.calibrating?'calibrating — appears after ~30 graded words':('Word difficulty '+bb.band+' of 9 · '+bb.tier+(bb.n>=2?(' · '+bb.acc+'% right at this band'):''))}</span></div>
-        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — Practice, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
+        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5">One skill measure across everything — the Word Gym, games, duels and tests all feed it. It climbs the moment you prove a harder band (80%+ right) and never falls from one bad game — only a sustained slide moves it down. Your games and daily tip follow it automatically.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${row}</div>
       </div>`; })()}
     <div style="margin-bottom:18px">${goodDaysCard()}</div>
@@ -9784,8 +10020,8 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
   </div>`; }
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
 function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
-  const total=window.SB_FULL?'125,000':'40,000';
-  const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':iconSVG('book',14,2.2)+' Load all 128,000 words'}</button>`:'';
+  const total=window.SB_FULL?countTxt('library'):sbOver(((window.SB_DATA||{}).nsf||[]).length);   /* the served corpus until the library is in */
+  const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':iconSVG('book',14,2.2)+' Load the whole library — '+countTxt('library')+' words'}</button>`:'';
   let body='';
   if(S.finderSel){ const w=S.finderSel;
     const lists=Object.entries(c.builtLists||{});
@@ -9795,7 +10031,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
         <div class="sb-ct" style="font-size:14px;margin-bottom:8px">Add “${esc(w.w)}” to a list</div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">${addChips}
           <span style="display:inline-flex;gap:6px;align-items:center"><input data-inp="finderName" data-fkey="finderName" value="${escA(S.finderName||'')}" maxlength="30" placeholder="New list name…" style="width:150px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:700;outline:none"><button data-act="finderCreateAdd" style="padding:8px 14px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">Create + add</button></span></div>
-        <div class="sb-cn" style="margin-top:8px">Lists live in Practice — practise them any time.</div>
+        <div class="sb-cn" style="margin-top:8px">Lists live in the Word Gym — practise them any time.</div>
       </div>
       ${wordFlash([w],0,'noop',{})}`;
   } else {
@@ -9806,7 +10042,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
     body = q.trim().length<2
       ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="font-size:34px;margin-bottom:8px">🔎</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
       : (rs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px">${cells}</div>`
-        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 125,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
+        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full library of '+countTxt('library')+' words below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
   }
   return `<div style="max-width:860px;margin:0 auto">
     ${pageHead('Word Finder','search '+total+' words','',loadBtn)}
@@ -9863,7 +10099,12 @@ function viewParent(){
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(beeBand(k).band)} — proven difficulty band across all activities">${(()=>{ const kb=beeBand(k); return `<div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.calibrating?'…':kb.band}</div><div style="font-size:12px;color:var(--muted);font-weight:700">BEE BAND</div>`; })()}</div>
+        ${(()=>{ /* A band nobody has measured yet says so in words (audit v4 §4): this tile printed '…'
+             for every child still calibrating, which read as a value that had not loaded. */
+          const kb=beeBand(k), ev=Math.round(bandEvidence(k));
+          return kb.calibrating
+            ? `<div class="sb-pz-band" data-band="none" style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="Word difficulty is measured from graded words — about ${BAND_MIN_EV} of them, or the placement test"><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.3">Not yet</div><div style="font-size:11px;color:var(--muted);font-weight:650;line-height:1.3">after ~${BAND_MIN_EV} graded words · ${Math.min(ev,BAND_MIN_EV)} so far</div><div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:2px">WORD DIFFICULTY</div></div>`
+            : `<div class="sb-pz-band" data-band="${kb.band}" style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(kb.band)} — proven difficulty band across all activities"><div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.band} of 9</div><div style="font-size:12px;color:var(--muted);font-weight:700">WORD DIFFICULTY</div></div>`; })()}
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.acc||0}%</div><div style="font-size:12px;color:var(--muted);font-weight:700">ACCURACY</div></div>
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${goodDaysThisWeek(k)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">GOOD DAYS THIS WEEK</div></div>
       </div>
@@ -10123,7 +10364,7 @@ function themeCard(t){ const c=active(); const cl=themeClusters().find(x=>x.id==
       </div>
       <div style="margin-top:auto;padding-top:11px;display:flex;gap:7px">
         <button data-act="openTheme" data-arg="${t.id}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;background:${cl.c};color:#fff;font-weight:800;font-size:12px;box-shadow:var(--edge)">${iconSVG('bulb',13)} Open</button>
-        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in Practice':'Add to your lists (top bar in Practice)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
+        <button data-act="addTheme" data-arg="${t.id}" title="${pinned?'In your lists — tap to open in the Word Gym':'Add to your lists (top bar in the Word Gym)'}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;font-weight:800;font-size:12px;${pinned?`background:color-mix(in srgb,${cl.c} 13%,var(--bg2));border:1px solid ${cl.c};color:${cl.c}`:'background:var(--surface2);border:1px solid var(--line);color:var(--text)'}">${pinned?('✓ L'+lvl):'+ Add'}</button>
       </div>
     </div>
   </div>`; }
@@ -10133,7 +10374,7 @@ function viewThemes(){ const S=state; const c=active(); ensureLists(c);
   const doneThemes=defs.filter(t=>{ const st=themeStat(t.id); return st.total>0 && st.m/st.total>=PATTERN_DONE_PCT; }).length;
   const myRow = mine.length
     ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700">My themes</span>${mine.map(t=>{ const cl=themeClusters().find(x=>x.id===t.cluster)||{}; return `<button data-act="selectList" data-arg="${themeKey(t.id)}" oncontextmenu="return sbDelList(event,'${themeKey(t.id)}')" title="Train · right-click to remove" style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;border:1px solid ${cl.c};background:color-mix(in srgb,${cl.c} 12%,var(--bg2));color:var(--text);font-weight:800;font-size:12px">${esc(t.label)} <span style="opacity:.7;font-size:12px">L${listStageIdx(c,themeKey(t.id))+1}</span></button>`; }).join('')}</div>`
-    : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in Practice.</div>`;
+    : `<div style="background:color-mix(in srgb,var(--accent) 9%,var(--bg2));border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:var(--text)"><b>Pick 3–5 themes you love.</b> Words stick better when they live somewhere — a kitchen, a courtroom, the night sky. Each theme becomes its own level ladder, and it joins your top bar in the Word Gym.</div>`;
   const grid='display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:13px';
   const sections=themeClusters().map(cl=>{ const ts=defs.filter(t=>t.cluster===cl.id); if(!ts.length) return '';
     return `<div style="display:flex;align-items:center;gap:12px;margin:24px 0 12px">
@@ -10216,7 +10457,7 @@ function viewThemeDetail(){
     ${tabBar}
     ${thin?`<div style="background:color-mix(in srgb,${cl.c} 10%,var(--bg2));border:1px solid color-mix(in srgb,${cl.c} 35%,var(--line));border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
       <b>Only ${ws.length} ${ws.length===1?'word':'words'} here so far.</b> This family is small in the core library and deepens
-      to hundreds of words with the 125,000-word library in the Advanced Pack. Read the explanation now;
+      to hundreds of words with the library of ${countTxt('library')} words in the Advanced Pack. Read the explanation now;
       the level ladder opens once there are ${THEME_MIN} words to climb.</div>`:''}
     ${tab==='train' && !thin ? (()=>{ const pref=state.trainPref||'cards';
       const MODES=[['cards','Cards','book','See the word, the meaning and the story, one card at a time.'],
@@ -10270,7 +10511,7 @@ function viewLesson(){ const S=state; const L=S.lessonSel; const dn=lessonComple
     ? (()=>{ const nextOpen = L.n<100 && journeyOpen(L.n+1);
         // never dead-end a journey: route to the next unlocked journey, or back to Practice
         return (nextOpen?`<button data-act="openLesson" data-arg="${L.n+1}" style="flex:1;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next journey →</button>`:'')+
-          `<button data-act="openCoach" style="flex:1;padding:14px;border-radius:14px;background:${nextOpen?'var(--surface2)':'var(--accent)'};color:${nextOpen?'var(--text)':'#fff'};font-weight:800;font-size:15px;${nextOpen?'border:1px solid var(--line)':'box-shadow:var(--edge)'}">Back to Practice →</button>`; })()
+          `<button data-act="openCoach" style="flex:1;padding:14px;border-radius:14px;background:${nextOpen?'var(--surface2)':'var(--accent)'};color:${nextOpen?'var(--text)':'#fff'};font-weight:800;font-size:15px;${nextOpen?'border:1px solid var(--line)':'box-shadow:var(--edge)'}">Back to the Word Gym →</button>`; })()
     : `<button data-act="lessonStepNext" style="flex:1;padding:14px;border-radius:14px;background:${f.c};color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next card →</button>`;
   return `<div style="max-width:660px;margin:0 auto;animation:sb-rise .35s ease both">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${backPill('lessonBack','All lessons',null)}<span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700"><span style="font-family:var(--display);font-variant-numeric:tabular-nums">${L.id}</span> · <span style="text-transform:capitalize">${L.diff}</span> <span style="width:9px;height:9px;border-radius:50%;background:${DIFF_DOT[L.diff]}"></span></span></div>
@@ -10575,7 +10816,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Practice</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('flag',14,2.4)} Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
+  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Gym</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('flag',14,2.4)} Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
       purple banner between the header and the tabs, which ate a whole row of Practice and
       pushed the thing the child came for below the fold — for a pack most of them do not
       own. A pill says the same thing and costs 40px. */
@@ -10690,7 +10931,7 @@ const LIST_COVER={
   nsf_senior :{c:'#3D7DF0',c2:'#2A63D6',tex:'grid',hero:'Big',tag:'Leagues'},
   nsf_advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'grid',hero:'Boss',tag:'Level'},
   nsf        :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Vault',tag:'Champion’s'},
-  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'Hive',tag:'130k words'},
+  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'Hive',tag:Math.floor(SB_COUNT.library()/1000)+'k+ words'},
   hardest    :{c:'#D6453A',c2:'#B8322A',tex:'cross',hero:'Beastly',tag:'Tier 6+'},
   latin      :{c:'#7C5CFF',c2:'#6A47F5',tex:'stripes',hero:'Latin',tag:'Origin'},
   greek      :{c:'#13A892',c2:'#0E8A78',tex:'rings',hero:'Greek',tag:'Origin'},
@@ -10784,7 +11025,7 @@ function coachSetup(){
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:800;color:rgba(255,255,255,.92)">${champLabel} · ${fmtN(jMast)} mastered</span><span style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#fff;color:${jc.c};font-weight:800;font-size:13px">${jStarted?'Continue':'Start the Journey'} →</span></div>
     </div></button>`;
   return `<div style="max-width:760px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${backPill('openCoach','Back to Practice',null)}</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">${backPill('openCoach','Back to the Word Gym',null)}</div>
     <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px">Setup &amp; lists</h2>
     <p style="margin:0 0 16px;color:var(--muted);font-size:13px">Pick the list you're training — each keeps its own level.${state.premium?'':' 🔒 lists come with Premium.'}</p>
     ${(()=>{ const on=advModeOn(c);
@@ -10798,7 +11039,7 @@ function coachSetup(){
       const locked=`<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:16px;margin-bottom:16px;background:var(--surface2);border:1px dashed var(--line);padding:13px 15px;display:flex;align-items:center;gap:12px">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,#5B3FA6 13%,transparent);color:#5B3FA6;display:grid;place-items:center;opacity:.8">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:22}):''}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)">Ultra Champions Journey</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 125,000 words · Advanced Pack</span></span>
+        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through the library of ${countTxt('library')} words · Advanced Pack</span></span>
         <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} Ask a grown-up</span></button>`;
       // unlocked: the advanced journey leads. locked: it sits under the standard one.
       return on ? (ultra+journeyBanner) : (journeyBanner+locked); })()}
@@ -11244,6 +11485,14 @@ function gFinishMC(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
 function coinIc(sz){ return (window.SB_ICON_ART&&SB_ICON_ART.coin)?SB_ICON_ART('coin',{size:sz||14}):SB_ICON('coin',{size:sz||14}); }
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${coinIc(sz)} ${n}</span>`; }
 function coinChip(){ return `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
+/* DAILY BUZZ, IN THE SHELL (audit v4 N2). The page head is the app's (back to Play); the board under it
+   is games-daily.js's, mounted into #db-host by render(). */
+function viewDaily(){
+  let when=''; try{ when=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}); }catch(e){}
+  return `<div class="sb-dailypage" style="max-width:560px;margin:0 auto">
+    ${pageHead('Daily Buzz', esc(when), '', null, 'openGames', 'Play')}
+    <div id="db-host" class="db-host" role="region" aria-label="Today's Daily Buzz" style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-rest)"></div></div>`;
+}
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();
@@ -11269,7 +11518,7 @@ function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round �
   pickerCard('wqStart','meaning','#13A892','book','Meanings','Match a word to its meaning or fill the blank in a sentence.')+
   pickerCard('wqStart','spell','#3D7DF0','spark','Spellings','Pick the correctly-spelled word from look-alikes.')+
   pickerCard('wqStart','origin','#4F9E6A','grid','Origins','Guess each word’s language of origin.')+
-  pickerCard('wqStart','idiom','#9C6A08','bulb','Idioms','What does “break the ice” really mean? 2,000 phrases.')+
+  pickerCard('wqStart','idiom','#9C6A08','bulb','Idioms','What does “break the ice” really mean?')+
   pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
   pickerCard('wqStart','vocab','#2E8FB8','book','Vocabulary','Bee-style: hear the word, pick the right meaning.')+
   pickerCard('wqStart','mixed','#B14FC4','palette','Mixed','A little of everything — meanings, spellings and origins.')+
@@ -11358,12 +11607,8 @@ function magicView(){ const g=state.game; const S=state;
       ? `<button data-act="magicNew" style="flex:1;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Round ${(g.round||1)+1} — 9 new cells →</button><button data-act="exitGame" style="padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">Done</button>`
       : `<button data-act="magicBoard" style="flex:1;padding:13px;border-radius:14px;background:${r.win?'var(--accent)':'var(--surface2)'};color:${r.win?'#fff':'var(--text)'};font-weight:800;font-size:15px;${r.win?'box-shadow:var(--edge)':'border:1px solid var(--line)'}">Back to the board</button>`}</div>
   </div>`; }
-/* The question bank is sharded and lazy, so SB_TRIVIA.questions is empty until a
-   level loads. The index carries per-level counts — use those for any headline
-   number, or it reads "0 questions" on a fresh boot. */
-function triviaTotal(){ try{ const T=window.SB_TRIVIA; if(!T) return 0;
-    if(T.byLevel){ let n=0; for(const k in T.byLevel) n+=(T.byLevel[k]||0); if(n) return n; }
-    return (T.count||((T.questions||[]).length)||0); }catch(e){ return 0; } }
+/* The question bank is sharded and lazy: its headline number is SB_COUNT.trivia (the index's
+   per-level counts, printed as a floor by countTxt), never SB_TRIVIA.questions.length. */
 /* ============================================================================
    THE 14 GAMES, PLAYABLE DIRECTLY FROM THE ARCADE — no story in the way.
    Each tile mounts one SB_SAGA_ENGINES engine on its painted play-field at the
@@ -11398,7 +11643,7 @@ const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',c
 let _arcHandle=null, _arcEl=null;
 function arcadeClose(){
   if(_arcHandle){ try{ _arcHandle.destroy(); }catch(e){} _arcHandle=null; }
-  if(_arcEl){ _arcEl.remove(); _arcEl=null; }
+  if(_arcEl){ try{ if(_arcEl._liveMo) _arcEl._liveMo.disconnect(); }catch(e){} _arcEl.remove(); _arcEl=null; }
   try{ if(window.SB_W4_MUSIC) SB_W4_MUSIC.sync(); }catch(e){}
 }
 /* ============================================================================
@@ -11573,7 +11818,7 @@ function arcadeResult(g, res){
   const card=document.createElement('div'); card.className='arc-play-result';
   card.innerHTML=`<div class="arc-play-rcard">
       <div style="font-size:34px;line-height:1">${isBest?'🌟':win?'🏆':'💪'}</div>
-      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
+      <div style="font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 2px" data-live-prompt="">${isBest?'New record!':win?'Nice spelling!':'Good try!'}</div>
       <div style="font-size:13px;color:var(--muted)">${win?((coins?'+'+coins+' 🪙 · ':'')+'play again to beat it'):'Every round makes the words stick. Give it another go.'}</div>
       ${bestLine}
       ${recap}
@@ -11706,9 +11951,9 @@ function bizzRender(mode, data){
   else if(mode==='result'){ const d=data;
     main=`<div class="bz-result">
       <div style="font-size:44px">${d.won?'🏆':(d.banked>0?'💰':'💫')}</div>
-      <div class="bz-rh">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
-      <div class="bz-rmoney">${money(d.banked)}</div>
-      <div class="bz-rsub">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
+      <div class="bz-rh" data-live-prompt="">${d.won?'BIZZILLIONAIRE!':(d.banked>0?'You walk away with':'Good run!')}</div>
+      <div class="bz-rmoney" data-live-prompt="">${money(d.banked)}</div>
+      <div class="bz-rsub" data-live-prompt="">${d.coins?('+'+d.coins+' 🪙 added to your hive'):'No coins this time — the safe rungs bank your winnings.'}</div>
       <div style="display:flex;gap:9px;margin-top:18px;justify-content:center;flex-wrap:wrap">
         <button class="bz-again" style="padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:15px">Play again</button>
         <button class="bz-quit" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">← Arcade</button>
@@ -11719,7 +11964,8 @@ function bizzRender(mode, data){
       const showRight=S.reveal&&i===q.correctIdx; const showWrong=S.reveal&&picked&&i!==q.correctIdx;
       return `<button class="bz-ans${picked?' picked':''}${showRight?' right':''}${showWrong?' wrong':''}" data-bz="${i}">
         <span class="bz-al">${L[i]}</span><span class="bz-at">${esc(txt)}</span></button>`; }).join('');
-    main=`<div class="bz-q">${esc(q.q.q)}</div>
+    main=`<div class="bz-q" data-live-prompt="${escA('Question '+(S.rung+1)+'. '+q.q.q)}">${esc(q.q.q)}</div>
+      ${S.reveal?`<span class="sb-sr" data-live-prompt="${escA(S.picked===q.correctIdx?'Right.':'Not this time. The answer is '+q.choices[q.order.indexOf(q.correctIdx)]+'.')}"></span>`:''}
       ${S.hint?`<div class="bz-hint">🐝 ${esc(S.hint)}</div>`:''}
       <div class="bz-answers">${answers}</div>
       <div class="bz-lifelines">
@@ -11730,6 +11976,7 @@ function bizzRender(mode, data){
   }
   _bizzEl.querySelector('.bz-stage').innerHTML=main;
   _bizzEl.querySelector('.bz-ladder').innerHTML=ladder;
+  liveScan(_bizzEl.querySelector('.bz-stage'));
   // wire
   _bizzEl.querySelectorAll('[data-bz]').forEach(b=>b.onclick=()=>bizzAnswer(+b.getAttribute('data-bz')));
   _bizzEl.querySelectorAll('[data-ll]').forEach(b=>b.onclick=()=>bizzLifeline(b.getAttribute('data-ll')));
@@ -11791,8 +12038,11 @@ function gamesHub(){ const S=state; const c=active();
      start menu (arcadeMenu) the small tile did, where the level is picked. */
   const HERO_GAMES={ beeGrandPrix:{img:'app-art/arc-grandprix.jpg',grad:'linear-gradient(150deg,#2A1A4A,#1B1235)',tag:'Race',cta:'Start your engine'},
     honeycombRun:{img:'app-art/arc-honeycomb.jpg',grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)',tag:'Maze',cta:'Enter the maze'} };
+  /* G9: the child's own best on each game's tile, quietly — a number they set, never a target the
+     tile sets for them (arcBest, saved by arcadeResult; nothing shows before a first scored round) */
+  const BEST=arcBestMap(), bestOf=k=>{ const v=Math.round(+BEST[k]||0); return v>0?'Best '+fmtN(v):''; };
   (SB_ARCADE_GAMES||[]).forEach(g=>{ const H=HERO_GAMES[g.k]; if(!H) return;
-    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:H.sub})); });
+    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:bestOf(g.k)||H.sub})); });
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
@@ -11815,8 +12065,8 @@ function gamesHub(){ const S=state; const c=active();
           <span class="sb-daily-go">${doneToday?'Seen today ✓':'Play today\u2019s word →'}</span>
         </span>
       </span></button>`; }
-  if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=triviaTotal();
-    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?fmtN(nQ)+' questions · ':'')+SB_TRIVIA.themes.length+' themes · picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
+  if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=countTxt('trivia');   /* SB_COUNT's floor — the themes list grows when the word chapters land, so it is not counted here */
+    feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?nQ+' questions · ':'')+'picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
   feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — every square you claim is a finished round.',cta:'#7E2E9E',stat:''}));
   // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
@@ -11827,7 +12077,7 @@ function gamesHub(){ const S=state; const c=active();
   // single Play button + its screenshot — no difficulty strip. Lighter scrim so the shot reads.
   const arcadeGames=SB_ARCADE_GAMES.filter(g=>!HERO_GAMES[g.k]).map(g=>tile({act:'arcadeMenu',arg:g.k,
     grad:"linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
-    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
+    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:bestOf(g.k)})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
   const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
   return `<div style="max-width:860px;margin:0 auto">
@@ -11855,10 +12105,10 @@ function typedGame(){ const S=state; const g=S.game; const w=g.list[g.i]; let st
   else statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.list.length} · ✓ ${g.right}</div>`;
   const hint = S.gInfo ? `<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-align:left;font-size:13px;line-height:1.55;margin-bottom:14px">${w.d?('<b>Meaning</b> — '+blankHTML(w.d,w.w)):''}${w.d&&w.s?'<br>':''}${w.s?('<b>Sentence</b> — '+blankHTML(w.s,w.w)):''}${w.h?('<br><span style="display:inline-flex;align-items:center;gap:5px;color:var(--accent);vertical-align:middle">'+iconSVG('bulb',14)+'</span> '+blankHTML(w.h,w.w)):''}${(!w.d&&!w.s)?'No meaning for this one — listen closely!':''}${(S.gInfo|0)>=2?`<br><b>Shape</b> — ${String(w.w).replace(/[^a-z]/gi,'').length} letters${w.p?' · '+String(w.p).split(/[-\s]+/).filter(Boolean).length+' beat'+(String(w.p).split(/[-\s]+/).filter(Boolean).length===1?'':'s'):''}`:''}${(S.gInfo|0)>=3&&String(w.w).length>3?`<br><b>Starts with</b> — “${esc(String(w.w)[0].toUpperCase())}”`:''}</div>` : '';
   let bossFb=''; if(g.type==='boss'&&g.last&&g.last.ok&&!g.fb){ bossFb=`<div style="color:#1f9d57;font-weight:800;font-size:13px;margin-bottom:12px">💥 Hit! Boss took damage.</div>`; }
-  if(g.fb&&!g.fb.ok){ bossFb=missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
+  if(g.fb&&!g.fb.ok){ bossFb=`<span class="sb-sr" data-live-prompt="Not this time. The word is shown letter by letter, then Next word."></span>`+missFeedbackHTML(g.fb.word, g.fb.typed||'', {head:'Look &amp; listen — here is the word, letter by letter', foot:'⚑ Saved for revision'})
       +`<button data-act="gMissGo" style="width:100%;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">Next word →</button>`; }
   const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:var(--glow);text-align:center">
-      <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
+      <p style="font-size:13px;color:var(--muted);font-weight:700;margin:0 0 14px" data-live-prompt="${escA('Word '+(g.i+1)+'. '+(g.type==='boss'?'Spell it to attack.':'Listen and type.'))}">${g.type==='boss'?'Spell it to attack!':'Listen and type'}</p>
       <button data-act="gSay" style="display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge);margin-bottom:14px">${iconSVG('volume',18)} Hear the word</button>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px"><button data-act="gSaySlow" style="padding:9px 14px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:13px;border:1px solid var(--line)">Slow</button>${g.type==='boss'&&((active().pow||{}).reveal||0)>0?`<button data-act="gReveal" style="padding:9px 14px;border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);font-weight:800;font-size:13px">💡 Reveal letter × ${(active().pow||{}).reveal}</button>`:''}<button data-act="gInfoToggle" style="padding:9px 14px;border-radius:999px;font-weight:700;font-size:13px;border:1px solid var(--line);${S.gInfo?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--text)'}" aria-label="Hint, step ${(S.gInfo|0)+1} of 3">${iconSVG('bulb',14)} ${['Hint','More help','One more','Hide help'][S.gInfo|0]}</button></div>
       ${hint}${bossFb}
@@ -11896,9 +12146,9 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
   return `<div style="max-width:560px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG(g.status==='lost'?'oops':'love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${title}</h2>
-      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${big}</div>
-      <p style="color:var(--muted);font-weight:700;margin-top:6px">${sub}</p>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px" data-live-prompt="">${title}</h2>
+      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1" data-live-prompt="">${big}</div>
+      <p style="color:var(--muted);font-weight:700;margin-top:6px" data-live-prompt="">${sub}</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
@@ -11920,10 +12170,10 @@ function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=
   else if(q.kind==='vocab') prompt=`${eyebrow('What does it mean?')}<div style="font-family:var(--display);font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:.02em">${q.prompt}</div>${q.p2?`<div style=\"font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);margin-top:4px\">${esc(q.p2)}</div>`:''}${hearBtn('Hear the word')}`;
   else prompt=`${eyebrow('Which word means…')}<div style="font-size:clamp(17px,3.6vw,21px);line-height:1.55;font-weight:600">“${q.prompt}”</div>`;
   const wrongPick=g.picked!=null && q.choices[g.picked]!==q.answer;
-  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center">${prompt}</div>
+  const inner=`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,30px);box-shadow:var(--glow);margin-bottom:14px;text-align:center"><span class="sb-sr" data-live-prompt="${escA('Question '+(g.i+1)+' of '+g.qs.length)}"></span><div data-live-prompt="">${prompt}</div></div>
     ${wrongPick?(q.kind==='spell'
-        ? missFeedbackHTML(q.wordObj||q.answer, q.choices[g.picked]||'', {head:'Not this time — the right spelling, letter by letter'})
-        : `<div style="background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">Not this time — the answer is: <span style="color:var(--good)">${esc(trunc(q.answer,90))}</span></div>`):''}
+        ? '<span class="sb-sr" data-live-prompt="Not this time. The right spelling is shown, letter by letter."></span>'+missFeedbackHTML(q.wordObj||q.answer, q.choices[g.picked]||'', {head:'Not this time — the right spelling, letter by letter'})
+        : `<div data-live-prompt="" style="background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:center;font-weight:800;font-size:14px;animation:sb-pop .3s ease both">Not this time — the answer is: <span style="color:var(--good)">${esc(trunc(q.answer,90))}</span></div>`):''}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">${choices}</div>
     ${wrongPick?`<button data-act="gMcNext" style="width:100%;margin-top:12px;padding:13px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Next →</button>`:''}`;
   return gameShell(statusBar, inner); }
@@ -11931,9 +12181,9 @@ function mcDone(){ const g=state.game; const pct=Math.round(g.right/(g.qs.length
   return `<div style="max-width:560px;margin:0 auto">
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;box-shadow:var(--glow);margin-bottom:14px">
       <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:74px;height:82px">${mascotSVG('love')}</div></div>
-      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
-      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1">${g.right}/${g.qs.length}</div>
-      <p style="color:var(--muted);font-weight:700;margin-top:6px">${pct}% correct</p>
+      <h2 style="font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 8px" data-live-prompt="">${pct>=80?'Word wizard! 🧙':pct>=50?'Good thinking 💪':'Keep learning 🌱'}</h2>
+      <div style="font-family:var(--display);font-weight:800;font-size:40px;color:var(--accent);line-height:1" data-live-prompt="${g.right} of ${g.qs.length} right">${g.right}/${g.qs.length}</div>
+      <p style="color:var(--muted);font-weight:700;margin-top:6px" data-live-prompt="">${pct}% correct</p>
       <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:15px">${coinIc(15)} +${g.bonus||0} coins earned</div>
       ${gameReveal(g)}
     </div>
@@ -12043,7 +12293,7 @@ function overlays(){
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:28px 30px;text-align:center;box-shadow:var(--glow);max-width:340px">
         <div style="width:64px;height:72px;margin:0 auto 12px;animation:sb-float 2.5s ease-in-out infinite">${mascotSVG('happy')}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:6px">Loading the full library…</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.5">All 125,000 words — this one-time load takes a few seconds.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5">The whole library, ${countTxt('library')} words — this one-time load takes a few seconds.</div>
         <div style="width:28px;height:28px;margin:14px auto 0;border:3px solid var(--surface2);border-top-color:var(--accent);border-radius:50%;animation:sb-spin .8s linear infinite"></div>
       </div></div>`;
   if(S.pinDlg) h+=`<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgb(20 12 40 / .6)" data-act="pinCancel">
@@ -12294,7 +12544,7 @@ function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">${['free','beginner','regional'].map(col).join('')}</div>
       <div style="background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:11px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('spark',22)}</span>
-        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px">${esc(addon.name)} · +$${addon.priceYr}/yr</span><span style="display:block;font-size:12px;color:var(--muted)">${esc(addon.blurb)}</span></span>
+        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px">${esc(addon.name)} · +$${addon.priceYr}/yr</span><span style="display:block;font-size:12px;color:var(--muted)">${esc(factFill(addon.blurb))}</span></span>
         ${(()=>{ const owned=(()=>{ try{ return !!SB_ENT.hasAddon('advanced'); }catch(e){ return false; } })();
           if(owned) return `<span style="padding:9px 15px;border-radius:10px;background:var(--mastered-tint,#E1F4E8);color:var(--good,#1f9d57);font-weight:800;font-size:12.5px;white-space:nowrap">Active &#10003;</span>`;
           if(!addon.built) return `<button data-act="buyAddon" data-arg="advanced" style="padding:9px 15px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">Notify me</button>`;
@@ -12348,12 +12598,12 @@ function viewCloudSheet(){ const S=state; const m=S.cloudSheet;
                 ${here?'<span style="font-size:12px;font-weight:800;color:var(--muted)">On this device</span>':''}</div>
               ${here?'':`<div style="display:flex;gap:8px;flex-wrap:wrap">
                 <input id="cldn-${i}" placeholder="First name or nickname" style="flex:1;min-width:140px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600;outline:none">
-                <input id="clda-${i}" type="number" min="4" max="18" value="9" aria-label="Age" style="width:74px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600;outline:none">
+                <select id="clda-${i}" aria-label="Age range" style="min-height:44px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600">${AGE_BANDS.map(b=>`<option value="${b.k}"${b.k===bandForAge(9).k?' selected':''}>Ages ${b.n}</option>`).join('')}</select>
                 <button data-act="cloudAdd" data-arg="${i}" style="padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Restore</button></div>`}
             </div>`; }).join(''));
     return wrap(`
       <div style="font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:4px">Restore a speller</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px">Their progress is on your account. Their <b style="color:var(--text)">name and age were never uploaded</b>, so add those here — they stay on this device.</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px">Their progress is on your account. Their <b style="color:var(--text)">name and age range were never uploaded</b>, so add those here — they stay on this device.</div>
       ${body}${err}
       <button data-act="closeCloud" style="width:100%;padding:12px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px;margin-top:4px">Done</button>`,true);
   }
@@ -12512,7 +12762,7 @@ function viewAdmin(){ const S=state; const tab=S.adminTab||'users'; const me=SB_
     let saga=0; try{ saga=(window.SAGA2&&SAGA2.cleared)?SAGA2.cleared():0; }catch(e){}
     body=`<div class="sb-card"><div style="font-family:var(--display);font-weight:800;font-size:15px;margin-bottom:8px">Analytics (local snapshot)</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
-        ${[['Profiles',(S.children||[]).length],['Accounts',SB_AUTH.listUsers().length],['Quotes',(window.SB_QUOTES||[]).length],['Saga cleared',saga]].map(([l,v])=>`<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent)">${fmtN(v)}</div><div style="font-size:11.5px;color:var(--muted);font-weight:700">${l}</div></div>`).join('')}
+        ${[['Profiles',(S.children||[]).length],['Accounts',SB_AUTH.listUsers().length],['Quotes',SB_COUNT.quotes()==null?'…':SB_COUNT.quotes()],['Saga cleared',saga]].map(([l,v])=>`<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent)">${fmtN(v)}</div><div style="font-size:11.5px;color:var(--muted);font-weight:700">${l}</div></div>`).join('')}
       </div>
       <div style="font-size:12px;color:var(--muted);margin-top:12px">Real product analytics (PostHog) + revenue BI (warehouse + Metabase) connect in Phase 2 — see LAUNCH-READINESS.md.</div></div>`;
   }
@@ -12609,6 +12859,9 @@ function render(){
       style="flex-shrink:0;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
+  if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
+  if(state.nav==='home'&&state.screen==='app') homeArtHint();
+  if(state.screen==='app'&&(state.game||state.nav==='daily')) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the
@@ -12624,6 +12877,53 @@ function render(){
   trapFocusAfterRender();
   save();
 }
+/* HOME'S PICTURES ARRIVE WITH ITS WORDS (audit v4 B6: "avatar and journey banners blank for ~6 s").
+   Home's avatar and its two painted journey plates are asked for only when Home is drawn — after
+   ~1MB of script — so on a phone network the words sat there for seconds over empty frames. Each
+   Home render notes which of those pictures it showed (device key homeArt, through the store); next
+   visit, index.html's parse-time peek preloads exactly those, alongside the scripts. Nothing is
+   added to a first load: the same files, asked for sooner, and only for a speller who has been here. */
+let _homeArtWas=null;
+function homeArtHint(){ try{
+  const urls=[...document.querySelectorAll('#root .sb-home-greet img, #root .sb-home-r2 img')].filter(i=>i.getBoundingClientRect().top<innerHeight).map(i=>i.getAttribute('src')||'')
+    .filter(u=>/^(avatars|app-art)\/[a-z0-9\/._-]+\.(png|webp|jpe?g)$/i.test(u)).filter((u,i,a)=>a.indexOf(u)===i).slice(0,5);
+  if(!urls.length) return; const k=JSON.stringify(urls);
+  if(_homeArtWas==null) _homeArtWas=JSON.stringify(SB_STORE.getJSON('homeArt',[]));
+  if(k!==_homeArtWas){ _homeArtWas=k; SB_STORE.setJSON('homeArt',urls); }
+}catch(e){} }
+/* P6 (audit v4): A GAME'S PROMPT AND ITS RESULT ARE SPOKEN TO A SCREEN READER. One polite live
+   region, #sb-live (visually hidden, on <body>, so no render ever replaces it — a live region rebuilt
+   with its new text is not announced). Screens mark what to say with data-live-prompt (its value, or
+   the element's text without its buttons); the arcade engines, which this file does not draw, are
+   read by selector (their clue line .sg-cardmean / #ss-hint, their end card). Said once per change,
+   never a spelling the screen does not already show, and nothing on screen moves. */
+const LIVE_STRIP=/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]\uFE0F?/gu;
+let _liveEl=null, _liveSaid='';
+function liveEl(){ if(_liveEl&&_liveEl.isConnected) return _liveEl; if(!document.body) return null;
+  _liveEl=document.getElementById('sb-live')||document.createElement('div');
+  _liveEl.id='sb-live'; _liveEl.className='sb-sr'; _liveEl.setAttribute('role','status'); _liveEl.setAttribute('aria-live','polite'); _liveEl.setAttribute('aria-atomic','true');
+  if(!_liveEl.isConnected) document.body.appendChild(_liveEl); return _liveEl; }
+function liveText(el){ const v=el.getAttribute&&el.getAttribute('data-live-prompt'); if(v) return v;
+  const k=el.cloneNode(true); k.querySelectorAll('button,[aria-hidden="true"],svg').forEach(x=>x.remove());
+  return [...k.childNodes].map(n=>(n.textContent||'').trim()).filter(Boolean).join('. '); }
+function liveSay(parts){ try{ const t=parts.map(x=>String(x||'').replace(LIVE_STRIP,'').replace(/\s+/g,' ').trim()).filter(Boolean).join('. ').replace(/([.?!:;—…])\s*\.(?=\s|$)/g,'$1');
+    if(t===_liveSaid) return;
+    /* the same prompt with something added (a miss under its question) says only what was added */
+    const say=(_liveSaid&&t.indexOf(_liveSaid)===0)?t.slice(_liveSaid.length).replace(/^[\s.]+/,''):t;
+    _liveSaid=t; const el=liveEl(); if(el&&say) el.textContent=say; }catch(e){} }
+function liveScan(scope){ try{ scope=scope||root; const els=[...scope.querySelectorAll('[data-live-prompt]')].filter(e=>e.getClientRects().length);
+    liveSay(els.map(liveText)); }catch(e){} }
+/* the arcade engines: their end card, else their clue line */
+function liveScanArc(host){ try{ if(!host||!host.isConnected) return;
+    const vis=e=>e&&e.getClientRects().length;
+    const res=[...document.querySelectorAll('.arc-play-result [data-live-prompt]')].filter(vis);
+    if(res.length){ liveSay(res.map(liveText)); return; }
+    const end=host.querySelector('.sg-endcard');
+    if(vis(end)){ liveSay(['.sg-end-h','.sg-end-sub','.sg-end-score','.sg-wordsum-h'].map(q=>{ const e=end.querySelector(q); return e?e.textContent:''; })); return; }
+    const clue=[...host.querySelectorAll('.sg-cardmean, #ss-hint')].filter(vis).map(e=>e.textContent.trim()).filter((t,i,a)=>t&&a.indexOf(t)===i);
+    if(clue.length) liveSay(['Clue: '+clue[0]]); }catch(e){} }
+try{ liveEl(); }catch(e){}
+window.SB_LIVE={ say:liveSay, scan:liveScan };
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
 root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; callAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
 root.addEventListener('dblclick', e=>{ const el=e.target.closest('[data-dbl]'); if(!el) return;

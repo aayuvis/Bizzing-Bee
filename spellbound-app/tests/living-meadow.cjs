@@ -52,14 +52,22 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(fresh.header, 'position stays legible — the stop card still says "of 13"');
   ok(fresh.wide, 'the board is far wider than the camera — a world, not a screen');
 
+  /* The camera is placed by mwClamp (trail.js) on a timer after every render, and only once the
+     board's painting has LOADED — so it is read once that has happened, never after a guessed
+     pause: on a loaded machine the painting took longer than the pause, and a background
+     render from the idle queue landed between two reads (it read 0 → 600), and the clamp is
+     Infinity until it has loaded (a scroll to the far east "reached 100%"). */
+  const SETTLE = async () => { for (const t0 = Date.now(); Date.now() - t0 < 15000;) {
+      const el = document.getElementById('sb-pan'), img = el && el.querySelector('img'); if (el && (!img || img.complete)) break; await new Promise(r => setTimeout(r, 30)); }
+    await new Promise(r => setTimeout(r, 0)); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); };
   // ---- the camera clamp IS the reveal: you cannot scroll into the future ----
-  const clamp = await pg.evaluate(async () => {
+  const clamp = await pg.evaluate(async (SETTLE) => { await eval(SETTLE)();   // the clamp is set once the painting has loaded
     const el = document.getElementById('sb-pan');
     el.scrollLeft = 999999;
-    await new Promise(r => setTimeout(r, 250));
+    await new Promise(r => setTimeout(r, 250)); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));   // the scroll event (and its clamp) runs in a frame
     const max = el.scrollLeft; const bd = el.firstElementChild.clientWidth;
     return { max, bd, frac: (max + el.clientWidth) / bd };
-  });
+  }, SETTLE.toString());
   ok(clamp.frac < 0.33, 'the camera clamps at the earned edge (' + Math.round(clamp.frac * 100) + '% of the world reachable) — off-canvas, never fog');
 
   // ---- no fog: nothing on the board is veiled or darkened ----
@@ -93,20 +101,20 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(unroll.rv >= 1, 'the reveal is remembered (rv=' + unroll.rv + ')');
   ok(/Mushroom Hollow|Hive Gates|Lollipop/.test(unroll.sign), 'and the bend is teased (' + unroll.sign.trim() + ')');
   // the camera OPENS at the child's stop, not at the west end of the world
-  const home = await pg.evaluate(async () => {
+  const home = await pg.evaluate(async (SETTLE) => { const settle = eval(SETTLE);
     app.trailBack(); await new Promise(r => setTimeout(r, 200));
-    app.trailAct('honey|meadow'); await new Promise(r => setTimeout(r, 1200));
+    app.trailAct('honey|meadow'); await new Promise(r => setTimeout(r, 1200)); await settle();
     const el = document.getElementById('sb-pan');
     return { sl: el ? el.scrollLeft : -1 };
-  });
+  }, SETTLE.toString());
   ok(home.sl > 120, 'the camera opens AT the child\'s stop (scroll=' + Math.round(home.sl) + '), no snap to the west end');
   // …and a background render must NOT send the camera home
-  const stay = await pg.evaluate(async () => {
-    const el = document.getElementById('sb-pan'); const before = el.scrollLeft;
-    render(); await new Promise(r => setTimeout(r, 500));
+  const stay = await pg.evaluate(async (SETTLE) => { const settle = eval(SETTLE);
+    await settle(); const before = document.getElementById('sb-pan').scrollLeft;
+    render(); await new Promise(r => setTimeout(r, 500)); await settle();
     const el2 = document.getElementById('sb-pan');
     return { before, after: el2 ? el2.scrollLeft : -1 };
-  });
+  }, SETTLE.toString());
   ok(Math.abs(stay.after - stay.before) < 40, 'the camera SURVIVES background renders (' + Math.round(stay.before) + ' → ' + Math.round(stay.after) + ')');
   // the chest trivia card: its answers must actually be clickable
   const triv = await pg.evaluate(async () => {

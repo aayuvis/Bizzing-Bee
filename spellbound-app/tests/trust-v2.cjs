@@ -106,6 +106,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
 
   /* ---- 7. (B5) the buddy's hello comes from what the child did, and changes each visit ---- */
   const gr = await pg.evaluate(async () => { const W = () => new Promise(r => setTimeout(r, 80)); const c = active();
+    await new Promise(r => SB_LAZY.need('trail', r));   /* the hello waits for the trail (audit v4 B5) — wait on that, not on time */
     c.missed = [{ w: 'rhythm', n: 1 }]; c.trapsBeaten = { necessary: 1 };
     const seen = []; const txt = () => (document.querySelector('.sb-home-greet') || {}).textContent || '';
     for (let i = 0; i < 6; i++) { app.setNav('games'); await W(); app.setNav('home'); await W(); const a = txt(); render(); await W(); seen.push({ a, b: txt(), k: (JSON.parse(SB_STORE.get('greet') || '{}')[c.name] || [])[1] }); }
@@ -113,6 +114,26 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(gr.seen.every(x => x.a && x.a === x.b), 'the hello holds still while the child is on Home (a re-render keeps it)');
   ok(gr.seen.every((x, i) => !i || x.k !== gr.seen[i - 1].k), 'it is never the same hello two visits running: ' + gr.seen.map(x => x.k).join(' → '));
   ok(gr.seen.some(x => x.k === 'miss') && gr.seen.some(x => x.k === 'trap') && !gr.leak, 'it speaks from evidence (a word to try again, a trap beaten) and never prints the missed word');
+  /* audit v4 B5: a VISIT is a page load. The pick used to be made at Home's first paint, before
+     trail-data.js (the next stop) had landed — so a quiet child (no misses, no traps) had one candidate
+     and heard the buddy's line on every visit. Reload five times: never the same hello twice running,
+     and the next stop is among them. */
+  {
+    const c2 = await b.newContext({ viewport: { width: 1100, height: 900 } });
+    await c2.addInitScript(s => { try { if (!localStorage.getItem('sb_t_q')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_q', '1'); localStorage.setItem('sb_splash', '0'); } } catch (e) {} },
+      Object.assign({}, seed, { pin: '2468', children: [Object.assign({}, seed.children[0], { name: 'Quiet', missed: [] })] }));
+    const p2 = await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
+    const visits = [];
+    await p2.goto('file://' + SRC + '/index.html');
+    for (let i = 0; i < 5; i++) {
+      const up = await p2.waitForFunction(() => typeof state !== 'undefined' && document.querySelector('.sb-home-greet:not(.sb-card)') && !document.querySelector('.sb-greet-hold'), null, { timeout: 45000 }).then(() => true, () => false);
+      visits.push(up ? await p2.evaluate(() => ({ k: (JSON.parse(SB_STORE.get('greet') || '{}').Quiet || [])[1], t: (document.querySelector('.sb-home-greet:not(.sb-card)') || {}).textContent || '' })) : { k: 'never-drawn', t: '' });
+      await p2.reload();
+    }
+    await c2.close();
+    ok(visits.every(v => v.k && v.t) && visits.every((v, i) => !i || v.k !== visits[i - 1].k) && visits.some(v => v.k === 'next'),
+      'a quiet child\'s hello changes on every visit (a reload), and the next stop is one of them: ' + visits.map(v => v.k).join(' → '));
+  }
 
   /* ---- 8. (T3) no paywall on a child's screen: no price, no plan button, no sales page ---- */
   const pw = await pg.evaluate(async () => { const W = ms => new Promise(r => setTimeout(r, ms)); const out = [];

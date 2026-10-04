@@ -103,13 +103,6 @@ window.SB_SOUTHASIA = [
     "def": "a new personification of a familiar idea",
     "hook": "A · VA · TAR — three As, and it ends in R, not A",
     "ex": "In the epic, the god comes to earth as an avatar with a bow."
-   },
-   {
-    "w": "yogi",
-    "say": "YOH-gee",
-    "def": "United States baseball player (born 1925)",
-    "hook": "yoga with an I: the one in this family that does not end in A",
-    "ex": "The yogi sat perfectly still while the class fidgeted."
    }
   ],
   "sc": {

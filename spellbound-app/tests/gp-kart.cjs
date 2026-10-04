@@ -9,6 +9,7 @@
      NODE_PATH=/opt/node22/lib/node_modules node tests/gp-kart.cjs                        */
 const { chromium } = require('playwright');
 const path = require('path');
+const { booted, until, raceTime, lazy } = require('./lib/wait.cjs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
@@ -20,9 +21,10 @@ async function race(pg, kart) {
     document.body.appendChild(host);
     window.SB_SAGA_ENGINES.beeGrandPrix(host, { diff: 'medium', world: 'Hive', scene: 'meadow', kart }, () => {});
   }, kart);
-  await pg.waitForTimeout(900);
+  /* the how-to card, then the countdown: wait for each, not for a guess at how long they take */
+  await pg.waitForSelector('#gpk #sg-howgo', { timeout: 30000 });
   await pg.evaluate(() => document.querySelector('#gpk #sg-howgo').click());
-  for (let i = 0; i < 40; i++) { if (await pg.evaluate(() => window._race.state().mode === 'race')) break; await pg.waitForTimeout(150); }
+  await until(pg, () => window._race && window._race.state().mode === 'race', null, 60000);
   await pg.evaluate(() => window._race.clearBoxes());
 }
 const st = pg => pg.evaluate(() => window._race.state());
@@ -33,8 +35,8 @@ const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEven
   const errs = [];
   const open = async (w, h) => { const pg = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     pg.on('pageerror', e => errs.push(e.message)); await pg.addInitScript(() => { window.SB_DEBUG = true; });
-    await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(3500);
-    await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
+    await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await booted(pg);
+    await lazy(pg, 'arcade');   // the engines are lazy since FIX-BEE N2 (boot-lazy 'arcade')
     return pg; };
 
   /* ---------- desktop ---------- */
@@ -45,13 +47,15 @@ const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEven
   const src = await pg.evaluate(() => !!(window.SB_KART_ART && SB_KART_ART.draw && SB_KART_ART.thumb));
   ok(src, 'the karts come from SB_KART_ART, not a painted sprite');
 
-  /* 2 — IT TURNS, IT DOES NOT TILT. Hold a direction: the kart yaws toward it. */
+  /* 2 — IT TURNS, IT DOES NOT TILT. Hold a direction: the kart yaws toward it. Held for
+     300ms of RACE time (lib/wait.cjs raceTime): on a loaded machine 300ms of wall clock was
+     as little as 120ms of race, and the yaw had not finished turning when it was read. */
   await pg.evaluate(() => { window._race.toStraight(90); window._race.setV(1); window._race.steerTo(-0.4); });
-  await key(pg, 'keydown', 'ArrowRight'); await pg.waitForTimeout(300);
+  await key(pg, 'keydown', 'ArrowRight'); await raceTime(pg, 0.3);
   const yR = (await st(pg)).yaw; await key(pg, 'keyup', 'ArrowRight');
-  await key(pg, 'keydown', 'ArrowLeft'); await pg.waitForTimeout(300);
+  await key(pg, 'keydown', 'ArrowLeft'); await raceTime(pg, 0.3);
   const yL = (await st(pg)).yaw; await key(pg, 'keyup', 'ArrowLeft');
-  await pg.waitForTimeout(500); const y0 = (await st(pg)).yaw;
+  await raceTime(pg, 0.5); const y0 = (await st(pg)).yaw;
   ok(yR > 0.5 && yL < -0.5 && Math.abs(y0) < 0.1, `the kart yaws into the steer — right ${yR.toFixed(2)}, left ${yL.toFixed(2)}, straight ${y0.toFixed(2)}`);
 
   /* 3 — THE BRAKE LAMPS LIGHT, AND YOU CAN SEE THEM. Out at ±27 units the nearer tyre
@@ -61,20 +65,24 @@ const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEven
     const r = [-1, 1].map(k => { const x = Math.round((K.x + k * 18 * u) * s.dpr), y = Math.round((K.y - 32 * u) * s.dpr);
       const d = g.getImageData(x - 2, y - 2, 5, 5).data; let R = 0, G = 0; for (let i = 0; i < d.length; i += 4) { R += d[i]; G += d[i + 1]; } return { R: R / 25, G: G / 25 }; });
     return r; });
-  await pg.evaluate(() => { window._race.toStraight(90); window._race.setV(1); window._race.steerTo(0); });
-  await pg.waitForTimeout(300); const off = await lamp();
+  /* the rivals are sent a long way back first: a rival kart drawn across the player's tail
+     would be read as the lamp (rivals are wherever the clock left them) */
+  await pg.evaluate(() => { const R = window._race; R.toStraight(90); R.setV(1); R.steerTo(0); R.state().rivScr.forEach((_, i) => R.pace(i, -6000)); });
+  await raceTime(pg, 0.3); const off = await lamp();
   /* read the lamps only once braking has been DRAWN: under load 150ms can be two frames,
-     and a pixel read before the frame that lit them measures the timer, not the lamp */
+     and a pixel read before the frame that lit them measures the timer, not the lamp. And
+     read them after the same 50ms of RACE that three frames are on an idle machine — three
+     frames of a throttled run are 150ms of race (a 4x run read 102 → 190, under the 200 bar) */
   await key(pg, 'keydown', 'ArrowDown');
   await pg.waitForFunction(() => window._race.state().braking, null, { timeout: 2000 });
-  await pg.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r)))));
+  await raceTime(pg, 0.05);
   const on = await lamp(); await key(pg, 'keyup', 'ArrowDown');
   const lit = on.every((q, i) => q.R > 200 && q.R - off[i].R > 50 && q.R - q.G > 80);
   ok(lit, `both brake lamps are red and brighten under braking — R ${off.map(q => Math.round(q.R)).join('/')} → ${on.map(q => Math.round(q.R)).join('/')}`);
 
   /* 4 — THE VERGE KICKS UP DUST. */
   await pg.evaluate(() => { window._race.toStraight(90); window._race.setV(1); window._race.steerTo(-0.93); });
-  await pg.waitForTimeout(400);
+  await raceTime(pg, 0.4);
   const dust = (await st(pg)).puffs;
   ok(dust >= 6, `two wheels on the verge throw up dust — ${dust} puffs in the air`);
 
@@ -92,10 +100,10 @@ const key = (pg, t, k) => pg.evaluate(([t, k]) => dispatchEvent(new KeyboardEven
   const clash = [];
   for (const [from, k] of [[-0.3, 'ArrowRight'], [0.3, 'ArrowLeft']]) {
     await ph.evaluate((x) => { window._race.toStraight(90); window._race.setV(0.8); window._race.steerTo(x); }, from);
-    await ph.waitForTimeout(200);
+    await raceTime(ph, 0.2);
     await key(ph, 'keydown', k);
     for (let n = 0; n < 14; n++) {
-      await ph.waitForTimeout(45);
+      await raceTime(ph, 0.045);   // fourteen looks across the same ~0.63s of race, however slow the frames
       const r = await ph.evaluate(() => {
         const s = window._race.state(), K = s.kart, cvr = document.querySelector('#gpk #sg-cv').getBoundingClientRect();
         const kb = { l: cvr.left + K.x - K.w * 0.5, r: cvr.left + K.x + K.w * 0.5, t: cvr.top + K.y - K.w * 1.1, b: cvr.top + K.y };

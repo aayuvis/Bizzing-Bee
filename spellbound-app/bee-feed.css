@@ -5,7 +5,10 @@
    Lazy, with bee-feed.js: never on the first screen. */
 .sb-feedpage { --bz-ink: var(--text); --bz-muted: var(--muted); --bz-line: var(--line); --bz-card: var(--paper, var(--bg2));
   --bz-chip: var(--surface2, var(--chip)); --bz-accent: var(--accent); --bz-display: var(--display); --bz-body: var(--ui, var(--body));
-  max-width: 720px; margin: 0 auto; }
+  max-width: 560px; margin: 0 auto; }
+/* ONE COLUMN: the page head, its subtitle and the cards share the card list's 560px (bizzing-feed.css
+   .bzf-list), so the back pill and the subtitle start where the cards start (audit v4: at 1280 the
+   head began at x=248 and the cards at x=336). tests/feed-screen.cjs measures it. */
 .sb-feedpage .bz-card { background: var(--paper, var(--bg2)); border: 1px solid var(--line); border-radius: var(--r-xl, 20px); box-shadow: var(--sh-rest); }
 .sb-feedpage .bz-btn { text-decoration: none; }
 .sb-feedpage .bz-btn.out { background: transparent; color: var(--text); }

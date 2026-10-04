@@ -11,6 +11,7 @@ const { chromium } = require('playwright');
 const path = require('path');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
+const SB_STORE_REC = /^p1\$[0-9a-f]{16,64}\$\d+\$[0-9a-f]{64}$/;   // store.js's PIN record: "p1$<salt>$<rounds>$<sha-256>"
 const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: null,
   children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'bizzy', theme: 'spellbound', coins: 50, xp: 40, level: 3 }] };
 
@@ -42,8 +43,12 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   await type('9999'); r = await look();
   ok(r.dlg && r.dlg.make && !r.dlg.first && !r.pin && !r.closer, 'a mismatch saves nothing, opens nothing, and starts over');
   await type('1234'); await type('1234'); r = await look();
-  ok(r.pin === '1234' && !r.dlg && r.tiers && r.closer, 'a match saves the PIN and carries on to the plan sheet (asked once, not twice)');
-  ok(await pg.evaluate(() => { const s = JSON.parse(localStorage.getItem('sb_saas_v2') || '{}'); return s.pin === '1234'; }), 'and the PIN is saved with the device');
+  ok(r.pin && !r.dlg && r.tiers && r.closer, 'a match saves the PIN and carries on to the plan sheet (asked once, not twice)');
+  /* (audit v4 Q1) it is kept salted and hashed: not the digits, in memory or on the device */
+  const kept = await pg.evaluate(() => { const s = JSON.parse(localStorage.getItem('sb_saas_v2') || '{}');
+    return { mem: state.parentPin, disk: s.pin, raw: localStorage.getItem('sb_saas_v2'), ok: SB_STORE.pinCheck('1234', s.pin), no: SB_STORE.pinCheck('1243', s.pin), again: SB_STORE.pinMake('1234') }; });
+  ok(SB_STORE_REC.test(kept.disk) && kept.disk === kept.mem && kept.ok && !kept.no, 'and the PIN is saved with the device — as a salted hash that 1234 opens and 1243 does not');
+  ok(!/"pin":"1234"/.test(kept.raw) && !/1234/.test(kept.disk) && kept.again !== kept.disk, 'the digits are nowhere in what is stored, and the same PIN hashes differently with a new salt');
 
   /* ---- 3. with a PIN: the sheet waits for it; a wrong one opens nothing ---- */
   await reset(); await pg.evaluate(() => app.goPaywall()); r = await look();
@@ -75,7 +80,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   let k1 = await where();
   await press(['Numpad4', 'Digit3', 'Numpad2', 'Digit1']);
   let k2 = await where();
-  ok(k1.dlg && k1.dlg.make && k1.dlg.first && !k1.pin && !k2.dlg && k2.pin === '4321' && k2.nav === 'progress' && k2.tab === 'parent',
+  ok(k1.dlg && k1.dlg.make && k1.dlg.first && !k1.pin && !k2.dlg && SB_STORE_REC.test(k2.pin || '') && k2.nav === 'progress' && k2.tab === 'parent',
     'choosing a PIN by keyboard: top row and numpad type, Backspace takes one back, typed twice it is saved and the parent zone opens');
   await pg.evaluate(() => { state.progTab = 'me'; app.setNav('home'); });
   await pg.evaluate(() => { const i = document.querySelector('.sb-hsearch input,input'); if (i) i.focus(); app.setNav('parent'); });
@@ -88,6 +93,23 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   await press(['Numpad4', 'Numpad3', 'Numpad2', 'Numpad1']); const k3 = await where();
   ok(!k1.dlg && k1.nav === 'home' && k2.dlg && k2.dlg.wrong && !k3.dlg && k3.nav === 'progress' && k3.tab === 'parent',
     'Escape cancels; a wrong PIN typed by keyboard opens nothing; the right one, on the numpad, opens the parent zone');
+
+  /* ---- 6. (audit v4 Q1) a household that kept the four digits (before v9) is migrated once ---- */
+  { const old = { sv: 8, theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1357', children: seed.children };
+    const c2 = await b.newContext({ viewport: { width: 900, height: 1000 } });
+    await c2.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, old);
+    const p2 = await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
+    await p2.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await p2.waitForTimeout(2800);
+    const m = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, mem: state.parentPin }));
+    ok(m.ran.join() === 'v8_to_v9' && SB_STORE_REC.test(m.disk) && m.disk === m.mem, `a pre-v9 household runs v8_to_v9 once and stores the record at once, not the digits (${m.ran.join()})`);
+    await p2.evaluate(() => { state.screen = 'app'; state.progTab = 'me'; app.setNav('home'); app.setNav('parent'); });
+    for (const k of '1357') await p2.evaluate(k => app.pinKey(k), k);
+    const opened = await p2.evaluate(() => state.nav === 'progress' && state.progTab === 'parent' && !state.pinDlg);
+    ok(opened, 'and its old PIN, 1357, still opens the parent zone');
+    await p2.reload(); await p2.waitForTimeout(2600);
+    const m2 = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin }));
+    ok(m2.ran.length === 0 && m2.disk === m.disk, 'a second boot migrates nothing and keeps the same record');
+    await c2.close(); }
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();

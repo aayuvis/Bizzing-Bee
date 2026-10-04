@@ -16,8 +16,13 @@
    locally they 404 and the app falls back to device speech.
    It also holds mockbee's list of recorded lines to the files in voice/ann/, so the list cannot
    drift as clips are added or removed.
+   Budget: 262s in a full run on 4 Oct, longer on a busier machine — the runner gives it 900s (lib/run.cjs
+   TIMEOUT), because it timed out at the 300s default in a full run under load (audit v4, R5). The
+   per-step pauses are its OBSERVATION windows (how long an error has to show itself), so they
+   stay; the waits that stood for "the app has booted" wait for that instead.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/console-clean.cjs                   */
 const { chromium } = require('playwright');
+const { booted } = require('./lib/wait.cjs');
 const fs = require('fs');
 const path = require('path');
 const { serve } = require('./lib/serve.cjs');
@@ -41,7 +46,7 @@ async function walk(b, base, vp, tag) {
   pg.on('pageerror', e => errs.push(`${tag} ${step}: page error: ${e.message}`));
   pg.on('console', m => { if (m.type() !== 'error') return; const at = (m.location() || {}).url || '';
     if (EXPECTED(at)) return; errs.push(`${tag} ${step}: ${m.text().slice(0, 160)}${at ? ' @ ' + at.split('/').slice(-2).join('/') : ''}`); });
-  await pg.goto(base); await pg.waitForTimeout(3200);
+  await pg.goto(base); await booted(pg); await pg.waitForTimeout(1000);   // booted, then a second of quiet to show a boot-time error
   step = 'first tap'; await pg.mouse.click(4, 400); await pg.waitForTimeout(1200);   // starts the idle queue, as a child's first tap does
   const visited = [];
   for (const r of ROUTES) {
@@ -85,7 +90,7 @@ async function walk(b, base, vp, tag) {
 
   /* mockbee's recorded-line list is the folder, exactly */
   const ctx2 = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
-  const pg = await ctx2.newPage(); await pg.goto('file://' + ROOT + '/index.html'); await pg.waitForTimeout(1500);
+  const pg = await ctx2.newPage(); await pg.goto('file://' + ROOT + '/index.html'); await booted(pg);   // mockbee.js has run: MOCKBEE is there to ask
   const have = (await pg.evaluate(() => window.MOCKBEE && typeof MOCKBEE.annHave === 'function' ? MOCKBEE.annHave() : null)) || [];
   await ctx2.close();
   const files = fs.readdirSync(path.join(ROOT, 'voice', 'ann')).filter(f => /\.mp3$/.test(f)).map(f => f.replace(/\.mp3$/, ''));
