@@ -164,7 +164,7 @@
     mockEnd() { const g = state.adv; if (!g || g.done) return; g.done = true; if (g.timer) clearInterval(g.timer);
       const c = active(); const st = aStats(c); const total = g.round === 'lightning' ? (g.right + g.wrong) : (g.list ? g.list.length : g.qs.length);
       const pct = total ? Math.round(g.right / total * 100) : 0; g.pct = pct; g.total = total;
-      const bonus = addCoins('contest'); g.bonus = bonus;   /* a mock completed is the standard's contest event */
+      const bonus = pct >= 70 ? addCoins('contest') : 0; g.bonus = bonus;   /* the contest coin at the PASS MARK only (games spec §1.3) — finishing is not passing */
       if (g.round === 'lightning' && g.right > (st.mockBest || 0)) st.mockBest = g.right;
       try { logActivity('practice', 'Mock Bee — ' + g.round, { done: total, right: g.right, coins: bonus }, []); sfx(pct >= 70 ? 'win' : 'level'); if (pct >= 70) burstConfetti(110); } catch (e) {}
       save(); render(); },
@@ -315,10 +315,10 @@
         <p style="color:var(--muted);font-size:13.5px;margin:0 0 18px">National-bee prep from the library of ${countTxt('library')} words. Master the hardest words.</p>
         <div style="display:grid;gap:12px">
           ${seg('ucj', 'ultraJourney', '#7C5CFF', 'Ultra Champions Journey', '2-year plan · 150–300 words a day, list after list, with the fast Sprint method.', 'Day ' + st.day)}
-          ${seg('mock', 'mockBee', '#C8901B', 'Mock Spelling Bee', 'Practice rounds — written, vocabulary & lightning — with a readiness benchmark.', 'best ' + (st.mockBest || 0))}
           ${seg('tips', 'advTips', '#13A892', 'Tips & Tricks', 'Memory, fast reading, etymology & bee-day tactics from champion methodology.', Object.keys(st.tipsRead || {}).length + ' read')}
           ${seg('concepts', 'advanced', '#5B3FA6', 'Advanced Concepts', 'Schwa rescue, stress shift, the origin tree & question strategy — narrated.', Object.keys(st.conceptsRead || {}).length + '/' + ADV._advChapters().length)}
-          ${seg('games', 'advGames', '#E8458C', 'Advanced Games', 'Memory match & rapid dictation — the drills a national-level speller needs.', 'play')}
+          ${/* Advanced Mock Rounds, Rapid Dictation and Memory Match left the pack (games spec §3.1, GAMES-LEDGER.md):
+               Mock Bee · Champ and Spelling Gym · Champ Dictation / Word Doctor are their homes now */''}
         </div>
       </div>`; },
 
