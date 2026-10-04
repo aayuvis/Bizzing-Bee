@@ -615,6 +615,7 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
   try{ const wp=weekProgress(c); if(wp.stops||wp.words) out.push({k:'week',t:`This week: ${wp.stops} stop${wp.stops===1?'':'s'} and ${wp.words} word${wp.words===1?'':'s'} mastered. Nice work, ${nm}.`}); }catch(e){}
   try{ const tb=Object.keys(c.trapsBeaten||{}).length; if(tb) out.push({k:'trap',t:`You have beaten ${tb} trap word${tb===1?'':'s'} — words that once tripped you up.`}); }catch(e){}
   try{ const nx=SB_SHELL.nextStep(); if(nx&&nx.ready&&!nx.allDone&&nx.title) out.push({k:'next',t:`Next up: ${trunc(nx.title,40)}. Ready when you are, ${nm}.`}); }catch(e){}
+  try{ const lv=oneLevel(c); if(lv&&lv.label) out.push({k:'level',t:`You are at ${lv.label}, ${nm}. Every word you spell right moves it.`}); }catch(e){}
   let line=''; const who=c.avatar||'bizzy';
   try{ const G=window.SB_AV_GREETINGS||{}; line=G[who]||''; }catch(e){}
   if(!line){ try{ if(typeof SB_AV_CARD==='function'){ const d=SB_AV_CARD(who); line=(d&&d.greeting)||''; } }catch(e){} }
@@ -624,6 +625,11 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
 let _greetVisit=null;   /* one pick per visit to Home — a re-render keeps it */
 function homeGreet(c){ c=c||active(); const C=homeGreetCands(c); const key=(c&&c.name||'')+'|'+state.nav;
   if(_greetVisit&&_greetVisit.key===key&&C.some(x=>x.k===_greetVisit.k)) return C.find(x=>x.k===_greetVisit.k).t;
+  /* PICK FROM ALL THE EVIDENCE, OR WAIT (audit v4 B5). The next stop is known only once trail-data.js
+     lands, which is after Home's first paint — so a visit's one pick, made at that paint, chose from
+     what boot had. On a quiet day that was the buddy's line alone, and the same hello came back every
+     visit. Until the trail is in (loaded or failed), the bubble holds its place instead (null). */
+  try{ if(window.SB_LAZY&&!SB_LAZY.ready('trail')) return null; }catch(e){}
   /* the rotation is a DEVICE note (sb_greet: {name:[n,k]}), not part of the child's record — a hello
      must never change what a backup holds */
   let G={}; try{ G=JSON.parse(SB_STORE.get('greet')||'{}')||{}; }catch(e){}
@@ -6810,6 +6816,7 @@ function viewHome(){
           ${(()=>{ /* Your buddy says hello, whoever your buddy is — Bizzy included. The
               line comes from SB_AV_GREETINGS, with the avatar card as a second source. */
             const line=homeGreet(c);
+            if(line==null) return `<div class="sb-home-greet sb-greet-hold" aria-hidden="true" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:10px 11px;display:flex;flex-direction:column;gap:7px;min-height:52px">${['86%','64%'].map(w=>`<span class="sb-hold" style="width:${w};background:color-mix(in srgb,var(--line) 75%,transparent)"></span>`).join('')}</div>`;
             return `<div class="sb-home-greet" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${trunc(line,104)}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
