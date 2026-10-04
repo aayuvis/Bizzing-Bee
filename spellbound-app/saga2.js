@@ -722,11 +722,11 @@
       :'<span class="sg-hub-art" aria-hidden="true"><img src="'+esc2(a)+'" alt="" loading="lazy"></span>';
     const tiles=modes.map(m=>{ const k=key+'/'+m.id, isLast=(m.id===last);
       return '<div class="sg-hub-tile sg-panel'+(isLast?' last':'')+'" data-mode="'+esc2(m.id)+'">'+
+        (isLast?'<span class="sg-hub-lastmark">Last played</span>':'')+
         '<button type="button" class="sg-hub-go" data-act="hubMode" data-arg="'+esc2(k)+'" aria-label="'+esc2(m.title+(m.promise?'. '+m.promise:''))+'">'+art(m.art)+
           '<span class="sg-hub-name">'+esc2(m.title)+(m.isNew?'<i class="sg-hub-new" title="Not played yet"><span class="sg-sr">new</span></i>':'')+'</span>'+
           '<span class="sg-hub-promise">'+esc2(m.promise||'')+'</span></button>'+
-        '<div class="sg-hub-meta">'+levelChip(k)+'<span class="sg-hub-best">'+(m.best?esc2(m.best):'No best yet')+'</span>'+
-          (isLast?'<span class="sg-hub-lastmark" title="Played last">Last played</span>':'')+'</div></div>'; }).join('');
+        '<div class="sg-hub-meta">'+levelChip(k)+'<span class="sg-hub-best">'+(m.best?esc2(m.best):'No best yet')+'</span></div></div>'; }).join('');
     const center='<h1 class="sg-st-title">'+esc2(def.title||'')+'</h1>';
     const n=modes.length, rd=Math.max(1,Math.ceil(n/(n===4||n<=2?2:3)));
     return SGUI.stage({plate:def.plate||key, name:key, cls:'sg-hub', region:false, label:def.title||'',
