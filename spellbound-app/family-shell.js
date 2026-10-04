@@ -245,6 +245,8 @@
     if (head === 'hive') { if (p[1]) state.collTab = p[1]; app.openCollection(); return; }
     if (head === 'shop') { app.openShop(p[1] || 'avatars'); return; }
     if (head === 'grownups') { app.setNav('parent'); return; }
+    /* the Mock Bee's lobby (games spec §4.1): #/mockbee, or #/mockbee/champ · /family for a mode */
+    if (head === 'mockbee') { app.mbOpen(p[1]); return; }
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
     if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
     if (head === 'play') { app.openGames(); return; }

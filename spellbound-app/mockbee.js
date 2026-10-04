@@ -911,7 +911,10 @@
     else if (k === 'ps') { if (/(able|ible|ance|ence|ant|ent)$/i.test(w.w)) { key = 'endings'; lead = 'Part of speech: ' + txt(w.ps); } }
     else if (k === 'def' || k === 'sent') { if (isHom(w)) { key = 'hom'; lead = 'A sound-alike'; } }
     const r = key && R[key]; if (!r) return '';
-    const body = txt((STRIP_FROM[key] || (x => x.check))(r));
+    let body = txt((STRIP_FROM[key] || (x => x.check))(r));
+    /* one line: the first sentence, cut at a clause if it runs long */
+    body = body.split(/(?<=\.)\s+/)[0];
+    if (body.length > 84) { const c = Math.max(body.lastIndexOf(', ', 84), body.lastIndexOf(' — ', 84)); if (c > 30) body = body.slice(0, c) + '.'; }
     return body ? mask(lead + ' → ' + body, w.w) : '';
   }
   const stripOn = (g, s) => g.mode === 'champ' || (g.mode === 'family' ? (s && (s.band === '11-15' || s.band === 'adult'))
@@ -1438,12 +1441,31 @@
   /* the shared stage (§5.0) when the build has it; the same three bands locally until then */
   function stageHTML(o) {
     try { if (window.SGUI && typeof SGUI.stage === 'function') return SGUI.stage(o); } catch (e) {}
+    setTimeout(fitStage, 0);
     return `<div class="mb-st" style="--mb-plate:url('${o.plate}')">
       <div class="mb-st-hud"><div class="mb-st-l">${o.hud.left || ''}</div><div class="mb-st-c">${o.hud.center || ''}</div><div class="mb-st-r">${o.hud.right || ''}</div></div>
       <div class="mb-st-play">${o.play || ''}</div>
       <div class="mb-st-ctrl">${o.controls || ''}</div></div>`;
   }
   const plate = () => { try { return PLATE; } catch (e) { return ''; } };
+  /* The local stage fills the window between the shell's bar and its foot (the tab bar on a
+     phone) and never makes the page scroll (§5.0 rule 1): measured, because #root is zoomed
+     and the shell's bars differ by width. If the hall is ever taller than that, the play area
+     scrolls inside the stage rather than the page. */
+  function fitStage() {
+    try {
+      const st = document.querySelector('.mb-st'); if (!st || state.nav !== 'mockbee') return;
+      st.style.height = '';
+      const r = st.getBoundingClientRect(); const z = (r.height / (st.offsetHeight || r.height)) || 1;
+      const top = r.top + window.scrollY;
+      /* the foot: the phone's fixed tab bar when it is showing, else the window's bottom edge */
+      let foot = 0; const tb = document.querySelector('.sb-tabbar');
+      if (tb && getComputedStyle(tb).display !== 'none') foot = tb.getBoundingClientRect().height;
+      const avail = window.innerHeight - top - foot - 10;
+      st.style.height = Math.max(420, avail / z) + 'px';
+    } catch (e) {}
+  }
+  try { window.addEventListener('resize', () => setTimeout(fitStage, 60)); } catch (e) {}
   const lvlChip = () => {
     try { if (window.SB_LEVEL && typeof SB_LEVEL.chip === 'function') return SB_LEVEL.chip('mockbee', 'Level'); } catch (e) {}
     const c = active() || {}; const cur = c.mbDiff || 'auto';
@@ -1491,7 +1513,7 @@
         ${p.profile || P.length <= 2 ? '<span class="mb-pdel"></span>' : `<button class="mb-pdel" data-act="mbFamDel" data-arg="${i}" aria-label="Remove player ${i + 1}">${iconSVG('close', 14)}</button>`}
       </div>`;
     const play = `<div class="mb-lobby">
-        <div class="mb-modes" role="radiogroup" aria-label="Kind of bee">${[['bee', 'Bee'], ['champ', 'Champ'], ['family', 'Family Bee night']].map(([k, t]) =>
+        <div class="mb-modes slimrow" role="radiogroup" aria-label="Kind of bee">${[['bee', 'Bee'], ['champ', 'Champ'], ['family', 'Family Bee night']].map(([k, t]) =>
           `<button class="mb-mode slim${k === 'family' ? ' on' : ''}" role="radio" aria-checked="${k === 'family'}" data-act="mbMode" data-arg="${k}"><b>${t}</b></button>`).join('')}</div>
         <p class="mb-fam-note">Everyone spells on this device, in turn. Names are just for tonight — the app does not keep them.
           Grown-ups get grown-up words. Only ${esc(c.name || 'the speller')}’s words earn coins.</p>
@@ -1650,7 +1672,7 @@
     g.rose = 1;
     const play = `<div class="mb-hall">
         <div class="mb-bench l">${L.map(s => benchChip(s, g)).join('')}</div>
-        <div class="mb-centre">
+        <div class="mb-centre${/^(me|meDone|pass)$/.test(g.phase || '') ? ' atmic' : ''}">
           <div class="mb-ann"><span class="mb-ann-ic">${iconSVG('volume', 15)}</span><p>${esc(g.announce || '')}</p></div>
           <div class="mb-podium">${podiumHTML(g)}${MIC_SVG}</div>
           ${mine ? `<div class="mb-mychair">${benchChip(mine, g)}</div>` : ''}
@@ -1659,8 +1681,8 @@
       </div>`;
     return `<div class="mb-wrap${rise}">${stageHTML({ plate: plate(),
       hud: { left: `<button data-act="mbQuit" class="mb-back">← Leave</button>`,
-        center: `<span class="mb-round">${esc(R.name)}<i>${esc(R.sub)}</i></span>`,
-        right: `<span class="mb-rec">${live.length} of ${g.field.length} standing</span>` },
+        center: `<span class="mb-round">${R.name.indexOf(' · ') > 0 ? `<span class="mb-wide">${esc(R.name.split(' · ')[0])} · </span>${esc(R.name.split(' · ')[1])}` : esc(R.name)}<i>${esc(R.sub)}</i></span>`,
+        right: `<span class="mb-rec">${live.length} of ${g.field.length}<span class="mb-wide"> standing</span></span>` },
       play, controls: controlsHTML(g) })}</div>`;
   }
 
