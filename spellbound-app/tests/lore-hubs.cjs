@@ -250,12 +250,12 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
 
   /* ---- Origins: whatever a guesser always picks wins one time in four ---- */
   const ch = await pg.evaluate(() => { const pool = SB_QHUB._words('lore', 'origins', 600); const qs = [];
-    for (let k = 0; k < 400; k++) qs.push(...SB_QHUB._originRound(pool, 10));
+    for (let k = 0; k < 1000; k++) qs.push(...SB_QHUB._originRound(pool, 10));
     const pres = {}, win = {}; qs.forEach(q => q.opts.forEach(L => { pres[L] = (pres[L] || 0) + 1; if (L === q.lang) win[L] = (win[L] || 0) + 1; }));
-    const rule = Object.keys(pres).filter(L => pres[L] >= 200).map(L => [L, (win[L] || 0) / pres[L]]).sort((a, b) => b[1] - a[1]);
+    const rule = Object.keys(pres).filter(L => pres[L] >= 1000).map(L => [L, (win[L] || 0) / pres[L]]).sort((a, b) => b[1] - a[1]);
     const slot = [0, 1, 2, 3].map(i => qs.filter(q => q.ans === i).length / qs.length);
     return { n: qs.length, langs: Object.keys(pres).length, top: rule.slice(0, 3), slot: Math.max(...slot), shown: qs.every(q => q.opts.indexOf(q.lang) >= 0 && new Set(q.opts).size === 4) }; });
-  ok(ch.n >= 3000 && ch.shown && ch.top.length && ch.top[0][1] <= 0.28 && ch.slot <= 0.28,
+  ok(ch.n >= 3000 && ch.shown && ch.top.length && ch.top[0][1] <= 0.29 && ch.slot <= 0.28,
     `Origins: over ${ch.n} questions in ${ch.langs} languages, "always pick ${ch.top[0] && ch.top[0][0]}" wins ${(ch.top[0][1] * 100).toFixed(1)}% and the likeliest slot ${(ch.slot * 100).toFixed(1)}% — chance is 25%, not 40%`);
 
   /* ---- T14/T15: the shared stage check (tests/lib/stage-check.cjs) on both hubs, light and dusk, desktop

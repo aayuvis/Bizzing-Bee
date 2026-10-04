@@ -756,6 +756,9 @@
   .qz-tag{display:none}.qz-long{display:none}.qz-short{display:inline}.qz-ll{padding:8px 10px;font-size:12.5px;gap:4px}.qz-lls{flex-wrap:nowrap;gap:6px}
   .qz-ot{-webkit-line-clamp:2}.qz-opts{gap:7px}.qz-sub{margin:2px 0}.qz-hear{padding:6px 12px;font-size:13px;margin:0 0 4px}.qz-tile-go{min-height:150px}.qz-hud{padding:8px 12px}.qz-big{font-size:clamp(24px,8vw,34px)}}
 .qz-cart{display:inline-flex;line-height:0}
+/* the level chip (SB_LEVEL.chip) is 94% white; seven of them on a phone hub are 2.5% pure white (T14) — on
+   these two hubs it takes a warm paper tone instead */
+.sb-stage[data-sb-stage="lore"] .sb-lvchip,.sb-stage[data-sb-stage="hive"] .sb-lvchip{background:color-mix(in srgb,var(--paper,#fff) 86%,var(--treasure,#F0B429) 14%)}
 @media (max-width:640px){.qz-hear,.qz-up,.qz-th{min-height:44px}
   .qz-card{position:relative}.qz-card>.qz-hear:not(.big){position:absolute;top:6px;right:6px;min-width:44px;justify-content:center;padding:0 10px;margin:0}.qz-hlab{display:none}}
 @media (prefers-reduced-motion:reduce){.qz-stage *{animation:none!important;transition:none!important}}`;
