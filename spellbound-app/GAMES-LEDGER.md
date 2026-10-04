@@ -71,5 +71,11 @@ A hub records its modes here as it ships; a new mode names the weaker mode it re
 
 | Hub | Mode | In for |
 |---|---|---|
+| Spelling Gym | Warm-up | Beat the Buzzer's 10-Word Warm-Up (and the Word Gym tab's Daily Buzz quick action) |
+| Spelling Gym | Sprint | Beat the Buzzer's 60-Second Sprint |
+| Spelling Gym | Champ Dictation | Rapid Dictation (add-on) |
+| Spelling Gym | Spot the Error | Word Quiz's Spellings round |
+| Spelling Gym | Squares | Magic Squares |
 | Spelling Gym | Word Doctor | Memory Match (add-on) |
+| Spelling Gym | Level Challenge | Beat the Buzzer's Stage Challenge |
 | Mock Spelling Bee | Family Bee night | Spelling Duel |

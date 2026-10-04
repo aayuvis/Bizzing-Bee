@@ -10586,7 +10586,7 @@ function viewDebug(){
     {act:'mbOpen',      arg:'', c:'#7C5CFF', n:'Mock Spelling Bee', d:'11 spellers, 8 rounds'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
-    {act:'openGym',     arg:'',      c:'#E0922E', n:gymHubName(),    d:'The drills hub (seven modes)'},
+    {act:'openGym',     arg:'',      c:'#E0922E', n:hubName('gym'),  d:'The drills hub (seven modes)'},
     {act:'playGame',    arg:'wordquiz', c:'#13A892', n:'Word Quiz', d:'Meaning / origin MC'},
     {act:'playGame',    arg:'boss',  c:'#7B52E0', n:'Boss Battle', d:'HP boss'},
     {act:'playGame',    arg:'duel',  c:'#C43D5A', n:'Spelling Duel', d:'Pass-the-device'},
@@ -11699,11 +11699,10 @@ function viewDaily(){
 }
 /* THE SPELLING GYM IN THE SHELL (games spec §4.2). The stage, the hub and every mode are gym.js's; the
    shell gives it a host the height of the screen and render() hands the host over (SB_GYM.mount). */
-function gymBestLine(c){ try{ const B=((c||active()).gym||{}).best||{}; let top=null;
-    Object.keys(B).forEach(k=>{ const b=B[k]; if(b&&b.n&&b.t&&(!top||b.p>top.p)) top=b; });
-    return top?('Best: '+top.r+'/'+top.n+' · '+top.t):''; }catch(e){ return ''; } }
-function gymHubName(){ let n=''; try{ n=window.SB_HUB_NAMES&&SB_HUB_NAMES.gym; }catch(e){} return n||'Spelling Gym'; }
-function viewGym(){ return `<div class="sb-gympage"><div id="gym-host" class="gym-host" role="region" aria-label="${escA(gymHubName())}">${window.SB_GYM?'':hiveLoader('opening the gym…')}</div></div>`; }
+/* the gym's modes by name, for the Play card's "Best 9/10 · Warm-up" before gym.js has loaded (gym.js reads it too) */
+window.SB_HUB_MODES=window.SB_HUB_MODES||{};
+SB_HUB_MODES.gym={warmup:'Warm-up', sprint:'Sprint', dictation:'Champ Dictation', spot:'Spot the Error', squares:'Squares', doctor:'Word Doctor', challenge:'Level Challenge'};
+function viewGym(){ return `<div class="sb-gympage"><div id="gym-host" class="gym-host" role="region" aria-label="${escA(hubName('gym'))}">${window.SB_GYM?'':hiveLoader('opening the gym…')}</div></div>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();

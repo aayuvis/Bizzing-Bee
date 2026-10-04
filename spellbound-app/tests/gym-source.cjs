@@ -21,7 +21,7 @@ const gym = read('gym.js'), app3 = read('app3.js'), lazy = read('boot-lazy.js'),
 const count = (s, re) => (s.match(re) || []).length;
 
 ok(count(gym, /'Spelling Gym'/g) === 1 && /SB_HUB_NAMES\.gym/.test(gym), `gym.js reads the hub's name from SB_HUB_NAMES and types it once, as the fallback (${count(gym, /'Spelling Gym'/g)})`);
-ok(count(app3, /'Spelling Gym'/g) === 1 && /function gymHubName\(\)[^\n]*SB_HUB_NAMES\.gym/.test(app3), `app3.js names the card and the search entry through gymHubName() (${count(app3, /'Spelling Gym'/g)} literal)`);
+ok(count(app3, /'Spelling Gym'/g) === 1 && /SB_HUB_NAMES=Object\.assign\(\{gym:'Spelling Gym'/.test(app3), `app3.js types the name once, as SB_HUB_NAMES's default, and reads it everywhere else (${count(app3, /'Spelling Gym'/g)} literal)`);
 const code = gym.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
 ok(!/Math\.random\s*\(/.test(code), 'gym.js never calls Math.random() — no reward, grade or word fate is left to chance');
 ok(/gym:\s*'gym\.js'/.test(lazy) && /gym:\s*\[[^\]]*'gym'/.test(lazy) && !/gym\.js/.test(index), 'gym.js arrives through boot-lazy (group gym), never as a boot <script>');

@@ -36,15 +36,18 @@
 
   /* ------------------------------------------------------------------ the modes */
   const MODES = [
-    { id: 'warmup', title: 'Warm-up', icon: 'flame', promise: 'Ten words, no clock. Ask for a hint when you need one.', n: 10, hints: true, adapt: true },
-    { id: 'sprint', title: 'Sprint', icon: 'timer', promise: 'Sixty seconds. Spell as many as you can.', clock: 60, adapt: true },
-    { id: 'champ', title: 'Champ Dictation', icon: 'bolt', promise: 'Ninety seconds of the hardest words in the library.', clock: 90, cap: 20, adapt: true, adv: true },
-    { id: 'spot', title: 'Spot the Error', icon: 'search', promise: 'One word in the sentence is wrong. Find it, then fix it.', n: 10, adapt: true },
-    { id: 'squares', title: 'Squares', icon: 'grid', promise: 'Spell 4 of 5 to claim a square. Three in a row makes a line.' },
-    { id: 'doctor', title: 'Word Doctor', icon: 'heart', promise: 'Your own missed words: find what went wrong, then cure it.' },
-    { id: 'challenge', title: 'Level Challenge', icon: 'trophy', promise: 'Spell 8 of 10 at the next level to move the gym up.', n: 10 }
+    { id: 'warmup', title: 'Warm-up', icon: 'flame', promise: 'Ten words. No clock. Hints on hand.', n: 10, hints: true, adapt: true },
+    { id: 'sprint', title: 'Sprint', icon: 'timer', promise: 'Sixty seconds. Spell all you can.', clock: 60, adapt: true },
+    { id: 'dictation', title: 'Champ Dictation', icon: 'bolt', promise: 'Ninety seconds of the hardest words.', clock: 90, cap: 20, adapt: true, adv: true },
+    { id: 'spot', title: 'Spot the Error', icon: 'search', promise: 'Find the misspelt word, then fix it.', n: 10, adapt: true },
+    { id: 'squares', title: 'Squares', icon: 'grid', promise: 'Spell 4 of 5 to claim a square.' },
+    { id: 'doctor', title: 'Word Doctor', icon: 'heart', promise: 'Your missed words: diagnose, then cure.' },
+    { id: 'challenge', title: 'Level Challenge', icon: 'trophy', promise: '8 of 10 at the next level moves you up.', n: 10 }
   ];
   const BY = {}; MODES.forEach(m => { BY[m.id] = m; });
+  /* the names the Play card shows for a best ("Best 9/10 · Warm-up") live in app3 (SB_HUB_MODES.gym), so
+     the card can name a mode before this file has loaded; the hub reads the same table */
+  try { const T = (W.SB_HUB_MODES || {}).gym || {}; MODES.forEach(m => { if (T[m.id]) m.title = T[m.id]; }); } catch (e) {}
   const LV = ['easy', 'medium', 'hard', 'champ'];
   const LV_NAME = { auto: 'Auto', easy: 'Easy', medium: 'Medium', hard: 'Hard', champ: 'Champ' };
   const hubName = () => { let n = ''; try { n = W.SB_HUB_NAMES && W.SB_HUB_NAMES.gym; } catch (e) {} return n || 'Spelling Gym'; };
@@ -123,18 +126,18 @@
 
   /* ------------------------------------------------------------------ loading BEFORE the clock */
   function libReady(mode) {
-    if (mode === 'champ') return !!(Array.isArray(W.SB_FULL) && W.SB_FULL.length);
+    if (mode === 'dictation') { let st = ''; try { st = _fullState; } catch (e) {} return st === 'loaded'; }   // the library's own loader state
     return true; }
   function loadLib(mode, cb) {
     let n = 2; const one = () => { if (--n === 0) cb(); };
-    try { if (typeof lazyNeed === 'function') lazyNeed(mode === 'spot' || mode === 'warmup' ? ['sents', 'lore'] : ['sents'], one); else one(); } catch (e) { one(); }
-    if (mode !== 'champ' || libReady('champ')) { one(); return; }
+    try { if (typeof lazyNeed === 'function') lazyNeed(mode === 'spot' || mode === 'warmup' ? ['arcade', 'sents', 'lore'] : ['arcade', 'sents'], one); else one(); } catch (e) { one(); }
+    if (mode !== 'dictation' || libReady('dictation')) { one(); return; }
     /* loadFullLibrary returns early (without its callback) while a load is already running, so
        the door watches the library itself rather than trusting one callback */
     try { if (typeof loadFullLibrary === 'function') loadFullLibrary(() => {}); } catch (e) {}
     let tries = 0; const t = setInterval(() => { tries++;
       let st = ''; try { st = _fullState; } catch (e) {}
-      if (libReady('champ') || st === 'error' || tries > 1200) { clearInterval(t); one(); } }, 100); }
+      if (libReady('dictation') || st === 'error' || tries > 1200) { clearInterval(t); one(); } }, 100); }
 
   /* ------------------------------------------------------------------ the clock */
   /* REAL TIME, held by a miss card, a hidden tab or the Settings sheet. The seconds left are read off
@@ -143,6 +146,13 @@
      The frames only paint it (sgLoop when the engine kit is in, a plain rAF otherwise). One gap over a
      second is a suspended device, not play, and counts as one second at most. */
   function clock(secs, onTick, onEnd) {
+    if (W.SGUI && typeof SGUI.clock === 'function') {
+      const el = document.createElement('span'); el.id = 'gym-clock'; el.className = 'sg-st-n'; el.textContent = String(Math.ceil(secs));
+      const C = { total: secs, el, held: false, over: false, t0: performance.now(), t1: 0 };
+      const k = SGUI.clock(secs, { el, onTick: () => { try { onTick(C); } catch (e) {} }, onEnd: () => { C.over = true; C.t1 = performance.now(); onEnd(); } });
+      Object.defineProperty(C, 'left', { get: () => k.left() });
+      C.hold = v => { C.held = !!v; k.hold(!!v); }; C.stop = () => { C.over = true; k.stop(); }; C.add = x => k.add(x);
+      return C; }
     const C = { left: secs, total: secs, held: false, over: false, used: 0, last: performance.now(), t0: performance.now(), t1: 0 };
     const paused = () => { if (C.held || document.hidden) return true; try { return !!(state.settingsOpen || state.pinDlg); } catch (e) { return false; } };
     const tick = () => { if (C.over) return; const now = performance.now(); const d = Math.min(1000, now - C.last); C.last = now;
@@ -197,13 +207,13 @@
     R.phase = 'answer'; VIEW = 'play'; R.started = performance.now();
     nextItem();
     if (R.m.clock) { const secs = R.m.clock * (W.SB_CALM ? 1.5 : 1);
-      R.clock = clock(secs, paintClock, () => finish()); } }
+      R.clock = clock(secs, paintClock, () => finish()); seatClock(); } }
 
   /* the next word: adaptive tier, never a repeat inside the round */
   function nextItem() { if (!R) return; R.hint = 0;
     if ((R.m.n && R.asked >= R.m.n)) { finish(); return; }
     let w = null;
-    if (R.mode === 'champ') w = champDraw(R.level, R.tier, R.seen)[0];
+    if (R.mode === 'dictation') w = champDraw(R.level, R.tier, R.seen)[0];
     else if (R.mode === 'spot') { const s = spotItem(); if (s) { R.spot = s; w = s.w; } }
     else w = draw(1, { level: R.mode === 'challenge' ? R.level : R.level, tier: R.m.adapt ? R.tier : 0, skip: R.seen })[0];
     if (!w) { if (!R.asked) { R.phase = 'empty'; paint(); return; } finish(); return; }
@@ -221,7 +231,7 @@
   /* pay per §6 — the ONLY place a gym answer pays */
   function payRight() { if (!R) return;
     if (R.mode === 'squares') return;                             // Squares pays a claimed square, never an answer
-    if (R.mode === 'champ' && R.paid >= (R.m.cap || 20)) return;  // Champ Dictation: at most 20 a round
+    if (R.mode === 'dictation' && R.paid >= (R.m.cap || 20)) return;  // Champ Dictation: at most 20 a round
     const n = (typeof payG === 'function') ? payG(R) : 0; if (n) R.paid++; }
 
   /* one typed answer. An empty Enter is never an answer. */
@@ -275,8 +285,10 @@
       if (R.pass) { try { R.bonus = (R.bonus || 0) + addCoins('contest'); } catch (e) {} promote(R.level); } }
     else if (asked) { try { R.lv = LVL().after(R.key, pct) || null; } catch (e) { R.lv = null; } }
     const g = gs(); g.seen[R.mode] = 1; g.last = R.mode;
-    const b = g.best[R.mode]; const score = R.mode === 'squares' ? (R.claimed || 0) : R.right;
-    if (!b || score > (b.s || 0) || (score === (b.s || 0) && pct > (b.p || 0))) g.best[R.mode] = { s: score, r: R.right, n: asked, p: pct, at: Date.now(), lv: R.level, t: R.m.title };
+    /* the best goes where the Play card and the bests migration read it: SB_BESTS['gym/<mode>'] —
+       right of asked, or right alone for a timed round (of: null); Word Doctor's is cures of patients */
+    const of = R.m.clock ? null : R.mode === 'doctor' ? (R.patients || []).length : asked;
+    if (asked || R.mode === 'doctor') putBest(R.mode, R.mode === 'doctor' ? (R.cures || 0) : R.right, of);
     if (R.mode === 'challenge' && R.pass) g.passed = R.level;
     R.coins = (typeof earnedSoFar === 'function' ? earnedSoFar() : 0) - R.e0;
     try { logActivity('gym', hubName() + ' · ' + R.m.title, { done: asked, right: R.right, coins: R.coins }, R.log.filter(x => !x.ok).map(x => x.w)); } catch (e) {}
@@ -331,12 +343,13 @@
   /* §1.2: these three wait for the 11–15 band, whatever the theme data says (minBand wins when set) */
   const GATED = { pharmacy: '11-15', war: '11-15', disease: '11-15' };
   function childBand() { const c = kid() || {}; if (c.ageBand && BAND_RANK[c.ageBand] != null) return c.ageBand; const a = c.age || 9; return a <= 7 ? '6-7' : a <= 10 ? '8-10' : '11-15'; }
-  function themeOpen(t) { const need = t.minBand || GATED[t.id]; return !need || BAND_RANK[childBand()] >= (BAND_RANK[need] || 0); }
-  function themeList(t, level) { let ws = []; try { ws = themeWords(t.id) || []; } catch (e) {}
-    ws = ws.filter(typable);
-    try { const c = kid(); const keep = c.gameDiff; c.gameDiff = lvResolve(level); const [lo, hi] = diffRange(c); c.gameDiff = keep;
-      const f = ws.filter(w => { const y = w.y || 3; return y >= lo && y <= hi; }); if (f.length >= 10) ws = f; } catch (e) {}
-    return ws; }
+  function themeOpen(t) { try { if (typeof W.SB_THEME_OPEN === 'function') return !!W.SB_THEME_OPEN(t, kid()); } catch (e) {}
+    const need = t.minBand || GATED[t.id]; return !need || BAND_RANK[childBand()] >= (BAND_RANK[need] || 0); }
+  /* a theme's words come through the one door too: nextWords with the theme (it gates minBand, keeps the
+     level window and the kid-safe filter); nextWords.pool reads the same pool without drawing from it */
+  function themeList(t, level) { let ws = [];
+    try { if (typeof W.nextWords === 'function' && typeof W.nextWords.pool === 'function') ws = W.nextWords.pool(kid(), { purpose: 'drill', theme: t.id, level: lvResolve(level), minLen: 3 }) || []; } catch (e) {}
+    return ws.filter(typable); }
   function boardRound() { const r = newRound('squares'); r.phase = 'board'; r.claimed = 0; r.lines = 0; r.lineSet = {};
     let defs = []; try { defs = themeDefs() || []; } catch (e) {}
     const g = gs(); g.boards = (g.boards || 0) + 1;
@@ -434,42 +447,51 @@
   /* ------------------------------------------------------------------ the stage */
   /* the painted plate comes with SB_PLATE (the engine kit ships the paintings and the function
      together); without it the stage wears its token gradient, and never asks for a file that 404s */
-  function plate(name) { try { if (typeof W.SB_PLATE === 'function') return W.SB_PLATE(name) || ''; } catch (e) {} return ''; }
-  function stage(o) { if (W.SGUI && typeof SGUI.stage === 'function') { try { return SGUI.stage(o); } catch (e) {} }
-    return '<div class="gym-stage"' + (o.plate ? ' style="--gym-plate:url(\'' + EA(o.plate) + '\')"' : '') + '><div class="gym-hud">' +
-      '<div class="gym-hl">' + (o.hud.left || '') + '</div><div class="gym-hc">' + (o.hud.center || '') + '</div><div class="gym-hr">' + (o.hud.right || '') + '</div></div>' +
-      '<div class="gym-play">' + (o.play || '') + '</div><div class="gym-ctl">' + (o.controls || '') + '</div></div>'; }
-  const back = (label, g) => '<button class="gym-back" data-g="' + g + '" aria-label="Back to ' + EA(label) + '"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg><span class="gym-back-l">' + E(label) + '</span></button>';
-  const stat = (n, l, id) => '<span class="gym-stat"' + (id ? ' id="' + id + '"' : '') + '><b>' + n + '</b><small>' + E(l) + '</small></span>';
+  function plate(name) { return name; }   // the kit takes a plate's NAME and swaps day/night itself
+  /* the centre of the HUD: Back, the title (and its chips), and a spacer as wide as Back, so the title sits
+     on the stage's centre line and the two stats either side stay the same width (T15) */
+  const centre = (bk, title) => '<div class="gym-cline">' + (bk || '<span class="gym-spacer" aria-hidden="true"></span>') + '<div class="gym-ctitle">' + title + '</div><span class="gym-spacer" aria-hidden="true"></span></div>';
+  function stage(o) { const hud = o.hud || {}; const c = centre(hud.back, hud.center || '');
+    if (W.SGUI && typeof SGUI.stage === 'function') { try { return SGUI.stage({ plate: o.plate, name: 'gym', cls: 'gym-st', label: hubName(), hud: { left: hud.left, center: c, right: hud.right },
+        play: '<div class="gym-fill">' + (o.play || '') + '</div>', controls: o.controls || '' }); } catch (e) {} }
+    let url = ''; try { if (o.plate && typeof W.SB_PLATE === 'function') url = W.SB_PLATE(o.plate) || ''; } catch (e) {}
+    return '<div class="gym-stage"' + (url ? ' style="--gym-plate:url(\'' + EA(url) + '\')"' : '') + '><div class="gym-hud">' +
+      '<div class="gym-hl">' + (hud.left || '') + '</div><div class="gym-hc">' + c + '</div><div class="gym-hr">' + (hud.right || '') + '</div></div>' +
+      '<div class="gym-play"><div class="gym-fill">' + (o.play || '') + '</div></div><div class="gym-ctl">' + (o.controls || '') + '</div></div>'; }
+  const back = (label, g) => '<button class="gym-back" data-g="' + g + '" aria-label="Back to ' + EA(label) + '" title="Back to ' + EA(label) + '"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>';
+  /* a HUD stat in the kit's own markup (number, then its label), so both sides of the HUD are one shape */
+  const stat = (n, l, id) => '<span class="sg-st-ic">' + ic(l === 'seconds' ? 'timer' : l === 'coins today' ? 'coin' : 'check', 18) + '</span><span class="sg-st-n"' + (id ? ' id="' + id + '"' : '') + '>' + n + '</span><span class="sg-st-t">' + E(l) + '</span>';
   function coinsToday() { try { const c = kid(); if (W.SB_DEMO || !W.BZ_WALLET) return 0; const who = walletWho(c); if (!who) return 0;
       const d0 = new Date(); d0.setHours(0, 0, 0, 0);
       return BZ_WALLET.ledger(who).filter(x => x.a === BEE_APP && x.n > 0 && x.why !== 'migrated' && x.t >= d0.getTime()).reduce((a, x) => a + x.n, 0); } catch (e) { return 0; } }
-  function bestText(id) { const b = gs().best[id]; const g = gs();
+  function getBest(id) { try { if (W.SB_BESTS) return W.SB_BESTS.get('gym/' + id); } catch (e) {} return (gs().best || {})[id] || null; }
+  function putBest(id, right, of) { try { if (W.SB_BESTS) return W.SB_BESTS.put('gym/' + id, right, of); } catch (e) {}
+    const B = gs().best, o = B[id], r = x => x.of ? x.right / x.of : x.right; const n = { right, of, at: Date.now() };
+    if (!o || r(n) > r(o)) B[id] = n; persist(); }
+  function bestText(id) { const g = gs();
     if (id === 'doctor') { const n = Object.keys((g.doc && g.doc.rec) || {}).length; return n ? n + ' recovered' : ''; }
-    if (id === 'challenge') return g.passed ? 'Passed ' + LV_NAME[g.passed] : '';
-    if (!b) return '';
-    if (id === 'squares') return 'Best ' + b.s + ' square' + (b.s === 1 ? '' : 's');
-    if (BY[id].clock) return 'Best ' + b.r;
-    return 'Best ' + b.r + '/' + b.n; }
-  W.SB_GYM_BEST = () => { let top = null; MODES.forEach(m => { const b = gs().best[m.id]; if (b && b.n && (!top || b.p > top.b.p)) top = { m, b }; });
-    return top ? 'Best: ' + top.b.r + '/' + top.b.n + ' · ' + top.m.title : ''; };
+    if (id === 'challenge' && g.passed) return 'Passed ' + LV_NAME[g.passed];
+    const b = getBest(id); if (!b || !b.right) return '';
+    return 'Best ' + (b.of ? b.right + '/' + b.of : b.right); }
 
   /* ------------------------------------------------------------------ painting */
   function el() { if (EL) return EL; EL = document.createElement('div'); EL.className = 'gym-root'; bind(EL); css(); return EL; }
   function paint() { if (!EL) return; let h = '';
     try { h = VIEW === 'hub' ? hubView() : VIEW === 'locked' ? lockedView() : VIEW === 'board' ? boardView() : VIEW === 'ward' ? wardView() : modeView(); }
-    catch (e) { try { console.error(e); } catch (_) {} h = stage({ plate: plate('gym'), hud: { left: back(hubName(), 'hub') }, play: '<div class="gym-card">Something went wrong here.</div>' }); }
+    catch (e) { try { console.error(e); } catch (_) {} h = stage({ plate: plate('gym'), hud: { back: back(hubName(), 'hub'), center: '' }, play: '<div class="sg-panel gym-card">Something went wrong here.</div>' }); }
     /* the same picture is not painted twice: an app render (a lazy file landing) re-mounts the gym, and
        a hub repainted on every one would never hold still under a finger or a screenshot */
     if (h === lastH && EL.firstChild) { size(); return; }
     lastH = h; EL.innerHTML = h; size();
+    try { if (W.SGUI && typeof SGUI.stageFit === 'function') SGUI.stageFit(); } catch (e) {}   // a new stage element is fitted to the shell at once
     if (KEYS) { try { KEYS.destroy(); } catch (e) {} KEYS = null; }
     const inp = EL.querySelector('.gym-in');
     if (inp && R && R.phase === 'answer') {
       const kh = EL.querySelector('.gym-keys');
-      if (touch() && kh) KEYS = keys(kh, inp);
-      else { try { inp.focus({ preventScroll: true }); } catch (e) {} }
+      if (kh && (touch() || (W.SGUI && typeof SGUI.keys === 'function'))) KEYS = keys(kh, inp);
+      if (!touch()) { try { inp.focus({ preventScroll: true }); } catch (e) {} }
     }
+    seatClock();
     const end = EL.querySelector('.sg-endcard'); if (end) { try { SGUI.bind(end); } catch (e) {}
       const a = end.querySelector('#sg-again'), b = end.querySelector('#sg-cont');
       if (a) a.onclick = () => again(); if (b) b.onclick = () => app.openGym(); try { (a || b).focus({ preventScroll: true }); } catch (e) {} } }
@@ -477,9 +499,12 @@
 
   function hubView() { const c = kid() || {}; const g = gs();
     const tiles = MODES.map(m => { const locked = m.adv && !advOn(); const best = bestText(m.id);
-      return { id: m.id, title: m.title, promise: locked ? 'Comes with the Advanced Pack' : m.promise, art: ic(m.icon, 30), best, isNew: !g.seen[m.id], last: g.last === m.id, locked }; });
-    const hud = { left: back('Play', 'play') + stat(goodDays(c), 'good days'), right: stat('+' + coinsToday(), 'coins today') };
-    if (typeof W.SB_HUB === 'function') { try { return W.SB_HUB({ key: 'gym', title: hubName(), plate: plate('gym'), modes: tiles, hud }); } catch (e) {} }
+      return { id: m.id, title: m.title, promise: locked ? 'Comes with the Advanced Pack' : m.promise, art: '<span class="gym-art">' + ic(m.icon, 30) + '</span>', best, isNew: !g.seen[m.id], last: g.last === m.id, locked }; });
+    const hud = { back: back('Play', 'play'), left: stat(goodDays(c), 'good days'), right: stat(coinsToday(), 'coins today') };
+    if (typeof W.SB_HUB === 'function') { try { const h = W.SB_HUB({ key: 'gym', title: hubName(), plate: plate('gym'), modes: tiles, last: g.last || '' });
+        /* the kit's hub has no way back drawn on it: Back goes beside the title, a spacer opposite */
+        const i = h.indexOf('<h1 class="sg-st-title">'), j = h.indexOf('</h1>', i);
+        return i < 0 || j < 0 ? h : h.slice(0, i) + centre(hud.back, h.slice(i, j + 5)) + h.slice(j + 5); } catch (e) {} }
     const grid = tiles.map(t => '<div class="gym-tile' + (t.id === 'challenge' ? ' wide' : '') + (t.locked ? ' locked' : '') + '">' +
       '<button class="gym-tile-go" data-act="hubMode" data-arg="gym/' + t.id + '" aria-label="' + EA(t.title + '. ' + t.promise) + '">' +
       '<span class="gym-tile-art">' + t.art + (t.isNew ? '<i class="gym-new" aria-label="new"></i>' : '') + '</span>' +
@@ -487,55 +512,62 @@
       '<span class="gym-tile-p">' + E(t.promise) + '</span>' +
       (t.best ? '<span class="gym-tile-b">' + E(t.best) + '</span>' : '') + '</button>' +
       (t.locked || t.id === 'doctor' ? '' : '<span class="gym-tile-lv">' + lvChip(t.id) + '</span>') + '</div>').join('');
-    return stage({ plate: plate('gym'), hud: Object.assign({ center: '<h2 class="gym-title">' + E(hubName()) + '</h2>' }, hud), play: '<div class="gym-hub">' + grid + '</div>', controls: '' }); }
+    return stage({ plate: plate('gym'), hud: Object.assign({ center: '<h1 class="sg-st-title gym-title">' + E(hubName()) + '</h1>' }, hud), play: '<div class="gym-hub">' + grid + '</div>', controls: '' }); }
   function goodDays(c) { try { return goodDaysThisWeek(c); } catch (e) { return 0; } }
 
   function hudFor(extraRight) { const m = R.m;
-    const left = back(hubName(), 'hub') + stat(R.mode === 'squares' ? R.claimed + '/9' : R.mode === 'doctor' ? (R.cures || 0) : R.right, R.mode === 'squares' ? 'squares' : R.mode === 'doctor' ? 'cured' : 'right');
+    const left = stat(R.mode === 'squares' ? R.claimed + '/9' : R.mode === 'doctor' ? (R.cures || 0) : R.right, R.mode === 'squares' ? 'squares' : R.mode === 'doctor' ? 'cured' : 'right');
     const chip = '<span class="gym-lvl static">' + LV_NAME[R.level] + '</span>' + (m.adapt && VIEW === 'play' ? '<span class="gym-tier" title="Where the next word comes from">Words: ' + LV_NAME[tierLevel()] + '</span>' : '');
-    const center = '<h2 class="gym-title">' + E(m.title) + '</h2><div class="gym-chips">' + chip + '</div>';
+    const center = '<h1 class="sg-st-title gym-title">' + E(m.title) + '</h1><div class="gym-chips">' + chip + '</div>';
     let right = extraRight;
     if (right == null) {
       if (m.clock) { const left2 = R.clock ? Math.ceil(R.clock.left) : Math.round(m.clock * (W.SB_CALM ? 1.5 : 1)); right = stat('<span id="gym-clock">' + left2 + '</span>', 'seconds'); }
       else if (m.n) right = stat(Math.min(R.asked + (/^(answer|tap)$/.test(R.phase) ? 1 : 0), m.n) + '/' + m.n, 'word');
       else right = stat(R.lines || 0, 'lines'); }
-    return { left, center, right }; }
-  function paintClock(C) { const e = EL && EL.querySelector('#gym-clock'); if (!e) return; const s = String(Math.ceil(C.left)); if (e.textContent !== s) e.textContent = s;
+    return { back: back(hubName(), 'hub'), left, center, right }; }
+  /* the round's clock element is ONE node all round: every repaint seats it back where the HUD asks */
+  function seatClock() { const C = R && R.clock; if (!C || !C.el || !EL) return; const ph = EL.querySelector('#gym-clock'); if (ph && ph !== C.el) ph.replaceWith(C.el); }
+  function paintClock(C) { const e = (C && C.el) || (EL && EL.querySelector('#gym-clock')); if (!e) return; const s = String(Math.ceil(C.left)); if (e.textContent !== s) e.textContent = s;
     const bar = EL.querySelector('.gym-bar > i'); if (bar) bar.style.transform = 'scaleX(' + Math.max(0, C.left / C.total).toFixed(4) + ')'; }
 
   function modeView() { const m = R.m;
-    if (R.phase === 'loading' || R.phase === 'ready') {
-      const lines = { sprint: 'The clock starts when you press Start. A miss stops it while you read the word.', champ: 'Ninety seconds of championship words. Up to 20 coins a round.', challenge: 'Ten words at ' + LV_NAME[chTarget()] + '. Spell 8 right and every mode in the gym moves up to ' + LV_NAME[chTarget()] + '.' };
+    if (R.phase === 'loading' || R.phase === 'ready') { if (R.mode !== 'challenge') R.level = lvResolve(lvGet(R.mode));
+      const lines = { sprint: 'The clock starts when you press Start. A miss stops it while you read the word.', dictation: 'Ninety seconds of championship words. Up to 20 coins a round.', challenge: 'Ten words at ' + LV_NAME[chTarget()] + '. Spell 8 right and every mode in the gym moves up to ' + LV_NAME[chTarget()] + '.' };
       const ready = R.phase === 'ready';
-      const play = '<div class="gym-card gym-ready"><div class="gym-big-ic">' + ic(m.icon, 46) + '</div><h3>' + E(m.title) + '</h3><p>' + E(lines[R.mode] || m.promise) + '</p>' +
+      const play = '<div class="sg-panel gym-card gym-ready"><div class="gym-big-ic">' + ic(m.icon, 46) + '</div><h3>' + E(m.title) + '</h3><p>' + E(lines[R.mode] || m.promise) + '</p>' +
         (R.mode !== 'challenge' ? '<div class="gym-readylv">Level ' + lvChip(R.mode) + '</div>' : '') +
         '<button class="gym-btn go" data-g="start" ' + (ready ? '' : 'disabled aria-disabled="true"') + '>' + (ready ? 'Start →' : 'Getting the words ready…') + '</button></div>';
       return stage({ plate: plate('gym'), hud: hudFor(), play, controls: '' }); }
-    if (R.phase === 'empty') return stage({ plate: plate('gym'), hud: hudFor(''), play: '<div class="gym-card"><p>No words at this level yet — try another level.</p><button class="gym-btn go" data-g="hub">Back to the gym</button></div>', controls: '' });
+    if (R.phase === 'empty') return stage({ plate: plate('gym'), hud: hudFor(''), play: '<div class="sg-panel gym-card"><p>No words at this level yet — try another level.</p><button class="gym-btn go" data-g="hub">Back to the gym</button></div>', controls: '' });
     if (R.phase === 'done') return stage({ plate: plate('gym'), hud: hudFor(''), play: doneCard(), controls: '' });
     if (R.mode === 'doctor') return doctorPlay();
     const w = R.cur || {}; const clockBar = m.clock ? '<div class="gym-bar" aria-hidden="true"><i></i></div>' : '';
     let card = '';
     if (R.mode === 'spot' && R.spot) {
       const toks = R.spot.toks.map((t, i) => t.sp ? E(t.sp) : (E(t.pre) + '<button class="gym-tok' + (R.phase !== 'tap' && t.bad ? ' bad' : '') + '" data-g="tok" data-arg="' + i + '"' + (R.phase === 'tap' ? '' : ' disabled') + '>' + E(t.t) + '</button>' + E(t.post))).join('');
-      card = '<div class="gym-card gym-spot" data-live-prompt>' + clockBar + '<p class="gym-ask">' + (R.phase === 'tap' ? 'One word is spelt wrong. Tap it.' : 'Now type it the right way.') + '</p><p class="gym-sent">' + toks + '</p>' +
+      card = '<div class="sg-panel gym-card gym-spot" data-live-prompt>' + clockBar + '<p class="gym-ask">' + (R.phase === 'tap' ? 'One word is spelt wrong. Tap it.' : 'Now type it the right way.') + '</p><p class="gym-sent">' + toks + '</p>' +
         (R.phase === 'answer' ? inputHTML() : '') + '</div>';
     } else {
       const def = w.d ? (typeof blankHTML === 'function' ? blankHTML(w.d.length > 110 ? w.d.slice(0, 108).replace(/\s+\S*$/, '') + '…' : w.d, w.w) : '') : '';
       const hints = m.hints ? hintHTML(w) : '';
-      card = '<div class="gym-card" data-live-prompt>' + clockBar +
+      card = '<div class="sg-panel gym-card" data-live-prompt>' + clockBar +
         (R.mode === 'squares' ? '<p class="gym-ask">' + E(R.board[R.cell].label) + ' · ' + (R.cellI + 1) + ' of 5</p>' : '') +
-        '<button class="gym-hear" data-g="hear" aria-label="Hear the word">' + ic('volume', 30) + '<span>Hear it</span></button>' +
+        '<button class="gym-hear" data-g="hear" aria-label="Hear the word">' + ic('volume', 30) + '<span>Hear it</span></button>' + toolsHTML() +
         (def ? '<p class="gym-def">' + def + '</p>' : '') + hints + inputHTML() + '</div>'; }
     return stage({ plate: plate('gym'), hud: hudFor(), play: card, controls: controlsHTML() }); }
   function inputHTML() { const t = touch();
     return '<input class="gym-in" data-fkey="gymIn" aria-label="Type the word" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ' +
       (t ? 'inputmode="none" readonly ' : '') + 'placeholder="type the word"><div class="gym-nudge" aria-live="polite"></div>'; }
+  /* the controls row: the on-screen keys (a phone) and Enter. On a phone the keyboard's own ⏎ is Enter, so
+     the row is the keys alone and sits in the stage's bottom 38%; Slowly and Hint live on the card */
+  const kitKeys = () => !!(W.SGUI && typeof SGUI.keys === 'function');
   function controlsHTML() { if (!R || R.phase !== 'answer') return '';
-    const row = '<div class="gym-acts">' + (R.mode === 'spot' ? '' : '<button class="gym-btn" data-g="slow">' + ic('volume', 16) + ' Slowly</button>') +
-      (R.m.hints ? '<button class="gym-btn" data-g="hint">' + ic('bulb', 16) + ' Hint</button>' : '') +
-      '<button class="gym-btn go" data-g="enter">Enter ' + ic('arrow', 16) + '</button></div>';
-    return (touch() ? '<div class="gym-keys"></div>' : '') + row; }
+    const row = (touch() && kitKeys()) ? '' : '<div class="gym-acts"><button class="gym-btn go" data-g="enter">Enter ' + ic('arrow', 16) + '</button></div>';
+    return '<div class="gym-keys"></div>' + row; }
+  function toolsHTML() { if (!R || R.phase !== 'answer') return '';
+    const t = (R.mode === 'spot' ? '' : '<button class="gym-pill" data-g="slow">' + ic('volume', 15) + ' Slowly</button>') +
+      (R.m.hints ? '<button class="gym-pill" data-g="hint">' + ic('bulb', 15) + ' Hint</button>' : '');
+    return t ? '<div class="gym-tools">' + t + '</div>' : ''; }
   /* graduated hints, least to most: the sentence, then the letter count, then the first letter —
      never the word */
   function hintHTML(w) { const n = R.hint | 0; if (!n) return ''; const out = [];
@@ -548,21 +580,21 @@
     if (R.mode === 'challenge') { title = R.pass ? 'Challenge passed!' : 'Not this time'; sub = R.pass ? 'The gym moves up to ' + LV_NAME[R.level] + '.' : 'You need 8 of 10. Try again when you are ready.'; }
     if (R.mode === 'squares') { title = R.board.every(c => c.done) ? 'The whole board!' : 'Board finished'; sub = R.claimed + ' square' + (R.claimed === 1 ? '' : 's') + ' · ' + R.lines + ' line' + (R.lines === 1 ? '' : 's') + ' · ' + R.right + ' of ' + R.asked + ' right'; }
     if (R.mode === 'doctor') { title = 'Rounds done'; sub = (R.cures || 0) + ' of ' + R.patients.length + ' cured' + (R.out ? ' · ' + R.out + ' went home' : ''); }
-    if (R.lv && R.lv.dropped) sub += '. Let’s warm up on ' + LV_NAME[R.lv.level] + '. You can move back up any time.';
+    if (R.lv && R.lv.dropped) sub += '. ' + (R.lv.line || ('Let’s warm up on ' + LV_NAME[R.lv.level] + '. You can move back up any time.'));
     const coins = Math.max(0, R.coins | 0);
     let html = '';
-    if (W.SGUI && typeof SGUI.result === 'function') html = SGUI.result({ title, sub, stars: R.pct >= 90 ? 3 : R.pct >= 70 ? 2 : R.pct >= 50 ? 1 : 0, score: coins, scoreLabel: 'Bizzing coins', words: R.log, win: R.pct >= 50, contLabel: 'Back to the gym' });
-    else html = '<div class="gym-card sg-endcard"><h3 class="sg-end-h">' + E(title) + '</h3><p class="sg-end-sub">' + E(sub) + '</p><p>+' + coins + ' coins</p><div class="gym-acts"><button class="gym-btn" id="sg-again">Play again</button><button class="gym-btn go" id="sg-cont">Back to the gym</button></div></div>';
+    if (W.SGUI && typeof SGUI.result === 'function') html = SGUI.result({ title, sub, stars: R.pct >= 90 ? 3 : R.pct >= 70 ? 2 : R.pct >= 50 ? 1 : 0, score: coins, scoreLabel: ' Bizzing coins', words: R.log, win: R.pct >= 50, contLabel: 'Back to the gym' });
+    else html = '<div class="sg-panel gym-card sg-endcard"><h3 class="sg-end-h">' + E(title) + '</h3><p class="sg-end-sub">' + E(sub) + '</p><p>+' + coins + ' coins</p><div class="gym-acts"><button class="gym-btn" id="sg-again">Play again</button><button class="gym-btn go" id="sg-cont">Back to the gym</button></div></div>';
     if (R.lv && R.lv.offerUp && R.mode !== 'challenge') html += '<button class="gym-btn up" data-act="hubMode" data-arg="gym/challenge">Ready for ' + LV_NAME[chTarget()] + '? Take the Level Challenge</button>';
     return html; }
 
-  function lockedView() { const m = BY[state.gymMode] || BY.champ;
-    const play = '<div class="gym-card gym-ready"><div class="gym-big-ic">' + ic(m.icon, 46) + '</div><h3>' + E(m.title) + '</h3><p>' + E(m.promise) + '</p><p class="gym-quiet">' + ic('lock', 15) + ' Comes with the Advanced Pack</p>' +
+  function lockedView() { const m = BY[state.gymMode] || BY.dictation;
+    const play = '<div class="sg-panel gym-card gym-ready"><div class="gym-big-ic">' + ic(m.icon, 46) + '</div><h3>' + E(m.title) + '</h3><p>' + E(m.promise) + '</p><p class="gym-quiet">' + ic('lock', 15) + ' Comes with the Advanced Pack</p>' +
       '<button class="gym-btn" data-act="openAdvanced">Show a grown-up</button></div>';
-    return stage({ plate: plate('gym'), hud: { left: back(hubName(), 'hub'), center: '<h2 class="gym-title">' + E(m.title) + '</h2>', right: '' }, play, controls: '' }); }
+    return stage({ plate: plate('gym'), hud: { back: back(hubName(), 'hub'), center: '<h1 class="sg-st-title gym-title">' + E(m.title) + '</h1>', left: '', right: '' }, play, controls: '' }); }
 
   function boardView() { if (R.phase === 'done') return modeView();
-    const cells = R.board.map((c, i) => '<button class="gym-sq' + (c.done ? ' done' : '') + '" data-g="sq" data-arg="' + i + '" aria-label="' + EA(c.label + (c.done ? ', claimed' : c.tried ? ', best ' + c.best + ' of 5' : '')) + '">' +
+    const cells = R.board.map((c, i) => '<button class="sg-panel gym-sq' + (c.done ? ' done' : '') + '" data-g="sq" data-arg="' + i + '" aria-label="' + EA(c.label + (c.done ? ', claimed' : c.tried ? ', best ' + c.best + ' of 5' : '')) + '">' +
       '<span>' + E(c.label) + '</span>' + (c.done ? ic('check', 22) : c.tried ? '<small>best ' + c.best + '/5</small>' : '') + '</button>').join('');
     let note = '';
     if (R.cellWon != null) note = R.celeb && R.celeb.length ? '<p class="gym-celeb">' + R.celeb.map(x => E(x) + ' — a line!').join(' ') + '</p>' : R.cellWon ? '<p class="gym-celeb">Square claimed!</p>' : '<p class="gym-quiet">' + R.cellRight + ' of 5 — you need 4 to claim it. Try that square again any time.</p>';
@@ -571,7 +603,7 @@
 
   function wardView() { if (R.phase === 'done') return modeView(); const D = ward(); const nRec = Object.keys(D.rec).length;
     const list = R.patients.length ? R.patients.map(w => '<li>' + ic('heart', 14) + '<span>' + (w._src === 'back' ? 'Back for a check-up' : 'New patient') + '</span></li>').join('') : '';
-    const play = '<div class="gym-card gym-ward"><div class="gym-big-ic">' + ic('heart', 40) + '</div><h3>The clinic</h3>' +
+    const play = '<div class="sg-panel gym-card gym-ward"><div class="gym-big-ic">' + ic('heart', 40) + '</div><h3>The clinic</h3>' +
       (R.patients.length ? '<p>' + R.patients.length + ' patient' + (R.patients.length === 1 ? '' : 's') + ' today — words you missed. Find what went wrong, then cure it. A patient goes home when you spell the word right on a later day.</p><ul class="gym-pts">' + list + '</ul><button class="gym-btn go" data-g="docgo">See the first patient →</button>'
         : '<p>No patients today. Words you miss anywhere in the app come here when it is time to look at them again.</p>') +
       '<p class="gym-quiet">Recovered ward: ' + nRec + '</p></div>';
@@ -584,9 +616,9 @@
     if (ph === 'diag') body = '<p class="gym-ask">What went wrong?</p><div class="gym-dx">' + R.opts.map((o, i) => '<button class="gym-btn dx" data-g="dx" data-arg="' + i + '">' + E(o[1]) + '</button>').join('') + '</div>';
     else if (ph === 'diagok') body = '<p class="gym-celeb">' + ic('check', 18) + ' Yes — ' + E(TYPES.find(x => x[0] === p.k)[1].toLowerCase()) + '.</p><p class="gym-def">' + E(TYPE_WHY[p.k]) + '</p>';
     else if (ph === 'diagno') body = '<div class="sb-miss gym-dxmiss"><b>It was: ' + E(TYPES.find(x => x[0] === p.k)[1]) + '</b><p>' + E(TYPE_WHY[p.k]) + '</p></div><button class="gym-btn go" data-g="cont">Continue →</button>';
-    else if (ph === 'answer') { body = '<p class="gym-ask">The cure: type the word.</p>' + inputHTML(); ctl = controlsHTML(); }
+    else if (ph === 'answer') { body = '<p class="gym-ask">The cure: type the word.</p>' + toolsHTML() + inputHTML(); ctl = controlsHTML(); }
     else if (ph === 'cured') body = R.verdict === 'out' ? '<p class="gym-celeb">' + ic('check', 18) + ' Cured — and spelt right on a later day. Off to the Recovered ward!</p>' : '<p class="gym-celeb">' + ic('check', 18) + ' Treated. Spell it right on another day and it goes home.</p>';
-    const card = '<div class="gym-card gym-doc" data-live-prompt>' + head + body + '</div>';
+    const card = '<div class="sg-panel gym-card gym-doc" data-live-prompt>' + head + body + '</div>';
     return stage({ plate: plate('clinic'), hud: hudFor(stat((R.pi + 1) + '/' + R.patients.length, 'patient')), play: card, controls: ctl }); }
 
   /* ------------------------------------------------------------------ keyboard + touch */
@@ -629,13 +661,15 @@
     if (!R) return;
     if (e.key === 'Enter' && R.phase === 'ready' && !(e.target && e.target.closest && e.target.closest('button'))) { e.preventDefault(); begin(); return; }
     if (R.phase === 'diag' && /^[1-4]$/.test(e.key)) { e.preventDefault(); docPick(+e.key - 1); return; }
-    if (R.phase === 'answer' && touch()) { const i = EL.querySelector('.gym-in'); if (!i) return;
+    if (R.phase === 'answer' && touch() && !(W.SGUI && typeof SGUI.keys === 'function')) { const i = EL.querySelector('.gym-in'); if (!i) return;
       if (/^[a-z]$/i.test(e.key)) { i.value += e.key.toLowerCase(); e.preventDefault(); } else if (e.key === 'Backspace') { i.value = i.value.slice(0, -1); e.preventDefault(); } else if (e.key === 'Enter') { e.preventDefault(); submit(i.value); } }
   } catch (_) {} });
   const flashMsg = t => { try { flash(t); } catch (e) {} };
 
   /* ------------------------------------------------------------------ the host */
-  function size() { try { if (!EL || !EL.parentNode) return; const host = EL.parentNode; const r = host.getBoundingClientRect();
+  function size() { try { if (!EL || !EL.parentNode) return; const host = EL.parentNode;
+      if (EL.querySelector('.sb-stage')) { if (host.style.height) host.style.height = ''; return; }
+      const r = host.getBoundingClientRect();
       const rootEl = document.getElementById('root'); const z = parseFloat(getComputedStyle(rootEl).zoom) || 1;
       const bar = document.querySelector('nav.sb-tabbar'); const bb = bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect() : null;
       const bottom = (bb && bb.height > 0 && bb.top < innerHeight) ? bb.top : innerHeight;
@@ -652,8 +686,21 @@
 
   function css() { if (document.getElementById('gym-css')) return; const s = document.createElement('style'); s.id = 'gym-css'; s.textContent = `
 .gym-host{position:relative;width:100%;max-width:1280px;margin:0 auto}
+.gym-fill{width:100%;height:100%;min-height:0;display:grid;place-items:center;container-type:size}
+.gym-cline{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0}
+.gym-ctitle{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.gym-spacer{flex:none;width:44px;height:44px}
+.gym-st .sg-st-c{max-width:min(62cqw,560px)}
+.gym-root .sg-hub-grid.n7 .sg-hub-art{width:clamp(36px,9cqh,72px)}
+.gym-art{display:grid;place-items:center;width:100%;height:100%;color:var(--treasure-deep,#8A5B00)}
+.gym-art svg{width:58%;height:58%}
+[data-mode="dusk"] .gym-art{color:var(--treasure,#F0B429)}
+@container sgstage (max-width:640px){ .gym-root .sb-stage .sg-st-c{max-width:58cqw} .gym-cline{gap:3px} .gym-ctitle .sg-st-title{max-width:100%;font-size:14.5px;padding:6px 8px}
+  .gym-root .gym-back,.gym-root .gym-spacer{width:40px;height:40px} }
+.gym-stage .sg-st-n{font-family:var(--display);font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}.gym-stage .sg-st-t{font-size:11.5px;color:var(--muted);font-weight:700}
+.gym-stage .sg-st-ic{display:grid;place-items:center}
 .sb-content:has(> .sb-gympage){padding-bottom:0!important}
-.gym-stage{--gym-act:linear-gradient(180deg,color-mix(in srgb,var(--action,var(--accent)) 82%,#fff),var(--action,var(--accent)) 55%,color-mix(in srgb,var(--action,var(--accent)) 84%,#000))}
+.gym-root{--gym-act:linear-gradient(180deg,color-mix(in srgb,var(--action,var(--accent)) 82%,#fff),var(--action,var(--accent)) 55%,color-mix(in srgb,var(--action,var(--accent)) 84%,#000))}
 .gym-root{height:100%}
 .gym-stage{position:relative;height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;border-radius:20px;overflow:hidden;isolation:isolate;color:var(--text);
   background:var(--gym-plate,none) center/cover no-repeat,linear-gradient(100deg,rgba(255,240,210,.10),rgba(60,30,0,.10) 50%,rgba(255,240,210,.10)),radial-gradient(150% 130% at 50% 0%,#F7DDA6 0%,#E7B66E 34%,#B97A3E 66%,#7A4A26 100%)}
@@ -666,12 +713,13 @@
 .gym-chips{display:flex;gap:6px;justify-content:center;margin-top:4px;flex-wrap:wrap}
 .gym-stat{display:inline-flex;flex-direction:column;line-height:1.05;font-variant-numeric:tabular-nums}
 .gym-stat b{font-family:var(--display);font-size:20px}.gym-stat small{font-size:11px;color:var(--muted);font-weight:700}
-.gym-back{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:6px 12px 6px 9px;border-radius:999px;background:color-mix(in srgb,var(--surface2,#fff) 80%,transparent);border:1px solid var(--line);font-weight:800;font-size:13px;color:var(--text)}
+.gym-back{flex:none;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:999px;background:color-mix(in srgb,var(--surface2,#fff) 80%,transparent);border:1px solid var(--line);font-weight:800;font-size:13px;color:var(--text)}
 .gym-play{display:grid;place-items:center;padding:12px;min-height:0;overflow:auto;container-type:size}
 .gym-stage .sg-endcard{background:color-mix(in srgb,var(--bz-card,var(--bg2)) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);box-shadow:0 10px 30px rgba(40,20,0,.18);max-width:min(560px,100%)}
 .gym-ctl{padding:8px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 55%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 80%,transparent) 50%,color-mix(in srgb,var(--bz-card,var(--bg2)) 55%,transparent));backdrop-filter:blur(6px)}
 .gym-ctl:empty{display:none}
-.gym-card{position:relative;width:min(560px,100%);min-height:min(52%,340px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(165deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 94%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 80%,transparent));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:22px;padding:clamp(14px,3vw,24px);text-align:center;box-shadow:0 10px 30px rgba(40,20,0,.18)}
+.gym-card{position:relative;width:min(560px,100%);min-height:min(52%,340px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border-radius:22px;padding:clamp(14px,3vw,24px);text-align:center}
+.gym-stage .gym-card,.gym-stage .gym-sq{background:linear-gradient(165deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 94%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 80%,transparent));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);box-shadow:0 10px 30px rgba(40,20,0,.18)}
 .gym-card h3{margin:0;font-family:var(--display);font-size:22px}.gym-card p{margin:0;line-height:1.5}
 .gym-big-ic{width:72px;height:72px;border-radius:20px;display:grid;place-items:center;background:var(--gym-act);color:var(--action-ink,#fff)}
 .gym-hear{display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:10px 22px;border-radius:999px;background:var(--gym-act);color:var(--action-ink,#fff);font-weight:800;font-size:17px;box-shadow:var(--edge)}
@@ -685,6 +733,9 @@
 .gym-btn.go{background:var(--gym-act);color:var(--action-ink,#fff);border-color:transparent;box-shadow:var(--edge)}
 .gym-btn[disabled]{opacity:.6}
 .gym-btn.up{margin-top:10px}
+.gym-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.gym-pill{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 14px;border-radius:999px;background:color-mix(in srgb,var(--surface2,#fff) 85%,transparent);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px}
+@container sgstage (max-width:640px){ .gym-root .sg-hub-grid.n7 .sg-hub-promise{display:none} }
 .gym-keys{width:min(560px,100%);display:flex;flex-direction:column;gap:6px}
 .gym-krow{display:flex;gap:4px;justify-content:center}
 .gym-k{flex:1 1 0;min-width:0;max-width:52px;height:44px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:18px;text-transform:lowercase}
@@ -705,7 +756,7 @@
 .gym-tile-lv{position:absolute;top:10px;right:10px}
 .gym-board-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(540px,100%)}
 .gym-board{width:min(480px,100cqw - 24px,100cqh - 64px);display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.gym-sq{aspect-ratio:1;border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;font-weight:800;font-size:clamp(11px,2.6vw,14px);line-height:1.2;color:var(--text);background:linear-gradient(165deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 94%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 78%,transparent));border:2px solid var(--line)}
+.gym-sq{aspect-ratio:1;border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;font-weight:800;font-size:clamp(11px,2.6vw,14px);line-height:1.2;color:var(--text)}
 .gym-sq.done{background:linear-gradient(165deg,color-mix(in srgb,var(--good) 80%,#fff),var(--good) 60%,color-mix(in srgb,var(--good) 85%,#000));color:#fff;border-color:transparent}.gym-sq small{font-size:11px;color:var(--muted)}
 .gym-celeb{font-family:var(--display);font-weight:800;font-size:17px;color:var(--good)}
 .gym-quiet{font-size:13px;color:var(--muted);font-weight:700;display:inline-flex;gap:6px;align-items:center}
@@ -738,6 +789,6 @@
       pat: R.pat ? { k: R.pat.k, cur: R.pat.cur, opts: R.opts && R.opts.map(o => o[0]) } : null, patients: R.patients ? R.patients.length : null, coins: R.coins } : { view: VIEW },
     hubName, docType, misspell, TYPES: TYPES.map(t => t[0]),
     /* for the tests only: bring a timed round's end close (the clock itself is what T4 measures) */
-    _clock: s => { const C = R && R.clock; if (C && !C.over) C.used = Math.max(C.used, (C.total - (+s || 0)) * 1000); }
+    _clock: s => { const C = R && R.clock; if (!C || C.over) return; if (C.add) C.add(-Math.max(0, C.left - (+s || 0))); else C.used = Math.max(C.used, (C.total - (+s || 0)) * 1000); }
   };
 })();

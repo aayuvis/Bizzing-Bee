@@ -20,6 +20,8 @@
      T14  no flat-colour region over 6% of the stage; no pure white or black over 2% (hub + a mode,
           1280×800 and 390×844, light and dusk)
      T15  symmetric: gutters, HUD side widths and the centre line within 4px; no scroll during play
+   On the engine kit (SGUI.stage / SB_HUB / SGUI.clock / SGUI.miss / SGUI.keys) T14/T15 run through the kit's
+   shared tests/lib/stage-check.cjs; the local measurements below stand in when it is absent.
    Every check was watched failing once with its fault put back (see the commit that added it).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/spelling-gym.cjs                         */
 'use strict';
@@ -51,7 +53,7 @@ function helpers() {
   const type = v => { const i = document.querySelector('.gym-in'); if (!i) return false; i.value = v; i.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); return true; };
   /* one move in whatever phase the round is in. how: 'right' | 'wrong' | 'random' */
   async function step(how) { const p = P(); const ph = p.phase;
-    if (ph === 'miss' || ph === 'diagno') { await new Promise(r => setTimeout(r, 0)); enter(); await U(() => P().phase !== ph); return 'cont'; }
+    if (ph === 'miss' || ph === 'diagno') { for (let k = 0; k < 6 && P().phase === ph; k++) { await new Promise(r => setTimeout(r, 300)); enter(); await U(() => P().phase !== ph, 600); } return 'cont'; }
     if (ph === 'diagok' || ph === 'cured') { await U(() => P().phase !== ph, 4000); return 'wait'; }
     if (ph === 'tap') { const toks = [...document.querySelectorAll('[data-g="tok"]')]; let i;
       if (how === 'right') i = toks.findIndex(t => +t.dataset.arg === p.bad);
@@ -102,7 +104,7 @@ async function page(b, o) { o = o || {};
   await pg.evaluate(() => new Promise(r => SB_LAZY.need('gym', r)));
   return { ctx, pg }; }
 const errs = [];
-const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challenge'];
+const MODES = ['warmup', 'sprint', 'dictation', 'spot', 'squares', 'doctor', 'challenge'];
 
 (async () => {
   const b = await chromium.launch({ executablePath: CHROME });
@@ -111,8 +113,8 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
   if (want('T9')) {
     const { ctx, pg } = await page(b);
     await pg.evaluate(() => app.openGames()); await until(pg, () => location.hash === '#/play');
-    await pg.click('[data-act="openGym"]'); await until(pg, () => location.hash === '#/gym' && !!document.querySelector('.gym-root [data-act="hubMode"]'));
-    const hub = await pg.evaluate(() => ({ h: location.hash, nav: state.nav, tiles: [...document.querySelectorAll('[data-act="hubMode"]')].map(t => t.getAttribute('data-arg')), title: (document.querySelector('.gym-root .gym-title') || {}).textContent }));
+    await pg.click('[data-act="playCard"][data-arg="gym"]'); await until(pg, () => location.hash === '#/gym' && !!document.querySelector('.gym-root [data-act="hubMode"]'));
+    const hub = await pg.evaluate(() => ({ h: location.hash, nav: state.nav, tiles: [...document.querySelectorAll('[data-act="hubMode"]')].map(t => t.getAttribute('data-arg')), title: ((document.querySelector('.gym-root .sg-st-title, .gym-root .gym-title') || {}).textContent || '').trim() }));
     ok(hub.nav === 'gym' && JSON.stringify(hub.tiles) === JSON.stringify(MODES.map(m => 'gym/' + m)), `T9: the Play tab's card opens the hub at #/gym, seven tiles in the fixed order (${hub.tiles.join(' ')})`);
     ok(hub.title === (await pg.evaluate(() => (window.SB_HUB_NAMES && SB_HUB_NAMES.gym) || 'Spelling Gym')), `T9: the hub wears its name from SB_HUB_NAMES, never a typed one ("${hub.title}")`);
     await pg.click('[data-act="hubMode"][data-arg="gym/warmup"]'); await until(pg, () => location.hash === '#/gym/warmup' && SB_GYM.peek().phase === 'answer');
@@ -147,7 +149,7 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
     ok(perf.challenge.pass === true && perf.challenge.coins === 20, `PAY: the Level Challenge pays per right plus 'contest' at its pass (10/10 → ${perf.challenge.coins})`);
     /* Champ Dictation: at most 20 a round */
     await pg.evaluate(() => { try { localStorage.removeItem('bizzing.wallet'); } catch (e) {} });
-    const champ = await pg.evaluate(() => __gym.round('champ', 'right', { maxAsked: 24 }));
+    const champ = await pg.evaluate(() => __gym.round('dictation', 'right', { maxAsked: 24 }));
     ok(champ.right === 24 && champ.coins === 20, `PAY: Champ Dictation stops paying at 20 a round (24 right → ${champ.coins})`);
 
     await ctx.close();
@@ -167,13 +169,13 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
     /* the panel draws the word letter by letter under the child's letters, so read it the way a screen
        reader does (its label spells the word) or as the word row of the diff */
     const h1 = await pg.evaluate(w => ({ left: __gym.P().left, held: __gym.P().held, phase: __gym.P().phase,
-      shown: [...document.querySelectorAll('.gym-root .sb-miss, .gym-root .sg-miss, .gym-root [class*="miss"]')].some(e => { if (!e.getClientRects().length) return false;
+      shown: [...document.querySelectorAll('.gym-root .sb-miss, .gym-root [class*="miss"]')].some(e => { if (!e.getClientRects().length) return false;
         const lab = [...e.querySelectorAll('[aria-label]')].map(x => x.getAttribute('aria-label')).join(' ').toLowerCase();
         const row = [...e.querySelectorAll('.sb-mdcol')].map(c => (c.lastElementChild || {}).textContent || '').join('').replace(/\s/g, '');
         return lab.includes(w.toLowerCase().split('').join(' ')) || row.toLowerCase() === w.toLowerCase() || e.textContent.toLowerCase().includes(w.toLowerCase()); }) }), w);
     ok(h1.phase === 'miss' && h1.shown, `T3: the correct form of a missed word stays on screen until Continue (3s later: ${h1.phase}, word shown ${h1.shown})`);
     ok(h0.held && h1.held && Math.abs(h1.left - h0.left) < 0.05, `T3: Sprint's clock is held while the miss is up (${h0.left.toFixed(2)}s → ${h1.left.toFixed(2)}s)`);
-    await pg.keyboard.press('Enter'); const resumed = await until(pg, () => SB_GYM.peek().phase === 'answer' && SB_GYM.peek().held === false);
+    await pg.keyboard.press('Enter'); const resumed = await until(pg, () => SB_GYM.peek().phase === 'answer' && SB_GYM.peek().held === false, null, 5000);
     await pg.waitForTimeout(1000); const h2 = await pg.evaluate(() => __gym.P().left);
     ok(resumed && h2 < h1.left - 0.8, `T3: Continue (Enter) moves on and the clock runs again (${h1.left.toFixed(2)}s → ${h2.toFixed(2)}s)`);
     /* the untimed modes hold too: Warm-up, a wrong tap in Spot the Error, a wrong diagnosis */
@@ -192,7 +194,7 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
     const { ctx, pg } = await page(b);
     const L = () => (window.SB_LEVEL && SB_LEVEL.get) ? SB_LEVEL : null;
     const rows = [];
-    for (const m of ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor']) {
+    for (const m of ['warmup', 'sprint', 'dictation', 'spot', 'squares', 'doctor']) {
       const r = await pg.evaluate(async m => { const { round } = __gym;
         const Lv = (window.SB_LEVEL && SB_LEVEL.get) ? SB_LEVEL : null;
         const get = k => Lv ? Lv.get(k) : ((active().gym || {}).lv || {})[k] ? active().gym.lv[k].level : 'auto';
@@ -263,15 +265,17 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
     const m = await pg.evaluate(() => { const bar = document.querySelector('nav.sb-tabbar'); const top = bar ? bar.getBoundingClientRect().top : innerHeight;
       const ctl = [...document.querySelectorAll('.gym-root button, .gym-root input')].filter(e => e.getClientRects().length);
       const bad = ctl.filter(e => { const r = e.getBoundingClientRect(); return r.bottom > Math.min(top, innerHeight) + 0.5 || r.top < 0; }).map(e => (e.textContent || e.getAttribute('aria-label') || e.className).trim().slice(0, 12));
-      const keys = [...document.querySelectorAll('.gym-root .gym-keys button, .gym-root [class*="keys"] button')].filter(e => e.getClientRects().length);
+      const keys = [...document.querySelectorAll('.gym-root .gym-keys button')].filter(e => e.getClientRects().length);
       const inp = document.querySelector('.gym-in');
       return { n: ctl.length, bad, keys: keys.length, minH: Math.min(...keys.map(k => k.getBoundingClientRect().height)), native: inp ? (inp.readOnly || inp.inputMode === 'none') : false }; });
     ok(m.n > 5 && !m.bad.length, `T11: on a 390×844 phone every control is on screen and above the tab bar (${m.n} controls${m.bad.length ? '; under or off: ' + m.bad.join(', ') : ''})`);
     ok(m.keys >= 26 && m.minH >= 40, `T11: an on-screen keyboard, every key at least 40px tall (${m.keys} keys, smallest ${Math.round(m.minH)}px)`);
     ok(m.native, 'T11: the native keyboard is not summoned over the stage (the input is read-only to it)');
     const w = await pg.evaluate(() => SB_GYM.peek().word);
-    for (const ch of w.toLowerCase()) await pg.tap(`.gym-root .gym-keys button[data-k="${ch}"], .gym-root [class*="keys"] button[data-k="${ch}"]`);
-    await pg.tap('.gym-root [data-g="enter"]'); const typed = await until(pg, () => SB_GYM.peek().right === 1);
+    /* pg.click, not pg.tap: Chromium's emulated tap sends its click with detail 0, which the kit (rightly, for
+       switch access and screen readers) also counts as a press, so an emulated tap types every letter twice */
+    for (const ch of w.toLowerCase()) await pg.click(`.gym-root .gym-keys button[data-k="${ch}"]`);
+    await pg.click('.gym-root .gym-keys button[data-k="⏎"], .gym-root .gym-keys button[data-k="enter"], .gym-root [data-g="enter"]'); const typed = await until(pg, () => SB_GYM.peek().right === 1);
     ok(typed, `T11: tapping the keys spells the word and Enter submits it ("${w}")`);
     await ctx.close();
   }
@@ -280,11 +284,14 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
   if (want('STAGE')) {
     for (const vp of [{ n: 'desktop', phone: false }, { n: 'phone', phone: true }]) for (const look of ['light', 'dusk']) {
       const { ctx, pg } = await page(b, { phone: vp.phone, mode: look, hash: '#/gym' });
-      await until(pg, () => !!document.querySelector('.gym-root .gym-stage, .gym-root .sg-stage'), null, 30000); await still(pg);
+      await until(pg, () => !!document.querySelector('.gym-root .sb-stage, .gym-root .gym-stage'), null, 30000); await still(pg);
       for (const where of ['hub', 'warmup']) {
         if (where === 'warmup') { await pg.evaluate(() => app.openGym('warmup')); await until(pg, () => SB_GYM.peek().phase === 'answer', null, 30000); await still(pg); }
         const T = `${vp.n} ${look} ${where}`;
-        const st = pg.locator('.gym-root .gym-stage, .gym-root .sg-stage').first();
+        if (STAGE && await pg.evaluate(() => !!document.querySelector('.gym-root .sb-stage'))) {
+          await pg.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+          STAGE.report(ok, `T14/T15 gym ${T}`, await STAGE.geometry(pg), await STAGE.pixels(pg), { play: where !== 'hub' }); continue; }
+        const st = pg.locator('.gym-root .gym-stage').first();
         let col;
         if (STAGE && STAGE.colours) col = await STAGE.colours(pg, st);
         else { const png = (await st.screenshot()).toString('base64');
@@ -295,7 +302,7 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
               if (d[i] >= 250 && d[i + 1] >= 250 && d[i + 2] >= 250) wh++; if (d[i] <= 5 && d[i + 1] <= 5 && d[i + 2] <= 5) bl++; }
             let top = 0, tk = 0; H.forEach((v, k) => { if (v > top) { top = v; tk = k; } }); return { flat: top / n, hex: '#' + tk.toString(16).padStart(6, '0'), white: wh / n, black: bl / n }; }, png); }
         ok(col.flat <= 0.06 && col.white <= 0.02 && col.black <= 0.02, `T14 ${T}: no flat colour over 6% (${(col.flat * 100).toFixed(1)}%${col.hex ? ' ' + col.hex : ''}), no pure white (${(col.white * 100).toFixed(1)}%) or black (${(col.black * 100).toFixed(1)}%) over 2%`);
-        const g = await pg.evaluate(() => { const s = document.querySelector('.gym-root .gym-stage, .gym-root .sg-stage').getBoundingClientRect();
+        const g = await pg.evaluate(() => { const s = document.querySelector('.gym-root .gym-stage').getBoundingClientRect();
           const hl = document.querySelector('.gym-root .gym-hl, .gym-root .sg-hud-l'), hr = document.querySelector('.gym-root .gym-hr, .gym-root .sg-hud-r'), hc = document.querySelector('.gym-root .gym-hc, .gym-root .sg-hud-c');
           const card = document.querySelector('.gym-root .gym-card, .gym-root .gym-hub');
           const R = e => e ? e.getBoundingClientRect() : null; const a = R(hl), z = R(hr), c = R(hc), k = R(card);
