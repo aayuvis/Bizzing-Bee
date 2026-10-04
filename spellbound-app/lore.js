@@ -56,13 +56,17 @@
     const r = c[k] || (c[k] = {}); r.best = r.best || {}; r.seen = r.seen || {}; return r; }
   function seenIds() { const c = active(); return new Set(c.qzSeen || []); }
   function markSeen(ids) { try { const c = active(); c.qzSeen = (c.qzSeen || []).concat(ids.filter(Boolean)); if (c.qzSeen.length > 1500) c.qzSeen = c.qzSeen.slice(-1100); } catch (e) {} }
-  function bestTxt(h, m) { const b = rec(h).best[m]; if (!b) return '';
-    if (m === 'clock') return 'Best: ' + b.r + ' right';
+  /* bests live in the household's SB_BESTS under the ledger's keys (lore/<mode>, hive/<mode>; store step
+     v11 carried Bee Trivia's, Word Quiz's and the clock's there) — {right, of}; of is null on the clock */
+  function bestOf(h, m) { try { if (W.SB_BESTS) { const b = SB_BESTS.get(lkey(h, m)); return b ? { r: b.right, n: b.of } : null; } } catch (e) {} const b = rec(h).best[m]; return b || null; }
+  function bestTxt(h, m) { const b = bestOf(h, m); if (!b) return '';
+    if (m === 'clock' || !b.n) return 'Best: ' + b.r + ' right';
     if (m === 'ladder') return 'Best: rung ' + b.r;
     return 'Best: ' + b.r + '/' + b.n; }
   /* The Play card's line: the hub's best MODE, never a run count ("Best: 8/10 · Roots"). */
-  /* (app3's SB_HUB_BEST reads the same record at boot, before this file is in) */
-  const cardBest = (h) => (W.SB_HUB_BEST ? SB_HUB_BEST(h) : '');
+  /* the Play card's line is app3's (playCardBest → SB_BESTS.top, names from SB_HUB_MODES) — the same record */
+  const cardBest = (h) => { try { const t = W.SB_BESTS && SB_BESTS.top(h); if (!t) return ''; const m = modeOf(h, t.mode);
+      return 'Best ' + (t.best.of ? t.best.right + '/' + t.best.of : t.best.right) + ' · ' + (m ? m.title : t.mode); } catch (e) { return ''; } };
 
   /* ------------------------------------------------------------------ levels (SB_LEVEL, g-found) */
   const LV = () => W.SB_LEVEL || null;
@@ -79,11 +83,18 @@
   const kidOK = (w) => { try { return W.kidSafe ? !!kidSafe(w) : true; } catch (e) { return true; } };
   /* nextWords (g-found) is the only door to the corpus; until it lands, gameWordsD is the legacy door.
      The mode's own level drives the pick, the way the arcade copies its per-game level into gameDiff. */
-  function words(h, m, n, extra) { const c = active(); const keep = c.gameDiff; const L = levelOf(h, m);
-    c.gameDiff = L || 'auto';
-    try { let p = W.nextWords ? nextWords(c, n, Object.assign({ purpose: 'lore' }, extra || {})) : gameWordsD();
-      return (p || []).filter((w) => w && w.w && kidOK(w)); }
-    catch (e) { return []; } finally { c.gameDiff = keep; } }
+  /* nextWords (purpose 'lore', the mode's level key) is the one door to the corpus. pool() reads the window
+     without serving anything; draw() SERVES — it logs each word into the 150-word no-repeat window — so
+     only the words a round actually asks go through it. gameWordsD is the legacy door if it is missing. */
+  function legacy(h, m, f) { const c = active(); const keep = c.gameDiff; c.gameDiff = levelOf(h, m) || 'auto';
+    try { return f(); } catch (e) { return []; } finally { c.gameDiff = keep; } }
+  function pool(h, m, extra) { const o = Object.assign({ purpose: 'lore', key: lkey(h, m) }, extra || {});
+    try { if (W.nextWords && nextWords.pool) return nextWords.pool(active(), o).filter((w) => w && w.w); } catch (e) {}
+    return legacy(h, m, () => gameWordsD().filter((w) => w && w.w && w.o && w.d && kidOK(w) && (!o.filter || o.filter(w)))); }
+  function draw(h, m, n, extra) { const o = Object.assign({ purpose: 'lore', key: lkey(h, m) }, extra || {});
+    try { if (W.nextWords) return nextWords(active(), n, o).filter((w) => w && w.w); } catch (e) {}
+    return legacy(h, m, () => { const p = pool(h, m, extra); return W.pickFresh ? pickFresh(p, n) : sample(p, n); }); }
+  const words = (h, m) => pool(h, m);   // the whole window, unserved (distractors, the tests)
   let _cl = null;
   function clusterOf(id) { if (!_cl) { _cl = {}; (((W.SB_THEMES || {}).themes) || []).forEach((t) => { _cl[t.id] = t.cluster; }); } return _cl[id]; }
   /* a word's SUBJECT themes — its origin and eponym shelves are not a subject */
@@ -94,8 +105,16 @@
 
   /* Distractors for a meaning question: the SAME part of speech always, and the same subject theme
      wherever the pool has one — then the same cluster — never "rubber, tons, deck" for territory. */
-  function meaningPeers(w, pool, n) { const P = posOf(w); if (!P || !w.d) return null;
+  /* the window indexed by part of speech + subject theme, and part of speech + cluster */
+  function peerIndex(P) { const ix = {}; const add = (k, w) => { (ix[k] = ix[k] || []).push(w); };
+    P.forEach((w) => { const ps = posOf(w); if (!ps || !w.d || w.d.length <= 4) return; const T = topical(w);
+      T.forEach((t) => add(ps + '|' + t, w)); new Set(T.map(clusterOf)).forEach((k) => add(ps + '|cl:' + k, w)); });
+    return ix; }
+  function meaningPeers(w, pool, n, ix) { const P = posOf(w); if (!P || !w.d) return null;
     const mine = new Set(topical(w)), myCl = new Set([...mine].map(clusterOf));
+    if (ix) { const seen = new Set(); const near = [];
+      [...mine].map((t) => P + '|' + t).concat([...myCl].map((k) => P + '|cl:' + k)).forEach((k) => (ix[k] || []).forEach((x) => { if (!seen.has(x)) { seen.add(x); near.push(x); } }));
+      pool = near; }
     const syn = new Set((((W.SB_SYN || {})[w.w]) || []).map((s) => String(s).toLowerCase()));
     const tier = (x) => { const t = topical(x); return t.some((id) => mine.has(id)) ? 0 : t.some((id) => myCl.has(clusterOf(id))) ? 1 : 2; };
     const cands = pool.filter((x) => x && x.w && x !== w && nkey(x.w) !== nkey(w.w) && posOf(x) === P && x.d && x.d.length > 4
@@ -117,11 +136,15 @@
     const s = sentenceOf(w);
     return { kind: 'mc', th: 'meanings', label: 'Meanings', prompt: w.w, big: true, sub: 'What does it mean?', opts, ans: opts.indexOf(right),
       fact: s ? 'In a sentence: ' + s : loreFact(w), word: w, say: w.w, sent: s, peers: peers.map((o) => o.x), dir }; }
-  function meaningRound(h, m, n, dirs) { const pool = words(h, m, 600);
-    const fresh = (W.pickFresh ? pickFresh(pool, pool.length) : sample(pool)).filter((w) => w.d && posOf(w));
+  function meaningRound(h, m, n, dirs, extra) { const P = pool(h, m, extra); const ix = peerIndex(P);
+    /* a word can be asked only if three others share its part of speech AND a subject theme; the round
+       draws its words from those, through the door, so only the words it asks are served */
+    const ok = new Set(); Object.keys(ix).forEach((k) => { if (k.indexOf('|cl:') < 0 && ix[k].length >= 4) ix[k].forEach((w) => ok.add(nkey(w.w))); });
+    let fresh = draw(h, m, n + 4, Object.assign({}, extra || {}, { filter: (w) => ok.has(nkey(w.w)) }));
+    if (fresh.length < n) fresh = fresh.concat(sample(P.filter((w) => ok.has(nkey(w.w)) && fresh.indexOf(w) < 0), n - fresh.length));
     /* first the words whose three peers all share their subject; only then the ones that need the cluster */
     const picked = [], later = [];
-    for (const w of fresh) { if (picked.length >= n) break; const peers = meaningPeers(w, pool, 3); if (!peers) continue;
+    for (const w of fresh) { if (picked.length >= n) break; const peers = meaningPeers(w, P, 3, ix); if (!peers) continue;
       (peers.every((o) => o.t === 0) ? picked : later).push([w, peers]); }
     const out = picked.concat(later).slice(0, n).map(([w, peers], i) => meaningQ(w, peers, dirs ? dirs[i % dirs.length] : (i % 2 ? 'm2w' : 'w2m')));
     return sample(out); }
@@ -154,7 +177,7 @@
   const LANGS = ['Old English', 'Latin', 'French', 'Norse', 'Greek', 'Dutch', 'German', 'Italian', 'Spanish', 'Arabic', 'Hebrew',
     'Hindi', 'Sanskrit', 'Japanese', 'Persian', 'Portuguese', 'Russian', 'Malay', 'Irish', 'Turkish', 'Welsh', 'Chinese'];
   const langOf = (w) => { const o = String((w && w.o) || '').trim(); return LANG_MAP[o] || o; };
-  function originRound(pool, n) { const by = {};
+  function originRound(pool, n, pick) { const by = {};
     pool.forEach((w) => { const L = langOf(w); if (LANGS.indexOf(L) >= 0 && /^[a-z]+$/.test(w.w)) (by[L] = by[L] || []).push(w); });
     /* The round's languages are fixed before the first question, and each holds enough words to be
        the answer every time the deck reaches it — a language that ran dry mid-round would leave the
@@ -166,7 +189,7 @@
     for (let i = 0; i < n; i++) {
       if (!deck.length) deck = sample(live);
       const L = deck.pop();
-      const cand = by[L].filter((w) => !used.has(w.w)); const w = (W.pickFresh ? pickFresh(cand, 1) : sample(cand, 1))[0]; used.add(w.w);
+      const cand = by[L].filter((w) => !used.has(w.w)); const w = (pick && pick(L, used)) || sample(cand, 1)[0]; used.add(w.w);
       const opts = sample([L].concat(sample(live.filter((x) => x !== L), 3)));
       out.push({ kind: 'origin', th: 'origins', label: 'Origins', word: w, lang: L, opts, ans: opts.indexOf(L), stage: 'pick', fact: loreFact(w) }); }
     return out; }
@@ -233,7 +256,8 @@
       needAll([needTriv(lv)], go(() => {})); return; }
     if (m === 'meanings') { needAll([needLazy('sents')], go(() => setQs(g, meaningRound(h, m, 10)))); return; }
     if (m === 'roots') { needAll([needTriv(lv), needLazy('sents')], go(() => setQs(g, trivDraw(ROOT_TH, lv, 10, true).map(fromTriv)))); return; }
-    if (m === 'origins') { needAll([needLazy('lore')], go(() => setQs(g, originRound(words(h, m, 600), 10)))); return; }
+    if (m === 'origins') { needAll([needLazy('lore')], go(() => setQs(g, originRound(pool(h, m), 10,
+      (L, used) => draw(h, m, 1, { filter: (w) => langOf(w) === L && !used.has(w.w) && /^[a-z]+$/.test(w.w) })[0])))); return; }
     if (m === 'idioms') { needAll([needLazy('fig')], go(() => setQs(g, figRound(h, m, 10)))); return; }
     if (m === 'ladder') { needAll([needTriv(Math.max(1, lv - 1)), needTriv(lv), needTriv(Math.min(5, lv + 1)), needLazy('sents')], go(() => buildLadder(g, lv))); return; }
     if (m === 'squares') { needAll([needTriv(lv), needLazy('fig')], go(() => buildSquares(g, lv))); return; }
@@ -257,7 +281,7 @@
   const RUNGS = 12;
   function buildLadder(g, lv) { const h = g.hub, m = g.mode; const qs = [];
     const bands = [Math.max(1, lv - 1), lv, Math.min(5, lv + 1)];
-    const mean = meaningRound(h, m, 12, ['w2m']).filter((q) => q.sent);
+    const mean = [-1, 0, 1].map((t) => meaningRound(h, m, 4, ['w2m'], { tier: t }).filter((q) => q.sent)).reverse().reduce((a, b) => a.concat(b), []);
     const idx = (W.wordIndex ? wordIndex() : {});
     for (let r = 0; r < RUNGS; r++) { const band = bands[Math.floor(r / 4)];
       if (r % 2 === 0 && mean.length) { qs.push(mean.pop()); continue; }
@@ -401,7 +425,9 @@
     settle(g);
     const h = g.hub, m = g.mode; const r = rec(h);
     const score = m === 'ladder' ? g.rung : g.right; const of = m === 'ladder' ? RUNGS : m === 'clock' ? 0 : (g.n - g.two);
-    const b = r.best[m]; if (!b || score > b.r) { r.best[m] = { r: score, n: of, t: modeOf(h, m).title }; g.newBest = !!b; }
+    const had = bestOf(h, m);
+    if (W.SB_BESTS) { try { g.newBest = SB_BESTS.put(lkey(h, m), score, of || null) && !!had; } catch (e) {} }
+    else if (!had || score > had.r) { r.best[m] = { r: score, n: of }; g.newBest = !!had; }
     /* the level is re-checked once, here: right first try ÷ asked, two-option items left out (§1.7) */
     const pct = g.asked ? g.right / g.asked : 0;   // right first try ÷ asked; a climb's miss is one asked, not right
     g.pct = pct;
@@ -564,15 +590,16 @@
     const pay = g.coins > 0 ? `<div class="qz-pay">${coin(g.coins)} into your wallet</div>`
       : `<div class="qz-nopay">${g.hub === 'hive' && !hivePays() ? 'Just for fun — no coins in this hub.' : g.mode === 'ladder' ? 'Climb four rungs and every rung pays a coin.' : g.mode === 'clock' ? 'Six right, at least six in ten, and every right answer pays a coin.' : 'Six right and every right answer pays a coin.'}</div>`;
     const L = g.lvl || {}; const names = LVL_NAME;
-    const lvl = L.dropped ? `<div class="qz-lvl">Let’s warm up on ${esc(names[L.level] || L.level)}. You can move back up any time.</div>`
-      : L.offerUp ? `<div class="qz-lvl"><button class="qz-up" data-act="qzUp">Ready for ${esc(names[nextUp(L.level)] || 'the next level')}?</button></div>` : '';
+    const up = L.offerUp ? (LV() && LV().upButton ? LV().upButton(lkey(g.hub, g.mode), L) : `<button class="qz-up" data-act="qzUp">Ready for ${esc(names[L.offerUp] || names[nextUp(L.level)] || 'the next level')}?</button>`) : '';
+    const lvl = L.dropped ? `<div class="qz-lvl">${esc(L.line || ('Let’s warm up on ' + (names[L.level] || L.level) + '. You can move back up any time.'))}</div>`
+      : up ? `<div class="qz-lvl">${up}</div>` : '';
     const best = bestTxt(g.hub, g.mode);
     return stage(g.hub, { hud: { left: backIn(g.hub) + stat('right', g.mode === 'ladder' ? g.rung : g.right, '', 'check'), center: title(m.title, SHORT[m.title], chip(g.hub, g.mode)), right: stat('best', esc(best.replace(/^Best: /, '') || '–'), '', 'trophy') + pad },
       play: `<div class="qz-card sg-panel qz-done" data-live-prompt="${escA(big + '. ' + sub)}"><div class="qz-dh">${g.newBest ? 'A new best' : 'Round complete'}</div><div class="qz-db">${esc(big)}</div><div class="qz-sub">${esc(sub)}</div>${pay}${lvl}</div>`,
       controls: `<div class="qz-btns"><button class="qz-go alt" data-act="qzBack">${ic('grid', 15)} All modes</button><button class="qz-go" data-act="qzGo">Play again <span class="qz-kb" aria-hidden="true">Enter</span></button></div>` }); }
   const ORDER = ['easy', 'medium', 'hard', 'champ'];
   function nextUp(l) { const i = ORDER.indexOf(l); return ORDER[Math.min(ORDER.length - 1, i + 1)] || 'medium'; }
-  function up() { const g = G(); if (!g || !g.lvl || !LV()) return; try { LV().set(lkey(g.hub, g.mode), nextUp(g.lvl.level)); } catch (e) {} g.lvl = null; render(); }
+  function up() { const g = G(); if (!g || !g.lvl || !LV()) return; try { LV().set(lkey(g.hub, g.mode), g.lvl.offerUp || nextUp(g.lvl.level)); } catch (e) {} g.lvl = null; render(); }
 
   function view() { const h = state.nav === 'hive' ? 'hive' : 'lore'; let g = G(); css();
     if (!g || g.hub !== h) { g = state.qz = { hub: h, mode: null, phase: 'hub' }; }
@@ -720,7 +747,7 @@
 .qz-kit .sg-st-region{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;overflow:auto}
 .qz-ladcol{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
 .qz-back{flex:none;position:relative;width:34px;height:34px;margin-right:2px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);border:1px solid var(--line);color:var(--text)}
-.qz-back::after{content:"";position:absolute;inset:-5px}
+.qz-back::after{content:"";position:absolute;inset:-6px}
 .qz-ttl{display:inline-flex;align-items:center;gap:8px}.qz-ttl .qz-ts{display:none}
 .qz-keys{width:100%}
 .qz-pad{display:none;flex:none;width:34px;height:1px}

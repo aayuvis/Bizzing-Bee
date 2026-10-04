@@ -35,7 +35,9 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   /* 2 */
   await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));
   const arc = [];
-  for (const k of ['typeBlaster', 'spellScene']) {
+  /* 4 Oct 2026: Spell Scene left the Play tab (games spec §3.1 — it merges into Type Blaster), so only
+     the arcade cards that remain are walked; the merged Type Blaster keeps this check */
+  for (const k of ['typeBlaster']) {
     await pg.evaluate(g => app.arcadePlay(g, { fromMenu: true }), k); await pg.waitForTimeout(2200);
     const r = await pg.evaluate(() => { const vis = e => e && e.getClientRects().length; const h = document.querySelector('#arc-host');
       const clue = [...h.querySelectorAll('.sg-cardmean, #ss-hint')].filter(vis).map(e => e.textContent.trim())[0] || '';

@@ -98,22 +98,27 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
       await p3.evaluate(() => { const x = document.querySelector('#arc-back'); if (x) x.click(); }); await p3.waitForTimeout(200);
     }
     /* REWRITTEN 4 Oct 2026 (games spec §4.3): Bizzillionaire's bar went with its overlay. Its climb is Word
-       Lore's Ladder, on the stage: the HUD's title and values each on one line, the three on one row,
-       nothing past the right edge, and the back pill a 44px target. */
+       Lore's Ladder, on the shared stage: the HUD's title and values each on one line, the three on one
+       row, nothing past the right edge, and the way back (in the left stat) a 44px target — hit-tested at
+       the corners of the 44px square centred on it, the way tests/touch-targets.cjs measures a thumb. */
     await p3.evaluate(() => app.openLore('ladder'));
-    await p3.waitForFunction(() => state.qz && state.qz.mode === 'ladder' && state.qz.phase === 'play' && document.querySelector('.qz-hud, .sg-hud'), null, { timeout: 30000 }).catch(() => {});
-    const rb = await p3.evaluate(() => { const bar = document.querySelector('.qz-hud, .sg-hud'); if (!bar) return { none: true };
+    await p3.waitForFunction(() => state.qz && state.qz.mode === 'ladder' && state.qz.phase === 'play' && document.querySelector('.sg-st-hud, .qz-hud'), null, { timeout: 30000 }).catch(() => {});
+    const rb = await p3.evaluate(() => { const bar = document.querySelector('.sg-st-hud, .qz-hud'); if (!bar) return { none: true };
       const lines = el => { const rng = document.createRange(); rng.selectNodeContents(el);
         return new Set([...rng.getClientRects()].filter(r => r.height > 1 && r.width > 1).map(r => Math.round(r.top))).size; };
-      const parts = [...bar.querySelectorAll('.qz-sv, .qz-title')].filter(k => k.getBoundingClientRect().width > 0);
+      const parts = [...bar.querySelectorAll('.sg-st-n, .qz-sv, .qz-tl, .qz-ts')].filter(k => k.getBoundingClientRect().width > 0);
       const kids = [...bar.children].filter(k => k.getBoundingClientRect().width > 0 && (k.textContent || '').trim());
       const ctr = el => { const q = el.getBoundingClientRect(); return (q.top + q.bottom) / 2; };
-      const back = (document.querySelector('.qz-top button') || bar).getBoundingClientRect();
-      return { name: (bar.querySelector('.qz-title') || {}).textContent, wrapped: parts.filter(k => lines(k) > 1).map(k => k.textContent.trim().slice(0, 18)),
+      const bk = document.querySelector('.qz-back'); let backH = 0;
+      if (bk) { const q = bk.getBoundingClientRect(), cx = (q.left + q.right) / 2, cy = (q.top + q.bottom) / 2;
+        backH = [[-21, -21], [21, -21], [-21, 21], [21, 21], [0, 0]].every(([dx, dy]) => { const e = document.elementFromPoint(cx + dx, cy + dy); return e && e.closest('.qz-back') === bk; }) ? 44 : Math.round(q.height); }
+      return { name: (bar.querySelector('.qz-tl, .qz-ts') || {}).textContent, wrapped: parts.filter(k => lines(k) > 1).map(k => k.textContent.trim().slice(0, 18)),
         offRow: kids.filter(k => Math.abs(ctr(k) - ctr(kids[0])) > 6).map(k => k.textContent.trim().slice(0, 18)),
-        past: kids.filter(k => k.getBoundingClientRect().right > innerWidth + 0.5).map(k => k.textContent.trim().slice(0, 18)), backH: Math.round(back.height) }; });
+        past: kids.filter(k => k.getBoundingClientRect().right > innerWidth + 0.5).map(k => k.textContent.trim().slice(0, 18)), backH }; });
     if (rb.none || rb.wrapped.length || rb.offRow.length || rb.past.length || rb.backH < 44) hbad.push(`${w}px the Ladder: ${JSON.stringify(rb)}`);
-    if (games.length < 6) hbad.push(`${w}px: only ${games.length} arcade engines found`);
+    /* 4 Oct 2026 (games spec §3.1): the Play tab keeps three arcade cards — Grand Prix, Type Blaster and
+       Honeycomb Run (Word Snake, Unscramble Stars and Spell Scene left) — so three is the floor, not six */
+    if (games.length < 3) hbad.push(`${w}px: only ${games.length} arcade engines found`);
     await c3.close();
   }
   ok(!hbad.length, 'every game header is one line at 390 and 360 — "← Arcade" and the game\'s name each whole, on the bar\'s one row, the back button 44px tall' + (hbad.length ? ' — ' + hbad.slice(0, 4).join(' | ') : ''));

@@ -5,7 +5,7 @@
    with a Chromium path typed into it, and "the tests pass" meant "the ones somebody
    remembered to run passed". This runs ALL of them, one at a time, and says which failed.
 
-   DISCOVERY IS A GLOB, NOT A LIST. Every tests/*.cjs and tests/*.js is a test unless it is
+   DISCOVERY IS A GLOB, NOT A LIST. Every tests/*.cjs, tests/*.js and tests/*.mjs is a test unless it is
    in SKIP below with a reason. A new test is picked up the moment it lands; nobody has to
    remember to register it. Helpers live in tests/lib/ (this folder), which is not globbed.
 
@@ -124,7 +124,7 @@ function resolvePlaywright() {
 }
 
 function discover(dir) {
-  return fs.readdirSync(dir).filter(f => /\.(cjs|js)$/.test(f) && fs.statSync(path.join(dir, f)).isFile()).sort();
+  return fs.readdirSync(dir).filter(f => /\.(cjs|js|mjs)$/.test(f) && fs.statSync(path.join(dir, f)).isFile()).sort();
 }
 const isBrowser = src => /require\(\s*['"]playwright['"]\s*\)/.test(src);
 const optsIn = src => /^\s*(\/\/|\/?\*).*@check\b/m.test(src);
