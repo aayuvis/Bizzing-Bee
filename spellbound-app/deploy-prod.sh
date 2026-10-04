@@ -95,7 +95,7 @@ say "3. Copy build"
 tar -C "$SRC" \
     --exclude=./.git --exclude=./CNAME \
     --exclude=./voice/w --exclude=./voice/pipeline \
-    --exclude=./books --exclude=./backend.html \
+    --exclude=./books --exclude=./backend.html --exclude=./forge-review \
     --exclude='./*.sh' --exclude='./*.py' --exclude='./*.log' \
     --exclude=./tests --exclude=./qa --exclude=./pipeline \
     --exclude=./node_modules --exclude=./design-pack \

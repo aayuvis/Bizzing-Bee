@@ -3273,6 +3273,13 @@ const app = {
   /* Daily Buzz is a screen in the shell (audit v4 N2): nav 'daily', #/daily, the top bar and tabs around
      it, Back to Play. The board is games-daily.js's own, drawn into #db-host after each render. */
   openDaily:()=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; app.setNav('daily'); },
+  /* WORD FORGE (games spec §5.1), a screen in the shell like Daily Buzz: nav 'forge', #/forge. Its table is
+     cited data the OWNER signs off — until SB_FORGE.signedOff the door stays shut (a typed address lands on
+     Play), except in testing mode, which opens it for review. forge.js draws into #fg-host after render. */
+  openForge:()=>{ clearGTimer(); lazyNeed('forge', ()=>{
+      const ok=!!((window.SB_FORGE&&SB_FORGE.signedOff)||state.devUnlock);
+      if(!ok){ app.openGames(); return; }
+      state.game=null; app.setNav('forge'); }); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
     const old=document.getElementById('dbg-eng'); if(old) old.remove();
@@ -6642,7 +6649,7 @@ function viewApp(){
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
       :key==='trail'?(S.nav==='trail'||atlasDrill())
-      :key==='games'?(S.nav==='games'||S.nav==='daily')
+      :key==='games'?(S.nav==='games'||S.nav==='daily'||S.nav==='forge')
       :S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -6679,6 +6686,7 @@ function viewApp(){
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='daily') content=viewDaily();
+  else if(S.nav==='forge') content=viewForge();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
@@ -6807,7 +6815,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='games'&&S.nav==='daily')||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='games'&&(S.nav==='daily'||S.nav==='forge'))||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -11493,6 +11501,8 @@ function viewDaily(){
     ${pageHead('Daily Buzz', esc(when), '', null, 'openGames', 'Play')}
     <div id="db-host" class="db-host" role="region" aria-label="Today's Daily Buzz" style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-rest)"></div></div>`;
 }
+/* WORD FORGE, IN THE SHELL: the stage is forge.js's, mounted into #fg-host by render(). */
+function viewForge(){ return `<div id="fg-host" class="fg-host" role="region" aria-label="Word Forge"></div>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();
@@ -12860,6 +12870,8 @@ function render(){
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
   if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
+  try{ document.body.classList.toggle('sb-forge-on', state.nav==='forge'&&state.screen==='app'); }catch(e){}
+  if(state.nav==='forge'&&state.screen==='app'){ try{ const h=document.getElementById('fg-host'); if(h){ if(window.SB_FORGE_UI) SB_FORGE_UI.mount(h); else lazyNeed('forge', ()=>{ const h2=document.getElementById('fg-host'); if(h2&&window.SB_FORGE_UI) SB_FORGE_UI.mount(h2); }); } }catch(e){} }   /* Word Forge draws its own stage into the shell */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
   if(state.screen==='app'&&(state.game||state.nav==='daily')) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
