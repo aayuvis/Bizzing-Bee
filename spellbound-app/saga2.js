@@ -1,10 +1,10 @@
 /* Bizzing Bee — SAGA v2 · "Bizzy and the Great Unspelling" · Act I engines.
-   Placeholder vector art (swaps for Claude Design drops). Words via gameWordsD/pickFresh; audio via voice/d + say(). */
+   Placeholder vector art (swaps for Claude Design drops). Words via nextWords (app3); audio via voice/d + say(). */
 (function(){
   const W=()=>window;
-  function pool(n){ try{ const l=pickFresh(gameWordsD(),n)||[];
-    l.forEach(w=>{ try{ if(typeof logGameWord==='function'&&w&&w.w) logGameWord(nkey(w.w)); }catch(e){} });
-    return l; }catch(e){ return []; } }
+  /* every engine's words come through the one door (app3 nextWords, games spec §1.1): kid-safe for
+     this child, inside the level window, none of the last 150 again — and it logs what it serves */
+  function pool(n,o){ try{ return window.nextWords(null,n,Object.assign({purpose:'drill'},o||{}))||[]; }catch(e){ return []; } }
   /* Every word an arcade game asked for, and whether it was spelled right.
      A game used to swallow its words: miss one mid-flight and the correct spelling went by
      in the same breath as the crash, so the one word you most needed to see was the one you
@@ -2203,19 +2203,17 @@
   W().SB_GP={ grade:gpGrade, par:GP_PAR, powerFor:gpPowerFor, STR:GP_STR, TABLE:GP_TABLE, COMBO:GP_COMBO, CAST:GP_CAST, GRID:GP_GRID,
     CUP:GP_CUP, CUP_PTS:GP_CUP_PTS, PAINTS:GP_PAINTS, TRAILS:GP_TRAILS, owns:gpOwns, garage:gpGarage, trackName:GP_TRACK_NAME };
 
-  /* THE BOX WORDS: one door (nextWords, purpose 'gate', kid-safe, at the chosen level), with a
-     guarded fallback until it lands — the arcade pool (gameWordsD + the 150-word no-repeat
-     window), kid-safe by window.kidSafe or the corpus filter, the Cup's origin family first. */
-  function gpDrawWords(n,org,avoid){ const out=[], seen=new Set(avoid||[]);
+  /* THE BOX WORDS: one door — nextWords(child, n, {purpose:'gate'}), kid-safe, inside the level
+     window of the Grand Prix's word level (key 'beeGrandPrix'), no repeat in the 150-word window.
+     The Cup asks for its track's origin family, one tier up if the level is short of it (§1.1:
+     an eight-year-old's band holds few Greek words, and a Greek track of English words is not
+     one). `avoid` keeps a Cup from repeating a word across its four races. */
+  function gpDrawWords(n,org,avoid){ const out=[], seen=new Set(avoid||[]), c=gpKid();
     const ks=w=>{ try{ return typeof window.kidSafe==='function'?!!window.kidSafe(w):(typeof safeWord==='function'?safeWord(w):true); }catch(e){ return true; } };
     const take=w=>{ if(!w||!w.w||!/^[a-z]+$/i.test(w.w)||w.w.length<3||!ks(w)) return; const k=String(w.w).toLowerCase(); if(seen.has(k)) return; seen.add(k); out.push(w); };
-    try{ if(typeof window.nextWords==='function') (window.nextWords(gpKid(),n+seen.size,{purpose:'gate',origin:org?org.origin:undefined})||[]).forEach(w=>{ if(out.length<n) take(w); }); }catch(e){}
-    if(out.length<n){ let P=[]; try{ P=pickFresh(gameWordsD(),600)||[]; }catch(e){ P=[]; }
-      if(org) P.forEach(w=>{ if(out.length<n&&org.re.test((w&&w.o)||'')) take(w); });   // the Cup's family first…
-      /* …one tier up for the family if the level is short of it (§1.1 tier +1): an eight-year-old's
-         band holds few Greek words, and a Greek track of English ones is not a Greek track */
-      if(org&&out.length<n){ try{ const [lo,hi]=diffRange(gpKid()); pickFresh(corpusSlice(lo,Math.min(9,hi+1),1500),1500).forEach(w=>{ if(out.length<n&&org.re.test((w&&w.o)||'')) take(w); }); }catch(e){} }
-      P.forEach(w=>{ if(out.length<n) take(w); }); }                                  // …then anything at the level
+    const ask=(o)=>{ try{ (window.nextWords(c,n+seen.size+4,Object.assign({purpose:'gate',key:'beeGrandPrix'},o))||[]).forEach(w=>{ if(out.length<n) take(w); }); }catch(e){} };
+    if(typeof window.nextWords==='function'){ if(org){ ask({origin:org.re}); if(out.length<n) ask({origin:org.re,tier:1}); } ask({}); }
+    else pool(n*2).forEach(w=>{ if(out.length<n) take(w); });   /* only before the foundations load */
     return out; }
   W().SB_GP.drawWords=gpDrawWords;
   let gpKill=null;                     // stops the race that is running now (see the engine's return)
@@ -2530,7 +2528,6 @@
     const WORDS=gpDrawWords(CFG.zones*CFG.laps+2, ORG, ORG?CUP.seen:null);
     function nextWord(){ if(!WORDS.length){ const more=gpDrawWords(4,ORG,new Set(gpRound.map(r=>String(r.w).toLowerCase()))); WORDS.push(...more); }
       const w=WORDS.shift()||{w:'honey',d:'the sweet golden food that bees make'};
-      try{ if(typeof logGameWord==='function') logGameWord(nkey(w.w)); }catch(e){}
       if(CUP){ (CUP.seen=CUP.seen||new Set()).add(String(w.w).toLowerCase()); }
       return w; }
     const gpRound=[];                      // the race's words, read by finish(): {w, ok, grade, power}
@@ -3291,7 +3288,8 @@
       const win=place===1, stars=place===1?3:place===2?2:place===3?1:0;
       const placePts=Math.max(0,6-place)*250, wordPts=50*right, score=placePts+drivePts+wordPts;
       const pct=met?right/met:0;
-      let contest=0; if(place<=3&&met>0&&pct>=0.7){ try{ contest=addCoins('contest'); }catch(e){ contest=0; } }
+      const podium=place<=3&&met>0&&pct>=0.7;   // the contest coin: a podium with 70% of the box words right — never for finishing
+      let contest=0; try{ contest=podium?addCoins('contest'):0; }catch(e){ contest=0; }
       const coins=Math.max(0,((()=>{ try{ return earnedSoFar(); }catch(e){ return E0; } })())-E0);
       let lvl=null; if(met>0&&window.SB_LEVEL&&typeof SB_LEVEL.after==='function'){ try{ lvl=SB_LEVEL.after('beeGrandPrix',pct); }catch(e){ lvl=null; } }
       const st=gpStat(); st.races=(st.races||0)+1;
@@ -3325,13 +3323,15 @@
         '<div class="gp-fin-row"><span>Box words</span><b data-gp-words>'+right+' of '+met+' right'+(clean?' · '+clean+' Clean':'')+'</b></div>'+
         '<div class="gp-fin-row"><span>Power-ups</span><b>earned '+earned.length+' '+pw(earned)+' · used '+used.length+'</b></div>'+
         '<div class="gp-fin-row"><span>Driving</span><b>'+cleanBends+' clean bends · '+drifts+' drifts · '+drivePts+' points</b></div>'+
-        '<div class="gp-fin-row"><span>Coins</span><b data-gp-coins="'+coins+'">'+coins+(contest?' (a podium with 70% of the words right)':'')+'</b></div>'+
-        (lvl&&lvl.dropped?'<div class="gp-fin-kind">Let’s warm up on '+esc2(String(lvl.level||'').replace(/^./,c=>c.toUpperCase()))+'. You can move back up any time.</div>':'')+
+        '<div class="gp-fin-row"><span>Coins</span><b data-gp-coins="'+coins+'">'+coins+' coin'+(coins===1?'':'s')+(contest?' (a podium with 70% of the words right)':'')+'</b></div>'+
+        (lvl&&lvl.dropped?'<div class="gp-fin-kind">'+esc2(lvl.line||('Let’s warm up on '+lvl.level+'. You can move back up any time.'))+'</div>':'')+
+        (lvl&&lvl.offerUp?'<button class="sg-rbtn" id="gp-up">Ready for '+esc2((SB_LEVEL.LABEL&&SB_LEVEL.LABEL[lvl.offerUp])||lvl.offerUp)+'?</button>':'')+
         (miss.length?'<button class="sg-rbtn" id="gp-revise">Add missed words to revision</button>':'');
       if(CUP&&cupDone){ const tab=Object.entries(CUP.pts).sort((a,b)=>b[1]-a[1]);
         extra.innerHTML+='<div class="gp-cup"><b>The Cup — final standings</b>'+tab.map(([id,p],i)=>'<div class="gp-cup-r'+(id==='me'?' me':'')+'"><span>'+(i+1)+'</span><span>'+(id==='me'?'You':esc2((GP_CAST[id]||{}).name||id))+'</span><b>'+p+'</b></div>').join('')+'</div>'; }
       const btns=el.querySelector('.sg-end-btns'); if(btns) btns.parentNode.insertBefore(extra,btns); else el.querySelector('.sg-endcard').appendChild(extra);
       el.style.display='grid'; SGUI.bind(el);
+      const up=el.querySelector('#gp-up'); if(up) up.onclick=()=>{ try{ SB_LEVEL.set('beeGrandPrix',lvl.offerUp); }catch(e){} up.disabled=true; up.textContent='Next race: '+((SB_LEVEL.LABEL&&SB_LEVEL.LABEL[lvl.offerUp])||lvl.offerUp)+' words'; };
       const rv=el.querySelector('#gp-revise'); if(rv) rv.onclick=()=>{ miss.forEach(m=>{ try{ addMiss({w:m.w,d:m.d||''},'mark'); }catch(e){} }); rv.disabled=true; rv.textContent='On your revision list'; };
       const again=el.querySelector('#sg-again'); if(CUP&&!cupDone&&again) again.textContent='Race it again';
       again.onclick=()=>{ el.style.display='none'; el.innerHTML=''; beeGrandPrix(host,{...opts0,cup:CUP?{...CUP,pts:CUP.ptsBefore||{},races:(CUP.races||[]).slice(0,-1)}:undefined},done); };

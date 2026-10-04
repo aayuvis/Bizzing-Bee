@@ -1,6 +1,6 @@
 {
- "total": 14174,
- "agnostic": 3021,
+ "total": 14169,
+ "agnostic": 3016,
  "byKind": {
   "place": 9,
   "lesson": 760,
@@ -11,7 +11,7 @@
   "origin": 1268,
   "play": 3498,
   "spotlight": 689,
-  "game": 8,
+  "game": 3,
   "story": 36,
   "character": 60,
   "fun": 2368

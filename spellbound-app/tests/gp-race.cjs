@@ -83,7 +83,7 @@ const want = k => !ONLY || ONLY.includes(k);
 
   /* ---------------- GP9: the words ---------------- */
   if (want('GP9')) {
-    const w = await pg.evaluate(() => { const c = active(), [lo, hi] = diffRange(c);
+    const w = await pg.evaluate(() => { const c = active(), [lo, hi] = diffRange(c, window.SB_LEVEL ? SB_LEVEL.get('beeGrandPrix') : undefined);   // the window nextWords uses for this key
       const safe = x => typeof window.kidSafe === 'function' ? !!window.kidSafe(x) : safeWord(x);
       const missed = new Set((c.missed || []).map(m => nkey(m.w)));
       let n = 0, unsafe = [], outside = [], repeats = 0, short = 0;
@@ -95,7 +95,7 @@ const want = k => !ONLY || ONLY.includes(k);
         return [o.origin, ws.filter(x => o.re.test(x.o || '')).length, ws.length, ws.filter(x => !safe(x) || ((x.y || 3) > Math.min(9, hi + 1) && !missed.has(nkey(x.w)))).length]; });
       return { n, unsafe: unsafe.slice(0, 5), nUnsafe: unsafe.length, outside: outside.slice(0, 5), nOut: outside.length, repeats, short, lo, hi, fam, door: typeof window.nextWords === 'function', ks: typeof window.kidSafe === 'function' }; });
     ok(w.n >= 2300 && !w.short && !w.nUnsafe && !w.nOut && !w.repeats,
-      `GP9: 200 races' box words (${w.n}) through ${w.door ? 'nextWords' : 'the guarded fallback'} — ${w.nUnsafe} fail ${w.ks ? 'kidSafe' : 'the corpus filter (kidSafe not on this branch)'}${w.nUnsafe ? ' (' + w.unsafe.join(', ') + ')' : ''}, ${w.nOut} outside the level window y${w.lo}–${w.hi}${w.nOut ? ' (' + w.outside.join(', ') + ')' : ''}, ${w.repeats} repeats inside a race`);
+      `GP9: 200 races' box words (${w.n}) through ${w.door ? 'nextWords' : 'the guarded fallback'} — ${w.nUnsafe} fail ${w.ks ? 'kidSafe' : 'the corpus filter'}${w.nUnsafe ? ' (' + w.unsafe.join(', ') + ')' : ''}, ${w.nOut} outside the level window y${w.lo}–${w.hi}${w.nOut ? ' (' + w.outside.join(', ') + ')' : ''}, ${w.repeats} repeats inside a race`);
     ok(w.fam.every(f => f[1] >= 10 && f[3] === 0), `the Cup's box words come from their family (one tier up at most): ${w.fam.map(f => f[0] + ' ' + f[1] + '/' + f[2] + (f[3] ? ' (' + f[3] + ' unsafe or above the tier)' : '')).join(', ')}`);
   }
 
