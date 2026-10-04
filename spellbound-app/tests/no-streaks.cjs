@@ -88,10 +88,13 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   }
   ok(!found.length, 'no streak copy on ' + screens.length + ' screens' + (found.length ? ' — ' + found.slice(0, 4).join(' | ') : ''));
 
-  /* ---- the Daily Buzz no longer counts a run either ---- */
-  const db = await pg.evaluate(async () => { try { app.setNav('games'); if (window.SB_DAILY && SB_DAILY.open) SB_DAILY.open(); } catch (e) {}
-    await new Promise(r => setTimeout(r, 600)); const t = document.body.innerText; document.querySelectorAll('.db-ov,.db-wrap,[class^="db-"]').forEach(e => { if (e.parentNode === document.body) e.remove(); }); return t; });
-  ok(!STREAK_RX.test(db), 'the Daily Buzz shows no streak');
+  /* ---- the daily game no longer counts a run either ----
+     (4 Oct 2026: Daily Bee replaced Daily Buzz and loads lazily — opened through its door and read once
+     its board is up, so this cannot pass on an empty screen; its HUD counts good days THIS WEEK) */
+  await pg.evaluate(() => { try { app.openDaily(); } catch (e) {} });
+  await pg.waitForFunction(() => !!document.querySelector('#db-host .db-grid, #db-host #db-end'), null, { timeout: 60000 }).catch(() => {});
+  const db = await pg.evaluate(() => { const h = document.querySelector('#db-host'); return { t: document.body.innerText, all: h ? h.textContent : '', up: !!(h && h.querySelector('.db-grid, #db-end')) }; });
+  ok(db.up && !STREAK_RX.test(db.t) && !STREAK_RX.test(db.all) && /good days? this week/i.test(db.all), 'the Daily Bee shows no streak — good days this week');
 
   await b.close();
   ok(!errs.length, errs.length ? 'page errors: ' + errs.slice(0, 3).join(' | ') : 'no page errors');

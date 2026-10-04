@@ -115,7 +115,11 @@
     loreHub: 'lore.js',
     /* The Spelling Gym (games spec §4.2): the hub and its seven modes. It stands on the arcade's
        kit (SGUI in saga2.js), so saga2 comes first; fetched at the door (app.openGym) only. */
-    gym: 'gym.js'
+    gym: 'gym.js',
+    /* Daily Bee (games spec §5.2): the game itself, fetched at its door with the engine kit it stands on
+       and the whole served corpus — the day's word is picked from it, so the same date and band give the
+       same word whatever else has loaded (the end card's sentence and origin come from sents and lore) */
+    dailyBee: 'games-daily.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -143,7 +147,8 @@
     forge: ['saga2', 'forgeCore', 'forgeData', 'forgeUI'],
     /* the hubs draw on the shared stage kit (SGUI.stage / SB_HUB, saga2.js), so it comes too */
     quizhubs: ['loreHub', 'saga2'],
-    gym: ['saga2', 'gym', 'sents']
+    gym: ['saga2', 'gym', 'sents'],
+    daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and

@@ -287,6 +287,7 @@
       if (pk && pk !== 'game') lazyNeed('arcade', function () { try { if (typeof app.arcadePlay === 'function') app.arcadePlay(pk); } catch (e) {} });
       return;
     }
+    if (head === 'daily' && typeof app.openDailyBee === 'function') { app.openDailyBee('route'); return; }   // Daily Bee (games spec §5.2) replaces Daily Buzz here
     /* Word Forge goes through its opener: the table's sign-off (or testing mode) is the lock */
     if (head === 'forge') { if (typeof app.openForge === 'function') app.openForge(); else app.openGames(); return; }
     if (head === 'support') { app.setNav('home'); return; }

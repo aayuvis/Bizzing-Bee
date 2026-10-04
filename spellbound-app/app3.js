@@ -3277,9 +3277,13 @@ const app = {
      now played straight from the arcade (arcadePlay). This is kept as a safe no-op so any
      stale saved deep-link or cached handler lands somewhere harmless rather than throwing. */
   openSaga:()=>{ set({nav:'games', screen:'app'}); },
-  /* Daily Buzz is a screen in the shell (audit v4 N2): nav 'daily', #/daily, the top bar and tabs around
-     it, Back to Play. The board is games-daily.js's own, drawn into #db-host after each render. */
-  openDaily:()=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; app.setNav('daily'); },
+  /* DAILY BEE (games spec §5.2, in for Daily Buzz) is a screen in the shell (audit v4 N2): nav 'daily',
+     #/daily, the top bar and tabs around a full-height stage, Back to Play. games-daily.js is lazy (the
+     `daily` group brings it and the whole corpus the day's word is picked from) and draws into #db-host
+     after each render. A tap here is a gesture, so the word is said as the board appears. */
+  openDailyBee:(arg)=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; state.dbeeSpeak=arg==='route'?0:1;
+    lazyNeed('daily'); app.setNav('daily'); },
+  openDaily:()=>app.openDailyBee(),   /* the old name: every door that opened Daily Buzz opens Daily Bee */
   /* WORD FORGE (games spec §5.1), a screen in the shell like Daily Buzz: nav 'forge', #/forge. Its table is
      cited data the OWNER signs off — until SB_FORGE.signedOff the door stays shut (a typed address lands on
      Play), except in testing mode, which opens it for review. forge.js draws into #fg-host after render. */
@@ -10598,7 +10602,7 @@ function viewEvoFeedback(){ const S=state; const themes=Object.keys(EV_NOMEN);
 function viewDebug(){
   if(!state.devUnlock) return viewSettings();
   const hubs=[
-    {act:'openDaily',   arg:'', c:'#2E8B57', n:'Daily Buzz',      d:'Wordle-style daily word'},
+    {act:'openDailyBee',arg:'', c:'#2E8B57', n:'Daily Bee',       d:'Hear it, find its spelling'},
     {act:'mbOpen',      arg:'', c:'#7C5CFF', n:'Mock Spelling Bee', d:'11 spellers, 8 rounds'},
     {act:'openLore',    arg:'', c:'#13A892', n:hubNameOf('lore')||'Word trivia', d:'Word trivia + the ladder'},
     {act:'openHive',    arg:'', c:'#2A63D6', n:hubNameOf('hive')||'General knowledge', d:'General knowledge'},
@@ -11704,13 +11708,11 @@ function gFinishMC(){ const g=state.game; g.status='done'; g.bonus=g.bonus||0;
 function coinIc(sz){ return (window.SB_ICON_ART&&SB_ICON_ART.coin)?SB_ICON_ART('coin',{size:sz||14}):SB_ICON('coin',{size:sz||14}); }
 function coinAmt(n, sz){ return `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap">${coinIc(sz)} ${n}</span>`; }
 function coinChip(){ return `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">${coinAmt(coinsOf(),14)}</span>`; }
-/* DAILY BUZZ, IN THE SHELL (audit v4 N2). The page head is the app's (back to Play); the board under it
-   is games-daily.js's, mounted into #db-host by render(). */
+/* DAILY BEE, IN THE SHELL (audit v4 N2, games spec §5.2). The whole screen is games-daily.js's stage —
+   HUD, board and keys on the morning-hive plate, edge to edge between the top bar and the tab bar —
+   mounted into #db-host by render(). Until the lazy file lands the host holds the hive loader. */
 function viewDaily(){
-  let when=''; try{ when=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}); }catch(e){}
-  return `<div class="sb-dailypage" style="max-width:560px;margin:0 auto">
-    ${pageHead('Daily Buzz', esc(when), '', null, 'openGames', 'Play')}
-    <div id="db-host" class="db-host" role="region" aria-label="Today's Daily Buzz" style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-rest)"></div></div>`;
+  return `<div id="db-host" class="db-host" role="region" aria-label="Today's Daily Bee">${window.SB_DAILY?'':hiveLoader('getting today\u2019s word ready\u2026')}</div>`;
 }
 /* WORD FORGE, IN THE SHELL: the stage is forge.js's, mounted into #fg-host by render(). */
 function viewForge(){ return `<div id="fg-host" class="fg-host" role="region" aria-label="Word Forge"></div>`; }
@@ -12950,7 +12952,8 @@ function render(){
       style="flex-shrink:0;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
-  if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
+  if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Bee draws its own stage into the shell */
+  else if(window.SB_DAILY&&SB_DAILY.close){ try{ SB_DAILY.close(); }catch(e){} }   /* …and lets its keyboard go the moment it is not the screen */
   try{ document.body.classList.toggle('sb-forge-on', state.nav==='forge'&&state.screen==='app'); }catch(e){}
   if(state.nav==='forge'&&state.screen==='app'){ try{ const h=document.getElementById('fg-host'); if(h){ if(window.SB_FORGE_UI) SB_FORGE_UI.mount(h); else lazyNeed('forge', ()=>{ const h2=document.getElementById('fg-host'); if(h2&&window.SB_FORGE_UI) SB_FORGE_UI.mount(h2); }); } }catch(e){} }   /* Word Forge draws its own stage into the shell */
   if(state.nav==='gym'&&state.screen==='app'){ try{ const h=document.getElementById('gym-host'); if(h&&window.SB_GYM) SB_GYM.mount(h); }catch(e){} }   /* the Spelling Gym keeps its own DOM and is re-attached, so a render never wipes a half-typed word */

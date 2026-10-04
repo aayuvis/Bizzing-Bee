@@ -1,0 +1,221 @@
+/* DAILY BEE (games spec §5.2, 4 Oct 2026) — one word a day, spoken, never shown, found in six tries
+   with a SHAPE on every letter, and it always ends with the word. In for Daily Buzz, on #/daily.
+
+   What this holds:
+     DB1  the same date and band give the same word — the pure pick, twice, and the GAME's word in two
+          fresh pages; different bands give different words.
+     DB2  the stage passes T14 and T15 in dark mode (and light), at 1280×800 and 390×844, measured
+          by the engine kit's stage-check.cjs: no flat-colour region over 6%, no pure white or black
+          over 2%; HUD stats of one width, gutters and the centre line within 4px, no scroll during
+          play, no control under the tab bar, phone controls in the bottom 38%, keys ≥ 40px (T11).
+     DB3  a random guesser earns 0 coins over 30 simulated days (the clock is moved a day at a time,
+          six random tries each, every day ends with the word on screen); SB_LEVEL.after('dailyBee')
+          is told 0 once a day. A solver earns exactly 1 a day, and a reload does not pay it again.
+     the route: the Play banner opens #/daily inside the shell, Back returns to #/play with nothing
+          left standing, the typed address opens it again.
+     shapes: ● right place · ◐ in the word · ○ not in it — on the board and on the keys.
+     never shown: the word is in no element, attribute or live line before the round ends (and IS
+          there after it, so the check can see it).
+   Every check here was watched failing with its fault put back (see the commit message).
+   Run: NODE_PATH=/opt/node22/lib/node_modules node tests/daily-bee.cjs
+        ONLY=db1,stage,db3,route runs some of the four parts (stage = shapes, never-shown, DB2).    */
+const { chromium } = require('playwright');
+const path = require('path');
+const W = require('./lib/wait.cjs');
+const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
+let fails = 0;
+const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
+const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 0, band: 3, bandSeed: 3,
+  lists: { journey: { xp: 30 } }, activeList: 'journey' };
+const ONLY = (process.env.ONLY || '').split(',').filter(Boolean), part = k => !ONLY.length || ONLY.includes(k);
+/* T14 / T15 / T11 are the engine kit's own checks (tests/lib/stage-check.cjs): geometry and pixels of the
+   stage SGUI.stage drew, the same rules every game on it is held to */
+const SC = require('./lib/stage-check.cjs');
+
+async function open(b, o) {
+  o = o || {};
+  const vp = o.vp || { width: 1180, height: 900 }, phone = vp.width < 500;
+  const ctx = await b.newContext({ viewport: vp, isMobile: phone, hasTouch: phone, reducedMotion: 'reduce' });
+  const kid = Object.assign({}, KID, o.kid || {});
+  await ctx.addInitScript(([k, mode]) => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode, pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, [kid, o.mode || 'light']);
+  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  if (o.time) await pg.clock.setFixedTime(o.time);
+  await pg.goto(URL + (o.hash || '')); await W.booted(pg);
+  return { ctx, pg, errs };
+}
+/* open the Daily Bee and wait for today's board (or its end card) */
+async function bee(pg, how) {
+  await pg.evaluate(h => { if (h === 'route') location.hash = '#/daily'; else app.openDailyBee(); }, how || 'tap');
+  return W.until(pg, () => !!document.querySelector('#db-host .db-grid, #db-host #db-end') && !!(active().dbee && active().dbee.word), null, 60000);
+}
+const word = pg => pg.evaluate(() => active().dbee.word);
+async function typeWord(pg, s) { for (const ch of s) await pg.keyboard.press(ch); await pg.keyboard.press('Enter'); }
+/* a guess with all three states: the first letter right, the next one shifted, the rest not in the word */
+function crafted(w) {
+  const notIn = 'zqxjvkwyfbhpmgu'.split('').find(ch => !w.includes(ch));
+  let near = null; for (let i = 2; i < w.length; i++) if (w[i] !== w[1] && w[i] !== w[0]) { near = w[i]; break; }
+  return w[0] + (near || notIn) + notIn.repeat(w.length - 2);
+}
+
+(async () => {
+  const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const errs = [];
+  const DAY0 = new Date(2026, 9, 5, 10, 0, 0);   // Mon 5 Oct 2026, 10am local
+
+  /* ---- DB1: the same date and band give the same word ---- */
+  if (part('db1')) {
+    let { ctx, pg, errs: e1 } = await open(b, { time: DAY0 }); errs.push(...e1);
+    await W.lazy(pg, 'daily');
+    /* the word a child gets (the foundations' nextWords daily list, read to the first word that fits the
+       board): asked twice; for another child of the same age band; for children of other bands; on
+       other dates. "Same date and band, same word" is the property; nothing about it is random. */
+    const P = await pg.evaluate(() => { const ds = ['2026-10-05', '2026-10-06', '2026-11-30']; const bands = ['8-10', '11-13', '14-18'];
+      const kid = (b, extra) => Object.assign({ name: 'K' + b, ageBand: b, age: parseInt(b, 10) + 1, band: 4, lists: {} }, extra || {});
+      const g = {}; ds.forEach(d => bands.forEach(b => { g[d + '|' + b] = SB_DBEE.wordFor(kid(b), d); }));
+      const again = ds.every(d => bands.every(b => SB_DBEE.wordFor(kid(b), d) === g[d + '|' + b]));
+      const twin = ds.every(d => SB_DBEE.wordFor(kid('8-10', { name: 'Twin', band: 8, gameDiff: 'champ' }), d) === g[d + '|8-10']);
+      const pure = ds.map(d => SB_DBEE.pick(null, d));
+      return { g, again, twin, nw: typeof nextWords === 'function', pure, pureAgain: ds.every((d, i) => SB_DBEE.pick(null, d) === pure[i]) }; });
+    const vals = Object.values(P.g);
+    ok(P.nw && P.again && vals.every(Boolean), 'DB1: the day\'s word comes from nextWords and is a function of date and band — asked twice, the same nine words (' + vals.slice(0, 3).join(' ') + ' …)');
+    ok(P.twin, 'DB1: every child in an age band gets the same word on a date, whatever their level or name');
+    ok(['2026-10-05', '2026-10-06', '2026-11-30'].every(d => new Set(['8-10', '11-13', '14-18'].map(b => P.g[d + '|' + b])).size === 3), 'DB1: different bands on one date give different words');
+    ok(new Set(['2026-10-05', '2026-10-06', '2026-11-30'].map(d => P.g[d + '|8-10'])).size === 3, 'DB1: and one band on different dates gives different words');
+    ok(P.pureAgain && P.pure.every(Boolean) && new Set(P.pure).size === 3, 'DB1: the fallback (nothing on the day\'s list fits the board) is deterministic too, a word a date (' + P.pure.join(' ') + ')');
+    await bee(pg); const w1 = await word(pg); const band1 = await pg.evaluate(() => active().ageBand);
+    await ctx.close();
+    ({ ctx, pg, errs: e1 } = await open(b, { time: DAY0 })); errs.push(...e1);
+    await bee(pg); const w2 = await word(pg);
+    await ctx.close();
+    ({ ctx, pg, errs: e1 } = await open(b, { time: DAY0, kid: { name: 'Ravi', age: 13, ageBand: '11-13', band: 8, bandSeed: 8 } })); errs.push(...e1);
+    await bee(pg); const w3 = await word(pg); const band3 = await pg.evaluate(() => active().ageBand);
+    await ctx.close();
+    ok(w1 && w1 === w2, `DB1: the game's word is the same in two fresh pages on the same date and band (${w1} / ${w2}, age band ${band1})`);
+    ok(w3 && w3 !== w1 && band3 !== band1, `DB1: a child in another age band gets another word (${w3}, age band ${band3})`);
+  }
+
+  /* ---- shapes on every state, the word never shown before the end, and DB2 at both sizes ---- */
+  if (part('stage')) for (const [vw, vh] of [[390, 844], [1280, 800]]) {
+    for (const mode of ['dusk', 'light']) {
+      const { ctx, pg, errs: e1 } = await open(b, { vp: { width: vw, height: vh }, mode, time: DAY0, hash: '#/play' }); errs.push(...e1);
+      const tag = vw + 'px ' + (mode === 'dusk' ? 'dark' : 'light') + ': ';
+      await bee(pg); await W.still(pg);
+      const w = await word(pg);
+      /* what the screen SHOWS or SAYS: every text node and every read attribute on the stage, the live
+         region and the title. (Not script URLs or class names: today's word may be "data".) */
+      const seen = () => pg.evaluate(w => { const re = new RegExp('(^|[^a-z])' + w + '(?=[^a-z]|$)', 'i'); const hits = [];
+        const st = document.querySelector('.db-wrap');
+        if (st) { const tw = document.createTreeWalker(st, NodeFilter.SHOW_TEXT); let n; while ((n = tw.nextNode())) if (re.test(n.textContent)) hits.push('text: ' + n.textContent.slice(0, 60));
+          st.querySelectorAll('*').forEach(e => ['aria-label', 'title', 'alt', 'data-live-prompt', 'placeholder', 'value'].forEach(a => { const v = e.getAttribute(a); if (v && re.test(v)) hits.push(a + ': ' + v.slice(0, 60)); })); }
+        const live = (document.getElementById('sb-live') || {}).textContent || '';
+        if (re.test(live)) hits.push('live: ' + live.slice(0, 60)); if (re.test(document.title)) hits.push('title');
+        return { hits, inStage: hits.length > 0 }; }, w);
+      let S = await seen();
+      const atOpen = !S.inStage;
+      if (mode === 'dusk') {
+        const g = crafted(w); await typeWord(pg, g); await W.frames(pg, 2);
+        S = await seen(); const afterGuess = !S.inStage;
+        await pg.evaluate(() => render()); await W.frames(pg, 2);
+        S = await seen(); const afterRender = !S.inStage;
+        ok(atOpen && afterGuess && afterRender, tag + 'the word is in no text, label or live line while the round is on (open, after a try, after a re-render)' + (S.hits.length ? ' — ' + S.hits.join(' | ') : ''));
+        const sh = await pg.evaluate(() => { const by = k => [...document.querySelectorAll('.db-grid .db-cell.' + k)];
+          const all = (els, glyph) => els.length > 0 && els.every(c => { const s = c.querySelector('.db-sh'); return s && s.textContent === glyph; });
+          const keys = k => [...document.querySelectorAll('#db-kb button')].filter(x => x.classList.contains(k) || x.classList.contains('db-k-' + k));
+          return { hit: all(by('hit'), '●'), near: all(by('near'), '◐'), miss: all(by('miss'), '○'),
+            labels: by('hit').concat(by('near'), by('miss')).every(c => /right place|in the word|not in it/.test(c.getAttribute('aria-label') || '')),
+            kHit: keys('hit').every(x => /●/.test(x.textContent)), kNear: keys('near').every(x => /◐/.test(x.textContent)), kMiss: keys('miss').every(x => /○/.test(x.textContent)),
+            kAny: keys('hit').length + keys('near').length + keys('miss').length, touch: !!document.querySelector('#db-kb button') }; });
+        ok(sh.hit && sh.near && sh.miss && sh.labels, tag + 'every graded letter carries its SHAPE as well as its colour (● right place · ◐ in the word · ○ not in it), and says it (' + JSON.stringify(sh) + ')');
+        if (sh.touch) ok(sh.kAny >= 3 && sh.kHit && sh.kNear && sh.kMiss, tag + 'and so does every letter key it has touched');
+      } else ok(atOpen, tag + 'the word is nowhere on the stage when the board opens' + (S.hits.length ? ' — ' + S.hits.join(' | ') : ''));
+      /* DB2 — measured mid-round: one try on the board, keys up */
+      /* DB2 — measured mid-round (one try on the board, keys up on a phone), in both looks */
+      SC.report(ok, tag + 'DB2', await SC.geometry(pg), await SC.pixels(pg), { play: true });
+      if (mode === 'dusk') {
+        /* play it out: the end always shows the word, with its meaning, origin and sentence */
+        const notIn = 'zqxjvkwyfbhpmgu'.split('').find(ch => !w.includes(ch));
+        for (let i = 0; i < 5; i++) await typeWord(pg, notIn.repeat(w.length));
+        await W.until(pg, () => !!document.querySelector('#db-end'), null, 8000);
+        const E = await pg.evaluate(w => { const e = document.querySelector('#db-end'); const t = e ? e.textContent : '';
+          return { word: !!e && e.querySelector('.db-word') && e.querySelector('.db-word').textContent === w, mean: /Meaning/i.test(t), orig: /Origin/i.test(t), sent: /In a sentence/i.test(t),
+            rev: !!document.querySelector('[data-db="rev"]') }; }, w);
+        S = await seen();
+        ok(E.word && E.mean && E.orig && E.sent && E.rev && S.inStage, tag + 'six misses end on the word itself — its meaning, origin, a sentence — with "Add to revision" (' + JSON.stringify(E) + ')');
+        await pg.click('[data-db="rev"]'); await W.until(pg, () => !!document.querySelector('[data-db="rev"][disabled]'), null, 4000);
+        const rv = await pg.evaluate(w => (active().missed || []).some(m => m.w === w), w);
+        ok(rv, tag + '"Add to revision" puts the word on the revision pile');
+      }
+      await ctx.close();
+    }
+  }
+
+  /* ---- DB3: a random guesser earns 0 over 30 simulated days; a solver earns 1 a day, once ---- */
+  if (part('db3')) {
+    const { ctx, pg, errs: e1 } = await open(b, { vp: { width: 390, height: 844 }, time: DAY0 }); errs.push(...e1);
+    /* SB_LEVEL.after is recorded (the real one when the foundations have landed, else a stub) */
+    await pg.evaluate(() => { window._lv = []; if (!window.SB_LEVEL) window.SB_LEVEL = { get: () => 'auto', set() {}, chip: () => '', after: () => ({ level: 'auto', dropped: false }) };
+      const real = SB_LEVEL.after; SB_LEVEL.after = function (k, p) { window._lv.push([k, p]); return real.apply(this, arguments); }; });
+    const coins0 = await pg.evaluate(() => { walletSync(active()); return active().coins || 0; });
+    let seed = 7; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+    let ended = 0, wordsSeen = new Set();
+    for (let d = 0; d < 30; d++) {
+      const day = new Date(DAY0.getTime()); day.setDate(day.getDate() + d);
+      await pg.clock.setFixedTime(day);
+      const want = await pg.evaluate(() => todayKey());
+      await pg.evaluate(() => app.openGames());
+      await pg.evaluate(() => app.openDailyBee());
+      await W.until(pg, k => !!(active().dbee && active().dbee.day === k && active().dbee.word) && !!document.querySelector('#db-host .db-grid'), want, 30000);
+      const n = (await word(pg)).length; wordsSeen.add(await word(pg));
+      for (let t = 0; t < 6; t++) { let g = ''; for (let i = 0; i < n; i++) g += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(rnd() * 26)]; await typeWord(pg, g); }
+      if (await W.until(pg, () => !!document.querySelector('#db-end .db-word'), null, 5000)) ended++;
+    }
+    const R = await pg.evaluate(() => { walletSync(active()); return { coins: active().coins || 0, won: Object.values(active().dbee.days).filter(x => x.s).length, lv: window._lv }; });
+    ok(R.coins - coins0 === 0 && R.won === 0, `DB3: a random guesser earns ${R.coins - coins0} coins over 30 simulated days (solved ${R.won})`);
+    ok(ended === 30 && wordsSeen.size >= 25, `DB3: and every one of the 30 days ended on its word (${ended}), ${wordsSeen.size} different words`);
+    ok(R.lv.length === 30 && R.lv.every(x => x[0] === 'dailyBee' && x[1] === 0), `DB3: SB_LEVEL.after('dailyBee', 0) once a day (${R.lv.length} calls)`);
+    /* a solver: day 31, solved on the third try — exactly one coin, and a reload does not pay it again */
+    const day = new Date(DAY0.getTime()); day.setDate(day.getDate() + 30); await pg.clock.setFixedTime(day);
+    const want = await pg.evaluate(() => todayKey());
+    await pg.evaluate(() => app.openDailyBee());
+    await W.until(pg, k => !!(active().dbee && active().dbee.day === k && active().dbee.word) && !!document.querySelector('#db-host .db-grid'), want, 30000);
+    const w = await word(pg); const notIn = 'zqxjvkwyfbhpmgu'.split('').find(ch => !w.includes(ch));
+    await typeWord(pg, notIn.repeat(w.length)); await typeWord(pg, crafted(w)); await typeWord(pg, w);
+    await W.until(pg, () => !!document.querySelector('#db-end .db-word'), null, 5000);
+    const c1 = await pg.evaluate(() => { walletSync(active()); return active().coins || 0; });
+    await pg.reload(); await W.booted(pg); await bee(pg, 'route');
+    await W.until(pg, () => !!document.querySelector('#db-end .db-word'), null, 8000);
+    const c2 = await pg.evaluate(() => { walletSync(active()); return active().coins || 0; });
+    ok(c1 - R.coins === 1 && c2 === c1, `a solved day pays exactly one coin (${c1 - R.coins}) and coming back to it pays nothing more (${c2 - c1})`);
+    await ctx.close();
+  }
+
+  /* ---- the route, and Back ---- */
+  if (part('route')) {
+    const { ctx, pg, errs: e1 } = await open(b, { vp: { width: 390, height: 844 }, hash: '#/play', time: DAY0 }); errs.push(...e1);
+    const look = () => pg.evaluate(() => { const tab = document.querySelector('nav.sb-tabbar [data-arg="games"]');
+      return { h: location.hash, nav: state.nav, stage: !!document.querySelector('#root .db-wrap .db-grid, #root .db-wrap #db-end'), bar: !!document.querySelector('#root .sb-fam-bar'),
+        tabbar: !!document.querySelector('#root nav.sb-tabbar'), play: !!tab && tab.getAttribute('aria-current') === 'page',
+        loose: [...document.body.children].filter(e => /(^|\s)db-/.test(e.className || '')).length }; });
+    /* the Play tab's door to it: Daily Bee's card in the lineup (g-found), or the banner before that */
+    const DOOR = '[data-act="playCard"][data-arg="dailyBee"], [data-act="openDailyBee"], [data-act="openDaily"]';
+    await W.until(pg, s => !!document.querySelector(s), DOOR, 15000);
+    await pg.click(DOOR);
+    await W.until(pg, () => !!document.querySelector('#root .db-wrap .db-grid'), null, 60000);
+    let L = await look();
+    ok(L.h === '#/daily' && L.nav === 'daily' && L.stage && L.bar && L.tabbar && L.play && !L.loose, 'the Play tab opens Daily Bee at #/daily, inside the shell (top bar, tab bar, Play marked) (' + JSON.stringify(L) + ')');
+    await pg.goBack(); await W.until(pg, () => location.hash === '#/play' && state.nav === 'games', null, 8000);
+    L = await look();
+    ok(L.h === '#/play' && L.nav === 'games' && !L.stage && !L.loose, 'Back returns to #/play and leaves nothing of it on screen (' + L.h + ')');
+    await pg.evaluate(() => { location.hash = '#/daily'; });
+    await W.until(pg, () => !!document.querySelector('#root .db-wrap .db-grid'), null, 30000);
+    L = await look();
+    ok(L.nav === 'daily' && L.stage, 'the typed address #/daily opens it');
+    await pg.click('[data-db="back"]'); await W.until(pg, () => state.nav === 'games', null, 8000);
+    ok((await look()).h === '#/play', 'its own "Play" button goes back to #/play');
+    await ctx.close();
+  }
+
+  ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
+  await b.close();
+  console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
+})();
