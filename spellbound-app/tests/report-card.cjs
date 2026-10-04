@@ -32,7 +32,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
       necessary: { b: 0, due: T, d: T, ok: 0, n: 3, miss: 3 },
     };
     const kid = (name, m) => ({ name, age: 9, ageBand: '8-10', avatar: 'bizzy', theme: 'spellbound', coins: 50, xp: 0, lists: { default: { xp: 3 } }, activeList: 'default', missed: [], mast: m });
-    localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234', children: [kid('Ahana', mast), kid('Ravi', {})] }));
+    localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234', children: [kid('Ahana', mast), Object.assign(kid('Ravi', {}), { bandSeed: 5 })] }));
     localStorage.setItem('bizzing.activity', JSON.stringify({ v: 1, s: [
       { a: 'bee', d: ymd(now), t: 600, m: 12, who: 'Ahana' },
       { a: 'bee', d: ymd(now - D), t: 500, m: 8, who: 'ahana ' },           // same child, case and space-blind
@@ -58,6 +58,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
     app.setNav('parent'); for (const k of '1234') app.pinKey(k); await W(300);
     const card = document.querySelector('.sb-report-card'); o.card = card ? card.innerText : '';
     o.cardOrder = card ? [...card.querySelectorAll('.sb-rc-box')].map(x => x.innerText.split('\n')[0].trim().toUpperCase()) : [];
+    o.bands = [...document.querySelectorAll('.sb-pz-band')].map(x => x.innerText.replace(/\s+/g, ' ').trim());
     return o;
   });
   const m = r.R.mastery;
@@ -70,6 +71,9 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
   ok(r.famSum === m.retained, 'the concept families add up to exactly the retained count');
   ok(m.traps.length >= 1 && !r.trapWordsMastered, 'traps to help with come from real misses, and never list a mastered word');
   ok(r.R.time.feed && r.R.time.minutes === 20 && r.R.time.days === 2, 'time = 20 active minutes on 2 days — only Bee, only this child, only 7 days, no milestone rows');
+  /* audit v4 §4: the speller tiles printed '…' for the word difficulty of every child still calibrating */
+  ok(r.bands.length === 2 && r.bands.every(t => !/…|\.\.\./.test(t)) && /^Not yet after ~30 graded words · \d+ so far WORD DIFFICULTY$/.test(r.bands[0]) && /^5 of 9 WORD DIFFICULTY$/.test(r.bands[1]),
+    'each speller tile says its word difficulty in words — "Not yet, after ~30 graded words" before there is one, "5 of 9" after a placement — never "…" (' + r.bands.join(' | ') + ')');
   ok(r.cardOrder.join('|') === 'TIME|PROGRESS|MASTERY', 'the Parent Zone card is laid out Time · Progress · Mastery');
   ok(/3 words mastered/.test(r.card) && /20 active minutes/.test(r.card) && /2 due for a re-check/.test(r.card) && /1 slipped since mastered/.test(r.card),
     'the card shows the same numbers: 3 mastered, 20 minutes, 2 due, 1 slipped');

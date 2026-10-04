@@ -9863,7 +9863,12 @@ function viewParent(){
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-        <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(beeBand(k).band)} — proven difficulty band across all activities">${(()=>{ const kb=beeBand(k); return `<div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.calibrating?'…':kb.band}</div><div style="font-size:12px;color:var(--muted);font-weight:700">BEE BAND</div>`; })()}</div>
+        ${(()=>{ /* A band nobody has measured yet says so in words (audit v4 §4): this tile printed '…'
+             for every child still calibrating, which read as a value that had not loaded. */
+          const kb=beeBand(k), ev=Math.round(bandEvidence(k));
+          return kb.calibrating
+            ? `<div class="sb-pz-band" data-band="none" style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="Word difficulty is measured from graded words — about ${BAND_MIN_EV} of them, or the placement test"><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.3">Not yet</div><div style="font-size:11px;color:var(--muted);font-weight:650;line-height:1.3">after ~${BAND_MIN_EV} graded words · ${Math.min(ev,BAND_MIN_EV)} so far</div><div style="font-size:12px;color:var(--muted);font-weight:700;margin-top:2px">WORD DIFFICULTY</div></div>`
+            : `<div class="sb-pz-band" data-band="${kb.band}" style="background:var(--surface);border-radius:10px;padding:11px;text-align:center" title="${bandTier(kb.band)} — proven difficulty band across all activities"><div style="font-family:var(--display);font-weight:800;font-size:17px">${kb.band} of 9</div><div style="font-size:12px;color:var(--muted);font-weight:700">WORD DIFFICULTY</div></div>`; })()}
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${k.acc||0}%</div><div style="font-size:12px;color:var(--muted);font-weight:700">ACCURACY</div></div>
         <div style="background:var(--surface);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--display);font-weight:800;font-size:17px">${goodDaysThisWeek(k)}</div><div style="font-size:12px;color:var(--muted);font-weight:700">GOOD DAYS THIS WEEK</div></div>
       </div>
