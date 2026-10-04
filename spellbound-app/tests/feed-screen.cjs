@@ -9,6 +9,10 @@
    level      the feed is the child's region: nothing above the next one, and a child further
               along the road gets different "now" cards
    due        a word whose mastery record slipped, its gap over, is the FIRST card, and says so
+   column     the page head, its subtitle and the cards start on one line, desktop and phone
+   reload     a reload the same day is a new session with none of the cards just seen; what was paid
+              stays paid; inside one visit the session holds; the reasons name the stop, the slip or
+              the peek ("For <region>" on at most 3 of 20 — it was 16)
    play       a question by KEYBOARD: a wrong answer holds ("Not this time — it is …" + Continue)
               and pays nothing; by TOUCH: a right answer pays one coin through the wallet, once —
               the same card answered again on a later visit pays nothing
@@ -82,7 +86,10 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
       /* the feed's own words — its chrome, the reasons and the buttons — not the corpus a card quotes */
       const page = document.querySelector('.sb-feedpage').cloneNode(true);
       page.querySelectorAll('h3,.bzf-body,.bzf-src,.bzf-roman,.bzf-q,.bzf-opt,.bzf-after').forEach(x => x.remove());
-      return { head: !!document.querySelector('.sb-feedpage .sb-phead h2'), n: cards.length, endLast: !!list && list.lastElementChild.classList.contains('bzf-end'),
+      const L = e => e ? Math.round(e.getBoundingClientRect().left) : -1;
+      const subEl = [...document.querySelectorAll('.sb-feedpage *')].find(e => e.children.length === 0 && /^Picked for you/.test(e.textContent.trim()));
+      return { head: !!document.querySelector('.sb-feedpage .sb-phead h2'), n: cards.length,
+        lx: { head: L(document.querySelector('.sb-feedpage .sb-phead')), sub: L(subEl), list: L(list), card: L(cards[0]) }, endLast: !!list && list.lastElementChild.classList.contains('bzf-end'),
         cont: (document.querySelector('.bzf-end a') || {}).getAttribute ? document.querySelector('.bzf-end a').getAttribute('href') : '',
         why: cards.filter(c => (c.querySelector('.bzf-why') || {}).textContent).length, text: page.textContent + ' ' + document.querySelector('.sb-header-sticky').textContent,
         snd: window.__snd, wide: document.documentElement.scrollWidth - innerWidth, nav: state.nav, hash: location.hash,
@@ -92,6 +99,9 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     ok(r.head && r.n >= 12 && r.n <= 20, `${where}: the page head and ${r.n} cards (about twenty)`);
     ok(r.endLast && r.cont === '#/continue', `${where}: the feed ends with the finished card, pointing at Continue (${r.cont})`);
     ok(r.why === r.n, `${where}: every card says why it is there`);
+    /* ONE COLUMN (audit v4: at 1280 the head and subtitle began at x=248 and the cards at x=336) */
+    ok(Math.abs(r.lx.head - r.lx.list) <= 1 && Math.abs(r.lx.sub - r.lx.list) <= 1 && Math.abs(r.lx.card - r.lx.list) <= 1,
+      `${where}: the page head, its subtitle and the cards start on one line (${r.lx.head} / ${r.lx.sub} / ${r.lx.card})`);
     ok(!/\b(likes?|followers?|views|streaks?|days in a row)\b/i.test(r.text), `${where}: no likes, views or streaks`);
     ok(r.snd === 0, `${where}: no sound before a tap (${r.snd})`);
     ok(r.nav === 'feed' && r.hash === '#/feed', `${where}: the route is #/feed`);
@@ -176,6 +186,33 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const s0 = await pg.evaluate(() => window.__snd);
     const hear = await pg.evaluate(() => { const x = document.querySelector('[data-bzf="hear"]'); if (x) x.click(); return !!x; });
     if (hear) { await wait(2500); ok((await pg.evaluate(() => window.__snd)) > s0, 'a word card\'s Hear it plays the word on a tap'); }
+    await ctx.close();
+  }
+
+  /* ---- reload: a new visit is a new session, and what was paid stays paid (audit v4, V4 + V5) ---- */
+  {
+    const { ctx, pg } = await open({ touch: true });
+    await openFeed(pg);
+    const one = await pg.evaluate(() => { const coins = active().coins || 0, q = [...document.querySelectorAll('.bzf-card')].find(c => c.querySelector('[data-bzf="ans"]'));
+      const id = q && q.getAttribute('data-id'); if (id) q.querySelector('[data-bzf="ans"][data-o="0"]').click();
+      return { id, coins, ids: active().feed.ids.map(x => x.id), whys: active().feed.ids.map(x => x.why) }; });
+    await wait(300);
+    const c1 = await pg.evaluate(() => active().coins || 0);
+    ok(one.id && c1 === one.coins + 1, `a right answer pays (${one.coins} → ${c1})`);
+    const fallback = one.whys.filter(w => /^For the /.test(w)).length;
+    ok(fallback <= 3, `the reasons name the stop, the slip or the peek — "For <region>" on ${fallback} of ${one.whys.length} (was 16 of 20)`);
+    ok(new Set(one.whys).size >= 8, `${new Set(one.whys).size} different reasons in one session`);
+    await pg.reload(); await wait(2600); await openFeed(pg);
+    const two = await pg.evaluate(() => ({ ids: active().feed.ids.map(x => x.id), paid: active().feed.paid }));
+    const rep = two.ids.filter(id => one.ids.includes(id)).length;
+    ok(two.ids.length >= 12 && rep === 0, `a reload the same day brings ${two.ids.length} cards, ${rep} of them seen before (was 21 of 21)`);
+    ok(!!two.paid[one.id], 'what was paid before the reload is still on the record');
+    const again = await pg.evaluate(id => new Promise(res => { const M = SB_FEED_META, g = Object.values(SB_FEED_IDX).flat().find(r => r[0] === id)[6];
+      SB_LAZY.reg['feedB' + g] = 'feed/' + M.body[g]; SB_LAZY.need('feedB' + g, () => { const c0 = active().coins || 0; SB_FEED.reset(); SB_FEED.answer(id, 0); res([c0, active().coins || 0]); }); }), one.id);
+    ok(again[0] === again[1], `answering it right again after the reload pays nothing (${again[0]} → ${again[1]})`);
+    await pg.evaluate(() => app.setNav('home')); await wait(200); await openFeed(pg);
+    const three = await pg.evaluate(() => active().feed.ids.map(x => x.id));
+    ok(three.join() === two.ids.join(), 'and inside one visit the session holds: leave #/feed and come back, the same cards');
     await ctx.close();
   }
 
