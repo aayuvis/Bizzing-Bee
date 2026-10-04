@@ -2361,8 +2361,8 @@ const app = {
     if(p.typed.length===4 && p.make){
       if(!p.first){ p.first=p.typed; p.typed=''; p.wrong=false; render(); return; }
       if(p.typed!==p.first){ p.first=null; p.typed=''; p.wrong=true; try{sfx('wrong');}catch(e){} render(); return; }
-      state.parentPin=p.typed; save(); flash('Grown-up PIN set ✓'); }
-    if(p.typed.length===4){ if(p.typed===state.parentPin){ const fn=p.next; state.pinDlg=null; p.wrong=false;
+      state.parentPin=SB_STORE.pinMake(p.typed); save(); flash('Grown-up PIN set ✓'); }   /* kept salted and hashed, never as the digits (store.js, audit v4 Q1) */
+    if(p.typed.length===4){ if(SB_STORE.pinCheck(p.typed,state.parentPin)){ const fn=p.next; state.pinDlg=null; p.wrong=false;
         /* a pass is good for whatever it opens on this same tick — the plan sheet's own guard in
            render() reads it, so a gated opener is not asked twice */
         state._pinPass=true; try{ fn ? fn() : render(); } finally { state._pinPass=false; } }

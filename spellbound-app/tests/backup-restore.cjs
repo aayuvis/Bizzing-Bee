@@ -111,7 +111,11 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
   ok(back.length === 2 && lost.length === 0, 'after the reload every field of both children is exactly as backed up' + (lost.length ? ' — changed: ' + lost.slice(0, 6).join(', ') : ''));
   if (process.env.DBG && after.children !== before.children) { const A = JSON.parse(before.children), B = JSON.parse(after.children || '[]');
     A.forEach((k, i) => Object.keys(Object.assign({}, k, B[i] || {})).forEach(f => { if (JSON.stringify(k[f]) !== JSON.stringify((B[i] || {})[f])) console.log('DIFF', i, f, String(JSON.stringify(k[f])).slice(0, 200), '=>', String(JSON.stringify((B[i] || {})[f])).slice(0, 200)); })); }
-  ok(after.activeIdx === fileHh.activeIdx && after.pin === '1234' && after.daily === before.daily && after.arc === before.arc, 'and the active child, the household PIN and the other app keys come back too');
+  ok(after.activeIdx === fileHh.activeIdx && after.pin === fileHh.pin && after.daily === before.daily && after.arc === before.arc, 'and the active child, the household PIN and the other app keys come back too');
+  /* (audit v4 Q1) the file carries the PIN's salted hash, never its digits, and 1234 still opens it */
+  const pinRec = /^p1\$[0-9a-f]{16,64}\$\d+\$[0-9a-f]{64}$/;
+  ok(pinRec.test(fileHh.pin || '') && !/"pin":"1234"/.test(text) && await pg.evaluate(p => SB_STORE.pinCheck('1234', p) && !SB_STORE.pinCheck('4321', p), fileHh.pin),
+    'the backup file holds the PIN as its salted hash, not the four digits — and the restored household still opens with 1234');
   /* byte-exact: restore writes back precisely what the file holds, key for key */
   const exact = await pg.evaluate((b) => { bkHalt(); eraseHousehold(); restoreHousehold(b);
     const bad = Object.keys(b.keys).filter(k => localStorage.getItem(k) !== b.keys[k]);
