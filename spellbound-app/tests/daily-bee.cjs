@@ -4,12 +4,10 @@
    What this holds:
      DB1  the same date and band give the same word — the pure pick, twice, and the GAME's word in two
           fresh pages; different bands give different words.
-     DB2  the stage passes T14 and T15 in dark mode (and light), at 1280×800 and 390×844:
-          T14  no flat-colour region over 6% of the stage; no pure white or black over 2%;
-          T15  HUD stats of one width, gutters and the centre line within 4px, no vertical scroll
-               during play, no control under the tab bar, letter keys ≥ 40px tall on a phone.
-          g-engine's own T14/T15 helpers are used when tests/lib has them (guarded); else the
-          measurements here, which read the screenshot's pixels in the page.
+     DB2  the stage passes T14 and T15 in dark mode (and light), at 1280×800 and 390×844, measured
+          by the engine kit's stage-check.cjs: no flat-colour region over 6%, no pure white or black
+          over 2%; HUD stats of one width, gutters and the centre line within 4px, no scroll during
+          play, no control under the tab bar, phone controls in the bottom 38%, keys ≥ 40px (T11).
      DB3  a random guesser earns 0 coins over 30 simulated days (the clock is moved a day at a time,
           six random tries each, every day ends with the word on screen); SB_LEVEL.after('dailyBee')
           is told 0 once a day. A solver earns exactly 1 a day, and a reload does not pay it again.
@@ -23,7 +21,6 @@
         ONLY=db1,stage,db3,route runs some of the four parts (stage = shapes, never-shown, DB2).    */
 const { chromium } = require('playwright');
 const path = require('path');
-const fs = require('fs');
 const W = require('./lib/wait.cjs');
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
 let fails = 0;
@@ -31,11 +28,9 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
 const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 0, band: 3, bandSeed: 3,
   lists: { journey: { xp: 30 } }, activeList: 'journey' };
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean), part = k => !ONLY.length || ONLY.includes(k);
-/* the engine kit's stage checks (tests/lib/stage-check.cjs, g-engine), used whenever the Daily Bee stands
-   on SGUI.stage; until that has landed, the same rules measured here */
-let KIT = null;
-{ const f = path.join(__dirname, 'lib', 'stage-check.cjs'); if (fs.existsSync(f)) { try { KIT = require(f); } catch (e) { KIT = null; } } }
-const onKit = pg => KIT ? pg.evaluate(() => !!document.querySelector('.db-wrap .sg-stage')) : false;
+/* T14 / T15 / T11 are the engine kit's own checks (tests/lib/stage-check.cjs): geometry and pixels of the
+   stage SGUI.stage drew, the same rules every game on it is held to */
+const SC = require('./lib/stage-check.cjs');
 
 async function open(b, o) {
   o = o || {};
@@ -60,42 +55,6 @@ function crafted(w) {
   const notIn = 'zqxjvkwyfbhpmgu'.split('').find(ch => !w.includes(ch));
   let near = null; for (let i = 2; i < w.length; i++) if (w[i] !== w[1] && w[i] !== w[0]) { near = w[i]; break; }
   return w[0] + (near || notIn) + notIn.repeat(w.length - 2);
-}
-
-/* ---- T14 / T15, measured ---- */
-async function t14(pg) {
-  /* the stage is redrawn on every app render, so it is clipped by its rectangle, not held as an element */
-  const q = await pg.evaluate(() => { const r = document.querySelector('.db-wrap > *').getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; });
-  const png = await pg.screenshot({ clip: q });
-  return pg.evaluate(async b64 => {
-    const im = new Image(); im.src = 'data:image/png;base64,' + b64; await im.decode();
-    const cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height;
-    const x = cv.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, cv.width, cv.height).data;
-    const H = new Map(); let white = 0, black = 0; const N = d.length / 4;
-    for (let i = 0; i < d.length; i += 4) { const k = (d[i] << 16) | (d[i + 1] << 8) | d[i + 2]; H.set(k, (H.get(k) || 0) + 1);
-      if (d[i] === 255 && d[i + 1] === 255 && d[i + 2] === 255) white++; if (!d[i] && !d[i + 1] && !d[i + 2]) black++; }
-    let top = 0, topK = 0; H.forEach((n, k) => { if (n > top) { top = n; topK = k; } });
-    return { flat: top / N, flatColour: '#' + topK.toString(16).padStart(6, '0'), white: white / N, black: black / N };
-  }, png.toString('base64'));
-}
-async function t15(pg) {
-  return pg.evaluate(() => {
-    const st = document.querySelector('.db-wrap > *').getBoundingClientRect(), mid = (st.left + st.right) / 2;
-    const R = s => { const e = document.querySelector(s); return e && e.getClientRects().length ? e.getBoundingClientRect() : null; };
-    const l = R('.db-stat.l'), r = R('.db-stat.r'), grid = R('.db-grid'), acts = R('.db-acts'), keys = R('#db-kb button') ? R('#db-kb') : null, title = R('.db-title');
-    const gut = q => q ? Math.abs((q.left - st.left) - (st.right - q.right)) : 0;
-    const ctr = q => q ? Math.abs((q.left + q.right) / 2 - mid) : 0;
-    const hud = l && r ? Math.abs((l.left - st.left) - (st.right - r.right)) : 99;
-    const tab = document.querySelector('nav.sb-tabbar'); const tabTop = tab && getComputedStyle(tab).display !== 'none' ? tab.getBoundingClientRect().top : innerHeight;
-    const ctl = [...document.querySelectorAll('.db-wrap button')].filter(b => b.getClientRects().length);
-    const under = ctl.filter(b => b.getBoundingClientRect().bottom > tabTop + 0.5 || b.getBoundingClientRect().bottom > innerHeight + 0.5).length;
-    const keyH = [...document.querySelectorAll('#db-kb button')].map(b => b.getBoundingClientRect().height);
-    const kbRow = document.querySelector('#db-kb .db-krow'); const keyW = kbRow ? kbRow.getBoundingClientRect().width : 0;
-    return { statW: l && r ? Math.abs(l.width - r.width) : 99, hud, gutters: Math.max(gut(grid), gut(acts), gut(keys)),
-      centre: Math.max(ctr(title), ctr(grid), ctr(acts), ctr(keys)), scroll: document.scrollingElement.scrollHeight - innerHeight,
-      stageScroll: (() => { const s = document.querySelector('.db-wrap > *'); return s.scrollHeight - s.clientHeight; })(),
-      under, keyMin: keyH.length ? Math.min(...keyH) : null, keys: keyH.length, stageH: st.height, tabTop, stageBottom: st.bottom };
-  });
 }
 
 (async () => {
@@ -162,12 +121,8 @@ async function t15(pg) {
         if (sh.touch) ok(sh.kAny >= 3 && sh.kHit && sh.kNear && sh.kMiss, tag + 'and so does every letter key it has touched');
       } else ok(atOpen, tag + 'the word is nowhere on the stage when the board opens' + (S.hits.length ? ' — ' + S.hits.join(' | ') : ''));
       /* DB2 — measured mid-round: one try on the board, keys up */
-      if (await onKit(pg)) { KIT.report(ok, tag + 'DB2 (stage-check)', await KIT.geometry(pg), await KIT.pixels(pg), { play: true }); }
-      else { const A = await t14(pg), B = await t15(pg);
-      ok(A.flat <= 0.06 && A.white <= 0.02 && A.black <= 0.02, tag + `T14 — largest flat colour ${(A.flat * 100).toFixed(1)}% (${A.flatColour}), pure white ${(A.white * 100).toFixed(2)}%, pure black ${(A.black * 100).toFixed(2)}%`);
-      ok(B.statW <= 4 && B.hud <= 4 && B.gutters <= 4 && B.centre <= 4, tag + `T15 — HUD stats ${B.statW.toFixed(1)}px apart in width, HUD gutters ${B.hud.toFixed(1)}, board/controls gutters ${B.gutters.toFixed(1)}, centre line ${B.centre.toFixed(1)}px`);
-      ok(B.scroll <= 1 && B.stageScroll <= 1 && !B.under && Math.abs(B.stageBottom - Math.min(B.tabTop, vh)) <= 2, tag + `T15 — no scroll (page ${B.scroll}px, stage ${B.stageScroll}px), no control under the tab bar (${B.under}), the stage reaches it (${Math.round(B.stageBottom)} / ${Math.round(Math.min(B.tabTop, vh))})`);
-      if (vw < 500) ok(B.keys >= 26 && B.keyMin >= 40, tag + `T11 — the letter keys are on screen and ${B.keyMin && B.keyMin.toFixed(1)}px tall (≥ 40)`); }
+      /* DB2 — measured mid-round (one try on the board, keys up on a phone), in both looks */
+      SC.report(ok, tag + 'DB2', await SC.geometry(pg), await SC.pixels(pg), { play: true });
       if (mode === 'dusk') {
         /* play it out: the end always shows the word, with its meaning, origin and sentence */
         const notIn = 'zqxjvkwyfbhpmgu'.split('').find(ch => !w.includes(ch));

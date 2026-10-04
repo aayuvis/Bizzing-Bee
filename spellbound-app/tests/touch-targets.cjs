@@ -9,9 +9,9 @@
      · the family top bar (.sb-header-sticky) — its 37px icons and 41px search row are pinned by the
        family's shell-check (tests/lib/family/shell-check.mjs REF.phone); changing them is a family
        decision, not Bee's;
-     · Daily Bee's letter keys (Daily Buzz's until 4 Oct 2026) — ten keys across a 390px phone cannot
-       each be 44 wide; they are 44+ tall, the layout every phone keyboard uses (WCAG 2.5.8's spacing
-       exception);
+     · (no longer: Daily Buzz's ten-across letter keys. 4 Oct 2026 — Daily Bee replaced it and types on
+       the engine kit's keyboard, the alphabet in rows of seven below 480px, every key a 44px target,
+       so that exemption is gone and its keys are measured like every other control);
      · the Atlas overview's region medallions on a narrow board — the 44px key rows under the board
        are the same doors (atlasKey; WCAG's "equivalent" exception);
      · links inside a sentence (WCAG's inline exception).
@@ -43,7 +43,6 @@ const SCREENS = [
     const r = await pg.evaluate(async () => {
       const SEL = 'button, a[href], [data-act], input, select, textarea, [role="button"], summary';
       const why = e => e.closest('.sb-header-sticky') ? 'the family top bar (shell-check pins it)'
-        : e.matches('.db-k') ? "Daily Bee's letter keys (ten across a phone)"
         : (e.matches('.atlas-pin') && e.closest('.atlas-wrap') && getComputedStyle(e.closest('.atlas-wrap').querySelector('.atlas-key') || document.body).display !== 'none') ? 'Atlas medallions (the 44px key is the same door)'
         : (e.tagName === 'A' && e.closest('p') && e.closest('p').textContent.trim().length > e.textContent.trim().length + 12) ? 'a link inside a sentence' : '';
       const els = [...document.querySelectorAll(SEL)].filter(e => !e.closest('[aria-hidden="true"]') && !(e.parentElement && e.parentElement.closest(SEL)) && !e.disabled

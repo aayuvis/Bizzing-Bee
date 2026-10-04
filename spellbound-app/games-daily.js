@@ -20,12 +20,11 @@
    no attribute and no live line carries it until the round is over (tests/daily-bee.cjs).
 
    IT LIVES IN THE SHELL (audit v4 N2): nav 'daily', #/daily, the family top bar and tabs around
-   a full-height stage (SGUI.stage when the engine kit has it, else the small one here) on the
-   morning-hive plate. app3 renders an empty #db-host; after every app render mount() draws the
+   the engine kit's stage (SGUI.stage, SGUI.keys) on the morning-hive plate. app3 renders an empty #db-host; after every app render mount() draws the
    stage again from the state kept on the child and here (the letters being typed), so a
    re-render never loses a word half-typed. Keys reach it only while it is the screen and nothing
-   is typed into a field or open over it. Lazy: boot-lazy's `daily` group brings this file and
-   the corpus at the door (app.openDailyBee).
+   is typed into a field or open over it. Lazy: boot-lazy's `daily` group brings this file, the
+   kit (saga2.js) and the corpus at the door (app.openDailyBee).
    ============================================================ */
 (function () {
   var TRIES = 6, MINL = 4, MAXL = 8, KEY = 'dailyBee';
@@ -34,40 +33,19 @@
   var LV_NAME = { auto: 'Auto', easy: 'Easy', medium: 'Medium', hard: 'Hard', champ: 'Champ' };
 
   /* Theme tokens only (Daily Buzz painted var(--bg,#FBF7EC) and #fff panels, unreadable at dusk).
-     Panels are translucent paper over the plate; a filled cell is a soft ramp, never a flat
-     block, so the stage carries no flat-colour region (T14). */
+     The STAGE is the engine kit's (SGUI.stage: fixed between the shell bar and the tab bar, the
+     morning-hive plate edge to edge, the HUD mirrored); this is only what goes inside it. Panels
+     are translucent paper over the plate; a filled cell is a soft ramp, never a flat block (T14). */
   var css = ''
-    /* edge to edge, and no taller than the window: the app frame's min-height:100dvh sits inside #root's
-       zoom, so on a phone it is 9% taller than the screen and the page would scroll under the stage */
     + '.sb-content:has(>.db-host){max-width:none!important;padding:0!important}'
-    + '#root div:has(>.sb-content>.db-host),#root>div:has(.db-host){min-height:0!important}'
-    + '.db-host{position:relative;width:100%}'
-    + '.db-wrap{position:relative;width:100%;height:calc(100dvh - 120px);min-height:420px}'
-    + '.db-wrap>.dbs-stage{height:100%}'
     /* the play area holds one centred column: the prompt, the board, the shapes' key, and the buttons */
     + '.db-play{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;min-height:0;box-sizing:border-box}'
     + '.db-kb{width:100%}'
-    /* the fallback stage (SGUI.stage draws its own when the engine kit is in) */
-    + '.dbs-stage{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr) auto;width:100%;height:100%;overflow:hidden;color:var(--text);'
-    + 'background:var(--dbs-plate,none) center/cover no-repeat,radial-gradient(70% 55% at 50% 8%,color-mix(in srgb,var(--treasure) 40%,transparent),transparent 72%),'
-    + 'radial-gradient(60% 50% at 12% 100%,color-mix(in srgb,var(--mastered) 18%,transparent),transparent 70%),'
-    + 'linear-gradient(180deg,color-mix(in srgb,var(--treasure) 24%,var(--tint)) 0%,var(--tint) 46%,var(--tint-deep) 100%)}'
-    + '[data-mode="dusk"] .dbs-stage{background:var(--dbs-plate,none) center/cover no-repeat,radial-gradient(70% 55% at 50% 6%,color-mix(in srgb,var(--treasure) 22%,transparent),transparent 72%),'
-    + 'radial-gradient(60% 50% at 88% 100%,color-mix(in srgb,var(--action) 22%,transparent),transparent 70%),linear-gradient(180deg,var(--tint-deep) 0%,var(--tint) 52%,var(--tint-deep) 100%)}'
-    + '.dbs-hud,.dbs-play,.dbs-ctl{width:min(100%,var(--dbs-w,960px));margin:0 auto;box-sizing:border-box}'
-    + '.dbs-hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:10px 12px 6px}'
-    + '.dbs-play{position:relative;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 12px}'
-    + '.dbs-ctl{padding:6px 12px 10px}'
-    /* the HUD: two stats of one width, mirrored about the centre */
-    + '.db-stat{width:min(100%,148px);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;padding:4px 8px;border-radius:14px;'
-    + 'background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid color-mix(in srgb,var(--line) 80%,transparent);text-align:center}'
-    + '.db-stat.l{justify-self:start}.db-stat.r{justify-self:end}'
-    + '.db-stat b{font:800 19px/1 var(--display);color:var(--text)}'
-    + '.db-stat span{font:700 10.5px/1.2 var(--ui);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:3px}'
     + '.db-mid{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;min-width:0}'
     + '.db-title{font:800 18px/1.1 var(--display);color:var(--text);white-space:nowrap}'
     + '.db-when{display:flex;align-items:center;gap:6px;font:700 12px/1.2 var(--ui);color:var(--muted);white-space:nowrap}'
     + '.db-lv{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,var(--paper) 80%,transparent);border:1px solid var(--line);color:var(--text);font:800 11.5px/1.4 var(--ui)}'
+    + '.sg-st-stat .db-ic{display:inline-grid;place-items:center;color:var(--treasure-deep,#8A5B00)}[data-mode="dusk"] .sg-st-stat .db-ic{color:var(--treasure,#F0B429)}'
     /* the board */
     + '.db-msg{min-height:22px;max-width:36em;margin:0 auto 8px;padding:3px 12px;border-radius:999px;font:700 13.5px/1.35 var(--ui);color:var(--text);text-align:center;background:color-mix(in srgb,var(--paper) 72%,transparent)}'
     + '.db-msg:empty{visibility:hidden}'
@@ -89,29 +67,19 @@
     + '@keyframes db-shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}'
     + '.db-key{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:8px;font:700 12px/1.3 var(--ui);color:var(--muted)}'
     + '.db-key span{display:inline-flex;align-items:center;gap:4px}'
-    /* the controls: three buttons mirrored about "Hear it again" */
+    /* three buttons mirrored about "Hear it again", at the foot of the play area, right above the keys */
     + '.db-acts{display:grid;grid-template-columns:1fr minmax(0,1.5fr) 1fr;gap:8px;margin:10px auto 0;width:100%;max-width:560px;flex:none}'
-    + '.db-stat .db-ic,.sg-st-stat .db-ic{display:inline-grid;place-items:center;color:var(--treasure-deep,#8A5B00)}[data-mode="dusk"] .db-ic{color:var(--treasure,#F0B429)}'
-    /* the kit's keys learn the board's shapes (tintKit) */
-    + '.sg-key.db-k-hit{background:linear-gradient(180deg,color-mix(in srgb,var(--mastered) 80%,#fff),var(--mastered));color:#fff;border-color:var(--mastered)}'
-    + '.sg-key.db-k-near{background:linear-gradient(180deg,color-mix(in srgb,var(--medium) 78%,#fff),var(--medium));color:#fff;border-color:var(--medium)}'
-    + '.sg-key.db-k-miss{background:color-mix(in srgb,var(--paper) 36%,transparent);color:var(--muted);border-style:dashed}'
     + '.db-b{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:6px 10px;border-radius:999px;box-sizing:border-box;'
     + 'font:800 14px/1.15 var(--ui);color:var(--text);background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 92%,transparent),color-mix(in srgb,var(--paper) 72%,transparent));border:1.5px solid var(--line);cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}'
     + '.db-b.go{background:var(--action);color:var(--action-ink,#fff);border-color:transparent;box-shadow:var(--edge)}'
     + '.db-b[disabled]{opacity:.7;cursor:default}'
     + '.db-b svg{flex:none}'
-    /* the fallback keyboard (SGUI.keys replaces it when the engine kit is in) */
-    + '.db-keys{display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;max-width:560px;margin:0 auto}'
-    + '.db-krow{display:flex;gap:5px;justify-content:center;width:100%}'
-    + '.db-k{position:relative;flex:1 1 0;min-width:0;max-width:48px;height:46px;border:1px solid color-mix(in srgb,var(--line) 80%,transparent);border-radius:9px;'
-    + 'background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 92%,transparent),color-mix(in srgb,var(--paper) 70%,transparent));color:var(--text);font:800 16px var(--ui);text-transform:uppercase;cursor:pointer;display:grid;place-items:center;padding:0}'
-    + '.db-k.wide{flex:1.5 1 0;max-width:74px;font-size:12px}'
-    + '.db-k .db-sh{position:absolute;right:3px;top:2px;font:400 9px/1 var(--ui)}'
-    + '.db-k.hit{background:linear-gradient(180deg,color-mix(in srgb,var(--mastered) 80%,#fff),var(--mastered));color:#fff;border-color:var(--mastered)}'
-    + '.db-k.near{background:linear-gradient(180deg,color-mix(in srgb,var(--medium) 78%,#fff),var(--medium));color:#fff;border-color:var(--medium)}'
-    + '.db-k.miss{background:color-mix(in srgb,var(--paper) 36%,transparent);color:var(--muted);border-style:dashed}'
-    + '.db-k:active{transform:translateY(1px)}'
+    /* the kit's keys learn the board's shapes (tintKit) */
+    + '.sg-key{position:relative}'
+    + '.sg-key .db-sh{position:absolute;right:3px;top:2px;font:400 10px/1 var(--ui)}'
+    + '.sg-key.db-k-hit{background:linear-gradient(180deg,color-mix(in srgb,var(--mastered) 80%,#fff),var(--mastered));color:#fff;border-color:var(--mastered)}'
+    + '.sg-key.db-k-near{background:linear-gradient(180deg,color-mix(in srgb,var(--medium) 78%,#fff),var(--medium));color:#fff;border-color:var(--medium)}'
+    + '.sg-key.db-k-miss{background:color-mix(in srgb,var(--paper) 36%,transparent);color:var(--muted);border-style:dashed}'
     /* the end: the word, always */
     + '.db-end{width:min(100%,560px);max-height:100%;overflow:auto;box-sizing:border-box;padding:14px 16px;border-radius:20px;text-align:center;'
     + 'background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:var(--sh-raised)}'
@@ -126,10 +94,10 @@
     + '.db-mini .db-row{--cell:18px;--gap:3px}'
     + '.db-mini .db-cell{border-width:1px;font-size:0}.db-mini .db-cell .db-sh{position:static;font-size:11px;color:inherit}'
     + '.db-kind{margin-top:8px;font:700 13px/1.4 var(--ui);color:var(--text);background:color-mix(in srgb,var(--treasure) 18%,transparent);border-radius:12px;padding:7px 10px}'
+    + '.db-wait{display:grid;place-items:center;min-height:50vh}'
     + '@media (prefers-reduced-motion:reduce){.db-cell.flip,.db-row.shake{animation:none}}'
     + '[data-a11y-motion] .db-cell.flip,[data-a11y-motion] .db-row.shake{animation:none}'
-    + '@media(max-width:560px){.dbs-hud{gap:6px;padding:8px 10px 4px}.db-stat{width:min(100%,92px);min-height:42px}.db-stat b{font-size:17px}.db-stat span{font-size:9.5px}'
-    + '.db-title{font-size:16px}.dbs-play{padding:2px 10px}.dbs-ctl{padding:4px 8px 8px}.db-acts{gap:6px;margin-top:8px}.db-b{font-size:13px;padding:6px 8px}.db-k{height:44px;font-size:15px}.db-krow{gap:4px}.db-keys{gap:5px}.db-msg{font-size:12.5px;margin-bottom:6px}.db-key{display:none}}';
+    + '@media(max-width:560px){.db-title{font-size:16px}.db-acts{gap:6px;margin-top:8px}.db-b{font-size:13px;padding:6px 8px}.db-msg{font-size:12.5px;margin-bottom:6px}.db-key{display:none}}';
 
   /* ------------------------------------------------------------------ the word */
   function fnv(s) { var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
@@ -250,34 +218,19 @@
   function ico(n, sz) { try { if (typeof iconSVG === 'function') return iconSVG(n, sz || 18); } catch (e) {} return ''; }
   function sayWord(w, slow) { try { if (typeof deviceSpeak === 'function') deviceSpeak(w, slow ? 0.55 : 0.9); else if (typeof say === 'function') say(w); } catch (e) {} }
   function live(t) { try { if (t && window.SB_LIVE) SB_LIVE.say([t]); } catch (e) {} }
-  function plate() {
-    try { if (typeof window.SB_PLATE === 'function') return window.SB_PLATE('daily'); } catch (e) {}
-    var dusk = false; try { dusk = state.mode === 'dusk'; } catch (e) {}
-    return 'app-art/stage/daily-' + (dusk ? 'night' : 'day') + '.webp';
-  }
-  /* the fallback stage asks for its plate ONCE and paints it only when it has arrived; until then (or if
-     the engine kit has not painted it yet) the token gradient under it is the morning */
-  var plates = {};
-  function plateVar(u) {
-    if (plates[u] === 1) return '--dbs-plate:url(\'' + esc(u) + '\')';
-    if (plates[u] == null) { plates[u] = 0; var im = new Image(); im.onload = function () { plates[u] = 1; var st = host && host.querySelector('.dbs-stage'); if (st) st.style.setProperty('--dbs-plate', 'url(\'' + u + '\')'); }; im.onerror = function () { plates[u] = -1; }; im.src = u; }
-    return '';
-  }
   function dateLabel() { try { return new Date().toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return today(); } }
   function levelChip() {
     try { if (window.SB_LEVEL && typeof SB_LEVEL.chip === 'function') return SB_LEVEL.chip(KEY, 'the Daily Bee'); } catch (e) {}
     return '<span class="db-lv">' + esc(LV_NAME[levelNow()] || 'Auto') + '</span>';
   }
-  /* the stage: the engine kit's when it is in (contract §5.0), else the same three rows here */
+  /* THE STAGE IS THE ENGINE KIT'S (SGUI.stage, games spec §5.0): the morning-hive plate by name (the kit
+     swaps day and night with the look), the HUD's stats as content the kit wraps, the play area and
+     the controls row. The 'daily' lazy group carries saga2.js, so the kit is in before the board is. */
   function statIn(x) { return '<span class="db-ic sg-st-ic" aria-hidden="true">' + x.ic + '</span><span class="sg-st-n" aria-label="' + esc(x.n + ' ' + x.t) + '">' + x.n + '</span><span class="sg-st-t">' + esc(x.t) + '</span>'; }
+  function kit() { return !!(window.SGUI && typeof SGUI.stage === 'function' && typeof SGUI.keys === 'function'); }
   function stage(o) {
-    if (window.SGUI && typeof SGUI.stage === 'function') {
-      try { var h = SGUI.stage({ plate: 'daily', name: 'daily', label: 'Daily Bee', hud: { left: statIn(o.hud.left), center: '<div class="db-mid">' + o.hud.center + '</div>', right: statIn(o.hud.right) }, play: o.play, controls: o.controls }); if (h) return h; } catch (e) {}
-    }
-    var st = function (x, side) { return '<div class="db-stat ' + side + '" aria-label="' + esc(x.n + ' ' + x.t) + '"><b>' + x.n + '</b><span>' + esc(x.t) + '</span></div>'; };
-    return '<div class="dbs-stage" style="' + plateVar(o.plate) + '">'
-      + '<div class="dbs-hud">' + st(o.hud.left, 'l') + '<div class="db-mid">' + o.hud.center + '</div>' + st(o.hud.right, 'r') + '</div>'
-      + '<div class="dbs-play">' + o.play + '</div><div class="dbs-ctl">' + o.controls + '</div></div>';
+    return SGUI.stage({ plate: 'daily', name: 'daily', label: 'Daily Bee',
+      hud: { left: statIn(o.hud.left), center: '<div class="db-mid">' + o.hud.center + '</div>', right: statIn(o.hud.right) }, play: o.play, controls: o.controls });
   }
 
   function cellHtml(ch, st, extra) {
@@ -304,18 +257,6 @@
     var ks = {}; (D.g || []).forEach(function (g) { var ev = grade(g, D.word); for (var i = 0; i < g.length; i++) ks[g[i]] = better(ks[g[i]] || 'miss', ev[i]); });
     return ks;
   }
-  function keysHtml(D) {
-    var ks = keyState(D), rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], h = '<div class="db-keys" role="group" aria-label="Letters">';
-    rows.forEach(function (row, i) {
-      h += '<div class="db-krow">';
-      if (i === 2) h += '<button type="button" class="db-k wide" data-k="enter" aria-label="Try this word">Enter</button>';
-      row.split('').forEach(function (ch) { var st = ks[ch];
-        h += '<button type="button" class="db-k' + (st ? ' ' + st : '') + '" data-k="' + ch + '" aria-label="' + ch.toUpperCase() + (st ? ', ' + SAYS[st] : '') + '">' + ch + (st ? '<i class="db-sh" aria-hidden="true">' + SHAPE[st] + '</i>' : '') + '</button>'; });
-      if (i === 2) h += '<button type="button" class="db-k wide" data-k="back" aria-label="Delete a letter">Del</button>';
-      h += '</div>';
-    });
-    return h + '</div>';
-  }
   function endHtml(D, w, n) {
     var won = !!D.won, head = won ? 'Solved in ' + D.g.length + (D.g.length === 1 ? ' try' : ' tries') + '. Today’s word:' : 'Today’s word was:';
     var h = '<div class="db-end" id="db-end">' + boardHtml(D, n, true)
@@ -326,11 +267,22 @@
       + (w.d ? '<div class="db-fact"><b>Meaning</b>' + esc(w.d) + '</div>' : '')
       + ((w.o || w.r) ? '<div class="db-fact"><b>Origin</b>' + esc(w.o || '') + (w.o && w.r ? '. ' : '') + esc(w.r || '') + '</div>' : '')
       + (w.s ? '<div class="db-fact"><b>In a sentence</b>' + esc(w.s) + '</div>' : '')
+      + nextTime(D, w)
       + '</div>';
     var L = D.lvr;
     if (L && L.dropped) h += '<div class="db-kind">' + esc(L.line || ('Let’s warm up on ' + (LV_NAME[L.level] || 'an easier level') + '. You can move back up any time.')) + '</div>';
     else if (L && L.up) h += '<div class="db-kind">Ready for ' + esc(LV_NAME[L.up] || L.up) + '? <button type="button" class="db-b" data-db="up" style="min-height:36px;margin-left:6px">Try it tomorrow</button></div>';
     return h + '</div>';
+  }
+  /* a missed day says how to get it next time, from the kit's own reading of the closest try against
+     the word (SGUI.missKind — the miss card's note); a try too far off to read says nothing */
+  function nextTime(D, w) {
+    if (D.won || !D.g.length || !(window.SGUI && typeof SGUI.missKind === 'function')) return '';
+    var best = D.g[0], score = -1;
+    D.g.forEach(function (g) { var ev = grade(g, D.word), sc = 0; ev.forEach(function (x) { sc += x === 'hit' ? 2 : x === 'near' ? 1 : 0; }); if (sc > score) { score = sc; best = g; } });
+    var k = null; try { k = SGUI.missKind(w, best); } catch (e) {}
+    if (!k || !k.line || k.k === 'letters') return '';
+    return '<div class="db-fact"><b>Next time</b>' + esc((k.label ? k.label + ': ' : '') + k.line) + '</div>';
   }
   function actsHtml(D) {
     var back = '<button type="button" class="db-b" data-db="back" aria-label="Back to Play">' + '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>Play</button>';
@@ -345,13 +297,17 @@
     if (!host || !host.isConnected) return;
     var c = kid(); if (!c) return;
     if (curKid !== c) { curKid = c; cur = ''; msgT = ''; spoke = ''; }
-    if (!corpusReady()) {
-      host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-play"><div class="db-msg" data-live-prompt="Getting today’s word ready.">Getting today’s word ready…</div></div>', controls: '' }) + '</div>';
-      try { SB_LAZY.need('daily', function () { draw(); }); } catch (e) {}
-      fit(); return;
+    if (!corpusReady() || !kit()) {
+      /* the kit and the corpus are on their way (the 'daily' group); a group that could not load
+         (offline, never fetched) is marked done by boot-lazy, and then the screen says so */
+      var gone = corpusReady() && !kit();
+      host.innerHTML = '<div class="db-wait" data-live-prompt="' + (gone ? 'The Daily Bee needs a connection the first time it opens.' : 'Getting today’s word ready.') + '">'
+        + (gone ? '<p class="db-msg">The Daily Bee needs a connection the first time it opens.</p>' : (typeof hiveLoader === 'function' ? hiveLoader('getting today’s word ready…') : '<p class="db-msg">Getting today’s word ready…</p>')) + '</div>';
+      if (!gone) { try { SB_LAZY.need('daily', function () { draw(); }); } catch (e) {} }
+      return;
     }
     var D = rec(c);
-    if (!ensureWord(c, D)) { host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(null), play: '<div class="db-play"><div class="db-msg">No word is ready for today. Try again in a moment.</div>' + actsHtml({ g: [] }) + '</div>', controls: '' }) + '</div>'; wire(); fit(); return; }
+    if (!ensureWord(c, D)) { host.innerHTML = '<div class="db-wrap">' + stage({ hud: hudFor(null), play: '<div class="db-play"><div class="db-msg">No word is ready for today. Try again in a moment.</div>' + actsHtml({ g: [] }) + '</div>', controls: '' }) + '</div>'; wire(); fit(); return; }
     var w = recOf(D.word), n = D.word.length;
     if (curDay !== D.day + '|' + D.word) { curDay = D.day + '|' + D.word; cur = ''; msgT = ''; }
     if (D.over) cur = '';
@@ -364,9 +320,9 @@
     /* "Hear it again" sits right above the keys, at the foot of the play area, so on a phone the keys
        alone are the controls row and it stays in the bottom 38% of the stage */
     var controls = D.over ? '' : '<div class="db-kb" id="db-kb"></div>';
-    host.innerHTML = '<div class="db-wrap">' + stage({ plate: plate(), hud: hudFor(D), play: play, controls: controls }) + '</div>';
+    host.innerHTML = '<div class="db-wrap">' + stage({ hud: hudFor(D), play: play, controls: controls }) + '</div>';
     flipRow = -1; shakeRow = false;
-    wire(); keyboard(D); fit();
+    wire(); keyboard(D); fit(); requestAnimationFrame(function () { if (host && host.isConnected) fit(); });
     /* the word is said when the board first appears after a tap, and once more at the end */
     var sayKey = D.day + '|' + D.word + '|' + (D.over ? 'end' : 'play');
     var tapped = false; try { tapped = !!state.dbeeSpeak; } catch (e) {}
@@ -446,26 +402,23 @@
   function keyboard(D) {
     if (keysApi) { try { keysApi.destroy(); } catch (e) {} keysApi = null; }
     var kb = host && host.querySelector('#db-kb'); if (!kb || D.over) return;
-    if (window.SGUI && typeof SGUI.keys === 'function') {
-      try {
-        keysApi = SGUI.keys(kb, { physical: false,
-          onKey: function (ch) { if (!quiet()) input(lc(ch), 'kit'); },
-          onBack: function () { if (!quiet()) input('back', 'kit'); },
-          onEnter: function () { if (!quiet()) input('enter', 'kit'); }
-        });
-        if (keysApi) { tintKit(kb, D); return; }
-      } catch (e) { keysApi = null; }
-    }
-    /* the fallback keys are for touch; a desktop types on its own keyboard (as SGUI.keys does) */
-    var touch = false; try { touch = matchMedia('(any-pointer: coarse)').matches || ('ontouchstart' in window); } catch (e) {}
-    kb.innerHTML = touch ? keysHtml(D) : '';
+    /* the kit's keys: drawn on a touch screen only (the alphabet below 480px), and told not to hear the
+       real keyboard itself — onKey below is the one physical path, with the board's own guards */
+    try {
+      keysApi = SGUI.keys(kb, { physical: false,
+        onKey: function (ch) { if (!quiet()) input(lc(ch), 'kit'); },
+        onBack: function () { if (!quiet()) input('back', 'kit'); },
+        onEnter: function () { if (!quiet()) input('enter', 'kit'); }
+      });
+      tintKit(kb, D);
+    } catch (e) { keysApi = null; }
   }
   /* the kit's keyboard learns the board's shapes too, by its letter keys' own text */
   function tintKit(kb, D) {
     var ks = keyState(D);
     [].forEach.call(kb.querySelectorAll('button'), function (b) { var t = lc((b.textContent || '').trim()); if (t.length !== 1 || !ks[t]) return;
-      b.classList.add('db-k-' + ks[t]); if (!b.querySelector('.db-sh')) b.insertAdjacentHTML('beforeend', '<i class="db-sh" aria-hidden="true" style="position:absolute;right:3px;top:2px;font-size:9px">' + SHAPE[ks[t]] + '</i>');
-      if (getComputedStyle(b).position === 'static') b.style.position = 'relative'; });
+      b.classList.add('db-k-' + ks[t]); b.setAttribute('aria-label', t.toUpperCase() + ', ' + SAYS[ks[t]]);
+      if (!b.querySelector('.db-sh')) b.insertAdjacentHTML('beforeend', '<i class="db-sh" aria-hidden="true">' + SHAPE[ks[t]] + '</i>'); });
   }
   /* the board takes keys only while it IS the screen, with nothing open over it and nothing typed
      into a field (the top bar's search box sits right above it) */
@@ -486,21 +439,14 @@
     else if (k === 'Enter') { e.preventDefault(); input('enter', 'phys'); }
   }
 
-  /* ------------------------------------------------------------------ the stage fills the screen */
-  /* Full height between the top bar and the tab bar (or the window's foot), measured, because
-     #root is zoomed (1.09, or the text-size setting) and a dvh inside it is the wrong size. Then
-     the board's cell is the largest that fits both ways — eight letters still fit a 390px phone. */
+  /* ------------------------------------------------------------------ the board fits the stage */
+  /* The kit fits the stage between the shell bar and the tab bar (stageFit); the board's cell is then
+     the largest that fits the play column both ways — eight letters still fit a 390px phone. Measured
+     after the kit has fitted the stage, and again on resize. */
   function fit() {
-    var wrap = host && host.querySelector('.db-wrap'); if (!wrap) return;
+    try { if (window.SGUI && SGUI.stageFit) SGUI.stageFit(); } catch (e) {}
     try {
-      var r = wrap.getBoundingClientRect(), z = wrap.offsetHeight ? r.height / wrap.offsetHeight : 1;
-      var bottom = window.innerHeight, tab = document.querySelector('nav.sb-tabbar');
-      if (tab && getComputedStyle(tab).display !== 'none') bottom = Math.min(bottom, tab.getBoundingClientRect().top);
-      var top = r.top + (window.scrollY || 0);
-      var h = Math.max(380, Math.floor((bottom - top) / (z || 1)));
-      wrap.style.height = h + 'px';
-      var st = wrap.firstElementChild; if (st && st.classList.contains('dbs-stage')) st.style.setProperty('--dbs-w', Math.round(Math.max(360, h * 4 / 3)) + 'px');
-      var grid = wrap.querySelector('.db-grid:not(.db-mini)'), play = grid && grid.parentElement;
+      var grid = host && host.querySelector('.db-grid:not(.db-mini)'), play = grid && grid.parentElement;
       if (grid && play) {
         var n = +(grid.style.getPropertyValue('--n')) || 5, gap = 6;
         var cs = getComputedStyle(play), pw = play.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -510,7 +456,7 @@
         grid.style.setProperty('--cell', Math.max(26, cell) + 'px');
       }
     } catch (e) {}
-    if (!sizeOn) { sizeOn = true; window.addEventListener('resize', function () { if (host && host.isConnected) fit(); }); }
+    if (!sizeOn) { sizeOn = true; window.addEventListener('resize', function () { if (host && host.isConnected) requestAnimationFrame(fit); }); }
   }
 
   /* ------------------------------------------------------------------ the shell's door */
