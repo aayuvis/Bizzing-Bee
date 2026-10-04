@@ -545,11 +545,16 @@
     let r = 1; try { r = state.voiceRate || 1; } catch (e) {}
     return Math.min(8000, 320 + w * 330 / r);
   }
-  /* wait at least ms, and always long enough for the line in the air to land */
+  /* wait at least ms, and always long enough for the line in the air to land.
+     A timer belongs to the bee that set it: one still pending when that bee is quit or a new
+     one is started does nothing. It used to run on the NEXT bee — quit during the draw, take
+     the stage again within ~5s, and the old draw's timer opened the new bee's round early,
+     then its own opened it again, two nextTurn chains running at once. Guard:
+     tests/mockbee-faces.cjs. */
   function after(ms, fn) {
     const g = mb();
     const left = g && g.spokeAt ? Math.max(0, (g.spokeAt + g.spokeMs) - Date.now()) : 0;
-    return setTimeout(fn, Math.max(ms, left));
+    return setTimeout(() => { if (mb() === g) fn(); }, Math.max(ms, left));
   }
 
   /* announce(shown, spoken)

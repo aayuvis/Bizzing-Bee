@@ -8,10 +8,13 @@
    refused with a reason. Then: no dev/tester unlock, "add XP" or "add coins" control is
    anywhere outside Settings → Testing tools, and switching tester mode on and off never
    rewrites a child.
+   Waits on state, not time (lib/wait.cjs): the card drawn, the confirm up, the fresh page
+   booted after each reload.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/backup-restore.cjs                 */
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
+const { booted, until } = require('./lib/wait.cjs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
@@ -35,14 +38,15 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
     localStorage.setItem('bizzing.wallet', JSON.stringify({ v: 1, kids: { ahana: { coins: 25, ledger: [{ a: 'maths', t: 1, n: 25, why: 'stop' }] }, zed: { coins: 4, ledger: [] } } }));
   } catch (e) {} });
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => { errs.push(e.message); if (process.env.DBG) console.log('PAGEERR', e.stack); });
-  await pg.goto(URL); await pg.waitForTimeout(2800);
+  await pg.goto(URL); await booted(pg);
   const typePin = async () => { for (const k of '1234') await pg.evaluate(k => app.pinKey(k), k); };
 
   /* ---- the household as the app holds it, after boot ---- */
   const before = await pg.evaluate(() => { save(); const s = JSON.parse(localStorage.getItem('sb_saas_v2')); return { children: JSON.stringify(s.children), activeIdx: s.activeIdx, pin: s.pin, daily: localStorage.getItem('sb_daily'), arc: localStorage.getItem('sb_arc_best') }; });
 
   /* ---- download: behind the PIN ---- */
-  await pg.evaluate(() => { state.screen = 'app'; app.setNav('parent'); }); await typePin(); await pg.waitForTimeout(200);
+  await pg.evaluate(() => { state.screen = 'app'; app.setNav('parent'); }); await until(pg, () => !!state.pinDlg); await typePin();
+  await until(pg, () => !!document.querySelector('.sb-backup [data-act="bkDownload"]'));
   const hasCard = await pg.evaluate(() => !!document.querySelector('.sb-backup [data-act="bkDownload"]') && !!document.querySelector('.sb-backup [data-file="bkPick"]') && !!document.querySelector('.sb-backup [data-act="bkAskErase"]'));
   ok(hasCard, 'the Parent Zone carries Download, Restore and Erase');
   await pg.evaluate(() => app.bkDownload());
@@ -58,7 +62,7 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
     && blob.family['bizzing.activity'].s.length === 1 && blob.family['bizzing.activity'].s[0].a === 'bee', 'from the family keys it takes only this household\'s slice');
 
   /* ---- erase: the confirm, then the PIN; nothing goes before it ---- */
-  await pg.evaluate(() => app.bkAskErase()); await pg.waitForTimeout(100);
+  await pg.evaluate(() => app.bkAskErase()); await until(pg, () => !!document.querySelector('.sb-bk-confirm [data-act="bkEraseGo"]'), null, 5000);
   const eraseConfirm = await pg.evaluate(() => !!document.querySelector('.sb-bk-confirm [data-act="bkEraseGo"]'));
   ok(eraseConfirm, 'Erase asks "are you sure" first');
   /* the wallet before erase: B's 1:1 migration has already moved the child's old coins in, so compare
@@ -69,8 +73,8 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
   ok(midErase.dlg && midErase.still, 'then asks for the PIN, and nothing is erased before it is given');
   await Promise.all([pg.waitForNavigation({ timeout: 10000 }).catch(() => null), typePin().catch(() => null)]);
   /* the reload races the last PIN digit; wait for the fresh page itself to be up */
-  await pg.waitForFunction(() => { try { return typeof state !== 'undefined' && !!document.querySelector('#root') && state.screen === 'landing'; } catch (e) { return false; } }, null, { timeout: 15000 }).catch(() => null);
-  await pg.waitForTimeout(800);
+  await until(pg, () => { try { return typeof state !== 'undefined' && !!document.querySelector('#root') && state.screen === 'landing'; } catch (e) { return false; } }, null, 30000);
+  await booted(pg);
   const afterErase = await pg.evaluate(() => { const ks = []; for (let i = 0; i < localStorage.length; i++) ks.push(localStorage.key(i));
     const s = JSON.parse(localStorage.getItem('sb_saas_v2') || '{}');
     return { kids: (s.children || []).length, screen: state.screen, daily: localStorage.getItem('sb_daily'), tm: localStorage.getItem('sb_tm_log'),
@@ -85,13 +89,13 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
   /* the welcome page is still re-rendering as boot-lazy delivers data, which can detach the
      input between choosing the file and its change event — so offer the file until it lands */
   const offer = async (f, done) => { for (let i = 0; i < 4; i++) { await pg.setInputFiles('[data-file="bkPick"]', f);
-    const got = await pg.waitForFunction(done, null, { timeout: 2500 }).then(() => true).catch(() => false); if (got) return; } };
+    if (await until(pg, done, null, 8000)) return; } };
   await offer(junk, () => !!state.bkMsg);
   const refused = await pg.evaluate(() => ({ msg: state.bkMsg && state.bkMsg.t, pending: !!state.bkPending, kids: (JSON.parse(localStorage.getItem('sb_saas_v2') || '{}').children || []).length }));
   ok(refused.msg && /not a Bizzing Bee backup/.test(refused.msg) && !refused.pending && refused.kids === 0, 'a file that is not a backup is refused with a reason, and nothing changes');
 
   /* ---- restore from the welcome page's picker ---- */
-  await offer(file, () => !!state.bkPending); await pg.waitForTimeout(100);
+  await offer(file, () => !!state.bkPending); await until(pg, () => !!document.querySelector('.sb-bk-confirm [data-act="bkRestoreGo"]'), null, 5000);
   const pending = await pg.evaluate(() => ({ p: state.bkPending && state.bkPending.names, confirm: !!document.querySelector('.sb-bk-confirm [data-act="bkRestoreGo"]') }));
   ok(pending.p && pending.p.join(',') === 'Ahana,Ravi' && pending.confirm, 'the welcome page reads the file and asks before restoring Ahana and Ravi');
   await pg.evaluate(() => app.bkRestoreGo());
@@ -99,8 +103,8 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
   ok(restoreAsk, 'restore is behind the PIN too (on an empty device a grown-up chooses one first)');
   await pg.evaluate(() => { for (const k of '4321') app.pinKey(k); });   // a fresh device: choose…
   await Promise.all([pg.waitForNavigation({ timeout: 10000 }).catch(() => null), pg.evaluate(() => { for (const k of '4321') app.pinKey(k); }).catch(() => null)]);  // …and confirm
-  await pg.waitForFunction(() => { try { return typeof state !== 'undefined' && state.screen === 'app'; } catch (e) { return false; } }, null, { timeout: 15000 }).catch(() => null);
-  await pg.waitForTimeout(800);
+  await until(pg, () => { try { return typeof state !== 'undefined' && state.screen === 'app'; } catch (e) { return false; } }, null, 30000);
+  await booted(pg);
   const after = await pg.evaluate(() => { const s = JSON.parse(localStorage.getItem('sb_saas_v2') || '{}'); return { children: JSON.stringify(s.children), activeIdx: s.activeIdx, pin: s.pin, daily: localStorage.getItem('sb_daily'), arc: localStorage.getItem('sb_arc_best'), screen: state.screen,
     act: JSON.parse(localStorage.getItem('bizzing.activity') || '{}').s, tm: localStorage.getItem('sb_tm_log') }; });
   const fileHh = JSON.parse(blob.keys.sb_saas_v2);
@@ -118,13 +122,14 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
     const extra = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^sb_/.test(k) && !(k in b.keys)) extra.push(k); }
     return { bad, extra }; }, blob);
   ok(exact.bad.length === 0 && exact.extra.length === 0, 'backup → erase → restore round-trips the household EXACTLY: every key byte-identical to the file, nothing extra' + (exact.bad.length + exact.extra.length ? ' — ' + exact.bad.concat(exact.extra).join(', ') : ''));
-  await pg.reload(); await pg.waitForTimeout(2800);
+  await pg.reload(); await booted(pg);
   ok(after.screen === 'app', 'the app opens on the restored household');
   ok(after.act && after.act.length === 2 && after.act.some(x => x.a === 'maths') && after.act.some(x => x.a === 'bee' && x.who === 'Ahana'), "Bee's activity rows come back beside Maths' rows, not over them");
   ok(!after.tm, 'and the research log, which was never in the file, stays gone');
 
   /* ---- no tester levers outside Testing tools; tester mode never rewrites a child ---- */
   const t = await pg.evaluate(async () => { const W = ms => new Promise(res => setTimeout(res, ms)); const o = {};
+    const U = async (f, ms) => { for (const t0 = Date.now(); Date.now() - t0 < (ms || 15000);) { try { if (f()) return true; } catch (e) {} await W(30); } return false; };
     const LEVER = /toggleDev|devCoins|addXp|giveXp|addCoins|giveCoins|grantArt|cheat|unlockAll/i;
     const levers = (root) => [...root.querySelectorAll('[data-act]')].filter(el => LEVER.test(el.getAttribute('data-act')) && !el.closest('details')).map(el => el.getAttribute('data-act'));
     const seen = new Set();
@@ -138,10 +143,10 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
     o.testCoinsOffered = /Tops the purse up to 1,000,000/.test(document.body.innerHTML);
     const child = () => JSON.stringify(state.children);
     const c0 = child();
-    state.pinDlg = null; app.toggleDevUnlock(); for (const k of '1234') app.pinKey(k); await W(80);
+    state.pinDlg = null; app.toggleDevUnlock(); for (const k of '1234') app.pinKey(k); await U(() => !state.pinDlg && state.devUnlock, 5000);
     o.devOn = !!state.devUnlock;
-    app.toggleDevCoins(); for (const k of '1234') app.pinKey(k); await W(80);
-    app.toggleDevUnlock(); for (const k of '1234') app.pinKey(k); await W(80);
+    app.toggleDevCoins(); for (const k of '1234') app.pinKey(k); await U(() => !state.pinDlg, 5000);
+    app.toggleDevUnlock(); for (const k of '1234') app.pinKey(k); await U(() => !state.pinDlg && !state.devUnlock, 5000);
     o.devOff = !state.devUnlock;
     o.childUntouched = child() === c0; if (!o.childUntouched) { const A = JSON.parse(c0), B = JSON.parse(child()); o.diff = []; A.forEach((k, i) => Object.keys(Object.assign({}, k, B[i])).forEach(f => { if (JSON.stringify(k[f]) !== JSON.stringify(B[i][f])) o.diff.push(i + ':' + f + ':' + String(JSON.stringify(k[f])).slice(0, 80) + '=>' + String(JSON.stringify(B[i][f])).slice(0, 80)); })); }
     state.settingsOpen = false; return o; });
