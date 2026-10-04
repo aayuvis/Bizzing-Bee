@@ -66,6 +66,22 @@ const REAL = {
   await pg3.goto(URL); await pg3.waitForTimeout(2600);
   ok(await pg3.evaluate(() => state.children.length === 1 && active().name === 'Zara' && !SB_SHELL.demo && !document.querySelector('.sb-demo-bar')), 'without ?demo the app opens on the real child, unlabelled');
 
+  /* ---- (audit v4 A5) the opening page's hero links to the sample — it was reachable only by
+     typing ?demo. A real link, followed by keyboard on a desktop and by a tap on a phone ---- */
+  for (const vp of [{ n: 'desktop', width: 1280, height: 900 }, { n: 'phone', width: 390, height: 844, touch: true }]) {
+    const c4 = await b.newContext({ viewport: { width: vp.width, height: vp.height }, hasTouch: !!vp.touch, isMobile: !!vp.touch });
+    const p4 = await c4.newPage(); p4.on('pageerror', e => errs.push(e.message));
+    await p4.goto(URL); await p4.waitForTimeout(2600);
+    const h = await p4.evaluate(() => { const hero = document.querySelector('section'); const a = hero && [...hero.querySelectorAll('a[href]')].find(x => /[?&]demo\b/.test(x.getAttribute('href')));
+      const r = a && a.getBoundingClientRect(); return { landing: state.screen === 'landing', href: a && a.getAttribute('href'), text: a && a.textContent.trim(), h: r ? Math.round(r.height) : 0, onScreen: !!r && r.top >= 0 && r.bottom <= innerHeight * 1.2 }; });
+    ok(h.landing && h.href && h.h >= 44 && h.onScreen, `${vp.n}: the hero carries a link to the sample ("${h.text}" → ${h.href}, ${h.h}px tall, in the first screen)`);
+    if (vp.touch) await p4.tap('section a[href*="demo"]'); else { await p4.focus('section a[href*="demo"]'); await p4.keyboard.press('Enter'); }
+    await p4.waitForTimeout(3000);
+    const d = await p4.evaluate(() => ({ demo: SB_SHELL.demo, name: active() && active().name, bar: !!document.querySelector('.sb-demo-bar') }));
+    ok(d.demo && d.name === 'Mira' && d.bar, `${vp.n}: following it (${vp.touch ? 'a tap' : 'Enter'}) opens the labelled sample`);
+    await c4.close();
+  }
+
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);

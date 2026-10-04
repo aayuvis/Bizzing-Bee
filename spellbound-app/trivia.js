@@ -258,9 +258,11 @@
           <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15.5px">${name}</span>
           <span style="display:block;font-size:12px;color:var(--muted);font-weight:650;line-height:1.35">${desc}</span></span>
           <span style="color:var(--accent);font-weight:800;font-size:13px;white-space:nowrap">Play →</span></button>`;
-      const nQ = T().questions.length;
+      /* the bank's ONE count (app3 SB_COUNT, audit v4 H2) — not questions.length, which is only the
+         shards that happen to be in memory (6,604, then 12,462 a moment later) */
+      const nQ = countTxt('trivia');
       return `<div style="max-width:860px;margin:0 auto">
-        ${pageHead('Bee Trivia', fmtN(nQ) + ' questions · ' + T().themes.length + ' themes', 'Pick a theme and your level, then choose how to play. Every right answer earns a coin — and a fun fact.',
+        ${pageHead('Bee Trivia', nQ ? nQ + ' questions' : '', 'Pick a theme and your level, then choose how to play. Every right answer earns a coin — and a fun fact.',
           st.right ? `<span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12.5px">🧠 ${fmtN(st.right)} right · best clock ${st.clockBest || 0}</span>` : '')}
         <div style="margin-bottom:14px"><div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">Your level</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">${lvs}</div></div>

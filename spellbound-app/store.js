@@ -108,8 +108,71 @@
         Object.keys(LV).forEach(function (w) { if (lv >= LV[w] && un.indexOf(w) < 0) { un.push(w); kept.push(w); } });
         if (kept.length) { ch.unlockedThemes = un; ch.worldsKept = kept; } });
       return b;
+    },
+    /* v8 → v9: the grown-up PIN is kept salted and hashed, never as its digits (audit v4 Q1). A
+       household that holds the four digits has them replaced by their record (pinMake below);
+       the same four digits still open the gate. */
+    function v8_to_v9(b) {
+      if (b.pin != null && b.pin !== '' && !isPinRec(b.pin)) b.pin = pinMake(String(b.pin));
+      else if (b.pin === '') b.pin = null;
+      return b;
     }
   ];
+
+  /* ---------------------------------------------------------------- the grown-up PIN
+     Stored SALTED AND HASHED (audit v4 Q1): "p1$<salt>$<rounds>$<hash>", the hash being SHA-256
+     over salt + ":" + PIN, then re-hashed with the salt <rounds> times. A household blob, a backup
+     file or a peek at storage shows that record and never the digits. It is synchronous on
+     purpose — pinGate checks on the fourth keystroke and carries straight on — and written out
+     here in plain JS because SubtleCrypto's digest is asynchronous and is not offered to every
+     page opened from file://. Four digits are 10,000 guesses whatever the hash, so this keeps
+     the PIN out of sight; it does not make it a lock, and the dialog still says so.
+     A record is made by pinMake, checked by pinCheck, and saveHousehold never writes the
+     digits even if a caller hands them over (a PIN set directly in state, as tests do). */
+  var PIN_ROUNDS = 1000;
+  var K256 = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+  function sha256hex(str) {
+    var u = unescape(encodeURIComponent(String(str))), bytes = [], i, t;
+    for (i = 0; i < u.length; i++) bytes.push(u.charCodeAt(i));
+    var bits = bytes.length * 8; bytes.push(0x80);
+    while (bytes.length % 64 !== 56) bytes.push(0);
+    for (i = 7; i >= 0; i--) bytes.push(i >= 4 ? 0 : (bits >>> (i * 8)) & 0xff);
+    var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19], W = new Array(64);
+    for (var o = 0; o < bytes.length; o += 64) {
+      for (t = 0; t < 16; t++) W[t] = (bytes[o + 4 * t] << 24) | (bytes[o + 4 * t + 1] << 16) | (bytes[o + 4 * t + 2] << 8) | bytes[o + 4 * t + 3];
+      for (t = 16; t < 64; t++) { var x = W[t - 15], y = W[t - 2];
+        W[t] = (W[t - 16] + (((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3)) + W[t - 7] + (((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10))) | 0; }
+      var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (t = 0; t < 64; t++) {
+        var T1 = (h + (((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7))) + ((e & f) ^ (~e & g)) + K256[t] + W[t]) | 0;
+        var T2 = ((((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10))) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+        h = g; g = f; f = e; e = (d + T1) | 0; d = c; c = b; b = a; a = (T1 + T2) | 0; }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    return H.map(function (v) { return ('0000000' + (v >>> 0).toString(16)).slice(-8); }).join('');
+  }
+  var PIN_RE = /^p1\$([0-9a-f]{16,64})\$(\d{1,6})\$([0-9a-f]{64})$/;
+  function isPinRec(v) { return typeof v === 'string' && PIN_RE.test(v); }
+  function pinDigest(pin, salt, rounds) { var h = sha256hex(salt + ':' + pin); for (var i = 1; i < rounds; i++) h = sha256hex(salt + h); return h; }
+  function pinSalt() { var s = '', i, r = null;
+    try { r = new Uint8Array(16); (window.crypto || window.msCrypto).getRandomValues(r); } catch (e) { r = null; }
+    for (i = 0; i < 16; i++) s += ('0' + ((r ? r[i] : Math.floor(Math.random() * 256)) & 255).toString(16)).slice(-2);
+    return s; }
+  function pinMake(pin) { var salt = pinSalt(); return 'p1$' + salt + '$' + PIN_ROUNDS + '$' + pinDigest(String(pin), salt, PIN_ROUNDS); }
+  /* the digits typed against what is kept. A bare-digits value can only be in memory (a test, or
+     a state written before the next save) and is compared as it is; storage never holds one. */
+  function pinCheck(pin, rec) {
+    if (rec == null || rec === '' || pin == null) return false;
+    var m = PIN_RE.exec(String(rec)); if (!m) return String(rec) === String(pin);
+    return pinDigest(String(pin), m[1], +m[2]) === m[3]; }
   var SCHEMA = STEPS.length + 1;
   var READ_ONLY = false, ran = [];
 
@@ -140,8 +203,17 @@
     setJSON: function (n, v) { return rset(name(n), JSON.stringify(v)); },
     isFamily: function (n) { name(n); return !!FAMILY[n]; },
     /* the household */
-    loadHousehold: function () { var raw = rget(KEYS.household); if (raw == null) return null; var b; try { b = JSON.parse(raw); } catch (e) { return null; } return migrate(b); },
-    saveHousehold: function (b) { if (READ_ONLY || !b) return false; b.sv = SCHEMA; return rset(KEYS.household, JSON.stringify(b)); },
+    /* a PIN still held as digits (a household or a restored backup from before v9) is written
+       back as its record at once, rather than waiting for the next save() */
+    loadHousehold: function () { var raw = rget(KEYS.household); if (raw == null) return null; var b; try { b = JSON.parse(raw); } catch (e) { return null; }
+      var plain = b && b.pin != null && b.pin !== '' && !isPinRec(b.pin);
+      b = migrate(b);
+      if (plain && !READ_ONLY && b && isPinRec(b.pin)) rset(KEYS.household, JSON.stringify(b));
+      return b; },
+    saveHousehold: function (b) { if (READ_ONLY || !b) return false; b.sv = SCHEMA;
+      if (b.pin != null && b.pin !== '' && !isPinRec(b.pin)) b.pin = pinMake(String(b.pin));   // never the digits
+      return rset(KEYS.household, JSON.stringify(b)); },
+    pinMake: pinMake, pinCheck: pinCheck, isPinRec: isPinRec, sha256: sha256hex,
     readOnly: function () { return READ_ONLY; },
     migrated: function () { return ran.slice(); },
     migrate: migrate,
