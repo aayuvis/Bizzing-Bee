@@ -19,8 +19,13 @@
            reaction, full lock or none) and an at-level speller (70% right), the box time
            counted as hearing the word, typing it, and reading the card
 
-   The pace numbers these hold are CFG.rival in saga2.js. Proved by breaking (4 Oct 2026), each
-   put back and the file cmp'd after: see the bottom of this file.
+   The pace numbers these hold are CFG.rival and GP_CAST pw in saga2.js. Proved by breaking
+   (4 Oct 2026), each put back and the file cmp'd after: the card printing coins+1 → GP11; a coin
+   paid on a miss → GP6; box words a tier above the level → GP9; "stupid" slipped into a draw →
+   GP9 (kidSafe); the power-up of the place behind → GP5; the slot ghost not kept up → GP5; no
+   combo Turbo → the combo check; the old +7%/−6% band → GP3 (kept 39%); grass that costs
+   nothing → GP1 (wins every race); your power-ups doing nothing → GP2; §2.6's own lengths
+   (2,000 at Medium) → GP12.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/gp-race.cjs                       */
 const { chromium } = require('playwright');
 const path = require('path');

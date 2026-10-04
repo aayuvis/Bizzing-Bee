@@ -16,7 +16,12 @@
            at the end; the garage sells paint at a printed price through the family wallet,
            a milestone trail opens with its milestone, and the race wears what you chose
 
-   Proved by breaking (4 Oct 2026), each put back and the file cmp'd — see the report.
+   Proved by breaking (4 Oct 2026), each put back and the file cmp'd: a miss that resumes at once →
+   GP8; the brake 14px off centre → GP10; the old frame-clamped loop → GP7; drawDist never
+   adapting → §2.9; DPR uncapped on a phone → §2.9; no 'grandprix' slug → GP13; the ghost never
+   saved → §2.7; the Cup ignoring its families → §2.7 (this check first read the family from the
+   race's own state, which the fault blanked too — it reads the Cup's table now); the garage
+   handing paint over without the wallet → §2.7.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/gp-play.cjs                        */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -171,8 +176,10 @@ const CHROME = process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-
         R.bot({ drive: 'line', seed: i + 1, spell: (w, p) => { fam.push(w.o || ''); return { typed: w.w, secs: p.par * 0.8 }; } }); R.fast(900);
         const cont = h.querySelector('#sg-cont'); seen.push({ scene: s.scene, origin: s.origin, fam: fam.slice(), label: cont && cont.textContent, cupI: s.cup && s.cup.i, rows: h.querySelectorAll('.gp-cup-r').length });
         if (cont) cont.click(); }
-      const tab = seen.filter(x => x && x.scene).map(x => x.rows).pop(); return { seen, st0, st1: (active().gpStat || {}).cups || 0, tab }; });
-    const races = cup.seen.filter(x => x && x.scene);
+      const tab = seen.filter(x => x && x.scene).map(x => x.rows).pop(); return { seen, st0, st1: (active().gpStat || {}).cups || 0, tab, table: window.SB_GP.CUP.map(o => [o.scene, o.origin]) }; });
+    /* the family each track SHOULD have comes from the Cup's table, never from the race's own
+       state — a race that lost its family would otherwise be judged against nothing */
+    const races = cup.seen.filter(x => x && x.scene).map(r => ({ ...r, origin: (cup.table.find(t => t[0] === r.scene) || [])[1] }));
     const famOk = races.every(r => r.fam.filter(o => window_re(r.origin).test(o)).length >= r.fam.length * 0.8);
     function window_re(o) { return { english: /english|germanic|norse/i, greek: /greek/i, latin: /latin/i, french: /french|anglo-norman/i }[o] || /./; }
     ok(races.map(r => r.scene).join() === 'meadow,sunset,city,bazaar' && famOk,
