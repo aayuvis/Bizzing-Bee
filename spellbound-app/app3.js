@@ -11808,8 +11808,11 @@ function gamesHub(){ const S=state; const c=active();
      start menu (arcadeMenu) the small tile did, where the level is picked. */
   const HERO_GAMES={ beeGrandPrix:{img:'app-art/arc-grandprix.jpg',grad:'linear-gradient(150deg,#2A1A4A,#1B1235)',tag:'Race',cta:'Start your engine'},
     honeycombRun:{img:'app-art/arc-honeycomb.jpg',grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)',tag:'Maze',cta:'Enter the maze'} };
+  /* G9: the child's own best on each game's tile, quietly — a number they set, never a target the
+     tile sets for them (arcBest, saved by arcadeResult; nothing shows before a first scored round) */
+  const BEST=arcBestMap(), bestOf=k=>{ const v=Math.round(+BEST[k]||0); return v>0?'Best '+fmtN(v):''; };
   (SB_ARCADE_GAMES||[]).forEach(g=>{ const H=HERO_GAMES[g.k]; if(!H) return;
-    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:H.sub})); });
+    heroes.push(heroTile({act:'arcadeMenu',arg:g.k,grad:H.grad,img:H.img,tag:iconSVG('joystick',12,2.4)+' '+H.tag,title:g.n,blurb:g.blurb,cta:H.cta,sub:bestOf(g.k)||H.sub})); });
   // ---- FEATURE TILES: daily, trivia, champ, magic ----
   const feats=[];
   /* Daily Buzz is a once-a-day ritual, not one of nine games to browse. It rides as a
@@ -11844,7 +11847,7 @@ function gamesHub(){ const S=state; const c=active();
   // single Play button + its screenshot — no difficulty strip. Lighter scrim so the shot reads.
   const arcadeGames=SB_ARCADE_GAMES.filter(g=>!HERO_GAMES[g.k]).map(g=>tile({act:'arcadeMenu',arg:g.k,
     grad:"linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('app-art/shots/game-"+g.k+".jpg') center/cover",
-    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:''})).join('');
+    art:'',badge:g.tag,title:g.n,blurb:g.blurb,cta:'var(--accent)',stat:bestOf(g.k)})).join('');
   // ---- QUICK GAMES: the timed/quiz engines that aren't part of the 14 ----
   const quick=GAMES.map(gm=>gtile({act:'playGame',arg:gm.type,grad:gameCoverBG(gm),art:gameArtSVG(gm.type,48),badge:gm.tag,title:gm.name,blurb:gm.blurb,cta:gm.c,stat:''})).join('');
   return `<div style="max-width:860px;margin:0 auto">
