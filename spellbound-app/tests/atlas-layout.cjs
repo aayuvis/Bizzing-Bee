@@ -119,6 +119,25 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
     const off = pops.flatMap(p => p.out);
     ok(pops.every(p => p.n >= 2) && !off.length, W + 'px: the stop card stays inside the visible map for the first, middle and last stops of a long panorama'
       + (off.length ? ' — ' + off.slice(0, 3).join(' | ') : ''));
+    /* the road sign at the earned edge is never cut by the window (audit v4 §4: "clipped at the
+       right edge ('cl')"): pan the board across, and at every stop it is wholly in or wholly out */
+    const sign = await pg.evaluate(async () => {
+      state.devUnlock = false; app.trailToMap(); app.trailAct('honey|meadow'); await new Promise(res => setTimeout(res, 900));
+      const pan = document.getElementById('sb-pan'); const out = { seen: 0, steps: 0, cut: [] };
+      if (!pan || !pan.querySelector('.mw-sign')) return out;
+      const max = pan.scrollWidth - pan.clientWidth;
+      for (let x = 0; x <= max + 40; x += 37) {
+        pan.scrollLeft = x; pan.dispatchEvent(new Event('scroll'));
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); out.steps++;
+        const sg = pan.querySelector('.mw-sign'); if (!sg) continue;
+        const r = sg.getBoundingClientRect(), w = pan.getBoundingClientRect();
+        const L = Math.max(0, w.left), R = Math.min(document.documentElement.clientWidth, w.right);
+        if (r.right > L + 1 && r.left < R - 1) out.seen++;
+        if ((r.left < R - 1 && r.right > R + 1) || (r.left < L - 1 && r.right > L + 1)) out.cut.push(Math.round(pan.scrollLeft) + ': ' + Math.round(r.left) + '–' + Math.round(r.right) + ' in ' + Math.round(L) + '–' + Math.round(R));
+      }
+      return out; });
+    ok(sign.seen >= 2 && !sign.cut.length, W + 'px: the road sign at the earned edge is never cut by the window as the board pans (' + sign.steps + ' camera stops, sign in view at ' + sign.seen + ')'
+      + (sign.cut.length ? ' — cut at ' + sign.cut.slice(0, 3).join(' | ') : ''));
     /* the moth and the chest: their cards fit the phone, ✕ included (94vw under #root's zoom did not) */
     const dlg = await pg.evaluate(async () => { const W2 = ms => new Promise(r => setTimeout(r, ms)); const out = {};
       const R = Math.random; Math.random = () => 0.05; state.devUnlock = false;

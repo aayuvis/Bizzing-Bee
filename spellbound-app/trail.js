@@ -2053,7 +2053,24 @@
      Measured from layout (offsetLeft/offsetWidth), so the pop-in's scale cannot skew it.
      Guard: tests/atlas-layout.cjs (first, middle and last stops at 360 and 390). */
   let _popRaf = 0;
-  function popFitSoon() { if (_popRaf) return; _popRaf = requestAnimationFrame(() => { _popRaf = 0; popFit(); }); }
+  function popFitSoon() { if (_popRaf) return; _popRaf = requestAnimationFrame(() => { _popRaf = 0; popFit(); signFit(); }); }
+  /* THE ROAD SIGN STAYS READABLE (audit v4 §4: "clipped at the right edge ('cl')"). The sign at the
+     earned edge is hung from that edge, so while the camera sits short of it only its first letters
+     showed at the window's right. Whenever any of it is in the window it is slid in whole (--sdx) —
+     it still points → down the road it names — and it goes back on its post at the edge. Same
+     arithmetic as popFit: screen pixels, handed back in CSS pixels. Guard: atlas-layout.cjs. */
+  function signFit() { try {
+    const pan = document.getElementById('sb-pan'), sg = pan && pan.querySelector('.mw-sign'); if (!sg) return;
+    const bd = sg.offsetParent; if (!bd || !bd.offsetWidth) return;
+    const br = bd.getBoundingClientRect(), wr = pan.getBoundingClientRect();
+    const z = br.width / bd.offsetWidth || 1, w = sg.offsetWidth * z;
+    const L = Math.max(wr.left, 0) + 6, R = Math.min(wr.right, document.documentElement.clientWidth) - 6;
+    const right = br.left + sg.offsetLeft * z, left = right - w;   // where it hangs: translateX(-100%)
+    let dx = 0;
+    if (left < R && right > R) dx = R - right;                     // cut at the window's right: slide it in
+    else if (right > L && left < L) dx = L - left;                 // cut at the left: the same, the other way
+    sg.style.setProperty('--sdx', Math.round(dx / z) + 'px');
+  } catch (_) {} }
   function popFit() { try {
     const pan = document.getElementById('sb-pan'), p = pan && pan.querySelector('.atlas-pop'); if (!p) return;
     const bd = p.offsetParent; if (!bd || !bd.offsetWidth) return;
@@ -2827,7 +2844,7 @@
     const _tx = _side === 'l' ? '-16px' : _side === 'r' ? 'calc(-100% + 16px)' : '-50%';
     const _ty = _below ? '24px' : 'calc(-100% - 24px)';
     const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
-    if (!shut) setTimeout(popFit, 0);   // after panTo/mwClamp have moved the camera
+    setTimeout(() => { if (!shut) popFit(); signFit(); }, 0);   // after panTo/mwClamp have moved the camera
     const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}" data-act="popKeep" data-side="${_side}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
       <div class="atlas-pop-in">
         <div style="display:flex;align-items:flex-start;gap:13px">
