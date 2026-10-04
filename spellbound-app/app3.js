@@ -1671,6 +1671,52 @@ function suggestWords(q, n){ q=nkey((q||'').trim()); n=n||7; if(q.length<2) retu
       else if(contains.length<n && k.indexOf(q)>0){ seen.add(k); contains.push(r); } }
   }
   return exact.concat(starts, contains).slice(0,n); }
+/* ---- The header search finds PLACES too (audit v4 C4) ----
+   It returned dictionary words only: "meadow" found a gloss for hay, and "grand prix", "roman
+   forum" and "quotes" found nothing. A place is an Atlas region or stop, an arcade game, a
+   concept chapter or a Library tool, and its row opens it through the SAME opener a tap uses —
+   the tile's own act and arg, or the route's (#/atlas/…, #/stop/…, #/concepts/…) — so a locked
+   stop, a plan lock or the grown-up PIN stands exactly as it does for the tap. Keys, not
+   positions, go in the row: the index is rebuilt when the Atlas or the concept course lands,
+   and a row drawn before that must still open the place it names.
+   It runs per keystroke beside suggestWords, so the index (~400 short titles) is built once
+   from live data and matching is one word-prefix test per title. */
+const LIB_DOORS=[['Concepts','setNav','concepts'],['Theme Journeys','setNav','themes'],['Vocabulary','openVocab',''],
+  ['Idioms & Similes','setNav','figurative'],['Bizzing Trivia','openTrivTrain',''],['The Sound Alphabet','openIpaTrain',''],
+  ['Typing Trainer','openTyping',''],['Quotes & Poems','openQuotes','']];   // the Library's tiles, act for act (viewExplore)
+const placeKey=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+let _placeIdx=null;
+function placeIndex(){ if(_placeIdx) return _placeIdx;
+  const P=[], seen=new Set(); const add=(kind,t,go)=>{ const k=placeKey(t); if(!k||seen.has(k)) return; seen.add(k); P.push({kind,t,k,go,rank:P.length}); };
+  try{ const T=window.SB_TRAIL;
+    if(T&&T.honey){ (T.honey.acts||[]).forEach(a=>add('Word Atlas region',String(a.title||'').replace(/^Act [IVXLC]+\s*·\s*/,''),'r|honey|'+a.id)); } }catch(e){}
+  LIB_DOORS.forEach(([t,a,g])=>add('Library',t,'a|'+a+'|'+g));
+  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Buzz','openDaily',''],['Bee Trivia','openTrivia',''],['Magic Squares','playGame','magic']]
+      .concat((window.SB_ARCADE_GAMES||[]).map(g=>[g.n,'arcadeMenu',g.k]), GAMES.map(g=>[g.name,'playGame',g.type]))
+      .forEach(([t,a,g])=>{ if(typeof app[a]==='function') add('Arcade game',t,'a|'+a+'|'+g); }); }catch(e){}
+  try{ const T=window.SB_TRAIL;
+    if(T&&T.honey){ (T.honey.units||[]).forEach(u=>{ const raw=String(u.title||''); const cut=raw.indexOf(' — '); add('Word Atlas stop',cut>0?raw.slice(0,cut):raw,'u|'+u.id); }); } }catch(e){}
+  try{ const ch=((window.SB_CONCEPTS||{}).chapters||[]).concat(((window.SB_ADV_CONCEPTS||{}).chapters||[]));   // state.conceptData's order — the route's index
+    ch.forEach((x,i)=>{ if(x&&x.title) add('Concept chapter',x.title,'c|'+i); }); }catch(e){}
+  if(window.SB_TRAIL) _placeIdx=P;   // keep rebuilding until the Atlas is in
+  return P; }
+try{ window.addEventListener('sb-lazy',e=>{ if(/^(trail|concepts|advConcepts)$/.test(e&&e.detail)) _placeIdx=null; }); }catch(e){}
+function suggestPlaces(q, n){ q=placeKey(q); n=n||3; if(q.length<3) return [];
+  const out=[];
+  for(const p of placeIndex()){ const i=(' '+p.k).indexOf(' '+q); if(i<0) continue;
+    out.push({place:p.go, w:p.t, d:p.kind, s:(p.k===q?0:(i===0?1:2))*1e4+p.rank}); }
+  return out.sort((a,b)=>a.s-b.s).slice(0,n); }
+/* The bar's list: an exact word first, then up to three places, then the other words — seven rows. */
+function headerSuggest(q){ const pl=suggestPlaces(q,3); const ws=suggestWords(q,7-pl.length);
+  const k=nkey((q||'').trim()); const ex=ws.filter(r=>nkey(r.w)===k);
+  return ex.concat(pl, ws.filter(r=>nkey(r.w)!==k)).slice(0,7); }
+/* Open a place by its key, through the opener a tap on it uses. */
+function openPlace(key){ const p=String(key||'').split('|');
+  if(p[0]==='r'){ lazyNeed('atlas',()=>app.trailAct(p[1]+'|'+p[2])); return; }                 // the pin's act — #/atlas/<crs>/<act>
+  if(p[0]==='u'){ lazyNeed('atlas',()=>app.trailUnit(p[1])); return; }                         // #/stop/<id>: the frontier lock holds
+  if(p[0]==='c'){ lazyNeed('concepts',()=>{ try{ loadConcepts(); }catch(e){}                   // #/concepts/<i>: a locked chapter goes where a tap sends it
+      if(state.conceptData&&state.conceptData[+p[1]]) app.openConcept(+p[1]); else app.setNav('concepts'); }); return; }
+  if(p[0]==='a'&&typeof app[p[1]]==='function'){ if(p[2]) app[p[1]](p[2]); else app[p[1]](); } }
 /* ---- word DB / coach ---- */
 let _wdb = null;
 function wordDB(){ if(_wdb) return _wdb; const m=new Map();
@@ -2748,14 +2794,17 @@ const app = {
     state.finderQ=q; state.finderSel=null; state.hq=''; state.hqSel=-1; app.openFinder(); },
   hqPick:(w)=>{ if(drillLive()) return; state.finderQ=w||''; state.hq=''; state.hqSel=-1; state.finderSel=null;
     app.openFinder(); try{ app.finderPick(w); }catch(e){} },
-  hqKey:(e)=>{ if(drillLive()) return; const list=suggestWords(state.hq,7); const n=list.length;
+  /* a place row (audit v4 C4): close the bar, then open it the way a tap on it would */
+  hqPlace:(key)=>{ if(drillLive()) return; state.hq=''; state.hqSel=-1; render(); openPlace(key); },
+  hqKey:(e)=>{ if(drillLive()) return; const list=headerSuggest(state.hq); const n=list.length;
     if(e.key==='ArrowDown'){ e.preventDefault(); state.hqSel=n?((state.hqSel+1+n+1)%(n+1))-0:-1; if(state.hqSel>=n) state.hqSel=-1; render(); return; }
     if(e.key==='ArrowUp'){ e.preventDefault(); state.hqSel=n?(state.hqSel<=-1?n-1:state.hqSel-1):-1; render(); return; }
     if(e.key==='Escape'){ state.hq=''; state.hqSel=-1; render(); try{ e.target.blur(); }catch(_){} return; }
     if(e.key!=='Enter') return;
     e.preventDefault();
     // Enter takes the highlighted suggestion if there is one, otherwise the typed query
-    if(state.hqSel>=0 && list[state.hqSel]) app.hqPick(list[state.hqSel].w); else app.hqGo(); },
+    const it=state.hqSel>=0?list[state.hqSel]:null;
+    if(it&&it.place) app.hqPlace(it.place); else if(it) app.hqPick(it.w); else app.hqGo(); },
   finderPick:(w)=>{ const r=finderResults(state.finderQ).find(x=>nkey(x.w)===nkey(w)) || wordDB().get(nkey(w)); if(r){ state.finderSel=r; try{window.scrollTo(0,0);}catch(e){} render(); } },
   finderBack:()=>set({finderSel:null}),
   finderLoadFull:()=>loadFullLibrary(()=>{}),
@@ -6619,12 +6668,12 @@ function viewApp(){
         ${(()=>{ /* A real search bar, not a button that goes somewhere to find one. Type
              here, suggestions drop under it, Enter opens the Finder on the query — and a
              suggestion tapped goes straight to that word's card. */
-          const _drill=drillLive(); const _q=_drill?'':(state.hq||''); const _sug=_drill?[]:suggestWords(_q,7); const _sel=state.hqSel==null?-1:state.hqSel;   // FIX-BEE D8: no search while a word is being tested
-          const _rows=_sug.map((r,i)=>`<button data-act="hqPick" data-arg="${escA(r.w)}" class="sb-hsug-row${i===_sel?' on':''}" role="option" aria-selected="${i===_sel?'true':'false'}">
+          const _drill=drillLive(); const _q=_drill?'':(state.hq||''); const _sug=_drill?[]:headerSuggest(_q); const _sel=state.hqSel==null?-1:state.hqSel;   // FIX-BEE D8: no search while a word is being tested
+          const _rows=_sug.map((r,i)=>`<button data-act="${r.place?'hqPlace':'hqPick'}" data-arg="${escA(r.place||r.w)}" class="sb-hsug-row${r.place?' sb-hsug-place':''}${i===_sel?' on':''}" role="option" aria-selected="${i===_sel?'true':'false'}">
               <span class="sb-hsug-w">${esc(r.w)}</span>${r.d?`<span class="sb-hsug-d">${esc(trunc(r.d,64))}</span>`:''}</button>`).join('');
           return `<div class="sb-hsearch">
             <span class="sb-hsearch-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg></span>
-            <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${_drill?'Search waits until you answer':'Search any word…'}"${_drill?' disabled aria-disabled="true" title="Search pauses while a word is being tested — it could give the spelling away."':''}>
+            <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words, games and places" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${_drill?'Search waits until you answer':'Search any word…'}"${_drill?' disabled aria-disabled="true" title="Search pauses while a word is being tested — it could give the spelling away."':''}>
             ${_q?`<button data-act="hqClear" class="sb-hsearch-x" aria-label="Clear search">✕</button>`:''}
             ${_sug.length?`<div class="sb-hsug" role="listbox">${_rows}<button data-act="hqGo" class="sb-hsug-all">See all matches for “${esc(_q)}” →</button></div>`
               :(_q.trim().length===1?`<div class="sb-hsug"><div class="sb-hsug-none">Keep typing — two letters and the words start arriving.</div></div>`:'')}
