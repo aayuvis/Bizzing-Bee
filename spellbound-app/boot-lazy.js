@@ -112,7 +112,10 @@
     forgeUI: 'forge.js',
     /* Word Lore + Hive Mind, the two trivia hubs (games spec §4.3/§4.4): fetched at the door of a
        hub only (app.openLore / app.openHive below), never on the first screen or the idle queue. */
-    loreHub: 'lore.js'
+    loreHub: 'lore.js',
+    /* The Spelling Gym (games spec §4.2): the hub and its seven modes. It stands on the arcade's
+       kit (SGUI in saga2.js), so saga2 comes first; fetched at the door (app.openGym) only. */
+    gym: 'gym.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -139,13 +142,14 @@
     feed: ['feedEngine', 'feedMeta', 'feedView'],
     forge: ['saga2', 'forgeCore', 'forgeData', 'forgeUI'],
     /* the hubs draw on the shared stage kit (SGUI.stage / SB_HUB, saga2.js), so it comes too */
-    quizhubs: ['loreHub', 'saga2']
+    quizhubs: ['loreHub', 'saga2'],
+    gym: ['saga2', 'gym', 'sents']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'] };
 
   var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',

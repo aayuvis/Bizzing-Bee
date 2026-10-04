@@ -128,6 +128,7 @@
     try { if (typeof bizzClose === 'function' && document.querySelector('.bz-play')) bizzClose(); } catch (e) {}
     try { if (typeof clearGTimer === 'function') clearGTimer(); } catch (e) {}
     try { if (typeof tyStop === 'function') tyStop(); } catch (e) {}
+    try { if (window.SB_GYM) SB_GYM.stop(); } catch (e) {}   // a gym round ends where it stands; nothing is paid for leaving
     try { state.game = null; state.sq = null; } catch (e) {}
   }
 
@@ -176,6 +177,7 @@
     if (n === 'progress' || n === 'parent') return S.progTab === 'parent' ? 'grownups' : 'progress';
     if (n === 'train') return 'practice/drill';
     if (n === 'games' && S.game) return 'play/game';
+    if (n === 'gym') return 'gym' + (S.gymMode ? '/' + S.gymMode : '');   // the Spelling Gym hub, and each of its modes
     return NAV_ROUTE[n] || n;
   }
   function routeOf() { var o = overlayRoute(); if (o) return o; return state.settingsOpen && state.screen === 'app' ? 'settings' : baseRoute(); }
@@ -274,7 +276,11 @@
     /* the Mock Bee's lobby (games spec §4.1): #/mockbee, or #/mockbee/champ · /family for a mode */
     if (head === 'mockbee') { app.mbOpen(p[1]); return; }
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
-    if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
+    if (head === 'practice') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
+    /* #/gym is the Spelling Gym hub on the Play tab (games spec §4.2), and #/gym/<mode> one of its
+       modes — through the same opener a tile uses, so a locked mode's address lands on its lock.
+       (Until 4 Oct 2026 #/gym was a typed alias for the Word Gym tab; #/practice still is its address.) */
+    if (head === 'gym') { app.openGym(p[1] || null); return; }
     if (head === 'play') {
       app.openGames();
       var pk = p[1] && (PLAY_SLUG[p[1]] || p[1]);
