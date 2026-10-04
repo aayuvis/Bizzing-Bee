@@ -978,7 +978,14 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   `--node-only` is the deploy's data gate. console-clean has a 900s budget. A Mock Bee timer
   belongs to the bee that set it. **Open**: under load a reload straight after boot can lose the
   page's fresh localStorage (the seed marker too) — store-seam / medals / hive-activity /
-  family-topbar each failed once that way and pass alone; unexplained.
+  family-topbar each failed once that way and pass alone; unexplained. **daily-bee's "a solved day
+  pays one coin and coming back pays nothing" (4 Oct) is the same thing, and it is not load:** on a
+  failing run the test's own init script finds `t_seed` gone and re-seeds at ~24ms, the wallet key
+  is null, and a Storage hook saw no `clear`/`removeItem` from the app — the browser came back with
+  EMPTY storage. It failed ~half the time in the main checkout and never in a fresh worktree of the
+  same commit; any extra round-trip before `pg.reload()` (an evaluate, a console listener) made it
+  pass 6/6. A Chromium file:// reload artefact, not a coin bug. Do not "fix" it by waiting in the test
+  without first finding the mechanism.
 
 ## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
 
