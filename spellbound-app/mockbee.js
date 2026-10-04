@@ -1428,8 +1428,12 @@
   function mountMiss(g) {
     if (!kitMiss() || mb() !== g || g.phase !== 'meDone' || !g.hold || state.nav !== 'mockbee') return;
     const host = document.querySelector('.sb-stage') || document.body;
-    if (g.missCard && g.missCard.held) { if (!document.body.contains(g.missCard.el)) host.appendChild(g.missCard.el); return; }
+    /* app3 hides any toast while a miss panel is on screen, checking after each render — which ran
+       before this card was (re)mounted, so the check runs again here */
+    const quiet = () => { try { if (typeof _toastVsMiss === 'function') _toastVsMiss(); } catch (e) {} };
+    if (g.missCard && g.missCard.held) { if (!document.body.contains(g.missCard.el)) host.appendChild(g.missCard.el); quiet(); return; }
     g.missCard = SGUI.miss(host, g.word, g.meTry || '', { onContinue: () => { if (mb() === g && g.hold) g.hold(); } });
+    quiet();
     const iv = setInterval(() => { if (!g.missCard) return clearInterval(iv); if (mb() !== g || state.nav !== 'mockbee') { clearInterval(iv); dropMiss(g); } }, 400);
   }
   function dropMiss(g) {
