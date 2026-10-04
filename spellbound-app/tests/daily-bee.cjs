@@ -66,24 +66,32 @@ function crafted(w) {
   if (part('db1')) {
     let { ctx, pg, errs: e1 } = await open(b, { time: DAY0 }); errs.push(...e1);
     await W.lazy(pg, 'daily');
-    const P = await pg.evaluate(() => { const ds = ['2026-10-05', '2026-10-06', '2026-11-30']; const bs = ['1-2', '3-5', '6-9'];
-      const g = {}; ds.forEach(d => bs.forEach(bb => { const r = SB_DBEE.pick(d, bb); g[d + '|' + bb] = r && r.w; }));
-      const again = ds.every(d => bs.every(bb => (SB_DBEE.pick(d, bb) || {}).w === g[d + '|' + bb]));
-      return { g, again }; });
+    /* the word a child gets (the foundations' nextWords daily list, read to the first word that fits the
+       board): asked twice; for another child of the same age band; for children of other bands; on
+       other dates. "Same date and band, same word" is the property; nothing about it is random. */
+    const P = await pg.evaluate(() => { const ds = ['2026-10-05', '2026-10-06', '2026-11-30']; const bands = ['8-10', '11-13', '14-18'];
+      const kid = (b, extra) => Object.assign({ name: 'K' + b, ageBand: b, age: parseInt(b, 10) + 1, band: 4, lists: {} }, extra || {});
+      const g = {}; ds.forEach(d => bands.forEach(b => { g[d + '|' + b] = SB_DBEE.wordFor(kid(b), d); }));
+      const again = ds.every(d => bands.every(b => SB_DBEE.wordFor(kid(b), d) === g[d + '|' + b]));
+      const twin = ds.every(d => SB_DBEE.wordFor(kid('8-10', { name: 'Twin', band: 8, gameDiff: 'champ' }), d) === g[d + '|8-10']);
+      const pure = ds.map(d => SB_DBEE.pick(null, d));
+      return { g, again, twin, nw: typeof nextWords === 'function', pure, pureAgain: ds.every((d, i) => SB_DBEE.pick(null, d) === pure[i]) }; });
     const vals = Object.values(P.g);
-    ok(P.again && vals.every(Boolean), 'DB1: the pick is a function of date and band — asked twice, the same nine words (' + vals.slice(0, 3).join(' ') + ' …)');
-    ok(['2026-10-05', '2026-10-06', '2026-11-30'].every(d => new Set(['1-2', '3-5', '6-9'].map(bb => P.g[d + '|' + bb])).size === 3), 'DB1: different bands on one date give different words');
-    ok(new Set(['2026-10-05', '2026-10-06', '2026-11-30'].map(d => P.g[d + '|3-5'])).size === 3, 'DB1: and one band on different dates gives different words');
-    await bee(pg); const w1 = await word(pg); const band1 = await pg.evaluate(() => SB_DBEE.band());
+    ok(P.nw && P.again && vals.every(Boolean), 'DB1: the day\'s word comes from nextWords and is a function of date and band — asked twice, the same nine words (' + vals.slice(0, 3).join(' ') + ' …)');
+    ok(P.twin, 'DB1: every child in an age band gets the same word on a date, whatever their level or name');
+    ok(['2026-10-05', '2026-10-06', '2026-11-30'].every(d => new Set(['8-10', '11-13', '14-18'].map(b => P.g[d + '|' + b])).size === 3), 'DB1: different bands on one date give different words');
+    ok(new Set(['2026-10-05', '2026-10-06', '2026-11-30'].map(d => P.g[d + '|8-10'])).size === 3, 'DB1: and one band on different dates gives different words');
+    ok(P.pureAgain && P.pure.every(Boolean) && new Set(P.pure).size === 3, 'DB1: the fallback (nothing on the day\'s list fits the board) is deterministic too, a word a date (' + P.pure.join(' ') + ')');
+    await bee(pg); const w1 = await word(pg); const band1 = await pg.evaluate(() => active().ageBand);
     await ctx.close();
     ({ ctx, pg, errs: e1 } = await open(b, { time: DAY0 })); errs.push(...e1);
     await bee(pg); const w2 = await word(pg);
     await ctx.close();
     ({ ctx, pg, errs: e1 } = await open(b, { time: DAY0, kid: { name: 'Ravi', age: 13, ageBand: '11-13', band: 8, bandSeed: 8 } })); errs.push(...e1);
-    await bee(pg); const w3 = await word(pg); const band3 = await pg.evaluate(() => SB_DBEE.band());
+    await bee(pg); const w3 = await word(pg); const band3 = await pg.evaluate(() => active().ageBand);
     await ctx.close();
-    ok(w1 && w1 === w2, `DB1: the game's word is the same in two fresh pages on the same date and band (${w1} / ${w2}, band ${band1})`);
-    ok(w3 && w3 !== w1 && band3 !== band1, `DB1: a child on another band gets another word (${w3}, band ${band3})`);
+    ok(w1 && w1 === w2, `DB1: the game's word is the same in two fresh pages on the same date and band (${w1} / ${w2}, age band ${band1})`);
+    ok(w3 && w3 !== w1 && band3 !== band1, `DB1: a child in another age band gets another word (${w3}, age band ${band3})`);
   }
 
   /* ---- shapes on every state, the word never shown before the end, and DB2 at both sizes ---- */

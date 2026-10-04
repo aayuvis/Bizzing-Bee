@@ -7,9 +7,10 @@
    origin, a sentence, and "Add to revision" when it got away. Daily Buzz drew five blank
    squares over a list of 300 fixed words and never said the word at all; this one teaches it.
 
-   THE WORD is deterministic per date AND band: nextWords(child, 1, {purpose:'daily'}) when the
-   foundations have it, else an FNV hash of "<date>|<lo>-<hi>" over this child's band of the
-   corpus (diffRange at the Daily Bee's level), kid-safe, letters only, 4–8 long. The pick waits
+   THE WORD is deterministic per date AND band: the foundations' nextWords(child, n, {purpose:'daily'})
+   (the same list for every child of an age band on a date, never touching the 150-word window), read
+   until the first word that fits a phone's board (4–8 letters, a sentence, not one of the stage's own
+   words); only if that yields nothing, an FNV hash of "<date>|<lo>-<hi>" over the child's band. The pick waits
    for the whole served corpus (the `daily` lazy group), so the same date and band give the same
    word whatever else has loaded; today's word is then kept on the child (c.dbee) so a deploy or a
    level change after the first try never swaps it mid-game.
@@ -93,6 +94,7 @@
     + '.db-mini{display:inline-grid;gap:3px;margin:2px auto 8px}'
     + '.db-mini .db-row{--cell:18px;--gap:3px}'
     + '.db-mini .db-cell{border-width:1px;font-size:0}.db-mini .db-cell .db-sh{position:static;font-size:11px;color:inherit}'
+    + '.db-coin{margin:10px 0 0;font:800 14px/1.3 var(--ui);color:var(--treasure-deep,#8A5B00)}[data-mode="dusk"] .db-coin{color:var(--treasure,#F0B429)}'
     + '.db-kind{margin-top:8px;font:700 13px/1.4 var(--ui);color:var(--text);background:color-mix(in srgb,var(--treasure) 18%,transparent);border-radius:12px;padding:7px 10px}'
     + '.db-wait{display:grid;place-items:center;min-height:50vh}'
     + '@media (prefers-reduced-motion:reduce){.db-cell.flip,.db-row.shake{animation:none}}'
@@ -113,10 +115,10 @@
     + 'enter delete letter empty level auto easy medium hard champ group getting ready today tomorrow solved meaning origin '
     + 'sentence revision added back from move time added comes ready letters monday tuesday wednesday thursday friday '
     + 'saturday sunday january february march april june july august september sept october november december').split(' ').forEach(function (x) { OWN[x] = 1; });
-  function fits(e) {
+  function fits(e, c) {
     if (!e || !e.w || !e.d || !e.p || !e.s) return false;
     var w = String(e.w); if (!/^[a-z]+$/.test(w) || w.length < MINL || w.length > MAXL || OWN[w]) return false;
-    if (typeof window.kidSafe === 'function') { try { return !!window.kidSafe(e); } catch (x) { return false; } }
+    if (typeof window.kidSafe === 'function') { try { return !!window.kidSafe(e, c); } catch (x) { return false; } }   /* for THIS child (their age band) */
     try { if (typeof CORE_STRIKE !== 'undefined' && CORE_STRIKE.has(w)) return false; } catch (x) {}
     try { if (typeof CORE_CUT !== 'undefined' && CORE_CUT.has(w)) return false; } catch (x) {}
     if ((window.SB_WORDS_HELD || []).indexOf(w) >= 0) return false;
@@ -126,35 +128,18 @@
     if (typeof window.SB_GLOSS_OK === 'function' && !window.SB_GLOSS_OK(e.d, e.w)) return false;
     return true;
   }
-  var _pools = {}, _all = null, _allN = -1;
-  /* a headword, not a form of one: "locals", "jumped", "racing" are the day's word only if the
-     corpus has no "local", "jump", "race" to be the word instead (lemmaOnly, by the corpus itself) */
-  function lemma(w) {
-    var src = (window.SB_DATA && window.SB_DATA.nsf) || [];
-    if (!_all || _allN !== src.length) { _all = {}; for (var i = 0; i < src.length; i++) if (src[i] && src[i].w) _all[src[i].w] = 1; _allN = src.length; }
-    var A = _all;
-    if (/s$/.test(w) && (A[w.slice(0, -1)] || /es$/.test(w) && A[w.slice(0, -2)] || /ies$/.test(w) && A[w.slice(0, -3) + 'y'])) return false;
-    if (/ed$/.test(w) && (A[w.slice(0, -2)] || A[w.slice(0, -1)] || /ied$/.test(w) && A[w.slice(0, -3) + 'y'] || w.length > 5 && w[w.length - 3] === w[w.length - 4] && A[w.slice(0, -3)])) return false;
-    if (/ing$/.test(w) && (A[w.slice(0, -3)] || A[w.slice(0, -3) + 'e'] || w.length > 6 && w[w.length - 4] === w[w.length - 5] && A[w.slice(0, -4)])) return false;
-    if (/(er|est)$/.test(w) && (A[w.replace(/(er|est)$/, '')] || A[w.replace(/(r|st)$/, '')] || A[w.replace(/i(er|est)$/, 'y')])) return false;
-    return true;
+  /* EVERY WORD COMES THROUGH THE DOOR (nextWords, games spec §1.1; tests/word-door.cjs): the day's list,
+     and — only if no word on it fits the board — the child's own pool at this level, sorted by spelling
+     and hashed by date and level window, so even that fallback is the same word all day. */
+  function dailyList(c, date) { try { return window.nextWords(c, 24, { purpose: 'daily', minLen: MINL, maxLen: MAXL, lemmaOnly: true, date: date }) || []; } catch (e) { return []; } }
+  function fallbackPool(c) {
+    var lv = levelNow(), p = [];
+    try { p = window.nextWords.pool(c, { purpose: 'drill', level: lv, minLen: MINL, maxLen: MAXL, needDef: true, needSent: true, lemmaOnly: true }) || []; } catch (e) {}
+    var seen = {}; p = p.filter(function (e) { if (!fits(e, c) || seen[e.w]) return false; seen[e.w] = 1; return true; });
+    return p.sort(function (a, b) { return a.w < b.w ? -1 : a.w > b.w ? 1 : 0; });
   }
-  /* the band's words, sorted by spelling, so the pool does not depend on the order shards landed */
-  function bandPool(lo, hi) {
-    var src = (window.SB_DATA && window.SB_DATA.nsf) || [], k = lo + '-' + hi + '|' + src.length;
-    if (_pools[k]) return _pools[k];
-    var seen = {}, out = [];
-    for (var i = 0; i < src.length; i++) { var e = src[i]; if (!fits(e)) continue; var y = Math.max(1, Math.min(9, e.y || 3));
-      if (y < lo || y > hi || seen[e.w] || !lemma(e.w)) continue; seen[e.w] = 1; out.push(e); }
-    out.sort(function (a, b) { return a.w < b.w ? -1 : a.w > b.w ? 1 : 0; });
-    return (_pools[k] = out);
-  }
-  /* THE PICK: same date and band → same word. `band` is "lo-hi", the corpus y-range. */
-  function pick(date, band) {
-    var p = String(band || '').split('-'), lo = +p[0] || 1, hi = +p[1] || lo, pool = bandPool(lo, hi);
-    if (!pool.length) return null;
-    return pool[fnv(String(date) + '|' + lo + '-' + hi) % pool.length];
-  }
+  /* THE FALLBACK PICK: same date and level window → same word */
+  function pick(c, date, band) { var pool = fallbackPool(c); return pool.length ? pool[fnv(String(date) + '|' + band) % pool.length] : null; }
   function levelNow() { try { if (window.SB_LEVEL && typeof SB_LEVEL.get === 'function') return SB_LEVEL.get(KEY) || 'auto'; } catch (e) {} return 'auto'; }
   function bandFor(c, lvl) {
     try { if (typeof diffRange === 'function') { var r = diffRange(c, lvl || 'auto'); return r[0] + '-' + r[1]; } } catch (e) {}
@@ -164,17 +149,16 @@
   function corpusReady() { try { return !window.SB_LAZY || SB_LAZY.ready('daily'); } catch (e) { return true; } }
   /* the foundations' picker when it is in (it owns the level window and the kid-safe door), else ours */
   function choose(c, date, band) {
-    if (typeof window.nextWords === 'function') {
-      try { var r = window.nextWords(c, 24, { purpose: 'daily', minLen: MINL, maxLen: MAXL, lemmaOnly: true, date: date }) || [];
-        for (var i = 0; i < r.length; i++) if (fits(r[i])) return r[i]; } catch (e) {}
-    }
-    return pick(date, band);
+    var r = dailyList(c, date); for (var i = 0; i < r.length; i++) if (fits(r[i], c)) return r[i];
+    return pick(c, date, band);
   }
-  var _byW = null, _byN = -1;
-  function recOf(w) {
-    var src = (window.SB_DATA && window.SB_DATA.nsf) || [];
-    if (!_byW || _byN !== src.length) { _byW = {}; for (var i = 0; i < src.length; i++) { var e = src[i]; if (e && e.w && !_byW[e.w]) _byW[e.w] = e; } _byN = src.length; }
-    return _byW[w] || { w: w };
+  /* the day's word's whole record (meaning, origin, sentence) — found again through the same door */
+  var _rec = null;
+  function recOf(c, D) {
+    if (_rec && _rec.w === D.word) return _rec;
+    var all = dailyList(c, D.day).concat(D.word && !_rec ? fallbackPool(c) : []);
+    for (var i = 0; i < all.length; i++) if (all[i] && all[i].w === D.word) return (_rec = all[i]);
+    return { w: D.word };
   }
 
   /* ------------------------------------------------------------------ today's game, on the child */
@@ -192,7 +176,7 @@
     var lvl = levelNow(), band = bandFor(c, lvl), key = D.day + '|' + lvl + '|' + band;
     if (D.word && (D.key === key || (D.g && D.g.length) || D.over)) return true;
     var r = choose(c, D.day, band); if (!r) return false;
-    D.word = r.w; D.key = key; D.g = []; try { if (typeof save === 'function') save(); } catch (e) {}
+    D.word = r.w; D.key = key; D.g = []; _rec = r; try { if (typeof save === 'function') save(); } catch (e) {}
     return true;
   }
   /* two passes, so a doubled letter is only marked as often as the word holds it */
@@ -268,7 +252,9 @@
       + ((w.o || w.r) ? '<div class="db-fact"><b>Origin</b>' + esc(w.o || '') + (w.o && w.r ? '. ' : '') + esc(w.r || '') + '</div>' : '')
       + (w.s ? '<div class="db-fact"><b>In a sentence</b>' + esc(w.s) + '</div>' : '')
       + nextTime(D, w)
-      + '</div>';
+      + '</div>'
+      /* the coin is the ledger's: what payG actually paid (0 at the day's cap prints nothing) */
+      + (won && D.coins > 0 ? '<p class="db-coin">+' + D.coins + ' coin' + (D.coins === 1 ? '' : 's') + ' for spelling it</p>' : '');
     var L = D.lvr;
     if (L && L.dropped) h += '<div class="db-kind">' + esc(L.line || ('Let’s warm up on ' + (LV_NAME[L.level] || 'an easier level') + '. You can move back up any time.')) + '</div>';
     else if (L && L.up) h += '<div class="db-kind">Ready for ' + esc(LV_NAME[L.up] || L.up) + '? <button type="button" class="db-b" data-db="up" style="min-height:36px;margin-left:6px">Try it tomorrow</button></div>';
@@ -308,7 +294,7 @@
     }
     var D = rec(c);
     if (!ensureWord(c, D)) { host.innerHTML = '<div class="db-wrap">' + stage({ hud: hudFor(null), play: '<div class="db-play"><div class="db-msg">No word is ready for today. Try again in a moment.</div>' + actsHtml({ g: [] }) + '</div>', controls: '' }) + '</div>'; wire(); fit(); return; }
-    var w = recOf(D.word), n = D.word.length;
+    var w = recOf(c, D), n = D.word.length;
     if (curDay !== D.day + '|' + D.word) { curDay = D.day + '|' + D.word; cur = ''; msgT = ''; }
     if (D.over) cur = '';
     var intro = n + ' letters. Listen, then type your first try.';
@@ -388,7 +374,7 @@
     if (!D || !D.word) return;
     if (a === 'hear') return sayWord(D.word);
     if (a === 'slow') return sayWord(D.word, true);
-    if (a === 'rev' && D.over && !D.won && !D.rev) { try { addMiss(recOf(D.word), 'mark'); } catch (e) {} D.rev = 1; try { save(); } catch (e) {} live('Added to your revision pile.'); return draw(); }
+    if (a === 'rev' && D.over && !D.won && !D.rev) { try { addMiss(recOf(c, D), 'mark'); } catch (e) {} D.rev = 1; try { save(); } catch (e) {} live('Added to your revision pile.'); return draw(); }
     if (a === 'up' && D.lvr && D.lvr.up) { try { SB_LEVEL.set(KEY, D.lvr.up); } catch (e) {} D.lvr.up = ''; try { save(); } catch (e) {} return draw(); }
   }
   function wire() {
@@ -474,6 +460,8 @@
   function doneToday(c) { var D = c && c.dbee; return !!(D && D.day === today() && D.over); }
   window.SB_DAILY = { open: open, close: close, mount: mount, doneToday: doneToday };
   /* for the tests and the foundations: the pure pick, the grade, and how long today's word is */
-  window.SB_DBEE = { pick: pick, grade: grade, band: function (c, l) { return bandFor(c || kid(), l || levelNow()); }, fits: fits, shapes: SHAPE,
+  window.SB_DBEE = { pick: function (c, date) { c = c || kid(); var r = pick(c, date || today(), bandFor(c, levelNow())); return r ? r.w : ''; }, grade: grade,
+    /* the word a child gets on a date: the foundations' daily pick (per date and age band), else ours */
+    wordFor: function (c, date) { c = c || kid(); var r = choose(c, date || today(), bandFor(c, levelNow())); return r ? r.w : ''; }, band: function (c, l) { return bandFor(c || kid(), l || levelNow()); }, fits: fits, shapes: SHAPE,
     len: function () { var c = kid(), D = c && c.dbee; return D && D.day === today() && D.word ? D.word.length : 0; } };
 })();
