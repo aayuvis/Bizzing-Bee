@@ -73,6 +73,15 @@ for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's ow
   same('landing — evolution forms', all(/(\d[\d,]*)\s+evolution forms/g, t).map(num), C.evoForms);
   same('landing — trivia questions (a floor)', all(/(\d[\d,]*)\s+trivia questions/g, t).map(num), TRIV);
   ok(!/none for sale|not one of them for\s*sale/i.test(t), 'the opening page never says avatars are not for sale (the Shop sells them for coins)');
+  /* (follow-up) packs, odds and drops are gone (FIX-BEE v2): nothing on the page may sell them,
+     and the collectibles section says what is true — four tiers, fixed coin prices, no chance */
+  ok(!/pack drops?|open a pack|drop odds|golden reveal/i.test(t), 'the opening page sells no pack drops (packs and odds are gone)');
+  ok(/Common, Rare, Epic and Legendary/.test(t) && /Nothing is drawn at random/.test(t), 'it names the four rarity tiers and says nothing is random');
+  /* the two word claims, each one number: the library, and the part of it with a recorded voice */
+  same('landing — the library ("over N words and serious bee preparation", the add-on, the table)',
+    all(/(?:over|Over) ([\d,]+) words and serious bee/g, t).concat(all(/library of over ([\d,]+) words/g, t), all(/Over ([\d,]+) · [\d,]+ graded/g, t)).map(num), C.library);
+  same('landing — the recorded voice ("N words recorded / in one real recorded voice")',
+    all(/(?:over|Over) ([\d,]+) words (?:recorded in a real|in one real recorded|are recorded in a real)/g, t).map(num), C.voiced);
   ok(land.shown.length === land.live.length && land.shown.every(n => land.live.includes(n)),
     `the games it shows are the arcade's own — [${land.shown.join(', ')}] vs [${land.live.join(', ')}]`);
   await lp.close();
@@ -81,6 +90,8 @@ for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's ow
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   same('index.html mirror — games', all(/\b(\w+) (?:word|distinct) games/gi, html).map(asNum), C.games);
   same('index.html mirror — trivia questions', all(/(\d[\d,]*) trivia questions/gi, html).map(num), TRIV);
+  same('index.html mirror — the recorded voice', all(/Over ([\d,]+) words (?:spoken aloud|are recorded in a real|in one real recorded)/g, html).map(num), C.voiced);
+  same('index.html mirror — the library', all(/library of over ([\d,]+) words/g, html).concat(all(/Over ([\d,]+) · [\d,]+ graded/g, html)).map(num), C.library);
 
   /* ---- 4. in the app ---- */
   const pg = await b.newPage({ viewport: { width: 1280, height: 900 } });

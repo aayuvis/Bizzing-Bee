@@ -432,14 +432,36 @@ const pricing = fs.readFileSync(SRC + '/pricing.js', 'utf8');
    its whole purpose. 125,000 is a floor with room for the next cleanup. */
 ok(!/1[23]0,000-word library/.test(app3 + adv + pricing + idx),
   'no surface still offers a "130,000-word library" the bank cannot back');
-ok(/125,000-word library/.test(app3) && /125,000-word library/.test(pricing),
-  'the library is offered as 125,000 words');
-ok(/find any of 125,000 words/.test(app3), 'and the Word Finder searches 125,000');
-// the voice is a different corpus and must not be inflated
-ok(/Over 128,000 words spoken aloud/.test(idx),
-  'the RECORDED VOICE claim stays at 128,000 — the shard ships no clips');
-ok(/Over 128,000 words are recorded in a real neural voice/.test(idx),
-  'and so does the FAQ answer about the recorded voice');
+/* THE TWO CLAIMS ARE EACH ONE NUMBER NOW, AND BOTH ARE MEASURED (audit v4 H2/A2, 4 Oct 2026).
+   The library and the voice are different claims on purpose — but each used to be typed in
+   several places that disagreed ("125,000-word library" here, "over 128,000 words" on the
+   landing ladder, "128,000-word library" on the Advanced tile), and the voice said "over
+   128,000 words spoken aloud" while only 125,894 of the words a child can reach had a clip:
+   the manifest still lists ~4,600 words the sweeps have struck. app3's SB_FACTS keeps each as
+   its honest ROUND FLOOR and every surface prints it through SB_COUNT, so this suite measures
+   both and holds the floors to the bank. */
+const FACTS = (() => { const m = app3pre.match(/const SB_FACTS = (\{[\s\S]*?\n\});/); return m ? new Function('return ' + m[1])() : {}; })();
+const vw = {}; new Function('window', fs.readFileSync(SRC + '/voice-words.js', 'utf8'))(vw);
+const VOICE = new Set(String(vw.SB_WVOICE || '').split('|').filter(Boolean));
+let voicedLive = 0; for (const k of live) if (VOICE.has(k)) voicedLive++;
+ok(FACTS.library % 5000 === 0 && FACTS.library < live.size && live.size - FACTS.library < 5000,
+  `the LIBRARY claim is the live library's floor to 5,000s — over ${FACTS.library} for ${live.size} words`);
+ok(FACTS.voiced % 1000 === 0 && FACTS.voiced < voicedLive && voicedLive - FACTS.voiced < 1000,
+  `the VOICE claim is the floor to 1,000s of the library words with a recorded clip — over ${FACTS.voiced} for ${voicedLive} of ${VOICE.size} clips`);
+ok(FACTS.voiced <= FACTS.library, 'and the voice never claims more than the library holds');
+/* every surface prints them through SB_COUNT — no typed library or voice figure is left */
+const typedFig = /\b\d{3},000(-word| words?\b| ·)/;
+const typedIn = [['app3.js', app3], ['advanced.js', adv], ['pricing.js', pricing]].filter(([n, t]) => typedFig.test(t)).map(([n, t]) => n + ': ' + t.match(typedFig)[0]);
+ok(typedIn.length === 0, 'no surface types a library or voice figure' + (typedIn.length ? ' — ' + typedIn.join('; ') : ''));
+ok(/find any of '\+countTxt\('library'\)\+' words/.test(app3) && /\{library\}/.test(pricing) && /countTxt\('library'\)/.test(adv),
+  "the Word Finder's help, the plan sheet's add-on and the Advanced page read the library from SB_COUNT");
+// the voice is a different corpus and must not be inflated; the static mirror crawlers read says the same figures
+const fmt = n => n.toLocaleString('en-US');
+ok(idx.includes('Over ' + fmt(FACTS.voiced) + ' words spoken aloud') && !/Over 1[23]\d,000 words spoken aloud/.test(idx.replace('Over ' + fmt(FACTS.voiced) + ' words spoken aloud', '')),
+  'the RECORDED VOICE claim in index.html is the measured floor — over ' + fmt(FACTS.voiced));
+ok((idx.match(new RegExp('Over ' + fmt(FACTS.voiced) + ' words are recorded in a real neural voice', 'g')) || []).length === 2,
+  'and so is the FAQ answer about the recorded voice (JSON-LD and the page)');
+ok(idx.includes('library of over ' + fmt(FACTS.library) + ' words'), 'and the add-on offer names the library floor');
 ok(/128k clip manifest/.test(fs.readFileSync(SRC + '/boot-lazy.js', 'utf8')),
   'the clip manifest is still described as what it is');
 

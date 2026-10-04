@@ -1643,7 +1643,7 @@ function loadFullLibrary(then){ if(window.SB_FULL){ fullWords(); _fullState='loa
     h.onload=()=>{ fullWords(); _wdb=null; render(); };
     h.onerror=()=>{};
     document.head.appendChild(h);
-    if(then) then(); render(); flash('Full library ready — 125,000 words 📚'); };
+    if(then) then(); render(); flash('Full library ready — '+countTxt('library')+' words 📚'); };
   s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
   document.head.appendChild(s); }
 /* ---- Word Finder: search the whole library, open a learn card, add to lists ---- */
@@ -2021,7 +2021,7 @@ function coachCatalog(){
     { key:'nsf500',     label:'The Mighty 500',          sub:'500 high-probability finals words · your 15-day list', words:st.nsf500 },
     { key:'vocab26',    label:'Meaning Masters',         sub:'Practice for the 2026 junior vocabulary final · 1,000 words', words:st.vocab26 },
     { key:'nsf',        label:'The Champion’s Vault',    sub:'17,000-word competition library',       words:nsf },
-    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · 125,000 (loads on first use)', words:(window.SB_FULL||nsf) },
+    { key:'all',        label:'The Whole Hive',          sub:'Every word we know · '+countTxt('library')+' (loads on first use)', words:(window.SB_FULL||nsf) },
     { key:'hardest',    grp:'tricky', label:'Beastly Words',           sub:'Highest-difficulty spellers + championship winners', words:st.hardest.concat(window.SB_SCRIPPS||[]) },
     { key:'trickiest',  grp:'tricky', label:'Sneaky Spellings',        sub:'The sound hides the spelling — pattern words, not just rare ones', words:st.trickiest },
     { key:'latin',      grp:'origins',label:'Latin Legends',           sub:'Words with roots from Latin',           words:st.latin },
@@ -4025,8 +4025,18 @@ const SB_FACTS = {
   /* Figures for data the opening page never loads. Every count of something the page DOES
      hold — avatars, arcade games, evolution forms, trivia — is SB_COUNT's now (below), read
      from the live data; these are checked against their files by tests/one-count.cjs. */
-  clips: 128491,        // voice/w/*.mp3, every word in both libraries
-  library: 128197,      // words-full.js
+  /* The LIBRARY and the VOICE are two claims and two numbers (CLAUDE.md, "The 130k
+     library"): the library is every word a child can open — the 130k library after the QC
+     strike lists and safeWord, with the championship shard and the served corpus — and the
+     voice is the part of it that has a recorded clip (the shard ships none, and the clip
+     manifest still lists words the sweeps have since struck, which no child can reach).
+     Both are kept as the honest ROUND FLOOR, not the count: tests/word-bank.cjs measures the
+     live library and its clips on every run and fails unless each is that count's floor —
+     library to 5,000s (127,907 on 4 Oct 2026 → 125,000), voice to 1,000s (125,894 →
+     125,000; it read "over 128,000" while only 125,894 of the words a child can reach had
+     a clip). */
+  library: 125000,
+  voiced: 125000,
   core: 40979,          // the core graded library
   chapters: 31, acts: 6,   // legacy story counts; kept for any remaining references, no longer marketed
   scripps: 108,         // SB_SCRIPPS — national winning words, 1925-2026
@@ -4074,12 +4084,17 @@ const SB_COUNT = {
   scripps: () => ((window.SB_SCRIPPS || []).length || SB_FACTS.scripps),
   journeys: () => ((((window.SB_LESSONS || {}).lessons) || []).length || SB_FACTS.journeys),
   techniques: () => ((window.SB_ADV_TIPS || []).length || SB_FACTS.techniques),
+  /* the 130k library and its clips are never loaded to count them — see SB_FACTS */
+  library: () => SB_FACTS.library,
+  voiced: () => SB_FACTS.voiced,
 };
 /* How a count is PRINTED, so a floor reads the same everywhere: '' while a lazy one is on its
    way (say the sentence without a number), "over 31,000" for trivia, the exact figure else. */
-const SB_FLOOR = { trivia: 1 };
+const SB_FLOOR = { trivia: 1, library: 1, voiced: 1 };
 function countTxt(k) { const n = SB_COUNT[k] ? SB_COUNT[k]() : null; if (!n) return '';
   return SB_FLOOR[k] ? sbOver(n) : sbFmt(n); }
+/* the same, starting a sentence ("Over …") */
+function countCap(k) { const t = countTxt(k); return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
 /* the same, as a word for the start of a sentence ("Six arcade games") */
 function countWord(k) { const n = SB_COUNT[k] ? SB_COUNT[k]() : 0;
   const W = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
@@ -4201,7 +4216,7 @@ function viewLanding() {
     ['&ldquo;My bee is at Forager. Two more and she&rsquo;s Queen.&rdquo;',
      'Progress that measures effort and can never be lost. That is the answer to the plateau — the exact moment most families quit.'],
     ['&ldquo;It says the word properly.&rdquo;',
-     `${sbOver(SB_FACTS.clips)} words recorded in a real neural voice, not device text-to-speech — which mispronounces exactly the French-origin borrowings that decide bees. A child can only spell what they actually heard.`],
+     `${countCap('voiced')} words recorded in a real neural voice, not device text-to-speech — which mispronounces exactly the French-origin borrowings that decide bees. A child can only spell what they actually heard.`],
     ['&ldquo;It won&rsquo;t tell me. It literally beeps it out.&rdquo;',
      'When the app reads a word inside a sentence it splices the audio and plays a beep over the target, so the example can never leak the spelling. It is engineered so it cannot be cheated.'],
     ['&ldquo;Beat your dad.&rdquo;',
@@ -4222,7 +4237,7 @@ function viewLanding() {
     ['4–7', 'The books', 'Read aloud by a parent. No screen, no scoring, no pressure — just affection for words, and for a character they will follow.'],
     ['7–9', 'The arcade', `${countTxt('games')} word games where spelling is how you win, a new Daily Buzz every day, and ${countTxt('trivia')} trivia questions. They think they are playing a game about a bee.`],
     ['9–12', 'The ladder', 'The highest-value words, an avatar that evolves the whole way up, and Champ Challenges to test out and skip ahead.'],
-    ['12–15', 'The library', `${sbOver(SB_FACTS.library)} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
+    ['12–15', 'The library', `${countCap('library')} words and serious bee preparation. The child who started with a picture book is now spelling words most adults cannot.`],
   ].map(([age, t, b], i) => `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative">
       <div style="font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent);letter-spacing:.06em">AGES ${age}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:19px;margin:6px 0 8px">${t}</div>
@@ -4245,17 +4260,17 @@ function viewLanding() {
    because a table that disagrees with itself is worse than not having one.
    No competitor is named — the column is what a typical app in the category does. */
 /* Copy that names a count says {key} (or {key:Word} / {key:word} for "Six" / "six") and is
-   filled at render time from SB_COUNT — these tables are built while app3 is still parsing,
+   filled at render time from SB_COUNT ({key:Cap} for "Over 125,000" at a sentence's start) — these tables are built while app3 is still parsing,
    before the arcade list below exists. The static mirror in index.html carries the same
    words, and tests/one-count.cjs holds the two to the same figures. */
-function factFill(s) { return String(s).replace(/\{(\w+)(?::(Word|word))?\}/g, (m, k, w) => w ? (w === 'word' ? countWord(k).toLowerCase() : countWord(k)) : countTxt(k)); }
+function factFill(s) { return String(s).replace(/\{(\w+)(?::(Word|word|Cap))?\}/g, (m, k, w) => w === 'Cap' ? countCap(k) : w ? (w === 'word' ? countWord(k).toLowerCase() : countWord(k)) : countTxt(k)); }
 const SB_COMPARE = [
   /* Short enough to scan, not read. The first version was three columns of full
      sentences — nobody compares anything by reading nine sentences, and the whole
      value of a table is that the eye can run down it. The detail that was in the
      prose now lives in the FAQ, where somebody who wants it will go looking. */
-  ['Hearing the word',       'Robotic device text-to-speech',   'Over 128,000 words in one real recorded voice'],
-  ['Words available',        'A few hundred to ~4,000',         '125,000 · 40,000 graded by difficulty'],
+  ['Hearing the word',       'Robotic device text-to-speech',   '{voiced:Cap} words in one real recorded voice'],
+  ['Words available',        'A few hundred to ~4,000',         '{library:Cap} · 40,000 graded by difficulty'],
   ['Different games',        'One or two, re-skinned',          '{games:Word} distinct games, trivia and a mock bee'],
   ['Bee practice',           'Word lists to memorise',          'Full Scripps-format mock bee'],
   ['Roots and origins',      'Rarely covered',                  '{journeys} journeys · {conceptsFree} chapters'],
@@ -4268,7 +4283,7 @@ const SB_COMPARE = [
 const SB_FAQ = [
   ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in {games:word} word games plus a full mock bee so children keep coming back.'],
   ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Beginner Bee is $9.99 a month or $99 a year for 10,000 words, and Regional Speller at $19.99 a month or $199 a year unlocks the full graded library and the book series. Monthly plans can be cancelled at any time.'],
-  ['Does my child hear the words spoken aloud?', "Yes. Over 128,000 words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
+  ['Does my child hear the words spoken aloud?', "Yes. {voiced:Cap} words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
   ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all {scripps} national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
   ['Does it teach Greek and Latin roots?', 'Yes. {journeys} Word Journeys lessons and {conceptsFree} concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
   ['Does it work without internet?', 'Yes. Once loaded it runs offline on a tablet or phone — on a plane, in a car or in a tunnel. Practice is saved on this device. Nothing leaves it unless a grown-up switches on the optional cloud backup — and a child’s name and age never leave it at all.'],
@@ -4341,12 +4356,14 @@ function landCollect(){
 
   return landSection('Collect · evolve · earn',
     `${countTxt('avatars')} characters. Coins buy them, and coins cannot be&nbsp;bought.`,
-    `No packs and no odds: every card prints its price in coins, and a Legendary also names the learning milestone that opens it — coins buy looks and nothing else, and nothing is ever left to chance. In a category built on pester-power purchases, that is the headline.`,
+    `No packs and no odds: every card says how it is won — free, a fixed price in coins, or for a Legendary the learning milestone that comes first — coins buy looks and nothing else, and nothing is ever left to chance. In a category built on pester-power purchases, that is the headline.`,
     `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(52px,7.4vw,76px),1fr));gap:10px;justify-items:center;margin-bottom:22px">${strip}</div>
      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
        ${[['Egg to Queen Bee', (countTxt('evoForms') ? countTxt('evoForms') + ' evolution forms across ' + countWord('worlds').toLowerCase() + ' worlds' : 'An evolution ladder in every world') + ', each hand-drawn with its own idle animation. It measures effort, and it never goes down.'],
           ['Coins buy looks, never words', 'Bizzing coins are earned by learning and buy an avatar, a world or a frame at its printed price — chapters open on the Atlas. There is no way to pay your way past a word you cannot spell — and game artifacts are won by playing, not bought.'],
-          ['A golden reveal', 'Pack drops are the reason a nine-year-old comes back tomorrow without being asked — bought with practice, not with a card.']]
+          /* (audit v4) this card sold "pack drops" — packs, odds and drops are gone (FIX-BEE v2). What is
+             true now: four rarity tiers, a fixed price for each, a milestone before a Legendary, no chance */
+          ['Four tiers, no luck in any of them', 'Common, Rare, Epic and Legendary. Commons are free; the rest have a fixed price in coins, and a Legendary first asks for the learning milestone it names. Nothing is drawn at random.']]
         .map(([t,b])=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
           <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">${t}</div>
           <div style="font-size:13px;line-height:1.5;color:var(--muted)">${b}</div></div>`).join('')}
@@ -4491,7 +4508,7 @@ function landPlansSection() {
       <div>
         <div style="font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">Add-on · sits on top of any plan</div>
         <div style="font-family:var(--display);font-weight:800;font-size:21px;margin-bottom:7px">${esc(adv.name)} · $${adv.priceYr}/year</div>
-        <div style="font-size:13.5px;color:var(--muted);line-height:1.55">The full ${sbOver(SB_FACTS.library)}-word library, ${countTxt('conceptsAdv')} advanced narrated lessons, ${countTxt('techniques')} champion techniques, mock spelling bees and the Ultra Champions journey. For the family with a bee in the calendar.</div>
+        <div style="font-size:13.5px;color:var(--muted);line-height:1.55">The full library of ${countTxt('library')} words, ${countTxt('conceptsAdv')} advanced narrated lessons, ${countTxt('techniques')} champion techniques, mock spelling bees and the Ultra Champions journey. For the family with a bee in the calendar.</div>
       </div>
       <div style="text-align:right"><button data-act="landPick" data-arg="advanced" style="padding:13px 22px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">Add the Advanced Pack</button></div>
     </div>`;
@@ -6010,10 +6027,10 @@ function advBanner(c){ if(!advModeOn(c)) return '';   /* T3: no offer on a child
   const price=(window.ADV&&ADV.price)?ADV.price():299;
   const unlocked=on;
   const sub=on
-    ? 'National-bee prep · 125,000-word library · 2-year plan, mock bees, champion tips & games'
+    ? 'National-bee prep · a library of '+countTxt('library')+' words · 2-year plan, mock bees, champion tips & games'
     : ready
-      ? 'You are ready for this — the Advanced Pack adds the full 125,000-word library, mock bees and narrated advanced lessons'
-      : 'Advanced Pack · the full 125,000-word library, mock bees, narrated advanced lessons and champion techniques';
+      ? 'You are ready for this — the Advanced Pack adds the full library of '+countTxt('library')+' words, mock bees and narrated advanced lessons'
+      : 'Advanced Pack · the full library of '+countTxt('library')+' words, mock bees, narrated advanced lessons and champion techniques';
   return `<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:20px;overflow:hidden;margin-bottom:16px;background:linear-gradient(135deg,#241B4E,#3A2A72 60%,#5B3FA6);box-shadow:0 8px 22px rgba(60,40,120,.32);position:relative">
     <div style="padding:17px 18px;display:flex;align-items:center;gap:14px;color:#fff">
       <span style="width:52px;height:52px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.14)">${SB_ICON('trophy',{size:29})}</span>
@@ -6784,7 +6801,7 @@ function viewHelp(){ const q=(h,b)=>`<details class="sb-card bz-help"><summary>$
     ${q('What are worlds?','A world repaints the whole app and brings its own music and avatar packs. Bizzing Bee and Galaxy are open to everyone; the other six open for 240 coins each, or with the family plan.')}
     ${q('What do Common, Rare, Epic and Legendary mean?','Commons are free for everyone. Rares cost 120 coins and Epics 250 once their world is open. A Legendary costs 500 and first asks you to reach a learning milestone, which its card names.')}
     ${q('When is a word mastered?','When you spell it right on two different days. A word comes back for a check later, and if it slips it is simply practised again.')}
-    ${q('How do I look up a word?','Type it into the search bar at the top: find any of 125,000 words, hear it and read its card. While a word is being tested, search waits — it could give the spelling away.')}
+    ${q('How do I look up a word?','Type it into the search bar at the top: find any of '+countTxt('library')+' words, hear it and read its card. While a word is being tested, search waits — it could give the spelling away.')}
     ${q('What are Medals?','Medals record what you did — stops finished, traps beaten, words mastered. Each one says exactly what earned it.')}
     ${q('Who are the Grown-ups?','The lock at the top opens the grown-ups area behind a 4-digit PIN: the report card, the plan, backup and erase. The PIN keeps little hands out; it is not a bank lock.')}
   </div>`; }
@@ -9600,7 +9617,7 @@ function viewQuest(){
       ${iconTile('advanced', advCol, {size:54, radius:16})}
       <span style="min-width:0;flex:1">
         <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15">Advanced Mode</span>${aUnlocked?`<span style="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#0a7a44;background:color-mix(in srgb,#39d98a 30%,transparent);padding:2px 8px;border-radius:999px">Unlocked</span>`:`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--muted);background:var(--surface2);padding:2px 9px;border-radius:999px">${SB_ICON('lock',{size:12})} Locked</span>`}</span>
-        <span style="display:block;font-size:13px;color:var(--text);font-weight:600;margin-top:5px;line-height:1.5">National Spelling Bee prep from the full <b>128,000-word</b> library — a 2-year sprint plan, mock bees, champion tips and advanced games.</span>
+        <span style="display:block;font-size:13px;color:var(--text);font-weight:600;margin-top:5px;line-height:1.5">National Spelling Bee prep from the full library of <b>${countTxt('library')} words</b> — a 2-year sprint plan, mock bees, champion tips and advanced games.</span>
         <span style="display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--muted);font-weight:600;margin-top:6px;line-height:1.45"><span style="color:${advCol};flex-shrink:0;margin-top:1px">${SB_ICON('sparkle',{size:13})}</span>${aUnlocked?'You’ve earned it — master the very hardest words.':('Comes with the Advanced Pack.')}</span>
         <span style="display:inline-flex;align-items:center;gap:5px;margin-top:11px;font-weight:800;font-size:12.5px;color:#fff;background:${advCol};padding:9px 15px;border-radius:10px">${aUnlocked?'Enter Advanced':'See how to unlock'} ${SB_ICON('arrowRight',{size:14})}</span>
       </span>
@@ -9909,8 +9926,8 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
   </div>`; }
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
 function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
-  const total=window.SB_FULL?'125,000':'40,000';
-  const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':iconSVG('book',14,2.2)+' Load all 128,000 words'}</button>`:'';
+  const total=window.SB_FULL?countTxt('library'):sbOver(((window.SB_DATA||{}).nsf||[]).length);   /* the served corpus until the library is in */
+  const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':iconSVG('book',14,2.2)+' Load the whole library — '+countTxt('library')+' words'}</button>`:'';
   let body='';
   if(S.finderSel){ const w=S.finderSel;
     const lists=Object.entries(c.builtLists||{});
@@ -9931,7 +9948,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
     body = q.trim().length<2
       ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="font-size:34px;margin-bottom:8px">🔎</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
       : (rs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px">${cells}</div>`
-        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full 125,000-word library below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
+        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full library of '+countTxt('library')+' words below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
   }
   return `<div style="max-width:860px;margin:0 auto">
     ${pageHead('Word Finder','search '+total+' words','',loadBtn)}
@@ -10341,7 +10358,7 @@ function viewThemeDetail(){
     ${tabBar}
     ${thin?`<div style="background:color-mix(in srgb,${cl.c} 10%,var(--bg2));border:1px solid color-mix(in srgb,${cl.c} 35%,var(--line));border-radius:14px;padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
       <b>Only ${ws.length} ${ws.length===1?'word':'words'} here so far.</b> This family is small in the core library and deepens
-      to hundreds of words with the 125,000-word library in the Advanced Pack. Read the explanation now;
+      to hundreds of words with the library of ${countTxt('library')} words in the Advanced Pack. Read the explanation now;
       the level ladder opens once there are ${THEME_MIN} words to climb.</div>`:''}
     ${tab==='train' && !thin ? (()=>{ const pref=state.trainPref||'cards';
       const MODES=[['cards','Cards','book','See the word, the meaning and the story, one card at a time.'],
@@ -10815,7 +10832,7 @@ const LIST_COVER={
   nsf_senior :{c:'#3D7DF0',c2:'#2A63D6',tex:'grid',hero:'Big',tag:'Leagues'},
   nsf_advanced:{c:'#7B52E0',c2:'#5E39C4',tex:'grid',hero:'Boss',tag:'Level'},
   nsf        :{c:'#C8901B',c2:'#A8760E',tex:'rings',hero:'Vault',tag:'Champion’s'},
-  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'Hive',tag:'130k words'},
+  all        :{c:'#7B52E0',c2:'#5E39C4',tex:'cross',hero:'Hive',tag:Math.floor(SB_COUNT.library()/1000)+'k+ words'},
   hardest    :{c:'#D6453A',c2:'#B8322A',tex:'cross',hero:'Beastly',tag:'Tier 6+'},
   latin      :{c:'#7C5CFF',c2:'#6A47F5',tex:'stripes',hero:'Latin',tag:'Origin'},
   greek      :{c:'#13A892',c2:'#0E8A78',tex:'rings',hero:'Greek',tag:'Origin'},
@@ -10923,7 +10940,7 @@ function coachSetup(){
       const locked=`<button class="sb-lift" data-act="openAdvanced" style="width:100%;text-align:left;border-radius:16px;margin-bottom:16px;background:var(--surface2);border:1px dashed var(--line);padding:13px 15px;display:flex;align-items:center;gap:12px">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,#5B3FA6 13%,transparent);color:#5B3FA6;display:grid;place-items:center;opacity:.8">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:22}):''}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)">Ultra Champions Journey</span>
-        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through all 125,000 words · Advanced Pack</span></span>
+        <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through the library of ${countTxt('library')} words · Advanced Pack</span></span>
         <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} Ask a grown-up</span></button>`;
       // unlocked: the advanced journey leads. locked: it sits under the standard one.
       return on ? (ultra+journeyBanner) : (journeyBanner+locked); })()}
@@ -12164,7 +12181,7 @@ function overlays(){
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:28px 30px;text-align:center;box-shadow:var(--glow);max-width:340px">
         <div style="width:64px;height:72px;margin:0 auto 12px;animation:sb-float 2.5s ease-in-out infinite">${mascotSVG('happy')}</div>
         <div style="font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:6px">Loading the full library…</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.5">All 125,000 words — this one-time load takes a few seconds.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5">The whole library, ${countTxt('library')} words — this one-time load takes a few seconds.</div>
         <div style="width:28px;height:28px;margin:14px auto 0;border:3px solid var(--surface2);border-top-color:var(--accent);border-radius:50%;animation:sb-spin .8s linear infinite"></div>
       </div></div>`;
   if(S.pinDlg) h+=`<div style="position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px;background:rgb(20 12 40 / .6)" data-act="pinCancel">
@@ -12415,7 +12432,7 @@ function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">${['free','beginner','regional'].map(col).join('')}</div>
       <div style="background:var(--surface2);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:11px;background:var(--chip);color:var(--accent);display:grid;place-items:center">${iconSVG('spark',22)}</span>
-        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px">${esc(addon.name)} · +$${addon.priceYr}/yr</span><span style="display:block;font-size:12px;color:var(--muted)">${esc(addon.blurb)}</span></span>
+        <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px">${esc(addon.name)} · +$${addon.priceYr}/yr</span><span style="display:block;font-size:12px;color:var(--muted)">${esc(factFill(addon.blurb))}</span></span>
         ${(()=>{ const owned=(()=>{ try{ return !!SB_ENT.hasAddon('advanced'); }catch(e){ return false; } })();
           if(owned) return `<span style="padding:9px 15px;border-radius:10px;background:var(--mastered-tint,#E1F4E8);color:var(--good,#1f9d57);font-weight:800;font-size:12.5px;white-space:nowrap">Active &#10003;</span>`;
           if(!addon.built) return `<button data-act="buyAddon" data-arg="advanced" style="padding:9px 15px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">Notify me</button>`;
