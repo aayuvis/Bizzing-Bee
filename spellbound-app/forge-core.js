@@ -118,8 +118,21 @@
       if (etym) return 'This word comes from ' + etym + ', so it is *' + want + '*, not *' + p + '*.';
       return 'Both say the same sound, but this word is spelt with *' + want + '*, not *' + p + '*.';
     }
-    var pm = placed && placed.m ? placed.m : '';
-    return '*' + p + '*' + (pm ? ' means "' + pm + '"' : ' does not belong here') + '; this word needs *' + want + '* ("' + row.partMeanings[slot] + '"), so ' + row.w.length + ' letters of ' + mean(row) + '.';
+    var pm = placed && placed.m ? placed.m : '', pk = placed && placed.k;
+    var WHERE = { pre: 'the front', root: 'the middle', suf: 'the end' }, WHAT = { pre: 'prefix', root: 'root', suf: 'suffix' };
+    /* a look-alike of ANOTHER part of this word, dropped in the wrong slot */
+    for (var j = 0; j < row.parts.length; j++) {
+      if (j !== slot && ((row.confusable && row.confusable[j]) || []).indexOf(p) >= 0)
+        return '*' + p + '* is a ' + WHAT[row.kinds[j]] + ' (like *' + row.parts[j] + '*) — it would go at ' + WHERE[row.kinds[j]] + '. This slot needs *' + want + '* ("' + row.partMeanings[slot] + '").';
+    }
+    /* the wrong KIND of part for this slot */
+    if (pk && pk !== wk) return '*' + p + '* is a ' + WHAT[pk] + ' — it goes at ' + WHERE[pk] + '. This slot needs the ' + WHAT[wk] + ' *' + want + '* ("' + row.partMeanings[slot] + '").';
+    /* un- and in- both mean "not": the language decides (concepts-data, chapter "un- (not / reverse action)", card "un- vs in-") */
+    var inFam = { 'in': 1, im: 1, il: 1, ir: 1 };
+    if (wk === 'pre' && ((p === 'un' && inFam[want]) || (inFam[p] && want === 'un')))
+      return want === 'un' ? '*un-* is the English "not"; this word is English-built, so *un-*, not *' + p + '-*.'
+        : '*un-* is the Old English "not"; *' + want + '-* is the Latin one, and this word comes from Latin' + (row.etym ? ' *' + row.etym + '*' : '') + ', so *' + want + '-*.';
+    return '*' + p + '*' + (pm ? ' means "' + pm + '"' : ' is not part of this word') + '; this word needs *' + want + '* ("' + row.partMeanings[slot] + '")' + (row.etym ? ' — it comes from ' + (row.origin || 'Latin') + ' *' + row.etym + '*' : '') + '.';
   }
   function order(row) { return row.parts.map(function (s, i) { return (row.kinds[i] === 'pre' ? s + '-' : row.kinds[i] === 'suf' ? '-' + s : s); }).join(' + '); }
   function mean(row) { return row.partMeanings.join(' + '); }
@@ -151,7 +164,15 @@
     return out;
   }
 
-  var API = { join: join, changeNote: changeNote, rack: rack, openSlots: openSlots, reason: reason, grade: grade,
+  /* PAY (spec §6: "per first-forge right; never tiles alone"). The one place that decides it.
+     payNow(level)  — coins the moment a word resolves right: Hard and Champ, where the child SPELLS it.
+     roundPay(level, rights, n) — coins at the round's end: Medium pays its first-forge rights only
+       when the round reaches half (§1.7's bar), because a random placer can land a word by luck but
+       never half a round; Easy (the exact parts, in some order) never pays — that is tiles alone. */
+  function payNow(level) { return level === 'hard' || level === 'champ'; }
+  function roundPay(level, rights, n) { return level === 'medium' && n > 0 && rights / n >= 0.5 ? rights : 0; }
+
+  var API = { payNow: payNow, roundPay: roundPay, join: join, changeNote: changeNote, rack: rack, openSlots: openSlots, reason: reason, grade: grade,
     combine: combine, boundaries: boundaries, rng: rng, hash: hash, shuffled: shuffled, order: order };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   if (root) root.SB_FORGE_CORE = API;

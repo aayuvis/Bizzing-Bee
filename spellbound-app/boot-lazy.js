@@ -104,7 +104,12 @@
        never on the idle queue, never on the first screen. */
     feedEngine: 'bizzing-feed.js',
     feedMeta: 'feed/feed-meta.js',     // names the per-level index and body groups; bee-feed.js registers and loads those
-    feedView: 'bee-feed.js'
+    feedView: 'bee-feed.js',
+    /* Word Forge (games spec §5.1): the shared rules, the CITED morpheme table and the game. The table
+       also rides the idle queue (last) so the Play lineup can read SB_FORGE.signedOff without the game. */
+    forgeCore: 'forge-core.js',
+    forgeData: 'forge-data.js',
+    forgeUI: 'forge.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -128,17 +133,18 @@
     arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
     reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes'],
-    feed: ['feedEngine', 'feedMeta', 'feedView']
+    feed: ['feedEngine', 'feedMeta', 'feedView'],
+    forge: ['saga2', 'forgeCore', 'forgeData', 'forgeUI']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'] };
 
   var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'sync'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'sync'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]

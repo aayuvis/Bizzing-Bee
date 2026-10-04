@@ -248,6 +248,8 @@
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
     if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
     if (head === 'play') { app.openGames(); return; }
+    /* Word Forge goes through its opener: the table's sign-off (or testing mode) is the lock */
+    if (head === 'forge') { if (typeof app.openForge === 'function') app.openForge(); else app.openGames(); return; }
     if (head === 'support') { app.setNav('home'); return; }
     var nav = ROUTE_NAV[head] || head;
     /* A tool behind the plan opens through ITS opener, the one its Library tile taps: setNav would
