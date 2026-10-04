@@ -217,13 +217,13 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const one = await pg.evaluate(() => { const coins = active().coins || 0, q = [...document.querySelectorAll('.bzf-card')].find(c => c.querySelector('[data-bzf="ans"]'));
       const id = q && q.getAttribute('data-id'); if (id) q.querySelector('[data-bzf="ans"][data-o="0"]').click();
       return { id, coins, ids: active().feed.ids.map(x => x.id), whys: active().feed.ids.map(x => x.why) }; });
-    await wait(300);
+    await until(pg, c0 => (active().coins || 0) > c0, one.coins, 10000);
     const c1 = await pg.evaluate(() => active().coins || 0);
     ok(one.id && c1 === one.coins + 1, `a right answer pays (${one.coins} → ${c1})`);
     const fallback = one.whys.filter(w => /^For the /.test(w)).length;
     ok(fallback <= 3, `the reasons name the stop, the slip or the peek — "For <region>" on ${fallback} of ${one.whys.length} (was 16 of 20)`);
     ok(new Set(one.whys).size >= 8, `${new Set(one.whys).size} different reasons in one session`);
-    await pg.reload(); await wait(2600); await openFeed(pg);
+    await pg.reload(); await ready(pg); await openFeed(pg);
     const two = await pg.evaluate(() => ({ ids: active().feed.ids.map(x => x.id), paid: active().feed.paid }));
     const rep = two.ids.filter(id => one.ids.includes(id)).length;
     ok(two.ids.length >= 12 && rep === 0, `a reload the same day brings ${two.ids.length} cards, ${rep} of them seen before (was 21 of 21)`);
@@ -231,7 +231,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const again = await pg.evaluate(id => new Promise(res => { const M = SB_FEED_META, g = Object.values(SB_FEED_IDX).flat().find(r => r[0] === id)[6];
       SB_LAZY.reg['feedB' + g] = 'feed/' + M.body[g]; SB_LAZY.need('feedB' + g, () => { const c0 = active().coins || 0; SB_FEED.reset(); SB_FEED.answer(id, 0); res([c0, active().coins || 0]); }); }), one.id);
     ok(again[0] === again[1], `answering it right again after the reload pays nothing (${again[0]} → ${again[1]})`);
-    await pg.evaluate(() => app.setNav('home')); await wait(200); await openFeed(pg);
+    await pg.evaluate(() => app.setNav('home')); await until(pg, () => state.nav === 'home'); await openFeed(pg);
     const three = await pg.evaluate(() => active().feed.ids.map(x => x.id));
     ok(three.join() === two.ids.join(), 'and inside one visit the session holds: leave #/feed and come back, the same cards');
     await ctx.close();
