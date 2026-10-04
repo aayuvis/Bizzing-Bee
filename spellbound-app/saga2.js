@@ -680,7 +680,7 @@
     const cardHost=host.querySelector('#hc-cardhost'), keysHost=host.querySelector('#hc-keys'), ctl=host.querySelector('#hc-ctl');
     let keys=null;
     function spellCard(kind, g){
-      const w=kind==='gate'?g.w:nextWord(); card={kind,g,w,typed:''}; loop.hold(true);
+      const w=kind==='gate'?g.w:nextWord(); card={kind,g,w,typed:''}; loop.hold(true); wall=null;
       const head=kind==='gate'?('Gate '+(G.indexOf(g)+1)+' of '+GATES+' — spell it to open the gate'):'A flower! Spell it to bloom';
       cardHost.innerHTML='<div class="hc-card sg-cardbox" role="dialog" aria-modal="true" aria-label="Spell the word">'+
         '<b>'+esc(head)+'</b><button type="button" class="sg-cardw" id="sg-cw" aria-label="Hear the word">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
@@ -694,7 +694,7 @@
       function submit(){ if(!card) return; const typed=inp.value.trim(); if(!typed){ try{ say(w.w); }catch(e){} return; }
         const ok=sameSpelling(typed,w.w); met++; wlog(w,ok); hcRound.push({w:w.w,ok});
         if(ok){ right++; spelled++; AK.pay(); try{ if(typeof sfx==='function') sfx('correct'); }catch(e){}
-          if(kind==='gate'){ g.open=true; MAZE[g.r][g.c]=2; score+=200; spawnSplash('Gate '+(G.indexOf(g)+1)+' open');
+          if(kind==='gate'){ g.open=true; MAZE[g.r][g.c]=2; stillDirty=true; score+=200; spawnSplash('Gate '+(G.indexOf(g)+1)+' open');
             try{ flash('The honey gate swings open · +1 🪙'); }catch(e){} }
           else { score+=150; if(lives<LIVES) lives++; spawnSplash('+1');
             try{ flash('The flower blooms · +150 honey · +1 🪙'); }catch(e){} }
@@ -737,26 +737,39 @@
           const z=ZC[bz]; bee.px=z[0]; bee.py=z[1]; bee.dir=[0,0];   // back to the top corner of the zone she was in
           if(lives<=0){ over=true; finish(false,'lives'); } } } });
       if(over) return;
-      t-=dt; flowerT-=dt;
+      flowerT-=dt;
       if(flowerT<=0&&!flower){ flowerT=3; placeFlower(); }
       /* one late moth, once, at the halfway mark — in the zone corner furthest from the bee */
       if(!lateMoth && t<=CFG.time/2){ lateMoth=true;
         const cs=[[1,1],[COLS-2,1],[COLS-2,ROWS-2],[1,ROWS-2]].filter(p=>open(p[0],p[1]));
         const far=cs.sort((a,b)=>(Math.abs(b[0]-bc)+Math.abs(b[1]-br))-(Math.abs(a[0]-bc)+Math.abs(a[1]-br)))[0]||[COLS-2,1];
-        moths.push({c:far[0],r:far[1],px:far[0],py:far[1],dir:[0,0]}); }
-      if(t<=0){ t=0; over=true; finish(false,'time'); } }
-    const loop=AK.loop(update, ()=>{ if(started) draw(); });
-    function draw(){
-      shake.begin(cx);
-      cx.clearRect(-40,-40,BW+80,BH+80);
-      const T=performance.now();
-      // painted play field, scrimmed so the maze reads on top of it
-      if(!drawWorld(cx,world,0,0,BW,BH)){ cx.fillStyle='#4C7A54'; cx.fillRect(0,0,BW,BH); }
-      SGFX.scrim(cx,BW,BH,0.34);
-      SGFX.drawMotes(cx,motes,BW,BH,T);
-      /* the walls are HONEYCOMB - six sides, a light source above, a shadow under each cell */
-      for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c];
-        const px=c*CELL+CELL/2, py=r*CELL+CELL/2;
+        moths.push({c:far[0],r:far[1],px:far[0],py:far[1],dir:[0,0]}); } }
+    /* The ROUND CLOCK reads the frame's real time (capped at 0.25 s a frame, the shared clock's
+       own cap), not the sum of physics steps: on a phone slowed enough that the steps fall
+       behind, the bee may move a shade slow, but 3:00 is still three minutes (spec §8, T4). */
+    let wall=null;
+    function tickClock(){ const now=(document.timeline&&document.timeline.currentTime)||performance.now();   // the frame's own timestamp
+      if(wall!=null && started && !over && !card){ t-=Math.min(0.25,(now-wall)/1000);
+        if(t<=0){ t=0; over=true; finish(false,'time'); } }
+      wall=now; }
+    const loop=AK.loop(update, ()=>{ if(!started) return; tickClock(); if(!over) draw(); });
+    /* THE STILL PART OF THE MAZE IS PAINTED ONCE. The painting, its scrim and every wall and
+       gate used to be redrawn each frame — a hundred-odd shadowed hexes — and on a slowed phone
+       that made frames long enough for the round to fall behind real time. They go into one
+       layer, repainted only when it changes (a gate opens, the painting arrives). */
+    let still=null, stillDirty=true;
+    function paintStill(){ if(!still) still=document.createElement('canvas');
+      still.width=cv.width; still.height=cv.height; const sx=still.getContext('2d'); sx.setTransform(dpr,0,0,dpr,0,0);
+      const painted=drawWorld(sx,world,0,0,BW,BH); if(!painted){ sx.fillStyle='#4C7A54'; sx.fillRect(0,0,BW,BH); }
+      SGFX.scrim(sx,BW,BH,0.34);
+      for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ const v=MAZE[r][c]; if(v===0||v===3) wallAt(sx,c,r,v); }
+      stillDirty=!painted; }                               // keep trying until the painting has loaded
+    /* a nectar dot is one small sprite, drawn once and stamped */
+    let dotSpr=null;
+    function dotSprite(){ if(dotSpr) return dotSpr; const R=Math.max(2,CELL*0.10), S=Math.ceil(R*2.6*2+4);
+      dotSpr=document.createElement('canvas'); dotSpr.width=Math.round(S*dpr); dotSpr.height=Math.round(S*dpr);
+      const d=dotSpr.getContext('2d'); d.setTransform(dpr,0,0,dpr,0,0); SGFX.orb(d,S/2,S/2,R,'#FFF3C4','#F0B429',Math.PI/2); dotSpr._s=S; return dotSpr; }
+    function wallAt(g,c,r,v){ const px=c*CELL+CELL/2, py=r*CELL+CELL/2; const cx=g;
         if(v===0){
           cx.save(); cx.shadowColor='rgba(8,5,20,.55)'; cx.shadowBlur=CELL*0.22; cx.shadowOffsetY=CELL*0.09;
           const g=cx.createLinearGradient(0,py-CELL*0.5,0,py+CELL*0.5);
@@ -769,9 +782,17 @@
           const g=cx.createLinearGradient(px-CELL/2,0,px+CELL/2,0); g.addColorStop(0,'#B36B00'); g.addColorStop(.5,'#FFC23D'); g.addColorStop(1,'#B36B00');
           cx.fillStyle=g; SGFX.rr(cx,px-CELL*0.42,py-CELL*0.42,CELL*0.84,CELL*0.84,CELL*0.16); cx.fill();
           cx.strokeStyle='rgba(90,46,0,.7)'; cx.lineWidth=Math.max(1.5,CELL*0.06);
-          for(let k=-1;k<=1;k++){ cx.beginPath(); cx.moveTo(px+k*CELL*0.2,py-CELL*0.36); cx.lineTo(px+k*CELL*0.2,py+CELL*0.36); cx.stroke(); } }
-        else if(v===1) SGFX.orb(cx,px,py,CELL*0.10,'#FFF3C4','#F0B429',T/420+(c+r)*0.7);
-      }
+          for(let k=-1;k<=1;k++){ cx.beginPath(); cx.moveTo(px+k*CELL*0.2,py-CELL*0.36); cx.lineTo(px+k*CELL*0.2,py+CELL*0.36); cx.stroke(); } } }
+    function draw(){
+      shake.begin(cx);
+      cx.clearRect(-40,-40,BW+80,BH+80);
+      const T=performance.now();
+      if(stillDirty) paintStill();
+      cx.drawImage(still,0,0,BW,BH);
+      SGFX.drawMotes(cx,motes,BW,BH,T);
+      { const sp=dotSprite(), S=sp._s;
+        for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ if(MAZE[r][c]!==1) continue;
+          const k=0.86+0.14*Math.sin(T/420+(c+r)*0.7), w=S*k; cx.drawImage(sp,c*CELL+CELL/2-w/2,r*CELL+CELL/2-w/2,w,w); } }
       // the hive, home: drawn as a dome of comb, lit once every gate is open
       { const hx=HIVE.c*CELL+CELL/2, hy=HIVE.r*CELL+CELL/2, lit=G.every(g=>g.open);
         cx.save(); if(lit){ cx.shadowColor='rgba(255,210,90,.9)'; cx.shadowBlur=CELL*0.6; }
@@ -849,7 +870,7 @@
       want:d=>{bee.want=d.slice();}, openAt:(c,r)=>open(c,r), word:()=>card?card.w.w:'',
       warp:(c,r)=>{ bee.px=bee.c=c; bee.py=bee.r=r; bee.dir=[0,0]; bee.want=[0,0]; },
       setTime:s=>{ t=s; }, clearDots:()=>{ for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(MAZE[r][c]===1){ MAZE[r][c]=2; } dots=0; },
-      noMoths:()=>{ moths=[]; lateMoth=true; }, reachHive:()=>reach().has(HIVE.c+','+HIVE.r), begin:()=>{ if(!started){ const el=host.querySelector('#sg-card'); el.style.display='none'; el.innerHTML=''; begin(); } } };
+      noMoths:()=>{ moths=[]; lateMoth=true; }, rearm:()=>{ G.forEach(g=>{ g.arm=true; }); }, reachHive:()=>reach().has(HIVE.c+','+HIVE.r), begin:()=>{ if(!started){ const el=host.querySelector('#sg-card'); el.style.display='none'; el.innerHTML=''; begin(); } } };
     return { destroy(){ over=true; try{ loop.stop(); }catch(e){} removeEventListener('keydown',key); if(keys){ try{ keys.destroy(); }catch(e){} } } };
   }
 
