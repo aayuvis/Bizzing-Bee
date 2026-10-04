@@ -37,13 +37,20 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     app.ultraAct(0); await W(200);
     out.wispGone = !document.querySelector('[data-act="uWisp"]');
 
-    // ---- the rival duel: best of three ----
+    // ---- the rival duel. REWRITTEN 4 Oct 2026 (games spec §4.7): the rival spells its OWN words
+    //      and each word the child spells right pays one coin as it lands — the duel no longer
+    //      pays a contest's 10 for two words. Three each (more on a tie); tests/atlas-encounters.cjs
+    //      holds the rival's profile, the held miss and the determinism. ----
     app.uDuel(); await W(150);
-    out.duelCard = state.uq && state.uq.kind === 'duel' && !!state.uq.rival;
+    out.duelCard = state.uq && state.uq.kind === 'duel' && !!state.uq.rival && !!state.uq.rival.name;
     const cW = c.coins;
-    app.uqType(state.uq.words[0].w); app.uqGo(); await W(120);
-    app.uqType(state.uq.words[1].w); app.uqGo(); await W(120);
-    out.duelWon = !state.uq && c.coins === cW + 10 && (SB_EXPED.prog().finds.u0 || {}).duel === 1;   // a duel won is a contest: 10
+    for (let k = 0; k < 6 && state.uq && state.uq.phase !== 'done'; k++) {
+      if (state.uq.phase === 'me') { app.uqType(state.uq.words[state.uq.i].w); app.uqGo(); await W(120); }
+      if (state.uq && state.uq.phase === 'rival') { app.uqNext(); await W(120); } }
+    const mine = (state.uq && state.uq.mine) || [];
+    const paidRight = c.coins === cW + mine.filter(m => m.ok).length && mine.length >= 3 && mine.every(m => m.ok);
+    app.uqNext(); await W(120);
+    out.duelWon = paidRight && !state.uq && (SB_EXPED.prog().finds.u0 || {}).duel === 1;
 
     // ---- the Hidden Pass: 3-word chain, next landmark opens EARLY ----
     app.uGate(); await W(150);
@@ -95,7 +102,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   ok(r.wispGift, 'tapping the word-wisp is a moment, not a wage — it pays nothing (FIX-BEE: no coins for luck)');
   ok(r.wispGone, 'a claimed wisp leaves the board');
   ok(r.duelCard, 'the rival waits with a named challenge');
-  ok(r.duelWon, 'winning the best-of-3 duel pays a contest\'s 10 coins');
+  ok(r.duelWon, 'the duel pays one coin per word spelled right (never a contest\'s 10 for two words) and settles the secret');
   ok(r.gateCard, 'the Hidden Pass demands a 3-word chain');
   ok(r.chainResets, 'a miss breaks the chain back to the start');
   ok(r.passOpens && r.skippedIn, 'the finished chain opens the NEXT landmark early — real non-linearity');

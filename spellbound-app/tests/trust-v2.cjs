@@ -197,19 +197,26 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(g11.n >= 150 && g11.ths.every(t => /^(words|eponyms|langs|wmeaning|wroots|wbreak|wstories)$/.test(t)), `${g11.n} Bizzillionaire draws across all 15 rungs are all word questions (${g11.ths.join(', ')})`);
   ok([1, 2, 3, 4, 5].every(l => (g11.per[l] || 0) >= 150), 'and every level holds 150+ of them: ' + [1, 2, 3, 4, 5].map(l => g11.per[l]).join(' · '));
 
-  /* ---- 6. Spell Scene's result ---- */
+  /* ---- 6. A lost round's result — REWRITTEN 4 Oct 2026: Spell Scene was merged into Type Blaster
+     (games spec §4.5), so the same promise is held on Type Blaster: the word a round is lost on is
+     in the log, and the card can never read "N of N spelled" over a lost round. ---- */
   const saga = fs.readFileSync(path.join(SRC, 'saga2.js'), 'utf8');
   ok(!/Back to map/.test(saga), 'no result card offers "Back to map" — the arcade has no map');
   /* Behaviour, not source text (the deploy tree is minified): lose a real round — three wrong
      answers — and read the result card. */
   const ss = await pg.evaluate(async () => { const W = ms => new Promise(r => setTimeout(r, ms)); const host = document.createElement('div');
     host.style.cssText = 'position:fixed;inset:0;z-index:9999'; document.body.appendChild(host); let out = null;
-    SB_SAGA_ENGINES.spellScene(host, { diff: 'easy' }, () => {});
-    for (let t = 0; t < 3; t++) { await W(500); const n = host.querySelectorAll('#ss-slots .ss-slot').length; for (let j = 0; j < n; j++) host.querySelector('.ss-kb[data-k="z"]').click(); }
-    for (let t = 0; t < 30 && !(host.querySelector('#sg-card') || {}).innerHTML; t++) await W(100);
+    await new Promise(r => SB_LAZY.need('arcade', r));
+    SB_SAGA_ENGINES.typeBlaster(host, { diff: 'easy' }, () => {});
+    const go = host.querySelector('#sg-howgo'); if (go) go.click();
+    const key = k => window.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true }));
+    /* three wrong words, each held until Continue (Enter) — three shields, and the round is lost */
+    for (let t = 0; t < 3; t++) { for (let j = 0; j < 30 && !host.querySelector('.tb-foe'); j++) await W(100);
+      key('z'); key('z'); key('z'); key('Enter'); await W(400); key('Enter'); await W(250); }
+    for (let t = 0; t < 30 && !host.querySelector('#sg-card .sg-endcard'); t++) await W(100);
     const chips = [...host.querySelectorAll('#sg-card .sg-wchip')]; out = { n: chips.length, no: chips.filter(c => c.classList.contains('no')).length, txt: (host.querySelector('#sg-card') || {}).textContent || '' };
     host.remove(); return out; });
-  ok(ss.n >= 1 && ss.no >= 1, `a lost Spell Scene logs the word it was lost on, so "N of N spelled" can never sit over a lost round (${ss.no} of ${ss.n} chips marked missed)`);
+  ok(ss.n >= 1 && ss.no >= 1, `a lost Type Blaster round logs the word it was lost on, so "N of N spelled" can never sit over a lost round (${ss.no} of ${ss.n} chips marked missed)`);
 
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();

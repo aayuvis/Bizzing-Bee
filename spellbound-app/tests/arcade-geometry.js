@@ -139,14 +139,24 @@ ok(/const f=\(zm-si\*segLen\)\/segLen, a=seg\.p1\.camera, b=seg\.p2\.camera/.tes
 ok(/const crossed=_wrapped \? \(iz>_prevPm \|\| iz<=_pm2\) : \(iz>_prevPm && iz<=_pm2\)/.test(src),
    'the item box is picked up by a swept test, immune to frame length');
 
-/* ---------------- Honeycomb Run ---------------- */
+/* ---------------- Honeycomb Run ----------------
+   REWRITTEN 4 Oct 2026 (games spec §4.6), deliberately: the round is now four gates to the
+   hive on the shared fixed-step clock, so three checks that pinned the OLD behaviour changed —
+   "a timed-out round needs two words" (a time-out now simply loses: the hive is the only win),
+   "the maze clock is the rAF timestamp" (the clock is the shared loop; the ROUND clock reads the
+   frame's own timestamp), and the CFG shape (moths have their own speed, the clock is per level).
+   Every check that still describes the game is kept as it was. The live behaviour is held by
+   tests/arcade-honeycomb.cjs. */
 console.log('\nHONEYCOMB RUN');
-const hcLine = src.match(/const CFG=\{easy:\{moths:[\s\S]*?\}\[diff\];/)[0];
-const HC = {}; for (const m of hcLine.matchAll(/(easy|medium|hard|champ):\{moths:(\d+),speed:([\d.]+),target:(\d+),time:(\d+)\}/g))
-  HC[m[1]] = { moths: +m[2], speed: +m[3], target: +m[4], time: +m[5] };
-const dimLine = src.match(/const DIM=\{easy:\[[\s\S]*?\}\[diff\]/)[0];
+const hcEng = src.slice(src.indexOf('function honeycombRun('), src.indexOf('/* ---------- ENGINE B'));
+const hcLine = hcEng.match(/const CFG=calmCFG\(\{easy:\{moths:[\s\S]*?\}\[diff\]/)[0];
+const HC = {}; for (const m of hcLine.matchAll(/(easy|medium|hard|champ):\{moths:(\d+),speed:([\d.]+),moth:([\d.]+),time:(\d+)\}/g))
+  HC[m[1]] = { moths: +m[2], speed: +m[3], moth: +m[4], time: +m[5] };
+const dimLine = hcEng.match(/const DIM=\{easy:\[[\s\S]*?\}\[diff\]/)[0];
 const DIM = {}; for (const m of dimLine.matchAll(/(easy|medium|hard|champ):\[(\d+),(\d+),(true|false)\]/g))
   DIM[m[1]] = { cols: +m[2], rows: +m[3] };
+const LV = ['easy', 'medium', 'hard', 'champ'];
+ok(LV.every(k => HC[k] && DIM[k]), 'all four levels configured');
 
 ok(!/moths\.length<CFG\.moths\+6/.test(src), 'the 16%-a-second moth spam is gone');
 // difficulty comes from moths that HUNT, not from more moths
@@ -160,35 +170,46 @@ ok(/const HUNTERS=\{easy:1,medium:2,hard:2,champ:2\}/.test(src),
 ok(/else if\(grace<=0\)\{ grace=2;/.test(src), 'two seconds of grace after a hit — no chained respawn deaths');
 ok(/ops\.sort\(\(a,b\)=>flee>0 \? dHome\(b\)-dHome\(a\) : dHome\(a\)-dHome\(b\)\)/.test(src),
    'a hunting moth turns toward the bee, and AWAY while she holds royal jelly');
-ok(/if\(!lateMoth && t<=Math\.floor\(CFG\.time\/2\)\)/.test(src), 'exactly one late moth, once, at the halfway mark');
-ok(/function placeFlower\(\)/.test(src), 'the flower has a placement function, not a random cell');
-ok(/const d=Math\.abs\(c-bc\)\+Math\.abs\(r-br\); if\(d<2\) continue;/.test(src), 'the flower is placed relative to the BEE');
-ok(/\(d<=6\?near:far\)/.test(src), 'it prefers cells within 6 of the bee');
-ok(/moths\.some\(m=>Math\.abs\(Math\.round\(m\.px\)-c\)\+Math\.abs\(Math\.round\(m\.py\)-r\)<2\)/.test(src),
+ok(/if\(!lateMoth && t<=CFG\.time\/2\)/.test(hcEng), 'exactly one late moth, once, at the halfway mark');
+ok(/function placeFlower\(\)/.test(hcEng), 'the bonus flower has a placement function, not a random cell');
+ok(/const d=Math\.abs\(c-bc\)\+Math\.abs\(r-br\); if\(d<2\) continue;/.test(hcEng), 'it is placed relative to the BEE');
+ok(/\(d<=6\?near:far\)/.test(hcEng), 'it prefers cells within 6 of the bee');
+ok(/moths\.some\(m=>Math\.abs\(Math\.round\(m\.px\)-c\)\+Math\.abs\(Math\.round\(m\.py\)-r\)<2\)/.test(hcEng),
    'it never lands on top of a moth');
-const reseed = +src.match(/if\(flowerT<=0&&!flower\)\{ flowerT=(\d+); placeFlower\(\); \}/)[1];
-ok(reseed <= 4, `a new flower every ${reseed}s (was 9)`);
-ok(/finish\(score>=CFG\.target && spelled>=2\)/.test(src), 'a timed-out round needs words spelled, not just dots eaten');
-// movement is per SECOND, on the display's clock — it used to be a fixed step per frame
-ok(/function step\(ent,sp,dt\)/.test(src), 'step takes dt: movement is time-based, not frame-based');
-ok(/const spd=sp\*Math\.max\(0\.001,Math\.min\(0\.034,dt\|\|1\/60\)\)/.test(src), 'and dt is clamped at TWO frames — a hitch is a shade of slowdown, never a hop');
-ok(!/ent\.px=jc; ent\.py=jr; ent\.dir=bee\.want\.slice\(\);/.test(src), 'the early-turn teleport (up to 0.4 cells a frame) is gone');
-ok(/if\(ent\.dir\[0\]!==0 && ent\.py!==Math\.round\(ent\.py\)\)/.test(src), 'cornering GLIDES onto the new corridor at running speed');
-ok(/const now=\(ts!==undefined\?ts:performance\.now\(\)\)/.test(src), 'the maze clock is the sub-ms rAF timestamp, not Date.now()');
-ok(!/loop=setInterval\(frame, 1000\/60\)/.test(src), 'the maze runs on requestAnimationFrame like every other engine, not setInterval');
+ok(!/flower=pool\[Math\.floor\(Math\.random/.test(hcEng), 'and it is picked by a fixed stride, not a dice roll');
+const reseed = +hcEng.match(/if\(flowerT<=0&&!flower\)\{ flowerT=(\d+); placeFlower\(\); \}/)[1];
+ok(reseed <= 4, `a new bonus flower every ${reseed}s (was 9)`);
+// THE WIN: the hive, through four gates — never the dots, never the clock
+const wins = [...hcEng.matchAll(/finish\(true/g)].length;
+ok(wins === 1 && /if\(bc===HIVE\.c && br===HIVE\.r && G\.every\(g=>g\.open\)\)\{ over=true; finish\(true,'home'\)/.test(hcEng),
+   'the ONLY win is the bee in the hive with every gate open');
+ok(!/if\(dots<=0\)/.test(hcEng), 'clearing the dots wins nothing (it used to end the round as a win)');
+ok(/const LIVES=3, GATES=4;/.test(hcEng), 'three lives on every level, four gates');
+ok(LV.every((k, i) => i === 0 || HC[k].time < HC[LV[i - 1]].time) && HC.easy.time === 180 && HC.champ.time === 120,
+   `a fixed clock per level, Easy 3:00 down to Champ 2:00 (${LV.map(k => HC[k].time).join('/')} s)`);
+ok(!/t\+=15/.test(hcEng), 'a word adds score, never time — a good speller\'s round still ends');
+ok(LV.every((k, i) => i === 0 || (HC[k].moth > HC[LV[i - 1]].moth && HC[k].moth / HC[k].speed > HC[LV[i - 1]].moth / HC[LV[i - 1]].speed)),
+   `moths chase faster per level, and gain on the bee (${LV.map(k => (HC[k].moth / (HC[k].speed * 1.25)).toFixed(2)).join(' / ')} of her speed)`);
+// movement is per SECOND, on the shared clock — it used to be a fixed step per frame
+ok(/function step\(ent,sp,dt\)/.test(hcEng), 'step takes dt: movement is time-based, not frame-based');
+ok(/const spd=sp\*Math\.max\(0\.001,Math\.min\(0\.034,dt\|\|1\/60\)\)/.test(hcEng), 'and dt is clamped at TWO frames — a hitch is a shade of slowdown, never a hop');
+ok(!/ent\.px=jc; ent\.py=jr; ent\.dir=bee\.want\.slice\(\);/.test(hcEng), 'the early-turn teleport (up to 0.4 cells a frame) is gone');
+ok(/if\(ent\.dir\[0\]!==0 && ent\.py!==Math\.round\(ent\.py\)\)/.test(hcEng), 'cornering GLIDES onto the new corridor at running speed');
+ok(/const loop=AK\.loop\(update,/.test(hcEng) && !/setInterval\(/.test(hcEng), 'the maze runs on the shared fixed-step clock (sgLoop), never setInterval');
+ok(/document\.timeline&&document\.timeline\.currentTime/.test(hcEng), 'the round clock reads the frame\'s own timestamp, capped like the shared clock');
 // the bee is paced like an arcade maze game, not a racing game
-const BEE_MULT = +src.match(/step\(bee,CFG\.speed\*([\d.]+),/)[1];
+const BEE_MULT = +hcEng.match(/step\(bee,CFG\.speed\*([\d.]+),/)[1];
 for (const [k, c] of Object.entries(HC)) {
   const cps = c.speed * BEE_MULT;
-  ok(cps <= 3.5, `${k.padEnd(6)} bee runs at ${cps.toFixed(2)} cells/s (arcade maze pace is ~1.5-2.0; was ${(c.speed / 0.75 * BEE_MULT).toFixed(2)})`);
+  ok(cps <= 3.5, `${k.padEnd(6)} bee runs at ${cps.toFixed(2)} cells/s (arcade maze pace is ~1.5-2.0)`);
 }
-
 for (const [k, c] of Object.entries(HC)) {
   const { cols, rows } = DIM[k];
-  let cells = 0; for (let r = 1; r < rows - 1; r++) for (let col = 1; col < cols - 1; col++) if (!(r % 2 === 0 && col % 2 === 0)) cells++;
+  const MC = (cols - 1) / 2, MR = (rows - 1) / 2;
+  ok(MC % 2 === 0 && MR % 2 === 0, `${k.padEnd(6)} ${cols}x${rows}: the zone walls sit on pillar lines, so every zone is connected inside`);
+  let cells = 0; for (let r = 1; r < rows - 1; r++) for (let col = 1; col < cols - 1; col++) if (!(r % 2 === 0 && col % 2 === 0) && r !== MR && col !== MC) cells++;
   const most = c.moths + 1;                       // base, plus the single late arrival
-  ok(cells / most >= 12, `${k.padEnd(6)} ${cells} open cells for at most ${most} moths — ${(cells / most).toFixed(0)} cells each (was ${(cells / (c.moths + 6)).toFixed(0)})`);
-  ok(most <= c.moths + 1, `${k.padEnd(6)} moths cap at ${most}, so the tuned count still means something`);
+  ok(cells / most >= 12, `${k.padEnd(6)} ${cells} open cells for at most ${most} moths — ${(cells / most).toFixed(0)} cells each`);
 }
 console.log(bad ? `\n${bad} FAILED` : '\nboth games keep the word in front of the player');
 process.exit(bad ? 1 : 0);

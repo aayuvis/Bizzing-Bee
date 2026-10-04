@@ -5,7 +5,7 @@
    render never replaces it — a live region rebuilt with new text is not announced). This holds:
      1. the region exists once, outside #root, role=status / aria-live=polite, and takes no space;
      2. an arcade engine's clue is said as it appears, word for word what the screen shows
-        (typeBlaster, spellScene) — never more than the screen;
+        (typeBlaster, which took in Spell Scene on 4 Oct 2026) — never more than the screen;
      3. Word Quiz says "Question 1 of 10" and the question; a wrong pick adds only the miss line;
         the next question is said afresh;
      4. a typed game says which word and what to do — and never the word it is asking for;
