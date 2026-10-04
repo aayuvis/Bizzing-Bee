@@ -52,7 +52,7 @@
   };
   var ADDONS = {
     advanced: { id: 'advanced', name: 'Advanced Pack + Coaching', priceYr: 299, built: true,
-                blurb: 'The full 125,000-word library, six narrated advanced-concept lessons, mock spelling bees, champion techniques and advanced games.' }
+                blurb: 'The full library of {library} words, six narrated advanced-concept lessons, mock spelling bees, champion techniques and advanced games.' }
   };
   var ORDER = ['free', 'beginner', 'regional'];
 

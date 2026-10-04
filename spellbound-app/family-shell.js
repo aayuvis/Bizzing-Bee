@@ -119,6 +119,9 @@
   var RESTORABLE = { shop: 1, help: 1, home: 1, concepts: 1, coach: 1, quest: 1, explore: 1, themes: 1, figurative: 1, vocab: 1, quotes: 1,
     trivtrain: 1, ipatrain: 1, typing: 1, builder: 1, beeband: 1, coachdesk: 1, traps: 1, revisions: 1, evolution: 1,
     collection: 1, finder: 1, games: 1, trivia: 1, journeys: 1, adv: 1, progress: 1, feed: 1 };
+  /* screens with a gated opener — an address goes through it: the trainTools plan lock
+     (gateFeature) and the Advanced Pack's sales page, which asks for the PIN first (T3) */
+  var DOOR = { quotes: 'openQuotes', vocab: 'openVocab', typing: 'openTyping', ipatrain: 'openIpaTrain', trivtrain: 'openTrivTrain', adv: 'openAdvanced' };
   var PARENT = { train: 'coach', levelup: 'coach', leveltest: 'home', mockbee: 'games', sq: 'games', reader: 'explore',
     debug: 'home', voicetest: 'home', evofeedback: 'home', parent: 'progress' };
 
@@ -228,6 +231,12 @@
     if (head === 'play') { app.openGames(); return; }
     if (head === 'support') { app.setNav('home'); return; }
     var nav = ROUTE_NAV[head] || head;
+    /* A tool behind the plan opens through ITS opener, the one its Library tile taps: setNav would
+       draw the page and skip the plan lock (and the PIN in front of the plan sheet) — #/quotes,
+       #/vocab, #/typing, #/ipatrain and #/trivtrain all reached a free child's screen that way, and
+       #/adv drew the Advanced Pack's sales page with no PIN (audit v4). The opener also loads what
+       the page reads. */
+    if (DOOR[nav] && typeof app[DOOR[nav]] === 'function') { app[DOOR[nav]](); return; }
     if (RESTORABLE[nav]) { app.setNav(nav); return; }
     if (PARENT[nav]) { app.setNav(PARENT[nav]); return; }
     app.setNav('home');

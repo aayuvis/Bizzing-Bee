@@ -63,7 +63,25 @@ const { chromium } = require('playwright');
   { const P=require('fs').readFileSync(require('path').resolve(__dirname,'..','privacy.html'),'utf8').replace(/<[^>]+>/g,'').replace(/\s+/g,' ');
     if(!/asks for a first name \(or nickname\) and an age range\b/.test(P)) errs.push('privacy.html: the profile step is not described as asking for an age range');
     if(/Child's age(?! range)/.test(P)) errs.push("privacy.html: the table lists \"Child's age\", not the age range the app stores");
-    if(/The name and the age never leave/.test(P)) errs.push('privacy.html: "the name and the age never leave the device" — it is an age range'); }
+    if(/The name and the age never leave/.test(P)) errs.push('privacy.html: "the name and the age never leave the device" — it is an age range');
+    if(!/restore onto a new device, the app asks you for the name and the age range there/.test(P)) errs.push('privacy.html: the restore step is not described as asking for an age range'); }
+  /* (follow-up) the cloud-restore sheet asks the same RANGE onboarding and Settings ask — it took an
+     exact age in a number box. A restored child gets c.ageBand and its midpoint c.age (setAgeBand). */
+  const rs=await pg.evaluate(async()=>{ const wait=ms=>new Promise(r=>setTimeout(r,ms));
+    const before=state.children.length; state.screen='app';
+    state.cloudSheet='restore'; state.cloudErr=null; state.cloudList=[{ row:{ id:'cid-test', display_name:'Fox', spell_level:3, avatar:'fox' }, child:{ cid:'cid-test', avatar:'fox', theme:'spellbound', level:3, lists:{default:{xp:5}}, activeList:'default' }, updated_at:Date.now() }];
+    render(); await wait(200);
+    const sel=document.querySelector('select#clda-0'); const num=document.querySelector('input[id^="clda-"]');
+    const opts=sel?[...sel.options].map(o=>o.value):[]; const label=sel&&sel.getAttribute('aria-label');
+    const txt=(document.body.innerText.match(/name and age[^.]*uploaded/)||[''])[0];
+    if(sel){ sel.value='11-13'; } const nm=document.getElementById('cldn-0'); if(nm) nm.value='Rhea';
+    app.cloudAdd(0); await wait(200);
+    const kid=state.children[state.children.length-1];
+    return { opts, label, num:!!num, txt, added:state.children.length===before+1, band:kid&&kid.ageBand, age:kid&&kid.age, name:kid&&kid.name }; });
+  if(rs.num) errs.push('the restore sheet still has a number box for an exact age');
+  if(rs.opts.join()!==['5-7','8-10','11-13','14-18'].join() || rs.label!=='Age range') errs.push('the restore sheet does not offer the four age ranges — '+JSON.stringify(rs.opts)+' '+rs.label);
+  if(!/age range were never uploaded/.test(rs.txt)) errs.push('the restore sheet says "'+rs.txt+'", not "name and age range"');
+  if(!rs.added || rs.band!=='11-13' || rs.age!==12 || rs.name!=='Rhea') errs.push('a restored child should be Rhea, band 11-13, age midpoint 12 — got '+JSON.stringify(rs));
   await b.close();
   console.log(errs.length?'FAIL\n'+errs.join('\n'):'PASS — onboarding asks for a display name and an age range, and stores both');
   process.exit(errs.length?1:0);
