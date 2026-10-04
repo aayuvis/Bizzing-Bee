@@ -10,7 +10,7 @@
      (6–7: four rivals, three rounds · 8–10: six, four · 11–15: eight, five) and then
      it is sudden death, where every round costs the rivals more. A perfect speller's
      bee used to run past 704 s; tests/mockbee-sim.cjs plays perfect spellers on a
-     simulated clock and holds the median under the cap. Past 70% of the cap the
+     simulated clock and holds the median under the cap. Past 60% of the cap the
      write-along windows close, and at the cap the bee ends with co-champions — the
      old Scripps rule — so no bee can run long.
    - WHEN YOU ARE OUT you choose: Finish now (the rivals are resolved at once from
@@ -34,7 +34,7 @@
    Uses app3 globals: state, render, active, save, addCoins, payG, sfx, burstConfetti,
    esc, escA, iconSVG, SB_AVATAR, logBand, markMastered, mastEvidence, addMiss, nkey,
    fmtN, sameSpelling, maskTxt, missFeedbackHTML, logGameWord, recentGameKeys,
-   wordClip, altPron, trickAnal, vocBuildCheck, gameWordsD, corpusSlice. Registers
+   wordClip, altPron, trickAnal, vocBuildCheck, gameWordsD, nextWords. Registers
    actions on `app` (a top-level const in app3's scope, NOT window.app).
    ============================================================ */
 (function () {
@@ -94,7 +94,7 @@
   const BANDS = {
     '6-7':   { label: '6–7',   rivals: 4, rounds: 3, win: 12000, ids: ['pixel', 'koi', 'beaker', 'panda'] },
     '8-10':  { label: '8–10',  rivals: 6, rounds: 4, win: 10000, ids: ['pixel', 'koi', 'beaker', 'panda', 'comet', 'astro'] },
-    '11-15': { label: '11–15', rivals: 8, rounds: 5, win: 8000, ids: ['beaker', 'panda', 'comet', 'astro', 'scopey', 'melody', 'samurai', 'goldlegend'] },
+    '11-15': { label: '11–15', rivals: 8, rounds: 5, win: 7000, ids: ['beaker', 'panda', 'comet', 'astro', 'scopey', 'melody', 'samurai', 'goldlegend'] },
   };
   /* Family Bee night: each player picks one. Grown-ups get grown-up words — but never the
      Finals words, which belong to Champ alone. */
@@ -246,8 +246,8 @@
   const alive = () => ((mb() && mb().field) || []).filter(s => s.in);
   const profileIn = () => alive().some(isProfile);
 
-  /* How hard is this word, 0..1. Words from the ranked bee list carry their percentile in
-     `_h`; anything else falls back to the library's y plus a length tax. */
+  /* How hard is this word, 0..1: the library's y plus a length tax (a word that carries its
+     own percentile in `_h` is judged on that). */
   function hardness(w) {
     if (!w) return .5;
     if (typeof w._h === 'number') return w._h;
@@ -269,8 +269,8 @@
     const mid = g && typeof g.mid === 'number' ? g.mid : hardness(w);
     const word = -(hardness(w) - mid) * .5;
     const nerve = -(R.press || 0) * (1 - bot.nerve) * .35;
-    const drop = -.035 * Math.min(R.n || 0, 6);
-    const sd = R.sdN >= 0 ? -.12 * (R.sdN + 1) : 0;
+    const drop = -.045 * Math.min(R.n || 0, 6);
+    const sd = R.sdN >= 0 ? -.14 * (R.sdN + 1) : 0;
     const wobble = (rnd() - .5) * bot.vary * 2;
     return rnd() < clamp(base + spec + word + nerve + drop + sd + wobble, .04, .97);
   }
@@ -301,56 +301,17 @@
   }
 
   /* ---------------- word supply ----------------
-     One door: nextWords(child, n, {purpose:'contest'}) (games spec §1.1), when the build has it.
-     The fallback is the bee's own list — the words the library tags as competition words,
-     ranked once, a percentile window per level — so the hall still runs without the picker. */
-  const BEE_TIER = /North South Finals|Senior|Advanced|Junior|Primary|NWFinal/i;
-  let _beeList = null, _beeFrom = 0;
-  function beeList() {
-    const src = (window.SB_DATA && SB_DATA.nsf) || [];
-    if (_beeList && src.length === _beeFrom) return _beeList;
-    _beeFrom = src.length;
-    const out = [];
-    for (const w of src) {
-      if (!w || !w.w || !w.d || w.d.length < 5) continue;
-      if (!/^[a-z]{3,}$/i.test(w.w)) continue;
-      if (!w.nt || !BEE_TIER.test(w.nt)) continue;
-      if (typeof window.kidSafe === 'function' && !window.kidSafe(w)) continue;
-      out.push(w);
-    }
-    const sc = w => clamp(w.y || 3, 1, 9) * 10 + Math.min(20, (w.w.length - 4) * 1.6);
-    out.sort((a, b) => sc(a) - sc(b) || a.w.length - b.w.length);
-    _beeList = out.map((w, i) => ({ ...w, _h: out.length > 1 ? i / (out.length - 1) : .5 }));
-    return _beeList;
-  }
-  /* percentile windows of the bee list: a level, a family band, or the Finals */
-  const WIN = { easy: [0, .30], medium: [.18, .55], hard: [.38, .72], champ: [.52, .78], finals: [.78, 1],
-    '6-7': [0, .30], '8-10': [.18, .55], '11-15': [.38, .74], adult: [.55, .78] };
-  function windowFor(g, R, who) {
-    if (g.mode === 'champ') return R.kind === 'vocab' ? [.6, 1] : WIN.finals;
-    const base = (g.mode === 'family' && who && who.band) ? WIN[who.band] : WIN[lvlConcrete(g.lvl, g.band)];
-    const sh = (R.tier || 0) * .08 + Math.max(0, R.sdN + 1) * .04;
-    return [clamp(base[0] + sh, 0, .68), clamp(base[1] + sh, .16, .78)];
-  }
-  function fromBeeList(n, win) {
-    const list = beeList();
-    let pool = [];
-    if (list.length > 60) {
-      const a = Math.floor(win[0] * list.length);
-      const b = Math.max(a + n * 4, Math.ceil(win[1] * list.length));
-      pool = list.slice(a, Math.min(b, list.length));
-    }
-    if (pool.length < n) {          /* the tagged list has not landed — the y-bands keep the bee alive */
-      const band = [Math.max(1, Math.round(1 + win[0] * 8)), Math.min(9, Math.round(2 + win[1] * 8))];
-      try { pool = pool.concat(corpusSlice(band[0], band[1], 600) || []); } catch (e) {}
-      pool = pool.filter(w => w && w.w && w.d && /^[a-z][a-z-]{2,}$/i.test(w.w));
-    }
-    /* words already served this week go to the BACK, never dropped: a thin window still fills */
-    let recent = null;
-    try { recent = recentGameKeys(active()); } catch (e) {}
-    const fresh = [], stale = [];
-    for (const w of shuffle(pool.slice())) { (recent && recent.has(nkey(w.w)) ? stale : fresh).push(w); if (fresh.length >= n * 3) break; }
-    return fresh.concat(stale);
+     ONE DOOR: nextWords(child, n, {purpose:'contest'}) (games spec §1.1) — kid-safe for this
+     child, inside the level window, none of their last 150 game words, competition-tagged words
+     first. The bee asks for the round's tier (−1 for the forgiving first round, +1 for the last
+     round and sudden death) at the level being played (SB_LEVEL key 'mockbee'). Finals words —
+     the top of the list, skeuomorph and its kind — are Champ's alone: Champ asks for the Champ
+     level a tier up and keeps only those; every other bee keeps everything but them. A Family
+     Bee night guest's words come through the same door at the level their band stands for. */
+  const BAND_LEVEL = { '6-7': 'easy', '8-10': 'medium', '11-15': 'hard', adult: 'champ' };
+  function nw(n, o) {
+    try { if (typeof window.nextWords === 'function') return window.nextWords(active(), n, o) || []; } catch (e) {}
+    try { return (typeof gameWordsD === 'function' ? gameWordsD() : []).filter(w => !o.filter || o.filter(w)); } catch (e) { return []; }
   }
   /* n words for this round and this speller, never one already given in this bee */
   function drawWords(n, R, who) {
@@ -361,22 +322,19 @@
       for (const w of arr || []) {
         if (out.length >= n) break;
         if (!w || !w.w || !w.d || !/^[a-z][a-z-]{2,}$/i.test(w.w)) continue;
-        if (!champ && isFinals(w)) continue;
-        if (champ && R.kind !== 'vocab' && !isFinals(w) && !loose) continue;
-        const k = nkey(w.w); if (used.has(k) && !loose) continue;
-        if (out.some(x => nkey(x.w) === k)) continue;
+        const k = nkey(w.w); if ((used.has(k) && !loose) || out.some(x => nkey(x.w) === k)) continue;
         used.add(k); out.push(w);
       }
     };
-    const own = !who || !(g.mode === 'family') || (who.profile && who.band === g.band);
-    if (own && typeof window.nextWords === 'function') {
-      try {
-        take(window.nextWords(active(), n + 4, { purpose: 'contest', tier: champ ? 1 : (R.tier || 0),
-          level: champ ? 'champ' : lvlConcrete(g.lvl, g.band), key: 'mockbee' }));
-      } catch (e) {}
-    }
-    if (out.length < n) take(fromBeeList(n - out.length, windowFor(g, R, who)));
-    if (out.length < n) take(fromBeeList(n - out.length, [0, 1]), true);
+    const guest = g.mode === 'family' && who && !who.profile;
+    const level = champ ? 'champ' : guest ? (BAND_LEVEL[who.band] || 'medium') : (g.mode === 'family' && who ? (BAND_LEVEL[who.band] || g.lvl) : g.lvl);
+    const tier = champ ? 1 : (R.sdN >= 0 ? 1 : (R.tier || 0));
+    const fin = champ && R.kind !== 'vocab' ? isFinals : (champ ? null : w => !isFinals(w));
+    const o = { purpose: 'contest', key: 'mockbee', level, tier, needDef: true, filter: fin || undefined };
+    take(nw(n + 6, o));
+    if (out.length < n) take(nw(n + 6, { ...o, tier: 0 }));
+    if (out.length < n) take(nw(n + 6, { purpose: 'contest', key: 'mockbee', level, needDef: true, filter: fin || undefined }), true);
+    if (out.length < n) take(nw(n + 6, { purpose: 'contest', needDef: true }), true);
     return out;
   }
 
@@ -474,8 +432,8 @@
     return setTimeout(() => { if (mb() === g && state.nav === 'mockbee') fn(); }, Math.max(ms, left) / speedOf(g));
   }
   const elapsed = g => Date.now() - ((g && g.t0) || Date.now());
-  /* past 70% of the cap the write-along windows close; at the cap time is called */
-  const late = g => elapsed(g) > CAP_MS * .7;
+  /* past 60% of the cap the write-along windows close; at the cap time is called */
+  const late = g => elapsed(g) > CAP_MS * .6;
   function speakMs(text) {
     const w = String(text || '').trim().split(/\s+/).filter(Boolean).length;
     let r = 1; try { r = state.voiceRate || 1; } catch (e) {}
@@ -1382,7 +1340,8 @@
     const given = g.mine.length, right = g.mine.filter(m => m.ok).length;
     g.pct = given ? right / given : 0;
     let contest = 0;
-    if (me && given && g.pct >= .7 && place <= 3 && place < size) { try { contest = addCoins('contest') || 0; } catch (e) {} }
+    const podium = !!me && given > 0 && g.pct >= .7 && place <= 3 && place < size;
+    if (podium) contest = addCoins('contest') || 0;
     g.contest = contest;
     g.pay = (g.bonus || 0) + contest;
     /* the level rule (§1.7): one Bee is one round; words right ÷ words given */

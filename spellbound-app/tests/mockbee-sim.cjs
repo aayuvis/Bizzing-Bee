@@ -57,6 +57,23 @@ const DATA = (() => {
   for (const [w, s] of S) { const r = by.get(w); if (r && !r.s && s) r.s = s; }
   return ctx;
 })();
+/* nextWords, as app3 draws it for purpose 'contest' (competition-tagged words first, a y window
+   per level, one tier up or down, the caller's filter) — on its OWN seeded generator, so the bee's
+   Math.random count stays the bee's and the same seed is the same bee */
+const BY_Y = (() => { const by = {}; for (const w of DATA.SB_DATA.nsf || []) { if (!w || !w.w || !w.d || w.d.length <= 4 || !/^[a-z]{3,}$/.test(w.w)) continue;
+  (by[w.y || 3] = by[w.y || 3] || []).push(w); } for (const y in by) { const t = by[y].filter(w => w.nt); if (t.length >= 60) by[y] = t; } return by; })();
+const Y_OF = { easy: [1, 3], medium: [3, 5], hard: [4, 7], champ: [6, 9] };
+function mkNextWords(seed) {
+  let a = seed >>> 0; const r = () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  return (c, n, o) => { o = o || {}; const band = (c && c.ageBand) || '8-10';
+    const lv = Y_OF[o.level] ? o.level : band === '5-7' ? 'easy' : band === '8-10' ? 'medium' : 'hard';
+    const t = Math.max(-1, Math.min(1, o.tier | 0)); const lo = Math.max(1, Y_OF[lv][0] + t), hi = Math.min(9, Y_OF[lv][1] + t);
+    let pool = []; for (let y = lo; y <= hi; y++) pool = pool.concat(BY_Y[y] || []);
+    if (typeof o.filter === 'function') pool = pool.filter(o.filter);
+    const out = []; const seen = new Set(); let guard = 0;
+    while (out.length < n && pool.length && guard++ < n * 30) { const w = pool[Math.floor(r() * pool.length)]; if (!seen.has(w.w)) { seen.add(w.w); out.push(w); } }
+    return out; };
+}
 const VALID_SFX = new Set(['correct', 'wrong', 'coin', 'win', 'lose', 'level', 'tick']);
 const has = (txt, w) => new RegExp('(^|[^a-z])' + String(w).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-z])', 'i').test(String(txt || ''));
 const textOf = html => String(html || '').replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ');
@@ -104,7 +121,8 @@ function world(opts) {
     esc: s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])),
     escA: s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])),
     iconSVG: () => '<svg></svg>', SB_AVATAR: id => '<img src="avatars/' + id + '.webp">', fmtN: n => String(n),
-    wordClip: t => 'voice/w/' + t + '.mp3', corpusSlice: () => [], gameWordsD: () => [], vocBuildCheck: () => null,
+    wordClip: t => 'voice/w/' + t + '.mp3', gameWordsD: () => [], vocBuildCheck: () => null,
+    nextWords: mkNextWords(4242 + (opts.t0 || 0)),
     homPartners: w => { const g = (DATA.SB_HOM || []).find(x => x.indexOf(String(w).toLowerCase()) >= 0); return g ? g.filter(x => x !== String(w).toLowerCase()) : []; },
     altPron: w => { const o = DATA.SB_ALT_PRON || {}; const k = String(w).toLowerCase(); return Object.prototype.hasOwnProperty.call(o, k) ? o[k] : null; },
     SB_STORE: { getJSON: (k, d) => (k in mem ? JSON.parse(mem[k]) : d), setJSON: (k, v) => { mem[k] = JSON.stringify(v); stores.push(k + '=' + mem[k]); } },
@@ -336,8 +354,8 @@ if (on('RANDOM')) {
   /* a Bee at the Champ level, every round up to the third of sudden death, 40 words a round */
   const W8 = world({ t0: 65, ageBand: '14-18', level: 'champ' }); W8.A.mbOpen('bee'); W8.A.mbStart();
   const dealt = []; for (let r = 0; r < 8; r++) dealt.push(...W8.ctx.MOCKBEE.draw(40, r));
-  const finalsInBee = dealt.filter(w => typeof w._h === 'number' ? w._h >= .78 : (w.y || 0) >= 8).length;
-  ok(fin.length && fin.every(w => (typeof w._h === 'number' ? w._h >= .78 : (w.y || 0) >= 8)) && finalsInBee === 0, `WORDS: Finals words only in Champ (${fin.length} Champ words all Finals; ${finalsInBee} of ${dealt.length} dealt in a Bee at Champ level)`);
+  const finalsInBee = dealt.filter(w => (w.y || 0) >= 8).length;
+  ok(fin.length && fin.every(w => ((w.y || 0) >= 8)) && finalsInBee === 0, `WORDS: Finals words only in Champ (${fin.length} Champ words all Finals; ${finalsInBee} of ${dealt.length} dealt in a Bee at Champ level)`);
   const mineWords = a.g.mine.map(m => m.w);
   ok(new Set(mineWords).size === mineWords.length, 'WORDS: no word twice in one bee');
 }
