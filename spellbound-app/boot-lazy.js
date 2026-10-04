@@ -104,7 +104,10 @@
        never on the idle queue, never on the first screen. */
     feedEngine: 'bizzing-feed.js',
     feedMeta: 'feed/feed-meta.js',     // names the per-level index and body groups; bee-feed.js registers and loads those
-    feedView: 'bee-feed.js'
+    feedView: 'bee-feed.js',
+    /* The Spelling Gym (games spec §4.2): the hub and its seven modes. It stands on the arcade's
+       kit (SGUI in saga2.js), so saga2 comes first; fetched at the door (app.openGym) only. */
+    gym: 'gym.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -128,13 +131,14 @@
     arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
     reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes'],
-    feed: ['feedEngine', 'feedMeta', 'feedView']
+    feed: ['feedEngine', 'feedMeta', 'feedView'],
+    gym: ['saga2', 'gym', 'sents']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], gym: ['saga2'] };
 
   var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',

@@ -339,7 +339,7 @@ let _toastTimer = null;
    the Grand Prix: a 100ms frame, which at top speed carries the kart 4.6 road segments.
    That is the reported lag, and it is why the item box could be missed.
    When an overlay is up the toast is written straight into the DOM instead. */
-function _gameOverlayUp(){ try{ return !!document.querySelector('.arc-play,.bz-play,.sg-hud'); }catch(e){ return false; } }
+function _gameOverlayUp(){ try{ return !!document.querySelector('.arc-play,.bz-play,.sg-hud,.gym-stage'); }catch(e){ return false; } }
 function _paintToast(){ try{
     let el=document.getElementById('sb-toast-live');
     if(!state.toast){ if(el) el.remove(); return true; }
@@ -1751,7 +1751,7 @@ function placeIndex(){ if(_placeIdx) return _placeIdx;
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.acts||[]).forEach(a=>add('Word Atlas region',String(a.title||'').replace(/^Act [IVXLC]+\s*·\s*/,''),'r|honey|'+a.id)); } }catch(e){}
   LIB_DOORS.forEach(([t,a,g])=>add('Library',t,'a|'+a+'|'+g));
-  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Buzz','openDaily',''],['Bee Trivia','openTrivia',''],['Magic Squares','playGame','magic']]
+  try{ [['Mock Spelling Bee','mbOpen',''],['Who Wants to Be a Bizzillionaire','openBizz',''],['Daily Buzz','openDaily',''],['Bee Trivia','openTrivia',''],[gymHubName(),'openGym','']]
       .concat((window.SB_ARCADE_GAMES||[]).map(g=>[g.n,'arcadeMenu',g.k]), GAMES.map(g=>[g.name,'playGame',g.type]))
       .forEach(([t,a,g])=>{ if(typeof app[a]==='function') add('Arcade game',t,'a|'+a+'|'+g); }); }catch(e){}
   try{ const T=window.SB_TRAIL;
@@ -3273,6 +3273,12 @@ const app = {
   /* Daily Buzz is a screen in the shell (audit v4 N2): nav 'daily', #/daily, the top bar and tabs around
      it, Back to Play. The board is games-daily.js's own, drawn into #db-host after each render. */
   openDaily:()=>{ clearGTimer(); try{ if(window.SB_DAILY&&SB_DAILY.close) SB_DAILY.close(); }catch(e){} state.game=null; app.setNav('daily'); },
+  /* THE SPELLING GYM (games spec §4.2): one hub for the drills, its own lazy file (gym.js, boot-lazy
+     group 'gym'). The door shows the screen at once and hands over when the file is in; mode is one
+     of gym.js's MODES ('warmup', 'sprint', …) or nothing for the hub. #/gym and #/gym/<mode> land here. */
+  openGym:(mode)=>{ clearGTimer(); state.game=null; state.gymMode=mode||null;
+    if(window.SB_GYM){ SB_GYM.open(mode); return; }
+    set({nav:'gym', screen:'app'}); lazyNeed('gym', ()=>{ if(window.SB_GYM && state.nav==='gym') SB_GYM.open(state.gymMode); }); },
   // ----- Debug / QC: launch one saga engine standalone in a full-screen overlay -----
   dbgSaga:(name)=>{ if(!window.SB_SAGA_ENGINES||!SB_SAGA_ENGINES[name]){ flash('Engine not loaded'); return; }
     const old=document.getElementById('dbg-eng'); if(old) old.remove();
@@ -6642,7 +6648,7 @@ function viewApp(){
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
       :key==='trail'?(S.nav==='trail'||atlasDrill())
-      :key==='games'?(S.nav==='games'||S.nav==='daily')
+      :key==='games'?(S.nav==='games'||S.nav==='daily'||S.nav==='gym')
       :S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
@@ -6679,6 +6685,7 @@ function viewApp(){
   else if(S.nav==='finder') content=viewFinder();
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='daily') content=viewDaily();
+  else if(S.nav==='gym') content=viewGym();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
@@ -6807,7 +6814,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='games'&&S.nav==='daily')||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='games'&&(S.nav==='daily'||S.nav==='gym'))||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -7900,6 +7907,7 @@ function drillLive(){ try{ const S=state; if(S.screen!=='app') return false;
     if(S.nav==='mockbee' && S.mb && S.mb.view==='stage') return true;
     if(S.nav==='trivia' && S.trv && /^(quiz|clock|square)$/.test(S.trv.view||'') && !S.trv.done) return true;
     if(S.nav==='games' && S.game && S.game.status==='play') return true;
+    if(S.nav==='gym' && window.SB_GYM && SB_GYM.live()) return true;
     if(S.nav==='adv' && S.adv && /^(drill|scan|mock)$/.test(S.adv.mode||'') && !S.adv.done) return true;
     if(S.nav==='leveltest' && S.lt && S.lt.placed==null) return true;
     if(S.readerQuiz && !S.readerQuiz.over) return true;
@@ -10562,8 +10570,7 @@ function viewDebug(){
     {act:'mbOpen',      arg:'', c:'#7C5CFF', n:'Mock Spelling Bee', d:'11 spellers, 8 rounds'},
     {act:'openTrivia',  arg:'', c:'#13A892', n:'Bee Trivia',      d:'Knowledge rounds'},
     {act:'openChallenge',arg:'journey', c:'#E0922E', n:'Champ Challenge', d:'Timed / counted'},
-    {act:'playGame',    arg:'magic', c:'#B14FC4', n:'Magic Squares', d:'3×3 spell-a-line'},
-    {act:'playGame',    arg:'beat',  c:'#FF5FA2', n:'Beat the Buzzer', d:'60s sprint'},
+    {act:'openGym',     arg:'',      c:'#E0922E', n:gymHubName(),    d:'The drills hub (seven modes)'},
     {act:'playGame',    arg:'wordquiz', c:'#13A892', n:'Word Quiz', d:'Meaning / origin MC'},
     {act:'playGame',    arg:'boss',  c:'#7B52E0', n:'Boss Battle', d:'HP boss'},
     {act:'playGame',    arg:'duel',  c:'#C43D5A', n:'Spelling Duel', d:'Pass-the-device'},
@@ -10896,12 +10903,12 @@ function coachTrain(){
     : (S.luTab==='practice' ? trainerCard()
       : S.luTab==='vocab' ? vocabPracticeCard()
       : learnCardsBtn+wordFlash(ws, S.reviseIdx, 'reviseNav', {selfMark:true}));
-  const act=(a,ic,t,col)=>`<button data-act="${a}" class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
+  const act=(a,ic,t,col,arg)=>`<button data-act="${a}"${arg?` data-arg="${escA(arg)}"`:''} class="sb-lift" style="display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 10px;box-shadow:var(--sh-rest)">${iconTile(ic,col,{size:44,radius:13})}<span style="font-family:var(--display);font-weight:800;font-size:13.5px;color:${col};line-height:1.15">${t}</span></button>`;
   /* Play-tested (Amrita 8.26): Daily Buzz / Written / Oral round all read as the same
      "hear it, type it" to a child — problem of plenty — and "Setup" read as a settings
      tab. Two ways to practise plus one clearly-named door to the word lists. */
   const actions=`<div style="font-family:var(--display);font-weight:800;font-size:15px;margin:18px 2px 10px">Quick practice</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('startBuzz','flame','Daily Buzz','#E8845C')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','list','Pick your words','#C8901B')}</div>`;
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px">${act('openGym','flame','Warm-up','#E8845C','warmup')}${act('startOral','speaker','Oral round','#13A892')}${act('coachSetupOpen','list','Pick your words','#C8901B')}</div>`;
   const journeyPromo = (key!=='journey' && (getList(c,'journey').stage||0)===0) ? `<button data-act="startJourney" style="width:100%;text-align:left;border-radius:14px;margin-top:16px;overflow:hidden;${listCoverBG('journey')};box-shadow:0 4px 14px rgba(43,27,94,.16)"><div style="padding:13px 16px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="min-width:0;flex:1"><div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)">Recommended path</div><div style="font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15">${journeyName()} — 20 Stages to Champ</div></div><span style="padding:8px 14px;border-radius:10px;background:#fff;color:${listCoverOf('journey').c};font-weight:800;font-size:13px;white-space:nowrap">Start →</span></div></button>` : '';
   /* The Ultra banner moved into the Practice header as a pill (see topBar above):
      a full-width card for a pack most spellers do not own was pushing Practice itself
@@ -11189,11 +11196,11 @@ function magicAdvance(){ const g=state.game; if(!g) return;
   if(g.qi>=g.qs.length){ magicFinishCell(); return; }
   render(); const q=g.qs[g.qi]; if(q.k==='spell') setTimeout(()=>say(q.w.w),300); }
 /* ===================== GAMES ARCADE ===================== */
-/* Two quick games. Beat the Buzzer absorbed the Champ Challenge (Level Challenge mode),
-   the two-player Duel and the ◆ Rapid Dictation; Word Quiz absorbed ◆ Memory Match.
-   Boss Battle lives inside Spelling Quest (season map → quick fight). */
+/* One quick game. Beat the Buzzer, Magic Squares and Word Quiz's spelling rounds merged into the
+   Spelling Gym (games spec §4.2, gym.js) on 4 Oct 2026: their entry points are gone, their engines
+   stay (playGame('beat'|'magic'|'buzz') still run, and tests drive them). Word Quiz keeps its
+   knowledge rounds until Word Lore takes them. */
 const GAMES=[
-  { type:'beat',     ic:'target', name:'Beat the Buzzer', blurb:'Sprint the clock, warm up, duel a friend or take the Level Challenge.', tag:'Timed', c:'#FF5FA2',c2:'#E8458C',tex:'dots' },
   { type:'wordquiz', ic:'book',   name:'Word Quiz',       blurb:'Meanings, spellings or word origins — choose your round, or go mixed.', tag:'Quiz', c:'#13A892',c2:'#0E8A78',tex:'rings' },
 ];
 function gameCoverBG(gm){ const t=CONCEPT_TEX[gm.tex]||CONCEPT_TEX.stripes;
@@ -11493,6 +11500,13 @@ function viewDaily(){
     ${pageHead('Daily Buzz', esc(when), '', null, 'openGames', 'Play')}
     <div id="db-host" class="db-host" role="region" aria-label="Today's Daily Buzz" style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-rest)"></div></div>`;
 }
+/* THE SPELLING GYM IN THE SHELL (games spec §4.2). The stage, the hub and every mode are gym.js's; the
+   shell gives it a host the height of the screen and render() hands the host over (SB_GYM.mount). */
+function gymBestLine(c){ try{ const B=((c||active()).gym||{}).best||{}; let top=null;
+    Object.keys(B).forEach(k=>{ const b=B[k]; if(b&&b.n&&b.t&&(!top||b.p>top.p)) top=b; });
+    return top?('Best: '+top.r+'/'+top.n+' · '+top.t):''; }catch(e){ return ''; } }
+function gymHubName(){ try{ return (window.SB_HUB_NAMES&&SB_HUB_NAMES.gym)||'Spelling Gym'; }catch(e){ return 'Spelling Gym'; } }
+function viewGym(){ return `<div class="sb-gympage"><div id="gym-host" class="gym-host" role="region" aria-label="${escA(gymHubName())}">${window.SB_GYM?'':hiveLoader('opening the gym…')}</div></div>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();
   if(g.type==='magic') return magicView();
@@ -11516,7 +11530,6 @@ function beatModePicker(){ return gamePickerShell('Beat the Buzzer','Pick how yo
   (advModeOn()?pickerCard('arcAdvDict','','#3A2A72','bolt','◆ Rapid Dictation','90 seconds — hear & type the hardest words in the library.'):'')); }
 function wordQuizPicker(){ return gamePickerShell('Word Quiz','Choose a round — each is 10 questions.',
   pickerCard('wqStart','meaning','#13A892','book','Meanings','Match a word to its meaning or fill the blank in a sentence.')+
-  pickerCard('wqStart','spell','#3D7DF0','spark','Spellings','Pick the correctly-spelled word from look-alikes.')+
   pickerCard('wqStart','origin','#4F9E6A','grid','Origins','Guess each word’s language of origin.')+
   pickerCard('wqStart','idiom','#9C6A08','bulb','Idioms','What does “break the ice” really mean?')+
   pickerCard('wqStart','simile','#E0922E','flame','Similes','Complete the simile — as busy as a … ?')+
@@ -11995,7 +12008,7 @@ function gamesHub(){ const S=state; const c=active();
         <span class="arc-hero-blurb" style="display:block">${esc(o.blurb)}</span>
         <span class="arc-hero-cta"><span class="arc-hero-go">${esc(o.cta)} →</span>${o.sub?`<span class="arc-hero-sub">${esc(o.sub)}</span>`:''}</span>
       </span></button>`;
-  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-tile">
+  const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="arc-tile${o.wide?' arc-wide':''}"${o.wide?' style="grid-column:span 2"':''}>
       <span class="arc-tile-top" style="background:${o.grad}">${o.badge?`<span class="arc-badge">${esc(o.badge)}</span>`:''}<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${o.art}</span></span>
       <span class="arc-tile-body">
         <span class="arc-tile-title" style="display:block">${esc(o.title)}</span>
@@ -12068,7 +12081,12 @@ function gamesHub(){ const S=state; const c=active();
   if(window.SB_TRIVIA){ const st=(c.trivia)||{}; const nQ=countTxt('trivia');   /* SB_COUNT's floor — the themes list grows when the word chapters land, so it is not counted here */
     feats.push(tile({act:'openTrivia',grad:'linear-gradient(135deg,#F0A93C,#DC7A18)',art:gameArtSVG('trivia',48),badge:'Quiz',title:'Bee Trivia',blurb:(nQ?nQ+' questions · ':'')+'picture & listening rounds.',cta:'#C8791B',stat:st.right?fmtN(st.right)+' right':''})); }
   /* Champ Challenge merged into Beat the Buzzer as its Level Challenge mode. */
-  feats.push(tile({act:'playGame',arg:'magic',grad:'linear-gradient(135deg,#B14FC4,#7E2E9E)',art:gameArtSVG('magic',48),badge:'Board',title:'Magic Squares',blurb:'Clear a 3×3 board of themes & concepts — every square you claim is a finished round.',cta:'#7E2E9E',stat:''}));
+  /* THE SPELLING GYM (games spec §4.2): one card for the drills — Warm-up, Sprint, Champ Dictation, Spot
+     the Error, Squares, Word Doctor and the Level Challenge — in for Beat the Buzzer, Magic Squares and
+     Word Quiz's spelling rounds. It is WIDE: one card in for two keeps every row of the grid full,
+     and it goes FIRST among the cards after the engines so a two-column phone never leaves a hole.
+     The card shows the hub's best mode, never a run count. */
+  feats.unshift(tile({act:'openGym',arg:'',wide:true,grad:'linear-gradient(135deg,#E0922E,#B8641A)',art:gameArtSVG('champ',48),badge:'Train',title:gymHubName(),blurb:'Seven ways to train: a warm-up, a sprint, spot the error, squares, the Word Doctor and the Level Challenge.',cta:'#B8641A',stat:gymBestLine(c)}));
   // ---- THE GAMES (the culled eight): each mounts its engine on its play-field, story-free ----
   /* Tile banner is a REAL screenshot of the game (app-art/shots/game-<k>.jpg), not the
      generic painted world plate — so the picture on the Bee Grand Prix tile is the race,
@@ -12860,6 +12878,7 @@ function render(){
       background:rgba(58,42,0,.14);color:#3A2A00;font-weight:800;line-height:1">${iconSVG('close',12)}</button></div>`;
   root.innerHTML = devBanner + `<div style="min-height:100dvh;position:relative;z-index:1">${view()}</div>` + overlays();
   if(state.nav==='daily'&&state.screen==='app'){ try{ const h=document.getElementById('db-host'); if(h&&window.SB_DAILY&&SB_DAILY.mount) SB_DAILY.mount(h); }catch(e){} }   /* Daily Buzz draws its own board into the shell */
+  if(state.nav==='gym'&&state.screen==='app'){ try{ const h=document.getElementById('gym-host'); if(h&&window.SB_GYM) SB_GYM.mount(h); }catch(e){} }   /* the Spelling Gym keeps its own DOM and is re-attached, so a render never wipes a half-typed word */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
   if(state.screen==='app'&&(state.game||state.nav==='daily')) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
