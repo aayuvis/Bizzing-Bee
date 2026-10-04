@@ -84,11 +84,11 @@ const GONE = ['Bizzillionaire', 'Daily Buzz', 'Beat the Buzzer', 'Magic Squares'
       return { before, after: document.querySelector('.pl-card[data-card="typeBlaster"] .sb-lvchip').textContent.trim(), rec: SB_LEVEL.LABEL[SB_LEVEL.get('typeBlaster')] }; });
     ok(step.before !== step.after && step.after.startsWith(step.rec), `${T}: tapping a chip steps the level (${step.before} → ${step.after})`);
     /* Word Forge, signed: still every row full */
-    await pg.evaluate(() => { window.SB_FORGE_SIGNED = true; render(); }); await still(pg);
+    await pg.evaluate(() => { window.__forge = window.SB_FORGE; window.SB_FORGE = Object.assign(Object.create(window.SB_FORGE || null), { signedOff: true }); render(); }); await still(pg);
     const f = await measure();
     ok(f.doors.find(d => d.id === 'play').keys.includes('wordForge') && f.doors.every(d => d.full), `${T}: with Word Forge's table signed it joins Play, and every row is still full (${f.doors.find(d => d.id === 'play').keys.join('/')})`);
     /* a renamed hub */
-    await pg.evaluate(() => { window.SB_FORGE_SIGNED = false; SB_HUB_NAMES.gym = 'Buzz Lab'; render(); });
+    await pg.evaluate(() => { window.SB_FORGE = window.__forge; SB_HUB_NAMES.gym = 'Buzz Lab'; render(); });
     const rn = await pg.evaluate(() => (document.querySelector('.pl-card[data-card="gym"] .arc-tile-title') || {}).textContent);
     ok(rn === 'Buzz Lab', `${T}: renaming a hub in SB_HUB_NAMES renames its card (${rn})`);
     await ctx.close();

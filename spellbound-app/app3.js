@@ -12192,7 +12192,7 @@ function bizzRender(mode, data){
    Dictation, mock rounds). Their engines may live on inside a hub; their cards do not.
    A card opens through ONE opener on `app` (`open`) or the arcade start menu (`arcade`). A card
    whose opener is not on the page yet still stands, saying "Coming", so the doors never re-flow
-   as the hubs land. Word Forge stays hidden while its table is unsigned (window.SB_FORGE_SIGNED).
+   as the hubs land. Word Forge stays hidden while its table is unsigned (SB_FORGE.signedOff; devUnlock shows it).
    Hub names come from SB_HUB_NAMES — never typed here. Every card carries the §1.7 level chip.
    Rows are always full: 4 columns (2 below 720px), flagships span two, and a door whose cards
    would leave a hole widens its last small cards instead (tests/arcade-hub.cjs).
@@ -12232,7 +12232,8 @@ const PLAY_ART = {
 function playCardName(k){ if(k==='gym'||k==='lore'||k==='hive') return hubName(k);
   const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); return (PLAY_TEXT[k]&&PLAY_TEXT[k].n)||(g&&g.n)||k; }
 function playCardLive(card){ if(card.arcade) return !!(window.SB_ARCADE_GAMES||[]).find(x=>x.k===card.k); return typeof app[card.open]==='function'; }
-function playCardShown(card){ return card.k==='wordForge' ? window.SB_FORGE_SIGNED===true : true; }
+/* Word Forge stands on the tab only once its morpheme table is signed off (g-forge's SB_FORGE.signedOff), or under the testing unlock */
+function playCardShown(card){ return card.k==='wordForge' ? !!((window.SB_FORGE&&SB_FORGE.signedOff)||state.devUnlock) : true; }
 function playCardsShown(){ return SB_PLAY_CARDS.filter(playCardShown); }
 /* the child's own best on a card, quietly — a number they set, never a target the card sets (G9) */
 function playCardBest(card,c){
@@ -12246,7 +12247,9 @@ function playCardBest(card,c){
 function playCardPicture(card,big){ const A=PLAY_ART[card.k]||{}; const V=window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'';
   if(A.img) return A.img+V;
   if(A.shot) return 'app-art/shots/game-'+A.shot+'.jpg'+V;
-  if(A.plate&&typeof window.SB_PLATE==='function'){ try{ const u=SB_PLATE(A.plate); if(u) return u; }catch(e){} }
+  if(A.plate){ try{ if(typeof window.SB_PLATE==='function'){ const u=SB_PLATE(A.plate); if(u) return u; } }catch(e){}
+    /* saga2 (and SB_PLATE) loads with the arcade, after this tab first draws: the same rule, here */
+    return 'app-art/stage/'+A.plate+'-'+(document.documentElement.getAttribute('data-mode')==='dusk'?'night':'day')+'.webp'; }
   return ''; }
 function gamesHub(){ const c=active();
   const shown=playCardsShown();
@@ -12273,7 +12276,7 @@ function gamesHub(){ const c=active();
     const top=pic?`linear-gradient(180deg,rgba(20,14,42,0),rgba(20,14,42,.14)),url('${pic}') center/cover`:(A.grad||'var(--accent)');
     return `<div class="arc-tile pl-card" data-card="${o.k}"${span>1?` style="grid-column:span ${span}"`:''}>
       <button data-act="playCard" data-arg="${escA(o.k)}" class="arc-tile-play${live?'':' pl-coming'}">
-        <span class="arc-tile-top" style="background:${top}"><span class="arc-badge">${esc(live?o.tag:'Coming')}</span>${pic?'':`<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))">${A.game?gameArtSVG(A.game,48):''}</span>`}</span>
+        <span class="arc-tile-top" style="background:${top}"><span class="arc-badge">${esc(live?o.tag:'Coming')}</span>${(!pic||A.plate)&&A.game?`<span style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.38))">${gameArtSVG(A.game,48)}</span>`:''}</span>
         <span class="arc-tile-body">
           <span class="arc-tile-title" style="display:block">${esc(name)}</span>
           <span class="arc-tile-blurb" style="display:block">${esc(promise)}</span>

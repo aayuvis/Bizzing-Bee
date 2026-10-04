@@ -34,7 +34,7 @@ takes Unscramble Stars' empty slot. The count here is the cards, not the round n
 | `beeGrandPrix` | Bee Grand Prix | Play | kept | — |
 | `typeBlaster` | Type Blaster (Spell Scene merged in) | Play | kept | — |
 | `honeycombRun` | Honeycomb Run | Play | kept | — |
-| `wordForge` | Word Forge (hidden while its table is unsigned) | Play | in | `spellScene` |
+| `wordForge` | Word Forge (hidden until `SB_FORGE.signedOff`; the testing unlock shows it) | Play | in | `spellScene` |
 
 Reserved, not in the registry: **Sound Paths** (`soundPaths`, Play) — in for `unscrambleStars`, **only when its
 alignment data is ready**. Until then the slot stays empty.
