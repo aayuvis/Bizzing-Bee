@@ -58,6 +58,12 @@ const { chromium } = require('playwright');
   if(r.draftBand!=='14-18') errs.push('draft band = '+r.draftBand);
   if(r.kidBand!=='14-18') errs.push('saved child band = '+r.kidBand);
   if(r.kidAge!==16) errs.push('saved child age midpoint = '+r.kidAge+' (want 16)');
+  /* (audit v4 S3) the COPPA notice says what the profile step asks for: an age RANGE, never an
+     exact age — at the point of collection, in the table, and where it says what stays home */
+  { const P=require('fs').readFileSync(require('path').resolve(__dirname,'..','privacy.html'),'utf8').replace(/<[^>]+>/g,'').replace(/\s+/g,' ');
+    if(!/asks for a first name \(or nickname\) and an age range\b/.test(P)) errs.push('privacy.html: the profile step is not described as asking for an age range');
+    if(/Child's age(?! range)/.test(P)) errs.push("privacy.html: the table lists \"Child's age\", not the age range the app stores");
+    if(/The name and the age never leave/.test(P)) errs.push('privacy.html: "the name and the age never leave the device" — it is an age range'); }
   await b.close();
   console.log(errs.length?'FAIL\n'+errs.join('\n'):'PASS — onboarding asks for a display name and an age range, and stores both');
   process.exit(errs.length?1:0);
