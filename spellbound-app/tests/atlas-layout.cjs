@@ -10,10 +10,13 @@
       atlasKey, index.html .atlas-wrap container queries). Wide boards are as they were.
    2. The stop callout on a region's panorama ran off the right edge of a phone ("Clear the
       earlier stops firs"). popFit() slides it into the visible window of the panning board.
-   3. The Advanced Rounds panel said "Unlocks with the Advanced Pack" and named no way in.
-      It now offers "Show a grown-up" (the PIN-gated Advanced Pack — the PIN dialog IS the
-      door) and "Look at the map" (a peek at the board; its regions lead to the same door).
-      No price, and never the words "ask a grown-up" (FIX-BEE v2 T3).
+   3. The paid continents are ONE QUIET LINE (owner, 4 Oct 2026; audit v4 C5). Two locked
+      panels (Advanced Rounds, Ultra — "Show a grown-up" + "Look at the map" over blurred
+      boards) became one sentence under the Honey map, "More continents come with the Advanced
+      Pack", and one "Show a grown-up": the same PIN-gated door. No paid board, no peek, no
+      price, and never the words "ask a grown-up" (FIX-BEE v2 T3). A tester or a pack holder
+      still sees all three continents and no line.
+   4. The road sign at a region's earned edge is never cut by a phone's window (audit v4 §4).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/atlas-layout.cjs */
 const { chromium } = require('playwright');
 const SRC = process.env.SRC || __dirname + '/..';
@@ -172,7 +175,7 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
     await pg.close();
   }
 
-  /* ---------- 3. a locked continent has a door, and a look ---------- */
+  /* ---------- 3. the paid continents are one quiet line, with one door ---------- */
   {
     const { pg, errs } = await boot(b, 390, 844);
     await atlas(pg, 'light', 0);
@@ -180,22 +183,25 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
       const W = ms => new Promise(r => setTimeout(r, ms)); const o = {};
       const t = (document.querySelector('.sb-content') || document.body).innerText;
       o.price = /\$\s?\d|\/\s*yr|per year/i.test(t); o.askWords = /ask a grown-up/i.test(t);
-      const doors = [...document.querySelectorAll('button[data-act="atlasAdvDoor"]')], looks = [...document.querySelectorAll('[data-act="atlasPeek"]')];
-      o.doors = doors.length; o.looks = looks.length; o.named = doors.every(x => /grown-up/i.test(x.textContent));
-      o.inside = looks.every(x => { const ov = x.closest('[style*="inset:0"]'), pr = ov.parentElement.getBoundingClientRect(), r = x.getBoundingClientRect(); return r.top >= pr.top && r.bottom <= pr.bottom; });
+      const lines = [...document.querySelectorAll('.atlas-more')], doors = [...document.querySelectorAll('[data-act="atlasAdvDoor"]')];
+      o.lines = lines.length; o.doors = doors.length; o.boards = document.querySelectorAll('.atlas-board').length;
+      o.peek = document.querySelectorAll('[data-act="atlasPeek"]').length;
+      o.said = lines.length === 1 && /^More continents come with the Advanced Pack\s*Show a grown-up$/.test(lines[0].innerText.replace(/\s+/g, ' ').trim());
+      o.door = doors.length === 1 && doors[0].tagName === 'BUTTON' && lines[0].contains(doors[0]) && /^Show a grown-up$/.test(doors[0].textContent.trim());
+      const bd = document.querySelector('.atlas-board'); o.under = !!(bd && lines[0] && lines[0].getBoundingClientRect().top >= bd.getBoundingClientRect().bottom);
+      o.tall = doors[0] ? Math.round(doors[0].getBoundingClientRect().height) : 0;
+      o.filled = doors[0] ? getComputedStyle(doors[0]).backgroundColor : '';
+      o.paidNames = /Ultra Champions|THE LAST CONTINENT|90% GATES|Advanced Rounds/.test(t);
       state.pinDlg = null; doors[0].click(); await W(300); o.pin = !!state.pinDlg; o.noSheet = !state.showTiers && state.nav === 'trail'; state.pinDlg = null; render(); await W(200);
-      document.querySelector('[data-act="atlasPeek"][data-arg="exp"]').click(); await W(300);
-      const boards = document.querySelectorAll('.atlas-board'); const exp = boards[1];
-      o.peekOpen = !exp.parentElement.parentElement.querySelector(':scope > [style*="inset:0"]') && exp.querySelectorAll('.atlas-pin').length === 6;
-      o.peekBar = !!document.querySelector('[data-act="atlasPeek"][data-arg="exp"]') && /comes with the Advanced Pack/i.test(exp.closest('.atlas-wrap').parentElement.innerText);
-      exp.querySelector('.atlas-pin').click(); await W(300); o.pinFromPeek = !!state.pinDlg && state.trailView !== 'act'; state.pinDlg = null; render(); await W(200);
-      document.querySelector('[data-act="atlasPeek"][data-arg="exp"]').click(); await W(300);
-      o.closed = !!document.querySelectorAll('.atlas-board')[1].parentElement.parentElement.querySelector(':scope > [style*="inset:0"]');
+      /* a tester sees all three continents and no line */
+      state.devUnlock = true; render(); await W(300);
+      o.devBoards = document.querySelectorAll('.atlas-board').length; o.devLine = document.querySelectorAll('.atlas-more').length; state.devUnlock = false; render();
       return o; });
-    ok(d.doors === 2 && d.looks === 2 && d.named && d.inside, 'both locked continents offer "Show a grown-up" and "Look at the map", inside their panel ' + JSON.stringify(d));
+    ok(d.lines === 1 && d.said && d.door && d.doors === 1 && d.under, 'a free child\'s Atlas says ONE quiet line under the map — "More continents come with the Advanced Pack" — with one "Show a grown-up" ' + JSON.stringify(d));
+    ok(d.boards === 1 && !d.peek && !d.paidNames, 'and draws no paid continent: one board, no "Look at the map", no Advanced Rounds or Ultra heading');
+    ok(d.tall >= 44, 'its one button is a 44px target (' + d.tall + 'px)');
     ok(d.pin && d.noSheet, '"Show a grown-up" opens the grown-up PIN — the pack is drawn only behind it');
-    ok(d.peekOpen && d.peekBar && d.closed, '"Look at the map" lifts the veil on the expedition board, says what it comes with, and "Done looking" puts it back');
-    ok(d.pinFromPeek, 'a region tapped while looking leads to the same PIN door, not into the region');
+    ok(d.devBoards === 3 && d.devLine === 0, 'a tester (or a pack holder) still sees all three continents, and no line (' + d.devBoards + ' boards)');
     ok(!d.price && !d.askWords, 'no price and no "ask a grown-up" on the child\'s Atlas (FIX-BEE v2 T3)');
     ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
     await pg.close();

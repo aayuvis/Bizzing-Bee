@@ -1589,39 +1589,24 @@
       </div>
     </div>`;
   }
-  /* A LOCKED CONTINENT HAS A DOOR, AND YOU MAY LOOK THROUGH IT.
-     The two plan-locked continents used to be one big button reading "Unlocks with the
-     Advanced Pack" over a blurred map — it named no way in, and on a child's screen it read
-     as a dead end. Each panel now says what it comes with and offers two real actions:
-     "Show a grown-up", which opens the Advanced Pack through the grown-up PIN
-     (app.openAdvanced → pinGate — the PIN dialog IS the door; the pack's page is drawn only
-     behind it), and "Look at the map", which lifts the veil so the child can see the board
-     before anyone unlocks it; its regions then lead to the same door. No price, and never
-     the words "ask a grown-up" (FIX-BEE v2 T3, tests/trust-v2.cjs). Guard:
-     tests/atlas-layout.cjs. */
-  function advLock(key, icon, title, line, blur) {
-    return `<div data-act="atlasAdvDoor" style="position:absolute;inset:0;z-index:5;display:grid;place-items:center;border-radius:20px;cursor:pointer;background:${blur ? 'linear-gradient(180deg,rgba(12,9,28,.66),rgba(12,9,28,.88));-webkit-backdrop-filter:blur(3.5px);backdrop-filter:blur(3.5px)' : 'linear-gradient(180deg,rgba(10,8,26,.40),rgba(10,8,26,.80))'}">
-      <div style="text-align:center;padding:22px;max-width:26em">
-        <span style="display:inline-grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;margin-bottom:12px">${iconSVG(icon, 24)}</span>
-        <span style="display:block;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)">${esc(title)}</span>
-        <span style="display:block;font-size:13px;line-height:1.5;color:rgba(255,255,255,.92);margin-top:6px">${esc(line)} Comes with the Advanced Pack.</span>
-        <span style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px">
-          <button data-act="atlasAdvDoor" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:11px;background:#FFC23D;color:#241E33;font-weight:800;font-size:14px">${iconSVG('lock', 14)} Show a grown-up</button>
-          <button data-act="atlasPeek" data-arg="${key}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:11px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);color:#fff;font-weight:800;font-size:14px">Look at the map</button>
-        </span></div></div>`;
-  }
-  function advPeekBar(key) {
-    return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding:10px 12px;border-radius:14px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
-      <span style="flex:1;min-width:180px;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted)">${iconSVG('lock', 13)} Just looking — this comes with the Advanced Pack.</span>
-      <button data-act="atlasAdvDoor" style="padding:9px 14px;border-radius:10px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:13px">Show a grown-up</button>
-      <button data-act="atlasPeek" data-arg="${key}" style="padding:9px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Done looking</button></div>`;
+  /* THE PAID CONTINENTS ARE ONE QUIET LINE (owner, 4 Oct 2026; audit v4 C5).
+     A child without the Advanced Pack used to meet two big locked panels under the Honey map —
+     the Advanced Rounds and Ultra, each over a blurred board with "Show a grown-up" and "Look at
+     the map". The owner chose one quiet line instead: the child's Atlas is the continent they
+     can walk, and under it a single sentence, "More continents come with the Advanced Pack",
+     with one "Show a grown-up" — the same door as before (atlasAdvDoor → ultraUpsell → the
+     grown-up PIN; the pack's page is drawn only behind it). No price, no boards, no peek, and
+     never the words "ask a grown-up" (FIX-BEE v2 T3, tests/trust-v2.cjs). A region address
+     (#/atlas/exp/…, a stop) still lands on the same door. Guard: tests/atlas-layout.cjs. */
+  function advLine() {
+    return `<div class="atlas-more" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 4px;padding:10px 12px 10px 14px;border-radius:14px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
+      <span style="flex:1;min-width:190px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--muted)">${iconSVG('lock', 14)} More continents come with the Advanced Pack</span>
+      <button data-act="atlasAdvDoor" style="min-height:44px;padding:0 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Show a grown-up</button></div>`;
   }
   /* the door: the pack's own page, behind the PIN. app.openAdvanced returns silently while
      advanced.js is not in, so go through app3's ultraUpsell, which waits for it and falls back
-     to the (PIN-guarded) plan sheet — one door, never a dead tap. The whole veil is this door
-     too, as the old single button was; its two buttons are the named, focusable ways in. */
+     to the (PIN-guarded) plan sheet — one door, never a dead tap. */
   app2.atlasAdvDoor = () => { if (app2.ultraUpsell) return app2.ultraUpsell(); if (window.ADV) app2.openAdvanced(); };
-  app2.atlasPeek = k => { const p = state.atlasPeek = Object.assign({}, state.atlasPeek); p[k] = !p[k]; render(); };
   function viewAtlas() {
     const c = active();
     state.trailCourse = 'honey';
@@ -1630,9 +1615,8 @@
     state.trailCourse = 'exp';
     const expOk = advOn() || devOn();
     const x = expOk ? actSections(c, 'exp') : null;
-    const advBoard = atlasBoard(c, 'exp');
+    const advBoard = expOk ? atlasBoard(c, 'exp') : '';
     state.trailCourse = 'honey';
-    const peek = state.atlasPeek || {};
     return `<div style="${RISE()}max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
@@ -1640,36 +1624,16 @@
       ${tierBar(h.lap, h.done, h.total)}
       ${board}
       <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 22px">Tap a region to walk it. ${h.lap === 1 ? 'Tier 1 keeps every word at your level — the same continent returns tougher at Tier 2.' : 'Tier ' + h.lap + ' of 3 — the same continent, harder words.'}</p>
-      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 12px">
+      ${expOk ? `<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">${esc(T().names.expedition)}</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#37415B,#1F2A44);border-radius:999px;padding:4px 11px">90% GATES</span></div>
-      ${expOk ? tierBar(x.lap, x.done, x.total) : ''}
-      <!-- min-height only when LOCKED. The panel takes its height from the map's
-           aspect ratio, so on a phone it is about 200px (184px at 360px wide) while
-           the lock content — icon, heading, two-line paragraph, price button — is
-           272px. The button fell out of the bottom of the panel and landed on the
-           next section's heading. Desktop never showed it: there the map is 596px
-           tall and the content has room to spare. With two actions (a door and a look)
-           it is ~310px at 360px wide, so 340px — and the Ultra panel below needs the same. -->
-      <div style="position:relative${expOk || peek.exp ? '' : ';min-height:340px'}">
-        ${advBoard}
-        <!-- The scrim used to start at .34 opacity, which is nowhere near enough to
-             cover what is under it: the expedition map's region labels are white
-             pills on dark discs, and they punched straight through "Six expert
-             expeditions" and its paragraph. It read as a broken screen rather than
-             as a locked one. Stronger now, and blurred, so the map is still legibly
-             THERE — you can see there is something to unlock — without any of its
-             lettering competing with the lettering on top of it. -->
-        ${expOk ? '' : peek.exp ? advPeekBar('exp') : advLock('exp', 'lock', 'Six expert expeditions', '54 stops at national level, each on its own map, gated at 90%.', true)}
-      </div>
+      ${tierBar(x.lap, x.done, x.total)}
+      <div style="position:relative">${advBoard}</div>
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:26px 0 12px">
         <span style="font-family:var(--display);font-weight:800;font-size:19px">Ultra Champions</span>
         <span style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#241E33;background:linear-gradient(135deg,#FFE49B,#E8A81C);border-radius:999px;padding:4px 11px">THE LAST CONTINENT</span></div>
-      <div style="position:relative${expOk || peek.ultra ? '' : ';min-height:340px'}">
-        ${ultraBoard(c)}
-        ${expOk ? '' : peek.ultra ? advPeekBar('ultra') : advLock('ultra', 'crown', "The champions' journey", 'Every word in the library, hardest first, in day-sized blocks. The end of the road.', false)}
-      </div>
-      <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>
+      <div style="position:relative">${ultraBoard(c)}</div>
+      <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 4px">Three continents, one journey: the Honey continent three tiers deep, then the Expedition, then Ultra.</p>` : advLine()}
     </div>`;
   }
   /* ---------------------------------------------------------------
