@@ -608,18 +608,7 @@
 .sg-brake{opacity:.94}
 .sg-brake:active{background:#E0553C;color:#fff;transform:scale(.94)}
 
-/* ===== The Grand Prix, sideways on a phone =====
-   The "turn your phone" card: shown instead of the race while a phone is upright, and over
-   it (the race paused) if the phone is turned upright mid-race. */
-.sg-turn{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  padding:24px;text-align:center;color:#fff;background:radial-gradient(120% 80% at 50% 40%,#3A2E57 0%,#241E33 70%)}
-.sg-turn b{font:800 22px/1.2 var(--display,'Fraunces',serif)}
-.sg-turn span{font:600 14px/1.45 var(--ui,'Hanken',sans-serif);color:#D8CCF0;max-width:300px}
-.sg-turn-ph{width:96px;height:96px;color:#FFD873;margin-bottom:6px}
-.sg-turn-ph svg{width:100%;height:100%;animation:sgTurn 2.4s cubic-bezier(.6,0,.3,1) infinite}
-@keyframes sgTurn{0%,18%{transform:rotate(0)}50%,82%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
-@media (prefers-reduced-motion:reduce){ .sg-turn-ph svg{animation:none;transform:rotate(-90deg)} }
-.sg-turn-wrap{position:absolute;inset:0;z-index:80}
+/* ===== The Grand Prix on a phone: sideways AND upright (4 Oct: the turn-your-phone card is gone) ===== */
 /* the race itself, sideways: the HUD floats over the sky, the controls live in the gutters
    either side of the road (--sg-gut is set by the engine), the right-hand pair stacks */
 .sg-land{display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -632,3 +621,23 @@
 /* the spelling card sits at the TOP: the keyboard will take the bottom half of the screen */
 .sg-land #sg-card{place-items:start center;padding-top:6px}
 .sg-land .sg-cardbox{padding:12px 18px;gap:6px}
+/* the race itself, UPRIGHT: the road is the top ~60% at the full width (the engine sizes
+   it), the HUD floats over its sky, and everything a thumb presses lives in the zone BELOW
+   the road (--sg-ctl tall, set by the engine): Steer Left · Brake · Steer Right on one row
+   at 60% of the zone's height, the power-up slot over the brake. Nothing sits on the road. */
+.sg-port .sg-racehud{position:absolute;top:6px;left:8px;right:8px;z-index:6;margin:0;padding:4px 10px;max-width:none}
+.sg-port .sg-rh-row{gap:8px}
+.sg-port .sg-rh-place{font-size:16px}
+.sg-port .sg-rh-spd{min-width:0}
+.sg-port .sg-posbar{min-width:90px}
+.sg-port .sg-race3d{margin:0 auto}
+.sg-port .sg-race3d canvas{display:block}
+.sg-port #sg-cv{border:0;border-radius:0 0 18px 18px;max-width:none}   /* edge to edge: Wd is the screen's width */
+.sg-port .sg-steer{top:calc(100% + var(--sg-ctl,240px) * .6 - 44px);bottom:auto;height:88px;padding:0 16px;align-items:center}
+.sg-port .sg-steer-r{display:contents}
+.sg-port .sg-steer .sg-sbtn{width:112px;height:88px;border-radius:44px}
+.sg-port .sg-steer .sg-sbtn svg{width:34px;height:34px}
+.sg-port .sg-steer .sg-brake{width:72px;height:72px;border-radius:50%}
+.sg-port .sg-hold{top:calc(100% + var(--sg-ctl,240px) * .6 - 112px);right:auto;left:50%;margin-left:-29px}
+.sg-port #sg-card{place-items:start center;padding-top:6px}
+.sg-port .sg-cardbox{padding:12px 18px;gap:6px}

@@ -79,24 +79,24 @@
 
   <h2>3. What information the app handles — and where it lives</h2>
   <p>When you create a speller profile, the app asks for a <b>first name (or nickname)</b> and an
-  <b>age</b>, and lets your child pick an avatar. As your child plays it records practice progress:
+  <b>age range</b>, and lets your child pick an avatar. As your child plays it records practice progress:
   words attempted, scores, levels, coins and settings. All of that is stored on your device.</p>
   <p><b>Bizzing coins.</b> Coins are kept in one family wallet per child, shared by the Bizzing
   apps opened in the same browser on this device (browser storage, key <code>bizzing.wallet</code>),
   so a coin earned in one app can be spent in another. The wallet holds the child's first name in
   lower case, their coin balance and a short ledger of what earned or spent each coin. It never
   leaves the device, and coins are earned only for learning — never bought with money.</p>
-  <p><b>The name and the age never leave the device</b> — not the real name, and not a nickname
+  <p><b>The name and the age range never leave the device</b> — not the real name, and not a nickname
   either. They are used only to greet your child on screen and to pick a starting difficulty. When
   backup is on, what is copied to the server is a label taken from <i>the avatar your child picked</i>
   ("Fox", "Panda"), their spelling level, and the progress record — against a random id that is not
   derived from anything about them. When you restore onto a new device, the app asks you for the name
-  and the age there, because the server was never told them.</p>
+  and the age range there, because the server was never told them.</p>
 
   <div class="tw"><table>
     <tr><th>Information</th><th>Where it lives</th><th>Sent to the server?</th></tr>
     <tr><td>Child's first name or nickname</td><td>Your device</td><td><b>No</b></td></tr>
-    <tr><td>Child's age</td><td>Your device</td><td><b>No</b></td></tr>
+    <tr><td>Child's age range</td><td>Your device</td><td><b>No</b></td></tr>
     <tr><td>Avatar label ("Fox", "Panda")</td><td>Your device</td><td>Only if you turn backup on</td></tr>
     <tr><td>Avatar, theme, spelling level</td><td>Your device</td><td>Only if you turn backup on</td></tr>
     <tr><td>Practice progress, scores, coins, settings</td><td>Your device</td><td>Only if you turn backup on</td></tr>
