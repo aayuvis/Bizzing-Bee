@@ -459,13 +459,22 @@
      It writes the seconds into `el.textContent` IN PLACE and calls onTick only when the
      whole second changes — never a re-render of the view each second, which is what drops
      a phone's keyboard focus mid-word (gTick → render). onEnd fires once. */
-  function sgClock(secs, o){ o=o||{}; let left=+secs||0, shown=null, over=false;
+  /* A countdown is not physics: it reads the real clock every frame rather than counting
+     sgLoop's capped steps, so a phone that can only draw eight frames a second still ends a
+     60-second Sprint after 60 seconds. It stops counting while hidden, held, or under a miss
+     card, exactly like sgLoop. */
+  function sgClock(secs, o){ o=o||{}; let left=+secs||0, shown=null, over=false, held=false, raf=0, last=performance.now();
+    const vis=()=>{ last=performance.now(); }; document.addEventListener('visibilitychange',vis);   // time spent hidden is not play
     const fmt=o.fmt||(s=>String(s));
-    const lp=sgLoop(dt=>{ if(over) return; left-=dt; if(left<=0){ left=0; over=true; } }, ()=>{
-      const s=Math.ceil(left-1e-9);
-      if(s!==shown){ shown=s; try{ if(o.el) o.el.textContent=fmt(s); }catch(e){} try{ if(o.onTick) o.onTick(s,left); }catch(e){} }
-      if(over){ lp.stop(); try{ if(o.onEnd) o.onEnd(); }catch(e){} } });
-    return { left:()=>left, hold:lp.hold, add(s){ left+=s; }, stop(){ over=true; lp.stop(); } }; }
+    function paint(){ const s=Math.max(0,Math.ceil(left-1e-9));
+      if(s!==shown){ shown=s; try{ if(o.el) o.el.textContent=fmt(s); }catch(e){} try{ if(o.onTick) o.onTick(s,left); }catch(e){} } }
+    function tick(now){ if(over) return; raf=requestAnimationFrame(tick);
+      if(document.hidden||held||SGUI.held){ last=now; return; }
+      left-=Math.min(1,Math.max(0,(now-last)/1000)); last=now;   // a slow frame still counts in full; only a stall over 1s is clipped
+      if(left<=0){ left=0; over=true; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange',vis); paint(); try{ if(o.onEnd) o.onEnd(); }catch(e){} return; }
+      paint(); }
+    paint(); raf=requestAnimationFrame(tick);
+    return { left:()=>left, hold(v){ held=!!v; }, add(s){ left+=s; }, stop(){ over=true; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange',vis); } }; }
 
   /* ---- 2. ONE MISS CARD (§1.5). From the Warm-Up's miss screen: the child's letters over
      the word's, the letters that differ marked by SHAPE as well as colour (a wrong letter is
@@ -539,6 +548,9 @@
       return {k:'suffix',label:'Suffix endings',line:'The ending is -'+sm[0]+(tm&&tm[0]!==sm[0]?' (you wrote -'+tm[0]+')':'')+'.',rule:R2}; }
     /* ie / ei */
     if(/ie|ei/.test(w.slice(Math.max(0,ws-1),we+1)) && /ie|ei/.test(t)) return {k:'ie',label:'ie or ei',line:'This word is spelled with '+(w.match(/ie|ei/)[0])+'.',rule:rule('ieei')};
+    /* one vowel written for another, same length: the vowel (the schwa), never an "er" reading */
+    if(vow>0 && nonVow===0 && cols.every(c=>c.op==='ok'||c.op==='sub'))
+      return {k:'vowel',label:'The vowel',line:'The vowel here is spelled '+seg+'. In a quiet syllable every vowel sounds like "uh", so the sound cannot tell you which one.',rule:rule('schwa')};
     /* one sound, several spellings: widen the window round the zone until both halves are
        spellings of the same sound */
     for(let pad=0; pad<=2; pad++){ for(let l=0; l<=pad; l++){ const r=pad-l;

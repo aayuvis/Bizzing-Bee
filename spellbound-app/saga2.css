@@ -554,6 +554,9 @@
 :root[data-mode="dusk"] .sg-stage{background-image:var(--sg-plate-n,none),linear-gradient(180deg,var(--tint-deep,#251F42),var(--tint,#2E2750))}
 /* a stage owns the screen: nothing under it scrolls, and the shell's own padding is not a page */
 :root.sg-stage-on,:root.sg-stage-on body{overflow:hidden;overscroll-behavior:none}
+/* the world's animated decoration is entirely covered by a stage or a game overlay, and under a
+   4x CPU throttle it was what made the frames 50-150ms instead of 16.7ms: switch it off there */
+:root.sg-stage-on .w4-bg,body:has(>.arc-play) .w4-bg,body:has(>.bz-play) .w4-bg{display:none}
 :root.sg-stage-on .sb-content{min-height:0}
 /* #root's first child is min-height:100dvh INSIDE #root's 1.09 zoom — 9% taller than the window,
    so every screen scrolled ~70px; under a stage the shell is only a header, so let it be short */
