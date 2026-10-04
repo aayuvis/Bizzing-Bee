@@ -56,17 +56,13 @@
     const r = c[k] || (c[k] = {}); r.best = r.best || {}; r.seen = r.seen || {}; return r; }
   function seenIds() { const c = active(); return new Set(c.qzSeen || []); }
   function markSeen(ids) { try { const c = active(); c.qzSeen = (c.qzSeen || []).concat(ids.filter(Boolean)); if (c.qzSeen.length > 1500) c.qzSeen = c.qzSeen.slice(-1100); } catch (e) {} }
-  const isRatio = (m) => m !== 'clock';
   function bestTxt(h, m) { const b = rec(h).best[m]; if (!b) return '';
     if (m === 'clock') return 'Best: ' + b.r + ' right';
     if (m === 'ladder') return 'Best: rung ' + b.r;
     return 'Best: ' + b.r + '/' + b.n; }
   /* The Play card's line: the hub's best MODE, never a run count ("Best: 8/10 · Roots"). */
-  function cardBest(h) { let top = null;
-    (MODES[h] || []).forEach((m) => { const b = rec(h).best[m.id]; if (!b || !isRatio(m.id) || !b.n) return;
-      const p = b.r / b.n; if (!top || p > top.p) top = { p, m }; });
-    if (!top) { const b = rec(h).best.clock; return b ? 'Best: ' + b.r + ' right · Against the Clock' : ''; }
-    return bestTxt(h, top.m.id) + ' · ' + top.m.title; }
+  /* (app3's SB_HUB_BEST reads the same record at boot, before this file is in) */
+  const cardBest = (h) => (W.SB_HUB_BEST ? SB_HUB_BEST(h) : '');
 
   /* ------------------------------------------------------------------ levels (SB_LEVEL, g-found) */
   const LV = () => W.SB_LEVEL || null;
@@ -294,7 +290,7 @@
     markSeen(qs.slice(0, 30).map((q) => q.id)); g.qs = qs; g.left = CLOCK_MS; g.phase = 'play'; }
   function fmtT(ms) { return Math.max(0, Math.ceil(ms / 1000)) + 's'; }
   function runClock(g) { stopClock(g);
-    const upd = (dt) => { if (G() !== g || g.phase !== 'play') { stopClock(g); return; } if (g.held || state.settingsOpen) return;
+    const upd = (dt) => { if (G() !== g || g.phase !== 'play' || state.nav !== g.hub) { stopClock(g); return; } if (g.held || state.settingsOpen) return;
       g.left -= dt * 1000; if (g.left <= 0) { g.left = 0; stopClock(g); finish(g); } };
     const draw = () => { const el = document.getElementById('qz-time'); if (el) { const t = fmtT(g.left); if (el.textContent !== t) el.textContent = t; el.classList.toggle('low', g.left <= 10000); } };
     if (W.sgLoop) { g.loop = sgLoop(upd, draw); return; }
@@ -396,11 +392,11 @@
     settle(g);
     const h = g.hub, m = g.mode; const r = rec(h);
     const score = m === 'ladder' ? g.rung : g.right; const of = m === 'ladder' ? RUNGS : m === 'clock' ? 0 : (g.n - g.two);
-    const b = r.best[m]; if (!b || score > b.r) { r.best[m] = { r: score, n: of }; g.newBest = !!b; }
+    const b = r.best[m]; if (!b || score > b.r) { r.best[m] = { r: score, n: of, t: modeOf(h, m).title }; g.newBest = !!b; }
     /* the level is re-checked once, here: right first try ÷ asked, two-option items left out (§1.7) */
-    const pct = m === 'ladder' ? (g.rung / Math.max(1, g.rung + (g.missed ? 1 : 0))) : (g.asked ? g.right / g.asked : 0);
+    const pct = g.asked ? g.right / g.asked : 0;   // right first try ÷ asked; a climb's miss is one asked, not right
     g.pct = pct;
-    try { if (LV() && LV().after && g.asked + (m === 'ladder' ? 1 : 0) > 0) g.lvl = LV().after(lkey(h, m), Math.round(pct * 100)); } catch (e) {}
+    try { if (LV() && LV().after && g.asked > 0) g.lvl = LV().after(lkey(h, m), Math.round(pct * 100)); } catch (e) {}
     g.coins = (W.earnedSoFar ? earnedSoFar() : g.e0 + g.paid) - g.e0;
     try { logActivity(h === 'lore' ? 'lore' : 'hive', hubName(h) + ' · ' + modeOf(h, m).title, { done: g.asked, right: g.right, coins: g.coins }, []); } catch (e) {}
     try { if (score >= Math.max(1, of * 0.8)) { sfx('win'); burstConfetti(90); } else sfx('level'); } catch (e) {}
@@ -413,6 +409,7 @@
     if (id === 'all') g.ths = []; else { const i = g.ths.indexOf(id); if (i >= 0) g.ths.splice(i, 1); else g.ths.push(id); }
     rec(g.hub).ths = g.ths.slice(); render(); }
   function begin() { const g = G(); if (!g || g.phase !== 'intro') return; const lv = trivLv(g.hub, g.mode);
+    try { if (W.ttLevelReady && !ttLevelReady(lv)) { if (!g.waiting) { g.waiting = 1; needTriv(lv)(() => { g.waiting = 0; if (G() === g) begin(); }); } return; } } catch (e) {}
     if (g.mode === 'clock') buildClock(g, lv);
     else setQs(g, trivDraw(g.ths && g.ths.length ? g.ths : generalThemes(), lv, 10).map(fromTriv));
     g.e0 = W.earnedSoFar ? earnedSoFar() : 0; render(); afterStart(g); }
@@ -487,7 +484,7 @@
     const num = g.mode === 'ladder' ? 'Rung ' + (g.rung + 1) + ' of ' + RUNGS + '. ' : g.mode === 'clock' || g.mode === 'squares' ? '' : 'Question ' + (g.i + 1) + ' of ' + g.n + '. ';
     return `<div class="qz-card" data-live-prompt="${escA(num + (q.big ? q.prompt + '. ' + (q.sub || '') : (q.sub ? q.sub + ' ' : '') + q.prompt))}">
       <div class="qz-tag">${esc(q.label || '')}</div>${visual(q)}
-      ${q.aud || q.say ? `<button class="qz-hear" data-act="qzHear">${ic('volume', 17)} Hear it</button>` : ''}
+      ${q.aud || q.say ? `<button class="qz-hear" data-act="qzHear" aria-label="Hear it">${ic('volume', 17)} <span class="qz-hlab">Hear it</span></button>` : ''}
       ${q.big ? `<div class="qz-big">${esc(q.prompt)}</div><div class="qz-sub">${esc(q.sub || '')}</div>` : `${q.sub ? `<div class="qz-sub">${esc(q.sub)}</div>` : ''}<div class="qz-q">${esc(q.prompt)}</div>`}
       ${q.two ? '<div class="qz-two">True or false — just for fun: this one never counts toward your level.</div>' : ''}
       ${extra || ''}${right ? rightHTML(q) : ''}</div>`; }
@@ -522,7 +519,8 @@
     let body = `<div class="qz-sub">Listen. Where does this word come from?</div><button class="qz-hear big" data-act="qzHear">${ic('volume', 20)} Hear the word</button>`;
     if (q.stage !== 'pick') body += `<div class="qz-lang ${q.langOk ? 'ok' : 'no'}">${ic(q.langOk ? 'check' : 'close', 16)} ${q.langOk ? 'Yes — it came into English from' : 'It came into English from'} <b>${esc(q.lang)}</b>.</div>`;
     if (q.stage === 'type') body += `<div class="qz-sub">Now spell it.</div>
-      <input class="qz-in" data-inp="qzType" data-key="qzKey" data-fkey="qzTyped" value="${escA(g.typed || '')}" placeholder="type the word" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Type the word you heard">
+      ${kbd() ? '<div id="qz-keys" class="qz-keys"></div>' : ''}
+      <input class="qz-in" data-inp="qzType" data-key="qzKey" data-fkey="qzTyped"${kbd() ? ' readonly inputmode="none"' : ''} value="${escA(g.typed || '')}" placeholder="type the word" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Type the word you heard">
       <button class="qz-go" data-act="qzSubmit">Check <span class="qz-kb" aria-hidden="true">Enter</span></button>`;
     if (q.stage === 'done') { const note = [q.lang + (q.fact ? ' — ' + q.fact : '')];
       if (q.ok) body += `<div class="qz-ok" role="status">${ic('check', 16)} <b>${esc(w.w)}</b> — spelled right. <span class="qz-okf">${esc(note[0])}</span></div><button class="qz-go" data-act="qzGo">Next <span class="qz-kb" aria-hidden="true">Enter</span></button>`;
@@ -530,6 +528,8 @@
           + `<div class="qz-fact"><b>${ic('bulb', 15)} Where it comes from</b> ${esc(note[0])}</div><button class="qz-go" data-act="qzGo">Continue <span class="qz-kb" aria-hidden="true">Enter</span></button>`); } }
     return `<div class="qz-card" data-live-prompt="Listen, then pick the language the word came from.">${body}</div>`; }
 
+  /* touch screens type on the kit's keyboard (§1.6: keys ≥ 40px, never under the tab bar); desktops on their own */
+  function kbd() { try { return !!(W.SGUI && SGUI.keys && W.matchMedia && matchMedia('(pointer: coarse)').matches); } catch (e) { return false; } }
   function introView(g) { const ths = generalThemes(); const sel = g.ths || [];
     const chips = [['all', 'All themes']].concat(ths.map((id) => [id, themeLabel(id)])).map(([id, label]) => { const on = id === 'all' ? !sel.length : sel.indexOf(id) >= 0;
       const A = (W.SB_TT_ICON_ART || {})[id]; const pic = A ? `<span class="qz-thic" aria-hidden="true">${A.replace('<svg ', '<svg width="22" height="22" ')}</span>` : '';
@@ -586,6 +586,10 @@
           q.opts[g.picked], { onContinue: () => { if (G() === g && g.tok === tok && g.held) cont(); } }); } } catch (e) {}
     try { const host = document.getElementById('qz-miss'); if (host && !host.childElementCount && W.SGUI && SGUI.miss && q.kind === 'origin') {
         g.kitHold = true; SGUI.miss(host, q.word, q.typed, { note: q.lang + (q.fact ? ' — ' + q.fact : ''), onContinue: () => { if (G() === g && curQ(g) === q) advance(g); } }); } } catch (e) {}
+    try { const host = document.getElementById('qz-keys'); if (host && !host.childElementCount && q.kind === 'origin' && q.stage === 'type' && kbd()) {
+        const box = () => document.querySelector('[data-fkey="qzTyped"]'); const put = () => { const b = box(); if (b) b.value = g.typed || ''; };
+        if (g.keys && g.keys.destroy) { try { g.keys.destroy(); } catch (e) {} }
+        g.keys = SGUI.keys(host, { onKey: (ch) => { g.typed = (g.typed || '') + ch; put(); }, onBack: () => { g.typed = String(g.typed || '').slice(0, -1); put(); }, onEnter: () => submitType() }); } } catch (e) {}
     try { if (W.liveScan) liveScan(); } catch (e) {} }
 
   /* ---- keys: 1–4 pick (1–9 a square), Enter continues — never while a sheet or the PIN is up ---- */
@@ -693,13 +697,16 @@
   .qz-tag{display:none}.qz-long{display:none}.qz-short{display:inline}.qz-ll{padding:8px 10px;font-size:12.5px;gap:4px}.qz-lls{flex-wrap:nowrap;gap:6px}
   .qz-ot{-webkit-line-clamp:2}.qz-opts{gap:7px}.qz-sub{margin:2px 0}.qz-hear{padding:6px 12px;font-size:13px;margin:0 0 4px}.qz-tile-go{min-height:150px}.qz-hud{padding:8px 12px}.qz-big{font-size:clamp(24px,8vw,34px)}}
 .qz-cart{display:inline-flex;line-height:0}
+@media (max-width:640px){.qz-hear,.qz-up,.qz-th{min-height:44px}
+  .qz-card{position:relative}.qz-card>.qz-hear:not(.big){position:absolute;top:6px;right:6px;min-width:44px;justify-content:center;padding:0 10px;margin:0}.qz-hlab{display:none}}
 @media (prefers-reduced-motion:reduce){.qz-stage *{animation:none!important;transition:none!important}}`;
     document.head.appendChild(s); }
 
   /* ------------------------------------------------------------------ the doors */
   const API = { open, view, best: cardBest, start, finish, modes: MODES, hubName,
     /* for the tests: the generators and the pay rule, so a bot can play them without a screen */
-    _meaningRound: meaningRound, _originRound: originRound, _figRound: figRound, _trivDraw: trivDraw, _owed: owed, _words: words, _topical: topical, _posOf: posOf, _rivalSays: rivalSays, _G: G, _cur: () => curQ(G()) };
+    _meaningRound: meaningRound, _originRound: originRound, _figRound: figRound, _trivDraw: trivDraw, _owed: owed, _words: words, _topical: topical, _posOf: posOf, _rivalSays: rivalSays, _G: G, _cur: () => curQ(G()),
+    _ladder: (lv) => { const g = { hub: 'lore', mode: 'ladder' }; buildLadder(g, lv); return g.qs || []; } };
   window.SB_QHUB = API;
   /* the Play card's best line, for g-found's card: SB_QHUB_BEST('lore') → "Best: 8/10 · Roots" */
   window.SB_QHUB_BEST = cardBest;

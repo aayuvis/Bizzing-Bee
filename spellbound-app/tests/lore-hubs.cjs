@@ -130,7 +130,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     const out = { random: {}, perfect: {}, runCount };
     for (const h of ['lore', 'hive']) for (const m of MODES[h]) {
       const k = h + '/' + m; out.random[k] = []; out.perfect[k] = await round(h, m, 'perfect');
-      for (let r = 0; r < (m === 'ladder' ? 12 : 3); r++) out.random[k].push(await round(h, m, 'random'));
+      for (let r = 0; r < (m === 'ladder' ? 16 : m === 'origins' || m === 'clock' ? 3 : 7); r++) out.random[k].push(await round(h, m, 'random'));
     }
     return out; }, MODES);
   const keys = Object.keys(bots.perfect);
@@ -142,8 +142,16 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     window.SB_HIVE_PAY = false; const off = own({ hub: 'hive', mode: 'classic', right: 10, asked: 10, paid: 0 }); delete window.SB_HIVE_PAY;
     return { bad, off }; });
   ok(!rule.bad.length && rule.off === 0, 'T1 on the rule: nothing is owed below chance — under 6 of 10, on the clock under 60%, and before 15 answers while it runs (6 right once time is up), under 4 rungs — and SB_HIVE_PAY=false pays Hive Mind nothing' + (rule.bad.length ? ' — ' + rule.bad.slice(0, 5).join(', ') : ''));
-  const t1 = keys.filter(k => bots.random[k].some(r => r.err || r.paid !== 0)).map(k => k + ' ' + JSON.stringify(bots.random[k].map(r => r.err || r.paid)));
-  ok(!t1.length, `T1: a random bot earns 0 coins in all ${keys.length} modes (${keys.reduce((n, k) => n + bots.random[k].length, 0)} rounds)` + (t1.length ? ' — ' + t1.join(' | ') : ''));
+  /* T1. The pay rule owes nothing below chance (checked for every score above). A guesser can still be
+     lucky — 6 of 10 at four options happens about 2% of the time, so its expected wage is ~0.12 coins a
+     round, 1.2% of a perfect round's 10. Held here as a rate, over enough rounds that one lucky round
+     cannot fail it and a rule that paid below chance (≈25% of perfect) cannot pass it. */
+  const errsB = keys.filter(k => bots.random[k].some(r => r.err)).map(k => k + ' ' + JSON.stringify(bots.random[k].map(r => r.err || r.paid)));
+  const rRounds = keys.reduce((n, k) => n + bots.random[k].length, 0), rCoins = keys.reduce((n, k) => n + bots.random[k].reduce((a, r) => a + (r.paid || 0), 0), 0);
+  const pPer = keys.reduce((n, k) => n + (bots.perfect[k].paid || 0), 0) / keys.length, rPer = rCoins / rRounds;
+  const lucky = keys.flatMap(k => bots.random[k].filter(r => r.paid > 0).map(r => k + ':' + r.paid));
+  ok(!errsB.length && rPer <= 0.05 * pPer && keys.every(k => bots.random[k].every(r => k === 'lore/origins' ? r.paid === 0 : true)),
+    `T1: a random bot is paid at chance's rate and no more — ${rCoins} coins in ${rRounds} rounds, ${(rPer / pPer * 100).toFixed(1)}% of a perfect bot's wage a round (lucky rounds: ${lucky.join(', ') || 'none'}); Origins, which pays for typing, never` + (errsB.length ? ' — ' + errsB.join(' | ') : ''));
   const pays = keys.filter(k => bots.perfect[k].err || !(bots.perfect[k].paid > 0)).map(k => k + ' ' + JSON.stringify(bots.perfect[k]));
   ok(!pays.length, 'and a perfect bot is paid in every mode (Hive Mind too, SB_HIVE_PAY defaulting on)' + (pays.length ? ' — ' + pays.join(' | ') : ''));
   const t6 = keys.flatMap(k => [bots.perfect[k]].concat(bots.random[k]).filter(r => !r.err && (r.coins !== r.paid || r.shown !== r.paid)).map(r => k + ' card ' + r.shown + ' / ledger ' + r.paid));
@@ -225,6 +233,18 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     return { n: qs.length, peers, samePos, sameTh, bad: bad.slice(0, 5), both: qs.every(q => q.opts.length === 4 && q.opts[q.ans] != null), dirs: [...new Set(qs.map(q => q.dir))] }; });
   ok(pos.n >= 60 && pos.samePos === pos.peers && pos.both, `Meanings: every one of ${pos.peers} distractors in ${pos.n} questions is the target's part of speech` + (pos.bad.length ? ' — ' + pos.bad.join(', ') : ''));
   ok(pos.sameTh / pos.peers >= 0.8 && pos.dirs.length === 2, `…${(pos.sameTh / pos.peers * 100).toFixed(0)}% share its subject theme (the rest its cluster), and both directions are asked (${pos.dirs.join(', ')})`);
+
+  /* ---- no question gives itself away: distinct options, one right, the right one in any slot, and a
+     meaning→word prompt that never prints its own word (the question-leaks rules, for the hubs) ---- */
+  const lk = await pg.evaluate(() => { const qs = []; for (let k = 0; k < 8; k++) qs.push(...SB_QHUB._meaningRound('lore', 'meanings', 20), ...SB_QHUB._figRound('lore', 'idioms', 10));
+    const bad = [], slot = [0, 0, 0, 0];
+    for (const q of qs) { const low = q.opts.map(o => String(o).trim().toLowerCase());
+      if (new Set(low).size !== low.length) bad.push('dup ' + q.prompt.slice(0, 30));
+      if (low.filter(o => o === String(q.opts[q.ans]).trim().toLowerCase()).length !== 1) bad.push('one ' + q.prompt.slice(0, 30));
+      if (q.dir === 'm2w' && new RegExp('\\b' + q.word.w + '\\b', 'i').test(q.prompt)) bad.push('leak ' + q.word.w);
+      slot[q.ans]++; }
+    return { n: qs.length, bad: bad.slice(0, 5), slot: slot.map(x => x / qs.length) }; });
+  ok(lk.n >= 200 && !lk.bad.length && Math.max(...lk.slot) < 0.32, `${lk.n} Meanings and Idioms questions: options distinct, exactly one right, the right one in any slot (${lk.slot.map(x => (x * 100).toFixed(0) + '%').join(' ')}), no meaning prints its own word` + (lk.bad.length ? ' — ' + lk.bad.join(', ') : ''));
 
   /* ---- Origins: whatever a guesser always picks wins one time in four ---- */
   const ch = await pg.evaluate(() => { const pool = SB_QHUB._words('lore', 'origins', 600); const qs = [];

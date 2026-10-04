@@ -4172,6 +4172,14 @@ const SB_COUNT = {
 const SB_FLOOR = { trivia: 1, library: 1, voiced: 1 };
 /* A hub's name (games spec §3.3, owner to choose): SB_HUB_NAMES, never typed into copy here. */
 function hubNameOf(k) { try { return (window.SB_HUB_NAMES && SB_HUB_NAMES[k]) || (window.SB_QHUB ? SB_QHUB.hubName(k) : ''); } catch (e) { return ''; } }
+/* The Play card's line for a trivia hub (games spec §4.0): its best MODE, never a run count —
+   "Best: 8/10 · Roots". Read at boot from the child's own record (lore.js keeps it: c.qzLore /
+   c.qzHive .best[mode] = {r, n, t}), so the card needs no lazy file to say it. '' before a round. */
+function hubBest(h) { try { const c = active(); const B = ((c && c[h === 'hive' ? 'qzHive' : 'qzLore']) || {}).best || {}; let top = null;
+    Object.keys(B).forEach(m => { const b = B[m]; if (!b || !b.n || m === 'clock') return; const p = b.r / b.n; if (!top || p > top.p) top = { p, b, m }; });
+    if (!top) { const b = B.clock; return b ? 'Best: ' + b.r + ' right' + (b.t ? ' · ' + b.t : '') : ''; }
+    return 'Best: ' + (top.m === 'ladder' ? 'rung ' + top.b.r : top.b.r + '/' + top.b.n) + (top.b.t ? ' · ' + top.b.t : ''); } catch (e) { return ''; } }
+window.SB_HUB_BEST = hubBest;
 function countTxt(k) { const n = SB_COUNT[k] ? SB_COUNT[k]() : null; if (!n) return '';
   return SB_FLOOR[k] ? sbOver(n) : sbFmt(n); }
 /* the same, starting a sentence ("Over …") */
