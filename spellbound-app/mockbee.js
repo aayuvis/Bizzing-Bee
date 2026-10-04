@@ -1869,6 +1869,8 @@
     view: () => { const g = mb(); if (!g) return viewLobby();
       return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : g.view === 'family' ? viewFamily() : viewLobby(); },
     stats: () => prog(),
+    /* the cast, for the Atlas duel (trail.js): one table of rivals, not a copy (games spec §2.5/§4.7) */
+    rivals: () => BOTS.map(b => ({ id: b.id, name: b.name, lvl: b.lvl, nerve: b.nerve, spec: b.spec, vary: b.vary, face: (typeof faceOf === 'function' ? faceOf(b) : b.id) })),
     /* the Play card's words, from the bee as it is now (the card itself is the lineup's) */
     card: () => { const c = active() || {}; const B = BANDS[bandKey(c)]; const p = prog();
       return { title: 'Mock Spelling Bee', promise: B.rivals + ' rivals, one microphone, eight minutes. Ask the pronouncer anything.',
