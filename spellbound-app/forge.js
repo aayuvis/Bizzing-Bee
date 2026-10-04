@@ -61,7 +61,7 @@
   /* the §1.7 rule: 50% or more keeps the level, under 50% drops one (floor Easy) */
   function after(pct) {
     try { if (window.SB_LEVEL && SB_LEVEL.after) return SB_LEVEL.after('wordForge', pct) || {}; } catch (e) {}
-    var f = fst(), cur = level(), out = { level: cur, dropped: false };
+    var f = fst(), cur = (G && G.lv) || level(), out = { level: cur, dropped: false };
     if (pct < 0.5 && cur !== 'easy') { out.level = LV[LV.indexOf(cur) - 1]; out.dropped = true; f.lv = out.level; }
     f.hist = (f.hist || []).concat([Math.round(pct * 100)]).slice(-6); persist();
     return out;
@@ -252,7 +252,7 @@
     var shelf = function (lang) {
       return '<div class="fg-shelf"><div class="fg-shelf-h">' + lang + ' roots</div><div class="fg-plaques">' + roots.filter(function (r) { return r.lang === lang; }).map(function (r) {
         var R = f.codex[r.id] || {}, later = Object.keys(R).filter(function (w) { return R[w].l; }).length, m = f.mastered[r.id], met = f.met[r.id];
-        return '<div class="fg-plaque' + (m ? ' gold' : met ? ' met' : '') + '" title="' + esc(r.forms.join(' / ') + ' — ' + r.meanFull) + '"><b>' + esc(r.forms[0]) + '</b><span>' + esc(r.mean) + '</span><i>' + (m ? 'mastered' : later + ' of 3') + '</i></div>';
+        return '<div class="fg-plaque' + (m ? ' gold' : met ? ' met' : '') + '" title="' + esc(r.forms.join(' / ') + ' — ' + r.meanFull) + '"><b>' + esc(r.id) + '</b><span>' + esc(r.mean) + '</span><i>' + (m ? 'mastered' : later + ' of 3') + '</i></div>';
       }).join('') + '</div></div>';
     };
     return '<div class="fg-codex" role="dialog" aria-label="The Codex"><div class="fg-codex-h">The Codex</div>' +

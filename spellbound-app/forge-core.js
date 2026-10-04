@@ -73,11 +73,13 @@
         if (row.kinds.indexOf(r.kinds[i]) < 0) return;
         have[s] = 1; others.push({ s: s, m: r.partMeanings[i], k: r.kinds[i], real: -1 }); }); });
     others = shuffled(others, hash(row.w + '#' + seed));
+    /* Hard fixes the root on the anvil, so its rack holds only fronts and ends */
+    if (level === 'hard') { fam = fam.filter(function (t) { return t.k !== 'root'; }); others = others.filter(function (t) { return t.k !== 'root'; }); }
     var want = level === 'hard' ? Math.max(4, 6 - row.parts.length + 2) : (row.parts.length <= 2 ? 4 : 2);
     var dec = shuffled(fam, hash(row.w + '*' + seed)).slice(0, want);
     for (var i = 0; dec.length < want && i < others.length; i++) dec.push(others[i]);
     var tiles = parts.concat(dec);
-    if (level === 'hard') tiles = tiles.filter(function (t) { return t.k !== 'root' || t.real < 0; });
+    if (level === 'hard') tiles = tiles.filter(function (t) { return t.k !== 'root'; });
     return shuffled(tiles, hash(row.w + '@' + seed));
   }
   /* the slots a level leaves open (Hard fixes the roots on the anvil) */
