@@ -66,7 +66,9 @@ function arcadeDriver(k) {
 }
 ['beeGrandPrix', 'typeBlaster', 'honeycombRun'].forEach(k => register(arcadeDriver(k)));
 const botDir = path.join(HERE, 'bots');
-if (fs.existsSync(botDir)) for (const f of fs.readdirSync(botDir).filter(f => /\.mjs$/.test(f)).sort()) register((await import(pathToFileURL(path.join(botDir, f)).href)).default);
+/* a game's own driver (tests/bots/<key>.mjs) REPLACES the built-in one for its key — it knows the game */
+if (fs.existsSync(botDir)) for (const f of fs.readdirSync(botDir).filter(f => /\.mjs$/.test(f)).sort()) { const d = (await import(pathToFileURL(path.join(botDir, f)).href)).default;
+  const i = d ? DRIVERS.findIndex(x => x.key === d.key) : -1; if (i >= 0) DRIVERS.splice(i, 1); register(d); }
 
 /* ---- the bots (seeded) ---- */
 function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }

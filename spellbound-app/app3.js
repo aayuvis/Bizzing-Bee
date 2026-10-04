@@ -3581,7 +3581,7 @@ const app = {
     // no tint: karts/heroes carry their own colours (a leftover saved arcColour used to
     // wash the kart sprite oddly). A menu-chosen world overrides the tile's default.
     try{ _arcHandle=engs[k](host, {diff:eDiff, world:gopts.world||g.w, onUnlock, hero:heroAvId,
-        kart:gopts.kart, scene:gopts.scene, layout:gopts.layout, style:gopts.style, autoGo:!!extra.fromMenu}, done); }
+        kart:gopts.kart, scene:gopts.scene, drive:gopts.drive, layout:gopts.layout, style:gopts.style, autoGo:!!extra.fromMenu}, done); }
     catch(e){ try{ console.error(e); }catch(_){} flash('Could not start that game'); arcadeClose(); }
     // launched from the start menu → skip the engine's own how-to gate (the menu explained it)
     if(extra.fromMenu){ setTimeout(()=>{ try{ const go=host.querySelector('#sg-howgo'); if(go) go.click(); }catch(_){}} , 90); }
@@ -11860,7 +11860,7 @@ function arcadeClose(){
    your racer (avatar), your colour, and difficulty, then drops you straight in.
    ========================================================================== */
 const ARCADE_HOWTO = {
-  beeGrandPrix:   'Spell the word at each ⚡ gate to boost past your rivals. Steer ◀ ▶, dodge 🛢️ oil, grab ❓ boxes — finish top of the pack.',
+  beeGrandPrix:   'A kart race first: steer, brake, drift and pick your box in every zone. Spell its word for a power-up — quick and right is full strength.',
   honeycombRun:   'Munch the honey through the hive and clear each gate by spelling its word. Dodge the moths and fill the honey meter.',
   typeBlaster:    'Type each word before the glitch monster reaches the bottom. Fast and perfect builds your combo — zap every glitch.',
   keepFlying:     'Tap or hold to fly. Bank every honey pot by spelling it, dodge the pillars, then soar through the Hive Gates home.',
@@ -11883,8 +11883,12 @@ const ARC_KARTS = [
 ];
 const ARC_SCENES = [
   {v:'meadow',n:'Sunny Meadow',img:'gp-sky'},{v:'sunset',n:'Sunset Canyon',img:'gp-sunset'},
-  {v:'city',n:'Neon City',img:'gp-city'},
+  {v:'city',n:'Neon City',img:'gp-city'},{v:'bazaar',n:'Spice Bazaar',img:'gp-bazaar'},
+  /* the Cup: all four tracks in one sitting, each with its own word family (saga2.js GP_CUP) */
+  {v:'cup',n:'The Cup',imgs:['gp-sky','gp-sunset','gp-city','gp-bazaar']},
 ];
+/* Grand Prix: how hard the ROAD is, chosen apart from the word level (games spec §2.6) */
+const ARC_DRIVE = [{v:'easy',n:'Easy road'},{v:'medium',n:'Medium road'},{v:'hard',n:'Hard road'},{v:'champ',n:'Champ road'}];
 const ARC_HCLAYOUT = [{v:'classic',n:'Classic'},{v:'spiral',n:'Spiral'},{v:'chambers',n:'Chambers'}];
 const ARC_HCSTYLE  = [{v:'hive',n:'Golden Hive'},{v:'meadow',n:'Meadow'},{v:'cavern',n:'Crystal Cavern'}];
 // Word Snake: YOU ARE THE SNAKE — the hero row offers the Serpent pack (each id maps to a
@@ -11894,9 +11898,10 @@ const ARC_SWORLDS=[{v:'forest',n:'Deep Forest',img:'forest'},{v:'pond',n:'Lily P
 const ARC_CFG = {
   /* no hero row: the driver is the speller's own buddy. Choosing a champion out of thirty
      before every race was a decision in front of the game, not part of it. */
-  beeGrandPrix:{ noHero:true, groups:[
+  beeGrandPrix:{ noHero:true, diffLabel:'Word level', garage:true, groups:[
     {key:'kart', label:'Your kart', kind:'kart',  opts:ARC_KARTS},
-    {key:'scene',label:'Track',     kind:'scene', opts:ARC_SCENES} ]},
+    {key:'scene',label:'Track',     kind:'scene', opts:ARC_SCENES},
+    {key:'drive',label:'Driving',   kind:'chip',  opts:ARC_DRIVE} ]},
   honeycombRun:{ groups:[
     {key:'layout',label:'Maze layout',kind:'chip', opts:ARC_HCLAYOUT},
     {key:'style', label:'World style', kind:'chip', opts:ARC_HCSTYLE} ]},
@@ -11938,7 +11943,8 @@ function arcadeMenu(k){
     ${cfg.noHero?'':`<div class="arcm-preview"><span class="arcm-av" id="arcm-prev"></span></div>
     <div class="arcm-sec"><div class="arcm-lbl">${esc(cfg.heroLabel||'Your hero')}</div><div class="arcm-avrow" id="arcm-avs"></div></div>`}
     ${groupHTML}
-    <div class="arcm-sec"><div class="arcm-lbl">Difficulty</div><div class="arcm-diff" id="arcm-diff"></div></div>
+    <div class="arcm-sec"><div class="arcm-lbl">${esc(cfg.diffLabel||'Difficulty')}</div><div class="arcm-diff" id="arcm-diff"></div></div>
+    ${cfg.garage?`<button class="arcm-d" id="arcm-gar" style="margin:4px auto 10px;display:block;min-height:44px;padding:0 18px">Garage — paint and trails</button>`:''}
     <button class="arcm-go" id="arcm-go">${iconSVG('joystick',18)} Start</button>
   </div>`;
   document.body.appendChild(el);
@@ -11956,6 +11962,7 @@ function arcadeMenu(k){
       if(gr.kind==='kart'||gr.kind==='scene'||gr.kind==='world'){
         /* a kart thumbnail is drawn by the same code that draws the kart in the race
            (SB_KART_ART) — the picked kart and the raced kart are one drawing */
+        if(o.imgs) return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><span style="display:grid;grid-template-columns:1fr 1fr;gap:2px;aspect-ratio:16/9;overflow:hidden;border-radius:8px">${o.imgs.map(im=>`<img src="${arcGart(im)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`).join('')}</span><span>${esc(o.n)}</span></button>`;
         const kt=(gr.kind==='kart'&&window.SB_KART_ART)?SB_KART_ART.thumb(o.v,168):'';
         const src=kt||(gr.kind==='world'?('app-art/sgw-'+o.img+'.jpg'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'')):arcGart(o.img));
         return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><img src="${src}" alt="${escA(o.n)}" loading="lazy"><span>${esc(o.n)}</span></button>`; }
@@ -11969,6 +11976,7 @@ function arcadeMenu(k){
     dd.querySelectorAll('.arcm-d').forEach(x=>x.classList.toggle('on',x.dataset.d===selDiff)); };
   drawPrev();
   el.querySelector('.arcm-x').onclick=arcadeClose;
+  const gar=el.querySelector('#arcm-gar'); if(gar) gar.onclick=()=>{ try{ window.SB_GP.garage(el,()=>{ try{ gar.focus(); }catch(e){} }); }catch(e){} };
   el.querySelector('#arcm-go').onclick=()=>{
     // remember the per-game choices, but DON'T overwrite the child's app-wide avatar
     c.arcGame=c.arcGame||{}; c.arcGame[k]={av:cfg.noHero?null:selAv,diff:selDiff,opts:{...selOpt}};

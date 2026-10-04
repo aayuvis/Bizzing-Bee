@@ -1777,6 +1777,71 @@
       bolt:g=>{ g.beginPath(); g.moveTo(0.06,-0.32); g.lineTo(-0.16,0.03); g.lineTo(0,0.03); g.lineTo(-0.06,0.32); g.lineTo(0.17,-0.05); g.lineTo(0.01,-0.05); g.closePath(); g.fill(); } };
     /* kind -> (variant, world) -> { bw, bh (box, half-widths), foot (footprint half-width), paint(g) } */
     const P={
+      /* ===== THE BAZAAR (the Cup's fourth track, owner 4 Oct): a market street. Awning stalls,
+         spice sacks, lantern posts, sandstone gateways, date palms, rug racks. No signs at all,
+         so nothing on this street can spell anything. Sizes held by tests/gp-world.cjs. ===== */
+      stall:(v)=>{ const cols=[['#E8A33A','#FFF3DC'],['#2FA39A','#FFF3DC'],['#C94F6D','#FFF3DC'],['#5B5FC7','#F6E7C8']][v%4], R=rng(v*41+9);
+        return {bw:1.6,bh:1.4,foot:0.64,paint:g=>{ foot(g,0.68,0.2);
+          g.fillStyle='#7A5536'; g.fillRect(-0.62,-1.0,1.24,1.0); g.fillStyle='rgba(0,0,0,.28)'; g.fillRect(-0.62,-1.0,1.24,0.14);
+          g.fillStyle='#5E3F27'; g.fillRect(-0.55,-0.8,1.1,0.03);
+          for(let i=0;i<4;i++) dot(g,-0.4+i*0.27,-0.87,0.065,['#D9783A','#3E8E8A','#C9A227','#B94D63'][(i+v)%4]);
+          g.fillStyle='#5A3B24'; g.fillRect(-0.68,-1.18,0.05,1.18); g.fillRect(0.63,-1.18,0.05,1.18);
+          const cg=g.createLinearGradient(0,-0.5,0,0); cg.addColorStop(0,'#C08A55'); cg.addColorStop(1,'#8C5E36'); g.fillStyle=cg; g.fillRect(-0.62,-0.5,1.24,0.5);
+          g.strokeStyle='rgba(60,30,10,.35)'; g.lineWidth=0.015; for(let x=-0.42;x<0.62;x+=0.21){ g.beginPath(); g.moveTo(x,-0.5); g.lineTo(x,0); g.stroke(); }
+          for(let i=0;i<5;i++){ const x=-0.5+i*0.25, c=['#E2522F','#F2B630','#7A9A3A','#B5462E','#E8C547'][(i+v)%5];
+            g.fillStyle='#6B4426'; g.beginPath(); g.ellipse(x,-0.52,0.1,0.035,0,0,7); g.fill();
+            g.fillStyle=c; g.beginPath(); g.moveTo(x-0.09,-0.52); g.quadraticCurveTo(x,-0.68-R()*0.05,x+0.09,-0.52); g.closePath(); g.fill(); }
+          const top=-1.4, bot=-1.12;
+          for(let i=0;i<8;i++){ const x0=-0.78+i*0.195; g.fillStyle=i%2?cols[1]:cols[0]; g.beginPath(); g.moveTo(x0+0.05,top); g.lineTo(x0+0.245,top); g.lineTo(x0+0.195,bot); g.lineTo(x0,bot); g.closePath(); g.fill();
+            g.beginPath(); g.arc(x0+0.0975,bot,0.0975,0,Math.PI); g.fill(); }
+          g.fillStyle='rgba(0,0,0,.14)'; g.fillRect(-0.73,top,1.5,0.035); }}; },
+      sacks:(v)=>{ const R=rng(v*23+5), sp=[['#D9481F','#F2A33A','#E8C547'],['#B5462E','#7A9A3A','#F2B630'],['#C9762E','#8B3A2E','#E8C547']][v%3];
+        return {bw:0.95,bh:0.42,foot:0.42,paint:g=>{ foot(g,0.44,0.2);
+          [[-0.28,0.17],[0.02,0.2],[0.3,0.16]].forEach((q,i)=>{ const x=q[0], r=q[1], h=0.26+R()*0.05;
+            const sg=g.createLinearGradient(x-r,0,x+r,0); sg.addColorStop(0,'#E6D3A8'); sg.addColorStop(1,'#B89B66');
+            g.fillStyle=sg; g.beginPath(); g.moveTo(x-r,0); g.quadraticCurveTo(x-r*1.12,-h*0.6,x-r*0.85,-h); g.lineTo(x+r*0.85,-h); g.quadraticCurveTo(x+r*1.12,-h*0.6,x+r,0); g.closePath(); g.fill();
+            g.fillStyle='#D8C292'; g.beginPath(); g.ellipse(x,-h,r*0.88,r*0.22,0,0,7); g.fill();
+            g.fillStyle=sp[i]; g.beginPath(); g.moveTo(x-r*0.75,-h); g.quadraticCurveTo(x,-h-0.12,x+r*0.75,-h); g.closePath(); g.fill();
+            g.fillStyle='rgba(255,255,255,.25)'; g.beginPath(); g.ellipse(x-r*0.25,-h-0.04,r*0.2,0.018,0,0,7); g.fill(); }); }}; },
+      lantern:(v)=>{ const lc=[['#F2A33A','#E2522F','#F2C94C'],['#E85D75','#F2A33A','#7FC8C0'],['#F2C94C','#C94F6D','#E8823A']][(v>>1)%3], d=v%2?-1:1;
+        return {bw:1.0,bh:1.66,foot:0.08,paint:g=>{ g.scale(d,1); foot(g,0.12,0.22);
+          g.fillStyle='#4A3424'; g.fillRect(-0.03,-1.58,0.06,1.58); g.fillRect(-0.07,-0.08,0.14,0.08);
+          g.strokeStyle='#4A3424'; g.lineWidth=0.035; g.beginPath(); g.moveTo(0,-1.52); g.quadraticCurveTo(0.25,-1.64,0.46,-1.52); g.stroke();
+          g.strokeStyle='rgba(60,40,20,.8)'; g.lineWidth=0.012; g.beginPath(); g.moveTo(0,-1.44); g.quadraticCurveTo(0.23,-1.22,0.46,-1.44); g.stroke();
+          [0.09,0.23,0.37].forEach((x,i)=>{ const t=x/0.46, y=-1.44+0.22*2*t*(1-t);
+            g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+0.04); g.stroke();
+            const gl=g.createRadialGradient(x,y+0.11,0.01,x,y+0.11,0.14); gl.addColorStop(0,'rgba(255,230,150,.55)'); gl.addColorStop(1,'rgba(255,230,150,0)');
+            g.fillStyle=gl; g.beginPath(); g.arc(x,y+0.11,0.14,0,7); g.fill();
+            g.fillStyle=lc[i]; g.beginPath(); g.ellipse(x,y+0.11,0.055,0.075,0,0,7); g.fill();
+            g.fillStyle='rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(x-0.018,y+0.09,0.015,0.04,0,0,7); g.fill();
+            g.fillStyle='#4A3424'; g.fillRect(x-0.03,y+0.03,0.06,0.012); g.fillRect(x-0.03,y+0.18,0.06,0.012); }); }}; },
+      arch:(v)=>{ const st=['#E2B77E','#D9A86C','#EBC48E'][v%3], tile=['#2E7F86','#B5462E','#3E5FA0'][v%3];
+        return {bw:2.3,bh:2.66,foot:1.08,paint:g=>{ foot(g,1.12,0.22);
+          const sg=g.createLinearGradient(-1.1,0,1.1,0); sg.addColorStop(0,sh(st,0.14)); sg.addColorStop(1,sh(st,-0.22));
+          g.fillStyle=sg; g.beginPath(); g.moveTo(-1.05,0); g.lineTo(-1.05,-2.35); g.lineTo(1.05,-2.35); g.lineTo(1.05,0); g.lineTo(0.55,0); g.lineTo(0.55,-1.25);
+          g.quadraticCurveTo(0.55,-1.85,0,-1.98); g.quadraticCurveTo(-0.55,-1.85,-0.55,-1.25); g.lineTo(-0.55,0); g.closePath(); g.fill();
+          g.fillStyle=sh(st,0.05); for(let x=-1.05;x<1.0;x+=0.3) g.fillRect(x,-2.62,0.18,0.3);
+          g.fillStyle=sh(st,-0.12); g.fillRect(-1.12,-2.38,2.24,0.08);
+          g.strokeStyle=tile; g.lineWidth=0.07; g.beginPath(); g.moveTo(-0.62,0); g.lineTo(-0.62,-1.25); g.quadraticCurveTo(-0.62,-1.92,0,-2.06); g.quadraticCurveTo(0.62,-1.92,0.62,-1.25); g.lineTo(0.62,0); g.stroke();
+          [[-0.82,-1.75],[0.82,-1.75]].forEach(p=>{ g.fillStyle=tile; for(let i=0;i<4;i++){ const a=i*Math.PI/2; g.beginPath(); g.ellipse(p[0]+Math.cos(a)*0.06,p[1]+Math.sin(a)*0.06,0.06,0.035,a,0,7); g.fill(); } dot(g,p[0],p[1],0.03,'#F2E3C0'); });
+          g.strokeStyle='rgba(80,40,10,.22)'; g.lineWidth=0.012; for(let y=-0.3;y>-2.3;y-=0.3){ g.beginPath(); g.moveTo(-1.05,y); g.lineTo(-0.56,y); g.moveTo(0.56,y); g.lineTo(1.05,y); g.stroke(); } }}; },
+      palm:(v)=>{ const R=rng(v*67+3), lean=(v%2?-1:1)*(0.08+R()*0.06), H=1.62+(v%3)*0.12;
+        return {bw:1.5,bh:H+0.32,foot:0.1,paint:g=>{ foot(g,0.16,0.22);
+          const tx=lean*H; g.strokeStyle='#8A6A44'; g.lineWidth=0.1; g.lineCap='round'; g.beginPath(); g.moveTo(0,0); g.quadraticCurveTo(tx*0.2,-H*0.55,tx,-H); g.stroke();
+          g.strokeStyle='rgba(60,40,20,.45)'; g.lineWidth=0.012; for(let i=1;i<12;i++){ const t=i/12, x=tx*t*t, y=-H*t; g.beginPath(); g.moveTo(x-0.05,y); g.lineTo(x+0.05,y+0.02); g.stroke(); }
+          for(let i=0;i<7;i++){ const a=-Math.PI/2+(i-3)*0.48+(R()-0.5)*0.1, L=0.62+R()*0.15, ex=tx+Math.cos(a)*L, ey=-H+Math.sin(a)*L*0.55+0.12;
+            g.strokeStyle=i%2?'#3E7F3A':'#4E9A44'; g.lineWidth=0.05; g.beginPath(); g.moveTo(tx,-H); g.quadraticCurveTo(tx+Math.cos(a)*L*0.5,-H+Math.sin(a)*L*0.5-0.12,ex,ey); g.stroke();
+            g.strokeStyle='rgba(60,120,50,.8)'; g.lineWidth=0.012;
+            for(let k=1;k<7;k++){ const t=k/7, bx=tx+(ex-tx)*t, by=-H+(ey+H)*t-0.08*Math.sin(Math.PI*t); g.beginPath(); g.moveTo(bx,by); g.lineTo(bx+0.06,by+0.08); g.moveTo(bx,by); g.lineTo(bx-0.06,by+0.08); g.stroke(); } }
+          for(let i=0;i<5;i++) dot(g,tx+(i-2)*0.04,-H+0.08+(i%2)*0.03,0.03,'#B5652A'); }}; },
+      rugs:(v)=>{ const pal=[['#B5462E','#F2C94C','#2E5E8C'],['#2E7F86','#F2E3C0','#C94F6D'],['#7A3B6E','#E8A33A','#F2E3C0']][v%3];
+        return {bw:1.2,bh:0.98,foot:0.52,paint:g=>{ foot(g,0.55,0.2);
+          g.fillStyle='#5A3B24'; g.fillRect(-0.56,-0.95,0.04,0.95); g.fillRect(0.52,-0.95,0.04,0.95); g.fillRect(-0.58,-0.96,1.16,0.04);
+          [-0.5,-0.16,0.18].forEach((x,i)=>{ const w=0.32, top=-0.92, h=0.62+(i%2)*0.08;
+            g.fillStyle=pal[i%3]; g.fillRect(x,top,w,h);
+            g.strokeStyle=pal[(i+1)%3]; g.lineWidth=0.025; g.strokeRect(x+0.03,top+0.03,w-0.06,h-0.06);
+            g.fillStyle=pal[(i+2)%3]; const c0=x+w/2, c1=top+h/2; g.beginPath(); g.moveTo(c0,c1-0.14); g.lineTo(c0+0.09,c1); g.lineTo(c0,c1+0.14); g.lineTo(c0-0.09,c1); g.closePath(); g.fill();
+            g.strokeStyle='rgba(255,255,255,.5)'; g.lineWidth=0.008; for(let k=1;k<6;k++){ g.beginPath(); g.moveTo(x+w*k/6,top+h); g.lineTo(x+w*k/6,top+h+0.04); g.stroke(); } }); }}; },
       bush:(v,world)=>{ const pal=world==='cactus'?['#6F6E38','#8F8C4A','#B3AF66']:world==='building'?['#1E4632','#2B6142','#3D7F55']:['#2E763C','#45A04E','#6CC768'];
         const R=rng(v*97+3), fl=world==='tree'&&v%2===1, fc=['#FF8FB8','#FFD54A','#FFFFFF'][v%3];
         const pts=[[-0.19,-0.11,0.12],[0.19,-0.11,0.12],[-0.06,-0.19,0.15],[0.1,-0.21,0.13],[0,-0.1,0.14]];
@@ -2021,10 +2086,17 @@
       downtown:{dense:1, lamps:1, props:[{k:'tower',gap:[8,13],off:[3.0,4.4]}]},
       avenue:{dense:1, lamps:1, props:[{k:'shop',gap:[7,11],off:[2.4,2.9]},{k:'billboard',gap:[40,62],off:[3.5,3.9]},{k:'tower',gap:[18,28],off:[4.4,5.4]}]},
       park:{grass:['#2F5A3E','#2A5238'], lamps:1, props:[{k:'parktree',gap:[18,28],off:[2.0,3.0],group:[1,2]},{k:'hedge',gap:[24,36],off:[1.8,2.4]}]},
-      bridge:{water:'both', verge:'#4A5068', strip:'rail', lamps:1, props:[]} }} };
+      bridge:{water:'both', verge:'#4A5068', strip:'rail', lamps:1, props:[]} }},
+    /* the market street: a souk of stalls (dense on purpose, like the city's avenue), a lantern
+       walk, the sandstone gates, and an open square of palms */
+    bazaar:{ list:['souk','lanterns','gates','square'], z:{
+      souk:{dense:1, grass:['#D9B07A','#CFA670'], verge:'#E2C79A', props:[{k:'stall',gap:[9,14],off:[2.3,2.8]},{k:'sacks',gap:[16,26],off:[1.9,2.1]}]},
+      lanterns:{grass:['#D6AA72','#CCA068'], lanterns:1, props:[{k:'rugs',gap:[40,60],off:[2.1,2.6]},{k:'palm',gap:[50,80],off:[2.4,3.4]}]},
+      gates:{grass:['#DDB47C','#D3AA72'], props:[{k:'arch',gap:[36,54],off:[2.6,3.0]},{k:'palm',gap:[32,50],off:[1.9,2.8],group:[1,2]},{k:'sacks',gap:[26,40],off:[1.9,2.4]}]},
+      square:{grass:['#E0BC86','#D6B27C'], verge:'#EBD3A8', props:[{k:'palm',gap:[28,46],off:[1.9,3.2],group:[1,2]},{k:'stall',gap:[44,70],off:[2.3,3.0]},{k:'arch',once:0.5,off:[3.0,3.4]}]} }} };
   /* how far up the road each kind is still drawn (bands); small things stop sooner */
-  const GP_FAR={formation:1300,shop:600,bush:350,flowers:300,reeds:300,haybale:420,rock:380,hedge:350,signpost:420,lamp:320,tree:800,parktree:700,cactus:800,boulders:700,deadtree:700,billboard:900,tower:1100,barn:1500,windmill:1600,watertower:1500,butte:1800};
-  const GP_VAR={formation:4,shop:4,bush:4,flowers:3,haybale:3,barn:2,windmill:1,reeds:3,cactus:6,rock:4,boulders:3,deadtree:3,butte:1,watertower:1,signpost:2,tower:6,lamp:2,billboard:4,hedge:1,tree:2,parktree:2};
+  const GP_FAR={stall:600,sacks:350,lantern:400,arch:1300,palm:800,rugs:450,formation:1300,shop:600,bush:350,flowers:300,reeds:300,haybale:420,rock:380,hedge:350,signpost:420,lamp:320,tree:800,parktree:700,cactus:800,boulders:700,deadtree:700,billboard:900,tower:1100,barn:1500,windmill:1600,watertower:1500,butte:1800};
+  const GP_VAR={stall:4,sacks:3,lantern:6,arch:3,palm:6,rugs:3,formation:4,shop:4,bush:4,flowers:3,haybale:3,barn:2,windmill:1,reeds:3,cactus:6,rock:4,boulders:3,deadtree:3,butte:1,watertower:1,signpost:2,tower:6,lamp:2,billboard:4,hedge:1,tree:2,parktree:2};
 
   /* ===== PHONES RACE EITHER WAY UP (4 Oct, owner: the race must play upright) =====
      1 Oct made a phone race SIDEWAYS only: held upright it showed "Turn your phone sideways"
@@ -2039,6 +2111,117 @@
      lets go of every input; nothing restarts and nothing pauses. */
   const gpPhone=()=>{ try{ return matchMedia('(pointer:coarse)').matches && Math.min(innerWidth,innerHeight)<560; }catch(e){ return false; } };
   const gpUpright=()=>innerHeight>innerWidth;
+
+  /* ===== BEE GRAND PRIX — THE RULES THAT ARE NOT THE ROAD (games spec §2, 4 Oct 2026) =====
+     "A great kart race first. Spelling is the fuel." Everything here is a TABLE, and nothing in
+     it rolls a die (FAMILY-STANDARD: nothing random in a reward): the grade is a clock, the
+     power-up is your place in the race, the combo is a count. tests/gp-rules.cjs reads these
+     through window.SB_GP and greps them for Math.random (GP4, GP5). */
+  const GP_SEED=s=>{ let h=2166136261; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; };
+  /* one seeded stream per track: the same track, hazards and boxes every time you race it, which
+     is what makes a ghost of your best lap mean anything */
+  const gpRng=seed=>{ let s=seed>>>0; return ()=>{ s=s+0x6D2B79F5|0; let t=Math.imul(s^s>>>15,1|s); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; };
+  /* SPELLING QUALITY. Clean = right inside par (1.2s + 0.45s a letter; Calm mode gives half as
+     long again), Right = right but slower, Miss = wrong. There is one try at a box. */
+  const GP_PAR=(letters,calm)=>(1.2+0.45*letters)*(calm?1.5:1);
+  function gpGrade(ok,secs,letters,calm){ return !ok?'miss':(secs<=GP_PAR(letters,calm)?'clean':'right'); }
+  /* WHICH POWER-UP: your place when you hit the box. The leader gets a Shield, the back of the
+     field gets speed, and a racer more than a quarter of a lap behind the leader in last gets the
+     honey that slows everyone ahead. Clean is full strength, Right is standard (§2.4). */
+  const GP_TABLE=['shield','oil','gust','turbo','rocket'];
+  const GP_STR={ shield:{full:{t:10},std:{t:6}}, oil:{full:{t:2.8},std:{t:1.8}}, gust:{full:{t:2.0},std:{t:1.3}},
+    turbo:{full:{mul:1.45,t:4},std:{mul:1.3,t:3}}, rocket:{full:{mul:1.75,t:2.6},std:{mul:1.5,t:2}}, honey:{full:{t:2.8},std:{t:1.8}} };
+  function gpPowerFor(place,field,behindLap){ if(place>=field && behindLap>0.25) return 'honey';
+    return GP_TABLE[Math.min(GP_TABLE.length,Math.max(1,place|0))-1]; }
+  const GP_COMBO=3;                  // three Clean in a row: a free Turbo (standard strength)
+  /* THE CAST IS THE MOCK BEE'S (mockbee.js BOTS) — one hall of rivals across both flagships.
+     A rival never wears the child's own face: `alt` stands in, exactly as faceOf() does there.
+     pw is how often they turn a box into a power-up (deterministic: every 1/pw boxes, never a
+     dice roll); their pace is their place on the grid (GP_GRID order, the engine's spread). */
+  const GP_CAST={
+    pixel:{name:'Pip',alt:'germy',pw:0.60,kart:'kart-rocket',col:'#E5484D'},  koi:{name:'Nova',alt:'luna',pw:0.75,kart:'kart',col:'#3B93D6'},
+    beaker:{name:'Rafi',alt:'atom',pw:0.75,kart:'kart-buggy',col:'#2FB98A'},   panda:{name:'Suki',alt:'neko',pw:0.83,kart:'kart-cruiser',col:'#8B63D6'},
+    comet:{name:'Dax',alt:'rocket',pw:0.68,kart:'kart-red',col:'#F0803C'},       astro:{name:'Mira',alt:'saturn',pw:0.90,kart:'kart-rocket',col:'#EC6BB0'},
+    scopey:{name:'Theo',alt:'robo',pw:0.95,kart:'kart',col:'#5A6B8C'},        melody:{name:'Ines',alt:'fae',pw:0.90,kart:'kart-cruiser',col:'#C9A227'},
+    samurai:{name:'Kwame',alt:'ninja',pw:0.90,kart:'kart-red',col:'#2E86D1'},    goldlegend:{name:'Vesper',alt:'crystal',pw:0.95,kart:'kart-buggy',col:'#B8860B'} };
+  const GP_GRID={easy:['pixel','koi','beaker'], medium:['comet','astro','panda','scopey'], hard:['samurai','melody','astro','comet'], champ:['goldlegend','samurai','melody','astro']};
+  /* THE CUP: four races in one sitting, each track's box words from one origin family (they are
+     the families Word Forge builds on). The fourth track is ONE entry here — the owner chose the
+     Bazaar (4 Oct). */
+  const GP_CUP=[
+    {scene:'meadow', origin:'english', label:'English words', re:/english|germanic|norse/i},
+    {scene:'sunset', origin:'greek',   label:'Greek roots',   re:/greek/i},
+    {scene:'city',   origin:'latin',   label:'Latin roots',   re:/latin/i},
+    {scene:'bazaar', origin:'french',  label:'French words',  re:/french|anglo-norman/i} ];
+  const GP_CUP_PTS=[10,8,6,4,2];
+  const GP_TRACK_NAME={meadow:'Sunny Meadow',sunset:'Sunset Canyon',city:'Neon City',bazaar:'Spice Bazaar'};
+  /* THE GARAGE: printed prices, bought through the family wallet like an avatar (spendCoins);
+     three trails open with a named learning milestone instead of a price. Nothing random. */
+  const GP_PAINTS=[ {id:'factory',n:'Factory finish',col:null,price:0}, {id:'honey',n:'Honey gold',col:'#F0B429',price:40},
+    {id:'cherry',n:'Cherry',col:'#EC5C67',price:40}, {id:'ocean',n:'Ocean',col:'#3B93D6',price:60}, {id:'mint',n:'Mint',col:'#2FB98A',price:60},
+    {id:'grape',n:'Grape',col:'#8B63D6',price:80}, {id:'midnight',n:'Midnight',col:'#2E3566',price:80} ];
+  const GP_TRAILS=[ {id:'dust',n:'Road dust',col:'225,225,232',price:0}, {id:'sky',n:'Sky puffs',col:'150,205,255',price:60},
+    {id:'peach',n:'Peach puffs',col:'255,190,150',price:60}, {id:'violet',n:'Violet haze',col:'190,160,255',price:90},
+    {id:'gold',n:'Golden comet',col:'255,214,90',ms:{k:'clean',n:25,txt:'Spell 25 box words Clean'}},
+    {id:'beeline',n:'Bee line',col:'255,236,140',ms:{k:'right',n:50,txt:'Spell 50 box words right'}},
+    {id:'rainbow',n:'Rainbow',col:'rainbow',ms:{k:'cups',n:1,txt:'Finish a whole Cup'}} ];
+  const gpKid=()=>{ try{ return (typeof active==='function'&&active())||null; }catch(e){ return null; } };
+  const gpGar=c=>{ c=c||gpKid()||{}; const g=c.gpGar||(c.gpGar={own:{paint:['factory'],trail:['dust']},paint:'factory',trail:'dust'}); return g; };
+  const gpStat=c=>{ c=c||gpKid()||{}; return c.gpStat||(c.gpStat={right:0,clean:0,cups:0,races:0}); };
+  const gpMsMet=(ms,c)=>!!ms && (gpStat(c)[ms.k]||0)>=ms.n;
+  function gpOwns(kind,id,c){ const it=(kind==='paint'?GP_PAINTS:GP_TRAILS).find(x=>x.id===id); if(!it) return false;
+    if(!it.price&&!it.ms) return true; if(it.ms) return gpMsMet(it.ms,c); return (gpGar(c).own[kind]||[]).indexOf(id)>=0; }
+  /* the garage, drawn into `host` (the arcade start menu): buttons, so Tab/Enter work as well as a tap */
+  function gpGarage(host,onClose){
+    const c=gpKid(); if(!c||!host) return; const G=gpGar(c);
+    const el=document.createElement('div'); el.className='gp-gar'; el.setAttribute('role','dialog'); el.setAttribute('aria-label','Garage');
+    const coins=()=>{ try{ return (c.coins|0); }catch(e){ return 0; } };
+    const row=(kind,it)=>{ const own=gpOwns(kind,it.id,c), on=G[kind]===it.id;
+      const sw=kind==='paint'?'<i class="gp-sw" style="background:'+(it.col||'linear-gradient(135deg,#ddd,#999)')+'"></i>'
+        :'<i class="gp-sw gp-sw-t" style="background:'+(it.col==='rainbow'?'linear-gradient(90deg,#f66,#fd5,#6d6,#6cf,#c8f)':'rgb('+it.col+')')+'"></i>';
+      const act=on?'<span class="gp-gar-on">In use</span>'
+        :own?'<button class="gp-gar-b" data-gp-use="'+kind+'|'+it.id+'">Use</button>'
+        :it.ms?'<span class="gp-gar-ms">'+esc2(it.ms.txt)+'</span>'
+        :'<button class="gp-gar-b buy" data-gp-buy="'+kind+'|'+it.id+'"'+(coins()<it.price?' disabled':'')+'>Buy · '+it.price+' coins</button>';
+      return '<div class="gp-gar-row'+(on?' on':'')+'">'+sw+'<b>'+esc2(it.n)+'</b>'+act+'</div>'; };
+    const draw=()=>{ el.innerHTML='<div class="gp-gar-card"><div class="gp-gar-h"><b>Garage</b><span>'+coins()+' coins</span>'+
+      '<button class="gp-gar-x" data-gp-x="1" aria-label="Close the garage">'+SGUI.chev(-1)+'</button></div>'+
+      '<div class="gp-gar-sec">Paint</div>'+GP_PAINTS.map(p=>row('paint',p)).join('')+
+      '<div class="gp-gar-sec">Trail</div>'+GP_TRAILS.map(t=>row('trail',t)).join('')+'</div>'; };
+    const close=()=>{ removeEventListener('keydown',kd,true); el.remove(); if(onClose) onClose(); };
+    const kd=e=>{ if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); close(); } };
+    el.onclick=e=>{ const x=e.target.closest('[data-gp-x]'); if(x){ close(); return; }
+      const u=e.target.closest('[data-gp-use]'); if(u){ const [k,id]=u.dataset.gpUse.split('|'); if(gpOwns(k,id,c)){ G[k]=id; try{ save(); }catch(_){} draw(); } return; }
+      const b=e.target.closest('[data-gp-buy]'); if(b){ const [k,id]=b.dataset.gpBuy.split('|'); const it=(k==='paint'?GP_PAINTS:GP_TRAILS).find(x=>x.id===id);
+        if(!it||it.ms||gpOwns(k,id,c)) return;
+        let ok=false; try{ ok=typeof spendCoins==='function'&&spendCoins(it.price,'Grand Prix garage: '+it.n); }catch(_){ ok=false; }
+        if(ok){ (G.own[k]=G.own[k]||[]).push(id); G[k]=id; try{ save(); }catch(_){} } else { try{ flash('Not enough coins yet — every box word you spell right is one.'); }catch(_){} }
+        draw(); } };
+    addEventListener('keydown',kd,true); draw(); host.appendChild(el);
+    try{ const f=el.querySelector('button'); if(f) f.focus(); }catch(e){}
+    return { close }; }
+  W().SB_GP={ grade:gpGrade, par:GP_PAR, powerFor:gpPowerFor, STR:GP_STR, TABLE:GP_TABLE, COMBO:GP_COMBO, CAST:GP_CAST, GRID:GP_GRID,
+    CUP:GP_CUP, CUP_PTS:GP_CUP_PTS, PAINTS:GP_PAINTS, TRAILS:GP_TRAILS, owns:gpOwns, garage:gpGarage, trackName:GP_TRACK_NAME };
+
+  /* THE BOX WORDS: one door — nextWords(child, n, {purpose:'gate'}), kid-safe, inside the level
+     window of the Grand Prix's word level (key 'beeGrandPrix'), no repeat in the 150-word window.
+     The Cup asks for its track's origin family, one tier up if the level is short of it (§1.1:
+     an eight-year-old's band holds few Greek words, and a Greek track of English words is not
+     one). `avoid` keeps a Cup from repeating a word across its four races. */
+  function gpDrawWords(n,org,avoid){ const out=[], seen=new Set(avoid||[]), c=gpKid();
+    const ks=w=>{ try{ return typeof window.kidSafe==='function'?!!window.kidSafe(w):(typeof safeWord==='function'?safeWord(w):true); }catch(e){ return true; } };
+    const take=w=>{ if(!w||!w.w||!/^[a-z]+$/i.test(w.w)||w.w.length<3||!ks(w)) return; const k=String(w.w).toLowerCase(); if(seen.has(k)) return; seen.add(k); out.push(w); };
+    const ask=(o)=>{ try{ (window.nextWords(c,n+seen.size+4,Object.assign({purpose:'gate',key:'beeGrandPrix'},o))||[]).forEach(w=>{ if(out.length<n) take(w); }); }catch(e){} };
+    if(typeof window.nextWords==='function'){ if(org){ ask({origin:org.re}); if(out.length<n) ask({origin:org.re,tier:1}); } ask({}); }
+    else pool(n*2).forEach(w=>{ if(out.length<n) take(w); });   /* only before the foundations load */
+    return out; }
+  W().SB_GP.drawWords=gpDrawWords;
+  let gpKill=null;                     // stops the race that is running now (see the engine's return)
+  /* A MISS HOLDS (§2.4, GP8): the engine kit's miss card — the child's letters against the word,
+     the differing ones marked, the word said again, a note that matches the error — over the
+     race until Continue (Enter or a tap). sgLoop holds while it is up. */
+  function gpMiss(el,w,typed,cont){ if(!el) return cont(); el.style.display='grid';
+    SGUI.miss(el,w,typed,{head:'No power-up this time. Here is the word.',onContinue:()=>{ el.style.display='none'; el.innerHTML=''; cont(); }}); }
 
   function beeGrandPrix(host, opts, done){
     /* THE LAYOUT IS MEASURED, AND MEASURED AGAIN WHEN THE PHONE TURNS (gpLayout).
@@ -2065,21 +2248,31 @@
       horizonY=Math.round(Ht*0.30);
       host.style.setProperty('--sg-gut',(LAND?Math.floor((innerWidth-Wd)/2):0)+'px');
       host.style.setProperty('--sg-ctl',CTL+'px'); }
-    const diff=opts.diff||'medium';
+    /* DRIVING difficulty and WORD level are two choices (§2.6): opts.drive is how hard the road
+       is, opts.diff is the word level the arcade resolved (c.gameDiff, read by the word picker). */
+    const DIFFS=['easy','medium','hard','champ'];
+    const diff=DIFFS.indexOf(opts.drive)>=0?opts.drive:(DIFFS.indexOf(opts.diff)>=0?opts.diff:'medium');
+    /* THE CUP: opts.scene 'cup' starts it; each next race carries the standings in opts.cup */
+    const opts0=opts;
+    const CUP=opts.cup||(opts.scene==='cup'?{i:0,pts:null,races:[]}:null);
+    if(CUP) opts={...opts, scene:GP_CUP[CUP.i].scene};
+    let loop=null, boxesOff=false, noRivalPw=false, noHaz=false;
     const HERO=(opts.hero)||heroAv();            // the chosen racer shows as the driver + the position marker
     const KART=(opts.kart)||'kart';              // chosen kart sprite (5 options in the start menu)
     // three scenarios: each is its own painted sky + road/grass palette
     const SCENES={
       meadow:{sky:'gp-sky',  prop:'tree',    light:{road:'#6C6C74',roadWear:'#65656E',verge:'#93A86B',grass:'#7BC169',rumble:'#EDEDED',lane:'#FFFFFF'}, dark:{road:'#64646C',roadWear:'#5E5E66',verge:'#8B9E64',grass:'#72B461',rumble:'#C7413F',lane:''}},
       sunset:{sky:'gp-sunset',prop:'cactus',  light:{road:'#6B5A63',roadWear:'#64545C',verge:'#D8A96E',grass:'#C98A4A',rumble:'#FFE7BE',lane:'#FFF3D8'}, dark:{road:'#63535B',roadWear:'#5D4D55',verge:'#CB9C63',grass:'#BC7E42',rumble:'#B5503A',lane:''}},
-      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',roadWear:'#4B4B58',verge:'#3E4870',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',roadWear:'#43434D',verge:'#374063',grass:'#2C3452',rumble:'#C452C4',lane:''}}
+      city:  {sky:'gp-city',  prop:'building',light:{road:'#50505E',roadWear:'#4B4B58',verge:'#3E4870',grass:'#333B5E',rumble:'#8AE0FF',lane:'#EAF6FF'}, dark:{road:'#484852',roadWear:'#43434D',verge:'#374063',grass:'#2C3452',rumble:'#C452C4',lane:''}},
+      /* the Cup's fourth track (owner, 4 Oct): a market street — sandstone flags, a saffron-and-white kerb */
+      bazaar:{sky:'gp-bazaar',prop:'bazaar',  light:{road:'#7A6A5C',roadWear:'#726355',verge:'#D9B98A',grass:'#D2A86E',rumble:'#FFF4DE',lane:'#FFF4DE'}, dark:{road:'#726254',roadWear:'#6A5B4E',verge:'#CDAD7E',grass:'#C79C62',rumble:'#E0A030',lane:''}}
     };
     const SCN=SCENES[opts.scene]||SCENES.meadow;
     const SKY=SCN.sky, NIGHT=(opts.scene==='city');
     /* DISTANCE FOG — the colour the world dissolves INTO at the horizon. One value per
        scene, used by both the per-segment fog and the haze band, so the road and the sky
        agree about how far away "far" looks. */
-    const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235'}[opts.scene]||'214,232,242';
+    const FOG_RGB={meadow:'214,232,242', sunset:'255,214,160', city:'150,190,235', bazaar:'255,222,178'}[opts.scene]||'214,232,242';
     // one epic point-to-point run - length ~= minutes of driving; boxes pace the spelling
     /* `pull` is how hard a bend pushes you out, in road half-widths a second per unit of
        curve, FLAT OUT. It is the difficulty dial that changes the driving: rivals and
@@ -2088,10 +2281,18 @@
        105% on medium, 118% on hard and 130% on champ — so easy holds flat out, medium only
        just, hard wants a lift and champ wants the brake. Hands-off, medium is on the grass
        at the first bend (4.7s); easy gives a small child about thirteen seconds. */
-    const CFG=calmCFG({easy:{len:1800,laps:2,rivals:3,rival:0.84,haz:0.014,boxEvery:280,pull:0.33},
-               medium:{len:2300,laps:2,rivals:4,rival:0.90,haz:0.026,boxEvery:300,pull:0.46},
-               hard:{len:2800,laps:2,rivals:4,rival:0.96,haz:0.04,boxEvery:320,pull:0.52},
-               champ:{len:3300,laps:2,rivals:4,rival:1.02,haz:0.055,boxEvery:340,pull:0.57}}[diff]);
+    /* §2.6: two laps, a lap of len bands with `zones` box zones, `card` seconds on the spelling
+       clock. The lengths are §2.6's ×1.2 (1600/2000/2300/2600 → 1900/2400/2750/3100): at §2.6's
+       own numbers a Medium race took 2.7 minutes for a child-like driver, and GP12 asks 3–4. `rival` is the field's pace as a share of top speed (calibrated by the bots in
+       tests/gp-race.cjs — GP1/GP2); `pull` stays LAST on each line (arcade-geometry reads it). */
+    const CFG=calmCFG({easy:{len:1900,laps:2,zones:4,rivals:3,rival:0.89,haz:0.014,card:14,pull:0.33},
+               medium:{len:2400,laps:2,zones:5,rivals:4,rival:0.934,haz:0.026,card:12,pull:0.46},
+               hard:{len:2750,laps:2,zones:5,rivals:4,rival:0.905,haz:0.04,card:10,pull:0.52},
+               champ:{len:3100,laps:2,zones:6,rivals:4,rival:0.885,haz:0.055,card:9,pull:0.57}}[diff]);
+    /* the whole track — zones, props, hazards, boxes — comes from ONE seeded stream: the same
+       track every time you race it (a ghost lap needs that), and a test can race twenty */
+    const SEED=opts.seed!=null?(opts.seed>>>0):GP_SEED(opts.scene+'|'+diff);
+    const R=gpRng(SEED);
     host.innerHTML=
       '<div class="sg-racehud"><div class="sg-rh-row">'+
         '<span class="sg-rh-place" id="sg-pos">1st <i>/ '+(CFG.rivals+1)+'</i></span>'+
@@ -2105,7 +2306,7 @@
       '<button class="sg-sbtn" data-s="1" aria-label="Steer right">'+SGUI.chev(1)+'</button></div></div></div>'+
       '<div id="sg-card"></div>';
     const cv=host.querySelector('#sg-cv');
-    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const dpr=Math.min(gpPhone()?1.5:2,window.devicePixelRatio||1);   // §2.9: 1.5 on a phone
     const cx=cv.getContext('2d');
     function gpLayout(){ gpMeasure();
       cv.width=Math.round(Wd*dpr); cv.height=Math.round(Ht*dpr);   // a new size clears the canvas and its transform
@@ -2117,7 +2318,7 @@
     // drawDist is the count of road segments projected AND drawn every frame — the
     // dominant per-frame cost. 130 segments is 2.8s of road at top speed; 100 is 2.2s and
     // still well past the horizon haze, for 23% less work on every frame.
-    const segLen=200, roadW=2200, rumbleLen=3, drawDist=100, camH=3600, fov=62;   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
+    const segLen=200, roadW=2200, rumbleLen=3, camH=3600, fov=62; let drawDist=100;   // drawDist adapts to the frame rate (render)   // zoomed-in, high camera — the race world sits close and large, looking down onto the track
     // Elevated chase-cam: taller camera + a horizon lifted above mid-screen so you
     // look DOWN onto more of the track ahead instead of skimming it at ground level.
     // horizonY is Ht*0.30, set by gpMeasure because Ht changes when a phone turns.
@@ -2161,7 +2362,7 @@
        spacing, landmarks, strips and water. */
     const COP_W=0.46, OIL_W=0.34, BOX_W=0.27, POST_H=0.24;   // on the road: a car a touch wider than a kart; oil and the box sized to CATCH; a post half a kart high
     const WORLD=SCN.prop, ZONES=GP_ZONES[WORLD]||GP_ZONES.tree;
-    const zoneCycle=ZONES.list.slice().sort(()=>Math.random()-0.5);
+    const zoneCycle=ZONES.list.slice(); for(let i=zoneCycle.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [zoneCycle[i],zoneCycle[j]]=[zoneCycle[j],zoneCycle[i]]; }
     sectors.forEach((r,i)=>{ for(let n=r[0];n<r[1];n++) segs[n].zone=zoneCycle[i%zoneCycle.length]; });
     const lerpHex=(a,b,t)=>{ const p=parseInt(a.slice(1),16), q=parseInt(b.slice(1),16), m=k=>Math.round(((p>>k)&255)*(1-t)+((q>>k)&255)*t);
       return '#'+((1<<24)+(m(16)<<16)+(m(8)<<8)+m(0)).toString(16).slice(1); };
@@ -2174,25 +2375,26 @@
           sg.color={...here, grass:lerpHex(pz.grass,here.grass,t), verge:lerpHex(pz.verge,here.verge,t)}; }
         else sg.color=here; } }
     const runs=[]; segs.forEach((sg,n)=>{ if(!n||sg.zone!==segs[n-1].zone) runs.push({name:sg.zone,a:n,b:n+1}); else runs[runs.length-1].b=n+1; });
-    const rnd=(a,b)=>a+Math.random()*(b-a);
+    const rnd=(a,b)=>a+R()*(b-a);
     /* every prop's footprint clears the verge (1.42) by construction — a wide variant is
        pushed out rather than trusted to the zone's offset range */
-    const put=(n,kind,off,far,v)=>{ if(n<4||n>=segs.length-2) return; const vv=v!=null?v:Math.floor(Math.random()*GP_VAR[kind]);
+    const put=(n,kind,off,far,v)=>{ if(n<4||n>=segs.length-2) return; const vv=v!=null?v:Math.floor(R()*GP_VAR[kind]);
       if(kind!=='tree'&&kind!=='parktree'&&kind!=='lamp'){ const ft=GPS.box(kind,vv,WORLD).foot; if(Math.abs(off)<1.46+ft) off=Math.sign(off||1)*(1.46+ft); }
-      segs[n].sprites.push({kind:'prop',p:kind,v:vv,off,k:Math.random(),far:far||GP_FAR[kind]}); };
+      segs[n].sprites.push({kind:'prop',p:kind,v:vv,off,k:R(),far:far||GP_FAR[kind]}); };
     runs.forEach(run=>{ const z=ZONES.z[run.name], len=run.b-run.a;
-      run.water=z.water==='one'?(Math.random()<0.5?-1:1):z.water==='both'?2:0;
+      run.water=z.water==='one'?(R()<0.5?-1:1):z.water==='both'?2:0;
       for(let n=run.a;n<run.b;n++){ const sg=segs[n]; sg.water=run.water; sg.strip=z.strip||null;
         }
       (z.props||[]).forEach(rule=>{
-        const side=()=>{ if(rule.side==='water') return run.water===2?(Math.random()<0.5?-1:1):(run.water||1);
-          if(rule.side==='dry') return run.water&&run.water!==2?-run.water:(Math.random()<0.5?-1:1);
-          return Math.random()<0.5?-1:1; };
+        const side=()=>{ if(rule.side==='water') return run.water===2?(R()<0.5?-1:1):(run.water||1);
+          if(rule.side==='dry') return run.water&&run.water!==2?-run.water:(R()<0.5?-1:1);
+          return R()<0.5?-1:1; };
         if(rule.once!=null){ put(run.a+Math.round(len*rule.once),rule.k,side()*rnd(rule.off[0],rule.off[1])); return; }
         for(let n=run.a+Math.round(rnd(0,rule.gap[0])); n<run.b-2; n+=Math.round(rnd(rule.gap[0],rule.gap[1]))){
           const sd=side(), g=rule.group?Math.round(rnd(rule.group[0],rule.group[1]+0.49)):1;
           for(let q=0;q<g;q++) put(Math.min(run.b-1,n+q*Math.round(rnd(2,5))),rule.k,sd*(rnd(rule.off[0],rule.off[1])+q*0.55)); } });
-      if(z.lamps) for(let n=run.a+3;n<run.b-1;n+=14){ put(n,'lamp',-1.62,0,0); put(n,'lamp',1.62,0,1); } });   // each lamp's arm reaches over the road
+      if(z.lamps) for(let n=run.a+3;n<run.b-1;n+=14){ put(n,'lamp',-1.62,0,0); put(n,'lamp',1.62,0,1); }
+      if(z.lanterns) for(let n=run.a+5,i=0;n<run.b-1;n+=26,i++){ put(n,'lantern',-1.75,0,2*(i%3)); put(n,'lantern',1.75,0,2*(i%3)+1); } });   // each arm reaches toward the road   // each lamp's arm reaches over the road
     /* MARKER POSTS, BOTH VERGES, EVERY 5 SEGMENTS. This is the oldest trick in pseudo-3D
        racing and the one thing this track had nothing of: at 46 segments a second a post
        every five is nine a second flicking past your shoulder, and THAT is what speed
@@ -2204,10 +2406,27 @@
                                      segs[n].sprites.push({kind:'post',off:1.06,k:n}); }
     // mixed hazards + crazy distractions: oil slicks and patrol cops
     const HKINDS=['oil','oil','oil','cop'];
-    const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+Math.random()*16)){ if(Math.random()<CFG.haz*8){
-      const kind=HKINDS[Math.floor(Math.random()*HKINDS.length)];
-      hazards.push({seg:n,off:(Math.random()*1.4-0.7),kind:kind}); } }
-    const items=[]; for(let n=70;n<segs.length-60;n+=Math.floor(CFG.boxEvery*(0.8+Math.random()*0.5))){ items.push({seg:n,off:(Math.random()*1.1-0.55),gone:false,k:Math.random()*6}); }
+    /* THE RACING LINE: lean into the bend coming up — the average curve over the next thirty
+       bands, weighted to the nearest, as an offset toward the inside. The Easy overlay draws it,
+       the box zones put their middle box on it, and the racing-line bot drives it. */
+    const LINE=new Float32Array(segs.length);
+    for(let n=0;n<segs.length;n++){ let c=0,w=0; for(let k=0;k<30;k++){ const q=1-k/30; c+=(segs[(n+k)%segs.length].curve||0)*q; w+=q; } LINE[n]=Math.max(-0.6,Math.min(0.6,0.11*c/w)); }
+    const idealX=n=>LINE[((n%segs.length)+segs.length)%segs.length];
+    /* BOX ZONES, PLACED BY DESIGN (§2.2): `zones` a lap, evenly spread and nudged onto the
+       calmest band nearby, each THREE boxes across the road — left, the racing line, right.
+       The racing-line box is on the fastest path, the outer two cost a line change, and
+       missing the zone is a driving miss. 0.62 apart against a CATCH of 0.34: one box a zone. */
+    const ZGAP=0.62, zoneSegs=[];
+    for(let z=0;z<CFG.zones;z++){ const at=Math.round(70+(z+0.5)*(segs.length-130)/CFG.zones); let best=at, bc=1e9;
+      for(let d=-40;d<=40;d++){ const n=at+d, c=Math.abs(segs[n].curve||0)*3+Math.abs(d)*0.02; if(c<bc){ bc=c; best=n; } }
+      zoneSegs.push(best); }
+    const items=[]; zoneSegs.forEach((n,z)=>{ const mid=Math.max(-0.2,Math.min(0.2,idealX(n)));
+      [-1,0,1].forEach(k=>items.push({seg:n,off:+(mid+k*ZGAP).toFixed(3),gone:false,k:z*1.7+k,zone:z,line:k===0})); });
+    /* hazards keep clear of the box zones: a box is a choice, not an ambush */
+    const hazards=[]; for(let n=60;n<segs.length-40;n+=Math.floor(20+R()*16)){ if(R()<CFG.haz*8){
+      if(zoneSegs.some(zn=>Math.abs(zn-n)<14)) continue;
+      const kind=HKINDS[Math.floor(R()*HKINDS.length)];
+      hazards.push({seg:n,off:(R()*1.4-0.7),kind:kind}); } }
 
     /* ---- racers: the villains ---- */
     const maxV=segLen*46, accel=maxV/4.6, offDecel=-maxV/1.6, offLimit=maxV/3.2;
@@ -2229,20 +2448,36 @@
     let yawS=0, wheelPh=0, bumpT=0;
     const KART_W=0.38;                // a kart is 38% of the road's half-width: ~19% of the road, as a kart game's are
     const parts=[];                   // screen-space puffs behind the kart: exhaust, dust, tyre smoke
-    const DUST={meadow:'150,128,88', sunset:'214,168,108', city:'150,160,190'}[opts.scene]||'150,128,88';
-    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, finishedRivals=0, gpCombo=0, offGrass=false;
+    const DUST={meadow:'150,128,88', sunset:'214,168,108', city:'150,160,190', bazaar:'206,170,120'}[opts.scene]||'150,128,88';
+    let boostT=0, boostMul=1, shieldT=0, spinFlashT=0, countT=0, gpCombo=0, offGrass=false;
+    /* a rival's power-up on YOU: a spin (oil) or a slow (gust, honey); your Shield stops both */
+    let pSpinT=0, pSlowT=0;
+    /* §2.3 driving: the drift mini-turbo (hold the brake into a bend, let go after 0.8s / 1.6s),
+       and the clean-line bonus (a bend finished inside the edge at >85% of top speed charges the
+       next drift half as fast again). Both score driving points. */
+    let driftT=0, drifting=false, cleanBoost=0, drivePts=0, cleanBends=0, drifts=0, bendIn=null;
+    let raceT=0, lapT=0, lapTimes=[], countFrom=0;
     const heroKart=HERO;
-    const VILL=[
-      {name:'The Smudge',col:'#8B8B96',glyph:'🦋',sprite:'smudge-swarm',        kart:'kart-cruiser'},
-      {name:'Glitch',    col:'#7B5CE0',glyph:'👾',sprite:'glitch-corrupt-glee', kart:'kart-rocket'},
-      {name:'Vex',       col:'#C9A227',glyph:'🐝',sprite:'vex-full',            kart:'kart-red'},
-      {name:'The Bramble',col:'#4A7A3A',glyph:'🌿',sprite:null,                kart:'kart-buggy'}];
+    /* the garage: your paint and your exhaust trail (bought or earned, never random) */
+    const GAR=(()=>{ try{ return gpGar(); }catch(e){ return {}; } })();
+    const PAINT=(()=>{ const p=GP_PAINTS.find(x=>x.id===GAR.paint); return (p&&gpOwns('paint',p.id)&&p.col)||opts.tint||null; })();
+    const TRAILC=(()=>{ const t=GP_TRAILS.find(x=>x.id===GAR.trail); return (t&&gpOwns('trail',t.id))?t.col:'225,225,232'; })();
+    const RAINBOW=['255,120,120','255,200,90','150,220,120','120,200,255','190,150,255'];
+    const trailCol=()=>TRAILC==='rainbow'?RAINBOW[Math.floor(bumpT*6)%RAINBOW.length]:TRAILC;
+    const GP_NAME={shield:'Shield',oil:'Oil slick',gust:'Gust',turbo:'Turbo',rocket:'Rocket',honey:'Sticky honey'};
+    /* THE FIELD: the Mock Bee's spellers (GP_GRID by difficulty), each in the face the hall gives
+       them — never the child's own (alt stands in) */
+    const myAv=(()=>{ try{ return (gpKid()||{}).avatar||'bizzy'; }catch(e){ return 'bizzy'; } })();
+    const facesMB=(()=>{ try{ return window.MOCKBEE&&MOCKBEE.faces?MOCKBEE.faces():null; }catch(e){ return null; } })();
+    const faceFor=id=>{ const f=facesMB&&facesMB.find(x=>x.id===id); if(f&&f.face) return f.face; return id===myAv?GP_CAST[id].alt:id; };
     const rivals=[];
-    for(let i=0;i<CFG.rivals;i++){ const vd=VILL[i%VILL.length];
-      rivals.push({z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*(0.92+i*0.035),
-        name:vd.name, col:vd.col, glyph:vd.glyph, sprite:vd.sprite, kart:vd.kart, spin:0, slow:0, fin:false, ph:Math.random()}); }
+    (GP_GRID[diff]||GP_GRID.medium).slice(0,CFG.rivals).forEach((id,i)=>{ const P=GP_CAST[id];
+      /* the field is SPREAD (1, .975, .95, .925 of the difficulty's pace, in grid order): bunched
+         within 3.5% the draft welded them into one pack, and a race was either won or lost to it */
+      rivals.push({id, z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*(1-0.025*i)*(window.SB_CALM?0.92:1), pw:P.pw, name:P.name, col:P.col, face:faceFor(id), kart:P.kart,
+        spin:0, slow:0, shield:0, boostT:0, boostMul:1, fin:false, finT:0, ph:(i*0.37)%1, zk:0, lastPm:0, v:0}); });
 
-    /* ---- power-ups: spell a ? box to UNLOCK one, tap the slot (or Space) to FIRE ---- */
+    /* ---- power-ups: spell a box to EARN one, tap the slot (or Space) to FIRE it ---- */
     const PWSVG={
       rocket:'<svg viewBox="0 0 40 40"><path d="M20 3c6 5 8 13 8 19l-4 5h-8l-4-5c0-6 2-14 8-19Z" fill="#E5484D"/><path d="M20 3c3 4 5 9 5 19h-5V3Z" fill="#FF8A8E" opacity=".7"/><circle cx="20" cy="15" r="3.4" fill="#BFE3FF" stroke="#2B3A67" stroke-width="1.2"/><path d="M12 24l-5 7 7-2M28 24l5 7-7-2" fill="#C43D5A"/><path d="M16 29h8l-1.6 6h-4.8Z" fill="#F5A623"/><path d="M17.5 35c.8 3 4.2 3 5 0l-2.5 4Z" fill="#FF6B35"/></svg>',
       turbo:'<svg viewBox="0 0 40 40"><path d="M8 22 22 5l-4 12h9L13 35l4-13H8Z" fill="#36D1FF" stroke="#0E7EA8" stroke-width="1.6" stroke-linejoin="round"/><path d="M25 9l6 2-4 4M27 22l6 2-4 4" stroke="#9BE7FF" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
@@ -2250,51 +2485,106 @@
       gust:'<svg viewBox="0 0 40 40"><path d="M33 12c0 7-8 8-17 8m19 2c-2 6-11 7-18 5m14-19c-4-3-12-3-16 2" fill="none" stroke="#39C6A5" stroke-width="3.4" stroke-linecap="round"/><circle cx="9" cy="11" r="2" fill="#39C6A5"/><circle cx="12" cy="29" r="2" fill="#8FE8D2"/><circle cx="30" cy="33" r="2" fill="#8FE8D2"/></svg>',
       honey:'<svg viewBox="0 0 40 40"><path d="M11 14c-3 3-3 12 1 16h16c4-4 4-13 1-16Z" fill="#F5B32B" stroke="#8A5A10" stroke-width="1.4"/><ellipse cx="20" cy="13" rx="10" ry="3.4" fill="#FFCF5C" stroke="#8A5A10" stroke-width="1.2"/><path d="M15 17c-1 3 0 7 1 9" stroke="#FFE49B" stroke-width="2.6" stroke-linecap="round"/><path d="M24 30c0 3 2 4 2 6 0 1.8-2.6 1.8-2.6 0 0-2 .6-3 .6-6Z" fill="#D89614"/></svg>',
       shield:'<svg viewBox="0 0 40 40"><path d="M20 4l12 5v9c0 8-5 14-12 18-7-4-12-10-12-18V9Z" fill="#5AB5F7" opacity=".35" stroke="#2E86D1" stroke-width="2"/><path d="M20 9l8 3.4v6c0 5.4-3.4 9.6-8 12.4-4.6-2.8-8-7-8-12.4v-6Z" fill="none" stroke="#BFE3FF" stroke-width="1.8"/><path d="M15 19l4 4 7-8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
-    const POWERS=[
-      {id:'rocket',name:'Rocket boost',msg:'🚀 ROCKET! Hold on!',run(){ boostT=2.6; boostMul=1.75; }},
-      {id:'turbo', name:'Turbo',msg:'⚡ TURBO!',run(){ boostT=4.0; boostMul=1.45; }},
-      {id:'oil',   name:'Oil slick',msg:'🛢️ Oil dropped — chaser spun out!',run(){ let best=null,bd=1e9;
-                     rivals.forEach(r=>{ const d=pos-r.z; if(d>0&&d<bd){bd=d;best=r;} }); if(best){best.spin=2.8;} else { boostT=1.5;boostMul=1.4; } }},
-      {id:'gust',  name:'Gust push',msg:'🌪️ Gust — shoved them wide!',run(){ let best=null,bd=1e9;
-                     rivals.forEach(r=>{ const d=r.z-pos; if(d>0&&d<bd){bd=d;best=r;} }); if(best){ best.x+=(best.x>=0?1:-1)*0.9; best.slow=2.0; } else { boostT=1.7;boostMul=1.4; } }},
-      {id:'honey', name:'Sticky honey',msg:'🍯 Honey — every racer ahead slowed!',run(){ rivals.forEach(r=>{ if(r.z>pos) r.slow=2.8; }); }},
-      {id:'shield',name:'Bubble shield',msg:'🛡️ Shield up!',run(){ shieldT=8; }}];
-    let held=null;
+    const placeOf=z=>1+rivals.filter(r=>r.z>z).length;
+    const placeNow=()=>placeOf(pos);
+    const leadZ=()=>Math.max(pos,...rivals.map(r=>r.z));
+    const behindLap=z=>(leadZ()-z)/trackLen;
+    /* the racers as one list, so a power-up treats you and a rival alike */
+    const ME={me:true}; Object.defineProperty(ME,'z',{get:()=>pos});
+    const field=()=>[ME].concat(rivals);
+    function nearest(z0,dir,who){ let best=null,bd=1e18; field().forEach(t=>{ if(t===who||t.fin) return; const d=(t.z-z0)*dir; if(d>0&&d<bd){ bd=d; best=t; } }); return best; }
+    function hitWith(t,kind,secs,from){
+      if(t===ME){ if(shieldT>0){ blocked++; try{ flash('Your Shield held!'); }catch(_){} return; }
+        hitsOnMe.push(kind);
+        if(kind==='spin'){ pSpinT=Math.max(pSpinT,secs); spinFlashT=0.5; } else pSlowT=Math.max(pSlowT,secs);
+        try{ flash(from&&from.name?(from.name+(kind==='spin'?' oiled the road — you spun!':' slowed you down!')):'Slowed!'); }catch(_){} return; }
+      if(t.shield>0) return;
+      if(kind==='spin') t.spin=Math.max(t.spin,secs); else { t.slow=Math.max(t.slow,secs); if(from===ME&&kind==='gust') t.x+=(t.x>=0?1:-1)*0.6; } }
+    /* one function fires every power-up, yours or a rival's, by the §2.4 strengths */
+    function usePower(id,full,who){ const S=GP_STR[id][full?'full':'std'], z0=who.z;
+      if(id==='shield'){ if(who===ME) shieldT=S.t; else who.shield=S.t; }
+      else if(id==='turbo'||id==='rocket'){ if(who===ME){ boostT=S.t; boostMul=S.mul; } else { who.boostT=S.t; who.boostMul=S.mul; } }
+      else if(id==='oil'){ const t=nearest(z0,-1,who); if(t) hitWith(t,'spin',S.t,who); }
+      else if(id==='gust'){ const t=nearest(z0,1,who); if(t) hitWith(t,'gust',S.t,who); }
+      else if(id==='honey'){ field().forEach(t=>{ if(t!==who&&!t.fin&&t.z>z0) hitWith(t,'honey',S.t,who); }); } }
+    let held=null, earned=[], used=[], hitsOnMe=[], blocked=0;
     const holdBtn=host.querySelector('#sg-hold');
-    function renderHold(){ holdBtn.innerHTML=held?PWSVG[held.id]:'<span class="sg-hold-empty">?</span>';
-      holdBtn.classList.toggle('ready',!!held); }
-    function fireHeld(){ if(!held||mode!=='race') return; const p=held; held=null; renderHold();
-      try{flash(p.msg);}catch(_){ } try{p.run();}catch(e){} }
+    /* THE SLOT SHOWS WHAT THE NEXT BOX WOULD GIVE — a ghost of it — so a power-up is a plan, not
+       a gamble. Holding one, it shows that one, with a ring when it is full strength. */
+    let _ghostId='';
+    const nextPower=()=>gpPowerFor(placeNow(),CFG.rivals+1,behindLap(pos));
+    function renderHold(){
+      if(held){ holdBtn.innerHTML=PWSVG[held.id]+(held.full?'<i class="gp-full" aria-hidden="true"></i>':''); holdBtn.classList.add('ready'); holdBtn.classList.remove('ghost');
+        holdBtn.setAttribute('aria-label','Use '+GP_NAME[held.id]+(held.full?', full strength':'')); holdBtn.dataset.p=held.id; _ghostId=''; return; }
+      const g=nextPower(); if(g===_ghostId) return; _ghostId=g;
+      holdBtn.innerHTML='<span class="gp-ghost">'+PWSVG[g]+'</span>'; holdBtn.classList.remove('ready'); holdBtn.classList.add('ghost');
+      holdBtn.setAttribute('aria-label','Next box gives: '+GP_NAME[g]); holdBtn.dataset.p='ghost:'+g; }
+    function fireHeld(){ if(!held||mode!=='race') return; const p=held; held=null; used.push(p.id);
+      usePower(p.id,p.full,ME); try{ flash(GP_NAME[p.id]+(p.full?' — full strength!':'!')); }catch(_){ } renderHold(); }
     holdBtn.onclick=fireHeld;
 
-    /* ---- spelling gate: hitting a ? box pauses the race ---- */
-    const feed=wordFeed(60);
-    const gpRound=[];                      // the race's words, read by finish()
+    /* ---- the words: drawn up front, so none repeats inside a race (§2.6) ---- */
+    const ORG=CUP?GP_CUP[CUP.i]:null;
+    const WORDS=gpDrawWords(CFG.zones*CFG.laps+2, ORG, ORG?CUP.seen:null);
+    function nextWord(){ if(!WORDS.length){ const more=gpDrawWords(4,ORG,new Set(gpRound.map(r=>String(r.w).toLowerCase()))); WORDS.push(...more); }
+      const w=WORDS.shift()||{w:'honey',d:'the sweet golden food that bees make'};
+      if(CUP){ (CUP.seen=CUP.seen||new Set()).add(String(w.w).toLowerCase()); }
+      return w; }
+    const gpRound=[];                      // the race's words, read by finish(): {w, ok, grade, power}
+    let met=0, right=0, clean=0, payN=0, bot=null, curW=null;
+    const gpPay={bonus:0};
+    const CALM=!!window.SB_CALM, CARD_T=Math.round((CFG.card||12)*(CALM?1.5:1));
+    /* phones type on SGUI.keys (no native keyboard over the road); desktop types for real */
+    const softKeys=()=>gpPhone();
+    let _cardKeys=null;
+    function cardOff(el){ if(_cardKeys){ try{ _cardKeys.destroy(); }catch(e){} _cardKeys=null; } el.style.display='none'; el.innerHTML=''; host.classList.remove('gp-spelling'); }
+    /* ---- the box: the race stops, the word is said, and the clock that grades it starts ---- */
     function spellGate(){
       mode='spell'; letGo();
-      const w=feed.next();
-      const p=POWERS[Math.floor(Math.random()*POWERS.length)];
+      const w=nextWord(), L=String(w.w).length, field_n=CFG.rivals+1; curW=w;
+      const power=gpPowerFor(placeNow(),field_n,behindLap(pos));
       const el=host.querySelector('#sg-card');
-      el.innerHTML='<div class="sg-cardbox"><b>Item box — spell it to unlock the power-up</b>'+
-        '<button class="sg-cardw" id="sg-cspk">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
-        '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="sg-rbtn go" id="sg-cgo">Unlock</button></div></div>';
-      el.style.display='grid'; try{ say(w.w); }catch(e){}
-      const inp=el.querySelector('#sg-ci'); try{inp.focus();}catch(e){}
-      function submit(){ const ok=sameSpelling(inp.value,w.w); wlog(w,ok); gpRound.push({w:w.w,ok:ok});
-        el.style.display='none'; el.innerHTML='';
-        if(ok){ held=p; renderHold();
-          // spell combo: unbroken correct spells stack an instant extra boost
-          gpCombo++; if(gpCombo>=2){ boostT=Math.max(boostT,1.2); boostMul=Math.max(boostMul,1.22+Math.min(gpCombo,6)*0.06); }
-          const uc=host.querySelector('#sg-card');
-          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[p.id]+'</span><b>'+p.name+(gpCombo>=2?(' · '+gpCombo+'x combo'):'')+' unlocked!</b><i>tap the slot (or Space) to use it</i></div>';
-          uc.style.display='grid';
-          setTimeout(()=>{ uc.style.display='none'; uc.innerHTML=''; resume(); },1300);
-        } else { gpCombo=0; try{flash('The box fizzles… next one is coming!');}catch(_){ } resume(); } }
+      const t0=performance.now(); let doneG=false, ringT=0;
+      /* the bot driver (tests) answers here, synchronously, with the time it says it took */
+      if(bot&&bot.spell){ const a=bot.spell(w,{par:GP_PAR(L,CALM),power}); return grade(a.typed,a.secs); }
+      el.innerHTML='<div class="sg-cardbox gp-card"><div class="gp-card-top"><span class="gp-card-ring" id="gp-ring"></span>'+
+        '<b>Spell it for a power-up</b><span class="gp-card-p" title="'+GP_NAME[power]+'">'+PWSVG[power]+'</span></div>'+
+        '<button class="sg-cardw" id="sg-cspk" aria-label="Hear the word again">'+iconSVG('volume',18)+'</button>'+meaningHTML(w)+
+        '<div class="sg-inrow"><input id="sg-ci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type the word"'+(softKeys()?' inputmode="none" readonly':'')+'>'+
+        '<button class="sg-rbtn go" id="sg-cgo">Go</button></div></div>';
+      el.style.display='grid'; host.classList.add('gp-spelling'); try{ loop&&loop.hold(true); }catch(e){} try{ say(w.w); }catch(e){}
+      const inp=el.querySelector('#sg-ci'), ring=el.querySelector('#gp-ring');
+      const tick=()=>{ if(doneG) return; const left=Math.max(0,CARD_T-(performance.now()-t0)/1000);
+        if(ring) ring.innerHTML=SGUI.ring(left/CARD_T,Math.ceil(left)); if(left<=0){ submit(); return; } ringT=setTimeout(tick,250); };
+      tick();
+      if(softKeys()){ const K=SGUI.keys(el.querySelector('.gp-card'),{ onKey:ch=>{ inp.value+=ch; }, onBack:()=>{ inp.value=inp.value.slice(0,-1); }, onEnter:()=>submit() }); _cardKeys=K; }
+      else { try{ inp.focus(); }catch(e){} }
+      function submit(){ if(doneG) return; doneG=true; clearTimeout(ringT); const secs=(performance.now()-t0)/1000; cardOff(el); grade(inp.value,secs); }
       inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
       el.querySelector('#sg-cgo').onclick=submit;
       el.querySelector('#sg-cspk').onclick=()=>{ try{ say(w.w); }catch(e){} };
+      function grade(typed,secs){
+        const ok=sameSpelling(typed||'',w.w), g=gpGrade(ok,secs,L,CALM);
+        met++; wlog(w,ok); gpRound.push({w:w.w,d:w.d||'',ok,grade:g,power:ok?power:null});
+        const st=gpStat();
+        if(ok){ right++; payN+=payG(gpPay)?1:0; st.right=(st.right||0)+1;
+          if(g==='clean'){ clean++; st.clean=(st.clean||0)+1; gpCombo++; } else gpCombo=0;
+          held={id:power,full:g==='clean'}; earned.push(power); renderHold();
+          let combo=false; if(gpCombo>=GP_COMBO){ gpCombo=0; combo=true; usePower('turbo',false,ME); }
+          if(bot&&bot.spell) return resume();
+          const uc=host.querySelector('#sg-card');
+          uc.innerHTML='<div class="sg-cardbox sg-unlock"><span class="sg-unlock-ic">'+PWSVG[power]+'</span><b>'+GP_NAME[power]+(g==='clean'?' · full strength':'')+'</b>'+
+            '<i>'+(g==='clean'?'Clean — spelled inside the clock':'Right — a little slower than Clean')+(combo?' · three Clean in a row: a free Turbo!':'')+'</i><i>Tap the slot (or Space) to use it</i></div>';
+          uc.style.display='grid';
+          setTimeout(()=>{ if(mode!=='spell') return; uc.style.display='none'; uc.innerHTML=''; resume(); },1100);
+        } else { gpCombo=0;
+          if(bot&&bot.spell) return resume();
+          /* A MISS HOLDS (§2.4, GP8): no power-up, the word on screen with the letters marked,
+             and the race stays stopped until Continue (Enter or a tap) */
+          host.classList.add('gp-spelling');   // the miss card sits where the spell card was, over the thumb band
+          gpMiss(host.querySelector('#sg-card'),w,typed||'',()=>{ host.classList.remove('gp-spelling'); resume(); }); } }
     }
-    function resume(){ countT=1.0; mode='count'; if(_rotWait){ _rotWait=false; onRot(); } }
+    function resume(){ curW=null; try{ loop&&loop.hold(false); }catch(e){} countT=1.0; countFrom=1.0; mode='count'; if(_rotWait){ _rotWait=false; onRot(); } }
 
     /* ---- steering ----
        WHAT IS HELD, NOT WHAT HAPPENED LAST. The old handlers set steer on a press and zeroed
@@ -2423,6 +2713,7 @@
         if(si%(isF?2:3)===0){ const pw=0.035*w1, ph=(isF?0.3:0.34)*w1; cx.fillStyle=col; cx.fillRect(ax-pw/2,y1-ph,pw,ph); } }
       cx.globalAlpha=a0; }
     const farItems=[];                       // far props, collected near-to-far, drawn far-to-near
+    let _skyCv=null;                         // the backdrop, pre-scaled for this layout
     function drawBG(){
       const hz=horizonY;
       const sky=sgTex(SKY);
@@ -2444,7 +2735,12 @@
         const par=Math.sin(pos/2600)*16 - playerX*26;         // gentle parallax
         const groundH=Ht-hz;
         const srcH=sky.height*0.68, iw=Wd*1.12;
-        try{ cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, hz+2); }catch(e){}
+        /* the painting is scaled ONCE into an offscreen canvas at this layout's size (§2.9), then
+           one unscaled blit a frame — a 1280px image resampled every frame was the dearest draw */
+        const sk=Math.round(iw)+'|'+Math.round(hz)+'|'+dpr;
+        if(!_skyCv||_skyCv.k!==sk){ try{ const c2=document.createElement('canvas'); c2.width=Math.ceil(iw*dpr); c2.height=Math.ceil((hz+2)*dpr);
+          c2.getContext('2d').drawImage(sky,0,0,sky.width,srcH,0,0,c2.width,c2.height); c2.k=sk; _skyCv=c2; }catch(e){ _skyCv=null; } }
+        try{ if(_skyCv) cx.drawImage(_skyCv, -(iw-Wd)/2 + par*0.35, 0, iw, hz+2); else cx.drawImage(sky, 0,0, sky.width,srcH, -(iw-Wd)/2 + par*0.35, 0, iw, hz+2); }catch(e){}
         const gg=cx.createLinearGradient(0,hz,0,Ht);
         gg.addColorStop(0,  hx(LIGHT.grass,1.14));            // lit at the horizon
         gg.addColorStop(0.5,hx(LIGHT.grass,1.0));
@@ -2488,7 +2784,8 @@
     /* _vis is written only for bands inside this frame's draw range, so a band the camera
        jumped past keeps last time's true. Anything placed by band (rivals, hazards, boxes)
        checks the band was visited THIS frame, or a jump leaves ghosts drawn at old positions. */
-    let _frameN=0;
+    let _frameN=0, _ghostN=0;
+    const LINE_ON=diff==='easy';
     function draw(){ _frameN++;
       drawBG();
       const posm=pos%trackLen;
@@ -2553,6 +2850,9 @@
           poly(s1.x-s1.w*EO-e1,s1.y, s2.x-s2.w*EO-e2,s2.y, s2.x-s2.w*EO+e2,s2.y, s1.x-s1.w*EO+e1,s1.y, el);
           poly(s1.x+s1.w*EO-e1,s1.y, s2.x+s2.w*EO-e2,s2.y, s2.x+s2.w*EO+e2,s2.y, s1.x+s1.w*EO+e1,s1.y, el); }
         if(c.lane){ const lw1=s1.w*0.03, lw2=s2.w*0.03; poly(s1.x-lw1,s1.y, s2.x-lw2,s2.y, s2.x+lw2,s2.y, s1.x+lw1,s1.y, fogged(c.lane,n)); }
+        /* EASY ONLY: the racing line, a pale ribbon on the tarmac (§2.3) */
+        if(LINE_ON && n<70 && s1.w>8){ const q1=idealX(seg.index), q2=idealX(seg.index+1), lw1=s1.w*0.05, lw2=s2.w*0.05, a1=s1.x+q1*s1.w, a2=s2.x+q2*s2.w;
+          cx.globalAlpha=0.30*Math.min(1,(70-n)/20); poly(a1-lw1,s1.y, a2-lw2,s2.y, a2+lw2,s2.y, a1+lw1,s1.y, '#FFFDF0'); cx.globalAlpha=1; }
         // checkered finish strip
         if(Math.abs(seg.index*segLen-FINVIS)<segLen*2){ const cw=(s1.w*2)/10;
           for(let k=0;k<10;k++){ cx.fillStyle=(k%2)?'#111':'#EEE'; cx.fillRect(s1.x-s1.w+k*cw,s1.y-3,cw,6); } }
@@ -2637,6 +2937,12 @@
         const sc=camDepth/cz2, sx=Wd/2+sc*(a.x+(b.x-a.x)*f)*Wd/2+sc*roadW*Wd/2*r.x, sy=horizonY-sc*(a.y+(b.y-a.y)*f)*Ht/2;
         r._sx=sx; r._sy=sy;
         order.push({y:sy,scale:sc,sx:sx,sy:sy,t:'rival',r:r,clip:seg._clip,far:seg._far}); });
+      /* THE GHOST of your best lap on this track at this difficulty: where you were at this lap time */
+      if(ghost&&ghost.s&&mode==='race'&&lap<=CFG.laps){ const gi=lapT/0.1, i0=Math.floor(gi), A=ghost.s[i0], B=ghost.s[i0+1]||A;
+        if(A&&B[0]>=A[0]){ const f2=gi-i0, gz=(A[0]+(B[0]-A[0])*f2)*segLen, gx=A[1]+(B[1]-A[1])*f2, si=Math.floor(gz/segLen)%segs.length, seg=segs[si];
+          if(seg&&seg._vis&&seg._vf===_frameN){ const f=(gz-si*segLen)/segLen, a=seg.p1.camera, b=seg.p2.camera, cz2=a.z+(b.z-a.z)*f;
+            if(cz2>camDepth){ const sc=camDepth/cz2, sx=Wd/2+sc*(a.x+(b.x-a.x)*f)*Wd/2+sc*roadW*Wd/2*gx, sy=horizonY-sc*(a.y+(b.y-a.y)*f)*Ht/2;
+              order.push({y:sy,scale:sc,sx,sy,t:'ghost',clip:seg._clip,far:seg._far}); _ghostN++; } } } }
       order.sort((a,b)=>a.y-b.y);
       order.forEach(o=>{ if(o.t!=='prop' && o.t!=='strip' && (o.far||0)>95) return;   // beyond this they are sub-pixel; props carry on in the far loop
         const hw=o.scale*roadW*Wd/2;            // the road's half-width at this depth, px
@@ -2691,11 +2997,16 @@
             cx.fillStyle='#fff'; cx.font='800 '+Math.round(s*0.78)+'px Fraunces,serif'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('?',0,s*0.04);
             cx.textAlign='left'; cx.textBaseline='alphabetic'; }
           cx.restore(); }
+        else if(o.t==='ghost'){ const kw=w*(KART_W/0.11); cx.globalAlpha*=0.42;
+          kartDraw(cx,o.sx,o.sy,kw,{style:KART,body:'#E8F4FF',driver:avImg(heroKart),yaw:0,wheel:wheelPh,t:bumpT,lift:0}); }
         else { const r=o.r, kw=w*(KART_W/0.11), sp=r.spin>0;
-          kartDraw(cx,o.sx,o.sy,kw,{style:r.kart,body:r.col,driver:r.sprite?sgImg(r.sprite):null,glyph:r.sprite?null:r.glyph,
+          kartDraw(cx,o.sx,o.sy,kw,{style:r.kart,body:r.col,driver:avImg(r.face),glyph:null,
             yaw:sp?Math.sin(bumpT*14)*0.9:Math.sin(bumpT*0.9+r.ph*6)*0.12, wheel:(wheelPh+r.ph)%1, t:bumpT+r.ph*9,
             lift:-Math.sin(bumpT*8.5+r.ph*7)*0.25});
-          if(sp){ cx.font='700 '+Math.round(kw*0.4)+'px serif'; cx.textAlign='center'; cx.fillText('💫',o.sx,o.sy-kw*1.25); cx.textAlign='left'; } }
+          /* a spin is drawn (two arcs over the kart), never an emoji */
+          if(sp){ cx.strokeStyle='rgba(255,255,255,.9)'; cx.lineWidth=Math.max(1.5,kw*0.05); const a0=bumpT*9;
+            for(const k of [0,Math.PI]){ cx.beginPath(); cx.arc(o.sx,o.sy-kw*1.2,kw*0.28,a0+k,a0+k+1.9); cx.stroke(); } }
+          if(r.shield>0){ cx.strokeStyle='rgba(120,205,255,.85)'; cx.lineWidth=2; cx.beginPath(); cx.ellipse(o.sx,o.sy-kw*0.6,kw*0.66,kw*0.72,0,0,7); cx.stroke(); } }
         cx.globalAlpha=1; cx.restore();
       });
       /* THE KART IS DRAWN WHERE IT IS. Its offset from centre is measured in the same
@@ -2715,7 +3026,7 @@
       const px=Wd/2 + (playerX-camLag)*hwK;
       _kartPx=px; _kpy=py; _kpw=pw;       // for the feel probe, and where the puffs leave from
       const vfk=v/maxV, rough=offGrass&&v>1?(Math.sin(bumpT*23)*1.1+Math.sin(bumpT*37)*0.6):0;
-      kartDraw(cx,px,py,pw,{style:KART,body:opts.tint||null,driver:avImg(heroKart),
+      kartDraw(cx,px,py,pw,{style:KART,body:PAINT,driver:avImg(heroKart),
         yaw:yawS, roll:-yawS*0.07+Math.max(-1,Math.min(1,push/2.5))*0.03,
         lift:-(Math.sin(bumpT*9)*0.3+Math.sin(bumpT*5.7)*0.2)*vfk+rough,
         wheel:wheelPh, brake:braking&&v>maxV*0.3, boost:boostT>0, t:bumpT, lod:false});
@@ -2781,23 +3092,37 @@
     /* position bar: everyone's progress at a glance */
     function updateHud(){
       const ahead=rivals.filter(r=>r.z>pos).length; const place=ahead+1;
-      host.querySelector('#sg-pos').innerHTML=['🥇 1st','🥈 2nd','🥉 3rd','4th','5th'][place-1]+' <i>/ '+(CFG.rivals+1)+'</i>';
+      host.querySelector('#sg-pos').innerHTML=['1st','2nd','3rd','4th','5th'][place-1]+' <i>/ '+(CFG.rivals+1)+'</i>';
+      if(!held) renderHold();
       host.querySelector('#sg-lap').textContent='Lap '+Math.min(CFG.laps,lap)+'/'+CFG.laps;
-      host.querySelector('#sg-spd').textContent='💨 '+Math.round(v/maxV*180);
+      host.querySelector('#sg-spd').textContent=Math.round(v/maxV*180)+' km/h';
       const pb=host.querySelector('#sg-pb');
       let dots='<i class="sg-pb-road"></i><b class="sg-pb-flag">'+GP_FLAG()+'</b>';
       rivals.forEach((r,i)=>{ const pct=Math.min(99,r.z/TOTAL*100);
-        dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+r.name+'">'+r.glyph+'</span>'; });
+        if(r._av==null){ try{ r._av=(window.SB_AVATAR&&SB_AVATAR(r.face,16))||''; }catch(e){ r._av=''; } }
+        dots+='<span class="sg-pb-dot" style="left:'+pct.toFixed(1)+'%;top:'+(i%2?72:28)+'%;background:'+r.col+'" title="'+esc2(r.name)+'">'+r._av+'</span>'; });
       dots+='<span class="sg-pb-dot me" style="left:'+Math.min(99,pos/TOTAL*100).toFixed(1)+'%">'+meMark+'</span>';
       pb.innerHTML=dots;
     }
 
     /* ---- loop ---- */
-    let last=0;
-    function frame(ts){ if(over) return; const dt=Math.min(0.05,(ts-last)/1000)||0.016; last=ts;
-      if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } }
-      if(mode==='race') update(dt);
-      draw(); requestAnimationFrame(frame); }
+    /* ---- loop: real time, fixed step (spec §1.4, sgLoop) ----
+       Physics advances in 1/120 s steps, as many as real time needs, so a race takes the same
+       time on a slow phone as on a fast laptop (GP7); the picture is drawn once a frame, the
+       world carried forward by the part-step left over so nothing judders between steps. */
+    const loopFn=window.sgLoop;   // the engine kit's one clock (it also holds while a miss card is up)
+    function step(dt){ if(over) return;
+      if(mode==='count'){ countT-=dt; if(countT<=0){ mode='race'; } return; }
+      if(mode==='race') update(dt); }
+    /* PERFORMANCE (§2.9): drawDist 100 → 70 under 50fps and back above 58; puffs capped 120,
+       halved while slow. Measured on the frame clock, not guessed from the device. */
+    let _fps=60, _fT=0, _slow=false, _ddPin=0;   // _ddPin: a test measuring the world at a fixed range pins it (window._race.pinDraw)
+    function render(alpha){ const now=performance.now(); if(_fT){ const f=1000/Math.max(1,now-_fT); _fps+=(Math.min(120,f)-_fps)*0.05; } _fT=now;
+      if(_ddPin) drawDist=_ddPin; else if(!_slow&&_fps<50){ _slow=true; drawDist=70; } else if(_slow&&_fps>58){ _slow=false; drawDist=100; }
+      if(mode!=='race'){ draw(); return; }
+      const a=Math.max(0,Math.min(1,alpha||0))/120, p0=pos, z0=rivals.map(r=>r.z);
+      pos+=v*a; rivals.forEach(r=>{ r.z+=(r.v||0)*a; });
+      try{ draw(); } finally { pos=p0; rivals.forEach((r,i)=>{ r.z=z0[i]; }); } }
     /* Puffs are spawned where the kart was DRAWN (last frame's px/py/pw), so they leave
        from the pipes and the tyres, then drift toward the camera and fade. */
     let _kpy=0, _kpw=0;
@@ -2808,19 +3133,46 @@
       const rg=g2.createRadialGradient(32,32,0,32,32,32);
       rg.addColorStop(0,'rgba('+col+',1)'); rg.addColorStop(0.45,'rgba('+col+',.7)'); rg.addColorStop(1,'rgba('+col+',0)');
       g2.fillStyle=rg; g2.fillRect(0,0,64,64); return (_puffTex[col]=pc); }
-    function puff(x,y,vx,vy,r,gr,life,col,a){ if(parts.length<110) parts.push({x,y,vx,vy,r,gr,life,max:life,col,a}); }
+    function puff(x,y,vx,vy,r,gr,life,col,a){ if(parts.length<(_slow?60:120)) parts.push({x,y,vx,vy,r,gr,life,max:life,col,a}); }
     function kartFx(dt){
       for(let i=parts.length-1;i>=0;i--){ const q=parts[i]; q.life-=dt; if(q.life<=0){ parts.splice(i,1); continue; }
         q.x+=q.vx*dt; q.y+=q.vy*dt; q.r+=q.gr*dt; q.vx*=0.97; }
       if(!_kpw) return; const vf=v/maxV, P=_kpw, X=_kartPx, Y=_kpy;
       const rate=(r)=>Math.random()<r*dt;
-      if(vf>0.05 && rate(boostT>0?34:10+vf*8)) [-0.08,0.08].forEach(k=>puff(X+k*P,Y-0.11*P,(Math.random()-0.5)*P*0.3,P*(0.5+Math.random()*0.4),P*0.04,P*0.16,0.45,boostT>0?'255,190,120':'225,225,232',boostT>0?0.4:0.28));
+      if(vf>0.05 && rate(boostT>0?34:10+vf*8)) [-0.08,0.08].forEach(k=>puff(X+k*P,Y-0.11*P,(Math.random()-0.5)*P*0.3,P*(0.5+Math.random()*0.4),P*0.04,P*0.16,0.45,boostT>0?'255,190,120':trailCol(),boostT>0?0.4:0.28));
       const onVerge=Math.abs(playerX)>0.9;
       if(vf>0.08 && onVerge && rate(34)) [-1,1].forEach(k=>puff(X+k*0.37*P,Y-0.03*P,k*P*(0.3+Math.random()*0.5),P*(0.7+Math.random()*0.6),P*0.06,P*0.34,0.6,DUST,0.5));
       if(braking && vf>0.45 && rate(26)) [-1,1].forEach(k=>puff(X+k*0.37*P,Y-0.02*P,k*P*0.2,P*(0.6+Math.random()*0.4),P*0.05,P*0.28,0.5,'245,245,248',0.45));
     }
-    function update(dt){
+    /* the bot drivers the acceptance tests race with (window._race.bot): a racing-line driver
+       that steers onto LINE and lifts for the tight bends, and a random one. Never in play. */
+    function botDrive(dt){ const n=Math.floor(pos/segLen), vf=v/maxV, sg=segs[n%segs.length];
+      if(bot.drive==='human'){ /* a child at the wheel: sees where the kart was 0.3s ago, steers full or not at all,
+           lifts late for the tight bends (the 300ms-reaction driver of tools/game-bench) */
+        (bot.hist=bot.hist||[]).push([playerX,idealX(n+4)]); const old=bot.hist.length>36?bot.hist.shift():bot.hist[0];
+        const err=old[1]-old[0]; steer=Math.abs(err)>0.14?Math.sign(err):0;
+        let c=0; for(let k=4;k<16;k++) c=Math.max(c,Math.abs(segs[(n+k)%segs.length].curve||0));
+        braking=c>=4&&vf>0.8; }
+      else if(bot.drive==='random'){ bot.t=(bot.t||0)-dt; if(bot.t<=0){ const r=bot.rng(); steer=r<0.36?-1:r<0.72?1:0; bot.t=0.25+bot.rng()*0.45; } braking=false; }
+      else { let tgt=idealX(n+4); const pushNow=(sg.curve||0)*vf*vf*PULL;
+        /* a racing driver steps round a hazard on its line and back */
+        const pm=pos%trackLen; hazards.forEach(h=>{ let d=h.seg*segLen-pm; if(d<0) d+=trackLen; if(d>0&&d<segLen*14&&Math.abs(h.off-tgt)<0.5) tgt=h.off>tgt?h.off-0.55:h.off+0.55; });
+        tgt=Math.max(-0.85,Math.min(0.85,tgt));
+        const want=(tgt-playerX)/0.25+pushNow, cap=2.2*Math.max(0.42,vf);
+        steer=Math.max(-1,Math.min(1,want/cap));
+        let c=0; for(let k=0;k<22;k++) c=Math.max(c,Math.abs(segs[(n+k)%segs.length].curve||0));
+        braking=c*vf*PULL>2.2*0.86; }
+      if(held){ const id=held.id; let go=id!=='oil'&&id!=='gust';
+        if(id==='oil') go=rivals.some(r=>!r.fin&&pos-r.z>0&&pos-r.z<segLen*6);
+        if(id==='gust') go=rivals.some(r=>!r.fin&&r.z-pos>0&&r.z-pos<segLen*25);
+        if(go) fireHeld(); } }
+    let ghost=null, gSamp=[], gBest=null, gAcc=0;
+    const GKEY=opts.scene+'|'+diff;
+    try{ ghost=((window.SB_STORE&&SB_STORE.getJSON('gpGhost',{}))||{})[GKEY]||null; }catch(e){ ghost=null; }
+    function update(dt){ raceT+=dt; lapT+=dt; if(!held) renderHold();   // the slot's ghost follows your place (a DOM write only when it changes)
+      if(bot&&bot.drive) botDrive(dt);
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
+      pSpinT=Math.max(0,pSpinT-dt); pSlowT=Math.max(0,pSlowT-dt);
       const seg=segs[Math.min(segs.length-1,Math.floor(pos/segLen))];
       /* Steering was halved in an earlier tuning pass to stop a tap leaping across the
          road. It overshot: at 1.1 a full crossing took 1.8 SECONDS of holding, which is
@@ -2828,38 +3180,40 @@
          2.2 — the road crosses in 0.9s, a tap still nudges, and the kart answers. */
       const dxs=dt*2.2*Math.max(0.42,v/maxV);
       playerX+=steer*dxs;
-      /* THE ROAD PUSHES YOU OUT — WHILE IT BENDS, AND ONLY THEN.
-         For a while the push had MEMORY: a bend built up a sideways slide that outlived it,
-         with a 2.4s half-life. Measured in the simulator: an unsteered kart moved 0.17
-         road-half-widths a second ON STRAIGHTS, a kart parked in the grass kept being shoved
-         sideways, and a counter-steer at a standstill lost to the stored slide for most of a
-         second. Play-tested in one line: "the car is veering in all random directions". It
-         was — the push you felt belonged to a bend you had already left.
-         So the push has no memory. It is the bend under the kart NOW, times speed squared,
-         times PULL. What that model has to prove is that it is not self-driving — the reason
-         memoryless was dropped the first time is that a weak push pendulums across
-         alternating bends and never leaves the road. PULL is set so it cannot: hands-off,
-         every difficulty is in the grass by the first sector. SQUARED is what makes the brake
-         the answer to a corner (lifting to 80% cuts the push by a third), and what makes a
-         kart that has stopped in the grass steerable straight back out.
-         Against a child who reacts 300ms late and steers back only once clearly drifting,
-         grass time fell 9.6→5.9% on easy, 13.5→6.4% medium, 16.7→7.7% hard, 20.4→11% champ. */
+      /* THE ROAD PUSHES YOU OUT — WHILE IT BENDS, AND ONLY THEN. No memory (see CLAUDE.md
+         "THE PUSH HAS NO MEMORY"): the bend under the kart NOW, times speed squared, times PULL. */
       const vf=v/maxV;
       push=(seg.curve||0)*vf*vf*PULL;
       playerX-=push*dt;
       playerX=Math.max(-1.2,Math.min(1.2,playerX));
       /* the kart's LOOK: nose into the steer (not a card tilting), treads rolling with the
          road, springs working harder the faster you go and hard on the grass */
-      yawS += (steer*0.85 - yawS)*(1-Math.pow(0.5,dt/0.09));
+      yawS += ((steer*0.85+(pSpinT>0?Math.sin(raceT*16)*0.9:0)) - yawS)*(1-Math.pow(0.5,dt/0.09));
       wheelPh = (wheelPh + (v/maxV)*dt*5.5)%1; bumpT+=dt;
       kartFx(dt);
       camLag += ((playerX*CAM_FOLLOW)-camLag)*(1-Math.pow(0.5, dt/CAM_HALF));
+      /* ±2% RUBBER BAND and a symmetric DRAFT (§2.5, owner): more than 12 bands behind the
+         leader, +2% of top speed; within 3 bands behind any racer, +2% more. That is all —
+         a lead earned by driving stays a lead (GP3). */
+      const lead=Math.max(0,...rivals.map(r=>r.fin?-1:r.z));
+      const band=lead-pos>segLen*12?0.02:0, draft=rivals.some(r=>!r.fin&&r.z-pos>0&&r.z-pos<segLen*3)?0.02:0;
+      const cap=pSpinT>0?0.35:pSlowT>0?0.6:1;
+      const topV=maxV*boostMul*(1+band+draft)*cap;
       const offRoad=(playerX<-0.95||playerX>0.95);
+      const curveNow=Math.abs(seg.curve||0);
+      const wasDrift=drifting;
+      drifting=!offRoad&&braking&&curveNow>=2&&steer*(seg.curve||0)>0&&v>maxV*0.55;
       if(offRoad){
         // the grass rolls the kart to a FULL STOP — no throttle off the tarmac; steering
         // still works at a standstill, so you steer back on and pull away again
         v=Math.max(0, v-(maxV/0.9)*dt);
-        if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('🌿 Off the track — steer back on!');}catch(_){} }
+        if(!offGrass){ offGrass=true; spinFlashT=Math.max(spinFlashT,0.3); try{flash('Off the track — steer back on!');}catch(_){} }
+      } else if(drifting){
+        /* A DRIFT: the brake held INTO a bend, steering with it. It scrubs speed gently (to 62%)
+           instead of braking hard, and charges the mini-turbo; a clean previous bend charges it
+           half as fast again. */
+        offGrass=false; driftT+=dt*(cleanBoost?1.5:1);
+        v=Math.max(maxV*0.62, v-(maxV/2.4)*dt);
       } else if(braking){
         offGrass=false;
         /* a real lift, not a tap: down to ~46% in about a second, which is what a
@@ -2868,15 +3222,24 @@
         v=Math.max(maxV*0.34, v-(maxV/1.05)*dt);
       } else {
         offGrass=false;
-        v=Math.min(maxV*boostMul, v+accel*dt);   // tarmac: accelerate up to top speed
+        if(v>topV) v=Math.max(topV, v-maxV*1.6*dt);   // a spin or a slow bites; a boost ending eases off
+        else v=Math.min(topV, v+accel*dt);             // tarmac: accelerate up to top speed
       }
+      /* let go of a drift after 0.8s or 1.6s: ×1.15 or ×1.3 for a second */
+      if(wasDrift&&!drifting){ const m=driftT>=1.6?1.3:driftT>=0.8?1.15:0;
+        if(m){ if(boostT<=0||boostMul<=m){ boostT=Math.max(boostT,1); boostMul=Math.max(boostMul,m); } drivePts+=m>1.2?20:10; drifts++; cleanBoost=0;
+          try{ flash(m>1.2?'Big drift — mini-turbo!':'Drift — mini-turbo!'); }catch(_){} }
+        driftT=0; }
+      /* CLEAN-LINE BONUS: a bend (curve 2+) taken without touching the edge, left at >85% */
+      if(curveNow>=2){ if(!bendIn) bendIn={clean:true}; if(Math.abs(playerX)>0.9) bendIn.clean=false; }
+      else if(bendIn){ if(bendIn.clean&&v>maxV*0.85){ cleanBends++; drivePts+=25; cleanBoost=1; } else cleanBoost=0; bendIn=null; }
       const pm=pos%trackLen;
       // tol ≈ half a kart-width in lane units — so a hit needs a real overlap, matching what you see
       const CATCH=0.34;
-      if(shieldT<=0){ hazards.forEach(h=>{ if(h.hit) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
-        if(d<segLen*0.9 && Math.abs(playerX-h.off)<CATCH && v>maxV*0.25){ h.hit=true; setTimeout(()=>{h.hit=false;},1400);
-          if(h.kind==='cop'){ v*=0.5; spinFlashT=0.5; try{flash('🚓 Pulled over — the cops!');}catch(_){} }
-          else { v*=0.55; spinFlashT=0.5; try{flash('🛢️ Slipped on oil!');}catch(_){} } } }); }
+      /* hazards cost speed (×0.55, §2.3); the Shield rides through them */
+      if(shieldT<=0&&!noHaz){ hazards.forEach(h=>{ if(h.hitT>raceT) return; const hz2=h.seg*segLen; let d=Math.abs(pm-hz2); d=Math.min(d,trackLen-d);
+        if(d<segLen*0.9 && Math.abs(playerX-h.off)<CATCH && v>maxV*0.25){ h.hitT=raceT+1.4;
+          v*=0.55; spinFlashT=0.5; try{flash(h.kind==='cop'?'Pulled over — the cops!':'Slipped on oil!');}catch(_){} } }); }
       /* THE BOX IS SWEPT, NOT SAMPLED. This used to ask "is the box inside a 1.6-segment
          window THIS frame?", which is a point test against a fixed window and therefore
          frame-rate dependent: at 60fps the kart covers 0.77 of a segment per frame and you
@@ -2889,59 +3252,120 @@
       pos+=v*dt;
       const _pm2=pos%trackLen;
       const _wrapped=_pm2<_prevPm;                    // crossed the start/finish this frame
+      let gate=null;
       items.forEach(it=>{ if(it.gone) return; const iz=it.seg*segLen;
         const crossed=_wrapped ? (iz>_prevPm || iz<=_pm2) : (iz>_prevPm && iz<=_pm2);
-        if(crossed && Math.abs(playerX-it.off)<CATCH){ it.gone=true; spellGate(); } });
+        if(crossed && Math.abs(playerX-it.off)<CATCH){ it.gone=true; gate=it; } });
+      /* the ghost of this lap, ten samples a second: where you were and how far across */
+      gAcc+=dt; if(gAcc>=0.1){ gAcc-=0.1; gSamp.push([+(_pm2/segLen).toFixed(1),+playerX.toFixed(2)]); }
       const nl=1+Math.floor(pos/trackLen);
-      if(nl>lap&&nl<=CFG.laps){ lap=nl; items.forEach(it=>it.gone=false); try{flash('🏁 Lap '+lap+' of '+CFG.laps+'!');}catch(_){ } }
-      if(pos>=TOTAL){ over=true; return finish(); }
-      rivals.forEach(r=>{ r.spin=Math.max(0,r.spin-dt); r.slow=Math.max(0,r.slow-dt);
-        let rs=r.spd; if(r.spin>0) rs*=0.28; else if(r.slow>0) rs*=0.55;
-        const gap=pos-r.z; rs+= gap>segLen*12?maxV*0.07: gap<-segLen*12?-maxV*0.06:0;
-        r.z+=Math.max(0,rs)*dt; if(r.z>=TOTAL) r.fin=true;
+      if(nl>lap){ lapTimes.push(+lapT.toFixed(2)); if(!gBest||lapT<gBest.t) gBest={t:+lapT.toFixed(2),s:gSamp}; gSamp=[]; lapT=0;
+        if(nl<=CFG.laps){ lap=nl; items.forEach(it=>it.gone=boxesOff); try{flash('Lap '+lap+' of '+CFG.laps+'!');}catch(_){ } } }
+      rivals.forEach(r=>{ r.spin=Math.max(0,r.spin-dt); r.slow=Math.max(0,r.slow-dt); r.shield=Math.max(0,r.shield-dt); r.boostT=Math.max(0,r.boostT-dt); if(!r.boostT) r.boostMul=1;
+        let rs=r.spd*r.boostMul; if(r.spin>0) rs*=0.28; else if(r.slow>0) rs*=0.55;
+        const gap=pos-r.z; rs+= gap>segLen*12?maxV*0.02: gap<-segLen*12?-maxV*0.02:0;
+        if([ME].concat(rivals).some(o=>o!==r&&!o.fin&&o.z-r.z>0&&o.z-r.z<segLen*3)) rs+=maxV*0.02;
+        r.v=Math.max(0,rs); const pz=r.z%trackLen; r.z+=r.v*dt; const nz=r.z%trackLen;
+        /* a rival's box: it turns one into a power-up every 1/pw boxes, chosen by the same
+           table from ITS place — deterministic, never a dice roll */
+        zoneSegs.forEach(zn=>{ const iz=zn*segLen; if(nz<pz ? (iz>pz||iz<=nz) : (iz>pz&&iz<=nz)){ r.zk++;
+          if(!r.fin&&!noRivalPw&&Math.floor(r.zk*r.pw)>Math.floor((r.zk-1)*r.pw)){ const id=gpPowerFor(1+rivals.filter(o=>o!==r&&o.z>r.z).length+(pos>r.z?1:0),CFG.rivals+1,behindLap(r.z)); usePower(id,false,r); r.used=(r.used||0)+1; } } });
+        if(!r.fin&&r.z>=TOTAL){ r.fin=true; r.finT=raceT; }
         r.x+= (Math.sin((r.z+r.name.length*99)/1400)*0.6 - r.x)*dt*0.6; });
+      if(pos>=TOTAL){ over=true; return finish(); }
+      if(gate) spellGate();
     }
-    /* A race that ends by calling done() hands the child straight back to the app's
-       generic text card — no placing, no words, nothing to read. The finish IS the
-       race, and this one did not have one. */
-    function finish(){ unbind();
+    /* THE FINISH (§2.6). Stars by place. Score = place points + driving points (clean bends,
+       drift mini-turbos) + 50 for each box word right. Coins only for words: one per box word
+       right as it was spelled (payG), and the contest coin only for a podium with 70% or more
+       of the box words right — never for finishing. The card prints the coins the LEDGER moved
+       (GP11). The word level hears box words right ÷ box words met; the place never moves it. */
+    const E0=(()=>{ try{ return typeof earnedSoFar==='function'?earnedSoFar():0; }catch(e){ return 0; } })();
+    let result=null;
+    function finish(){ unbind(); try{ loop&&loop.stop(); }catch(e){}
+      try{ updateHud(); }catch(e){}
       const place=1+rivals.filter(r=>r.fin).length;
-      const win=place===1, score=(6-place)*250+Math.round(pos/segLen);
-      const stars=place===1?3:place===2?2:place===3?1:0;
+      const win=place===1, stars=place===1?3:place===2?2:place===3?1:0;
+      const placePts=Math.max(0,6-place)*250, wordPts=50*right, score=placePts+drivePts+wordPts;
+      const pct=met?right/met:0;
+      const podium=place<=3&&met>0&&pct>=0.7;   // the contest coin: a podium with 70% of the box words right — never for finishing
+      let contest=0; try{ contest=podium?addCoins('contest'):0; }catch(e){ contest=0; }
+      const coins=Math.max(0,((()=>{ try{ return earnedSoFar(); }catch(e){ return E0; } })())-E0);
+      let lvl=null; if(met>0&&window.SB_LEVEL&&typeof SB_LEVEL.after==='function'){ try{ lvl=SB_LEVEL.after('beeGrandPrix',pct); }catch(e){ lvl=null; } }
+      const st=gpStat(); st.races=(st.races||0)+1;
+      /* the ghost: this race's best lap, kept if it beats the one on this device */
+      const laps=lapTimes.filter(t=>t>5&&t<9999), best=laps.length?Math.min(...laps):null;
+      let newBest=false; if(gBest&&best!=null&&gBest.t===best&&gBest.s.length>20&&(!ghost||best<ghost.t)){ newBest=true;
+        try{ const all=SB_STORE.getJSON('gpGhost',{})||{}; all[GKEY]={t:best,s:gBest.s}; SB_STORE.setJSON('gpGhost',all); }catch(e){} }
+      /* the Cup: points for the finishing order (rivals still racing are placed by how far they got) */
+      let cupDone=false;
+      if(CUP){ const order=rivals.filter(r=>r.fin).sort((a,b)=>a.finT-b.finT).map(r=>r.id);
+        const rest=rivals.filter(r=>!r.fin).sort((a,b)=>b.z-a.z).map(r=>r.id);
+        const all=order.concat(['me'],rest); CUP.pts=CUP.pts||{};
+        all.forEach((id,i)=>{ CUP.pts[id]=(CUP.pts[id]||0)+(GP_CUP_PTS[i]||0); });
+        CUP.races=(CUP.races||[]).concat([{scene:opts.scene,place}]); cupDone=CUP.i>=GP_CUP.length-1;
+        if(cupDone){ st.cups=(st.cups||0)+1; } }
+      try{ save(); }catch(e){}
+      result={ place, win, stars, score, placePts, drivePts, wordPts, met, right, clean, pct, coins, contest, best, newBest, earned:earned.slice(), used:used.slice(), lvl, laps, raceT:+raceT.toFixed(1), cup:CUP?{i:CUP.i,pts:{...CUP.pts},done:cupDone}:null };
       const ORD=['','1st','2nd','3rd','4th','5th','6th'];
       const el=host.querySelector('#sg-card'); if(!el){ done({win,score,stars}); return; }
-      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words:gpRound,
-        title: (ORD[place]||(place+'th'))+' across the line' });
+      /* words: missed first — they are the reason to look */
+      const words=gpRound.slice().sort((a,b)=>(a.ok?1:0)-(b.ok?1:0));
+      el.innerHTML=SGUI.result({ win, stars, score, scoreLabel:'points', words,
+        title:(ORD[place]||(place+'th'))+' across the line', sub:CUP?('The Cup · race '+(CUP.i+1)+' of '+GP_CUP.length+' · '+GP_CUP[CUP.i].label):'',
+        contLabel:CUP&&!cupDone?('Next race: '+GP_TRACK_NAME[GP_CUP[CUP.i+1].scene]):(CUP?'See the Cup':'Done') });
+      const fmt=t=>t==null?'—':(Math.floor(t/60)+':'+String((t%60).toFixed(1)).padStart(4,'0'));
+      const miss=gpRound.filter(r=>!r.ok);
+      const pw=a=>a.length?a.map(id=>'<span class="gp-pw-i" title="'+GP_NAME[id]+'">'+PWSVG[id]+'</span>').join(''):'<i>none</i>';
+      const extra=document.createElement('div'); extra.className='gp-fin';
+      extra.innerHTML=
+        '<div class="gp-fin-row"><span>Best lap</span><b>'+fmt(best)+(newBest?' <em class="gp-fin-new">new ghost</em>':'')+'</b></div>'+
+        '<div class="gp-fin-row"><span>Box words</span><b data-gp-words>'+right+' of '+met+' right'+(clean?' · '+clean+' Clean':'')+'</b></div>'+
+        '<div class="gp-fin-row"><span>Power-ups</span><b>earned '+earned.length+' '+pw(earned)+' · used '+used.length+'</b></div>'+
+        '<div class="gp-fin-row"><span>Driving</span><b>'+cleanBends+' clean bends · '+drifts+' drifts · '+drivePts+' points</b></div>'+
+        '<div class="gp-fin-row"><span>Coins</span><b data-gp-coins="'+coins+'">'+coins+' coin'+(coins===1?'':'s')+(contest?' (a podium with 70% of the words right)':'')+'</b></div>'+
+        (lvl&&lvl.dropped?'<div class="gp-fin-kind">'+esc2(lvl.line||('Let’s warm up on '+lvl.level+'. You can move back up any time.'))+'</div>':'')+
+        (lvl&&lvl.offerUp?'<button class="sg-rbtn" id="gp-up">Ready for '+esc2((SB_LEVEL.LABEL&&SB_LEVEL.LABEL[lvl.offerUp])||lvl.offerUp)+'?</button>':'')+
+        (miss.length?'<button class="sg-rbtn" id="gp-revise">Add missed words to revision</button>':'');
+      if(CUP&&cupDone){ const tab=Object.entries(CUP.pts).sort((a,b)=>b[1]-a[1]);
+        extra.innerHTML+='<div class="gp-cup"><b>The Cup — final standings</b>'+tab.map(([id,p],i)=>'<div class="gp-cup-r'+(id==='me'?' me':'')+'"><span>'+(i+1)+'</span><span>'+(id==='me'?'You':esc2((GP_CAST[id]||{}).name||id))+'</span><b>'+p+'</b></div>').join('')+'</div>'; }
+      const btns=el.querySelector('.sg-end-btns'); if(btns) btns.parentNode.insertBefore(extra,btns); else el.querySelector('.sg-endcard').appendChild(extra);
       el.style.display='grid'; SGUI.bind(el);
-      el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; beeGrandPrix(host,opts,done); };
-      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
+      const up=el.querySelector('#gp-up'); if(up) up.onclick=()=>{ try{ SB_LEVEL.set('beeGrandPrix',lvl.offerUp); }catch(e){} up.disabled=true; up.textContent='Next race: '+((SB_LEVEL.LABEL&&SB_LEVEL.LABEL[lvl.offerUp])||lvl.offerUp)+' words'; };
+      const rv=el.querySelector('#gp-revise'); if(rv) rv.onclick=()=>{ miss.forEach(m=>{ try{ addMiss({w:m.w,d:m.d||''},'mark'); }catch(e){} }); rv.disabled=true; rv.textContent='On your revision list'; };
+      const again=el.querySelector('#sg-again'); if(CUP&&!cupDone&&again) again.textContent='Race it again';
+      again.onclick=()=>{ el.style.display='none'; el.innerHTML=''; beeGrandPrix(host,{...opts0,cup:CUP?{...CUP,pts:CUP.ptsBefore||{},races:(CUP.races||[]).slice(0,-1)}:undefined},done); };
+      el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML='';
+        if(CUP&&!cupDone){ beeGrandPrix(host,{...opts0,autoGo:true,cup:{...CUP,i:CUP.i+1,ptsBefore:{...CUP.pts}}},done); return; }
+        done({win,score,stars}); }; }
 
     /* ---- how to play ---- */
     host.style.position='relative';
     const intro=document.createElement('div'); intro.className='sg-howto';
     intro.innerHTML='<div class="sg-howto-card">'+
       '<div class="sg-howto-h">Bee Grand Prix</div>'+
-      '<div class="sg-howto-sub">One epic race to the finish against the Unspelling’s crew — the Smudge, Glitch and Vex are on the grid!</div>'+
+      '<div class="sg-howto-sub">'+(CUP?('The Cup, race '+(CUP.i+1)+' of '+GP_CUP.length+': '+GP_TRACK_NAME[opts.scene]+' · '+GP_CUP[CUP.i].label+'. '):'')+'Two laps against '+rivals.map(r=>esc2(r.name)).join(', ').replace(/, ([^,]*)$/,' and $1')+' from the Mock Bee.</div>'+
       '<ol class="sg-howto-steps">'+
-      '<li><b>Steer</b> with the two arrow buttons, or the <b>arrow keys</b> — dodge the oil slicks and the cops.</li>'+
-      '<li><b>The ⊗ button is the brake</b> (or <b>↓</b>). Flat out the big bends will throw you into the grass — lift for those, and you keep the road.</li>'+
-      '<li>Drive into a <b>? box</b> — the race pauses while you <b>spell the word</b>.</li>'+
-      '<li>Spelling it right <b>unlocks a power-up</b> into your slot — tap the slot (or Space) to fire it when you need it!</li>'+
-      '<li>Watch the <b>track bar up top</b> to see where every racer is. First to the flag wins ⭐⭐⭐.</li>'+
+      '<li><b>Steer</b> with the arrow buttons or <b>← →</b>. The round button is the <b>brake</b> (or <b>↓</b>): lift for the big bends and you keep the road.</li>'+
+      '<li>Every box zone has <b>three boxes</b> — left, the racing line, right. Drive through one and the race stops while you <b>spell its word</b>.</li>'+
+      '<li>Right is a <b>power-up</b>; right and quick is <b>Clean</b>, full strength. Your place picks which one — the slot shows the next.</li>'+
+      '<li>Tap the slot (or <b>Space</b>) to use it. Hold the brake into a bend and let go for a <b>drift mini-turbo</b>.</li>'+
+      (diff==='easy'?'<li>The pale line on the road is the <b>racing line</b>.</li>':'')+
       '</ol>'+
       '<button class="sg-rbtn go sg-howto-go" id="sg-howgo">To the grid! →</button></div>';
     host.appendChild(intro);
-    intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; mode='count'; };
+    intro.querySelector('#sg-howgo').onclick=()=>{ intro.remove(); countT=1.0; countFrom=1.0; mode='count'; };
     /* launched from the start menu, which already explained the race — and a race that
        waited for the phone to turn has no click left to skip this with */
-    if(opts.autoGo){ intro.remove(); countT=1.0; mode='count'; }
+    if(opts.autoGo){ intro.remove(); countT=1.0; countFrom=1.0; mode='count'; }
     renderHold();
-    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,place:1+rivals.filter(r=>r.z>pos).length,v,over,land:LAND,port:PORT,size:[Wd,Ht],hz:horizonY,rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+    if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,full:!!(held&&held.full),slot:holdBtn.dataset.p||'',met,right,clean,combo:gpCombo,earned:earned.slice(),used:used.slice(),
+      drivePts,cleanBends,drifts,driftT,raceT,lapT,lapTimes:lapTimes.slice(),hitsOnMe:hitsOnMe.slice(),blocked,diff,scene:opts.scene,seed:SEED,word:curW&&curW.w,drawDist,fps:Math.round(_fps),boost:[boostT,boostMul],shieldT,pSpinT,pSlowT,ghost:!!ghost,ghostDrawn:_ghostN,paint:PAINT,trail:TRAILC,cup:CUP?{i:CUP.i,pts:CUP.pts}:null,origin:ORG?ORG.origin:null,place:1+rivals.filter(r=>r.z>pos).length,v,over,land:LAND,port:PORT,size:[Wd,Ht],hz:horizonY,rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       /* the size of everything, in road half-widths — what tests/gp-scale.cjs audits */
       scale:()=>{ const tr=sgTex('tree'), kinds={};
-        ZONES.list.forEach(nm=>{ const z=ZONES.z[nm]; (z.props||[]).concat(z.lamps?[{k:'lamp',off:[1.62,1.62]}]:[]).forEach(r=>{
+        ZONES.list.forEach(nm=>{ const z=ZONES.z[nm]; (z.props||[]).concat(z.lamps?[{k:'lamp',off:[1.62,1.62]}]:[]).concat(z.lanterns?[{k:'lantern',off:[1.75,1.75]}]:[]).forEach(r=>{
           let w,h,f; if(r.k==='tree'||r.k==='parktree'){ const s0=r.k==='tree'?1.1:0.78; w=s0*1.2; h=tr?s0*(tr.height/tr.width):null; f=0.15; }
           else { let bw=0,bh=0,ft=0, hmin=1e9; for(let v=0;v<GP_VAR[r.k];v++){ const b=GPS.box(r.k,v,WORLD); bw=Math.max(bw,b.bw); bh=Math.max(bh,b.bh); hmin=Math.min(hmin,b.bh); ft=Math.max(ft,b.foot); } w=bw; h=[hmin,bh]; f=ft; }
           const k=kinds[r.k]||(kinds[r.k]={w,h,foot:f,offMin:9,zones:[]}); k.offMin=Math.min(k.offMin,r.off[0]); k.zones.push(nm); }); });
@@ -2956,7 +3380,7 @@
       pace:(i,dz,x)=>{ const r=rivals[i]; if(r){ r.z=pos+dz; if(x!=null) r.x=x; } },
       rivZ:()=>rivals.map(r=>Math.round(r.z)),
       toZone:(nm,into)=>{ const r=runs.find(q=>q.name===nm); if(!r) return false; pos=(r.a+(into==null?Math.min(30,(r.b-r.a)>>2):into))*segLen; return true; },
-      steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i)=>{held=POWERS[i||0];renderHold();},
+      steerTo:(x)=>{playerX=x; camLag=x*CAM_FOLLOW;}, jump:(z)=>{pos=z;}, grant:(i,full)=>{held={id:typeof i==='string'?i:GP_TABLE[i||0],full:full!==false};renderHold();},
       setV:(f)=>{v=maxV*f;}, curveHere:()=>(segs[Math.floor((pos%trackLen)/segLen)]||{}).curve||0,
       /* handling probes: park the kart at the start of a long straight, or just inside the
          held part of a tight bend — first-lap positions, measured from the track itself */
@@ -2974,11 +3398,33 @@
         if(it){ pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
       toHaz:(kind)=>{ const pm=pos%trackLen, h=hazards.find(x=>!x.hit&&(!kind||x.kind===kind)&&x.seg*segLen>pm+segLen*12);   // capture tooling: line up the next hazard
         if(h){ pos+= (h.seg-9)*segLen - pm; playerX=h.off; } },
-      clearBoxes:()=>{ items.forEach(i=>i.gone=true); },                 // capture tooling: no unplanned spell gates
+      clearBoxes:()=>{ boxesOff=true; items.forEach(i=>i.gone=true); },   // capture tooling: no unplanned spell gates
       gateNow:()=>{ const pm=pos%trackLen, it=items.find(x=>x.seg*segLen>pm+segLen*14);   // capture tooling: summon ONE gate ahead
-        if(it){ it.gone=false; pos+= (it.seg-8)*segLen - pm; playerX=it.off; } } };
-    requestAnimationFrame(frame);
-    return { destroy(){ over=true; unbind(); } };
+        if(it){ it.gone=false; pos+= (it.seg-8)*segLen - pm; playerX=it.off; } },
+      /* ---- the acceptance hooks (games spec §2.10) ---- */
+      /* answer the open box: the right word when called with nothing (an oracle), else `typed` */
+      spell:(typed)=>{ const i=host.querySelector('#sg-ci'); if(mode!=='spell'||!i||!curW) return false; i.value=typed==null?curW.w:typed;
+        i.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); return true; },
+      /* steer the racing line from now on (on=false hands the wheel back) */
+      steerLine:(on)=>{ if(on===false){ if(bot) bot.drive=null; steer=0; braking=false; return; } bot=bot||{}; bot.drive='line'; },
+      line:n=>idealX(n==null?Math.floor(pos/segLen):n), zones:()=>zoneSegs.slice(), boxes:()=>items.map(it=>({seg:it.seg,off:it.off,line:it.line,zone:it.zone})),
+      /* a bot for the whole race: drive 'line'|'random', spell(word,{par,power}) → {typed,secs} */
+      bot:(cfg)=>{ bot=cfg?{...cfg,rng:gpRng(cfg.seed||1)}:null; },
+      /* run the race as fast as the machine allows: physics steps, no drawing, bots answer */
+      fast:(secs)=>{ const lim=raceT+(secs||600); if(mode==='howto'){ intro.remove(); countT=1.0; mode='count'; } if(loop) loop.hold(true);
+        let n=0; while(!over&&raceT<lim&&n<2e6){ if(mode==='spell') break; step(1/120); n++; }
+        if(loop&&!over&&mode!=='spell') loop.hold(false);   // hand the clock back: the race goes on drawing and running
+        return over?result:null; },
+      result:()=>result, rivalsAt:()=>rivals.map(r=>({id:r.id,name:r.name,face:r.face,z:r.z,fin:r.fin,spd:r.spd,shield:r.shield,spin:r.spin,slow:r.slow})),
+      forcePlace:(p)=>{ /* line the field up so you are in place p: rivals ahead step in front by 2 bands */ rivals.forEach((r,i)=>{ r.z=i<p-1?pos+segLen*(2+i*2):pos-segLen*(3+i*2); }); },
+      usePower:(id,full,who)=>usePower(id,full!==false,who==null?ME:rivals[who]),
+      rivalPowers:(on)=>{ noRivalPw=on===false; }, hazards:(on)=>{ noHaz=on===false; }, pinDraw:(n)=>{ _ddPin=n|0; if(n) drawDist=n|0; }, setRival:(i,z)=>{ if(rivals[i]) rivals[i].z=z; } };
+    loop=loopFn(step,render);
+    /* ONE race lives at a time: a Cup's next race and Play again start a new engine in this
+       host, and the arcade's handle (from the first) must stop whichever one is running */
+    try{ if(gpKill) gpKill(); }catch(e){}
+    gpKill=()=>{ over=true; try{ loop.stop(); }catch(e){} unbind(); };
+    return { destroy(){ try{ if(gpKill) gpKill(); }catch(e){} gpKill=null; } };
   }
 
   function whackAMoth(host, opts, done){

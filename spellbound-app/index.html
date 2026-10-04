@@ -1318,6 +1318,9 @@
     display:inline-flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 8px 22px rgba(240,128,60,.4);transition:transform .12s}
   .arcm-go:hover{transform:translateY(-2px)} .arcm-go:active{transform:translateY(0) scale(.98)}
   .arcm-go svg{width:20px;height:20px}
+  /* a phone held sideways is ~390px tall: Start stays on screen while the choices scroll under it
+     (games spec §2.8, "Landscape: Start above the fold") */
+  @media (orientation:landscape) and (max-height:560px){ .arcm-go{position:sticky;bottom:6px;z-index:2;margin-top:14px} }
   /* Who Wants to Be a Bizzillionaire — money-ladder quiz overlay. */
   .bz-play{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#173a5c,#0c1f38 60%,#081627);color:#fff;display:flex;flex-direction:column;overflow:auto}
   /* The Vocabulary card's four buttons (Back · Hear it · + meaning · Next) needed ~425px and made
