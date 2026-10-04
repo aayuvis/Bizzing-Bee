@@ -3033,7 +3033,8 @@ const app = {
       const streakRight=(state._run||0)+1; const mood=streakRight>=3?'love':'excited';
       state._run=streakRight; state.sessionRight+=1; state.sessionDone+=1;
       sfx('correct'); addCoins('answer'); gainXp(); clearMiss(target);
-      if(streakRight>0 && streakRight%5===0){ state.toast='⭐ '+streakRight+' right in a row!'; scheduleToast(2200); burstConfetti(50); }
+      /* a little burst every fifth right word — never a count of them (no run counts: games spec §4.3, no streaks) */
+      if(streakRight>0 && streakRight%5===0){ burstConfetti(50); }
       state.status='correct'; state.mood=state.toast?'wow':mood; render();
       autoAdvance(850);  // correct → already marked complete; move on, no click needed
     } else {

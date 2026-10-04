@@ -603,6 +603,11 @@ body:has(>.arc-play) #root{height:0;min-height:0;overflow:hidden}   /* the scree
   background:var(--sg-plate-d,none) center/cover no-repeat,linear-gradient(180deg,var(--tint,#FFF4DC),var(--bg2,#FBE7BE));
   --sg-gut:clamp(10px,2.4cqw,28px)}
 :root[data-mode="dusk"] .sb-stage{background-image:var(--sg-plate-n,none),linear-gradient(180deg,var(--tint-deep,#251F42),var(--tint,#2E2750))}
+/* every plate wears the kit's paper grain (under every panel): a compressed painting's calm centre is
+   smooth enough to read as one flat colour, and on a phone the crop enlarges it — the grain is the
+   gouache paper the plates are painted to look like, and no region of a stage is a flat fill (T14).
+   Mock Bee found it first (.mb-stage); it is the default now. Reduced motion: it never moves anyway. */
+.sb-stage::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.7;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E")}
 /* a stage owns the screen: nothing under it scrolls, and the shell's own padding is not a page */
 :root.sb-stage-on,:root.sb-stage-on body{overflow:hidden;overscroll-behavior:none}
 /* the world's animated decoration is entirely covered by a stage or a game overlay, and under a
