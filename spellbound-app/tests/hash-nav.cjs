@@ -153,6 +153,28 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   ok(!L.pin && L.nav === 'games' && L.h === '#/play', 'Back with the PIN open still only closes it and stays on Play (' + L.h + ')');
   await ctx.close();
 
+  /* ---- 8. (audit v4) an address to a gated tool meets the same lock as a tap on its tile ----
+     #/quotes, #/vocab, #/typing, #/ipatrain and #/trivtrain went through setNav and drew the page
+     for a free child, skipping the plan lock and the PIN in front of the plan sheet; #/adv drew
+     the Advanced Pack's sales page with no PIN. Each now goes through the opener its tile taps. */
+  {
+    ({ ctx, pg } = await open(b, URL, errs));
+    const GATED = { quotes: 'quotes', vocab: 'vocab', typing: 'typing', ipatrain: 'ipatrain', trivtrain: 'trivtrain', adv: 'adv' };
+    const look = () => pg.evaluate(() => ({ nav: state.nav, pin: !!state.pinDlg, tiers: !!state.showTiers, closer: !!document.querySelector('[data-act="closeTiers"],[data-act="closePaywall"]') }));
+    const calm = () => pg.evaluate(() => { state.pinDlg = null; state.showTiers = false; state.showPaywall = false; state._planOk = false; app.setNav('home'); });
+    for (const tier of ['free', 'regional']) {
+      await pg.evaluate(t => { active().tier = t === 'free' ? undefined : t; active().addons = {}; }, tier);
+      for (const [route, nav] of Object.entries(GATED)) {
+        await calm(); await pg.waitForTimeout(150);
+        await pg.evaluate(r => { location.hash = '#/' + r; }, route); await pg.waitForTimeout(700);
+        const r = await look();
+        if (tier === 'free' || route === 'adv') ok(r.nav !== nav && r.pin && !r.closer, `${tier}: #/${route} meets the lock its tile meets — the PIN, and no ${nav} screen and no plan sheet under it (${JSON.stringify(r)})`);
+        else ok(r.nav === nav && !r.pin, `${tier}: #/${route} opens its screen (${r.nav})`);
+      }
+    }
+    await ctx.close();
+  }
+
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
