@@ -48,7 +48,7 @@ function helpers() {
   let seed = 12345; const rnd = () => { seed ^= seed << 13; seed >>>= 0; seed ^= seed >>> 17; seed ^= seed << 5; seed >>>= 0; return seed / 4294967296; };
   const rword = n => { let s = ''; for (let i = 0; i < Math.max(3, n); i++) s += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(rnd() * 26)]; return s; };
   const enter = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-  const type = v => { const i = document.querySelector('.gym-in'); i.value = v; i.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); };
+  const type = v => { const i = document.querySelector('.gym-in'); if (!i) return false; i.value = v; i.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); return true; };
   /* one move in whatever phase the round is in. how: 'right' | 'wrong' | 'random' */
   async function step(how) { const p = P(); const ph = p.phase;
     if (ph === 'miss' || ph === 'diagno') { await new Promise(r => setTimeout(r, 0)); enter(); await U(() => P().phase !== ph); return 'cont'; }
@@ -60,7 +60,8 @@ function helpers() {
       toks[i].click(); await U(() => P().phase !== 'tap'); return 'tap'; }
     if (ph === 'diag') { const o = p.pat.opts; const j = how === 'right' ? o.indexOf(p.pat.k) : how === 'wrong' ? o.findIndex(x => x !== p.pat.k) : Math.floor(rnd() * o.length);
       document.querySelectorAll('[data-g="dx"]')[j].click(); await U(() => P().phase !== 'diag'); return 'diag'; }
-    if (ph === 'answer') { const w = p.word, a = p.asked; type(how === 'right' ? w : rword(w.length)); await U(() => P().asked !== a || P().phase !== 'answer'); return 'answer'; }
+    if (ph === 'answer') { const w = p.word, a = p.asked; if (!type(how === 'right' ? w : rword(w.length))) { await U(() => !!document.querySelector('.gym-in') || P().phase !== 'answer', 2000); return 'retry'; }
+      await U(() => P().asked !== a || P().phase !== 'answer'); return 'answer'; }
     if (ph === 'board') { const i = (p.board || []).findIndex(d => !d); document.querySelector('[data-g="sq"][data-arg="' + i + '"]').click(); await U(() => P().phase === 'answer'); return 'cell'; }
     if (ph === 'ward') { const b = document.querySelector('[data-g="docgo"]'); if (b) { b.click(); await U(() => P().phase !== 'ward'); return 'ward'; } return 'empty'; }
     if (ph === 'ready') { document.querySelector('[data-g="start"]').click(); await U(() => P().phase !== 'ready'); return 'start'; }
@@ -130,7 +131,7 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
     await ctx.close();
   }
 
-  /* ---------------- T1 / T2 / T3 / PAY: bots in every mode ---------------- */
+  /* ---------------- T1 / T2 / PAY: bots in every mode ---------------- */
   if (want('BOTS')) {
     const { ctx, pg } = await page(b);
     /* the random bot first, on a fresh wallet day, so the 100/day cap cannot hide a coin */
@@ -149,7 +150,12 @@ const MODES = ['warmup', 'sprint', 'champ', 'spot', 'squares', 'doctor', 'challe
     const champ = await pg.evaluate(() => __gym.round('champ', 'right', { maxAsked: 24 }));
     ok(champ.right === 24 && champ.coins === 20, `PAY: Champ Dictation stops paying at 20 a round (24 right → ${champ.coins})`);
 
-    /* T3: a miss holds, and holds the clock */
+    await ctx.close();
+  }
+
+  /* ---------------- T3: a miss holds, and holds the clock ---------------- */
+  if (want('T3')) {
+    const { ctx, pg } = await page(b);
     await pg.evaluate(() => app.openGym('sprint')); await until(pg, () => SB_GYM.peek().phase === 'ready', null, 30000);
     await pg.keyboard.press('Enter'); await until(pg, () => SB_GYM.peek().phase === 'answer');
     const empty = await pg.evaluate(async () => { const a = __gym.P().asked; __gym.type(''); await new Promise(r => setTimeout(r, 120)); return { asked: __gym.P().asked, phase: __gym.P().phase }; });

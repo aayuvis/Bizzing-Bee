@@ -35,7 +35,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
       const cols = grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0;
       /* CELLS, not tiles (4 Oct 2026, games spec §4.2): the Spelling Gym card spans two columns — one card
          in for Beat the Buzzer and Magic Squares — which is the "wider tile rather than a hole" rule */
-      const cells = tiles.reduce((a, t) => a + (+((/span (\d+)/.exec(getComputedStyle(t).gridColumnEnd) || [])[1]) || 1), 0);
+      const cells = tiles.reduce((a, t) => { const cs = getComputedStyle(t); return a + (+((/span (\d+)/.exec(cs.gridColumnStart + ' ' + cs.gridColumnEnd) || [])[1]) || 1); }, 0);
       const rows = grid ? new Set(tiles.map(t => Math.round(t.getBoundingClientRect().top))).size : 0;
       /* a hollow tile: the gap between the end of its words and the top of its Play button */
       const gaps = tiles.map(t => { const bl = t.querySelector('.arc-tile-blurb'), cta = t.querySelector('.arc-cta'); if (!bl || !cta) return -1;
