@@ -3272,7 +3272,10 @@ const app = {
   openGames:()=>{ clearGTimer(); const c=active(); ensureLists(c); set({nav:'games', screen:'app', game:null, gInfo:false, typed:'', mood:'happy', conceptSel:null}); },
   /* Spelling Quest is gone; its Arcade slot is the Mock Spelling Bee. Old
      deep-links land on the new game rather than on nothing. */
-  openQuest:()=>{ clearGTimer(); if(window.MOCKBEE) MOCKBEE.open(); },
+  openQuest:()=>app.mbOpen(),
+  /* THE MOCK BEE'S DOOR: mockbee.js is lazy (boot-lazy group 'mockbee'); when it lands it replaces this
+     with the real opener, which is then called with the same mode */
+  mbOpen:(mode)=>{ const me=app.mbOpen; lazyNeed('mockbee', ()=>{ if(app.mbOpen!==me) app.mbOpen(mode); }); },
   /* The 'Bizzy & the Great Unspelling' story is gone — the games it used to gate are
      now played straight from the arcade (arcadePlay). This is kept as a safe no-op so any
      stale saved deep-link or cached handler lands somewhere harmless rather than throwing. */
@@ -6721,7 +6724,7 @@ function viewApp(){
   else if(S.nav==='forge') content=viewForge();
   else if(S.nav==='gym') content=viewGym();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
-  else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():'');
+  else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():(lazyNeed('mockbee',()=>{ if(state.nav==='mockbee') render(); }), hiveLoader('opening the bee…')));
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
   else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
   else if(S.nav==='lore'||S.nav==='hive') content=(window.SB_QHUB?SB_QHUB.view():hiveLoader('opening '+(hubNameOf(S.nav)||'the quiz')+'…'));
@@ -7494,7 +7497,7 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
   const wordsRight=Object.values(c.lists||{}).reduce((s,l)=>s+(l.xp||0),0);   // one per word spelled right
   /* Spelling Quest's fifteen seasons are retired; the competition record is the
      Mock Spelling Bee's — bees entered, bees won, and the best finish of eleven. */
-  let mbSt={}; try{ if(window.MOCKBEE) mbSt=MOCKBEE.stats()||{}; }catch(e){}
+  let mbSt={}; try{ mbSt=(window.MOCKBEE?MOCKBEE.stats():SB_STORE.getJSON('mockbee',{}))||{}; }catch(e){}
   const mbPlayed=mbSt.played||0, mbWins=mbSt.wins||0, mbBest=mbSt.best||99;
   const worlds=THEMES.filter(t=>isThemeUnlocked(t.id)).length;
   const wkWords=(c.week||[]).reduce((a,b)=>a+(b||0),0);
@@ -12123,7 +12126,7 @@ function playCardsShown(){ return SB_PLAY_CARDS.filter(playCardShown); }
 /* the child's own best on a card, quietly — a number they set, never a target the card sets (G9) */
 function playCardBest(card,c){
   if(card.arcade){ const v=Math.round(+arcBestMap()[card.k]||0); return v>0?'Best '+fmtN(v):''; }
-  if(card.k==='mockbee'){ try{ const st=window.MOCKBEE?MOCKBEE.stats():{}; return st.played&&st.best?('Best finish: '+(n=>n+(n%100>10&&n%100<14?'th':({1:'st',2:'nd',3:'rd'})[n%10]||'th'))(+st.best)+(st.wins?' · '+st.wins+' won':'')):''; }catch(e){ return ''; } }
+  if(card.k==='mockbee'){ try{ const st=(window.MOCKBEE?MOCKBEE.stats():SB_STORE.getJSON('mockbee',{}))||{}; return st.played&&st.best?('Best finish: '+(n=>n+(n%100>10&&n%100<14?'th':({1:'st',2:'nd',3:'rd'})[n%10]||'th'))(+st.best)+(st.wins?' · '+st.wins+' won':'')):''; }catch(e){ return ''; } }
   if(card.hub){ try{ if(window.SB_HUB_BEST&&typeof SB_HUB_BEST[card.k]==='function'){ const s=SB_HUB_BEST[card.k](); if(s) return String(s); } }catch(e){}
     const t=SB_BESTS.top(card.k,c); if(!t) return '';
     const mode=((window.SB_HUB_MODES&&SB_HUB_MODES[card.k]&&SB_HUB_MODES[card.k][t.mode])||t.mode.charAt(0).toUpperCase()+t.mode.slice(1));

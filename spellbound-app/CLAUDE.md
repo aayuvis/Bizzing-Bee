@@ -880,7 +880,11 @@ Mock Rounds (→ Mock Bee · Champ; `advGo('mock')` opens it).
 - **Mock Bee** (`mockbee.js`): eight-minute cap (rivals/rounds by band), Finish now / Watch the rest,
   the Pronouncer's Chair in every turn (fixed order, masked answers, 3 s each, empty buttons hidden),
   Champ, Family Bee night (names never stored; only the profile child paid). `MOCKBEE.rivals()` is the cast.
-  `tests/mockbee-sim.cjs` (fake clock), `mockbee-stage.cjs`.
+  `tests/mockbee-sim.cjs` (fake clock), `mockbee-stage.cjs`. **It is LAZY now** (boot-lazy `mockbee` group,
+  after `saga2`; no script tag): the merged games put first load over its ratchet, and the bee is not on the
+  first screen. Every door goes through `app.mbOpen(mode)` / `app.openQuest`, which `lazyNeed('mockbee')` first;
+  the Play card and Home read `MOCKBEE.stats()` when it is loaded and `SB_STORE.getJSON('mockbee')` until then.
+  A test that calls into `MOCKBEE` waits on `SB_LAZY.need('mockbee')` first.
 - **Grand Prix**: deterministic per seed — `window._race.bot({…})` + `fast(secs)` runs a race in ~0.3 s;
   GP1/GP2/GP12 calibrate with it; re-run `tests/gp-race.cjs` after touching `CFG.rival`, `GP_CAST`, `pull`
   or lap lengths (laps are §2.6 × 1.2 so a Medium race is 3–4 min). Headless always drops draw distance to
@@ -897,6 +901,12 @@ Mock Rounds (→ Mock Bee · Champ; `advGo('mock')` opens it).
 - **Word Forge** (`forge.js`/`forge-core.js`/`forge-data.js`): the table is GENERATED
   (`tools/forge/build-table.cjs`, cited per row — never hand-edit it); `forge-review/` is the owner's
   sign-off sheet and is NEVER deployed (it quotes etymonline). Pay rules live only in forge-core.
+  **A stage drawn inside a game's own host must call `SGUI.stageFit()` after it draws** — the kit refits
+  only when `#root`'s children change, so Forge's stage ran under the phone tab bar until something else
+  re-rendered (gym.js and games-daily.js already did this). Forge's panel token `--fg-panel` lives on
+  `.fg-on-sgui` as well as the fallback `.fg-stage`; without it every card and button under the kit stage
+  was transparent. Phone HUD: equal-width stats, the level chip steps aside in play, the definition is a
+  line in the play area. Its plate and panels wear a coarser grain than the kit's (light grain on dusk panels).
 - **The deploy's data gate** now includes the games' node checks (word-door, pay-path, no-random-rewards,
   sfx-kinds, games-ledger, bests-migration, gp-rules, mockbee-sim, gym-source, forge-data).
 

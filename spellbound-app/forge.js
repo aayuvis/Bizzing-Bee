@@ -284,10 +284,11 @@
   function meaningHTML() {
     var r = cur();
     if (!r || !G || G.phase === 'howto' || G.phase === 'result') return '<div class="fg-mean"><span class="fg-stat-h">Meaning</span><span class="fg-mean-t">Hear a word, forge it from its parts.</span></div>';
-    return '<div class="fg-mean"><span class="fg-stat-h">Meaning' + (r.origin ? ' · from ' + esc(r.origin) : '') + '</span><span class="fg-mean-t" data-live-prompt>' + esc(mask(r.d, r.w)) + '</span></div>';
+    return '<div class="fg-mean"><span class="fg-stat-h">Meaning' + (r.origin ? '<span class="fg-org"> · from ' + esc(r.origin) + '</span>' : '') + '</span><span class="fg-mean-t" data-live-prompt>' + esc(mask(r.d, r.w)) + '</span></div>';
   }
   function centreHTML() {
-    return '<div class="fg-title"><button type="button" class="fg-back" data-fg="back" aria-label="Back to Play"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="fg-name">Word Forge</span>' + chip() + '</div>';
+    var inplay = G && G.phase !== 'howto' && G.phase !== 'result' && G.phase !== 'codex' && G.phase !== 'empty';
+    return '<div class="fg-title' + (inplay ? ' fg-inplay' : '') + '"><button type="button" class="fg-back" data-fg="back" aria-label="Back to Play"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="fg-name">Word Forge</span>' + chip() + '</div>';
   }
   function tileHTML(t, k) {
     return '<button type="button" class="fg-tile ' + t.k + (t.used ? ' used' : '') + '" data-fg="tile" data-id="' + t.id + '" ' + (t.used ? 'disabled aria-hidden="true"' : '') + ' aria-label="' + esc(t.s + ', ' + t.m) + ' (key ' + (k + 1) + ')"><span class="fg-key">' + (k + 1) + '</span><b>' + esc(t.s) + '</b><span class="fg-tm">' + esc(t.m) + '</span></button>';
@@ -369,7 +370,10 @@
   }
   function stageHTML() {
     var hud = { left: meaningHTML(), center: centreHTML(), right: heatHTML() };
-    var play = '<div class="fg-play">' + playHTML() + '</div>', ctl = controlsHTML();
+    /* on a phone the HUD's stat is too narrow for a definition: the meaning reads as a line at the top of
+       the play area instead (the HUD keeps its label and, visually hidden, the live text) */
+    var mr = cur(), mrow = (mr && G && G.phase !== 'howto' && G.phase !== 'result') ? '<div class="fg-mean-row" aria-hidden="true"><b>Meaning' + (mr.origin ? ' · from ' + esc(mr.origin) : '') + ':</b> ' + esc(mask(mr.d, mr.w)) + '</div>' : '';
+    var play = '<div class="fg-play">' + mrow + playHTML() + '</div>', ctl = controlsHTML();
     try {
       if (window.SGUI && typeof SGUI.stage === 'function') return '<div class="fg-stage-wrap fg-on-sgui">' + SGUI.stage({ plate: plate(), hud: hud, play: play, controls: ctl }) + '</div>';
     } catch (e) {}
@@ -394,6 +398,9 @@
     if (!G) start();
     var active = document.activeElement, wasType = active && active.id === 'fg-type';
     host.innerHTML = stageHTML();
+    /* the kit only refits a stage when #root's children change; this one is drawn inside its own host, so fit it
+       between the shell bar and the tab bar now, or on a phone it runs under the tab bar until something re-renders */
+    try { if (window.SGUI && typeof SGUI.stageFit === 'function') SGUI.stageFit(); } catch (e) {}
     if (window.SGUI && SGUI.bind) try { SGUI.bind(host); } catch (e) {}
     var ag = host.querySelector('#sg-again'), cn = host.querySelector('#sg-cont');
     if (ag) ag.onclick = function () { start(G.after && G.after.level); };
@@ -507,13 +514,15 @@
       '.sb-forge-on .sb-content{padding-bottom:0!important;padding-top:8px!important}',
       '.sb-forge-on #root div[style*="min-height:100dvh"]{min-height:0!important}',
       '.fg-stage{position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;padding:12px clamp(10px,3vw,28px);color:#fff;font-family:var(--body,var(--display,system-ui,sans-serif));',
-      '--fg-panel:linear-gradient(180deg,color-mix(in srgb,color-mix(in srgb,var(--paper,#fffaf0) 86%,#fff3d6) 95%,transparent),color-mix(in srgb,var(--paper,#fffaf0) 72%,transparent));',
+      '--fg-panel:linear-gradient(180deg,color-mix(in srgb,color-mix(in srgb,var(--paper,#fffaf0) 88%,#fff3d6) 96%,transparent),color-mix(in srgb,color-mix(in srgb,var(--paper,#fffaf0) 66%,#e9c98f) 90%,transparent));',
       'background:var(--fg-plate) center/cover no-repeat,repeating-linear-gradient(115deg,rgba(255,210,140,.07) 0 3px,transparent 3px 11px),repeating-linear-gradient(25deg,rgba(0,0,0,.08) 0 2px,transparent 2px 13px),radial-gradient(30% 22% at 30% 30%,rgba(255,190,90,.25),transparent 70%),radial-gradient(28% 20% at 72% 76%,rgba(255,140,40,.22),transparent 70%),radial-gradient(60% 80% at 0% 60%,rgba(255,150,40,.55),transparent 70%),radial-gradient(60% 80% at 100% 60%,rgba(255,120,30,.5),transparent 70%),radial-gradient(90% 60% at 50% 110%,rgba(120,60,20,.9),transparent 70%),linear-gradient(180deg,#3a2414 0%,#5a3518 45%,#2a190e 100%)}',
-      '.fg-on-sgui{position:absolute;inset:0}',
+      '.fg-on-sgui{position:absolute;inset:0;--fg-panel:linear-gradient(180deg,color-mix(in srgb,color-mix(in srgb,var(--paper,#fffaf0) 88%,#fff3d6) 96%,transparent),color-mix(in srgb,color-mix(in srgb,var(--paper,#fffaf0) 66%,#e9c98f) 90%,transparent));}',
+      /* dusk panels are dark and one tone: a light grain (the plate's is dark, and vanishes on them) */
+      ':root[data-mode="dusk"] .fg-on-sgui{--fg-panel:url(\"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'180\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.75\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix values=\'0 0 0 0 .95 0 0 0 0 .88 0 0 0 0 .74 1.5 0 0 0 -.6\'/%3E%3C/filter%3E%3Crect width=\'180\' height=\'180\' filter=\'url(%23n)\' opacity=\'.42\'/%3E%3C/svg%3E\"),linear-gradient(180deg,color-mix(in srgb,color-mix(in srgb,var(--paper,#fffaf0) 88%,#fff3d6) 96%,transparent),color-mix(in srgb,color-mix(in srgb,var(--paper,#fffaf0) 66%,#e9c98f) 90%,transparent))}',
       /* .sg-hud is only the flag that tells flash() a game is up — none of saga2.css's white bar */
       '.fg-hud.sg-hud{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;background:none;border:0;box-shadow:none;padding:0;margin:0;max-width:none;backdrop-filter:none;border-radius:0;font:inherit;color:inherit}',
       '.fg-hl,.fg-hr{min-width:0;display:flex}.fg-hr{justify-content:flex-end}',
-      '.fg-mean,.fg-heat,.fg-title{background:var(--fg-panel);backdrop-filter:blur(8px);color:var(--text,#2a2116);border-radius:14px;padding:8px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18)}',
+      '.fg-mean,.fg-heat,.fg-title{background:url(\"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'160\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.85\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix values=\'0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .5 0\'/%3E%3C/filter%3E%3Crect width=\'160\' height=\'160\' filter=\'url(%23n)\' opacity=\'.32\'/%3E%3C/svg%3E\"),var(--fg-panel);backdrop-filter:blur(8px);color:var(--text,#2a2116);border-radius:14px;padding:8px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18)}',
       '.fg-mean,.fg-heat{width:min(100%,340px);display:flex;flex-direction:column;gap:2px}',
       '.fg-stat-h{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#6d604f)}',
       '.fg-mean-t{font-size:13.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}',
@@ -567,7 +576,7 @@
       '.fg-btn.go{background:linear-gradient(180deg,#ffcf5a,#f0a020);color:#3a2205}',
       '.fg-btn:disabled{opacity:.5;cursor:default}',
       '.fg-btn:focus-visible,.fg-tile:focus-visible,.fg-slot:focus-visible,.fg-gap:focus-visible{outline:3px solid #fff;outline-offset:2px}',
-      '.fg-card,.fg-codex,.fg-miss,.fg-result .sg-cardbox{background:var(--fg-panel);backdrop-filter:blur(8px);color:var(--text,#2a2116);border-radius:18px;padding:18px 20px;max-width:560px;width:100%;box-shadow:0 8px 28px rgba(0,0,0,.3)}',
+      '.fg-card,.fg-codex,.fg-miss,.fg-result .sg-cardbox{background:url(\"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'160\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.85\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix values=\'0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .5 0\'/%3E%3C/filter%3E%3Crect width=\'160\' height=\'160\' filter=\'url(%23n)\' opacity=\'.32\'/%3E%3C/svg%3E\"),var(--fg-panel);backdrop-filter:blur(8px);color:var(--text,#2a2116);border-radius:18px;padding:18px 20px;max-width:560px;width:100%;box-shadow:0 8px 28px rgba(0,0,0,.3)}',
       '.fg-h{font-family:var(--display,inherit);font-weight:900;font-size:22px;margin-bottom:6px}',
       '.fg-sub{font-weight:700}.fg-steps{margin:8px 0 8px 18px;padding:0;line-height:1.6}.fg-note{color:var(--muted,#6d604f);font-size:13.5px}',
       '.fg-row{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}',
@@ -590,7 +599,13 @@
       '.fg-plaque{display:flex;flex-direction:column;align-items:center;border-radius:10px;padding:6px;border:2px dashed color-mix(in srgb,var(--text,#2a2116) 25%,transparent);opacity:.6}',
       '.fg-plaque.met{opacity:1;border-style:solid}.fg-plaque.gold{opacity:1;border-style:solid;background:linear-gradient(180deg,#ffe08a,#f0b429);color:#3a2205;border-color:#c98a08}',
       '.fg-plaque b{font-size:17px}.fg-plaque span{font-size:11.5px}.fg-plaque i{font-size:10.5px;font-style:normal;font-weight:800;opacity:.75}',
-      '@media (max-width:640px){.fg-stage{gap:8px;padding:8px 10px}.fg-hud.sg-hud{grid-template-columns:1fr 1fr;grid-template-areas:"c c" "l r";gap:6px}.fg-hc{grid-area:c;display:flex;justify-content:center}.fg-hl{grid-area:l}.fg-hr{grid-area:r}.fg-title{padding:4px 8px}.fg-mean,.fg-heat{width:100%}.fg-name{font-size:15px}.fg-mean-t{font-size:12px;-webkit-line-clamp:3}.fg-heat b{font-size:12px}.fg-btn{min-width:0;flex:1;font-size:14px;padding:0 8px}.fg-tile{min-width:84px;min-height:52px}.fg-slot{min-height:64px}.fg-hammer{width:40px;height:40px;top:-26px}.fg-ctl{gap:8px}}'
+      '.fg-mean-row{display:none}',
+      /* the forge plate is lit soft round the anvil: the kit's paper grain is too fine to read there, so the forge wears a coarser one (T14) */
+      '.fg-on-sgui .sb-stage::before{opacity:1;background:url(\"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'180\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.75\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix values=\'0 0 0 0 .38 0 0 0 0 .26 0 0 0 0 .1 1.5 0 0 0 -.6\'/%3E%3C/filter%3E%3Crect width=\'180\' height=\'180\' filter=\'url(%23n)\' opacity=\'.42\'/%3E%3C/svg%3E\")}',
+      /* phone HUD: the two stats fill their columns at equal widths round the title (T15); in play the level chip steps
+         aside (the round's level is in its count line) so the title fits, and Heat is a bar and a count on one line */
+      '@media (max-width:640px){.fg-on-sgui .sg-st-side .sg-st-stat{width:100%;min-width:0;padding:5px 10px}.fg-on-sgui .fg-mean,.fg-on-sgui .fg-heat{width:100%;min-width:0}.fg-on-sgui .fg-heat{flex-direction:row;align-items:center;gap:6px}.fg-on-sgui .fg-heat .fg-stat-h{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.fg-on-sgui .fg-heat-bar{flex:1;min-width:14px}.fg-on-sgui .fg-heat b{white-space:nowrap}.fg-on-sgui .fg-inplay .sb-lvchip,.fg-on-sgui .fg-inplay .fg-chip{display:none}}',
+      '@media (max-width:640px){.fg-mean-row{display:block;margin:0 auto 8px;max-width:560px;font-size:14px;line-height:1.4;padding:8px 12px;border-radius:12px;color:var(--text,#2a2116);background:url(\"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'160\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.85\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix values=\'0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .5 0\'/%3E%3C/filter%3E%3Crect width=\'160\' height=\'160\' filter=\'url(%23n)\' opacity=\'.32\'/%3E%3C/svg%3E\"),var(--fg-panel)}.fg-on-sgui .fg-mean-t,.fg-on-sgui .fg-org{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.fg-stage{gap:8px;padding:8px 10px}.fg-hud.sg-hud{grid-template-columns:1fr 1fr;grid-template-areas:"c c" "l r";gap:6px}.fg-hc{grid-area:c;display:flex;justify-content:center}.fg-hl{grid-area:l}.fg-hr{grid-area:r}.fg-title{padding:4px 8px}.fg-mean,.fg-heat{width:100%}.fg-name{font-size:15px}.fg-mean-t{font-size:12px;-webkit-line-clamp:3}.fg-heat b{font-size:12px}.fg-btn{min-width:0;flex:1;font-size:14px;padding:0 8px}.fg-tile{min-width:84px;min-height:52px}.fg-slot{min-height:64px}.fg-hammer{width:40px;height:40px;top:-26px}.fg-ctl{gap:8px}}'
     ].join('\n');
     document.head.appendChild(s);
   }

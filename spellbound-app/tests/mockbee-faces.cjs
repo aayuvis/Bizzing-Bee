@@ -31,6 +31,7 @@ const OTHERS = ['bizzy', 'neko', 'ninja', 'crystal', 'queenhive'];
     children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 40, lists: { journey: { xp: 30 } }, activeList: 'journey' }] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } });
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await booted(pg);
+  await pg.evaluate(() => SB_LAZY.need('mockbee'));   // mockbee.js is lazy since 4 Oct 2026 (it left the first screen)
   await pg.waitForFunction(() => !!window.MOCKBEE, null, { timeout: 30000 });
   await pg.evaluate(() => { window.Audio = function () { return { play: () => Promise.resolve(), pause: () => {} }; }; try { speechSynthesis.speak = () => {}; } catch (e) {} });
 

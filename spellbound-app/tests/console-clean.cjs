@@ -90,7 +90,7 @@ async function walk(b, base, vp, tag) {
 
   /* mockbee's recorded-line list is the folder, exactly */
   const ctx2 = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
-  const pg = await ctx2.newPage(); await pg.goto('file://' + ROOT + '/index.html'); await booted(pg);   // mockbee.js has run: MOCKBEE is there to ask
+  const pg = await ctx2.newPage(); await pg.goto('file://' + ROOT + '/index.html'); await booted(pg); await pg.evaluate(() => new Promise(r => SB_LAZY.need('mockbee', r)));   // mockbee.js is lazy (4 Oct 2026): fetch it, then MOCKBEE is there to ask
   const have = (await pg.evaluate(() => window.MOCKBEE && typeof MOCKBEE.annHave === 'function' ? MOCKBEE.annHave() : null)) || [];
   await ctx2.close();
   const files = fs.readdirSync(path.join(ROOT, 'voice', 'ann')).filter(f => /\.mp3$/.test(f)).map(f => f.replace(/\.mp3$/, ''));
