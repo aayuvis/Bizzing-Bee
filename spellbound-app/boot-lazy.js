@@ -104,7 +104,10 @@
        never on the idle queue, never on the first screen. */
     feedEngine: 'bizzing-feed.js',
     feedMeta: 'feed/feed-meta.js',     // names the per-level index and body groups; bee-feed.js registers and loads those
-    feedView: 'bee-feed.js'
+    feedView: 'bee-feed.js',
+    /* Word Lore + Hive Mind, the two trivia hubs (games spec §4.3/§4.4): fetched at the door of a
+       hub only (app.openLore / app.openHive below), never on the first screen or the idle queue. */
+    loreHub: 'lore.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -128,7 +131,9 @@
     arcade: ['saga2'],
     /* everything any volume of the in-app reader can render */
     reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes'],
-    feed: ['feedEngine', 'feedMeta', 'feedView']
+    feed: ['feedEngine', 'feedMeta', 'feedView'],
+    /* the hubs draw on the shared stage kit (SGUI.stage / SB_HUB, saga2.js), so it comes too */
+    quizhubs: ['loreHub', 'saga2']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
@@ -313,7 +318,7 @@
      about it. Deferred scripts have all run by DOMContentLoaded, so `app` (a top-level
      const in app3.js — a bare name, not window.app) exists by then. A tap that arrives
      before the code does simply runs when it lands. */
-  var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade' };
+  var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade', openLore: 'quizhubs', openHive: 'quizhubs' };
   /* KICKS start a screen's data the moment its door is opened but do NOT hold the screen:
      it draws at once from what is in hand and redraws as each file lands (every load
      re-renders). For screens that are useful before the whole library is in. */
