@@ -123,7 +123,7 @@
   /* What the old back-button trap did, plus the arcade overlays: a drill that is being left
      is stopped, never left running under the next screen. */
   function leaveDrill() {
-    try { if (typeof arcadeClose === 'function' && document.querySelector('.arc-play')) arcadeClose(); } catch (e) {}
+    try { if (typeof arcadeClose === 'function' && document.querySelector('.arc-play,.arc-menu')) arcadeClose(); } catch (e) {}
     try { if (typeof bizzClose === 'function' && document.querySelector('.bz-play')) bizzClose(); } catch (e) {}
     try { if (typeof clearGTimer === 'function') clearGTimer(); } catch (e) {}
     try { if (typeof tyStop === 'function') tyStop(); } catch (e) {}
@@ -173,7 +173,21 @@
     if (n === 'games' && S.game) return 'play/game';
     return NAV_ROUTE[n] || n;
   }
-  function routeOf() { return state.settingsOpen && state.screen === 'app' ? 'settings' : baseRoute(); }
+  function routeOf() { var o = overlayRoute(); if (o) return o; return state.settingsOpen && state.screen === 'app' ? 'settings' : baseRoute(); }
+  /* THE ARCADE OVERLAY HAS AN ADDRESS (games spec §1.6, T9). The race, the blaster and the maze
+     play in a fullscreen overlay app3 appends to <body>, outside the string render, so the
+     screen under it never changed its route and Back had nothing to step back from. An overlay
+     that carries data-route is a SCREEN to the router: its route is the address while it is up,
+     its history entry is marked {ov:1}, Back from it lands where it was opened from, and
+     #/play/<slug> opens it through the same arcadePlay a tap uses. */
+  var PLAY_SLUG = { grandprix: 'beeGrandPrix', blaster: 'typeBlaster', honeycomb: 'honeycombRun' };
+  function playRoute(k) { for (var s in PLAY_SLUG) if (PLAY_SLUG[s] === k) return 'play/' + s; return k ? 'play/' + k : null; }
+  function overlayRoute() { try { var el = document.querySelector('.arc-play[data-route]'); return el ? el.getAttribute('data-route') : null; } catch (e) { return null; } }
+  /* the overlay's own way out (← Arcade): step back over its entry so Back does not reopen it */
+  function leaveOverlay() {
+    try { if (history.state && history.state.ov) { history.back(); return; } } catch (e) {}
+    syncHash(); try { render(); } catch (e) {}
+  }
 
   var R = { last: null, booted: false, applying: false, pending: null };
   function urlFor(r) { return '#/' + r; }
@@ -181,8 +195,9 @@
     var r = routeOf();
     if (r === R.last) return;
     try {
-      if (R.applying) history.replaceState({ sb: 1 }, '', urlFor(r));
-      else history.pushState({ sb: 1 }, '', urlFor(r));
+      var st = overlayRoute() === r ? { sb: 1, ov: 1 } : { sb: 1 };
+      if (R.applying) history.replaceState(st, '', urlFor(r));
+      else history.pushState(st, '', urlFor(r));
     } catch (e) {}
     R.last = r;
   }
@@ -247,7 +262,12 @@
     if (head === 'grownups') { app.setNav('parent'); return; }
     if (head === 'progress') { state.progTab = 'me'; app.setNav('progress'); return; }
     if (head === 'practice' || head === 'gym') { app.openCoach(); return; }   // the tab is the Word Gym now; #/practice stays the route
-    if (head === 'play') { app.openGames(); return; }
+    if (head === 'play') {
+      app.openGames();
+      var pk = p[1] && (PLAY_SLUG[p[1]] || p[1]);
+      if (pk && pk !== 'game') lazyNeed('arcade', function () { try { if (typeof app.arcadePlay === 'function') app.arcadePlay(pk); } catch (e) {} });
+      return;
+    }
     if (head === 'support') { app.setNav('home'); return; }
     var nav = ROUTE_NAV[head] || head;
     /* A tool behind the plan opens through ITS opener, the one its Library tile taps: setNav would
@@ -263,7 +283,7 @@
   /* Layers that are not screens: back closes them first and stays where it is. */
   function closeLayer() {
     try {
-      if (document.querySelector('.arc-play,.bz-play')) { leaveDrill(); render(); return true; }
+      if (document.querySelector('.arc-play:not([data-route]),.bz-play,.arc-menu')) { leaveDrill(); render(); return true; }
       if (menuOpen()) { state.famMenu = false; render(); return true; }
       if (state.drawerOpen) { state.drawerOpen = false; render(); return true; }
       if (state.walletOpen) { state.walletOpen = false; render(); return true; }
@@ -503,6 +523,7 @@
     nextStep: nextStep, goNext: goNext, goStep: goStep, levelWords: levelWords,
     inDrill: inDrill, leaveDrill: leaveDrill,
     routeOf: routeOf, applyRoute: applyRoute, boot: boot, afterRender: afterRender,
+    sync: function () { if (R.booted) syncHash(); }, playRoute: playRoute, leaveOverlay: leaveOverlay,
     startActivity: startActivity, milestone: milestone, watch: watch,
     bookOut: bookOut, bookIn: bookIn, switchChild: switchChild,
     hiveBtn: hiveBtn, lockBtn: lockBtn, kidBtn: kidBtn, kidMenu: kidMenu, demoBar: demoBar,

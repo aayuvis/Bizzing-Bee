@@ -432,6 +432,328 @@
   const esc2=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   W().SGUI = SGUI;
 
+  /* ==========================================================================
+     THE ENGINE KIT (games spec §1.4, §1.5, §1.6, §4.0, §5.0) — one clock, one miss
+     card, one on-screen keyboard, one stage and one hub screen, shared by every game.
+     Everything here is exported on window and reads nothing from the engines below,
+     so a game, a hub or a test can use one piece without the others.
+     ========================================================================== */
+
+  /* ---- 1. ONE CLOCK (§1.4). Physics at a fixed 1/120 s, as many steps as real time needs
+     (at most 12 a frame), render once per animation frame. It pauses while the page is
+     hidden, while the caller holds it, and while a miss card is up (SGUI.held): a clock
+     that runs under the card a child is reading takes the time it was meant to give. The
+     body is the spec's, word for word, plus that one SGUI.held term. Every timed thing in
+     the games — a moving kart, a draining ring, a Sprint's seconds — runs on real time
+     through this, never on `dt = Math.min(0.05, …)` (which slows the game on a slow phone)
+     or on a setInterval that counts its own ticks (which slows the clock). */
+  function sgLoop(update, render){ let acc=0, last=performance.now(), raf, held=false;
+    function tick(now){ raf=requestAnimationFrame(tick); if(document.hidden||held||SGUI.held){ last=now; return; }
+      acc+=Math.min(0.25,(now-last)/1000); last=now; let n=0;
+      while(acc>=1/120 && n<12){ update(1/120); acc-=1/120; n++; } render(acc*120); }
+    raf=requestAnimationFrame(tick);
+    return { hold(v){ held=!!v; }, stop(){ cancelAnimationFrame(raf); } }; }
+  W().sgLoop=sgLoop;
+
+  /* A countdown for the timed text modes (Sprint, Level Challenge, timed trivia), on sgLoop.
+     It writes the seconds into `el.textContent` IN PLACE and calls onTick only when the
+     whole second changes — never a re-render of the view each second, which is what drops
+     a phone's keyboard focus mid-word (gTick → render). onEnd fires once. */
+  /* A countdown is not physics: it reads the real clock every frame rather than counting
+     sgLoop's capped steps, so a phone that can only draw eight frames a second still ends a
+     60-second Sprint after 60 seconds. It stops counting while hidden, held, or under a miss
+     card, exactly like sgLoop. */
+  function sgClock(secs, o){ o=o||{}; let left=+secs||0, shown=null, over=false, held=false, raf=0, last=performance.now();
+    const vis=()=>{ last=performance.now(); }; document.addEventListener('visibilitychange',vis);   // time spent hidden is not play
+    const fmt=o.fmt||(s=>String(s));
+    function paint(){ const s=Math.max(0,Math.ceil(left-1e-9));
+      if(s!==shown){ shown=s; try{ if(o.el) o.el.textContent=fmt(s); }catch(e){} try{ if(o.onTick) o.onTick(s,left); }catch(e){} } }
+    function tick(now){ if(over) return; raf=requestAnimationFrame(tick);
+      if(document.hidden||held||SGUI.held){ last=now; return; }
+      left-=Math.min(1,Math.max(0,(now-last)/1000)); last=now;   // a slow frame still counts in full; only a stall over 1s is clipped
+      if(left<=0){ left=0; over=true; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange',vis); paint(); try{ if(o.onEnd) o.onEnd(); }catch(e){} return; }
+      paint(); }
+    paint(); raf=requestAnimationFrame(tick);
+    return { left:()=>left, hold(v){ held=!!v; }, add(s){ left+=s; }, stop(){ over=true; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange',vis); } }; }
+
+  /* ---- 2. ONE MISS CARD (§1.5). From the Warm-Up's miss screen: the child's letters over
+     the word's, the letters that differ marked by SHAPE as well as colour (a wrong letter is
+     struck through, a missing one is a dashed empty box, the right letter is underlined with
+     a bar and a caret), the word spoken again, a note about THIS error — never the word's
+     family in general — and Continue by Enter or a tap. Clocks hold while it is up.
+     "aerial" typed "arial" used to get the Greek f→ph tip because the word is Greek; the
+     note now comes from where the letters actually part company. */
+  const SG_SOUNDS=[ /* one sound, several spellings — both halves of a miss must sit in ONE row */
+    ['f',['f','ff','ph','gh']], ['k',['c','k','ck','ch','cc','q','qu','que']], ['s',['s','ss','c','sc','ce','se']],
+    ['j',['j','g','dg','dge','ge','gi']], ['sh',['sh','ti','ci','ch','ssi','si','s','sci']], ['z',['z','zz','s','se','x']],
+    ['air',['air','are','ar','ear','ere','eir','aer','ai','ae','a']], ['er',['er','ir','ur','or','ear','our','ar','yr','re']],
+    ['ay',['a','ai','ay','ei','eigh','ey','ae']], ['ee',['e','ee','ea','ie','ei','y','ey','i','ae','oe']],
+    ['oh',['o','oa','ow','oe','ou','ough','eau']], ['oo',['oo','u','ew','ue','ou','ui','o','eu']],
+    ['eye',['i','y','igh','ie','ye','ei','ai']], ['ow',['ow','ou']], ['oy',['oi','oy']], ['aw',['aw','au','a','augh','ough','or','our','oa']],
+    ['shun',['tion','sion','cian','ssion','tian','cion']], ['w',['w','wh']], ['n',['n','kn','gn','pn','nn']],
+    ['m',['m','mb','mn','mm']], ['r',['r','wr','rh','rr']], ['g',['g','gh','gu','gg']], ['uh',['a','e','i','o','u','ou']],
+  ];
+  const SG_SUFFIX=/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede|ise|ize|ful|less|ness|ment|ly|er|or|ar)$/;
+  function sgAlign(typed, word){ const a=String(typed||'').toLowerCase().slice(0,60), b=String(word||'').toLowerCase();
+    const m=a.length, n=b.length, D=[]; for(let i=0;i<=m;i++){ D.push(new Array(n+1).fill(0)); D[i][0]=i; } for(let j=0;j<=n;j++) D[0][j]=j;
+    for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) D[i][j]=Math.min(D[i-1][j]+1, D[i][j-1]+1, D[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    const cols=[]; let i=m, j=n;
+    while(i>0||j>0){
+      if(i>0&&j>0&&a[i-1]===b[j-1]&&D[i][j]===D[i-1][j-1]){ cols.push({t:a[i-1],w:b[j-1],op:'ok'}); i--; j--; }
+      else if(i>0&&j>0&&D[i][j]===D[i-1][j-1]+1){ cols.push({t:a[i-1],w:b[j-1],op:'sub'}); i--; j--; }
+      else if(j>0&&D[i][j]===D[i][j-1]+1){ cols.push({t:'',w:b[j-1],op:'del'}); j--; }
+      else { cols.push({t:a[i-1],w:'',op:'ins'}); i--; } }
+    return cols.reverse(); }
+  /* Classify ONE miss by where the letters differ. Returns {k, label, line, rule}:
+     k ∈ double | single | silent | sound | ie | suffix | vowel | letters | none. */
+  function sgMissKind(word, typed){
+    const w=String((word&&word.w)||word||'').toLowerCase(), t=String(typed||'').toLowerCase().trim();
+    const rec=(word&&typeof word==='object')?word:{w:w};
+    const R=(W().SB_COACH_RULES||{});
+    const rule=k=>(R[k]&&R[k].check)||'';
+    if(!w) return {k:'none',label:'',line:'',rule:''};
+    if(!t) return {k:'letters',label:'Letter by letter',line:'Here it is, one letter at a time. Say each beat as you read it.',rule:''};
+    if(t===w) return {k:'none',label:'',line:'',rule:''};
+    const cols=sgAlign(t,w);
+    /* word-index span of the differing zone, and the typed letters across it */
+    let wi=0, ws=-1, we=-1, ts='', dbl=null, sgl=null, vow=0, nonVow=0;
+    cols.forEach(c=>{
+      if(c.op==='ok'){ wi++; return; }
+      const at=wi; if(ws<0) ws=at; we=Math.max(we, c.op==='ins'?at:at+1);
+      if(c.op==='del'){ if(w[at-1]===c.w||w[at+1]===c.w) dbl=c.w; }
+      if(c.op==='ins'){ if(c.t===w[at-1]||c.t===w[at]) sgl=c.t; }
+      const lt=c.t||'', lw=c.w||'';
+      if((lt===''||/[aeiouy]/.test(lt))&&(lw===''||/[aeiouy]/.test(lw))) vow++; else nonVow++;
+      if(c.op!=='ok') ts+=lt;
+      if(c.op!=='ins') wi++; });
+    if(ws<0) return {k:'none',label:'',line:'',rule:''};
+    const seg=w.slice(ws,Math.max(we,ws));
+    /* doubled or single letter */
+    if(dbl && nonVow<=1) return {k:'double',label:'Double letters',line:'This word doubles the '+dbl+': '+dbl+dbl+'.',rule:rule('double')};
+    if(sgl && nonVow<=1 && !(w.indexOf(sgl+sgl)>=0)) return {k:'single',label:'Double letters',line:'Only one '+sgl+' here, not '+sgl+sgl+'.',rule:rule('double')};
+    /* a silent letter the child left out */
+    const dropped=cols.filter(c=>c.op==='del'); const onlyDrop=dropped.length===1 && cols.every(c=>c.op==='ok'||c.op==='del');
+    if(onlyDrop){ const L=dropped[0].w; const at=ws;
+      const SIL=[[/^(k)n/,0],[/^(w)r/,0],[/^(g)n/,0],[/^(p)[sn]/,0],[/^(m)n/,0],[/^r(h)/,1],[/^(h)o(nest|nou|ur|ei)/,0],[/^g(h)/,1],[/^w(h)/,1],
+        [/m(b)$/,1],[/m(n)$/,1],[/(g)n$/,0],[/s(t)(le|en)$/,1],[/f(t)en$/,1],[/(b)t/,0],[/s(c)[eiy]/,1],[/g(u)[eiy]/,1],[/(l)[km]/,0],[/ou(l)d/,2],
+        [/i(g)h/,1],[/(w)ord|ans(w)er|(w)o$/,0],[/is(l)/,2],[/p(s)/,1],[/(c)h(t)/,0]];
+      for(const [re] of SIL){ const m=w.match(re); if(!m) continue; const off=m.index+m[0].indexOf(m.slice(1).find(Boolean)||'');
+        const g=m.slice(1).find(Boolean); if(g&&g.length===1&&g===L&&Math.abs(off-at)<=1)
+          return {k:'silent',label:'Silent letters',line:'The '+L+' in '+w+' is silent: you cannot hear it, but it is written.',rule:rule('silent')}; } }
+    /* a suffix at the end of the word */
+    const sm=w.match(SG_SUFFIX);
+    if(sm && w.length-sm[0].length>=3 && ws>=w.length-sm[0].length){
+      const tm=t.slice(Math.max(0,t.length-sm[0].length-1)).match(/(able|ible|ance|ence|ancy|ency|ant|ent|ary|ery|ory|tion|sion|cian|eous|ious|uous|ous|cede|ceed|sede|ise|ize|ful|less|ness|ment|ly|er|or|ar|al|el|le)$/);
+      const R2=/^(able|ible)$/.test(sm[0])?rule('endings'):/^(ance|ence|ancy|ency|ant|ent)$/.test(sm[0])?'An -ance word has an -ant partner and an -ence word an -ent one (importance, important; confidence, confident). If you know one, you know the other.':'';
+      return {k:'suffix',label:'Suffix endings',line:'The ending is -'+sm[0]+(tm&&tm[0]!==sm[0]?' (you wrote -'+tm[0]+')':'')+'.',rule:R2}; }
+    /* ie / ei */
+    if(/ie|ei/.test(w.slice(Math.max(0,ws-1),we+1)) && /ie|ei/.test(t)) return {k:'ie',label:'ie or ei',line:'This word is spelled with '+(w.match(/ie|ei/)[0])+'.',rule:rule('ieei')};
+    /* one vowel written for another, same length: the vowel (the schwa), never an "er" reading */
+    if(vow>0 && nonVow===0 && cols.every(c=>c.op==='ok'||c.op==='sub'))
+      return {k:'vowel',label:'The vowel',line:'The vowel here is spelled '+seg+'. In a quiet syllable every vowel sounds like "uh", so the sound cannot tell you which one.',rule:rule('schwa')};
+    /* one sound, several spellings: widen the window round the zone until both halves are
+       spellings of the same sound */
+    for(let pad=0; pad<=2; pad++){ for(let l=0; l<=pad; l++){ const r=pad-l;
+      const a=Math.max(0,ws-l), b=Math.min(w.length, Math.max(we,ws)+r);
+      const wseg=w.slice(a,b); const tPre=w.slice(0,a), tPost=w.slice(b);
+      if(!t.startsWith(tPre)||!t.endsWith(tPost)||t.length<tPre.length+tPost.length) continue;
+      const tseg=t.slice(tPre.length, t.length-tPost.length); if(!wseg||wseg===tseg) continue;
+      const hit=SG_SOUNDS.find(([,sp])=>sp.indexOf(wseg)>=0&&sp.indexOf(tseg)>=0);
+      if(hit && !(hit[0]==='uh')){ let o='';
+        const og=String(rec.o||'');
+        if(/^(f|k|eye)$/.test(hit[0]) && /greek/i.test(og) && /ph|ch|y/.test(wseg)) o=' That is a Greek spelling, like phone, chorus and myth.';
+        else if(/french/i.test(og) && /eau|que|ch|et/.test(wseg)) o=' That is a French spelling, kept from the language it came from.';
+        return {k:'sound',label:'One sound, several spellings',line:'The "'+hit[0]+'" sound here is spelled '+wseg+(tseg?', not '+tseg:'')+'.'+o,rule:''}; } } }
+    /* a vowel: the quiet "uh" sound (the schwa) and its cousins */
+    if(vow>0 && nonVow===0) return {k:'vowel',label:'The vowel',line:seg?('The vowel here is spelled '+seg+'. In a quiet syllable every vowel sounds like "uh", so the sound cannot tell you which one.'):'A vowel is missing here.',rule:rule('schwa')};
+    return {k:'letters',label:'Letter by letter',line:'Look at the marked letters, then say the word slowly, one beat at a time, and spell each beat.',rule:''};
+  }
+
+  let _missUp=0;
+  Object.defineProperty(SGUI,'held',{get(){ return _missUp>0; }, configurable:true});
+  const SPK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" stroke="none"/><path d="M15.6 9a4.2 4.2 0 0 1 0 6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>';
+  const BULB='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.4.3.6.75.6 1.25h4c0-.5.2-.95.6-1.25A4.4 4.4 0 0 0 8 1.6z" fill="currentColor" opacity=".9"/><path d="M6.4 12.6h3.2M6.9 14.2h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  const TICK='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3 8.6l3.2 3L13 4.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const CROSS='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+  /* the shared shell of both miss cards: a scrim over the host, the card, Continue by Enter
+     or a tap, every other key swallowed so nothing types into the game underneath */
+  function missShell(host, inner, o){
+    host=host||document.body;
+    /* on a stage the card covers the whole stage, keyboard and all (the keys are dead while it is
+       up): a phone's play region above the keys is too short to hold the letters, the note and
+       Continue */
+    try{ const st=host.closest&&host.closest('.sb-stage'); if(st) host=st; }catch(e){}
+    const fixed=(host===document.body);
+    try{ if(!fixed && getComputedStyle(host).position==='static') host.style.position='relative'; }catch(e){}
+    const wrap=document.createElement('div'); wrap.className='sg-misswrap'+(fixed?' fixed':'');
+    wrap.innerHTML='<div class="sg-misscard sb-miss" role="dialog" aria-modal="true" aria-labelledby="sg-miss-h">'+inner+
+      '<button class="sg-rbtn go sg-miss-go" type="button">Continue <span class="sg-kbd" aria-hidden="true">Enter</span></button></div>';
+    host.appendChild(wrap); _missUp++;
+    const t0=performance.now(); let closed=false;
+    function close(){ if(closed) return; closed=true; _missUp=Math.max(0,_missUp-1);
+      removeEventListener('keydown',onKey,true); try{ wrap.remove(); }catch(e){}
+      try{ if(o.onContinue) o.onContinue(); }catch(e){} }
+    function onKey(e){ if(closed) return;
+      if(e.key==='Tab') return;                                   // focus may still move inside the card
+      e.stopPropagation();
+      if(e.key==='Enter'||e.key===' '&&e.target&&e.target.closest&&e.target.closest('.sg-misscard')){
+        e.preventDefault(); if(e.repeat||performance.now()-t0<250) return;   // the Enter that submitted the answer is not a Continue
+        close(); return; }
+      if(e.key&&e.key.length===1) e.preventDefault(); }
+    addEventListener('keydown',onKey,true);
+    wrap.querySelector('.sg-miss-go').onclick=close;
+    wrap.querySelectorAll('[data-sg-say]').forEach(b=>{ b.onclick=()=>{ try{ say(b.getAttribute('data-sg-say')); }catch(e){} }; });
+    try{ setTimeout(()=>{ if(!closed){ const b=wrap.querySelector('.sg-miss-go'); if(b) b.focus({preventScroll:true}); } },30); }catch(e){}
+    return { el:wrap, close, get held(){ return !closed; } };
+  }
+  /* word: a word record {w,d,o,h…} or a string; typed: what the child wrote ('' = nothing). */
+  SGUI.miss=function(host, word, typed, o){ o=o||{};
+    const w=String((word&&word.w)||word||''), t=String(typed||'').trim();
+    const cols=sgAlign(t,w), why=sgMissKind(word,t), rec=(word&&typeof word==='object')?word:{};
+    const cell=(ch,op,row)=>{ const diff=op!=='ok', gap=(row==='t'&&op==='del')||(row==='w'&&op==='ins');
+      const cls=gap?'gap':!diff?'':row==='t'?(op==='ins'?'bad extra':'bad'):'good';
+      return '<span class="sg-mc '+cls+'">'+(gap?'':esc2(ch))+'</span>'; };
+    const rowT=t?cols.map(c=>cell(c.t,c.op,'t')).join(''):'';
+    const rowW=cols.map(c=>c.w?cell(c.w,t?c.op:'ok','w'):(t?cell('','ins','w'):'')).join('');
+    const nDiff=cols.filter(c=>c.op!=='ok').length;
+    const summary=(t?'You wrote '+t+'. ':'')+'The word is spelled '+w.split('').join(' ')+'.'+(t?' '+nDiff+' letter'+(nDiff===1?'':'s')+' differ.':'');
+    const note=o.note||why.line;
+    const inner='<div class="sg-miss-h" id="sg-miss-h" data-live-prompt>'+(o.head||(t?'Not this time. Here is the word.':'Here is the word.'))+'</div>'+
+      '<div class="sg-mdiff" role="img" aria-label="'+esc2(summary)+'">'+
+        (t?'<div class="sg-mrow t"><span class="sg-mlbl">You</span><span class="sg-mlet">'+rowT+'</span></div>':'')+
+        '<div class="sg-mrow w"><span class="sg-mlbl">Word</span><span class="sg-mlet">'+rowW+'</span></div></div>'+
+      '<div class="sg-mtools"><button type="button" class="sg-msay" data-sg-say="'+esc2(w)+'">'+SPK+' Hear it again</button></div>'+
+      (note?'<div class="sg-mwhy" data-why="'+esc2(why.k)+'"><span class="sg-mwhy-ic">'+BULB+'</span><span><b>'+esc2(why.label||'How to get it next time')+'</b> — '+esc2(note)+
+        (why.rule&&!o.note?'<span class="sg-mrule">'+esc2(why.rule)+'</span>':'')+
+        (rec.h?'<span class="sg-mrule">Memory hook: '+esc2(rec.h)+'</span>':'')+'</span></div>':'');
+    const h=missShell(host, inner, o);
+    try{ setTimeout(()=>{ if(h.held) say(w); },220); }catch(e){}
+    return h; };
+  /* q: a bank question {q, c:[right, …], f} (c[0] is the right answer, as in the trivia bank)
+     or {q, a, f}; picked: the option text the child chose (or its index into q.c). */
+  SGUI.missQ=function(host, q, picked, o){ o=o||{}; q=q||{};
+    const right=String(q.a!=null?q.a:(q.c&&q.c[0])||''); let pk=picked;
+    if(typeof pk==='number'&&q.c) pk=q.c[pk]; pk=String(pk==null?'':pk);
+    const inner='<div class="sg-miss-h" id="sg-miss-h" data-live-prompt>'+(o.head||'Not this one. Here is the answer.')+'</div>'+
+      (q.q?'<div class="sg-mq">'+esc2(q.q)+'</div>':'')+
+      '<div class="sg-mans">'+(pk?'<div class="sg-mopt bad"><span class="sg-mopt-ic">'+CROSS+'</span><span class="sg-mlbl">You chose</span><s>'+esc2(pk)+'</s></div>':'')+
+      '<div class="sg-mopt good"><span class="sg-mopt-ic">'+TICK+'</span><span class="sg-mlbl">Answer</span><b>'+esc2(right)+'</b></div></div>'+
+      (q.f?'<div class="sg-mwhy"><span class="sg-mwhy-ic">'+BULB+'</span><span><b>Did you know?</b> '+esc2(q.f)+'</span></div>':'');
+    return missShell(host, inner, o); };
+  SGUI.missKind=sgMissKind; SGUI.align=sgAlign; SGUI.clock=sgClock;
+
+  /* ---- 3. ONE ON-SCREEN KEYBOARD (§1.6). For touch only: a coarse pointer gets keys, a
+     desktop gets nothing drawn and uses the real keyboard (which works on both — a tablet
+     with a keyboard case types either way). Keys are at least 40px at 390px: QWERTY needs
+     ten across, which a 390px phone cannot give at 40px under #root's 1.09 zoom, so a narrow
+     screen gets the alphabet in four rows of seven (a–g · h–n · o–u · v–z ⌫ ⏎) and a wide one
+     gets QWERTY. Mount it in the stage's controls row, which sits above the tab bar. */
+  const KB_QWERTY=[['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['z','x','c','v','b','n','m','⌫','⏎']];
+  const KB_ABC=[['a','b','c','d','e','f','g'],['h','i','j','k','l','m','n'],['o','p','q','r','s','t','u'],['v','w','x','y','z','⌫','⏎']];
+  SGUI.keys=function(host, o){ o=o||{};
+    const touch=o.touch!=null?!!o.touch:(()=>{ try{ return matchMedia('(pointer:coarse)').matches; }catch(e){ return false; } })();
+    const fire=k=>{ if(SGUI.held) return; try{ if(k==='⌫'){ o.onBack&&o.onBack(); } else if(k==='⏎'){ o.onEnter&&o.onEnter(); } else { o.onKey&&o.onKey(k); } }catch(e){} };
+    let el=null;
+    if(touch && host){
+      const wpx=host.getBoundingClientRect().width||innerWidth;
+      const rows=(o.layout==='qwerty'||(o.layout!=='abc'&&wpx>=480))?KB_QWERTY:KB_ABC;
+      el=document.createElement('div'); el.className='sg-keys'+(rows===KB_ABC?' abc':' qwerty'); el.setAttribute('role','group'); el.setAttribute('aria-label','Letter keys');
+      el.innerHTML=rows.map(r=>'<div class="sg-krow">'+r.map(k=>'<button type="button" class="sg-key'+(k==='⌫'?' back':k==='⏎'?' enter':'')+'" data-k="'+k+'" aria-label="'+(k==='⌫'?'Delete':k==='⏎'?'Enter':k)+'">'+
+        (k==='⌫'?'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5h10.5A1.5 1.5 0 0 1 21 6.5v11a1.5 1.5 0 0 1-1.5 1.5H9l-6-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+        :k==='⏎'?'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 5v6.5a2 2 0 0 1-2 2H6M9.5 9.5L5.5 13.5l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':k)+'</button>').join('')+'</div>').join('');
+      el.addEventListener('pointerdown',e=>{ const b=e.target.closest('.sg-key'); if(!b) return; e.preventDefault(); b.classList.add('down'); setTimeout(()=>b.classList.remove('down'),120); fire(b.dataset.k); });
+      el.addEventListener('click',e=>{ const b=e.target.closest('.sg-key'); if(b&&e.detail===0) fire(b.dataset.k); });   // a key reached by Tab and pressed with Enter
+      host.appendChild(el); }
+    const onDoc=e=>{ if(o.physical===false||SGUI.held||e.defaultPrevented) return; const tg=e.target;
+      if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return;   // a game with its own input handles its own typing
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      if(/^[a-z]$/i.test(e.key)){ e.preventDefault(); fire(e.key.toLowerCase()); }
+      else if(e.key==='Backspace'){ e.preventDefault(); fire('⌫'); }
+      else if(e.key==='Enter'){ if(tg&&tg.closest&&tg.closest('button,a')&&!tg.closest('.sg-keys')) return; e.preventDefault(); fire('⏎'); } };
+    addEventListener('keydown',onDoc);
+    return { el, touch, destroy(){ removeEventListener('keydown',onDoc); try{ if(el) el.remove(); }catch(e){} } }; };
+
+  /* ---- 4. ONE STAGE (§5.0). Grid rows auto 1fr auto between the shell bar and the tab bar
+     (or the window's bottom): a mirrored HUD with equal-width stats round a centred title,
+     the play area on a painted plate edge to edge (a centred 4:3 play region on a desktop,
+     full width on a phone, the plate continuing behind), and the controls centred — on a
+     phone in the bottom 38%. Panels are translucent tokens, never solid white. The plate is
+     a CSS variable pair, so a Light ↔ Dusk switch swaps the painting without a re-render.
+     The stage is position:fixed and FITTED to the shell: #root is zoomed, so a 100dvh box
+     inside it runs 9% past the window; stageFit() measures the header and the tab bar on
+     screen and writes the insets back in #root's own pixels, after every render and resize. */
+  const AV=()=>(W().SB_ASSET_V?('?v='+W().SB_ASSET_V):'');
+  function plateUrl(name, half){ return 'app-art/stage/'+name+'-'+half+'.webp'+AV(); }
+  W().SB_PLATE=function(name){ const dark=(document.documentElement.getAttribute('data-mode')==='dusk');
+    return 'app-art/stage/'+name+'-'+(dark?'night':'day')+'.webp'; };
+  function plateVars(plate){ if(!plate) return '';
+    if(/[\/.]/.test(plate)) return "--sg-plate-d:url('"+esc2(plate)+"');--sg-plate-n:url('"+esc2(plate)+"')";
+    return "--sg-plate-d:url('"+plateUrl(plate,'day')+"');--sg-plate-n:url('"+plateUrl(plate,'night')+"')"; }
+  SGUI.stage=function(o){ o=o||{}; const hud=o.hud||{};
+    const side=(x,cls)=>'<div class="sg-st-side '+cls+'">'+(x==null||x===''?'':'<div class="sg-st-stat sg-panel">'+x+'</div>')+'</div>';
+    return '<section class="sb-stage'+(o.cls?' '+o.cls:'')+(o.region===false?' free':'')+'" data-sb-stage="'+esc2(o.name||o.plate||'')+'" style="'+plateVars(o.plate)+'"'+(o.label?' aria-label="'+esc2(o.label)+'"':'')+'>'+
+      '<div class="sg-st-hud">'+side(hud.left,'l')+'<div class="sg-st-c">'+(hud.center||'')+'</div>'+side(hud.right,'r')+'</div>'+
+      '<div class="sg-st-play"><div class="sg-st-region">'+(o.play||'')+'</div></div>'+
+      '<div class="sg-st-ctl">'+(o.controls||'')+'</div></section>'; };
+  function stageFit(){ try{
+    const st=document.querySelectorAll('.sb-stage'); if(!st.length) return;
+    const root=document.getElementById('root'); const z=root?(parseFloat(getComputedStyle(root).zoom)||1):1;
+    const hdr=document.querySelector('.sb-header-sticky'); const top=hdr?Math.max(0,hdr.getBoundingClientRect().bottom):0;
+    const tb=document.querySelector('.sb-tabbar'); let bot=0;
+    if(tb&&getComputedStyle(tb).display!=='none'){ const r=tb.getBoundingClientRect(); if(r.height) bot=Math.max(0,innerHeight-r.top); }
+    st.forEach(s=>{ s.style.top=(top/z).toFixed(2)+'px'; s.style.bottom=(bot/z).toFixed(2)+'px'; });
+    document.documentElement.classList.add('sb-stage-on');
+  }catch(e){} }
+  SGUI.stageFit=stageFit;
+  (function watch(){ try{
+    const root=document.getElementById('root'); if(!root) return;
+    let raf=0; const kick=()=>{ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0;
+      if(!document.querySelector('.sb-stage')) document.documentElement.classList.remove('sb-stage-on'); else stageFit(); }); };
+    new MutationObserver(kick).observe(root,{childList:true});
+    addEventListener('resize',kick); kick();
+  }catch(e){} })();
+
+  /* ---- 5. ONE HUB SCREEN (§4.0). A painted plate; the HUD mirrored — good days this week on
+     the left (never a streak), the hub's name in the centre, coins earned today on the right;
+     and a symmetric grid of mode tiles (three across on a desktop, two on a phone, a short
+     last row centred), each with its art, a one-line promise, its level chip, its best and a
+     "new" dot until first played. The order is the hub's own, simplest first, and never
+     changes with play; the mode played last carries a mark instead. A tile is a div holding
+     ONE stretched button (data-act="hubMode", data-arg="<hub>/<mode>") so the level chip — a
+     button of its own — never nests inside it. */
+  W().SB_HUB_OPEN=W().SB_HUB_OPEN||{};
+  function coinsToday(){ try{ const c=active(), Wl=W().BZ_WALLET; const who=String((c&&c.name)||'').trim(); if(!Wl||!who) return 0;
+    const d=new Date().toDateString();
+    return (Wl.ledger(who)||[]).filter(x=>x.a==='bee'&&x.n>0&&x.why!=='migrated'&&new Date(x.t).toDateString()===d).reduce((a,x)=>a+x.n,0); }catch(e){ return 0; } }
+  function goodDays(){ try{ return goodDaysThisWeek(active()); }catch(e){ return 0; } }
+  function hubLast(key){ try{ const c=active(); return (c.hubLast&&c.hubLast[key])||''; }catch(e){ return ''; } }
+  function levelChip(k){ try{ if(W().SB_LEVEL&&SB_LEVEL.chip) return SB_LEVEL.chip(k); }catch(e){}
+    return '<span class="sg-hub-lvl">Auto</span>'; }
+  const COINI='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="8.2" fill="#F0B429" stroke="#B57F06" stroke-width="1.6"/><path d="M10 5.6l3.8 2.2v4.4L10 14.4l-3.8-2.2V7.8z" fill="none" stroke="#8A5B00" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+  const SUNI='<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="currentColor"/><path d="M10 2.4v2.2M10 15.4v2.2M2.4 10h2.2M15.4 10h2.2M4.6 4.6l1.5 1.5M13.9 13.9l1.5 1.5M15.4 4.6l-1.5 1.5M6.1 13.9l-1.5 1.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
+  W().SB_HUB=function(def){ def=def||{}; const key=def.key||'hub', modes=def.modes||[], last=def.last!=null?def.last:hubLast(key);
+    const gd=goodDays(), ct=coinsToday();
+    const left=(def.hud&&def.hud.left!=null)?def.hud.left:('<span class="sg-st-ic">'+SUNI+'</span><span class="sg-st-n">'+gd+'</span><span class="sg-st-t">good day'+(gd===1?'':'s')+' this week</span>');
+    const right=(def.hud&&def.hud.right!=null)?def.hud.right:('<span class="sg-st-ic">'+COINI+'</span><span class="sg-st-n">'+ct+'</span><span class="sg-st-t">coin'+(ct===1?'':'s')+' today</span>');
+    const art=a=>!a?'<span class="sg-hub-art none" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 7l14.7 8.5v17L24 41 9.3 32.5v-17z" fill="color-mix(in srgb,var(--treasure,#F0B429) 55%,transparent)" stroke="var(--treasure-deep,#8A5B00)" stroke-width="2.2" stroke-linejoin="round"/><path d="M24 15.5l7.4 4.25v8.5L24 32.5l-7.4-4.25v-8.5z" fill="none" stroke="var(--treasure-deep,#8A5B00)" stroke-width="1.8" stroke-linejoin="round" opacity=".6"/></svg></span>':/^</.test(String(a).trim())?'<span class="sg-hub-art" aria-hidden="true">'+a+'</span>'
+      :'<span class="sg-hub-art" aria-hidden="true"><img src="'+esc2(a)+'" alt="" loading="lazy"></span>';
+    const tiles=modes.map(m=>{ const k=key+'/'+m.id, isLast=(m.id===last);
+      return '<div class="sg-hub-tile sg-panel'+(isLast?' last':'')+'" data-mode="'+esc2(m.id)+'">'+
+        (isLast?'<span class="sg-hub-lastmark">Last played</span>':'')+
+        '<button type="button" class="sg-hub-go" data-act="hubMode" data-arg="'+esc2(k)+'" aria-label="'+esc2(m.title+(m.isNew?', new':'')+(m.promise?'. '+m.promise:'')+(isLast?'. Played last':''))+'">'+art(m.art)+
+          '<span class="sg-hub-name">'+esc2(m.title)+(m.isNew?'<i class="sg-hub-new" title="Not played yet"><span class="sg-sr">new</span></i>':'')+'</span>'+
+          '<span class="sg-hub-promise">'+esc2(m.promise||'')+'</span></button>'+
+        '<div class="sg-hub-meta">'+levelChip(k)+'<span class="sg-hub-best">'+(m.best?esc2(m.best):'No best yet')+'</span></div></div>'; }).join('');
+    const center='<h1 class="sg-st-title">'+esc2(def.title||'')+'</h1>';
+    const n=modes.length, rd=Math.max(1,Math.ceil(n/(n===4||n<=2?2:3)));
+    return SGUI.stage({plate:def.plate||key, name:key, cls:'sg-hub', region:false, label:def.title||'',
+      hud:{left, center, right}, play:'<div class="sg-hub-grid n'+n+'" style="--rd:'+rd+';--rp:'+Math.ceil(n/2)+'">'+tiles+'</div>', controls:def.controls||''}); };
+  /* a tile → the hub's own opener for that mode, and the mode remembered as played last */
+  if(typeof app!=='undefined' && app){ app.hubMode=function(arg){ const s=String(arg||''); const i=s.indexOf('/'); if(i<1) return;
+    const key=s.slice(0,i), id=s.slice(i+1);
+    try{ const c=active(); c.hubLast=c.hubLast||{}; c.hubLast[key]=id; }catch(e){}
+    const fn=W().SB_HUB_OPEN[key]; if(typeof fn==='function') fn(id); }; }
+
   function opt_size(t){ return String(t||'').length>10?20:26; }
 
   /* A polished vector moth drawn straight onto the canvas — dusty scalloped wings,
