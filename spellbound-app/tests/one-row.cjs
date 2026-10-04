@@ -100,7 +100,9 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
     await p3.evaluate(() => app.openBizz()); await p3.waitForTimeout(600);
     const rb = await measureBar();
     if (rb.none || rb.wrapped.length || rb.offRow.length || rb.past.length || rb.backH < 44) hbad.push(`${w}px bizzillionaire: ${JSON.stringify(rb)}`);
-    if (games.length < 6) hbad.push(`${w}px: only ${games.length} arcade engines found`);
+    /* 4 Oct 2026: the arcade registry is three engines now — Grand Prix, Type Blaster (Spell Scene
+       merged in) and Honeycomb Run; Word Snake and Unscramble Stars left (games spec §3.1) */
+    if (games.length < 3) hbad.push(`${w}px: only ${games.length} arcade engines found`);
     await c3.close();
   }
   ok(!hbad.length, 'every game header is one line at 390 and 360 — "← Arcade" and the game\'s name each whole, on the bar\'s one row, the back button 44px tall' + (hbad.length ? ' — ' + hbad.slice(0, 4).join(' | ') : ''));

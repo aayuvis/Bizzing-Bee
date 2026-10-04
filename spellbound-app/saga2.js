@@ -3562,13 +3562,20 @@
     /* A miss HOLDS: every glitch freezes and the word is shown, letter against letter,
        until Continue. The glitch it belonged to then dissolves — its word has been read
        out on screen, so it is not asked again as if it were still a test. */
-    function miss(f, t, note){ holding=true; loop.hold(true); shield--; combo=0; f.el.classList.add('frozen');
+    function miss(f, t, note){ holding=true; loop.hold(true); wall=null; shield--; combo=0; f.el.classList.add('frozen');
       try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
       scene.classList.remove('breach'); void scene.offsetWidth; scene.classList.add('breach'); hud();
       AK.miss(playEl, f.w, t, { note, onContinue(){
         f.dead=true; foes=foes.filter(x=>x!==f); try{ f.el.remove(); }catch(e){} typed='';
         holding=false; if(shield<=0){ over=true; finish(false); return; }
-        loop.hold(false); spawnT=Math.min(spawnT,0.8); retarget(); } }); }
+        wall=null; loop.hold(false); spawnT=Math.min(spawnT,0.8); retarget(); } }); }
+    /* THE FALL IS A CLOCK, so it reads the frame's real time (capped at 0.25 s a frame, as the
+       shared loop caps it) rather than summing physics steps: the shared loop makes up at most
+       0.1 s of steps a frame, so on a phone too slow for 10 fps the glitches would drift slow
+       against the child's real seconds. Movement is still driven by the shared loop's frames. */
+    let wall=null;
+    function frameDt(){ const now=(document.timeline&&document.timeline.currentTime)||performance.now();
+      const d=wall==null?0:Math.min(0.25,Math.max(0,(now-wall)/1000)); wall=now; return d; }
     function update(dt){ if(over||!started||holding) return;
       for(const f of foes){ f.y+=CFG.fall*dt; }
       const hit=foes.find(f=>f.y>=1);
@@ -3581,7 +3588,7 @@
       if(!foes.length && !queue.length && blasted<N){ over=true; finish(false); } }
     let H=0, FH=0;
     function measure(){ H=scene.clientHeight; const f=foes[0]; FH=f?f.el.offsetHeight:Math.min(110,H*0.2); }
-    function render(){ if(!started) return; if(!H) measure();
+    function render(){ if(!started) return; const fd=frameDt(); if(fd>0) update(fd); if(over||!started) return; if(!H) measure();
       const line=H*0.80;
       for(const f of foes){ if(f.dead) continue; f.el.style.transform='translate(-50%,'+Math.round(f.y*(line-FH))+'px)'; }
       const d=foes.some(f=>!f.dead&&f.y>=0.62); if(d!==danger){ danger=d; scene.classList.toggle('tb-danger',d); }
@@ -3589,7 +3596,7 @@
         barrel.style.transform='rotate('+(Math.atan2(dx,dy)*180/Math.PI).toFixed(1)+'deg)'; } }
     const onResize=()=>{ H=0; };
     addEventListener('resize',onResize);
-    const loop=AK.loop(update, render);
+    const loop=AK.loop(()=>{}, render);
     /* the real keyboard, on capture, and only the keys this game uses — so a letter is
        typed once even if the shared on-screen keyboard also listens */
     const kb=e=>{ if(over||!started||holding) return; if(e.ctrlKey||e.metaKey||e.altKey) return; const k=e.key;
@@ -3617,7 +3624,7 @@
       el.style.display='grid'; SGUI.bind(el);
       el.querySelector('#sg-again').onclick=()=>{ el.style.display='none'; el.innerHTML=''; typeBlaster(host,opts,done); };
       el.querySelector('#sg-cont').onclick=()=>{ el.style.display='none'; el.innerHTML=''; done({win,score,stars}); }; }
-    function begin(){ started=true; H=0; spawn(); spawnT=(1/CFG.fall)/CFG.at*0.8; hud(); }
+    function begin(){ started=true; H=0; wall=null; spawn(); spawnT=(1/CFG.fall)/CFG.at*0.8; hud(); }
     function howto(){ const el=host.querySelector('#sg-card');
       el.innerHTML=SGUI.howto({ title:'Type Blaster', art:TB_GLITCH(64),
         sub:'The glitches have greyed the world. Every word you blast paints a piece of it back.',

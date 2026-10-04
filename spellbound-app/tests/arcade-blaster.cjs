@@ -104,7 +104,7 @@ async function stageCheck(pg, label) {
     const ttl = R(document.querySelector('#tb-prog'));
     const ov = document.querySelector('.arc-play'); const hostEl = document.querySelector('#arc-host');
     const stg = R(hostEl.firstElementChild);
-    const ctrls = [...document.querySelectorAll('#arc-host button')].filter(b => b.getClientRects().length && getComputedStyle(b).visibility !== 'hidden');
+    const ctrls = [...document.querySelectorAll('#arc-host button')].filter(b => b.getClientRects().length && getComputedStyle(b).visibility !== 'hidden' && getComputedStyle(b).pointerEvents !== 'none');   // a blasted glitch mid-explosion is not a control
     const covered = ctrls.filter(b => { const r = b.getBoundingClientRect(); if (r.bottom > innerHeight + 0.5) return true;
       const el = document.elementFromPoint(Math.min(innerWidth - 1, r.left + r.width / 2), Math.min(innerHeight - 1, r.top + r.height / 2)); return !el || !(b === el || b.contains(el)); }).map(b => b.id || b.className || b.textContent);
     return { statW: [L.width, Rt.width], statGut: [L.left - host.left, host.right - Rt.right], sceneGut: [sc.left - host.left, host.right - sc.right],
@@ -191,26 +191,22 @@ async function stageCheck(pg, label) {
   { const { ctx: c4, pg: p4 } = await open(b);
     const cdp = await c4.newCDPSession(p4); await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
     await launch(p4, 'medium');
-    const t4 = await p4.evaluate(() => new Promise(res => { const id = _tb.state().target; let t0 = null, y0 = 0, last = null, game = 0, acc = 0, gap = 0;
+    const t4 = await p4.evaluate(() => new Promise(res => { const id = _tb.state().target; let t0 = null, y0 = 0, last = null, clamped = 0, gap = 0;
       (function f(now) { const s = _tb.state(); const fo = s.foes.find(x => x.id === id); if (!fo) { res(null); return; }
-        /* the shared clock's own arithmetic, step for step: real time in, at most 0.25 s a frame,
-           physics in 1/120 s steps, at most 12 a frame, the rest carried to the next frame */
-        if (last != null) { acc += Math.min(0.25, (now - last) / 1000); const n = Math.min(12, Math.floor(acc * 120 + 1e-9)); acc -= n / 120;
-          if (t0 != null) { game += n / 120; gap = Math.max(gap, now - last); } }
+        if (t0 != null && last != null) { clamped += Math.min(0.25, (now - last) / 1000); gap = Math.max(gap, now - last); }
         last = now;
         if (t0 == null && fo.y >= 0.1) { t0 = now; y0 = fo.y; }
-        if (t0 != null && fo.y >= 0.6) { res({ secs: (now - t0) / 1000, game, gap, dy: fo.y - y0, fall: s.fall }); return; }
+        if (t0 != null && fo.y >= 0.6) { res({ secs: (now - t0) / 1000, clamped, gap, dy: fo.y - y0, fall: s.fall }); return; }
         requestAnimationFrame(f); })(performance.now()); }));
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
-    /* The glitch moves on the shared clock (spec §1.4): real time, stepped at 1/120 s, never more
-       than 12 steps (0.1 s) in one frame. So the fall is held to that clock's reading, step for
-       step, and to the WALL clock whenever every frame came in under 100 ms — the regime in
-       which the clock promises real time. A frame stalled longer (another process holding the
-       CPU) is time the game deliberately does not leap through, and is reported, not hidden. */
-    const want = t4 ? t4.dy / t4.fall : 0, err = t4 ? Math.abs(t4.game - want) / want : 1;
-    ok(t4 && err <= 0.03, `T4 · a glitch fell ${t4 ? t4.dy.toFixed(3) : '?'} of the drop in ${t4 ? t4.game.toFixed(2) : '?'} s of clock time; the fall rate says ${want.toFixed(2)} s (${(err * 100).toFixed(1)}% off, ≤ 3%)`);
-    if (t4 && t4.gap < 100) { const ew = Math.abs(t4.secs - want) / want; ok(ew <= 0.03, `T4 · and on the wall clock: ${t4.secs.toFixed(2)} s (${(ew * 100).toFixed(1)}% off)`); }
-    else if (t4) console.log(`  --     T4 · wall clock ${t4.secs.toFixed(2)} s not compared: a frame took ${Math.round(t4.gap)} ms (machine load), past the 100 ms the clock can make up in one frame`);
+    /* The fall is a clock: it reads each frame's real time, capped at 0.25 s a frame exactly as the
+       shared loop caps it — a frame stalled longer than that (another process holding the CPU) is
+       time the game deliberately does not leap through. So the fall is held to that capped reading
+       of real time, and to the wall clock itself whenever no frame stalled past the cap. */
+    const want = t4 ? t4.dy / t4.fall : 0, err = t4 ? Math.abs(t4.clamped - want) / want : 1;
+    ok(t4 && err <= 0.03, `T4 · a glitch fell ${t4 ? t4.dy.toFixed(3) : '?'} of the drop in ${t4 ? t4.clamped.toFixed(2) : '?'} s of real (capped) time; the fall rate says ${want.toFixed(2)} s (${(err * 100).toFixed(1)}% off, ≤ 3%)`);
+    if (t4 && t4.gap < 250) { const ew = Math.abs(t4.secs - want) / want; ok(ew <= 0.03, `T4 · and on the wall clock: ${t4.secs.toFixed(2)} s (${(ew * 100).toFixed(1)}% off)`); }
+    else if (t4) console.log(`  --     T4 · wall clock ${t4.secs.toFixed(2)} s not compared: a frame stalled ${Math.round(t4.gap)} ms (machine load), past the 250 ms cap`);
     await c4.close(); }
 
   /* T11 · the phone */
@@ -245,6 +241,18 @@ async function stageCheck(pg, label) {
     await launch(ps, 'medium'); await ps.waitForTimeout(400);
     await stageCheck(ps, `${w}×${h} ${mode}`);
     await cs.close();
+  }
+  /* T9 · both games have an address, and Back from it returns to Play */
+  console.log('\n  T9 · routes');
+  for (const [route, name] of [['play/blaster', 'Type Blaster'], ['play/honeycomb', 'Honeycomb Run']]) {
+    const ctx9 = await b.newContext({ viewport: { width: 1100, height: 800 } });
+    await ctx9.addInitScript(k => { try { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] }));
+      localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } } catch (e) {} }, KID);
+    const p9 = await ctx9.newPage(); await p9.goto(URL + '#/' + route); await booted(p9);
+    const up = await until(p9, n => { const m = document.querySelector('.arc-menu .arcm-title'); return !!m && m.textContent.trim() === n; }, name, 15000);
+    await p9.goBack(); const back = await until(p9, () => !document.querySelector('.arc-menu,.arc-play') && state.nav === 'games', null, 8000);
+    ok(up && back, `T9 · #/${route} opens ${name}'s start screen over Play, and Back closes it onto Play`);
+    await ctx9.close();
   }
   await b.close();
   console.log(fails ? `\n${fails} FAILED\n` : '\nall good\n');

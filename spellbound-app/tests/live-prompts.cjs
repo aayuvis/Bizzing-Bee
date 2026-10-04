@@ -5,7 +5,7 @@
    render never replaces it — a live region rebuilt with new text is not announced). This holds:
      1. the region exists once, outside #root, role=status / aria-live=polite, and takes no space;
      2. an arcade engine's clue is said as it appears, word for word what the screen shows
-        (typeBlaster, spellScene) — never more than the screen;
+        (typeBlaster, which took in Spell Scene on 4 Oct 2026) — never more than the screen;
      3. Word Quiz says "Question 1 of 10" and the question; a wrong pick adds only the miss line;
         the next question is said afresh;
      4. a typed game says which word and what to do — and never the word it is asking for;
@@ -35,7 +35,9 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   /* 2 */
   await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r)));
   const arc = [];
-  for (const k of ['typeBlaster', 'spellScene']) {
+  /* 4 Oct 2026: Spell Scene was merged into Type Blaster (games spec §4.5) and left the arcade, so
+     the clue is checked on the one game that carries both now. */
+  for (const k of ['typeBlaster']) {
     await pg.evaluate(g => app.arcadePlay(g, { fromMenu: true }), k); await pg.waitForTimeout(2200);
     const r = await pg.evaluate(() => { const vis = e => e && e.getClientRects().length; const h = document.querySelector('#arc-host');
       const clue = [...h.querySelectorAll('.sg-cardmean, #ss-hint')].filter(vis).map(e => e.textContent.trim())[0] || '';

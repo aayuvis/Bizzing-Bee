@@ -55,7 +55,8 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
     ok(r.cols === vp.cols && r.n > 0 && r.n % r.cols === 0, `${T}: ${r.n} small tiles in ${r.cols} columns — every row full, no blank cells`);
     ok(r.gaps.every(g => g >= 0 && g <= 60), `${T}: no small tile is hollow (≤ three lines of slack) — words to Play button ${Math.max(...r.gaps)}px at most (${r.gaps.join(', ')})`);
     ok(r.strips === 0 && r.chips.length >= 1 && r.chips.every(a => /Word level for .+: \w+\. Tap for \w+/.test(a)), `${T}: the word level is one labelled chip per game, not a strip (${r.chips.length})`);
-    ok(r.best['Bee Grand Prix'] === 'Best 1,240' && r.best['Type Blaster'] === 'Best 87' && r.best['Word Snake'] === '' && r.best['Honeycomb Run'] === '' && !r.pressure,
+    /* 4 Oct 2026: Word Snake left the arcade (games spec §3.1); Honeycomb Run is the game with no best here */
+    ok(r.best['Bee Grand Prix'] === 'Best 1,240' && r.best['Type Blaster'] === 'Best 87' && r.best['Honeycomb Run'] === '' && !r.pressure,
       `${T}: a game's tile shows the child's own best where they have one (Grand Prix ${r.best['Bee Grand Prix'] || '—'}, Type Blaster ${r.best['Type Blaster'] || '—'}), none where they have not, and no "beat it" anywhere`);
     /* the chip really steps the level */
     const step = await pg.evaluate(() => { const ch = document.querySelector('.arc-lvl'); if (!ch) return null; const before = ch.textContent.trim(); ch.click(); return { before, after: (document.querySelector('.arc-lvl') || {}).textContent.trim() }; });
