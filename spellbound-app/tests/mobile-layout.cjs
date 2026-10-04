@@ -103,14 +103,17 @@ const CHILD = { name: 'Ravi', avatar: 'bee', coins: 240, pow: {}, age: 11,
     // ---- and no screen scrolls sideways ----
     const wide = await pg.evaluate(async () => {
       const out = {};
-      for (const nav of ['home', 'games', 'trail', 'coach', 'explore', 'collection']) {
+      /* vocab: its card's four buttons made #/vocab 391px wide on a 390px phone (audit v4 §4) */
+      for (const nav of ['home', 'games', 'trail', 'coach', 'explore', 'collection', 'vocab']) {
         app.setNav(nav); await new Promise(r => setTimeout(r, 900));
         out[nav] = document.documentElement.scrollWidth;
       }
       out.vw = innerWidth;
       return out;
     });
-    const sideways = Object.entries(wide).filter(([k, v]) => k !== 'vw' && v > wide.vw + 1);
+    /* against the width ASKED FOR, not innerWidth: an isMobile page that overflows widens its own
+       layout viewport to fit (innerWidth read 391 on a 390 phone), so v > innerWidth never fired */
+    const sideways = Object.entries(wide).filter(([k, v]) => k !== 'vw' && v > W + 1);
     ok(sideways.length === 0, W + 'px: no screen scrolls sideways'
       + (sideways.length ? ' — ' + sideways.map(([k, v]) => k + '=' + v).join(', ') : ''));
     ok(errs.length === 0, W + 'px: no page errors' + (errs.length ? ': ' + errs[0] : ''));

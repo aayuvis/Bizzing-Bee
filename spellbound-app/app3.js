@@ -3426,7 +3426,7 @@ const app = {
     clearGTimer(); bizzClose();
     const el=document.createElement('div'); el.className='bz-play'; _bizzEl=el;
     el.innerHTML='<div class="bz-top"><button class="bz-back" id="bz-back">← Arcade</button>'
-      +'<span class="bz-title">Who Wants to Be a Bizzillionaire</span></div>'
+      +'<span class="bz-title"><span class="bz-title-pre">Who Wants to Be a </span>Bizzillionaire</span></div>'
       +'<div class="bz-body"><div class="bz-stage"></div><div class="bz-ladder"></div></div>';
     document.body.appendChild(el);
     el.querySelector('#bz-back').onclick=bizzClose;
@@ -5437,7 +5437,7 @@ function viewVocab(){ const S=state; const c=active();
         ${w.sy?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${esc(w.sy)}</div>`:''}
         ${flip?back:`<div style="color:var(--muted);font-weight:700;font-size:13px;margin-top:22px">Tap to reveal the meaning ▾</div>`}
       </button>
-      <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
+      <div class="voc-nav" style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px">
         <button data-act="vocNav" data-arg="-1" style="padding:12px 20px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px;${i===0?'opacity:.4':''}">← Back</button>
         <button data-act="vocSayWord" style="height:44px;padding:0 14px;border-radius:12px;background:var(--chip);color:var(--accent);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',17)} Hear it</button>
         <button data-act="vocSayCard" title="Hear the word and its meaning" style="height:44px;padding:0 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px">${iconSVG('volume',15)} + meaning</button>

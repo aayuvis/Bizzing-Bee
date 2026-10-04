@@ -1170,6 +1170,23 @@
   .arc-play-rcard{background:var(--paper,#fff);border-radius:20px;padding:26px 30px;text-align:center;max-width:340px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
   .arc-play-av{margin-left:6px;width:30px;height:30px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.14);display:grid;place-items:center;flex-shrink:0}
   .arc-play-av svg,.arc-play-av img{width:100%;height:100%}
+  /* A GAME'S HEADER IS ONE LINE ON A PHONE (audit v4 §4). At 360–390px "← Arcade" broke after the
+     arrow and "Unscramble Stars" / "Who Wants to Be a Bizzillionaire" took two lines: nothing in the
+     bar was told not to wrap. The back button and the level chip keep their words whole, the name
+     takes what is left (ellipsis as a last resort), and the back button is a 44px target (P3). */
+  .arc-play-back,.bz-back{white-space:nowrap;flex-shrink:0}
+  .arc-play-name,.bz-title{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .arc-play-diff{white-space:nowrap;flex-shrink:0}
+  @media (max-width:520px){
+    .arc-play-top{gap:8px;padding:6px 10px}
+    .arc-play-back,.bz-back{min-height:44px;padding:0 12px;font-size:13.5px}
+    .arc-play-name{font-size:15px}
+    .arc-play-av{width:26px;height:26px;margin-left:0}
+    .arc-play-diff{padding:4px 9px;font-size:11px}
+    .bz-top{gap:9px;padding:8px 12px}
+    .bz-title{font-size:15.5px}
+    .bz-title-pre{display:none}
+  }
   /* a phone on its side has ~360px of height: the arcade bar becomes a thin strip so the
      game (the Grand Prix races sideways) gets nearly all of it */
   @media (orientation:landscape) and (max-height:560px) and (pointer:coarse){
@@ -1227,6 +1244,10 @@
   .arcm-go svg{width:20px;height:20px}
   /* Who Wants to Be a Bizzillionaire — money-ladder quiz overlay. */
   .bz-play{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#173a5c,#0c1f38 60%,#081627);color:#fff;display:flex;flex-direction:column;overflow:auto}
+  /* The Vocabulary card's four buttons (Back · Hear it · + meaning · Next) needed ~425px and made
+     #/vocab 391px wide on a 390px phone (audit v4 §4). On a phone they wrap into two full rows. */
+  .voc-nav>button{white-space:nowrap;justify-content:center;min-height:44px}
+  @media (max-width:520px){ .voc-nav{flex-wrap:wrap} .voc-nav>button{flex:1 1 auto} }
   .bz-top{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:12px 16px}
   .bz-back{color:#fff;font-weight:800;font-size:14px;background:rgba(255,255,255,.14);border:0;border-radius:9px;padding:8px 13px;cursor:pointer}
   .bz-title{font-family:var(--display);font-weight:800;font-size:17px}
