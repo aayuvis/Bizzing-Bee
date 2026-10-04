@@ -7404,10 +7404,32 @@ function ledgerWords(x,c){ c=c||active(); const why=String(x.why||'');
   return what; }
 function walletLines(c,n){ c=c||active(); try{ if(window.SB_DEMO) return []; const W=window.BZ_WALLET; if(!W) return [];
     return W.ledger(walletWho(c)).slice().sort((x,y)=>y.t-x.t).slice(0,n||30); }catch(e){ return []; } }
-function walletRowsHTML(c,n){ const L=walletLines(c,n);
+/* K9: ONE LINE PER SITTING, NOT PER COIN. Twenty right answers wrote twenty "+1 · a right answer"
+   lines and pushed everything else off the sheet. Earnings of the same kind from the same app in one
+   sitting (no gap over 20 minutes) fold into one line: "+13 · from 13 right answers". Spending, refunds
+   and the one-off move into the family wallet always stay lines of their own. The ledger itself is the
+   family drop-in's and is only read here. */
+const LEDGER_SITTING=20*60000;
+const LEDGER_MANY={ answer:k=>'from '+k+' right answers', stop:k=>'from '+k+' finished rounds', contest:k=>'from '+k+' contests', mastery:k=>'from '+k+' words mastered on two different days' };
+function walletGroups(c,n){ c=c||active(); const L=walletLines(c,2000); const out=[]; let sit=null, prevT=null;
+  for(const x of L){   /* newest first */
+    if(prevT==null || prevT-x.t>LEDGER_SITTING) sit={};   /* a new sitting */
+    prevT=x.t;
+    const why=String(x.why||''), can=x.n>0 && LEDGER_MANY[why];
+    const key=can?(x.a+'|'+why):null, g=key&&sit[key];
+    if(g){ g.n+=x.n; g.k++; g.old=x; continue; }
+    const row={ a:x.a, t:x.t, n:x.n, why, k:1, top:x, old:x }; out.push(row); if(key) sit[key]=row; }
+  return out.slice(0,n||30); }
+function walletRowWords(g,c){ if(g.k<2) return ledgerWords(g.top,c);
+  let what=LEDGER_MANY[g.why](g.k);
+  /* name the round only when the whole sitting came from one */
+  const a=ledgerWords(g.top,c), b=ledgerWords(g.old,c), i=a.indexOf(' — ');
+  if(i>0 && a===b) what+=a.slice(i);
+  return what; }
+function walletRowsHTML(c,n){ const L=walletGroups(c,n);
   if(!L.length) return `<p class="bz-empty"><span class="bz-empty-m">${mascotSVG('think')}</span>No coins yet. Every right answer pays one — they land here.</p>`;
   return `<ol class="bz-ledger">${L.map(x=>{ const plus=x.n>0; const app=SHOP_APP_LABEL[x.a]||x.a;
-    return `<li><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(ledgerWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
+    return `<li${x.k>1?` data-k="${x.k}"`:''}><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(walletRowWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
 const WALLET_FOR='Bizzing coins come from learning — right answers, finished rounds, contests and mastery — in every Bizzing app. They buy avatars, worlds and frames at fixed prices. Never lessons, and never real money.';
 function viewWalletSheet(){ if(!state.walletOpen) return ''; const c=active();
   return `<div class="bz-sheet-ov" data-act="closeWallet"><div class="bz-sheet" data-act="noop" data-trap="wallet" role="dialog" aria-modal="true" aria-label="Your Bizzing coins">

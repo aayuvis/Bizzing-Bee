@@ -13,7 +13,9 @@
      4. the 100-a-day cap holds;
      5. a bare number pays nothing, so an invented payout fails safe;
      6. Test coins and ?demo never write the family wallet; a plan grants no coins;
-     7. no call site anywhere passes an amount.
+     7. no call site anywhere passes an amount;
+     8. (audit v4 K9) the wallet history is one line per sitting — "+13 · from 13 right answers" —
+        while purchases and the one-off migration stay lines of their own.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/wallet-coins.cjs                  */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
@@ -124,6 +126,35 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     const today = BZ_WALLET.ledger('Ahana').filter(x => x.a === 'bee' && x.n > 0 && x.why !== 'migrated' && new Date(x.t).toDateString() === new Date().toDateString()).reduce((a, x) => a + x.n, 0);
     return { today, last: addCoins('answer') }; });
   ok(cap.today === 100 && cap.last === 0, `the day stops at 100 earned (${cap.today}), and the next right answer pays 0 (${cap.last})`);
+
+  /* ---- 8. the history is one line per sitting (audit v4 K9) ---- */
+  {
+    const now = Date.now(), M = 60000, L = [];
+    L.push({ a: 'bee', t: now - 300 * M, n: 250, why: 'migrated' });
+    for (let i = 0; i < 3; i++) L.push({ a: 'bee', t: now - 200 * M + i * M, n: 1, why: 'answer' });       // an earlier sitting
+    L.push({ a: 'bee', t: now - 120 * M, n: -120, why: 'avatar:panda' });                                  // a purchase, alone
+    for (let i = 0; i < 13; i++) L.push({ a: 'bee', t: now - 30 * M + i * M, n: 1, why: 'answer' });      // today's sitting…
+    L.push({ a: 'bee', t: now - 16 * M, n: 5, why: 'stop' });                                              // …with a finished round in it
+    L.push({ a: 'maths', t: now - 15 * M, n: 1, why: 'answer' });                                          // a sibling app: its own line
+    const coins = L.reduce((a, x) => a + x.n, 0);
+    const ctx = await b.newContext({ viewport: { width: 1000, height: 900 } });
+    await ctx.addInitScript(([s, w]) => { try { if (!localStorage.getItem('t_hist')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0');
+      localStorage.setItem('bizzing.wallet', JSON.stringify(w)); localStorage.setItem('t_hist', '1'); } } catch (e) {} },
+      [Object.assign({}, seed, { children: [Object.assign({}, seed.children[0], { walletWho: 'ahana', coins })] }), { v: 1, kids: { ahana: { coins, ledger: L } } }]);
+    const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+    await pg.goto('file://' + APP + '/index.html'); await pg.waitForTimeout(2500);
+    const h = await pg.evaluate(async () => { state.walletOpen = true; render(); await new Promise(r => setTimeout(r, 200));
+      const rows = [...document.querySelectorAll('.bz-sheet .bz-ledger li')].map(li => (li.querySelector('b').textContent + ' ' + li.querySelector('.bz-ledger-w').textContent).replace(/\s+/g, ' ').trim());
+      state.walletOpen = false; app.openShop('avatars'); await new Promise(r => setTimeout(r, 300));
+      const shop = [...document.querySelectorAll('.bz-hist .bz-ledger li')].length;
+      return { rows, shop, raw: BZ_WALLET.ledger('Ahana').length }; });
+    ok(h.rows[0] === '+1 a right answer' && h.rows[1] === '+5 finished a round' && h.rows[2] === '+13 from 13 right answers',
+      'the history folds a sitting\'s right answers into one line — "+13 from 13 right answers" — beside its finished round and a sibling app\'s own line (' + h.rows.slice(0, 3).join(' | ') + ')');
+    ok(/^−120 bought /.test(h.rows[3]) && h.rows[4] === '+3 from 3 right answers' && /^\+250 Bee coins moved/.test(h.rows[5]) && h.rows.length === 6,
+      'a purchase stands alone, an earlier sitting is its own line, and the move into the family wallet is never folded (' + h.rows.slice(3).join(' | ') + ')');
+    ok(h.shop === h.rows.length && h.raw === 20, `the Shop's history reads the same ${h.shop} lines, and the ledger itself is untouched (${h.raw} entries)`);
+    await ctx.close();
+  }
 
   await b.close();
   ok(!errs.length, errs.length ? 'page errors: ' + errs.slice(0, 3).join(' | ') : 'no page errors');
