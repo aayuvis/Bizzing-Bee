@@ -19,6 +19,12 @@
 (function () {
   'use strict';
   var DAY = 864e5;
+  /* THIS PAGE LOAD. Today's session is kept for the visit — leave #/feed and come back and it is the
+     same twenty — but a RELOAD is a new visit and gets a new session, built with everything shown
+     earlier today sinking (the engine's seen-this-week rule), so it is different cards until the
+     pool runs out (audit v4, V4: a reload repeated 21 of 21). What was paid stays paid: c.feed.paid
+     is per child and per card, and answer() never pays a card twice. */
+  var VISIT = Date.now();
   var play = {};                 /* this visit's answers: id -> { st: 'right'|'wrong'|'shown', o } */
   var rows = {};                 /* id -> its index row, from the level indexes loaded so far */
 
@@ -82,6 +88,28 @@
         }
       }
     } catch (e) {}
+    /* EVERY STOP SAYS WHICH IT IS (audit v4, V5: 16 of 20 cards read "For the Meadow"). A card from
+       another stop of the child's region, or from any stop they have finished, names that stop —
+       and says only what is true of it: finished, further along this road, or simply in the region.
+       Light weights, so the two signals above and a slipped word still lead. */
+    try {
+      var T2 = window.SB_TRAIL, M = D(), dn = (c.trail || {}).done || {}, road = [];
+      if (T2 && M) {
+        T2.honey.acts.forEach(function (a) { road = road.concat(a.units); });
+        var at = nx && nx.kind === 'unit' ? road.indexOf(nx.arg) : -1;
+        T2.honey.units.forEach(function (u) {
+          var lv = M.units[u.id]; if (!lv || lv > L) return;
+          var t2 = String(u.title || '').split(' — ')[0];
+          if (dn[u.id]) out.push({ topic: 'stop:' + u.id, w: 1, why: 'From “' + t2 + '”, a stop you finished' });
+          else if (lv === L) out.push({ topic: 'stop:' + u.id, w: 0.5, why: (at >= 0 && road.indexOf(u.id) > at ? 'Further along this road: “' : 'In ' + levelName(L) + ': “') + t2 + '”' });
+        });
+      }
+    } catch (e) {}
+    /* a word the child has spelled right before (the mastery record, c.mast) — seen again on purpose */
+    try {
+      var MS = c.mast || {};
+      Object.keys(MS).forEach(function (k) { var r = MS[k]; if (r && r.ok > 0) out.push({ topic: 'word:' + k, w: 2, why: 'A word you have spelled right before' }); });
+    } catch (e) {}
     return out;
   }
   var WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -110,6 +138,8 @@
   function extra(it) {
     if (KIND_WHY[it.kind]) return { s: 0.5, why: KIND_WHY[it.kind] };
     if (it.kind === 'play' && it.level == null) return { s: 0.5, why: 'A word story' };
+    /* a question about a word that lives in a region, with no stop of its own to name */
+    if (it.kind === 'play') return { s: 0.01, why: 'A question on a word from ' + levelName(it.level) };
     return null;
   }
 
@@ -119,11 +149,11 @@
     var nx = null; try { nx = SB_SHELL.nextStep(); if (nx && !nx.ready) nx = null; } catch (e) {}
     var L = levelOf(nx), band = bandOf(c), due = dueOf(c, now);
     var sig = JSON.stringify([L, nx && nx.arg, band, Object.keys(due).sort()]);
-    if (F.day === day && F.sig === sig && F.ids && F.ids.length) return F.ids;
+    if (F.day === day && F.sig === sig && F.vis === VISIT && F.ids && F.ids.length) return F.ids;
     var items = []; groupsFor(L).forEach(function (g) { items = items.concat(decoded(g) || []); });
     var list = BZ_FEED.feedFor({ items: items, band: band, now: now, signals: signals(c, nx, L), due: due, seen: F.seen,
       extra: extra, level: L, levelName: levelName });
-    F.day = day; F.sig = sig;
+    F.day = day; F.sig = sig; F.vis = VISIT;
     F.ids = list.map(function (x) { return { id: x.id, why: x.why, tier: x.tier, g: rows[x.id].g }; });
     list.forEach(function (x) { F.seen[x.id] = day; });
     /* the record of what was shown is kept a month, so it never grows without end */

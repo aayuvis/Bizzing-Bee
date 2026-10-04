@@ -140,6 +140,13 @@ window.SB_WORDS_PATCH = function () {
    'snot', 'tits', 'twit', 'twits'
   ].forEach(function (w) { REMOVE[nk(w)] = 1; });
 
+  /* 1f) The owner's call on the words under review, 4 Oct 2026: deleted, with app3's CORE_STRIKE.
+     The served shards no longer hold them at all (tools/strike-served.cjs); listed here so a
+     regenerated shard cannot bring one back. `retard` was repaired in DEF until today. */
+  ['retard', 'retards', 'idiots', 'idiotic', 'moronic', 'imbeciles', 'cretins', 'morons',
+   'idiotically', 'imbecilic', 'cretinous', 'cretinism'
+  ].forEach(function (w) { REMOVE[nk(w)] = 1; });
+
   /* 1e) RACIST AND ANTISEMITIC TERMS, struck 5 Sep 2026. Most carry glosses
      that confess what they are — "(ethnic slur)", "now considered offensive" —
      and were served anyway. The antisemitic compounds (Jew-free, Jewless,
@@ -200,7 +207,16 @@ window.SB_WORDS_PATCH = function () {
     heinously:  'In the story the villain schemed so heinously that the whole town cheered when the hero stopped him.',
     viscerally: 'The fans reacted viscerally, gasping all at once at the last-second goal.',
     sensitively:'The teacher sensitively helped the nervous new student feel welcome.',
-    allegedly:  'The puppy allegedly buried the missing sock somewhere in the garden.'
+    allegedly:  'The puppy allegedly buried the missing sock somewhere in the garden.',
+    /* was "During hysterical conditions various functions of the human body are disordered." */
+    hysterical: 'The crowd grew hysterical with excitement when the band finally walked onto the stage.',
+    /* unkind or inaccurate sentences under the 4 Oct rewrites */
+    dumbness:   'The dumbness of the plan became clear the moment the paper boat began to sink.',
+    bedlamite:  'In the old novel, the villagers unkindly called the wandering stranger a bedlamite.',
+    gentile:    'Jewish and gentile neighbours worked side by side to clean up the park.',
+    gentiles:   'The synagogue opened its doors to Jews and gentiles alike for the summer concert.',
+    psychotic:  'The doctor explained that with the right care, a psychotic illness can often be treated.',
+    arthritic:  'Warm water soothed her arthritic knees after the long walk.'
   });
 
   // 3) Rewrite spelling-leak definitions (target word must NOT appear in the definition text).
@@ -280,7 +296,6 @@ window.SB_WORDS_PATCH = function () {
     gyp: "a short form of gypsum, the soft mineral used to make plaster",
     spick: "spick and span means perfectly clean and tidy",
     nance: "a surname; also an old dialect word for a fussy manner",
-    retard: "to slow something down or hold back its progress",
     ass: "a donkey; a patient hoofed animal like a small, long-eared horse",
     butt: "the thicker or blunter end of a tool or weapon; also, the target of a joke",
     bloody: "covered or stained with blood",
@@ -392,7 +407,44 @@ window.SB_WORDS_PATCH = function () {
     sufficience:   'the state of having as much as is needed; enough of something.',
     conjecture:    'an opinion or guess formed on little or no proof; to guess from scanty evidence.',
     lubricate:     'to apply oil or grease so parts slide and move smoothly with less friction.',
-    empty:         'holding nothing inside; containing no contents at all.'
+    empty:         'holding nothing inside; containing no contents at all.',
+    /* KEPT AND REWRITTEN, the owner's call, 4 Oct 2026 — the same text as app3's CORE_FIX block of
+       that name, so the served card and the library card agree. The shards carry it at rest too. */
+    autism: 'a lifelong developmental difference that affects how a person communicates and experiences the world',
+    autistic: 'having a lifelong developmental difference that affects how a person communicates and experiences the world',
+    schizophrenia: 'a serious long-term mental illness that can change how a person thinks, feels and sees what is real',
+    schizophrenic: 'a person who lives with a serious long-term mental illness that can change how they think, feel and see what is real',
+    heathen: 'an old word, often used unkindly, for someone who does not follow a widely held religion, as seen by people who do',
+    heathens: 'an old word, often used unkindly, for people who do not follow a widely held religion, as seen by people who do',
+    infidel: 'an old word, often used unkindly, for someone who does not follow a particular religion, usually the speaker’s own',
+    infidels: 'an old word, often used unkindly, for people who do not follow a particular religion, usually the speaker’s own',
+    lunatic: 'an informal and often unkind word for someone who behaves in a wild, foolish or reckless way',
+    lunatics: 'an informal and often unkind word for people who behave in a wild, foolish or reckless way',
+    maniac: 'an informal and often unkind word for someone who behaves in a wild or reckless way; also someone who is extremely keen on something',
+    insane: 'wildly foolish or unreasonable (an informal use); it is unkind when used to describe a person who is ill',
+    pygmy: 'a kind of animal or plant that is much smaller than the usual kind',
+    dumb: 'not able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolish',
+    hysteria: 'wild, uncontrollable fear or excitement, often spreading through a crowd',
+    hysterical: 'overcome by wild, uncontrollable feeling such as fear or excitement; informally, also extremely funny',
+    dumbness: 'the state of not being able to speak (an old meaning, now considered offensive); in everyday talk, it also means foolishness',
+    madman: 'an informal and often unkind word for a man who behaves in a wild or reckless way',
+    madmen: 'an informal and often unkind word for men who behave in a wild or reckless way',
+    maniacs: 'an informal and often unkind word for people who behave in a wild or reckless way; also people who are extremely keen on something',
+    lunacy: 'wild foolishness; an old word for madness, from a belief that the moon could affect people’s minds',
+    bedlamite: 'an old, unkind word for a person thought to be mad; it comes from the name of a London hospital for people with mental illness',
+    gentile: 'a person who is not Jewish',
+    gentiles: 'people who are not Jewish',
+    psychotic: 'a person who has psychosis, an illness that can make it hard to tell what is real from what is not',
+    paranoid: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+    paranoiac: 'a person who has paranoia, a condition that makes someone feel, without good reason, that others want to harm them',
+    leper: 'a person who has leprosy; the word is now considered hurtful, and “a person with leprosy” is preferred',
+    lepers: 'people who have leprosy; the word is now considered hurtful, and “people with leprosy” is preferred',
+    lazar: 'an old word for a person who has leprosy',
+    arthritic: 'a person who has arthritis, a condition that makes the joints painful and stiff',
+    paretic: 'a person who has paresis, a weakness or partial loss of movement in part of the body',
+    igloo: 'a dome-shaped shelter built from blocks of snow, traditionally by the Inuit',
+    tupek: 'tent that is an Inuit summer dwelling',
+    tupik: 'tent that is an Inuit summer dwelling'
   });
 
   var removed = 0, sPatched = 0, dPatched = 0;
@@ -404,5 +456,26 @@ window.SB_WORDS_PATCH = function () {
     if (PRON[w]) { e.p = PRON[w]; }
   }
   // (debug) window.__wordsPatch = {removed:removed, sPatched:sPatched, dPatched:dPatched};
+};
+/* WORDS UNDER REVIEW — the ONE place a word goes while the owner decides what happens to it (delete
+   it, or keep it with a rewritten gloss). A held word stays spellable and searchable, but nothing
+   PROMOTES it: My Feed builds no card on it (tools/build-feed.cjs) and the word of the hour never
+   picks it (app3's wohPool). tests/struck-words.cjs holds both, and holds a decided word to its
+   decision: a deleted one absent from every served store, a rewritten one off its old gloss.
+   Empty since 4 Oct 2026, when the owner decided the v4 audit's list (block 1f above, and app3's
+   CORE_STRIKE / CORE_FIX blocks of that date). */
+window.SB_WORDS_HELD = [];
+/* A GLOSS FIT TO PUT ON A CARD — the mechanical faults tools/clean-glosses.cjs removes, as a test: a
+   "(domain)" label in front, a sentence with its subject cut off ("is an outfit…"), WordNet's
+   `quote' marks, a quotation's credit left in ("…; - Morris Fishbein"), or too short to be a gloss.
+   Given the headword too, a meaning that spells its own word (as a whole word) fails — it gives the
+   answer away.
+   Read by tools/build-feed.cjs (no card is cut from a gloss that fails) and app3's wohPool. */
+window.SB_GLOSS_OK = function (d, w) {
+  d = String(d == null ? '' : d).trim();
+  if (d.length < 3) return false;
+  if (/^\(/.test(d) || /^(is|are)\s/i.test(d) || /`/.test(d) || /;\s*-\s*[A-Z]/.test(d)) return false;
+  if (w && new RegExp('\\b' + String(w).replace(/[^a-z0-9]/gi, '\\$&') + '\\b', 'i').test(d)) return false;
+  return true;
 };
 window.SB_WORDS_PATCH();
