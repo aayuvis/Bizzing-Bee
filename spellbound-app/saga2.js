@@ -1814,14 +1814,14 @@
   const GP_COMBO=3;                  // three Clean in a row: a free Turbo (standard strength)
   /* THE CAST IS THE MOCK BEE'S (mockbee.js BOTS) — one hall of rivals across both flagships.
      A rival never wears the child's own face: `alt` stands in, exactly as faceOf() does there.
-     pace is the share of the difficulty's rival speed; pw is how often they turn a box into a
-     power-up (deterministic: every 1/pw boxes, never a dice roll). */
+     pw is how often they turn a box into a power-up (deterministic: every 1/pw boxes, never a
+     dice roll); their pace is their place on the grid (GP_GRID order, the engine's spread). */
   const GP_CAST={
-    pixel:{name:'Pip',alt:'germy',pace:0.985,pw:0.40,kart:'kart-rocket',col:'#E5484D'},  koi:{name:'Nova',alt:'luna',pace:0.97,pw:0.50,kart:'kart',col:'#3B93D6'},
-    beaker:{name:'Rafi',alt:'atom',pace:0.995,pw:0.50,kart:'kart-buggy',col:'#2FB98A'},   panda:{name:'Suki',alt:'neko',pace:0.975,pw:0.55,kart:'kart-cruiser',col:'#8B63D6'},
-    comet:{name:'Dax',alt:'rocket',pace:1.0,pw:0.45,kart:'kart-red',col:'#F0803C'},       astro:{name:'Mira',alt:'saturn',pace:0.99,pw:0.60,kart:'kart-rocket',col:'#EC6BB0'},
-    scopey:{name:'Theo',alt:'robo',pace:0.965,pw:0.65,kart:'kart',col:'#5A6B8C'},        melody:{name:'Ines',alt:'fae',pace:0.995,pw:0.60,kart:'kart-cruiser',col:'#C9A227'},
-    samurai:{name:'Kwame',alt:'ninja',pace:1.0,pw:0.60,kart:'kart-red',col:'#2E86D1'},    goldlegend:{name:'Vesper',alt:'crystal',pace:1.0,pw:0.70,kart:'kart-buggy',col:'#B8860B'} };
+    pixel:{name:'Pip',alt:'germy',pw:0.24,kart:'kart-rocket',col:'#E5484D'},  koi:{name:'Nova',alt:'luna',pw:0.30,kart:'kart',col:'#3B93D6'},
+    beaker:{name:'Rafi',alt:'atom',pw:0.30,kart:'kart-buggy',col:'#2FB98A'},   panda:{name:'Suki',alt:'neko',pw:0.33,kart:'kart-cruiser',col:'#8B63D6'},
+    comet:{name:'Dax',alt:'rocket',pw:0.27,kart:'kart-red',col:'#F0803C'},       astro:{name:'Mira',alt:'saturn',pw:0.36,kart:'kart-rocket',col:'#EC6BB0'},
+    scopey:{name:'Theo',alt:'robo',pw:0.39,kart:'kart',col:'#5A6B8C'},        melody:{name:'Ines',alt:'fae',pw:0.36,kart:'kart-cruiser',col:'#C9A227'},
+    samurai:{name:'Kwame',alt:'ninja',pw:0.36,kart:'kart-red',col:'#2E86D1'},    goldlegend:{name:'Vesper',alt:'crystal',pw:0.42,kart:'kart-buggy',col:'#B8860B'} };
   const GP_GRID={easy:['pixel','koi','beaker'], medium:['comet','astro','panda','scopey'], hard:['samurai','melody','astro','comet'], champ:['goldlegend','samurai','melody','astro']};
   /* THE CUP: four races in one sitting, each track's box words from one origin family (they are
      the families Word Forge builds on). The fourth track is ONE entry here — the owner chose the
@@ -1890,6 +1890,9 @@
     try{ if(typeof window.nextWords==='function') (window.nextWords(gpKid(),n+seen.size,{purpose:'gate',origin:org?org.origin:undefined})||[]).forEach(w=>{ if(out.length<n) take(w); }); }catch(e){}
     if(out.length<n){ let P=[]; try{ P=pickFresh(gameWordsD(),600)||[]; }catch(e){ P=[]; }
       if(org) P.forEach(w=>{ if(out.length<n&&org.re.test((w&&w.o)||'')) take(w); });   // the Cup's family first…
+      /* …one tier up for the family if the level is short of it (§1.1 tier +1): an eight-year-old's
+         band holds few Greek words, and a Greek track of English ones is not a Greek track */
+      if(org&&out.length<n){ try{ const [lo,hi]=diffRange(gpKid()); pickFresh(corpusSlice(lo,Math.min(9,hi+1),1500),1500).forEach(w=>{ if(out.length<n&&org.re.test((w&&w.o)||'')) take(w); }); }catch(e){} }
       P.forEach(w=>{ if(out.length<n) take(w); }); }                                  // …then anything at the level
     return out; }
   W().SB_GP.drawWords=gpDrawWords;
@@ -1987,12 +1990,13 @@
        just, hard wants a lift and champ wants the brake. Hands-off, medium is on the grass
        at the first bend (4.7s); easy gives a small child about thirteen seconds. */
     /* §2.6: two laps, a lap of len bands with `zones` box zones, `card` seconds on the spelling
-       clock. `rival` is the field's pace as a share of top speed (calibrated by the bots in
+       clock. The lengths are §2.6's ×1.2 (1600/2000/2300/2600 → 1900/2400/2750/3100): at §2.6's
+       own numbers a Medium race took 2.7 minutes for a child-like driver, and GP12 asks 3–4. `rival` is the field's pace as a share of top speed (calibrated by the bots in
        tests/gp-race.cjs — GP1/GP2); `pull` stays LAST on each line (arcade-geometry reads it). */
-    const CFG=calmCFG({easy:{len:1600,laps:2,zones:4,rivals:3,rival:0.91,haz:0.014,card:14,pull:0.33},
-               medium:{len:2000,laps:2,zones:5,rivals:4,rival:0.94,haz:0.026,card:12,pull:0.46},
-               hard:{len:2300,laps:2,zones:5,rivals:4,rival:0.89,haz:0.04,card:10,pull:0.52},
-               champ:{len:2600,laps:2,zones:6,rivals:4,rival:0.86,haz:0.055,card:9,pull:0.57}}[diff]);
+    const CFG=calmCFG({easy:{len:1900,laps:2,zones:4,rivals:3,rival:0.91,haz:0.014,card:14,pull:0.33},
+               medium:{len:2400,laps:2,zones:5,rivals:4,rival:0.95,haz:0.026,card:12,pull:0.46},
+               hard:{len:2750,laps:2,zones:5,rivals:4,rival:0.915,haz:0.04,card:10,pull:0.52},
+               champ:{len:3100,laps:2,zones:6,rivals:4,rival:0.885,haz:0.055,card:9,pull:0.57}}[diff]);
     /* the whole track — zones, props, hazards, boxes — comes from ONE seeded stream: the same
        track every time you race it (a ghost lap needs that), and a test can race twenty */
     const SEED=opts.seed!=null?(opts.seed>>>0):GP_SEED(opts.scene+'|'+diff);
@@ -2176,7 +2180,9 @@
     const faceFor=id=>{ const f=facesMB&&facesMB.find(x=>x.id===id); if(f&&f.face) return f.face; return id===myAv?GP_CAST[id].alt:id; };
     const rivals=[];
     (GP_GRID[diff]||GP_GRID.medium).slice(0,CFG.rivals).forEach((id,i)=>{ const P=GP_CAST[id];
-      rivals.push({id, z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*P.pace*(window.SB_CALM?0.92:1), pw:P.pw, name:P.name, col:P.col, face:faceFor(id), kart:P.kart,
+      /* the field is SPREAD (1, .975, .95, .925 of the difficulty's pace, in grid order): bunched
+         within 3.5% the draft welded them into one pack, and a race was either won or lost to it */
+      rivals.push({id, z:segLen*6*(i+1), x:(i-1.2)*0.5, spd:maxV*CFG.rival*(1-0.025*i)*(window.SB_CALM?0.92:1), pw:P.pw, name:P.name, col:P.col, face:faceFor(id), kart:P.kart,
         spin:0, slow:0, shield:0, boostT:0, boostMul:1, fin:false, finT:0, ph:(i*0.37)%1, zk:0, lastPm:0, v:0}); });
 
     /* ---- power-ups: spell a box to EARN one, tap the slot (or Space) to FIRE it ---- */
@@ -2487,7 +2493,7 @@
     /* _vis is written only for bands inside this frame's draw range, so a band the camera
        jumped past keeps last time's true. Anything placed by band (rivals, hazards, boxes)
        checks the band was visited THIS frame, or a jump leaves ghosts drawn at old positions. */
-    let _frameN=0;
+    let _frameN=0, _ghostN=0;
     const LINE_ON=diff==='easy';
     function draw(){ _frameN++;
       drawBG();
@@ -2645,7 +2651,7 @@
         if(A&&B[0]>=A[0]){ const f2=gi-i0, gz=(A[0]+(B[0]-A[0])*f2)*segLen, gx=A[1]+(B[1]-A[1])*f2, si=Math.floor(gz/segLen)%segs.length, seg=segs[si];
           if(seg&&seg._vis&&seg._vf===_frameN){ const f=(gz-si*segLen)/segLen, a=seg.p1.camera, b=seg.p2.camera, cz2=a.z+(b.z-a.z)*f;
             if(cz2>camDepth){ const sc=camDepth/cz2, sx=Wd/2+sc*(a.x+(b.x-a.x)*f)*Wd/2+sc*roadW*Wd/2*gx, sy=horizonY-sc*(a.y+(b.y-a.y)*f)*Ht/2;
-              order.push({y:sy,scale:sc,sx,sy,t:'ghost',clip:seg._clip,far:seg._far}); } } } }
+              order.push({y:sy,scale:sc,sx,sy,t:'ghost',clip:seg._clip,far:seg._far}); _ghostN++; } } } }
       order.sort((a,b)=>a.y-b.y);
       order.forEach(o=>{ if(o.t!=='prop' && o.t!=='strip' && (o.far||0)>95) return;   // beyond this they are sub-pixel; props carry on in the far loop
         const hw=o.scale*roadW*Wd/2;            // the road's half-width at this depth, px
@@ -2877,7 +2883,7 @@
     let ghost=null, gSamp=[], gBest=null, gAcc=0;
     const GKEY=opts.scene+'|'+diff;
     try{ ghost=((window.SB_STORE&&SB_STORE.getJSON('gpGhost',{}))||{})[GKEY]||null; }catch(e){ ghost=null; }
-    function update(dt){ raceT+=dt; lapT+=dt;
+    function update(dt){ raceT+=dt; lapT+=dt; if(!held) renderHold();   // the slot's ghost follows your place (a DOM write only when it changes)
       if(bot&&bot.drive) botDrive(dt);
       boostT=Math.max(0,boostT-dt); if(boostT===0) boostMul=1; shieldT=Math.max(0,shieldT-dt); spinFlashT=Math.max(0,spinFlashT-dt);
       pSpinT=Math.max(0,pSpinT-dt); pSlowT=Math.max(0,pSlowT-dt);
@@ -3065,7 +3071,7 @@
     if(opts.autoGo){ intro.remove(); countT=1.0; countFrom=1.0; mode='count'; }
     renderHold();
     if(window.SB_DEBUG) window._race={ state:()=>({pos,TOTAL,trackLen,lap,mode,held:held&&held.id,full:!!(held&&held.full),slot:holdBtn.dataset.p||'',met,right,clean,combo:gpCombo,earned:earned.slice(),used:used.slice(),
-      drivePts,cleanBends,drifts,driftT,raceT,lapT,lapTimes:lapTimes.slice(),hitsOnMe:hitsOnMe.slice(),blocked,diff,scene:opts.scene,seed:SEED,word:curW&&curW.w,drawDist,fps:Math.round(_fps),boost:[boostT,boostMul],shieldT,pSpinT,pSlowT,ghost:!!ghost,place:1+rivals.filter(r=>r.z>pos).length,v,over,land:LAND,port:PORT,size:[Wd,Ht],hz:horizonY,rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
+      drivePts,cleanBends,drifts,driftT,raceT,lapT,lapTimes:lapTimes.slice(),hitsOnMe:hitsOnMe.slice(),blocked,diff,scene:opts.scene,seed:SEED,word:curW&&curW.w,drawDist,fps:Math.round(_fps),boost:[boostT,boostMul],shieldT,pSpinT,pSlowT,ghost:!!ghost,ghostDrawn:_ghostN,paint:PAINT,trail:TRAILC,cup:CUP?{i:CUP.i,pts:CUP.pts}:null,origin:ORG?ORG.origin:null,place:1+rivals.filter(r=>r.z>pos).length,v,over,land:LAND,port:PORT,size:[Wd,Ht],hz:horizonY,rivScr:rivals.map(r=>r._sy==null?null:[r._sx,r._sy,r.z]),x:playerX,push,drift:push,steer,camLag,yaw:yawS,puffs:parts.length,kart:{x:_kartPx,y:_kpy,w:_kpw},join:_join&&{x:_join.x,y:_join.y,w:_join.w},dpr,screenX:_kartPx,mid:Wd/2,braking,vf:v/maxV,
       curveAhead:(function(){ const i=Math.floor(pos/segLen); let c=0;
         for(let k=6;k<26;k++){ const g=segs[(i+k)%segs.length]; if(g) c+=g.curve||0; } return +(c/20).toFixed(2); })()}),
       /* the size of everything, in road half-widths — what tests/gp-scale.cjs audits */
