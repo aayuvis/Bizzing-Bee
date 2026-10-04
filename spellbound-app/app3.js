@@ -2511,9 +2511,11 @@ const app = {
   cloudAdd:(i)=>{ const row=(state.cloudList||[])[+i]; if(!row) return;
     const nEl=document.getElementById('cldn-'+i), aEl=document.getElementById('clda-'+i);
     const nm=((nEl&&nEl.value)||'').trim()||'Speller';
-    const age=Math.max(4,Math.min(18,+((aEl&&aEl.value)||9)||9));
+    /* an age RANGE, as onboarding and Settings ask (AGE_BANDS): c.ageBand is the value of record
+       and c.age its midpoint (setAgeBand) — this sheet used to take an exact age in a number box */
+    const band=(AGE_BANDS.find(b=>b.k===((aEl&&aEl.value)||''))||bandForAge(9)).k;
     if((state.children||[]).some(c=>c.cid===row.row.id)){ flash('That speller is already on this device'); return; }
-    const kid=Object.assign({}, row.child, {name:nm, age:age});
+    const kid=Object.assign({}, row.child, {name:nm}); setAgeBand(kid, band);
     state.children=(state.children||[]).concat([kid]); save();
     flash(esc(nm)+' restored'); set({cloudSheet:null, cloudList:null}); },
   /* Deleting a speller. COPPA gives a parent the right to delete their child's
@@ -12486,12 +12488,12 @@ function viewCloudSheet(){ const S=state; const m=S.cloudSheet;
                 ${here?'<span style="font-size:12px;font-weight:800;color:var(--muted)">On this device</span>':''}</div>
               ${here?'':`<div style="display:flex;gap:8px;flex-wrap:wrap">
                 <input id="cldn-${i}" placeholder="First name or nickname" style="flex:1;min-width:140px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600;outline:none">
-                <input id="clda-${i}" type="number" min="4" max="18" value="9" aria-label="Age" style="width:74px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600;outline:none">
+                <select id="clda-${i}" aria-label="Age range" style="min-height:44px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;font-weight:600">${AGE_BANDS.map(b=>`<option value="${b.k}"${b.k===bandForAge(9).k?' selected':''}>Ages ${b.n}</option>`).join('')}</select>
                 <button data-act="cloudAdd" data-arg="${i}" style="padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px">Restore</button></div>`}
             </div>`; }).join(''));
     return wrap(`
       <div style="font-family:var(--display);font-weight:800;font-size:19px;margin-bottom:4px">Restore a speller</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px">Their progress is on your account. Their <b style="color:var(--text)">name and age were never uploaded</b>, so add those here — they stay on this device.</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px">Their progress is on your account. Their <b style="color:var(--text)">name and age range were never uploaded</b>, so add those here — they stay on this device.</div>
       ${body}${err}
       <button data-act="closeCloud" style="width:100%;padding:12px;border-radius:12px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13.5px;margin-top:4px">Done</button>`,true);
   }
