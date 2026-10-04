@@ -192,7 +192,7 @@ const wallet = pg => pg.evaluate(() => { try { return BZ_WALLET.balance(walletWh
       const minH = keys.length ? Math.min(...keys.map(x => x.getBoundingClientRect().height)) : 0;
       const w = _maze.word(); const find = ch => keys.find(x => (x.dataset.k || x.textContent || '').trim().toLowerCase() === ch);
       for (const ch of w) { const bt = find(ch); if (bt) bt.click(); }
-      const ent = keys.find(x => /enter/i.test(x.dataset.k || x.textContent || '')); if (ent) ent.click();
+      const ent = keys.find(x => x.dataset.k === '⏎' || /enter/i.test(x.getAttribute('aria-label') || x.dataset.k || x.textContent || '')); if (ent) ent.click();
       await _U(() => _maze.state().gates[0].open, 2000);
       return { n: keys.length, minH, bad: bad.length, open: _maze.state().gates[0].open,
         padBack: !!document.querySelector('#sg-dpad') && document.querySelector('#sg-dpad').getClientRects().length > 0 }; });

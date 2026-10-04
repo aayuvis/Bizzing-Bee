@@ -24,6 +24,7 @@
 const { chromium } = require('playwright');
 const path = require('path');
 const { booted, until } = require('./lib/wait.cjs');
+const SC = require('./lib/stage-check.cjs');
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
 const CHROME = process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 let fails = 0;
@@ -73,49 +74,16 @@ async function bot(pg, kind) {
   }, kind);
 }
 
-/* T14 / T15 read the real pixels: the screenshot is decoded back in the page */
+/* T14 / T15 · the shared stage checks (tests/lib/stage-check.cjs) — the same measured rules every
+   game on SGUI.stage is held to — plus this game's own: the cannon on the centre line and the
+   play scene the biggest thing on the stage */
 async function stageCheck(pg, label) {
-  const box = await pg.evaluate(() => { const r = document.querySelector('#arc-host').getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; });
-  const png = (await pg.screenshot({ clip: box })).toString('base64');
-  const px = await pg.evaluate(async b64 => {
-    const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
-    const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height; const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0);
-    const d = cx.getImageData(0, 0, cv.width, cv.height).data, W = cv.width, H = cv.height, B = 8;
-    let white = 0, black = 0; for (let i = 0; i < d.length; i += 4) { if (d[i] >= 250 && d[i + 1] >= 250 && d[i + 2] >= 250) white++; else if (d[i] <= 5 && d[i + 1] <= 5 && d[i + 2] <= 5) black++; }
-    const bw = Math.floor(W / B), bh = Math.floor(H / B), flat = new Array(bw * bh).fill(null);
-    for (let by = 0; by < bh; by++) for (let bx = 0; bx < bw; bx++) { let mn = [255, 255, 255], mx = [0, 0, 0], s = [0, 0, 0];
-      for (let y = by * B; y < by * B + B; y++) for (let x = bx * B; x < bx * B + B; x++) { const i = (y * W + x) * 4;
-        for (let k = 0; k < 3; k++) { const v = d[i + k]; if (v < mn[k]) mn[k] = v; if (v > mx[k]) mx[k] = v; s[k] += v; } }
-      if (mx[0] - mn[0] <= 3 && mx[1] - mn[1] <= 3 && mx[2] - mn[2] <= 3) flat[by * bw + bx] = s.map(v => v / (B * B)); }
-    /* a region is ONE colour: it grows from a seed block while each block stays within 6 (sum of
-       channels) of the SEED — so a painted gradient, which drifts, is never one flat region */
-    const seen = new Uint8Array(bw * bh); let big = 0;
-    for (let i = 0; i < flat.length; i++) { if (!flat[i] || seen[i]) continue; let n = 0; const st = [i]; seen[i] = 1; const s0 = flat[i];
-      while (st.length) { const j = st.pop(); n++; const x = j % bw, y = (j - x) / bw;
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= bw || ny >= bh) continue; const k = ny * bw + nx;
-          if (seen[k] || !flat[k]) continue; if (Math.abs(flat[k][0] - s0[0]) + Math.abs(flat[k][1] - s0[1]) + Math.abs(flat[k][2] - s0[2]) > 6) continue; seen[k] = 1; st.push(k); } }
-      big = Math.max(big, n); }
-    return { flat: big / (bw * bh), white: white / (W * H), black: black / (W * H) };
-  }, png);
-  ok(px.flat <= 0.06, `T14 ${label}: largest flat-colour region ${(px.flat * 100).toFixed(1)}% of the stage (≤ 6%)`);
-  ok(px.white <= 0.02 && px.black <= 0.02, `T14 ${label}: pure white ${(px.white * 100).toFixed(2)}%, pure black ${(px.black * 100).toFixed(2)}% (each ≤ 2%)`);
-  const g = await pg.evaluate(() => { const R = e => e && e.getBoundingClientRect(); const host = R(document.querySelector('#arc-host'));
-    const L = R(document.querySelector('#tb-sh')), Rt = R(document.querySelector('.tb-score')), sc = R(document.querySelector('#tb-scene')), can = R(document.querySelector('#tb-cannon'));
-    const ttl = R(document.querySelector('#tb-prog'));
-    const ov = document.querySelector('.arc-play'); const hostEl = document.querySelector('#arc-host');
-    const stg = R(hostEl.firstElementChild);
-    const ctrls = [...document.querySelectorAll('#arc-host button')].filter(b => b.getClientRects().length && getComputedStyle(b).visibility !== 'hidden' && getComputedStyle(b).pointerEvents !== 'none');   // a blasted glitch mid-explosion is not a control
-    const covered = ctrls.filter(b => { const r = b.getBoundingClientRect(); if (r.bottom > innerHeight + 0.5) return true;
-      const el = document.elementFromPoint(Math.min(innerWidth - 1, r.left + r.width / 2), Math.min(innerHeight - 1, r.top + r.height / 2)); return !el || !(b === el || b.contains(el)); }).map(b => b.id || b.className || b.textContent);
-    return { statW: [L.width, Rt.width], statGut: [L.left - host.left, host.right - Rt.right], sceneGut: [sc.left - host.left, host.right - sc.right],
-      hostMid: host.left + host.width / 2, cannonMid: can.left + can.width / 2, sceneMid: sc.left + sc.width / 2, progMid: ttl.left + ttl.width / 2,
-      scroll: Math.max(ov.scrollHeight - ov.clientHeight, stg.bottom - innerHeight, R(ov).bottom - innerHeight), hostScroll: hostEl.scrollHeight - hostEl.clientHeight, covered, sceneShare: (sc.width * sc.height) / ((host.width) * (host.height)) }; });
-  ok(Math.abs(g.statW[0] - g.statW[1]) <= 4 && Math.abs(g.statGut[0] - g.statGut[1]) <= 4, `T15 ${label}: HUD stats mirrored — widths ${g.statW.map(Math.round)}, gutters ${g.statGut.map(Math.round)}`);
-  ok(Math.abs(g.sceneGut[0] - g.sceneGut[1]) <= 4 && Math.abs(g.sceneMid - g.hostMid) <= 4 && Math.abs(g.cannonMid - g.sceneMid) <= 4,
-    `T15 ${label}: scene gutters ${g.sceneGut.map(Math.round)}, the cannon on the centre line (${Math.round(g.cannonMid)} vs ${Math.round(g.hostMid)})`);
-  ok(g.scroll <= 1 && g.hostScroll <= 1, `T15 ${label}: no scroll during play (${g.scroll}, ${g.hostScroll})`);
-  ok(!g.covered.length, `T15 ${label}: every control on screen and uncovered` + (g.covered.length ? ' — ' + g.covered.slice(0, 3).join(', ') : ''));
-  ok(g.sceneShare >= 0.4, `T15 ${label}: the play scene is the biggest thing (${Math.round(g.sceneShare * 100)}% of the stage)`);
+  SC.report(ok, label, await SC.geometry(pg), await SC.pixels(pg), { play: true });
+  const g = await pg.evaluate(() => { const R = e => e.getBoundingClientRect(); const st = R(document.querySelector('#arc-host .sb-stage'));
+    const sc = R(document.querySelector('#tb-scene')), can = R(document.querySelector('#tb-cannon'));
+    return { stageMid: st.left + st.width / 2, sceneMid: sc.left + sc.width / 2, cannonMid: can.left + can.width / 2, share: (sc.width * sc.height) / (st.width * st.height) }; });
+  ok(Math.abs(g.sceneMid - g.stageMid) <= 4 && Math.abs(g.cannonMid - g.stageMid) <= 4, `T15 ${label}: the scene and the cannon on the centre line (${Math.round(g.sceneMid)}, ${Math.round(g.cannonMid)} vs ${Math.round(g.stageMid)})`);
+  ok(g.share >= 0.4, `T15 ${label}: the play scene is the biggest thing (${Math.round(g.share * 100)}% of the stage)`);
 }
 
 (async () => {
@@ -227,7 +195,8 @@ async function stageCheck(pg, label) {
     ok(k.tabTop == null || k.lowest <= k.tabTop, 'no key sits under the tab bar');
     const tapped = await pp.evaluate(async () => { const t = _tb.target(); const find = ch => [...document.querySelectorAll('#tb-keys button')].find(x => (x.dataset.k || x.textContent || '').trim().toLowerCase() === ch);
       for (const ch of t) { const bt = find(ch); if (bt) bt.click(); }
-      const ent = [...document.querySelectorAll('#tb-keys button')].find(x => /enter/i.test(x.dataset.k || x.textContent || '')); if (ent) ent.click();
+      const ent = [...document.querySelectorAll('#tb-keys button')].find(x => x.dataset.k === '⏎' || /enter/i.test(x.getAttribute('aria-label') || x.dataset.k || x.textContent || ''));
+      if (ent) ent.click();
       await new Promise(r => setTimeout(r, 300)); return _tb.state().blasted; });
     ok(tapped === 1, 'tapping the keys spells the word and Enter fires it');
     await stageCheck(pp, '390×844 light');
@@ -249,9 +218,10 @@ async function stageCheck(pg, label) {
     await ctx9.addInitScript(k => { try { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] }));
       localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } } catch (e) {} }, KID);
     const p9 = await ctx9.newPage(); await p9.goto(URL + '#/' + route); await booted(p9);
-    const up = await until(p9, n => { const m = document.querySelector('.arc-menu .arcm-title'); return !!m && m.textContent.trim() === n; }, name, 15000);
+    /* the address opens the game (the engine kit's PLAY_SLUG route) or its start screen */
+    const up = await until(p9, n => { const m = document.querySelector('.arc-menu .arcm-title, .arc-play[data-route] .arc-play-name'); return !!m && m.textContent.trim() === n; }, name, 15000);
     await p9.goBack(); const back = await until(p9, () => !document.querySelector('.arc-menu,.arc-play') && state.nav === 'games', null, 8000);
-    ok(up && back, `T9 · #/${route} opens ${name}'s start screen over Play, and Back closes it onto Play`);
+    ok(up && back, `T9 · #/${route} opens ${name} over Play, and Back closes it onto Play`);
     await ctx9.close();
   }
   await b.close();

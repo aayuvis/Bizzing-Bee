@@ -3544,7 +3544,10 @@ const app = {
       +'<span class="arc-play-diff">'+(_arcDiffLabel[pick]||'')+'</span></div>'
       +'<div class="arc-play-host" id="arc-host"></div>';
     document.body.appendChild(el);
-    el.querySelector('#arc-back').onclick=arcadeClose;
+    /* the overlay has an address (#/play/grandprix …, games spec T9): the router reads it off
+       data-route, and ← Arcade steps back over it so Back does not reopen the game */
+    try{ const r=window.SB_SHELL&&SB_SHELL.playRoute&&SB_SHELL.playRoute(k); if(r){ el.setAttribute('data-route',r); SB_SHELL.sync(); } }catch(e){}
+    el.querySelector('#arc-back').onclick=arcadeLeave;
     const host=el.querySelector('#arc-host');
     /* P6: the engine draws its own clue and end card; say them as they change */
     try{ let lt=0; const mo=new MutationObserver(()=>{ if(!lt) lt=setTimeout(()=>{ lt=0; liveScanArc(host); },160); });   /* throttled, not debounced: a HUD ticking every frame must not starve it */
@@ -11635,6 +11638,7 @@ const SB_ARCADE_GAMES = [
 window.SB_ARCADE_GAMES = SB_ARCADE_GAMES;
 const _arcDiffLabel = {auto:'My level',easy:'Easy',medium:'Medium',hard:'Hard',champ:'Champ'};
 let _arcHandle=null, _arcEl=null;
+function arcadeLeave(){ arcadeClose(); try{ if(window.SB_SHELL&&SB_SHELL.leaveOverlay){ SB_SHELL.leaveOverlay(); return; } }catch(e){} }
 function arcadeClose(){
   if(_arcHandle){ try{ _arcHandle.destroy(); }catch(e){} _arcHandle=null; }
   if(_arcEl){ try{ if(_arcEl._liveMo) _arcEl._liveMo.disconnect(); }catch(e){} _arcEl.remove(); _arcEl=null; }
@@ -11814,7 +11818,7 @@ function arcadeResult(g, res){
       </div></div>`;
   _arcEl.appendChild(card);
   card.querySelector('.arc-r-again').onclick=()=>{ arcadeClose(); if(window.app) app.arcadePlay(g.k); };
-  card.querySelector('.arc-r-back').onclick=arcadeClose;
+  card.querySelector('.arc-r-back').onclick=arcadeLeave;
   card.querySelectorAll('.arc-r-say').forEach(b=>{ b.onclick=()=>{ try{ say(b.dataset.w); }catch(e){} }; });
   card.querySelectorAll('.arc-r-rev').forEach(b=>{ b.onclick=()=>{
     try{ addMiss({w:b.dataset.w, d:b.dataset.d||''},'mark'); }catch(e){}
