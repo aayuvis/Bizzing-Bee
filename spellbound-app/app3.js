@@ -1589,7 +1589,9 @@ const CORE_FIX = {
   paretic: 'a person who has paresis, a weakness or partial loss of movement in part of the body',
   igloo: 'a dome-shaped shelter built from blocks of snow, traditionally by the Inuit',
   tupek: 'tent that is an Inuit summer dwelling',
-  tupik: 'tent that is an Inuit summer dwelling'
+  tupik: 'tent that is an Inuit summer dwelling',
+  /* glossed "like a coquette" — a struck word — so the meaning went with it */
+  flirtatious: 'behaving in a playful way that shows you like someone'
 };
 /* ---- slurs ----
    SB_UNSAFE_RE is a list of specific strings, so it caught 22 of the 210 entries
