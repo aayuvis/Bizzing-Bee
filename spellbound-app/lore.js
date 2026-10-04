@@ -16,7 +16,7 @@
        (and 60% in a timed run), then every right counts; Origins pays per typed word; the
        Ladder per rung from the fourth. Two-option items never pay and never count;
      · SB_LEVEL.after(key, pct) once at the end of every round, key 'lore/<mode>' / 'hive/<mode>';
-     · no run counts anywhere ("5 right in a row" is gone); the card shows a best, not a tally. */
+     · no run counts anywhere (Bee Trivia's streak flash is gone); the card shows a best, not a tally. */
 (function () {
   'use strict';
   const W = window;
@@ -123,10 +123,12 @@
       fact: s ? 'In a sentence: ' + s : loreFact(w), word: w, say: w.w, sent: s, peers: peers.map((o) => o.x), dir }; }
   function meaningRound(h, m, n, dirs) { const pool = words(h, m, 600);
     const fresh = (W.pickFresh ? pickFresh(pool, pool.length) : sample(pool)).filter((w) => w.d && posOf(w));
-    const out = [];
-    for (const w of fresh) { if (out.length >= n) break; const peers = meaningPeers(w, pool, 3); if (!peers) continue;
-      out.push(meaningQ(w, peers, dirs ? dirs[out.length % dirs.length] : (out.length % 2 ? 'm2w' : 'w2m'))); }
-    return out; }
+    /* first the words whose three peers all share their subject; only then the ones that need the cluster */
+    const picked = [], later = [];
+    for (const w of fresh) { if (picked.length >= n) break; const peers = meaningPeers(w, pool, 3); if (!peers) continue;
+      (peers.every((o) => o.t === 0) ? picked : later).push([w, peers]); }
+    const out = picked.concat(later).slice(0, n).map(([w, peers], i) => meaningQ(w, peers, dirs ? dirs[i % dirs.length] : (i % 2 ? 'm2w' : 'w2m')));
+    return sample(out); }
 
   /* ---- trivia items (Roots, Hive Mind, the board and the clock) ---- */
   const QUOTED = /[“"]([A-Za-z][A-Za-z' -]*)[”"]/g;
@@ -158,12 +160,16 @@
   const langOf = (w) => { const o = String((w && w.o) || '').trim(); return LANG_MAP[o] || o; };
   function originRound(pool, n) { const by = {};
     pool.forEach((w) => { const L = langOf(w); if (LANGS.indexOf(L) >= 0 && /^[a-z]+$/.test(w.w)) (by[L] = by[L] || []).push(w); });
+    /* The round's languages are fixed before the first question, and each holds enough words to be
+       the answer every time the deck reaches it — a language that ran dry mid-round would leave the
+       options exactly when it stopped being the answer, and "always pick Hindi" would beat chance. */
+    const langs = Object.keys(by); let live = [];
+    for (let L = langs.length; L >= 4; L--) { const need = Math.ceil(n / L); const E = langs.filter((x) => by[x].length >= need); if (E.length >= L) { live = E; break; } }
+    if (live.length < 4) return [];
     const out = [], used = new Set(); let deck = [];
     for (let i = 0; i < n; i++) {
-      const live = Object.keys(by).filter((L) => by[L].some((w) => !used.has(w.w)));
-      if (live.length < 4) break;
       if (!deck.length) deck = sample(live);
-      let L = deck.pop(); if (live.indexOf(L) < 0) { i--; continue; }
+      const L = deck.pop();
       const cand = by[L].filter((w) => !used.has(w.w)); const w = (W.pickFresh ? pickFresh(cand, 1) : sample(cand, 1))[0]; used.add(w.w);
       const opts = sample([L].concat(sample(live.filter((x) => x !== L), 3)));
       out.push({ kind: 'origin', th: 'origins', label: 'Origins', word: w, lang: L, opts, ans: opts.indexOf(L), stage: 'pick', fact: loreFact(w) }); }
@@ -311,7 +317,10 @@
   function owed(g) { if (g.hub === 'hive' && !hivePays()) return 0;
     if (g.mode === 'origins') return g.spelled || 0;
     if (g.mode === 'ladder') return g.rung >= 4 ? g.rung : 0;
-    if (g.mode === 'clock') return (g.right >= 6 && g.asked && g.right / g.asked >= 0.6) ? g.right : 0;
+    /* the clock has no fixed length, so a lucky early run must not count: while it runs, coins wait for 15
+       answers at 60%; when time is up, 6 right at 60% is enough (a slow reader is not a guesser) */
+    if (g.mode === 'clock') { const acc = g.asked ? g.right / g.asked : 0; if (acc < 0.6) return 0;
+      return (g.phase === 'done' ? g.right >= 6 : g.asked >= 15) ? g.right : 0; }
     return g.right >= 6 ? g.right : 0; }
   function settle(g) { let k = owed(g) - g.paid; while (k-- > 0) { g.paid++; try { payG(g); } catch (e) {} } }
   function grade(g, q, i) { const ok = i === q.ans; g.picked = i;
@@ -327,7 +336,7 @@
       try { sfx(q.langOk ? 'correct' : 'wrong'); } catch (e) {} render(); focusType(); setTimeout(() => { if (G() === g) say(q.word.w); }, 260); return; }
     stopAud();
     const ok = grade(g, q, i);
-    if (g.mode === 'ladder') { if (ok) { g.rung++; settle(g); try { burstConfetti(30); } catch (e) {} } else { g.held = true; g.missed = true; }
+    if (g.mode === 'ladder') { if (ok) { g.rung++; settle(g); try { burstConfetti(30); } catch (e) {} if (g.rung >= RUNGS) { finish(g); return; } } else { g.held = true; g.missed = true; }
       render(); if (ok) after(g, 1200, () => { g.picked = null; g.hidden = []; g.hint = ''; g.sentShown = false; if (g.rung >= RUNGS) finish(g); else { render(); speakCur(g); } }); return; }
     if (g.mode === 'squares') { const cell = g.cells[g.sel]; cell.st = ok ? 1 : 2; if (!ok) g.held = true; render();
       if (ok) after(g, 1500, () => nextCell(g)); return; }
@@ -467,7 +476,7 @@
   /* the miss card: the question, the right answer, and why — SGUI.missQ when the kit is in */
   function missHTML(g, q) {
     if (W.SGUI && SGUI.missQ) return `<div id="qz-missq" class="qz-missq"></div>`;
-    return `<div class="qz-miss" role="status">
+    return `<div class="qz-miss" data-live-prompt="${escA('Not this time. The answer is ' + q.opts[q.ans] + '.')}">
       <div class="qz-mans">${ic('close', 16)} Not this time. The answer: <b>${esc(q.opts[q.ans])}</b></div>
       ${g.picked != null && q.opts[g.picked] != null ? `<div class="qz-mpick">You picked: ${esc(clip(q.opts[g.picked], 90))}</div>` : ''}
       ${q.fact ? `<div class="qz-fact"><b>${ic('bulb', 15)} Did you know?</b> ${esc(q.fact)}</div>` : ''}
@@ -475,7 +484,8 @@
   function rightHTML(q) { return `<div class="qz-ok" role="status"><span class="qz-okh">${ic('check', 16)} Right!</span>${q.fact ? ` <span class="qz-okf">${esc(clip(q.fact, 150))}</span>` : ''}</div>`; }
   const isHeld = (g, q) => g.held && g.picked != null && g.picked !== q.ans;
   function qCard(g, q, extra) { const held = g.held && g.picked != null && g.picked !== q.ans; const right = g.picked != null && g.picked === q.ans;
-    return `<div class="qz-card" data-live-prompt="${escA((q.big ? q.prompt + '. ' : '') + (q.sub || '') + ' ' + (q.big ? '' : q.prompt))}">
+    const num = g.mode === 'ladder' ? 'Rung ' + (g.rung + 1) + ' of ' + RUNGS + '. ' : g.mode === 'clock' || g.mode === 'squares' ? '' : 'Question ' + (g.i + 1) + ' of ' + g.n + '. ';
+    return `<div class="qz-card" data-live-prompt="${escA(num + (q.big ? q.prompt + '. ' + (q.sub || '') : (q.sub ? q.sub + ' ' : '') + q.prompt))}">
       <div class="qz-tag">${esc(q.label || '')}</div>${visual(q)}
       ${q.aud || q.say ? `<button class="qz-hear" data-act="qzHear">${ic('volume', 17)} Hear it</button>` : ''}
       ${q.big ? `<div class="qz-big">${esc(q.prompt)}</div><div class="qz-sub">${esc(q.sub || '')}</div>` : `${q.sub ? `<div class="qz-sub">${esc(q.sub)}</div>` : ''}<div class="qz-q">${esc(q.prompt)}</div>`}
@@ -488,7 +498,7 @@
           <span class="qz-cn" aria-hidden="true">${i + 1}</span>${c.st === 1 ? ic('star', 26) : c.st === 2 ? ic('close', 24) : cellArt(c.th)}<span class="qz-cl">${esc(c.label)}</span></button>`).join('');
       const line = g.lineFlash ? `<div class="qz-line" role="status">${ic('sparkle', 16)} Line ${g.lineFlash}! ${g.lineFlash === 1 ? 'Your first line.' : 'Another line.'}</div>` : '';
       return stage(h, { hud, play: `<div class="qz-board">${cells}</div>${line}`, controls: `<div class="qz-hint">Pick a square — keys 1–9 or tap</div>` }); }
-    const q = curQ(g);
+    const q = curQ(g); if (!q) return stage(h, { hud, play: W.hiveLoader ? hiveLoader('…') : '' });
     if (q.kind === 'origin') return stage(h, { hud, play: originCard(g, q), controls: q.stage === 'pick' ? optsHTML(g, q) : '' });
     let extra = '';
     if (m === 'ladder') { const rv = g.rival && g.picked == null ? `<div class="qz-rival">${g.rival.id && W.SB_AVATAR ? `<span class="qz-rav">${SB_AVATAR(g.rival.id, 34)}</span>` : ''}<span><b>${esc(g.rival.name)}:</b> ${g.rival.sure ? 'I’m fairly sure it’s' : 'I think it might be'} <b>${g.rival.pick + 1}</b>.</span></div>` : '';
@@ -526,7 +536,8 @@
       return `<button class="qz-th${on ? ' on' : ''}" data-act="qzTh" data-arg="${id}" aria-pressed="${on}">${pic}${esc(label)}</button>`; }).join('');
     const m = modeOf(g.hub, g.mode);
     return stage(g.hub, { hud: { left: stat('Themes', sel.length ? String(sel.length) : 'All'), center: `<span class="qz-title">${esc(m.title)}</span>${chip(g.hub, g.mode)}`, right: stat('Best', esc(bestTxt(g.hub, g.mode).replace(/^Best: /, '') || '–')) },
-      play: `<div class="qz-card qz-intro"><div class="qz-sub">${esc(m.promise())}</div><div class="qz-ths">${chips}</div></div>`,
+      /* the bank's ONE count (SB_COUNT, from the index — never "0 questions" before a shard lands) */
+      play: `<div class="qz-card qz-intro"><div class="qz-sub">${esc(m.promise())}</div><div class="qz-cnt">${esc([cnt('trivia') ? cnt('trivia') + ' questions' : '', ths.length + ' themes'].filter(Boolean).join(' · '))}</div><div class="qz-ths">${chips}</div></div>`,
       controls: `<button class="qz-go big" data-act="qzBegin">Start <span class="qz-kb" aria-hidden="true">Enter</span></button>` }); }
 
   function doneView(g) { const m = modeOf(g.hub, g.mode);
@@ -565,7 +576,8 @@
       const bottom = (br && br.height && br.top < innerHeight) ? br.top : innerHeight;
       const top = r.top + (window.scrollY || 0);   // where it sits with the page at the top
       const h = Math.max(380, Math.floor((bottom - top - 10) / (z || 1)));
-      if (st.classList.contains('qz-hubst')) st.style.minHeight = h + 'px'; else st.style.height = h + 'px'; } catch (e) {} }
+      if (st.classList.contains('qz-hubst')) { st.style.minHeight = h + 'px'; return; }
+      st.style.height = h + 'px'; } catch (e) {} }
   if (!W._qzFit) { W._qzFit = 1; window.addEventListener('resize', () => { if (state && (state.nav === 'lore' || state.nav === 'hive')) fit(); }); }
   function mount() { fit(); const g = G(); if (!g || g.phase !== 'play') return; const q = curQ(g); if (!q) return;
     try { const host = document.getElementById('qz-missq'); if (host && !host.childElementCount && W.SGUI && SGUI.missQ) {
@@ -596,17 +608,18 @@
   /* ------------------------------------------------------------------ styles (tokens only: day and dusk) */
   function css() { if (document.getElementById('qz-css')) return; const s = document.createElement('style'); s.id = 'qz-css'; s.textContent = `
 .qz-top{display:flex;align-items:center;margin:0 auto 10px;max-width:1100px}
-.qz-stage{position:relative;max-width:1100px;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:380px;border-radius:22px;overflow:hidden;isolation:isolate;background:var(--qz-bg);box-shadow:var(--sh-rest)}
+.qz-stage{position:relative;max-width:1100px;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);min-height:380px;border-radius:22px;overflow:hidden;isolation:isolate;background:var(--qz-bg);box-shadow:var(--sh-rest)}
 .qz-stage[data-plate]{background:var(--qz-plate) center/cover no-repeat,var(--qz-bg)}
 .qz-lore{--qz-bg:radial-gradient(120% 80% at 50% 0%,color-mix(in srgb,var(--treasure,#F0B429) 30%,var(--bg2)),transparent 70%),linear-gradient(180deg,color-mix(in srgb,#8A5B2A 26%,var(--bg2)),color-mix(in srgb,#5A3A1E 34%,var(--bg2)))}
 .qz-hive{--qz-bg:radial-gradient(120% 80% at 50% 0%,color-mix(in srgb,#6A8BFF 34%,var(--bg2)),transparent 70%),linear-gradient(180deg,color-mix(in srgb,#1E2A5A 40%,var(--bg2)),color-mix(in srgb,#141A3A 52%,var(--bg2)))}
 .qz-hud{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;padding:10px clamp(12px,2.4vw,20px);background:color-mix(in srgb,var(--bg2) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.qz-hl{justify-self:start;min-width:0}.qz-hr{justify-self:end;min-width:0;text-align:right}.qz-hc{display:flex;align-items:center;gap:8px;justify-content:center;min-width:0}
+.qz-hl{justify-self:stretch;min-width:0;text-align:left}.qz-hr{justify-self:stretch;min-width:0;text-align:right}.qz-hr .qz-stat{align-items:flex-end}.qz-hc{display:flex;align-items:center;gap:8px;justify-content:center;min-width:0}
 .qz-title{font-family:var(--display);font-weight:800;font-size:clamp(16px,2.4vw,20px);white-space:nowrap}
 .qz-stat{display:inline-flex;flex-direction:column;line-height:1.15}.qz-sk{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .qz-sv{font-family:var(--display);font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;color:var(--text)}.qz-sv.low{color:var(--bad)}
 .qz-play{display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;padding:clamp(10px,2.4vw,24px);min-height:0;overflow:auto}
 .qz-hubst .qz-play{overflow:visible}
+.qz-stage:not(.qz-hubst) .qz-play{container-type:size}
 .qz-ctl{display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 clamp(12px,3vw,24px) 16px}
 .qz-ctl .qz-miss{width:min(760px,100%);margin-top:0}
 .qz-card{width:min(720px,100%);background:color-mix(in srgb,var(--bg2) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,3.4vw,28px);text-align:center;box-shadow:var(--glow,var(--sh-rest));color:var(--text)}
@@ -649,7 +662,7 @@
 .qz-tb{font-size:12px;font-weight:800;color:var(--accent);margin-top:auto}
 .qz-new{position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
 .qz-chip{position:absolute;left:50%;bottom:8px;transform:translateX(-50%)}
-.qz-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(460px,100%)}
+.qz-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(460px,100cqw,calc(100cqh - 64px))}
 .qz-cell{position:relative;aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:color-mix(in srgb,var(--bg2) 90%,transparent);border:2px solid var(--line);color:var(--text);box-shadow:var(--sh-rest);font-weight:800}
 .qz-cell.s1{border-color:#1f9d57;background:color-mix(in srgb,#1f9d57 22%,var(--bg2));color:#B07A00}.qz-cell.s2{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--bg2));color:var(--bad)}
 .qz-cl{font-size:12px;color:var(--text);padding:0 4px}.qz-cn{position:absolute;top:6px;left:8px;font-size:11px;color:var(--muted)}
@@ -658,10 +671,10 @@
 .qz-ladwrap{display:flex;align-items:center;justify-content:center;gap:16px;width:min(900px,100%)}
 .qz-ladwrap .qz-card{flex:1}
 .qz-comb{display:flex;flex-direction:column;gap:3px;flex:none}
-.qz-rung{width:46px;height:30px;display:grid;place-items:center;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:color-mix(in srgb,var(--bg2) 80%,transparent);color:var(--muted);font-weight:800;font-size:12px}
+.qz-rung{width:46px;height:min(30px,calc((100cqh - 30px)/12 - 3px));display:grid;place-items:center;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:color-mix(in srgb,var(--bg2) 80%,transparent);color:var(--muted);font-weight:800;font-size:12px}
 .qz-rung.mark{background:color-mix(in srgb,var(--treasure,#F0B429) 22%,var(--bg2))}
 .qz-rung.done{background:var(--treasure,#F0B429);color:#4a3200}.qz-rung.on{background:var(--accent);color:#fff}
-@media (max-width:640px){.qz-ladwrap{flex-direction:column-reverse;gap:8px}.qz-comb{flex-direction:row-reverse;flex-wrap:wrap;justify-content:center}.qz-rung{width:26px;height:22px;font-size:10px}}
+@media (max-width:640px){.qz-ladwrap{flex-direction:column-reverse;gap:8px}.qz-comb{flex-direction:row-reverse;flex-wrap:nowrap;justify-content:center;gap:2px}.qz-rung{width:22px;height:18px;font-size:9px}}
 .qz-lls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .qz-ll{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:9px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px}
 .qz-ll.used,.qz-ll:disabled{opacity:.5}.qz-exit{background:var(--bg2)}
@@ -672,11 +685,13 @@
 .qz-th.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--bg2))}.qz-thic{display:inline-flex;line-height:0}
 .qz-done .qz-dh{font-family:var(--display);font-weight:800;font-size:20px}.qz-db{font-family:var(--display);font-weight:800;font-size:clamp(34px,7vw,48px);color:var(--accent);line-height:1.1;margin:6px 0}
 .qz-pay{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 15px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900}
+.qz-cnt{font-size:12.5px;color:var(--muted);font-weight:800}
 .qz-nopay,.qz-lvl{margin-top:10px;font-size:13px;color:var(--muted);font-weight:700}
 .qz-up{padding:9px 16px;border-radius:999px;background:var(--surface2);border:1.5px solid var(--accent);color:var(--accent);font-weight:800}
 .qz-short{display:none}
 @media (max-width:560px){.qz-opt{min-height:46px;padding:8px 11px;font-size:14px}.qz-opt.long{font-size:13px}.qz-card{padding:12px 14px}.qz-hear{margin:2px 0 6px;padding:8px 14px}
-  .qz-tag{display:none}.qz-long{display:none}.qz-short{display:inline}.qz-ll{padding:8px 11px;font-size:12.5px}.qz-tile-go{min-height:150px}.qz-hud{padding:8px 12px}}
+  .qz-tag{display:none}.qz-long{display:none}.qz-short{display:inline}.qz-ll{padding:8px 10px;font-size:12.5px;gap:4px}.qz-lls{flex-wrap:nowrap;gap:6px}
+  .qz-ot{-webkit-line-clamp:2}.qz-opts{gap:7px}.qz-sub{margin:2px 0}.qz-hear{padding:6px 12px;font-size:13px;margin:0 0 4px}.qz-tile-go{min-height:150px}.qz-hud{padding:8px 12px}.qz-big{font-size:clamp(24px,8vw,34px)}}
 .qz-cart{display:inline-flex;line-height:0}
 @media (prefers-reduced-motion:reduce){.qz-stage *{animation:none!important;transition:none!important}}`;
     document.head.appendChild(s); }
@@ -684,7 +699,7 @@
   /* ------------------------------------------------------------------ the doors */
   const API = { open, view, best: cardBest, start, finish, modes: MODES, hubName,
     /* for the tests: the generators and the pay rule, so a bot can play them without a screen */
-    _meaningRound: meaningRound, _originRound: originRound, _figRound: figRound, _trivDraw: trivDraw, _owed: owed, _words: words, _topical: topical, _posOf: posOf, _rivalSays: rivalSays, _G: G };
+    _meaningRound: meaningRound, _originRound: originRound, _figRound: figRound, _trivDraw: trivDraw, _owed: owed, _words: words, _topical: topical, _posOf: posOf, _rivalSays: rivalSays, _G: G, _cur: () => curQ(G()) };
   window.SB_QHUB = API;
   /* the Play card's best line, for g-found's card: SB_QHUB_BEST('lore') → "Best: 8/10 · Roots" */
   window.SB_QHUB_BEST = cardBest;
