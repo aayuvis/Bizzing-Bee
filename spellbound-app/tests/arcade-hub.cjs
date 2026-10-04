@@ -33,6 +33,10 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
       const grid = document.querySelector('.arc-grid');
       const tiles = grid ? [...grid.children] : [];
       const cols = grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0;
+      /* CELLS, not tiles (4 Oct 2026, games spec §4.2): the Spelling Gym card spans two columns — one card
+         in for Beat the Buzzer and Magic Squares — which is the "wider tile rather than a hole" rule */
+      const cells = tiles.reduce((a, t) => a + (+((/span (\d+)/.exec(getComputedStyle(t).gridColumnEnd) || [])[1]) || 1), 0);
+      const rows = grid ? new Set(tiles.map(t => Math.round(t.getBoundingClientRect().top))).size : 0;
       /* a hollow tile: the gap between the end of its words and the top of its Play button */
       const gaps = tiles.map(t => { const bl = t.querySelector('.arc-tile-blurb'), cta = t.querySelector('.arc-cta'); if (!bl || !cta) return -1;
         return Math.round(cta.getBoundingClientRect().top - bl.getBoundingClientRect().bottom); });
@@ -40,7 +44,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
       return { titles: heroes.map(h => h.querySelector('.arc-hero-title').textContent.trim()), heights: heroes.map(h => Math.round(h.getBoundingClientRect().height)),
         painted: heroes.filter(h => h.querySelector('.arc-hero-img')).map(h => h.querySelector('.arc-hero-title').textContent.trim()), loaded,
         sech: document.querySelectorAll('.arc-sech').length + (/The games — pick your level|More to play/.test(txt) ? 1 : 0),
-        cols, n: tiles.length, gaps, smallGP: tiles.some(t => /Bee Grand Prix|Honeycomb Run/.test(t.textContent)),
+        cols, n: tiles.length, cells, rows, gaps, smallGP: tiles.some(t => /Bee Grand Prix|Honeycomb Run/.test(t.textContent)),
         strips: document.querySelectorAll('.arc-diff').length, chips: [...document.querySelectorAll('.arc-lvl')].map(e => e.getAttribute('aria-label')),
         best: Object.fromEntries([...document.querySelectorAll('.arc-hero, .arc-grid > *')].map(t => { const ti = t.querySelector('.arc-hero-title, .arc-tile-title');
           const m = (t.innerText || '').match(/Best [\d,]+/); return [ti ? ti.textContent.trim() : '?', m ? m[0] : '']; })),
@@ -52,7 +56,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
     ok(new Set(r.heights).size === 1, `${T}: the large tiles are all one height (${r.heights.join(', ')})`);
     ok(r.painted.join() === 'Bee Grand Prix,Honeycomb Run' && r.loaded.length === 2 && r.loaded.every(Boolean), `${T}: the race and the maze wear their paintings, and both load`);
     ok(!r.smallGP, `${T}: the race and the maze are not repeated as small tiles`);
-    ok(r.cols === vp.cols && r.n > 0 && r.n % r.cols === 0, `${T}: ${r.n} small tiles in ${r.cols} columns — every row full, no blank cells`);
+    ok(r.cols === vp.cols && r.n > 0 && r.cells % r.cols === 0 && r.rows === r.cells / r.cols, `${T}: ${r.n} small tiles (${r.cells} cells) in ${r.cols} columns and ${r.rows} rows — every row full, no blank cells`);
     ok(r.gaps.every(g => g >= 0 && g <= 60), `${T}: no small tile is hollow (≤ three lines of slack) — words to Play button ${Math.max(...r.gaps)}px at most (${r.gaps.join(', ')})`);
     ok(r.strips === 0 && r.chips.length >= 1 && r.chips.every(a => /Word level for .+: \w+\. Tap for \w+/.test(a)), `${T}: the word level is one labelled chip per game, not a strip (${r.chips.length})`);
     ok(r.best['Bee Grand Prix'] === 'Best 1,240' && r.best['Type Blaster'] === 'Best 87' && r.best['Word Snake'] === '' && r.best['Honeycomb Run'] === '' && !r.pressure,

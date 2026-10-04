@@ -2,7 +2,7 @@
 
    ONE hub card on the Play tab replaces Beat the Buzzer, Magic Squares and Word Quiz's spelling
    rounds. The hub's name is the owner's to choose, so it is read from window.SB_HUB_NAMES.gym and
-   never typed here ('Spelling Gym' is only the fallback). The Practice tab is the WORD Gym — a
+   never typed here (the default name is only the fallback). The Practice tab is the WORD Gym — a
    different thing; nothing here renames it.
 
    Seven modes, in a FIXED order (simplest first, never reordered by play):
@@ -47,7 +47,7 @@
   const BY = {}; MODES.forEach(m => { BY[m.id] = m; });
   const LV = ['easy', 'medium', 'hard', 'champ'];
   const LV_NAME = { auto: 'Auto', easy: 'Easy', medium: 'Medium', hard: 'Hard', champ: 'Champ' };
-  const hubName = () => { try { return (W.SB_HUB_NAMES && W.SB_HUB_NAMES.gym) || 'Spelling Gym'; } catch (e) { return 'Spelling Gym'; } };
+  const hubName = () => { let n = ''; try { n = W.SB_HUB_NAMES && W.SB_HUB_NAMES.gym; } catch (e) {} return n || 'Spelling Gym'; };
 
   /* ------------------------------------------------------------------ small helpers */
   const E = s => (typeof esc === 'function' ? esc(s) : String(s == null ? '' : s));
@@ -111,10 +111,12 @@
     out = out.slice(0, n); out.forEach(w => { try { logGameWord(K(w)); } catch (e) {} });
     return out; }
   /* Champ Dictation is Rapid Dictation's hard list: the 130k library ranked trickiest-first
-     (advanced.js hardPool, read through ADV.pool()). The tier moves the window up or down that ranking. */
-  function champDraw(tier, skip) { let P = []; try { if (W.ADV && typeof ADV.pool === 'function') P = ADV.pool() || []; } catch (e) {}
+     (advanced.js hardPool, read through ADV.pool()). The level picks a window of that ranking
+     (Champ is its top 2,000) and the tier moves it one step. */
+  const CHAMP_WIN = { champ: [0, 2000], hard: [0, 6000], medium: [3000, 9000], easy: [6000, 12000] };
+  function champDraw(level, tier, skip) { let P = []; try { if (W.ADV && typeof ADV.pool === 'function') P = ADV.pool() || []; } catch (e) {}
     if (!P.length) return draw(1, { level: 'champ', tier, skip });
-    const lo = tier < 0 ? 3000 : 0, hi = tier > 0 ? 2000 : tier < 0 ? 9000 : 6000;
+    const [lo, hi] = CHAMP_WIN[shiftLv(level, tier)];
     const slice = P.slice(lo, hi).filter(w => typable(w) && !skip.has(K(w)));
     const pick = (typeof pickFresh === 'function' ? pickFresh(slice, 1) : slice.slice(0, 1));
     pick.forEach(w => { try { logGameWord(K(w)); } catch (e) {} }); return pick; }
@@ -135,21 +137,28 @@
       if (libReady('champ') || st === 'error' || tries > 1200) { clearInterval(t); one(); } }, 100); }
 
   /* ------------------------------------------------------------------ the clock */
-  /* real time, fixed step, held by a miss card, a hidden tab or the Settings sheet */
+  /* REAL TIME, held by a miss card, a hidden tab or the Settings sheet. The seconds left are read off
+     performance.now() — never summed from clamped frame steps — so a long frame (a word drawn from the
+     library, a phone at 4x slower) costs the child nothing: a 60-second round is 60 real seconds.
+     The frames only paint it (sgLoop when the engine kit is in, a plain rAF otherwise). One gap over a
+     second is a suspended device, not play, and counts as one second at most. */
   function clock(secs, onTick, onEnd) {
-    const C = { left: secs, total: secs, held: false, over: false, t0: performance.now(), t1: 0 };
-    const upd = dt => { if (C.over || C.held) return; try { if (state.settingsOpen || state.pinDlg) return; } catch (e) {}
-      C.left -= dt; if (C.left <= 0) { C.left = 0; C.over = true; C.t1 = performance.now(); setTimeout(onEnd, 0); } };
-    const ren = () => { try { onTick(C); } catch (e) {} };
-    if (typeof W.sgLoop === 'function') { C.loop = W.sgLoop(upd, ren); }
-    else { let last = performance.now(), raf = 0, held = false;
-      const tick = now => { raf = requestAnimationFrame(tick); if (document.hidden || held) { last = now; return; }
-        let acc = Math.min(0.25, (now - last) / 1000); last = now; let k = 0;
-        while (acc > 0 && k < 30) { const dt = Math.min(acc, 1 / 120); upd(dt); acc -= dt; k++; } ren(); };
-      raf = requestAnimationFrame(tick);
-      C.loop = { hold(v) { held = !!v; }, stop() { cancelAnimationFrame(raf); } }; }
-    C.hold = v => { C.held = !!v; try { C.loop.hold(!!v); } catch (e) {} };
-    C.stop = () => { C.over = true; try { C.loop.stop(); } catch (e) {} };
+    const C = { left: secs, total: secs, held: false, over: false, used: 0, last: performance.now(), t0: performance.now(), t1: 0 };
+    const paused = () => { if (C.held || document.hidden) return true; try { return !!(state.settingsOpen || state.pinDlg); } catch (e) { return false; } };
+    const tick = () => { if (C.over) return; const now = performance.now(); const d = Math.min(1000, now - C.last); C.last = now;
+      if (!paused()) C.used += d;
+      C.left = Math.max(0, secs - C.used / 1000);
+      try { onTick(C); } catch (e) {}
+      if (C.left <= 0) { C.over = true; C.t1 = now; stopLoop(); setTimeout(onEnd, 0); } };
+    const vis = () => { C.last = performance.now(); }; document.addEventListener('visibilitychange', vis);
+    let stopLoop;
+    if (typeof W.sgLoop === 'function') { const L = W.sgLoop(() => {}, tick); stopLoop = () => { try { L.stop(); } catch (e) {} }; }
+    else { let raf = 0; const f = () => { raf = requestAnimationFrame(f); tick(); }; raf = requestAnimationFrame(f); stopLoop = () => cancelAnimationFrame(raf); }
+    /* a backstop for a page with no frames at all (a background tab that is somehow still "visible") */
+    const iv = setInterval(tick, 250);
+    const stop0 = stopLoop; stopLoop = () => { stop0(); clearInterval(iv); document.removeEventListener('visibilitychange', vis); };
+    C.hold = v => { tick(); C.held = !!v; C.last = performance.now(); };
+    C.stop = () => { C.over = true; stopLoop(); };
     return C; }
 
   /* ------------------------------------------------------------------ the round */
@@ -157,6 +166,7 @@
   let EL = null;       // the gym's own DOM, re-attached into #gym-host after every app render
   let KEYS = null;     // the on-screen keyboard handle
   let VIEW = 'hub';    // hub | ready | play | done | board | ward | locked
+  let lastH = null;    // the last picture painted into EL (anything written around paint() clears it)
 
   function stop() { try { if (R && R.clock) R.clock.stop(); } catch (e) {} if (KEYS) { try { KEYS.destroy(); } catch (e) {} KEYS = null; }
     if (R) R.phase = 'gone'; R = null; }
@@ -193,7 +203,7 @@
   function nextItem() { if (!R) return; R.hint = 0;
     if ((R.m.n && R.asked >= R.m.n)) { finish(); return; }
     let w = null;
-    if (R.mode === 'champ') w = champDraw(R.tier, R.seen)[0];
+    if (R.mode === 'champ') w = champDraw(R.level, R.tier, R.seen)[0];
     else if (R.mode === 'spot') { const s = spotItem(); if (s) { R.spot = s; w = s.w; } }
     else w = draw(1, { level: R.mode === 'challenge' ? R.level : R.level, tier: R.m.adapt ? R.tier : 0, skip: R.seen })[0];
     if (!w) { if (!R.asked) { R.phase = 'empty'; paint(); return; } finish(); return; }
@@ -203,7 +213,7 @@
     live(R.mode === 'spot' ? 'Find the word that is spelt wrong.' : ('Word ' + (R.asked + 1) + (R.m.n ? ' of ' + R.m.n : '') + '. Listen, then spell it.')); }
 
   /* the word level the next draw comes from, for the chip */
-  const tierLevel = () => R ? (R.mode === 'champ' ? 'champ' : shiftLv(R.level, R.m.adapt ? R.tier : 0)) : 'medium';
+  const tierLevel = () => R ? shiftLv(R.level, R.m.adapt ? R.tier : 0) : 'medium';
   function adapt(ok) { if (!R || !R.m.adapt) return;
     if (ok) { R.misses = 0; if (++R.streak >= 3) { R.streak = 0; R.tier = Math.min(1, R.tier + 1); } }
     else { R.streak = 0; if (++R.misses >= 2) { R.misses = 0; R.tier = Math.max(-1, R.tier - 1); } } }
@@ -241,7 +251,8 @@
     const go = () => { if (!R || R.phase !== 'miss') return; R.phase = 'answer'; if (R.clock) R.clock.hold(false); detach(); then(); };
     let detach = () => {};
     say1(w.w);
-    if (host && W.SGUI && typeof SGUI.miss === 'function') { try { SGUI.miss(host, w, typed, { onContinue: go }); return; } catch (e) {} }
+    if (host && W.SGUI && typeof SGUI.miss === 'function') { try { lastH = null; SGUI.miss(host, w, typed, { onContinue: go }); return; } catch (e) {} }
+    lastH = null;
     if (host) host.innerHTML = missHTML(w, typed);
     /* Enter or tap continues — wired on the next tick, so the Enter that submitted cannot also dismiss */
     setTimeout(() => { const kd = e => { if (e.key === 'Enter' && !e.repeat) { e.preventDefault(); go(); } };
@@ -448,7 +459,10 @@
   function paint() { if (!EL) return; let h = '';
     try { h = VIEW === 'hub' ? hubView() : VIEW === 'locked' ? lockedView() : VIEW === 'board' ? boardView() : VIEW === 'ward' ? wardView() : modeView(); }
     catch (e) { try { console.error(e); } catch (_) {} h = stage({ plate: plate('gym'), hud: { left: back(hubName(), 'hub') }, play: '<div class="gym-card">Something went wrong here.</div>' }); }
-    EL.innerHTML = h; size();
+    /* the same picture is not painted twice: an app render (a lazy file landing) re-mounts the gym, and
+       a hub repainted on every one would never hold still under a finger or a screenshot */
+    if (h === lastH && EL.firstChild) { size(); return; }
+    lastH = h; EL.innerHTML = h; size();
     if (KEYS) { try { KEYS.destroy(); } catch (e) {} KEYS = null; }
     const inp = EL.querySelector('.gym-in');
     if (inp && R && R.phase === 'answer') {
@@ -626,8 +640,11 @@
       const bar = document.querySelector('nav.sb-tabbar'); const bb = bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect() : null;
       const bottom = (bb && bb.height > 0 && bb.top < innerHeight) ? bb.top : innerHeight;
       const top = r.top + (W.scrollY || 0) - (W.scrollY || 0);
-      const h = Math.max(360, Math.floor((bottom - top - 10) / z));
-      if (Math.abs((parseFloat(host.style.height) || 0) - h) > 1) host.style.height = h + 'px'; } catch (e) {} }
+      const h = Math.max(360, Math.floor((bottom - top - 8) / z));
+      if (Math.abs((parseFloat(host.style.height) || 0) - h) > 1) host.style.height = h + 'px';
+      /* the shell is at least 100dvh tall INSIDE #root's zoom, i.e. 9% taller than the screen, which
+         is a scroll on every page; the gym's play must not scroll, so its page is exactly one screen */
+      if (z !== 1) for (let a = host.parentNode; a && a !== rootEl; a = a.parentNode) if (a.style && a.style.minHeight) a.style.minHeight = (innerHeight / z) + 'px'; } catch (e) {} }
   addEventListener('resize', () => { if (EL && EL.isConnected) size(); });
   function mount(host) { const e = el(); if (e.parentNode !== host) host.appendChild(e);
     if (!e.innerHTML || VIEW === 'hub' || (R && (R.phase === 'ready' || R.phase === 'board' || R.phase === 'ward'))) paint(); else size();
@@ -635,11 +652,13 @@
 
   function css() { if (document.getElementById('gym-css')) return; const s = document.createElement('style'); s.id = 'gym-css'; s.textContent = `
 .gym-host{position:relative;width:100%;max-width:1280px;margin:0 auto}
+.sb-content:has(> .sb-gympage){padding-bottom:0!important}
+.gym-stage{--gym-act:linear-gradient(180deg,color-mix(in srgb,var(--action,var(--accent)) 82%,#fff),var(--action,var(--accent)) 55%,color-mix(in srgb,var(--action,var(--accent)) 84%,#000))}
 .gym-root{height:100%}
 .gym-stage{position:relative;height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;border-radius:20px;overflow:hidden;isolation:isolate;color:var(--text);
-  background:var(--gym-plate,none) center/cover no-repeat,radial-gradient(120% 90% at 50% 0%,#F7DDA6 0%,#E7B66E 38%,#B97A3E 72%,#7A4A26 100%)}
-[data-mode="dusk"] .gym-stage{background:var(--gym-plate,none) center/cover no-repeat,radial-gradient(120% 90% at 50% 0%,#3B2F5E 0%,#2A2148 40%,#1C1633 72%,#120E22 100%)}
-.gym-hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:8px 12px;background:color-mix(in srgb,var(--bz-card,var(--bg2)) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  background:var(--gym-plate,none) center/cover no-repeat,linear-gradient(100deg,rgba(255,240,210,.10),rgba(60,30,0,.10) 50%,rgba(255,240,210,.10)),radial-gradient(150% 130% at 50% 0%,#F7DDA6 0%,#E7B66E 34%,#B97A3E 66%,#7A4A26 100%)}
+[data-mode="dusk"] .gym-stage{background:var(--gym-plate,none) center/cover no-repeat,linear-gradient(100deg,rgba(150,130,255,.08),rgba(0,0,0,.10) 50%,rgba(150,130,255,.08)),radial-gradient(150% 130% at 50% 0%,#3B2F5E 0%,#2A2148 36%,#1C1633 66%,#120E22 100%)}
+.gym-hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:8px 12px;background:linear-gradient(90deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 78%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 92%,transparent) 50%,color-mix(in srgb,var(--bz-card,var(--bg2)) 78%,transparent));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .gym-hl{display:flex;align-items:center;gap:10px;justify-self:stretch;min-width:0}
 .gym-hr{display:flex;align-items:center;gap:10px;justify-content:flex-end;min-width:0;text-align:right}
 .gym-hc{text-align:center;min-width:0}
@@ -648,13 +667,14 @@
 .gym-stat{display:inline-flex;flex-direction:column;line-height:1.05;font-variant-numeric:tabular-nums}
 .gym-stat b{font-family:var(--display);font-size:20px}.gym-stat small{font-size:11px;color:var(--muted);font-weight:700}
 .gym-back{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:6px 12px 6px 9px;border-radius:999px;background:color-mix(in srgb,var(--surface2,#fff) 80%,transparent);border:1px solid var(--line);font-weight:800;font-size:13px;color:var(--text)}
-.gym-play{display:grid;place-items:center;padding:12px;min-height:0;overflow:auto}
-.gym-ctl{padding:8px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--bz-card,var(--bg2)) 70%,transparent);backdrop-filter:blur(6px)}
+.gym-play{display:grid;place-items:center;padding:12px;min-height:0;overflow:auto;container-type:size}
+.gym-stage .sg-endcard{background:color-mix(in srgb,var(--bz-card,var(--bg2)) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);box-shadow:0 10px 30px rgba(40,20,0,.18);max-width:min(560px,100%)}
+.gym-ctl{padding:8px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 55%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 80%,transparent) 50%,color-mix(in srgb,var(--bz-card,var(--bg2)) 55%,transparent));backdrop-filter:blur(6px)}
 .gym-ctl:empty{display:none}
-.gym-card{position:relative;width:min(560px,100%);min-height:min(52%,340px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:color-mix(in srgb,var(--bz-card,var(--bg2)) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:22px;padding:clamp(14px,3vw,24px);text-align:center;box-shadow:0 10px 30px rgba(40,20,0,.18)}
+.gym-card{position:relative;width:min(560px,100%);min-height:min(52%,340px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(165deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 94%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 80%,transparent));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:22px;padding:clamp(14px,3vw,24px);text-align:center;box-shadow:0 10px 30px rgba(40,20,0,.18)}
 .gym-card h3{margin:0;font-family:var(--display);font-size:22px}.gym-card p{margin:0;line-height:1.5}
-.gym-big-ic{width:72px;height:72px;border-radius:20px;display:grid;place-items:center;background:var(--action,var(--accent));color:var(--action-ink,#fff)}
-.gym-hear{display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:10px 22px;border-radius:999px;background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:17px;box-shadow:var(--edge)}
+.gym-big-ic{width:72px;height:72px;border-radius:20px;display:grid;place-items:center;background:var(--gym-act);color:var(--action-ink,#fff)}
+.gym-hear{display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:10px 22px;border-radius:999px;background:var(--gym-act);color:var(--action-ink,#fff);font-weight:800;font-size:17px;box-shadow:var(--edge)}
 .gym-def{color:var(--text);font-size:15px;max-width:34em}.gym-hint{font-size:14px;color:var(--muted)}
 .gym-ask{font-weight:800;color:var(--muted);font-size:13px;letter-spacing:.02em}
 .gym-in{width:min(420px,100%);text-align:center;padding:12px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--text);font-family:var(--entry,inherit);font-weight:800;font-size:clamp(20px,5vw,28px);letter-spacing:.08em;outline:none}
@@ -662,31 +682,31 @@
 .gym-nudge{min-height:1em;font-size:12.5px;font-weight:700;color:var(--muted)}
 .gym-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .gym-btn{min-height:44px;padding:10px 18px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:14px;display:inline-flex;align-items:center;gap:7px;justify-content:center}
-.gym-btn.go{background:var(--action,var(--accent));color:var(--action-ink,#fff);border-color:transparent;box-shadow:var(--edge)}
+.gym-btn.go{background:var(--gym-act);color:var(--action-ink,#fff);border-color:transparent;box-shadow:var(--edge)}
 .gym-btn[disabled]{opacity:.6}
 .gym-btn.up{margin-top:10px}
 .gym-keys{width:min(560px,100%);display:flex;flex-direction:column;gap:6px}
 .gym-krow{display:flex;gap:4px;justify-content:center}
 .gym-k{flex:1 1 0;min-width:0;max-width:52px;height:44px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:18px;text-transform:lowercase}
-.gym-k.wide{flex:1.5 1 0;max-width:72px}.gym-k.go{background:var(--action,var(--accent));color:var(--action-ink,#fff)}
+.gym-k.wide{flex:1.5 1 0;max-width:72px}.gym-k.go{background:var(--gym-act);color:var(--action-ink,#fff)}
 .gym-bar{position:absolute;left:14px;right:14px;top:8px;height:5px;border-radius:9px;background:color-mix(in srgb,var(--line) 70%,transparent);overflow:hidden}
 .gym-bar>i{display:block;height:100%;background:var(--action,var(--accent));transform-origin:left center}
 .gym-lvl{display:inline-flex;align-items:center;min-height:28px;padding:3px 10px;border-radius:999px;background:var(--chip,var(--surface2));border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--text)}
 .gym-tier{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:800;color:var(--muted);border:1px dashed var(--line)}
 .gym-hub{width:min(980px,100%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-content:center}
-.gym-tile{position:relative;display:flex;flex-direction:column;border-radius:18px;background:color-mix(in srgb,var(--bz-card,var(--bg2)) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);box-shadow:0 6px 18px rgba(40,20,0,.14)}
+.gym-tile{position:relative;display:flex;flex-direction:column;border-radius:18px;background:linear-gradient(165deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 94%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 78%,transparent));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);box-shadow:0 6px 18px rgba(40,20,0,.14)}
 .gym-tile.wide{grid-column:1/-1}
 .gym-tile-go{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto;column-gap:12px;row-gap:3px;text-align:left;padding:14px 14px 12px;color:var(--text);flex:1}
-.gym-tile-art{grid-row:1/4;position:relative;width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:var(--action,var(--accent));color:var(--action-ink,#fff)}
+.gym-tile-art{grid-row:1/4;position:relative;width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:var(--gym-act);color:var(--action-ink,#fff)}
 .gym-tile.locked .gym-tile-art{background:var(--surface2);color:var(--muted)}
 .gym-new{position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:#E8458C;border:2px solid var(--bg2,#fff)}
 .gym-tile-t{font-family:var(--display);font-weight:800;font-size:16px}.gym-lastm{font-size:11px;color:var(--muted);font-weight:700}
 .gym-tile-p{font-size:12.5px;color:var(--muted);line-height:1.4}.gym-tile-b{font-size:12px;font-weight:800;color:var(--text)}
 .gym-tile-lv{position:absolute;top:10px;right:10px}
 .gym-board-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(540px,100%)}
-.gym-board{width:min(480px,100%);display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.gym-sq{aspect-ratio:1;border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;font-weight:800;font-size:clamp(11px,2.6vw,14px);line-height:1.2;color:var(--text);background:color-mix(in srgb,var(--bz-card,var(--bg2)) 88%,transparent);border:2px solid var(--line)}
-.gym-sq.done{background:var(--good);color:#fff;border-color:transparent}.gym-sq small{font-size:11px;color:var(--muted)}
+.gym-board{width:min(480px,100cqw - 24px,100cqh - 64px);display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gym-sq{aspect-ratio:1;border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;font-weight:800;font-size:clamp(11px,2.6vw,14px);line-height:1.2;color:var(--text);background:linear-gradient(165deg,color-mix(in srgb,var(--bz-card,var(--bg2)) 94%,transparent),color-mix(in srgb,var(--bz-card,var(--bg2)) 78%,transparent));border:2px solid var(--line)}
+.gym-sq.done{background:linear-gradient(165deg,color-mix(in srgb,var(--good) 80%,#fff),var(--good) 60%,color-mix(in srgb,var(--good) 85%,#000));color:#fff;border-color:transparent}.gym-sq small{font-size:11px;color:var(--muted)}
 .gym-celeb{font-family:var(--display);font-weight:800;font-size:17px;color:var(--good)}
 .gym-quiet{font-size:13px;color:var(--muted);font-weight:700;display:inline-flex;gap:6px;align-items:center}
 .gym-sent{font-size:clamp(17px,2.6vw,21px);line-height:2;max-width:32em}
@@ -716,6 +736,8 @@
       left: R.clock ? R.clock.left : null, held: R.clock ? R.clock.held : null, t0: R.started || null, t1: R.ended || null, pct: R.pct, lv: R.lv, pass: R.pass,
       bad: R.spot ? R.spot.toks.findIndex(t => t.bad) : -1, claimed: R.claimed, board: R.board ? R.board.map(c => c.done) : null,
       pat: R.pat ? { k: R.pat.k, cur: R.pat.cur, opts: R.opts && R.opts.map(o => o[0]) } : null, patients: R.patients ? R.patients.length : null, coins: R.coins } : { view: VIEW },
-    hubName, docType, misspell, TYPES: TYPES.map(t => t[0])
+    hubName, docType, misspell, TYPES: TYPES.map(t => t[0]),
+    /* for the tests only: bring a timed round's end close (the clock itself is what T4 measures) */
+    _clock: s => { const C = R && R.clock; if (C && !C.over) C.used = Math.max(C.used, (C.total - (+s || 0)) * 1000); }
   };
 })();

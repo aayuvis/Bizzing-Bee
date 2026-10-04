@@ -11505,7 +11505,7 @@ function viewDaily(){
 function gymBestLine(c){ try{ const B=((c||active()).gym||{}).best||{}; let top=null;
     Object.keys(B).forEach(k=>{ const b=B[k]; if(b&&b.n&&b.t&&(!top||b.p>top.p)) top=b; });
     return top?('Best: '+top.r+'/'+top.n+' · '+top.t):''; }catch(e){ return ''; } }
-function gymHubName(){ try{ return (window.SB_HUB_NAMES&&SB_HUB_NAMES.gym)||'Spelling Gym'; }catch(e){ return 'Spelling Gym'; } }
+function gymHubName(){ let n=''; try{ n=window.SB_HUB_NAMES&&SB_HUB_NAMES.gym; }catch(e){} return n||'Spelling Gym'; }
 function viewGym(){ return `<div class="sb-gympage"><div id="gym-host" class="gym-host" role="region" aria-label="${escA(gymHubName())}">${window.SB_GYM?'':hiveLoader('opening the gym…')}</div></div>`; }
 function viewGames(){ const g=state.game; if(!g) return gamesHub();
   if(g.type==='duel') return duelView();

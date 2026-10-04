@@ -3,7 +3,10 @@
    What a child sees says "Word Gym": the desktop tab row, the phone's bottom bar, the page's
    own title, the back pill that returns to it and the Progress card that opens it. What a
    child never sees did not move, so old links and saves still work: the nav key is still
-   'coach', the route is still #/practice (and #/gym, typed by hand, lands there too).
+   'coach', the route is still #/practice.
+   REWRITTEN 4 Oct 2026 (games spec §4.2): #/gym, which used to be a typed alias for this tab, is now the
+   address of the Spelling Gym — the drills hub on the Play tab (gym.js). The tab was not renamed and
+   #/practice still opens it; the last check below now pins both halves of that.
    Proved by breaking (4 Oct 2026): with the old label back in NAV_TABS, both old page titles
    and the #/gym alias removed, 7 of 10 fail — both bars, both headings and the route.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/word-gym.cjs                        */
@@ -69,7 +72,8 @@ const label = (pg, sel) => pg.evaluate(s => { const e = document.querySelector(s
   ({ ctx, pg } = await open(b, false, errs, '#/gym'));
   const r2 = await pg.evaluate(() => state.nav);
   await ctx.close();
-  ok(/^(coach|quest)$/.test(r1) && /^(coach|quest)$/.test(r2), `#/practice and #/gym both open it (${r1}, ${r2})`);
+  ok(/^(coach|quest)$/.test(r1), `#/practice opens it (${r1})`);
+  ok(r2 === 'gym', `#/gym opens the Spelling Gym hub on the Play tab, not this tab (${r2})`);
 
   await b.close();
   ok(!errs.length, errs.length ? 'page errors: ' + errs[0] : 'no page errors');

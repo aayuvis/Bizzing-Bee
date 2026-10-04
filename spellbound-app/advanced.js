@@ -402,13 +402,14 @@
             ${card('vocab', 'book', 'Vocabulary Round', '12 hard words — pick the correct meaning.')}
             ${card('lightning', 'timer', 'Lightning Round', '60 seconds — spell as many as you can.')}
           </div>`, 'advBack'); }
-      if (g.done) { const verdict = g.pct >= 85 ? ['🏆', 'National-ready', 'var(--good,#1f9d57)'] : g.pct >= 65 ? ['🥇', 'State level', '#C8901B'] : g.pct >= 45 ? ['🥈', 'Regional level', '#3D7DF0'] : ['🥉', 'Keep drilling', 'var(--muted)'];
+      /* The national / state / regional placement verdict is RETIRED (games spec §4.2, 4 Oct 2026):
+         one mock round cannot say where a child would place, and a badge that claims it is a promise the
+         app cannot keep. The round reports what happened — the words right — and nothing more. */
+      if (g.done) {
         return ADV._shell(`<div style="max-width:520px;margin:0 auto;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--glow);animation:sb-pop .35s ease both">
-          <div style="font-size:48px">${verdict[0]}</div>
           <h2 style="font-family:var(--display);font-weight:800;font-size:22px;margin:6px 0 2px">${g.round[0].toUpperCase() + g.round.slice(1)} round</h2>
           <div style="font-family:var(--display);font-weight:800;font-size:42px;color:var(--accent);line-height:1;margin-top:8px">${g.right}/${g.total}</div>
           <div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:4px">${g.pct}% right</div>
-          <div style="display:inline-block;margin-top:12px;padding:7px 16px;border-radius:999px;font-weight:800;font-size:14px;color:#fff;background:${verdict[2]}">${verdict[1]}</div>
           <div style="display:flex;gap:10px;justify-content:center;margin-top:20px"><button data-act="advGo" data-arg="mock" style="padding:13px 20px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);font-weight:800">Another round</button><button data-act="advMockPick" data-arg="${g.round}" style="padding:13px 20px;border-radius:13px;background:var(--accent);color:#fff;font-weight:800">Retry →</button></div>
         </div>`, 'advExit'); }
       if (g.round === 'vocab') { const q = g.qs[g.i];
