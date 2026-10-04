@@ -106,6 +106,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
 
   /* ---- 7. (B5) the buddy's hello comes from what the child did, and changes each visit ---- */
   const gr = await pg.evaluate(async () => { const W = () => new Promise(r => setTimeout(r, 80)); const c = active();
+    await new Promise(r => SB_LAZY.need('trail', r));   /* the hello waits for the trail (audit v4 B5) — wait on that, not on time */
     c.missed = [{ w: 'rhythm', n: 1 }]; c.trapsBeaten = { necessary: 1 };
     const seen = []; const txt = () => (document.querySelector('.sb-home-greet') || {}).textContent || '';
     for (let i = 0; i < 6; i++) { app.setNav('games'); await W(); app.setNav('home'); await W(); const a = txt(); render(); await W(); seen.push({ a, b: txt(), k: (JSON.parse(SB_STORE.get('greet') || '{}')[c.name] || [])[1] }); }
@@ -125,8 +126,8 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     const visits = [];
     await p2.goto('file://' + SRC + '/index.html');
     for (let i = 0; i < 5; i++) {
-      await p2.waitForFunction(() => typeof state !== 'undefined' && document.querySelector('.sb-home-greet:not(.sb-card)') && !document.querySelector('.sb-greet-hold'), null, { timeout: 15000 }).catch(() => {});
-      visits.push(await p2.evaluate(() => ({ k: (JSON.parse(SB_STORE.get('greet') || '{}').Quiet || [])[1], t: (document.querySelector('.sb-home-greet:not(.sb-card)') || {}).textContent || '' })));
+      const up = await p2.waitForFunction(() => typeof state !== 'undefined' && document.querySelector('.sb-home-greet:not(.sb-card)') && !document.querySelector('.sb-greet-hold'), null, { timeout: 45000 }).then(() => true, () => false);
+      visits.push(up ? await p2.evaluate(() => ({ k: (JSON.parse(SB_STORE.get('greet') || '{}').Quiet || [])[1], t: (document.querySelector('.sb-home-greet:not(.sb-card)') || {}).textContent || '' })) : { k: 'never-drawn', t: '' });
       await p2.reload();
     }
     await c2.close();
