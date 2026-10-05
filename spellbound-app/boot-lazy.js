@@ -120,6 +120,8 @@
        and the whole served corpus — the day's word is picked from it, so the same date and band give the
        same word whatever else has loaded (the end card's sentence and origin come from sents and lore) */
     dailyBee: 'games-daily.js',
+    /* Daily Buzz, back as it was (5 Oct 2026): the game is self-contained (its own 328 words), so it needs nothing else */
+    dailyBuzz: 'daily-buzz.js',
     /* The Mock Spelling Bee (games spec §4.1): fetched at its door (app.mbOpen) with the engine kit it stands
        on — it left the first screen on 4 Oct 2026 (23 KB) to keep a returning speller under the first-load ceiling */
     mockbee: 'mockbee.js'
@@ -152,7 +154,8 @@
     quizhubs: ['loreHub', 'saga2'],
     gym: ['saga2', 'gym', 'sents'],
     mockbee: ['saga2', 'mockbee'],
-    daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
+    daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore'],
+    buzz: ['dailyBuzz']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and

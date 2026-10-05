@@ -850,9 +850,10 @@ Word Lore; "Ready for Hard?" after two rounds ≥80% (`SB_LEVEL.OFFER_UP`); Gran
 DETERMINISTIC position table (nothing random); the Cup's fourth track is **Spice Bazaar**; definitions
 are NOT filtered on format in games. The Play tab is `SB_PLAY_CARDS` in three doors — Compete: Mock
 Spelling Bee · Train: Spelling Gym, Word Lore, Hive Mind, Daily Bee · Play: Bee Grand Prix, Type Blaster,
-Honeycomb Run, Word Forge (hidden until its table is signed off: `SB_FORGE.signedOff || devUnlock`).
-Sound Paths waits for regenerated IPA + an owner-reviewed alignment table; its slot stays EMPTY.
-Gone: Bizzillionaire (→ Word Lore's Ladder), Daily Buzz (→ Daily Bee), Beat the Buzzer / Magic Squares /
+Honeycomb Run, Daily Buzz, Word Forge (hidden until its table is signed off: `SB_FORGE.signedOff || devUnlock`).
+Sound Paths waits for regenerated IPA + an owner-reviewed alignment table; its reserved slot went to Daily
+Buzz on 5 Oct, so it comes in only by naming a card that goes out.
+Gone: Bizzillionaire (→ Word Lore's Ladder), Beat the Buzzer / Magic Squares /
 Word Quiz spelling rounds (→ Spelling Gym), Bee Trivia (→ Word Lore + Hive Mind), Spell Scene (→ Type
 Blaster), Word Snake, Unscramble Stars, Memory Match, the Spelling Duel (→ Family Bee night), Advanced
 Mock Rounds (→ Mock Bee · Champ; `advGo('mock')` opens it).
@@ -896,6 +897,17 @@ Mock Rounds (→ Mock Bee · Champ; `advGo('mock')` opens it).
   (and theme); Origins fixes its language set per round so chance is 25%; pay only from 6/10. `lore-hubs.cjs`.
 - **Daily Bee** (`games-daily.js`, lazy `daily`, `#/daily`, `c.dbee`): the same word per date and age band;
   shapes as well as colour; always ends on the word; pays 1 when solved. `daily-bee.cjs`.
+- **Daily Buzz is BACK, as it was** (owner, 5 Oct 2026: "we need the guess the word of the day game back" —
+  "its own card again" — "come back as it was"). `daily-buzz.js` is the 4 Oct game byte for byte apart from
+  its names: `SB_DAILY_BUZZ`, CSS/ids `dz-*` (Daily Bee owns `db-*` and both sheets can share a page), nav
+  `dailybuzz`, `#/buzz`, opener `app.openDailyBuzz`, lazy group `buzz`. Same 328 words, Wordle rules, any five
+  letters accepted, solved/played stats, Share your grid, one `answer` coin when solved, and its old record
+  (store key `daily` → `sb_daily`) came back with it. Card `dailyBuzz` in the Play door with **no level chip**
+  (`nolevel:1` — one word for everyone; `arcade-hub` holds it to being the only such card). **One change:** a
+  day whose word the screen itself prints (DAILY in the title, SPELL in the greeting, MARCH in a March date)
+  takes the next word on the list (`todaysWord`), because the old game showed the answer in plain sight on
+  those days — "never leak the answer". `tests/daily-buzz.cjs` plays those days (proved by putting the old
+  pick back: 6 fail) and pays twice on purpose (1 fails).
 - **Type Blaster** commits the whole word and repaints a grey world (`blaster-grey`/`-color`); **Honeycomb
   Run** is four word gates to the hive; game timers read frame real time capped at 0.25 s.
 - **Word Forge** (`forge.js`/`forge-core.js`/`forge-data.js`): the table is GENERATED
@@ -941,7 +953,7 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   the record). Tests may still seed plain digits — the migration takes them.
 - **My Feed**: the session is per VISIT (`c.feed.vis`), not per day; "why" lines come from the real
   signal; the build drops cards whose gloss fails `SB_GLOSS_OK`.
-- **Daily Buzz is a screen** (nav `daily`, `#/daily`, `viewDaily` + `SB_DAILY.mount`), not an overlay.
+- **Daily Buzz is a screen**, not an overlay — since 5 Oct its own: nav `dailybuzz`, `#/buzz`, `viewDailyBuzz` + `SB_DAILY_BUZZ.mount` (`#/daily` is Daily Bee).
 - **Home's first screen**: the pictures it showed are remembered in device key `homeArt` and
   preloaded by a second read-only IIFE in the parse-time script; boot-lazy fetches `trail` at
   DOMContentLoaded when Home was drawn (inside boot-lazy `state` is the loader's own). The hello waits

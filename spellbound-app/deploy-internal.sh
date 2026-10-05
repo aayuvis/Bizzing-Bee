@@ -45,7 +45,7 @@ die(){ printf '\n\033[31mABORT: %s\033[0m\n' "$*" >&2; exit 1; }
 say "0. Syntax check"
 for f in app3.js saga2.js voice-review.js voice-words.js voice-cdn.js \
          supabase-sync.js supabase-auth.js boot-lazy.js family-shell.js store.js \
-         mockbee.js gym.js lore.js games-daily.js forge.js forge-core.js forge-data.js kid-safe.js trail.js; do
+         mockbee.js gym.js lore.js games-daily.js daily-buzz.js forge.js forge-core.js forge-data.js kid-safe.js trail.js; do
   [ -f "$SRC/$f" ] || continue
   node -c "$SRC/$f" >/dev/null || die "$f does not parse"
   echo "   ok  $f"
