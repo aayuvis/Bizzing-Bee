@@ -997,7 +997,8 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   EMPTY storage. It failed ~half the time in the main checkout and never in a fresh worktree of the
   same commit; any extra round-trip before `pg.reload()` (an evaluate, a console listener) made it
   pass 6/6. A Chromium file:// reload artefact, not a coin bug. Do not "fix" it by waiting in the test
-  without first finding the mechanism.
+  without first finding the mechanism. `levels.cjs` ("after a reload the levels are still the child's") did the same in
+  a 5 Oct suite run — 0 kept in the household — and passed alone, before and after that day's change.
 
 ## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
 
