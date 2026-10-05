@@ -5,16 +5,21 @@
    that hub on purpose, so this test was rewritten deliberately, not loosened. The rules it kept:
    every row full, large painted tiles for the flagships, no hollow tile, the child's own best and no
    "beat it", one level chip per card that really steps.)
+   (5 Oct 2026, owner: "we need the guess the word of the day game back" — "its own card again" — "come back
+   as it was". Rewritten deliberately, not loosened: Daily Buzz is in the Play door again and out of GONE, and
+   it carries NO level chip — its word is the same for every child, as it was — so the chip check now holds
+   every other card to a labelled chip, holds Daily Buzz to none, and fails if any other card drops its chip
+   the same way.)
 
    - three doors in order — Compete · Train · Play — and the cards in SB_PLAY_CARDS, in that order:
      Mock Spelling Bee · the three hubs (named from SB_HUB_NAMES, never typed) and Daily Bee · Bee Grand
-     Prix, Type Blaster, Honeycomb Run (Word Forge only when its table is signed)
-   - none of the cards that left: Bizzillionaire, Daily Buzz, Beat the Buzzer, Magic Squares, Word Quiz,
+     Prix, Type Blaster, Honeycomb Run, Daily Buzz (Word Forge only when its table is signed)
+   - none of the cards that left: Bizzillionaire, Beat the Buzzer, Magic Squares, Word Quiz,
      Bee Trivia, Word Snake, Unscramble Stars, Spell Scene
    - every row of every door is full at 1180 (4 columns) and 390 (2), with Word Forge hidden AND shown
    - the flagships are large painted tiles (Mock Bee the whole row, the Grand Prix two columns, its
      painting loads); cards in a row are one height; no small tile is hollow
-   - a level chip on every card (SB_LEVEL.chip), labelled, and a tap steps it
+   - a level chip on every card (SB_LEVEL.chip), labelled, and a tap steps it — except Daily Buzz, which has none
    - a card says "Coming" exactly when its opener is not on the page yet
    - (audit v4 G9) a game the child has scored in shows their best, quietly; none where they have not
    - renaming a hub (SB_HUB_NAMES) renames its card
@@ -27,7 +32,7 @@ let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
   children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 40, lists: { journey: { xp: 12 } }, activeList: 'journey' }] };
-const GONE = ['Bizzillionaire', 'Daily Buzz', 'Beat the Buzzer', 'Magic Squares', 'Word Quiz', 'Bee Trivia', 'Word Snake', 'Unscramble Stars', 'Spell Scene'];
+const GONE = ['Bizzillionaire', 'Beat the Buzzer', 'Magic Squares', 'Word Quiz', 'Bee Trivia', 'Word Snake', 'Unscramble Stars', 'Spell Scene'];
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined) });
@@ -60,13 +65,14 @@ const GONE = ['Bizzillionaire', 'Daily Buzz', 'Beat the Buzzer', 'Magic Squares'
       const best = Object.fromEntries(cards.map(el => [el.dataset.card, ((el.innerText || '').match(/Best [\d,]+/) || [''])[0]]));
       return { doors, titles, gaps, mb: await big('mockbee'), gp: await big('beeGrandPrix'), coming, best,
         chips: cards.map(el => (el.querySelector('.sb-lvchip') || {}).getAttribute ? el.querySelector('.sb-lvchip').getAttribute('aria-label') : ''),
+        nolevel: cards.map(el => !!(SB_PLAY_CARDS.find(x => x.k === el.dataset.card) || {}).nolevel),
         gone: (() => { const t = document.querySelector('.sb-content, #root').innerText; return GONE.filter(n => t.includes(n)); })(),
         names: ['gym', 'lore', 'hive'].map(k => SB_HUB_NAMES[k]),
         pressure: cards.filter(t => /beat (it|your|that)|new record|can you beat|try to beat|to beat/i.test(t.innerText)).length };
     }, GONE);
     const T = vp.n; const r = await measure();
     ok(r.doors.map(d => d.id + ':' + d.head).join() === 'compete:Compete,train:Train,play:Play', `${T}: three doors in order — ${r.doors.map(d => d.head).join(' · ')}`);
-    const want = { compete: ['mockbee'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun'] };
+    const want = { compete: ['mockbee'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun', 'dailyBuzz'] };
     ok(r.doors.every(d => JSON.stringify(d.keys) === JSON.stringify(want[d.id])), `${T}: the lineup, door by door — ${r.doors.map(d => d.keys.join('/')).join(' | ')}`);
     ok(r.titles.slice(1, 4).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(1, 4).join(', ')})`);
     ok(!r.gone.length, `${T}: none of the cards that left are on the tab` + (r.gone.length ? ' — ' + r.gone.join(', ') : ''));
@@ -75,7 +81,9 @@ const GONE = ['Bizzillionaire', 'Daily Buzz', 'Beat the Buzzer', 'Magic Squares'
     ok(r.mb && r.mb.hero && r.mb.share > 0.97, `${T}: Mock Spelling Bee is a large tile the width of its door (${r.mb && Math.round(r.mb.share * 100)}%)`);
     ok(r.gp && r.gp.hero && r.gp.painted && r.gp.loaded && r.gp.share > (vp.cols === 4 ? 0.45 : 0.97), `${T}: the Grand Prix is a large painted tile and its painting loads (${r.gp && Math.round(r.gp.share * 100)}% of the row)`);
     ok(r.gaps.length && r.gaps.every(g => g >= 0 && g <= 60), `${T}: no small tile is hollow (≤ three lines of slack) — words to Play button ${Math.max(...r.gaps)}px at most`);
-    ok(r.chips.length === r.titles.length && r.chips.every(a => /^Word level for .+: \w+\. Tap for \w+$/.test(a)), `${T}: a labelled level chip on every card (${r.chips.filter(Boolean).length}/${r.titles.length})`);
+    const keyed = r.doors.flatMap(d => d.keys), chipless = keyed.filter((k, i) => r.nolevel[i]);
+    ok(r.chips.length === r.titles.length && r.chips.every((a, i) => r.nolevel[i] ? a === '' : /^Word level for .+: \w+\. Tap for \w+$/.test(a)), `${T}: a labelled level chip on every card but Daily Buzz, and none on Daily Buzz (${r.chips.filter(Boolean).length}/${r.titles.length})`);
+    ok(chipless.join() === 'dailyBuzz', `${T}: Daily Buzz is the only card with no level (${chipless.join(', ') || 'none'})`);
     ok(r.coming.every(x => x.says === !x.live), `${T}: a card says "Coming" exactly when its opener is missing — coming: ${r.coming.filter(x => x.says).map(x => x.k).join(', ') || 'none'}`);
     ok(r.best.beeGrandPrix === 'Best 1,240' && r.best.typeBlaster === 'Best 87' && r.best.honeycombRun === '' && !r.pressure,
       `${T}: a game's card shows the child's own best (Grand Prix ${r.best.beeGrandPrix || '—'}, Type Blaster ${r.best.typeBlaster || '—'}), none where they have none, and no "beat it" anywhere`);

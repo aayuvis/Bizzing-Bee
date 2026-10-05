@@ -13,14 +13,16 @@ then add the line to `SB_PLAY_CARDS`. In that order.
 
 ## Count
 
-Cards: **9**
+Cards: **10**
 
 Before 4 Oct 2026: **13** — Mock Spelling Bee · Bizzillionaire · Bee Grand Prix · Honeycomb Run · Daily Buzz ·
 Beat the Buzzer · Magic Squares · Word Quiz · Bee Trivia · Type Blaster · Word Snake · Unscramble Stars ·
 Spell Scene.
 
-The spec's §0 and §3.1 say "13 to 10"; counted card by card the lineup is nine, and ten when Sound Paths
-takes Unscramble Stars' empty slot. The count here is the cards, not the round number.
+The spec's §0 and §3.1 say "13 to 10"; counted card by card the lineup was nine on 4 Oct, with Unscramble
+Stars' slot held empty for Sound Paths. On 5 Oct 2026 the owner brought **Daily Buzz** back into that slot
+("we need the guess the word of the day game back" — "its own card again" — "come back as it was"): ten.
+The count here is the cards, not the round number.
 
 ## Cards
 
@@ -35,9 +37,10 @@ takes Unscramble Stars' empty slot. The count here is the cards, not the round n
 | `typeBlaster` | Type Blaster (Spell Scene merged in) | Play | kept | — |
 | `honeycombRun` | Honeycomb Run | Play | kept | — |
 | `wordForge` | Word Forge (hidden until `SB_FORGE.signedOff`; the testing unlock shows it) | Play | in | `spellScene` |
+| `dailyBuzz` | Daily Buzz — back 5 Oct 2026, as it was (`daily-buzz.js`, `#/buzz`; no level chip) | Play | in | `unscrambleStars` (its slot, held for Sound Paths until the owner gave it to Daily Buzz) |
 
-Reserved, not in the registry: **Sound Paths** (`soundPaths`, Play) — in for `unscrambleStars`, **only when its
-alignment data is ready**. Until then the slot stays empty.
+Not in the registry: **Sound Paths** (`soundPaths`, Play). Its reserved slot (Unscramble Stars') went to Daily Buzz
+on 5 Oct 2026, so when its alignment data is ready it comes in only by naming a card that goes out.
 
 ## Out
 
@@ -48,9 +51,9 @@ alignment data is ready**. Until then the slot stays empty.
 | `wordquiz` | Word Quiz | 4 Oct 2026 | its spelling rounds belong where words are produced, its knowledge rounds with word knowledge | Spelling Gym · Spot the Error; Word Lore · Meanings, Origins, Idioms & Similes |
 | `trivia` | Bee Trivia | 4 Oct 2026 | split in two with distinct names (owner) | Word Lore (word themes), Hive Mind (general themes) |
 | `bizz` | Who Wants to Be a Bizzillionaire | 4 Oct 2026 | a ladder of word questions is a Word Lore mode | Word Lore · Ladder |
-| `daily` | Daily Buzz | 4 Oct 2026 | Daily Bee teaches the word; Daily Buzz never said it | Daily Bee |
+| `daily` | Daily Buzz | 4 Oct 2026 | Daily Bee teaches the word; Daily Buzz never said it | Daily Bee — and on 5 Oct 2026 the owner brought Daily Buzz back as it was, as its own card (`dailyBuzz`, above), beside Daily Bee |
 | `spellScene` | Spell Scene | 4 Oct 2026 | duplicated Type Blaster (owner); its best ideas move in | Type Blaster; its card slot to Word Forge |
-| `unscrambleStars` | Unscramble Stars | 4 Oct 2026 | too basic: all the letters are given, a random tapper scored 96% | the slot waits for Sound Paths |
+| `unscrambleStars` | Unscramble Stars | 4 Oct 2026 | too basic: all the letters are given, a random tapper scored 96% | its slot: Daily Buzz (5 Oct 2026) |
 | `wordSnake` | Word Snake | 4 Oct 2026 | the glowing next tile spelled the word for the child | — (no replacement) |
 | `memoryMatch` | ◆ Memory Match (Advanced add-on) | 4 Oct 2026 | it paid for luck | Spelling Gym · Word Doctor (a mode, not a card) |
 | `rapidDictation` | ◆ Rapid Dictation (Advanced add-on) | 4 Oct 2026 | a duplicate | Spelling Gym · Champ Dictation |
