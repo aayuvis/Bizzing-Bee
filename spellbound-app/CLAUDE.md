@@ -1063,12 +1063,22 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
 - `SB_UNSAFE_RE` refuses the family by headword AND by definition ("gender identity", "assigned at birth",
   "recorded for them at birth", non-binary…), never `gender` alone (the grammar word) or `trans` alone.
   **Kept on purpose**: gender/genders (grammar), engender, androgynous/androgyny (appearance), hermaphroditic
-  (botany), unisex, the "-person" words (chairperson, snowperson…). **Sexual-orientation words are a separate
-  owner decision** (lesbian(s), homosexual are served; heterosexual(s), bisexual, gayborhood, homonormative… are
-  in the library; `queer`'s library gloss is the slur sense while words-patch serves "strange, odd").
-- Guard: `tests/no-gender-identity.cjs` (@check, node — headwords, the meaning in every shipped text, trans,
-  the filter and its spare list, clips; proved by running it on the commit before: 12 fail; filter additions
-  removed: 2 fail). `struck-words.cjs` DELETED + REWRITTEN carry the decision too; `word-bank.cjs` CORE 126,512.
+  (botany), unisex, the "-person" words (chairperson, snowperson…).
+- **Sexual-orientation words are deleted too** (asked the same day; the owner chose "Delete them all"): 58 more
+  records — lesbian(s), lesbianism, homosexual(s), homosexuality, homophobia, homophobic, heterosexual(s), bisexual(s),
+  gays, gayness, gaydar, gayborhood, homonormative, heteronormative, Polari and their forms — plus their lore,
+  synonyms, alternates, voice and French-voice entries and clips (and the orphan voice keys celesbian, nonbisexual).
+  **Kept with their everyday sense only**: `gay` (cheerful — words-patch DEF had been serving "…also, attracted to
+  people of the same sex" over a clean file), `straight` (the SERVED copy said "a heterosexual person"; CORE_FIX now),
+  `queer` (strange, odd), `pouf(s)` (a footstool), `dike` (an embankment, now at rest too); `out`/`outing`/`fairy`/
+  `pansies`/`beard` lost those senses in SB_ALT; `excommunicate(d)` were re-sentenced (the served sentence was "The gay
+  priest was excommunicated when he married his partner", also in trivia-words.js). Trivia: t29006 (answer Polari)
+  deleted, `byLevel` 5 → 6871; t28959's Polari foil → Shelta; t9973's fact no longer says "bisexual flowers".
+  **Kept on purpose**: asexual/ambisexual (biology — `\bbisexual` in the filter spares it), sapphic (a verse form),
+  sappho and Lesbos, homophone(s), homophilous. `word-bank.cjs` CORE is now 126,454.
+- Guard: `tests/no-gender-identity.cjs` (@check, node — both decisions: headwords, the meaning in every shipped
+  text, trans and the kept words' senses, the filter and its spare list, clips; proved on the commit before each:
+  12 fail, then 16 fail; filter additions removed: 2 fail). `struck-words.cjs` DELETED + REWRITTEN carry the decision too; `word-bank.cjs` CORE 126,512.
 
 ## Nazi vocabulary is deleted (3 Oct 2026, owner: "remove words like nazi nazism nazis" — "delete these words from the repo")
 - **32 records deleted from every store** — the Nazi family (nazi/nazis/nazism/naziism/nazify…,

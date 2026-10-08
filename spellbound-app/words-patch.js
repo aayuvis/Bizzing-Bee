@@ -353,8 +353,8 @@ window.SB_WORDS_PATCH = function () {
     holdup: "a delay that stops something going ahead as planned",
     humus: "dark, rich, crumbly soil made from rotted leaves and other plant matter",
     equipping: "supplying a person or place with the tools and gear needed for a task",
-    homosexual: "attracted to people of the same sex",
-    gay: "light-hearted and full of cheerful high spirits; also, attracted to people of the same sex",
+    /* owner, 8 Oct 2026: gay keeps its cheerful sense only (homosexual is deleted: app3 CORE_STRIKE) */
+    gay: "light-hearted and full of cheerful high spirits",
     bondage: "the condition of being held as a slave or kept under another's harsh control",
     jezebel: "a shameless or scheming woman, from a queen in an old story",
     stripper: "a chemical used to remove old paint or varnish from a surface",
