@@ -224,6 +224,8 @@ window.SB_WORDS_PATCH = function () {
      A-B-A, which is how it came to look like an acronym */
   var PRON = Object.assign(Object.create(null), { aba: 'AH-buh', abas: 'AH-buhz', baa: 'BAH', baas: 'BAHZ' });
   var DEF = Object.assign(Object.create(null), {
+    /* owner, 8 Oct 2026: `trans` keeps only its first sense (app3 CORE_FIX says the same; tests/no-gender-identity.cjs) */
+    trans: "across, beyond or through; on the far side of something",
     /* THE BIOGRAPHY CLASS, 5 Sep 2026. A person of the same name had taken the
        ordinary word's entry: wren was Christopher Wren rather than the bird. Only
        hijacked common words are here — a headword that is only ever a name keeps
