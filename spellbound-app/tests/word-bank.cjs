@@ -12,8 +12,9 @@ const SRC = process.env.SRC || __dirname + '/..';
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
-const CORE = 126512;   // SB_FULL as it ships, before the shard
-/* 126,551 until 8 Oct 2026, when the owner had the 39 gender-identity records deleted (transgender,
+const CORE = 126454;   // SB_FULL as it ships, before the shard
+/* 126,512 until later on 8 Oct 2026, when the owner chose "Delete them all" for 58 sexual-orientation records.
+   126,551 until 8 Oct 2026, when the owner had the 39 gender-identity records deleted (transgender,
    transsexual(s), cissexual, bigender, genderfluid, transvestite(s)… — app3 CORE_STRIKE, tests/no-gender-identity.cjs). */
 /* 126,562 until 4 Oct 2026, when the owner had retard, retards, idiots, idiotic, moronic,
    imbeciles and morons deleted from every store (tests/struck-words.cjs) — seven library records —

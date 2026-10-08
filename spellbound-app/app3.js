@@ -889,8 +889,10 @@ function loadConcepts(){
    Gender-identity words and meanings too (owner, 8 Oct 2026, see CORE_STRIKE): by headword and by definition
    ("gender identity", "assigned at birth"…), never `gender` alone (grammar) and never `trans` alone
    (transition, transatlantic, transport all pass — tests/no-gender-identity.cjs holds the spare list).
+   Sexual-orientation words and meanings too (owner, same day, "Delete them all"); `\bbisexual` spares the
+   biology word ambisexual, and nothing here touches gay/queer/straight, which keep their everyday senses.
    The 40k core list is cleaned at rest; this guards the premium 130k library too. ---- */
-const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus|\bnazi(?!r)|feminazi|japanazi|islamonazi|denazif|hitler|gestapo|swastika|goebbels|wehrmacht|anschluss|gammadion|transgender|transsexual|transvestit|cisgender|cissexual|genderqueer|genderfluid|\bbigender|\bagender|ambigender|multigender|intergender|postgender|transfeminis|transfolk|\btrans(?:man|men|woman|women)\b|kathoey|gender identit|gender expression|gender dysphoria|gender reassignment|sex reassignment|assigned (?:male |female )?at birth|(?:recorded|assigned) for (?:them|him|her) at birth|\bnon-?binary\b)/i;
+const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus|\bnazi(?!r)|feminazi|japanazi|islamonazi|denazif|hitler|gestapo|swastika|goebbels|wehrmacht|anschluss|gammadion|transgender|transsexual|transvestit|cisgender|cissexual|genderqueer|genderfluid|\bbigender|\bagender|ambigender|multigender|intergender|postgender|transfeminis|transfolk|\btrans(?:man|men|woman|women)\b|kathoey|gender identit|gender expression|gender dysphoria|gender reassignment|sex reassignment|assigned (?:male |female )?at birth|(?:recorded|assigned) for (?:them|him|her) at birth|\bnon-?binary\b|homosexual|lesbian|heterosexual|\bbisexual|homophob|\blgbt|lesbigay|gaydar|gayborhood|gaytopia|heteronormativ|homonormativ|homonational|sexual orientation|\bgays\b|openly gay)/i;
 function safeWord(w){ if(!w||!w.w) return false; if(SB_UNSAFE_RE.test(w.w)) return false; if(w.d&&SB_UNSAFE_RE.test(w.d)) return false; return true; }
 window.SB_UNSAFE_RE=SB_UNSAFE_RE;   /* kid-safe.js reads it (games spec §1.2) */
 /* ---- full library: 130k words live in words-full.js + words-hard.js, loaded on demand (file too big for startup) ---- */
@@ -1264,7 +1266,21 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
   'nontranssexual','postgenderism','sexship','transfeminism','transfolk','transgender','transgenderism',
   'transman','transsexual','transsexuality','transsexuals','transwoman','ungender','ungendered',
   /* defined by "gender identities" — the same meaning */
-  'omnisexual','omnisexuality','nonheteronormative']);
+  'omnisexual','omnisexuality','nonheteronormative',
+/* ---- sexual-orientation words and meanings, 8 Oct 2026 ----
+   Asked the same day, the owner chose "Delete them all": every word whose meaning IS a sexual orientation
+   (or its slang and politics) is deleted from every store and the library file at rest, clips included.
+   Kept with their everyday sense only: gay/gayer/gaily (cheerful), straight (no bend), queer (strange, odd),
+   pouf(s) (a footstool), dike (an embankment); out/outing/fairy/pansies/beard lost their orientation
+   senses in SB_ALT. Kept on purpose: asexual/ambisexual (biology), sapphic (a verse form), sappho and
+   Lesbos (the poet and the island), homophone(s), homophilous. Guard: tests/no-gender-identity.cjs. */
+  'gayville','polari','antihomophobic','antihomosexual','antihomosexuality','antilesbian','gaybait',
+  'gayborhood','gayby','gaydar','gaydom','gayish','gaymer','gaynesses','gaysian','gaytopia',
+  'heteronormative','heteronormatively','heteropatriarchy','heterosexualist','heterosexually',
+  'heterosexualness','heterosexuals','homonationalism','homonormative','homonormatively','homophile',
+  'homophobia','homophobic','homosexual','lesbian','lesbianhood','lesbianic','lesbianish','lesbianism',
+  'lesbianization','lesbianize','lesbianness','lesbians','lesbianship','lesbigay','nongay',
+  'nonheterosexual','nonhomophobic','nonhomosexual','nonlesbian','nonqueer','queers','yestergay']);
 window.SB_CORE_STRIKE=CORE_STRIKE;   /* kid-safe.js reads it (games spec §1.2): a struck word is never a game word */
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
@@ -1528,6 +1544,8 @@ const CORE_CUT = new Set((
 const CORE_FIX = {
     /* owner, 8 Oct 2026: the gender sense goes; the word keeps its first meaning (and words-patch DEF serves the same) */
     trans: "across, beyond or through; on the far side of something",
+    /* owner, 8 Oct 2026: the served copy said "a heterosexual person"; it keeps its everyday sense */
+    straight: "going in one direction without a bend, curve or turn",
     /* served to children already under this gloss; the LIBRARY copy still said
        "affectionate play (or foreplay without contact with the genital organs)".
        One word must not be repaired in one bank and deleted from the other. */
@@ -1539,7 +1557,6 @@ const CORE_FIX = {
     pouf: "a soft padded footstool or low cushioned seat with no back or arms",
     poufs: "soft padded footstools or low cushioned seats with no back or arms",
     queer: "strange, odd or curious; not what you would expect",
-    queers: "makes something go wrong or spoils a plan",
     mongrel: "a dog of mixed or unknown breed",
     mickey: "to take the mickey is to tease someone or make fun of them",
     mickeys: "playful teasing; taking the mickey out of someone",

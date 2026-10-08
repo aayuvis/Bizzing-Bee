@@ -51,7 +51,14 @@ const DELETED = ['retard', 'retards', 'idiots', 'idiotic', 'moronic', 'imbeciles
   'nongender', 'nongendered', 'nontransgender', 'nontransgendered', 'nontranssexual', 'postgenderism', 'sexship',
   'transfeminism', 'transfolk', 'transgender', 'transgenderism', 'transman', 'transsexual', 'transsexuality',
   'transsexuals', 'transwoman', 'ungender', 'ungendered', 'transvestite', 'transvestites', 'omnisexual', 'omnisexuality',
-  'nonheteronormative'];
+  'nonheteronormative',
+  /* the same day, asked: "Delete them all" for sexual-orientation words */
+  'polari', 'antihomophobic', 'antihomosexual', 'antihomosexuality', 'antilesbian', 'gaybait', 'gayborhood', 'gayby', 'gaydar',
+  'gaydom', 'gayish', 'gaymer', 'gaynesses', 'gaysian', 'gaytopia', 'heteronormative', 'heteronormatively', 'heteropatriarchy',
+  'heterosexualist', 'heterosexually', 'heterosexualness', 'heterosexuals', 'homonationalism', 'homonormative', 'homonormatively',
+  'homophile', 'homophobia', 'homophobic', 'homosexual', 'lesbian', 'lesbianhood', 'lesbianic', 'lesbianish', 'lesbianism',
+  'lesbianization', 'lesbianize', 'lesbianness', 'lesbians', 'lesbianship', 'lesbigay', 'nongay', 'nonheterosexual', 'nonhomophobic',
+  'nonhomosexual', 'nonlesbian', 'nonqueer', 'queers', 'yestergay'];
 const CONFIRMED = ['idiot', 'moron', 'cretin', 'imbecile', 'mongolism', 'negro', 'negroes', 'negroid', 'gypsy', 'gipsy',
   'midget', 'cripple', 'eskimo', 'hottentot'];                                // the audit's examples, served at rest until 4 Oct
 const REWRITTEN = {                                                           // word → what the old gloss said
@@ -68,7 +75,8 @@ const REWRITTEN = {                                                           //
   lazar: /afflicted/i, arthritic: /afflicted/i, paretic: /afflicted/i, igloo: /eskimo/i, tupek: /eskimo/i, tupik: /eskimo/i,
   flirtatious: /coquette/i,
   /* 8 Oct 2026, the owner: `trans` keeps only its first sense */
-  trans: /gender|identity|birth/i };
+  trans: /gender|identity|birth/i,
+  straight: /heterosexual|sexual orientation/i };
 const SERVED_KEEP = new Set(['dike']);
 
 /* app3's strike lists and library filter, read out of the source the page runs */
