@@ -44,7 +44,14 @@ const some = (a) => (a.length ? ' — ' + a.slice(0, 10).join(' ') + (a.length >
 
 /* the decisions */
 const DELETED = ['retard', 'retards', 'idiots', 'idiotic', 'moronic', 'imbeciles', 'cretins', 'morons',
-  'idiotically', 'imbecilic', 'cretinous', 'cretinism'];                     // the second pass, same day
+  'idiotically', 'imbecilic', 'cretinous', 'cretinism',                      // the second pass, same day
+  /* 8 Oct 2026, the owner: gender-identity words and meanings (tests/no-gender-identity.cjs holds the text too) */
+  'agendered', 'ambigender', 'ambigendered', 'androgynously', 'antigender', 'antitranssexual', 'bigender', 'bigendered',
+  'cissexual', 'cissexuality', 'genderfluid', 'intergender', 'kathoey', 'multigender', 'multigendered', 'nonfemale',
+  'nongender', 'nongendered', 'nontransgender', 'nontransgendered', 'nontranssexual', 'postgenderism', 'sexship',
+  'transfeminism', 'transfolk', 'transgender', 'transgenderism', 'transman', 'transsexual', 'transsexuality',
+  'transsexuals', 'transwoman', 'ungender', 'ungendered', 'transvestite', 'transvestites', 'omnisexual', 'omnisexuality',
+  'nonheteronormative'];
 const CONFIRMED = ['idiot', 'moron', 'cretin', 'imbecile', 'mongolism', 'negro', 'negroes', 'negroid', 'gypsy', 'gipsy',
   'midget', 'cripple', 'eskimo', 'hottentot'];                                // the audit's examples, served at rest until 4 Oct
 const REWRITTEN = {                                                           // word → what the old gloss said
@@ -59,7 +66,9 @@ const REWRITTEN = {                                                           //
   lunacy: /legal insanity/i, bedlamite: /term for a lunatic/i, gentile: /your god/i, gentiles: /your god/i,
   psychotic: /afflicted/i, paranoid: /afflicted/i, paranoiac: /afflicted/i, leper: /afflicted/i, lepers: /afflicted/i,
   lazar: /afflicted/i, arthritic: /afflicted/i, paretic: /afflicted/i, igloo: /eskimo/i, tupek: /eskimo/i, tupik: /eskimo/i,
-  flirtatious: /coquette/i };
+  flirtatious: /coquette/i,
+  /* 8 Oct 2026, the owner: `trans` keeps only its first sense */
+  trans: /gender|identity|birth/i };
 const SERVED_KEEP = new Set(['dike']);
 
 /* app3's strike lists and library filter, read out of the source the page runs */

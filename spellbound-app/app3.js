@@ -886,8 +886,11 @@ function loadConcepts(){
    Nazi vocabulary too (owner, 3 Oct 2026: "delete these words from the repo"): the 32 words were
    deleted from every store; this keeps the 130k library from bringing one back by a headword or a
    definition. `\bnazi(?!r)` spares nadir's Arabic nazir and the Nazirites; Ashkenazi has no \b.
+   Gender-identity words and meanings too (owner, 8 Oct 2026, see CORE_STRIKE): by headword and by definition
+   ("gender identity", "assigned at birth"…), never `gender` alone (grammar) and never `trans` alone
+   (transition, transatlantic, transport all pass — tests/no-gender-identity.cjs holds the spare list).
    The 40k core list is cleaned at rest; this guards the premium 130k library too. ---- */
-const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus|\bnazi(?!r)|feminazi|japanazi|islamonazi|denazif|hitler|gestapo|swastika|goebbels|wehrmacht|anschluss|gammadion)/i;
+const SB_UNSAFE_RE=/(nigger|nigga|faggot|niggard|currymuncher|towelhead|raghead|\bkike\b|\bchink|wetback|\bgook\b|\bcoon\b|darkie|\bwop\b|\bdago\b|beaner|\bspic\b|\bcunt|motherfuck|\bfuck|\bshit\b|fellat|cunniling|catamit|pederast|paedophil|pedophil|coprophil|klismaphil|frotteur|\bvoyeur|masturbat|onanis|ejaculat|copulat|fornicat|\bwhore|\bslut\b|bestialit|zoophil|necrophil|scatophil|analingus|\bnazi(?!r)|feminazi|japanazi|islamonazi|denazif|hitler|gestapo|swastika|goebbels|wehrmacht|anschluss|gammadion|transgender|transsexual|transvestit|cisgender|cissexual|genderqueer|genderfluid|\bbigender|\bagender|ambigender|multigender|intergender|postgender|transfeminis|transfolk|\btrans(?:man|men|woman|women)\b|kathoey|gender identit|gender expression|gender dysphoria|gender reassignment|sex reassignment|assigned (?:male |female )?at birth|(?:recorded|assigned) for (?:them|him|her) at birth|\bnon-?binary\b)/i;
 function safeWord(w){ if(!w||!w.w) return false; if(SB_UNSAFE_RE.test(w.w)) return false; if(w.d&&SB_UNSAFE_RE.test(w.d)) return false; return true; }
 window.SB_UNSAFE_RE=SB_UNSAFE_RE;   /* kid-safe.js reads it (games spec §1.2) */
 /* ---- full library: 130k words live in words-full.js + words-hard.js, loaded on demand (file too big for startup) ---- */
@@ -1246,7 +1249,22 @@ const CORE_STRIKE = new Set(['alloted','commmitteth','induhvidual','abe',
    from the served stores at rest by tools/strike-served.cjs; tests/struck-words.cjs guards both. */
   'retard','retards','idiots','idiotic','moronic','imbeciles',
   /* and the insult forms of words already struck, same day, same decision */
-  'idiotically','imbecilic','cretinous','cretinism']);
+  'idiotically','imbecilic','cretinous','cretinism',
+/* ---- gender-identity words and meanings, 8 Oct 2026 ----
+   Owner: "for trans remove the meaning 'defines a person whos gender differ from what is defined at
+   birth' — this is controversial… we dont want such words or meanings… audit the entire word list".
+   Every word whose meaning IS a gender identity, or the politics of one, is deleted from every store and
+   from the library file at rest (transvestite(s) were already struck above). `trans` stays, with only its
+   'across, beyond, through' sense (CORE_FIX). SB_UNSAFE_RE refuses the family by headword AND by
+   definition, so the 130k library cannot bring one back. Kept: gender/genders (grammar), engender,
+   androgynous/androgyny (appearance), hermaphroditic (botany). Guard: tests/no-gender-identity.cjs. */
+  'agendered','ambigender','ambigendered','androgynously','antigender','antitranssexual','bigender',
+  'bigendered','cissexual','cissexuality','genderfluid','intergender','kathoey','multigender',
+  'multigendered','nonfemale','nongender','nongendered','nontransgender','nontransgendered',
+  'nontranssexual','postgenderism','sexship','transfeminism','transfolk','transgender','transgenderism',
+  'transman','transsexual','transsexuality','transsexuals','transwoman','ungender','ungendered',
+  /* defined by "gender identities" — the same meaning */
+  'omnisexual','omnisexuality','nonheteronormative']);
 window.SB_CORE_STRIKE=CORE_STRIKE;   /* kid-safe.js reads it (games spec §1.2): a struck word is never a game word */
 /* ---- the reviewed non-words, signed off 4 Sep 2026 ----
    1,762 entries the generated core carried that are not English words a speller
@@ -1508,6 +1526,8 @@ const CORE_CUT = new Set((
    BEFORE the slur test below, so a repaired record is judged on its new
    definition — which is why no exemption list is needed for any of these. */
 const CORE_FIX = {
+    /* owner, 8 Oct 2026: the gender sense goes; the word keeps its first meaning (and words-patch DEF serves the same) */
+    trans: "across, beyond or through; on the far side of something",
     /* served to children already under this gloss; the LIBRARY copy still said
        "affectionate play (or foreplay without contact with the genital organs)".
        One word must not be repaired in one bank and deleted from the other. */

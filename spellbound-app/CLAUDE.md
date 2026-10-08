@@ -1050,6 +1050,26 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
 - **Deploys run only the node tests** (the data gate, see "Tests run from one command" above): the
   browser guards above are run here, one at a time, before a commit.
 
+## Gender-identity words and meanings are deleted (8 Oct 2026, owner: "for trans remove the meaning … we dont want such words or meanings… audit the entire word list" — "dont just block the words… delete them")
+- **39 records deleted from every store, the 130k library file included** — transgender, transgenderism,
+  transsexual(s), transsexuality, transvestite(s), cissexual(ity), bigender(ed), agendered, ambigender(ed),
+  genderfluid, intergender, multigender(ed), nongender(ed), ungender(ed), antigender, postgenderism,
+  nontransgender(ed), nontranssexual, antitranssexual, transfeminism, transfolk, transman, transwoman, kathoey,
+  sexship, nonfemale, androgynously, and three whose definitions named "gender identities" (omnisexual,
+  omnisexuality, nonheteronormative) — with their lore, alternate senses, voice-index and French-voice entries and
+  **39 clips in `voice/w/`**. All are in CORE_STRIKE so a corpus import cannot serve one again.
+- **`trans` stays with only its first sense**: "across, beyond or through; on the far side of something"
+  (app3 CORE_FIX + words-patch DEF + both banks at rest). The `travesties` lore lost "to cross-dress".
+- `SB_UNSAFE_RE` refuses the family by headword AND by definition ("gender identity", "assigned at birth",
+  "recorded for them at birth", non-binary…), never `gender` alone (the grammar word) or `trans` alone.
+  **Kept on purpose**: gender/genders (grammar), engender, androgynous/androgyny (appearance), hermaphroditic
+  (botany), unisex, the "-person" words (chairperson, snowperson…). **Sexual-orientation words are a separate
+  owner decision** (lesbian(s), homosexual are served; heterosexual(s), bisexual, gayborhood, homonormative… are
+  in the library; `queer`'s library gloss is the slur sense while words-patch serves "strange, odd").
+- Guard: `tests/no-gender-identity.cjs` (@check, node — headwords, the meaning in every shipped text, trans,
+  the filter and its spare list, clips; proved by running it on the commit before: 12 fail; filter additions
+  removed: 2 fail). `struck-words.cjs` DELETED + REWRITTEN carry the decision too; `word-bank.cjs` CORE 126,512.
+
 ## Nazi vocabulary is deleted (3 Oct 2026, owner: "remove words like nazi nazism nazis" — "delete these words from the repo")
 - **32 records deleted from every store** — the Nazi family (nazi/nazis/nazism/naziism/nazify…,
   denazify, nazidom, Naziland, Nazilike) and the words whose MEANING is Nazism: hitler, hitlerian,
