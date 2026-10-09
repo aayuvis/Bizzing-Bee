@@ -62,4 +62,11 @@ for (const r of A.regions) {
 ok(A.regions.length === 4 && !regionIssues.length, `four regions, each with its stops (≥16 items) and a level check of unseen items (≥10)` + (regionIssues.length ? ' — ' + regionIssues.join(' · ') : ''));
 const missingRef = A.regions.flatMap((r) => r.stops.flatMap((s) => s.items).concat(r.check)).concat(A.games || []).filter((id) => !A.items[id]);
 ok(!missingRef.length, 'every item a stop, a check or a game names exists' + (missingRef.length ? ' — ' + missingRef.slice(0, 5).join(', ') : ''));
+/* a painted map named in analogy.js's ART table must ship: the path is built at render time, so the deploy's literal-path
+   asset check cannot see it (the spines vanished from a deploy that way) */
+const ui = fs.readFileSync(path.join(ROOT, 'analogy.js'), 'utf8');
+const artBlock = (ui.match(/const ART = \{([\s\S]*?)\};/) || [, ''])[1];
+const imgs = [...artBlock.matchAll(/img:\s*'([^']+)'/g)].map((m) => m[1]);
+const lost = imgs.filter((f) => !fs.existsSync(path.join(ROOT, 'app-art', f)));
+ok(!lost.length, `every painted map analogy.js names is in app-art (${imgs.length} named)` + (lost.length ? ' — missing ' + lost.join(', ') : ''));
 console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);

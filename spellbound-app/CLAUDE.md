@@ -1062,9 +1062,13 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   every stop is passed; passing it **walks** the region and opens the next; passing again on **another day, on items not seen
   before**, is **mastery** (one `mastery` coin) — the only thing the tab calls mastered. Pay: `answer` from the sixth right,
   `contest` once a day per region on a pass. Progress lives on the child at `c.anl` (`stops`, `regs`, `seen`, `bee`).
-- **The scenery is drawn in code** (layered SVG, positions from a seeded hash) because the image key is not in this container —
-  same contract as the Atlas maps: the road sweeps in a lazy S and is drawn OVER the scenery. If painted maps are made later
-  (`voice/pipeline/analogy-maps.py`, the act-maps contract, `app-art/anl-*.jpg`), swap `sceneFor` for an `<img>` and keep the road.
+- **The scenery is drawn in code until the paintings exist** (owner, 9 Oct: "background graphics sucks" — painted maps
+  wanted). The key lives in the cloud environment as **`GKEY`** (owner's choice; a new session sees it, never print it).
+  `python3 voice/pipeline/analogy-maps.py --all` then `--jpeg` writes `app-art/anl-{ponds,orchard,workshop,peaks}.jpg`
+  (16:9, the board's own shape). Then, per region, add `ART[<region>] = {img, road}` in analogy.js: `road` is ~12 points
+  **traced along the painted band by eye** in the board's 1600×900 space (the Atlas's ACT_MAP rule — regenerate a map,
+  re-trace it). A region in `ART` shows its painting, its stops ride its own road, and the drawn scenery is not used.
+  `tests/analogy-data.cjs` fails if a named painting is missing from app-art (the deploy's asset check cannot see it).
 - **The data is cut, never typed**: `node tools/analogy/build-app.cjs` (~2.5 min) from `tools/analogy/lessons.json` (nine
   lessons with their bridges, traps and hand-written stems; four regions; ~450 hand-written seed rows: everyday opposites,
   degree ladders, parts, materials, uses, doers, word families) plus the engine (`tools/analogy/`, README there). What ships:
