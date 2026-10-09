@@ -233,10 +233,18 @@
         const f = (a, b, c, d) => 0.5 * ((2 * b) + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
         out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]); } }
     out.push(P[P.length - 1]); return out; }
-  const ROAD_D = crPath(ROAD), ROAD_PTS = crPoints(ROAD, 24);
-  const ROAD_LEN = (() => { const L = [0]; for (let i = 1; i < ROAD_PTS.length; i++) L.push(L[i - 1] + Math.hypot(ROAD_PTS[i][0] - ROAD_PTS[i - 1][0], ROAD_PTS[i][1] - ROAD_PTS[i - 1][1])); return L; })();
-  function along(f) { const T = ROAD_LEN[ROAD_LEN.length - 1] * f; let i = ROAD_LEN.findIndex((x) => x >= T); if (i <= 0) return ROAD_PTS[0];
-    const a = ROAD_PTS[i - 1], b = ROAD_PTS[i], u = (T - ROAD_LEN[i - 1]) / Math.max(1e-6, ROAD_LEN[i] - ROAD_LEN[i - 1]); return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]; }
+  const ROAD_PTS = crPoints(ROAD, 24);
+  /* Painted maps (voice/pipeline/analogy-maps.py → app-art/anl-<region>.jpg, 16:9 like the board). A region listed here
+     shows its painting instead of the drawn scenery, and its road is the one TRACED ALONG THE PAINTED BAND, in the board's
+     1600×900 space — measured by eye against the picture, exactly like the Atlas's ACT_MAP. Regenerate a map, re-trace it.
+     tests/analogy-data.cjs holds every image named here to a file in app-art. */
+  const ART = {};
+  const GEO = {};
+  function geo(id) { if (GEO[id]) return GEO[id]; const P = (ART[id] && ART[id].road) || ROAD; const pts = crPoints(P, 24);
+    const len = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    return (GEO[id] = { d: crPath(P), pts, len }); }
+  function along(g, f) { const L = g.len, T = L[L.length - 1] * f; let i = L.findIndex((x) => x >= T); if (i <= 0) return g.pts[0];
+    const a = g.pts[i - 1], b = g.pts[i], u = (T - L[i - 1]) / Math.max(1e-6, L[i] - L[i - 1]); return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]; }
   const POCKETS = [[120, 560, 1160, 700], [1180, 250, 1580, 600], [420, 250, 1460, 400], [10, 20, 150, 330], [1120, 760, 1590, 890], [20, 470, 230, 720]];
   function rng(seed) { let s = hash(seed) || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
   function spots(seed, n, pocketIx, minGap) { const R = rng(seed); const out = []; let guard = 0;
@@ -246,7 +254,9 @@
       if (out.some((o) => Math.hypot(o[0] - x, o[1] - y) < (minGap || 70))) continue; out.push([x, y, R()]); }
     return out.sort((a, b) => a[1] - b[1]); }
   const tree = (x, y, s, leaf, dark) => `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${s.toFixed(2)})"><rect x="-5" y="-6" width="10" height="34" rx="3" fill="#7A5232"/><circle cx="0" cy="-26" r="30" fill="${dark}"/><circle cx="-14" cy="-20" r="22" fill="${leaf}"/><circle cx="12" cy="-32" r="20" fill="${leaf}"/><circle cx="6" cy="-14" r="16" fill="${dark}" opacity=".55"/></g>`;
-  function sceneFor(id) { const R = rng(id); let sky, ground, far, mid, bits = '';
+  function sceneFor(id) {
+    if (ART[id]) return `<div class="anl-scene anl-paint"><img src="app-art/${ART[id].img}" alt="" decoding="async"></div>`;
+    const R = rng(id); let sky, ground, far, mid, bits = ''; const ROAD_D = geo(id).d;
     if (id === 'ponds') { sky = ['#BFE3F2', '#FBE7C6']; ground = ['#A7D58A', '#78B86A']; far = '#9CC7A4'; mid = '#8CC27A';
       bits += [[430, 620, 150, 54], [760, 632, 140, 50]].map(([x, y, rx, ry]) => `<ellipse cx="${x}" cy="${y}" rx="${rx + 10}" ry="${ry + 8}" fill="#6FA45E"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="#5FB7D6"/><ellipse cx="${x - 30}" cy="${y - 14}" rx="${rx * 0.5}" ry="${ry * 0.28}" fill="#BDE6F2" opacity=".7"/>` +
         [0, 1, 2].map((k) => `<ellipse cx="${x - 60 + k * 48}" cy="${y + 10 - k * 6}" rx="16" ry="7" fill="#3E8C4E"/><circle cx="${x - 56 + k * 48}" cy="${y + 6 - k * 6}" r="4" fill="#F7B7D2"/>`).join('')).join('');
@@ -309,10 +319,10 @@
       const st = mastered(r.id) ? 'Mastered' : walked(r.id) ? 'Walked' : open ? 'Open' : 'After ' + (R[i - 1] || {}).name;
       return `<button class="anl-rtab${on ? ' on' : ''}${open ? '' : ' locked'}" data-act="anl" data-arg="region:${escA(r.id)}" aria-pressed="${on}" ${open ? '' : 'aria-disabled="true"'}>
         <span class="anl-rname">${open ? '' : ic('lock', 12) + ' '}${esc(r.name)}</span><span class="anl-rsub">Levels ${r.lv[0]}–${r.lv[1]} · ${esc(st)}</span></button>`; }).join('');
-    const nStops = reg.stops.length + 1;
+    const nStops = reg.stops.length + 1; const g = geo(reg.id);
     const marks = []; const at = here();
     for (let j = 0; j < nStops; j++) { const isChk = j === reg.stops.length; const st = isChk ? null : reg.stops[j]; const id = isChk ? reg.id + '-check' : st.id;
-      const f = 0.07 + 0.88 * (j / (nStops - 1)); const [x, y] = along(f); const open = stopOpen(reg, j);
+      const f = 0.07 + 0.88 * (j / (nStops - 1)); const [x, y] = along(g, f); const open = stopOpen(reg, j);
       const done = isChk ? walked(reg.id) : passed(id); const L = st ? lesson(st.lesson) : null; const cur = at && at.r === reg && at.j === j;
       const label = isChk ? 'Level check' : L.title;
       marks.push(`<button class="anl-stop${done ? ' done' : ''}${open ? '' : ' locked'}${cur ? ' cur' : ''}${s.stop === id ? ' sel' : ''}${isChk ? ' chk' : ''}" style="left:${(x / 16).toFixed(2)}%;top:${(y / 9).toFixed(2)}%" data-act="anl" data-arg="stop:${escA(id)}" aria-label="${escA(label + (done ? ', passed' : open ? '' : ', locked'))}">
@@ -320,10 +330,10 @@
         ${cur && W.SB_AVATAR && c ? `<span class="anl-me" aria-hidden="true">${SB_AVATAR(c.avatar || 'bizzy', 40)}</span>` : ''}</button>`); }
     /* the walked part of the road, solid, up to where the child stands */
     const reach = (() => { let j = 0; for (let k = 0; k < reg.stops.length; k++) if (passed(reg.stops[k].id)) j = k + 1; return walked(reg.id) ? 1 : 0.07 + 0.88 * (j / (nStops - 1)); })();
-    const walkPts = ROAD_PTS.filter((p, i) => ROAD_LEN[i] <= ROAD_LEN[ROAD_LEN.length - 1] * reach);
+    const walkPts = g.pts.filter((p, i) => g.len[i] <= g.len[g.len.length - 1] * reach);
     const walkD = walkPts.length > 1 ? 'M' + walkPts.map((p) => p.map((v) => v.toFixed(0)).join(' ')).join(' L') : '';
-    const board = `<div class="anl-board" role="group" aria-label="${escA(reg.name + ' map')}">${sceneFor(reg.id)}
-      <svg class="anl-walk" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><path d="${ROAD_D}" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-dasharray="4 16" stroke-linecap="round" opacity=".9"/>${walkD ? `<path d="${walkD}" fill="none" stroke="#F2A93B" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>` : ''}</svg>
+    const board = `<div class="anl-board${ART[reg.id] ? ' painted' : ''}" role="group" aria-label="${escA(reg.name + ' map')}">${sceneFor(reg.id)}
+      <svg class="anl-walk" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><path d="${g.d}" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-dasharray="4 16" stroke-linecap="round" opacity=".9"/>${walkD ? `<path d="${walkD}" fill="none" stroke="#F2A93B" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>` : ''}</svg>
       ${marks.join('')}</div>`;
     const tabIc = (() => { try { return navIcon('analogy', 24); } catch (e) { return lic('family', 20); } })();
     return `<div class="anl-page">${head('Analogy Atlas', esc(reg.about), 'goHome', 'Home', tabIc)}
@@ -550,6 +560,8 @@
 .anl-rsub{font-size:12px;color:var(--muted)}
 .anl-board{position:relative;width:100%;aspect-ratio:16/9;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--sh-rest,0 4px 18px rgba(0,0,0,.08));container-type:inline-size}
 .anl-scene,.anl-walk{position:absolute;inset:0;width:100%;height:100%;display:block}
+.anl-paint img{width:100%;height:100%;object-fit:cover;display:block}
+.anl-board.painted .anl-walk{filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .anl-stop{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;min-width:48px;min-height:48px;background:none;border:0;padding:0;cursor:pointer;z-index:2}
 .anl-med{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#FFFFFF;color:#3A2A5A;border:3px solid #F2A93B;box-shadow:0 3px 10px rgba(0,0,0,.28)}
 .anl-stop.done .anl-med{background:#F2A93B;color:#FFFFFF;border-color:#FFFFFF}

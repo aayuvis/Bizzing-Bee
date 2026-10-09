@@ -16,7 +16,9 @@ import sys
 import time
 import urllib.request
 
-KEY = open(os.environ.get('GKEY_FILE', '/root/.gkey')).read().strip()
+# The key comes from the environment (GKEY, set in the cloud environment's settings) and
+# falls back to the key file. Never print it; it goes only in the x-goog-api-key header.
+KEY = (os.environ.get('GKEY') or open(os.environ.get('GKEY_FILE', '/root/.gkey')).read()).strip()
 OUT = '/home/user/Bizzing-Bee/spellbound-app/app-art'
 MODEL = os.environ.get('NB_MODEL', 'gemini-3.1-flash-image')
 CTX = ssl.create_default_context(cafile='/root/.ccr/ca-bundle.crt')
