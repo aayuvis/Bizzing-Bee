@@ -3326,6 +3326,14 @@ const app = {
   openDaily:()=>app.openDailyBee(),   /* the old name: every door that opened Daily Buzz opens Daily Bee */
   /* DAILY BUZZ, back as it was (owner, 5 Oct 2026: "come back as it was", its own card): nav 'dailybuzz', #/buzz,
      the page head and the board under it. daily-buzz.js is lazy (boot-lazy group 'buzz'); render() mounts it. */
+  /* THE ANALOGIES TAB (owner, 9 Oct 2026): analogy.js + analogy-data.js, lazy group 'analogy'; #/analogies,
+     #/analogies/<region|stop>[/learn|/words], #/analogies/clock; Mock Analogy Bee is #/anlbee */
+  openAnalogies:(sub)=>{ clearGTimer(); state.game=null; const parts=String(sub||'').split('/').filter(Boolean);
+    lazyNeed('analogy', ()=>{ try{ if(window.SB_ANL) SB_ANL.openRoute(parts); }catch(e){} });
+    if(!window.SB_ANL) app.setNav('analogy'); },
+  openAnlBee:()=>{ clearGTimer(); state.game=null;
+    lazyNeed('analogy', ()=>{ try{ if(window.SB_ANL) SB_ANL.openBee(); }catch(e){} });
+    if(!window.SB_ANL) app.setNav('anlbee'); },
   openDailyBuzz:()=>{ clearGTimer(); try{ if(window.SB_DAILY_BUZZ&&SB_DAILY_BUZZ.close) SB_DAILY_BUZZ.close(); }catch(e){} state.game=null;
     lazyNeed('buzz', ()=>{ if(state.nav==='dailybuzz') render(); }); app.setNav('dailybuzz'); },
   /* WORD FORGE (games spec §5.1), a screen in the shell like Daily Buzz: nav 'forge', #/forge. Its table is
@@ -5963,10 +5971,11 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
    icon drops back to currentColor, because the pill behind it is already the
    accent and a coloured glyph on it would be unreadable. */
 const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#0E8A78',
-  play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B', feed:'#D2553A' };
+  play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B', feed:'#D2553A', analogy:'#2E9E5B' };
 /* The tabs, in the family order. My Feed is the LAST tab, after Play (owner, 2 Oct 2026,
    FAMILY-STANDARD §6a) — and it goes, with its ☰ row, when a grown-up switches it off. */
-function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Word Gym','practice'],['explore','Library','library'],['games','Play','play']];
+/* Analogies sits right after the Word Gym (owner, 9 Oct 2026: "a separate analogies tab next to the word gym") */
+function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Word Gym','practice'],['analogy',phone?'Analogy':'Analogies','analogy'],['explore','Library','library'],['games','Play','play']];
   if(!state.feedOff) t.push(['feed','My Feed','feed']); return t; }
 function navIcon(key,size,plain){ size=size||22;
   const tint=plain?'currentColor':(NAV_TINT[key]||'currentColor');
@@ -5981,6 +5990,8 @@ function navIcon(key,size,plain){ size=size||22;
     practice:()=>w(f('M4 20l4.4-1L19.3 8.1a2.1 2.1 0 0 0-3-3L5.4 16z')+'<path d="M4 20l4.4-1L19.3 8.1a2.1 2.1 0 0 0-3-3L5.4 16z"/><path d="M14.3 6.1l3 3"/><path d="M4.4 22h15"/>'),
     /* three books on a shelf */
     library:()=>w(f('M4.6 4.6h4v14.8h-4zM10.4 4.6h4v14.8h-4z')+'<rect x="4.6" y="4.6" width="4" height="14.8" rx="1.1"/><rect x="10.4" y="4.6" width="4" height="14.8" rx="1.1"/><path d="M16.6 5.6l3.2.8-3 14.4-3.2-.8z"/><path d="M4.6 9.4h4M10.4 9.4h4"/>'),
+    /* a bridge: an analogy carries a link from one pair across to another */
+    analogy:()=>w(f('M3 16.6c2.6-5.4 15.4-5.4 18 0V19H3z')+'<path d="M3 16.6c2.6-5.4 15.4-5.4 18 0"/><path d="M2.4 19.2h19.2"/><path d="M7 13.6v5.6M12 12.2v7M17 13.6v5.6"/>'),
     /* a gamepad */
     play:()=>w(f('M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z')+'<path d="M7.2 7.4h9.6a4.6 4.6 0 0 1 4.6 4.6v.6a4 4 0 0 1-7.1 2.5H9.7A4 4 0 0 1 2.6 12.6V12a4.6 4.6 0 0 1 4.6-4.6z"/><path d="M6.4 11.6h2.8M7.8 10.2v2.8"/><circle cx="15.4" cy="10.8" r=".9" fill="${tint}" stroke="none"/><circle cx="17.6" cy="12.8" r=".9" fill="${tint}" stroke="none"/>'),
     /* a climbing chart with the last point lit */
@@ -6763,6 +6774,8 @@ function viewApp(){
   else if(S.nav==='games') content=viewGames();
   else if(S.nav==='daily') content=viewDaily();
   else if(S.nav==='dailybuzz') content=viewDailyBuzz();
+  else if(S.nav==='analogy') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.view():(lazyNeed('analogy',()=>{ if(state.nav==='analogy') render(); }), hiveLoader('opening the Analogy Atlas…')));
+  else if(S.nav==='anlbee') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.beeView():(lazyNeed('analogy',()=>{ if(state.nav==='anlbee') render(); }), hiveLoader('opening the bee…')));
   else if(S.nav==='forge') content=viewForge();
   else if(S.nav==='gym') content=viewGym();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
@@ -12137,7 +12150,8 @@ function arcadeResult(g, res){
    would leave a hole widens its last small cards instead (tests/arcade-hub.cjs).
    ============================================================================ */
 const SB_PLAY_CARDS = [
-  {k:'mockbee',      door:'compete', size:'full', open:'mbOpen',       tag:'Competition'},
+  {k:'mockbee',      door:'compete', size:'big',  open:'mbOpen',       tag:'Competition'},   // half banner since 9 Oct 2026 (owner), beside Mock Analogy Bee
+  {k:'mockAnalogy',  door:'compete', size:'big',  open:'openAnlBee',   tag:'Competition'},   // in 9 Oct 2026 (owner: "an analogy based mock spelling bee … mock analogy bee")
   {k:'gym',          door:'train',   open:'openGym',      hub:1,       tag:'Train'},
   {k:'lore',         door:'train',   open:'openLore',     hub:1,       tag:'Words'},
   {k:'hive',         door:'train',   open:'openHive',     hub:1,       tag:'Quiz'},
@@ -12152,6 +12166,7 @@ window.SB_PLAY_CARDS = SB_PLAY_CARDS;
 const PLAY_DOORS = [['compete','Compete'],['train','Train'],['play','Play']];
 const PLAY_TEXT = {
   mockbee:  {n:'Mock Spelling Bee', p:'Your rivals, one microphone, real bee rules. Miss your word and you sit down.'},
+  mockAnalogy:{n:'Mock Analogy Bee', p:'Your rivals, one analogy each. Miss the link and you sit down.'},
   gym:      {p:'Warm-up, Sprint, Squares and more: every way to drill a spelling, in one hall.'},
   lore:     {p:'Roots, origins, meanings and idioms: the story inside every word.'},
   hive:     {p:'General-knowledge trivia, with a fact to keep from every question.'},
@@ -12161,6 +12176,7 @@ const PLAY_TEXT = {
 };
 const PLAY_ART = {
   mockbee:{grad:'linear-gradient(150deg,#3A1E4E,#2A1638 60%,#1E1028)'},
+  mockAnalogy:{grad:'linear-gradient(150deg,#163A5A,#122A44 60%,#0C1C30)'},
   gym:{grad:'linear-gradient(135deg,#FF5FA2,#C8458C)', plate:'gym', game:'beat'},
   lore:{grad:'linear-gradient(135deg,#13A892,#0E7A6A)', plate:'lore', game:'wordquiz'},
   hive:{grad:'linear-gradient(135deg,#F0A93C,#C8791B)', plate:'hive', game:'trivia'},
@@ -12180,6 +12196,7 @@ function playCardsShown(){ return SB_PLAY_CARDS.filter(playCardShown); }
 /* the child's own best on a card, quietly — a number they set, never a target the card sets (G9) */
 function playCardBest(card,c){
   if(card.arcade){ const v=Math.round(+arcBestMap()[card.k]||0); return v>0?'Best '+fmtN(v):''; }
+  if(card.k==='mockAnalogy'){ try{ if(window.SB_ANL) return SB_ANL.beeBest(); const p=((c&&c.anl)||{}).bee||{}; if(!p.played||!p.best) return ''; const n=p.best; return 'Best finish: '+n+(n%100>10&&n%100<14?'th':({1:'st',2:'nd',3:'rd'})[n%10]||'th')+(p.wins?' · '+p.wins+' won':''); }catch(e){ return ''; } }
   if(card.k==='mockbee'){ try{ const st=(window.MOCKBEE?MOCKBEE.stats():SB_STORE.getJSON('mockbee',{}))||{}; return st.played&&st.best?('Best finish: '+(n=>n+(n%100>10&&n%100<14?'th':({1:'st',2:'nd',3:'rd'})[n%10]||'th'))(+st.best)+(st.wins?' · '+st.wins+' won':'')):''; }catch(e){ return ''; } }
   if(card.hub){ try{ if(window.SB_HUB_BEST&&typeof SB_HUB_BEST[card.k]==='function'){ const s=SB_HUB_BEST[card.k](); if(s) return String(s); } }catch(e){}
     const t=SB_BESTS.top(card.k,c); if(!t) return '';
@@ -12201,7 +12218,7 @@ function gamesHub(){ const c=active();
     const chip=o.nolevel?'':SB_LEVEL.chip(o.k,name);   // Daily Buzz has no level: a chip there would step nothing
     const go=live?(A.cta||'Play'):'Coming';
     if(span>1){   /* a flagship: the large painted tile */
-      let art=''; if(!pic&&o.k==='mockbee'&&window.SB_AVATAR){ try{ const hid=SB_AVATARS.byId['goldlegend']?'goldlegend':((SB_AVATARS.list[0]||{}).id); art=SB_AVATAR(hid,116,{dark:true}); }catch(e){} }
+      let art=''; if(!pic&&(o.k==='mockbee'||o.k==='mockAnalogy')&&window.SB_AVATAR){ try{ const want=o.k==='mockbee'?'goldlegend':'scopey'; const hid=SB_AVATARS.byId[want]?want:((SB_AVATARS.list[o.k==='mockbee'?0:1]||{}).id); art=SB_AVATAR(hid,116,{dark:true}); }catch(e){} }
       if(!pic&&!art&&A.game) art=gameArtSVG(A.game,96);
       return `<div class="pl-card pl-big" data-card="${o.k}" style="grid-column:${span>=4?'1 / -1':'span 2'}">
         <button data-act="playCard" data-arg="${escA(o.k)}" class="arc-hero${live?'':' pl-coming'}">
@@ -13017,7 +13034,7 @@ function render(){
   if(state.nav==='forge'&&state.screen==='app'){ try{ const h=document.getElementById('fg-host'); if(h){ if(window.SB_FORGE_UI) SB_FORGE_UI.mount(h); else lazyNeed('forge', ()=>{ const h2=document.getElementById('fg-host'); if(h2&&window.SB_FORGE_UI) SB_FORGE_UI.mount(h2); }); } }catch(e){} }   /* Word Forge draws its own stage into the shell */
   if(state.nav==='gym'&&state.screen==='app'){ try{ const h=document.getElementById('gym-host'); if(h&&window.SB_GYM) SB_GYM.mount(h); }catch(e){} }   /* the Spelling Gym keeps its own DOM and is re-attached, so a render never wipes a half-typed word */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
-  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
+  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby'))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the

@@ -1,8 +1,8 @@
 # The analogy engine
 
 Builds `A : B :: C : ?` items out of Bizzing Bee's own words. No outside lexicon, no outside word
-vectors, no model at play time. It is the engine behind the proposed Analogies mode (Word Lore)
-and the WordMasters meet plan; nothing in the app reads it yet.
+vectors, no model at play time. It is the engine behind the Analogies tab (`analogy.js`), which reads
+only what `build-app.cjs` cuts from it.
 
 ```
 node tools/analogy/run.cjs        # ~3 min cold (trains the word map), ~2.5 min warm
@@ -12,6 +12,20 @@ Writes `analogy-review/` — `stats.json` (every number below), `sample.json` + 
 stratified sample for a person to judge) and `judged.json` (the verdicts). Like `forge-review/`
 it is **never deployed** (both deploy scripts exclude it). The word-map cache lives in the system
 temp folder, never in the app tree a deploy copies.
+
+## The app's data (the Analogies tab)
+
+```
+node tools/analogy/build-app.cjs    # writes analogy-data.js (~290 KB, lazy), ~2.5 min warm
+```
+
+`lessons.json` is the editorial half: nine lessons (the link in plain words, how to spot it, the trap, hand-written
+stems), four regions by Bee level band, and ~450 hand-written seed rows the definitions cannot supply (everyday
+opposites, degree ladders, parts, materials, uses, doers, word families). `build-app.cjs` puts the seed rows into the
+table, runs the composer, keeps only the kinds of row that measured well (see its header), and lays out the trail:
+a stop per lesson per region and a level check per region from items no stop uses. **Draft**: the lessons and seeds
+were written by Claude and await a person's review (`reviewed:false` in the data). `tests/analogy-data.cjs` guards
+the file; `tests/analogies.cjs` the tab.
 
 ## The parts
 

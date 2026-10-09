@@ -121,7 +121,10 @@ function makeLex(W) {
     for (const c of cand(t)) if (W.has(c) && ps(c) === 'verb') return infl(c) || c;
     return null;
   }
-  return { lemma, infl, tokens, gloss, head, verb, ps };
+  /* a headword this word is a form of, by spelling alone (frying → fry, bitten → bit…): used to keep
+     wrong answers in their base form, where a child meets them */
+  function baseOf(w) { for (const c of cand(w).slice(1)) if (c !== w && W.has(c) && c.length >= 3) return c; return null; }
+  return { lemma, infl, tokens, gloss, head, verb, ps, baseOf };
 }
 
 module.exports = { makeLex, STOP, BOUND };

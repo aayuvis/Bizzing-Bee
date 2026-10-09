@@ -2,7 +2,8 @@
 
    shell      checkShell(page, {phone, bee:true}) — the family's own measurement of Bee's chrome
               (tests/lib/family/shell-check.mjs, vendored byte for byte) — returns [] on Home,
-              desktop and phone, light and dark, with SIX tabs: … Play · My Feed, My Feed last
+              desktop and phone, light and dark, with SEVEN tabs since 9 Oct 2026 (the owner's Analogies tab after
+              Word Gym): … Play · My Feed, My Feed last
    screen     #/feed: the page head, about twenty cards each saying why, then the finished card
               last, pointing at Continue; no likes, views or streaks; no sound before a tap;
               nothing wider than a 390px phone; the My Feed tab is the lit one
@@ -93,10 +94,14 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
        the card must span the row (1107px at 1280) — and anything else still fails. */
     const ownerHome = m => /^second journey card: missing$|^second missing on phone home$/.test(m)
       || (/^next-on-your-journey card width is (\d+)px, Bee's is 547px$/.test(m) && Math.abs(+RegExp.$1 - 1107) <= 5);
-    const f = (await checkShell(pg, { phone, bee: true })).filter(m => !ownerHome(m));
+    /* THE OWNER'S ANALOGIES TAB (9 Oct 2026, "a separate analogies tab next to the word gym"): Bee carries a
+       seventh tab, and the family's check counts 4–6. Until the family standard takes it, exactly that one
+       finding is allowed — and only while the seventh tab is Analogies, right after Word Gym. */
     const tabs = await pg.evaluate(ph => [...document.querySelectorAll(ph ? 'nav.sb-tabbar button' : '.sb-topnav button')].map(x => x.textContent.trim()), phone);
+    const ownerTabs = m => m === '7 tabs (4–6)' && tabs.length === 7 && /Word Gym$/.test(tabs[2]) && /Analog/.test(tabs[3]);
+    const f = (await checkShell(pg, { phone, bee: true })).filter(m => !ownerHome(m) && !ownerTabs(m));
     ok(!f.length, `checkShell on Home, ${phone ? 'phone' : 'desktop'}, ${dark ? 'dark' : 'light'}: [] ${f.length ? JSON.stringify(f) : ''}`);
-    ok(tabs.length === 6 && /My Feed$/.test(tabs[5]) && /Play$/.test(tabs[4]), `six tabs, My Feed last: ${tabs.join(' · ')}`);
+    ok(tabs.length === 7 && /Analog/.test(tabs[3]) && /My Feed$/.test(tabs[6]) && /Play$/.test(tabs[5]), `seven tabs, Analogies after Word Gym, My Feed last: ${tabs.join(' · ')}`);
     await ctx.close();
   }
 

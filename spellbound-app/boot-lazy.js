@@ -124,7 +124,12 @@
     dailyBuzz: 'daily-buzz.js',
     /* The Mock Spelling Bee (games spec §4.1): fetched at its door (app.mbOpen) with the engine kit it stands
        on — it left the first screen on 4 Oct 2026 (23 KB) to keep a returning speller under the first-load ceiling */
-    mockbee: 'mockbee.js'
+    mockbee: 'mockbee.js',
+    /* The Analogies tab (owner, 9 Oct 2026): the Analogy Atlas, its lessons, Against the Clock and the Mock
+       Analogy Bee — the screen and the trail it reads (cut by tools/analogy/build-app.cjs). Fetched at the
+       door of #/analogies or #/anlbee only, never on the first screen or the idle queue. */
+    anlData: 'analogy-data.js',
+    anlUI: 'analogy.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -155,13 +160,14 @@
     gym: ['saga2', 'gym', 'sents'],
     mockbee: ['saga2', 'mockbee'],
     daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore'],
-    buzz: ['dailyBuzz']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
+    buzz: ['dailyBuzz'],
+    analogy: ['anlData', 'anlUI']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'] };
 
   var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',

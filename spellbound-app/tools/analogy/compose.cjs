@@ -29,9 +29,15 @@ const MAXLEN = 14;                    // a contest word, not a chemistry term
 const STEM_FAM = 40;
 const NO_TAGS = new Set(['religion', 'myth', 'theology', 'doctrine', 'insults', 'monsters', 'folklore', 'magic', 'brewing', 'distilling', 'viticulture']);
 const NO_WORDS = new Set(('beer wine whiskey whisky brandy vodka rum gin ale stout lager liquor cocktail sake champagne ' +
-  'mash malt booze tipsy drunk drunken hangover sexism molotov').split(' '));
+  'mash malt booze tipsy drunk drunken hangover sexism molotov liqueur trump').split(' '));
 const OLDER_TAGS = new Set(['war', 'weapons', 'disease', 'pharmacy', 'crime', 'toxicology', 'military']);
 const SYMMETRIC = new Set(['synonym', 'antonym']);
+/* a wrong answer must be a word worth choosing between: not a little function word, not a form of
+   another headword, and never from a subject a children's game should not use as a decoy */
+const FILLER = new Set(('has have had was were is are be been being do does did get got then than inside keep someone something ' +
+  'anyone everyone thing things very also just only even still such some any each every many much more most other another ' +
+  'into onto upon about above below over under after before again ever never always often yes no not').split(' '));
+const NO_TRAP_TAGS = new Set(['politics', 'war', 'weapons', 'crime', 'disease', 'pharmacy', 'religion', 'myth', 'insults', 'toxicology', 'military']);
 
 function fnv(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h; }
 function order(id, n) {                       // a permutation of 0..n-1 fixed by the id
@@ -48,7 +54,12 @@ function compose(D, R, EMB, opts) {
   const lvl = (w) => (W.get(w) || {}).y || 9;
   const fq = (w) => EMB.freq.get(w) || 0;
   const tagsOf = (w) => (W.get(w) || {}).t || [];
-  const ok = (w) => W.has(w) && !X.infl(w) && w.length <= MAXLEN && !NO_WORDS.has(w) && !tagsOf(w).some((t) => NO_TAGS.has(t))
+  const ALLOW = opts.allow || new Set();       // hand-written seed words: trusted as written ("scared" is not "scar"+ed)
+  const ROLE = opts.role || new Map();         // edge → the part of speech D plays in it (seed rows say so)
+  /* every part of speech a word is recorded with: its own and its alternate senses' — Bee keeps one
+     ps per headword, and for everyday words it is often the rarer one ("cold" is filed as a noun) */
+  const POS = (w) => { const x = W.get(w); if (!x) return new Set(); const s = new Set([x.ps]); for (const a of x.alt || []) s.add(String(a.p || '').replace(/^plural\s+/, '')); return s; };
+  const ok = (w) => W.has(w) && (ALLOW.has(w) || !X.infl(w)) && w.length <= MAXLEN && !NO_WORDS.has(w) && !tagsOf(w).some((t) => NO_TAGS.has(t))
     && !/like$/.test(w) && !(/^(?:non|un|in|dis)/.test(w) && fq(w) < 20);       // coinages: "melonlike", "nonresistor"
   const GL = new Map();
   const gl = (w) => { if (!GL.has(w)) GL.set(w, new Set(X.tokens(X.gloss((W.get(w) || {}).d || '')).map((t) => X.lemma(t) || t))); return GL.get(w); };
@@ -112,14 +123,16 @@ function compose(D, R, EMB, opts) {
       done.add(rel + c + '>' + d);
       const L0 = Math.max(lvl(c), lvl(d));
       bump(rel, L0, 'pairs');
-      if (!familiar(c, L0) || !familiar(d, L0)) continue;
+      const seeded = ROLE.has(rel + '|' + c + '|' + d);
+      if (!seeded && (!familiar(c, L0) || !familiar(d, L0))) continue;
       bump(rel, L0, 'familiar');
       if (!EMB.has(c)) continue;
       // the single-answer guard: anything the relation reaches from C, D's synonyms, C's and D's families
       const bad = new Set([c, d, ...out(rel, c), ...synOf(d), ...family(c), ...family(d)]);
       for (const x of out(rel, d)) if (SYMMETRIC.has(rel)) bad.add(x);
-      const wantPs = ps(d);
-      const fits = (t, L) => ok(t) && !bad.has(t) && ps(t) === wantPs && lvl(t) <= Math.max(L, lvl(c)) && familiar(t, L)
+      const wantPs = ROLE.get(rel + '|' + c + '|' + d) || ps(d);
+      const fits = (t, L) => ok(t) && !bad.has(t) && !FILLER.has(t) && !tagsOf(t).some((g) => NO_TRAP_TAGS.has(g))
+        && !(/(?:ing|ed|s)$/.test(t) && X.baseOf(t) && !ALLOW.has(t)) && (ROLE.size ? POS(t).has(wantPs) && ps(t) !== 'adverb' : ps(t) === wantPs) && lvl(t) <= Math.max(L, lvl(c)) && familiar(t, L)
         && !stemShare(t, c, 4) && !stemShare(t, d, 4) && t.length <= d.length * 2 + 2 && d.length <= t.length * 2 + 2
         && !glossTie(t, c) && !glossTie(t, d);
       const cd = EMB.has(d) ? EMB.cos(c, d) : 0;
@@ -136,10 +149,10 @@ function compose(D, R, EMB, opts) {
       if (rel === 'kind') { for (const t of members.get(c) || []) { if (fits(t, L0)) { take(t, 'sibling'); break; } } }
       else { const sib = [...(members.get((out('kind', d).values().next() || {}).value) || [])].sort(); for (const t of sib) if (fits(t, L0)) { take(t, 'sibling'); break; } }
       // form: D's family in another part of speech — wrong part of speech on purpose, so not via fits()
-      for (const t of family(d)) { if (t !== d && t !== c && !family(c).has(t) && ok(t) && ps(t) !== wantPs && lvl(t) <= L0 + 1 && familiar(t, L0)) { traps.push({ w: t, kind: 'form', s: 0 }); break; } }
+      for (const t of family(d)) { if (t !== d && t !== c && !family(c).has(t) && ok(t) && !POS(t).has(wantPs) && lvl(t) <= L0 + 1 && familiar(t, L0)) { traps.push({ w: t, kind: 'form', s: 0 }); break; } }
       // top up with further associates
       for (const [t, s] of nearOf(c)) { if (traps.length >= 4) break; if (fits(t, L0)) take(t, 'assoc', s); }
-      if (traps.length < 3) continue;
+      if (traps.length < 3 && !(seeded && opts.keepSeeds)) continue;
       const opts4 = traps.slice(0, 4);
       const L = Math.max(L0, ...opts4.map((x) => lvl(x.w)));
       bump(rel, L, 'cores');
@@ -150,10 +163,10 @@ function compose(D, R, EMB, opts) {
       const cv = EMB.has(d) ? mid(c, d) : null;
       const cands = stemList.filter(([a, b]) => a !== c && a !== d && b !== c && b !== d && !opts4.some((x) => x.w === a || x.w === b) && lvl(a) <= L && lvl(b) <= L
         && ps(a) === ps(c) && ps(b) === ps(d));
-      if (!cands.length) continue;
+      if (!cands.length && !opts.noStem) continue;   // the app takes its stems from lessons.json (noStem)
       bump(rel, L, 'stemmed');
-      let pick = cands[fnv(c + '>' + d) % Math.min(cands.length, 12)];
-      if (cv) {
+      let pick = cands.length ? cands[fnv(c + '>' + d) % Math.min(cands.length, 12)] : null;
+      if (cv && cands.length) {
         const scored = cands.slice(0, 120).map((p) => [p, dot(cv, mid(p[0], p[1]))]).sort((x, y) => y[1] - x[1]);
         const at = L <= 3 ? 0 : L <= 6 ? Math.floor(scored.length / 3) : scored.length - 1;
         pick = scored[Math.min(at, scored.length - 1)][0];
@@ -174,3 +187,4 @@ function compose(D, R, EMB, opts) {
 }
 
 module.exports = { compose, order, fnv, FAM };
+

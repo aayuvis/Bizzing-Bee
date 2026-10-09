@@ -1050,6 +1050,40 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
 - **Deploys run only the node tests** (the data gate, see "Tests run from one command" above): the
   browser guards above are run here, one at a time, before a commit.
 
+## The Analogies tab (9 Oct 2026, owner: "a separate analogies tab next to the word gym … treat this like word atlas … lessons and words based on that lessons … practice sessions leading to mastery of the level" — "mock analogy bee … shrinking mock spelling bee banner to half" — "against the clock")
+- **Seven tabs now: Home · Word Atlas · Word Gym · Analogies · Library · Play · My Feed** (`NAV_TABS`, icon `navIcon('analogy')`,
+  a bridge). The family's `checkShell` counts 4–6; `tests/feed-screen.cjs` allows exactly that finding, and only while the
+  seventh tab is Analogies after Word Gym. On a phone the bar shrinks its labels when it holds seven (`index.html`, `:has`).
+- **`analogy.js` + `analogy-data.js`, lazy group `analogy`** (never first load): `#/analogies[/<region|stop>[/learn|/words]]`,
+  `#/analogies/clock`, `#/anlbee`. Openers `app.openAnalogies` / `app.openAnlBee` live in app3 so the Play card stands live.
+- **The Analogy Atlas**: four regions by Bee level band (Twin Ponds 1–2 · Orchard Hill 3–4 · Workshop Valley 5–6 · Bridge
+  Peaks 7–9), a stop per lesson, a **level check** per region. A stop is Learn → Meet the words → Practice (relation first:
+  name the link from three plain sentences, then answer) → Check (7/8 passes, opens the next stop). The level check opens when
+  every stop is passed; passing it **walks** the region and opens the next; passing again on **another day, on items not seen
+  before**, is **mastery** (one `mastery` coin) — the only thing the tab calls mastered. Pay: `answer` from the sixth right,
+  `contest` once a day per region on a pass. Progress lives on the child at `c.anl` (`stops`, `regs`, `seen`, `bee`).
+- **The scenery is drawn in code** (layered SVG, positions from a seeded hash) because the image key is not in this container —
+  same contract as the Atlas maps: the road sweeps in a lazy S and is drawn OVER the scenery. If painted maps are made later
+  (`voice/pipeline/analogy-maps.py`, the act-maps contract, `app-art/anl-*.jpg`), swap `sceneFor` for an `<img>` and keep the road.
+- **The data is cut, never typed**: `node tools/analogy/build-app.cjs` (~2.5 min) from `tools/analogy/lessons.json` (nine
+  lessons with their bridges, traps and hand-written stems; four regions; ~450 hand-written seed rows: everyday opposites,
+  degree ladders, parts, materials, uses, doers, word families) plus the engine (`tools/analogy/`, README there). What ships:
+  seed rows; synonyms only when each word lists the other; antonyms from un-/in-/dis- or "not X" evidence (no -ing pairs);
+  categories only when the definition names them (shape/building/fruit/food/game/sport only from seeds); word families;
+  agents from level 5. **`reviewed:false`** — the seeds and the lessons were written by Claude and are a DRAFT; the owner put the
+  tab live before a person read them. `tests/analogy-data.cjs` (node, data gate) holds every word to the library and the
+  strike lists, one answer per item, and level checks to items no stop uses.
+- **Wrong answers are recipes, never chance**: `a` an associate of C from Bee's word map, `o:<rel>` tied to C another way, `s`
+  the right kind of answer for another pair, `f` the answer's word family. A miss HOLDS and says which, in plain words.
+- **Never the answer in plain sight**: no definition on screen while a question is open; the bridge step words every option the
+  same way (`PLAIN`), so the true sentence cannot be spotted by its polish. Option order, stems and rivals are hashes.
+- **Mock Analogy Bee** (`#/anlbee`, Play card `mockAnalogy`, half banner beside Mock Spelling Bee in Compete; GAMES-LEDGER count
+  11, status "added (owner)"): seven rivals from Mock Bee's cast (never the child's own face), round one sits nobody down, a miss
+  after that sits you down, the analogies climb a level every two rounds; only a podium pays `contest`. **Against the Clock**
+  (analogies) lives in the tab: 60 s, a wrong pick costs 2 s and the clock holds while the miss is up; pays like Lore's clock.
+- Guards: `tests/analogies.cjs` (browser: tab place, map, lesson, words, relation-first practice, no leak, held miss, stop/level/
+  mastery across two days, clock, bee, half banners, phone bar), `tests/analogy-data.cjs`, `arcade-hub.cjs` (half banners).
+
 ## Gender-identity words and meanings are deleted (8 Oct 2026, owner: "for trans remove the meaning … we dont want such words or meanings… audit the entire word list" — "dont just block the words… delete them")
 - **39 records deleted from every store, the 130k library file included** — transgender, transgenderism,
   transsexual(s), transsexuality, transvestite(s), cissexual(ity), bigender(ed), agendered, ambigender(ed),
