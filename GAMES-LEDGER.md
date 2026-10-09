@@ -13,7 +13,7 @@ then add the line to `SB_PLAY_CARDS`. In that order.
 
 ## Count
 
-Cards: **10**
+Cards: **11**
 
 Before 4 Oct 2026: **13** — Mock Spelling Bee · Bizzillionaire · Bee Grand Prix · Honeycomb Run · Daily Buzz ·
 Beat the Buzzer · Magic Squares · Word Quiz · Bee Trivia · Type Blaster · Word Snake · Unscramble Stars ·
@@ -24,11 +24,18 @@ Stars' slot held empty for Sound Paths. On 5 Oct 2026 the owner brought **Daily 
 ("we need the guess the word of the day game back" — "its own card again" — "come back as it was"): ten.
 The count here is the cards, not the round number.
 
+On 9 Oct 2026 the owner added **Mock Analogy Bee** beside Mock Spelling Bee in Compete ("an analogy based mock
+spelling bee game that we can call mock analogy bee … shrinking mock spelling bee banner to half"): eleven. It came
+in by the owner's decision, not in a slot that went out, so its status reads "added" and it names no Out row. Its
+home is the new Analogies tab (`analogy.js`, `#/anlbee`); Against the Clock for analogies lives in that tab, not on
+the Play tab.
+
 ## Cards
 
 | Key | Card | Door | Status | Out (what it came in for) |
 |---|---|---|---|---|
-| `mockbee` | Mock Spelling Bee (with Family Bee night) | Compete | kept | — (Family Bee night is a mode, in for the Spelling Duel) |
+| `mockbee` | Mock Spelling Bee (with Family Bee night) — a half banner since 9 Oct 2026 | Compete | kept | — (Family Bee night is a mode, in for the Spelling Duel) |
+| `mockAnalogy` | Mock Analogy Bee — the other half banner (`analogy.js`, `#/anlbee`) | Compete | added (owner, 9 Oct 2026) | — (an owner addition: the count went from 10 to 11) |
 | `gym` | Spelling Gym (name from `SB_HUB_NAMES`) | Train | in | `beat`, `magic`, `wordquiz` (its spelling rounds) |
 | `lore` | Word Lore (name from `SB_HUB_NAMES`) | Train | in | `trivia` (word themes), `wordquiz` (meaning, origin and idiom rounds), `bizz` |
 | `hive` | Hive Mind (name from `SB_HUB_NAMES`) | Train | in | `trivia` (general themes) |
