@@ -222,7 +222,7 @@ function card(s, o) {
     ['Wedge', 'Spelling bee', 'The one competition this community already organises around — and dominates. We do not have to create the demand or explain the category.'],
     ['Expand by engine reuse', 'Adjacent word products', 'Verbal reasoning, vocabulary and test prep run on the drill engine that already exists. New revenue, near-zero new infrastructure.'],
     ['Deepen the moat', 'Heritage language', 'The only category where the diaspora is the entire market rather than a slice of it. Hardest to copy, stickiest to own.'],
-    ['Broaden the house', 'Numeracy & money', 'Bizzing Finance and mental-maths extend the brand past words once the word franchise is proven.'],
+    ['Broaden the house', 'Numeracy & money', 'Bizzing Money and mental-maths extend the brand past words once the word franchise is proven.'],
   ];
   steps.forEach(([tag, head, body], i) => {
     const x = M + i * 3.02;
@@ -286,7 +286,7 @@ function card(s, o) {
     { x: 4.83, name: 'CULTURE', c: GOLD,
       items: [['Bizzing India', 'free hook'], ['Bizzing Bhasha', 'paid pack']] },
     { x: 8.96, name: 'NUMBERS & THE WORLD', c: GREEN,
-      items: [['Bizzing Maths', 'planned'], ['Bizzing Finance', 'in flight'],
+      items: [['Bizzing Maths', 'planned'], ['Bizzing Money', 'in flight'],
               ['Bizzing Business', 'committed'], ['Bizzing AI', 'proposed'], ['Bizzing Quiz', 'gap']] },
   ];
   fams.forEach(f => {
