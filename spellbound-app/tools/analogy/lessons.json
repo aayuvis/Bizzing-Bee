@@ -1,0 +1,189 @@
+{
+  "_note": "The Analogy Trail's lessons, stems and seed rows. DRAFT — written for review, not yet approved by a person. Every word must be a Bee headword (build-app.cjs drops and reports any that is not). Stems are the A : B pairs a child sees first; they are chosen from here only, never from the engine. Seed rows are relation rows the definitions cannot supply (everyday opposites, degree ladders, parts, materials, uses, doers); the engine builds their wrong answers.",
+  "lessons": [
+    {
+      "id": "same", "rels": ["synonym"], "title": "Same meaning", "ic": "link",
+      "idea": "Some words are near twins: they mean almost the same thing. Big and large. Quick and fast.",
+      "bridge": "{A} means about the same as {B}.",
+      "spot": "Swap one word for the other in a sentence. If the sentence still means the same, they are twins.",
+      "trap": "Watch for a word that goes WITH the word but does not MEAN it. Cool and breeze go together, but a breeze is not cool.",
+      "stems": [["big", "large"], ["quick", "fast"], ["begin", "start"], ["shout", "yell"], ["gift", "present"], ["angry", "mad"], ["choose", "pick"], ["close", "shut"], ["huge", "giant"], ["simple", "easy"]]
+    },
+    {
+      "id": "opposite", "rels": ["antonym"], "title": "Opposites", "ic": "swap",
+      "idea": "Opposites sit at the two ends of the same line. Hot and cold are both about temperature, at opposite ends.",
+      "bridge": "{A} is the opposite of {B}.",
+      "spot": "Ask: are they about the same thing, at opposite ends? Full and empty are both about how much is inside.",
+      "trap": "A near twin is the most tempting wrong answer here. If you need the opposite of happy, glad is a trap: it means the same.",
+      "stems": [["hot", "cold"], ["full", "empty"], ["early", "late"], ["wet", "dry"], ["strong", "weak"], ["open", "shut"], ["rich", "poor"], ["push", "pull"], ["arrive", "leave"], ["ancient", "modern"]]
+    },
+    {
+      "id": "kind", "rels": ["kind"], "title": "Kind of", "ic": "sprout",
+      "idea": "Some pairs are a member and its group. A robin is a kind of bird. An oak is a kind of tree.",
+      "bridge": "{A} is a kind of {B}.",
+      "spot": "Say \"is a kind of\" between the two words. If it sounds right, you have found the link.",
+      "trap": "Another member of the same group is a trap. For robin, sparrow tempts you, but a sparrow is not the group. And watch the direction: a bird is not a kind of robin.",
+      "stems": [["robin", "bird"], ["oak", "tree"], ["rose", "flower"], ["carrot", "vegetable"], ["salmon", "fish"], ["hammer", "tool"], ["violin", "instrument"], ["truck", "vehicle"], ["circle", "shape"], ["ant", "insect"]]
+    },
+    {
+      "id": "part", "rels": ["part"], "title": "Part of a whole", "ic": "puzzle",
+      "idea": "Some pairs are a piece and the thing it belongs to. A petal is part of a flower. A page is part of a book.",
+      "bridge": "{A} is part of {B}.",
+      "spot": "Ask: could you find the first thing on or in the second? A wheel is on a bicycle.",
+      "trap": "Another part of the same whole tempts you. For petal, stem is a trap: it is a part too, not the whole.",
+      "stems": [["petal", "flower"], ["page", "book"], ["finger", "hand"], ["wing", "bird"], ["roof", "house"], ["fin", "fish"], ["branch", "tree"], ["sleeve", "shirt"], ["yolk", "egg"], ["string", "guitar"]]
+    },
+    {
+      "id": "made", "rels": ["material"], "title": "Made from", "ic": "pot",
+      "idea": "Some pairs are a thing and the stuff it is made from. A sweater is made from wool. A window is made from glass.",
+      "bridge": "{A} is made from {B}.",
+      "spot": "Ask: what would you need to make it? Bread needs flour.",
+      "trap": "Something that goes with the thing is not what it is made from. Butter goes with bread, but bread is made from flour.",
+      "stems": [["sweater", "wool"], ["window", "glass"], ["table", "wood"], ["candle", "wax"], ["bread", "flour"], ["tire", "rubber"], ["cheese", "milk"], ["brick", "clay"], ["snowman", "snow"], ["boot", "leather"]]
+    },
+    {
+      "id": "use", "rels": ["function"], "title": "Used for", "ic": "tool",
+      "idea": "Some pairs are a thing and the job it does. Scissors cut. A pen writes. A broom sweeps.",
+      "bridge": "{A} is used to {B}.",
+      "spot": "Say \"is used to\" between the words. A shovel is used to dig.",
+      "trap": "Another thing from the same place is a trap. For broom, mop tempts you, but mop is a tool, not a job.",
+      "stems": [["scissors", "cut"], ["pen", "write"], ["broom", "sweep"], ["shovel", "dig"], ["key", "unlock"], ["oven", "bake"], ["needle", "sew"], ["ladder", "climb"], ["scale", "weigh"], ["towel", "dry"]]
+    },
+    {
+      "id": "who", "rels": ["agent"], "title": "Who does it", "ic": "user",
+      "idea": "Some pairs are an action and the person who does it. Someone who bakes is a baker. Someone who sails is a sailor.",
+      "bridge": "{B} is a person who {As}.",
+      "spot": "Say \"a person who\" and the action. A person who paints is a painter.",
+      "trap": "The thing the person works with is a trap. For bake, bread tempts you, but bread is what a baker makes, not who bakes.",
+      "stems": [["bake", "baker"], ["teach", "teacher"], ["sail", "sailor"], ["paint", "painter"], ["farm", "farmer"], ["sing", "singer"], ["act", "actor"], ["drive", "driver"], ["swim", "swimmer"], ["invent", "inventor"]]
+    },
+    {
+      "id": "family", "rels": ["action", "quality", "relating", "able"], "title": "Word families", "ic": "steps",
+      "idea": "Some pairs keep the same idea and change the word's job. Decide becomes decision. Brave becomes bravery. Danger becomes dangerous.",
+      "bridge": "{A} becomes {B}: the same idea with a new job.",
+      "spot": "Look at the ending and the job. If the first pair turns an action into a thing, the second must too.",
+      "trap": "A word with the same meaning but the wrong job is the trap. For kind to kindness, kindly tempts you, but kindly does a different job.",
+      "stems": [["decide", "decision"], ["brave", "bravery"], ["danger", "dangerous"], ["explain", "explanation"], ["kind", "kindness"], ["joy", "joyful"], ["move", "movement"], ["dark", "darkness"], ["music", "musical"], ["enjoy", "enjoyment"]]
+    },
+    {
+      "id": "degree", "rels": ["degree"], "title": "Stronger and weaker", "ic": "trend",
+      "idea": "Some pairs are the same feeling or size, turned up. Warm turned up is hot. Hot turned up is scorching.",
+      "bridge": "{B} is a stronger {A}.",
+      "spot": "Ask: is the second word the same thing, only more so? Tired, then exhausted.",
+      "trap": "A near twin at the SAME strength is the trap. Chilly is close to cool, but it is not the far end.",
+      "stems": [["warm", "hot"], ["tired", "exhausted"], ["angry", "furious"], ["hungry", "starving"], ["cold", "freezing"], ["sad", "miserable"], ["dirty", "filthy"], ["wet", "soaked"], ["happy", "ecstatic"], ["small", "tiny"]]
+    }
+  ],
+  "regions": [
+    { "id": "ponds", "name": "Twin Ponds", "lv": [1, 2], "art": "anl-ponds", "opts": 3,
+      "about": "Where every word finds its twin, its opposite and its family.",
+      "stops": ["same", "opposite", "kind", "who"] },
+    { "id": "orchard", "name": "Orchard Hill", "lv": [3, 4], "art": "anl-orchard", "opts": 4,
+      "about": "Pieces, wholes and what things are made from.",
+      "stops": ["part", "made", "use", "same", "family"] },
+    { "id": "workshop", "name": "Workshop Valley", "lv": [5, 6], "art": "anl-workshop", "opts": 4,
+      "about": "Makers, their tools, and words that change their jobs.",
+      "stops": ["who", "family", "degree", "opposite", "kind"] },
+    { "id": "peaks", "name": "Bridge Peaks", "lv": [7, 9], "art": "anl-peaks", "opts": 5,
+      "about": "Every link at once, with the trickiest words and the closest traps.",
+      "stops": ["same", "opposite", "degree", "family", "kind"] }
+  ],
+  "seed": {
+    "antonym": [
+      ["hot", "cold"], ["big", "small"], ["happy", "sad"], ["fast", "slow"], ["light", "dark"], ["early", "late"],
+      ["empty", "full"], ["hard", "soft"], ["heavy", "light"], ["high", "low"], ["long", "short"], ["loud", "quiet"],
+      ["new", "old"], ["rich", "poor"], ["strong", "weak"], ["thick", "thin"], ["wet", "dry"], ["young", "old"],
+      ["clean", "dirty"], ["true", "false"], ["wide", "narrow"], ["deep", "shallow"], ["rough", "smooth"],
+      ["sharp", "blunt"], ["tall", "short"], ["kind", "cruel"], ["polite", "rude"], ["safe", "dangerous"],
+      ["cheap", "expensive"], ["easy", "difficult"], ["sweet", "sour"], ["tight", "loose"], ["noisy", "silent"],
+      ["friend", "enemy"], ["win", "lose"], ["give", "take"], ["push", "pull"], ["buy", "sell"], ["arrive", "leave"],
+      ["begin", "finish"], ["remember", "forget"], ["accept", "refuse"], ["increase", "decrease"], ["laugh", "cry"],
+      ["love", "hate"], ["float", "sink"], ["victory", "defeat"], ["question", "answer"], ["day", "night"],
+      ["summer", "winter"], ["top", "bottom"], ["entrance", "exit"], ["success", "failure"], ["ancient", "modern"],
+      ["generous", "selfish"], ["humble", "proud"], ["cautious", "reckless"], ["permanent", "temporary"],
+      ["scarce", "plentiful"], ["praise", "criticize"], ["expand", "shrink"], ["visible", "hidden"], ["frequent", "rare"],
+      ["maximum", "minimum"], ["courage", "cowardice"], ["attack", "defend"], ["guilty", "innocent"],
+      ["ascend", "descend"], ["artificial", "natural"], ["borrow", "lend"], ["conceal", "reveal"],
+      ["include", "exclude"], ["import", "export"], ["open", "shut"], ["wild", "tame"], ["brave", "timid"],
+      ["calm", "stormy"], ["fresh", "stale"], ["sunny", "cloudy"], ["awake", "asleep"]
+    ],
+    "degree": [
+      ["warm", "hot"], ["hot", "scorching"], ["cool", "cold"], ["cold", "freezing"], ["big", "huge"], ["small", "tiny"],
+      ["happy", "ecstatic"], ["glad", "thrilled"], ["sad", "miserable"], ["angry", "furious"], ["annoyed", "angry"],
+      ["scared", "terrified"], ["tired", "exhausted"], ["hungry", "starving"], ["dirty", "filthy"], ["wet", "soaked"],
+      ["good", "excellent"], ["bad", "terrible"], ["pretty", "beautiful"], ["like", "love"], ["dislike", "hate"],
+      ["speak", "shout"], ["breeze", "gale"], ["hill", "mountain"], ["pond", "lake"], ["stream", "river"],
+      ["interested", "fascinated"], ["surprised", "astonished"], ["worried", "frantic"], ["smart", "brilliant"],
+      ["sip", "gulp"], ["nibble", "devour"], ["pleased", "delighted"], ["drizzle", "downpour"], ["cool", "frigid"],
+      ["dim", "dark"], ["quiet", "silent"]
+    ],
+    "part": [
+      ["wheel", "bicycle"], ["page", "book"], ["leaf", "tree"], ["petal", "flower"], ["finger", "hand"], ["toe", "foot"],
+      ["wing", "bird"], ["fin", "fish"], ["roof", "house"], ["branch", "tree"], ["key", "piano"], ["string", "guitar"],
+      ["lens", "camera"], ["blade", "knife"], ["handle", "mug"], ["beak", "bird"], ["hoof", "horse"], ["trunk", "elephant"],
+      ["shell", "turtle"], ["sail", "boat"], ["chapter", "book"], ["verse", "poem"], ["sleeve", "shirt"], ["collar", "shirt"],
+      ["lid", "pot"], ["lace", "shoe"], ["sole", "shoe"], ["pupil", "eye"], ["crust", "bread"], ["yolk", "egg"],
+      ["peel", "orange"], ["root", "plant"], ["stem", "flower"], ["brick", "wall"], ["minute", "hour"], ["month", "year"],
+      ["spoke", "wheel"], ["keyboard", "computer"], ["mane", "lion"], ["claw", "cat"]
+    ],
+    "material": [
+      ["sweater", "wool"], ["window", "glass"], ["jar", "glass"], ["table", "wood"], ["paper", "wood"], ["tire", "rubber"],
+      ["candle", "wax"], ["coin", "metal"], ["nail", "iron"], ["brick", "clay"], ["pottery", "clay"], ["bread", "flour"],
+      ["cake", "flour"], ["butter", "cream"], ["cheese", "milk"], ["jam", "fruit"], ["statue", "marble"],
+      ["ring", "gold"], ["basket", "wicker"], ["sandcastle", "sand"], ["snowman", "snow"], ["igloo", "ice"],
+      ["tent", "canvas"], ["jeans", "denim"], ["shirt", "cotton"], ["boot", "leather"], ["wallet", "leather"],
+      ["blanket", "wool"], ["chair", "wood"], ["bottle", "glass"], ["omelet", "egg"], ["popcorn", "corn"]
+    ],
+    "function": [
+      ["scissors", "cut"], ["pen", "write"], ["pencil", "draw"], ["broom", "sweep"], ["shovel", "dig"], ["spoon", "stir"],
+      ["oven", "bake"], ["stove", "cook"], ["freezer", "freeze"], ["kettle", "boil"], ["needle", "sew"], ["hammer", "pound"],
+      ["key", "unlock"], ["ladder", "climb"], ["microscope", "magnify"], ["camera", "photograph"], ["thermometer", "measure"],
+      ["ruler", "measure"], ["scale", "weigh"], ["alarm", "wake"], ["towel", "dry"], ["soap", "clean"], ["net", "catch"],
+      ["glue", "stick"], ["whistle", "signal"], ["oar", "row"], ["brake", "slow"], ["funnel", "pour"], ["sieve", "strain"],
+      ["grater", "shred"], ["whisk", "beat"], ["rake", "gather"], ["pump", "inflate"], ["magnet", "attract"],
+      ["shield", "protect"], ["helmet", "protect"], ["lantern", "light"], ["fan", "cool"], ["heater", "warm"],
+      ["saw", "cut"], ["drill", "bore"], ["telescope", "observe"]
+    ],
+    "agent": [
+      ["teach", "teacher"], ["bake", "baker"], ["farm", "farmer"], ["paint", "painter"], ["sing", "singer"],
+      ["dance", "dancer"], ["write", "writer"], ["read", "reader"], ["swim", "swimmer"], ["run", "runner"],
+      ["drive", "driver"], ["fly", "pilot"], ["cook", "chef"], ["sail", "sailor"], ["act", "actor"], ["invent", "inventor"],
+      ["visit", "visitor"], ["sculpt", "sculptor"], ["explore", "explorer"], ["garden", "gardener"], ["hunt", "hunter"],
+      ["climb", "climber"], ["build", "builder"], ["govern", "governor"], ["lead", "leader"], ["follow", "follower"],
+      ["play", "player"], ["win", "winner"], ["report", "reporter"], ["translate", "translator"], ["edit", "editor"],
+      ["direct", "director"], ["compose", "composer"], ["design", "designer"], ["photograph", "photographer"],
+      ["rescue", "rescuer"], ["heal", "doctor"], ["guard", "guardian"], ["skate", "skater"], ["judge", "referee"]
+    ],
+    "kind": [
+      ["robin", "bird"], ["salmon", "fish"], ["oak", "tree"], ["rose", "flower"], ["carrot", "vegetable"], ["apple", "fruit"],
+      ["hammer", "tool"], ["violin", "instrument"], ["truck", "vehicle"], ["boot", "shoe"], ["ant", "insect"],
+      ["snake", "reptile"], ["frog", "amphibian"], ["whale", "mammal"], ["soccer", "sport"], ["chess", "game"],
+      ["waltz", "dance"], ["circle", "shape"], ["red", "color"], ["gold", "metal"], ["granite", "rock"],
+      ["diamond", "gem"], ["kitchen", "room"], ["canoe", "boat"], ["jet", "aircraft"], ["sofa", "furniture"],
+      ["lemonade", "drink"], ["cheddar", "cheese"], ["cinnamon", "spice"], ["basil", "herb"], ["wheat", "grain"],
+      ["tulip", "flower"], ["eagle", "bird"], ["shark", "fish"], ["beetle", "insect"], ["piano", "instrument"],
+      ["bus", "vehicle"], ["triangle", "shape"], ["blue", "color"], ["silver", "metal"], ["pine", "tree"],
+      ["parrot", "bird"], ["trout", "fish"], ["daisy", "flower"], ["onion", "vegetable"], ["banana", "fruit"],
+      ["wrench", "tool"], ["drum", "instrument"], ["tennis", "sport"], ["square", "shape"], ["copper", "metal"]
+    ],
+    "action": [
+      ["decide", "decision"], ["explain", "explanation"], ["describe", "description"], ["invent", "invention"],
+      ["move", "movement"], ["enjoy", "enjoyment"], ["agree", "agreement"], ["arrive", "arrival"], ["refuse", "refusal"],
+      ["fail", "failure"], ["please", "pleasure"], ["discover", "discovery"], ["celebrate", "celebration"],
+      ["imagine", "imagination"], ["protect", "protection"], ["create", "creation"], ["argue", "argument"],
+      ["choose", "choice"], ["grow", "growth"], ["die", "death"]
+    ],
+    "quality": [
+      ["brave", "bravery"], ["kind", "kindness"], ["happy", "happiness"], ["dark", "darkness"], ["wise", "wisdom"],
+      ["free", "freedom"], ["warm", "warmth"], ["strong", "strength"], ["long", "length"], ["deep", "depth"],
+      ["wide", "width"], ["curious", "curiosity"], ["generous", "generosity"], ["honest", "honesty"], ["patient", "patience"],
+      ["proud", "pride"], ["true", "truth"], ["silent", "silence"], ["able", "ability"], ["safe", "safety"]
+    ],
+    "relating": [
+      ["danger", "dangerous"], ["fame", "famous"], ["beauty", "beautiful"], ["joy", "joyful"], ["power", "powerful"],
+      ["music", "musical"], ["magic", "magical"], ["nature", "natural"], ["hero", "heroic"], ["gold", "golden"],
+      ["wood", "wooden"], ["child", "childish"], ["rain", "rainy"], ["sun", "sunny"], ["poison", "poisonous"],
+      ["peace", "peaceful"], ["care", "careful"], ["mud", "muddy"], ["science", "scientific"], ["history", "historic"]
+    ]
+  }
+}

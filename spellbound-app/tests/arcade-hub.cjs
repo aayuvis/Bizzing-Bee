@@ -12,12 +12,12 @@
    the same way.)
 
    - three doors in order — Compete · Train · Play — and the cards in SB_PLAY_CARDS, in that order:
-     Mock Spelling Bee · the three hubs (named from SB_HUB_NAMES, never typed) and Daily Bee · Bee Grand
+     Mock Spelling Bee and Mock Analogy Bee (two half banners since 9 Oct 2026) · the three hubs (named from SB_HUB_NAMES, never typed) and Daily Bee · Bee Grand
      Prix, Type Blaster, Honeycomb Run, Daily Buzz (Word Forge only when its table is signed)
    - none of the cards that left: Bizzillionaire, Beat the Buzzer, Magic Squares, Word Quiz,
      Bee Trivia, Word Snake, Unscramble Stars, Spell Scene
    - every row of every door is full at 1180 (4 columns) and 390 (2), with Word Forge hidden AND shown
-   - the flagships are large painted tiles (Mock Bee the whole row, the Grand Prix two columns, its
+   - the flagships are large painted tiles (Mock Bee half its row on a desktop, the whole row on a phone, the Grand Prix two columns, its
      painting loads); cards in a row are one height; no small tile is hollow
    - a level chip on every card (SB_LEVEL.chip), labelled, and a tap steps it — except Daily Buzz, which has none
    - a card says "Coming" exactly when its opener is not on the page yet
@@ -72,13 +72,15 @@ const GONE = ['Bizzillionaire', 'Beat the Buzzer', 'Magic Squares', 'Word Quiz',
     }, GONE);
     const T = vp.n; const r = await measure();
     ok(r.doors.map(d => d.id + ':' + d.head).join() === 'compete:Compete,train:Train,play:Play', `${T}: three doors in order — ${r.doors.map(d => d.head).join(' · ')}`);
-    const want = { compete: ['mockbee'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun', 'dailyBuzz'] };
+    const want = { compete: ['mockbee', 'mockAnalogy'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun', 'dailyBuzz'] };
     ok(r.doors.every(d => JSON.stringify(d.keys) === JSON.stringify(want[d.id])), `${T}: the lineup, door by door — ${r.doors.map(d => d.keys.join('/')).join(' | ')}`);
-    ok(r.titles.slice(1, 4).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(1, 4).join(', ')})`);
+    ok(r.titles.slice(2, 5).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(2, 5).join(', ')})`);
     ok(!r.gone.length, `${T}: none of the cards that left are on the tab` + (r.gone.length ? ' — ' + r.gone.join(', ') : ''));
     ok(r.doors.every(d => d.full), `${T}: every row of every door is full (${r.doors.map(d => d.id + ' ' + d.rows + ' row' + (d.rows > 1 ? 's' : '')).join(', ')})`);
     ok(r.doors.every(d => d.even), `${T}: the cards in a row are one height`);
-    ok(r.mb && r.mb.hero && r.mb.share > 0.97, `${T}: Mock Spelling Bee is a large tile the width of its door (${r.mb && Math.round(r.mb.share * 100)}%)`);
+    /* since 9 Oct 2026 (owner: "shrinking mock spelling bee banner to half") Mock Spelling Bee is a half banner
+       beside Mock Analogy Bee: a large tile half its door on a desktop, the whole row on a phone */
+    ok(r.mb && r.mb.hero && (T === 'phone' ? r.mb.share > 0.97 : r.mb.share > 0.45 && r.mb.share < 0.55), `${T}: Mock Spelling Bee is a large tile, half its door beside Mock Analogy Bee (${r.mb && Math.round(r.mb.share * 100)}%)`);
     ok(r.gp && r.gp.hero && r.gp.painted && r.gp.loaded && r.gp.share > (vp.cols === 4 ? 0.45 : 0.97), `${T}: the Grand Prix is a large painted tile and its painting loads (${r.gp && Math.round(r.gp.share * 100)}% of the row)`);
     ok(r.gaps.length && r.gaps.every(g => g >= 0 && g <= 60), `${T}: no small tile is hollow (≤ three lines of slack) — words to Play button ${Math.max(...r.gaps)}px at most`);
     const keyed = r.doors.flatMap(d => d.keys), chipless = keyed.filter((k, i) => r.nolevel[i]);
