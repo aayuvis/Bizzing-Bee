@@ -1,0 +1,7553 @@
+[
+ {
+  "id": "action:retire>retirement",
+  "rel": "action",
+  "L": 3,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "retire",
+  "d": "retirement",
+  "options": [
+   "leadership",
+   "retirement",
+   "dedication",
+   "junior",
+   "senior"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "senior",
+    "assoc",
+    0.794
+   ],
+   [
+    "junior",
+    "assoc",
+    0.768
+   ],
+   [
+    "dedication",
+    "assoc",
+    0.755
+   ],
+   [
+    "leadership",
+    "assoc",
+    0.727
+   ]
+  ],
+  "cd": 0.782,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:certify>certification",
+  "rel": "action",
+  "L": 3,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "certify",
+  "d": "certification",
+  "options": [
+   "publisher",
+   "confirmation",
+   "certification",
+   "subscription",
+   "applicant"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "confirmation",
+    "assoc",
+    0.85
+   ],
+   [
+    "applicant",
+    "assoc",
+    0.845
+   ],
+   [
+    "subscription",
+    "assoc",
+    0.843
+   ],
+   [
+    "publisher",
+    "assoc",
+    0.828
+   ]
+  ],
+  "cd": 0.903,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:determine>determination",
+  "rel": "action",
+  "L": 3,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "determine",
+  "d": "determination",
+  "options": [
+   "deciding",
+   "determination",
+   "estimate",
+   "assessment"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "assessment",
+    "assoc",
+    0.667
+   ],
+   [
+    "estimate",
+    "assoc",
+    0.645
+   ],
+   [
+    "deciding",
+    "assoc",
+    0.642
+   ]
+  ],
+  "cd": 0.532,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:bake>bakery",
+  "rel": "action",
+  "L": 3,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "bake",
+  "d": "bakery",
+  "options": [
+   "bun",
+   "dough",
+   "oatmeal",
+   "bakery",
+   "baking"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "baking",
+    "assoc",
+    0.857
+   ],
+   [
+    "oatmeal",
+    "assoc",
+    0.824
+   ],
+   [
+    "dough",
+    "assoc",
+    0.821
+   ],
+   [
+    "bun",
+    "assoc",
+    0.815
+   ]
+  ],
+  "cd": 0.704,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:enforce>enforcement",
+  "rel": "action",
+  "L": 3,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "enforce",
+  "d": "enforcement",
+  "options": [
+   "violation",
+   "oversight",
+   "sanction",
+   "mandatory",
+   "enforcement"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "violation",
+    "assoc",
+    0.789
+   ],
+   [
+    "sanction",
+    "assoc",
+    0.783
+   ],
+   [
+    "oversight",
+    "assoc",
+    0.779
+   ],
+   [
+    "mandatory",
+    "assoc",
+    0.779
+   ]
+  ],
+  "cd": 0.808,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:propose>proposal",
+  "rel": "action",
+  "L": 3,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "propose",
+  "d": "proposal",
+  "options": [
+   "hypothesis",
+   "legislation",
+   "congress",
+   "proposal"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "legislation",
+    "assoc",
+    0.63
+   ],
+   [
+    "hypothesis",
+    "assoc",
+    0.624
+   ],
+   [
+    "congress",
+    "assoc",
+    0.612
+   ]
+  ],
+  "cd": 0.679,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:compile>compilation",
+  "rel": "action",
+  "L": 4,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "compile",
+  "d": "compilation",
+  "options": [
+   "reprint",
+   "compilation",
+   "glossary",
+   "dictionary",
+   "cipher"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "glossary",
+    "assoc",
+    0.835
+   ],
+   [
+    "reprint",
+    "assoc",
+    0.822
+   ],
+   [
+    "cipher",
+    "assoc",
+    0.82
+   ],
+   [
+    "dictionary",
+    "assoc",
+    0.818
+   ]
+  ],
+  "cd": 0.874,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:recommend>recommendation",
+  "rel": "action",
+  "L": 4,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "recommend",
+  "d": "recommendation",
+  "options": [
+   "diabetic",
+   "prescription",
+   "pharmacist",
+   "recommendation",
+   "dosage"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "pharmacist",
+    "assoc",
+    0.729
+   ],
+   [
+    "prescription",
+    "assoc",
+    0.725
+   ],
+   [
+    "dosage",
+    "assoc",
+    0.715
+   ],
+   [
+    "diabetic",
+    "assoc",
+    0.705
+   ]
+  ],
+  "cd": 0.415,
+  "strong": true,
+  "older": true,
+  "cstems": 1
+ },
+ {
+  "id": "action:vibrate>vibration",
+  "rel": "action",
+  "L": 5,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "vibrate",
+  "d": "vibration",
+  "options": [
+   "sibilant",
+   "resonance",
+   "vibration",
+   "ticking",
+   "audible"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "resonance",
+    "assoc",
+    0.805
+   ],
+   [
+    "ticking",
+    "assoc",
+    0.795
+   ],
+   [
+    "audible",
+    "assoc",
+    0.785
+   ],
+   [
+    "sibilant",
+    "assoc",
+    0.763
+   ]
+  ],
+  "cd": 0.78,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:exhale>exhalation",
+  "rel": "action",
+  "L": 5,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "exhale",
+  "d": "exhalation",
+  "options": [
+   "turbulence",
+   "yawn",
+   "coughing",
+   "panting",
+   "exhalation"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "coughing",
+    "assoc",
+    0.843
+   ],
+   [
+    "yawn",
+    "assoc",
+    0.817
+   ],
+   [
+    "panting",
+    "assoc",
+    0.817
+   ],
+   [
+    "turbulence",
+    "assoc",
+    0.81
+   ]
+  ],
+  "cd": 0.874,
+  "strong": false,
+  "older": true,
+  "cstems": 1
+ },
+ {
+  "id": "action:acknowledge>acknowledgment",
+  "rel": "action",
+  "L": 5,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "acknowledge",
+  "d": "acknowledgment",
+  "options": [
+   "perjury",
+   "assertion",
+   "affidavit",
+   "acknowledgment",
+   "confirmation"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "affidavit",
+    "assoc",
+    0.796
+   ],
+   [
+    "assertion",
+    "assoc",
+    0.789
+   ],
+   [
+    "confirmation",
+    "assoc",
+    0.779
+   ],
+   [
+    "perjury",
+    "assoc",
+    0.779
+   ]
+  ],
+  "cd": 0.788,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:transgress>transgression",
+  "rel": "action",
+  "L": 6,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "transgress",
+  "d": "transgression",
+  "options": [
+   "transgression",
+   "subversion",
+   "obedience",
+   "repeal",
+   "treason"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "obedience",
+    "assoc",
+    0.871
+   ],
+   [
+    "treason",
+    "assoc",
+    0.869
+   ],
+   [
+    "subversion",
+    "assoc",
+    0.859
+   ],
+   [
+    "repeal",
+    "assoc",
+    0.856
+   ]
+  ],
+  "cd": 0.867,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:oscillate>oscillation",
+  "rel": "action",
+  "L": 7,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "oscillate",
+  "d": "oscillation",
+  "options": [
+   "waveform",
+   "velocity",
+   "gyroscope",
+   "momentum",
+   "oscillation"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "momentum",
+    "assoc",
+    0.866
+   ],
+   [
+    "waveform",
+    "assoc",
+    0.846
+   ],
+   [
+    "gyroscope",
+    "assoc",
+    0.837
+   ],
+   [
+    "velocity",
+    "assoc",
+    0.831
+   ]
+  ],
+  "cd": 0.87,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:magnetize>magnetization",
+  "rel": "action",
+  "L": 7,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "magnetize",
+  "d": "magnetization",
+  "options": [
+   "electromagnet",
+   "excitation",
+   "resistor",
+   "polarity",
+   "magnetization"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "electromagnet",
+    "assoc",
+    0.825
+   ],
+   [
+    "excitation",
+    "assoc",
+    0.825
+   ],
+   [
+    "polarity",
+    "assoc",
+    0.799
+   ],
+   [
+    "resistor",
+    "assoc",
+    0.796
+   ]
+  ],
+  "cd": 0.863,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:preoccupy>preoccupation",
+  "rel": "action",
+  "L": 7,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "preoccupy",
+  "d": "preoccupation",
+  "options": [
+   "anticipation",
+   "reluctance",
+   "preoccupation",
+   "perplexity",
+   "fervor"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "fervor",
+    "assoc",
+    0.866
+   ],
+   [
+    "perplexity",
+    "assoc",
+    0.863
+   ],
+   [
+    "reluctance",
+    "assoc",
+    0.858
+   ],
+   [
+    "anticipation",
+    "assoc",
+    0.856
+   ]
+  ],
+  "cd": 0.891,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:utter>utterance",
+  "rel": "action",
+  "L": 7,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "utter",
+  "d": "utterance",
+  "options": [
+   "lament",
+   "disapproval",
+   "utterance",
+   "murmuring",
+   "declamation"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "lament",
+    "assoc",
+    0.705
+   ],
+   [
+    "murmuring",
+    "assoc",
+    0.701
+   ],
+   [
+    "declamation",
+    "assoc",
+    0.691
+   ],
+   [
+    "disapproval",
+    "assoc",
+    0.687
+   ]
+  ],
+  "cd": 0.759,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:entangle>entanglement",
+  "rel": "action",
+  "L": 7,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "entangle",
+  "d": "entanglement",
+  "options": [
+   "lashing",
+   "aileron",
+   "tether",
+   "slack",
+   "entanglement"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "tether",
+    "assoc",
+    0.738
+   ],
+   [
+    "slack",
+    "assoc",
+    0.735
+   ],
+   [
+    "aileron",
+    "sibling",
+    0.541
+   ],
+   [
+    "lashing",
+    "assoc",
+    0.732
+   ]
+  ],
+  "cd": 0.731,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "action:abet>abettal",
+  "rel": "action",
+  "L": 9,
+  "stem": [
+   "emit",
+   "emission"
+  ],
+  "c": "abet",
+  "d": "abettal",
+  "options": [
+   "barratry",
+   "larceny",
+   "pardon",
+   "abettal",
+   "felon"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "felon",
+    "assoc",
+    0.827
+   ],
+   [
+    "larceny",
+    "assoc",
+    0.817
+   ],
+   [
+    "barratry",
+    "assoc",
+    0.812
+   ],
+   [
+    "pardon",
+    "assoc",
+    0.812
+   ]
+  ],
+  "cd": 0.781,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "agent:ski>skier",
+  "rel": "agent",
+  "L": 2,
+  "stem": [
+   "run",
+   "runner"
+  ],
+  "c": "ski",
+  "d": "skier",
+  "options": [
+   "tow",
+   "rider",
+   "skier",
+   "sled"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "sled",
+    "assoc",
+    0.834
+   ],
+   [
+    "rider",
+    "assoc",
+    0.827
+   ],
+   [
+    "tow",
+    "assoc",
+    0.821
+   ]
+  ],
+  "cd": 0.87,
+  "strong": false,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:photograph>photographer",
+  "rel": "agent",
+  "L": 2,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "photograph",
+  "d": "photographer",
+  "options": [
+   "caption",
+   "viewing",
+   "picture",
+   "chart",
+   "photographer"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "caption",
+    "assoc",
+    0.71
+   ],
+   [
+    "viewing",
+    "assoc",
+    0.669
+   ],
+   [
+    "picture",
+    "other:synonym",
+    0.293
+   ],
+   [
+    "chart",
+    "assoc",
+    0.65
+   ]
+  ],
+  "cd": 0.683,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:rule>ruler",
+  "rel": "agent",
+  "L": 2,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "rule",
+  "d": "ruler",
+  "options": [
+   "dictator",
+   "absolute",
+   "ruler",
+   "norm",
+   "constitution"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "dictator",
+    "assoc",
+    0.667
+   ],
+   [
+    "constitution",
+    "assoc",
+    0.614
+   ],
+   [
+    "norm",
+    "other:synonym",
+    0.525
+   ],
+   [
+    "absolute",
+    "assoc",
+    0.603
+   ]
+  ],
+  "cd": 0.584,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:therapy>therapist",
+  "rel": "agent",
+  "L": 2,
+  "stem": [
+   "run",
+   "runner"
+  ],
+  "c": "therapy",
+  "d": "therapist",
+  "options": [
+   "treatment",
+   "therapist",
+   "surgery",
+   "diagnosis",
+   "clinic"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "treatment",
+    "assoc",
+    0.773
+   ],
+   [
+    "clinic",
+    "assoc",
+    0.729
+   ],
+   [
+    "surgery",
+    "assoc",
+    0.728
+   ],
+   [
+    "diagnosis",
+    "assoc",
+    0.721
+   ]
+  ],
+  "cd": 0.682,
+  "strong": true,
+  "older": true,
+  "cstems": 2
+ },
+ {
+  "id": "agent:garden>gardener",
+  "rel": "agent",
+  "L": 3,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "garden",
+  "d": "gardener",
+  "options": [
+   "bush",
+   "gardener",
+   "blossom",
+   "backyard",
+   "hedge"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "hedge",
+    "assoc",
+    0.724
+   ],
+   [
+    "blossom",
+    "assoc",
+    0.715
+   ],
+   [
+    "backyard",
+    "other:synonym",
+    0.656
+   ],
+   [
+    "bush",
+    "assoc",
+    0.714
+   ]
+  ],
+  "cd": 0.665,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:magic>magician",
+  "rel": "agent",
+  "L": 3,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "magic",
+  "d": "magician",
+  "options": [
+   "inspiration",
+   "occult",
+   "magician",
+   "wizard",
+   "ghost"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "wizard",
+    "assoc",
+    0.759
+   ],
+   [
+    "ghost",
+    "assoc",
+    0.688
+   ],
+   [
+    "occult",
+    "other:synonym",
+    0.605
+   ],
+   [
+    "inspiration",
+    "assoc",
+    0.67
+   ]
+  ],
+  "cd": 0.715,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:trap>trapper",
+  "rel": "agent",
+  "L": 4,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "trap",
+  "d": "trapper",
+  "options": [
+   "snare",
+   "pry",
+   "trapper",
+   "escape",
+   "ambush"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "snare",
+    "assoc",
+    0.767
+   ],
+   [
+    "pry",
+    "assoc",
+    0.698
+   ],
+   [
+    "ambush",
+    "other:synonym",
+    0.649
+   ],
+   [
+    "escape",
+    "assoc",
+    0.681
+   ]
+  ],
+  "cd": 0.622,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:claim>claimant",
+  "rel": "agent",
+  "L": 5,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "claim",
+  "d": "claimant",
+  "options": [
+   "affidavit",
+   "rebuttal",
+   "claimant",
+   "credibility",
+   "allegation"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "rebuttal",
+    "assoc",
+    0.689
+   ],
+   [
+    "affidavit",
+    "assoc",
+    0.689
+   ],
+   [
+    "allegation",
+    "other:synonym",
+    0.613
+   ],
+   [
+    "credibility",
+    "assoc",
+    0.685
+   ]
+  ],
+  "cd": 0.671,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:perfume>perfumer",
+  "rel": "agent",
+  "L": 5,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "perfume",
+  "d": "perfumer",
+  "options": [
+   "fragrance",
+   "flavoring",
+   "mastic",
+   "perfumer",
+   "beeswax"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "fragrance",
+    "assoc",
+    0.813
+   ],
+   [
+    "mastic",
+    "assoc",
+    0.803
+   ],
+   [
+    "flavoring",
+    "assoc",
+    0.803
+   ],
+   [
+    "beeswax",
+    "assoc",
+    0.775
+   ]
+  ],
+  "cd": 0.718,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:anatomy>anatomist",
+  "rel": "agent",
+  "L": 5,
+  "stem": [
+   "run",
+   "runner"
+  ],
+  "c": "anatomy",
+  "d": "anatomist",
+  "options": [
+   "paleontology",
+   "anatomist",
+   "hyoid",
+   "zoology",
+   "cranium"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "zoology",
+    "assoc",
+    0.858
+   ],
+   [
+    "cranium",
+    "assoc",
+    0.788
+   ],
+   [
+    "hyoid",
+    "assoc",
+    0.788
+   ],
+   [
+    "paleontology",
+    "assoc",
+    0.777
+   ]
+  ],
+  "cd": 0.816,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:settle>settler",
+  "rel": "agent",
+  "L": 5,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "settle",
+  "d": "settler",
+  "options": [
+   "dispute",
+   "settler",
+   "resolving",
+   "resolve",
+   "mediation"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "mediation",
+    "assoc",
+    0.692
+   ],
+   [
+    "dispute",
+    "assoc",
+    0.653
+   ],
+   [
+    "resolve",
+    "assoc",
+    0.643
+   ],
+   [
+    "resolving",
+    "assoc",
+    0.637
+   ]
+  ],
+  "cd": 0.568,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:swindle>swindler",
+  "rel": "agent",
+  "L": 6,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "swindle",
+  "d": "swindler",
+  "options": [
+   "swindler",
+   "solicitation",
+   "trickery",
+   "cheat",
+   "deceiver"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "cheat",
+    "assoc",
+    0.889
+   ],
+   [
+    "trickery",
+    "assoc",
+    0.815
+   ],
+   [
+    "deceiver",
+    "assoc",
+    0.806
+   ],
+   [
+    "solicitation",
+    "assoc",
+    0.789
+   ]
+  ],
+  "cd": 0.784,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:vacation>vacationer",
+  "rel": "agent",
+  "L": 7,
+  "stem": [
+   "run",
+   "runner"
+  ],
+  "c": "vacation",
+  "d": "vacationer",
+  "options": [
+   "holiday",
+   "vacationer",
+   "weekday",
+   "camping",
+   "outing"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "camping",
+    "assoc",
+    0.769
+   ],
+   [
+    "outing",
+    "assoc",
+    0.764
+   ],
+   [
+    "holiday",
+    "other:synonym",
+    0.69
+   ],
+   [
+    "weekday",
+    "assoc",
+    0.754
+   ]
+  ],
+  "cd": 0.741,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:bicycle>bicyclist",
+  "rel": "agent",
+  "L": 7,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "bicycle",
+  "d": "bicyclist",
+  "options": [
+   "hitch",
+   "bicyclist",
+   "motorcycle",
+   "trailer",
+   "bike"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "motorcycle",
+    "assoc",
+    0.83
+   ],
+   [
+    "trailer",
+    "assoc",
+    0.803
+   ],
+   [
+    "bike",
+    "other:synonym",
+    0.796
+   ],
+   [
+    "hitch",
+    "assoc",
+    0.803
+   ]
+  ],
+  "cd": 0.717,
+  "strong": true,
+  "older": true,
+  "cstems": 2
+ },
+ {
+  "id": "agent:duel>duellist",
+  "rel": "agent",
+  "L": 7,
+  "stem": [
+   "run",
+   "runner"
+  ],
+  "c": "duel",
+  "d": "duellist",
+  "options": [
+   "combat",
+   "agon",
+   "victor",
+   "standoff",
+   "duellist"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "victor",
+    "assoc",
+    0.822
+   ],
+   [
+    "agon",
+    "assoc",
+    0.816
+   ],
+   [
+    "combat",
+    "other:synonym",
+    0.663
+   ],
+   [
+    "standoff",
+    "assoc",
+    0.816
+   ]
+  ],
+  "cd": 0.775,
+  "strong": true,
+  "older": true,
+  "cstems": 2
+ },
+ {
+  "id": "agent:question>questioner",
+  "rel": "agent",
+  "L": 7,
+  "stem": [
+   "run",
+   "runner"
+  ],
+  "c": "question",
+  "d": "questioner",
+  "options": [
+   "questioner",
+   "asking",
+   "inquiry",
+   "veracity",
+   "lawmaker"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "asking",
+    "assoc",
+    0.765
+   ],
+   [
+    "veracity",
+    "assoc",
+    0.719
+   ],
+   [
+    "inquiry",
+    "other:synonym",
+    0.698
+   ],
+   [
+    "lawmaker",
+    "assoc",
+    0.717
+   ]
+  ],
+  "cd": 0.688,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:advance>advancer",
+  "rel": "agent",
+  "L": 7,
+  "stem": [
+   "buy",
+   "buyer"
+  ],
+  "c": "advance",
+  "d": "advancer",
+  "options": [
+   "progress",
+   "miscalculation",
+   "precondition",
+   "advancer",
+   "rebuff"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "rebuff",
+    "assoc",
+    0.662
+   ],
+   [
+    "precondition",
+    "assoc",
+    0.649
+   ],
+   [
+    "progress",
+    "other:synonym",
+    0.571
+   ],
+   [
+    "miscalculation",
+    "assoc",
+    0.63
+   ]
+  ],
+  "cd": 0.663,
+  "strong": false,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "agent:abandon>abandoner",
+  "rel": "agent",
+  "L": 8,
+  "stem": [
+   "run",
+   "runner"
+  ],
+  "c": "abandon",
+  "d": "abandoner",
+  "options": [
+   "neglect",
+   "derelict",
+   "licence",
+   "abandoner",
+   "wreck"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "derelict",
+    "assoc",
+    0.731
+   ],
+   [
+    "neglect",
+    "assoc",
+    0.723
+   ],
+   [
+    "licence",
+    "other:synonym",
+    0.445
+   ],
+   [
+    "wreck",
+    "assoc",
+    0.664
+   ]
+  ],
+  "cd": 0.747,
+  "strong": false,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "antonym:high>low",
+  "rel": "antonym",
+  "L": 1,
+  "stem": [
+   "age",
+   "minority"
+  ],
+  "c": "high",
+  "d": "low",
+  "options": [
+   "height",
+   "ranking",
+   "low",
+   "peak"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "height",
+    "assoc",
+    0.588
+   ],
+   [
+    "ranking",
+    "assoc",
+    0.559
+   ],
+   [
+    "peak",
+    "other:synonym",
+    0.537
+   ]
+  ],
+  "cd": 0.688,
+  "strong": false,
+  "older": false,
+  "cstems": 16
+ },
+ {
+  "id": "antonym:rude>polite",
+  "rel": "antonym",
+  "L": 3,
+  "stem": [
+   "arrogant",
+   "modest"
+  ],
+  "c": "rude",
+  "d": "polite",
+  "options": [
+   "sarcastic",
+   "polite",
+   "vain",
+   "awkward"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "awkward",
+    "assoc",
+    0.769
+   ],
+   [
+    "sarcastic",
+    "assoc",
+    0.756
+   ],
+   [
+    "vain",
+    "assoc",
+    0.753
+   ]
+  ],
+  "cd": 0.798,
+  "strong": false,
+  "older": false,
+  "cstems": 30
+ },
+ {
+  "id": "antonym:radiation>exposure",
+  "rel": "antonym",
+  "L": 3,
+  "stem": [
+   "decay",
+   "repair"
+  ],
+  "c": "radiation",
+  "d": "exposure",
+  "options": [
+   "infrared",
+   "emission",
+   "wavelength",
+   "exposure",
+   "absorption"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "emission",
+    "assoc",
+    0.815
+   ],
+   [
+    "wavelength",
+    "assoc",
+    0.787
+   ],
+   [
+    "infrared",
+    "assoc",
+    0.779
+   ],
+   [
+    "absorption",
+    "assoc",
+    0.777
+   ]
+  ],
+  "cd": 0.664,
+  "strong": true,
+  "older": false,
+  "cstems": 46
+ },
+ {
+  "id": "antonym:helpful>helpless",
+  "rel": "antonym",
+  "L": 3,
+  "stem": [
+   "reasonable",
+   "unfair"
+  ],
+  "c": "helpful",
+  "d": "helpless",
+  "options": [
+   "helpless",
+   "selfish",
+   "beneficial",
+   "hopeless",
+   "kindly"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "kindly",
+    "assoc",
+    0.778
+   ],
+   [
+    "hopeless",
+    "assoc",
+    0.766
+   ],
+   [
+    "beneficial",
+    "other:synonym",
+    0.683
+   ],
+   [
+    "selfish",
+    "assoc",
+    0.757
+   ]
+  ],
+  "cd": 0.67,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "antonym:shallow>deep",
+  "rel": "antonym",
+  "L": 3,
+  "stem": [
+   "depression",
+   "high"
+  ],
+  "c": "shallow",
+  "d": "deep",
+  "options": [
+   "deep",
+   "inlet",
+   "wad",
+   "trout",
+   "estuary"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "wad",
+    "assoc",
+    0.779
+   ],
+   [
+    "estuary",
+    "assoc",
+    0.755
+   ],
+   [
+    "trout",
+    "assoc",
+    0.723
+   ],
+   [
+    "inlet",
+    "assoc",
+    0.706
+   ]
+  ],
+  "cd": 0.435,
+  "strong": true,
+  "older": false,
+  "cstems": 46
+ },
+ {
+  "id": "antonym:exposure>radiation",
+  "rel": "antonym",
+  "L": 3,
+  "stem": [
+   "decay",
+   "repair"
+  ],
+  "c": "exposure",
+  "d": "radiation",
+  "options": [
+   "emission",
+   "radiation",
+   "absorption",
+   "freezing",
+   "risk"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "absorption",
+    "assoc",
+    0.708
+   ],
+   [
+    "freezing",
+    "assoc",
+    0.687
+   ],
+   [
+    "risk",
+    "other:synonym",
+    0.487
+   ],
+   [
+    "emission",
+    "assoc",
+    0.685
+   ]
+  ],
+  "cd": 0.664,
+  "strong": true,
+  "older": false,
+  "cstems": 46
+ },
+ {
+  "id": "antonym:shameless>shameful",
+  "rel": "antonym",
+  "L": 4,
+  "stem": [
+   "trivial",
+   "important"
+  ],
+  "c": "shameless",
+  "d": "shameful",
+  "options": [
+   "insolent",
+   "shameful",
+   "surly",
+   "shame",
+   "immoral"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "insolent",
+    "assoc",
+    0.919
+   ],
+   [
+    "immoral",
+    "assoc",
+    0.895
+   ],
+   [
+    "shame",
+    "form",
+    0
+   ],
+   [
+    "surly",
+    "assoc",
+    0.893
+   ]
+  ],
+  "cd": 0.843,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "antonym:attractive>unpleasant",
+  "rel": "antonym",
+  "L": 5,
+  "stem": [
+   "elegant",
+   "awkward"
+  ],
+  "c": "attractive",
+  "d": "unpleasant",
+  "options": [
+   "unpleasant",
+   "adorable",
+   "desirable",
+   "pretty",
+   "stylish"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "pretty",
+    "assoc",
+    0.748
+   ],
+   [
+    "adorable",
+    "assoc",
+    0.678
+   ],
+   [
+    "desirable",
+    "other:synonym",
+    0.615
+   ],
+   [
+    "stylish",
+    "assoc",
+    0.675
+   ]
+  ],
+  "cd": 0.511,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "antonym:prove>disprove",
+  "rel": "antonym",
+  "L": 5,
+  "stem": [
+   "said",
+   "retract"
+  ],
+  "c": "prove",
+  "d": "disprove",
+  "options": [
+   "validate",
+   "disprove",
+   "verify",
+   "attest",
+   "convince"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "validate",
+    "assoc",
+    0.687
+   ],
+   [
+    "attest",
+    "assoc",
+    0.672
+   ],
+   [
+    "convince",
+    "assoc",
+    0.672
+   ],
+   [
+    "verify",
+    "assoc",
+    0.671
+   ]
+  ],
+  "cd": 0.725,
+  "strong": false,
+  "older": false,
+  "cstems": 4
+ },
+ {
+  "id": "antonym:breezy>airtight",
+  "rel": "antonym",
+  "L": 5,
+  "stem": [
+   "unnecessary",
+   "necessary"
+  ],
+  "c": "breezy",
+  "d": "airtight",
+  "options": [
+   "airy",
+   "dewy",
+   "frosty",
+   "airtight"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "dewy",
+    "assoc",
+    0.87
+   ],
+   [
+    "frosty",
+    "assoc",
+    0.868
+   ],
+   [
+    "airy",
+    "other:synonym",
+    0.792
+   ]
+  ],
+  "cd": 0.508,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "antonym:imbalance>symmetry",
+  "rel": "antonym",
+  "L": 5,
+  "stem": [
+   "decay",
+   "repair"
+  ],
+  "c": "imbalance",
+  "d": "symmetry",
+  "options": [
+   "symmetry",
+   "dysfunction",
+   "cortisol",
+   "impairment",
+   "degeneration"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "impairment",
+    "assoc",
+    0.87
+   ],
+   [
+    "dysfunction",
+    "assoc",
+    0.868
+   ],
+   [
+    "degeneration",
+    "assoc",
+    0.861
+   ],
+   [
+    "cortisol",
+    "assoc",
+    0.86
+   ]
+  ],
+  "cd": 0.53,
+  "strong": true,
+  "older": true,
+  "cstems": 48
+ },
+ {
+  "id": "antonym:patience>impatience",
+  "rel": "antonym",
+  "L": 6,
+  "stem": [
+   "active",
+   "idle"
+  ],
+  "c": "patience",
+  "d": "impatience",
+  "options": [
+   "tolerance",
+   "prudence",
+   "mentor",
+   "impatience",
+   "perseverance"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "perseverance",
+    "assoc",
+    0.781
+   ],
+   [
+    "prudence",
+    "assoc",
+    0.757
+   ],
+   [
+    "tolerance",
+    "other:synonym",
+    0.57
+   ],
+   [
+    "mentor",
+    "assoc",
+    0.75
+   ]
+  ],
+  "cd": 0.622,
+  "strong": true,
+  "older": false,
+  "cstems": 48
+ },
+ {
+  "id": "antonym:naive>suspicious",
+  "rel": "antonym",
+  "L": 7,
+  "stem": [
+   "hard",
+   "easy"
+  ],
+  "c": "naive",
+  "d": "suspicious",
+  "options": [
+   "suspicious",
+   "unkind",
+   "ridiculous",
+   "artless",
+   "amateurish"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "unkind",
+    "assoc",
+    0.853
+   ],
+   [
+    "amateurish",
+    "assoc",
+    0.846
+   ],
+   [
+    "artless",
+    "other:synonym",
+    0.837
+   ],
+   [
+    "ridiculous",
+    "assoc",
+    0.838
+   ]
+  ],
+  "cd": 0.608,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "antonym:casually>methodically",
+  "rel": "antonym",
+  "L": 7,
+  "stem": [
+   "never",
+   "ever"
+  ],
+  "c": "casually",
+  "d": "methodically",
+  "options": [
+   "attentively",
+   "superficially",
+   "blindly",
+   "methodically"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "blindly",
+    "assoc",
+    0.775
+   ],
+   [
+    "attentively",
+    "assoc",
+    0.77
+   ],
+   [
+    "superficially",
+    "other:synonym",
+    0.443
+   ]
+  ],
+  "cd": 0.544,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "antonym:inconvenient>opportune",
+  "rel": "antonym",
+  "L": 7,
+  "stem": [
+   "hard",
+   "easy"
+  ],
+  "c": "inconvenient",
+  "d": "opportune",
+  "options": [
+   "onerous",
+   "unintentional",
+   "deplorable",
+   "awkward",
+   "opportune"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "deplorable",
+    "assoc",
+    0.849
+   ],
+   [
+    "onerous",
+    "assoc",
+    0.841
+   ],
+   [
+    "awkward",
+    "other:synonym",
+    0.678
+   ],
+   [
+    "unintentional",
+    "assoc",
+    0.839
+   ]
+  ],
+  "cd": 0.744,
+  "strong": true,
+  "older": false,
+  "cstems": 32
+ },
+ {
+  "id": "antonym:tractable>stubborn",
+  "rel": "antonym",
+  "L": 7,
+  "stem": [
+   "usual",
+   "rare"
+  ],
+  "c": "tractable",
+  "d": "stubborn",
+  "options": [
+   "foolhardy",
+   "stubborn",
+   "palpable",
+   "manageable",
+   "docile"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "docile",
+    "assoc",
+    0.883
+   ],
+   [
+    "foolhardy",
+    "assoc",
+    0.851
+   ],
+   [
+    "manageable",
+    "other:synonym",
+    0.672
+   ],
+   [
+    "palpable",
+    "assoc",
+    0.839
+   ]
+  ],
+  "cd": 0.568,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "antonym:herbaceous>woody",
+  "rel": "antonym",
+  "L": 8,
+  "stem": [
+   "rude",
+   "polite"
+  ],
+  "c": "herbaceous",
+  "d": "woody",
+  "options": [
+   "cruciferous",
+   "wood",
+   "shrubby",
+   "woody",
+   "weedy"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "weedy",
+    "assoc",
+    0.915
+   ],
+   [
+    "shrubby",
+    "assoc",
+    0.912
+   ],
+   [
+    "wood",
+    "form",
+    0
+   ],
+   [
+    "cruciferous",
+    "assoc",
+    0.905
+   ]
+  ],
+  "cd": 0.808,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "antonym:woody>herbaceous",
+  "rel": "antonym",
+  "L": 8,
+  "stem": [
+   "rude",
+   "polite"
+  ],
+  "c": "woody",
+  "d": "herbaceous",
+  "options": [
+   "leafless",
+   "leathery",
+   "leafy",
+   "herbaceous",
+   "shrubby"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "leafy",
+    "assoc",
+    0.814
+   ],
+   [
+    "shrubby",
+    "assoc",
+    0.803
+   ],
+   [
+    "leathery",
+    "assoc",
+    0.794
+   ],
+   [
+    "leafless",
+    "assoc",
+    0.786
+   ]
+  ],
+  "cd": 0.808,
+  "strong": true,
+  "older": false,
+  "cstems": 34
+ },
+ {
+  "id": "cause:humiliate>ashamed",
+  "rel": "cause",
+  "L": 5,
+  "stem": [
+   "strengthen",
+   "strong"
+  ],
+  "c": "humiliate",
+  "d": "ashamed",
+  "options": [
+   "shameful",
+   "lowly",
+   "disrespectful",
+   "bossy",
+   "ashamed"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "lowly",
+    "assoc",
+    0.832
+   ],
+   [
+    "shameful",
+    "assoc",
+    0.829
+   ],
+   [
+    "disrespectful",
+    "assoc",
+    0.826
+   ],
+   [
+    "bossy",
+    "assoc",
+    0.816
+   ]
+  ],
+  "cd": 0.76,
+  "strong": true,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "cause:complicate>hard",
+  "rel": "cause",
+  "L": 5,
+  "stem": [
+   "ensure",
+   "certain"
+  ],
+  "c": "complicate",
+  "d": "hard",
+  "options": [
+   "weird",
+   "simpler",
+   "manageable",
+   "hard",
+   "believable"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "simpler",
+    "assoc",
+    0.679
+   ],
+   [
+    "manageable",
+    "assoc",
+    0.668
+   ],
+   [
+    "weird",
+    "assoc",
+    0.661
+   ],
+   [
+    "believable",
+    "assoc",
+    0.657
+   ]
+  ],
+  "cd": 0.446,
+  "strong": true,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "cause:intimidate>fearful",
+  "rel": "cause",
+  "L": 5,
+  "stem": [
+   "uncover",
+   "visible"
+  ],
+  "c": "intimidate",
+  "d": "fearful",
+  "options": [
+   "jealous",
+   "bossy",
+   "wary",
+   "fearful",
+   "antagonistic"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "jealous",
+    "assoc",
+    0.858
+   ],
+   [
+    "wary",
+    "assoc",
+    0.85
+   ],
+   [
+    "antagonistic",
+    "assoc",
+    0.837
+   ],
+   [
+    "bossy",
+    "assoc",
+    0.82
+   ]
+  ],
+  "cd": 0.823,
+  "strong": true,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "cause:gratify>happy",
+  "rel": "cause",
+  "L": 5,
+  "stem": [
+   "amplify",
+   "larger"
+  ],
+  "c": "gratify",
+  "d": "happy",
+  "options": [
+   "ashamed",
+   "enjoyable",
+   "sensible",
+   "happy",
+   "pitiful"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "enjoyable",
+    "assoc",
+    0.853
+   ],
+   [
+    "pitiful",
+    "assoc",
+    0.852
+   ],
+   [
+    "ashamed",
+    "assoc",
+    0.846
+   ],
+   [
+    "sensible",
+    "assoc",
+    0.841
+   ]
+  ],
+  "cd": 0.717,
+  "strong": true,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "cause:contaminate>impure",
+  "rel": "cause",
+  "L": 6,
+  "stem": [
+   "assure",
+   "certain"
+  ],
+  "c": "contaminate",
+  "d": "impure",
+  "options": [
+   "microbial",
+   "anaerobic",
+   "impure",
+   "pathogenic",
+   "hazardous"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "hazardous",
+    "assoc",
+    0.778
+   ],
+   [
+    "anaerobic",
+    "assoc",
+    0.771
+   ],
+   [
+    "pathogenic",
+    "assoc",
+    0.747
+   ],
+   [
+    "microbial",
+    "assoc",
+    0.746
+   ]
+  ],
+  "cd": 0.686,
+  "strong": true,
+  "older": true,
+  "cstems": 7
+ },
+ {
+  "id": "cause:devastate>extensive",
+  "rel": "cause",
+  "L": 6,
+  "stem": [
+   "uncover",
+   "visible"
+  ],
+  "c": "devastate",
+  "d": "extensive",
+  "options": [
+   "catastrophic",
+   "extensive",
+   "vulnerable",
+   "dire",
+   "unchecked"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "unchecked",
+    "assoc",
+    0.752
+   ],
+   [
+    "vulnerable",
+    "assoc",
+    0.749
+   ],
+   [
+    "dire",
+    "assoc",
+    0.722
+   ],
+   [
+    "catastrophic",
+    "assoc",
+    0.72
+   ]
+  ],
+  "cd": 0.576,
+  "strong": true,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "cause:paralyze>powerless",
+  "rel": "cause",
+  "L": 7,
+  "stem": [
+   "uncover",
+   "visible"
+  ],
+  "c": "paralyze",
+  "d": "powerless",
+  "options": [
+   "immobile",
+   "powerless",
+   "overactive",
+   "lethal"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "immobile",
+    "assoc",
+    0.848
+   ],
+   [
+    "lethal",
+    "assoc",
+    0.811
+   ],
+   [
+    "overactive",
+    "assoc",
+    0.794
+   ]
+  ],
+  "cd": 0.732,
+  "strong": true,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "cause:humble>unpretentious",
+  "rel": "cause",
+  "L": 9,
+  "stem": [
+   "amplify",
+   "larger"
+  ],
+  "c": "humble",
+  "d": "unpretentious",
+  "options": [
+   "demure",
+   "bashful",
+   "reverent",
+   "gracious",
+   "unpretentious"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "gracious",
+    "assoc",
+    0.794
+   ],
+   [
+    "demure",
+    "assoc",
+    0.769
+   ],
+   [
+    "reverent",
+    "assoc",
+    0.765
+   ],
+   [
+    "bashful",
+    "assoc",
+    0.758
+   ]
+  ],
+  "cd": 0.754,
+  "strong": true,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "degree:release>explosion",
+  "rel": "degree",
+  "L": 2,
+  "stem": [
+   "anger",
+   "fury"
+  ],
+  "c": "release",
+  "d": "explosion",
+  "options": [
+   "reset",
+   "trigger",
+   "ransom",
+   "publication",
+   "explosion"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "trigger",
+    "assoc",
+    0.586
+   ],
+   [
+    "ransom",
+    "assoc",
+    0.565
+   ],
+   [
+    "publication",
+    "other:synonym",
+    0.322
+   ],
+   [
+    "reset",
+    "assoc",
+    0.558
+   ]
+  ],
+  "cd": 0.474,
+  "strong": true,
+  "older": false,
+  "cstems": 5
+ },
+ {
+  "id": "degree:desire>craving",
+  "rel": "degree",
+  "L": 2,
+  "stem": [
+   "sorrow",
+   "grief"
+  ],
+  "c": "desire",
+  "d": "craving",
+  "options": [
+   "want",
+   "liking",
+   "craving",
+   "agony"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "liking",
+    "assoc",
+    0.714
+   ],
+   [
+    "want",
+    "other:synonym",
+    0.532
+   ],
+   [
+    "agony",
+    "sibling",
+    0.426
+   ]
+  ],
+  "cd": 0.723,
+  "strong": false,
+  "older": false,
+  "cstems": 5
+ },
+ {
+  "id": "degree:sorrow>grief",
+  "rel": "degree",
+  "L": 2,
+  "stem": [
+   "fear",
+   "terror"
+  ],
+  "c": "sorrow",
+  "d": "grief",
+  "options": [
+   "anger",
+   "grief",
+   "regret",
+   "longing",
+   "fury"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "regret",
+    "assoc",
+    0.812
+   ],
+   [
+    "longing",
+    "assoc",
+    0.809
+   ],
+   [
+    "anger",
+    "sibling",
+    0.767
+   ],
+   [
+    "fury",
+    "assoc",
+    0.801
+   ]
+  ],
+  "cd": 0.899,
+  "strong": false,
+  "older": false,
+  "cstems": 4
+ },
+ {
+  "id": "degree:unpleasant>nasty",
+  "rel": "degree",
+  "L": 3,
+  "stem": [
+   "sad",
+   "tragic"
+  ],
+  "c": "unpleasant",
+  "d": "nasty",
+  "options": [
+   "unlikely",
+   "reminiscent",
+   "rotten",
+   "nasty",
+   "improper"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "unlikely",
+    "assoc",
+    0.726
+   ],
+   [
+    "reminiscent",
+    "assoc",
+    0.7
+   ],
+   [
+    "rotten",
+    "assoc",
+    0.695
+   ],
+   [
+    "improper",
+    "assoc",
+    0.674
+   ]
+  ],
+  "cd": 0.63,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "degree:wonder>awe",
+  "rel": "degree",
+  "L": 3,
+  "stem": [
+   "fear",
+   "terror"
+  ],
+  "c": "wonder",
+  "d": "awe",
+  "options": [
+   "affinity",
+   "miracle",
+   "baffled",
+   "envy",
+   "awe"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "baffled",
+    "assoc",
+    0.698
+   ],
+   [
+    "envy",
+    "assoc",
+    0.683
+   ],
+   [
+    "miracle",
+    "other:synonym",
+    0.629
+   ],
+   [
+    "affinity",
+    "sibling",
+    0.335
+   ]
+  ],
+  "cd": 0.722,
+  "strong": false,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "degree:throw>hurl",
+  "rel": "degree",
+  "L": 3,
+  "stem": [
+   "fear",
+   "terror"
+  ],
+  "c": "throw",
+  "d": "hurl",
+  "options": [
+   "hurl",
+   "toss",
+   "ball",
+   "strike",
+   "hitting"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "strike",
+    "assoc",
+    0.616
+   ],
+   [
+    "hitting",
+    "assoc",
+    0.599
+   ],
+   [
+    "toss",
+    "other:synonym",
+    0.498
+   ],
+   [
+    "ball",
+    "assoc",
+    0.596
+   ]
+  ],
+  "cd": 0.63,
+  "strong": false,
+  "older": false,
+  "cstems": 7
+ },
+ {
+  "id": "degree:revenge>vengeance",
+  "rel": "degree",
+  "L": 4,
+  "stem": [
+   "desire",
+   "craving"
+  ],
+  "c": "revenge",
+  "d": "vengeance",
+  "options": [
+   "nuisance",
+   "retribution",
+   "vengeance",
+   "malice",
+   "condemnation"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "retribution",
+    "assoc",
+    0.859
+   ],
+   [
+    "nuisance",
+    "assoc",
+    0.822
+   ],
+   [
+    "malice",
+    "assoc",
+    0.816
+   ],
+   [
+    "condemnation",
+    "assoc",
+    0.81
+   ]
+  ],
+  "cd": 0.921,
+  "strong": false,
+  "older": false,
+  "cstems": 8
+ },
+ {
+  "id": "degree:harmful>catastrophic",
+  "rel": "degree",
+  "L": 4,
+  "stem": [
+   "sad",
+   "tragic"
+  ],
+  "c": "harmful",
+  "d": "catastrophic",
+  "options": [
+   "catastrophic",
+   "lethal",
+   "detrimental",
+   "adverse",
+   "pathogenic"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "lethal",
+    "assoc",
+    0.757
+   ],
+   [
+    "pathogenic",
+    "assoc",
+    0.724
+   ],
+   [
+    "adverse",
+    "other:synonym",
+    0.652
+   ],
+   [
+    "detrimental",
+    "assoc",
+    0.703
+   ]
+  ],
+  "cd": 0.581,
+  "strong": true,
+  "older": true,
+  "cstems": 1
+ },
+ {
+  "id": "degree:aversion>revulsion",
+  "rel": "degree",
+  "L": 5,
+  "stem": [
+   "fear",
+   "terror"
+  ],
+  "c": "aversion",
+  "d": "revulsion",
+  "options": [
+   "antipathy",
+   "hatred",
+   "loathing",
+   "revulsion",
+   "acceptance"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "antipathy",
+    "assoc",
+    0.927
+   ],
+   [
+    "loathing",
+    "assoc",
+    0.921
+   ],
+   [
+    "hatred",
+    "other:synonym",
+    0.753
+   ],
+   [
+    "acceptance",
+    "sibling",
+    0.583
+   ]
+  ],
+  "cd": 0.84,
+  "strong": true,
+  "older": false,
+  "cstems": 8
+ },
+ {
+  "id": "degree:impressive>formidable",
+  "rel": "degree",
+  "L": 5,
+  "stem": [
+   "sad",
+   "tragic"
+  ],
+  "c": "impressive",
+  "d": "formidable",
+  "options": [
+   "breathtaking",
+   "splendid",
+   "extraordinary",
+   "outstanding",
+   "formidable"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "extraordinary",
+    "assoc",
+    0.743
+   ],
+   [
+    "splendid",
+    "assoc",
+    0.739
+   ],
+   [
+    "outstanding",
+    "assoc",
+    0.725
+   ],
+   [
+    "breathtaking",
+    "assoc",
+    0.724
+   ]
+  ],
+  "cd": 0.524,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "degree:fatigue>exhaustion",
+  "rel": "degree",
+  "L": 5,
+  "stem": [
+   "fear",
+   "panic"
+  ],
+  "c": "fatigue",
+  "d": "exhaustion",
+  "options": [
+   "exhaustion",
+   "fortitude",
+   "dizziness",
+   "nausea",
+   "headache"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "headache",
+    "assoc",
+    0.873
+   ],
+   [
+    "dizziness",
+    "assoc",
+    0.862
+   ],
+   [
+    "fortitude",
+    "assoc",
+    0.838
+   ],
+   [
+    "nausea",
+    "assoc",
+    0.829
+   ]
+  ],
+  "cd": 0.814,
+  "strong": true,
+  "older": false,
+  "cstems": 8
+ },
+ {
+  "id": "degree:worry>stewing",
+  "rel": "degree",
+  "L": 5,
+  "stem": [
+   "anger",
+   "fury"
+  ],
+  "c": "worry",
+  "d": "stewing",
+  "options": [
+   "concern",
+   "hopeful",
+   "nightmare",
+   "stewing",
+   "hurt"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "hurt",
+    "assoc",
+    0.758
+   ],
+   [
+    "nightmare",
+    "assoc",
+    0.677
+   ],
+   [
+    "concern",
+    "other:synonym",
+    0.58
+   ],
+   [
+    "hopeful",
+    "assoc",
+    0.676
+   ]
+  ],
+  "cd": 0.27,
+  "strong": true,
+  "older": true,
+  "cstems": 8
+ },
+ {
+  "id": "degree:poisonous>venomous",
+  "rel": "degree",
+  "L": 7,
+  "stem": [
+   "sad",
+   "tragic"
+  ],
+  "c": "poisonous",
+  "d": "venomous",
+  "options": [
+   "venomous",
+   "fetid",
+   "potent",
+   "allergenic",
+   "carcinogenic"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "allergenic",
+    "assoc",
+    0.819
+   ],
+   [
+    "carcinogenic",
+    "assoc",
+    0.784
+   ],
+   [
+    "potent",
+    "assoc",
+    0.769
+   ],
+   [
+    "fetid",
+    "assoc",
+    0.749
+   ]
+  ],
+  "cd": 0.633,
+  "strong": true,
+  "older": true,
+  "cstems": 1
+ },
+ {
+  "id": "degree:ugly>hideous",
+  "rel": "degree",
+  "L": 7,
+  "stem": [
+   "sad",
+   "tragic"
+  ],
+  "c": "ugly",
+  "d": "hideous",
+  "options": [
+   "adorable",
+   "unattractive",
+   "grotesque",
+   "hideous",
+   "duller"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "unattractive",
+    "assoc",
+    0.812
+   ],
+   [
+    "adorable",
+    "assoc",
+    0.794
+   ],
+   [
+    "grotesque",
+    "other:synonym",
+    0.68
+   ],
+   [
+    "duller",
+    "assoc",
+    0.787
+   ]
+  ],
+  "cd": 0.773,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "degree:wicked>villainous",
+  "rel": "degree",
+  "L": 8,
+  "stem": [
+   "sad",
+   "tragic"
+  ],
+  "c": "wicked",
+  "d": "villainous",
+  "options": [
+   "sinful",
+   "immoral",
+   "devilish",
+   "diabolical",
+   "villainous"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "diabolical",
+    "assoc",
+    0.87
+   ],
+   [
+    "immoral",
+    "assoc",
+    0.856
+   ],
+   [
+    "devilish",
+    "other:synonym",
+    0.83
+   ],
+   [
+    "sinful",
+    "assoc",
+    0.853
+   ]
+  ],
+  "cd": 0.89,
+  "strong": false,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "function:van>carry",
+  "rel": "function",
+  "L": 1,
+  "stem": [
+   "teeth",
+   "bit"
+  ],
+  "c": "van",
+  "d": "carry",
+  "options": [
+   "booth",
+   "truck",
+   "carry",
+   "subway"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "subway",
+    "assoc",
+    0.844
+   ],
+   [
+    "booth",
+    "assoc",
+    0.843
+   ],
+   [
+    "truck",
+    "other:synonym",
+    0.753
+   ]
+  ],
+  "cd": 0.469,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "function:dagger>pierce",
+  "rel": "function",
+  "L": 3,
+  "stem": [
+   "teeth",
+   "bit"
+  ],
+  "c": "dagger",
+  "d": "pierce",
+  "options": [
+   "sword",
+   "pierce",
+   "lance",
+   "spear",
+   "tool"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "spear",
+    "assoc",
+    0.823
+   ],
+   [
+    "lance",
+    "assoc",
+    0.805
+   ],
+   [
+    "tool",
+    "other:kind",
+    0.53
+   ],
+   [
+    "sword",
+    "assoc",
+    0.803
+   ]
+  ],
+  "cd": 0.548,
+  "strong": true,
+  "older": true,
+  "cstems": 2
+ },
+ {
+  "id": "function:purse>carry",
+  "rel": "function",
+  "L": 3,
+  "stem": [
+   "teeth",
+   "bit"
+  ],
+  "c": "purse",
+  "d": "carry",
+  "options": [
+   "wallet",
+   "receipt",
+   "bin",
+   "grocery",
+   "carry"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "wallet",
+    "assoc",
+    0.723
+   ],
+   [
+    "grocery",
+    "assoc",
+    0.718
+   ],
+   [
+    "bin",
+    "assoc",
+    0.703
+   ],
+   [
+    "receipt",
+    "assoc",
+    0.7
+   ]
+  ],
+  "cd": 0.369,
+  "strong": true,
+  "older": false,
+  "cstems": 1
+ },
+ {
+  "id": "function:rasp>smooth",
+  "rel": "function",
+  "L": 4,
+  "stem": [
+   "teeth",
+   "bit"
+  ],
+  "c": "rasp",
+  "d": "smooth",
+  "options": [
+   "scraping",
+   "grate",
+   "maul",
+   "smooth"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "scraping",
+    "assoc",
+    0.864
+   ],
+   [
+    "maul",
+    "assoc",
+    0.857
+   ],
+   [
+    "grate",
+    "other:synonym",
+    0.707
+   ]
+  ],
+  "cd": 0.637,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "function:bottle>store",
+  "rel": "function",
+  "L": 4,
+  "stem": [
+   "purse",
+   "carry"
+  ],
+  "c": "bottle",
+  "d": "store",
+  "options": [
+   "goblet",
+   "brewer",
+   "store",
+   "carton",
+   "keg"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "goblet",
+    "assoc",
+    0.743
+   ],
+   [
+    "keg",
+    "assoc",
+    0.735
+   ],
+   [
+    "carton",
+    "assoc",
+    0.723
+   ],
+   [
+    "brewer",
+    "assoc",
+    0.721
+   ]
+  ],
+  "cd": 0.518,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "function:canister>store",
+  "rel": "function",
+  "L": 4,
+  "stem": [
+   "purse",
+   "carry"
+  ],
+  "c": "canister",
+  "d": "store",
+  "options": [
+   "cupboard",
+   "wicker",
+   "store",
+   "cutlery",
+   "keg"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "keg",
+    "assoc",
+    0.881
+   ],
+   [
+    "cupboard",
+    "assoc",
+    0.873
+   ],
+   [
+    "cutlery",
+    "assoc",
+    0.867
+   ],
+   [
+    "wicker",
+    "assoc",
+    0.86
+   ]
+  ],
+  "cd": 0.661,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "function:silo>store",
+  "rel": "function",
+  "L": 5,
+  "stem": [
+   "purse",
+   "carry"
+  ],
+  "c": "silo",
+  "d": "store",
+  "options": [
+   "barley",
+   "store",
+   "granary",
+   "harvesting",
+   "chowder"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "granary",
+    "assoc",
+    0.927
+   ],
+   [
+    "chowder",
+    "assoc",
+    0.865
+   ],
+   [
+    "harvesting",
+    "assoc",
+    0.851
+   ],
+   [
+    "barley",
+    "assoc",
+    0.849
+   ]
+  ],
+  "cd": 0.695,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "function:handkerchief>wipe",
+  "rel": "function",
+  "L": 6,
+  "stem": [
+   "purse",
+   "carry"
+  ],
+  "c": "handkerchief",
+  "d": "wipe",
+  "options": [
+   "crochet",
+   "sequin",
+   "wipe",
+   "earring",
+   "tissue"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "sequin",
+    "assoc",
+    0.906
+   ],
+   [
+    "crochet",
+    "assoc",
+    0.898
+   ],
+   [
+    "tissue",
+    "other:synonym",
+    0.303
+   ],
+   [
+    "earring",
+    "assoc",
+    0.891
+   ]
+  ],
+  "cd": 0.606,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "function:spatula>lift",
+  "rel": "function",
+  "L": 6,
+  "stem": [
+   "teeth",
+   "bit"
+  ],
+  "c": "spatula",
+  "d": "lift",
+  "options": [
+   "shank",
+   "spaghetti",
+   "slicing",
+   "lift",
+   "saucer"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "saucer",
+    "assoc",
+    0.908
+   ],
+   [
+    "slicing",
+    "assoc",
+    0.878
+   ],
+   [
+    "spaghetti",
+    "assoc",
+    0.873
+   ],
+   [
+    "shank",
+    "assoc",
+    0.87
+   ]
+  ],
+  "cd": 0.453,
+  "strong": true,
+  "older": false,
+  "cstems": 2
+ },
+ {
+  "id": "function:chromatography>separate",
+  "rel": "function",
+  "L": 7,
+  "stem": [
+   "purse",
+   "carry"
+  ],
+  "c": "chromatography",
+  "d": "separate",
+  "options": [
+   "separate",
+   "styrene",
+   "electrolytic",
+   "ethanol",
+   "electrolysis"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "ethanol",
+    "assoc",
+    0.882
+   ],
+   [
+    "styrene",
+    "assoc",
+    0.857
+   ],
+   [
+    "electrolytic",
+    "assoc",
+    0.856
+   ],
+   [
+    "electrolysis",
+    "assoc",
+    0.854
+   ]
+  ],
+  "cd": 0.521,
+  "strong": true,
+  "older": true,
+  "cstems": 2
+ },
+ {
+  "id": "kind:mold>shape",
+  "rel": "kind",
+  "L": 2,
+  "stem": [
+   "cement",
+   "color"
+  ],
+  "c": "mold",
+  "d": "shape",
+  "options": [
+   "ceramic",
+   "shape",
+   "slab",
+   "stamp"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "ceramic",
+    "assoc",
+    0.715
+   ],
+   [
+    "slab",
+    "assoc",
+    0.709
+   ],
+   [
+    "stamp",
+    "other:synonym",
+    0.511
+   ]
+  ],
+  "cd": 0.499,
+  "strong": true,
+  "older": false,
+  "cstems": 201
+ },
+ {
+  "id": "kind:dot>shape",
+  "rel": "kind",
+  "L": 2,
+  "stem": [
+   "coral",
+   "color"
+  ],
+  "c": "dot",
+  "d": "shape",
+  "options": [
+   "shape",
+   "purple",
+   "clover",
+   "meadow",
+   "crimson"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "meadow",
+    "assoc",
+    0.634
+   ],
+   [
+    "clover",
+    "assoc",
+    0.616
+   ],
+   [
+    "purple",
+    "assoc",
+    0.611
+   ],
+   [
+    "crimson",
+    "assoc",
+    0.606
+   ]
+  ],
+  "cd": 0.326,
+  "strong": true,
+  "older": false,
+  "cstems": 198
+ },
+ {
+  "id": "kind:vase>vessel",
+  "rel": "kind",
+  "L": 3,
+  "stem": [
+   "rim",
+   "shape"
+  ],
+  "c": "vase",
+  "d": "vessel",
+  "options": [
+   "emerald",
+   "vessel",
+   "pendant",
+   "ruby"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "emerald",
+    "assoc",
+    0.778
+   ],
+   [
+    "pendant",
+    "assoc",
+    0.769
+   ],
+   [
+    "ruby",
+    "assoc",
+    0.763
+   ]
+  ],
+  "cd": 0.489,
+  "strong": true,
+  "older": false,
+  "cstems": 298
+ },
+ {
+  "id": "kind:basket>container",
+  "rel": "kind",
+  "L": 3,
+  "stem": [
+   "straw",
+   "plant"
+  ],
+  "c": "basket",
+  "d": "container",
+  "options": [
+   "container",
+   "cane",
+   "sack",
+   "bale",
+   "wicker"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "wicker",
+    "assoc",
+    0.802
+   ],
+   [
+    "bale",
+    "assoc",
+    0.782
+   ],
+   [
+    "sack",
+    "assoc",
+    0.781
+   ],
+   [
+    "cane",
+    "assoc",
+    0.77
+   ]
+  ],
+  "cd": 0.495,
+  "strong": true,
+  "older": false,
+  "cstems": 299
+ },
+ {
+  "id": "kind:gear>machine",
+  "rel": "kind",
+  "L": 3,
+  "stem": [
+   "shoe",
+   "shape"
+  ],
+  "c": "gear",
+  "d": "machine",
+  "options": [
+   "ammunition",
+   "machine",
+   "tow",
+   "equipment",
+   "rifle"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "rifle",
+    "assoc",
+    0.756
+   ],
+   [
+    "ammunition",
+    "assoc",
+    0.731
+   ],
+   [
+    "equipment",
+    "other:synonym",
+    0.706
+   ],
+   [
+    "tow",
+    "assoc",
+    0.727
+   ]
+  ],
+  "cd": 0.579,
+  "strong": true,
+  "older": true,
+  "cstems": 299
+ },
+ {
+  "id": "kind:piano>instrument",
+  "rel": "kind",
+  "L": 3,
+  "stem": [
+   "key",
+   "shape"
+  ],
+  "c": "piano",
+  "d": "instrument",
+  "options": [
+   "recital",
+   "broadway",
+   "composer",
+   "instrumental",
+   "instrument"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "broadway",
+    "assoc",
+    0.789
+   ],
+   [
+    "recital",
+    "assoc",
+    0.784
+   ],
+   [
+    "instrumental",
+    "form",
+    0
+   ],
+   [
+    "composer",
+    "assoc",
+    0.783
+   ]
+  ],
+  "cd": 0.615,
+  "strong": true,
+  "older": false,
+  "cstems": 297
+ },
+ {
+  "id": "kind:beetle>insect",
+  "rel": "kind",
+  "L": 4,
+  "stem": [
+   "leather",
+   "animal"
+  ],
+  "c": "beetle",
+  "d": "insect",
+  "options": [
+   "toad",
+   "larvae",
+   "cacti",
+   "insect",
+   "assassin"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "toad",
+    "assoc",
+    0.79
+   ],
+   [
+    "larvae",
+    "assoc",
+    0.771
+   ],
+   [
+    "assassin",
+    "assoc",
+    0.756
+   ],
+   [
+    "cacti",
+    "assoc",
+    0.754
+   ]
+  ],
+  "cd": 0.763,
+  "strong": true,
+  "older": false,
+  "cstems": 300
+ },
+ {
+  "id": "kind:aristocracy>book",
+  "rel": "kind",
+  "L": 4,
+  "stem": [
+   "mill",
+   "plant"
+  ],
+  "c": "aristocracy",
+  "d": "book",
+  "options": [
+   "caste",
+   "book",
+   "alderman",
+   "nobility",
+   "supremacy"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "supremacy",
+    "assoc",
+    0.871
+   ],
+   [
+    "alderman",
+    "assoc",
+    0.865
+   ],
+   [
+    "nobility",
+    "other:synonym",
+    0.859
+   ],
+   [
+    "caste",
+    "assoc",
+    0.863
+   ]
+  ],
+  "cd": 0.202,
+  "strong": true,
+  "older": false,
+  "cstems": 296
+ },
+ {
+  "id": "kind:firework>device",
+  "rel": "kind",
+  "L": 4,
+  "stem": [
+   "mill",
+   "plant"
+  ],
+  "c": "firework",
+  "d": "device",
+  "options": [
+   "device",
+   "meteor",
+   "roaring",
+   "flaming",
+   "flicker"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "flaming",
+    "assoc",
+    0.822
+   ],
+   [
+    "flicker",
+    "assoc",
+    0.784
+   ],
+   [
+    "meteor",
+    "assoc",
+    0.772
+   ],
+   [
+    "roaring",
+    "assoc",
+    0.767
+   ]
+  ],
+  "cd": 0.439,
+  "strong": true,
+  "older": false,
+  "cstems": 274
+ },
+ {
+  "id": "kind:attitude>feeling",
+  "rel": "kind",
+  "L": 4,
+  "stem": [
+   "hog",
+   "animal"
+  ],
+  "c": "attitude",
+  "d": "feeling",
+  "options": [
+   "honesty",
+   "feeling",
+   "leniency",
+   "patriotism",
+   "distrust"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "honesty",
+    "assoc",
+    0.719
+   ],
+   [
+    "patriotism",
+    "assoc",
+    0.718
+   ],
+   [
+    "distrust",
+    "assoc",
+    0.714
+   ],
+   [
+    "leniency",
+    "assoc",
+    0.713
+   ]
+  ],
+  "cd": 0.525,
+  "strong": true,
+  "older": false,
+  "cstems": 249
+ },
+ {
+  "id": "kind:eggplant>vegetable",
+  "rel": "kind",
+  "L": 4,
+  "stem": [
+   "annual",
+   "plant"
+  ],
+  "c": "eggplant",
+  "d": "vegetable",
+  "options": [
+   "rosemary",
+   "kale",
+   "vegetable",
+   "parsley",
+   "cauliflower"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "parsley",
+    "assoc",
+    0.943
+   ],
+   [
+    "kale",
+    "assoc",
+    0.932
+   ],
+   [
+    "cauliflower",
+    "assoc",
+    0.931
+   ],
+   [
+    "rosemary",
+    "assoc",
+    0.93
+   ]
+  ],
+  "cd": 0.797,
+  "strong": true,
+  "older": false,
+  "cstems": 300
+ },
+ {
+  "id": "kind:sandstone>rock",
+  "rel": "kind",
+  "L": 5,
+  "stem": [
+   "lobster",
+   "animal"
+  ],
+  "c": "sandstone",
+  "d": "rock",
+  "options": [
+   "meteorite",
+   "rock",
+   "feldspar",
+   "basalt",
+   "rocky"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "basalt",
+    "assoc",
+    0.903
+   ],
+   [
+    "meteorite",
+    "assoc",
+    0.88
+   ],
+   [
+    "rocky",
+    "form",
+    0
+   ],
+   [
+    "feldspar",
+    "assoc",
+    0.871
+   ]
+  ],
+  "cd": 0.732,
+  "strong": true,
+  "older": false,
+  "cstems": 297
+ },
+ {
+  "id": "kind:caladium>plant",
+  "rel": "kind",
+  "L": 7,
+  "stem": [
+   "emotion",
+   "feeling"
+  ],
+  "c": "caladium",
+  "d": "plant",
+  "options": [
+   "honeysuckle",
+   "gardenia",
+   "plant",
+   "pavilion",
+   "petunia"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "pavilion",
+    "assoc",
+    0.904
+   ],
+   [
+    "honeysuckle",
+    "assoc",
+    0.904
+   ],
+   [
+    "petunia",
+    "assoc",
+    0.894
+   ],
+   [
+    "gardenia",
+    "assoc",
+    0.882
+   ]
+  ],
+  "cd": 0.612,
+  "strong": true,
+  "older": false,
+  "cstems": 272
+ },
+ {
+  "id": "kind:marinara>sauce",
+  "rel": "kind",
+  "L": 7,
+  "stem": [
+   "physicist",
+   "scientist"
+  ],
+  "c": "marinara",
+  "d": "sauce",
+  "options": [
+   "parmesan",
+   "mozzarella",
+   "cutlet",
+   "sauce",
+   "brioche"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "mozzarella",
+    "assoc",
+    0.957
+   ],
+   [
+    "cutlet",
+    "assoc",
+    0.949
+   ],
+   [
+    "brioche",
+    "assoc",
+    0.946
+   ],
+   [
+    "parmesan",
+    "assoc",
+    0.946
+   ]
+  ],
+  "cd": 0.832,
+  "strong": true,
+  "older": false,
+  "cstems": 299
+ },
+ {
+  "id": "kind:appointee>worker",
+  "rel": "kind",
+  "L": 7,
+  "stem": [
+   "red",
+   "color"
+  ],
+  "c": "appointee",
+  "d": "worker",
+  "options": [
+   "nominee",
+   "assignee",
+   "candidacy",
+   "nomination",
+   "worker"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "nominee",
+    "assoc",
+    0.91
+   ],
+   [
+    "nomination",
+    "assoc",
+    0.905
+   ],
+   [
+    "assignee",
+    "assoc",
+    0.9
+   ],
+   [
+    "candidacy",
+    "assoc",
+    0.893
+   ]
+  ],
+  "cd": 0.539,
+  "strong": true,
+  "older": false,
+  "cstems": 298
+ },
+ {
+  "id": "kind:aneurism>disease",
+  "rel": "kind",
+  "L": 7,
+  "stem": [
+   "dinner",
+   "food"
+  ],
+  "c": "aneurism",
+  "d": "disease",
+  "options": [
+   "thrombosis",
+   "vagus",
+   "coronary",
+   "lymphoma",
+   "disease"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "vagus",
+    "assoc",
+    0.913
+   ],
+   [
+    "thrombosis",
+    "assoc",
+    0.912
+   ],
+   [
+    "coronary",
+    "assoc",
+    0.911
+   ],
+   [
+    "lymphoma",
+    "assoc",
+    0.907
+   ]
+  ],
+  "cd": 0.63,
+  "strong": true,
+  "older": true,
+  "cstems": 300
+ },
+ {
+  "id": "kind:leporidae>mammal",
+  "rel": "kind",
+  "L": 9,
+  "stem": [
+   "room",
+   "building"
+  ],
+  "c": "leporidae",
+  "d": "mammal",
+  "options": [
+   "mammal",
+   "shrew",
+   "decapod",
+   "fissiped",
+   "hyena"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "shrew",
+    "assoc",
+    0.939
+   ],
+   [
+    "fissiped",
+    "assoc",
+    0.93
+   ],
+   [
+    "decapod",
+    "assoc",
+    0.923
+   ],
+   [
+    "hyena",
+    "assoc",
+    0.922
+   ]
+  ],
+  "cd": 0.739,
+  "strong": true,
+  "older": false,
+  "cstems": 299
+ },
+ {
+  "id": "kind:euphorbia>plant",
+  "rel": "kind",
+  "L": 9,
+  "stem": [
+   "emotion",
+   "feeling"
+  ],
+  "c": "euphorbia",
+  "d": "plant",
+  "options": [
+   "plant",
+   "nephelium",
+   "vitis",
+   "capparis",
+   "mimosa"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "mimosa",
+    "assoc",
+    0.954
+   ],
+   [
+    "vitis",
+    "assoc",
+    0.95
+   ],
+   [
+    "capparis",
+    "assoc",
+    0.941
+   ],
+   [
+    "nephelium",
+    "assoc",
+    0.941
+   ]
+  ],
+  "cd": 0.728,
+  "strong": true,
+  "older": false,
+  "cstems": 272
+ },
+ {
+  "id": "material:herbal>leave",
+  "rel": "material",
+  "L": 2,
+  "stem": [
+   "cider",
+   "juice"
+  ],
+  "c": "herbal",
+  "d": "leave",
+  "options": [
+   "brew",
+   "leave",
+   "remedy",
+   "ginger",
+   "aged"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "remedy",
+    "assoc",
+    0.832
+   ],
+   [
+    "brew",
+    "assoc",
+    0.79
+   ],
+   [
+    "aged",
+    "assoc",
+    0.782
+   ],
+   [
+    "ginger",
+    "assoc",
+    0.757
+   ]
+  ],
+  "cd": 0.468,
+  "strong": true,
+  "older": false,
+  "cstems": 17
+ },
+ {
+  "id": "material:cake>flour",
+  "rel": "material",
+  "L": 2,
+  "stem": [
+   "bread",
+   "dough"
+  ],
+  "c": "cake",
+  "d": "flour",
+  "options": [
+   "bun",
+   "block",
+   "flour",
+   "loaf"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "bun",
+    "assoc",
+    0.824
+   ],
+   [
+    "loaf",
+    "assoc",
+    0.791
+   ],
+   [
+    "block",
+    "other:synonym",
+    0.265
+   ]
+  ],
+  "cd": 0.639,
+  "strong": true,
+  "older": false,
+  "cstems": 16
+ },
+ {
+  "id": "material:ceramic>material",
+  "rel": "material",
+  "L": 2,
+  "stem": [
+   "jewelry",
+   "metal"
+  ],
+  "c": "ceramic",
+  "d": "material",
+  "options": [
+   "material",
+   "coating",
+   "tin",
+   "slab"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "tin",
+    "assoc",
+    0.777
+   ],
+   [
+    "coating",
+    "assoc",
+    0.772
+   ],
+   [
+    "slab",
+    "assoc",
+    0.77
+   ]
+  ],
+  "cd": 0.647,
+  "strong": true,
+  "older": false,
+  "cstems": 17
+ },
+ {
+  "id": "material:oatmeal>oat",
+  "rel": "material",
+  "L": 3,
+  "stem": [
+   "cider",
+   "juice"
+  ],
+  "c": "oatmeal",
+  "d": "oat",
+  "options": [
+   "topping",
+   "soy",
+   "simmer",
+   "oat",
+   "barley"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "soy",
+    "assoc",
+    0.925
+   ],
+   [
+    "topping",
+    "assoc",
+    0.921
+   ],
+   [
+    "barley",
+    "sibling",
+    0.829
+   ],
+   [
+    "simmer",
+    "assoc",
+    0.92
+   ]
+  ],
+  "cd": 0.845,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:caramel>sugar",
+  "rel": "material",
+  "L": 3,
+  "stem": [
+   "cider",
+   "juice"
+  ],
+  "c": "caramel",
+  "d": "sugar",
+  "options": [
+   "topping",
+   "oatmeal",
+   "biscuit",
+   "sugar",
+   "sugary"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "biscuit",
+    "assoc",
+    0.9
+   ],
+   [
+    "oatmeal",
+    "assoc",
+    0.89
+   ],
+   [
+    "sugary",
+    "form",
+    0
+   ],
+   [
+    "topping",
+    "assoc",
+    0.889
+   ]
+  ],
+  "cd": 0.645,
+  "strong": true,
+  "older": false,
+  "cstems": 18
+ },
+ {
+  "id": "material:bronze>copper",
+  "rel": "material",
+  "L": 3,
+  "stem": [
+   "jewelry",
+   "metal"
+  ],
+  "c": "bronze",
+  "d": "copper",
+  "options": [
+   "tapestry",
+   "emerald",
+   "tan",
+   "ruby",
+   "copper"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "emerald",
+    "assoc",
+    0.819
+   ],
+   [
+    "tapestry",
+    "assoc",
+    0.798
+   ],
+   [
+    "tan",
+    "other:synonym",
+    0.515
+   ],
+   [
+    "ruby",
+    "assoc",
+    0.775
+   ]
+  ],
+  "cd": 0.738,
+  "strong": true,
+  "older": false,
+  "cstems": 19
+ },
+ {
+  "id": "material:crib>slat",
+  "rel": "material",
+  "L": 4,
+  "stem": [
+   "bronze",
+   "copper"
+  ],
+  "c": "crib",
+  "d": "slat",
+  "options": [
+   "slat",
+   "cradle",
+   "piglet",
+   "cot",
+   "upstairs"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "cot",
+    "assoc",
+    0.89
+   ],
+   [
+    "upstairs",
+    "assoc",
+    0.878
+   ],
+   [
+    "cradle",
+    "other:synonym",
+    0.743
+   ],
+   [
+    "piglet",
+    "assoc",
+    0.863
+   ]
+  ],
+  "cd": 0.665,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:cocoa>powder",
+  "rel": "material",
+  "L": 4,
+  "stem": [
+   "herbal",
+   "leave"
+  ],
+  "c": "cocoa",
+  "d": "powder",
+  "options": [
+   "powder",
+   "salsa",
+   "oatmeal",
+   "muffin",
+   "spoonful"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "muffin",
+    "assoc",
+    0.918
+   ],
+   [
+    "oatmeal",
+    "assoc",
+    0.906
+   ],
+   [
+    "salsa",
+    "assoc",
+    0.904
+   ],
+   [
+    "spoonful",
+    "assoc",
+    0.899
+   ]
+  ],
+  "cd": 0.69,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:pasta>dough",
+  "rel": "material",
+  "L": 4,
+  "stem": [
+   "herbal",
+   "leave"
+  ],
+  "c": "pasta",
+  "d": "dough",
+  "options": [
+   "bacon",
+   "oatmeal",
+   "salami",
+   "dough",
+   "steak"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "salami",
+    "assoc",
+    0.874
+   ],
+   [
+    "steak",
+    "assoc",
+    0.87
+   ],
+   [
+    "oatmeal",
+    "assoc",
+    0.868
+   ],
+   [
+    "bacon",
+    "assoc",
+    0.863
+   ]
+  ],
+  "cd": 0.789,
+  "strong": true,
+  "older": false,
+  "cstems": 19
+ },
+ {
+  "id": "material:pottery>clay",
+  "rel": "material",
+  "L": 4,
+  "stem": [
+   "cake",
+   "flour"
+  ],
+  "c": "pottery",
+  "d": "clay",
+  "options": [
+   "artisan",
+   "clay",
+   "porcelain",
+   "bronze",
+   "shard"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "shard",
+    "assoc",
+    0.881
+   ],
+   [
+    "artisan",
+    "assoc",
+    0.796
+   ],
+   [
+    "porcelain",
+    "assoc",
+    0.79
+   ],
+   [
+    "bronze",
+    "assoc",
+    0.786
+   ]
+  ],
+  "cd": 0.742,
+  "strong": true,
+  "older": false,
+  "cstems": 19
+ },
+ {
+  "id": "material:humus>leave",
+  "rel": "material",
+  "L": 4,
+  "stem": [
+   "bread",
+   "dough"
+  ],
+  "c": "humus",
+  "d": "leave",
+  "options": [
+   "leave",
+   "leach",
+   "bedrock",
+   "peat",
+   "basalt"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "leach",
+    "assoc",
+    0.893
+   ],
+   [
+    "peat",
+    "assoc",
+    0.858
+   ],
+   [
+    "bedrock",
+    "assoc",
+    0.831
+   ],
+   [
+    "basalt",
+    "assoc",
+    0.819
+   ]
+  ],
+  "cd": 0.426,
+  "strong": true,
+  "older": false,
+  "cstems": 19
+ },
+ {
+  "id": "material:margarine>oil",
+  "rel": "material",
+  "L": 6,
+  "stem": [
+   "herbal",
+   "leave"
+  ],
+  "c": "margarine",
+  "d": "oil",
+  "options": [
+   "oily",
+   "turmeric",
+   "nutmeg",
+   "cumin",
+   "oil"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "cumin",
+    "assoc",
+    0.907
+   ],
+   [
+    "nutmeg",
+    "assoc",
+    0.888
+   ],
+   [
+    "oily",
+    "form",
+    0
+   ],
+   [
+    "turmeric",
+    "assoc",
+    0.882
+   ]
+  ],
+  "cd": 0.713,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:latticework>strip",
+  "rel": "material",
+  "L": 7,
+  "stem": [
+   "sub",
+   "split"
+  ],
+  "c": "latticework",
+  "d": "strip",
+  "options": [
+   "grid",
+   "buckram",
+   "veneer",
+   "edging",
+   "strip"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "edging",
+    "assoc",
+    0.876
+   ],
+   [
+    "veneer",
+    "assoc",
+    0.872
+   ],
+   [
+    "grid",
+    "other:synonym",
+    0.571
+   ],
+   [
+    "buckram",
+    "assoc",
+    0.85
+   ]
+  ],
+  "cd": 0.427,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:naphthalene>tar",
+  "rel": "material",
+  "L": 7,
+  "stem": [
+   "sub",
+   "split"
+  ],
+  "c": "naphthalene",
+  "d": "tar",
+  "options": [
+   "alkane",
+   "hexane",
+   "styrene",
+   "tar",
+   "ethane"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "ethane",
+    "assoc",
+    0.928
+   ],
+   [
+    "alkane",
+    "assoc",
+    0.928
+   ],
+   [
+    "styrene",
+    "assoc",
+    0.923
+   ],
+   [
+    "hexane",
+    "assoc",
+    0.918
+   ]
+  ],
+  "cd": 0.697,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:guacamole>avocado",
+  "rel": "material",
+  "L": 7,
+  "stem": [
+   "sub",
+   "split"
+  ],
+  "c": "guacamole",
+  "d": "avocado",
+  "options": [
+   "acorn",
+   "tahini",
+   "hummus",
+   "avocado",
+   "fondue"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "tahini",
+    "assoc",
+    0.944
+   ],
+   [
+    "fondue",
+    "assoc",
+    0.942
+   ],
+   [
+    "acorn",
+    "sibling",
+    0.559
+   ],
+   [
+    "hummus",
+    "assoc",
+    0.941
+   ]
+  ],
+  "cd": 0.866,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:burgoo>oat",
+  "rel": "material",
+  "L": 8,
+  "stem": [
+   "sub",
+   "split"
+  ],
+  "c": "burgoo",
+  "d": "oat",
+  "options": [
+   "broiler",
+   "cutlet",
+   "oat",
+   "pita",
+   "barley"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "pita",
+    "assoc",
+    0.923
+   ],
+   [
+    "cutlet",
+    "assoc",
+    0.921
+   ],
+   [
+    "barley",
+    "sibling",
+    0.818
+   ],
+   [
+    "broiler",
+    "assoc",
+    0.92
+   ]
+  ],
+  "cd": 0.803,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:hummus>chickpea",
+  "rel": "material",
+  "L": 8,
+  "stem": [
+   "sub",
+   "split"
+  ],
+  "c": "hummus",
+  "d": "chickpea",
+  "options": [
+   "fondue",
+   "mozzarella",
+   "bead",
+   "chickpea",
+   "flatbread"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "fondue",
+    "assoc",
+    0.948
+   ],
+   [
+    "mozzarella",
+    "assoc",
+    0.947
+   ],
+   [
+    "bead",
+    "sibling",
+    0.613
+   ],
+   [
+    "flatbread",
+    "assoc",
+    0.944
+   ]
+  ],
+  "cd": 0.914,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "material:sarsaparilla>extract",
+  "rel": "material",
+  "L": 9,
+  "stem": [
+   "sub",
+   "split"
+  ],
+  "c": "sarsaparilla",
+  "d": "extract",
+  "options": [
+   "turmeric",
+   "acetum",
+   "potpourri",
+   "horehound",
+   "extract"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "horehound",
+    "assoc",
+    0.948
+   ],
+   [
+    "turmeric",
+    "assoc",
+    0.942
+   ],
+   [
+    "acetum",
+    "sibling",
+    0.837
+   ],
+   [
+    "potpourri",
+    "assoc",
+    0.938
+   ]
+  ],
+  "cd": 0.664,
+  "strong": true,
+  "older": true,
+  "cstems": 20
+ },
+ {
+  "id": "part:above>text",
+  "rel": "part",
+  "L": 1,
+  "stem": [
+   "over",
+   "play"
+  ],
+  "c": "above",
+  "d": "text",
+  "options": [
+   "lower",
+   "median",
+   "level",
+   "ranking",
+   "text"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "ranking",
+    "assoc",
+    0.613
+   ],
+   [
+    "lower",
+    "assoc",
+    0.59
+   ],
+   [
+    "level",
+    "assoc",
+    0.585
+   ],
+   [
+    "median",
+    "assoc",
+    0.572
+   ]
+  ],
+  "cd": 0.308,
+  "strong": true,
+  "older": false,
+  "cstems": 10
+ },
+ {
+  "id": "part:department>organization",
+  "rel": "part",
+  "L": 2,
+  "stem": [
+   "hub",
+   "wheel"
+  ],
+  "c": "department",
+  "d": "organization",
+  "options": [
+   "organization",
+   "startup",
+   "agency",
+   "funding",
+   "executive"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "executive",
+    "assoc",
+    0.812
+   ],
+   [
+    "agency",
+    "assoc",
+    0.747
+   ],
+   [
+    "funding",
+    "assoc",
+    0.737
+   ],
+   [
+    "startup",
+    "assoc",
+    0.736
+   ]
+  ],
+  "cd": 0.796,
+  "strong": true,
+  "older": false,
+  "cstems": 17
+ },
+ {
+  "id": "part:chin>jaw",
+  "rel": "part",
+  "L": 3,
+  "stem": [
+   "forearm",
+   "limb"
+  ],
+  "c": "chin",
+  "d": "jaw",
+  "options": [
+   "cheek",
+   "rib",
+   "jaw",
+   "thigh",
+   "elbow"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "cheek",
+    "assoc",
+    0.774
+   ],
+   [
+    "elbow",
+    "assoc",
+    0.754
+   ],
+   [
+    "thigh",
+    "assoc",
+    0.735
+   ],
+   [
+    "rib",
+    "assoc",
+    0.727
+   ]
+  ],
+  "cd": 0.611,
+  "strong": true,
+  "older": false,
+  "cstems": 26
+ },
+ {
+  "id": "part:sleeve>garment",
+  "rel": "part",
+  "L": 3,
+  "stem": [
+   "upper",
+   "shoe"
+  ],
+  "c": "sleeve",
+  "d": "garment",
+  "options": [
+   "stocking",
+   "sandal",
+   "sash",
+   "footwear",
+   "garment"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "stocking",
+    "assoc",
+    0.887
+   ],
+   [
+    "sandal",
+    "assoc",
+    0.883
+   ],
+   [
+    "sash",
+    "assoc",
+    0.871
+   ],
+   [
+    "footwear",
+    "assoc",
+    0.853
+   ]
+  ],
+  "cd": 0.764,
+  "strong": true,
+  "older": false,
+  "cstems": 28
+ },
+ {
+  "id": "part:audio>signal",
+  "rel": "part",
+  "L": 3,
+  "stem": [
+   "above",
+   "text"
+  ],
+  "c": "audio",
+  "d": "signal",
+  "options": [
+   "transmission",
+   "acoustic",
+   "sound",
+   "keyboard",
+   "signal"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "acoustic",
+    "assoc",
+    0.793
+   ],
+   [
+    "keyboard",
+    "assoc",
+    0.768
+   ],
+   [
+    "sound",
+    "other:synonym",
+    0.527
+   ],
+   [
+    "transmission",
+    "assoc",
+    0.763
+   ]
+  ],
+  "cd": 0.542,
+  "strong": true,
+  "older": true,
+  "cstems": 27
+ },
+ {
+  "id": "part:forearm>limb",
+  "rel": "part",
+  "L": 3,
+  "stem": [
+   "jaw",
+   "skull"
+  ],
+  "c": "forearm",
+  "d": "limb",
+  "options": [
+   "limb",
+   "femur",
+   "thigh",
+   "hip",
+   "tendon"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "femur",
+    "assoc",
+    0.851
+   ],
+   [
+    "hip",
+    "assoc",
+    0.837
+   ],
+   [
+    "thigh",
+    "assoc",
+    0.825
+   ],
+   [
+    "tendon",
+    "assoc",
+    0.821
+   ]
+  ],
+  "cd": 0.718,
+  "strong": true,
+  "older": false,
+  "cstems": 27
+ },
+ {
+  "id": "part:fore>vessel",
+  "rel": "part",
+  "L": 4,
+  "stem": [
+   "england",
+   "kingdom"
+  ],
+  "c": "fore",
+  "d": "vessel",
+  "options": [
+   "bow",
+   "lied",
+   "decree",
+   "vessel",
+   "oracle"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "lied",
+    "assoc",
+    0.726
+   ],
+   [
+    "oracle",
+    "assoc",
+    0.708
+   ],
+   [
+    "bow",
+    "other:synonym",
+    0.443
+   ],
+   [
+    "decree",
+    "assoc",
+    0.707
+   ]
+  ],
+  "cd": 0.216,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:xylem>plant",
+  "rel": "part",
+  "L": 4,
+  "stem": [
+   "back",
+   "human"
+  ],
+  "c": "xylem",
+  "d": "plant",
+  "options": [
+   "myelin",
+   "wood",
+   "keratin",
+   "arcade",
+   "plant"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "myelin",
+    "assoc",
+    0.861
+   ],
+   [
+    "keratin",
+    "assoc",
+    0.861
+   ],
+   [
+    "wood",
+    "other:synonym",
+    0.48
+   ],
+   [
+    "arcade",
+    "sibling",
+    0.342
+   ]
+  ],
+  "cd": 0.594,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:bodice>waist",
+  "rel": "part",
+  "L": 5,
+  "stem": [
+   "bend",
+   "curve"
+  ],
+  "c": "bodice",
+  "d": "waist",
+  "options": [
+   "cravat",
+   "headband",
+   "corset",
+   "waist",
+   "bonnet"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "bonnet",
+    "assoc",
+    0.918
+   ],
+   [
+    "cravat",
+    "assoc",
+    0.917
+   ],
+   [
+    "corset",
+    "other:synonym",
+    0.833
+   ],
+   [
+    "headband",
+    "assoc",
+    0.912
+   ]
+  ],
+  "cd": 0.81,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:petal>perianth",
+  "rel": "part",
+  "L": 5,
+  "stem": [
+   "sleeve",
+   "garment"
+  ],
+  "c": "petal",
+  "d": "perianth",
+  "options": [
+   "violet",
+   "lilac",
+   "sepal",
+   "perianth",
+   "bract"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "sepal",
+    "assoc",
+    0.83
+   ],
+   [
+    "bract",
+    "assoc",
+    0.816
+   ],
+   [
+    "lilac",
+    "assoc",
+    0.805
+   ],
+   [
+    "violet",
+    "assoc",
+    0.799
+   ]
+  ],
+  "cd": 0.723,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:cerebellum>brain",
+  "rel": "part",
+  "L": 6,
+  "stem": [
+   "audio",
+   "signal"
+  ],
+  "c": "cerebellum",
+  "d": "brain",
+  "options": [
+   "brain",
+   "tarsal",
+   "hippocampus",
+   "hypothalamus",
+   "vertebrae"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "hippocampus",
+    "assoc",
+    0.903
+   ],
+   [
+    "hypothalamus",
+    "assoc",
+    0.898
+   ],
+   [
+    "vertebrae",
+    "assoc",
+    0.879
+   ],
+   [
+    "tarsal",
+    "assoc",
+    0.877
+   ]
+  ],
+  "cd": 0.723,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:umbra>shadow",
+  "rel": "part",
+  "L": 6,
+  "stem": [
+   "sleeve",
+   "garment"
+  ],
+  "c": "umbra",
+  "d": "shadow",
+  "options": [
+   "overcast",
+   "twilight",
+   "shadow",
+   "moonlight",
+   "darkness"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "twilight",
+    "assoc",
+    0.872
+   ],
+   [
+    "moonlight",
+    "assoc",
+    0.837
+   ],
+   [
+    "darkness",
+    "other:synonym",
+    0.742
+   ],
+   [
+    "overcast",
+    "assoc",
+    0.833
+   ]
+  ],
+  "cd": 0.871,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:pinna>leaf",
+  "rel": "part",
+  "L": 7,
+  "stem": [
+   "audio",
+   "signal"
+  ],
+  "c": "pinna",
+  "d": "leaf",
+  "options": [
+   "cirrus",
+   "leaf",
+   "antler",
+   "lobe",
+   "seta"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "cirrus",
+    "assoc",
+    0.905
+   ],
+   [
+    "antler",
+    "assoc",
+    0.896
+   ],
+   [
+    "lobe",
+    "other:synonym",
+    0.702
+   ],
+   [
+    "seta",
+    "assoc",
+    0.895
+   ]
+  ],
+  "cd": 0.658,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:outskirt>far",
+  "rel": "part",
+  "L": 7,
+  "stem": [
+   "bend",
+   "curve"
+  ],
+  "c": "outskirt",
+  "d": "far",
+  "options": [
+   "adriatic",
+   "rockies",
+   "far",
+   "edge",
+   "tigris"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "rockies",
+    "assoc",
+    0.896
+   ],
+   [
+    "tigris",
+    "assoc",
+    0.896
+   ],
+   [
+    "edge",
+    "other:synonym",
+    0.525
+   ],
+   [
+    "adriatic",
+    "assoc",
+    0.896
+   ]
+  ],
+  "cd": 0.48,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "part:hammer>gunlock",
+  "rel": "part",
+  "L": 9,
+  "stem": [
+   "sea",
+   "ocean"
+  ],
+  "c": "hammer",
+  "d": "gunlock",
+  "options": [
+   "anvil",
+   "gunlock",
+   "striker",
+   "lathe",
+   "metalworker"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "anvil",
+    "assoc",
+    0.854
+   ],
+   [
+    "metalworker",
+    "assoc",
+    0.79
+   ],
+   [
+    "striker",
+    "other:synonym",
+    0.626
+   ],
+   [
+    "lathe",
+    "assoc",
+    0.763
+   ]
+  ],
+  "cd": 0.784,
+  "strong": true,
+  "older": false,
+  "cstems": 29
+ },
+ {
+  "id": "relating:tide>tidal",
+  "rel": "relating",
+  "L": 3,
+  "stem": [
+   "wave",
+   "wavy"
+  ],
+  "c": "tide",
+  "d": "tidal",
+  "options": [
+   "tidal",
+   "downstream",
+   "glacial",
+   "upstream"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "upstream",
+    "assoc",
+    0.803
+   ],
+   [
+    "glacial",
+    "assoc",
+    0.776
+   ],
+   [
+    "downstream",
+    "assoc",
+    0.751
+   ]
+  ],
+  "cd": 0.816,
+  "strong": false,
+  "older": false,
+  "cstems": 8
+ },
+ {
+  "id": "relating:water>watery",
+  "rel": "relating",
+  "L": 3,
+  "stem": [
+   "oil",
+   "oily"
+  ],
+  "c": "water",
+  "d": "watery",
+  "options": [
+   "downstream",
+   "salty",
+   "watery",
+   "upstream",
+   "tidal"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "tidal",
+    "assoc",
+    0.721
+   ],
+   [
+    "downstream",
+    "assoc",
+    0.713
+   ],
+   [
+    "salty",
+    "assoc",
+    0.687
+   ],
+   [
+    "upstream",
+    "assoc",
+    0.685
+   ]
+  ],
+  "cd": 0.571,
+  "strong": true,
+  "older": false,
+  "cstems": 8
+ },
+ {
+  "id": "relating:recreation>recreational",
+  "rel": "relating",
+  "L": 3,
+  "stem": [
+   "joy",
+   "joyful"
+  ],
+  "c": "recreation",
+  "d": "recreational",
+  "options": [
+   "competitive",
+   "recreational",
+   "suburban",
+   "outdoor"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "competitive",
+    "assoc",
+    0.792
+   ],
+   [
+    "outdoor",
+    "assoc",
+    0.774
+   ],
+   [
+    "suburban",
+    "assoc",
+    0.772
+   ]
+  ],
+  "cd": 0.924,
+  "strong": false,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:sentiment>sentimental",
+  "rel": "relating",
+  "L": 4,
+  "stem": [
+   "body",
+   "bodily"
+  ],
+  "c": "sentiment",
+  "d": "sentimental",
+  "options": [
+   "indifferent",
+   "profound",
+   "idealistic",
+   "sentimental"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "idealistic",
+    "assoc",
+    0.803
+   ],
+   [
+    "indifferent",
+    "assoc",
+    0.803
+   ],
+   [
+    "profound",
+    "assoc",
+    0.799
+   ]
+  ],
+  "cd": 0.635,
+  "strong": true,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:taste>tasteful",
+  "rel": "relating",
+  "L": 4,
+  "stem": [
+   "strength",
+   "strong"
+  ],
+  "c": "taste",
+  "d": "tasteful",
+  "options": [
+   "wonderful",
+   "tasteful",
+   "fruity",
+   "pleasant",
+   "fizzy"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "pleasant",
+    "assoc",
+    0.697
+   ],
+   [
+    "wonderful",
+    "assoc",
+    0.696
+   ],
+   [
+    "fruity",
+    "assoc",
+    0.694
+   ],
+   [
+    "fizzy",
+    "assoc",
+    0.686
+   ]
+  ],
+  "cd": 0.634,
+  "strong": true,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:defect>defective",
+  "rel": "relating",
+  "L": 5,
+  "stem": [
+   "strength",
+   "strong"
+  ],
+  "c": "defect",
+  "d": "defective",
+  "options": [
+   "defective",
+   "hormonal",
+   "congenital",
+   "inflammatory"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "congenital",
+    "assoc",
+    0.759
+   ],
+   [
+    "hormonal",
+    "assoc",
+    0.717
+   ],
+   [
+    "inflammatory",
+    "assoc",
+    0.709
+   ]
+  ],
+  "cd": 0.797,
+  "strong": false,
+  "older": true,
+  "cstems": 9
+ },
+ {
+  "id": "relating:navigation>navigational",
+  "rel": "relating",
+  "L": 5,
+  "stem": [
+   "body",
+   "bodily"
+  ],
+  "c": "navigation",
+  "d": "navigational",
+  "options": [
+   "ballistic",
+   "planetary",
+   "transatlantic",
+   "navigational"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "ballistic",
+    "assoc",
+    0.771
+   ],
+   [
+    "planetary",
+    "assoc",
+    0.763
+   ],
+   [
+    "transatlantic",
+    "assoc",
+    0.756
+   ]
+  ],
+  "cd": 0.874,
+  "strong": false,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:flavor>flavorful",
+  "rel": "relating",
+  "L": 5,
+  "stem": [
+   "strength",
+   "strong"
+  ],
+  "c": "flavor",
+  "d": "flavorful",
+  "options": [
+   "sweeter",
+   "flavorful",
+   "tangy",
+   "fruity",
+   "pungent"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "tangy",
+    "assoc",
+    0.821
+   ],
+   [
+    "fruity",
+    "assoc",
+    0.813
+   ],
+   [
+    "pungent",
+    "assoc",
+    0.8
+   ],
+   [
+    "sweeter",
+    "assoc",
+    0.799
+   ]
+  ],
+  "cd": 0.763,
+  "strong": true,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:shrub>shrubby",
+  "rel": "relating",
+  "L": 6,
+  "stem": [
+   "fog",
+   "foggy"
+  ],
+  "c": "shrub",
+  "d": "shrubby",
+  "options": [
+   "prickly",
+   "spiny",
+   "leafless",
+   "thorny",
+   "shrubby"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "thorny",
+    "assoc",
+    0.84
+   ],
+   [
+    "prickly",
+    "assoc",
+    0.769
+   ],
+   [
+    "spiny",
+    "assoc",
+    0.745
+   ],
+   [
+    "leafless",
+    "assoc",
+    0.744
+   ]
+  ],
+  "cd": 0.818,
+  "strong": true,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:allergen>allergenic",
+  "rel": "relating",
+  "L": 7,
+  "stem": [
+   "joy",
+   "joyful"
+  ],
+  "c": "allergen",
+  "d": "allergenic",
+  "options": [
+   "hypersensitive",
+   "allergenic",
+   "inflammatory",
+   "oxidative",
+   "immunological"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "hypersensitive",
+    "assoc",
+    0.881
+   ],
+   [
+    "inflammatory",
+    "assoc",
+    0.87
+   ],
+   [
+    "oxidative",
+    "assoc",
+    0.87
+   ],
+   [
+    "immunological",
+    "assoc",
+    0.868
+   ]
+  ],
+  "cd": 0.785,
+  "strong": true,
+  "older": true,
+  "cstems": 9
+ },
+ {
+  "id": "relating:polygon>polygonal",
+  "rel": "relating",
+  "L": 7,
+  "stem": [
+   "joy",
+   "joyful"
+  ],
+  "c": "polygon",
+  "d": "polygonal",
+  "options": [
+   "orthogonal",
+   "congruent",
+   "symmetric",
+   "geometric",
+   "polygonal"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "congruent",
+    "assoc",
+    0.874
+   ],
+   [
+    "geometric",
+    "assoc",
+    0.868
+   ],
+   [
+    "symmetric",
+    "assoc",
+    0.862
+   ],
+   [
+    "orthogonal",
+    "assoc",
+    0.841
+   ]
+  ],
+  "cd": 0.879,
+  "strong": false,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:bronchi>bronchial",
+  "rel": "relating",
+  "L": 7,
+  "stem": [
+   "joy",
+   "joyful"
+  ],
+  "c": "bronchi",
+  "d": "bronchial",
+  "options": [
+   "bronchial",
+   "tracheal",
+   "ventricular",
+   "pulmonary",
+   "purulent"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "tracheal",
+    "assoc",
+    0.93
+   ],
+   [
+    "pulmonary",
+    "assoc",
+    0.919
+   ],
+   [
+    "purulent",
+    "assoc",
+    0.909
+   ],
+   [
+    "ventricular",
+    "assoc",
+    0.909
+   ]
+  ],
+  "cd": 0.957,
+  "strong": false,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:asymmetry>asymmetrical",
+  "rel": "relating",
+  "L": 7,
+  "stem": [
+   "law",
+   "lawful"
+  ],
+  "c": "asymmetry",
+  "d": "asymmetrical",
+  "options": [
+   "geometrical",
+   "orthorhombic",
+   "asymmetrical",
+   "dimensional"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "dimensional",
+    "assoc",
+    0.875
+   ],
+   [
+    "geometrical",
+    "assoc",
+    0.872
+   ],
+   [
+    "orthorhombic",
+    "assoc",
+    0.86
+   ]
+  ],
+  "cd": 0.825,
+  "strong": true,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "relating:cancer>cancerous",
+  "rel": "relating",
+  "L": 7,
+  "stem": [
+   "joy",
+   "joyful"
+  ],
+  "c": "cancer",
+  "d": "cancerous",
+  "options": [
+   "cancerous",
+   "hemolytic",
+   "allergic",
+   "autoimmune",
+   "bacterial"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "bacterial",
+    "assoc",
+    0.75
+   ],
+   [
+    "hemolytic",
+    "assoc",
+    0.744
+   ],
+   [
+    "autoimmune",
+    "assoc",
+    0.74
+   ],
+   [
+    "allergic",
+    "assoc",
+    0.729
+   ]
+  ],
+  "cd": 0.796,
+  "strong": false,
+  "older": true,
+  "cstems": 9
+ },
+ {
+  "id": "relating:typography>typographical",
+  "rel": "relating",
+  "L": 7,
+  "stem": [
+   "tide",
+   "tidal"
+  ],
+  "c": "typography",
+  "d": "typographical",
+  "options": [
+   "thematic",
+   "graphical",
+   "compositional",
+   "typographical",
+   "stylistic"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "stylistic",
+    "assoc",
+    0.883
+   ],
+   [
+    "graphical",
+    "assoc",
+    0.867
+   ],
+   [
+    "compositional",
+    "assoc",
+    0.866
+   ],
+   [
+    "thematic",
+    "assoc",
+    0.857
+   ]
+  ],
+  "cd": 0.838,
+  "strong": true,
+  "older": false,
+  "cstems": 9
+ },
+ {
+  "id": "synonym:extent>length",
+  "rel": "synonym",
+  "L": 1,
+  "stem": [
+   "part",
+   "portion"
+  ],
+  "c": "extent",
+  "d": "length",
+  "options": [
+   "maximum",
+   "minimum",
+   "average",
+   "length"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "minimum",
+    "assoc",
+    0.717
+   ],
+   [
+    "maximum",
+    "assoc",
+    0.714
+   ],
+   [
+    "average",
+    "assoc",
+    0.706
+   ]
+  ],
+  "cd": 0.398,
+  "strong": true,
+  "older": false,
+  "cstems": 150
+ },
+ {
+  "id": "synonym:railroad>railway",
+  "rel": "synonym",
+  "L": 2,
+  "stem": [
+   "building",
+   "structure"
+  ],
+  "c": "railroad",
+  "d": "railway",
+  "options": [
+   "railway",
+   "caravan",
+   "wagon",
+   "buses",
+   "hub"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "wagon",
+    "assoc",
+    0.824
+   ],
+   [
+    "buses",
+    "assoc",
+    0.812
+   ],
+   [
+    "caravan",
+    "assoc",
+    0.806
+   ],
+   [
+    "hub",
+    "assoc",
+    0.774
+   ]
+  ],
+  "cd": 0.867,
+  "strong": false,
+  "older": false,
+  "cstems": 222
+ },
+ {
+  "id": "synonym:remedy>cure",
+  "rel": "synonym",
+  "L": 2,
+  "stem": [
+   "cause",
+   "reason"
+  ],
+  "c": "remedy",
+  "d": "cure",
+  "options": [
+   "herbal",
+   "cure",
+   "healing",
+   "medication"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "herbal",
+    "assoc",
+    0.832
+   ],
+   [
+    "healing",
+    "assoc",
+    0.687
+   ],
+   [
+    "medication",
+    "assoc",
+    0.676
+   ]
+  ],
+  "cd": 0.753,
+  "strong": true,
+  "older": true,
+  "cstems": 222
+ },
+ {
+  "id": "synonym:advertising>promotion",
+  "rel": "synonym",
+  "L": 2,
+  "stem": [
+   "individual",
+   "person"
+  ],
+  "c": "advertising",
+  "d": "promotion",
+  "options": [
+   "media",
+   "consumer",
+   "promotion",
+   "editing",
+   "commercial"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "consumer",
+    "assoc",
+    0.8
+   ],
+   [
+    "commercial",
+    "assoc",
+    0.779
+   ],
+   [
+    "media",
+    "assoc",
+    0.777
+   ],
+   [
+    "editing",
+    "assoc",
+    0.761
+   ]
+  ],
+  "cd": 0.71,
+  "strong": true,
+  "older": false,
+  "cstems": 222
+ },
+ {
+  "id": "synonym:combination>mixture",
+  "rel": "synonym",
+  "L": 3,
+  "stem": [
+   "element",
+   "part"
+  ],
+  "c": "combination",
+  "d": "mixture",
+  "options": [
+   "generic",
+   "ether",
+   "integral",
+   "mixture"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "generic",
+    "assoc",
+    0.662
+   ],
+   [
+    "ether",
+    "assoc",
+    0.647
+   ],
+   [
+    "integral",
+    "assoc",
+    0.644
+   ]
+  ],
+  "cd": 0.456,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:appearance>aspect",
+  "rel": "synonym",
+  "L": 3,
+  "stem": [
+   "form",
+   "shape"
+  ],
+  "c": "appearance",
+  "d": "aspect",
+  "options": [
+   "character",
+   "rustic",
+   "aspect",
+   "quality",
+   "texture"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "texture",
+    "assoc",
+    0.645
+   ],
+   [
+    "quality",
+    "assoc",
+    0.636
+   ],
+   [
+    "rustic",
+    "assoc",
+    0.609
+   ],
+   [
+    "character",
+    "assoc",
+    0.607
+   ]
+  ],
+  "cd": 0.315,
+  "strong": true,
+  "older": false,
+  "cstems": 248
+ },
+ {
+  "id": "synonym:envoy>delegate",
+  "rel": "synonym",
+  "L": 4,
+  "stem": [
+   "person",
+   "someone"
+  ],
+  "c": "envoy",
+  "d": "delegate",
+  "options": [
+   "embassy",
+   "delegate",
+   "correspondent",
+   "registrar",
+   "summons"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "correspondent",
+    "assoc",
+    0.863
+   ],
+   [
+    "summons",
+    "assoc",
+    0.861
+   ],
+   [
+    "registrar",
+    "assoc",
+    0.837
+   ],
+   [
+    "embassy",
+    "assoc",
+    0.834
+   ]
+  ],
+  "cd": 0.811,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:leaning>inclination",
+  "rel": "synonym",
+  "L": 4,
+  "stem": [
+   "pair",
+   "two"
+  ],
+  "c": "leaning",
+  "d": "inclination",
+  "options": [
+   "buoyancy",
+   "inclination",
+   "downhill",
+   "seesaw",
+   "acceptance"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "buoyancy",
+    "assoc",
+    0.809
+   ],
+   [
+    "seesaw",
+    "assoc",
+    0.805
+   ],
+   [
+    "acceptance",
+    "sibling",
+    0.439
+   ],
+   [
+    "downhill",
+    "assoc",
+    0.801
+   ]
+  ],
+  "cd": 0.655,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:dread>apprehension",
+  "rel": "synonym",
+  "L": 5,
+  "stem": [
+   "individual",
+   "person"
+  ],
+  "c": "dread",
+  "d": "apprehension",
+  "options": [
+   "nightmare",
+   "apprehension",
+   "frightening",
+   "panic",
+   "timidity"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "nightmare",
+    "assoc",
+    0.846
+   ],
+   [
+    "frightening",
+    "assoc",
+    0.834
+   ],
+   [
+    "panic",
+    "assoc",
+    0.823
+   ],
+   [
+    "timidity",
+    "assoc",
+    0.822
+   ]
+  ],
+  "cd": 0.835,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:curvature>deformity",
+  "rel": "synonym",
+  "L": 5,
+  "stem": [
+   "being",
+   "entity"
+  ],
+  "c": "curvature",
+  "d": "deformity",
+  "options": [
+   "elongation",
+   "conic",
+   "contour",
+   "deformity",
+   "displacement"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "elongation",
+    "assoc",
+    0.843
+   ],
+   [
+    "displacement",
+    "assoc",
+    0.823
+   ],
+   [
+    "conic",
+    "assoc",
+    0.821
+   ],
+   [
+    "contour",
+    "assoc",
+    0.817
+   ]
+  ],
+  "cd": 0.809,
+  "strong": true,
+  "older": true,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:mutter>murmur",
+  "rel": "synonym",
+  "L": 5,
+  "stem": [
+   "act",
+   "bill"
+  ],
+  "c": "mutter",
+  "d": "murmur",
+  "options": [
+   "whispers",
+   "grin",
+   "wink",
+   "murmur",
+   "smirk"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "grin",
+    "assoc",
+    0.871
+   ],
+   [
+    "wink",
+    "assoc",
+    0.868
+   ],
+   [
+    "smirk",
+    "assoc",
+    0.859
+   ],
+   [
+    "whispers",
+    "assoc",
+    0.847
+   ]
+  ],
+  "cd": 0.696,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:flood>deluge",
+  "rel": "synonym",
+  "L": 5,
+  "stem": [
+   "ace",
+   "one"
+  ],
+  "c": "flood",
+  "d": "deluge",
+  "options": [
+   "deluge",
+   "wildfire",
+   "rubble",
+   "outage",
+   "landslide"
+  ],
+  "answer": 0,
+  "traps": [
+   [
+    "wildfire",
+    "assoc",
+    0.782
+   ],
+   [
+    "landslide",
+    "assoc",
+    0.751
+   ],
+   [
+    "rubble",
+    "assoc",
+    0.73
+   ],
+   [
+    "outage",
+    "assoc",
+    0.728
+   ]
+  ],
+  "cd": 0.731,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:appreciable>noticeable",
+  "rel": "synonym",
+  "L": 7,
+  "stem": [
+   "new",
+   "fresh"
+  ],
+  "c": "appreciable",
+  "d": "noticeable",
+  "options": [
+   "tolerable",
+   "copious",
+   "noticeable",
+   "negligible",
+   "limitless"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "limitless",
+    "assoc",
+    0.866
+   ],
+   [
+    "negligible",
+    "assoc",
+    0.862
+   ],
+   [
+    "copious",
+    "assoc",
+    0.823
+   ],
+   [
+    "tolerable",
+    "assoc",
+    0.822
+   ]
+  ],
+  "cd": 0.783,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ },
+ {
+  "id": "synonym:dictator>potentate",
+  "rel": "synonym",
+  "L": 7,
+  "stem": [
+   "study",
+   "research"
+  ],
+  "c": "dictator",
+  "d": "potentate",
+  "options": [
+   "absolutism",
+   "democrat",
+   "czar",
+   "potentate",
+   "regent"
+  ],
+  "answer": 3,
+  "traps": [
+   [
+    "absolutism",
+    "assoc",
+    0.846
+   ],
+   [
+    "regent",
+    "assoc",
+    0.843
+   ],
+   [
+    "czar",
+    "sibling",
+    0.716
+   ],
+   [
+    "democrat",
+    "assoc",
+    0.833
+   ]
+  ],
+  "cd": 0.816,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:dynamo>powerhouse",
+  "rel": "synonym",
+  "L": 7,
+  "stem": [
+   "old",
+   "elderly"
+  ],
+  "c": "dynamo",
+  "d": "powerhouse",
+  "options": [
+   "machine",
+   "diode",
+   "joule",
+   "oscillator",
+   "powerhouse"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "oscillator",
+    "assoc",
+    0.872
+   ],
+   [
+    "diode",
+    "assoc",
+    0.85
+   ],
+   [
+    "machine",
+    "other:kind",
+    0.532
+   ],
+   [
+    "joule",
+    "assoc",
+    0.842
+   ]
+  ],
+  "cd": 0.731,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:conveyor>carrousel",
+  "rel": "synonym",
+  "L": 7,
+  "stem": [
+   "existence",
+   "being"
+  ],
+  "c": "conveyor",
+  "d": "carrousel",
+  "options": [
+   "launcher",
+   "winch",
+   "carrousel",
+   "forklift",
+   "shunt"
+  ],
+  "answer": 2,
+  "traps": [
+   [
+    "launcher",
+    "assoc",
+    0.882
+   ],
+   [
+    "forklift",
+    "assoc",
+    0.868
+   ],
+   [
+    "shunt",
+    "assoc",
+    0.865
+   ],
+   [
+    "winch",
+    "assoc",
+    0.864
+   ]
+  ],
+  "cd": 0.693,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:prejudice>preconception",
+  "rel": "synonym",
+  "L": 7,
+  "stem": [
+   "plant",
+   "factory"
+  ],
+  "c": "prejudice",
+  "d": "preconception",
+  "options": [
+   "favoritism",
+   "preconception",
+   "nationalism",
+   "conviction",
+   "injustice"
+  ],
+  "answer": 1,
+  "traps": [
+   [
+    "favoritism",
+    "assoc",
+    0.827
+   ],
+   [
+    "injustice",
+    "assoc",
+    0.799
+   ],
+   [
+    "conviction",
+    "assoc",
+    0.794
+   ],
+   [
+    "nationalism",
+    "assoc",
+    0.779
+   ]
+  ],
+  "cd": 0.701,
+  "strong": true,
+  "older": false,
+  "cstems": 250
+ },
+ {
+  "id": "synonym:advantageous>beneficial",
+  "rel": "synonym",
+  "L": 8,
+  "stem": [
+   "every",
+   "each"
+  ],
+  "c": "advantageous",
+  "d": "beneficial",
+  "options": [
+   "taxable",
+   "stingy",
+   "illicit",
+   "transferable",
+   "beneficial"
+  ],
+  "answer": 4,
+  "traps": [
+   [
+    "taxable",
+    "assoc",
+    0.871
+   ],
+   [
+    "illicit",
+    "assoc",
+    0.853
+   ],
+   [
+    "stingy",
+    "assoc",
+    0.846
+   ],
+   [
+    "transferable",
+    "assoc",
+    0.844
+   ]
+  ],
+  "cd": 0.742,
+  "strong": true,
+  "older": false,
+  "cstems": 20
+ }
+]

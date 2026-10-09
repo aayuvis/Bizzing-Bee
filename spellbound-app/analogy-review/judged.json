@@ -1,0 +1,1099 @@
+{
+ "note": "Hand review of sample.json, one verdict per item. G = usable as built (relation right, one best answer, wrong answers fair) given a good stem pair; C = the core is right but one wrong answer must be swapped; B = the relation is wrong, or a word is too obscure for a child. Stems were judged separately: most need replacing from a reviewed stem bank. Reviewed by the engine's author, not yet by a person — a second reader is still owed.",
+ "rates": {
+  "action": {
+   "G": 16,
+   "C": 0,
+   "B": 2,
+   "n": 18
+  },
+  "agent": {
+   "G": 13,
+   "C": 2,
+   "B": 3,
+   "n": 18
+  },
+  "antonym": {
+   "G": 11,
+   "C": 0,
+   "B": 7,
+   "n": 18
+  },
+  "cause": {
+   "G": 6,
+   "C": 0,
+   "B": 2,
+   "n": 8
+  },
+  "degree": {
+   "G": 11,
+   "C": 0,
+   "B": 4,
+   "n": 15
+  },
+  "function": {
+   "G": 9,
+   "C": 1,
+   "B": 0,
+   "n": 10
+  },
+  "kind": {
+   "G": 9,
+   "C": 3,
+   "B": 6,
+   "n": 18
+  },
+  "material": {
+   "G": 9,
+   "C": 3,
+   "B": 6,
+   "n": 18
+  },
+  "part": {
+   "G": 7,
+   "C": 0,
+   "B": 8,
+   "n": 15
+  },
+  "relating": {
+   "G": 14,
+   "C": 1,
+   "B": 0,
+   "n": 15
+  },
+  "synonym": {
+   "G": 12,
+   "C": 3,
+   "B": 3,
+   "n": 18
+  }
+ },
+ "items": [
+  {
+   "id": "action:retire>retirement",
+   "rel": "action",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "action:certify>certification",
+   "rel": "action",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "action:determine>determination",
+   "rel": "action",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "action:bake>bakery",
+   "rel": "action",
+   "L": 3,
+   "v": "B"
+  },
+  {
+   "id": "action:enforce>enforcement",
+   "rel": "action",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "action:propose>proposal",
+   "rel": "action",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "action:compile>compilation",
+   "rel": "action",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "action:recommend>recommendation",
+   "rel": "action",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "action:vibrate>vibration",
+   "rel": "action",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "action:exhale>exhalation",
+   "rel": "action",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "action:acknowledge>acknowledgment",
+   "rel": "action",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "action:transgress>transgression",
+   "rel": "action",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "action:oscillate>oscillation",
+   "rel": "action",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "action:magnetize>magnetization",
+   "rel": "action",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "action:preoccupy>preoccupation",
+   "rel": "action",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "action:utter>utterance",
+   "rel": "action",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "action:entangle>entanglement",
+   "rel": "action",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "action:abet>abettal",
+   "rel": "action",
+   "L": 9,
+   "v": "B"
+  },
+  {
+   "id": "agent:ski>skier",
+   "rel": "agent",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "agent:photograph>photographer",
+   "rel": "agent",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "agent:rule>ruler",
+   "rel": "agent",
+   "L": 2,
+   "v": "C"
+  },
+  {
+   "id": "agent:therapy>therapist",
+   "rel": "agent",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "agent:garden>gardener",
+   "rel": "agent",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "agent:magic>magician",
+   "rel": "agent",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "agent:trap>trapper",
+   "rel": "agent",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "agent:claim>claimant",
+   "rel": "agent",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "agent:perfume>perfumer",
+   "rel": "agent",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "agent:anatomy>anatomist",
+   "rel": "agent",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "agent:settle>settler",
+   "rel": "agent",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "agent:swindle>swindler",
+   "rel": "agent",
+   "L": 6,
+   "v": "C"
+  },
+  {
+   "id": "agent:vacation>vacationer",
+   "rel": "agent",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "agent:bicycle>bicyclist",
+   "rel": "agent",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "agent:duel>duellist",
+   "rel": "agent",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "agent:question>questioner",
+   "rel": "agent",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "agent:advance>advancer",
+   "rel": "agent",
+   "L": 7,
+   "v": "B"
+  },
+  {
+   "id": "agent:abandon>abandoner",
+   "rel": "agent",
+   "L": 8,
+   "v": "B"
+  },
+  {
+   "id": "antonym:high>low",
+   "rel": "antonym",
+   "L": 1,
+   "v": "G"
+  },
+  {
+   "id": "antonym:rude>polite",
+   "rel": "antonym",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "antonym:radiation>exposure",
+   "rel": "antonym",
+   "L": 3,
+   "v": "B"
+  },
+  {
+   "id": "antonym:helpful>helpless",
+   "rel": "antonym",
+   "L": 3,
+   "v": "B"
+  },
+  {
+   "id": "antonym:shallow>deep",
+   "rel": "antonym",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "antonym:exposure>radiation",
+   "rel": "antonym",
+   "L": 3,
+   "v": "B"
+  },
+  {
+   "id": "antonym:shameless>shameful",
+   "rel": "antonym",
+   "L": 4,
+   "v": "B"
+  },
+  {
+   "id": "antonym:attractive>unpleasant",
+   "rel": "antonym",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "antonym:prove>disprove",
+   "rel": "antonym",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "antonym:breezy>airtight",
+   "rel": "antonym",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "antonym:imbalance>symmetry",
+   "rel": "antonym",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "antonym:patience>impatience",
+   "rel": "antonym",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "antonym:naive>suspicious",
+   "rel": "antonym",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "antonym:casually>methodically",
+   "rel": "antonym",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "antonym:inconvenient>opportune",
+   "rel": "antonym",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "antonym:tractable>stubborn",
+   "rel": "antonym",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "antonym:herbaceous>woody",
+   "rel": "antonym",
+   "L": 8,
+   "v": "G"
+  },
+  {
+   "id": "antonym:woody>herbaceous",
+   "rel": "antonym",
+   "L": 8,
+   "v": "G"
+  },
+  {
+   "id": "cause:humiliate>ashamed",
+   "rel": "cause",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "cause:complicate>hard",
+   "rel": "cause",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "cause:intimidate>fearful",
+   "rel": "cause",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "cause:gratify>happy",
+   "rel": "cause",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "cause:contaminate>impure",
+   "rel": "cause",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "cause:devastate>extensive",
+   "rel": "cause",
+   "L": 6,
+   "v": "B"
+  },
+  {
+   "id": "cause:paralyze>powerless",
+   "rel": "cause",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "cause:humble>unpretentious",
+   "rel": "cause",
+   "L": 9,
+   "v": "B"
+  },
+  {
+   "id": "degree:release>explosion",
+   "rel": "degree",
+   "L": 2,
+   "v": "B"
+  },
+  {
+   "id": "degree:desire>craving",
+   "rel": "degree",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "degree:sorrow>grief",
+   "rel": "degree",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "degree:unpleasant>nasty",
+   "rel": "degree",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "degree:wonder>awe",
+   "rel": "degree",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "degree:throw>hurl",
+   "rel": "degree",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "degree:revenge>vengeance",
+   "rel": "degree",
+   "L": 4,
+   "v": "B"
+  },
+  {
+   "id": "degree:harmful>catastrophic",
+   "rel": "degree",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "degree:aversion>revulsion",
+   "rel": "degree",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "degree:impressive>formidable",
+   "rel": "degree",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "degree:fatigue>exhaustion",
+   "rel": "degree",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "degree:worry>stewing",
+   "rel": "degree",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "degree:poisonous>venomous",
+   "rel": "degree",
+   "L": 7,
+   "v": "B"
+  },
+  {
+   "id": "degree:ugly>hideous",
+   "rel": "degree",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "degree:wicked>villainous",
+   "rel": "degree",
+   "L": 8,
+   "v": "G"
+  },
+  {
+   "id": "function:van>carry",
+   "rel": "function",
+   "L": 1,
+   "v": "G"
+  },
+  {
+   "id": "function:dagger>pierce",
+   "rel": "function",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "function:purse>carry",
+   "rel": "function",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "function:rasp>smooth",
+   "rel": "function",
+   "L": 4,
+   "v": "C"
+  },
+  {
+   "id": "function:bottle>store",
+   "rel": "function",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "function:canister>store",
+   "rel": "function",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "function:silo>store",
+   "rel": "function",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "function:handkerchief>wipe",
+   "rel": "function",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "function:spatula>lift",
+   "rel": "function",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "function:chromatography>separate",
+   "rel": "function",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "kind:mold>shape",
+   "rel": "kind",
+   "L": 2,
+   "v": "B"
+  },
+  {
+   "id": "kind:dot>shape",
+   "rel": "kind",
+   "L": 2,
+   "v": "B"
+  },
+  {
+   "id": "kind:vase>vessel",
+   "rel": "kind",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "kind:basket>container",
+   "rel": "kind",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "kind:gear>machine",
+   "rel": "kind",
+   "L": 3,
+   "v": "B"
+  },
+  {
+   "id": "kind:piano>instrument",
+   "rel": "kind",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "kind:beetle>insect",
+   "rel": "kind",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "kind:aristocracy>book",
+   "rel": "kind",
+   "L": 4,
+   "v": "B"
+  },
+  {
+   "id": "kind:firework>device",
+   "rel": "kind",
+   "L": 4,
+   "v": "C"
+  },
+  {
+   "id": "kind:attitude>feeling",
+   "rel": "kind",
+   "L": 4,
+   "v": "C"
+  },
+  {
+   "id": "kind:eggplant>vegetable",
+   "rel": "kind",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "kind:sandstone>rock",
+   "rel": "kind",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "kind:caladium>plant",
+   "rel": "kind",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "kind:marinara>sauce",
+   "rel": "kind",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "kind:appointee>worker",
+   "rel": "kind",
+   "L": 7,
+   "v": "B"
+  },
+  {
+   "id": "kind:aneurism>disease",
+   "rel": "kind",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "kind:leporidae>mammal",
+   "rel": "kind",
+   "L": 9,
+   "v": "B"
+  },
+  {
+   "id": "kind:euphorbia>plant",
+   "rel": "kind",
+   "L": 9,
+   "v": "C"
+  },
+  {
+   "id": "material:herbal>leave",
+   "rel": "material",
+   "L": 2,
+   "v": "B"
+  },
+  {
+   "id": "material:cake>flour",
+   "rel": "material",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "material:ceramic>material",
+   "rel": "material",
+   "L": 2,
+   "v": "B"
+  },
+  {
+   "id": "material:oatmeal>oat",
+   "rel": "material",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "material:caramel>sugar",
+   "rel": "material",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "material:bronze>copper",
+   "rel": "material",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "material:crib>slat",
+   "rel": "material",
+   "L": 4,
+   "v": "C"
+  },
+  {
+   "id": "material:cocoa>powder",
+   "rel": "material",
+   "L": 4,
+   "v": "C"
+  },
+  {
+   "id": "material:pasta>dough",
+   "rel": "material",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "material:pottery>clay",
+   "rel": "material",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "material:humus>leave",
+   "rel": "material",
+   "L": 4,
+   "v": "B"
+  },
+  {
+   "id": "material:margarine>oil",
+   "rel": "material",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "material:latticework>strip",
+   "rel": "material",
+   "L": 7,
+   "v": "C"
+  },
+  {
+   "id": "material:naphthalene>tar",
+   "rel": "material",
+   "L": 7,
+   "v": "B"
+  },
+  {
+   "id": "material:guacamole>avocado",
+   "rel": "material",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "material:burgoo>oat",
+   "rel": "material",
+   "L": 8,
+   "v": "B"
+  },
+  {
+   "id": "material:hummus>chickpea",
+   "rel": "material",
+   "L": 8,
+   "v": "G"
+  },
+  {
+   "id": "material:sarsaparilla>extract",
+   "rel": "material",
+   "L": 9,
+   "v": "B"
+  },
+  {
+   "id": "part:above>text",
+   "rel": "part",
+   "L": 1,
+   "v": "B"
+  },
+  {
+   "id": "part:department>organization",
+   "rel": "part",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "part:chin>jaw",
+   "rel": "part",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "part:sleeve>garment",
+   "rel": "part",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "part:audio>signal",
+   "rel": "part",
+   "L": 3,
+   "v": "B"
+  },
+  {
+   "id": "part:forearm>limb",
+   "rel": "part",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "part:fore>vessel",
+   "rel": "part",
+   "L": 4,
+   "v": "B"
+  },
+  {
+   "id": "part:xylem>plant",
+   "rel": "part",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "part:bodice>waist",
+   "rel": "part",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "part:petal>perianth",
+   "rel": "part",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "part:cerebellum>brain",
+   "rel": "part",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "part:umbra>shadow",
+   "rel": "part",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "part:pinna>leaf",
+   "rel": "part",
+   "L": 7,
+   "v": "B"
+  },
+  {
+   "id": "part:outskirt>far",
+   "rel": "part",
+   "L": 7,
+   "v": "B"
+  },
+  {
+   "id": "part:hammer>gunlock",
+   "rel": "part",
+   "L": 9,
+   "v": "B"
+  },
+  {
+   "id": "relating:tide>tidal",
+   "rel": "relating",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "relating:water>watery",
+   "rel": "relating",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "relating:recreation>recreational",
+   "rel": "relating",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "relating:sentiment>sentimental",
+   "rel": "relating",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "relating:taste>tasteful",
+   "rel": "relating",
+   "L": 4,
+   "v": "C"
+  },
+  {
+   "id": "relating:defect>defective",
+   "rel": "relating",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "relating:navigation>navigational",
+   "rel": "relating",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "relating:flavor>flavorful",
+   "rel": "relating",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "relating:shrub>shrubby",
+   "rel": "relating",
+   "L": 6,
+   "v": "G"
+  },
+  {
+   "id": "relating:allergen>allergenic",
+   "rel": "relating",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "relating:polygon>polygonal",
+   "rel": "relating",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "relating:bronchi>bronchial",
+   "rel": "relating",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "relating:asymmetry>asymmetrical",
+   "rel": "relating",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "relating:cancer>cancerous",
+   "rel": "relating",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "relating:typography>typographical",
+   "rel": "relating",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "synonym:extent>length",
+   "rel": "synonym",
+   "L": 1,
+   "v": "B"
+  },
+  {
+   "id": "synonym:railroad>railway",
+   "rel": "synonym",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "synonym:remedy>cure",
+   "rel": "synonym",
+   "L": 2,
+   "v": "C"
+  },
+  {
+   "id": "synonym:advertising>promotion",
+   "rel": "synonym",
+   "L": 2,
+   "v": "G"
+  },
+  {
+   "id": "synonym:combination>mixture",
+   "rel": "synonym",
+   "L": 3,
+   "v": "G"
+  },
+  {
+   "id": "synonym:appearance>aspect",
+   "rel": "synonym",
+   "L": 3,
+   "v": "C"
+  },
+  {
+   "id": "synonym:envoy>delegate",
+   "rel": "synonym",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "synonym:leaning>inclination",
+   "rel": "synonym",
+   "L": 4,
+   "v": "G"
+  },
+  {
+   "id": "synonym:dread>apprehension",
+   "rel": "synonym",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "synonym:curvature>deformity",
+   "rel": "synonym",
+   "L": 5,
+   "v": "B"
+  },
+  {
+   "id": "synonym:mutter>murmur",
+   "rel": "synonym",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "synonym:flood>deluge",
+   "rel": "synonym",
+   "L": 5,
+   "v": "G"
+  },
+  {
+   "id": "synonym:appreciable>noticeable",
+   "rel": "synonym",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "synonym:dictator>potentate",
+   "rel": "synonym",
+   "L": 7,
+   "v": "C"
+  },
+  {
+   "id": "synonym:dynamo>powerhouse",
+   "rel": "synonym",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "synonym:conveyor>carrousel",
+   "rel": "synonym",
+   "L": 7,
+   "v": "B"
+  },
+  {
+   "id": "synonym:prejudice>preconception",
+   "rel": "synonym",
+   "L": 7,
+   "v": "G"
+  },
+  {
+   "id": "synonym:advantageous>beneficial",
+   "rel": "synonym",
+   "L": 8,
+   "v": "G"
+  }
+ ]
+}
