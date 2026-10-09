@@ -18,7 +18,8 @@ import urllib.request
 
 # The key comes from the environment (GKEY, set in the cloud environment's settings) and
 # falls back to the key file. Never print it; it goes only in the x-goog-api-key header.
-KEY = (os.environ.get('GKEY') or open(os.environ.get('GKEY_FILE', '/root/.gkey')).read()).strip()
+def key():
+    return (os.environ.get('GKEY') or open(os.environ.get('GKEY_FILE', '/root/.gkey')).read()).strip()
 OUT = '/home/user/Bizzing-Bee/spellbound-app/app-art'
 MODEL = os.environ.get('NB_MODEL', 'gemini-3.1-flash-image')
 CTX = ssl.create_default_context(cafile='/root/.ccr/ca-bundle.crt')
@@ -84,7 +85,7 @@ def gen(slug, retries=4):
     req = urllib.request.Request(
         f'https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent',
         data=json.dumps(body).encode(),
-        headers={'Content-Type': 'application/json', 'X-goog-api-key': KEY})
+        headers={'Content-Type': 'application/json', 'X-goog-api-key': key()})
     for attempt in range(retries):
         try:
             with urllib.request.urlopen(req, timeout=300, context=CTX) as r:

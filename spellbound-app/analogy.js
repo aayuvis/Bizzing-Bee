@@ -238,7 +238,12 @@
      shows its painting instead of the drawn scenery, and its road is the one TRACED ALONG THE PAINTED BAND, in the board's
      1600×900 space — measured by eye against the picture, exactly like the Atlas's ACT_MAP. Regenerate a map, re-trace it.
      tests/analogy-data.cjs holds every image named here to a file in app-art. */
-  const ART = {};
+  const ART = {
+    ponds: { img: 'anl-ponds.jpg', road: [[70, 870], [200, 720], [400, 652], [700, 645], [1000, 640], [1230, 628], [1360, 540], [1390, 420], [1330, 300], [1200, 238], [950, 235], [700, 238], [450, 245], [300, 272]] },
+    orchard: { img: 'anl-orchard.jpg', road: [[40, 800], [250, 748], [600, 738], [1000, 745], [1300, 712], [1410, 600], [1330, 492], [1100, 442], [750, 428], [400, 422], [220, 372], [180, 262], [300, 162], [650, 118], [1000, 112], [1300, 86], [1560, 40]] },
+    workshop: { img: 'anl-workshop.jpg', road: [[60, 860], [250, 732], [550, 702], [900, 702], [1150, 660], [1220, 560], [1120, 482], [880, 442], [620, 418], [430, 392], [310, 300], [350, 196], [600, 160], [850, 215], [1050, 288], [1300, 262], [1400, 150], [1330, 50]] },
+    peaks: { img: 'anl-peaks.jpg', road: [[230, 185], [130, 290], [90, 430], [150, 580], [330, 690], [600, 745], [870, 765], [1120, 722], [1330, 652], [1450, 520], [1450, 380], [1400, 230], [1380, 90]] },
+  };
   const GEO = {};
   function geo(id) { if (GEO[id]) return GEO[id]; const P = (ART[id] && ART[id].road) || ROAD; const pts = crPoints(P, 24);
     const len = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));

@@ -1062,8 +1062,9 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   every stop is passed; passing it **walks** the region and opens the next; passing again on **another day, on items not seen
   before**, is **mastery** (one `mastery` coin) — the only thing the tab calls mastered. Pay: `answer` from the sixth right,
   `contest` once a day per region on a pass. Progress lives on the child at `c.anl` (`stops`, `regs`, `seen`, `bee`).
-- **The scenery is drawn in code until the paintings exist** (owner, 9 Oct: "background graphics sucks" — painted maps
-  wanted). The key lives in the cloud environment as **`GKEY`** (owner's choice; a new session sees it, never print it).
+- **Each region is a painted map** (owner, 9 Oct: "background graphics sucks"): `app-art/anl-{ponds,orchard,workshop,peaks}.jpg`,
+  with its road traced in `ART` (analogy.js). The code-drawn scene stays only as the fallback for a region not in `ART`.
+  The map script reads the key from **`GKEY`** (env) or `/root/.gkey` — the key FILE does not survive a container reset.
   `python3 voice/pipeline/analogy-maps.py --all` then `--jpeg` writes `app-art/anl-{ponds,orchard,workshop,peaks}.jpg`
   (16:9, the board's own shape). Then, per region, add `ART[<region>] = {img, road}` in analogy.js: `road` is ~12 points
   **traced along the painted band by eye** in the board's 1600×900 space (the Atlas's ACT_MAP rule — regenerate a map,

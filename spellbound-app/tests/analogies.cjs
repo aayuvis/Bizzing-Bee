@@ -73,7 +73,9 @@ async function round(pg, rights) { const n = (await run(pg)).n;
     ok(stops.length >= 4 && stops[stops.length - 1].chk, `the first region's road has ${stops.length - 1} stops and a level check at the end`);
     ok(!stops[0].locked && stops.slice(1).every(s => s.locked), 'only the first stop is open on a first visit; the rest wait their turn');
     ok(stops.every(s => s.w >= 44 && s.h >= 44), 'every stop is at least 44px to tap');
-    ok(await pg.evaluate(() => !!document.querySelector('.anl-board svg.anl-scene') && document.querySelectorAll('.anl-rtab').length === 4), 'the board is a drawn scene, with four regions to choose');
+    /* the board wears its region's painting (app-art/anl-<region>.jpg), and the picture actually loads */
+    await W.until(pg, () => { const i = document.querySelector('.anl-board .anl-paint img'); return !!i && i.complete; }, null, 15000).catch(() => {});
+    ok(await pg.evaluate(() => { const i = document.querySelector('.anl-board .anl-paint img'); return !!i && i.naturalWidth > 0 && /anl-ponds\.jpg/.test(i.src) && document.querySelectorAll('.anl-rtab').length === 4; }), 'the board is its painted map (loaded), with four regions to choose');
 
     /* 2 — Learn and Meet the words */
     await pg.click('.anl-btn[data-arg="learn"]'); await W.until(pg, () => !!document.querySelector('.anl-lesson'), null, 4000);
