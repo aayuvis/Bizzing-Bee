@@ -1,0 +1,1648 @@
+[
+ {
+  "unit": "item:v0",
+  "verdict": "pass",
+  "reason": "boggy = marshy exactly; sandy/grassy/mossy/upland are not synonyms (a bog may be mossy, but 'mossy' does not mean boggy). Gloss right. r2's fail gives only the relation name, no defect, and I find none; r1 pass upheld.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v1",
+  "verdict": "pass",
+  "reason": "finish/begin are direct opposites; 'close' is a synonym of finish, not an opposite, and smooth/hard/winter do not fit. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v2",
+  "verdict": "fail",
+  "reason": "Agree with r1 and r2: 'cosmopolitan' is overwhelmingly an adjective (and a cocktail/magazine name); the noun sense 'sophisticate' is obscure even at L8, and every distractor is a lower-cased proper noun used as filler.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v3",
+  "verdict": "pass",
+  "reason": "top/bottom are direct opposites; head/apex are synonyms of top, taper/ascend do not fit. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v4",
+  "verdict": "fix",
+  "reason": "global = worldwide is sound, but r1 and r2 are right that 'overall' is a standard synonym in the comprehensive sense ('a global view') and 'extensive' is close too. Dropping both leaves national/economic, neither defensible.",
+  "drop": [
+   "overall",
+   "extensive"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v5",
+  "verdict": "fix",
+  "reason": "courage -> courageous is a clean word-family pair; unwavering/heroic are not of the family. r2 is right that 'manly' pairs courage with a gender stereotype; drop it.",
+  "drop": [
+   "manly"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v6",
+  "verdict": "fix",
+  "reason": "bagpipe is a kind of (musical) instrument and no distractor competes; 'instrumental' is an adjective trap, not a second answer. But the gloss 'a device that requires skill for proper use' is the generic tool sense, not the musical one: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:v7",
+  "verdict": "pass",
+  "reason": "flexible = adaptable; rigid/stiff are opposites, 'thinner' unrelated, 'adapt' is a verb so not a same-meaning adjective. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v8",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: magic = witchcraft only in the sorcery sense (stage magic is not witchcraft), and 'shaman' (a real religious role) and 'witchcraft' itself (a practice some adherents hold as religion) sit beside wizard/ghost as fantasy. Not rescuable by dropping.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v9",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'jesus' is a sacred name lower-cased as a throwaway distractor, and 'doom' is only an unpleasant fate, not the same as fate.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:va",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: to a child a mango is a fruit; 'mango is a kind of tree' is true only of the plant, and no option offers 'fruit'. Misleading.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vb",
+  "verdict": "pass",
+  "reason": "customize = personalize exactly; optimise/optimize (two valid spellings of one unrelated verb), covet, recalculate are not synonyms. The doubled distractor is untidy but creates no second answer. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vc",
+  "verdict": "fix",
+  "reason": "fissure = crevice is sound and the gloss is the WordNet sense they share. r1/r2 are right that 'chasm' (a deep fissure) is defensible; also drop 'indentation', which the gloss's 'depression in a surface' makes look right. cavern/magma remain.",
+  "drop": [
+   "chasm",
+   "indentation"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vd",
+  "verdict": "pass",
+  "reason": "pamphlet = brochure; advisory/journalist/allusion/presenter do not fit. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ve",
+  "verdict": "pass",
+  "reason": "trailing = tracking in the follow-the-trail sense ('trailing/tracking the deer'), which the gloss shows; the distractors are unrelated plants. r2 calls it weak, but the pair is a WordNet synonym set and nothing competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vf",
+  "verdict": "fix",
+  "reason": "cuckoo is a kind of bird; thrush/kangaroo/ferret are not categories it belongs to. Agree with both rounds that 'fool' is an insult that calls up cuckoo's slang 'crazy' sense: drop it.",
+  "drop": [
+   "fool"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vg",
+  "verdict": "fail",
+  "reason": "Agree with r1/r2: a fresco is a kind of mural (painted on wet plaster), not the same meaning, and 'graffiti' is also a wall painting. Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vh",
+  "verdict": "pass",
+  "reason": "lane = alley (a narrow road/street; 'down the lane/alley'); pedestrian, bike, sidewalk, cruise are not synonyms. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vi",
+  "verdict": "pass",
+  "reason": "a keyboard is part of a computer; tape and fret (part of a guitar) are not wholes it belongs to. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vj",
+  "verdict": "pass",
+  "reason": "reduction = decrease; reversal/minimum/elimination are not the same. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vk",
+  "verdict": "pass",
+  "reason": "diary = journal; reminder/biography/caption/revelation do not fit. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vl",
+  "verdict": "fix",
+  "reason": "receptacle = container is sound. Agree that 'repository' is a listed synonym: drop it. The gloss's parenthetical ('especially a large metal boxlike object of standardized…') teaches the shipping-container sense: hide it. occupant/storage/cupboard remain, none meaning receptacle.",
+  "drop": [
+   "repository"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:vm",
+  "verdict": "fix",
+  "reason": "unaware = oblivious is sound at L8. r1 is right that 'unfamiliar' ('unfamiliar with' = 'unaware of') is defensible: drop it. hopeless/pessimistic/smarter remain.",
+  "drop": [
+   "unfamiliar"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vn",
+  "verdict": "fix",
+  "reason": "aqua = cyan as a colour (web aqua is cyan), and the gloss is cyan's colour sense. Both rounds are right that dictionary 'aqua' also means water: drop 'water'. littoral/amber/sluice remain, none a synonym.",
+  "drop": [
+   "water"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vo",
+  "verdict": "pass",
+  "reason": "downpour = rainstorm (heavy rain); snowstorm/snowfall/blizzard are other weather, trample unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vp",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'tumble' mainly means fall; 'flip' matches only the gymnastics sense, and 'plop' (fall heavily) is at least as close. No single defensible answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vq",
+  "verdict": "fix",
+  "reason": "foundation = groundwork is sound and the gloss shows the shared 'basis' sense. Agree that 'support' and 'framework' are defensible: drop both. exterior/concrete remain.",
+  "drop": [
+   "support",
+   "framework"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vr",
+  "verdict": "fail",
+  "reason": "sorrowful = sad is sound, but tearful and somber (both rounds) are standard synonyms, and 'pitiful' also overlaps ('a sorrowful/pitiful sight'). Dropping all three would leave one wrong option, so it cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vs",
+  "verdict": "fail",
+  "reason": "Agree with r1: engraving and etching are distinct printmaking techniques, and the gloss defines a print from an etched plate, which an engraving is not.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vt",
+  "verdict": "fail",
+  "reason": "Agree with r1: a watch is one kind of timepiece (clocks are timepieces too), and the gloss itself says 'a small portable timepiece'. Link not 'same meaning'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vu",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'weapon is a kind of instrument' rests on a generic sense no child recognises, the gloss is generic, firearm/cannon are hyponyms the other way, and the whole option set is weapons vocabulary.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vv",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: at L4 'brush' is the tool; the undergrowth sense is obscure, and 'broom' is a defensible tool-sense answer. Cannot be rescued by dropping alone.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vw",
+  "verdict": "fix",
+  "reason": "constriction = narrowing is exact. r2 is right that ureter is an obscure medical distractor, and 'spasm' (an involuntary tightening) is close enough to constriction to argue: drop both. dilation (the opposite) and coronary remain, neither a synonym.",
+  "drop": [
+   "spasm",
+   "ureter"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vx",
+  "verdict": "pass",
+  "reason": "gruel = porridge; omelet/marinade/barbecue/coriander are other foods. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vy",
+  "verdict": "fix",
+  "reason": "amaze = astonish is exact, but 'marvel' is listed beside them in many thesauruses and a child could defend it: drop it. gasp/wept remain.",
+  "drop": [
+   "marvel"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vz",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'neoplasm' is a technical medical term, far too obscure at L5, and tumour vocabulary is heavy for this age.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w0",
+  "verdict": "fix",
+  "reason": "medley = potpourri is sound at L7. Agree 'concoction' (a mixture) is defensible: drop it. The gloss is a broken fragment ('Is any mixture of unrelated objects subjects etc'): hide it. haricot/turnover remain.",
+  "drop": [
+   "concoction"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:w1",
+  "verdict": "fail",
+  "reason": "Agree with r1: an announcement is one kind of statement (a bank statement or a maths statement is not an announcement), and the gloss 'a formal public statement' makes d narrower; 'affidavit' is another kind. Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w2",
+  "verdict": "fix",
+  "reason": "inclination = tendency is sound. Agree 'bias' is a standard synonym (a leaning) and fits the gloss itself: drop it. reconciliation/acceptance/absurdity remain.",
+  "drop": [
+   "bias"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w3",
+  "verdict": "fix",
+  "reason": "fluttering = flapping is sound. Agree with r1 that 'quiver' (flutter/tremble) is defensible: drop it. mane/seagull/cheetah remain.",
+  "drop": [
+   "quiver"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w4",
+  "verdict": "pass",
+  "reason": "cast (of a play) = troupe (a group of actors), as the gloss shows; hex/shadow/spotlight/backdrop play on other senses of 'cast' but none means a group of performers. r2's 'loose' is not enough to fail: they are interchangeable in 'a cast/troupe of actors'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w5",
+  "verdict": "pass",
+  "reason": "mother = mom; father/baby/sister/husband are other family words. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w6",
+  "verdict": "fix",
+  "reason": "winner = champion is sound. r2 is right that 'wager' is a gambling word, out of place for children: drop it. tennis/golfer/hockey remain.",
+  "drop": [
+   "wager"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w7",
+  "verdict": "fix",
+  "reason": "skill = expertise is sound. Agree 'dexterity' is a standard synonym: drop it. adept (an adjective/person), discipline, profession remain, none meaning skill.",
+  "drop": [
+   "dexterity"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w8",
+  "verdict": "fail",
+  "reason": "Agree with both rounds that confederacy and affiliation are defensible; dropping them leaves only affiliate and 'ethnic' (a filler word that should not be there), and the gloss is the business-contract sense of partnership. Too many faults to rescue.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w9",
+  "verdict": "pass",
+  "reason": "wide -> width is the adjective-to-noun family; depth/length belong to other adjectives, darkness/pride unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wa",
+  "verdict": "pass",
+  "reason": "vine = climber (a climbing plant) exactly, and the gloss shows the plant sense, which removes r2's worry about younger children; shrub/fern/annual/bush are not climbers.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wb",
+  "verdict": "fix",
+  "reason": "factory = mill is a true synonym set ('cotton mill', 'steel mill') and the gloss shows it. But 'industry' is used for a factory in Indian English ('he runs a small industry'), which this audience hears: drop it. shipment/annual/worker remain.",
+  "drop": [
+   "industry"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wc",
+  "verdict": "pass",
+  "reason": "telephone = phone; a receiver is part of a phone, wireless is a radio, user/transmission unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wd",
+  "verdict": "pass",
+  "reason": "harmless/harmful are direct opposites; 'benign' is a synonym of harmless, 'fatal' an extreme, 'unlikely' unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:we",
+  "verdict": "fix",
+  "reason": "disruption = disturbance is sound. 'turbulence' (turmoil, upheaval) and 'cessation' (a disruption of service is a stop) are close enough to argue: drop both. impediment/depletion remain.",
+  "drop": [
+   "turbulence",
+   "cessation"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wf",
+  "verdict": "fail",
+  "reason": "Agree with r1: juice (from fruit) and sap (fluid circulating in a plant) are related, not the same meaning; 'blood' is a grim distractor.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wg",
+  "verdict": "pass",
+  "reason": "righteous = virtuous; idealistic/stoic are not the same, diabolical/sinful are opposites. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wh",
+  "verdict": "pass",
+  "reason": "street = road; downtown/park/town are places, not synonyms. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wi",
+  "verdict": "pass",
+  "reason": "certify -> certification is the verb-to-noun family; confirmation belongs to confirm, the rest are unrelated. Gloss names the right act. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wj",
+  "verdict": "fix",
+  "reason": "engrave = etch as verbs (the gloss 'to carve or cut a design into a hard surface' fits both). Agree with both rounds that 'chisel' fits the same gloss: drop it. inlay/brooch/stencil remain.",
+  "drop": [
+   "chisel"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wk",
+  "verdict": "fix",
+  "reason": "accessible = available is sound. Agree 'convenient' (easy to reach) is a listed synonym: drop it. virtual/impersonal remain.",
+  "drop": [
+   "convenient"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wl",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: to a child a cucumber is a vegetable; 'kind of vine' is true only of the plant and there is no 'vegetable' option. Misleading.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wm",
+  "verdict": "pass",
+  "reason": "billow = swell (the heaving of the sea; sails billow/swell); a ripple is a small wave, skyrocket/ember/trickle unrelated. Gloss shows the shared sea sense. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wn",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: roe is fish eggs, not a kind of fish. The link is false.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wo",
+  "verdict": "fail",
+  "reason": "Agree with r1: a melody is the tune alone and a song has words, and the gloss 'a short musical composition with words' contradicts 'melody'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wp",
+  "verdict": "fail",
+  "reason": "Agree with r1: at L1 'class' is a school class and 'category' is a hard word for age 8, with school-word distractors pulling the other way. Too hard for its level; cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wq",
+  "verdict": "fix",
+  "reason": "screech = squeal (high-pitched; tyres screech/squeal) is sound. 'holler' (to yell) sits beside screech in many thesauruses: drop it. hoot/honk/growl remain, all low or different sounds.",
+  "drop": [
+   "holler"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wr",
+  "verdict": "pass",
+  "reason": "stomach = belly (informal); digestion/ulcer/lung/bladder are not the same. Gloss right; 'belly' is a plain word, not an insult. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ws",
+  "verdict": "fix",
+  "reason": "motorist = driver is exact. Agree with both rounds that 'tramp' is a derogatory word for a homeless person and a sexual insult in slang: drop it. streetcar/scooter/taxicab remain.",
+  "drop": [
+   "tramp"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wt",
+  "verdict": "pass",
+  "reason": "puzzle = riddle in the gloss's sense ('the disappearance is a puzzle/riddle'); clue/solver/theorem/combo are not synonyms. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wu",
+  "verdict": "fail",
+  "reason": "r1 passed it and r2 failed it without a reason; on a fresh look a hairpiece is usually a partial piece (toupee, extension), and a wig is one kind of hairpiece, so this is a kind-of pair, not the same meaning. Failed for the same reason as timepiece/watch on this sheet.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wv",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: the gloss defines 'plant' as a factory, peppermint and thyme are also plants, and a child knows licorice as a sweet.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ww",
+  "verdict": "fix",
+  "reason": "repay = reimburse is sound. Agree with r1 that 'redeem' (pay off a debt) is defensible: drop it. mortgage/resent/expend remain.",
+  "drop": [
+   "redeem"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wx",
+  "verdict": "pass",
+  "reason": "minstrel = bard (a travelling singer-poet); tango/duet/columnist are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wy",
+  "verdict": "fix",
+  "reason": "capable -> capability is a sound family pair. Agree with both rounds that 'ness' is a suffix, not a word: drop it. state/worthy/render remain.",
+  "drop": [
+   "ness"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wz",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: hiking is a kind of walking (a long walk, per the gloss), not the same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x0",
+  "verdict": "fix",
+  "reason": "move -> movement is the verb-to-noun family; halt/decision/arrival/imagination belong elsewhere. r2's fail gives only the relation name, no defect, and I find none. But the gloss ('a change of position that does not entail a change of location') teaches a narrow sense that contradicts moving from place to place: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:x1",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'corporeal' is too obscure at L5 (age 12).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x2",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: litre/liter are spelling variants of one word, not two words with the same meaning, and confusing in a spelling app.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x3",
+  "verdict": "pass",
+  "reason": "estimate = guess (a rough estimate); probability/average/percentage are maths words, not synonyms. Gloss shows the opinion-on-incomplete-evidence sense. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x4",
+  "verdict": "pass",
+  "reason": "gritty = grainy (a WordNet synonym set); crumbly/briny/chunky/soapy are other textures. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x5",
+  "verdict": "fix",
+  "reason": "tight/loose are direct opposites and no distractor competes. Agree with r1 that the gloss 'grant freedom to' is the verb sense: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:x6",
+  "verdict": "fix",
+  "reason": "leaping = jumping is exact; swoop/trot/dove/twirl are other movements. Agree with r1 that the gloss (an athletic competition) is the wrong sense: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:x7",
+  "verdict": "fix",
+  "reason": "a xylophone is a kind of (musical) instrument; strum/mouthpiece/fret are parts or actions, 'instrumental' an adjective trap. r2's fail gives only the relation name, no defect, and I find none. But the gloss is the generic device sense, not the musical one: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:x8",
+  "verdict": "pass",
+  "reason": "victory = triumph; bravery/won/defeat/betrayal do not fit. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x9",
+  "verdict": "pass",
+  "reason": "a butterfly is a kind of insect; peacock/eagle are birds, daisy a plant, orb unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xa",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: ash (powdery residue) and soot (black carbon from smoke) are different substances.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xb",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'occident' is archaic and obscure, 'indy' is not a word, and 'arabia' is a lower-cased proper noun used as filler.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xc",
+  "verdict": "fix",
+  "reason": "cache = hoard (a hidden store) is sound and the gloss shows that sense. Agree 'repository' and 'archive' (a store) are defensible: drop both. retrieval/encryption remain.",
+  "drop": [
+   "repository",
+   "archive"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xd",
+  "verdict": "pass",
+  "reason": "price = cost; premium/buyer/salary/investment are not the same. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xe",
+  "verdict": "pass",
+  "reason": "gorge = ravine; lagoon/trough/rowboat/trickle are not steep valleys. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xf",
+  "verdict": "pass",
+  "reason": "amuse = entertain; hoax/jest/parody are not the same. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xg",
+  "verdict": "fix",
+  "reason": "fleck = speck is exact. r2 flagged 'ting' as odd: it is also UK slang for a girl, often sexualised. Drop it. topaz/amethyst remain.",
+  "drop": [
+   "ting"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xh",
+  "verdict": "fail",
+  "reason": "Agree with r1: a plane is one kind of aircraft (helicopters and balloons are aircraft too), and the gloss itself says so. Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xi",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: extortion is obtaining by threats, not overcharging; 'fraud' is as close; adult crime vocabulary.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xj",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: notable and incredible are standard synonyms of remarkable; dropping them leaves one wrong option, so it cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xk",
+  "verdict": "pass",
+  "reason": "cooling = chilling (the process of becoming cooler); freeze is a verb and an extreme, evaporation/vapour/condensation are other processes. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xl",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'ass' is a common swear word, and a statue is a kind of sculpture (the gloss says so), so even without it the link is not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xm",
+  "verdict": "pass",
+  "reason": "answer = response; verdict/apology/guess/refusal are kinds of reply, not the same. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xn",
+  "verdict": "pass",
+  "reason": "underside = bottom; forewing/operculum/thorax/pincer are body parts, not synonyms. Gloss right; 'bottom' here is plain. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xo",
+  "verdict": "fix",
+  "reason": "derision = mockery is sound. Agree 'scorn' and 'sneer' are standard synonyms: drop both. jealousy/indignation remain.",
+  "drop": [
+   "scorn",
+   "sneer"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xp",
+  "verdict": "pass",
+  "reason": "pupil = student; iris/eye/colon pull on the eye sense of 'pupil' but none means a learner. Agree with r2's own note that these are fair traps.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xq",
+  "verdict": "pass",
+  "reason": "debris = rubble; silt/hydrant/rainwater/smog are not the same. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xr",
+  "verdict": "pass",
+  "reason": "conservation = preservation; wetland/tourism/cleanup/habitat are related topics, not synonyms. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xs",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'abhorrer' is a rare, near-nonce word, not one to teach.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xt",
+  "verdict": "pass",
+  "reason": "hairdo = coiffure exactly; frizz/cabochon/tutu/lacework are not. At L8 (age 15) coiffure is a fair spelling word, so r2's 'obscure' does not hold.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xu",
+  "verdict": "fail",
+  "reason": "Agree with r1: a song has words and a tune is the melody alone; related, not the same meaning. Failed for the same reason as melody/song.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xv",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: a click and a clink are different sounds.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xw",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: fun is enjoyment, entertainment is an activity or show; related, not the same.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xx",
+  "verdict": "pass",
+  "reason": "stumble = stagger (to walk unsteadily); wow/jog/flop/wink are not. Gloss shows the unsteady-gait sense. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xy",
+  "verdict": "fix",
+  "reason": "deter = discourage is sound. Agree 'repel' is defensible ('a repellent deters insects'), and 'repulse' (drive back) is close: drop both. entrap/fend remain.",
+  "drop": [
+   "repel",
+   "repulse"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xz",
+  "verdict": "pass",
+  "reason": "posture = stance; stoop is one posture, stature is height, upright an adjective, flexibility unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y0",
+  "verdict": "fail",
+  "reason": "Agree with r1: at L1 'plant' means a green plant and the factory sense is too hard for age 8; 'industry' is also used for a factory in Indian English.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y1",
+  "verdict": "pass",
+  "reason": "uncovering = revealing; forgery/eyewitness/vandal/legacy are not. Gloss shows the making-evident sense. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y2",
+  "verdict": "pass",
+  "reason": "false -> falsehood is the adjective-to-noun family; fake/flaw/true are not its noun. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y3",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'denial' mainly means saying something is untrue and only weakly 'rejection', and 'abuse' is a heavy distractor at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y4",
+  "verdict": "pass",
+  "reason": "affection = fondness; gratitude/goodwill/admiration/compassion are related feelings, not the same. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y5",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'contradict' and 'negate' are listed synonyms of refute; dropping them leaves one wrong option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y6",
+  "verdict": "pass",
+  "reason": "a sardine is a kind of fish; lobster/squid/abalone are sea creatures that are not fish, 'saltwater' an adjective. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y7",
+  "verdict": "fix",
+  "reason": "increase = gain is sound. r2's blind pick of 'boost' proves it is a second answer: drop it. reduction/efficiency/insulin remain.",
+  "drop": [
+   "boost"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y8",
+  "verdict": "pass",
+  "reason": "build (noun) = physique, as the gloss shows; framework/prop/prototype/foundation pull on the verb but none means a body's shape. r2 called it tricky, not wrong, and at L6 the noun sense is fair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y9",
+  "verdict": "pass",
+  "reason": "youth -> youthful is the word-family link; r2's 'juvenile' relates to youth in meaning but is not of the family, which is what the link asks. maiden/adolescent/beloved are not either.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ya",
+  "verdict": "pass",
+  "reason": "luggage = baggage; van/fare/wallet/freight are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yb",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'arousal' has a sexual sense and 'neurosis' is a clinical term as filler; dropping both leaves one wrong option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yc",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: a moraine is a ridge of glacial debris, not a kind of stone.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yd",
+  "verdict": "pass",
+  "reason": "basement = cellar; bathroom/attic/hydrant/bathtub are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ye",
+  "verdict": "pass",
+  "reason": "revulsion = disgust; exasperation/indignation are other feelings, acceptance its opposite, harassment unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yf",
+  "verdict": "pass",
+  "reason": "disbelief = skepticism; jealousy/doom/wrath/anticipation are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yg",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'bait' and 'entrap' are defensible synonyms of entice; dropping them leaves one wrong option, and the gloss repeats 'entice'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yh",
+  "verdict": "pass",
+  "reason": "grieve = mourn; solace/repent/comforted/cherish are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yi",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: granule/grain is near-synonymy, not 'kind of', and 'speck' also fits.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yj",
+  "verdict": "pass",
+  "reason": "series = sequence; motif/booklet/trio/narration are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yk",
+  "verdict": "pass",
+  "reason": "attribute = trait; masculine/masculinity/goodness/notion are not synonyms. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yl",
+  "verdict": "pass",
+  "reason": "fluffy = downy; curly/velvety/lacy are other textures and 'down' is the noun. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ym",
+  "verdict": "fail",
+  "reason": "Agree with r1: reasoning is a kind of thinking (the gloss says 'thinking that is coherent and logical'). Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yn",
+  "verdict": "pass",
+  "reason": "knowledge = awareness in the 'knowledge/awareness of the danger' sense, which the gloss shows; ethic/mystic/metaphysics/aptitude are not. r2's 'loose' does not identify a competing answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yo",
+  "verdict": "pass",
+  "reason": "belligerence = aggression; malice/retaliation/snub/abhorrence are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yp",
+  "verdict": "pass",
+  "reason": "a fox is a kind of mammal; rabbit/hound/leopard/deer are fellow animals, not categories. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yq",
+  "verdict": "pass",
+  "reason": "appraisal = assessment; depreciation/salary/sufficiency/shareholder are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yr",
+  "verdict": "fix",
+  "reason": "speculation = conjecture is sound. Agree with r1 that 'hypotheses' is defensible, and 'inference' is close: drop both. skepticism/paradox remain.",
+  "drop": [
+   "hypotheses",
+   "inference"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ys",
+  "verdict": "pass",
+  "reason": "reliable = dependable; available/fastest/clearer are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yt",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: manure is one kind of fertilizer, as the gloss shows. Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yu",
+  "verdict": "pass",
+  "reason": "paradise = heaven in the gloss's general sense ('any place of complete bliss'), which is neutral across faiths; swan/robin/fairy/heavenly are not. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yv",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: likeness also means a portrait, so representation, depiction and effigy are all defensible; dropping them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yw",
+  "verdict": "fix",
+  "reason": "droop = sag is sound. 'limp' (flowers go limp) is close enough to argue: drop it. lob/tuft/maroon remain.",
+  "drop": [
+   "limp"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yx",
+  "verdict": "pass",
+  "reason": "excellence = superiority (the gloss shows the shared sense); prestige/sophistication/utmost/estimation are not. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yy",
+  "verdict": "pass",
+  "reason": "hole = opening; screw/peg fill holes and a dent is a hollow, not an opening. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yz",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: caulk is one kind of filler (the gloss says so), it is obscure at L4, and r2 notes it sounds like a vulgar word.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z0",
+  "verdict": "pass",
+  "reason": "astrology -> astrological is the noun-to-adjective family, presented neutrally; sociological/theological/humanistic belong to other nouns. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z1",
+  "verdict": "pass",
+  "reason": "smooth/rough are direct opposites; crisp/thick/soft/cloudy are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z2",
+  "verdict": "pass",
+  "reason": "board = committee in the governing-body sense the gloss shows ('a board/committee of examiners'); skate/roller/bulletin/fulcrum pull on the plank sense but none means a group. r2's 'loose' names no competing answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z3",
+  "verdict": "pass",
+  "reason": "creative = imaginative; renewable/contemporary/speculative are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z4",
+  "verdict": "fix",
+  "reason": "caustic = corrosive is sound and the gloss shows the chemical sense. Agree with both rounds that figurative 'abrasive' is defensible: drop it. vapour/wetness/lather remain.",
+  "drop": [
+   "abrasive"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z5",
+  "verdict": "pass",
+  "reason": "hobby = pastime; showcase/weekend/enthusiast/debut are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z6",
+  "verdict": "pass",
+  "reason": "string = twine (a light cord); pluck/fret/lute/percussion pull on the music sense but none is a cord. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z7",
+  "verdict": "pass",
+  "reason": "bias = prejudice; conviction/persuasion/volition/dissent are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z8",
+  "verdict": "pass",
+  "reason": "effortless = easy; breathless/flawless/incredible/dizzy are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z9",
+  "verdict": "pass",
+  "reason": "rewriting = revising; signer/compilation/reprint/clarification are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:za",
+  "verdict": "fix",
+  "reason": "unsuitable = inappropriate is sound. Agree with r1 that 'inconvenient' ('an unsuitable time') is a listed synonym: drop it. appropriate/satisfactory/negligent remain.",
+  "drop": [
+   "inconvenient"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zb",
+  "verdict": "pass",
+  "reason": "incorporation = inclusion; signer/issuer/substitution are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zc",
+  "verdict": "pass",
+  "reason": "parachute = chute (its short form, same meaning, like telephone/phone); helicopter/foremast/tow/glider are not. r2's 'clipped form' is not a defect: the meaning is identical.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zd",
+  "verdict": "pass",
+  "reason": "crumble = disintegrate; shatter is sudden breaking, demolish is to destroy, uproot unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ze",
+  "verdict": "fail",
+  "reason": "Agree with r1: the gloss defines an airport as an airfield with tower, hangars and passenger facilities, a narrower kind. Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zf",
+  "verdict": "pass",
+  "reason": "cart = wagon; truck/van are motor vehicles, sack unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zg",
+  "verdict": "pass",
+  "reason": "ecological = environmental ('ecological/environmental damage'); geographical/geographic/evolutionary are not. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zh",
+  "verdict": "fix",
+  "reason": "celebration = festival is sound. Agree 'feast' (a feast day) and 'ceremony' are defensible: drop both. supper/graduation remain.",
+  "drop": [
+   "feast",
+   "ceremony"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zi",
+  "verdict": "fix",
+  "reason": "bard = minstrel is sound. 'writer' is arguable (the Bard, a poet, is a writer): drop it. maiden/epic/ballad remain.",
+  "drop": [
+   "writer"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zj",
+  "verdict": "fix",
+  "reason": "ancient/modern are direct opposites; elder/old are synonyms, love/answer unrelated. Agree with r1 that the gloss 'a contemporary person' is the noun sense: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:zk",
+  "verdict": "fail",
+  "reason": "Agree with r1: 'warmer' is first the comparative of warm (and 'cooler' plays on it); warmer = heater is confusing at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zl",
+  "verdict": "pass",
+  "reason": "authenticity = genuineness; correctness/confirmation are not the same and 'genuine' is the adjective. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zm",
+  "verdict": "fix",
+  "reason": "assistant = helper is sound. Agree 'deputy' is a standard synonym: drop it. boss/senior/executive remain.",
+  "drop": [
+   "deputy"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zn",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: a child does not know a waffle as a kind of cake, and the gloss 'baked in an oven' is wrong for a waffle.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zo",
+  "verdict": "pass",
+  "reason": "purple is a kind of colour; pink/violet are fellow colours, not categories, and 'colorful' an adjective. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zp",
+  "verdict": "pass",
+  "reason": "circumference = girth (the distance around); vertices/longitude/median/vertex are not. The gloss shows the around-a-body case of that sense. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zq",
+  "verdict": "pass",
+  "reason": "equestrian (noun) = rider; handler/racer/judo/rocker are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zr",
+  "verdict": "fail",
+  "reason": "Agree with r1: viewing (watching) and screening (showing a film) are not the same, and it is too hard at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zs",
+  "verdict": "fix",
+  "reason": "routine = habit ('my morning routine/habit') is sound and the gloss shows it. Agree with r1 that 'performance' (a dance routine) is defensible: drop it. rehearsal/overtime/recital remain.",
+  "drop": [
+   "performance"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zt",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: logic (reasoning) and rationale (the reasons for something) are not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zu",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'embryonic' is defensible, and ovarian/glandular are odd anatomy filler; dropping all three leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zv",
+  "verdict": "pass",
+  "reason": "cranium -> cranial is the noun-to-adjective family; parietal/vertebral/pelvic/frontal are other anatomy adjectives. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zw",
+  "verdict": "pass",
+  "reason": "reporter = journalist; email/investigator/bard are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zx",
+  "verdict": "pass",
+  "reason": "stiffness = rigidity; elasticity/flexibility are opposites, eyesight/spasm unrelated. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zy",
+  "verdict": "pass",
+  "reason": "sun -> sunny is the noun-to-adjective family; golden/magical/natural/rainy are not of it. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zz",
+  "verdict": "pass",
+  "reason": "canyon = gorge; headland/cove/crag/boulder are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10a",
+  "verdict": "fix",
+  "reason": "a tuba is a kind of (musical) instrument; clapper/cymbal/drummer/instrumental do not compete. r2's fail gives only the relation name, no defect, and I find none. But the gloss is the generic device sense: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:10b",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: a poll (a survey or vote) and a questionnaire (a list of questions) are related, not the same.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10c",
+  "verdict": "pass",
+  "reason": "enroll -> enrollment is the verb-to-noun family; learner/academy/certification are not of it and 'join' is a verb. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10d",
+  "verdict": "fix",
+  "reason": "superiority = excellence is sound and the gloss shows it. Agree with r1 that 'disdain' (an air of superiority) is defensible: drop it. humility/patriotism/excel remain.",
+  "drop": [
+   "disdain"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10e",
+  "verdict": "pass",
+  "reason": "vaporization = evaporation; drier/wetness/decomposition/precipitate are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10f",
+  "verdict": "fail",
+  "reason": "Agree with r1: a gesture is one kind of motion (the gloss: 'motion of hands or body'), and jolt/rotation are other kinds. Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10g",
+  "verdict": "pass",
+  "reason": "a mackerel is a kind of fish; auk (a bird), crayfish, baboon are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10h",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: prudence and deliberation are defensible, and 'premeditation' carries a criminal connotation.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10i",
+  "verdict": "fix",
+  "reason": "limitation = constraint is sound. Agree that 'confinement' and 'handicap' (a dated disability term) are defensible: drop both. The gloss shows physical restraint, not the sense of a limit: hide it. oversight/dependency remain.",
+  "drop": [
+   "confinement",
+   "handicap"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:10j",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: the gloss is lawn grass, which maize is not, and a child knows maize as a crop.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10k",
+  "verdict": "pass",
+  "reason": "inside (noun) = interior; spot/word/find/there are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10l",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: yeast is one kind of leaven, and 'leaven' is obscure at L4.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10m",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: 'suck' is crude slang, and swallow = sip is weak (a sip is a small drink).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10n",
+  "verdict": "pass",
+  "reason": "perfume = fragrance; mastic/beeswax/linseed/balsam are substances, not a smell. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10o",
+  "verdict": "pass",
+  "reason": "narrowing = constriction exactly; navel/jugular/colon/mesentery are anatomy words that cannot be confused with it. r2's note on the distractors is a style point, not a second answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10p",
+  "verdict": "fail",
+  "reason": "Agree with r1: a banker is one kind of financier (the gloss says so), and 'broker' is arguable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10q",
+  "verdict": "pass",
+  "reason": "insect = bug; worm/spider/toad are other creatures, not synonyms. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10r",
+  "verdict": "pass",
+  "reason": "livestock is a kind of animal; hay/crop are farm produce, sheep an instance, domestic an adjective. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10s",
+  "verdict": "fix",
+  "reason": "doubt = skepticism is sound. Agree 'suspicion' is a standard synonym: drop it. certainty/contradiction/conviction remain.",
+  "drop": [
+   "suspicion"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10t",
+  "verdict": "pass",
+  "reason": "flip = somersault (the gloss shows the acrobatic sense); vert/upside/posit are odd but none is a synonym. r2's complaint is about style, not a second answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10u",
+  "verdict": "fix",
+  "reason": "gulp = swallow (verb) is sound and no distractor competes. Agree with r1 that the gloss 'a small amount of liquid food' contradicts gulp: hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:10v",
+  "verdict": "fix",
+  "reason": "blunt/sharp are direct opposites. Agree that 'keen' (a keen blade) is also an opposite of blunt: drop it. The gloss is the musical sharp: hide it. timid/tame/cowardice remain.",
+  "drop": [
+   "keen"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:10w",
+  "verdict": "fix",
+  "reason": "champion = winner is sound and the gloss shows it. Agree 'defender' is defensible (a champion of the poor), and 'fighter' too: drop both. triumph/boxer remain.",
+  "drop": [
+   "defender",
+   "fighter"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10x",
+  "verdict": "fix",
+  "reason": "improper = inappropriate is sound. Agree 'unacceptable' is a listed synonym: drop it. negligent/untrue/inconvenient remain.",
+  "drop": [
+   "unacceptable"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10y",
+  "verdict": "pass",
+  "reason": "useful -> usefulness is the adjective-to-noun family; retrieval/formulation/necessary/avail are not of it. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10z",
+  "verdict": "fail",
+  "reason": "Agree with r1: a carving is one kind of sculpture, and 'woodwork' is arguable. Link not exact.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11a",
+  "verdict": "fix",
+  "reason": "sneaky = underhanded is sound. 'naughty' overlaps for a child (sneaky behaviour is naughty) and carries an adult double sense: drop it. extra/silent remain.",
+  "drop": [
+   "naughty"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11b",
+  "verdict": "fix",
+  "reason": "tubular = cylindrical is exact. Agree with both rounds that 'oriental' is a dated, offensive term: drop it. warty/conical/narrower remain.",
+  "drop": [
+   "oriental"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11c",
+  "verdict": "fix",
+  "reason": "music -> musical is the noun-to-adjective family; joyful/heroic/magical/rainy are not of it. r2's fail gives only the relation name, no defect, and I find none. But the gloss is the noun 'a musical' (a show): hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:11d",
+  "verdict": "pass",
+  "reason": "cash = currency (money in notes and coins, as the gloss shows); premium/asset/cage/investment are not. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11e",
+  "verdict": "fix",
+  "reason": "fury = wrath is sound. Agree with r1 that 'indignation' (anger) is defensible: drop it. elation/emotion/fear remain.",
+  "drop": [
+   "indignation"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11f",
+  "verdict": "pass",
+  "reason": "history -> historic is the noun-to-adjective family; famous/scientific/heroic/powerful are not of it. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11g",
+  "verdict": "fail",
+  "reason": "Agree with both rounds: a tiara is one kind of crown, and wreath/garland are also crowns. Not rescuable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11h",
+  "verdict": "pass",
+  "reason": "apprentice = trainee; veteran/junior/barber/custodian are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11i",
+  "verdict": "fix",
+  "reason": "plausible = credible is sound. 'trustworthy' is a synonym of credible ('a credible witness') and a child could defend it: drop it. doubtful/improbable/apologetic remain.",
+  "drop": [
+   "trustworthy"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11j",
+  "verdict": "pass",
+  "reason": "a spoke is part of a wheel; 'whisper' plays on spoke as past of speak, and a spoke is not part of a bar. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11k",
+  "verdict": "pass",
+  "reason": "intrude = interfere; confide/consent/dissent are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11l",
+  "verdict": "pass",
+  "reason": "liking = fondness; goodwill/closeness/gratitude/familiarity are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11m",
+  "verdict": "fix",
+  "reason": "exaggeration = embellishment is sound and the gloss shows it. Agree with r1 that 'caricature' (an exaggerated portrayal) is defensible: drop it. attractiveness/vividness/absurd remain.",
+  "drop": [
+   "caricature"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11n",
+  "verdict": "pass",
+  "reason": "peel is part of an orange; candy and shred are not wholes it belongs to. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "drop": [],
+  "gloss": "keep"
+ }
+]
