@@ -1,0 +1,2362 @@
+[
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:8",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "shipment = freight (goods carried); inventory/receipt/premium do not compete.",
+    "cycle": 3
+   },
+   {
+    "item": "item:8",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; freight = goods shipped",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "shipment",
+  "d": "freight",
+  "wrong": [
+   "inventory",
+   "receipt",
+   "premium"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Shipment/freight is a sound synonym pair. Both rounds agree 'package' reads as the same thing as a shipment to a child; drop it. Remaining inventory/receipt/premium are clearly wrong.",
+  "cycle2": "fixed in round 3: Agree with r1 over r2: shipment/freight is a sound pair and inventory/receipt/premium do not compete, but the shown gloss 'Is goods or cargo transported for pay' is broken English with a stray leading 'Is' (the same defect for which the cringe gloss was hidden). Hide the gloss; nothing else changes.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:103",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a): 'pouch' is a narrower word for 'bag'. Dictionaries define a pouch as 'a small bag', so d is a kind of c, which is the 'A kind of' link, not 'Same meaning'. The shown gloss ('a sack or satchel of moderate size') also does not describe a pouch.",
+    "cycle": 3
+   },
+   {
+    "item": "item:103",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; pouch is a small bag, close enough",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:103",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "bag",
+  "d": "pouch",
+  "wrong": [
+   "towel",
+   "bin",
+   "express",
+   "laundry"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A sack or satchel of moderate size for storing or transporting goods",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r1's hyponym fail: dictionaries define pouch as a small bag and children use the words interchangeably, so 'about the same' holds. towel/bin/express/laundry are not synonyms. r2 passed.",
+  "cycle2": "passed by round 3 over an earlier fail: Overrule r1's hyponym fail, side with r2: thesauri list pouch under bag and the bridge only claims 'about the same', the same tolerance applied to shore/beach and grin/smile. towel/bin/express/laundry are not synonyms, so pouch is the one answer. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:161",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "handcuff = manacle (one WordNet synset); deterrent/impediment/pillory do not compete; fine at L7.",
+    "cycle": 3
+   },
+   {
+    "item": "item:161",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; manacle and pillory are hard words for 8-15; pillory is a different restraint, not a synonym",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:161",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "handcuff",
+  "d": "manacle",
+  "wrong": [
+   "deterrent",
+   "impediment",
+   "pillory"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: handcuff/manacle is sound at L7. Both rounds agree 'fetter' is also a synonym; drop it. deterrent/impediment/pillory are not synonyms of handcuff.",
+  "cycle2": "fixed in round 3: Agree with r1 over r2: handcuff/manacle is a sound L7 pair and deterrent/impediment/pillory do not compete, but the shown gloss 'A shackle for the hand handcuffs' is a garbled run-on displayed to a child. Hide the gloss.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:176",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a): a swamp is one TYPE of wetland (wetlands include marshes, bogs, fens and swamps; WordNet puts swamp under wetland). d is a narrower word, so 'Same meaning' is false and the pair teaches the 'A kind of' link under the wrong name.",
+    "cycle": 3
+   },
+   {
+    "item": "item:176",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: swamp is a kind of wetland rather than an exact synonym, but clearly the best; habitat is a category, not a synonym",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:176",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "wetland",
+  "d": "swamp",
+  "wrong": [
+   "habitat",
+   "creek"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Low land that is seasonally flooded",
+  "cycle1": "fixed in round 3: Swamp is the everyday word children use for a wetland, so 'about the same' holds (r2 pass). r1 is right that 'nile' is a lowercase proper noun; also 'estuary' is itself a wetland type a child could defend. Drop both; habitat/creek remain.",
+  "cycle2": "passed by round 3 over an earlier fail: Overrule r1's hyponym fail, side with r2: thesauri list swamp as a synonym of wetland and it is the everyday word a child uses for one; the bridge claims only 'about the same'. habitat (a wetland is one) and creek are not synonyms, so swamp is the one answer. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:185",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "accumulation = buildup; melanin/breakdown do not compete.",
+    "cycle": 3
+   },
+   {
+    "item": "item:185",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:185",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "accumulation",
+  "d": "buildup",
+  "wrong": [
+   "melanin",
+   "breakdown"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of building up an accumulation",
+  "cycle1": "fixed in round 3: accumulation/buildup is sound. Both rounds agree 'urine' is toilet-giggle filler; drop it. melanin/breakdown/albumin remain wrong.",
+  "cycle2": "fixed in round 3: accumulation/buildup is sound and no option competes, but 'albumin' (a blood/egg protein) is technical jargon far too obscure at L4 (age 11). Drop it; melanin and breakdown remain, neither a synonym. Gloss right. Both rounds passed; r2 had flagged the obscure distractors."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:y",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a): acting is one kind of performing. Singing, dancing, playing music and doing magic are all performing but not acting, so d is narrower than c. A careful child can see 'you can perform a song without acting', so 'Same meaning' is not exactly true.",
+    "cycle": 3
+   },
+   {
+    "item": "item:y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: loose synonym: performing is broader than acting (singers, musicians perform too); acceptable but not tight",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "performing",
+  "d": "acting",
+  "wrong": [
+   "solo",
+   "audition"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The performance of a part or role in a drama",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r1: for children 'performing' on a stage means acting, and the gloss names that sense. solo/stag/audition are not synonyms (stag is an ordinary animal word). r2 passed.",
+  "cycle2": "fixed in round 3: Agree with r1 on the option only: performing/acting is sound and the gloss names the drama sense, but 'stag' beside performing/solo/audition sits in the 'stag show / stag night' sense (men-only, often adult entertainment) - a double meaning in exactly this context. Drop it; solo and audition remain and neither is a synonym."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:7a",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "possible = feasible; probable is a fair near-miss rather than a second answer.",
+    "cycle": 3
+   },
+   {
+    "item": "item:7a",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; probable is a near-miss (likely is not the same as possible) that some children will pick",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:7a",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "possible",
+  "d": "feasible",
+  "wrong": [
+   "probable",
+   "finite",
+   "furthest",
+   "infinite"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: 'probable' (likely) is a distinct idea from possible, so it is a fair near-miss rather than a second answer; feasible is fine at L4 (age 11). r1 passed.",
+  "cycle2": "fixed in round 3: possible/feasible is sound at L4 and probable (likely) is a fair near-miss rather than a second answer, but the shown gloss 'Is capable of being done' carries the same stray leading 'Is' as the cringe/freight/miserable/jealous glosses; a malformed definition should not be shown in a spelling app. Hide the gloss. Both rounds passed.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:9p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A perfumer makes perfume (MW also gives 'one that perfumes'). It is the only person on offer.",
+    "cycle": 3
+   },
+   {
+    "item": "item:9p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: maker/doer of it; fragrance is a synonym trap, not the same link",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:9p",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "perfume",
+  "d": "perfumer",
+  "wrong": [
+   "fragrance",
+   "beeswax",
+   "linseed"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who makes (and sells) perfumes",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r1: a perfumer is exactly the person who makes perfume (the same shape as ranch/rancher), the gloss says so, and perfumer is the only person among fragrance/mastic/beeswax/linseed. r2 passed.",
+  "cycle2": "fixed in round 3: perfume/perfumer holds (a perfumer makes perfume, the gloss says so) and is the only person on offer, but 'mastic' (a resin) is far too obscure at L5 (age 12), as r2 noted. Drop it; fragrance, beeswax and linseed remain, none a person."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:ae",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "Exact noun form; stimuli/stimulus/activation share no root.",
+    "cycle": 3
+   },
+   {
+    "item": "item:ae",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: adjective -> noun",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:ae",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "responsive",
+  "d": "responsiveness",
+  "wrong": [
+   "stimuli",
+   "stimulus",
+   "activation"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Agree 'arousal' has a common sexual sense and must be dropped. responsive -> responsiveness is an exact word-family pair; stimuli/stimulus/activation share no root, and the gloss describes the right sense.",
+  "cycle2": "fixed in round 3: Agree with r1 on the gloss: responsive/responsiveness is an exact family pair and stimuli/stimulus/activation share no root, but the gloss for the noun reads 'Responsive to stimulation', an adjective phrase that repeats c, in a lesson whose whole point is the word taking a new job. It shows the wrong part of speech; hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:b4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "miserable is a stronger sad; ecstatic/patriotic/nostalgic are not.",
+    "cycle": 3
+   },
+   {
+    "item": "item:b4",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: stronger degree",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:b4",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 4,
+  "c": "sad",
+  "d": "miserable",
+  "wrong": [
+   "ecstatic",
+   "patriotic",
+   "nostalgic"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: sad -> miserable is a true stronger pair and the gloss is the right sense. Agree with R1 over R2: 'pathetic' is a common playground put-down and also means 'causing sadness', so it is both unsuitable and arguable; drop it. ecstatic/patriotic/nostalgic remain.",
+  "cycle2": "fixed in round 3: Agree with r1 over r2 on the gloss: sad -> miserable is a true stronger pair and ecstatic/patriotic/nostalgic do not compete, but the gloss 'Is very unhappy uneasy or uncomfortable' is broken English (stray leading 'Is', missing commas). Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:b6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A gale is a stronger breeze; the false-number gloss is hidden.",
+    "cycle": 3
+   },
+   {
+    "item": "item:b6",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: stronger degree",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:b6",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "breeze",
+  "d": "gale",
+  "wrong": [
+   "sway",
+   "sunflower",
+   "dew"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: breeze -> gale is a true stronger pair and the gloss fits. Agree with R1 over R2: monsoon is literally a seasonal wind, and a child from an Indian household may defend it as a stronger breeze; drop it. sway/sunflower/dew remain.",
+  "cycle2": "fixed in round 3: Agree with r1 over r2 on the gloss: breeze -> gale is a true stronger pair and sway/sunflower/dew do not compete, but the gloss 'A strong wind moving 45-90 knots' teaches a false number (a gale, Beaufort 7-10, is about 28-55 knots; 64+ knots is hurricane force). Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:bu",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "hot is a stronger warm; cold/gulp/downpour are not.",
+    "cycle": 3
+   },
+   {
+    "item": "item:bu",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: stronger degree; cold is the opposite trap",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:bu",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 1,
+  "c": "warm",
+  "d": "hot",
+  "wrong": [
+   "cold",
+   "gulp",
+   "downpour"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: warm -> hot is a true stronger pair. Drop 'frigid': 'frigid' has a dictionary sexual sense (an insult aimed at women), so it is a double-meaning word and cannot appear for 8-15; R2 was right to flag it, R1's pass missed it. cold/gulp/downpour remain.",
+  "cycle2": "fixed in round 3: Agree with r1 over r2 on the gloss: warm -> hot is a true stronger pair and cold/gulp/downpour do not compete, but the gloss 'Used of physical heat' is only a usage note with no meaning - the defect for which picturesque's 'Used of locations' was hidden. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:d9",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A zither is a kind of instrument; fret is a part, saxophone a sibling, and instrumental an adjective.",
+    "cycle": 3
+   },
+   {
+    "item": "item:d9",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: kind of; zither is obscure but the category is clear; saxophone is a sibling, instrumental the wrong part of speech",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:d9",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "zither",
+  "d": "instrument",
+  "wrong": [
+   "fret",
+   "instrumental",
+   "saxophone"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Overrules R1's obscurity fail: zither is a familiar alphabet-book word, and 'instrument' is the only category on offer. But some zithers are sold as harps (lap harp, autoharp), so a child can defend 'harp'; drop it. The gloss is the general 'instrument' sense, which a zither fits. fret/instrumental/saxophone remain.",
+  "cycle2": "fixed in round 3: Agree with r1 over r2: zither -> instrument is true and fret/instrumental/saxophone do not compete, but the gloss 'A device that requires skill for proper use' is the tool sense of instrument, not the musical sense a zither belongs to; the identical gloss was hidden on cello (d7) and chime (dp) for that reason. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:e8",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "Exact family pair, and the praise-sense gloss is hidden.",
+    "cycle": 3
+   },
+   {
+    "item": "item:e8",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: adjective -> noun; distractors exploitation and harassment are heavy adult concepts for 8-15 though not unsafe per se",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:e8",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "aggressive",
+  "d": "aggressiveness",
+  "wrong": [
+   "repulse",
+   "harassment",
+   "exploitation",
+   "antagonist"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2 (whose note is not a fault): aggressive -> aggressiveness is an exact word-family pair, no other option shares the root, the gloss is a correct sense, and the words are suitable at level 6.",
+  "cycle2": "fixed in round 3: aggressive/aggressiveness is an exact family pair and repulse/harassment/exploitation/antagonist share no root, but the shown gloss 'The quality of being bold and enterprising' is the business-praise sense, while the item (and every child) reads aggressive as hostile; it would teach aggressiveness as a virtue. Hide the gloss. Both rounds passed.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:ej",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "envious = jealous in ordinary use; no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:ej",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:ej",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "envious",
+  "d": "jealous",
+  "wrong": [
+   "wary",
+   "giddy",
+   "unhappy",
+   "impassive"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2 (no fault given): envious = jealous; the wrong options are not synonyms. Gloss is the right sense.",
+  "cycle2": "fixed in round 3: Agree with r1 over r2 on the gloss: envious/jealous is a sound pair and wary/giddy/unhappy/impassive do not compete, but the gloss 'Is feeling resentment against someone because of success' is broken English (stray leading 'Is', 'because of success' with no owner), the cringe-gloss defect. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:es",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "oval = ellipse (one WordNet synset); round/lob do not compete. Note: the shown gloss stops mid-sentence ('cutting completely…'). Shorten it or hide it.",
+    "cycle": 3
+   },
+   {
+    "item": "item:es",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; round is a describing word, not a synonym",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:es",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "oval",
+  "d": "ellipse",
+  "wrong": [
+   "round",
+   "lob"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A closed plane curve resulting from the intersection of a circular cone and a plane cutting completely…",
+  "cycle1": "fixed in round 3: oval -> ellipse is a standard synonym pair and the gloss is the right (if technical) sense. Agree 'oblong' is commonly used for oval shapes; drop it. round/lob/knob remain.",
+  "cycle2": "fixed in round 3: Link and gloss sound: oval = ellipse; round/lob are not synonyms. But 'knob' is labelled taboo slang in British English (penis; 'you knob' as an insult), and the rule fails a word that is also a common insult even in an innocent sense; this audience includes UK families. Drop it; round and lob remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:fy",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "loud is the opposite of quiet; silent/calm are synonyms and humble is unrelated.",
+    "cycle": 3
+   },
+   {
+    "item": "item:fy",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: opposites; silent and calm are synonym traps",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:fy",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 3,
+  "c": "quiet",
+  "d": "loud",
+  "wrong": [
+   "silent",
+   "calm",
+   "humble"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Characterized by or producing sound of great volume or intensity",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2 (no fault given): loud is the opposite of quiet; silent/calm are synonyms. Gloss right.",
+  "cycle2": "fixed in round 3: Agree with R1 over the cycle-1 overrule: quiet also means calm/still (a quiet night, a quiet child), and dictionaries give restless/agitated as its antonyms in that sense, so 'restless' is a second defensible opposite. loud is the clean answer; drop restless. silent/calm (synonyms) and humble remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:g7",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "entrance is the opposite of exit; no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:g7",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: opposites; part-of-speech mismatch: arrive/leave are verbs, so exit (verb) pairs with enter, which is absent; entrance works only with exit as a noun",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:g7",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 3,
+  "c": "exit",
+  "d": "entrance",
+  "wrong": [
+   "shut",
+   "ascend",
+   "sink",
+   "exclude"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2 (no fault given): entrance is the opposite of exit. Gloss acceptable.",
+  "cycle2": "fixed in round 3: Agree with R1 over the cycle-1 overrule: the link is right (entrance is the opposite of exit; shut/ascend/sink/exclude are not), but the shown gloss 'Something that provides access (to get in or get out)' tells the child an entrance is also a way out, contradicting the item. Hide the gloss.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:gn",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "gelatin -> gelatinous is exact; no option shares the root.",
+    "cycle": 3
+   },
+   {
+    "item": "item:gn",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: noun -> adjective; gummy describes a similar texture but is not derived from gelatin",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:gn",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 8,
+  "c": "gelatin",
+  "d": "gelatinous",
+  "wrong": [
+   "greasy",
+   "gummy",
+   "preservative"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Thick like gelatin",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2 (no fault given): gelatin -> gelatinous is exact. Gloss right.",
+  "cycle2": "fixed in round 3: Link and gloss sound: gelatin -> gelatinous; greasy/gummy/preservative share no root. But 'pasty' is a body insult (pasty-faced, pale-skinned) - the same word cycle-1 round 3 dropped from item:ly for that reason - so drop it here too for consistency. greasy/gummy/preservative remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:hd",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "continuance is a real noun of continue; no option shares the root.",
+    "cycle": 3
+   },
+   {
+    "item": "item:hd",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: verb -> noun; continuance is valid but less common than continuation",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:hd",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "continue",
+  "d": "continuance",
+  "wrong": [
+   "disruption",
+   "resume",
+   "inactivity"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of continuing an activity without interruption",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2: continuance is a real noun of continue (continuation is more common but not offered). 'abort' is used in its everyday stop-a-task sense.",
+  "cycle2": "fixed in round 3: Link and gloss sound: continuance is a real noun of continue; disruption/resume/inactivity share no root. Agree with R1 over the cycle-1 overrule: 'abort' as random filler carries a dominant adult sense (ending a pregnancy) that parents of 8-15s will object to whatever sense was meant, and nothing is lost by removing it. Drop abort; three wrong options remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:hk",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A synthesizer is a musical instrument; no option is its category.",
+    "cycle": 3
+   },
+   {
+    "item": "item:hk",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: kind of",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:hk",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "synthesizer",
+  "d": "instrument",
+  "wrong": [
+   "amplifier",
+   "sonata",
+   "instrumental",
+   "multimedia"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2 (no fault given): a synthesizer is a (musical) instrument; amplifier/sonata/multimedia are not its categories. The gloss is the general instrument sense, which fits.",
+  "cycle2": "fixed in round 3: Agree with R1 over the cycle-1 overrule: the link is right (a synthesizer is a musical instrument; amplifier/sonata/multimedia/instrumental fail it), but the gloss is the general 'device that requires skill' sense, not the musical one, and the same gloss was hidden for piano, harpsichord and oboe. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:hx",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "Marinara is a sauce; no option is its category.",
+    "cycle": 3
+   },
+   {
+    "item": "item:hx",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: kind of",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:hx",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "marinara",
+  "d": "sauce",
+  "wrong": [
+   "mozzarella",
+   "cutlet",
+   "brioche"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Flavorful relish or dressing or topping served as an accompaniment to food",
+  "cycle1": "passed by round 3 over an earlier fail: Overrules R2 (no fault given): marinara is a sauce; mozzarella/cutlet/brioche/parmesan are not its categories. Gloss right.",
+  "cycle2": "fixed in round 3: Link and gloss sound: marinara is a sauce; mozzarella/cutlet/brioche are not its categories. But 'parmesan' is a proper adjective (of Parma) that dictionaries capitalise, shown in lowercase as filler - the same call cycle-1 round 3 made for 'alsatian'. Drop it; mozzarella/cutlet/brioche remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:js",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a) and level (d): in everyday and British use, 'extremities' means the hands and feet (Oxford, Cambridge), which are only the ends of the limbs. The 'limb' sense is medical register ('upper/lower extremities'). To an 11-year-old, extremity means 'the farthest point' or 'an extreme'. So only a technical sense matches, and even that is narrower in common use. Too weak and too adult for L4.",
+    "cycle": 3
+   },
+   {
+    "item": "item:js",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; extremity is a somewhat technical and loose synonym of limb (often means hands/feet)",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:js",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "limb",
+  "d": "extremity",
+  "wrong": [
+   "hind",
+   "femur",
+   "elbow",
+   "sternum"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An external body part that projects from the body",
+  "cycle1": "passed by round 3 over an earlier fail: R2's fail gives only the link name and no defect. In anatomy, the limbs are the extremities (upper and lower extremities = arms and legs). Hind, femur, elbow and sternum are parts, not synonyms. The gloss is correct.",
+  "cycle2": "passed by round 3 over an earlier fail: R1 failed on difficulty and looseness; I side with R2 and cycle-1 round 3. Dictionaries give 'a limb of the body' as extremity's first anatomical sense (upper/lower extremities), and thesauri list extremity for limb; hind/femur/elbow/sternum are parts, not synonyms, so the answer is unambiguous. extremity is a stretch word, not an obscure one, at level 4."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:ju",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "The award sense of citation (Cambridge's first sense: a formal statement praising bravery) matches commendation, and the gloss teaches it. condemnation is an opposite and the rest are unrelated.",
+    "cycle": 3
+   },
+   {
+    "item": "item:ju",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms, but citation = commendation is an obscure sense for 8-15 (kids know citation as a reference or a ticket); condemnation is the opposite trap",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:ju",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "commendation",
+  "d": "citation",
+  "wrong": [
+   "condemnation",
+   "earnest",
+   "frivolity",
+   "discontent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An official award (as for bravery or service) usually given as formal public statement",
+  "cycle1": "passed by round 3 over an earlier fail: R2's worry about familiarity does not sink it. 'A citation for bravery' is a common phrase, and the gloss teaches exactly that sense. Condemnation is an opposite, and earnest, frivolity and discontent are unrelated, so citation is the only defensible answer.",
+  "cycle2": "passed by round 3 over an earlier fail: R1 failed on the narrow award sense; I side with R2 and cycle-1 round 3. 'A citation for bravery' is a real, current sense that dictionaries pair with commendation, the gloss teaches exactly that sense, and the other options (condemnation an opposite; earnest/frivolity/discontent unrelated) leave citation as the only defensible answer."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:kr",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "loyalty = devotion; no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:kr",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; betrayal is the opposite trap",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:kr",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "loyalty",
+  "d": "devotion",
+  "wrong": [
+   "betrayal",
+   "leadership",
+   "agony",
+   "believer"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: R2's fail gives only the link name and no defect. loyalty = devotion is sound. Betrayal is the opposite, and leadership, agony and believer do not mean loyalty. The gloss is terse but shows the right sense.",
+  "cycle2": "fixed in round 3: Link is sound (loyalty = devotion; betrayal/leadership/agony/believer are not synonyms), but agree with R1: the gloss 'Strong attachment zeal enthusiasm' has lost its punctuation and reads as a word pile to a level-2 (about age 9) child, so it does not show the sense usably. Hiding is the only mechanical remedy; the pair stands without it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:m5",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A bump (on the head) is a swelling; shin/sag/eyelash do not compete.",
+    "cycle": 3
+   },
+   {
+    "item": "item:m5",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:m5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "bump",
+  "d": "swelling",
+  "wrong": [
+   "shin",
+   "sag",
+   "eyelash"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An abnormal protuberance or localized enlargement",
+  "cycle1": "passed by round 3 over an earlier fail: R2's fail gives only the link name and no defect. bump = swelling (a lump on the head). A blister is a specific fluid sac, and shin, sag and eyelash are clearly wrong. The gloss is correct.",
+  "cycle2": "fixed in round 3: Link and gloss sound: bump (a lump from a knock) = swelling; shin/sag/eyelash are wrong. Agree with R1 over the cycle-1 overrule that 'blister' is also a raised bump on the skin, so a careful child can defend it in the same injury sense. Drop blister; shin/sag/eyelash remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:mf",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Level (d) and loose fit: 'elicit' (and 'evoke') are secondary-school academic words, too advanced for L4 (about age 11). They also overlap only in the 'call forth a response' sense: you evoke a memory or an image, but you elicit an answer or information ('the smell elicited memories' is odd). Move it to L7 or above, or cut it.",
+    "cycle": 3
+   },
+   {
+    "item": "item:mf",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; both words are advanced for younger players",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:mf",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "evoke",
+  "d": "elicit",
+  "wrong": [
+   "sublime",
+   "heighten",
+   "mute"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Call forth (emotions, feelings, and responses)",
+  "cycle1": "fixed in round 3: evoke = elicit (call forth a response) is sound. But one dictionary sense of evoke is 'to re-create imaginatively', so 'recreate' is defensible. Drop it. Sublime, heighten and mute remain.",
+  "cycle2": "passed by round 3 over an earlier fail: R1 failed on level only; I side with R2. evoke = elicit (call forth a response) is exact, both are standard middle-school academic vocabulary (a stretch at level 4, not obscure), and sublime/heighten/mute leave elicit the only defensible answer. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:o2",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a): a platter is a large serving plate or dish, while a tray is a flat board with a rim for carrying things (Cambridge). They are related tableware, not the same thing. A cafeteria tray is not a platter, and the gloss shown is tray's 'receptacle' sense, not a dish.",
+    "cycle": 3
+   },
+   {
+    "item": "item:o2",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:o2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "platter",
+  "d": "tray",
+  "wrong": [
+   "taco",
+   "cornbread",
+   "bag",
+   "truffle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An open receptacle for holding or displaying or serving articles or food",
+  "cycle1": "passed by round 3 over an earlier fail: R2's fail gives only the link name and no defect. platter = tray (a flat serving receptacle), as thesauruses list. Taco, cornbread, bag and truffle are clearly wrong. The gloss is correct.",
+  "cycle2": "passed by round 3 over an earlier fail: Overrule R1's fail. The bridge is 'means about the same as', and thesauruses list tray as a synonym of platter (a flat serving receptacle); the gloss shown for tray ('open receptacle for holding, displaying or serving food') describes a platter exactly. Taco, cornbread, bag, truffle cannot compete, so tray is the one defensible answer."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:od",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "contempt = disdain; insult/affront are acts, not the feeling, and acceptance is unrelated.",
+    "cycle": 3
+   },
+   {
+    "item": "item:od",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; insult and affront are related acts rather than the feeling, near-misses but not equal",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:od",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "contempt",
+  "d": "disdain",
+  "wrong": [
+   "insult",
+   "acceptance",
+   "affront"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: contempt = disdain (the gloss is their shared definition) is sound. Both rounds are right that 'derision' (scorn) is defensible, so drop it. Insult, acceptance and affront remain.",
+  "cycle2": "fixed in round 3: Agree with R1. contempt = disdain is sound and insult, acceptance, affront are not feelings of scorn, but the gloss shown is garbled ('...unworthy of or beneath one scorn') and defines disdain with the clue word itself. Hide it; the link and options are fine.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:on",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "legacy = inheritance; the options are people.",
+    "cycle": 3
+   },
+   {
+    "item": "item:on",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:on",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "legacy",
+  "d": "inheritance",
+  "wrong": [
+   "claimant",
+   "eyewitness",
+   "landowner"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: R2's fail gives only the link name and no defect. legacy = inheritance. Claimant, eyewitness and landowner are people, not the thing inherited. The gloss is correct.",
+  "cycle2": "fixed in round 3: Agree with R1. legacy = inheritance (the thing handed down) is sound and claimant, eyewitness, landowner are people, but the gloss is inheritance's 'hereditary succession' sense (the act of succeeding), not the property inherited that matches legacy. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:p0",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A racehorse is a kind of horse; rodeo/equestrian/handler are not its category.",
+    "cycle": 3
+   },
+   {
+    "item": "item:p0",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: kind of",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:p0",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "racehorse",
+  "d": "horse",
+  "wrong": [
+   "rodeo",
+   "equestrian",
+   "handler"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Solid-hoofed herbivorous quadruped domesticated since prehistoric times",
+  "cycle1": "passed by round 3 over an earlier fail: A racehorse is a kind of horse. R2's 'category' gives no fault; 'thoroughbred' is not a category every racehorse belongs to (quarter horses, standardbreds race too), and rodeo/equestrian/handler are not categories of racehorse. One defensible answer.",
+  "cycle2": "fixed in round 3: A racehorse is a kind of horse, but thoroughbred is the breed most racehorses are, so a child can reasonably pick it (R2's note). Drop it; rodeo, equestrian, handler remain and none is a category of racehorse. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:ph",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "Nutmeg is a spice; the options are other foods, not categories.",
+    "cycle": 3
+   },
+   {
+    "item": "item:ph",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: kind of",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:ph",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "nutmeg",
+  "d": "spice",
+  "wrong": [
+   "parsley",
+   "almond",
+   "coconut",
+   "soy"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: Nutmeg is a spice; the other options are specific foods (parsley is a herb), not categories nutmeg belongs to. R2's 'category' names no fault. Gloss is the spice sense.",
+  "cycle2": "fixed in round 3: Agree with R1. Nutmeg is a spice and parsley, almond, coconut, soy are not categories it belongs to, but the gloss shown is spice's 'used as a preservative' sense rather than the flavouring sense a child needs. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:r6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "beg = entreat; entreat is formal, not archaic, at L5; bully/grumble/shun do not compete.",
+    "cycle": 3
+   },
+   {
+    "item": "item:r6",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; entreat is advanced",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:r6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "beg",
+  "d": "entreat",
+  "wrong": [
+   "bully",
+   "grumble",
+   "shun"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Ask for or request earnestly",
+  "cycle1": "passed by round 3 over an earlier fail: beg -> entreat is exact; gloss right. R2 named no fault: beggar (family noun), bully, grumble, shun do not mean beg.",
+  "cycle2": "fixed in round 3: beg = entreat is exact, but 'beggar' as filler labels a person by poverty and is used as a put-down (R2's note); the rules bar stigmatising filler. Drop it; bully, grumble, shun remain. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:u6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "pig = hog (one WordNet synset), used in the farm-animal sense; hen/pigeon do not compete.",
+    "cycle": 3
+   },
+   {
+    "item": "item:u6",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; pig/hog are also used as insults for people, but here they are core animal vocabulary, so not flagged",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:u6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "pig",
+  "d": "hog",
+  "wrong": [
+   "hen",
+   "pigeon"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A large farm animal with a broad snout, raised for meat",
+  "cycle1": "passed by round 3 over an earlier fail: pig -> hog are one synset; basic farm-animal words, not used here as insults. R2 named no fault: hen, plump, beaver, pigeon are not pigs.",
+  "cycle2": "fixed in round 3: Agree with both rounds on the distractors: 'plump' beside pig/hog invites a body-shaming reading, and 'beaver' carries a common vulgar slang sense, which fails even in its innocent sense. pig = hog is a sound basic farm-animal pair used in its animal sense (R1). Drop both; hen and pigeon remain. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:ua",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "exhaustion = fatigue; no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:ua",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:ua",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "exhaustion",
+  "d": "fatigue",
+  "wrong": [
+   "laziness",
+   "dizziness",
+   "fortitude",
+   "boredom"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: exhaustion -> fatigue are interchangeable in ordinary use (suffering from exhaustion/fatigue). R2 named no fault: laziness, dizziness, fortitude, boredom are not. Gloss is the right sense, though it begins oddly with 'Is'.",
+  "cycle2": "fixed in round 3: Partly agree with R1. The bridge is 'means about the same as', and thesauruses give fatigue as the everyday synonym of exhaustion ('suffering from exhaustion/fatigue'); laziness, dizziness, fortitude, boredom do not compete, so the link holds. But the gloss shown is a broken fragment ('Is weariness from exertion'). Hide it, as was done for the other fragment glosses.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:ut",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "crease = wrinkle; no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:ut",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:ut",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "crease",
+  "d": "wrinkle",
+  "wrong": [
+   "sandpaper",
+   "fray",
+   "thumbnail"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A slight depression in the smoothness of a surface",
+  "cycle1": "passed by round 3 over an earlier fail: crease -> wrinkle are one synset; gloss right. R2 named no fault: matt (a finish), sandpaper, fray, thumbnail are not.",
+  "cycle2": "fixed in round 3: crease = wrinkle is exact and the gloss is right, but 'matt' is a rare variant spelling (usually 'matte') that reads like the name Matt in a spelling app, and the same word was dropped from another item for that reason. Drop it; sandpaper, fray, thumbnail remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:vb",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "customize = personalize; no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:vb",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:vb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "customize",
+  "d": "personalize",
+  "wrong": [
+   "optimize",
+   "covet",
+   "recalculate"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Make personal or more personal",
+  "cycle1": "passed by round 3 over an earlier fail: customize = personalize exactly; optimise/optimize (two valid spellings of one unrelated verb), covet, recalculate are not synonyms. The doubled distractor is untidy but creates no second answer. r2's fail gives only the relation name, no defect, and I find none.",
+  "cycle2": "fixed in round 3: Agree with R1. customize = personalize is exact and covet and recalculate are clearly wrong, but offering both 'optimise' and 'optimize' in a spelling app makes one look like a misspelling and wastes an option. Drop 'optimise' (the app's other spellings here are -ize); optimize, covet, recalculate remain."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:vn",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a) and (d): aqua and cyan are two different colour names, not one word's synonyms. Aqua is a light blue-green, and WordNet files it with turquoise/aquamarine. Cyan is a separate synset, 'a primary subtractive color for light', and that technical printer-ink gloss is what the child is shown. Aqua's other sense (water) also pulls the other way. A careful child cannot be sure these 'mean the same'.",
+    "cycle": 3
+   },
+   {
+    "item": "item:vn",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms (identical in web colours); some treat aqua as a lighter blue-green, minor",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:vn",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "aqua",
+  "d": "cyan",
+  "wrong": [
+   "amber",
+   "sluice"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A primary subtractive color for light",
+  "cycle1": "fixed in round 3: aqua = cyan as a colour (web aqua is cyan), and the gloss is cyan's colour sense. Both rounds are right that dictionary 'aqua' also means water: drop 'water'. littoral/amber/sluice remain, none a synonym.",
+  "cycle2": "fixed in round 3: Partly overrule R1. Under the bridge 'means about the same as', aqua and cyan both name the same greenish-blue (dictionaries define both that way), and the gloss is cyan's colour sense; 'water' was already dropped. But 'littoral' is coastal-ecology jargon, far too obscure for L6. Drop it; amber and sluice remain, neither a synonym."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:vx",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a): gruel is defined as 'a THIN porridge' (WordNet puts it under porridge; Oxford: thin liquid food of oatmeal), so porridge is the broader word and gruel a kind of it. That is the 'A kind of' link, not 'Same meaning'.",
+    "cycle": 3
+   },
+   {
+    "item": "item:vx",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:vx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "gruel",
+  "d": "porridge",
+  "wrong": [
+   "omelet",
+   "marinade",
+   "barbecue",
+   "coriander"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Soft food made by boiling oatmeal or other meal or legumes in water or milk until thick",
+  "cycle1": "passed by round 3 over an earlier fail: gruel = porridge; omelet/marinade/barbecue/coriander are other foods. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "cycle2": "passed by round 3 over an earlier fail: Overrule R1. The bridge is 'means about the same as', and porridge is the standard synonym for gruel (gruel is a thin porridge); omelet, marinade, barbecue, coriander are other foods, so porridge is the one defensible answer. The gloss is porridge's only sense, and right for porridge."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:w4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "cast (the actors) = troupe (a group of performers); hex/shadow/spotlight/backdrop play on other senses of cast and are not groups.",
+    "cycle": 3
+   },
+   {
+    "item": "item:w4",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms, loose (a cast is the actors of one production; a troupe is a company); shadow and hex are collocation traps (cast a shadow, cast a hex) that may confuse",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:w4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "cast",
+  "d": "troupe",
+  "wrong": [
+   "hex",
+   "spotlight",
+   "shadow",
+   "backdrop"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A group of actors or performers especially travelers",
+  "cycle1": "passed by round 3 over an earlier fail: cast (of a play) = troupe (a group of actors), as the gloss shows; hex/shadow/spotlight/backdrop play on other senses of 'cast' but none means a group of performers. r2's 'loose' is not enough to fail: they are interchangeable in 'a cast/troupe of actors'.",
+  "cycle2": "passed by round 3 over an earlier fail: Overrule R1. cast (the actors) = troupe is a standard thesaurus pairing, and the gloss pins the performers sense. Hex, shadow, spotlight and backdrop play on other senses of 'cast', but none means a group of performers, so they test the sense without giving a second answer."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:wa",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "vine = climber (a climbing plant), and the gloss pins the plant sense; the options are not climbers.",
+    "cycle": 3
+   },
+   {
+    "item": "item:wa",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; climber-as-plant is a less familiar sense; shrub and bush are synonyms of each other, not of vine",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:wa",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "vine",
+  "d": "climber",
+  "wrong": [
+   "shrub",
+   "fern",
+   "annual",
+   "bush"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A vine or climbing plant that readily grows up a support or over other plants",
+  "cycle1": "passed by round 3 over an earlier fail: vine = climber (a climbing plant) exactly, and the gloss shows the plant sense, which removes r2's worry about younger children; shrub/fern/annual/bush are not climbers.",
+  "cycle2": "passed by round 3 over an earlier fail: Overrule R1. In everyday use a vine is a climbing plant, and the gloss for climber ('a vine or climbing plant...') states the match and pins the plant sense, so it is not the person who climbs. Shrub, fern, annual, bush are not climbers."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:wb",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "factory = mill (one WordNet synset: steel mill, paper mill); no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:wb",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; mill = factory only in some senses (steel mill, paper mill)",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:wb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "factory",
+  "d": "mill",
+  "wrong": [
+   "shipment",
+   "annual",
+   "worker"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A plant consisting of one or more buildings with facilities for manufacturing",
+  "cycle1": "fixed in round 3: factory = mill is a true synonym set ('cotton mill', 'steel mill') and the gloss shows it. But 'industry' is used for a factory in Indian English ('he runs a small industry'), which this audience hears: drop it. shipment/annual/worker remain.",
+  "cycle2": "passed by round 3 over an earlier fail: Overrule R1. mill is a standard synonym for factory (paper mill, steel mill), and the gloss is their shared dictionary definition. Shipment, annual, worker cannot compete, so mill is the one defensible answer at L2."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:wi",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "certify -> certification is the verb-to-noun form; the options have other roots.",
+    "cycle": 3
+   },
+   {
+    "item": "item:wi",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: verb -> noun; confirmation belongs to confirm, not certify",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:wi",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "certify",
+  "d": "certification",
+  "wrong": [
+   "confirmation",
+   "applicant",
+   "subscription",
+   "publisher"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: certify -> certification is the verb-to-noun family; confirmation belongs to confirm, the rest are unrelated. Gloss names the right act. r2's fail gives only the relation name, no defect, and I find none.",
+  "cycle2": "fixed in round 3: certify -> certification is the right verb-to-noun family, and confirmation, applicant, subscription, publisher are other roots. But the gloss is the narrow enfranchisement sense ('...or bestowing a franchise on'), which an L3 child will misread (franchise = a chain or film series). Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:wx",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "minstrel = bard (travelling singer-poets, given as each other's synonyms); tango/duet/columnist do not compete.",
+    "cycle": 3
+   },
+   {
+    "item": "item:wx",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:wx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "minstrel",
+  "d": "bard",
+  "wrong": [
+   "tango",
+   "duet",
+   "columnist"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A lyric poet",
+  "cycle1": "passed by round 3 over an earlier fail: minstrel = bard (a travelling singer-poet); tango/duet/columnist are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r1's fail. Dictionaries and thesauri pair minstrel and bard as travelling poet-singers, and the bridge only claims 'means about the same as'. Both words are met at 11 in Robin Hood, Shakespeare ('the Bard') and fantasy stories, so not too obscure for L4. 'minstrel' on its own is the standard word for a medieval singer; the blackface sense belongs to the compound 'minstrel show' and is not the word's ordinary meaning. tango, duet, columnist do not compete. Gloss 'a lyric poet' is bard's sense."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:yy",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "hole = opening; peg fills a hole and a dent is a hollow, not an opening.",
+    "cycle": 3
+   },
+   {
+    "item": "item:yy",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; dent is a depression, not a hole",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:yy",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "hole",
+  "d": "opening",
+  "wrong": [
+   "peg",
+   "dent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An open or empty space in or between things",
+  "cycle1": "passed by round 3 over an earlier fail: hole = opening; screw/peg fill holes and a dent is a hollow, not an opening. Gloss right. r2's fail gives only the relation name, no defect, and I find none.",
+  "cycle2": "fixed in round 3: Side with r2's fail on safety, not on the link. hole = opening is right and the gloss fits, but 'screw' has a common crude slang sense and here sits next to 'hole' and 'peg', which turns an innocent set into innuendo for older children - the swear-word rule applies even in the innocent sense. Drop it; peg and dent remain (a peg fills a hole, a dent is a hollow, neither is an opening)."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:z2",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "board = committee in the governing-group sense the gloss shows; the plank-sense traps are not groups.",
+    "cycle": 3
+   },
+   {
+    "item": "item:z2",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms (governing board); skate and bulletin are compound-word traps (skateboard, bulletin board); board=committee sense is harder for younger players",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:z2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "board",
+  "d": "committee",
+  "wrong": [
+   "skate",
+   "roller",
+   "bulletin",
+   "fulcrum"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A special group delegated to consider some matter",
+  "cycle1": "passed by round 3 over an earlier fail: board = committee in the governing-body sense the gloss shows ('a board/committee of examiners'); skate/roller/bulletin/fulcrum pull on the plank sense but none means a group. r2's 'loose' names no competing answer.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r1's fail. Thesauri give committee as a synonym of board in the governing-body sense ('a board/committee of examiners'), and the bridge claims only 'means about the same as'. Indian children know exactly this sense from 'the CBSE board'. skate, roller, bulletin, fulcrum pull on the plank sense (bulletin is a goes-with trap, as the lesson teaches), but none means a group, so committee is the only defensible answer. Gloss is the right sense."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:zh",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link (a): a festival is one kind of celebration, a special, organised, often religious or cultural one (Oxford: 'a day or period of celebration'). A birthday party or a win is a celebration but not a festival, so d is narrower than c, and 'Same meaning' teaches the 'A kind of' link under the wrong name. It also leaves 'graduation', another occasion that is celebrated, nearer than a clean distractor should be.",
+    "cycle": 3
+   },
+   {
+    "item": "item:zh",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: near synonyms; graduation is a kind of occasion, not a synonym",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:zh",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "celebration",
+  "d": "festival",
+  "wrong": [
+   "supper",
+   "graduation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A day or period of time set aside for feasting and celebration",
+  "cycle1": "fixed in round 3: celebration = festival is sound. Agree 'feast' (a feast day) and 'ceremony' are defensible: drop both. supper/graduation remain.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r1's fail. Thesauri list festival among the synonyms of celebration, and the bridge claims only 'means about the same as'; at L2 that is the right level of precision. 'graduation' is the finishing of a course (its ceremony may be celebrated, but the word does not mean celebration), and supper is a meal, so festival is the one defensible answer. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:zi",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "bard = minstrel; maiden/epic/ballad are not people of that kind.",
+    "cycle": 3
+   },
+   {
+    "item": "item:zi",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:zi",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "bard",
+  "d": "minstrel",
+  "wrong": [
+   "maiden",
+   "epic",
+   "ballad"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A singer of folk songs",
+  "cycle1": "fixed in round 3: bard = minstrel is sound. 'writer' is arguable (the Bard, a poet, is a writer): drop it. maiden/epic/ballad remain.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r1's fail, for the same reasons as item:wx: bard and minstrel are given as each other's synonyms (travelling poet-singers), the words are met at 11 in Robin Hood and Shakespeare, and plain 'minstrel' is the medieval word, not the 'minstrel show'. maiden, epic, ballad (what a minstrel sings) do not compete. Gloss 'a singer of folk songs' is minstrel's sense."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:zp",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "circumference = girth (the distance around, as of a tree); the body-sense gloss is hidden and no option competes.",
+    "cycle": 3
+   },
+   {
+    "item": "item:zp",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: loose synonym; girth usually means the measurement round a body/trunk, perimeter would be cleaner; mild body-size connotation",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:zp",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "circumference",
+  "d": "girth",
+  "wrong": [
+   "vertices",
+   "longitude",
+   "median",
+   "vertex"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "passed by round 3 over an earlier fail: circumference = girth (the distance around); vertices/longitude/median/vertex are not. The gloss shows the around-a-body case of that sense. r2's fail gives only the relation name, no defect, and I find none.",
+  "cycle2": "fixed in round 3: Partly side with r1. circumference = girth holds in the 'distance around something' sense (the girth of a tree trunk; thesauri list girth under circumference), and vertex/vertices, longitude, median do not compete (the vertex/vertices duplicate is untidy, not a second answer). But the gloss shown, 'the distance around a person's body', is the narrow body-size sense - the one everyday English uses for fatness ('a man of some girth') - not the geometric sense the clue word needs. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:10t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "flip = somersault (MW: a somersault, especially in the air); upside/posit do not compete.",
+    "cycle": 3
+   },
+   {
+    "item": "item:10t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms (gymnastic flip); upside is an upside-down trap, posit is obscure",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:10t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "flip",
+  "d": "somersault",
+  "wrong": [
+   "upside",
+   "posit"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An acrobatic feat in which the feet roll over the head (either forward or backward) and return",
+  "cycle1": "passed by round 3 over an earlier fail: flip = somersault (the gloss shows the acrobatic sense); vert/upside/posit are odd but none is a synonym. r2's complaint is about style, not a second answer.",
+  "cycle2": "fixed in round 3: Partly side with r1. flip = somersault is a dictionary sense (MW: a somersault, especially in the air; children say 'do a flip'), the gloss pins it, and no option is a synonym. But 'vert' reads to most children as a fragment of 'vertical' or a misspelling, the same class as 'ness' and 'gaster' that cycle 1 dropped from a spelling app. Drop it; upside and posit remain, neither a synonym ('posit' is advanced but harmless as a distractor)."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:13s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "significance = meaning (the significance of a symbol); prestige is not, and meaningful/notable are adjectives.",
+    "cycle": 3
+   },
+   {
+    "item": "item:13s",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms; notable/meaningful are adjective traps; prestige is status, not significance",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:13s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "significance",
+  "d": "meaning",
+  "wrong": [
+   "prestige",
+   "meaningful",
+   "notable"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The message that is intended or expressed or signified",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: significance = meaning (the significance of a symbol), the sense the gloss shows. greatness and prestige are not importance, and meaningful/notable are adjectives.",
+  "cycle2": "fixed in round 3: Partly side with r1. significance = meaning is a standard sense ('the significance of a symbol'), and the gloss shows it. But significance's commoner sense is importance, and 'greatness' is close enough to importance ('the greatness/significance of the discovery') for a careful 11-year-old to defend. Drop it. prestige (reputation), meaningful and notable (adjectives) remain, none a noun meaning the same."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:15i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "bookshelf = bookcase in everyday use; alcove/workspace/attic are places.",
+    "cycle": 3
+   },
+   {
+    "item": "item:15i",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: synonyms",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:15i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "bookshelf",
+  "d": "bookcase",
+  "wrong": [
+   "alcove",
+   "workspace",
+   "attic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A piece of furniture with shelves for storing books",
+  "cycle1": "fixed in round 3: Agree with both rounds that 'lena' is a lowercase proper name used as filler. bookshelf = bookcase holds in the common sense (Cambridge: 'a shelf, or a set of shelves, for books'); dropping 'lena' leaves alcove/workspace/attic.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r1's fail. Cambridge defines bookshelf as 'a shelf, or a set of shelves, for books' and in everyday speech a bookshelf is the piece of furniture; the bridge claims only 'means about the same as'. Even a child who reads bookshelf as one shelf of a bookcase lands on the same answer, so no competing answer exists: alcove, workspace, attic are places. Gloss right."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "item:17n",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "blunt is the opposite of sharp; sour and strong are not opposites.",
+    "cycle": 3
+   },
+   {
+    "item": "item:17n",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "note: opposites",
+    "cycle": 3
+   }
+  ],
+  "unit": "item:17n",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "sharp",
+  "d": "blunt",
+  "wrong": [
+   "sour",
+   "strong"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having an edge or point that is not sharp",
+  "cycle1": "fixed in round 3: Side with r1 over r2: thesauri give 'smooth' as an opposite of sharp (sharp vs smooth edges, taste), so two answers fit for an 8-year-old. sharp/blunt is the canonical pair; dropping 'smooth' leaves sour/strong/thick.",
+  "cycle2": "fixed in round 3: Side with r1 on 'thick'. sharp/blunt is the canonical pair and the gloss is right, but 'thick' is a standard opposite of sharp in the mind sense (sharp-witted vs thick-headed), and in that sense it is a playground insult for being slow. Drop it; sour (a sharp taste, a near-synonym) and strong remain, neither an opposite."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:0",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A baker is the one who bakes. Word families also fits but is not a better description.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:0",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:0",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "bake",
+  "b": "baker",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a baker is exactly who bakes. That the agent noun is also derived from the verb does not make the 'Who does it' link false; the stem only needs its link to be true.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a baker is exactly the person who bakes. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:1",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A teacher is the one who teaches.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:1",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:1",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "teach",
+  "b": "teacher",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a teacher is exactly who teaches. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a teacher is exactly the person who teaches. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:2",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A sailor is the one who sails.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:2",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:2",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "sail",
+  "b": "sailor",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a sailor is exactly who sails. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a sailor is exactly the person who sails. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:3",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A painter is the one who paints.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:3",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:3",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "paint",
+  "b": "painter",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a painter is exactly who paints. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a painter is exactly the person who paints. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A farmer is the one who farms.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:4",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:4",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "farm",
+  "b": "farmer",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a farmer is exactly who farms. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a farmer is exactly the person who farms. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:5",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A singer is the one who sings.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:5",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:5",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "sing",
+  "b": "singer",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a singer is exactly who sings. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a singer is exactly the person who sings. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "An actor is the one who acts.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:6",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:6",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "act",
+  "b": "actor",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: an actor is exactly who acts. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and an actor is exactly the person who acts. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:7",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A driver is the one who drives.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:7",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:7",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "drive",
+  "b": "driver",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a driver is exactly who drives. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a driver is exactly the person who drives. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:8",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A swimmer is the one who swims.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:8",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:8",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "swim",
+  "b": "swimmer",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a swimmer is exactly who swims. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a swimmer is exactly the person who swims. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:9",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "An inventor is the one who invents.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:9",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:9",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "invent",
+  "b": "inventor",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: an inventor is exactly who invents. Being derived from the verb does not make 'Who does it' false.",
+  "cycle2": "passed by round 3 over an earlier fail: Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and an inventor is exactly the person who invents. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair."
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n0",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Another link describes this pair better. 'cook' is just as commonly a NOUN, the person who cooks, so cook : chef reads most naturally as two people-words: Same meaning (thesauri give chef = cook), or a chef is a kind of cook (a professional one). As the A:B example it teaches 'synonym' and would steer a child to the synonym distractor (e.g. 'fragrance' in item:9p, perfume -> perfumer). Use a pair whose first word is only a verb.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n0",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Same meaning · cook is also a noun for the person, and a cook and a chef are near synonyms, so Same meaning is defensible",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n0",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "cook",
+  "b": "chef",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n1",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A pilot is the person who flies the aircraft; pilot reads first as a person-noun.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n1",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "a pilot flies the plane",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n1",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "fly",
+  "b": "pilot",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n2",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A doctor is a person who heals (makes sick people well); common, kid-safe words.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n2",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "a doctor heals; fine",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n2",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "heal",
+  "b": "doctor",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n3",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A thief is a person who steals; story-common and kid-safe.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n3",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "a thief steals; fine",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n3",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "steal",
+  "b": "thief",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A tutor is a person who teaches. Minor: tutor is also a verb, but the person reading dominates.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n4",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Same meaning · tutor is also a verb meaning to teach, so teach/tutor read as Same meaning too",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n4",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "teach",
+  "b": "tutor",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n5",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A mechanic is a person who repairs machines.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n5",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "a mechanic repairs (machines); fine",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n5",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "repair",
+  "b": "mechanic",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A waiter is a person who serves food at tables.",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n6",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "a waiter serves; fine",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n6",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "serve",
+  "b": "waiter",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ },
+ {
+  "why": "cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)",
+  "verdicts": [
+   {
+    "item": "stem:who:n7",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "A lifeguard is a person who rescues swimmers in danger (Cambridge: 'save them if they are in danger').",
+    "cycle": 3
+   },
+   {
+    "item": "stem:who:n7",
+    "round": 2,
+    "verdict": "pass",
+    "reason": "a lifeguard rescues swimmers; fine",
+    "cycle": 3
+   }
+  ],
+  "unit": "stem:who:n7",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "rescue",
+  "b": "lifeguard",
+  "cycle3": "new pair: a person word not built from the verb, so Word families cannot also fit"
+ }
+]

@@ -725,8 +725,26 @@
      on a phone, then the stop card and a 2x2 tile block side by side. */
   .sb-home-r2{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;align-items:start}
   .sb-home-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-  /* one card in row 2 now — "You are here" — and it takes the row (owner, 4 Oct 2026: the training
-     journey card left Home; it lives in Practice) */
+  /* TWO journey cards again (owner, 10 Oct 2026 — the road to 4.5, P0.2): "You are here" and the second card
+     (homeSecondCard: the mistakes deck when due, else the Analogy Atlas, or the Spelling Gym while analogies are
+     gated) side by side from 900px — Bee's row the family's shell REF measures (547px each at 1280) — one height */
+  @media (min-width:900px){ .sb-home-r2{grid-template-columns:minmax(300px,1fr) minmax(300px,1fr);align-items:stretch} }
+  .sb-home-second{display:flex;flex-direction:column;align-items:stretch;width:100%;padding:0;text-align:left;overflow:hidden;
+    background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-rest);color:var(--ink,var(--text))}
+  .sb-home-second .s2-band{position:relative;display:grid;place-items:center;height:var(--hh,150px);flex:none;color:#fff;overflow:hidden}
+  .sb-home-second .s2-band::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.2) 1.6px,transparent 1.8px);background-size:18px 18px}
+  .sb-home-second .s2-band::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 20% 0%,rgba(255,255,255,.22),transparent 60%)}
+  .sb-home-second .s2-band>*{position:relative;z-index:1}
+  .sb-home-second .s2-ic{display:grid;place-items:center;width:76px;height:76px;border-radius:22px;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35)}
+  .sb-home-second .s2-art{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.3))}
+  .sb-home-second .s2-body{display:flex;flex-direction:column;flex:1;min-width:0;padding:11px 15px 14px}
+  .sb-home-second .s2-title{display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1.14;margin:2px 0 3px}
+  .sb-home-second .s2-sub{display:block;font-size:13px;line-height:1.4;color:var(--muted);margin-bottom:12px}
+  .sb-home-second .s2-chips{display:flex;flex-wrap:wrap;gap:5px;margin:-4px 0 12px}
+  .sb-home-second .s2-chip{font-family:var(--mono,monospace);font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface2);color:var(--ink,var(--text))}
+  /* an OUTLINED pill, never filled: Continue is the one filled button on Home */
+  .sb-home-second .s2-go{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:9px 15px;
+    border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);font-weight:800;font-size:13.5px;color:var(--ink,var(--text))}
   /* ONE Continue, above the fold on a phone (FIX-BEE B1, family standard §2). The home keeps
      its look and its source order; below 640px the two rows dissolve (display:contents) into
      one column and Continue is moved up to sit straight under the greeting — at 390x844 it
@@ -794,13 +812,22 @@
   .sb-here-rail>i{flex:1;min-width:2px;border-radius:999px;background:var(--tint-deep,var(--surface2))}
   .sb-here-rail>i.d{background:var(--action,var(--accent))}
   .sb-here-rail>i.n{background:var(--treasure,#F0B429);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--treasure,#F0B429) 45%,transparent)}
-  @media (min-width:640px){ .sb-here{--hh:176px} }
-  @media (min-width:900px){
-    .sb-here{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);--hh:232px;--hz:160%}
-    .sb-here-body{padding:18px 20px;justify-content:center}
-    .sb-here-go{margin-top:14px}
-  }
+  /* "You are here" stands in half the row from 900px (P0.2), so it keeps the phone's shape there: the window over
+     the map on top, the words and Continue under it — the two journey cards share one band height (--hh) */
+  @media (min-width:640px){ .sb-here,.sb-home-second{--hh:176px} }
+  .sb-here .sb-home-mast{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;
+    font-size:11px;font-weight:800;line-height:1.5;background:color-mix(in srgb,var(--good,#1f9d57) 13%,transparent);color:var(--good-deep,#156B3B)}
+  :root[data-mode="dusk"] .sb-here .sb-home-mast{color:#9BE7BC}
   @media (prefers-reduced-motion:reduce){ .sb-here-dot{animation:none} }
+  /* THE WORD ATLAS's SUB-NAV — Atlas | Gym (owner, 10 Oct 2026; app3 atlasSubNav): the family's sub-page head, two
+     chips at the top of the Atlas map and of the Word Gym. The chip you are on is the raised one (aria-current),
+     never an accent fill — a filled chip would read as a second Continue. 44px targets for a thumb. */
+  .sb-subnav{display:flex;width:max-content;max-width:100%;gap:4px;padding:4px;margin:0 0 12px;border-radius:999px;
+    background:var(--surface2);box-shadow:inset 0 0 0 1px var(--line)}
+  .sb-subchip{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;min-width:96px;padding:0 18px;
+    border-radius:999px;font-family:var(--display);font-weight:800;font-size:14.5px;color:var(--muted);background:transparent}
+  .sb-subchip[aria-current="page"]{background:var(--paper,var(--bg2));color:var(--ink,var(--text));box-shadow:0 1px 3px rgba(20,12,40,.16),inset 0 0 0 1px var(--line)}
+  .sb-subchip:hover:not([aria-current="page"]){color:var(--ink,var(--text))}
   /* mobile chrome: bottom tab bar replaces the top nav; mode switcher collapses to a cycle button */
   .sb-tabbar{display:none}
   @media(min-width:640px) and (hover:hover){
@@ -817,7 +844,6 @@
     .sb-tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--paper,var(--bg2)) 94%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(7px + env(safe-area-inset-bottom,0px))}
     .sb-tabbar button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:800;padding:5px 2px;border-radius:10px;font-family:var(--ui,inherit)}
     .sb-tabbar button span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .sb-tabbar:has(> button:nth-child(7)) button{font-size:9.6px;padding:5px 0;letter-spacing:-.01em}
     .sb-tabbar button[aria-current="page"]{background:var(--chip,color-mix(in srgb,var(--accent) 12%,transparent))}
     .sb-toast{bottom:calc(78px + env(safe-area-inset-bottom,0px))!important;max-width:92vw}
     .sb-mob-hide{display:none!important}
@@ -2779,6 +2805,8 @@
   .bk-all{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:9px;
     background:#6B3F14;color:#fff;font-weight:800;font-size:12px}
   .bk-locked .bk-all{background:var(--surface2);color:var(--muted)}
+  /* locked: one quiet line, no plan name, no crown (T3; owner, 10 Oct 2026) */
+  .bk-lockline{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted)}
   .bk-books{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:172px}
   /* One continuous row on anything wider than a phone: the two authored halves
      collapse away and their spines become direct children of .bk-books. */
@@ -3549,6 +3577,7 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
        NOT boot scripts any more: boot-lazy.js loads them, in order, at the door of a game. -->
 <script defer src="trivia.js?v=20261010b"></script>
 <script defer src="advanced.js?v=20261010b"></script>
+<script defer src="trail-road.js?v=20261010b"></script>
 <script defer src="trail.js?v=20261010b"></script>
 </body>
 </html>

@@ -138,9 +138,25 @@
       if (stopOpen(hit.r, j)) { s.reg = hit.r.id; s.stop = parts[0]; if (parts[1] === 'learn') s.v = 'lesson'; else if (parts[1] === 'words') s.v = 'words'; } }
     try { render(); } catch (e) {} }
 
+  /* ------------------------------------------------------------------ the one word door's list */
+  /* EVERY word an item puts on screen — C, the answer and each wrong answer — passes kidSafe for THIS child
+     (app3's door to kid-safe.js: its families, the stigma scan of the word and its gloss, and the under-eleven
+     list). An item that fails is never asked: not in a stop, a level check, the clock or the Mock Analogy Bee
+     (the 4.5 brief, P0.7 — the Atlas was asking an eight-year-old about murder). tests/word-door-seeded.cjs. */
+  function itemWords(it) { return [it[2], it[3]].concat(it.slice(4).map((x) => String(x).split('|')[0])); }
+  /* remembered per item for this child's age (the Bee asks the whole pool every round) */
+  let okFor = '', okMemo = {};
+  function itemOK(id) { const A0 = D(), it = A0 && A0.items[id]; if (!it) return false; if (typeof W.kidSafe !== 'function') return true;
+    const c = kid(), key = c ? (c.age || '') + '|' + (c.ageBand || '') : '';
+    if (key !== okFor) { okFor = key; okMemo = Object.create(null); }
+    if (id in okMemo) return okMemo[id];
+    const G = A0.gloss || {};
+    return (okMemo[id] = itemWords(it).every((w) => { try { return !!W.kidSafe({ w, d: G[w] || '' }, c); } catch (e) { return true; } })); }
+  const safeIds = (ids) => (ids || []).filter(itemOK);
+
   /* ------------------------------------------------------------------ rounds */
   const PER = { practice: 8, check: 8, level: 10 };
-  function itemsFor(kind, hit, r) { const all = hit && hit.s ? hit.s.items : r.check; const seen = rec().seen;
+  function itemsFor(kind, hit, r) { const all = safeIds(hit && hit.s ? hit.s.items : r.check); const seen = rec().seen;
     const n = PER[kind] || 8; const sr = hit && hit.s ? stopRec(hit.s.id) : regRec(r.id);
     if (kind === 'practice') { const k = sr.prac = (sr.prac || 0) + 1; const off = (k * n) % Math.max(1, all.length); return [...Array(Math.min(n, all.length))].map((_, i) => all[(off + i) % all.length]); }
     /* evidence is on items this child has not answered before, wherever they can be found */
@@ -204,7 +220,7 @@
     const lvHi = r.lv[1]; const pool = []; const A0 = D();
     regions().forEach((rg) => { if (rg.lv[0] <= lvHi) { rg.stops.forEach((st) => pool.push(...st.items)); } });
     (A0.games || []).forEach((id) => { const it = A0.items[id]; if (it && it[1] <= lvHi + 1) pool.push(id); });
-    const seed = day() + '|clock|' + (rec().n++); const ord = perm(seed, pool.length).map((i) => pool[i]);
+    const safe = safeIds(pool); const seed = day() + '|clock|' + (rec().n++); const ord = perm(seed, safe.length).map((i) => safe[i]);
     s.run = { kind: 'clock', ids: ord, seed, i: 0, right: 0, asked: 0, paid: 0, e0: (W.earnedSoFar ? earnedSoFar() : 0), log: [], n: ord.length, opts: 4, phase: 'pick', left: CLOCK_MS, reg: r.id };
     s.v = 'run'; prep(s.run); store(); render(); runClock(s.run); }
   function clockAdd(ms) { const g = S().run; if (g) g.left = Math.max(0, g.left + ms); }
@@ -442,10 +458,12 @@
     else if (k === 'name' && step.k === 'name' && ls.pk.name == null) { const o = nameOpts(L, st[1]); if (!(+n >= 0 && +n < o.lines.length)) return; ls.pk.name = +n; try { sfx(o.ord[+n] === 0 ? 'correct' : 'wrong'); } catch (e) {} }
     else if (k === 'try' && step.k === 'try' && ls.pk.tr == null) { const o = tryOpts(L, st); if (!(+n >= 0 && +n < o.opts.length)) return; ls.pk.tr = +n; try { sfx(o.ord[+n] === 0 ? 'correct' : 'wrong'); } catch (e) {} }
     render(); }
+  /* a word whose library meaning a reviewer read as the wrong sense for its pair shows this instead (analogy-review, glossHeld) */
+  const HELD_LINE = 'More than one meaning \u2014 the link shows which one.';
   function wordsView() { const s = S(); const hit = stopById(s.stop); if (!hit || !hit.s) { s.v = 'map'; return mapView(); }
-    const L = lesson(hit.s.lesson); const A0 = D(); const seen = new Set(); const list = [];
-    for (const id of hit.s.items) { const it = A0.items[id]; if (!it) continue; for (const w of [it[2], it[3]]) { if (seen.has(w)) continue; seen.add(w); list.push(w); } if (list.length >= 24) break; }
-    const rows = list.map((w) => `<li class="anl-word"><button class="anl-say" data-act="anl" data-arg="say:${escA(w)}" aria-label="${escA('Hear ' + w)}">${ic('volume', 16)}</button><span class="anl-ww">${esc(w)}</span><span class="anl-wd">${esc(A0.gloss[w] || '')}</span></li>`).join('');
+    const L = lesson(hit.s.lesson); const A0 = D(); const seen = new Set(); const list = []; const held = new Set(A0.glossHeld || []);
+    for (const id of safeIds(hit.s.items)) { const it = A0.items[id]; if (!it) continue; for (const w of [it[2], it[3]]) { if (seen.has(w)) continue; seen.add(w); list.push(w); } if (list.length >= 24) break; }
+    const rows = list.map((w) => `<li class="anl-word"><button class="anl-say" data-act="anl" data-arg="say:${escA(w)}" aria-label="${escA('Hear ' + w)}">${ic('volume', 16)}</button><span class="anl-ww">${esc(w)}</span><span class="anl-wd">${esc(A0.gloss[w] || (held.has(w) ? HELD_LINE : ''))}</span></li>`).join('');
     return `<div class="anl-page">${head('Meet the words', esc(L.title + ' · ' + hit.r.name), 'anl', hit.r.name, lic(L.id, 20))}
       <div class="anl-card"><p class="anl-note">The words you will link in this stop. Read each one and hear it; knowing a word is half of every analogy.</p><ul class="anl-words">${rows}</ul>
       <div class="anl-btns"><button class="anl-btn main" data-act="anl" data-arg="practice">${ic('pencil', 16)} Start practice</button></div></div></div>`; }
@@ -534,21 +552,32 @@
 
   /* ================================================================== MOCK ANALOGY BEE */
   /* Seven spellers and you, one analogy each a round. Round one sits nobody down. A miss after that
-     and you sit down; the last speller standing wins. The rivals are the Mock Spelling Bee's cast,
-     and whether a rival is right is a hash of the bee, the round and the rival — never a roll. */
-  const CAST = [['pixel', 'Pixel', 0.9], ['koi', 'Koi', 0.88], ['beaker', 'Beaker', 0.86], ['panda', 'Panda', 0.84], ['comet', 'Comet', 0.82], ['astro', 'Astro', 0.8], ['melody', 'Melody', 0.78]];
+     and you sit down; the last speller standing wins. Whether a rival is right is a hash of the bee, the
+     round and the rival — never a roll.
+     THE RIVALS ARE MOCK BEE'S CAST (owner, 10 Oct 2026 — the road to 4.5, P0.9/P0.10: "Mock Analogy Bee seats come
+     from MOCKBEE.rivals() — Pip, Nova, Rafi… same faces, same names everywhere"). This file used to keep its own
+     seven and name them from the avatar catalogue, so the panda Mock Bee calls Suki was "Panda" here and Pip was
+     "Pixel Pal". Now the seats are MOCKBEE.rivals(): Mock Bee's names, and its faces — a rival whose face is the
+     child's own wears that rival's `alt`, exactly as on the Mock Bee stage. The seven are the run of the cast
+     (ordered by the cast's own `lvl`) nearest the bee's level; a rival's chance on an analogy comes from the same
+     profile's `voc` — how well they know what words mean — so Theo, who asks for every definition, is the one to
+     beat here, and Pip, who never asks, is not. */
+  const SEATS = 7;
+  const skillOf = (r) => 0.72 + 0.22 * (+r.voc || 0.5);
   const LVL_LO = { easy: 1, medium: 3, hard: 5, champ: 7 };
   function beeLevel() { let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {}
     if (LVL_LO[L]) return LVL_LO[L]; const h = here(); return h ? h.r.lv[0] : 1; }
-  function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); return [...ids]; }
+  function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); return safeIds([...ids]); }
   const B = () => state.anlBee;
   function openBee() { stopClock(); state.anlBee = { phase: 'lobby' }; state.nav = 'anlbee'; state.screen = 'app'; state.game = null; try { render(); } catch (e) {} }
-  const SPARE = ['scopey', 'samurai', 'crystal', 'neko', 'ninja'];
-  /* a rival never wears the child's own face: the next spare in the cast takes that seat */
-  function castFor() { const c = kid(); const mine = c && c.avatar; const used = new Set(CAST.map((x) => x[0]));
-    return CAST.map(([id, name, sk]) => { if (id !== mine) return [id, name, sk]; const alt = SPARE.find((x) => !used.has(x) && x !== mine && (!W.SB_AVATARS || SB_AVATARS.byId[x])) || id; used.add(alt); return [alt, name, sk]; }); }
-  function beeStart() { const lo = beeLevel(); const seed = day() + '|bee|' + (rec().n++); const names = castFor().map(([id, name, sk]) => {
-      let nm = name; try { if (W.SB_AVATARS && SB_AVATARS.byId[id]) nm = SB_AVATARS.byId[id].name || name; } catch (e) {} return { id, name: nm, sk, out: 0 }; });
+  /* the seven seats: [face, name, chance, rival id] from Mock Bee's cast, for the child on screen ([] until mockbee.js is in) */
+  function castFor(lo) { const c = kid(); const mine = (c && c.avatar) || 'bizzy';
+    const all = (W.MOCKBEE && typeof MOCKBEE.rivals === 'function') ? MOCKBEE.rivals(mine).slice().sort((a, b) => a.lvl - b.lvl) : [];
+    if (!all.length) return [];
+    const from = Math.max(0, Math.min(all.length - SEATS, Math.round(((lo || beeLevel()) - 1) / 2)));
+    return all.slice(from, from + SEATS).map((r) => [r.face, r.name, skillOf(r), r.id]); }
+  function beeStart() { if (!castFor().length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') beeStart(); }); } catch (e) {} return; }
+    const lo = beeLevel(); const seed = day() + '|bee|' + (rec().n++); const names = castFor(lo).map(([id, name, sk, rid]) => ({ id, rid, name, sk, out: 0 }));
     state.anlBee = { phase: 'turn', seed, lo, round: 1, field: names, me: { out: 0 }, used: {}, log: [], e0: (W.earnedSoFar ? earnedSoFar() : 0) };
     store(); beeAsk(); }
   function beeAsk() { const b = B(); const lv = Math.min(9, b.lo + Math.floor((b.round - 1) / 2)); const pool = beePool();
@@ -559,7 +588,7 @@
     b.picked = i; const ok = i === q.ans; b.log.push({ c: q.c, d: q.d, ok, w: q.opts[i] }); rec().seen[q.id] = Date.now();
     try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
     /* the rivals' turn: each standing rival is right with a chance that falls as the rounds climb */
-    b.calls = []; b.field.forEach((r) => { if (r.out) return; const p = r.sk - 0.035 * (b.round - 1); const right = (hash(b.seed + '|' + b.round + '|' + r.id) % 1000) / 1000 < p; b.calls.push({ r, right }); });
+    b.calls = []; b.field.forEach((r) => { if (r.out) return; const p = r.sk - 0.035 * (b.round - 1); const right = (hash(b.seed + '|' + b.round + '|' + (r.rid || r.id)) % 1000) / 1000 < p; b.calls.push({ r, right }); });
     if (b.round > 1) { b.calls.forEach((x) => { if (!x.right) x.r.out = b.round; }); if (!ok) b.me.out = b.round; }
     const standing = b.field.filter((r) => !r.out).length + (b.me.out ? 0 : 1);
     if (standing === 0) { /* everybody missed: the round runs again, nobody sits down */ b.calls.forEach((x) => { if (x.r.out === b.round) x.r.out = 0; }); if (b.me.out === b.round) b.me.out = 0; b.again = 1; } else b.again = 0;
@@ -572,7 +601,7 @@
     b.round++; beeAsk(); }
   /* out, or the last one standing: the rest is resolved at once from the same hash */
   function beeFinish() { const b = B(); let r = b.round;
-    while (b.field.filter((x) => !x.out).length > (b.me.out ? 1 : 0) && r < 40) { r++; b.field.forEach((x) => { if (x.out) return; const p = x.sk - 0.035 * (r - 1); if ((hash(b.seed + '|' + r + '|' + x.id) % 1000) / 1000 >= p) x.out = r; });
+    while (b.field.filter((x) => !x.out).length > (b.me.out ? 1 : 0) && r < 40) { r++; b.field.forEach((x) => { if (x.out) return; const p = x.sk - 0.035 * (r - 1); if ((hash(b.seed + '|' + r + '|' + (x.rid || x.id)) % 1000) / 1000 >= p) x.out = r; });
       if (!b.field.some((x) => !x.out)) { const last = b.field.filter((x) => x.out === r); last.forEach((x) => { x.out = 0; }); if (last.length === 1) break; } }
     const outAt = (x) => (x.out || 999); const myOut = b.me.out || 999;
     b.place = 1 + b.field.filter((x) => outAt(x) > myOut).length;
@@ -588,7 +617,9 @@
     const me = c && W.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 46) : '';
     const face = (id) => { try { return W.SB_AVATAR ? SB_AVATAR(id, 46) : ''; } catch (e) { return ''; } };
     const hd = (t, sub) => { try { return pageHead(t, '', sub || '', W.coinChip ? coinChip() : '', 'openAnalogies', 'Analogies', null, ic('trophy', 20)); } catch (e) { return '<h1>' + esc(t) + '</h1>'; } };
-    if (b.phase === 'lobby') { const cast = castFor().map(([id, name]) => { let nm = name; try { if (W.SB_AVATARS && SB_AVATARS.byId[id]) nm = SB_AVATARS.byId[id].name || name; } catch (e) {} return `<li class="anl-rival">${face(id)}<span>${esc(nm)}</span></li>`; }).join('');
+    if (b.phase === 'lobby') { const seats = castFor();
+      if (!seats.length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') render(); }); } catch (e) {} }
+      const cast = seats.map(([id, name]) => `<li class="anl-rival">${face(id)}<span>${esc(name)}</span></li>`).join('');
       const p = rec().bee; const ord = (n) => n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th');
       return `<div class="anl-page">${hd('Mock Analogy Bee', 'One analogy each, round by round')}
         <div class="anl-card anl-center"><ul class="anl-field">${cast}<li class="anl-rival me">${me}<span>You</span></li></ul>
@@ -869,7 +900,7 @@
 
   /* ------------------------------------------------------------------ the door */
   const API = { open, openRoute, view, beeView, openBee, stop, route, act, beeAct, beeBest, toolView, openTool, toolRoute, toolAct, here: () => { const h = here(); return h ? { region: h.r.id, name: h.r.name } : null; },
-    _question: question, _bridge: bridgeQ, _linkLine: linkLine };
+    _question: question, _bridge: bridgeQ, _linkLine: linkLine, _safeIds: safeIds };
   W.SB_ANL = API;
   try { Object.assign(app, { anl: (a) => act(a), anlBee: (a) => beeAct(a), anlTool: (a) => toolAct(a), anlToolType: (v) => toolType(v), anlToolKey: (e) => toolKey(e) }); } catch (e) {}
   try { if (state.nav === 'analogy' || state.nav === 'anlbee' || state.nav === 'anltool') render(); } catch (e) {}

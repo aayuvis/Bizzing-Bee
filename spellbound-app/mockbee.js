@@ -63,7 +63,7 @@
     { id: 'panda', alt: 'neko', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, voc: 0.62, vtell: 'steady here too', spec: null, pace: 1400,
       note: 'Unshakeable. The lights do nothing to her.', vary: .07,
       tell: 'breathes out, then spells' },
-    { id: 'comet', alt: 'rocket', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not define at gunpoint', spec: null, pace: 700,
+    { id: 'comet', alt: 'rocket', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not tell you the meaning of', spec: null, pace: 700,
       note: 'Fastest here in round one. Watch him late on.', vary: .16,
       tell: 'rocks on his heels' },
     { id: 'astro', alt: 'saturn', lvl: .44, name: 'Mira', age: 12, skill: .70, nerve: .66, voc: 0.79, vtell: 'Greek gives her the meaning before the spelling', spec: /greek/i, pace: 1250,
@@ -84,7 +84,9 @@
   ];
   /* the face a rival wears in this hall: their own, unless it is the child's (see `alt`) */
   function myFace() { try { const g = state.mb; return (g && g.avatar) || (active() || {}).avatar || 'bizzy'; } catch (e) { return 'bizzy'; } }
-  function faceOf(b) { return b && b.id === myFace() ? b.alt : (b && b.id); }
+  /* `mine` names the face to avoid when the caller knows it better than the hall does (Mock Analogy Bee seats the same
+     cast for the child on screen, whatever bee state.mb last held) */
+  function faceOf(b, mine) { return b && b.id === (mine || myFace()) ? b.alt : (b && b.id); }
   const botById = id => BOTS.find(b => b.id === id);
 
   /* ---------------- the size of a bee: by age band (§4.1) ----------------
@@ -1869,8 +1871,11 @@
     view: () => { const g = mb(); if (!g) return viewLobby();
       return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : g.view === 'family' ? viewFamily() : viewLobby(); },
     stats: () => prog(),
-    /* the cast, for the Atlas duel (trail.js): one table of rivals, not a copy (games spec §2.5/§4.7) */
-    rivals: () => BOTS.map(b => ({ id: b.id, name: b.name, lvl: b.lvl, nerve: b.nerve, spec: b.spec, vary: b.vary, face: (typeof faceOf === 'function' ? faceOf(b) : b.id) })),
+    /* THE CAST — one table of rivals, not a copy (games spec §2.5/§4.7): the Atlas duel (trail.js) and Mock Analogy Bee
+       (analogy.js — owner, 10 Oct 2026, P0.9/P0.10: "same faces, same names everywhere") both seat it. `face` is never
+       the child's own avatar (faceOf/alt); pass `mine` to say whose face that is. `voc` is how well a rival knows what
+       words MEAN, which is what an analogy asks. */
+    rivals: (mine) => BOTS.map(b => ({ id: b.id, name: b.name, age: b.age, lvl: b.lvl, nerve: b.nerve, voc: b.voc, spec: b.spec, vary: b.vary, face: faceOf(b, mine) })),
     /* the Play card's words, from the bee as it is now (the card itself is the lineup's) */
     card: () => { const c = active() || {}; const B = BANDS[bandKey(c)]; const p = prog();
       return { title: 'Mock Spelling Bee', promise: B.rivals + ' rivals, one microphone, eight minutes. Ask the pronouncer anything.',

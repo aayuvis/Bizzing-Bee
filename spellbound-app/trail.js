@@ -191,18 +191,10 @@
     } catch (e) {}
   };
   function availableIn(u, lap) { if (course() === 'exp') return lap === 1 || !!(doneMap(active())[u.id] || {})[lap - 1] === false ? lap === 1 : true; return (u.laps || [u.lap || 1]).includes(lap); }
-  function seq(c) { // ordered nodes for the current lap: units + checkpoint markers every 4th
-    const lap = lapOf(c); const out = [];
-    for (const act of actsOf(course())) {
-      let n = 0;
-      for (const id of act.units) { const u = unit(id);
-        if (course() === 'honey' && !(u.laps || [u.lap || 1]).includes(lap)) continue;
-        out.push({ kind: 'unit', u, act: act.id }); n++;
-        if (n % (T().rules.checkpointEvery || 4) === 0) out.push({ kind: 'chk', id: act.id + ':' + n, act: act.id });
-      }
-    }
-    return out;
-  }
+  /* ordered nodes for the current lap: units + checkpoint markers every 4th. The road is trail-road.js's
+     (SB_TRAIL_ROAD.nodes) — the ONE count the board, Home's "Stop n of N" and My Feed's place cards all
+     read (the 4.5 brief, P0.14), so no two of them can disagree about how long a region is. */
+  function seq(c) { return window.SB_TRAIL_ROAD.nodes(T(), course(), lapOf(c)); }
   /* a UNIT opens the road behind it at Practice >= PGATE (or a legacy quiz pass);
      a CHECKPOINT is still its quiz — the every-4th-stop consolidation stays a quiz */
   const passedNode = (c, node) => node.kind === 'unit'
@@ -1710,15 +1702,16 @@
      A child without the Advanced Pack used to meet two big locked panels under the Honey map —
      the Advanced Rounds and Ultra, each over a blurred board with "Show a grown-up" and "Look at
      the map". The owner chose one quiet line instead: the child's Atlas is the continent they
-     can walk, and under it a single sentence, "More continents come with the Advanced Pack",
-     with one "Show a grown-up" — the same door as before (atlasAdvDoor → ultraUpsell → the
-     grown-up PIN; the pack's page is drawn only behind it). No price, no boards, no peek, and
-     never the words "ask a grown-up" (FIX-BEE v2 T3, tests/trust-v2.cjs). A region address
-     (#/atlas/exp/…, a stop) still lands on the same door. Guard: tests/atlas-layout.cjs. */
+     can walk, and under it a single sentence, "More continents come with the Advanced Pack".
+     NO DOOR ON THE CHILD'S ATLAS (owner, 10 Oct 2026 — the road to 4.5, P0.29: "Remove the last
+     'Show a grown-up' doors from the child Atlas; one quiet line in the Parent Zone"): the line is
+     words only, and the door to the pack is one quiet line in the Parent Zone, behind the PIN
+     (app3 advParentLine → ultraUpsell). No price, no boards, no peek, and never the words "ask a
+     grown-up" (FIX-BEE v2 T3, tests/trust-v2.cjs). A region address (#/atlas/exp/…, a stop) still
+     lands on the PIN-guarded door (atlasAdvDoor). Guard: tests/atlas-layout.cjs. */
   function advLine() {
-    return `<div class="atlas-more" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 4px;padding:10px 12px 10px 14px;border-radius:14px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
-      <span style="flex:1;min-width:190px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--muted)">${iconSVG('lock', 14)} More continents come with the Advanced Pack</span>
-      <button data-act="atlasAdvDoor" style="min-height:44px;padding:0 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Show a grown-up</button></div>`;
+    return `<div class="atlas-more" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 4px;padding:12px 14px;border-radius:14px;background:var(--bg2);box-shadow:0 0 0 1px var(--line)">
+      <span style="flex:1;min-width:190px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--muted)">${iconSVG('lock', 14)} More continents come with the Advanced Pack</span></div>`;
   }
   /* the door: the pack's own page, behind the PIN. app.openAdvanced returns silently while
      advanced.js is not in, so go through app3's ultraUpsell, which waits for it and falls back
@@ -1734,7 +1727,9 @@
     const x = expOk ? actSections(c, 'exp') : null;
     const advBoard = expOk ? atlasBoard(c, 'exp') : '';
     state.trailCourse = 'honey';
+    /* the Word Atlas's sub-nav, Atlas | Gym (owner, 10 Oct 2026: the Word Gym is its second sub-page — app3 atlasSubNav) */
     return `<div style="${RISE()}max-width:980px;margin:0 auto">
+      ${typeof atlasSubNav === 'function' ? atlasSubNav('atlas') : ''}
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
         ${atlasPills(c)}</div>

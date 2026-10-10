@@ -89,15 +89,26 @@ if (cmd === 'ship') {
   for (const [id, it] of Object.entries(A.items)) { const s = shipped['item:' + id]; if (!s) continue;
     const recipe = {}; it.slice(4).forEach((x) => { const [w, k] = String(x).split('|'); recipe[w] = k || 'a'; });
     items[id] = [it[0], it[1], it[2], it[3]].concat(s.wrong.map((w) => w + '|' + (recipe[w] || 'a')));
-    if (!s.glossHidden && A.gloss[it[3]]) gloss[it[3]] = A.gloss[it[3]]; }
+  }
+  /* every word a shipped item uses keeps the library meaning it carried (the meaning its word card shows everywhere in Bee),
+     except a word whose gloss a round-3 reviewer hid as the wrong sense in ANY item: that word shows no gloss anywhere */
+  const hidden = new Set(C.flatMap((c) => c.rows).filter((r) => r.gloss === 'hide' && /^item:/.test(r.item)).map((r) => (A.items[r.item.slice(5)] || [])[3]).filter(Boolean));
+  for (const it of Object.values(items)) for (const w of [it[2], it[3]]) if (!hidden.has(w) && A.gloss[w]) gloss[w] = A.gloss[w];
+  A.glossHeld = [...hidden].sort();
   A.lessons.forEach((L) => { ['title', 'idea', 'bridge', 'spot', 'trap'].forEach((f) => { const s = shipped['lesson:' + L.id + ':' + f]; if (s) L[f] = s.text; });
     L.stems = (L.stems || []).filter((_, i) => shipped['stem:' + L.id + ':' + i])
-      .concat(Object.values(shipped).filter((u) => u.kind === 'stem' && u.unit.indexOf('stem:' + L.id + ':n') === 0).map((u) => [u.a, u.b].concat(u.rel && u.rel !== L.rels[0] ? [u.rel] : []))); });
+      .concat(Object.values(shipped).filter((u) => u.kind === 'stem' && u.unit.indexOf('stem:' + L.id + ':n') === 0).map((u) => [u.a, u.b, u.rel || L.rels[0]])); });
   const lessonsOk = A.lessons.every((L) => ['title', 'idea', 'bridge', 'spot', 'trap'].every((f) => shipped['lesson:' + L.id + ':' + f]));
-  A.regions.forEach((r) => { r.stops.forEach((st) => { st.items = st.items.filter((id) => items[id]); }); r.check = r.check.filter((id) => items[id]); });
+  /* a region asks with r.opts options, so an item the review left with fewer wrong answers leaves that region's stops and
+     check; a stop left with fewer than 16 items (a practice and a check that do not overlap) is removed from the map */
+  const gone = [];
+  A.regions.forEach((r) => { const enough = (id) => items[id] && items[id].length - 4 >= r.opts - 1;
+    r.stops.forEach((st) => { st.items = st.items.filter(enough); }); r.check = r.check.filter(enough);
+    r.stops = r.stops.filter((st) => { if (st.items.length >= 16) return true; gone.push(st.id + ' (' + st.items.length + ' reviewed items)'); return false; }); });
+  A.review_gaps = gone;
   A.games = (A.games || []).filter((id) => items[id]);
   A.items = items; A.gloss = gloss;
-  A.review = { ledger: 'analogy-review/analogy-review.json', shipped: Object.keys(items).length, lessonsOk };
+  A.review = { ledger: 'analogy-review/analogy-review.json', shipped: Object.keys(items).length, lessonsOk, stopsRemoved: gone };
   A.reviewed = lessonsOk;
   const head = src.slice(0, src.indexOf('window.SB_ANALOGY'));
   fs.writeFileSync(path.join(APP, 'analogy-data.js'), head + 'window.SB_ANALOGY = ' + JSON.stringify(A) + ';\n');
@@ -132,7 +143,9 @@ if (cmd === 'ship' || cmd === 'report') {
   const tf = fixes.filter((r) => r.fix_text); if (tf.length) { L.push('', '### Wording rewritten', ''); tf.forEach((r) => L.push('- **' + r.item + '**: ' + r.fix_text)); }
   L.push('', '## Every unit dropped', '', '| unit | why |', '|---|---|');
   dropped.forEach((d) => L.push('| ' + d.unit + ' | ' + String(d.why).replace(/\|/g, '/').replace(/\n/g, ' ').slice(0, 240) + ' |'));
-  L.push('', '## For the owner', '', '- Round 2 of cycle 1 failed the Shiva card on principle (a living, worshipped god as a "Legendary" collectible beside a historical pantheon), not on its words. Its words passed. The avatar\'s place in the packs is your decision (10 Oct: Shiva and Zeus stay, each with a respectful card); the reviewers were told not to judge it, and this note is here so you see the concern.', '- The data shown to a child is exactly what shipped: `analogy-data.js` was cut to the shipped items (same ids and words the reviewers read), with a gloss only where a reviewer read it and kept it.');
+  const D0 = (() => { try { const c = { window: {} }; vm.runInNewContext(fs.readFileSync(path.join(APP, 'analogy-data.js'), 'utf8'), c); return c.window.SB_ANALOGY; } catch (e) { return {}; } })();
+  if ((D0.review_gaps || []).length) L.push('', '## Stops removed from the map', '', 'A stop needs 16 reviewed items with enough wrong answers for its region (a practice and a check that never overlap). These fell short after the review and are off the map until more items are written and reviewed: ' + D0.review_gaps.join(', ') + '. Every region keeps at least three stops.');
+  L.push('', '## For the owner', '', '- Round 2 of cycle 1 failed the Shiva card on principle (a living, worshipped god as a "Legendary" collectible beside a historical pantheon), not on its words. Its words passed. The avatar\'s place in the packs is your decision (10 Oct: Shiva and Zeus stay, each with a respectful card); the reviewers were told not to judge it, and this note is here so you see the concern.', '- The data shown to a child is exactly what shipped: `analogy-data.js` was cut to the shipped items (same ids and words the reviewers read), with the library meaning for every word it uses, except a word whose gloss a round-3 reviewer hid as the wrong sense — that word shows no gloss anywhere (`glossHeld`).');
   fs.writeFileSync(path.join(DIR, 'REPORT.md'), L.join('\n') + '\n');
   console.log('wrote analogy-review/REPORT.md (' + L.length + ' lines)');
 }

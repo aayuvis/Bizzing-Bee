@@ -15,6 +15,14 @@
        an honest note;
      · the picture is the overview's painting — never a region panorama (0.6–1MB each), which
        would blow Home's first-screen budget (tests/first-load.cjs).
+   Added 10 Oct 2026 (owner — the road to 4.5, P0.16 and P0.2):
+     · beside Continue, a small "mastered this week" chip: words mastered ON EVIDENCE since Monday (c.mast — right on
+       two separate days), so 0 says 0; a word mastered weeks ago, or a carried-over legacy mark, does not count;
+     · the second journey card beside it: the Spelling Gym while nothing is due (and analogies are gated), the
+       MISTAKES DECK once a word missed on an earlier day is due — naming that word and not one missed today — and a
+       tap opens Your Revisions.
+     Proved by breaking (10 Oct 2026): the chip fed weekProgress().stops instead of .words → the "one this week" check
+     fails; homeDueWords counting today's misses → the deck check fails (2 words, "rhythm" named).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/home-here.cjs                         */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -104,6 +112,28 @@ async function atlas(pg) {
     await pg.click('.sb-content [data-act="goNext"]'); await pg.waitForTimeout(1500);
     const end = await pg.evaluate(() => ({ nav: state.nav, view: state.trailView || 'map', h: location.hash, note: [...document.querySelectorAll('body *')].some(e => e.children.length === 0 && /Every stop on Tier 1 is walked/.test(e.textContent)) }));
     ok(end.nav === 'trail' && end.view === 'map' && end.h === '#/atlas' && end.note, `${vp.n}/all walked: Continue opens the Atlas overview with an honest "all done" note (${end.h}, note: ${end.note})`);
+    /* mastered this week, and the second journey card (owner, 10 Oct 2026) */
+    await pg.evaluate(walk, 2); await pg.waitForTimeout(400);
+    const H = await pg.evaluate(async () => { const Wt = ms => new Promise(r => setTimeout(r, ms));
+      const c = active(); c.mast = {}; c.missed = []; save(); app.setNav('home'); await Wt(300);
+      const chip = () => { const e = document.querySelector('.sb-content .sb-here .sb-home-mast'); return e ? { t: e.textContent.trim(), n: +e.getAttribute('data-week-mastered'), inStrip: !!e.closest('.sb-home-where') } : null; };
+      const second = () => { const e = document.querySelector('.sb-content .sb-home-r2 > :nth-child(2)'); return e ? { kind: e.getAttribute('data-kind'), act: e.getAttribute('data-act'), text: e.innerText.replace(/\s+/g, ' ') } : null; };
+      const zero = chip(), s0 = second();
+      const now = Date.now(), today = mastDay();
+      c.mast = { necessary: { b: 2, d: today, due: today + 3, ok: 2, n: 2, mt: now }, separate: { b: 2, d: today - 30, due: today + 3, ok: 2, n: 2, mt: now - 40 * 864e5 },
+        rhythm: { b: 2, d: today, due: today, ok: 1, n: 1, leg: 1 } };
+      save(); render(); await Wt(200);
+      const one = chip();
+      c.missed = [{ w: 'necessary', ts: now - 3 * 864e5 }, { w: 'rhythm', ts: now - 60e3 }]; save(); render(); await Wt(200);
+      const s1 = second();
+      document.querySelector('.sb-content .sb-home-r2 > :nth-child(2)').click(); await Wt(400);
+      const went = state.nav; c.mast = {}; c.missed = []; save(); app.setNav('home');
+      return { zero, one, s0, s1, went }; });
+    ok(H.zero && H.zero.inStrip && H.zero.n === 0 && H.zero.t === '0 words mastered this week', `${vp.n}: beside Continue, a "mastered this week" chip that says nought honestly ("${H.zero && H.zero.t}")`);
+    ok(H.one && H.one.n === 1 && H.one.t === '1 word mastered this week', `${vp.n}: a word mastered this week on evidence counts; one mastered 40 days ago and a carried-over mark do not ("${H.one && H.one.t}")`);
+    ok(H.s0 && H.s0.kind === 'gym' && H.s0.act === 'openGym', `${vp.n}: with nothing due (analogies gated) the second journey card is the Spelling Gym (${H.s0 && H.s0.kind})`);
+    ok(H.s1 && H.s1.kind === 'deck' && H.s1.act === 'openRevisions' && /1 word ready to revise/.test(H.s1.text) && /necessary/.test(H.s1.text) && !/rhythm/.test(H.s1.text) && H.went === 'revisions',
+      `${vp.n}: a word missed on an earlier day turns it into the mistakes deck — that word, not today's miss — and a tap opens Your Revisions (${H.s1 && H.s1.text.slice(0, 70)} → ${H.went})`);
     await ctx.close();
   }
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

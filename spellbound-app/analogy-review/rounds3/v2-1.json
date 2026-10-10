@@ -1,0 +1,357 @@
+[
+ {
+  "unit": "item:8",
+  "verdict": "pass",
+  "reason": "note: synonyms; freight = goods shipped"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "pass",
+  "reason": "note: synonyms; pouch is a small bag, close enough"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "pass",
+  "reason": "note: synonyms; manacle and pillory are hard words for 8-15; pillory is a different restraint, not a synonym"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "pass",
+  "reason": "note: swamp is a kind of wetland rather than an exact synonym, but clearly the best; habitat is a category, not a synonym"
+ },
+ {
+  "unit": "item:185",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:y",
+  "verdict": "pass",
+  "reason": "note: loose synonym: performing is broader than acting (singers, musicians perform too); acceptable but not tight"
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "pass",
+  "reason": "note: synonyms; probable is a near-miss (likely is not the same as possible) that some children will pick"
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "pass",
+  "reason": "note: maker/doer of it; fragrance is a synonym trap, not the same link"
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "pass",
+  "reason": "note: adjective -> noun"
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "pass",
+  "reason": "note: stronger degree"
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "pass",
+  "reason": "note: stronger degree"
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "pass",
+  "reason": "note: stronger degree; cold is the opposite trap"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "pass",
+  "reason": "note: kind of; zither is obscure but the category is clear; saxophone is a sibling, instrumental the wrong part of speech"
+ },
+ {
+  "unit": "item:e8",
+  "verdict": "pass",
+  "reason": "note: adjective -> noun; distractors exploitation and harassment are heavy adult concepts for 8-15 though not unsafe per se"
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:es",
+  "verdict": "pass",
+  "reason": "note: synonyms; round is a describing word, not a synonym"
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "pass",
+  "reason": "note: opposites; silent and calm are synonym traps"
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "pass",
+  "reason": "note: opposites; part-of-speech mismatch: arrive/leave are verbs, so exit (verb) pairs with enter, which is absent; entrance works only with exit as a noun"
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "pass",
+  "reason": "note: noun -> adjective; gummy describes a similar texture but is not derived from gelatin"
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "pass",
+  "reason": "note: verb -> noun; continuance is valid but less common than continuation"
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "pass",
+  "reason": "note: kind of"
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "pass",
+  "reason": "note: kind of"
+ },
+ {
+  "unit": "item:js",
+  "verdict": "pass",
+  "reason": "note: synonyms; extremity is a somewhat technical and loose synonym of limb (often means hands/feet)"
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "pass",
+  "reason": "note: synonyms, but citation = commendation is an obscure sense for 8-15 (kids know citation as a reference or a ticket); condemnation is the opposite trap"
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "pass",
+  "reason": "note: synonyms; betrayal is the opposite trap"
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "pass",
+  "reason": "note: synonyms; both words are advanced for younger players"
+ },
+ {
+  "unit": "item:o2",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:od",
+  "verdict": "pass",
+  "reason": "note: synonyms; insult and affront are related acts rather than the feeling, near-misses but not equal"
+ },
+ {
+  "unit": "item:on",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:p0",
+  "verdict": "pass",
+  "reason": "note: kind of"
+ },
+ {
+  "unit": "item:ph",
+  "verdict": "pass",
+  "reason": "note: kind of"
+ },
+ {
+  "unit": "item:r6",
+  "verdict": "pass",
+  "reason": "note: synonyms; entreat is advanced"
+ },
+ {
+  "unit": "item:u6",
+  "verdict": "pass",
+  "reason": "note: synonyms; pig/hog are also used as insults for people, but here they are core animal vocabulary, so not flagged"
+ },
+ {
+  "unit": "item:ua",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ut",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:vb",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:vn",
+  "verdict": "pass",
+  "reason": "note: synonyms (identical in web colours); some treat aqua as a lighter blue-green, minor"
+ },
+ {
+  "unit": "item:vx",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:w4",
+  "verdict": "pass",
+  "reason": "note: synonyms, loose (a cast is the actors of one production; a troupe is a company); shadow and hex are collocation traps (cast a shadow, cast a hex) that may confuse"
+ },
+ {
+  "unit": "item:wa",
+  "verdict": "pass",
+  "reason": "note: synonyms; climber-as-plant is a less familiar sense; shrub and bush are synonyms of each other, not of vine"
+ },
+ {
+  "unit": "item:wb",
+  "verdict": "pass",
+  "reason": "note: synonyms; mill = factory only in some senses (steel mill, paper mill)"
+ },
+ {
+  "unit": "item:wi",
+  "verdict": "pass",
+  "reason": "note: verb -> noun; confirmation belongs to confirm, not certify"
+ },
+ {
+  "unit": "item:wx",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:yy",
+  "verdict": "pass",
+  "reason": "note: synonyms; dent is a depression, not a hole"
+ },
+ {
+  "unit": "item:z2",
+  "verdict": "pass",
+  "reason": "note: synonyms (governing board); skate and bulletin are compound-word traps (skateboard, bulletin board); board=committee sense is harder for younger players"
+ },
+ {
+  "unit": "item:zh",
+  "verdict": "pass",
+  "reason": "note: near synonyms; graduation is a kind of occasion, not a synonym"
+ },
+ {
+  "unit": "item:zi",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:zp",
+  "verdict": "pass",
+  "reason": "note: loose synonym; girth usually means the measurement round a body/trunk, perimeter would be cleaner; mild body-size connotation"
+ },
+ {
+  "unit": "item:10t",
+  "verdict": "pass",
+  "reason": "note: synonyms (gymnastic flip); upside is an upside-down trap, posit is obscure"
+ },
+ {
+  "unit": "item:13s",
+  "verdict": "pass",
+  "reason": "note: synonyms; notable/meaningful are adjective traps; prestige is status, not significance"
+ },
+ {
+  "unit": "item:15i",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:17n",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "stem:who:0",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:1",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:2",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:3",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:4",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:5",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:6",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:7",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:8",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:9",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:n0",
+  "verdict": "fail",
+  "reason": "also fits: Same meaning · cook is also a noun for the person, and a cook and a chef are near synonyms, so Same meaning is defensible"
+ },
+ {
+  "unit": "stem:who:n1",
+  "verdict": "pass",
+  "reason": "a pilot flies the plane"
+ },
+ {
+  "unit": "stem:who:n2",
+  "verdict": "pass",
+  "reason": "a doctor heals; fine"
+ },
+ {
+  "unit": "stem:who:n3",
+  "verdict": "pass",
+  "reason": "a thief steals; fine"
+ },
+ {
+  "unit": "stem:who:n4",
+  "verdict": "fail",
+  "reason": "also fits: Same meaning · tutor is also a verb meaning to teach, so teach/tutor read as Same meaning too"
+ },
+ {
+  "unit": "stem:who:n5",
+  "verdict": "pass",
+  "reason": "a mechanic repairs (machines); fine"
+ },
+ {
+  "unit": "stem:who:n6",
+  "verdict": "pass",
+  "reason": "a waiter serves; fine"
+ },
+ {
+  "unit": "stem:who:n7",
+  "verdict": "pass",
+  "reason": "a lifeguard rescues swimmers; fine"
+ }
+]
