@@ -997,7 +997,14 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   `still`); measure colour with transitions off; any free port, never a fixed one;
   `node tests/lib/run.cjs --cpu 4 --repeat 3 <names>` finds a sleep before a loaded machine does;
   `--node-only` is the deploy's data gate. console-clean has a 900s budget. A Mock Bee timer
-  belongs to the bee that set it. **Open**: under load a reload straight after boot can lose the
+  belongs to the bee that set it. **Found, 10 Oct 2026 (P0.18): the reload below is Playwright's
+  OFF-THE-RECORD storage.** A throwaway context keeps localStorage in memory, and under a busy machine
+  a reload there sometimes starts the new document on an EMPTY storage (init script sees 0 keys where
+  the page left 5). pin-mandatory §6 in a loop beside six busy processes: off-the-record 3/48 reloads
+  empty, forced onto one renderer 2/24 (not a process swap), a persistent profile 0/72.
+  `pin-mandatory` now reloads in `chromium.launchPersistentContext` and asserts the reloaded page
+  starts on the storage it left; the tests below can take the same cure. Original note:
+  **Open**: under load a reload straight after boot can lose the
   page's fresh localStorage (the seed marker too) — store-seam / medals / hive-activity /
   family-topbar each failed once that way and pass alone; unexplained. **daily-bee's "a solved day
   pays one coin and coming back pays nothing" (4 Oct) is the same thing, and it is not load:** on a
@@ -1048,6 +1055,9 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   the spec's own stated aim (real time on a slow phone). Guard: `engine-kit.cjs` (hand-cranked frames).
   Consequence worth knowing: under an 8× throttle gp-handling's in-page driver gets one decision per ~150ms frame
   and its "steering into the bend" check runs wide; at the suite's 4× stress level everything passes.
+- **pin-mandatory's "a second boot migrates nothing"** (red in the audit's run, 1 of 3 in a repeat here) was
+  the off-the-record reload artefact in the Audit v4 "Tests wait on state" note — found and measured there;
+  its reload now runs in a persistent profile (0/72 empty) and says what storage the reloaded page found.
 - **`raceTime` (tests/lib/wait.cjs) waits on the race's own clock** (`_race.state().raceT`). It counted frames at
   a 50ms clamp left from the race's old loop, so on slow frames "0.7 s of race" was up to twice that and the kart
   reached the next bend — gp-handling's "(left the straight!)" in the audit's full run, reproduced at 8×.
