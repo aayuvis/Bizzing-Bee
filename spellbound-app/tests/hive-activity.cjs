@@ -28,10 +28,16 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const errs = [];
-  const ctx = await b.newContext({ viewport: { width: 1100, height: 900 } });
+  /* a PERSISTENT profile (10 Oct 2026): this test reloads and then counts what the reload kept. An off-the-record
+     context holds localStorage in memory, and on a loaded machine a reload there can start the page on EMPTY
+     storage — the P0 full run read "4 → 0" milestones, i.e. nothing survived, not something counted twice
+     (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72). */
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-hive-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1100, height: 900 },
+    executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   await ctx.clock.install();
   await ctx.addInitScript(s => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.removeItem('bizzing.activity'); localStorage.setItem('t_seed', '1'); } }, SEED);
-  const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+  const pg = ctx.pages()[0] || await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
   await pg.goto(URL); await pg.waitForTimeout(3000);
   await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r)));
   const feed = () => pg.evaluate(() => { try { return JSON.parse(localStorage.getItem('bizzing.activity') || 'null'); } catch (e) { return null; } });
@@ -92,6 +98,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
   ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket/.test(src), 'the drop-in has no network call in it');
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
+  await ctx.close(); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
 })();

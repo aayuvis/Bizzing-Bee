@@ -128,19 +128,27 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
      trail-data.js (the next stop) had landed — so a quiet child (no misses, no traps) had one candidate
      and heard the buddy's line on every visit. Reload five times: never the same hello twice running,
      and the next stop is among them. */
+  /* The reloads run in a PERSISTENT profile (10 Oct 2026): an off-the-record context keeps localStorage in
+     memory, and on a loaded machine a reload there sometimes starts the page on EMPTY storage — the seed comes
+     back, the greet record is gone, and the same hello repeats (failed twice in combined runs, 0 of 3 alone).
+     pin-mandatory measured it (off-the-record 3 of 48 reloads empty, on-disk 0 of 72). Each visit also says
+     what storage it started on, so a lost store can never again read as the app repeating itself. */
   {
-    const c2 = await b.newContext({ viewport: { width: 1100, height: 900 } });
-    await c2.addInitScript(s => { try { if (!localStorage.getItem('sb_t_q')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_q', '1'); localStorage.setItem('sb_splash', '0'); } } catch (e) {} },
+    const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-hello-profile-'));
+    const c2 = await chromium.launchPersistentContext(dir, { viewport: { width: 1100, height: 900 },
+      executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
+    await c2.addInitScript(s => { try { window.__startKeys = localStorage.length; if (!localStorage.getItem('sb_t_q')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_q', '1'); localStorage.setItem('sb_splash', '0'); } } catch (e) {} },
       Object.assign({}, seed, { pin: '2468', children: [Object.assign({}, seed.children[0], { name: 'Quiet', missed: [] })] }));
-    const p2 = await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
+    const p2 = c2.pages()[0] || await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
     const visits = [];
     await p2.goto('file://' + SRC + '/index.html');
     for (let i = 0; i < 5; i++) {
       const up = await p2.waitForFunction(() => typeof state !== 'undefined' && document.querySelector('.sb-home-greet:not(.sb-card)') && !document.querySelector('.sb-greet-hold'), null, { timeout: 45000 }).then(() => true, () => false);
-      visits.push(up ? await p2.evaluate(() => ({ k: (JSON.parse(SB_STORE.get('greet') || '{}').Quiet || [])[1], t: (document.querySelector('.sb-home-greet:not(.sb-card)') || {}).textContent || '' })) : { k: 'never-drawn', t: '' });
+      visits.push(up ? await p2.evaluate(() => ({ k: (JSON.parse(SB_STORE.get('greet') || '{}').Quiet || [])[1], t: (document.querySelector('.sb-home-greet:not(.sb-card)') || {}).textContent || '', keys: window.__startKeys })) : { k: 'never-drawn', t: '' });
       await p2.reload();
     }
-    await c2.close();
+    await c2.close(); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
+    ok(visits.slice(1).every(v => v.keys > 0), 'every reloaded visit starts on the storage the last one left (keys at start: ' + visits.map(v => v.keys).join(', ') + ')');
     ok(visits.every(v => v.k && v.t) && visits.every((v, i) => !i || v.k !== visits[i - 1].k) && visits.some(v => v.k === 'next'),
       'a quiet child\'s hello changes on every visit (a reload), and the next stop is one of them: ' + visits.map(v => v.k).join(' → '));
   }

@@ -78,7 +78,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
   const home = await pg.evaluate(() => [...document.querySelectorAll('button,a')]
     .map(x => (x.textContent || '').trim())
-    .filter(t => /^(Home|Word Atlas|Word Gym|Library|Play)$/.test(t)));   // the Practice tab is the Word Gym (owner, 4 Oct 2026)
+    .filter(t => /^(Home|Word Atlas|Library|Play|My Feed)$/.test(t)));   // brief 4.5 decision 1 (10 Oct 2026): the Word Gym is under the Atlas; a child sees five (Analogies waits for its release)
   ok(new Set(home).size === 5, `the five tabs are there after onboarding — ${[...new Set(home)].join(' · ') || 'NONE'}`);
 
   await pg.evaluate(() => {

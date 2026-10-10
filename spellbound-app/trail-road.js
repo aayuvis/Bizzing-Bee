@@ -3,7 +3,7 @@
    A region of the Word Atlas is not its list of units. On any lap a child walks only the units whose
    `laps` include it, and after every `rules.checkpointEvery`-th of them in an act there is a checkpoint —
    a stop of its own on the board ("Stop 3 of 13"). The board (trail.js seq()), Home's "You are here"
-   (SB_TRAIL_NEXT().stops) and My Feed's place cards each counted it their own way: the audit saw the
+   (the frontier reading's .stops, SB_TRAIL_NEXT) and My Feed's place cards each counted it their own way: the audit saw the
    Meadow board say 13 where the feed said 11, the Big Stage 2 where the feed said 15. Now this is the one
    function all of them read — trail.js builds its road from nodes(), tools/build-feed.cjs cuts the place
    cards from place() (tools/feed-corpus.cjs loads this file exactly as the page does), and bee-feed.js

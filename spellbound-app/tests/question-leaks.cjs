@@ -138,6 +138,12 @@ const EVEN = (h, label) => { const n = h.reduce((a, b) => a + b, 0); const sh = 
           const promptTxt = cl.textContent;
           if (q.kind === 'spell' ? has(promptTxt, q.answer) : has(promptTxt, q.word)) L('game-' + q.kind + '-prompt', q.word); }
         if (q.kind === 'vocab' && q.choices.some(c => has(c, q.word))) L('game-vocab-options', q.word); } }
+    /* the card's own chrome must not say the word (10 Oct 2026: "R repeat" in the key hint over a meaning
+       question whose answer was "repeat" — the random draw found it once). Asked on purpose, every run. */
+    { const w = { w: 'repeat', d: 'to do or say something again', s: 'Please repeat the word.' };
+      const q = { kind: 'meaning', word: w.w, wordObj: w, answer: w.w, choices: ['repeat', 'whisper', 'borrow', 'gather'], prompt: blankHTML(w.d, w.w), say: w.w };
+      card(q); const cl = document.querySelector('#root').cloneNode(true); cl.querySelectorAll('[data-act="gPick"]').forEach(x => x.remove());
+      if (has(cl.textContent, q.word)) L('game-meaning-prompt', q.word + ' (asked on purpose)'); }
     o.n.games = gq;
     /* magic squares */
     magicNewBoard(); const mg = state.game; let mq = 0;

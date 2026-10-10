@@ -72,6 +72,12 @@
      is first (trail.js trailHere: the same lock a tap on the region meets). A new speller is at
      the first region's first stop. Every stop of the tier walked: the Atlas itself, saying so. */
   function goNext() {
+    /* P1.15 (road to 4.5): an Atlas drill left unfinished is where Continue goes first — back to the very card
+       (app3 resumeOf / app.resumeDrill). Only when there is none does Continue open the map on the stop. */
+    try {
+      var rs = (typeof window.SB_RESUME === 'function') ? window.SB_RESUME() : null;
+      if (rs && app.resumeDrill) { leaveDrill(); app.resumeDrill(); return; }
+    } catch (e) {}
     var run = function () {
       var n = nextStep();
       if (n.ready && !n.allDone && n.actId && app.trailHere) { app.trailHere(n.crs + '|' + n.actId, n.node); return; }

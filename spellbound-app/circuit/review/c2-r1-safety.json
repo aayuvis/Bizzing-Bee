@@ -1,0 +1,617 @@
+[
+ {
+  "path": "cast.ash.tell",
+  "verdict": "pass",
+  "reason": "A neutral description of how a twin spells, as Mock Bee shows it. Says nothing about twins as a type."
+ },
+ {
+  "path": "cast.aria.tell",
+  "verdict": "pass",
+  "reason": "The same tell as Ash's. Neutral, and it doesn't mock anyone."
+ },
+ {
+  "path": "rounds[0].pieces.dax",
+  "verdict": "pass",
+  "reason": "A rival's boast ('The Sprints are mine'). It's a challenge, not a threat, and it doesn't mention the child's looks, family or worth (L4)."
+ },
+ {
+  "path": "rounds[0].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A light mystery hook. Round VIII answers it on screen (it is his home hall), and nothing frightening is implied."
+ },
+ {
+  "path": "rounds[1].pieces.drama",
+  "verdict": "pass",
+  "reason": "An affectionate running gag. The sleeping speller isn't named or mocked, and Theo's thoroughness wins him the word. The season later makes his method everyone's."
+ },
+ {
+  "path": "rounds[1].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Warm adult patience: the Pronouncer answers again, and the runner looks after Theo without being asked. The adults are kind and openly present."
+ },
+ {
+  "path": "rounds[1].pieces.above",
+  "verdict": "pass",
+  "reason": "Kind for any value of {asked}. At 0 it reads as 'you beat me without even asking', and 'Imagine what you'll do' is encouragement. Theo's own count is a habit, not a boast."
+ },
+ {
+  "path": "rounds[1].pieces.below",
+  "verdict": "pass",
+  "reason": "Kind for any value. At 0 the count is a plain tally followed by advice, and nothing shames the miss. Weighed: for a child who asked a lot and still went out, 'Next time, ask before you spell' slightly ignores the effort. It's dismissive at worst, never shaming, so it passes. See c2-r1-safety.md."
+ },
+ {
+  "path": "rounds[1].pieces.v",
+  "verdict": "pass",
+  "reason": "The V. frame is intriguing and not cruel. The adults know the writer, and nothing asks for secrecy. All nine byFamily fills read as habits, not judgements. The fallback is the problem (it tells a child who asked on every miss that they guess instead of asking), and it is fixed at slotLines.weak.byRound.2."
+ },
+ {
+  "path": "rounds[2].lesson",
+  "verdict": "pass",
+  "reason": "A lesson title. Nothing to judge for safety."
+ },
+ {
+  "path": "rounds[2].pieces.above",
+  "verdict": "pass",
+  "reason": "Warm rival letter. The {spelled} fallback ('still to come') reads kindly. Weighed: 'Draw the next word small on your palm' could send a 6–7-year-old for a pen. Finger-tracing is allowed at real bees, ink on a hand is not. Rafi's tell says 'traces', which would be clearer, but this is optional. Not a safety issue."
+ },
+ {
+  "path": "rounds[2].pieces.below",
+  "verdict": "pass",
+  "reason": "Teaching letter. It gives the technique and doesn't comment on the child's miss."
+ },
+ {
+  "path": "rounds[3].pieces.inv",
+  "verdict": "pass",
+  "reason": "Plain information about who is seated. Vesper's empty chair is suspense, not pressure on the child."
+ },
+ {
+  "path": "rounds[3].pieces.drama",
+  "verdict": "pass",
+  "reason": "Pip (8) jumping at thunder is observed gently, and nobody on screen laughs at him. The case later treats his fear kindly ('Thunder scares him, and dinging is calming'). That is fear shown, not mocked."
+ },
+ {
+  "path": "rounds[3].pieces.laugh",
+  "verdict": "pass",
+  "reason": "The joke is on the Pronouncer's delight. The runner's patience is affectionate, and nobody is the butt of it."
+ },
+ {
+  "path": "rounds[3].pieces.above",
+  "verdict": "pass",
+  "reason": "Encouraging, names the technique, no gloat."
+ },
+ {
+  "path": "rounds[3].pieces.below",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived the merge. There is no exclamation and no presumed word, and 'Next time' is forward-looking. It reads kindly for any {missed} and for the fallback ('a word'). Naming the child's own missed word in a 'next time' frame is coaching, not a callout."
+ },
+ {
+  "path": "rounds[3].pieces.v",
+  "verdict": "pass",
+  "reason": "Ominous but light foreshadowing. The Round V cliff says 'The Pronouncer says he's safe' before anything else happens. 'On this Circuit' is no scarier than 'in this hall'."
+ },
+ {
+  "path": "rounds[4].pieces.inv",
+  "verdict": "pass",
+  "reason": "Better than cycle 1: the first warning no longer names Dax in a circulated invitation. It states a consequence and adds no adjective."
+ },
+ {
+  "path": "rounds[4].pieces.v",
+  "verdict": "pass",
+  "reason": "'When a strong one breaks' is emotional, not cruel, and the note doesn't celebrate the gloat. Every byFamily fill is kind. The fallback ('You skip the suffix') makes an unsupported claim about a child with no weak spot, and it is fixed at slotLines.weak.byRound.5."
+ },
+ {
+  "path": "rounds[4].pieces.pip",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived the merge: the loyal coda is word for word ('I still think so'), so the note is loyal, not ironic, at Kwame's low point. 'Flip him like a flapjack' is pancake silliness, not a physical threat."
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "Unflappable. A kind word about Kwame, and the coda makes it loyal."
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "Harmless kitchen wordplay. It is not violence and not a body joke."
+ },
+ {
+  "path": "rounds[5].technique",
+  "verdict": "pass",
+  "reason": "Technique line. 'Often' is more honest, and there is nothing to judge for safety."
+ },
+ {
+  "path": "rounds[5].pieces.laugh",
+  "verdict": "pass",
+  "reason": "A host applauding wrong answers is the opposite of shaming. The runner's care is gentle."
+ },
+ {
+  "path": "rounds[5].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Vesper denies being V. and says Pip started the idea. Pip's rumour is harmless: being V. is no accusation of wrongdoing, so it isn't Dax-style rumour (L4). It is a private letter, and Pip is not humiliated."
+ },
+ {
+  "path": "rounds[5].pieces.below",
+  "verdict": "pass",
+  "reason": "Warmer than cycle 1 ('The quiet letters beat you' became 'Listen for the quiet letters next time'). Ballet is a teaching example, not a claimed miss."
+ },
+ {
+  "path": "rounds[5].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A public table of places. It is a fact about standings, nobody is mocked, and it sets up the motive the story later condemns."
+ },
+ {
+  "path": "rounds[6].pieces.below",
+  "verdict": "pass",
+  "reason": "Warm and forward-looking ('You'll spell {missed} next time'). It is kind for any fill and for the fallback 'the hard one'."
+ },
+ {
+  "path": "rounds[6].pieces.clue2.text",
+  "verdict": "pass",
+  "reason": "A clearing clue about a cartoon host. 'He can't spell' is evidence with no laugh attached, and it clears him of suspicion."
+ },
+ {
+  "path": "rounds[7].pieces.inv",
+  "verdict": "pass",
+  "reason": "A consequence stated without naming Dax or adding an adjective. That is the L4 design."
+ },
+ {
+  "path": "rounds[8].pieces.suspense",
+  "verdict": "pass",
+  "reason": "States both branches neutrally. Losing to Vesper is framed as 'it's hers', with no shame."
+ },
+ {
+  "path": "turn.kwame",
+  "verdict": "pass",
+  "reason": "Weighed again. 'I heard what you said in the corridor. You were right.' still comes before Dax's apology, and a young reader could take it as approving the gloat. It passes for the cycle-1 reasons: it means 'nobody's perfect', not 'mocking was fine'. Two beats later Dax calls it 'wrong' (apologies[2]), and Kwame narrows it to 'You were right about one thing'."
+ },
+ {
+  "path": "turn.apologies[0].reply",
+  "verdict": "pass",
+  "reason": "Theo accepts and invites Dax onto the team. A warm, earned reconciliation."
+ },
+ {
+  "path": "turn.apologies[2].text",
+  "verdict": "pass",
+  "reason": "Dax names both wrongs as wrong and apologises. Writing it on the dock links back to his low point. Earned on screen (L4)."
+ },
+ {
+  "path": "cases[0].taps[0]",
+  "verdict": "fix",
+  "reason": "Minor, and new to this lens: cycle 1 passed the programme line. The joke that someone 'learned English from a parrot' laughs at how a person learned English, which is a language-learner stereotype. Many of the family's diaspora grandparents learned English as an additional language. The plot only needs a parrot at the press. rounds[1].pieces.prog must change with this tap, or the quote won't match.",
+  "fix_text": "Sage's programme, still on the desk: 'Our press is run by a typesetter and a parrot. We are not sure which is in charge.'"
+ },
+ {
+  "path": "cases[0].taps[1]",
+  "verdict": "pass",
+  "reason": "Neutral scene detail."
+ },
+ {
+  "path": "cases[0].taps[2]",
+  "verdict": "pass",
+  "reason": "It points at Theo, who is the false suspect. Theo is cleared on screen, and Dax's blame of him is answered by Theo's 640th question and Dax's apology."
+ },
+ {
+  "path": "cases[0].reveal[0]",
+  "verdict": "pass",
+  "reason": "An accident, with nobody blamed. The apprentice isn't punished or mocked."
+ },
+ {
+  "path": "cases[1].clock",
+  "verdict": "pass",
+  "reason": "A gentle time-pressure clock. The children travel on the Committee's coach with the adults."
+ },
+ {
+  "path": "cases[1].taps[0]",
+  "verdict": "pass",
+  "reason": "Neutral scene detail."
+ },
+ {
+  "path": "cases[1].taps[1]",
+  "verdict": "pass",
+  "reason": "A host's dry programme. Nothing unsafe."
+ },
+ {
+  "path": "cases[1].taps[2]",
+  "verdict": "pass",
+  "reason": "A clue to Pip (8) taking the bell. The reveal handles it kindly: he apologises for not asking and is trusted to ring it."
+ },
+ {
+  "path": "cases[1].escalation",
+  "verdict": "pass",
+  "reason": "Heel-marks are evidence, not menace, and it adds no fear."
+ },
+ {
+  "path": "cases[1].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Puzzle instructions. Nothing to judge for safety."
+ },
+ {
+  "path": "cases[1].puzzle.items[3].clue",
+  "verdict": "pass",
+  "reason": "'Small hammers' means instrument mallets. Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[3].word",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[3].greek",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[3].rule",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[6].clue",
+  "verdict": "pass",
+  "reason": "Historical and cultural framing of the Greek chorus. Respectful."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].clue",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].word",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].greek",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].rule",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[9].clue",
+  "verdict": "pass",
+  "reason": "Neutral and child-friendly."
+ },
+ {
+  "path": "cases[1].puzzle.items[9].word",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[9].greek",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].puzzle.items[9].rule",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[1].reveal[2]",
+  "verdict": "pass",
+  "reason": "Names what Dax did, plainly and without insult. The Pronouncer's first warning follows (reveal[4])."
+ },
+ {
+  "path": "cases[1].reveal[3]",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived word for word. Pip owns up to taking the bell without asking before he is trusted with it, so the copyable behaviour is answered."
+ },
+ {
+  "path": "cases[1].lastChill",
+  "verdict": "pass",
+  "reason": "Spooky but safe. Weighed: the note hints that V. knew someone wanted a delay. The wrong is minor, it is answered on screen, and the adults approve the letters, so it passes."
+ },
+ {
+  "path": "cases[2].safeLine",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived word for word. Kwame tells a grown-up himself and the adults know, and build[id=case-scenes] makes this the first line on screen."
+ },
+ {
+  "path": "cases[2].taps[0]",
+  "verdict": "pass",
+  "reason": "Passes only because the safeLine is on screen first, which build[id=case-scenes] tests. The trailing 'to fix…' quotes Round V's letter (French). Keep that order."
+ },
+ {
+  "path": "cases[2].taps[1]",
+  "verdict": "pass",
+  "reason": "The 'left suddenly' detail. Safe after the safeLine."
+ },
+ {
+  "path": "cases[2].taps[2]",
+  "verdict": "pass",
+  "reason": "Hazel's tell under pressure, and she is keeping Kwame's confidence. The adult is trustworthy: she told the Pronouncer at once."
+ },
+ {
+  "path": "cases[2].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "Matches the cycle-1 decision: Kwame told her, and she told the Pronouncer. A teen's plans are kept private from peers, never from adults."
+ },
+ {
+  "path": "cases[2].puzzle.card",
+  "verdict": "pass",
+  "reason": "Eight loanwords from Swahili, Turkish, Russian, Arabic, Italian, Tamil and French, presented as the languages English borrowed from. Respectful and varied. Nothing alarming in 'Signing in by sundown'."
+ },
+ {
+  "path": "cases[2].puzzle.items[6].word",
+  "verdict": "pass",
+  "reason": "Spelling only."
+ },
+ {
+  "path": "cases[2].reveal[2]",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived word for word."
+ },
+ {
+  "path": "cases[3].taps[0]",
+  "verdict": "pass",
+  "reason": "The host's comic misprints. The joke is on a cartoon raccoon, not a child."
+ },
+ {
+  "path": "cases[3].taps[1]",
+  "verdict": "pass",
+  "reason": "A fact about standings. Nobody is mocked."
+ },
+ {
+  "path": "cases[3].taps[2]",
+  "verdict": "pass",
+  "reason": "Neutral scene detail."
+ },
+ {
+  "path": "cases[3].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Puzzle instructions. The fear of thirteen is a word fact, not a scare."
+ },
+ {
+  "path": "cases[3].reveal[5]",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived word for word ('nobody follows him out'). The formal warning is a consequence, and no physical chase is implied."
+ },
+ {
+  "path": "cases[3].clue.text",
+  "verdict": "pass",
+  "reason": "Same as rounds[6].pieces.clue2.text. Clearing evidence, no laugh attached."
+ },
+ {
+  "path": "cases[4].clock",
+  "verdict": "pass",
+  "reason": "A plain deadline. Nobody is threatened."
+ },
+ {
+  "path": "cases[4].impossible",
+  "verdict": "pass",
+  "reason": "A comic, cosy clue (the cat). It adds no menace."
+ },
+ {
+  "path": "cases[4].taps[0]",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[4].taps[1]",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[4].taps[2]",
+  "verdict": "pass",
+  "reason": "Neutral and gently comic."
+ },
+ {
+  "path": "cases[4].escalation",
+  "verdict": "pass",
+  "reason": "Vesper (15) is shown with dignity: she asks to be cleared, and nobody humiliates her."
+ },
+ {
+  "path": "cases[4].puzzle.items[2].why",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived word for word. Nerves are allowed, and not called a lie."
+ },
+ {
+  "path": "cases[4].puzzle.items[6].statement",
+  "verdict": "pass",
+  "reason": "An adult host's small untruth, which he owns in reveal[2]."
+ },
+ {
+  "path": "cases[4].puzzle.items[6].word",
+  "verdict": "pass",
+  "reason": "Spelling only."
+ },
+ {
+  "path": "cases[4].puzzle.items[6].correct",
+  "verdict": "pass",
+  "reason": "Spelling only."
+ },
+ {
+  "path": "cases[4].reveal[2]",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived word for word. Dash owns up, so every adult who kept a secret is put right on screen."
+ },
+ {
+  "path": "teamNight.beats.idea",
+  "verdict": "pass",
+  "reason": "Dax's reform shows as a team idea. The child's share (steady beat) is presented as a technique, not leftovers, and the daxPostcard thanks the child for it."
+ },
+ {
+  "path": "teamNight.beats.ravenmere",
+  "verdict": "pass",
+  "reason": "Sloane's 'How sweet' is condescension, not cruelty (§4.2), and Ravenmere's loss answers it. Arjun and Mei get skill-only descriptions, with no stereotype in their tells. The twins' tell is neutral."
+ },
+ {
+  "path": "teamNight.beats.callRules",
+  "verdict": "pass",
+  "reason": "Rules from the adult in charge, given openly before play."
+ },
+ {
+  "path": "teamNight.beats.drama.8-10",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived the merge: 'Sloane raises an eyebrow', not 'Arjun smirks'. A raised eyebrow is condescension, not a sneer, and nobody laughs. Dax answers his own miscall calmly, and Rafi is unsettled but not shamed."
+ },
+ {
+  "path": "teamNight.beats.drama.11-15",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived the merge, as at 8–10. Kwame's tension is shown, not mocked."
+ },
+ {
+  "path": "teamNight.beats.levellingMiss",
+  "verdict": "pass",
+  "reason": "The model miss line: the reformed antagonist supports the child, 'Breathe out. Second try.' Warm, and nothing shames the slip."
+ },
+ {
+  "path": "teamNight.beats.daxPostcard",
+  "verdict": "pass",
+  "reason": "Warm, and credits the child."
+ },
+ {
+  "path": "teamNight.beats.sting",
+  "verdict": "fix",
+  "reason": "New risk from the timing fix: 'the empty Grand Marquee' puts the child alone at night with an adult man and a 16-year-old when a note from an unknown writer arrives. Amendment 1 exists to keep that grooming shape off screen. Other grown-ups should be in the room. The Committee, being adults, keeps the Season 2 suspects (Mei, Vesper, someone not yet met) open.",
+  "fix_text": "Later, while the Committee clears the Grand Marquee, Vale and the Pronouncer are stacking chairs beside you when one more note slides under the door. A different hand, small and careful, in pencil: 'There were always two of us. — V.' Vale reads it twice. 'That isn't mine.' For the first time all season, the Pronouncer looks surprised."
+ },
+ {
+  "path": "teamNight.beats.stingAfter",
+  "verdict": "fix",
+  "reason": "Cycle-1 fix survived word for word. On a second read it should widen. This is the line that answers a note-writer no adult knows, and it makes one man (the adult amendment 1 was written about) the child's only channel. Safeguarding practice names any trusted adult. 'Any grown-up you trust' assumes no family shape and does not trip the T3 'ask a grown-up' check.",
+  "fix_text": "The Pronouncer, quietly: 'Then next season we find out who. Together, and in the open. Any note you ever get, you can show me, or any grown-up you trust.'"
+ },
+ {
+  "path": "teamNight.ravenmereRoster[1].tell",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[2].tell",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "accusation.lookAgainBy.vesper",
+  "verdict": "pass",
+  "reason": "A gentle redirect for a wrong pick: 'Not quite. Look again'. Nothing shames the child."
+ },
+ {
+  "path": "accusation.closingLetter",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived word for word ('a Circuit tradition even then' … 'the Committee said yes'). The adults are back in the frame of the letters, and it is 60 words."
+ },
+ {
+  "path": "hivePost.diary[1]",
+  "verdict": "pass",
+  "reason": "Warm level-up, no streak pressure."
+ },
+ {
+  "path": "hivePost.diary[3]",
+  "verdict": "pass",
+  "reason": "Warm level-up."
+ },
+ {
+  "path": "hivePost.diary[4]",
+  "verdict": "pass",
+  "reason": "Warm level-up. Weighed as in rounds[2].pieces.above: 'Draw… on your palm' could read as ink. 'Trace' is clearer, but this is optional."
+ },
+ {
+  "path": "hivePost.diary[7]",
+  "verdict": "pass",
+  "reason": "Warm ('This one came from you')."
+ },
+ {
+  "path": "hivePost.diary[9]",
+  "verdict": "pass",
+  "reason": "Warm, and repeats the routine."
+ },
+ {
+  "path": "hivePost.beeFileIntro",
+  "verdict": "pass",
+  "reason": "Open, not secret ('for you and anyone you show it to'). 'The one that beat you' frames a miss as information, not failure."
+ },
+ {
+  "path": "slotLines.weak.byFamily.noask",
+  "verdict": "pass",
+  "reason": "Names a habit, not a trait, and is true whenever it is printed: the child made no request on the missed words. Brisk but not cruel."
+ },
+ {
+  "path": "slotLines.weak.byFamily.silent",
+  "verdict": "pass",
+  "reason": "A habit, plainly put, and true when printed."
+ },
+ {
+  "path": "slotLines.weak.byFamily.fr",
+  "verdict": "pass",
+  "reason": "Puts the agency on the words ('slip past you'). Gentle."
+ },
+ {
+  "path": "slotLines.weak.byFamily.gk",
+  "verdict": "pass",
+  "reason": "A habit, not a judgement."
+ },
+ {
+  "path": "slotLines.weak.byFamily.end",
+  "verdict": "pass",
+  "reason": "A habit, not a judgement."
+ },
+ {
+  "path": "slotLines.weak.byFamily.dbl",
+  "verdict": "pass",
+  "reason": "A habit, not a judgement."
+ },
+ {
+  "path": "slotLines.weak.byFamily.vow",
+  "verdict": "pass",
+  "reason": "A habit, not a judgement."
+ },
+ {
+  "path": "slotLines.weak.byFamily.hom",
+  "verdict": "pass",
+  "reason": "A habit, not a judgement."
+ },
+ {
+  "path": "slotLines.weak.byFamily.epon",
+  "verdict": "pass",
+  "reason": "The words are the subject ('catch you out'). Gentle."
+ },
+ {
+  "path": "slotLines.weak.byRound.2",
+  "verdict": "fix",
+  "reason": "Reads unkindly for every child who gets it. By build[id=slots], this fallback prints only for a child with no misses, or whose every miss came after asking (a 'plain' miss is one that was not 'noask'). So V. tells exactly the children who asked that they 'guess instead of asking', a false rebuke. The fix is true for both children and keeps the V. voice.",
+  "fix_text": "No weak spot yet. Ask anyway."
+ },
+ {
+  "path": "slotLines.weak.byRound.5",
+  "verdict": "fix",
+  "reason": "The same fault, milder: a child with no weak spot is told they 'skip the suffix' with no evidence. That is unearned criticism on the child's screen. Keep the technique as advice, not diagnosis.",
+  "fix_text": "No weak spot yet. Never skip the suffix."
+ },
+ {
+  "path": "visitors[0].card",
+  "verdict": "pass",
+  "reason": "Historical framing ('To the ancient Greeks'), with later tellings attributed. Respectful, with no comedy (amendment 4)."
+ },
+ {
+  "path": "visitors[5].word",
+  "verdict": "pass",
+  "reason": "Spelling only."
+ },
+ {
+  "path": "visitors[5].card",
+  "verdict": "pass",
+  "reason": "Cycle-1 fix survived the merge: it opens 'To the ancient Greeks' and no longer says 'In Greek myth'. The punishment is described without the crime, and the gruesome parts of the story are left out. Fine for 6–15."
+ },
+ {
+  "path": "visitors[6].card",
+  "verdict": "pass",
+  "reason": "Historical framing. 'It isn't' corrects Braid's belief about hypnosis, not anyone's faith. Nothing copyable."
+ },
+ {
+  "path": "visitors[12].card",
+  "verdict": "pass",
+  "reason": "Historical framing ('To the ancient Romans'). Respectful."
+ },
+ {
+  "path": "visitors[19].card",
+  "verdict": "pass",
+  "reason": "Norse religion has practitioners today. The card speaks historically ('To the Norse'), never calls the gods false, and states scholarly uncertainty plainly, as docs/05 §1 asks ('grown-ups still argue'). Respectful."
+ }
+]
