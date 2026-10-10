@@ -1,0 +1,594 @@
+[
+ {
+  "unit": "item:8",
+  "pick": "freight",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; freight = goods shipped"
+ },
+ {
+  "unit": "item:103",
+  "pick": "pouch",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; pouch is a small bag, close enough"
+ },
+ {
+  "unit": "item:161",
+  "pick": "manacle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; manacle and pillory are hard words for 8-15; pillory is a different restraint, not a synonym"
+ },
+ {
+  "unit": "item:176",
+  "pick": "swamp",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "swamp is a kind of wetland rather than an exact synonym, but clearly the best; habitat is a category, not a synonym"
+ },
+ {
+  "unit": "item:185",
+  "pick": "buildup",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:y",
+  "pick": "acting",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "loose synonym: performing is broader than acting (singers, musicians perform too); acceptable but not tight"
+ },
+ {
+  "unit": "item:7a",
+  "pick": "feasible",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; probable is a near-miss (likely is not the same as possible) that some children will pick"
+ },
+ {
+  "unit": "item:9p",
+  "pick": "perfumer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "maker/doer of it; fragrance is a synonym trap, not the same link"
+ },
+ {
+  "unit": "item:ae",
+  "pick": "responsiveness",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "adjective -> noun"
+ },
+ {
+  "unit": "item:b4",
+  "pick": "miserable",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "stronger degree"
+ },
+ {
+  "unit": "item:b6",
+  "pick": "gale",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "stronger degree"
+ },
+ {
+  "unit": "item:bu",
+  "pick": "hot",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "stronger degree; cold is the opposite trap"
+ },
+ {
+  "unit": "item:d9",
+  "pick": "instrument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "kind of; zither is obscure but the category is clear; saxophone is a sibling, instrumental the wrong part of speech"
+ },
+ {
+  "unit": "item:e8",
+  "pick": "aggressiveness",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "adjective -> noun; distractors exploitation and harassment are heavy adult concepts for 8-15 though not unsafe per se"
+ },
+ {
+  "unit": "item:ej",
+  "pick": "jealous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:es",
+  "pick": "ellipse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; round is a describing word, not a synonym"
+ },
+ {
+  "unit": "item:fy",
+  "pick": "loud",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposites; silent and calm are synonym traps"
+ },
+ {
+  "unit": "item:g7",
+  "pick": "entrance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposites; part-of-speech mismatch: arrive/leave are verbs, so exit (verb) pairs with enter, which is absent; entrance works only with exit as a noun"
+ },
+ {
+  "unit": "item:gn",
+  "pick": "gelatinous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun -> adjective; gummy describes a similar texture but is not derived from gelatin"
+ },
+ {
+  "unit": "item:hd",
+  "pick": "continuance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb -> noun; continuance is valid but less common than continuation"
+ },
+ {
+  "unit": "item:hk",
+  "pick": "instrument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "kind of"
+ },
+ {
+  "unit": "item:hx",
+  "pick": "sauce",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "kind of"
+ },
+ {
+  "unit": "item:js",
+  "pick": "extremity",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; extremity is a somewhat technical and loose synonym of limb (often means hands/feet)"
+ },
+ {
+  "unit": "item:ju",
+  "pick": "citation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms, but citation = commendation is an obscure sense for 8-15 (kids know citation as a reference or a ticket); condemnation is the opposite trap"
+ },
+ {
+  "unit": "item:kr",
+  "pick": "devotion",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; betrayal is the opposite trap"
+ },
+ {
+  "unit": "item:m5",
+  "pick": "swelling",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:mf",
+  "pick": "elicit",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; both words are advanced for younger players"
+ },
+ {
+  "unit": "item:o2",
+  "pick": "tray",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:od",
+  "pick": "disdain",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; insult and affront are related acts rather than the feeling, near-misses but not equal"
+ },
+ {
+  "unit": "item:on",
+  "pick": "inheritance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:p0",
+  "pick": "horse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "kind of"
+ },
+ {
+  "unit": "item:ph",
+  "pick": "spice",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "kind of"
+ },
+ {
+  "unit": "item:r6",
+  "pick": "entreat",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; entreat is advanced"
+ },
+ {
+  "unit": "item:u6",
+  "pick": "hog",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; pig/hog are also used as insults for people, but here they are core animal vocabulary, so not flagged"
+ },
+ {
+  "unit": "item:ua",
+  "pick": "fatigue",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:ut",
+  "pick": "wrinkle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:vb",
+  "pick": "personalize",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:vn",
+  "pick": "cyan",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms (identical in web colours); some treat aqua as a lighter blue-green, minor"
+ },
+ {
+  "unit": "item:vx",
+  "pick": "porridge",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:w4",
+  "pick": "troupe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms, loose (a cast is the actors of one production; a troupe is a company); shadow and hex are collocation traps (cast a shadow, cast a hex) that may confuse"
+ },
+ {
+  "unit": "item:wa",
+  "pick": "climber",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; climber-as-plant is a less familiar sense; shrub and bush are synonyms of each other, not of vine"
+ },
+ {
+  "unit": "item:wb",
+  "pick": "mill",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; mill = factory only in some senses (steel mill, paper mill)"
+ },
+ {
+  "unit": "item:wi",
+  "pick": "certification",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb -> noun; confirmation belongs to confirm, not certify"
+ },
+ {
+  "unit": "item:wx",
+  "pick": "bard",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:yy",
+  "pick": "opening",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; dent is a depression, not a hole"
+ },
+ {
+  "unit": "item:z2",
+  "pick": "committee",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms (governing board); skate and bulletin are compound-word traps (skateboard, bulletin board); board=committee sense is harder for younger players"
+ },
+ {
+  "unit": "item:zh",
+  "pick": "festival",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "near synonyms; graduation is a kind of occasion, not a synonym"
+ },
+ {
+  "unit": "item:zi",
+  "pick": "minstrel",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:zp",
+  "pick": "girth",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "loose synonym; girth usually means the measurement round a body/trunk, perimeter would be cleaner; mild body-size connotation"
+ },
+ {
+  "unit": "item:10t",
+  "pick": "somersault",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms (gymnastic flip); upside is an upside-down trap, posit is obscure"
+ },
+ {
+  "unit": "item:13s",
+  "pick": "meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms; notable/meaningful are adjective traps; prestige is status, not significance"
+ },
+ {
+  "unit": "item:15i",
+  "pick": "bookcase",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:17n",
+  "pick": "blunt",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposites"
+ },
+ {
+  "unit": "stem:who:0",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:1",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:2",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:3",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:4",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:5",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:6",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:7",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:8",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:9",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "Who does it is the best fit, but the second word is built from the first (+er/-or), so Word families is also literally true and a child picking it would be right"
+ },
+ {
+  "unit": "stem:who:n0",
+  "pick": "Who does it",
+  "second": [
+   "Same meaning"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "cook is also a noun for the person, and a cook and a chef are near synonyms, so Same meaning is defensible"
+ },
+ {
+  "unit": "stem:who:n1",
+  "pick": "Who does it",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a pilot flies the plane"
+ },
+ {
+  "unit": "stem:who:n2",
+  "pick": "Who does it",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a doctor heals; fine"
+ },
+ {
+  "unit": "stem:who:n3",
+  "pick": "Who does it",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a thief steals; fine"
+ },
+ {
+  "unit": "stem:who:n4",
+  "pick": "Who does it",
+  "second": [
+   "Same meaning"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tutor is also a verb meaning to teach, so teach/tutor read as Same meaning too"
+ },
+ {
+  "unit": "stem:who:n5",
+  "pick": "Who does it",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a mechanic repairs (machines); fine"
+ },
+ {
+  "unit": "stem:who:n6",
+  "pick": "Who does it",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a waiter serves; fine"
+ },
+ {
+  "unit": "stem:who:n7",
+  "pick": "Who does it",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a lifeguard rescues swimmers; fine"
+ }
+]
