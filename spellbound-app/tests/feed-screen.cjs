@@ -9,6 +9,8 @@
               nothing wider than a 390px phone; the My Feed tab is the lit one
    level      the feed is the child's region: nothing above the next one, and a child further
               along the road gets different "now" cards
+   counts     every region's place card says the number its own board prints ("Stop n of N") and Home
+              quotes (SB_TRAIL_NEXT().stops) — lap 1, and lap 2 re-cut by SB_FEED.lapCut (the 4.5 brief, P0.14)
    due        a word whose mastery record slipped, its gap over, is the FIRST card, and says so
    column     the page head, its subtitle and the cards start on one line, desktop and phone
    reload     a reload the same day is a new session with none of the cards just seen; what was paid
@@ -161,6 +163,44 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     ok(runs[0].L === 1 && runs[1].L > 1, `the level is the child's Word Atlas region: ${runs[0].name} (${runs[0].L}) → ${runs[1].name} (${runs[1].L})`);
     ok(runs.every(x => x.above === 0), 'nothing above the next region appears');
     ok(runs[0].now.length && runs[1].now.length && !runs[0].now.some(id => runs[1].now.includes(id)), `moving up the road changes the "now" cards (${runs[0].now.length} → ${runs[1].now.length}, none shared)`);
+  }
+
+  /* ---- counts: a place card says what its region's BOARD says (the 4.5 brief, P0.14/P0.15) ----
+     For each of the nine regions a child is put at its first stop — on lap 1, and on lap 2 where the region
+     has lap-2 stops (the Meadow and the Library do not) — and the board
+     is opened: the "Stop n of N" its own stop card prints, SB_TRAIL_NEXT().stops (Home's "Stop n of N")
+     and the place card's number must all be one number. The lap-1 card is the one the build cut (read from
+     feed/ here, in node); a lap-2 child sees the card re-cut for their lap by SB_FEED.lapCut. Proved by
+     breaking: build-feed's place card back on units.length → the check fails with all nine regions off on lap 1 (Meadow 13 on the board, 11 on the card; the Big Stage 2 and 15). */
+  {
+    const FD = path.join(SRC, 'feed'), body = {};
+    fs.readdirSync(FD).filter(f => /^fb\d/.test(f)).forEach(f => { const t = fs.readFileSync(path.join(FD, f), 'utf8');
+      const m = t.match(/"pl-[a-z]+":\{[^}]*\}/g) || []; m.forEach(x => { const o = JSON.parse('{' + x + '}'); Object.assign(body, o); }); });
+    const { ctx, pg } = await open();
+    const got = await pg.evaluate(async (cards) => {
+      await new Promise(r => SB_LAZY.need(['atlas', 'feed'], r));
+      const out = [];
+      for (const lap of [1, 2]) for (const act of SB_TRAIL.honey.acts) {
+        if (!SB_TRAIL_ROAD.count(SB_TRAIL, act.id, lap)) continue;   // the Meadow and the Library have no lap-2 stops: no board to open
+        const c = active(); c.trail = { lap, done: {}, chk: {}, seen: {}, st: {}, elap: 1, edone: {}, echk: {}, ambV: {} };
+        for (const n of SB_TRAIL_ROAD.nodes(SB_TRAIL, 'honey', lap)) { if (n.act === act.id) break;
+          if (n.kind === 'unit') c.trail.done[n.u.id] = { [lap]: 90 }; else c.trail.chk[lap + ':' + n.id] = 90; }
+        state.trailCourse = 'honey'; state.villain = null;
+        const nx = SB_TRAIL_NEXT();
+        app.trailAct('honey|' + act.id); render();
+        const pop = (document.querySelector('.atlas-pop') || {}).textContent || '';
+        const m = pop.match(/Stop \d+ of (\d+)/);
+        const card = cards['pl-' + act.id];
+        const shown = card && (lap === 1 ? card : SB_FEED.lapCut(Object.assign({ kind: 'place' }, card)));
+        const n = shown && +(String(shown.body).match(/^(\d+) stops on this road/) || [])[1];
+        out.push({ act: act.id, lap, board: m ? +m[1] : null, here: nx && nx.actId === act.id ? nx.stops : null, card: n || null });
+      }
+      return out;
+    }, body);
+    const off = got.filter(x => !(x.board && x.board === x.here && x.here === x.card));
+    ok(got.filter(x => x.lap === 1).length === 9 && got.length >= 15 && !off.length, `every region's place card counts its road as the board does, lap 1 and the ${got.length - 9} regions with a lap 2 (board · Home · card): ` +
+      got.filter(x => x.lap === 1).map(x => x.act + ' ' + x.board + '·' + x.here + '·' + x.card).join(' ') + (off.length ? ' — OFF: ' + JSON.stringify(off.slice(0, 4)) : ''));
+    await ctx.close();
   }
 
   /* ---- due: a slipped word comes back first ---- */

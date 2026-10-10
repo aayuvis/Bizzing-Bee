@@ -169,8 +169,19 @@
     return '<button class="bz-btn out" data-bzf="hear" data-w="' + H(w) + '" aria-label="Hear “' + H(w) + '”">' +
       (typeof iconSVG === 'function' ? iconSVG('volume', 16, 2.2) : '') + ' Hear it</button>';
   }
+  /* a place card counts the road the way its board does (trail-road.js place(), the 4.5 brief P0.14): the
+     build cut it for the first walk; a child on a later lap walks a different set of stops, so the same
+     function re-cuts the words for THEIR lap whenever the trail data is on the page */
+  function lapCut(it) {
+    if (it.kind !== 'place' || !window.SB_TRAIL_ROAD || !window.SB_TRAIL) return it;
+    var lap = 1; try { lap = ((kid().trail || {}).lap) || 1; } catch (e) {}
+    if (lap === 1) return it;
+    var p = SB_TRAIL_ROAD.place(SB_TRAIL, String(it.src || '').replace(/^act:/, ''), lap);
+    return p ? Object.assign({}, it, { body: p.body }) : it;
+  }
   function card(x) {
     var it = bodyOf(x.id); if (!it) return '';
+    it = lapCut(it);
     var h = BZ_FEED.feedCard(it, x, play[x.id] || {});
     /* the recorded clip (voice-cdn streams it on a hosted build) — played only on a tap, beside the card's own button */
     if (it.clip) h = h.replace('<div class="bzf-row"><a ', '<div class="bzf-row">' + hearBtn(it) + '<a ');
@@ -247,5 +258,5 @@
   });
 
   window.SB_FEED = { view: view, levelOf: levelOf, levelName: levelName, session: session, dueOf: dueOf, signals: signals, answer: answer,
-    groupsFor: groupsFor, _play: play, reset: function () { for (var k in play) delete play[k]; } };
+    groupsFor: groupsFor, lapCut: lapCut, _play: play, reset: function () { for (var k in play) delete play[k]; } };
 })();

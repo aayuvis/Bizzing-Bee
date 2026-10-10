@@ -51,10 +51,16 @@
         'slaughtered', 'slaughtering', 'slaughterhouse', 'behead', 'beheads', 'beheaded', 'beheading', 'decapitate',
         'decapitated', 'decapitation', 'assassinate', 'assassinated', 'assassination', 'mutilate', 'mutilated', 'mutilation',
         'disembowel', 'disemboweled', 'bloodbath', 'terrorism', 'terrorist', 'terrorists'],
-      /* medical and mental-health stigma: the word is the hurt, whatever its gloss says */
+      /* medical and mental-health stigma: the word is the hurt, whatever its gloss says. The second line
+         (10 Oct 2026, P0.11–P0.13) is the stigma scan's headwords: every word below that the library holds
+         as a record a game could draw. `invalid` and `handicapped` are here because the served gloss IS the
+         person sense ("someone who is incapacitated…", "people who have a physical condition…"); `lame`
+         because its gloss is the disability sense and the word is the playground insult. */
       stigma: ['lunatic', 'lunatics', 'lunacy', 'insane', 'insanely', 'insanity', 'madman', 'madmen', 'madwoman', 'maniac', 'maniacs',
         'psycho', 'psychos', 'schizo', 'spastic', 'spastics', 'spaz', 'cripple', 'cripples', 'crippled', 'midget', 'midgets',
-        'leper', 'lepers', 'lazar', 'mongolism', 'mongoloid', 'mongoloids', 'bedlamite'],
+        'leper', 'lepers', 'lazar', 'mongolism', 'mongoloid', 'mongoloids', 'bedlamite',
+        'crippling', 'maniacal', 'madwomen', 'nutter', 'nutters', 'nutcase', 'nutcases', 'loony', 'loonies', 'looney', 'freak', 'freaks',
+        'freakish', 'handicapped', 'invalid', 'invalids', 'lame', 'lamely', 'lameness', 'harelip', 'hunchback', 'fatso', 'gyp', 'gypped'],
       /* identity words the v4 brief named: old names for a people or a faith, used as labels */
       identity: ['negro', 'negroes', 'negroid', 'negroids', 'gypsy', 'gypsies', 'gipsy', 'heathen', 'heathens', 'heathenish',
         'infidel', 'infidels', 'squaw', 'squaws']
@@ -75,21 +81,111 @@
       '\\berotic', '\\bpornograph', '\\bprostitut', '\\bbrothel', '\\borgasm', '\\baphrodisiac', '\\bgenitals\\b', '\\bcoitus',
       '\\bmurder', '\\bmassacre', '\\bgenocide', '\\btortur', '\\bsuicide\\b', '\\bbehead', '\\bdecapitat', '\\bdisembowel', '\\bmutilat'
     ],
-    /* a child under eleven: alcohol and liquor (minBand '11-15') */
+    /* a child under eleven: alcohol and liquor (minBand '11-15'), and the two words the 4.5 brief named */
     young: {
       minAge: 11,
       words: ['alcohol', 'alcoholic', 'alcoholics', 'alcoholism', 'beer', 'beers', 'liquor', 'liquors', 'whisky', 'whiskey',
         'whiskies', 'whiskeys', 'vodka', 'tequila', 'brandy', 'drunk', 'drunks', 'drunken', 'drunkenly',
-        'drunkenness', 'drunkard', 'drunkards', 'tipsy', 'hangover', 'booze', 'boozer', 'tobacco', 'cigarette', 'cigarettes', 'cigar', 'cigars'],
+        'drunkenness', 'drunkard', 'drunkards', 'tipsy', 'hangover', 'booze', 'boozer', 'tobacco', 'cigarette', 'cigarettes', 'cigar', 'cigars',
+        /* the 4.5 brief (P0.7, 10 Oct 2026): ordinary words the audit saw a game hand a young child — kept in the
+           library and in games from eleven, never struck. `racially` is a word about race a child should meet
+           with a grown-up's context; `maggots` (and its singular) the audit flagged as unpleasant for the youngest. */
+        'racially', 'maggot', 'maggots'],
       /* a gloss that SAYS the word is an alcoholic drink ("strong highly flavored sweet liquor…"), not one
          that merely mentions drink — chocolate is "usually drunk hot", a tavern sells drinks */
       defs: ['^(an? |any )?((?!(of|where|that|which|for|to|with|from|or|and)\\b)[a-z-]+,? ){0,4}(alcoholic (beverage|drink)|liquor)s?\\b', '\\bintoxicat', '\\bdrunkenness\\b']
+    },
+    /* STIGMA IN TEXT (the 4.5 brief, P0.11–P0.13, 10 Oct 2026). Words and phrases that hurt someone for a
+       disability, their mental health, their ethnicity or their body — read against TEXT: every example
+       sentence the app serves, the chapters' `ex`, the trivia questions and facts, every My Feed card, and
+       here against a game word's own headword and gloss. ONE list: the page reads it here (kidSafe), and node
+       reads it through tools/stigma.cjs, its only door (tools/build-feed.cjs drops a matching card;
+       tests/stigma.cjs fails on a match left in any served store). A served sentence that matches loses its
+       sentence — never gets a new one written (qc-stigma-fixes.json is the ledger).
+       Ordinary words are here only in the sense that hurts, by phrase: `crazy` said OF a person, not "drives
+       me crazy"; `invalid` the person, not the argument; `lame` the insult, not the horse that came up lame;
+       `suffers from` a disability or a mental illness, not indigestion. `mad` is not here at all (it means
+       angry), nor `blind`/`deaf`, `dwarf` (a star, a planet, a medical word) or `mute` (a button, a swan).
+       Whole words, case-insensitive unless listed under `cased`. */
+    stigma: {
+      /* every sense: the word itself is the hurt */
+      words: ['cripple', 'cripples', 'crippled', 'crippling', 'cripplingly', 'spastic', 'spastics', 'spaz', 'spazz', 'spazzes',
+        'retarded', 'retardate', 'retardates', 'handicapped', 'wheelchair-bound',
+        'lunatic', 'lunatics', 'lunacy', 'maniac', 'maniacs', 'maniacal', 'maniacally', 'madman', 'madmen', 'madwoman', 'madwomen',
+        'nutter', 'nutters', 'nutcase', 'nutcases', 'nutjob', 'nutjobs', 'nuthouse', 'loony', 'loonies', 'looney', 'looneys', 'schizo', 'schizos',
+        'dumb', 'dumber', 'dumbest', 'dumbly', 'dumbness', 'deaf-mute', 'deaf-mutes',
+        'freak', 'freaks', 'freakish', 'freakishly', 'midget', 'midgets', 'harelip', 'harelipped', 'hunchback', 'hunchbacked',
+        'leper', 'lepers', 'lazar', 'lazars', 'bedlamite', 'bedlamites', 'fatso', 'fatsos', 'invalids',
+        'gyp', 'gypped', 'gypping', 'gypsy', 'gypsies', 'gipsy', 'gipsies', 'eskimo', 'eskimos', 'redskin', 'redskins',
+        'half-breed', 'half-breeds', 'half-caste', 'half-castes', 'squaw', 'squaws', 'negroid', 'negroids', 'mongoloid', 'mongoloids',
+        'mongolism', 'orientals', 'pickaninny', 'pickaninnies'],
+      /* only in the sense that hurts (regular expressions, case-insensitive) */
+      phrases: [
+        /* invalid, the person — never the argument, the ticket or the password */
+        '(an|the|her|his|their|my|our|your) invalid(?=[\'’]s\\b|\\s*[,.;:!?)]|\\s*$|\\s+(who|and|in|for|was|is|had|has|lay|lies|lying|could|would)\\b)',
+        'invalid (mother|father|aunt|uncle|husband|wife|son|daughter|sister|brother|grandmother|grandfather|grandma|grandpa|child|children|parent|parents|patient|patients|chair|chairs|carriage|carriages|soldier|soldiers)\\b',
+        /* retard the noun (the verb "retards your fall" is a word for slowing down) */
+        '(a|an|the|you|you[\'’]re|those|these|such a|some|bunch of|total|complete|stupid|little|like a|what a|are|were) retards?\\b',
+        'mentally (deficient|defective|subnormal|handicapped|retarded)',
+        'confined to (a|his|her|their) wheelchairs?', 'wheelchair bound',
+        /* a label for a person, a place for people */
+        '(crazy|insane|demented|deranged|mental|psycho) (person|people|man|men|woman|women|lady|ladies|guy|guys|kid|kids|boy|boys|girl|girls|patient|patients|case|cases)\\b',
+        '(insane|mental) asylums?', 'mental (hospital|hospitals|institution|institutions|home|homes|ward|wards)\\b', 'criminally insane',
+        'the (insane|mentally ill|lame)(?=\\s*[,.;:!?)]|\\s*$|\\s+(and|or|who|were|was|are|is|in|of|from|with|to)\\b)',
+        /* said OF a person */
+        '(he|she|you|they|we|i)([\'’](s|re|m)|\\s+(is|are|was|were|am|must be|seems?|seemed|looks?|looked|went|goes|go|gone|has gone|had gone|behaved|behaves|acted|acts|acting|behaving))(\\s+(completely|totally|absolutely|clearly|simply|just|so|utterly|quite|a bit|a little|slightly|stark raving))?\\s+(crazy|crazily|insane|insanely|mental|nuts|bonkers|deranged|demented|unhinged|psycho)\\b',
+        /* lame, the insult */
+        'lame (excuse|excuses|joke|jokes|attempt|attempts|idea|ideas|movie|movies|party|parties|story|stories|game|games|kid|kids|guy|guys|person|people|answer|answers|reason|reasons)\\b',
+        '(so|totally|really|that[\'’]s|that is|sounds|sounded|seemed|seems) lame\\b', 'lamely', 'lameness of',
+        /* a disability or a mental illness as suffering */
+        'suffer(s|ed|ing)?(\\s+from)?\\s+(a\\s+|an\\s+)?((mild|severe|chronic|acute|terrible|serious)\\s+)?(case of\\s+)?COND\\b',
+        '(afflicted|stricken) (with|by) COND\\b', 'COND sufferers?\\b'
+      ],
+      /* the conditions the last three phrases name */
+      cond: '(autism|autistic|dyslexia|dyspraxia|depression|anxiety|schizophrenia|bipolar|psychos[ie]s|neuros[ie]s|neurasthenia|mental illness(es)?|mental disorders?|dementia|epilepsy|cerebral palsy|down[\'’]?s? syndrome|paralysis|paraplegia|quadriplegia|blindness|deafness|disabilit(y|ies)|leprosy|anomia|aphasia|stammering|stuttering|a stammer|a stutter|ocd|adhd|ptsd|insanity|madness|lunacy|dwarfism)',
+      /* with case: the lowercase word is the slur, the capitalised one a people or a name (the Mongol Empire) */
+      cased: ['mongols?', '[Pp]sychos?(?![-‐])', 'dumbos?'],
+      /* blanked before the scan — names and titles that carry a listed word without the hurt, each with why */
+      spare: [
+        'Looney Tunes',                                  // the cartoon series' name
+        'Hunchback of Notre[- ]Dame',                    // Hugo's novel
+        'Imaginary Invalid',                             // Molière's play, Le Malade imaginaire
+        'Gypsy,? (Roma,? )?and Traveller',               // the name those communities use for themselves in UK law and the census
+        'Sleeping Gypsy',                                // Henri Rousseau's painting
+        'gypsy jazz',                                    // the music's own name (jazz manouche)
+        'dumbo octopus(es)?',                            // a deep-sea animal's common name
+        'Bacup [\'‘]?Nutters',                           // the Britannia Coco-nut Dancers' own name (the coconut halves they wear)
+        'psycho ?[+=]',                                  // the Greek root written as a word sum: "psycho + pathy"
+        'freak (accident|accidents|wave|waves|storm|storms|weather|occurrence|occurrences|snowstorm|hailstorm|flood|floods|tide|tides)'   // a rare event
+      ]
     }
   };
   var BLOCK = Object.create(null), YOUNG = Object.create(null);   // 'constructor' is a library word
   Object.keys(L.words).forEach(function (k) { L.words[k].forEach(function (w) { BLOCK[w] = k; }); });
   L.young.words.forEach(function (w) { YOUNG[w] = 1; });
   var DEF = new RegExp(L.defs.join('|'), 'i'), YDEF = new RegExp(L.young.defs.join('|'), 'i');
+
+  /* the stigma scan: SPARE is blanked first (same length, so an offset still points into the text), then
+     the case-insensitive words and phrases, then the cased forms. stigmaHits(text) → every hit, in order. */
+  var SG = L.stigma, ALT = function (a) { return a.join('|'); };
+  var SG_I = new RegExp('\\b(' + ALT(SG.words.map(function (w) { return w.replace(/-/g, '[- ]'); })) + '|' +
+    ALT(SG.phrases.map(function (p) { return '(?:' + p.split('COND').join(SG.cond) + ')'; })) + ')\\b', 'gi');
+  var SG_C = new RegExp('\\b(' + ALT(SG.cased) + ')\\b', 'g'), SG_SPARE = new RegExp(ALT(SG.spare), 'gi');
+  /* `head`: the text is a lowercase HEADWORD, where case says nothing — the cased forms (lowercase `mongol` the
+     slur, `Mongol` the people) cannot be told apart there, so a headword is read against the rest of the list */
+  L.stigmaHits = function (text, head) {
+    var t = String(text == null ? '' : text); if (!t) return [];
+    t = t.replace(SG_SPARE, function (m) { return Array(m.length + 1).join(' '); });
+    var out = [], m;
+    (head ? [SG_I] : [SG_I, SG_C]).forEach(function (re) { re.lastIndex = 0; while ((m = re.exec(t))) { out.push({ at: m.index, hit: m[0] }); if (!m[0]) re.lastIndex++; } });
+    return out.sort(function (a, b) { return a.at - b.at; });
+  };
+  /* the common case first: a text with no candidate at all skips the spare pass (fixCore asks this of the
+     whole 130,000-word library as it loads) */
+  L.stigmaHit = function (text, head) {
+    var t = String(text == null ? '' : text); if (!t) return null;
+    SG_I.lastIndex = 0; SG_C.lastIndex = 0; if (!SG_I.test(t) && (head || !SG_C.test(t))) return null;
+    var h = L.stigmaHits(t, head); return h.length ? h[0].hit : null; };
 
   /* why(word, age) → null when a game may serve it, else the reason (a family name). Pure: it reads
      only the record, the age, and the three page lists when they are on the page. A record's verdict
@@ -102,6 +198,8 @@
     var S = window.SB_CORE_STRIKE; if (S && S.has && S.has(k)) return 'struck';
     var H = window.SB_WORDS_HELD; if (H && H.indexOf && H.indexOf(k) >= 0) return 'held';
     if (d && DEF.test(d)) return 'definition';
+    /* the stigma scan, on the headword and on the gloss a game would put on screen */
+    if (L.stigmaHit(k, true) || (d && L.stigmaHit(d))) return 'stigma';
     return null;
   }
   function young(w) { var k = String(w.w).toLowerCase().trim(), d = String(w.d || ''); return !!(YOUNG[k] || (d && YDEF.test(d))); }

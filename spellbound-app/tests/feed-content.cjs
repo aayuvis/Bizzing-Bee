@@ -29,6 +29,7 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const APP = path.resolve(__dirname, '..');
 const { load, regionName } = require(path.join(APP, 'tools', 'feed-corpus.cjs'));
+const { leak: rootLeak } = require(path.join(APP, 'tools', 'root-leak.cjs'));
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
@@ -78,7 +79,9 @@ function resolve(it) {
   if (k === 'act') {
     const ai = C.ACTS.findIndex(a => a.id === p[1]); if (ai < 0) fail('no region ' + p[1]);
     const a = C.ACTS[ai], u0 = C.UNITS[a.units[0]], u1 = C.UNITS[a.units[a.units.length - 1]];
-    if (it.title !== a.title || !has(it.body, u0.title) || !has(it.body, u1.title) || !has(it.body, String(a.units.length))) fail('not the region\'s own road');
+    const road = C.ROAD.place(C.TRAIL, a.id, 1);
+    if (!road || it.title !== a.title || it.body !== road.body || !has(it.body, road.first) || !has(it.body, road.last)) fail('not the region\'s own road as its board counts it');
+    void u0; void u1;
     if (it.level !== ai + 1) fail('the wrong level');
   } else if (k === 'unit' && p[2] === 'qs') {
     const u = C.UNITS[p[1]], q = u && (u.qs || [])[+p[3]];
@@ -164,10 +167,35 @@ function resolve(it) {
     if (new Set(it.play.opts).size !== it.play.opts.length) fail('two options are the same');
     const q = k === 'trivia' && trivia[p[1]];
     if (!(q && q.th === 'wbreak') && (it.play.q + ' ' + it.title).toLowerCase().includes(String(it.play.opts[0]).toLowerCase())) fail('the question gives its answer away');
+    if (q && rootLeak(q)) fail('a root question whose answer\'s stem sits in its prompt (' + rootLeak(q) + ')');
   }
 }
 const bad = []; ITEMS.forEach(it => { try { resolve(it); } catch (e) { bad.push(e.message); } });
 ok(!bad.length, `every src resolves and every card's words are its source's (${ITEMS.length - bad.length}/${ITEMS.length})` + (bad.length ? ' — ' + bad.slice(0, 3).join(' · ') : ''));
+/* COUNTS (the 4.5 brief, P0.14/P0.15): a place card's number is its region's BOARD count — stops AND
+   checkpoints on the first walk — from trail-road.js, the function trail.js builds the board from. Held three
+   ways: the card says place(); place() agrees with the rule the board documents (lap-1 units, a checkpoint
+   after every checkpointEvery-th), re-derived here independently; and trail.js's seq() IS that function. The
+   browser half (tests/feed-screen.cjs "counts") reads the live board's "Stop n of N" for all nine. */
+{
+  const every = C.TRAIL.rules.checkpointEvery || 4, rows = [];
+  for (const a of C.ACTS) {
+    for (const lap of [1, 2, 3]) {
+      const n = a.units.map((id) => C.UNITS[id]).filter((u) => u && (u.laps || [u.lap || 1]).includes(lap)).length;
+      const board = n + Math.floor(n / every), fn = C.ROAD.count(C.TRAIL, a.id, lap);
+      if (lap === 1) { const card = ITEMS.find((i) => i.id === 'pl-' + a.id), said = card && +(String(card.body).match(/^(\d+) stops on this road/) || [])[1];
+        rows.push({ act: a.id, board, fn, said, ok: board === fn && said === board }); }
+      else if (fn !== board) rows.push({ act: a.id + '@' + lap, board, fn, said: null, ok: false });
+    }
+  }
+  const off = rows.filter((r) => !r.ok);
+  ok(rows.filter((r) => r.said != null).length === C.ACTS.length && !off.length, 'every region\'s place card says its board\'s count (stops + checkpoints, lap 1), and the shared function agrees with the board\'s rule on every lap: ' +
+    rows.filter((r) => r.said != null).map((r) => r.act + ' ' + r.said).join(' · ') + (off.length ? ' — OFF: ' + JSON.stringify(off) : ''));
+  const trail = fs.readFileSync(path.join(APP, 'trail.js'), 'utf8');
+  ok(/function seq\(c\) \{ return window\.SB_TRAIL_ROAD\.nodes\(T\(\), course\(\), lapOf\(c\)\); \}/.test(trail) && /src="trail-road\.js\?v=[^"]+"><\/script>\s*<script defer src="trail\.js/.test(fs.readFileSync(path.join(APP, 'index.html'), 'utf8')),
+    'the board is built from the same function: trail.js seq() is SB_TRAIL_ROAD.nodes, and trail-road.js loads just before trail.js');
+  ok(!/units\.length \+ ' stops/.test(fs.readFileSync(path.join(APP, 'tools', 'build-feed.cjs'), 'utf8')), 'and the feed builder no longer types a count from units.length');
+}
 /* the quotation library's own namespace — a src or kind naming it; the library WORDS quote, quota and quotient are not it */
 ok(!ITEMS.some(i => /^quot(e|es|es-lib|ation)s?:/i.test(i.src) || /quote/i.test(i.kind)), 'nothing is cut from the unsourced quotation library');
 const seenKey = {}; let dup = null;
@@ -251,4 +279,9 @@ process.exit(fails ? 1 : 0);
    · the engine's tier rule widened to level n+2           → "no card above n+1" fails (level 7 saw a level-9 word)
    · the engine's due bonus removed                        → both "slipped" checks fail
    · the engine's band filter removed                      → "above their band" fails (a 5–7 child saw pq-w1111)
-   · the build's near-duplicate pass switched off          → "≥ 80% the same words" fails (uq-u45-0 ≈ uq-u50-0) */
+   · the build's near-duplicate pass switched off          → "≥ 80% the same words" fails (uq-u45-0 ≈ uq-u50-0)
+   (10 Oct 2026, the 4.5 brief)
+   · the place card put back on units.length                → "says its board's count" fails (all nine regions) and the
+                                                             cards fail to resolve
+   · trail.js seq() given its own loop back                 → "built from the same function" fails
+   · the root-leak drop taken out of the build and the bank → "every src resolves" fails on the root questions */

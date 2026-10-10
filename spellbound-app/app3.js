@@ -1693,6 +1693,10 @@ function fixCore(v){ try{
       if(Object.prototype.hasOwnProperty.call(CORE_FIX, k)) r.d = CORE_FIX[k];
       if(r.d && !SLUR_OK.has(k) && SLUR_DEF.test(r.d)) continue;
       if(ROMAN_NUM(k, r.d)) continue;
+      /* a sentence that hurts someone for a disability, their mental health, their ethnicity or their body
+         goes, the word stays (the 4.5 brief, P0.11): the list is kid-safe.js's, the served shards were
+         cleaned at rest by tools/stigma-fix.cjs, and this 45 MB library is cleaned here as it loads */
+      if(r.s && window.SB_KID_SAFE && SB_KID_SAFE.stigmaHit && SB_KID_SAFE.stigmaHit(r.s)) delete r.s;
       out.push(r);
     }
     return out; }catch(e){ return v; } }

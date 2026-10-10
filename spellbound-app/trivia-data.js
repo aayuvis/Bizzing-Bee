@@ -7,7 +7,7 @@ window.SB_TRIVIA={
   questions:[],
   version:7,
   count:31159,
-  byLevel:{"1":5230,"2":5858,"3":6519,"4":6661,"5":6871},
+  byLevel:{"1":5230,"2":5857,"3":6517,"4":6660,"5":6864},
   _L:{}, _wait:{},
   loaded:function(lv){ return !!this._L[lv]; },
   /* Push a shard in and tell the app its caches are stale. */

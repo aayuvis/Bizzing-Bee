@@ -138,9 +138,25 @@
       if (stopOpen(hit.r, j)) { s.reg = hit.r.id; s.stop = parts[0]; if (parts[1] === 'learn') s.v = 'lesson'; else if (parts[1] === 'words') s.v = 'words'; } }
     try { render(); } catch (e) {} }
 
+  /* ------------------------------------------------------------------ the one word door's list */
+  /* EVERY word an item puts on screen — C, the answer and each wrong answer — passes kidSafe for THIS child
+     (app3's door to kid-safe.js: its families, the stigma scan of the word and its gloss, and the under-eleven
+     list). An item that fails is never asked: not in a stop, a level check, the clock or the Mock Analogy Bee
+     (the 4.5 brief, P0.7 — the Atlas was asking an eight-year-old about murder). tests/word-door-seeded.cjs. */
+  function itemWords(it) { return [it[2], it[3]].concat(it.slice(4).map((x) => String(x).split('|')[0])); }
+  /* remembered per item for this child's age (the Bee asks the whole pool every round) */
+  let okFor = '', okMemo = {};
+  function itemOK(id) { const A0 = D(), it = A0 && A0.items[id]; if (!it) return false; if (typeof W.kidSafe !== 'function') return true;
+    const c = kid(), key = c ? (c.age || '') + '|' + (c.ageBand || '') : '';
+    if (key !== okFor) { okFor = key; okMemo = Object.create(null); }
+    if (id in okMemo) return okMemo[id];
+    const G = A0.gloss || {};
+    return (okMemo[id] = itemWords(it).every((w) => { try { return !!W.kidSafe({ w, d: G[w] || '' }, c); } catch (e) { return true; } })); }
+  const safeIds = (ids) => (ids || []).filter(itemOK);
+
   /* ------------------------------------------------------------------ rounds */
   const PER = { practice: 8, check: 8, level: 10 };
-  function itemsFor(kind, hit, r) { const all = hit && hit.s ? hit.s.items : r.check; const seen = rec().seen;
+  function itemsFor(kind, hit, r) { const all = safeIds(hit && hit.s ? hit.s.items : r.check); const seen = rec().seen;
     const n = PER[kind] || 8; const sr = hit && hit.s ? stopRec(hit.s.id) : regRec(r.id);
     if (kind === 'practice') { const k = sr.prac = (sr.prac || 0) + 1; const off = (k * n) % Math.max(1, all.length); return [...Array(Math.min(n, all.length))].map((_, i) => all[(off + i) % all.length]); }
     /* evidence is on items this child has not answered before, wherever they can be found */
@@ -204,7 +220,7 @@
     const lvHi = r.lv[1]; const pool = []; const A0 = D();
     regions().forEach((rg) => { if (rg.lv[0] <= lvHi) { rg.stops.forEach((st) => pool.push(...st.items)); } });
     (A0.games || []).forEach((id) => { const it = A0.items[id]; if (it && it[1] <= lvHi + 1) pool.push(id); });
-    const seed = day() + '|clock|' + (rec().n++); const ord = perm(seed, pool.length).map((i) => pool[i]);
+    const safe = safeIds(pool); const seed = day() + '|clock|' + (rec().n++); const ord = perm(seed, safe.length).map((i) => safe[i]);
     s.run = { kind: 'clock', ids: ord, seed, i: 0, right: 0, asked: 0, paid: 0, e0: (W.earnedSoFar ? earnedSoFar() : 0), log: [], n: ord.length, opts: 4, phase: 'pick', left: CLOCK_MS, reg: r.id };
     s.v = 'run'; prep(s.run); store(); render(); runClock(s.run); }
   function clockAdd(ms) { const g = S().run; if (g) g.left = Math.max(0, g.left + ms); }
@@ -444,7 +460,7 @@
     render(); }
   function wordsView() { const s = S(); const hit = stopById(s.stop); if (!hit || !hit.s) { s.v = 'map'; return mapView(); }
     const L = lesson(hit.s.lesson); const A0 = D(); const seen = new Set(); const list = [];
-    for (const id of hit.s.items) { const it = A0.items[id]; if (!it) continue; for (const w of [it[2], it[3]]) { if (seen.has(w)) continue; seen.add(w); list.push(w); } if (list.length >= 24) break; }
+    for (const id of safeIds(hit.s.items)) { const it = A0.items[id]; if (!it) continue; for (const w of [it[2], it[3]]) { if (seen.has(w)) continue; seen.add(w); list.push(w); } if (list.length >= 24) break; }
     const rows = list.map((w) => `<li class="anl-word"><button class="anl-say" data-act="anl" data-arg="say:${escA(w)}" aria-label="${escA('Hear ' + w)}">${ic('volume', 16)}</button><span class="anl-ww">${esc(w)}</span><span class="anl-wd">${esc(A0.gloss[w] || '')}</span></li>`).join('');
     return `<div class="anl-page">${head('Meet the words', esc(L.title + ' · ' + hit.r.name), 'anl', hit.r.name, lic(L.id, 20))}
       <div class="anl-card"><p class="anl-note">The words you will link in this stop. Read each one and hear it; knowing a word is half of every analogy.</p><ul class="anl-words">${rows}</ul>
@@ -540,7 +556,7 @@
   const LVL_LO = { easy: 1, medium: 3, hard: 5, champ: 7 };
   function beeLevel() { let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {}
     if (LVL_LO[L]) return LVL_LO[L]; const h = here(); return h ? h.r.lv[0] : 1; }
-  function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); return [...ids]; }
+  function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); return safeIds([...ids]); }
   const B = () => state.anlBee;
   function openBee() { stopClock(); state.anlBee = { phase: 'lobby' }; state.nav = 'anlbee'; state.screen = 'app'; state.game = null; try { render(); } catch (e) {} }
   const SPARE = ['scopey', 'samurai', 'crystal', 'neko', 'ninja'];
@@ -869,7 +885,7 @@
 
   /* ------------------------------------------------------------------ the door */
   const API = { open, openRoute, view, beeView, openBee, stop, route, act, beeAct, beeBest, toolView, openTool, toolRoute, toolAct, here: () => { const h = here(); return h ? { region: h.r.id, name: h.r.name } : null; },
-    _question: question, _bridge: bridgeQ, _linkLine: linkLine };
+    _question: question, _bridge: bridgeQ, _linkLine: linkLine, _safeIds: safeIds };
   W.SB_ANL = API;
   try { Object.assign(app, { anl: (a) => act(a), anlBee: (a) => beeAct(a), anlTool: (a) => toolAct(a), anlToolType: (v) => toolType(v), anlToolKey: (e) => toolKey(e) }); } catch (e) {}
   try { if (state.nav === 'analogy' || state.nav === 'anlbee' || state.nav === 'anltool') render(); } catch (e) {}

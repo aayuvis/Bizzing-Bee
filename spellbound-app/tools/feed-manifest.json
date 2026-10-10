@@ -1,18 +1,18 @@
 {
- "total": 28874,
- "agnostic": 3893,
+ "total": 28830,
+ "agnostic": 3891,
  "byKind": {
   "place": 9,
   "lesson": 760,
   "quiz": 208,
   "word": 1545,
-  "usage": 6665,
-  "hook": 1511,
+  "usage": 6659,
+  "hook": 1510,
   "origin": 3169,
-  "play": 3498,
-  "spotlight": 5531,
-  "analogy": 1576,
-  "sounds": 623,
+  "play": 3468,
+  "spotlight": 5529,
+  "analogy": 1572,
+  "sounds": 622,
   "saying": 1312,
   "game": 3,
   "story": 36,
@@ -23,50 +23,51 @@
   [
    1,
    "the Meadow",
-   2222
+   2221
   ],
   [
    2,
    "the Great Library",
-   2817
+   2812
   ],
   [
    3,
    "the Roman Forum",
-   3521
+   3515
   ],
   [
    4,
    "the Storm of Elements",
-   2837
+   2827
   ],
   [
    5,
    "the Root Kingdoms",
-   3127
+   3125
   ],
   [
    6,
    "the Wide Strait",
-   2773
+   2772
   ],
   [
    7,
    "the Trickster Junkyard",
-   2054
+   2048
   ],
   [
    8,
    "the Subject Sprints",
-   2994
+   2988
   ],
   [
    9,
    "the Big Stage",
-   2636
+   2631
   ]
  ],
- "nearDuplicatesDropped": 1465,
+ "stigmaDropped": 4,
+ "nearDuplicatesDropped": 1463,
  "nearDuplicateExamples": [
   [
    "uq-u1-1",

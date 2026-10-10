@@ -211,8 +211,6 @@ window.SB_WORDS_PATCH = function () {
     /* was "During hysterical conditions various functions of the human body are disordered." */
     hysterical: 'The crowd grew hysterical with excitement when the band finally walked onto the stage.',
     /* unkind or inaccurate sentences under the 4 Oct rewrites */
-    dumbness:   'The dumbness of the plan became clear the moment the paper boat began to sink.',
-    bedlamite:  'In the old novel, the villagers unkindly called the wandering stranger a bedlamite.',
     gentile:    'Jewish and gentile neighbours worked side by side to clean up the park.',
     gentiles:   'The synagogue opened its doors to Jews and gentiles alike for the summer concert.',
     psychotic:  'The doctor explained that with the right care, a psychotic illness can often be treated.',
