@@ -52,9 +52,9 @@ const LEVEL_WORDS = WORDS; // the current level's word list
    sliced into 20 stages with growing word counts (14 → 52). Mastering a stage unlocks the next. */
 const STAGE_NAMES = ['Sprout','Seedling','Sapling','Climber','Explorer','Voyager','Scholar','Wordsmith','Linguist','Adept','Tactician','Strategist','Virtuoso','Maven','Sage','Luminary','Champion','Grandmaster','Prodigy','Legend'];
 const DEFAULT_STAGE_COUNT = 20;
-let _defStages = null;
-function defaultStages(){ if(_defStages) return _defStages;
-  const nsf=(window.SB_DATA&&SB_DATA.nsf)||[];
+/* THE ALGORITHM, over a word source. tools/build-curriculum.cjs runs exactly this over the boot word tier and writes
+   its answer into curriculum-data.js; tests/curriculum.cjs runs it again and compares. */
+function buildDefaultStages(nsf){
   const seen=new Set(); const pool=[];
   for(const w of nsf){ if(!w||!w.w) continue; const k=nkey(w.w); if(seen.has(k)) continue;
     if(!(w.d&&w.d.length>4)) continue; if(!/^[a-z]+$/i.test(w.w)) continue; if(w.w.length<3||w.w.length>16) continue;
@@ -72,6 +72,29 @@ function defaultStages(){ if(_defStages) return _defStages;
   if(stages[0]){ const cur=[]; const cs=new Set();
     for(const w of WORDS.concat(stages[0].words)){ const k=nkey(w.w); if(!cs.has(k)){ cs.add(k); cur.push(w); } }
     stages[0].words=cur.slice(0,16); }
+  return stages; }
+let _defStages = null;
+/* THE CURRICULUM IS GENERATED DATA (road to 4.5, P1.13 step 1). The 20 stages used to be built HERE, once, from
+   whatever SB_DATA.nsf held at the first call: a returning speller's first render built them from the boot word tier
+   (words-data.js + words-extra.js + words-patch.js), a new child's first call could come after the second shard and
+   build them from 41,000 words. The boot tier is lazy now (boot-lazy group `words1`), so that first call could come
+   at any moment — and the stages are the steady state every returning child has been climbing: SB_CURRICULUM.stages
+   (curriculum-data.js, written by tools/build-curriculum.cjs from buildDefaultStages over the boot tier, never typed).
+   The words map back to the SAME record objects the algorithm picks (stage 1 leads with app2's WORDS; every other key
+   is its first record in the shard that passes the filter), so a card, a drill and a count read exactly what they
+   read before. Before the shard is in, the stages are their keys as thin records ({w}) — counts and keys only, never
+   memoised; nothing that shows a meaning or starts a drill runs before the shard (callAct's gate, wordsIn). */
+function defaultStages(){ if(_defStages) return _defStages;
+  const C=window.SB_CURRICULUM||{};
+  const mk=(by)=>(C.stages||[]).map((ks,i)=>({ n:i+1, label:STAGE_NAMES[i]||('Stage '+(i+1)), words:ks.map(w=>by(w)||{w}) }));
+  if(!wordsIn()) return mk(()=>null);   /* keys only, before the shard: never memoised */
+  if(!C.stages) return (_defStages=buildDefaultStages((window.SB_DATA&&SB_DATA.nsf)||[]));
+  const first=new Map(), starter=new Map();
+  for(const w of WORDS){ const k=nkey(w.w); if(!starter.has(k)) starter.set(k,w); }
+  for(const w of (SB_DATA.nsf||[])){ if(!w||!w.w) continue; const k=nkey(w.w); if(first.has(k)) continue;
+    if(!(w.d&&w.d.length>4)) continue; if(!/^[a-z]+$/i.test(w.w)) continue; if(w.w.length<3||w.w.length>16) continue; first.set(k,w); }
+  const stages=mk(w=>first.get(nkey(w))||null);
+  if(stages[0]) stages[0].words=C.stages[0].map(w=>starter.get(nkey(w))||first.get(nkey(w))||{w});
   _defStages=stages; return _defStages; }
 /* ---- Generalized staging: EVERY list is split into difficulty-sorted stages you climb
    through until the whole list is mastered. Default uses the 20 curated stages above;
@@ -200,6 +223,10 @@ const _hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 /* Ask boot-lazy for a deferred data file at the door of the feature that needs
    it. Safe to call repeatedly and safe to call before boot-lazy exists. */
 function lazyNeed(what, cb){ try{ if(window.SB_LAZY) return SB_LAZY.need(what, cb); }catch(e){} if(cb) cb(); }
+/* IS THE BOOT WORD TIER IN? (road to 4.5, P1.13 step 1) words-data.js + words-extra.js + words-patch.js left the first
+   screen: boot-lazy group `words1`, first on the idle queue and in every word door's group. Home draws without it
+   (SB_CURRICULUM carries what Home shows); anything that starts a drill or shows a meaning waits for it (callAct). */
+function wordsIn(){ try{ return !window.SB_LAZY||SB_LAZY.ready('words1'); }catch(e){ return true; } }
 let _homIdx=null;
 function homIndex(){ if(_homIdx) return _homIdx; const m=Object.create(null); try{ (window.SB_HOM||[]).forEach(g=>g.forEach(w=>{ m[w]=g; })); }catch(e){} return (_homIdx=m); }
 function homPartners(w){ const g=homIndex()[nkey(w)]; return g?g.filter(x=>x!==nkey(w)):[]; }
@@ -208,6 +235,17 @@ function diacritic(w){ const o=window.SB_DIACRITICS||{}; const k=nkey(w); if(_ha
   try{ const k2=k.normalize('NFD').replace(/[̀-ͯ]/g,''); if(k2!==k&&_hasOwn(o,k2)) return o[k2]; }catch(e){}
   return null; }
 function trickAnal(w){ if(w._tk) return w._tk;
+  /* while the boot tier is landing (its three files arrive one after another), nothing is cached on a record: trickSeal
+     scores the whole tier when it is in, the way Home's first render always did */
+  try{ if(window.SB_LAZY&&SB_LAZY.state('words1')==='loading') return trickRaw(w); }catch(e){}
+  return trickRaw(w,true); }
+/* THE BOOT TIER'S SCORES (P1.13 step 1). Home's first render used to sort every boot record by spellDiff before any
+   lazy file had landed, so each one carried a score with NO homophone bonus (SB_HOM is in sounds-data.js, lazy) for
+   the rest of the visit — the score every list, ladder and cluster order a returning speller saw was built on. Home no
+   longer touches the records, so when `words1` lands they are scored here, the same way, before anything reads them. */
+function trickSeal(recs){ recs=recs||(window.SB_DATA&&SB_DATA.nsf)||[]; const h=_homIdx; _homIdx=Object.create(null);
+  try{ for(const w of recs) if(w&&w.w&&!w._tk) trickRaw(w,true); }finally{ _homIdx=h; } }
+function trickRaw(w,keep){
   const s=String(w.w||'').toLowerCase(), p=String(w.p||'');
   const f={epon:0,silent:0,fr:0,gk:0,end:0,dbl:0,vow:0};
   if((w.t||[]).indexOf('eponyms')>=0) f.epon=12;
@@ -235,7 +273,7 @@ function trickAnal(w){ if(w._tk) return w._tk;
   score=Math.min(60,score);
   let cls='plain',best=4; for(const k in f){ if(f[k]>best){best=f[k];cls=k;} }
   if(f.epon) cls='epon';                             // the name-story concept outranks its side-effects
-  try{ w._tk={score,cls}; }catch(e){}
+  if(keep){ try{ w._tk={score,cls}; }catch(e){} }
   return {score,cls}; }
 function trickScore(w){ return trickAnal(w).score; }
 function trickLabel(w){ const a=trickAnal(w); return (a.cls!=='plain'&&a.score>=10)?TRICK_LABELS[a.cls]:null; }
@@ -254,12 +292,23 @@ const LIB_LEVEL_SIZE = 120;
 const champLevelSize = (k) => 24 + (k-1)*6;                 // L1=24 … L20=138  (~1,620 total)
 let _champWordCount = null;
 function champWordCount(){ if(_champWordCount!=null) return _champWordCount; let s=0; for(let k=1;k<=CHAMP_LEVELS;k++) s+=champLevelSize(k); _champWordCount=s; return s; }
-let _journeySorted = null;
-function journeySorted(){ if(_journeySorted) return _journeySorted;
-  const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const seen=new Set(); const pool=[];
+/* THE ALGORITHM, over a word source (tools/build-curriculum.cjs runs it over the boot tier; tests/curriculum.cjs again) */
+function buildJourneySorted(src){ const seen=new Set(); const pool=[];
   for(const w of src){ if(!w||!w.w) continue; const k=nkey(w.w); if(seen.has(k)) continue; seen.add(k); pool.push(w); }
   pool.sort((a,b)=> (spellDiff(a)-spellDiff(b)) || ((b.bp||0)-(a.bp||0)) ); // easy→hard by trickiness
-  _journeySorted=pool; return pool; }
+  return pool; }
+let _journeySorted = null;
+/* THE LADDER IS GENERATED DATA too (road to 4.5, P1.13 step 1): SB_CURRICULUM.ladder, the order buildJourneySorted
+   gives the boot word tier — which is what a returning speller's first render built and kept (_journeySorted was never
+   dropped), with no homophone bonus (SB_HOM is lazy and had not landed; trickSeal below keeps the boot records' scores
+   that way). It used to be timing-dependent: a new child whose first call came after words-data-2.js climbed a
+   41,000-word ladder that night and an 8,000-word one the next day. Keys map to the shard's first record for each. */
+function journeySorted(){ if(_journeySorted) return _journeySorted;
+  const C=window.SB_CURRICULUM||{};
+  if(!wordsIn()) return (C.ladder||[]).map(w=>({w}));   /* keys only, before the shard: never memoised */
+  if(!C.ladder) return (_journeySorted=buildJourneySorted((window.SB_DATA&&SB_DATA.nsf)||[]));
+  const first=new Map(); for(const w of (SB_DATA.nsf||[])){ if(!w||!w.w) continue; const k=nkey(w.w); if(!first.has(k)) first.set(k,w); }
+  _journeySorted=C.ladder.map(w=>first.get(nkey(w))||{w}); return _journeySorted; }
 let _journeyOrder = null;
 function journeyOrder(){ if(_journeyOrder) return _journeyOrder;
   const all=journeySorted();
@@ -273,8 +322,13 @@ let _journeyStages = null;
 function journeyStages(){ if(_journeyStages) return _journeyStages;
   const {champ,rest}=journeyOrder(); const stages=[]; let i=0;
   for(let k=1;k<=CHAMP_LEVELS;k++){ const sz=champLevelSize(k); stages.push({ n:k, label:'Stage '+k, words:champ.slice(i,i+sz), champ:true }); i+=sz; }
-  // Sprinkle the Scripps championship words across the toughest Champ levels (15–20).
-  const scripps=(window.SB_SCRIPPS||[]);
+  /* Sprinkle the Scripps championship words across the toughest Champ levels (15–20).
+     NOT ON THE LADDER A CHILD CLIMBS (P1.13 step 1, measured): _journeyStages was memoised at Home's first render, and
+     scripps-data.js is lazy (the `lists` group, the idle queue), so no returning speller's ladder ever had them — a
+     child on the Journey climbed this one, unsprinkled. With the boot tier lazy the first build can come after
+     scripps lands, which would re-cut every Library level under a child's feet. The ladder stays the one they climb;
+     sprinkling is an owner's call, made as data (tools/build-curriculum.cjs), never by load timing. */
+  const scripps=[];
   if(scripps.length){ const seen=new Set(); stages.forEach(s=>(s.words||[]).forEach(w=>seen.add(nkey(w.w))));
     const fresh=scripps.filter(w=>w&&w.w&&!seen.has(nkey(w.w)));
     const startLvl=15, span=CHAMP_LEVELS-startLvl+1; // 15..20 → 6 levels
@@ -1904,12 +1958,24 @@ let _wohPool=null, _wohBand={};
    above). Home's first screen carries only the boot word tier, which holds no band-4 word at all: a band with
    nothing loaded yet gives null and the tile holds its space (cardHold) until the library lands, never a word
    from another band. wohPool() with no band is the whole old pool (tests/struck-words.cjs reads it). */
+/* THE BAND POOL, over a word source (tools/build-curriculum.cjs runs it over the boot tier for the seed below) */
+function wohBandPool(src,b,B,on){ const p=[];
+  for(const e of src){ if(!e||!e.w||!e.d||!e.p||/[^a-zA-Z]/.test(e.w)) continue; const len=e.w.length; if(len<5||len>13||!wohFit(e)) continue;
+    if(window.SB_KID_SAFE&&!SB_KID_SAFE.check(e,8)) continue;
+    if((on?B.of(e):B.bounds(e).hi)===b) p.push(e); }
+  return p; }
+/* THE SEED (road to 4.5, P1.13 step 1). Home's first screen no longer carries the boot word tier, so until it lands the
+   word of the hour draws from SB_CURRICULUM.woh: for each band, the pool wohBandPool gives over that tier with the
+   bands not yet loaded (each record's own ceiling) — exactly the pool a returning speller's first render drew from —
+   in the same order, carrying only what the tile shows (word, meaning, respelling). The same hour picks the same word
+   as before, and settled() pins it: the card never rewrites when the shard lands. */
+function wohSeed(b){ const C=window.SB_CURRICULUM, S=C&&C.woh&&C.woh[b]; if(!S) return null;
+  const m=_wohBand['seed'+b]; if(m) return m.p;
+  const p=S.map(r=>({w:r[0],d:r[1],p:r[2],_seed:1})); _wohBand['seed'+b]={k:'seed',p}; return p; }
 function wohPool(b){ const src=(window.SB_DATA&&SB_DATA.nsf)||[];
-  if(b){ const B=window.SB_BAND, on=!!(B&&B.ready&&B.ready()), k=src.length+'|'+on; const m=_wohBand[b];
-    if(m&&m.k===k) return m.p; const p=[];
-    for(const e of src){ if(!e||!e.w||!e.d||!e.p||/[^a-zA-Z]/.test(e.w)) continue; const len=e.w.length; if(len<5||len>13||!wohFit(e)) continue;
-      if(window.SB_KID_SAFE&&!SB_KID_SAFE.check(e,8)) continue;
-      if((on?B.of(e):B.bounds(e).hi)===b) p.push(e); }
+  if(b){ if(!wordsIn()){ const sd=wohSeed(b); if(sd) return sd; }
+    const B=window.SB_BAND, on=!!(B&&B.ready&&B.ready()), k=src.length+'|'+on; const m=_wohBand[b];
+    if(m&&m.k===k) return m.p; const p=wohBandPool(src,b,B,on);
     _wohBand[b]={k,p}; return p; }
   if(_wohPool) return _wohPool; const out=[];
   for(const e of src){ if(!e||!e.w||!e.d||!e.p||!e.s) continue; if(/[^a-zA-Z]/.test(e.w)) continue;
@@ -2450,6 +2516,8 @@ const app = {
          choice — the other one is a tap away, and the look only changes when a world is tapped) */
       if(nk==='world' && !S.draft.theme) S.draft.theme=ONB_THEMES.find(id=>FREE_THEMES.indexOf(id)>=0)||FREE_THEMES[0];
       set({onbStep:S.onbStep+1}); if(nk==='place') onbPlaceBegin(); return; }
+    /* the end of setup is a first WORD (or the chosen stop's lesson): it waits for the boot word tier (P1.13 step 1) */
+    if(!wordsIn()){ wordsHold(()=>app.onbNext()); return; }
     const placed=app._finishOnb(); set({screen:'app', nav:'home'});
     /* A8 (FIX-BEE v2): the first thing a new speller does is SPELL — one spoken word, right inside
        the first minute, celebrated — and then the first Atlas lesson through the one next step.
@@ -2626,7 +2694,9 @@ const app = {
          word that was tapped with whatever is known about it — a thin card is a small
          failure, the wrong word is the bug being fixed. */
       if(!w) w={w:q}; }
-    else w=wordOfHour();
+    else{ w=wordOfHour();
+      /* the hour's word may have been pinned from the seed (wohSeed) before the shard was in: open its full record */
+      if(w&&w._seed){ const k=nkey(w.w); try{ w=wordIndex()[k]||wordDB().get(k)||w; }catch(e){} } }
     if(!w){ flash('No word right now — try again soon'); return; }
     set({wordCard:w}); try{ say(w.w); }catch(e){} },
   wordCardSay:(w)=>{ try{ say(w); }catch(e){} },
@@ -6986,7 +7056,11 @@ function viewApp(){
     return `<button data-act="setNav" data-arg="${key}" aria-current="${on?'page':'false'}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';
-  if(S.nav==='home') content=viewHome();
+  /* A SCREEN THAT READS WORDS (road to 4.5, P1.13): reached before the boot word tier is in — an address, a PIN pass, an
+     opener that sets the nav — the hive loader holds the page and the tier is asked for; it renders when it lands */
+  const _need=(!NAV_WORDLESS[S.nav]&&!wordsIn())?'words1':null;
+  if(_need) content=(lazyNeed(_need,()=>render()), hiveLoader('fetching the words…'));
+  else if(S.nav==='home') content=viewHome();
   else if(S.nav==='concepts') content = S.conceptSel ? viewConceptDetail() : viewConceptList();
   else if(S.nav==='levelup') content=viewLevelUp();
   else if(S.nav==='train') content=viewTrain();
@@ -7376,19 +7450,13 @@ function homeToday(c){ const m=todayMetrics(c), rings=[m.pApp,m.pPrac,m.pWords],
     <button class="sb-td-b sb-td-main" data-act="openToday" aria-label="${escA("Today's ten: "+s[0]+'. '+s[1])}"><span><b>Today's ten</b><i> · ${s[0]}</i></span><span class="sb-td-go">${s[1]}<span class="sb-td-ar"> ${iconSVG('arrow',13,2.4)}</span></span></button>
     ${state.feedOff?'':`<button class="sb-td-b" data-act="setNav" data-arg="feed" aria-label="${escA('My Feed: '+feed)}">${navIcon('feed',18,true)}<span><b><i>My </i>Feed</b><i> · ${feed}</i></span></button>`}</div>`; }
 function viewHome(){
-  const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
-  const focusedH=((c.ageMode)||((c.age||9)<=11?'playful':'focused'))==='focused';
-  const aKey=activeListKey(); const fIdx=formIdx(heroLevel(c));
+  /* NOTHING HERE READS A WORD RECORD (road to 4.5, P1.13 step 1): Home draws before the boot word tier is in. Its first
+     render used to count the active list's stage, its concept chapters and its Word Journeys into fourteen locals that
+     nothing on the screen printed — and that dead count was what made every boot record a first-paint read. They are
+     gone; what Home shows comes from the child's record, the Atlas and SB_CURRICULUM (the word of the hour's seed). */
+  const S=state; const c=active(); ensureLists(c);
+  const aKey=activeListKey();
   const greetHour=new Date().getHours(); const greeting=greetHour<12?'Good morning,':greetHour<18?'Good afternoon,':'Good evening,';
-  const goalTarget=c.goal||S.draft.goal||10; const goalDoneN=goalToday(); const goalPctNum=Math.min(100,Math.round((goalDoneN/goalTarget)*100));
-  const masteredCt=listWords(aKey).filter(w=>S.luMastered[nkey(w.w)]).length; const listCt=listWords(aKey).length||1;
-  const buzzCt=(S.missedWords&&S.missedWords.length)||0;
-  const aLvlNew=listStageIdx(c,aKey)+1;
-  const cAll=(state.conceptData||(window.SB_CONCEPTS&&SB_CONCEPTS.chapters)||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length; const cTot=cAll.length||110;
-  const cChapDone=(cAll.length?conceptChapters().filter(x=>conceptChapterStat(x).complete).length:0);
-  const lDone=lessonsDoneCount(); const lUnits=lessonUnits();
-  const lChapDone=lUnits.filter(u=>{ const ls=lessonsAll().filter(L=>L.unit===u.n); return ls.length && ls.every(L=>lessonComplete(L)); }).length; const lChapTot=lUnits.length||10;
-  const qp=c.questPath; const qpLabel=qp==='themes'?'Theme Journey':qp==='own'?'My own list':qp==='journey'?'Bizzing Bee Journey':null;
   /* The four tiles are the four things a speller actually does, in the order the
      app now presents them: follow the Atlas, drill words, read an explanation,
      play. Word Journeys lost its tile when it moved onto a Concepts shelf — the
@@ -7399,13 +7467,10 @@ function viewHome(){
      reads — family-shell.js builds it on SB_TRAIL_NEXT — so Continue cannot disagree with
      the drawer, the end of onboarding or the Hive's #/continue. */
   const _ns=SB_SHELL.nextStep(); const nx=_ns.ready?_ns:null;
-  const atlas=nx?{done:nx.done,total:nx.total,lap:nx.lap}:(function(){ try{ const T=window.SB_TRAIL; if(!T) return {done:0,total:0,lap:1};
-      const tr=c.trail||{}; return { done:Object.keys(tr.done||{}).length, total:(T.honey.units||[]).length, lap:tr.lap||1 }; }
-    catch(e){ return {done:0,total:0,lap:1}; } })();
   return `<div class="sb-home">
     ${(()=>{ const lp=getList(c,aKey); const lf=levelFromXp(lp.xp||0); const xpToNext=Math.max(0,(lf.need||1)-(lf.into||0));
       const evoPct=Math.min(100,Math.round((lf.into||0)/(lf.need||1)*100));
-      const woh=(typeof wordOfHour==='function')?wordOfHour():null; const wohPr=woh?pronFor(woh.w):null;
+      const woh=(typeof wordOfHour==='function')?wordOfHour():null; const wohPr=woh?(pronFor(woh.w)||(woh._seed&&woh.p?{p:woh.p}:null)):null;   /* a seed word (P1.13) carries its record's respelling, which is what pronFor reads off the record */
       const wohTile=woh?`<button data-act="openWordCard" title="Tap for the full word card" class="sb-card sb-home-woh" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,var(--treasure,#F0B429) 18%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,var(--treasure,#F0B429) 42%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
         <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--treasure,#F0B429);color:#2B2117;flex-shrink:0;font-size:20px">${iconSVG('history',20,2.2)}</span>
         <span style="min-width:0;flex:1">
@@ -12733,6 +12798,8 @@ function fullListOverlay(){ const S=state; if(!S.listView) return '';
 }
 function overlays(){
   const S=state; let h=''; h+=fullListOverlay(); 
+  /* a tap that is waiting for the boot word tier (wordsHold): the hive loader over the screen, nothing to tap under it */
+  if(S.wordsWait) h+=`<div class="sb-words-wait" style="position:fixed;inset:0;z-index:140;display:grid;place-items:center;background:color-mix(in srgb,var(--bg1,#f3efff) 82%,transparent)">${hiveLoader('fetching the words…')}</div>`;
   // These sheets live out here, not inside view(): render() wraps view() in a
   // position:relative;z-index:1 box, which is a stacking context — anything drawn inside it
   // is pinned below the overlays no matter how high its own z-index is. That is why
@@ -13434,9 +13501,33 @@ function liveScanArc(host){ try{ if(!host||!host.isConnected) return;
 try{ liveEl(); }catch(e){}
 window.SB_LIVE={ say:liveSay, scan:liveScan };
 function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn(arg, ev); }
-root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; callAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
+/* A TAP THAT NEEDS THE WORDS WAITS FOR THEM (road to 4.5, P1.13 step 1). The boot word tier left the first screen
+   (boot-lazy `words1`, first on the idle queue, which the first tap starts). Before, every action could count on it;
+   now a tap in the app made before it lands is held — ONE tap; the hive loader covers the screen so a second tap has
+   nothing to land on — and runs the moment the tier is in. Typing (data-inp / data-chg) never waits. WORDLESS are the
+   shell's own controls (drawer, wallet, PIN, settings, the look, the child switcher, Home itself), which read no word
+   and answer at once. The landing and the onboarding steps are not gated: none reads a word, and onbNext waits for
+   the tier itself before it ends setup on the first word. */
+const WORDLESS=new Set(['noop','openDrawer','closeDrawer','muteAll','openWallet','closeWallet','cycleMode','pinKey','pinCancel',
+  'openSettings','closeSettings','setGrownOpen','setSwitchChild','setOpenCollection','pinSetup','devTap','devBannerHide','goHome','celebrateClose',
+  'famMenu','famMenuClose','famSwitch','famSettings','famMine','famAdd','hqClear','nextTip','openAvDeck']);
+let _wordsHeld=null;
+function wordsHold(fn){ if(wordsIn()){ fn(); return true; }
+  if(_wordsHeld) return false;
+  _wordsHeld=fn; state.wordsWait=true; try{ render(); }catch(e){}
+  lazyNeed('words1', ()=>{ const f=_wordsHeld; _wordsHeld=null; state.wordsWait=false; try{ f(); }finally{ try{ render(); }catch(e){} } });
+  return false; }
+/* navs that read no word record (or ask for their own group, which carries the tier): drawn before it lands */
+const NAV_WORDLESS = { home:1, settings:1, collection:1, shop:1, evolution:1, help:1, trail:1, reader:1, analogy:1, anltool:1, anlbee:1, today:1,
+  feed:1, mockbee:1, lore:1, hive:1, adv:1, debug:1, voicetest:1, evofeedback:1 };
+function tapAct(act, arg){
+  /* the lock asks for the PIN first (setNav('parent') → pinGate): the PIN reads no word, and the report card it opens
+     waits for the tier itself (viewApp's NAV_WORDLESS guard) */
+  if(state.screen!=='app' || WORDLESS.has(act) || (act==='setNav'&&(arg==='home'||arg==='parent')) || wordsIn()) return callAct(act, arg);
+  wordsHold(()=>callAct(act, arg)); }
+root.addEventListener('click', e=>{ const el=e.target.closest('[data-act]'); if(!el) return; tapAct(el.getAttribute('data-act'), el.getAttribute('data-arg')); });
 root.addEventListener('dblclick', e=>{ const el=e.target.closest('[data-dbl]'); if(!el) return;
-  e.preventDefault(); callAct(el.getAttribute('data-dbl'), el.getAttribute('data-arg')); });
+  e.preventDefault(); tapAct(el.getAttribute('data-dbl'), el.getAttribute('data-arg')); });
 /* The suggestion list closes on pick, Enter, Escape and any nav change. This covers the
    last case — a click that lands somewhere else entirely. It runs on capture so it fires
    before the click's own action re-renders. */
@@ -13595,6 +13686,15 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
      word-of-the-hour pool and the sound lists all rebuild on the next render. */
   if(name==='words2'){ _catStatic=null; _wIdx=null; _wohPool=null; _wdb=null; _sndCache=null; _themeCache={}; }
   if(name==='wordband'||name==='words2'){ _wohBand={}; _nwBy=null; }   /* the word bands (P1.1): every band-keyed pool rebuilds */
+  /* THE BOOT WORD TIER LANDED (P1.13 step 1: words-data.js + words-extra.js + words-patch.js, one bundle). Score its
+     records first, the way Home's first render always did (trickSeal: no homophone bonus — every list order a returning
+     speller ever saw was built on these scores), then drop EVERY pool that could have been built without it. Nothing
+     that starts a drill ran before this (callAct's gate), but a count, a search or a list may have been drawn. */
+  if(name==='words1'){ try{ trickSeal(); }catch(err){}
+    _catStatic=null; _wIdx=null; _wohPool=null; _wdb=null; _nwIdx=null; _corpusBands=null; _b2Idx=null; _sndCache=null; _themeCache={};
+    for(const k in _stageCache) delete _stageCache[k];
+    _defStages=null; _journeySorted=null; _journeyOrder=null; _journeyStages=null; _eponStages=null; _nwBy=null;
+    for(const k in _wohBand) if(k.indexOf('seed')!==0) delete _wohBand[k]; }
 });
 
 (function init(){

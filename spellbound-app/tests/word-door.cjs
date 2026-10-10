@@ -38,12 +38,12 @@ const ALLOW = {
     coachCatalog: 'the Word Gym’s list catalogue', catStatic: 'the Word Gym’s list catalogue', soundLists: 'the sound lists (catalogue)', ipaPool: 'the Sound Alphabet trainer', selectList: 'choosing a study list',
     themePool: 'Theme Journeys (themeDefs gates minBand)', themeWords: 'Theme Journeys (themeDefs gates minBand)', themeStat: 'Theme Journeys', viewThemeDetail: 'Theme Journeys',
     finderResults: 'search looks a word up, never serves one to spell', suggestWords: 'search suggestions look a word up', wordDB: 'search and the word card look a word up', viewFinder: 'the Word Finder', b2Idx: 'the List Builder’s index',
-    wohPool: 'Home’s word of the hour (wohFit)', vocDeckWords: 'the Vocabulary section’s decks' },
+    wohPool: 'Home’s word of the hour (wohFit)', vocDeckWords: 'the Vocabulary section’s decks',
+    trickSeal: 'scores the boot word tier the moment it lands (P1.13 step 1) — a score on each record, never a word served' },
   'boot-lazy.js': { '(top level)': 'registers the 130k library’s chunk index as a lazy file — a path, not a read (P1.12)' },
   'library.js': { reg: 'the 130k library’s chunk reader names a chunk file for boot-lazy (P1.12)' },
   'advanced.js': { advActivate: 'loads the library when the pack switches on', hardPool: 'the Advanced Pack’s Ultra road (a course, not a Play-tab game)' },
   'trail.js': { widx: 'the Atlas’s word index (lookup by key)' },
-  'family-shell.js': { sampleHousehold: 'the ?demo household' },
   'saga2.js': { wordHive: 'a retired engine’s dictionary for checking found words (not on the Play tab)' },
 };
 const TOK = /\b(corpusSlice|corpusBands|themeWords|fullWords)\(|\bSB_FULL\b|\bSB_HARD\b|words-full|words-hard|\bSB_DATA\s*(?:&&\s*SB_DATA)?\.nsf/g;

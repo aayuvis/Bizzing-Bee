@@ -221,6 +221,57 @@ rejected); the grade map is US grade / UK year / CBSE class with a source on eve
 - `tests/pin-mandatory.cjs`'s known pre-existing failure ("a second boot migrates nothing and keeps the same record")
   passed on this batch's runs, so it is intermittent; this batch did not touch it — it is not fixed, only not seen.
 
+## Road to 4.5, P1 — the boot word tier is lazy (P1.13 step 1, 10 Oct 2026) — READ FIRST; it overrides the sections below
+The plan is `docs/first-load-plan.md` step 1. `words-data.js` + `words-extra.js` + `words-patch.js` (~368 KB gz) are no
+longer boot scripts. The rules a later session keeps:
+- **THE CURRICULUM IS GENERATED DATA.** `node tools/build-curriculum.cjs` runs app3's OWN algorithms
+  (`buildDefaultStages`, `buildJourneySorted`, `wohBandPool`, pulled out of the source by `tools/app3-closure.cjs`) over
+  the boot tier, loaded as the page loads it, and writes:
+  - `curriculum-data.js` (a BOOT script, ~17 KB gz): `SB_CURRICULUM.stages` (the 20 default stages as words) and
+    `.woh` (the word of the hour's seed: every k-th word of each band's pool, ≤160 a band, with the respelling and the
+    meaning as far as the tile's `trunc(d,84)` reads);
+  - `curriculum-ladder.js` (lazy, in the `words1` bundle): `SB_CURRICULUM.ladder`, the Journey order.
+  Never edit either; change the words or the algorithm and re-run. `tests/curriculum.cjs` (@check, node) rebuilds,
+  compares, and runs app3's runtime `defaultStages()` / `journeySorted()` / `journeyStages()` against the algorithms —
+  the same record OBJECTS.
+- **What the data froze, measured on the build before** (a returning speller's first render, probe in the session):
+  the 20 stages and the 7,571-word ladder are byte-identical to it; Home's every card is identical except the word of
+  the hour (the seed is thinned, so the hour's word differs); 103 of 105 lists are identical for a child on the default
+  list, the journey, or a theme. The two that differ were TIMING-DEPENDENT before and are now each list's steady state:
+  - the default stages of a child NOT on the default list (built from 41,000 words if the first call came after the
+    second shard) — now always the boot tier's;
+  - the Journey of a child NOT on the journey (the Scripps winners sprinkled in if `scripps-data.js` had landed first) —
+    now never sprinkled, which is what every child ON the journey has always climbed (`_journeyStages` was memoised at
+    their first render, before the lazy Scripps file). **Sprinkling is an owner's call, made as data — never by timing.**
+  - **Boot-tier records carry no homophone bonus** (`trickSeal`, run when `words1` lands): every returning first render
+    scored them before `sounds-data.js` landed, and every list order a child saw was built on that. Keep it, or
+    regenerate and say what changed.
+- **`words1` is a BUNDLE** (boot-lazy REG value is an array: the three files then the ladder, inserted `async=false`,
+  one `sb-lazy` when the last has run). It is first on the idle queue (the first tap starts it) and in every group a word
+  is read through; `words2` and `sents` DEPEND on it (they land on its records, in order). **`window.SB_DATA` is ONE
+  object** created by boot-lazy: an assignment to it merges (`words-data.js` and every tool that rewrites it keep their
+  `window.SB_DATA={…}` form), and app.js's `const SB_DATA` is that object.
+- **Nothing that starts a drill or shows a meaning runs before the tier:** `tapAct` (app3) holds a tap in the app
+  until `words1` lands (the hive loader covers the screen; one tap; `WORDLESS` are the shell's own controls and Home;
+  `setNav('parent')` goes straight to the PIN); typing never waits; `applyRoute` holds an address the same way
+  (`ROUTE_WORDLESS`), and the tester PIN waits for a held address; `onbNext` holds the end of setup; viewApp's
+  `NAV_WORDLESS` guard draws the hive loader for a word screen reached any other way. On `words1` app3's listener scores
+  the tier (`trickSeal`) and drops EVERY pool built without it. Before it, `defaultStages()` / `journeySorted()` are
+  thin `{w}` records from the data and are never memoised; `wordsIn()` is the one question.
+- **Home reads no word record.** viewHome's fourteen dead locals that counted the active list (and made every boot record
+  a first-paint read) are deleted; the woh tile draws the seed (`wohSeed`, pinned by `settled`), and `openWordCard`
+  opens the full record. `?demo`'s sample words come from `SB_CURRICULUM.stages`.
+- **Offline**: a device that was never tapped online has no words offline; the first tap's idle queue fetches the tier
+  and the worker keeps it (`offline-pwa` asks for it as that tap would).
+- **Tests**: `tests/curriculum.cjs` (node), `tests/words-lazy.cjs` (browser: Home without the tier and when it lands, the
+  live curriculum on the page's records, the seal with `SB_HOM` landed first, a tap and an address before the tier,
+  setup's first word, file://). A test that calls into the corpus right after boot asks for `words1` first (or uses a
+  group that carries it). `word-band` §6c draws the hour from the seed; `word-door` allows `trickSeal`.
+- **Proved by breaking:** curriculum — a hand edit in the data (3 fail), the homophone bonus on the tier (3), the Scripps
+  sprinkle back (1), the thin ladder memoised (2), `words-data.js` back in index.html (1); words-lazy — the seed unused
+  (3), the seed's respelling dropped (1), no tap gate (1), the tier unsealed (1), the seal with `SB_HOM` in hand (1), the
+  bundle async / out of order (3), setup not waiting (1: the first word was "bee").
+
 ## Road to 4.5, P1 — load weight (10 Oct 2026) — READ FIRST; it overrides the sections below
 Brief rows P1.12 (the dictionary), P1.14 (asset weight) and P1.13 outside app3.js (first-load JS). app3.js was NOT split
 here; another batch was editing it. The plan for that split is **`docs/first-load-plan.md`**: per-file numbers, what

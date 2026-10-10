@@ -224,10 +224,13 @@
     for (let i = 0; i < s.length; i++) if (!passedNode(c, s[i])) return i; return s.length; }
 
   /* ---- word pools ---- */
+  /* built once, as before — but never before the boot word tier is in (boot-lazy `words1`, lazy since P1.13 step 1):
+     an index built from an empty shard would have stayed empty for the visit */
   let _idx = null;
-  function widx() { if (_idx) return _idx; _idx = new Map();
-    for (const w of ((window.SB_DATA && SB_DATA.nsf) || [])) if (w && w.w) _idx.set(nkey(w.w), w);
-    return _idx; }
+  function widx() { if (_idx) return _idx; const m = new Map();
+    for (const w of ((window.SB_DATA && SB_DATA.nsf) || [])) if (w && w.w) m.set(nkey(w.w), w);
+    let ready = true; try { ready = !window.SB_LAZY || SB_LAZY.ready('words1'); } catch (e) {}
+    if (ready) _idx = m; return m; }
   function needMap(cb) { if (window.SB_TRAIL_MAP) { cb(); return; }
     if (needMap._p) { needMap._q.push(cb); return; }
     needMap._p = true; needMap._q = [cb];
