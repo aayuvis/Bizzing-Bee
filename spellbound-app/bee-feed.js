@@ -134,7 +134,8 @@
     } catch (e) {}
     return due;
   }
-  var KIND_WHY = { game: 'A game from the arcade', story: 'From your avatars’ stories', fun: 'From the idioms and similes shelf' };
+  var KIND_WHY = { game: 'A game from the arcade', story: 'From your avatars’ stories', fun: 'From the idioms and similes shelf',
+    analogy: 'From the Analogy Atlas', sounds: 'Words that sound the same', saying: 'A word with two ways to say it' };
   function extra(it) {
     if (KIND_WHY[it.kind]) return { s: 0.5, why: KIND_WHY[it.kind] };
     if (it.kind === 'play' && it.level == null) return { s: 0.5, why: 'A word story' };

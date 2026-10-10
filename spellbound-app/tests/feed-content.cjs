@@ -134,6 +134,31 @@ function resolve(it) {
     if (!f || !f.kid || f.m !== it.body || '“' + f.ex + '”' !== it.source || !it.title.endsWith(f.p)) fail('not the library\'s idiom or simile');
     if (f.diff === 'hard' && bandsOf(it).some(b => b === '5-7' || b === '8-10')) fail('a hard idiom reaches a younger band');
     if (has(it.body + it.source, f.os)) fail('carries the origin story');
+  } else if (k === 'anl') {
+    /* the item's own words: its answer first, its recipe wrong answers after, a stem pair from its lesson's bank */
+    const x = C.ANL.items[p[1]]; if (!x || !it.play) fail('no analogy item ' + p[1]);
+    const [rel, lv, c, d] = x, L = C.ANL.lessons.find(l => l.rels.includes(rel)); if (!L) fail('no lesson for ' + rel);
+    const wrong = x.slice(4).map(v => String(v).split('|')[0]);
+    if (it.play.opts[0] !== d || !it.play.opts.slice(1).every(o => wrong.includes(o))) fail('not the item\'s answer and wrong answers');
+    const st = (L.stems || []).find(s => it.play.q === s[0] + ' is to ' + s[1] + ' as ' + c + ' is to …');
+    if (!st || (L.id === 'family' && (st[2] || rel) !== rel) || it.play.opts.includes(st[0]) || it.play.opts.includes(st[1])) fail('the stem is not from its lesson\'s bank, or shares a word');
+    if (it.title !== 'Analogy · ' + L.title || it.level !== lv) fail('not its lesson\'s title or the item\'s level');
+    if (it.play.after && it.play.after !== d + ': ' + C.ANL.gloss[d]) fail('the after line is not the answer\'s gloss');
+    if (lv >= 7 && bandsOf(it).includes('5-7')) fail('a level-' + lv + ' analogy reaches a 5–7 child');
+  } else if (k === 'anl-lesson') {
+    const L = C.ANL.lessons.find(l => l.id === p[1]);
+    if (!L || !['idea', 'spot', 'trap'].includes(p[2]) || L[p[2]] !== it.body || !it.title.endsWith(L.title) || it.level != null) fail('not the analogy lesson\'s own words');
+  } else if (k === 'hom') {
+    const grp = C.HOM[+p[1]]; if (!grp) fail('no sound-alike group ' + p[1]);
+    const ws = [...new Set(grp)];
+    if (it.title !== 'Sound the same · ' + ws.join(' · ') || ws.some(x => !C.WORD[x] || !has(it.body, x + ': ' + C.WORD[x].d))) fail('not the group\'s words with the library\'s meanings');
+    const ls = ws.map(x => wordLevel[x]).filter(x => x != null);
+    if (it.level !== (ls.length ? Math.min(...ls) : undefined)) fail('not the region of its first word');
+  } else if (k === 'alt') {
+    const wd = wordOf(), r = C.ALT[p[1]]; if (!r || p[1] !== wd) fail('no second pronunciation for ' + p[1]);
+    if (!has(it.body, r.a) || !has(it.body, r.b) || (r.n && r.n !== 'also heard' && !has(it.body, r.n)) || it.title !== 'Two ways to say it · ' + wd) fail('not the library\'s two pronunciations');
+    if (it.level !== wordLevel[wd]) fail('not the region of its word');
+    clipRight(wd);
   } else fail('a src nothing resolves: ' + it.src);
   if (it.play) {
     if (new Set(it.play.opts).size !== it.play.opts.length) fail('two options are the same');
@@ -143,7 +168,8 @@ function resolve(it) {
 }
 const bad = []; ITEMS.forEach(it => { try { resolve(it); } catch (e) { bad.push(e.message); } });
 ok(!bad.length, `every src resolves and every card's words are its source's (${ITEMS.length - bad.length}/${ITEMS.length})` + (bad.length ? ' — ' + bad.slice(0, 3).join(' · ') : ''));
-ok(!ITEMS.some(i => /quote/i.test(i.src) || /quote/i.test(i.kind)), 'nothing is cut from the unsourced quotation library');
+/* the quotation library's own namespace — a src or kind naming it; the library WORDS quote, quota and quotient are not it */
+ok(!ITEMS.some(i => /^quot(e|es|es-lib|ation)s?:/i.test(i.src) || /quote/i.test(i.kind)), 'nothing is cut from the unsourced quotation library');
 const seenKey = {}; let dup = null;
 ITEMS.forEach(it => { const k = it.src + '|' + it.kind + '|' + it.title + '|' + (it.body || '') + '|' + (it.play ? it.play.q : ''); if (seenKey[k] && !dup) dup = it.id + ' = ' + seenKey[k]; seenKey[k] = it.id; });
 ok(!dup, 'no two cards share src + kind + text' + (dup ? ' — ' + dup : ''));
@@ -164,7 +190,9 @@ const wordsTwice = {}; ITEMS.filter(i => i.kind === 'word' || i.kind === 'spotli
 ok(Object.values(wordsTwice).every(n => n === 1), 'a word is a chapter word or a library spotlight, never both');
 const angles = {}; ITEMS.filter(i => i.key && i.level != null).forEach(i => { const a = angles[i.key] = angles[i.key] || {}; a[i.kind] = (a[i.kind] || 0) + 1; });
 ok(Object.values(angles).every(a => Object.keys(a).every(k => k === 'play' || a[k] === 1)), 'one word, several angles — but never two cards of the same angle');
-ok(ITEMS.every(i => /^#\/(atlas\/honey\/[a-z]+|stop\/u\d+|word\/[a-z]+|play|trivia|figurative|hive\/avatars)$/.test(i.route)), 'every route is one of the app\'s own screens (the browser test opens each)');
+ok(ITEMS.every(i => /^#\/(atlas\/honey\/[a-z]+|stop\/u\d+|word\/[a-z]+|play|trivia|figurative|hive\/avatars|analogies)$/.test(i.route)), 'every route is one of the app\'s own screens (the browser test opens each)');
+const kindsHave = new Set(ITEMS.map(i => i.kind));
+ok(['analogy', 'sounds', 'saying'].every(k => kindsHave.has(k)), 'the analogies, sound-alikes and second pronunciations are in the feed');
 ok(ITEMS.some(i => !bandsOf(i).includes('5-7')), 'some cards are above the youngest band, so the band rule below is tested');
 
 /* ------------------------------------------------------------------ the ranking */

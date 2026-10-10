@@ -3328,12 +3328,14 @@ const app = {
      the page head and the board under it. daily-buzz.js is lazy (boot-lazy group 'buzz'); render() mounts it. */
   /* THE ANALOGIES TAB (owner, 9 Oct 2026): analogy.js + analogy-data.js, lazy group 'analogy'; #/analogies,
      #/analogies/<region|stop>[/learn|/words], #/analogies/clock; Mock Analogy Bee is #/anlbee */
-  openAnalogies:(sub)=>{ clearGTimer(); state.game=null; const parts=String(sub||'').split('/').filter(Boolean);
-    lazyNeed('analogy', ()=>{ try{ if(window.SB_ANL) SB_ANL.openRoute(parts); }catch(e){} });
-    if(!window.SB_ANL) app.setNav('analogy'); },
-  openAnlBee:()=>{ clearGTimer(); state.game=null;
-    lazyNeed('analogy', ()=>{ try{ if(window.SB_ANL) SB_ANL.openBee(); }catch(e){} });
-    if(!window.SB_ANL) app.setNav('anlbee'); },
+  /* while the files load the tab shows its loader; when they land, the screen opens ONLY if the child is still
+     waiting on it — a late load must never pull a child back from wherever they went in the meantime */
+  openAnalogies:(sub)=>{ clearGTimer(); state.game=null; const parts=String(sub||'').split('/').filter(Boolean), late=!window.SB_ANL;
+    if(late) app.setNav('analogy');
+    lazyNeed('analogy', ()=>{ if(late && state.nav!=='analogy') return; try{ if(window.SB_ANL) SB_ANL.openRoute(parts); }catch(e){} }); },
+  openAnlBee:()=>{ clearGTimer(); state.game=null; const late=!window.SB_ANL;
+    if(late) app.setNav('anlbee');
+    lazyNeed('analogy', ()=>{ if(late && state.nav!=='anlbee') return; try{ if(window.SB_ANL) SB_ANL.openBee(); }catch(e){} }); },
   openDailyBuzz:()=>{ clearGTimer(); try{ if(window.SB_DAILY_BUZZ&&SB_DAILY_BUZZ.close) SB_DAILY_BUZZ.close(); }catch(e){} state.game=null;
     lazyNeed('buzz', ()=>{ if(state.nav==='dailybuzz') render(); }); app.setNav('dailybuzz'); },
   /* WORD FORGE (games spec §5.1), a screen in the shell like Daily Buzz: nav 'forge', #/forge. Its table is

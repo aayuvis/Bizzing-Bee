@@ -35,6 +35,13 @@
      fun        an idiom or simile a child is shown (kid:true): the phrase,    figurative-data.js
                 its meaning, its example — never the origin story, which the
                 library itself marks folk or disputed for many
+     analogy    an Analogy Atlas question (stem from the lesson's bank, the    analogy-data.js items
+                item's answer and recipe wrong answers; level = the item's),
+                and each analogy lesson's idea, spot-it and trap (no level)    analogy-data.js lessons
+     sounds     a homophone group, each word with the library's meaning        sounds-data.js SB_HOM
+     saying     a word's two written pronunciations and the library's note     sounds-data.js SB_ALT_PRON
+   Doubled 10 Oct 2026 (owner: "look for additional content and double the feed cards… e.g. analogies"):
+   14,169 → 28,874, by the three sources above and 650 library words per region (was 80).
    Held back: quotes-lib.js / quotes.js (unsourced — data-lint's ratchet), the concept `method`
    blocks (generated drill scaffolding, not prose), the `card` concept questions (their options
    are cut mid-word), the Advanced Pack, the parent coaching tips, capitalised headwords (the
@@ -76,7 +83,7 @@ const items = [], add = (it) => { if (!heldKey(it)) items.push(it); return it; }
 
 /* ------------------------------------------------------------- the road, region by region */
 const LEVELS = C.ACTS.map((a, i) => ({ n: i + 1, id: a.id, title: a.title, name: regionName(a.title) }));
-const SPOT_WORDS = 80;              // library words per region (the word maps hold 700–3,600 each; see the manifest)
+const SPOT_WORDS = 650;             // library words per region (the word maps hold 700–3,600 each; see the manifest)
 const wordLevel = {};               // a word → the region whose stop holds it (first stop wins)
 C.ACTS.forEach((a, ai) => a.units.forEach((id) => {
   const m = C.MAP[id] || {}; ['1', '2', '3'].forEach((k) => (m[k] || []).forEach((w) => { if (wordLevel[w] == null) wordLevel[w] = ai + 1; }));
@@ -155,6 +162,54 @@ C.ACTS.forEach((a, ai) => {
   spotAvail[L] = avail;
 });
 
+/* ------------------------------------------------------------- analogies (the Analogy Atlas, analogy-data.js) */
+/* One question per item, exactly as the tab builds it: a stem pair from the lesson's own hand-written bank
+   (never sharing a word with the item, never containing the answer), C, and the item's answer first with its
+   recipe wrong answers after (the card orders them by its id). The level is the item's own level, which the
+   engine cut per Bee level — the same nine the feed counts. The answer's gloss, when it reads cleanly, is
+   what the card says after. Then each lesson's idea, its "spot it" and its trap, with no level. */
+const fnv = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h; };
+const ANL = C.ANL, anlLesson = {};
+ANL.lessons.forEach((l) => l.rels.forEach((r) => { anlLesson[r] = l; }));
+const anlStem = (L, rel, words, d) => (L.stems || []).filter((x) => ((x[2] || rel) === rel || L.id !== 'family') && words.indexOf(x[0]) < 0 && words.indexOf(x[1]) < 0
+  && !(x[0] + ' ' + x[1]).toLowerCase().includes(d.toLowerCase()));
+const anlQ = (a, b, c) => a + ' is to ' + b + ' as ' + c + ' is to …';
+Object.keys(ANL.items).forEach((id) => {
+  const it = ANL.items[id], [rel, lv, c, d] = it, L = anlLesson[rel]; if (!L) return;
+  const wrong = it.slice(4).map((x) => String(x).split('|')[0]).slice(0, 3); if (!wrong.length) return;
+  const opts = [d].concat(wrong); if (new Set(opts).size !== opts.length) return;
+  const pool = anlStem(L, rel, opts.concat(c), d); if (!pool.length) return;
+  const st = pool[fnv('feed|' + id) % pool.length], q = anlQ(st[0], st[1], c), title = 'Analogy · ' + L.title;
+  if ((q + ' ' + title).toLowerCase().includes(d.toLowerCase())) return;                           // the question gives its answer away
+  const g = ANL.gloss[d], after = g && GLOSS_OK(g, d) && !g.toLowerCase().includes(d.toLowerCase()) ? d + ': ' + g : '';
+  add({ id: 'aq-' + id, kind: 'analogy', level: lv, bands: lv >= 7 ? from('11-13') : lv >= 5 ? from('8-10') : undefined, topics: ['anl:' + L.id],
+    src: 'anl:' + id, route: '#/analogies', cta: 'Open the Analogy Atlas', title, play: { q, opts, after } });
+});
+ANL.lessons.forEach((L) => [['idea', 'Analogies · '], ['spot', 'Spot it · '], ['trap', 'The trap · ']].forEach(([f, pre]) => {
+  if (L[f]) add({ id: 'al-' + L.id + '-' + f, kind: 'analogy', topics: ['anl:' + L.id], src: 'anl-lesson:' + L.id + ':' + f, route: '#/analogies',
+    cta: 'Open the Analogy Atlas', title: pre + L.title, body: L[f] });
+}));
+
+/* ------------------------------------------------------------- how words sound (sounds-data.js) */
+/* sound-alikes: a homophone group whose every word the served library holds with a clean meaning — the
+   words in the title, each one's own meaning in the body. Two ways to say it: a word with two written
+   pronunciations, both shown with the library's note. A card's level is the region of its (first) word. */
+const lvOf = (ws) => { const ls = ws.map((x) => wordLevel[x]).filter((x) => x != null); return ls.length ? Math.min.apply(null, ls) : undefined; };
+C.HOM.forEach((grp, i) => {
+  const ws = [...new Set(grp)];
+  if (ws.length < 2 || ws.some((x) => !LOWER.test(x) || !C.WORD[x] || !C.WORD[x].d || !GLOSS_OK(C.WORD[x].d, x) || HELD.has(x))) return;
+  if (ws.some((x) => ws.some((y) => C.WORD[x].d.toLowerCase().includes(y)))) return;                // a meaning that spells a partner
+  add({ id: 'hs-' + i, kind: 'sounds', level: lvOf(ws), topics: ws.map((x) => 'word:' + x), src: 'hom:' + i, route: '#/word/' + ws[0],
+    cta: 'Open “' + ws[0] + '”', title: 'Sound the same · ' + ws.join(' · '), body: ws.map((x) => x + ': ' + C.WORD[x].d).join('  ·  ') });
+});
+Object.keys(C.ALT).forEach((w) => {
+  const r = C.ALT[w], lib = C.WORD[w];
+  if (!LOWER.test(w) || !lib || HELD.has(w) || !r || !r.a || !r.b || r.a === r.b) return;
+  const body = r.n && r.n !== 'also heard' ? r.a + ' or ' + r.b + ' — ' + r.n : r.a + ', also heard ' + r.b + '.';
+  add({ id: 'ap-' + w, kind: 'saying', level: wordLevel[w], topics: ['word:' + w], key: 'word:' + w, src: 'alt:' + w, route: '#/word/' + w,
+    cta: 'Open the word card', title: 'Two ways to say it · ' + w, body, clip: C.VOICED.has(w) ? 1 : 0 });
+});
+
 /* ------------------------------------------------------------- level-agnostic */
 /* the arcade games on the Play tab only: GAMES (Beat the Buzzer, Word Quiz) left the tab on 4 Oct 2026
    (games spec §3.1) and live on inside the hubs, so a card saying "Play Beat the Buzzer" would open nothing */
@@ -191,6 +246,13 @@ C.TRIVIA.filter((q) => q.th === 'wstories' && q.c && q.c.length >= 3 && new Set(
    later card of a near pair is dropped (the earlier is the more central angle). The same
    function, from tools/feed-near.cjs, is what the test runs over the finished set. */
 const { textOf, nearDup } = require('./feed-near.cjs');
+/* no card whose words call anyone an idiot, a moron or worse — a library sentence or an origin can (the
+   sycamore's lore, a sentence for "irresponsible"); the list is tests/struck-words.cjs's INSULT, held there */
+const INSULT = new Set(['idiot', 'idiots', 'idiotic', 'moron', 'morons', 'moronic', 'cretin', 'cretins', 'imbecile', 'imbeciles',
+  'mongolism', 'negroid', 'midget', 'midgets', 'hottentot', 'hottentots']);
+const rude = (it) => [it.title, it.body, it.source].concat(it.play ? [it.play.q, it.play.after].concat(it.play.opts) : [])
+  .some((x) => (String(x || '').toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g) || []).some((t) => INSULT.has(t)));
+for (let i = items.length - 1; i >= 0; i--) if (rude(items[i])) items.splice(i, 1);
 const nd = nearDup(items);
 const kept = items.filter((_, i) => !nd.drop.has(i));
 

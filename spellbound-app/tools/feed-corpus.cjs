@@ -11,7 +11,8 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const APP = path.resolve(__dirname, '..');
 
 const FILES = ['words-data.js', 'words-extra.js', 'words-patch.js', 'words-data-s.js', 'words-data-2.js', 'words-lore.js', 'concepts-data.js',
-  'trail-data.js', 'trail-map-data.js', 'trivia-words.js', 'story-data.js', 'figurative-data.js', 'voice-words.js', 'avatars.js'];
+  'trail-data.js', 'trail-map-data.js', 'trivia-words.js', 'story-data.js', 'figurative-data.js', 'voice-words.js', 'avatars.js',
+  'analogy-data.js', 'sounds-data.js'];
 
 function literal(src, re, what) {
   const m = src.match(re);
@@ -33,7 +34,7 @@ function load() {
   /* the boot tier's sentences ride in their own file (boot-lazy merges them by word) */
   const C = { win, DATA: win.SB_DATA.nsf, LORE: win.SB_LORE || {}, CONCEPTS: win.SB_CONCEPTS.chapters,
     TRAIL: win.SB_TRAIL, MAP: win.SB_TRAIL_MAP, TRIVIA: win.SB_TRIVIA.questions, ARCS: win.SB_STORY_ARCS || [],
-    FIG: win.SB_FIG, AVATARS: win.SB_AVATARS };
+    FIG: win.SB_FIG, AVATARS: win.SB_AVATARS, ANL: win.SB_ANALOGY, HOM: win.SB_HOM || [], ALT: win.SB_ALT_PRON || {} };
   const sent = {}; (win.SB_SENT_BOOT || []).forEach(([w, s]) => { sent[w] = s; });
   C.WORD = {};
   for (const r of C.DATA) if (r && r.w && !C.WORD[r.w]) C.WORD[r.w] = Object.assign({}, r, (!r.s && sent[r.w]) ? { s: sent[r.w] } : {});
