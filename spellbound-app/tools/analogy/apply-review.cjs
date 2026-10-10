@@ -73,6 +73,8 @@ if (cmd === 'plan') {
 if (cmd === 'ship') {
   const U = units1(), NC = cycles(); const C = [];
   for (let n = 1; n <= NC; n++) { const rows = rowsOf(RD(n), n); const by = {}; (n === 1 ? U : read(path.join(RD(n), 'units.json'))).forEach((u) => { by[u.unit] = u; }); C.push({ n, rows, P: byUnit(rows), by }); }
+  /* a unit first written in a later cycle (a replacement pair) is reviewed and decided there */
+  const known = new Set(U.map((u) => u.unit)); C.slice(1).forEach((c) => Object.values(c.by).forEach((u) => { if (!known.has(u.unit)) { known.add(u.unit); U.push(u); } }));
   const shipped = {}, ledger = [], dropped = [];
   for (const u of U) {
     /* a unit is decided by the LAST cycle it went through: new evidence is never ignored */
@@ -89,7 +91,8 @@ if (cmd === 'ship') {
     items[id] = [it[0], it[1], it[2], it[3]].concat(s.wrong.map((w) => w + '|' + (recipe[w] || 'a')));
     if (!s.glossHidden && A.gloss[it[3]]) gloss[it[3]] = A.gloss[it[3]]; }
   A.lessons.forEach((L) => { ['title', 'idea', 'bridge', 'spot', 'trap'].forEach((f) => { const s = shipped['lesson:' + L.id + ':' + f]; if (s) L[f] = s.text; });
-    L.stems = (L.stems || []).filter((_, i) => shipped['stem:' + L.id + ':' + i]); });
+    L.stems = (L.stems || []).filter((_, i) => shipped['stem:' + L.id + ':' + i])
+      .concat(Object.values(shipped).filter((u) => u.kind === 'stem' && u.unit.indexOf('stem:' + L.id + ':n') === 0).map((u) => [u.a, u.b].concat(u.rel && u.rel !== L.rels[0] ? [u.rel] : []))); });
   const lessonsOk = A.lessons.every((L) => ['title', 'idea', 'bridge', 'spot', 'trap'].every((f) => shipped['lesson:' + L.id + ':' + f]));
   A.regions.forEach((r) => { r.stops.forEach((st) => { st.items = st.items.filter((id) => items[id]); }); r.check = r.check.filter((id) => items[id]); });
   A.games = (A.games || []).filter((id) => items[id]);

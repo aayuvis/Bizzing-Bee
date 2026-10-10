@@ -1,0 +1,1583 @@
+[
+ {
+  "unit": "item:6",
+  "verdict": "pass",
+  "reason": "gadget/device are everyday near-synonyms (both rounds pass). laptop is a kind of gadget, not a synonym; smart and mall are unrelated. Gloss shows the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8",
+  "verdict": "fix",
+  "reason": "Agree with r1 over r2: shipment/freight is a sound pair and inventory/receipt/premium do not compete, but the shown gloss 'Is goods or cargo transported for pay' is broken English with a stray leading 'Is' (the same defect for which the cringe gloss was hidden). Hide the gloss; nothing else changes.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:10",
+  "verdict": "pass",
+  "reason": "young/old are exact opposites; innocent/timid/tame are not opposites of young. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12",
+  "verdict": "pass",
+  "reason": "cruel/kind exact opposites; 'kindness' is the noun (opposite of cruelty), brutal is a synonym, reckless/timid unrelated. Gloss already hidden (noun sense). Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13",
+  "verdict": "pass",
+  "reason": "give/take exact opposites; gave is a tense form, lend/selfish/generous not opposites. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14",
+  "verdict": "pass",
+  "reason": "visible/hidden are opposites; apparent is a synonym, unclear/darker/reveal do not oppose visible. Gloss (verb 'hide') already hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15",
+  "verdict": "pass",
+  "reason": "buy/sell exact opposites; bought/borrow/export/expensive are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16",
+  "verdict": "pass",
+  "reason": "short/long exact opposites; brief is a synonym, length a noun, blunt/forget unrelated; 'tall' not offered. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:18",
+  "verdict": "pass",
+  "reason": "night/day exact opposites; winter is a season and 'lit' (illuminated) is an adjective, not the opposite noun of night. Two wrong options is within the rule. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:21",
+  "verdict": "pass",
+  "reason": "wheat is a kind of grain; harvest/bean/coconut are not categories of wheat. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:27",
+  "verdict": "pass",
+  "reason": "diamond is a kind of gem; emerald/ruby are co-members, not categories. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:30",
+  "verdict": "pass",
+  "reason": "'chef is a person who cooks' is exactly true; broth/stew/bread are things cooked and heat is a means, so chef is the only person and the only answer. r2's note that cook is its own doer noun does not create a rival. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:33",
+  "verdict": "pass",
+  "reason": "teach/teacher exact agent noun; instruction is the act, follower/composer are doers of other verbs. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:39",
+  "verdict": "pass",
+  "reason": "'pilot is a person who flies' is true; prey/wing/skater/hunter are not people who fly. The link does not require an -er form. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:42",
+  "verdict": "pass",
+  "reason": "artificial/natural exact opposites; virtual is near-synonym, nature a noun, aesthetic/cleaner unrelated. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:43",
+  "verdict": "pass",
+  "reason": "expand/shrink opposites; widen/grow/increase are synonyms of expand. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:44",
+  "verdict": "pass",
+  "reason": "shut/open exact opposites; door/lock/exit are associates and exclude is close to 'shut out', not an opposite. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:45",
+  "verdict": "pass",
+  "reason": "temporary/permanent exact opposites; convenient/minimum/scarce/safe are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:46",
+  "verdict": "pass",
+  "reason": "refuse/accept exact opposites; dare/brave/difficult do not oppose refuse. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:47",
+  "verdict": "pass",
+  "reason": "accept/refuse exact opposites; receive is a synonym, comply/justify/bread are not opposites. Gloss (refuse = rubbish) hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:48",
+  "verdict": "pass",
+  "reason": "donation/gift sound synonyms; nonprofit/tuition/broker are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:49",
+  "verdict": "pass",
+  "reason": "shore/beach are dictionary synonyms children use interchangeably; creek/bay/lagoon are other water features. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:50",
+  "verdict": "pass",
+  "reason": "a lens is part of a camera; laser/infrared/vision are not wholes a lens belongs to in any sense a child would defend. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:53",
+  "verdict": "pass",
+  "reason": "a trunk is part of an elephant; stalk and stump do not have a trunk as a part. Gloss right (if terse). Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:55",
+  "verdict": "pass",
+  "reason": "a sole is part of a shoe; thumb/elbow are parts, not wholes. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:56",
+  "verdict": "pass",
+  "reason": "a verse is part of a poem; sung/composer/accent are not wholes. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:57",
+  "verdict": "pass",
+  "reason": "a minute is part of an hour; thirty/forty/twenty are numbers, not wholes. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:59",
+  "verdict": "pass",
+  "reason": "a wheel is part of a bicycle; a pivot and a propeller have no wheel as a part. Easy for L5 but not wrong. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:62",
+  "verdict": "pass",
+  "reason": "a ring is made from gold; call/screw are other senses of ring, not materials, and golden is an adjective. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:63",
+  "verdict": "pass",
+  "reason": "a pen is used to write; unlock/sweep/sew/photograph are other functions. Gloss (authoring sense) hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:64",
+  "verdict": "pass",
+  "reason": "scissors are used to cut; sew/magnify/bore are other tools' jobs. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:69",
+  "verdict": "pass",
+  "reason": "a thermometer is used to measure; freeze/sweep/cool/magnify are not its job. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:72",
+  "verdict": "pass",
+  "reason": "a sieve is used to strain; shred/freeze/boil/cook are not its job. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:73",
+  "verdict": "pass",
+  "reason": "tendency/inclination sound synonyms at L4; tolerance/acceptance/skepticism are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:75",
+  "verdict": "pass",
+  "reason": "devastation/ruin sound synonyms; emptiness and mishap are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:77",
+  "verdict": "pass",
+  "reason": "malice/spite sound synonyms; acceptance/leniency are opposites in spirit. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:79",
+  "verdict": "pass",
+  "reason": "quilt/blanket are listed synonyms in everyday use; wallpaper/woodwork are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:80",
+  "verdict": "pass",
+  "reason": "hatred/animosity sound synonyms at L4; adoration/acceptance are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:82",
+  "verdict": "pass",
+  "reason": "bucket/pail exact synonyms; faucet/artery/bale are not (bale is not 'bail'). Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:87",
+  "verdict": "pass",
+  "reason": "patience is the only member of patient's word family on offer; nurse/clinic read patient as a noun but are not family members, kindness/safety are other quality nouns. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:92",
+  "verdict": "fail",
+  "reason": "Agree with r1 (and r2's own 'FLAWED' note): the bridge for this link says '{A} becomes {B}: the same idea with a new job', and 'meaningless' reverses the idea (without meaning); the parallel to the noun->adjective pairs in this set (hill:hilly, child:childish) is 'meaningful', which is not offered. The item would teach that -less keeps the same idea. That is a c/d defect, so dropping options cannot rescue it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:98",
+  "verdict": "pass",
+  "reason": "statue/sculpture are listed synonyms; gild/facade are unrelated and marble is a material (its rare 'a marble = a marble sculpture' sense names only marble statues, not a synonym). Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "pass",
+  "reason": "Overrule r1's hyponym fail, side with r2: thesauri list pouch under bag and the bridge only claims 'about the same', the same tolerance applied to shore/beach and grin/smile. towel/bin/express/laundry are not synonyms, so pouch is the one answer. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:105",
+  "verdict": "pass",
+  "reason": "workman/laborer sound synonyms; conveyor/wagon are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:115",
+  "verdict": "pass",
+  "reason": "flora/vegetation sound synonyms; fauna is the animal counterpart and annual a plant type. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:119",
+  "verdict": "pass",
+  "reason": "blooming/flowering exact synonyms; tulip/meadow are not. 'blooming' as a mild British intensifier is a euphemism, not a swear word. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:124",
+  "verdict": "pass",
+  "reason": "foam/lather used interchangeably; bubbly is an adjective (its champagne sense is secondary and not evoked here), sawdust/grime unrelated. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:128",
+  "verdict": "pass",
+  "reason": "difficulty/trouble sound synonyms; exhaustion/spite are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:137",
+  "verdict": "pass",
+  "reason": "cringe/wince sound synonyms; congratulate/flatter/hoax/overheard are not. Broken-English gloss already hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:138",
+  "verdict": "pass",
+  "reason": "picturesque/scenic sound synonyms at L7; lurid/dingy/spooky do not compete, and lurid is an ordinary adjective at age 14. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:139",
+  "verdict": "pass",
+  "reason": "zero/nothing sound synonyms for a child; total/maximum/volt/gross are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:140",
+  "verdict": "pass",
+  "reason": "beach/shore dictionary synonyms; lagoon/pool/creek are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:144",
+  "verdict": "pass",
+  "reason": "girth/circumference exact synonyms in the measuring sense (taught in maths/geography by L6); bridle/halter/jumper/saddle play on the strap sense but none means girth. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:149",
+  "verdict": "pass",
+  "reason": "approve/endorse sound synonyms; repaid/repeal/amend are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:151",
+  "verdict": "pass",
+  "reason": "a purse is a kind of container; pocket/grocery/receipt are not its category. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:159",
+  "verdict": "pass",
+  "reason": "trader/merchant sound synonyms; bazaar/export/pelt are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "fix",
+  "reason": "Agree with r1 over r2: handcuff/manacle is a sound L7 pair and deterrent/impediment/pillory do not compete, but the shown gloss 'A shackle for the hand handcuffs' is a garbled run-on displayed to a child. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:163",
+  "verdict": "pass",
+  "reason": "begin/finish opposites; arrive/early/day are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:164",
+  "verdict": "pass",
+  "reason": "bottom/underside exact synonyms; ledge/dive/mantle/buoy are not. 'bottom' is the ordinary polite word, not a swear word or insult. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:166",
+  "verdict": "pass",
+  "reason": "manacle/shackle exact synonyms; sling/barrage are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:175",
+  "verdict": "pass",
+  "reason": "stipend/allowance sound synonyms at L6; allow is only a family member, tuition/shareholder unrelated. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "pass",
+  "reason": "Overrule r1's hyponym fail, side with r2: thesauri list swamp as a synonym of wetland and it is the everyday word a child uses for one; the bridge claims only 'about the same'. habitat (a wetland is one) and creek are not synonyms, so swamp is the one answer. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:178",
+  "verdict": "pass",
+  "reason": "bookcase/bookshelf name the same furniture in everyday use; workspace/alcove/wallpaper/workbench are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:185",
+  "verdict": "fix",
+  "reason": "accumulation/buildup is sound and no option competes, but 'albumin' (a blood/egg protein) is technical jargon far too obscure at L4 (age 11). Drop it; melanin and breakdown remain, neither a synonym. Gloss right. Both rounds passed; r2 had flagged the obscure distractors.",
+  "drop": [
+   "albumin"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:186",
+  "verdict": "pass",
+  "reason": "courteous/polite exact synonyms; frolicsome/boorish are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:187",
+  "verdict": "pass",
+  "reason": "undertaking/project sound synonyms; diversion/advancement are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g",
+  "verdict": "pass",
+  "reason": "hiking/walking hold at 'about the same'; trail/scout/driveway are not synonyms. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i",
+  "verdict": "pass",
+  "reason": "road/street standard L1 synonyms; traffic/driver/transit are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j",
+  "verdict": "pass",
+  "reason": "trip/journey sound synonyms; bus/drove/backpack are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k",
+  "verdict": "pass",
+  "reason": "grin/smile classic synonym pair; wink/frown/agony are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m",
+  "verdict": "pass",
+  "reason": "blanket/cover listed synonyms; lawn/sweater/wool/picnic are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:n",
+  "verdict": "pass",
+  "reason": "trader/dealer sound synonyms; bazaar/export/import are not. 'dealer' is an ordinary trade word, and the gloss names that sense. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:o",
+  "verdict": "pass",
+  "reason": "evidence/proof listed synonyms; validity/defendant are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:q",
+  "verdict": "pass",
+  "reason": "a mill is a factory; sack/shovel/annual/lumber are not synonyms. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:r",
+  "verdict": "pass",
+  "reason": "playing/performing hold in the drama/music sense the gloss names; hockey/soccer are things played, not synonyms. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:s",
+  "verdict": "pass",
+  "reason": "device/gadget standard synonyms; generator/plug/clip/wireless are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w",
+  "verdict": "pass",
+  "reason": "cent/penny (one hundredth) holds; dollar/eighth/tenth are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x",
+  "verdict": "pass",
+  "reason": "tutor/instructor sound synonyms; seminar/tuition/nonprofit are not people. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y",
+  "verdict": "fix",
+  "reason": "Agree with r1 on the option only: performing/acting is sound and the gloss names the drama sense, but 'stag' beside performing/solo/audition sits in the 'stag show / stag night' sense (men-only, often adult entertainment) - a double meaning in exactly this context. Drop it; solo and audition remain and neither is a synonym.",
+  "drop": [
+   "stag"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1d",
+  "verdict": "pass",
+  "reason": "bottom/top exact opposites; rim/dive/sink are not. 'bottom' is an ordinary word, not an insult. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1k",
+  "verdict": "pass",
+  "reason": "sink/float exact opposites; leak/shrink/wet are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1m",
+  "verdict": "pass",
+  "reason": "love/hate exact opposites; anger/rich/lend are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1n",
+  "verdict": "pass",
+  "reason": "big/small exact opposites; huge/largest are synonyms, wide unrelated. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1q",
+  "verdict": "pass",
+  "reason": "heavy/light exact opposites; rain/weight/load/burden are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1w",
+  "verdict": "pass",
+  "reason": "calm/stormy opposites (weather and mood); confident/awake/quiet are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1z",
+  "verdict": "pass",
+  "reason": "timid/brave exact opposites; envy/tame/cruel are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2e",
+  "verdict": "pass",
+  "reason": "a kitchen is a kind of room; mop/towel are not categories. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2g",
+  "verdict": "pass",
+  "reason": "a boot is a type of shoe in standard dictionaries; sweater/nap/kick/sock are not its category (kick is boot's verb sense, not a category). Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2v",
+  "verdict": "pass",
+  "reason": "a hog is a kind of animal; pork/ham/gravy are foods, not categories. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3h",
+  "verdict": "pass",
+  "reason": "design/designer exact agent noun; builder/skater/visitor/sculptor do other verbs. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3j",
+  "verdict": "pass",
+  "reason": "direct/director exact agent noun; rescuer/translator/reporter/pilot do other verbs (pilot steers, a stretch from 'direct'). Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3w",
+  "verdict": "pass",
+  "reason": "climb/climber exact agent noun; ladder/steep associates, skier another doer, annual filler. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3y",
+  "verdict": "pass",
+  "reason": "swim/swimmer exact agent noun; crawl/dive/dip are actions, pro not a swimmer by definition. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4b",
+  "verdict": "pass",
+  "reason": "commitment/dedication sound synonyms; betrayal/mandatory/retirement are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4c",
+  "verdict": "pass",
+  "reason": "collection/group listed synonyms; catalog/relic/artwork are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4e",
+  "verdict": "pass",
+  "reason": "meadow/field listed synonyms; dusk/bog/creek are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4f",
+  "verdict": "pass",
+  "reason": "note/message sound synonyms; paragraph/musical are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4j",
+  "verdict": "pass",
+  "reason": "ginger is a kind of plant; curry/garlic/soy/basil are co-members or foods, not categories. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4k",
+  "verdict": "pass",
+  "reason": "a curry is a kind of dish; ginger/soy/basil/bun are not categories. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4n",
+  "verdict": "pass",
+  "reason": "a rocket is a kind of vehicle; jet/helicopter are co-members, rotor/ignition parts. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4o",
+  "verdict": "pass",
+  "reason": "grey is a kind of colour; brown/tan are co-members, colorful/dark adjectives. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4p",
+  "verdict": "pass",
+  "reason": "a donkey is a kind of animal; hen/raven/tiger are co-members. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4q",
+  "verdict": "pass",
+  "reason": "a toe is part of a foot; thumb/elbow are parts, not wholes. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4r",
+  "verdict": "pass",
+  "reason": "a hoof is part of a horse; paw/toe are parts, not wholes. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4t",
+  "verdict": "pass",
+  "reason": "a collar is part of a shirt; sleeve/hem are parts, not wholes. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4w",
+  "verdict": "pass",
+  "reason": "a mane is part of a lion; paddock/moorland/trot are not wholes. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4x",
+  "verdict": "pass",
+  "reason": "a chapter is part of a book; paragraph is smaller, essay and lesson are not books of chapters. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4y",
+  "verdict": "pass",
+  "reason": "a pupil is part of an eye; colon and student (pupil's other sense) are not wholes a pupil is part of. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5b",
+  "verdict": "pass",
+  "reason": "pottery is made from clay; shard/artisan/bronze are not its material. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5c",
+  "verdict": "pass",
+  "reason": "a chair is made from wood; gym/dresser are not materials and wooden is an adjective. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5g",
+  "verdict": "pass",
+  "reason": "an omelet is made from egg; rosemary/taco are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5h",
+  "verdict": "pass",
+  "reason": "a tire is made from rubber; exhaust/workout/slam/denim are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5j",
+  "verdict": "pass",
+  "reason": "a statue is made from marble; monument/sculptor/figure are not materials. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5k",
+  "verdict": "pass",
+  "reason": "a basket is made from wicker; bale/sack/oat are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5l",
+  "verdict": "pass",
+  "reason": "butter is made from cream; lemon/sauce/broth are not, creamy is an adjective. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5m",
+  "verdict": "pass",
+  "reason": "popcorn is made from corn; diner/hay/cream/wicker are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5r",
+  "verdict": "pass",
+  "reason": "cake is made from flour; bun/loaf/block are not materials. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5s",
+  "verdict": "pass",
+  "reason": "a blanket is made from wool; lawn/sweater/cover are not materials. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5u",
+  "verdict": "pass",
+  "reason": "a coin is made from metal; penny/dollar are coins, glass is not a coin material. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5w",
+  "verdict": "pass",
+  "reason": "a table is made from wood; dinner/grid are not materials, wooden is an adjective. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5x",
+  "verdict": "pass",
+  "reason": "paper is made from wood (pulp), the fact taught at this age; sheet/ink/daily/wooden are not its material. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6c",
+  "verdict": "pass",
+  "reason": "a grater is used to shred; wake/sweep/freeze/bake are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6d",
+  "verdict": "pass",
+  "reason": "a magnet is used to attract; sweep/strain/signal/inflate are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6f",
+  "verdict": "pass",
+  "reason": "a stove is used to cook; cool/shred are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6g",
+  "verdict": "pass",
+  "reason": "a freezer is used to freeze; wake/shred/bake are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6h",
+  "verdict": "pass",
+  "reason": "a telescope is used to observe; light/sweep are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6i",
+  "verdict": "pass",
+  "reason": "an oar is used to row; pound/sew are not, and 'catch' as a rowing term is too technical to be a rival. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6j",
+  "verdict": "pass",
+  "reason": "glue is used to stick; sew/shred/magnify/bake are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6k",
+  "verdict": "pass",
+  "reason": "a whisk is used to beat; shred/bake/wake/boil are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6l",
+  "verdict": "pass",
+  "reason": "a shovel is used to dig; wake/sweep/unlock/shred are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6m",
+  "verdict": "pass",
+  "reason": "a broom is used to sweep; shred/sew/bore/catch are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6n",
+  "verdict": "pass",
+  "reason": "an alarm is used to wake; freeze/unlock/strain are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6p",
+  "verdict": "pass",
+  "reason": "a spoon is used to stir; bake/shred/boil are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6r",
+  "verdict": "pass",
+  "reason": "a ruler is used to measure; pound/unlock/inflate/magnify are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6v",
+  "verdict": "pass",
+  "reason": "a hammer is used to pound; bore/sweep/sew are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6w",
+  "verdict": "pass",
+  "reason": "a net is used to catch; sweep/magnify/shred/stick are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6y",
+  "verdict": "pass",
+  "reason": "a saw is used to cut; unlock/wake/bore/dig are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6z",
+  "verdict": "pass",
+  "reason": "a scale is used to weigh; inflate/sweep/magnify/freeze are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "fix",
+  "reason": "possible/feasible is sound at L4 and probable (likely) is a fair near-miss rather than a second answer, but the shown gloss 'Is capable of being done' carries the same stray leading 'Is' as the cringe/freight/miserable/jealous glosses; a malformed definition should not be shown in a spelling app. Hide the gloss. Both rounds passed.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:7b",
+  "verdict": "pass",
+  "reason": "home/residence sound synonyms; vacation/nowhere/permanent are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7c",
+  "verdict": "pass",
+  "reason": "choice/pick hold ('take your pick'); outlook/favour are not synonyms. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7f",
+  "verdict": "pass",
+  "reason": "filling/stuffing sound synonyms; hum/savory/pastry are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7g",
+  "verdict": "pass",
+  "reason": "seller/merchant listed synonyms; buyer is the opposite, discount/commodity/premium unrelated. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7i",
+  "verdict": "pass",
+  "reason": "blend/mixture exact synonyms; genre/mute/clash are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7k",
+  "verdict": "pass",
+  "reason": "intimidation/bullying share a dictionary synset, and the gloss is that sense. compulsion's coercion sense is a weaker neighbour (being forced, not being frightened) and subversion is unrelated, so bullying is the clear answer. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7n",
+  "verdict": "pass",
+  "reason": "seawater/saltwater used interchangeably; evaporation/beaker/reservoir are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7p",
+  "verdict": "pass",
+  "reason": "comprehension/grasp sound synonyms in the understanding sense the gloss shows; volition/actuality are abstract L4-register words, not synonyms. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7q",
+  "verdict": "pass",
+  "reason": "animosity/hostility sound synonyms; indignation (anger at unfairness) and leniency are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7r",
+  "verdict": "pass",
+  "reason": "feather/plume dictionary synonyms; crest/peacock/stork/stripe are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7w",
+  "verdict": "pass",
+  "reason": "pursuit/chase sound synonyms with the gloss shown; ambition/liberation are not. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7z",
+  "verdict": "pass",
+  "reason": "barrier/obstacle sound synonyms; embankment/parapet/moat are kinds of barrier, defensive an adjective. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8a",
+  "verdict": "pass",
+  "reason": "childish is the only member of child's family on offer and keeps the idea (like a child); pediatric/juvenile/minor/newborn are meaning-neighbours, not family. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8c",
+  "verdict": "pass",
+  "reason": "arrive/arrival exact family pair; noon/leave are not family. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8g",
+  "verdict": "pass",
+  "reason": "accept/acceptance exact family pair; skeptic/refuse/admiration are not family. Gloss shows a real sense of acceptance that matches accept. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8h",
+  "verdict": "fail",
+  "reason": "Agree with r1: caudal, alveolar and pectoral are anatomy jargon far too obscure at L4 (age 11), and they frame 'spine' as the backbone, whose adjective is 'spinal', while 'spiny' belongs to the prickle sense; the circular gloss 'Having spines' lets a child learn spiny = having a backbone. All three remaining distractors are the problem, so dropping cannot leave two sound options. r2's own note calls them very obscure.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8j",
+  "verdict": "pass",
+  "reason": "tasteful is the only member of taste's family on offer and the gloss teaches its real (aesthetic) sense; pleasant/wonderful/fruity/fizzy are not family. r2's 'weak' note is answered by the gloss. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8m",
+  "verdict": "pass",
+  "reason": "bakery is the only member of bake's family on offer and keeps the idea (a place for baking); oatmeal/dough/roast/bun are not family. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8v",
+  "verdict": "pass",
+  "reason": "rotate/rotation exact family pair; pivot/compressor/propulsion are not family. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9e",
+  "verdict": "pass",
+  "reason": "hill/hilly exact family pair; grassy/steeper/snowy are not family. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9h",
+  "verdict": "pass",
+  "reason": "a kettle is used to boil; bake/shred/wake are not, and cook is a much weaker fit for a kettle than boil. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9i",
+  "verdict": "pass",
+  "reason": "a pump is used to inflate; sweep/freeze/cool/clean are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9j",
+  "verdict": "pass",
+  "reason": "a microscope is used to magnify; strain/light/freeze are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "fix",
+  "reason": "perfume/perfumer holds (a perfumer makes perfume, the gloss says so) and is the only person on offer, but 'mastic' (a resin) is far too obscure at L5 (age 12), as r2 noted. Drop it; fragrance, beeswax and linseed remain, none a person.",
+  "drop": [
+   "mastic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9t",
+  "verdict": "pass",
+  "reason": "ranch/rancher exact agent noun; mow/estate/bunk are not people. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9v",
+  "verdict": "pass",
+  "reason": "compose/composer exact agent noun; elegy/lyric/solo are things composed. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9x",
+  "verdict": "pass",
+  "reason": "rescue/rescuer exact agent noun; shipwreck/salvation are not people. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a1",
+  "verdict": "pass",
+  "reason": "allow/allowance exact family pair and the gloss shows allowance as an amount allowed; permit is a synonym, not family; modem/interface/passport unrelated. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a4",
+  "verdict": "pass",
+  "reason": "liberate/liberation exact family pair; confinement/oppression/onus are not family. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a7",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: annul/annulment is legal/adult vocabulary (chiefly the annulment of a marriage or a law) and too obscure for L5 (age 12); the pair itself is the problem, so no drop or gloss change rescues it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a8",
+  "verdict": "pass",
+  "reason": "abnormal/abnormality exact family pair; proliferation/enlargement are not family. Stigmatising gloss already hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a9",
+  "verdict": "pass",
+  "reason": "stylistic is the only member of style's family on offer; fashionable/chic/trendy/unconventional are meaning-neighbours. Gloss right at L6. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "fix",
+  "reason": "Agree with r1 on the gloss: responsive/responsiveness is an exact family pair and stimuli/stimulus/activation share no root, but the gloss for the noun reads 'Responsive to stimulation', an adjective phrase that repeats c, in a lesson whose whole point is the word taking a new job. It shows the wrong part of speech; hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:ax",
+  "verdict": "pass",
+  "reason": "metamorphosis/metamorphic exact family pair (butterflies and rocks are both on the L5 science syllabus); mutant/rudimentary are not family. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b0",
+  "verdict": "pass",
+  "reason": "devour is a stronger nibble; overcook/wiggle are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b3",
+  "verdict": "pass",
+  "reason": "scorching is a stronger hot; humid/breezy/cooler are not, and spicy is a different sense of hot, not a stronger one. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "fix",
+  "reason": "Agree with r1 over r2 on the gloss: sad -> miserable is a true stronger pair and ecstatic/patriotic/nostalgic do not compete, but the gloss 'Is very unhappy uneasy or uncomfortable' is broken English (stray leading 'Is', missing commas). Hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:b5",
+  "verdict": "pass",
+  "reason": "astonished is a stronger surprised; terrified/exhausted/thrilled/fascinated are strong forms of other states. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "fix",
+  "reason": "Agree with r1 over r2 on the gloss: breeze -> gale is a true stronger pair and sway/sunflower/dew do not compete, but the gloss 'A strong wind moving 45-90 knots' teaches a false number (a gale, Beaufort 7-10, is about 28-55 knots; 64+ knots is hurricane force). Hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:b7",
+  "verdict": "pass",
+  "reason": "ecstatic is a stronger happy; hopeless/sad/unhappy are opposites, not stronger forms. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bc",
+  "verdict": "pass",
+  "reason": "frantic is a stronger worried ('frantic with worry'); astonished/thrilled/exhausted are other states. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bd",
+  "verdict": "pass",
+  "reason": "terrified is a stronger scared; thrilled/astonished/scorching/exhausted are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bf",
+  "verdict": "pass",
+  "reason": "soaked is a stronger wet; mud/asphalt/muddy/scrub are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bg",
+  "verdict": "pass",
+  "reason": "furious is a stronger angry; resentful/sullen/irascible/gruff are kinds or tendencies of bad temper, not a stronger anger. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bi",
+  "verdict": "pass",
+  "reason": "delighted is a stronger pleased; fascinated/exhausted/terrified/astonished are other states. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bk",
+  "verdict": "pass",
+  "reason": "starving is a stronger hungry; grumpy/miserable are moods and devour/gulp are verbs. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bn",
+  "verdict": "pass",
+  "reason": "exhausted is a stronger tired; terrified/scorching/astonished/fascinated are not. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bp",
+  "verdict": "pass",
+  "reason": "dark is a stronger dim; darkness is the noun, frantic/scorching unrelated. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bq",
+  "verdict": "fail",
+  "reason": "Overturn the double pass: this link's bridge reads '{B} is a stronger {A}', so the item asserts 'a lake is a stronger pond', which is false - a lake is a bigger body of still water, not a stronger one. Size is not strength, so the link is not true of c -> d (unlike breeze->gale or stream->river, where the flow itself is stronger). A c/d defect: dropping options cannot rescue it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:br",
+  "verdict": "pass",
+  "reason": "huge is a stronger big; tiny/mini/small are opposites. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bs",
+  "verdict": "pass",
+  "reason": "a river is a larger, stronger-flowing stream, as the gloss itself says ('a large natural stream'); flow is a verb/noun of motion, lake is still water and not a stream, gulp unrelated. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "fix",
+  "reason": "Agree with r1 over r2 on the gloss: warm -> hot is a true stronger pair and cold/gulp/downpour do not compete, but the gloss 'Used of physical heat' is only a usage note with no meaning - the defect for which picturesque's 'Used of locations' was hidden. Hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:c3",
+  "verdict": "pass",
+  "reason": "colorful/colorless exact opposites; vibrant/bright are synonyms, silken/lacy unrelated. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c4",
+  "verdict": "pass",
+  "reason": "disprove/prove exact opposites; contradict/deny side with disprove, conjecture/provable are not opposites. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c5",
+  "verdict": "pass",
+  "reason": "thoughtless/thoughtful exact opposites; careless/negligent are synonyms, immoral/cowardly are not opposites. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c6",
+  "verdict": "pass",
+  "reason": "tasteful is the opposite of tasteless in the aesthetic sense the gloss shows; 'tasty' is not offered, so the flavour sense gives no rival; bland is a synonym, odorless/volatile/taste are not opposites. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c8",
+  "verdict": "pass",
+  "reason": "tasteful/tasteless exact opposites; genteel/stylish are synonyms of tasteful. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ci",
+  "verdict": "pass",
+  "reason": "dangerous/safe exact opposites; lethal is a synonym, unsafe likewise, safety a noun. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ck",
+  "verdict": "pass",
+  "reason": "scarce/plentiful exact opposites; meager/rare are synonyms. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cl",
+  "verdict": "pass",
+  "reason": "ascend/descend exact opposites; descendant is a noun, float/shrink are not opposites. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cp",
+  "verdict": "pass",
+  "reason": "successful/unsuccessful exact opposites; costly/effective are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d1",
+  "verdict": "pass",
+  "reason": "taro is a kind of plant; radish/sesame/parsnip/dill are co-members. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d2",
+  "verdict": "pass",
+  "reason": "a civet is a kind of mammal (a common city animal in India, fair at L5); marten/muskrat are co-members and blackbird is a bird, none a category of civet. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d7",
+  "verdict": "pass",
+  "reason": "a cello is a kind of instrument; saxophone is a co-member, soloist a person, instrumental an adjective, sonata a piece. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "fix",
+  "reason": "Agree with r1 over r2: zither -> instrument is true and fret/instrumental/saxophone do not compete, but the gloss 'A device that requires skill for proper use' is the tool sense of instrument, not the musical sense a zither belongs to; the identical gloss was hidden on cello (d7) and chime (dp) for that reason. Hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:di",
+  "verdict": "pass",
+  "reason": "a quince is a small tree as well as its fruit, so 'quince is a kind of tree' is true; 'fruit' is not offered and licorice/cranberry/caraway/coriander are co-members, not categories. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dj",
+  "verdict": "pass",
+  "reason": "a flea is a kind of insect; larvae is a life stage, a mite is an arachnid, an anteater a mammal. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dm",
+  "verdict": "pass",
+  "reason": "capsicum is a kind of plant; currant/grapefruit/apricot/hazelnut are co-members. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dn",
+  "verdict": "pass",
+  "reason": "caraway is a kind of plant; coriander/parsley/kale/tarragon are co-members. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dp",
+  "verdict": "pass",
+  "reason": "a chime is a percussion instrument (tuned bells); clang/jingle/ding are sounds, instrumental an adjective. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dt",
+  "verdict": "pass",
+  "reason": "flamenco is a kind of dance; jive is a co-member, dancer a person. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:du",
+  "verdict": "pass",
+  "reason": "rumba is a kind of dance; jive is a co-member, dancer a person. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dw",
+  "verdict": "pass",
+  "reason": "a seagull is a kind of bird; swipe/screech are not categories. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dx",
+  "verdict": "pass",
+  "reason": "a magnifier is an (optical) instrument, and here the general device sense the gloss shows is the right one; spectra/microscopy/instrumental are not categories. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e4",
+  "verdict": "pass",
+  "reason": "response -> responsive is the noun->adjective job change; responsiveness is family but keeps the noun job (the lesson's own trap), adverse/impulsive/reflex are not family. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e6",
+  "verdict": "pass",
+  "reason": "vaporize/vaporization exact family pair; aerosol/blender/wetness/convection are not family. Gloss hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e8",
+  "verdict": "fix",
+  "reason": "aggressive/aggressiveness is an exact family pair and repulse/harassment/exploitation/antagonist share no root, but the shown gloss 'The quality of being bold and enterprising' is the business-praise sense, while the item (and every child) reads aggressive as hostile; it would teach aggressiveness as a virtue. Hide the gloss. Both rounds passed.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:e9",
+  "verdict": "pass",
+  "reason": "meaningless/meaningful exact opposites; pointless is a synonym, pitiful/unhappy/discontent are not opposites. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eb",
+  "verdict": "pass",
+  "reason": "steady/wobbly plain opposites; buoyancy/hurdle/sweetheart/rev are not. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ec",
+  "verdict": "pass",
+  "reason": "realistic/unrealistic exact opposites; cinematic/artistic are unrelated, practical is a synonym. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ed",
+  "verdict": "pass",
+  "reason": "powerless/powerful exact opposites; helpless is a synonym, lax/power are not opposites. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ee",
+  "verdict": "pass",
+  "reason": "unrealistic/realistic exact opposites; idealistic/fanciful are synonyms, stoic/mediocre unrelated. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ef",
+  "verdict": "pass",
+  "reason": "wobbly/steady opposites; snug/sag/doorknob/freezer are not. Gloss (boyfriend sense) already hidden. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eg",
+  "verdict": "pass",
+  "reason": "beneficial/advantageous sound synonyms at L8; nutritional is narrower and advantage is the noun. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ei",
+  "verdict": "pass",
+  "reason": "education/schooling interchangeable in everyday use; curriculum/seminar/literacy/humanitarian are not synonyms. Gloss right. Both rounds pass.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "fix",
+  "reason": "Agree with r1 over r2 on the gloss: envious/jealous is a sound pair and wary/giddy/unhappy/impassive do not compete, but the gloss 'Is feeling resentment against someone because of success' is broken English (stray leading 'Is', 'because of success' with no owner), the cringe-gloss defect. Hide it.",
+  "drop": [],
+  "gloss": "hide"
+ }
+]
