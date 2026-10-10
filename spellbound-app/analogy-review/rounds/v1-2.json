@@ -296,8 +296,8 @@
  },
  {
   "unit": "item:6p",
-  "verdict": "pass",
-  "reason": ""
+  "verdict": "fail",
+  "reason": "(b) wrong option 'cook' - a spoon (wooden spoon) is used to cook; defensible"
  },
  {
   "unit": "item:6q",
@@ -1326,8 +1326,8 @@
  },
  {
   "unit": "item:d9",
-  "verdict": "pass",
-  "reason": ""
+  "verdict": "fail",
+  "reason": "(d) 'zither' is obscure for a level-5 (about 12) child"
  },
  {
   "unit": "item:da",
@@ -1356,8 +1356,8 @@
  },
  {
   "unit": "item:df",
-  "verdict": "pass",
-  "reason": ""
+  "verdict": "fail",
+  "reason": "(d) 'dulcimer' is obscure for a level-5 (about 12) child"
  },
  {
   "unit": "item:dg",

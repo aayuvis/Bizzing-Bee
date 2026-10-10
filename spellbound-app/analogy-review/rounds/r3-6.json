@@ -1,0 +1,5991 @@
+[
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11o",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'unacceptable' is a listed synonym of 'inappropriate'"
+   },
+   {
+    "item": "item:11o",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: unacceptable · inappropriate ~ unacceptable"
+   }
+  ],
+  "unit": "item:11o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "inappropriate",
+  "d": "unsuitable",
+  "wrong": [
+   "unacceptable",
+   "plausible",
+   "blatant",
+   "unintentional"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Not meant or adapted for a particular purpose"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:11p",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:11p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 9,
+  "c": "redwood",
+  "d": "sequoia",
+  "wrong": [
+   "baobab",
+   "appalachian",
+   "glen",
+   "moorland"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Either of two huge coniferous california trees that reach a height of 300 feet"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11q",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'pub' is an alcohol venue; 'shiver' is also defensible ('a chill' = a shivering fit)"
+   },
+   {
+    "item": "item:11q",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: shiver · unsafe: pub · a chill is also a shiver; 'pub' is an alcohol venue"
+   }
+  ],
+  "unit": "item:11q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "chill",
+  "d": "coldness",
+  "wrong": [
+   "cornbread",
+   "drizzle",
+   "pub",
+   "shiver"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The sensation produced by low temperatures"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11r",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a quilt is a KIND of blanket/bedding (stitched, stuffed layers); d narrower"
+   },
+   {
+    "item": "item:11r",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:11r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "blanket",
+  "d": "quilt",
+  "wrong": [
+   "lawn",
+   "cot",
+   "wool",
+   "sweater"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Bedding made of two layers of cloth filled with stuffing and stitched together"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:11s",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:11s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "narrator",
+  "d": "storyteller",
+  "wrong": [
+   "playwright",
+   "melodrama",
+   "thriller",
+   "memoir"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who tells a story"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11t",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'autoclave' is too obscure/technical for L7"
+   },
+   {
+    "item": "item:11t",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym; obscure"
+   }
+  ],
+  "unit": "item:11t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "autoclave",
+  "d": "sterilizer",
+  "wrong": [
+   "extractor",
+   "actuator",
+   "aileron"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A device for heating substances above their boiling point"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11u",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a cookout (outdoor barbecue) and a picnic (packed outdoor meal) are related, not the same"
+   },
+   {
+    "item": "item:11u",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:11u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "cookout",
+  "d": "picnic",
+  "wrong": [
+   "brunch",
+   "cornbread",
+   "food",
+   "muffin"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A day devoted to an outdoor social gathering"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11v",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'nobility' also means noble character/dignity, so wrong option 'dignity' is defensible; 'royalty' also close"
+   },
+   {
+    "item": "item:11v",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: dignity · nobility also = noble quality (dignity)"
+   }
+  ],
+  "unit": "item:11v",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "nobility",
+  "d": "aristocracy",
+  "wrong": [
+   "royalty",
+   "dignity",
+   "blockbuster",
+   "prestige"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A privileged class holding hereditary titles"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11w",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "article and essay are not the same (a news article is not an essay); 'article' also means a/an or an item - confusing at L1"
+   },
+   {
+    "item": "item:11w",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "loose synonym"
+   }
+  ],
+  "unit": "item:11w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "article",
+  "d": "essay",
+  "wrong": [
+   "edition",
+   "newspaper",
+   "patent",
+   "editor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An analytic or interpretive literary composition"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11x",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'chamber' also means a cavity (a heart chamber), so wrong option 'cavity' is defensible"
+   },
+   {
+    "item": "item:11x",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: cavity · chamber also = cavity (heart chamber)"
+   }
+  ],
+  "unit": "item:11x",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "chamber",
+  "d": "room",
+  "wrong": [
+   "cavity",
+   "portal",
+   "barn",
+   "interior"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An area within a building enclosed by walls and floor and ceiling"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:11y",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:11y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "alley",
+  "d": "lane",
+  "wrong": [
+   "driveway",
+   "subway",
+   "highway"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A narrow way or road"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:11z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:11z",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category; shroud is a burial cloth"
+   }
+  ],
+  "unit": "item:11z",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "shroud",
+  "d": "cloth",
+  "wrong": [
+   "padlock",
+   "parapet",
+   "limber",
+   "mesh"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Something made by weaving or knitting natural or synthetic fibers"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12a",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a pillory is a punishment device, not 'an instrument' in the gloss's sense; obscure word with a punishment theme"
+   },
+   {
+    "item": "item:12a",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category (instrument of punishment); obscure"
+   }
+  ],
+  "unit": "item:12a",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "pillory",
+  "d": "instrument",
+  "wrong": [
+   "chicane",
+   "remand",
+   "instrumental",
+   "imposter"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12b",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'serial' (in series) is a listed synonym of 'successive'"
+   },
+   {
+    "item": "item:12b",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: serial · serial = in a series, successive"
+   }
+  ],
+  "unit": "item:12b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "successive",
+  "d": "sequential",
+  "wrong": [
+   "serial",
+   "eleven",
+   "tertiary",
+   "cyclical"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "In regular succession without gaps"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12c",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "melting (solid to liquid by heat) and dissolving (going into solution) are different processes - teaches a science error"
+   },
+   {
+    "item": "item:12c",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "factually wrong: melting and dissolving are different processes; teaches a science misconception"
+   }
+  ],
+  "unit": "item:12c",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "melting",
+  "d": "dissolving",
+  "wrong": [
+   "precipitation",
+   "magma",
+   "pellet",
+   "asphalt"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The process of going into solution"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12d",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "figurative",
+  "d": "symbolic",
+  "wrong": [
+   "subjective",
+   "implicit",
+   "symbol",
+   "communicative"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Relating to or using or proceeding by means of symbols"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12e",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category"
+   }
+  ],
+  "unit": "item:12e",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "chicken",
+  "d": "bird",
+  "wrong": [
+   "lamb",
+   "roast",
+   "ham",
+   "pork"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12f",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'drove' is obscure at L2 and is also the past tense of 'drive' - confusing"
+   },
+   {
+    "item": "item:12f",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym; obscure"
+   }
+  ],
+  "unit": "item:12f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "herd",
+  "d": "drove",
+  "wrong": [
+   "deer",
+   "shepherd",
+   "sled"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A group of animals (a herd or flock) moving together"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12g",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12g",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12g",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "prejudice",
+  "d": "bias",
+  "wrong": [
+   "injustice",
+   "conviction",
+   "distrust",
+   "dissent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A partiality that prevents objective consideration of an issue or situation"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12h",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "forage is animal fodder (grass is a kind of forage, not the reverse); wrong option 'browse' (shoots eaten by animals) is also a kind of forage"
+   },
+   {
+    "item": "item:12h",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "blind pick “browse”, intended “grass” · second defensible: grass · broken: browse is a kind of forage (reverse); grass also plausible; no clean category"
+   }
+  ],
+  "unit": "item:12h",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "forage",
+  "d": "grass",
+  "wrong": [
+   "taro",
+   "soybean",
+   "browse",
+   "grassy"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Narrow-leaved green herbage: grown as lawns"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12i",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category"
+   }
+  ],
+  "unit": "item:12i",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "crocodile",
+  "d": "reptile",
+  "wrong": [
+   "cetacean",
+   "urchin",
+   "hedgehog",
+   "toad"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any cold-blooded vertebrate of the class reptilia including tortoises, turtles, snakes, lizards,…"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12j",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'relish' (to savour/enjoy; also a pleasing flavour) is a defensible synonym of 'savor'"
+   },
+   {
+    "item": "item:12j",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "blind pick “relish”, intended “taste” · second defensible: taste · savor also = taste"
+   }
+  ],
+  "unit": "item:12j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "savor",
+  "d": "taste",
+  "wrong": [
+   "soy",
+   "relish",
+   "oatmeal",
+   "ginger"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The flavor of food that you notice with your tongue"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12k",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12k",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "eradicate",
+  "d": "exterminate",
+  "wrong": [
+   "deter",
+   "taint",
+   "exterminator",
+   "repulse"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To get rid of pests completely"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12l",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a subpoena is a KIND of summons (for witnesses); d narrower; legal term too obscure at L6"
+   },
+   {
+    "item": "item:12l",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym; obscure legal term"
+   }
+  ],
+  "unit": "item:12l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "summons",
+  "d": "subpoena",
+  "wrong": [
+   "proclamation",
+   "confirmation",
+   "notary",
+   "dismissal"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The usual writ for the summoning of witnesses"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12m",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "dissolving and melting are different processes (gloss itself defines melting by heat) - teaches a science error"
+   },
+   {
+    "item": "item:12m",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "factually wrong: dissolving and melting are different processes; teaches a science misconception"
+   }
+  ],
+  "unit": "item:12m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "dissolving",
+  "d": "melting",
+  "wrong": [
+   "peroxide",
+   "solubility",
+   "methane"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The process whereby heat changes something from a solid to a liquid"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12n",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'trustworthy' (a believable/credible witness) is arguably defensible for 'believable'"
+   },
+   {
+    "item": "item:12n",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "believable",
+  "d": "plausible",
+  "wrong": [
+   "sensible",
+   "trustworthy",
+   "constructive",
+   "unrealistic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Apparently reasonable and valid, and truthful"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12o",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12o",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category"
+   }
+  ],
+  "unit": "item:12o",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "drill",
+  "d": "tool",
+  "wrong": [
+   "tackle",
+   "cleanup",
+   "bore",
+   "golfer"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12p",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'jesus' (lower-cased) uses a sacred figure as a throwaway distractor - disrespectful"
+   },
+   {
+    "item": "item:12p",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: jesus · 'jesus' is a sacred name used as a wrong-answer distractor"
+   }
+  ],
+  "unit": "item:12p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "fate",
+  "d": "destiny",
+  "wrong": [
+   "prophecy",
+   "jesus",
+   "mortal",
+   "soul"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An event (or a course of events) that will inevitably happen in the future"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12q",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'swagger' (arrogant manner) is listed as a synonym of 'arrogance'"
+   },
+   {
+    "item": "item:12q",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "arrogance",
+  "d": "conceit",
+  "wrong": [
+   "jealousy",
+   "boldness",
+   "envy",
+   "swagger"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An excessively favorable opinion of oneself"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12r",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "perch",
+  "d": "roost",
+  "wrong": [
+   "sparrow",
+   "flit",
+   "arbor",
+   "heron"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A shelter with perches for fowl or other birds"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12s",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym; 'agnostic' as a distractor beside 'liar' is a poor pairing"
+   }
+  ],
+  "unit": "item:12s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "liar",
+  "d": "deceiver",
+  "wrong": [
+   "ruth",
+   "agnostic",
+   "diction"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who leads you to believe something that is not true"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12t",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "crease",
+  "d": "fold",
+  "wrong": [
+   "matt",
+   "fray",
+   "hunch",
+   "fuzz"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To bend something over so one part lies on another."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12u",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12u",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "awe",
+  "d": "wonder",
+  "wrong": [
+   "terror",
+   "sadness",
+   "affection",
+   "optimism"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The feeling aroused by something strange and surprising"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12v",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a drummer is one KIND of percussionist (d broader)"
+   },
+   {
+    "item": "item:12v",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12v",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "drummer",
+  "d": "percussionist",
+  "wrong": [
+   "soloist",
+   "finale",
+   "clarinetist",
+   "fiddler"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A musician who plays percussion instruments"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12w",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:12w",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:12w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "front",
+  "d": "fore",
+  "wrong": [
+   "slap",
+   "affront",
+   "femur",
+   "elbow"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Front part of a vessel or aircraft"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12x",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "gloss defines 'plant' as a factory; wrong options 'fennel' and 'briar' are also kinds of plant"
+   },
+   {
+    "item": "item:12x",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category"
+   }
+  ],
+  "unit": "item:12x",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "artichoke",
+  "d": "plant",
+  "wrong": [
+   "briar",
+   "fennel",
+   "russet",
+   "bur"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12y",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a suspect is not a defendant (not yet charged); link false; crime topic at L2"
+   },
+   {
+    "item": "item:12y",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "weak: a suspect and a defendant are different legal roles"
+   }
+  ],
+  "unit": "item:12y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "suspect",
+  "d": "defendant",
+  "wrong": [
+   "crime",
+   "arrest",
+   "clue",
+   "testimony"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person against whom a charge is brought in court"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:12z",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'lingerie' is a sexualised underwear word; 'bodice' also"
+   },
+   {
+    "item": "item:12z",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: lingerie · 'lingerie' has a sexual connotation"
+   }
+  ],
+  "unit": "item:12z",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "blouse",
+  "d": "shirt",
+  "wrong": [
+   "plaid",
+   "bodice",
+   "apron",
+   "lingerie"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A garment worn on the upper half of the body"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13a",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'delightful' is a standard synonym of 'adorable'"
+   },
+   {
+    "item": "item:13a",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: delightful · adorable ~ delightful"
+   }
+  ],
+  "unit": "item:13a",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "adorable",
+  "d": "lovable",
+  "wrong": [
+   "delightful",
+   "gaudy",
+   "flamboyant"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having characteristics that attract love or affection"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13b",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong options 'pregnancy' and 'fetus' are reproductive terms unsuitable as throwaway distractors at L2 (age 9)"
+   },
+   {
+    "item": "item:13b",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym; 'pregnancy', 'fetus' sensitive distractors"
+   }
+  ],
+  "unit": "item:13b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "baby",
+  "d": "infant",
+  "wrong": [
+   "mother",
+   "cub",
+   "pregnancy",
+   "fetus"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A very young child (birth to 1 year) who has not yet begun to walk or talk"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13c",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'fixation' (obsession) is stronger than 'preoccupation'; distractors 'delusion'/'compulsive' use mental-health terms casually"
+   },
+   {
+    "item": "item:13c",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13c",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "preoccupation",
+  "d": "fixation",
+  "wrong": [
+   "compulsive",
+   "fervor",
+   "delusion",
+   "leniency"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An obsessive interest in or preoccupation with something."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13d",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'activist' is a defensible synonym of 'agitator', and the item equates activists with troublemakers"
+   },
+   {
+    "item": "item:13d",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym; 'activist' beside troublemaker is a loaded pairing"
+   }
+  ],
+  "unit": "item:13d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "troublemaker",
+  "d": "agitator",
+  "wrong": [
+   "brawl",
+   "repulse",
+   "agitate",
+   "activist"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "One who agitates"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13e",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a grotto is a small KIND of cave; d broader"
+   },
+   {
+    "item": "item:13e",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "grotto",
+  "d": "cave",
+  "wrong": [
+   "loch",
+   "cityscape",
+   "pavilion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A geological formation consisting of an underground enclosure with access from the surface of the ground or…"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13f",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "trash",
+  "d": "garbage",
+  "wrong": [
+   "mop",
+   "bin",
+   "bread",
+   "driveway"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Food that is discarded (as from a kitchen)"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13g",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a padlock is a KIND of lock; d broader"
+   },
+   {
+    "item": "item:13g",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13g",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "padlock",
+  "d": "lock",
+  "wrong": [
+   "swivel",
+   "tether",
+   "anchor",
+   "cuff"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A fastener fitted to a door or drawer to keep it firmly closed"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13h",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "goodbye",
+  "d": "farewell",
+  "wrong": [
+   "hello",
+   "wink",
+   "smirk",
+   "fidget"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An acknowledgment or expression of goodwill at parting"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13i",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "vendor",
+  "d": "seller",
+  "wrong": [
+   "bakery",
+   "bazaar",
+   "deli",
+   "stall"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who promotes or exchanges goods or services for money"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13j",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13j",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "sunshine",
+  "d": "sunlight",
+  "wrong": [
+   "midday",
+   "cooler",
+   "sunflower",
+   "november"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The rays of the sun"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13k",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13k",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "revive",
+  "d": "resuscitate",
+  "wrong": [
+   "reinvent",
+   "relapse",
+   "recoup",
+   "recondition"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause to regain consciousness"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13l",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a grill is not a kind of metal (it is made of metal); link false"
+   },
+   {
+    "item": "item:13l",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "blind pick “stove”, intended “metal” · weak: a grill is not a kind of stove; roast/simmer/fry are sibling methods"
+   }
+  ],
+  "unit": "item:13l",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "grill",
+  "d": "metal",
+  "wrong": [
+   "roast",
+   "stove",
+   "simmer",
+   "fry"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13m",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a meadow is a KIND of field (grass/hay field); d narrower; 'diamond' (baseball field) also arguable"
+   },
+   {
+    "item": "item:13m",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "field",
+  "d": "meadow",
+  "wrong": [
+   "sow",
+   "wheat",
+   "diamond",
+   "till"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A field where grass or alfalfa are grown to be made into hay"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13n",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13n",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "crevice",
+  "d": "fissure",
+  "wrong": [
+   "dune",
+   "bracken",
+   "trickle",
+   "ravine"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A long narrow depression in a surface"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13o",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a newborn is a narrower kind of baby; wrong options 'calf'/'cub' are newborn animals; 'pregnancy' unsuitable distractor at L2"
+   },
+   {
+    "item": "item:13o",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "newborn",
+  "d": "baby",
+  "wrong": [
+   "calf",
+   "cub",
+   "cow",
+   "pregnancy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A very young child (birth to 1 year) who has not yet begun to walk or talk"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13p",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a vassal (a lord's tenant, often a noble) is not a serf (a peasant bound to the land) - historically wrong; obscure at L4"
+   },
+   {
+    "item": "item:13p",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "historically inaccurate: a vassal was a free landholder, a serf was unfree"
+   }
+  ],
+  "unit": "item:13p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "vassal",
+  "d": "serf",
+  "wrong": [
+   "tenure",
+   "sultan",
+   "constable",
+   "landowner"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who is bound to the land and owned by the feudal lord"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13q",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "pretending",
+  "d": "feigning",
+  "wrong": [
+   "tease",
+   "hoax",
+   "doom"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Pretending with intention to deceive"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13r",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "drama",
+  "d": "play",
+  "wrong": [
+   "comedian",
+   "broadway",
+   "epic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A dramatic work intended for performance by actors on a stage"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13s",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "significance",
+  "d": "meaning",
+  "wrong": [
+   "greatness",
+   "prestige",
+   "meaningful",
+   "notable"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The message that is intended or expressed or signified"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13t",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "tactic and strategy are distinct (short-term move vs overall plan); too hard for L2; 'combat'/'activist' distractors"
+   },
+   {
+    "item": "item:13t",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym (loosely)"
+   }
+  ],
+  "unit": "item:13t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "tactic",
+  "d": "strategy",
+  "wrong": [
+   "fighter",
+   "activist",
+   "strategic",
+   "combat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An elaborate and systematic plan of action"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13u",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'executive' is a listed synonym of 'boss' (manager/head)"
+   },
+   {
+    "item": "item:13u",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "boss",
+  "d": "supervisor",
+  "wrong": [
+   "executive",
+   "advisor",
+   "assistant",
+   "sergeant"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who supervises the work done by others"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13v",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13v",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category"
+   }
+  ],
+  "unit": "item:13v",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "shellfish",
+  "d": "animal",
+  "wrong": [
+   "roe",
+   "haddock",
+   "mussel",
+   "tofu"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A living organism characterized by voluntary movement"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13w",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13w",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "fleece",
+  "d": "wool",
+  "wrong": [
+   "mink",
+   "crock",
+   "burlap",
+   "sweater"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A fabric made from the hair of sheep"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13x",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "gloss defines 'plant' as a factory; wrong option 'holly' is also a kind of plant"
+   },
+   {
+    "item": "item:13x",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "category"
+   }
+  ],
+  "unit": "item:13x",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "mistletoe",
+  "d": "plant",
+  "wrong": [
+   "holly",
+   "bur",
+   "muskrat"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:13y",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:13y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "decode",
+  "d": "decipher",
+  "wrong": [
+   "rewrite",
+   "edit",
+   "compile"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Convert code into ordinary language"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:13z",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'petri' is not a word on its own (it is from 'Petri dish', a proper name); gloss is dishware - nonsensical"
+   },
+   {
+    "item": "item:13z",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "'petri' is not a standalone word (Petri dish is an eponym)"
+   }
+  ],
+  "unit": "item:13z",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "petri",
+  "d": "dish",
+  "wrong": [
+   "yogurt",
+   "tofu",
+   "soy",
+   "vat"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A piece of dishware normally used as a container for holding or serving food"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14a",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong options 'gild' (to adorn with gold) and 'garland' (to adorn with garlands) are defensible synonyms of 'decorate'"
+   },
+   {
+    "item": "item:14a",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:14a",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "decorate",
+  "d": "adorn",
+  "wrong": [
+   "brooch",
+   "garland",
+   "gild"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Make more attractive by adding ornament, colour, etc."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14b",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "a mechanic (repairs machines) is not a machinist (operates machine tools); not the same"
+   },
+   {
+    "item": "item:14b",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "loose synonym"
+   }
+  ],
+  "unit": "item:14b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "mechanic",
+  "d": "machinist",
+  "wrong": [
+   "electrician",
+   "aerospace",
+   "engine",
+   "capacitor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A craftsman skilled in operating machine tools"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14c",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'performing' only matches 'playing' in one sense; the gloss's main sense ('having fun with a game') does not fit"
+   },
+   {
+    "item": "item:14c",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:14c",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "performing",
+  "d": "playing",
+  "wrong": [
+   "solo",
+   "stag",
+   "audition"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having fun with a game, or making music on an instrument."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14d",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:14d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "swell",
+  "d": "billow",
+  "wrong": [
+   "spurt",
+   "windstorm",
+   "wetness",
+   "whirlpool"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A large sea wave"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14e",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:14e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "classic",
+  "d": "masterpiece",
+  "wrong": [
+   "rerun",
+   "combo",
+   "cookbook",
+   "narrator"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The most outstanding work of a creative artist or craftsman"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14f",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong options 'nag' and 'inconvenience' are listed synonyms of 'annoy'"
+   },
+   {
+    "item": "item:14f",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:14f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "annoy",
+  "d": "irritate",
+  "wrong": [
+   "blunder",
+   "muddle",
+   "inconvenience",
+   "nag"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause annoyance in"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14g",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong option 'affix' is a standard synonym of 'attach'"
+   },
+   {
+    "item": "item:14g",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "blind pick “affix”, intended “fasten” · second defensible: fasten · attach = affix = fasten; two synonyms"
+   }
+  ],
+  "unit": "item:14g",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "attach",
+  "d": "fasten",
+  "wrong": [
+   "affix",
+   "limber",
+   "padlock",
+   "subordinate"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause to be firmly attached"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14h",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "adjective to noun"
+   }
+  ],
+  "unit": "item:14h",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 2,
+  "c": "honest",
+  "d": "honesty",
+  "wrong": [
+   "apology",
+   "kindness",
+   "generosity",
+   "truth"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being honest"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14i",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym; 'crete', 'andes' lowercase proper nouns"
+   }
+  ],
+  "unit": "item:14i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "settler",
+  "d": "colonist",
+  "wrong": [
+   "homestead",
+   "farmland",
+   "crete",
+   "andes"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who settles in a new colony or moves into new country"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14j",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "to a child a kettle is a tea kettle, not a cauldron; only an obscure sense matches; 'aorta' an odd distractor"
+   },
+   {
+    "item": "item:14j",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "weak: kettle ~ cauldron only in the old 'cooking pot' sense"
+   }
+  ],
+  "unit": "item:14j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "kettle",
+  "d": "cauldron",
+  "wrong": [
+   "tub",
+   "skillet",
+   "boil",
+   "aorta"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A very large pot that is used for boiling"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14k",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "wrong options 'torrent' and 'geyser' are defensible synonyms of 'gush'"
+   },
+   {
+    "item": "item:14k",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: torrent · gush also = torrent/outpouring"
+   }
+  ],
+  "unit": "item:14k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "gush",
+  "d": "spurt",
+  "wrong": [
+   "torrent",
+   "geyser",
+   "sluice",
+   "jolt"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The occurrence of a sudden discharge (as of liquid)"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14l",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "synonym"
+   }
+  ],
+  "unit": "item:14l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "continuous",
+  "d": "uninterrupted",
+  "wrong": [
+   "successive",
+   "recurrent",
+   "monotone",
+   "monotonous"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having undisturbed continuity"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14m",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'assent' (to agree to/approve formally) is a defensible near-synonym of 'endorse'; two answers fit."
+   },
+   {
+    "item": "item:14m",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: assent · endorse = approve; assent (agree to) is a near-synonym some thesauri share"
+   }
+  ],
+  "unit": "item:14m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "endorse",
+  "d": "approve",
+  "wrong": [
+   "assent",
+   "libel",
+   "empower"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Give sanction to"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14n",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'oversight' (supervision) is a defensible synonym of 'administration'/management; 'administration' is also hard for L2 (age 9)."
+   },
+   {
+    "item": "item:14n",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:14n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "administration",
+  "d": "management",
+  "wrong": [
+   "enforcement",
+   "oversight",
+   "manage"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of managing something"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14o",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "trader is the clear synonym; broker is an agent, not an owner of goods"
+   },
+   {
+    "item": "item:14o",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "broker is related but is an agent, not a merchant"
+   }
+  ],
+  "unit": "item:14o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "merchant",
+  "d": "trader",
+  "wrong": [
+   "bazaar",
+   "import",
+   "cart",
+   "broker"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who purchases and maintains an inventory of goods to be sold"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14q",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'passerine' is a technical ornithology term, too obscure even at L8; 'jerboa' also obscure."
+   },
+   {
+    "item": "item:14q",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "passerine is obscure for 8-15"
+   }
+  ],
+  "unit": "item:14q",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 8,
+  "c": "passerine",
+  "d": "bird",
+  "wrong": [
+   "jerboa",
+   "shrew",
+   "curlew"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14s",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Distractors 'easter' and 'passover' are faith festivals written in lowercase (a spelling app must not show them uncapitalised), and in the liturgical sense both ARE feasts, so the item is confusing; using religious holidays as throwaway distractors is also poor."
+   },
+   {
+    "item": "item:14s",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "passover/easter are faith festivals used as lowercase distractors; consider swapping for neutral words"
+   }
+  ],
+  "unit": "item:14s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "feast",
+  "d": "banquet",
+  "wrong": [
+   "supper",
+   "easter",
+   "passover",
+   "anniversary"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A ceremonial dinner party for many people"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14u",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'orpiment' (an arsenic sulphide mineral) is far too obscure for L7 (age 13); 'arsenate' also obscure."
+   },
+   {
+    "item": "item:14u",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "orpiment is very obscure for 8-15"
+   }
+  ],
+  "unit": "item:14u",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "orpiment",
+  "d": "mineral",
+  "wrong": [
+   "arsenate",
+   "topaz",
+   "hematite"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Solid homogeneous inorganic substances occurring in nature having a definite chemical composition"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14v",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'occident' is archaic/rare and loaded (Orient/Occident) for L6; distractors 'caucasus', 'volga', 'polynesian' are proper nouns shown in lowercase, one an ethnic term."
+   },
+   {
+    "item": "item:14v",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "occident is obscure; caucasus/polynesian/volga are lowercase proper nouns"
+   }
+  ],
+  "unit": "item:14v",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "occident",
+  "d": "west",
+  "wrong": [
+   "caucasus",
+   "volga",
+   "polynesian"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The countries of (originally) europe and (now including) north america and south america"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14w",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'video' is defensible: 'rent/watch a video' commonly means a movie; two answers fit at L1."
+   },
+   {
+    "item": "item:14w",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:14w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "movie",
+  "d": "film",
+  "wrong": [
+   "television",
+   "video",
+   "dot",
+   "theater"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A form of entertainment that enacts a story by sound and a sequence of images giving the illusion of…"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14x",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14x",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "gaster is obscure; tripe also means nonsense"
+   }
+  ],
+  "unit": "item:14x",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "gullet",
+  "d": "esophagus",
+  "wrong": [
+   "gaster",
+   "tripe",
+   "reflux"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The passage between the pharynx and the stomach"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14y",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'daredevil' (adj., daring/bold) is listed as a synonym of brave in common thesauruses; a careful child could defend it."
+   },
+   {
+    "item": "item:14y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:14y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "brave",
+  "d": "courageous",
+  "wrong": [
+   "veteran",
+   "daredevil",
+   "courage",
+   "ruthless"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Possessing or displaying courage"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:14z",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Sensitive set: distractors 'caste' and 'ethnic' (caste is a reviewed-only topic in the family's rules); 'nationality' also has an ethnic-group sense, so it is not exactly 'citizenship' and 'ancestry'/'ethnic' become arguable."
+   },
+   {
+    "item": "item:14z",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: caste · caste as a distractor beside nationality/ethnic/ancestry is a sensitive topic for this audience; swap it"
+   }
+  ],
+  "unit": "item:14z",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "nationality",
+  "d": "citizenship",
+  "wrong": [
+   "ethnic",
+   "caste",
+   "adoption",
+   "ancestry"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The status of a citizen with rights and duties"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15a",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link wrong: soap is a KIND of cleanser (d is broader), not the same meaning."
+   },
+   {
+    "item": "item:15a",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:15a",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "soap",
+  "d": "cleanser",
+  "wrong": [
+   "grease",
+   "lotion",
+   "blender",
+   "gelatin"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A preparation used in cleaning something"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15c",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'buffoon' is an insult word (gloss: 'a rude or vulgar fool'); also wrong option 'comedian' is a defensible synonym of clown."
+   },
+   {
+    "item": "item:15c",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: comedian · a clown is a comic performer, so comedian is defensible"
+   }
+  ],
+  "unit": "item:15c",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "clown",
+  "d": "buffoon",
+  "wrong": [
+   "antic",
+   "comedian",
+   "rave",
+   "rowdy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A rude or vulgar fool"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15d",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: an oblong is a kind of rectangle (non-square) or just an elongated shape, not the same as 'rectangle'; distractors 'malayan', 'peruvian' are nationality adjectives in lowercase, 'umbel' obscure."
+   },
+   {
+    "item": "item:15d",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "oblong as noun = rectangle; fine"
+   }
+  ],
+  "unit": "item:15d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "oblong",
+  "d": "rectangle",
+  "wrong": [
+   "malayan",
+   "hickory",
+   "peruvian",
+   "umbel"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A parallelogram with four right angles"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15e",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link wrong: a glossary is a list of terms with meanings; a vocabulary is the words a person or language uses. Not synonyms."
+   },
+   {
+    "item": "item:15e",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "glossary vs vocabulary is a loose synonym"
+   }
+  ],
+  "unit": "item:15e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "glossary",
+  "d": "vocabulary",
+  "wrong": [
+   "bibliography",
+   "compilation",
+   "directory",
+   "documentation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A listing of the words used in some enterprise"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15f",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'chunky' and 'pasty' are both common body descriptors used as teasing (fat / pale-faced); 'lump' is also a family form that muddies the item."
+   },
+   {
+    "item": "item:15f",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: pasty · pasty is a common insult for pale skin (plural has a sexual sense); chunky is also used about bodies"
+   }
+  ],
+  "unit": "item:15f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "chunky",
+  "d": "lumpy",
+  "wrong": [
+   "pasty",
+   "flaky",
+   "lump"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Like or containing small sticky lumps"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15g",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'cabochon' is too obscure for L7; the gloss shown is the wrong sense of 'gem' ('art highly prized...')."
+   },
+   {
+    "item": "item:15g",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "cabochon is very obscure for 8-15"
+   }
+  ],
+  "unit": "item:15g",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "cabochon",
+  "d": "gem",
+  "wrong": [
+   "onyx",
+   "loupe",
+   "emerald"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Art highly prized for its beauty or perfection"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15h",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'stab' is a defensible sense of 'thrust' (thrust a sword), and it is a violent word for L2."
+   },
+   {
+    "item": "item:15h",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: stab · thrust also means stab (thrust a knife); violent sense"
+   }
+  ],
+  "unit": "item:15h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "thrust",
+  "d": "push",
+  "wrong": [
+   "rotor",
+   "stab",
+   "crank"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of applying force in order to move something away"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15i",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'lena' is a proper name (river/person) in lowercase, meaningless to a child and confusing in a spelling app."
+   },
+   {
+    "item": "item:15i",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "lena is an odd proper-noun distractor"
+   }
+  ],
+  "unit": "item:15i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "bookshelf",
+  "d": "bookcase",
+  "wrong": [
+   "alcove",
+   "workspace",
+   "lena",
+   "attic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A piece of furniture with shelves for storing books"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15k",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'suspicion' is a standard synonym of 'doubt' ('I have my doubts about him'); two answers fit."
+   },
+   {
+    "item": "item:15k",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: suspicion · doubt also means suspicion/mistrust"
+   }
+  ],
+  "unit": "item:15k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "doubt",
+  "d": "uncertainty",
+  "wrong": [
+   "suspicion",
+   "certainty",
+   "contradiction",
+   "conviction"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Being unsettled or in doubt or dependent on chance"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15m",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'native' is defensible (the gloss itself says 'or who was born there'); 'nebraska', 'turkic' are proper nouns in lowercase."
+   },
+   {
+    "item": "item:15m",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: native · natives = inhabitants in common use"
+   }
+  ],
+  "unit": "item:15m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "inhabitant",
+  "d": "resident",
+  "wrong": [
+   "nebraska",
+   "native",
+   "turkic",
+   "peninsula"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who lives at a particular place for a prolonged period or who was born there"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15n",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'brazilian' is a nationality adjective in lowercase and also has an adult grooming sense; 'medal' is close to 'prize'."
+   },
+   {
+    "item": "item:15n",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:15n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "prize",
+  "d": "reward",
+  "wrong": [
+   "won",
+   "brazilian",
+   "medal"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A recompense for worthy acts or retribution for wrongdoing"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15o",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: steppe and prairie are two different regional grasslands (both KINDS of grassland), not the same meaning."
+   },
+   {
+    "item": "item:15o",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "steppe/prairie are close but not true synonyms"
+   }
+  ],
+  "unit": "item:15o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "steppe",
+  "d": "prairie",
+  "wrong": [
+   "trudge",
+   "tumble",
+   "podium",
+   "spotlight"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A tract of grassland a meadow"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15p",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link wrong: irony is not satire; satire is a form that often uses irony. The gloss ('witty language used to convey insults') is sarcasm's."
+   },
+   {
+    "item": "item:15p",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "no option is a real synonym of irony; satire is a genre, not irony; pair is weak"
+   }
+  ],
+  "unit": "item:15p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "irony",
+  "d": "satire",
+  "wrong": [
+   "pun",
+   "falsehood",
+   "subtlety",
+   "sincerity"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Witty language used to convey insults or scorn"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:15r",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "penny = cent only in US usage"
+   }
+  ],
+  "unit": "item:15r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "penny",
+  "d": "cent",
+  "wrong": [
+   "monthly",
+   "sixty",
+   "thirty",
+   "fifty"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A fractional monetary unit of several countries"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15s",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: a catalog is a kind of list (a book of items for sale), narrower than 'list'; 'dictionary' and 'receipt' are equally kinds of lists, so the item is muddled at L2."
+   },
+   {
+    "item": "item:15s",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:15s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "list",
+  "d": "catalog",
+  "wrong": [
+   "publisher",
+   "receipt",
+   "dictionary"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A book or pamphlet containing an enumeration of things"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15u",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'handicap' is a dated, stigmatising disability term; unsafe for the set."
+   },
+   {
+    "item": "item:15u",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: handicap · handicap is a dated, stigmatising disability term"
+   }
+  ],
+  "unit": "item:15u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "evade",
+  "d": "avoid",
+  "wrong": [
+   "bail",
+   "arrest",
+   "defraud",
+   "handicap"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Stay clear from"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15v",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link wrong: 'monarch' is broader than 'king' (a queen or empress is also a monarch) - d is the category, not a synonym."
+   },
+   {
+    "item": "item:15v",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:15v",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "king",
+  "d": "monarch",
+  "wrong": [
+   "prince",
+   "nobleman",
+   "empress",
+   "reign"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A nation's ruler or head of state usually by hereditary right"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:15z",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: an inn is a kind of (small) hotel - the gloss itself says so - and in British use an inn is a pub (alcohol)."
+   },
+   {
+    "item": "item:15z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:15z",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "hotel",
+  "d": "inn",
+  "wrong": [
+   "lobby",
+   "airport",
+   "barn",
+   "booth"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A hotel providing overnight lodging for travelers"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16b",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: a donation is a narrower kind of gift (to a cause); the true synonym is 'present'."
+   },
+   {
+    "item": "item:16b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:16b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "gift",
+  "d": "donation",
+  "wrong": [
+   "patron",
+   "reward",
+   "recognition",
+   "award"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A voluntary gift (as of money or service or ideas) made to some worthwhile cause"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16c",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: 'municipality' is a broader administrative term (any self-governing city or town), not the same as 'town'; 'moscow' is a proper noun in lowercase."
+   },
+   {
+    "item": "item:16c",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:16c",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "town",
+  "d": "municipality",
+  "wrong": [
+   "neighborhood",
+   "suburb",
+   "waterfront",
+   "moscow"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An urban district having corporate status and powers of self-government"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16e",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: robbery is a narrower kind of theft (by threat or violence - the gloss says so); 'fraud' is also close."
+   },
+   {
+    "item": "item:16e",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:16e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "theft",
+  "d": "robbery",
+  "wrong": [
+   "arrest",
+   "fraud",
+   "ransom",
+   "sue"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Larceny by threat of violence"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16f",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'floret' is a small flower that is PART of a flower head (or of broccoli) - 'Kind of' is not clearly right; gloss shown is the wrong sense of 'flower'; obscure."
+   },
+   {
+    "item": "item:16f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:16f",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "floret",
+  "d": "flower",
+  "wrong": [
+   "holly",
+   "bract",
+   "hibiscus"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A plant cultivated for its blooms or blossoms"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16h",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'antipathy' (strong aversion) is a defensible synonym of disgust (Collins lists it); two answers fit."
+   },
+   {
+    "item": "item:16h",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: antipathy · antipathy = intense dislike/aversion, close to disgust"
+   }
+  ],
+  "unit": "item:16h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "disgust",
+  "d": "revulsion",
+  "wrong": [
+   "antipathy",
+   "resentment",
+   "acceptance",
+   "anger"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Intense aversion"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16i",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'proficiency' is listed as a synonym of aptitude in common thesauruses; 'competence' also arguable."
+   },
+   {
+    "item": "item:16i",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: proficiency, competence · aptitude ~ ability; thesauri list competence and proficiency too"
+   }
+  ],
+  "unit": "item:16i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "aptitude",
+  "d": "talent",
+  "wrong": [
+   "proficiency",
+   "competence",
+   "intellect",
+   "upbringing"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Natural abilities or qualities"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16j",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'mime' (to imitate; a performer who imitates) is a defensible answer for 'imitator'."
+   },
+   {
+    "item": "item:16j",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:16j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "imitator",
+  "d": "mimic",
+  "wrong": [
+   "mime",
+   "parody",
+   "columnist",
+   "entertainer"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone, especially an actor, who copies another person's voice, look, or actions."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16k",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'perverse' shares its root and common association with 'pervert' (sexual double meaning); 'scruple' is also uncommon for age 13."
+   },
+   {
+    "item": "item:16k",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: perverse · perverse carries a sexual-deviance connotation (pervert)"
+   }
+  ],
+  "unit": "item:16k",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 7,
+  "c": "scruple",
+  "d": "scrupulous",
+  "wrong": [
+   "obstinate",
+   "blameless",
+   "perverse"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Having scruples"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16l",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'nick' (a small cut or scratch) is a defensible synonym of 'scratch'."
+   },
+   {
+    "item": "item:16l",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: nick · a nick is also a small scratch"
+   }
+  ],
+  "unit": "item:16l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "scratch",
+  "d": "abrasion",
+  "wrong": [
+   "nick",
+   "dent",
+   "blot",
+   "shin"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An abraded area where the skin is torn or worn off"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16n",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:16n",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: catapult · shoot (move/launch fast) ~ catapult is a weaker but defensible synonym"
+   }
+  ],
+  "unit": "item:16n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "shoot",
+  "d": "sprout",
+  "wrong": [
+   "aerial",
+   "arrow",
+   "catapult",
+   "bombardment"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any new growth of a plant such as a new branch or a bud"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16o",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'pub' is an alcohol venue word - fails the no-alcohol rule."
+   },
+   {
+    "item": "item:16o",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: pub · pub is an alcohol venue"
+   }
+  ],
+  "unit": "item:16o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "cellar",
+  "d": "basement",
+  "wrong": [
+   "granary",
+   "pub",
+   "urn",
+   "cupboard"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The lowermost portion of a structure partly or wholly below ground level"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "ok; trash is a deliberate homograph trap but not a family form"
+   },
+   {
+    "item": "item:16p",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "trash is the noun refuse (homograph trap), different link"
+   }
+  ],
+  "unit": "item:16p",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 2,
+  "c": "refuse",
+  "d": "refusal",
+  "wrong": [
+   "dare",
+   "trash",
+   "argument",
+   "arrival"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of refusing"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16r",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link wrong and a second answer: a flipper is a swim-fin (or an animal's limb), not a kind of shoe; wrong option 'fin' is exactly what a flipper is."
+   },
+   {
+    "item": "item:16r",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "blind pick “fin”, intended “shoe” · second defensible: shoe · flipper is not cleanly a kind of fin (fin is a synonym for swim flippers); dictionary sense makes a swim flipper a kind of shoe; muddled, drop"
+   }
+  ],
+  "unit": "item:16r",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "flipper",
+  "d": "shoe",
+  "wrong": [
+   "talon",
+   "pectoral",
+   "fin",
+   "starfish"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Footwear shaped to fit the foot (below the ankle) with a flexible upper of leather or plastic and a sole…"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16s",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'sensor' is a defensible category (radar is a kind of sensor); 'instrument' also reads as musical instrument to children given the violin stem."
+   },
+   {
+    "item": "item:16s",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: sensor · radar is equally a kind of sensor"
+   }
+  ],
+  "unit": "item:16s",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "radar",
+  "d": "instrument",
+  "wrong": [
+   "wireless",
+   "sensor",
+   "instrumental",
+   "beacon"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16t",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Faith content: 'Christ' is a title (Messiah) whose application to Jesus is a Christian belief, not a word synonym; presenting it as 'same meaning' asserts a faith claim, distractors include 'mortal', and the proper nouns are in lowercase."
+   },
+   {
+    "item": "item:16t",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "unsafe: jesus, christ · a faith's central figure used in a synonym drill, lowercase, words also used as an exclamatory oath; mortal as distractor touches doctrine; cut"
+   }
+  ],
+  "unit": "item:16t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "jesus",
+  "d": "christ",
+  "wrong": [
+   "revelation",
+   "testament",
+   "prophecy",
+   "mortal"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A teacher and prophet born in bethlehem and active in nazareth"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16u",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong options 'investigation' and 'evaluation' are both defensible synonyms of 'examination'."
+   },
+   {
+    "item": "item:16u",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: investigation, evaluation · examination has several synonyms in the options"
+   }
+  ],
+  "unit": "item:16u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "examination",
+  "d": "inspection",
+  "wrong": [
+   "diagnosis",
+   "evaluation",
+   "investigation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A formal or official examination"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16x",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: a quarry is one kind of mine/excavation (open pit for stone); 'mine' is broader."
+   },
+   {
+    "item": "item:16x",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:16x",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "quarry",
+  "d": "mine",
+  "wrong": [
+   "dug",
+   "silt",
+   "shard",
+   "pry"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Excavation in the earth from which ores and minerals are extracted"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:16y",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'ligne' is not an English word to a child and looks like a misspelling of 'line' in a spelling app; 'abscissa', 'iamb' are obscure."
+   },
+   {
+    "item": "item:16y",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "ligne/abscissa/iamb are obscure distractors"
+   }
+  ],
+  "unit": "item:16y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 8,
+  "c": "line",
+  "d": "queue",
+  "wrong": [
+   "ligne",
+   "abscissa",
+   "iamb",
+   "parallel"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A line of people or vehicles waiting for something"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17b",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'mire' (mud, muck) is a standard synonym of 'muck'; two answers fit."
+   },
+   {
+    "item": "item:17b",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "blind pick “mire”, intended “ooze” · second defensible: grime, ooze · muck = dirt/mud/sludge; mire, grime and ooze all fit"
+   }
+  ],
+  "unit": "item:17b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "muck",
+  "d": "ooze",
+  "wrong": [
+   "grime",
+   "mire",
+   "soot",
+   "scrub"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any thick, viscous matter"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17e",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: a spa is a narrower kind of resort (health resort - the gloss says so)."
+   },
+   {
+    "item": "item:17e",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "resort/spa is a loose synonym"
+   }
+  ],
+  "unit": "item:17e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "resort",
+  "d": "spa",
+  "wrong": [
+   "seaport",
+   "hostel",
+   "tourism",
+   "suburb"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A health resort near a spring or at the seaside"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17g",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link inexact: scheduling is a narrower kind of planning (fixing times), not the same meaning."
+   },
+   {
+    "item": "item:17g",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:17g",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "scheduling",
+  "d": "planning",
+  "wrong": [
+   "evaluation",
+   "consultation",
+   "workforce",
+   "refresher"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An act of formulating a program for a definite course of action"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17i",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Link wrong for a child: a sip is a tiny taste, a swallow is a gulp (and a bird); not the same. Wrong option 'cider' can be alcoholic."
+   },
+   {
+    "item": "item:17i",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: savor · unsafe: cider · no clean synonym of sip; swallow (a mouthful) and savor both arguable; cider is alcoholic in UK usage"
+   }
+  ],
+  "unit": "item:17i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "sip",
+  "d": "swallow",
+  "wrong": [
+   "cocoa",
+   "muffin",
+   "savor",
+   "cider"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A small amount of liquid food"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17j",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'stimulus' is a listed synonym of 'impulse' (impetus, push); two answers fit."
+   },
+   {
+    "item": "item:17j",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: stimulus · impulse ~ impetus/stimulus in thesauri"
+   }
+  ],
+  "unit": "item:17j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "impulse",
+  "d": "urge",
+  "wrong": [
+   "stimulus",
+   "volition",
+   "receptor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An instinctive motive"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17l",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'adjourn' (put off to a later time) is a defensible synonym of 'postpone'."
+   },
+   {
+    "item": "item:17l",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: adjourn · adjourn = put off to a later time"
+   }
+  ],
+  "unit": "item:17l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "postpone",
+  "d": "defer",
+  "wrong": [
+   "annul",
+   "repeal",
+   "revoke",
+   "adjourn"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Hold back to a later time"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17n",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'smooth' is a defensible opposite of 'sharp' for an 8-year-old (a sharp stone vs a smooth stone; sharp vs smooth taste/edges)."
+   },
+   {
+    "item": "item:17n",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:17n",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "sharp",
+  "d": "blunt",
+  "wrong": [
+   "sour",
+   "strong",
+   "smooth",
+   "thick"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having an edge or point that is not sharp"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17s",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'invoke' (to petition, call on for help) is a listed synonym of 'entreat'; the gloss 'call upon in supplication' fits it too."
+   },
+   {
+    "item": "item:17s",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: invoke · invoke = appeal earnestly to; weaker but defensible"
+   }
+  ],
+  "unit": "item:17s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "entreat",
+  "d": "beg",
+  "wrong": [
+   "jeer",
+   "invoke",
+   "mourn",
+   "absolve"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Call upon in supplication"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17u",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong options 'affirm' and 'decree' are both defensible synonyms of 'declare'."
+   },
+   {
+    "item": "item:17u",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: affirm · declare = affirm/assert"
+   }
+  ],
+  "unit": "item:17u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "declare",
+  "d": "proclaim",
+  "wrong": [
+   "affirm",
+   "condemn",
+   "shall",
+   "decree"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Declare formally"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "item:17w",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Wrong option 'torrent' (a sudden rush of water) is a defensible synonym of 'surge'/'gush'."
+   },
+   {
+    "item": "item:17w",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "second defensible: torrent · a surge of water/feeling ~ a torrent"
+   }
+  ],
+  "unit": "item:17w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "surge",
+  "d": "gush",
+  "wrong": [
+   "torrent",
+   "blizzard",
+   "geyser",
+   "hurricane"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A sudden rapid flow (as of water)"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:same:5",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'mad' means angry only in informal American use; in British and Indian English it means 'crazy', a stigmatising mental-health word, so for much of the audience angry/mad is not a synonym pair."
+   },
+   {
+    "item": "stem:same:5",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "stem:same:5",
+  "kind": "stem",
+  "link": "Same meaning",
+  "rel": "synonym",
+  "a": "angry",
+  "b": "mad"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:same:8",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:same:8",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "giant is mainly a noun; as adjective fine"
+   }
+  ],
+  "unit": "stem:same:8",
+  "kind": "stem",
+  "link": "Same meaning",
+  "rel": "synonym",
+  "a": "huge",
+  "b": "giant"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:0",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:0",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:0",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "bake",
+  "b": "baker"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:1",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:1",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:1",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "teach",
+  "b": "teacher"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:2",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:2",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:2",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "sail",
+  "b": "sailor"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:3",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:3",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:3",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "paint",
+  "b": "painter"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:4",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:4",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "farm",
+  "b": "farmer"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:5",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:5",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:5",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "sing",
+  "b": "singer"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:6",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:6",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "act",
+  "b": "actor"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:7",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:7",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:7",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "drive",
+  "b": "driver"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:8",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:8",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:8",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "swim",
+  "b": "swimmer"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:who:9",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:who:9",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "also fits: Word families · the agent noun is derived from the verb (bake/baker), so Word families also fits"
+   }
+  ],
+  "unit": "stem:who:9",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "invent",
+  "b": "inventor"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "stem:family:4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:family:4",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "'kind' may be confused with the 'Kind of' link label"
+   }
+  ],
+  "unit": "stem:family:4",
+  "kind": "stem",
+  "link": "Word families",
+  "rel": "quality",
+  "a": "kind",
+  "b": "kindness"
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "lesson:same:trap",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "'a breeze is not cool' is a false-sounding claim (breezes are often cool); it should say a breeze does not MEAN cool."
+   },
+   {
+    "item": "lesson:same:trap",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "'a breeze is not cool' is false/confusing (breezes are often cool; 'not cool' is also slang); say 'breeze does not MEAN cool'"
+   }
+  ],
+  "unit": "lesson:same:trap",
+  "kind": "text",
+  "what": "analogy lesson “Same meaning”, its trap",
+  "text": "Watch for a word that goes WITH the word but does not MEAN it. Cool and breeze go together, but a breeze is not cool."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "lesson:part:bridge",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "lesson:part:bridge",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "with the stems' bare nouns it reads 'petal is part of flower' - missing articles in a spelling/grammar app"
+   }
+  ],
+  "unit": "lesson:part:bridge",
+  "kind": "text",
+  "what": "analogy lesson “Part of a whole”, its bridge",
+  "text": "{A} is part of {B}."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "lesson:part:spot",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "The test 'could you find the first thing on or in the second?' is a location test and admits non-parts (a cup on a table, a fish in a pond); it teaches the wrong link."
+   },
+   {
+    "item": "lesson:part:spot",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "'could you find the first thing on or in the second?' is too loose - a cup in a cupboard or a bird in a tree passes; test with 'is part of'"
+   }
+  ],
+  "unit": "lesson:part:spot",
+  "kind": "text",
+  "what": "analogy lesson “Part of a whole”, its spot",
+  "text": "Ask: could you find the first thing on or in the second? A wheel is on a bicycle."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "lesson:use:bridge",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "With the stem pair scissors/cut it renders 'scissors is used to cut' - ungrammatical in a spelling app; needs is/are agreement or a singular stem."
+   },
+   {
+    "item": "lesson:use:bridge",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "fills to 'scissors is used to cut' (stem use:0) - subject-verb agreement error"
+   }
+  ],
+  "unit": "lesson:use:bridge",
+  "kind": "text",
+  "what": "analogy lesson “Used for”, its bridge",
+  "text": "{A} is used to {B}."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "lesson:use:trap",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "lesson:use:trap",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "'mop is a tool, not a job' is wrong: to mop is a cleaning job, so the example contradicts itself; use e.g. bucket"
+   }
+  ],
+  "unit": "lesson:use:trap",
+  "kind": "text",
+  "what": "analogy lesson “Used for”, its trap",
+  "text": "Another thing from the same place is a trap. For broom, mop tempts you, but mop is a tool, not a job."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "lesson:degree:bridge",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "lesson:degree:bridge",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "fills to ungrammatical 'Hot is a stronger warm'; 'Freezing is a stronger cold' reads as a worse illness"
+   }
+  ],
+  "unit": "lesson:degree:bridge",
+  "kind": "text",
+  "what": "analogy lesson “Stronger and weaker”, its bridge",
+  "text": "{B} is a stronger {A}."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "lesson:degree:trap",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Inaccurate: chilly is colder than cool, so it is not 'the SAME strength'; 'the far end' has no stated scale, so the example confuses."
+   },
+   {
+    "item": "lesson:degree:trap",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "chilly is arguably a step colder than cool, so it is a poor 'same strength' example, and 'the far end' is unexplained"
+   }
+  ],
+  "unit": "lesson:degree:trap",
+  "kind": "text",
+  "what": "analogy lesson “Stronger and weaker”, its trap",
+  "text": "A near twin at the SAME strength is the trap. Chilly is close to cool, but it is not the far end."
+ },
+ {
+  "why": "disagreement",
+  "verdicts": [
+   {
+    "item": "card:shiva",
+    "round": 1,
+    "verdict": "fail",
+    "reason": "Closing line 'Every family honours him in its own way - ask yours how they do' claims every family honours Shiva and presumes the reader's family does; should be e.g. 'Families who honour him each do it in their own way - if yours does, ask them.' Rest is respectful and accurate."
+   },
+   {
+    "item": "card:shiva",
+    "round": 2,
+    "verdict": "fail",
+    "reason": "text itself is respectful, from the inside, and accurate; but a living, worshipped deity sold as a 'Legendary' collectible avatar (rarity tier ~ power stat; 'legendary' implies legend) beside a historical pantheon needs a named reviewer"
+   }
+  ],
+  "unit": "card:shiva",
+  "kind": "card",
+  "what": "the avatar card for Shiva (a Legendary avatar in the Indian Gods / European Gods pack)",
+  "text": "Shiva is one of the most loved gods in Hinduism, honoured by Hindu families all over the world today. Many families pray to him as the one who protects, changes and makes new beginnings possible. In many homes and temples he is shown in quiet meditation, with the river Ganga flowing from his hair. Many families keep the festival of Maha Shivaratri, a night of prayer, with songs and stories. Every family honours him in its own way — ask yours how they do."
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:23",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:23",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:23",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "salmon",
+  "d": "fish",
+  "wrong": [
+   "shrimp",
+   "lobster",
+   "chicken"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of various mostly cold-blooded aquatic vertebrates usually having scales and breathing through gills"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:58",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:58",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:58",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 1,
+  "c": "month",
+  "d": "year",
+  "wrong": [
+   "week",
+   "weekend",
+   "forty"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A period of time containing 365 (or 366) days"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:67",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:67",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:67",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "needle",
+  "d": "sew",
+  "wrong": [
+   "magnify",
+   "bore",
+   "sweep",
+   "shred"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To join or fix cloth using a needle and thread"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:81",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:81",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:81",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "youth",
+  "d": "adolescent",
+  "wrong": [
+   "girl",
+   "maiden",
+   "beloved",
+   "bard"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A juvenile between the onset of puberty and maturity"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:106",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:106",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:106",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "aroma",
+  "d": "scent",
+  "wrong": [
+   "sweetness",
+   "savory",
+   "thyme",
+   "flavour"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A distinctive smell"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:108",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:108",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:108",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 1,
+  "c": "science",
+  "d": "scientific",
+  "wrong": [
+   "rainy",
+   "natural",
+   "dangerous",
+   "magical"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to the practice of science"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:119",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:119",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:119",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "blooming",
+  "d": "flowering",
+  "wrong": [
+   "shad",
+   "tulip",
+   "meadow",
+   "june"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The time and process of budding and unfolding of blossoms"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:122",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:122",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:122",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "dispenser",
+  "d": "container",
+  "wrong": [
+   "burner",
+   "beaker",
+   "blender",
+   "heater"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any object that can be used to hold things (especially a large metal boxlike object of standardized…"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:137",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:137",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:137",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "cringe",
+  "d": "wince",
+  "wrong": [
+   "congratulate",
+   "flatter",
+   "hoax",
+   "overheard"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Is to draw back or tense the body"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:148",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:148",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:148",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "irritate",
+  "d": "annoy",
+  "wrong": [
+   "soothe",
+   "numb",
+   "annoyance",
+   "muddle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause annoyance in"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:155",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:155",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:155",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "slogan",
+  "d": "motto",
+  "wrong": [
+   "rally",
+   "hustle",
+   "salute",
+   "protest"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A favorite saying of a sect or political group"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:173",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:173",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:173",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "hazardous",
+  "d": "dangerous",
+  "wrong": [
+   "lethal",
+   "refrigerant",
+   "danger",
+   "cryogenic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Involving or causing danger or risk"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:1h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1h",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1h",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "sweet",
+  "d": "sour",
+  "wrong": [
+   "flavor",
+   "almond",
+   "ginger",
+   "citrus"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having a sharp, acid taste like lemon or vinegar"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:1t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1t",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "true",
+  "d": "false",
+  "wrong": [
+   "real",
+   "accept",
+   "conceal",
+   "visible"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Not in accordance with the fact or reality or actuality"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:2i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2i",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2i",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "gravel",
+  "d": "rock",
+  "wrong": [
+   "peat",
+   "debris",
+   "rocky",
+   "mortar"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A lump or mass of hard consolidated mineral matter"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:3d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3d",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "win",
+  "d": "winner",
+  "wrong": [
+   "won",
+   "defeat",
+   "player",
+   "referee"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "The contestant who wins the contest"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:4s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4s",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4s",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "key",
+  "d": "piano",
+  "wrong": [
+   "vinyl",
+   "cue",
+   "chord"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A keyboard instrument that is played by depressing keys that cause hammers to strike tuned strings and…"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:5v",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5v",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5v",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "window",
+  "d": "glass",
+  "wrong": [
+   "bathroom",
+   "bedroom",
+   "marble",
+   "canvas"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A brittle transparent solid with irregular atomic structure"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:6e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6e",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6e",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "ladder",
+  "d": "climb",
+  "wrong": [
+   "sweep",
+   "unlock",
+   "catch",
+   "dig"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To get to the top of or go over typically with some effort."
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:8u",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8u",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8u",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 3,
+  "c": "similar",
+  "d": "similarity",
+  "wrong": [
+   "appearance",
+   "texture",
+   "type"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being similar"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:9b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9b",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "effect",
+  "d": "effective",
+  "wrong": [
+   "hormonal",
+   "adverse",
+   "effectiveness"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Producing or capable of producing an intended result or having a striking effect"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:a2",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:a2",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:a2",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "shrub",
+  "d": "shrubby",
+  "wrong": [
+   "evergreen",
+   "thorny",
+   "prickly",
+   "spiny"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to or resembling a shrub"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:ad",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:ad",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:ad",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "vibrate",
+  "d": "vibration",
+  "wrong": [
+   "resonance",
+   "audible",
+   "sibilant",
+   "heartbeat"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of vibrating"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:an",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:an",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:an",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "genuine",
+  "d": "genuineness",
+  "wrong": [
+   "originality",
+   "pretense",
+   "practicality",
+   "sensibility"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being genuine"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:b1",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:b1",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:b1",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 5,
+  "c": "sip",
+  "d": "gulp",
+  "wrong": [
+   "lemonade",
+   "drizzle",
+   "taste",
+   "cocoa"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A large and hurried swallow"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:ba",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:ba",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:ba",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "smart",
+  "d": "brilliant",
+  "wrong": [
+   "careless",
+   "flashy",
+   "frantic",
+   "delighted"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Of surpassing excellence"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:c4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:c4",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:c4",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "disprove",
+  "d": "prove",
+  "wrong": [
+   "contradict",
+   "conjecture",
+   "provable",
+   "deny"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Be shown or be found to be"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:cn",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:cn",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:cn",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "fresh",
+  "d": "stale",
+  "wrong": [
+   "nutty",
+   "new",
+   "generous",
+   "sunny"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "No longer fresh"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:cz",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:cz",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:cz",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "cheddar",
+  "d": "cheese",
+  "wrong": [
+   "flavour",
+   "salami",
+   "dumpling",
+   "salsa"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A solid food prepared from the pressed curd of milk"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:d7",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:d7",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:d7",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "cello",
+  "d": "instrument",
+  "wrong": [
+   "saxophone",
+   "soloist",
+   "instrumental",
+   "sonata"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:e2",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:e2",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:e2",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "reassure",
+  "d": "reassurance",
+  "wrong": [
+   "migraine",
+   "anesthesia",
+   "oncologist"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of reassuring"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:14r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14r",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:14r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "slope",
+  "d": "incline",
+  "wrong": [
+   "steeper",
+   "steep",
+   "plateau",
+   "crag"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An elevated geological formation"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:15q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:15q",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:15q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "entertain",
+  "d": "amuse",
+  "wrong": [
+   "rave",
+   "indulge",
+   "antic",
+   "glamour"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Occupy in an agreeable, entertaining or pleasant fashion"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:17m",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:17m",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:17m",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "nickel",
+  "d": "metal",
+  "wrong": [
+   "platinum",
+   "aluminum",
+   "uranium",
+   "copper"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "item:17y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:17y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:17y",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "answer",
+  "d": "question",
+  "wrong": [
+   "guess",
+   "guilty",
+   "rude",
+   "accept"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Something you ask when you want to find out or learn about it."
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "stem:opposite:6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:opposite:6",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "stem:opposite:6",
+  "kind": "stem",
+  "link": "Opposites",
+  "rel": "antonym",
+  "a": "rich",
+  "b": "poor"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "stem:kind:1",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:kind:1",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "stem:kind:1",
+  "kind": "stem",
+  "link": "Kind of",
+  "rel": "kind",
+  "a": "oak",
+  "b": "tree"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "stem:part:6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:part:6",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "stem:part:6",
+  "kind": "stem",
+  "link": "Part of a whole",
+  "rel": "part",
+  "a": "branch",
+  "b": "tree"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "stem:made:0",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:made:0",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "stem:made:0",
+  "kind": "stem",
+  "link": "Made from",
+  "rel": "material",
+  "a": "sweater",
+  "b": "wool"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "stem:family:7",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:family:7",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "stem:family:7",
+  "kind": "stem",
+  "link": "Word families",
+  "rel": "quality",
+  "a": "dark",
+  "b": "darkness"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "stem:degree:3",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "stem:degree:3",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "stem:degree:3",
+  "kind": "stem",
+  "link": "Stronger and weaker",
+  "rel": "degree",
+  "a": "hungry",
+  "b": "starving"
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "lesson:same:spot",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "lesson:same:spot",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "lesson:same:spot",
+  "kind": "text",
+  "what": "analogy lesson “Same meaning”, its spot",
+  "text": "Swap one word for the other in a sentence. If the sentence still means the same, they are twins."
+ },
+ {
+  "why": "10% re-check of a pass",
+  "verdicts": [
+   {
+    "item": "lesson:family:spot",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "lesson:family:spot",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "lesson:family:spot",
+  "kind": "text",
+  "what": "analogy lesson “Word families”, its spot",
+  "text": "Look at the ending and the job. If the first pair turns an action into a thing, the second must too."
+ }
+]
