@@ -679,14 +679,23 @@ body:has(>.arc-play) .w4-bg,body:has(>.bz-play) .w4-bg{display:none}   /* its ow
 .sg-hub-lvl{padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800}
 .sg-hub-lastmark{position:absolute;z-index:2;pointer-events:none;top:8px;right:8px;padding:2px 8px;border-radius:999px;font-size:10.5px;background:var(--chip);border:1.5px dashed color-mix(in srgb,var(--accent) 60%,transparent);color:var(--accent);font-weight:800}
 .sg-hub-tile.last{box-shadow:0 0 0 2.5px color-mix(in srgb,var(--accent) 55%,transparent),0 6px 22px rgba(40,24,6,.12)}
+/* On a phone a tile's share of the grid is its FLOOR, never its ceiling (P0.17): Word Lore's seven modes
+   make four rows, a quarter of a phone's play area is ~140px, and a tile held to exactly that clipped its
+   promise under the level chip ("Word to meaning, an…" cut mid-line). Now a tile grows to hold its words,
+   the art steps down as the rows go up so four rows still fit a 390×844 phone, and if a text size or a
+   short screen needs more, the grid scrolls (`safe` keeps the first row reachable) — words are never cut.
+   Guard: tests/mobile-layout.cjs (every hub, every tile's name, promise and chip inside its own tile). */
 @container sgstage (max-width:640px){
-  .sg-hub-grid{--cols:2}
-  .sg-hub-tile{height:calc((100% - (var(--rp,3) - 1) * var(--gap)) / var(--rp,3))}
-  .sg-hub-art{width:clamp(36px,9cqh,64px);border-radius:12px}
+  .sg-hub-grid{--cols:2;align-content:safe center}
+  .sg-hub-tile{height:auto;max-height:none;min-height:calc((100% - (var(--rp,3) - 1) * var(--gap)) / var(--rp,3))}
+  .sg-hub-go{flex:1 0 auto}
+  .sg-hub-art{width:clamp(30px,calc(20cqh / var(--rp,3)),64px);border-radius:12px}
   .sg-hub-meta{padding:2px 6px 8px;font-size:11px}
   .sg-hub-name{font-size:14.5px}
   .sg-hub-promise{font-size:11.5px}
-  .sg-hub-go{padding:10px 8px 2px}
+  .sg-hub-go{padding:8px 8px 2px;gap:3px}
+  /* an odd tile out takes the whole last row: "Against the Clock" stays one line and the row one tile tall */
+  .sg-hub-grid:is(.n3,.n5,.n7,.n9) .sg-hub-tile:last-child{width:100%}
 }
 
 /* THE MISS CARD: the letters, the word again, the note for THIS error, Continue */
