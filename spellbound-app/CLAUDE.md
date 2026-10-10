@@ -201,6 +201,9 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
   minified tree, so after a deploy that touches minify.cjs or adds a new script, run
   `node tests/lib/run.cjs --check --browser-only --root <deploy tree>` by hand. Tests that read
   source text skip themselves against a minified tree (`--root`), by name, saying why.
+  **AND the deploy refuses a tree the whole suite has not passed** (P0.18, 10 Oct — see "P0, 10 Oct
+  2026" below): `npm test` writes `tests/build/last-full.json`; no green record for HEAD's exact
+  spellbound-app tree, or a dirty tree, and nothing is published.
 - **Offline**: `sw.js` (pages network-first, stamped assets cache-first in `bee-core-<stamp>`,
   audio cached once played), `manifest.json` + `icons/`; registered only over http(s).
 - **First load is 1.7MB on a phone (was 12.3MB)** — idle data waits for the child's first tap,
@@ -1005,6 +1008,63 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   pass 6/6. A Chromium file:// reload artefact, not a coin bug. Do not "fix" it by waiting in the test
   without first finding the mechanism. `levels.cjs` ("after a reload the levels are still the child's") did the same in
   a 5 Oct suite run — 0 kept in the household — and passed alone, before and after that day's change.
+
+## P0, 10 Oct 2026 ("road to 4.5" P0.17–P0.20, P0.25) — the suite green, the deploy's record, five phone fixes
+- **The deploy refuses a tree the WHOLE suite has not passed.** `tests/lib/run.cjs`, run with no names and no
+  `--check/--node-only/--browser-only/--root`, writes `tests/build/last-full.json` {commit, tree, dirty, stable,
+  passed, failed, failedTests, total, at, secs}. `tree` is the git tree of spellbound-app AS TESTED (a run on
+  uncommitted files names the tree they become once committed, through a throwaway index). Both deploy scripts,
+  step 0a, refuse unless `tests/lib/full-record.cjs <tree>` is silent: missing, red, unstable (files changed
+  mid-run) or another tree's record all stop the deploy before anything is copied. A dirty spellbound-app is
+  refused outright, no override. **`DEPLOY_ACCEPT_RED=1` is for emergencies only**: it publishes past a missing
+  or red record in red letters, appends the reason to `tests/build/deploy-overrides.log` and writes it into the
+  gh-pages commit. `DEPLOY_GATE_ONLY=1` stops after the gate ("would this deploy go?"). The 4 Oct fast data gate
+  still runs. So the order is: commit → `npm test` (~100 min) → deploy. `node tests/lib/full-record.cjs` with no
+  argument answers for HEAD. Guard: `tests/deploy-gate.cjs` (@check, node — the real runner and both real
+  scripts in a throwaway repo with no remote; proved by breaking the runner's scope, its dirty-tree hash, each
+  script's gate and the gate's place: 9 and 8 fail).
+- **A new screen starts at its top** (`_screenTop()` after every render in app3): the key is the SCREEN
+  (screen · nav · coach mode/tab · a game on), never the state, so a re-render never moves the page and a new
+  screen always opens at its top. The practice drill opened from the foot of a concept chapter, the Champ
+  Challenge from the Word Gym's dock, and a dock list all opened with their header and progress bar scrolled
+  off a phone. `selectList`/`startJourney` scroll up too (same screen, new cards on top).
+- **A hub tile's share of a phone is its floor, not its ceiling** (saga2.css `@container sgstage`): Word Lore's
+  seven tiles were held to a quarter of the play area and the promise was cut to a 5px sliver under the chip.
+  Tiles grow to their words, art steps down with the row count (`20cqh / --rp`), an odd last tile takes the
+  whole row, and the grid scrolls (`safe center`) if a text size needs more. Lore's art is a span round the
+  SVG, so `.sg-hub-art>.qz-art` scales it (lore.js) — without it a smaller box centre-cropped the icon.
+- **A gym mode's name is never cut on a phone**: the title may take two balanced lines, and the HUD centre is
+  `min(58cqw, 100cqw − 160px)` so each stat keeps its 64px (at 360 the left stat sat under Back).
+- **An analogy option stays in its button**: the word is its own shrinkable span (`.anl-ow`, wraps as a last
+  resort) and below 560px the options stack one to a row, like Word Lore's ("establishment" crossed its button).
+- **The Atlas stop card refits when the BOARD changes size**, not only when the camera moves (`popWatch`, a
+  ResizeObserver, trail.js): a panorama is as wide as its painting, the first fit was made against the sliver
+  drawn before it loaded, and stop 1 (camera at 0) never scrolled to refit — the audit's "Junkyard stop card
+  162–485". Reproduced over http with the painting held back 1.5 s.
+- **The engine kit's loop runs a slow frame in full** (sgLoop, saga2.js): up to the 0.25 s clip (30 steps), and
+  nothing is carried past one step. The spec's body said "at most 12 a frame" and carried the rest, so frames
+  over 100ms ran behind the wall clock (the race at 93% under 8×, 73% under 16× — GP7 red on a loaded machine)
+  and the backlog was paid back up to 6× fast afterwards. A deliberate departure from the spec's text, made for
+  the spec's own stated aim (real time on a slow phone). Guard: `engine-kit.cjs` (hand-cranked frames).
+  Consequence worth knowing: under an 8× throttle gp-handling's in-page driver gets one decision per ~150ms frame
+  and its "steering into the bend" check runs wide; at the suite's 4× stress level everything passes.
+- **`raceTime` (tests/lib/wait.cjs) waits on the race's own clock** (`_race.state().raceT`). It counted frames at
+  a 50ms clamp left from the race's old loop, so on slow frames "0.7 s of race" was up to twice that and the kart
+  reached the next bend — gp-handling's "(left the straight!)" in the audit's full run, reproduced at 8×.
+- **Contrast** (a11y-axe green in light, white and dusk with an EMPTY `KNOWN`): Practice's path chips sit on a
+  darker `ink` of the path colour (#6446E0 / #0E7C6B, white 6.0 / 5.1:1); the Library's Trivia chip is #A35C0C
+  (5.1:1, was 3.4 under its halo); the Quote of the hour kicker wears `--treasure-deep` (dusk 5.8:1, was 1.7).
+  **axe never fails text on a gradient** (it files it "incomplete"), which is how that kicker passed: a11y-axe
+  now measures gradient-backed text against every stop (`gradient-contrast`, same KNOWN ratchet), loads the
+  quotes before it reads Home (the card is a shimmer until then), and waits on each screen instead of sleeping.
+  The audit's "Library colour-contrast in light and white" did not reproduce on this build at any width or wait.
+- **`mobile-layout`'s sideways check has NO pixel of slack** (`v > W`): with `> W + 1` the audit's 391px #/vocab
+  on a 390 phone could never have failed it. (391 did not reproduce on this build — every world, look, text size
+  and vocab tab measured 390 — so the fix is the guard: #/vocab is now read turned over and on Practise and Check
+  too, and a 1px overflow there fails.) P0.17's five screens are held there
+  at 390 and 360 (each proved by putting its fault back): every hub tile's words inside it, every gym title whole
+  and clear of the stats, the four longest analogy words in their buttons, three drill doors opening at their
+  top, and the Junkyard card on screen once its painting lands.
 
 ## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
 

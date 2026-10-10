@@ -43,6 +43,44 @@ for f in app3.js saga2.js voice-review.js voice-words.js voice-cdn.js \
   echo "   ok  $f"
 done
 
+# ---------- 0a. THE WHOLE SUITE, GREEN, FOR THIS EXACT TREE (P0.18, 10 Oct 2026) ----------
+# "deploy.sh refuses to publish on any red." The full suite takes ~100 minutes, so the deploy does not
+# run it (that is the owner's 4 Oct call, and the fast data gate below still runs). What it does is
+# refuse to publish a tree that has never been SEEN to pass: tests/lib/run.cjs writes
+# tests/build/last-full.json every time it runs the whole suite, naming the git tree it tested, and
+# tests/lib/full-record.cjs reads it. Missing, red, unstable, or for another tree -> no deploy.
+# A dirty spellbound-app is refused outright, with no override: the deploy commit says "Built from
+# <commit>", and uncommitted files would make that a lie.
+# EMERGENCIES ONLY: DEPLOY_ACCEPT_RED=1 publishes past a missing or red record. It says so in red,
+# appends the reason to tests/build/deploy-overrides.log, and writes it into the deploy commit itself,
+# so the override is on the record wherever anyone looks. DEPLOY_GATE_ONLY=1 stops after this step
+# ("would a deploy be allowed?") without copying or pushing anything.
+say "0a. Full-suite record (the whole suite, green, on this tree)"
+cd "$SRC"
+DIRTY="$(git status --porcelain --untracked-files=all -- .)"   # (no `| head` here: under pipefail its SIGPIPE would end the script silently)
+[ -z "$DIRTY" ] || die "spellbound-app has uncommitted changes — commit exactly what the full suite tested, then deploy:
+$(printf '%s\n' "$DIRTY" | sed -n 1,8p)"
+PREFIX="$(git rev-parse --show-prefix)"; PREFIX="${PREFIX%/}"
+TREE="$(git rev-parse "HEAD:$PREFIX")" || die "could not read the tree of HEAD:$PREFIX"
+OVERRIDE_NOTE=""
+if WHY="$(node "$SRC/tests/lib/full-record.cjs" "$TREE")"; then
+  echo "   green: the whole suite passed on tree ${TREE:0:12} ($(git rev-parse --short HEAD))"
+else
+  [ -n "$WHY" ] || die "tests/lib/full-record.cjs failed to answer"
+  if [ "${DEPLOY_ACCEPT_RED:-}" = "1" ]; then
+    printf '\n\033[41;97;1m%s\033[0m\n' "  DEPLOY_ACCEPT_RED=1 — PUBLISHING WITHOUT A GREEN FULL-SUITE RUN FOR THIS TREE  "
+    printf '\033[31;1m   %s\033[0m\n' "$WHY"
+    printf '\033[31m   %s\033[0m\n' "This is for emergencies only. It is logged in tests/build/deploy-overrides.log and in the deploy commit."
+    mkdir -p "$SRC/tests/build"
+    printf '%s\t%s\t%s\t%s\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "production" "$(git rev-parse --short HEAD)" "${TREE:0:12}" "$WHY" >> "$SRC/tests/build/deploy-overrides.log"
+    OVERRIDE_NOTE="DEPLOYED WITH DEPLOY_ACCEPT_RED=1 — no green full-suite run for this tree: $WHY"
+  else
+    die "$WHY
+   Nothing was copied or pushed. (Emergency only: DEPLOY_ACCEPT_RED=1 publishes anyway, loudly and on the record.)"
+  fi
+fi
+if [ "${DEPLOY_GATE_ONLY:-}" = "1" ]; then say "Gate only (DEPLOY_GATE_ONLY=1): a deploy of this tree would go ahead. Nothing was copied or pushed."; exit 0; fi
+
 # ---------- 0b. THE DATA GATE (owner, 4 Oct 2026: "fast data-only gate") ----------
 # On 3 Oct the owner removed the full test gate ("all changes will only pass through this chat");
 # on 4 Oct, asked again after the v4 audit, chose a fast DATA gate instead. Every node test runs —
@@ -189,7 +227,9 @@ if git diff --cached --quiet; then echo "   nothing to deploy"; exit 0; fi
 git -c user.email=noreply@anthropic.com -c user.name=Claude \
     commit -q -m "Deploy ($STAMP)
 
-Built from Bizzing-Bee $(cd "$SRC" && git rev-parse --short HEAD) on $(cd "$SRC" && git rev-parse --abbrev-ref HEAD)."
+Built from Bizzing-Bee $(cd "$SRC" && git rev-parse --short HEAD) on $(cd "$SRC" && git rev-parse --abbrev-ref HEAD).${OVERRIDE_NOTE:+
+
+$OVERRIDE_NOTE}"
 for i in 1 2 3 4; do
   git push origin HEAD:gh-pages && break
   echo "   push failed, retrying in $((2**i))s"; sleep $((2**i))
