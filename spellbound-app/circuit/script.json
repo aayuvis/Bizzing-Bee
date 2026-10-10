@@ -1,0 +1,2405 @@
+{
+  "season": 1,
+  "fiction": "A story about a spelling season. The rivals are made up; the techniques are real.",
+  "status": "DRAFT for the three-round review (BEE-CIRCUIT.md §12). Overrides: AMENDMENTS.md (10 Oct 2026).",
+  "authorNotes": [
+    "cast.*.role, suspectBoard.portraits[].clearedBy, fairPlay, rounds[].deliver and every *Note / note field are author-facing. Never render them; they spoil the mystery.",
+    "Every key under rounds[].pieces is one on-screen line (≤ 60 words), read aloud by the device voice on a tap (amendment 3). pipWord, clue and beeFileFakeTip are small objects whose string fields are each one line.",
+    "On screen, cases are 'Surprise Stops'. No line says 'Case 1' etc.; the place or the night is named instead.",
+    "Placing never changes the outcome (L6): above/below letters differ, nothing else in a round depends on placing except rounds[8].pieces.suspense, which states both branches.",
+    "Clue cards ride the hall mail, so every V. clue reaches every path before the accusation even if a case is skipped (test 5). A case may repeat a clue on screen; the card is delivered once.",
+    "Puzzle items are the authored set and the demo set. In play the case runner may swap in same-pattern words at the child's band through pick(), keeping each item's rule."
+  ],
+  "signoffs": {
+    "inv": "— V. Abara, Pronouncer, for the Committee",
+    "invNote": "Drawn in an upright hand on every invitation. The accusation's look-again for the Pronouncer relies on it."
+  },
+  "cast": {
+    "pixel": {
+      "name": "Pip",
+      "age": 8,
+      "tell": "starts before the pronouncer finishes",
+      "role": "The rumour mill: one big word misused per note, the real meaning a tap away. The comic heart."
+    },
+    "koi": {
+      "name": "Nova",
+      "age": 9,
+      "tell": "says the word twice, always",
+      "role": "The steady friend; her nan's rule (say it twice). Corrects Dax's first fake tip. Team Night: Old English, younger lectern."
+    },
+    "beaker": {
+      "name": "Rafi",
+      "age": 10,
+      "tell": "traces the letters on his palm",
+      "role": "The palm trick; Kwame's study partner. Turns his back on Dax in Round V. Team Night: Latin, younger lectern."
+    },
+    "panda": {
+      "name": "Suki",
+      "age": 11,
+      "tell": "breathes out, then spells",
+      "role": "Spells the unheard word in Round VII; Dax's rumour nearly strikes her round off (Case 4). Team Night: 'nobody's heard it', younger lectern."
+    },
+    "comet": {
+      "name": "Dax",
+      "age": 11,
+      "tell": "rocks on his heels",
+      "role": "The antagonist: fake tips, blame, one hidden bell, one rumour. A first warning, then a formal one. Reforms at the Finish Arch, clears Vesper in Case 5, captains Team Night from the bench."
+    },
+    "astro": {
+      "name": "Mira",
+      "age": 12,
+      "tell": "asks for the language of origin every time",
+      "role": "The Storm round. Corrects Dax's second fake tip. Team Night's Greek specialist (younger lectern)."
+    },
+    "scopey": {
+      "name": "Theo",
+      "age": 12,
+      "tell": "asks every question, every single word",
+      "role": "The question tally (212, 640, 1,204, 1,977). Blamed for the misprints, cleared. His way saves the blackout final. Team Night: 'needs questions' (older lectern)."
+    },
+    "melody": {
+      "name": "Ines",
+      "age": 13,
+      "tell": "mouths the word in French first",
+      "role": "Kwame's secret coach. Team Night's French specialist (older lectern)."
+    },
+    "samurai": {
+      "name": "Kwame",
+      "age": 14,
+      "tell": "hands behind his back, dead still",
+      "role": "Two seasons without a public miss, until Round V. Comes back coached by Ines. The one who sits down next to Dax. Team Night: Latin and Greek (older lectern)."
+    },
+    "goldlegend": {
+      "name": "Vesper",
+      "age": 15,
+      "tell": "does not ask for anything",
+      "role": "Last year's champion and the silence. On the Suspect Board (a V. name, violet ink). The false solution in Case 5. Asks her first question in the blackout final; spells the Team Night tiebreaker."
+    },
+    "pronouncer": {
+      "name": "V. Abara",
+      "age": "adult",
+      "tell": "'Say it back for me.'",
+      "role": "The Pronouncer. Reads every word and writes every bee file, openly. Warm and plain-spoken; writes nothing secret to any child. On the Suspect Board only for his initial and his kindness: a red herring. Knows who V. is, as the whole Committee does, and promised not to say."
+    },
+    "vale": {
+      "name": "Vale Penrallow",
+      "age": 16,
+      "tell": "writes left-handed; always at the Pronouncer's elbow",
+      "role": "The Committee's runner: lays out the programmes, carries the sealed list envelopes, holds a bell-case key. Newest speller eight seasons ago, aged 8; placed last. She is V. The letters are a Committee tradition the Pronouncer approved; only her name is the children's mystery."
+    },
+    "barnaby": {
+      "name": "Barnaby the Bear",
+      "age": null,
+      "tell": "writes very dry programmes",
+      "role": "Host, the Meadow (the Hive Gates)."
+    },
+    "sage": {
+      "name": "Sage the Owl",
+      "age": null,
+      "tell": "dozes on duty",
+      "role": "Host, the Library (the Grand Archive). Case 1 suspect: fell asleep at the press."
+    },
+    "tullia": {
+      "name": "Tullia the Tortoise",
+      "age": null,
+      "tell": "every programme arrives late",
+      "role": "Host, the Forum (the Colosseum)."
+    },
+    "bolt": {
+      "name": "Bolt the Ram",
+      "age": null,
+      "tell": "forecasts every round like weather",
+      "role": "Host, the Storm (the Eye of the Storm). Case 2 suspect: hid that the bell-case lock has been broken for a year."
+    },
+    "hazel": {
+      "name": "Hazel the Hedgehog",
+      "age": null,
+      "tell": "rolls into a ball under pressure",
+      "role": "Host, the Roots (the Root Throne). Saw Kwame leave and told the Pronouncer at once (Case 3)."
+    },
+    "salty": {
+      "name": "Salty the Seal",
+      "age": null,
+      "tell": "applauds everything; every programme is damp",
+      "role": "Host, the Strait (the Far Shore)."
+    },
+    "ratchet": {
+      "name": "Ratchet the Raccoon",
+      "age": null,
+      "tell": "'borrows' things; cannot spell",
+      "role": "Host, the Junkyard (the Trickster's Gate). On the Suspect Board; cleared because every programme he writes has a misprint and V. never misspells."
+    },
+    "dash": {
+      "name": "Dash the Hare",
+      "age": null,
+      "tell": "starts everything early",
+      "role": "Host, the Sprints (the Finish Arch). His spare key is the answer to Case 5."
+    },
+    "duchess": {
+      "name": "Duchess the Cat",
+      "age": null,
+      "tell": "sits on high shelves; regrets nothing",
+      "role": "Host, the Big Stage (the Grand Marquee). Knocks the envelope off a shelf (Case 5)."
+    },
+    "sloane": {
+      "name": "Sloane",
+      "age": 14,
+      "tell": "never smiles, never asks a question twice",
+      "role": "Ravenmere's captain. Everything is her speciality; a perfect record. Must lose for the first time, and doesn't know how. Season 2's antagonist camp."
+    },
+    "ash": {
+      "name": "Ash Lindqvist",
+      "age": 12,
+      "tell": "spells in step with a twin, one letter each",
+      "role": "Ravenmere. Memorised lists. Has never spelled apart from Aria."
+    },
+    "aria": {
+      "name": "Aria Lindqvist",
+      "age": 12,
+      "tell": "spells in step with a twin, one letter each",
+      "role": "Ravenmere. Memorised lists. Has never spelled apart from Ash."
+    },
+    "arjun": {
+      "name": "Arjun",
+      "age": 13,
+      "tell": "names the origin before the pronouncer finishes",
+      "role": "Ravenmere. Origins of every kind. Respects the Circuit and won't say so."
+    },
+    "mei": {
+      "name": "Mei",
+      "age": 10,
+      "tell": "writes every word in the air first",
+      "role": "Ravenmere's youngest. Slips the child a note in pencil after Team Night; a Season 2 seed for V.'s second hand."
+    }
+  },
+  "suspectBoard": {
+    "note": "Five portraits from Round I. The runner is drawn but unnamed until Round VII ('Thank you, Vale'); her label then updates. Any clue may be pinned under any portrait. Never scored. Accusing opens after Round IX.",
+    "portraits": [
+      {
+        "id": "vesper",
+        "label": "Vesper",
+        "why": "A V. name. Violet ink. Silent. Already qualified.",
+        "clearedBy": "Round VI letter ('Not me. I don't write notes.'); Round IX letter (the violet pen was a gift)."
+      },
+      {
+        "id": "pronouncer",
+        "label": "The Pronouncer, V. Abara",
+        "why": "His initial. 'Say it back' is his line. He reads every list, and he's kind to you.",
+        "clearedBy": "Upright signature against V.'s left slant (Round III card); 'It isn't mine to tell' (Round IX card)."
+      },
+      {
+        "id": "ratchet",
+        "label": "Ratchet the Raccoon",
+        "why": "'Borrows' things, and was where the dictionary went.",
+        "clearedBy": "Case 4 card: he can't spell, and V. never misspells."
+      },
+      {
+        "id": "dax",
+        "label": "Dax",
+        "why": "Everyone's first guess. He's the villain, and V. knows things.",
+        "clearedBy": "Round VIII card: V. was writing to him too."
+      },
+      {
+        "id": "vale",
+        "label": "The runner",
+        "labelAfterRound": 7,
+        "labelAfter": "Vale, the runner",
+        "why": "Always somewhere nobody looks: the chairs, the envelopes, the keys.",
+        "answer": true
+      }
+    ]
+  },
+  "rounds": [
+    {
+      "n": 1,
+      "act": "meadow",
+      "venue": "the Hive Gates",
+      "headliners": [
+        "pixel",
+        "koi"
+      ],
+      "technique": "Wait for the whole word, then say it back before your first letter.",
+      "lesson": "The Champion's Routine — say, spell, say",
+      "lessonGi": 0,
+      "vWhere": "on your chair, before the post came",
+      "pieces": {
+        "inv": "Welcome to the Bee Circuit. Nine rounds. One season. The Grand Marquee at the end. Seated in chairs two and three: Pip, who starts before the word is finished, and Nova, who says every word twice. One more thing: a Circuit tradition, letters signed V. The Committee knows who writes them. Working out who is up to you.",
+        "prog": "Please do not feed the bees. The bees are competing. — Barnaby",
+        "drama": "Pip blurts his first word before the Pronouncer has finished it. Round one forgives, so he stays standing. In round two he does it again, and sits down. Then he cheers louder than anyone for every speller left.",
+        "laugh": "The Pronouncer: 'Say it back for me.' Pip: 'Say it back for me.' The Pronouncer: 'Not the instructions, Pip.' At his elbow, the Committee's runner doesn't even blink.",
+        "suspense": "Before the doors open, the Committee's runner lays a programme on every chair. At the end of the row sits one chair with a card that reads RESERVED. Nobody sits in it.",
+        "above": "You waited. I saw. My nan's rule: say it twice. Once to hear it, once to check you heard it. — Nova",
+        "below": "So close. Say it back before your first letter, like the Pronouncer asks. My nan's rule: say it twice. — Nova",
+        "v": "Say it back. The chair at the end of the row is waiting for someone. So are you. — V.",
+        "dax": "A postcard from a venue you haven't reached: 'Heard you got through the Meadow. The Sprints are mine. — D. (fastest in round one, ask anyone)'",
+        "pip": "Dax is ubiquitous, which means very quick. (You-be-quick. It's right there in the word.) — Pip",
+        "pipWord": {
+          "word": "ubiquitous",
+          "misuse": "very quick",
+          "real": "seeming to be everywhere at once"
+        },
+        "cliff": "The postcard's stamp is from the Finish Arch, in the eighth region. You've only finished the first. How is he already there?",
+        "clue": {
+          "id": "v-chair",
+          "text": "Note 1 was on your chair before the post came. It quotes the Pronouncer: 'Say it back.'",
+          "suspects": [
+            "pronouncer",
+            "vale"
+          ]
+        }
+      }
+    },
+    {
+      "n": 2,
+      "act": "library",
+      "venue": "the Grand Archive",
+      "headliners": [
+        "scopey"
+      ],
+      "technique": "Ask before you spell: the definition, a sentence, the part of speech, the origin, other pronunciations. The Pronouncer has to answer.",
+      "lesson": "Ask the Right Questions — be a word detective",
+      "lessonGi": 10,
+      "vWhere": "folded inside your programme",
+      "pieces": {
+        "inv": "The Grand Archive requests silence, which Theo will not provide. You may ask the Pronouncer for a definition, a sentence, the part of speech. He has to answer.",
+        "prog": "We admire Theo's curiosity. We have ordered more chairs. Our press is run by a typesetter who learned English from a parrot. — Sage",
+        "drama": "Theo asks eleven questions about one word and spells it perfectly. The speller two seats down falls asleep.",
+        "laugh": "The Pronouncer, for the eleventh time: 'Yes, Theo. It is still a noun.' The runner refills his water glass without being asked.",
+        "suspense": "By the Archive door hangs a programme from every season, framed. Eight seasons back, one line: 'Newest speller: Vale Penrallow, aged 8, placed last.'",
+        "above": "You asked three questions and beat me. Imagine eleven. They have to answer. Questions asked this season: 212. — Theo",
+        "below": "You asked one question. Ask five: definition, sentence, part of speech, origin, alternate pronunciation. Questions asked this season: 212. — Theo",
+        "v": "You guess instead of asking. Tonight the list will lie to you. Read it twice. — V.",
+        "dax": "In the corridor, a 'tip': 'Separate has an e in the middle, everyone knows.' Nova, passing, says it twice, loud: 'Sep-a-rate. Sep-a-rate.' Three spellers fix their notes. Dax shrugs.",
+        "beeFileFakeTip": {
+          "tip": "Separate has an e in the middle: seperate.",
+          "truth": "S-E-P-A-R-A-T-E. The middle is an a: there's a rat in separate. It comes from Latin separare, from se- (apart) and parare (to make ready)."
+        },
+        "pip": "Theo is loquacious, which is a kind of lizard. — Pip",
+        "pipWord": {
+          "word": "loquacious",
+          "misuse": "a kind of lizard",
+          "real": "talking a great deal"
+        },
+        "cliff": "Surprise Stop 1: URGENT. 'The list for the Colosseum is back from the press. Every word is wrong.' V. predicted it.",
+        "clue": {
+          "id": "v-programme",
+          "text": "A framed programme, eight seasons old: 'Newest speller: Vale Penrallow, aged 8, placed last.' Another V.",
+          "suspects": [
+            "vale"
+          ]
+        }
+      }
+    },
+    {
+      "n": 3,
+      "act": "forum",
+      "venue": "the Colosseum",
+      "headliners": [
+        "beaker"
+      ],
+      "technique": "Take the Latin apart: prefix, root, ending. Split it before you spell it.",
+      "lesson": "fer (carry / bear)",
+      "lessonGi": 71,
+      "vWhere": "inside Tullia's late programme",
+      "pieces": {
+        "inv": "Latin prefixes today. The Colosseum seats thousands; today it seats us. In chair four: Rafi, who takes every root apart before he writes a letter.",
+        "prog": "This programme is late. All of my programmes are late. — Tullia",
+        "drama": "Rafi traces every word on his palm and lasts deep into the round. By the end his hand is shaking. He keeps tracing.",
+        "laugh": "Tullia's programme arrives after the round has finished. The runner hands it out anyway, straight-faced, one per chair.",
+        "suspense": "A violet pen has been left on your chair. Violet is Vesper's ink.",
+        "above": "You beat me on circumference. Circum means around; fer means carry. The line carried around. Split it before you spell it. Draw the next word small on your palm. — Rafi",
+        "below": "Circum means around, fer means carry: circumference is the line carried around. Split it first, then spell it. Try my palm trick. — Rafi",
+        "v": "Every long word is a short word wearing a coat. When the bell goes missing, look for the one who's scared of thunder. — V.",
+        "dax": "The night the list lied, Dax told everyone Theo did it: 'Who else hangs round a printing press?' Cleared, Theo asks him in front of the whole Archive: 'What made you think it was me?' His 640th question this season. Dax has no answer. He shrugs it off.",
+        "pip": "Rafi is meticulous, which is a type of fish. — Pip",
+        "pipWord": {
+          "word": "meticulous",
+          "misuse": "a type of fish",
+          "real": "very careful about every small detail"
+        },
+        "cliff": "The Storm invitation says Vesper is 'already qualified for the Grand Marquee'. The RESERVED chair now has a name.",
+        "clue": {
+          "id": "v-slant",
+          "text": "The night the list lied, the runner fixed the last line by hand: left hand, slanting left, like every V. note. The Pronouncer signed under it, straight up. And on your chair, a violet pen. Vesper writes in violet.",
+          "suspects": [
+            "vale",
+            "pronouncer",
+            "vesper"
+          ]
+        }
+      }
+    },
+    {
+      "n": 4,
+      "act": "storm",
+      "venue": "the Eye of the Storm",
+      "headliners": [
+        "astro"
+      ],
+      "technique": "Ask for the origin. In words from Greek, an f sound is often spelled ph, a k sound often ch, and an i sound often y.",
+      "lesson": "ph = /f/ Sound (Greek Signal)",
+      "lessonGi": 84,
+      "vWhere": "on your chair, before the post came",
+      "pieces": {
+        "inv": "Today's weather: Greek, with a strong chance of ph. Seated in chair one: Mira, who asks every word where it was born.",
+        "prog": "Expect thunder, and a ringing in your ears. — Bolt",
+        "drama": "Thunder hits mid-word. Mira doesn't flinch. She asks the origin, hears 'Greek', and smiles.",
+        "laugh": "Mira asks for the origin of the word 'the'. The Pronouncer answers, at length, delighted.",
+        "suspense": "That night, before Kwame's round, the Committee bell vanishes from its locked glass case. V. called it a round ago. Surprise Stop 2: URGENT.",
+        "above": "You asked for the origin twice. Do it every time. Greek words travel with their luggage: ph, ch, y. — Mira",
+        "below": "Phantom with an f! Ask where it came from and the word tells you its rules. — Mira",
+        "v": "Words keep their passports. Check them. Someone in this hall is about to lose more than a round. — V.",
+        "dax": "In the corridor: 'Rhythm's got an i in it, everyone knows.' Mira, without looking up: 'Greek. Y.' Two spellers who were listening stop listening to him.",
+        "beeFileFakeTip": {
+          "tip": "Rhythm has an i in it: rhithm.",
+          "truth": "R-H-Y-T-H-M. It comes from Greek rhythmos, and the Greek letter upsilon comes into English as y. There is no i anywhere in it."
+        },
+        "pip": "Mira is clairvoyant, which means she always clears up after herself. — Pip",
+        "pipWord": {
+          "word": "clairvoyant",
+          "misuse": "always clears up after herself",
+          "real": "claiming to see the future, or things beyond the ordinary senses"
+        },
+        "cliff": "V. said someone would lose more than a round. Who?",
+        "clue": {
+          "id": "v-reports",
+          "text": "V. always knows your weak spot. So does the bee file, the Pronouncer's scouting report. He writes it. The runner carries it.",
+          "suspects": [
+            "pronouncer",
+            "vale"
+          ]
+        }
+      }
+    },
+    {
+      "n": 5,
+      "act": "roots",
+      "venue": "the Root Throne",
+      "headliners": [
+        "samurai"
+      ],
+      "technique": "Build the word from its parts: prefix, root, suffix. Never skip one.",
+      "lesson": "dict / dic (say / speak)",
+      "lessonGi": 69,
+      "vWhere": "on the steps of the Root Throne",
+      "order": [
+        "inv",
+        "prog",
+        "laugh",
+        "drama",
+        "dax",
+        "suspense",
+        "above",
+        "below",
+        "v",
+        "pip",
+        "cliff",
+        "clue"
+      ],
+      "orderNote": "The laugh eases the hall before the crack, never after it.",
+      "pieces": {
+        "inv": "Kwame has not misspelled a word in public in two seasons. Seated beside him: you. Dax spells today on a first warning from the Committee.",
+        "prog": "Spectators are asked not to roll up into balls during sudden death. — Hazel",
+        "drama": "Kwame's word is reconnaissance. He leaves out an s. The hall goes silent. Hands still behind his back, he walks out. The runner holds the door for him and says nothing.",
+        "laugh": "Hazel rolls into a ball during sudden death. The hall laughs, for the last time today.",
+        "suspense": "The hall stays quiet long after the door shuts. A round ago, V. wrote that someone would lose more than a round.",
+        "above": "Now you know my weakness. French. Build every word from parts and you'll never crack like I did. I'm going to the Far Shore to fix mine. — K.",
+        "below": "You built it from parts and nearly had me. Prefix, root, suffix: never skip one. I have a weakness now. French. I'm going to the Far Shore to fix it. — K.",
+        "v": "Parts first, then the whole. You skip the suffix. And when a strong one breaks, the loud one gets louder. Watch. — V.",
+        "dax": "Kwame is already out of the building when Dax says it, loud, in the corridor: 'Told you. Nobody's perfect. Two seasons, gone in one word.' Nobody laughs. Rafi turns his back on him.",
+        "pip": "Kwame is imperturbable, which means he can't be turned into a turnip. — Pip",
+        "pipWord": {
+          "word": "imperturbable",
+          "misuse": "can't be turned into a turnip",
+          "real": "calm; impossible to upset or fluster"
+        },
+        "cliff": "Kwame's room is empty, his bag still on the bed. The Pronouncer says he's safe, and that's all he'll say. Surprise Stop 3: URGENT.",
+        "clue": {
+          "id": "v-keys",
+          "text": "A V. note turned up inside the locked bell case. Two keys open it: one on the Committee's ring, one on the runner's lanyard. Unless Bolt is right that the lock has been broken for a year. Then anyone could.",
+          "suspects": [
+            "vale",
+            "pronouncer"
+          ]
+        }
+      }
+    },
+    {
+      "n": 6,
+      "act": "strait",
+      "venue": "the Far Shore",
+      "headliners": [
+        "melody"
+      ],
+      "alsoSeated": [
+        "samurai"
+      ],
+      "technique": "Loanwords keep their home spelling. Ask the language, then listen for the letters it hides, often at the end.",
+      "lesson": "French Silent Letters",
+      "lessonGi": 54,
+      "vWhere": "tucked under a dry programme",
+      "pieces": {
+        "inv": "Fog on the Far Shore. Today's words came ashore from elsewhere. Seated: Ines, who mouths every word in French first, and Kwame, who has come back.",
+        "prog": "This programme is damp. — Salty",
+        "drama": "Ines faces Kwame, the speller she has secretly coached, in the last rounds. She tells the Pronouncer it's the hardest she has ever had to spell against anyone.",
+        "laugh": "Salty applauds every word, including the wrong ones.",
+        "suspense": "Vesper's letter, one line: 'Not me. I don't write notes. — Vesper.'",
+        "above": "Écoute la fin. Listen to the ending. French hides its letters at the end. You heard them today. — Ines",
+        "below": "Écoute la fin. Ballet ends in a t you never hear. The quiet letters beat you. — Ines",
+        "v": "The silent letters are the loudest. Next round, a word none of you has heard. Its parts have. — V.",
+        "dax": "Dax sits alone on the dock. Nobody sits with him. He is writing something.",
+        "pip": "Ines is bilingual, which means she has two lungs. — Pip",
+        "pipWord": {
+          "word": "bilingual",
+          "misuse": "has two lungs",
+          "real": "able to speak two languages well"
+        },
+        "cliff": "In the Junkyard invitation, Dax is listed eighth on the Circuit table, right behind Suki.",
+        "clue": {
+          "id": "vesper-denies",
+          "text": "Vesper's letter: 'Not me. I don't write notes.' Is it true?",
+          "suspects": [
+            "vesper"
+          ]
+        }
+      }
+    },
+    {
+      "n": 7,
+      "act": "junkyard",
+      "venue": "the Trickster's Gate",
+      "headliners": [
+        "panda"
+      ],
+      "technique": "Nerve. Facing a word you've never heard: breathe out, ask everything, and spell what its parts say.",
+      "lesson": "Number Prefixes 1–10: Latin & Greek",
+      "lessonGi": 39,
+      "vWhere": "on your chair, in the slanting hand",
+      "pieces": {
+        "inv": "The Trickster's Gate round includes one word no speller here has heard before. Seated: Suki, whom the lights do nothing to.",
+        "prog": "Three chairs have been borowed and will be returned evenchually. — Ratchet",
+        "progNote": "Deliberate misprints (borrowed, eventually). Ratchet's programmes always have one; the Suspect Board uses it to clear him.",
+        "drama": "The unheard word comes to Suki first, and for the first time ever she freezes. She breathes out, asks all five questions, and spells it right.",
+        "laugh": "Ratchet tries to 'borrow' the Pronouncer's microphone mid-round. The runner takes it back without a word. 'Thank you, Vale,' says the Pronouncer.",
+        "suspense": "By evening the rumour is everywhere: the word is fake, and Suki's round should be struck. Surprise Stop 4.",
+        "above": "The lights do something to everyone. I breathe out first. Out, not in. You did it today. — Suki",
+        "below": "You held your breath on the hard one. Breathe out. Then ask everything. — Suki",
+        "v": "Breathe out before the hard ones, not after. And the rumour has one author. He is fast. — V.",
+        "dax": "Dax is out of the hall before Suki's last letter, talking fast in the corridor. By evening everyone has heard the rumour. Nobody can say who said it first.",
+        "pip": "Suki is nonchalant, which is a kind of soup. — Pip",
+        "pipWord": {
+          "word": "nonchalant",
+          "misuse": "a kind of soup",
+          "real": "calm and relaxed; seeming not to worry"
+        },
+        "cliff": "The Finish Arch invitation: Dax's own round. He hasn't sent a postcard.",
+        "clue": {
+          "id": "v-list",
+          "text": "V. knew about the unheard word a round before the Committee announced it. The list is sealed in front of two people: the Pronouncer, and the runner who carries it. Her name is Vale. She's sixteen.",
+          "suspects": [
+            "vale",
+            "pronouncer"
+          ]
+        }
+      }
+    },
+    {
+      "n": 8,
+      "act": "sprints",
+      "venue": "the Finish Arch",
+      "headliners": [
+        "comet"
+      ],
+      "technique": "Pace. Fast early is not fast late: keep the steady beat, one syllable at a time, as calm in the last round as in the first.",
+      "lesson": "Syllables — re, mem, ber",
+      "lessonGi": 3,
+      "vWhere": "under the Finish Arch, while it was taped off",
+      "turn": "see top-level turn",
+      "pieces": {
+        "inv": "A speed round. The Committee notes that one speller has received a formal warning and will spell under observation.",
+        "prog": "The round will start at the bell. — Dash",
+        "drama": "Dax flies through round one, then fades, rocking on his heels, exactly as his tell says. After the last word, the screen cuts straight to the result card.",
+        "laugh": "Dash lets himself into the bell room with his own spare key and rings the bell four minutes early. The round starts anyway.",
+        "suspense": "The Finish Arch is taped off all morning. At the bell, the runner takes the tape down. Underneath lies a folded card with your name on it, in the slanting hand.",
+        "above": "You went slow on purpose and beat me. I'm sorry about the fake tips. And Theo. And the bell. And Suki. Mostly Suki. — D.",
+        "below": "I finished ahead of you today, and it doesn't feel like winning. I'm sorry about the fake tips. And Theo. And the bell. And Suki. Mostly Suki. — D.",
+        "v": "Steady beat wins late. Not everyone who writes to you wants to beat you. — V.",
+        "dax": "His home hall: he sent you that first postcard from here. Under observation, he doesn't whisper a single tip. He doesn't talk to anyone at all.",
+        "pip": "Dax is contrite, which means he can't be trusted with a kite. (I looked it up after. It means sorry. He is.) — Pip",
+        "pipWord": {
+          "word": "contrite",
+          "misuse": "can't be trusted with a kite",
+          "real": "truly sorry for something you did wrong"
+        },
+        "cliff": "The Grand Marquee invitation, on gold card: 'Seated in chair one: Vesper.' And on the back, in the slanting hand: 'The envelope will open before anyone opens it. — V.'",
+        "clue": {
+          "id": "dax-cleared",
+          "text": "Dax had V. notes too: a whole stack, all season, every one ignored. He thought you were writing them.",
+          "suspects": [
+            "dax"
+          ]
+        }
+      }
+    },
+    {
+      "n": 9,
+      "act": "stage",
+      "venue": "the Grand Marquee",
+      "headliners": [
+        "goldlegend"
+      ],
+      "technique": "Everything at once: wait, ask, find the origin, take it apart, breathe out, keep the beat.",
+      "lesson": "Championship Vocabulary: The Final 10",
+      "lessonGi": 111,
+      "nightBefore": "c5",
+      "vWhere": "inside the gold invitation's envelope",
+      "accusation": "see top-level accusation (opens after this round's mail)",
+      "pieces": {
+        "inv": "The final. Every speller you have met will be in the hall. Seated in chair one: Vesper, defending champion. Curtain up at seven.",
+        "prog": "The management regrets nothing. — Duchess",
+        "drama": "Halfway through, the Grand Marquee's lights go out. The round goes on by voice alone, and Theo's way becomes everyone's way: ask first, spell second. Then Vesper, who has never asked for anything, speaks into the dark: 'Language of origin, please.' The hall goes silent.",
+        "laugh": "Pip, in the dark: 'Good. Now nobody can see me start early.'",
+        "suspense": "The championship word arrives in a sealed envelope, carried in by the runner. Finish above Vesper and it's yours to spell; finish below and it's hers. Either way, the card shows the word, its origin and the technique that cracks it.",
+        "above": "You beat me by asking. I stopped asking the year I won, because it felt weak. Watching you ask everything was annoying. Then useful. The violet pen was mine. Keep it. — Vesper",
+        "below": "I won because I asked, the first time in a year. You asked everything all season. Annoying. Then useful. The violet pen was mine. You were writing in pencil; it was painful to watch. Keep it. — Vesper",
+        "v": "You asked everything tonight. Ask one more: who was there every single round? — V.",
+        "dax": "In the dark, Dax stops rocking on his heels. 'Could I have the definition, please?' Theo, somewhere to his left: 'Your first. I'm on 1,977.'",
+        "pip": "Vesper is formidable. I looked it up. It means what it sounds like. — Pip",
+        "pipWord": {
+          "word": "formidable",
+          "misuse": null,
+          "gotItRight": true,
+          "real": "so strong or skilled that you have to respect it"
+        },
+        "cliff": "A navy envelope with a silver crest: 'Ravenmere Academy challenges the Bee Circuit to a Team Bee. Tomorrow night. Your hall. Do try to keep up. — Sloane, Captain.'",
+        "clue": {
+          "id": "v-secret",
+          "text": "The night before the final, backstage, the Pronouncer said it plainly: 'I know who V. is. So does the whole Committee. I promised not to say. It isn't mine to tell.'",
+          "suspects": [
+            "pronouncer",
+            "vale"
+          ]
+        }
+      }
+    }
+  ],
+  "turn": {
+    "round": 8,
+    "scene": "Dax sits alone at the arrival desk under the Arch. Kwame walks over and sits down beside him.",
+    "choice": {
+      "key": "dax.helped",
+      "labels": {
+        "true": "Sit with them",
+        "false": "Give them a minute"
+      },
+      "line": {
+        "true": "Dax, without looking up: 'You came over. Both of you. Nobody's come over all season.'",
+        "false": "A minute later you join them. Dax, without looking up: 'Thanks for the minute. I needed it.'"
+      },
+      "note": "Both lead to the same scene. This is the only line the choice changes. Flavour only, never the outcome."
+    },
+    "kwame": "I crack too. Two seasons, gone in one word. You said it. You were right. Welcome.",
+    "dax": "I go fast because slow scares me. Slow is where you find out you don't know it.",
+    "notesIntro": "Then he takes a stack of cards from his pocket. V. notes, sent to him, all season. Every one ignored.",
+    "notes": [
+      "Slow down. — V.",
+      "Round one is not the whole bee. — V.",
+      "Ask one question. Just one. — V.",
+      "Fast is a start, not a finish. — V.",
+      "They aren't against you. — V."
+    ],
+    "daxOnNotes": "I thought YOU were writing them.",
+    "clears": "dax",
+    "apologies": [
+      {
+        "to": "scopey",
+        "text": "I said you wrecked the list. You didn't. I said it because you were easy to say it about. Sorry. — D.",
+        "reply": "Accepted. One question: why me? (That's 1,204.) — Theo"
+      },
+      {
+        "to": "panda",
+        "text": "The rumour was mine. You were one place ahead of me, and I wanted that place more than I wanted to be fair. Sorry. — D.",
+        "reply": "Breathe out, Dax. Out, not in. — Suki"
+      },
+      {
+        "to": "samurai",
+        "text": "What I said in the corridor. And 'not my problem.' Both wrong. Sorry. — D.",
+        "reply": "You were right about one thing. Nobody's perfect. That's what a team is for. — K."
+      }
+    ],
+    "toTheChild": "In rounds[7].pieces.above / below: the fake tips, Theo, the bell, Suki."
+  },
+  "cases": [
+    {
+      "id": "c1",
+      "after": 2,
+      "title": "The Misprinted List",
+      "act": "library",
+      "place": "the Grand Archive, at night",
+      "engine": "Spelling Gym · Spot the Error",
+      "engineKey": "gym/spot",
+      "theme": "The Library, 'every rule English wrote down': proofreading by the rules.",
+      "clock": "The Colosseum round is at 9:00, and the Pronouncer reads from paper.",
+      "impossible": "Every word on the only list is misspelled. The press was locked, and the printer swears he checked.",
+      "suspects": [
+        {
+          "who": "the printer",
+          "secret": "He needs glasses and hasn't told anyone."
+        },
+        {
+          "who": "sage",
+          "secret": "She fell asleep on duty."
+        },
+        {
+          "who": "scopey",
+          "secret": "He was at the press eleven times, 'only checking definitions'. He can't sleep the night before a round."
+        }
+      ],
+      "falseSolution": "Theo tampered with it. Dax says so first, and loudest.",
+      "planted": [
+        "Round II programme (Sage): 'Our press is run by a typesetter who learned English from a parrot.'",
+        "Round II V. note: 'Tonight the list will lie to you. Read it twice.'"
+      ],
+      "escalation": "11:40 p.m. The backup list turns up. It's misprinted too, in exactly the same places.",
+      "puzzle": {
+        "brief": "Twelve words from the list. Find each misprint and fix it. One of them isn't wrong at all, and spotting that is the key.",
+        "rule": "Every misprint is a word missing a letter you can't hear.",
+        "items": [
+          {
+            "printed": "nife",
+            "correct": "knife",
+            "why": "silent k"
+          },
+          {
+            "printed": "rist",
+            "correct": "wrist",
+            "why": "silent w"
+          },
+          {
+            "printed": "forein",
+            "correct": "foreign",
+            "why": "silent g"
+          },
+          {
+            "printed": "thum",
+            "correct": "thumb",
+            "why": "silent b"
+          },
+          {
+            "printed": "lisen",
+            "correct": "listen",
+            "why": "silent t"
+          },
+          {
+            "printed": "iland",
+            "correct": "island",
+            "why": "silent s"
+          },
+          {
+            "printed": "casle",
+            "correct": "castle",
+            "why": "silent t"
+          },
+          {
+            "printed": "colum",
+            "correct": "column",
+            "why": "silent n"
+          },
+          {
+            "printed": "clim",
+            "correct": "climb",
+            "why": "silent b"
+          },
+          {
+            "printed": "onest",
+            "correct": "honest",
+            "why": "silent h"
+          },
+          {
+            "printed": "sissors",
+            "correct": "scissors",
+            "why": "silent c"
+          },
+          {
+            "printed": "color",
+            "correct": [
+              "color",
+              "colour"
+            ],
+            "bothCorrect": true,
+            "why": "Not a misprint. American spelling dropped the u on purpose; British spelling kept it. Both are right."
+          }
+        ]
+      },
+      "accusation": {
+        "choices": [
+          "Theo tampered with the list.",
+          "The typesetter worked from a parrot's dictation, and every letter you can't hear went missing.",
+          "The printer misprinted it on purpose."
+        ],
+        "right": 1,
+        "lookAgain": "Not quite. Look again."
+      },
+      "reveal": [
+        "The apprentice set the type from the parrot's dictation. A parrot can only say what it hears, so every letter you can't hear went missing.",
+        "The backup was copied from the first list. Same holes, same places.",
+        "And color? The parrot dropped a u nobody says, and American dictionaries dropped it too, on purpose. Colour and color are both right.",
+        "Theo is cleared. The printer gets glasses. Sage is forgiven.",
+        "The runner, who carries the lists, fixes the last line by hand. Left hand. Her writing slants left. The Pronouncer signs underneath, straight up.",
+        "Dax shrugs: 'Could've been Theo.'"
+      ],
+      "clueOnScreen": "v-slant (delivered as Round III's clue card on every path)",
+      "lastChill": "On the press, a V. note: 'Read it twice. Then look at who blamed whom. — V.'"
+    },
+    {
+      "id": "c2",
+      "after": 4,
+      "title": "The Bell That Went Missing",
+      "act": "storm",
+      "place": "the Eye of the Storm",
+      "engine": "Word Lore · Origins",
+      "engineKey": "lore/origins",
+      "theme": "The Storm, 'Greek blows in like weather': a Greek clue trail.",
+      "clock": "Kwame's round starts in 30 minutes. No bell, no bee.",
+      "impossible": "The bell vanished from a locked glass case, and the glass is unbroken.",
+      "suspects": [
+        {
+          "who": "pixel",
+          "secret": "He's scared of storms, and hides it."
+        },
+        {
+          "who": "bolt",
+          "secret": "The lock has been broken for a year, and he never reported it."
+        },
+        {
+          "who": "comet",
+          "secret": "He shouts 'sabotage!' first. He hasn't practised, and wants the round delayed."
+        }
+      ],
+      "falseSolution": "A saboteur stole the bell to cancel the round.",
+      "planted": [
+        "Round IV programme (Bolt): 'Expect thunder, and a ringing in your ears.'",
+        "Round III V. note: 'When the bell goes missing, look for the one who's scared of thunder.'"
+      ],
+      "escalation": "The spare bell is missing too. The clock jumps to 15 minutes.",
+      "puzzle": {
+        "brief": "A trail of definitions. Each answer is a word built in Greek and spelled by Greek's rules: ph for f, ch for k, y for i. Spell it right and it opens the next hiding place.",
+        "items": [
+          {
+            "clue": "a fear of heights",
+            "word": "acrophobia",
+            "greek": "akron (peak) + phobos (fear)",
+            "rule": "ph"
+          },
+          {
+            "clue": "a word that imitates the sound it names, like buzz",
+            "word": "onomatopoeia",
+            "greek": "onoma (name) + poiein (to make)",
+            "rule": "oe"
+          },
+          {
+            "clue": "the order in which events happened",
+            "word": "chronology",
+            "greek": "khronos (time) + logia (study)",
+            "rule": "ch for k"
+          },
+          {
+            "clue": "a regular, repeated beat",
+            "word": "rhythm",
+            "greek": "rhythmos (measured flow)",
+            "rule": "rh, y"
+          },
+          {
+            "clue": "a long piece of music for a full orchestra",
+            "word": "symphony",
+            "greek": "syn (together) + phone (sound)",
+            "rule": "y, ph"
+          },
+          {
+            "clue": "the short line that joins two words",
+            "word": "hyphen",
+            "greek": "hyphen (together)",
+            "rule": "y, ph"
+          },
+          {
+            "clue": "a group singing together",
+            "word": "chorus",
+            "greek": "khoros (a band of dancers and singers)",
+            "rule": "ch for k"
+          },
+          {
+            "clue": "the science of matter, energy and motion",
+            "word": "physics",
+            "greek": "physis (nature)",
+            "rule": "ph, y"
+          },
+          {
+            "clue": "a sound that bounces back to you",
+            "word": "echo",
+            "greek": "ekho (sound, echo)",
+            "rule": "ch for k"
+          },
+          {
+            "clue": "the study of the mind",
+            "word": "psychology",
+            "greek": "psykhe (mind, soul) + logia (study)",
+            "rule": "ps, y, ch for k"
+          }
+        ]
+      },
+      "accusation": {
+        "choices": [
+          "A saboteur stole both bells to cancel the round.",
+          "Bolt hid them to cover up the broken lock.",
+          "Pip took the first bell to calm his nerves; Dax hid the spare to stretch the delay."
+        ],
+        "right": 2,
+        "lookAgain": "Not quite. Look again."
+      },
+      "reveal": [
+        "The runner's key turns in the lock and does nothing at all. The lock never worked. Bolt admits it.",
+        "Pip took the first bell to his seat. Thunder scares him, and dinging is calming.",
+        "The trail's last clue is behind the curtain: two deep heel-marks in the dust, rocked back and forth. Dax hid the spare to stretch the delay.",
+        "The round starts on time, with Pip ringing the bell.",
+        "The Pronouncer, quietly: 'First warning, Dax.'"
+      ],
+      "clueOnScreen": "v-keys (delivered as Round V's clue card on every path)",
+      "lastChill": "Inside the case, where the bell stood: a V. note. 'The bell will ring twice tonight. Listen for the second. — V.' Two keys open that case. But if the lock never worked, anyone could have put it there."
+    },
+    {
+      "id": "c3",
+      "after": 5,
+      "title": "Where Did Kwame Go?",
+      "act": "strait",
+      "place": "from the Root Throne to the Far Shore",
+      "engine": "Word Lore · Origins",
+      "engineKey": "lore/origins",
+      "theme": "The Strait, 'words that came ashore': loanwords.",
+      "clock": "Kwame must sign in at the Far Shore by sundown, or he's off the Circuit.",
+      "impossible": "His bag is still on his bed, but he's gone. All he left is a note written in loanwords.",
+      "safeLine": "He's safe. Hazel saw him leave and told the Pronouncer at once, so the grown-ups know. What nobody will tell you is where.",
+      "safeLineNote": "Shown in the cold open, before anything else (amendment 2).",
+      "suspects": [
+        {
+          "who": "melody",
+          "secret": "She has been coaching Kwame in French, in secret. It stays between the two of them."
+        },
+        {
+          "who": "comet",
+          "secret": "He has a card in his pocket he won't show anyone. And he won't help: 'Not my problem.'"
+        },
+        {
+          "who": "hazel",
+          "secret": "She saw Kwame leave and told the Pronouncer the same minute. Where he went is Kwame's to tell, she says."
+        }
+      ],
+      "falseSolution": "He quit. The Pronouncer knows he's safe, but even he looks worried Kwame won't come back to spell.",
+      "planted": [
+        "Round V letter from Kwame, both versions: 'I'm going to the Far Shore to fix it.'"
+      ],
+      "escalation": "The runner pins up a new ferry timetable. The afternoon boats are cancelled. One boat left.",
+      "puzzle": {
+        "brief": "Kwame's note is eight loanwords. Sort them by home language, the language English borrowed each one from. The first letters of six languages spell where he went. The two words that share a language say why.",
+        "note": "safari · yogurt · samovar · hummus · piano · catamaran · café · ballet. Back by sundown. — K.",
+        "homeLanguageNote": "Home language = the source language a pronouncer gives at a bee (Merriam-Webster's etymology, the bee's dictionary).",
+        "items": [
+          {
+            "word": "safari",
+            "home": "Swahili"
+          },
+          {
+            "word": "yogurt",
+            "home": "Turkish"
+          },
+          {
+            "word": "samovar",
+            "home": "Russian"
+          },
+          {
+            "word": "hummus",
+            "home": "Arabic"
+          },
+          {
+            "word": "piano",
+            "home": "Italian"
+          },
+          {
+            "word": "catamaran",
+            "home": "Tamil"
+          },
+          {
+            "word": "café",
+            "home": "French"
+          },
+          {
+            "word": "ballet",
+            "home": "French"
+          }
+        ],
+        "answer": "Swahili, Turkish, Russian, Arabic, Italian, Tamil: S-T-R-A-I-T. He went across the Strait. French, twice: to practise French."
+      },
+      "accusation": {
+        "choices": [
+          "He quit and went home.",
+          "He took the early ferry across the Strait to practise French.",
+          "He's hiding in the Grand Archive."
+        ],
+        "right": 1,
+        "lookAgain": "Not quite. Look again."
+      },
+      "reveal": [
+        "He took the early ferry across the Strait to practise French with Ines's cousin, who teaches it on the Far Shore.",
+        "Ines admits the coaching. Kwame asked her to keep it quiet, and she did.",
+        "Hazel nods. She told the Pronouncer the minute he left. The grown-ups knew he was safe all along; only the team didn't.",
+        "Kwame signs in at the Far Shore with minutes to spare."
+      ],
+      "lastChill": "On the dock you glimpse Dax, alone, reading a card he doesn't show anyone."
+    },
+    {
+      "id": "c4",
+      "after": 7,
+      "title": "The Word That Wasn't",
+      "act": "junkyard",
+      "place": "the Trickster's Gate",
+      "engine": "Word Forge (once signed off), else Word Lore · Roots",
+      "engineKey": "forge|lore/roots",
+      "theme": "The Junkyard, 'everything ever made has a name': words built from parts.",
+      "clock": "The Committee rules at noon. If the word is fake, Suki's round is struck.",
+      "impossible": "The dictionary page where the word should be is missing.",
+      "suspects": [
+        {
+          "who": "ratchet",
+          "secret": "A whole shed of 'borrowed' things."
+        },
+        {
+          "who": "astro",
+          "secret": "She's sure the word is Greek, but not sure of one small part, kai, and hides it."
+        },
+        {
+          "who": "panda",
+          "secret": "She says nothing, and hides how much it matters."
+        }
+      ],
+      "falseSolution": "Ratchet invented the word as a prank and tore out the page.",
+      "planted": [
+        "Round VII programme (Ratchet): chairs 'borowed', returned 'evenchually'. He can't spell, so he can't have invented a word.",
+        "Round VII V. note: 'The rumour has one author. He is fast.'",
+        "Round VI cliff: Dax eighth on the Circuit table, right behind Suki."
+      ],
+      "escalation": "A second page is missing: Suki's name in the record book.",
+      "puzzle": {
+        "brief": "The disputed word means 'fear of the number thirteen'. Rebuild it from its Greek parts, then build four more like it. If every part is real and means what it should, the word is real.",
+        "word": "triskaidekaphobia",
+        "items": [
+          {
+            "part": "tris",
+            "meaning": "three",
+            "language": "Greek",
+            "from": "treis (three); the word drops the e"
+          },
+          {
+            "part": "kai",
+            "meaning": "and",
+            "language": "Greek",
+            "from": "kai (and)"
+          },
+          {
+            "part": "deka",
+            "meaning": "ten",
+            "language": "Greek",
+            "from": "deka (ten); treiskaideka is Greek for thirteen"
+          },
+          {
+            "part": "phobia",
+            "meaning": "fear",
+            "language": "Greek",
+            "from": "phobos (fear), through New Latin -phobia"
+          },
+          {
+            "word": "decathlon",
+            "parts": [
+              "deka: ten",
+              "athlon: contest"
+            ],
+            "meaning": "an athletics contest of ten events"
+          },
+          {
+            "word": "trilogy",
+            "parts": [
+              "tri: three",
+              "logia: telling"
+            ],
+            "meaning": "a set of three books or films that belong together"
+          },
+          {
+            "word": "pentagon",
+            "parts": [
+              "pente: five",
+              "gonia: angle"
+            ],
+            "meaning": "a flat shape with five sides and five angles"
+          },
+          {
+            "word": "octopus",
+            "parts": [
+              "okto: eight",
+              "pous: foot"
+            ],
+            "meaning": "a sea animal with eight arms"
+          }
+        ]
+      },
+      "accusation": {
+        "choices": [
+          "The word is real. Ratchet borrowed the dictionary with its pages folded inside, and Dax started the rumour.",
+          "Ratchet invented the word as a prank and tore out the page.",
+          "The Committee made a mistake, and the word isn't real."
+        ],
+        "right": 0,
+        "lookAgain": "Not quite. Look again."
+      },
+      "reveal": [
+        "The word is real. Every part is Greek, and every part means what it should: three-and-ten fear. Fear of thirteen.",
+        "Ratchet 'borrowed' the dictionary as a doorstop, and the record book to keep it level. Neither page was torn. Both were folded inside.",
+        "Folded at that very page, a card in the slanting hand: 'Its parts have heard it. — V.' V. had seen the word before anyone.",
+        "The runner's arrival log and three spellers' word put the rumour in Dax's mouth, in the corridor, before anyone had opened a dictionary.",
+        "He wanted Suki struck off because she's one place ahead of him on the table.",
+        "The Committee reads Dax a formal warning, aloud, at the gate. Suki's round stands. Dax leaves first, as always. This time nobody chases him."
+      ],
+      "clue": {
+        "id": "ratchet-cleared",
+        "text": "Ratchet can't spell: every programme he writes has a misprint. V.'s notes have never had one.",
+        "suspects": [
+          "ratchet"
+        ]
+      },
+      "lastChill": "Suki, to nobody in particular: 'Breathe out, Dax.' He doesn't hear. Or he pretends not to."
+    },
+    {
+      "id": "c5",
+      "after": 8,
+      "title": "The Opened Envelope",
+      "act": "stage",
+      "place": "backstage at the Grand Marquee, the night before the final",
+      "engine": "Spelling Gym · Spot the Error",
+      "engineKey": "gym/spot",
+      "theme": "The Big Stage, 'endings decide everything': the lie is a wrong ending.",
+      "clock": "Curtain up at 7:00. If anyone has seen the championship word, the final is void.",
+      "impossible": "At five, the runner carried the sealed envelope into a dressing room and came out; the Pronouncer locked the door. The only key stayed on his belt all night. Now the envelope lies open on the floor.",
+      "suspects": [
+        {
+          "who": "goldlegend",
+          "secret": "She was alone backstage and won't leave her room. She's terrified, and hides it."
+        },
+        {
+          "who": "pronouncer",
+          "secret": "He knows who V. is, as the whole Committee does, and promised not to say."
+        },
+        {
+          "who": "duchess",
+          "secret": "None. She is a cat."
+        },
+        {
+          "who": "dash",
+          "secret": "He let himself in by the side door with his spare key to fetch his lucky stopwatch, and forgot to lock up."
+        }
+      ],
+      "falseSolution": "Vesper looked. She's the defending champion, she was alone, and she won't talk. The hall turns on her.",
+      "planted": [
+        "Round VIII: Dash let himself into the bell room with his own spare key. The hosts carry spare keys.",
+        "Duchess sits on a high shelf in every programme drawing.",
+        "Round VIII cliff, V. on the back of the gold invitation: 'The envelope will open before anyone opens it.'"
+      ],
+      "escalation": "6:15. The new word is sealed and ready, but Vesper won't spell unless her name is cleared.",
+      "puzzle": {
+        "brief": "Ten statements from four people. Check each ending: -ance or -ence, -able or -ible, -ant or -ent. Every statement with a wrong ending is a lie. Rule people out, then choose what happened.",
+        "items": [
+          {
+            "who": "goldlegend",
+            "statement": "My absence from the green room was deliberate.",
+            "word": "absence",
+            "correct": "absence",
+            "ok": true
+          },
+          {
+            "who": "goldlegend",
+            "statement": "The envelope was never accessible from my room.",
+            "word": "accessible",
+            "correct": "accessible",
+            "ok": true
+          },
+          {
+            "who": "goldlegend",
+            "statement": "I'm perfectly confidant about tomorrow.",
+            "word": "confidant",
+            "correct": "confident",
+            "ok": false,
+            "why": "A confidant is a trusted friend. She means confident, and she isn't. Her only lie is about her nerves."
+          },
+          {
+            "who": "pronouncer",
+            "statement": "The key on my belt was my only assurance.",
+            "word": "assurance",
+            "correct": "assurance",
+            "ok": true
+          },
+          {
+            "who": "pronouncer",
+            "statement": "I am responsible for the list, and I will seal a new word.",
+            "word": "responsible",
+            "correct": "responsible",
+            "ok": true
+          },
+          {
+            "who": "pronouncer",
+            "statement": "Who writes the V. letters isn't relevant to this.",
+            "word": "relevant",
+            "correct": "relevant",
+            "ok": true
+          },
+          {
+            "who": "dash",
+            "statement": "I locked the side door. I'm very dependible.",
+            "word": "dependible",
+            "correct": "dependable",
+            "ok": false
+          },
+          {
+            "who": "dash",
+            "statement": "My spare key is of no importence tonight.",
+            "word": "importence",
+            "correct": "importance",
+            "ok": false
+          },
+          {
+            "who": "dash",
+            "statement": "I only went in for my stopwatch. It's very valuable to me.",
+            "word": "valuable",
+            "correct": "valuable",
+            "ok": true
+          },
+          {
+            "who": "duchess",
+            "statement": "The high shelf is the most comfortable seat in the building.",
+            "word": "comfortable",
+            "correct": "comfortable",
+            "ok": true
+          }
+        ]
+      },
+      "accusation": {
+        "choices": [
+          "Vesper opened it to see the word.",
+          "The Pronouncer opened it and won't admit it.",
+          "Duchess knocked it off a shelf, through a door Dash left open. It fell face-down."
+        ],
+        "right": 2,
+        "lookAgain": "Not quite. Look again."
+      },
+      "reveal": [
+        "Dax is the one who sees it: Dash's spare key, still in the side door.",
+        "Duchess walked in through that door and knocked the envelope off the shelf. It fell open, face-down. Nobody saw the word.",
+        "Vesper's only lie was about her nerves. Dash's were about the door.",
+        "Dax, of all people, has cleared the speller he'd most like to see beaten.",
+        "The Pronouncer seals a new word in front of everyone and hands it to the runner to carry."
+      ],
+      "clueOnScreen": "v-secret (delivered as Round IX's clue card on every path)",
+      "lastChill": "Vesper opens her door and says one word to the team: 'Thanks.' Then, to Dax: 'Ask everything tomorrow.' Dax: 'I don't ask.' Vesper: 'Neither did I.'"
+    }
+  ],
+  "teamNight": {
+    "act": "stage",
+    "venue": "the Grand Marquee",
+    "opens": "Once Round IX is done, at any placing. Replayable against Ravenmere's second team with a short programme; the story does not repeat.",
+    "challenge": "A navy envelope with a silver crest: 'Ravenmere Academy challenges the Bee Circuit to a Team Bee. Tomorrow night. Your hall. Do try to keep up. — Sloane, Captain.'",
+    "challengeNote": "The same card as rounds[8].pieces.cliff; it is the Team Night invitation.",
+    "beats": {
+      "captaincy": [
+        "Vesper declines the captaincy: 'I've just learned to ask questions. I'm not ready to answer them.'",
+        "Kwame says one word: 'Dax.' The hall laughs. Then it sees he means it.",
+        "Theo: 'He blamed me for the misprints.' Suki: 'He tried to get my round struck.'",
+        "Dax says nothing for a long beat. Then: 'Yes. And I know exactly how fast I am, and where I fall apart. That's why I shouldn't spell every word. Nobody should.'"
+      ],
+      "idea": "Dax's plan, learned from losing: 'Speed is nothing. Who takes the word is everything.' Every word goes to the speller who knows its language. He captains from the bench and spells none himself. The steady-beat words, the ones nobody at the lectern owns, go to you.",
+      "ravenmere": "Ravenmere arrive in navy blazers and silver pins. Sloane, at the door: 'Circuit kids learn on a map. How sweet.' She never asks a question twice. The Lindqvist twins spell as one, a letter each. Arjun names the origin before the Pronouncer finishes. Mei writes every word in the air. Flawless, and certain.",
+      "drama": {
+        "8-10": "Ravenmere leads all night. In the last round Dax calls a word to Rafi as Latin. It's Greek. Arjun smirks. Rafi's finger stops on his palm. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Mira. She spells it.",
+        "11-15": "Ravenmere leads all night. In the last round Dax calls a word to Kwame as Latin. It's French. Arjun smirks. Kwame's hands tighten behind his back. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Ines. She spells it."
+      },
+      "levelling": "The word before the tiebreaker is yours. You spell it, and the score is level.",
+      "finalWord": "The tiebreaker comes down to Sloane and the Circuit. Team Bee rules: the captain may call it to anyone on the roster. Dax calls it to Vesper, the champion who never asks. In front of everyone, Vesper asks three questions. She spells it right. The Circuit wins.",
+      "after": [
+        "Sloane, who has never lost: 'Accuracy is manners. So is losing, apparently.'",
+        "The last letter of the season, on navy card: 'Next season. Our hall. Our list. Ravenmere does not lose twice. — Sloane'"
+      ],
+      "daxPostcard": "Steady beat. Like you said. — D. (captain, ask anyone)",
+      "sting": "Back at the Grand Marquee, Vale and the Pronouncer are stacking chairs beside you when one more note slides under the door. A different hand, small and careful, in pencil: 'There were always two of us. — V.' Vale reads it twice. 'That isn't mine.' For the first time all season, the Pronouncer looks surprised.",
+      "stingAfter": "The Pronouncer, quietly: 'Then next season we find out who. Together, and in the open.'",
+      "mei": "Folded into your programme, a tiny note in neat pencil: 'Your captain is good. Don't tell Sloane I said so. — M.'",
+      "coda": "The Atlas chip changes to 'The Bee Circuit · Season 2: Ravenmere'. On the Meadow board, the RESERVED chair is back, waiting for someone new."
+    },
+    "roster": {
+      "circuit": [
+        "pixel",
+        "koi",
+        "beaker",
+        "panda",
+        "comet",
+        "astro",
+        "scopey",
+        "melody",
+        "samurai",
+        "goldlegend"
+      ],
+      "captain": "comet",
+      "captainSpells": false,
+      "lectern": {
+        "8-10": [
+          "koi",
+          "beaker",
+          "astro",
+          "panda"
+        ],
+        "11-15": [
+          "melody",
+          "samurai",
+          "scopey",
+          "goldlegend"
+        ]
+      },
+      "lecternNote": "The child plus four teammates, seated by the mockbee band. The 6–7 band plays the 8–10 lectern. The tiebreaker may go to anyone on the Circuit roster, so Vesper takes it in every band.",
+      "ravenmere": [
+        "sloane",
+        "ash",
+        "aria",
+        "arjun",
+        "mei"
+      ]
+    },
+    "callerCategories": [
+      {
+        "call": "Greek",
+        "8-10": "astro",
+        "11-15": "samurai",
+        "why": "Mira's speciality is Greek. At the older lectern, Kwame's is Latin and Greek (mockbee spec)."
+      },
+      {
+        "call": "Latin",
+        "8-10": "beaker",
+        "11-15": "samurai",
+        "why": "Rafi's speciality is Latin; Kwame's is Latin and Greek."
+      },
+      {
+        "call": "French",
+        "8-10": "you",
+        "11-15": "melody",
+        "why": "Ines's speciality is French. Nobody at the younger lectern owns French, so there it is a steady-beat word: yours."
+      },
+      {
+        "call": "Old English",
+        "8-10": "koi",
+        "11-15": "you",
+        "why": "Nova's speciality is Old English and Germanic. Nobody at the older lectern owns it, so there it is yours."
+      },
+      {
+        "call": "Nobody's heard it",
+        "8-10": "panda",
+        "11-15": "goldlegend",
+        "why": "Suki has the steadiest nerve in the younger field; Vesper knows the list the way other people know a song."
+      },
+      {
+        "call": "Needs questions",
+        "8-10": null,
+        "11-15": "scopey",
+        "why": "Theo asks every question. Not offered at the younger lectern, where nobody owns it."
+      },
+      {
+        "call": "Steady beat",
+        "8-10": "you",
+        "11-15": "you",
+        "why": "Long plain words, and any word whose language nobody at the lectern owns."
+      }
+    ],
+    "rules": [
+      "The child plays the captain's caller: from the definition and the Ask-the-Pronouncer answers, pick the call. A right call sends the word to that seat; a wrong call sends it to the wrong seat, whose simulated chance falls.",
+      "Every third word is the child's own to spell (steady beat). The word before the tiebreaker is the child's and is always one the bee file shows mastered.",
+      "The Circuit always wins narrowly; Ravenmere's misses are seeded so the last words decide it. The child's play changes the margin, the lines and the stamp, never the outcome.",
+      "Contest coins pay only on the child's own spelled words and right calls. The bee file afterwards shows origin-calling accuracy."
+    ],
+    "ravenmereRoster": [
+      {
+        "id": "sloane",
+        "name": "Sloane",
+        "age": 14,
+        "role": "captain",
+        "tell": "never smiles, never asks a question twice",
+        "speciality": "everything; a perfect record"
+      },
+      {
+        "id": "ash",
+        "name": "Ash Lindqvist",
+        "age": 12,
+        "tell": "spells in step with a twin, one letter each",
+        "speciality": "memorised lists"
+      },
+      {
+        "id": "aria",
+        "name": "Aria Lindqvist",
+        "age": 12,
+        "tell": "spells in step with a twin, one letter each",
+        "speciality": "memorised lists"
+      },
+      {
+        "id": "arjun",
+        "name": "Arjun",
+        "age": 13,
+        "tell": "names the origin before the pronouncer finishes",
+        "speciality": "origins of every kind"
+      },
+      {
+        "id": "mei",
+        "name": "Mei",
+        "age": 10,
+        "tell": "writes every word in the air first",
+        "speciality": "the youngest Ravenmere speller"
+      }
+    ],
+    "season2Seeds": [
+      "Ravenmere is the antagonist camp: their hall, their list, their rules (no questions in round one).",
+      "Who wrote 'There were always two of us'? The hand is small and in pencil, like Mei's. Seeds also point at Vesper, and at someone not yet met. The Pronouncer doesn't know either.",
+      "Can a reformed antagonist stay reformed when Ravenmere plays the way he used to?"
+    ]
+  },
+  "accusation": {
+    "opens": "After Round IX's mail.",
+    "suspects": [
+      "vesper",
+      "pronouncer",
+      "ratchet",
+      "dax",
+      "vale"
+    ],
+    "right": "vale",
+    "lookAgain": "Not quite. Look again.",
+    "lookAgainBy": {
+      "vesper": "Not quite. Look again: Vesper told you herself. She doesn't write notes, and the violet pen was a gift.",
+      "pronouncer": "Not quite. Look again: his signature on every invitation stands straight up. V.'s writing slants left.",
+      "ratchet": "Not quite. Look again: every programme Ratchet writes has a misprint. V. has never misspelled a word.",
+      "dax": "Not quite. Look again: Dax got V. notes too, all season."
+    },
+    "reveal": [
+      "The runner is at the back of the hall, folding programmes. She looks up.",
+      "Vale Penrallow. Sixteen. The newest speller eight seasons ago, aged 8. Placed last.",
+      "Left-handed, slanting left. A bell-case key on her lanyard. Every sealed list, every round, at the Pronouncer's elbow, hearing him say: say it back.",
+      "The Pronouncer: 'She has carried every list for three seasons and never let one word slip. The Committee always knew. The name was yours to find.'",
+      "Vale: 'Say it back for me.' She almost smiles."
+    ],
+    "closingLetter": "I placed last, my first season. Somebody wrote to me after every round, and I never found out who. When I became the Committee's runner, I asked if I could keep it going, and they said yes. Every season I write to whoever is new, and to whoever needs it. You and Dax, this year. — Vale",
+    "closingChoices": [
+      "Thank you. I kept every one.",
+      "Next season, can I help write to the newest speller? I'll ask the Committee.",
+      "Say it back for me: thank you."
+    ]
+  },
+  "hivePost": {
+    "postcards": {
+      "meadow": "Region complete: {w1}, {w2} and {w3}, all spelled, and not one bee was fed. Well done. — Barnaby",
+      "library": "The Archive has entered {w1}, {w2} and {w3} in its records, in ink. Silence may now resume. — Sage",
+      "forum": "This postcard is late. Your {w1}, {w2} and {w3} were not. — Tullia",
+      "storm": "Forecast: {w1}, {w2} and {w3}, spelled straight through the thunder. Some ringing in the ears may continue. — Bolt",
+      "roots": "You built {w1}, {w2} and {w3} from the roots up. I stayed unrolled for all three. — Hazel",
+      "strait": "This postcard is damp. You spelled {w1}, {w2} and {w3} as they came ashore. Applause. — Salty",
+      "junkyard": "You spelled {w1}, {w2} and {w3}. I have borowed none of them. Yet. — Ratchet",
+      "sprints": "Three words, {w1}, {w2} and {w3}: steady beat, no false start. That makes one of us. — Dash",
+      "stage": "The management has reviewed {w1}, {w2} and {w3}, and regrets nothing. Curtain. — Duchess"
+    },
+    "postcardNote": "junkyard keeps one deliberate misprint (borrowed), in character; the child's own words are always printed correctly.",
+    "diary": [
+      "Level up. Same routine, one level deeper: say it, spell it, say it again.",
+      "Level up. Somewhere, Theo just added a question to his tally.",
+      "Level up. The words got harder, and so did you.",
+      "Level up. Nova's nan would say it twice: well done, well done.",
+      "Level up. Rafi would draw this one small on his palm.",
+      "Level up. Breathe out. You earned this one.",
+      "Level up. Steady beat, all the way here.",
+      "Level up. Mira wants to know where this one came from. You.",
+      "Level up. Fast is a start; this was earned at a steady pace.",
+      "Level up. The Pronouncer would just say: say it back for me."
+    ],
+    "beeFileIntro": "The bee file: the Pronouncer's scouting report, for you and anyone you show it to. Every word you spelled tonight, the one that beat you, why it did, and the technique that would have caught it. Missed words go to your revision pile.",
+    "beeFileFakeTipIntro": "Corridor tip, checked."
+  },
+  "visitorsNote": "Stop Visitors (§10, amendment 4). Framed historically: who they were to the ancient Greeks, Romans or Norse, or a dated line for a real person, and how the word reached English. Respectful voice (Bizzing India docs/05 §1–§2): no comedy, no speaking role, never 'myth' as a synonym for 'false', uncertainty stated plainly. Norse and classical religion have practitioners today; cards speak historically and never call the gods false. None of these appears in the story (D9). A visitor shows only where the build script finds its word on that stop's own list (eponyms.json); stop stays null until then. Every card goes through the three-round review.",
+  "visitors": [
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Atlas",
+      "word": "atlas",
+      "kind": "classical-myth",
+      "card": "To the ancient Greeks, Atlas was a Titan who held up the sky. In 1595 a book of maps by Gerardus Mercator came out under the title Atlas, and the word came to mean any book of maps.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Hesiod, Theogony (Atlas holds up the sky)"
+        },
+        {
+          "type": "primary",
+          "ref": "Gerardus Mercator, Atlas sive Cosmographicae Meditationes (Duisburg, 1595)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'atlas'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Hermes",
+      "word": "hermetic",
+      "kind": "classical-myth",
+      "card": "To the ancient Greeks, Hermes was the messenger of the gods. Much later, books of alchemy were credited to a legendary 'Thrice-Great Hermes', said to have made a seal that let no air through. Hermetic came to mean sealed tight.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'hermetic'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'hermetic'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Iris",
+      "word": "iridescent",
+      "kind": "classical-myth",
+      "card": "To the ancient Greeks, Iris was the goddess of the rainbow and a messenger of the gods. Her name is the Greek word for rainbow. Iridescent means shimmering with rainbow colours, like a soap bubble.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Hesiod, Theogony (Iris)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'iridescent'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Echo",
+      "word": "echo",
+      "kind": "classical-myth",
+      "card": "In Greek stories, later retold by the Roman poet Ovid, Echo was a mountain nymph who could only repeat the last words she heard. Her name is the Greek word for a sound that comes back, and English kept it: echo.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Ovid, Metamorphoses, Book 3 (Echo)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'echo'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Pan",
+      "word": "panic",
+      "kind": "classical-myth",
+      "card": "To the ancient Greeks, Pan was the god of shepherds and wild places, with a goat's legs and horns. Sudden, causeless fear in lonely places was blamed on him. The Greek word panikos, 'of Pan', reached English as panic.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'panic'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'panic'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Tantalus",
+      "word": "tantalise",
+      "kind": "classical-myth",
+      "card": "In Greek myth, Tantalus was a king punished in the underworld: the water around him drained away when he bent to drink, and the fruit above him rose out of reach. To tantalise is to keep what someone wants just out of reach.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Homer, Odyssey, Book 11 (Tantalus)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'tantalize'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Hypnos",
+      "word": "hypnosis",
+      "kind": "classical-myth",
+      "card": "To the ancient Greeks, Hypnos was the god of sleep. In 1843 the Scottish surgeon James Braid named hypnotism after him, believing it was a kind of sleep. It isn't, but the name stuck, and hypnosis followed.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "James Braid, Neurypnology (1843)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'hypnotism'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "Psyche",
+      "word": "psychology",
+      "kind": "classical-myth",
+      "card": "In a story told by the Roman writer Apuleius, Psyche was a mortal princess who won the love of Cupid and was made immortal. Her name is the Greek word for the soul or mind. Psychology, the study of the mind, is built on it.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Apuleius, Metamorphoses (The Golden Ass), Books 4–6"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'psychology'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "storm",
+      "figure": "the Titans",
+      "word": "titanic",
+      "kind": "classical-myth",
+      "card": "To the ancient Greeks, the Titans were the giant elder gods who ruled before Zeus and the Olympians. Titanic means as huge and powerful as a Titan.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Hesiod, Theogony (the Titans)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'titanic'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "forum",
+      "figure": "Janus",
+      "word": "January",
+      "kind": "classical-myth",
+      "card": "To the ancient Romans, Janus was the god of doorways and beginnings, shown with two faces, one looking back and one looking ahead. The Romans named a month for him, Ianuarius, and English made it January, the doorway of our year.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Ovid, Fasti, Book 1 (Janus)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'January'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "forum",
+      "figure": "Mars",
+      "word": "martial",
+      "kind": "classical-myth",
+      "card": "To the ancient Romans, Mars was the god of war, and the month of March was his. Martial, meaning to do with fighting, as in martial arts, comes from his name.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'martial'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'martial'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "forum",
+      "figure": "Juno",
+      "word": "June",
+      "kind": "classical-myth",
+      "card": "To the ancient Romans, Juno was queen of the gods and protector of women and marriage. June may be named after her, but even the Romans weren't sure: in his poem about the calendar, Ovid lets three goddesses argue over the month and never gives a verdict.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Ovid, Fasti, Book 6 (Juno, Juventas and Concordia each claim June)"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'June'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "forum",
+      "figure": "Vulcan",
+      "word": "volcano",
+      "kind": "classical-myth",
+      "card": "To the ancient Romans, Vulcan was the god of fire and the forge. Italian named burning mountains after him, vulcano, and English borrowed the word: volcano.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'volcano'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'volcano'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "forum",
+      "figure": "Ceres",
+      "word": "cereal",
+      "kind": "classical-myth",
+      "card": "To the ancient Romans, Ceres was the goddess of grain and the harvest. The Latin cerealis meant 'of Ceres', and English took it for grain crops, and for the grains in a breakfast bowl: cereal.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'cereal'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'cereal'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "forum",
+      "figure": "Fortuna",
+      "word": "fortune",
+      "kind": "classical-myth",
+      "card": "To the ancient Romans, Fortuna was the goddess of luck, good and bad. Her name is the Latin word fortuna, chance, and it reached English as fortune.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'fortune'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'fortune'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "forum",
+      "figure": "Mercury",
+      "word": "mercurial",
+      "kind": "classical-myth",
+      "card": "To the ancient Romans, Mercury was the quick-footed messenger of the gods. A planet and a quick, shining liquid metal took his name, and mercurial came to mean quick and changeable.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'mercurial'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'mercurial'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "roots",
+      "figure": "Tiw (Týr)",
+      "word": "Tuesday",
+      "kind": "norse-myth",
+      "card": "To the Anglo-Saxons he was Tiw, and to the Norse Týr: a god of war. When Germanic peoples took over the Roman week, the day of Mars, the Roman war god, became Tiw's day: Tuesday.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'Tuesday'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'Tuesday'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "roots",
+      "figure": "Woden (Odin)",
+      "word": "Wednesday",
+      "kind": "norse-myth",
+      "card": "To the Anglo-Saxons he was Woden, and to the Norse Odin: chief of the gods and a seeker of wisdom. The Roman day of Mercury became Woden's day: Wednesday, with a d you never hear.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'Wednesday'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'Wednesday'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "roots",
+      "figure": "Thor",
+      "word": "Thursday",
+      "kind": "norse-myth",
+      "card": "To the Norse, Thor was the god of thunder, who carried a hammer. The Anglo-Saxons called him Thunor, which is also their word for thunder. The Roman day of Jupiter became Thor's day: Thursday.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'Thursday'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'Thursday'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "roots",
+      "figure": "Frigg",
+      "word": "Friday",
+      "kind": "norse-myth",
+      "card": "To the Norse, Frigg was queen of the gods and wife of Odin; the Anglo-Saxons called her Frige. The Roman day of Venus became her day: Friday. Some scholars think the goddess Freyja fits Venus better, and they still argue about it.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'Friday' and 'Frigg'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'Friday'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "junkyard",
+      "figure": "John Montagu, 4th Earl of Sandwich",
+      "word": "sandwich",
+      "kind": "person",
+      "card": "John Montagu, 4th Earl of Sandwich (1718–1792), an English politician. By 1762 people were eating 'a sandwich', named after him. The story goes that he wanted a meal he could eat without leaving the table, but historians say nobody can prove it.",
+      "sources": [
+        {
+          "type": "primary",
+          "ref": "Edward Gibbon, journal entry, 24 November 1762 ('a bit of cold meat, or a Sandwich')"
+        },
+        {
+          "type": "primary",
+          "ref": "Pierre-Jean Grosley, Londres (1770), recounting a 1765 visit"
+        },
+        {
+          "type": "secondary",
+          "ref": "N. A. M. Rodger, The Insatiable Earl (1993)"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "junkyard",
+      "figure": "Adolphe Sax",
+      "word": "saxophone",
+      "kind": "person",
+      "card": "Adolphe Sax (1814–1894), a Belgian instrument maker. In 1846 he patented a new instrument: a metal body, played with a reed. It took his name and the Greek word phone, voice or sound: the saxophone.",
+      "sources": [
+        {
+          "type": "reference",
+          "ref": "Encyclopaedia Britannica, 'Adolphe Sax'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'saxophone'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "junkyard",
+      "figure": "James Brudenell, 7th Earl of Cardigan",
+      "word": "cardigan",
+      "kind": "person",
+      "card": "James Brudenell, 7th Earl of Cardigan (1797–1868), a British army officer. By the 1860s a knitted wool jacket that buttons down the front carried his name. He didn't invent it, and why it took his name is not certain.",
+      "sources": [
+        {
+          "type": "dictionary",
+          "ref": "Online Etymology Dictionary, 'cardigan'"
+        },
+        {
+          "type": "secondary",
+          "ref": "Michael Quinion, World Wide Words, 'Cardigan'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "junkyard",
+      "figure": "Rudolf Diesel",
+      "word": "diesel",
+      "kind": "person",
+      "card": "Rudolf Diesel (1858–1913), a German engineer. In the 1890s he designed an engine that squeezes air until it is hot enough to light the fuel without a spark. The engine, and the fuel it burns, carry his name: diesel.",
+      "sources": [
+        {
+          "type": "reference",
+          "ref": "Encyclopaedia Britannica, 'Rudolf Diesel'"
+        },
+        {
+          "type": "dictionary",
+          "ref": "Merriam-Webster, 'diesel'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "junkyard",
+      "figure": "Isaac Newton",
+      "word": "newton",
+      "kind": "person",
+      "card": "Isaac Newton (1643–1727), an English mathematician and scientist who set out the laws of motion and of gravity. In 1948 an international conference on measurement named the unit of force after him: the newton.",
+      "datesNote": "New Style dates; by the calendar England then used, he was born on 25 December 1642.",
+      "sources": [
+        {
+          "type": "institution",
+          "ref": "BIPM, 9th CGPM (1948), Resolution 7 (the name 'newton')"
+        },
+        {
+          "type": "reference",
+          "ref": "Encyclopaedia Britannica, 'Isaac Newton'"
+        }
+      ]
+    },
+    {
+      "stop": null,
+      "act": "junkyard",
+      "figure": "Marie and Pierre Curie",
+      "word": "curie",
+      "kind": "person",
+      "card": "Marie Curie (1867–1934) and Pierre Curie (1859–1906), scientists in Paris who studied radioactivity. In 1910, at a congress in Brussels, scientists named a unit of radioactivity the curie, in honour of Pierre, and many took it to honour Marie too.",
+      "sources": [
+        {
+          "type": "reference",
+          "ref": "Encyclopaedia Britannica, 'curie (unit)'"
+        },
+        {
+          "type": "institution",
+          "ref": "NIST, history of the curie (International Congress of Radiology and Electricity, Brussels, 1910)"
+        }
+      ]
+    }
+  ],
+  "fairPlay": {
+    "note": "For review round 3. Every V. clue below is a clue card delivered with a hall's mail, so it reaches every path before the accusation (test 5). Case scenes repeat some of them on screen.",
+    "vClues": [
+      {
+        "clue": "v-chair",
+        "round": 1,
+        "points": "'Say it back' is the Pronouncer's line; the runner stands at his elbow every round (r1 laugh) and laid out every chair before the doors opened (r1 suspense)."
+      },
+      {
+        "clue": "v-programme",
+        "round": 2,
+        "points": "'Newest speller: Vale Penrallow, aged 8, placed last', eight seasons ago: that speller is 16 now."
+      },
+      {
+        "clue": "v-slant",
+        "round": 3,
+        "points": "The runner writes left-handed and slants left, like V.; the Pronouncer's hand is upright (also on every invitation's signoff)."
+      },
+      {
+        "clue": "v-reports",
+        "round": 4,
+        "points": "V. knows your weak spot; the Pronouncer writes the bee file, the runner carries it."
+      },
+      {
+        "clue": "v-keys",
+        "round": 5,
+        "points": "The bell-case keys: the Committee's ring and the runner's lanyard (fair ambiguity: the lock may be broken)."
+      },
+      {
+        "clue": "v-list",
+        "round": 7,
+        "points": "V. predicted the unheard word (r6 note) before the Committee announced it; the list is sealed in front of the Pronouncer and the runner. Names the runner Vale, sixteen."
+      },
+      {
+        "clue": "v-secret",
+        "round": 9,
+        "points": "The Pronouncer knows who V. is and says 'It isn't mine to tell': someone else's secret, not his."
+      }
+    ],
+    "clearing": [
+      {
+        "who": "vesper",
+        "by": "vesper-denies (r6) and her r9 letter (the pen was a gift)"
+      },
+      {
+        "who": "dax",
+        "by": "dax-cleared (r8, the turn)"
+      },
+      {
+        "who": "ratchet",
+        "by": "his misprinted programmes (r7 prog, every path) and the c4 card"
+      },
+      {
+        "who": "pronouncer",
+        "by": "upright hand (v-slant, invitation signoff) and 'It isn't mine to tell' (v-secret)"
+      }
+    ],
+    "valeInPlainSight": [
+      "r1 suspense: lays a programme on every chair",
+      "r1 laugh: at the Pronouncer's elbow",
+      "r2 laugh: refills his water glass",
+      "r3 laugh: hands out the late programmes",
+      "r5 drama: holds the door for Kwame",
+      "r7 laugh: takes back the microphone; 'Thank you, Vale'",
+      "r8 suspense: takes down the tape at the Finish Arch",
+      "r9 suspense: carries in the championship envelope",
+      "c1 reveal: fixes the last line by hand",
+      "c2 reveal: her key turns and does nothing",
+      "c3 escalation: pins up the ferry timetable",
+      "c4 reveal: keeps the arrival log",
+      "c5 impossible and reveal: carries the envelope in, and the new one out",
+      "teamNight sting: stacking chairs beside you"
+    ],
+    "vArrivals": [
+      "r1: on your chair before the post (the runner set out the chairs)",
+      "c2: inside the locked bell case (her key; or the broken lock)",
+      "c4: folded at the disputed word's page in the dictionary Ratchet 'borrowed'",
+      "r8: under the Finish Arch while it was taped off (she took the tape down)"
+    ],
+    "daxWrongsAndConsequences": [
+      {
+        "wrong": "Fake tip: separate (r2)",
+        "consequence": "Nova corrects it aloud, on the spot; the bee file shows the rule."
+      },
+      {
+        "wrong": "Blames Theo (c1, recapped r3)",
+        "consequence": "Theo asks him in front of the Archive why; he has no answer."
+      },
+      {
+        "wrong": "Fake tip: rhythm (r4)",
+        "consequence": "Mira corrects it on the spot; spellers stop listening to him; the bee file shows the rule."
+      },
+      {
+        "wrong": "Hides the spare bell (c2)",
+        "consequence": "Caught by the trail's last clue; first warning; r5 invitation notes it."
+      },
+      {
+        "wrong": "Gloats about Kwame's miss, with Kwame gone (r5)",
+        "consequence": "Nobody laughs; Rafi turns his back."
+      },
+      {
+        "wrong": "'Not my problem' (c3)",
+        "consequence": "Alone on the dock; nobody sits with him (r6)."
+      },
+      {
+        "wrong": "The rumour about Suki's word (c4)",
+        "consequence": "Formal Committee warning read aloud; Suki's round stands; nobody chases him; r8 under observation."
+      }
+    ],
+    "daxReformOnScreen": [
+      "r8 the turn: admits why he rushes, shows V.'s notes, apologises to the child, Theo, Suki and Kwame by name",
+      "c5: spots Dash's key and clears Vesper",
+      "r9: asks his first question",
+      "teamNight: owns his record in front of the team, captains from the bench, does not panic on a wrong call"
+    ]
+  },
+  "changes": [
+    {
+      "where": "accusation, closingLetter, cast.vale, reveal",
+      "change": "V. is Vale Penrallow, 16, the Committee's runner; the closing letter is hers and says the Committee said yes.",
+      "why": "Amendment 1: V. is a teenager, not an adult."
+    },
+    {
+      "where": "cast.pronouncer, suspectBoard",
+      "change": "The Pronouncer stays on the board only for his initial, 'Say it back' and his kindness. He is right-handed and upright, writes nothing secret, and his Case 5 secret is that he knows who V. is.",
+      "why": "Amendment 1: a red herring and a warm, open adult."
+    },
+    {
+      "where": "rounds[0].pieces.inv",
+      "change": "Added: 'a Circuit tradition, letters signed V. The Committee knows who writes them. Working out who is up to you.'",
+      "why": "Amendment 1: the adults know, and the child is told so openly before the first note arrives."
+    },
+    {
+      "where": "suspectBoard",
+      "change": "Five portraits, not four: the runner is drawn from Round I and named on the board after Round VII.",
+      "why": "Amendment 1: Vale must be accusable, and in plain sight without being singled out."
+    },
+    {
+      "where": "rounds[0].pieces.laugh, suspense; [1].laugh; [2].laugh; [4].drama; [6].laugh; [7].suspense; [8].suspense; c1–c5",
+      "change": "The runner appears in plain sight: laying out chairs, at the Pronouncer's elbow, refilling water, handing out late programmes, holding the door, taking back the microphone, taking down the tape, carrying the envelopes, keeping the log.",
+      "why": "Task: Vale must appear in plain sight in several rounds without drawing attention."
+    },
+    {
+      "where": "rounds[1].pieces.suspense, clue",
+      "change": "The framed programme reads 'Newest speller: Vale Penrallow, aged 8, placed last', eight seasons ago (the brief had V. Abara, decades ago).",
+      "why": "Amendment 1. 'A few seasons' made exactly eight so 8 + 8 = 16 is a fair, checkable clue."
+    },
+    {
+      "where": "rounds[2].pieces.clue, cases[0].reveal",
+      "change": "The hand-corrected last line is the runner's: left-handed, slanting left. The Pronouncer signs under it, upright.",
+      "why": "Amendment 1: the slant clue moves to Vale and the Pronouncer is fairly cleared by it."
+    },
+    {
+      "where": "rounds[3].pieces.clue",
+      "change": "New card: V. knows your weak spot; the Pronouncer writes the bee file and the runner carries it.",
+      "why": "The brief's Round IV card depended on optional Case 2; every V. clue must reach every path (test 5)."
+    },
+    {
+      "where": "rounds[4].pieces.clue",
+      "change": "Replaced 'The Pronouncer sets the list' with the bell-case keys: the Committee's ring and the runner's lanyard, with Bolt's broken lock as fair ambiguity.",
+      "why": "Amendment 1: Vale holds a bell-case key; the key clue moved here so it reaches every path."
+    },
+    {
+      "where": "rounds[5].pieces.v",
+      "change": "Round VI's note now predicts the unheard word ('Next round, a word none of you has heard. Its parts have.'); its rumour line moved to Round VII's note.",
+      "why": "So V. really does know the word before the Committee announces it, which the amended list clue needs."
+    },
+    {
+      "where": "rounds[6].pieces.clue",
+      "change": "Replaced 'Only the person who sets the list knows it' with: the list is sealed in front of the Pronouncer and the runner, Vale, sixteen.",
+      "why": "Amendment 1: Vale carries the sealed lists. This card also links the runner to the name and age."
+    },
+    {
+      "where": "rounds[8].pieces.clue",
+      "change": "New card: the Pronouncer says he knows who V. is, as the whole Committee does, and 'It isn't mine to tell.'",
+      "why": "Amendment 1 and task: the Case 5 secret must reach every path before the accusation."
+    },
+    {
+      "where": "accusation.reveal",
+      "change": "Added: Vale 'has carried every list for three seasons and never let one word slip. The Committee always knew.'",
+      "why": "So nothing models a list-holder leaking words, and the adults-know premise is said aloud."
+    },
+    {
+      "where": "teamNight.beats.sting, stingAfter",
+      "change": "Vale and the Pronouncer both stand beside the child; Vale: 'That isn't mine.' The hand is small and in pencil. The Pronouncer adds 'Then next season we find out who. Together, and in the open.'",
+      "why": "Amendment 1: the sting must still land in a different hand. The adult stays involved and open."
+    },
+    {
+      "where": "cases[2].safeLine, suspects, reveal; rounds[4].pieces.cliff",
+      "change": "Hazel told the Pronouncer at once; the team is told Kwame is safe in the cold open and in Round V's cliff. Ines's coaching stays between the two spellers.",
+      "why": "Amendment 2."
+    },
+    {
+      "where": "cases[2].falseSolution",
+      "change": "The Pronouncer knows Kwame is safe and looks worried only that he won't come back to spell.",
+      "why": "Amendment 2: the adults knew he was safe."
+    },
+    {
+      "where": "cast.comet, everywhere",
+      "change": "Dax's mockbee vtell (the violence idiom amendment 5 removes) is not quoted or paraphrased anywhere.",
+      "why": "Amendment 5."
+    },
+    {
+      "where": "visitors",
+      "change": "Stop Visitors kept to §10's list, each framed historically with sources; no comedy, no speaking role.",
+      "why": "Amendment 4 and Bizzing India docs/05 §1–§2."
+    },
+    {
+      "where": "rounds[0].pieces.drama",
+      "change": "Pip blurts in round one, is forgiven, does it again in round two and sits down (the brief had him out in round one).",
+      "why": "mockbee.js: round one eliminates nobody ('the warm-up forgives')."
+    },
+    {
+      "where": "rounds[2].pieces.inv",
+      "change": "'Seats several thousand; we have nine' became 'seats thousands; today it seats us'.",
+      "why": "The field is 5, 7 or 9 spellers by age band (mockbee BANDS), not always nine."
+    },
+    {
+      "where": "rounds[2].pieces.drama",
+      "change": "Rafi 'lasts deep into the round' instead of being 'the last speller standing beside the child'.",
+      "why": "L6: a round's drama must hold at any placing."
+    },
+    {
+      "where": "rounds[7].pieces.drama",
+      "change": "Removed 'He and the child are the last two'.",
+      "why": "L6: the drama must hold at any placing."
+    },
+    {
+      "where": "rounds[7].pieces.below",
+      "change": "'I won by one word' became 'I finished ahead of you today'.",
+      "why": "L6: a below-placing child may have gone out long before the last word."
+    },
+    {
+      "where": "rounds[0].pieces.cliff",
+      "change": "'Eight regions away' became 'in the eighth region. You've only finished the first.'",
+      "why": "The Finish Arch is seven regions on from the Meadow."
+    },
+    {
+      "where": "rounds[2].pieces.above, below; lesson",
+      "change": "Rafi's letters name fer (carry) as well as circum (around); the lesson is 'fer (carry / bear)'.",
+      "why": "L5: the letter names its lesson; circumference is circum + fer + -ence, from Latin circumferre, to carry around."
+    },
+    {
+      "where": "rounds[3].technique",
+      "change": "Added 'often' to the Greek ph / ch / y rule.",
+      "why": "Accuracy: these are strong tendencies in Greek-derived words, not laws."
+    },
+    {
+      "where": "rounds[*].lesson",
+      "change": "Each round names one chapter title exactly as in concepts-data.js, with its index (lessonGi). Round VII uses 'Number Prefixes 1–10: Latin & Greek', Round VIII 'Syllables — re, mem, ber', Round IX 'Championship Vocabulary: The Final 10'.",
+      "why": "Task shape; the Junkyard's own units are inline and not in concepts-data.js."
+    },
+    {
+      "where": "rounds[5].headliners, alsoSeated",
+      "change": "Kwame listed as seated beside the headliner Ines.",
+      "why": "The brief's invitation seats both; only Ines headlines."
+    },
+    {
+      "where": "rounds[1].pieces.dax",
+      "change": "Nova corrects the separate tip aloud on the spot.",
+      "why": "Every wrong needs an on-screen consequence, not only a bee-file note."
+    },
+    {
+      "where": "rounds[2].pieces.dax",
+      "change": "Theo, cleared, asks Dax in front of the Archive why he blamed him; Dax has no answer (Theo's 640th question).",
+      "why": "On-screen consequence for the blame; places the 640 tally."
+    },
+    {
+      "where": "rounds[3].pieces.dax, beeFileFakeTip",
+      "change": "Second fake tip (rhythm with an i), corrected by Mira on the spot; the bell and the first warning stay in Case 2.",
+      "why": "The apology names 'the fake tips', plural; Round IV's mail arrives before Case 2 and must not spoil it."
+    },
+    {
+      "where": "rounds[4].pieces.inv",
+      "change": "Added 'Dax spells today on a first warning from the Committee.'",
+      "why": "The bell's consequence reaches every path, without saying why."
+    },
+    {
+      "where": "rounds[4].pieces.dax",
+      "change": "Kwame is explicitly out of the building before Dax speaks.",
+      "why": "L4: never mock a wrong answer to someone's face."
+    },
+    {
+      "where": "rounds[6].pieces.dax",
+      "change": "No longer reveals that the rumour was Dax's or reads the warning; he is seen talking fast in the corridor, and nobody can say who said it first.",
+      "why": "Round VII's mail arrives before Case 4; the formal warning now lives in Case 4's reveal and Round VIII's invitation."
+    },
+    {
+      "where": "rounds[7].pieces.dax",
+      "change": "New piece: the Finish Arch is his home hall (pays off Round I's postcard); under observation, he whispers no tips.",
+      "why": "The shape needs a dax piece every round; closes the Round I cliff."
+    },
+    {
+      "where": "rounds[8].pieces.dax",
+      "change": "New piece: in the dark Dax asks his first question; Theo: 'Your first. I'm on 1,977.'",
+      "why": "Shape needs it; his reform is earned on screen; Theo's tally stays his own count (212, 640, 1,204, 1,977)."
+    },
+    {
+      "where": "turn.choice.line",
+      "change": "The one line each choice changes is written out for both choices.",
+      "why": "L7 and test 4: dax.helped changes exactly one line."
+    },
+    {
+      "where": "turn.notes",
+      "change": "Five V. notes to Dax written out, all kind.",
+      "why": "Task: the stack of notes is part of the turn."
+    },
+    {
+      "where": "turn.apologies",
+      "change": "Theo's reply carries the 1,204 tally; Kwame's reply sets up Team Night ('That's what a team is for').",
+      "why": "Continuity for Theo's count and the captaincy."
+    },
+    {
+      "where": "rounds[7].pieces.laugh, suspense",
+      "change": "New: Dash lets himself into the bell room with his own spare key; the taped-off Arch with a card under it.",
+      "why": "Shape needs them; Case 5's planted key and one of V.'s impossible arrivals must appear on screen."
+    },
+    {
+      "where": "rounds[8].pieces.v",
+      "change": "New V. note: 'Ask one more: who was there every single round?'",
+      "why": "Shape needs a V. note every round; the mystery closer than you think, before the accusation."
+    },
+    {
+      "where": "rounds[0].pieces.pip",
+      "change": "'Ubiquitous, which means he has a big head' became 'which means very quick (you-be-quick)'.",
+      "why": "'Big head' can read as a dig at Dax's looks or worth."
+    },
+    {
+      "where": "rounds[3].pieces.pip",
+      "change": "'Clairvoyant, which means she has clear skin' became 'always clears up after herself'.",
+      "why": "No line comments on a girl's appearance."
+    },
+    {
+      "where": "rounds[8].pieces.laugh",
+      "change": "Pip's 'I can't see anything, which is normal for me' became 'Good. Now nobody can see me start early.'",
+      "why": "The old line could read as a joke about poor eyesight; the new one is his own tell."
+    },
+    {
+      "where": "rounds[8].pieces.pipWord",
+      "change": "misuse is null with gotItRight: true.",
+      "why": "In the finale Pip uses the word correctly, as the brief says."
+    },
+    {
+      "where": "rounds[4].pieces.drama",
+      "change": "Kwame's word is named: reconnaissance, missing an s.",
+      "why": "A sports documentary names the word; reconnaissance is French and has two s's and two n's."
+    },
+    {
+      "where": "cases[0].puzzle",
+      "change": "Twelve items: eleven words missing a silent letter (knife, wrist, foreign, thumb, listen, island, castle, column, climb, honest, scissors) and colour/color, both correct. No misprint is itself a real word.",
+      "why": "Makes the reveal true: a parrot can only say what it hears, so the letters you can't hear go missing; color is American spelling, dropped on purpose."
+    },
+    {
+      "where": "cases[0].suspects",
+      "change": "Theo's kind secret: he can't sleep the night before a round.",
+      "why": "L10: suspects with kind secrets."
+    },
+    {
+      "where": "cases[1].puzzle",
+      "change": "'Fear of small spaces' (claustrophobia: Latin claustrum + Greek -phobia) replaced by 'a fear of heights' (acrophobia, all Greek). Ten all-Greek words.",
+      "why": "The trail must be Greek-built words; claustrophobia is half Latin."
+    },
+    {
+      "where": "cases[1].reveal, lastChill",
+      "change": "The runner's key turns and does nothing (the broken lock); the V. note in the case reads 'The bell will ring twice tonight. Listen for the second.'",
+      "why": "Plants Vale's key fairly and keeps the case's deliberate ambiguity; uses the brief's §0 note."
+    },
+    {
+      "where": "cases[2].puzzle",
+      "change": "The brief's eight loanwords' languages spell nothing (French, French, Japanese, Swahili, German, French, Japanese, Hindi). Replaced with safari, yogurt, samovar, hummus, piano, catamaran (Swahili, Turkish, Russian, Arabic, Italian, Tamil: STRAIT) plus café and ballet (French, twice: why).",
+      "why": "The puzzle must really work; home language = the source a bee pronouncer gives (Merriam-Webster)."
+    },
+    {
+      "where": "cases[2].puzzle.items",
+      "change": "Samovar, not steppe, for Russian.",
+      "why": "English may have taken steppe through German or French; samovar came straight from Russian."
+    },
+    {
+      "where": "cases[2].reveal",
+      "change": "Ines's cousin teaches French on the Far Shore.",
+      "why": "Kwame is practising with an adult teacher, and the grown-ups know."
+    },
+    {
+      "where": "cases[2].suspects",
+      "change": "Dax's secret: a card in his pocket he won't show anyone.",
+      "why": "Every suspect needs a kind secret; it pays off at the turn."
+    },
+    {
+      "where": "cases[3].puzzle",
+      "change": "The disputed word is triskaidekaphobia (Greek treis + kai + deka, three-and-ten, plus phobia): four parts, then decathlon, trilogy, pentagon, octopus. Eight items.",
+      "why": "The brief left the word open; this one decodes exactly from real parts, and 4 + 4 meets the 8–12 item rule."
+    },
+    {
+      "where": "cases[3].suspects",
+      "change": "Mira's secret made specific: unsure of one part, kai.",
+      "why": "L10."
+    },
+    {
+      "where": "cases[3].reveal, clue",
+      "change": "The formal warning is read in the reveal; a V. card found folded at the word's page; the runner's arrival log; a Ratchet-cleared card.",
+      "why": "Moved from Round VII's mail; plants one of V.'s impossible arrivals; clears Ratchet on screen."
+    },
+    {
+      "where": "cases[4].suspects",
+      "change": "Dash added as a witness whose kind secret is the side door; the Pronouncer's secret is that he knows who V. is.",
+      "why": "The spare-key solution needs its keyholder in the case; amendment 1."
+    },
+    {
+      "where": "cases[4].impossible, reveal",
+      "change": "The runner carries the envelope in, and the new one out.",
+      "why": "Plain sight for Vale, and the amended envelope duty."
+    },
+    {
+      "where": "cases[4].puzzle",
+      "change": "Ten statements from four people; wrong endings mark the lies. Vesper's only lie is 'confidant' for confident (about her nerves); Dash's are dependible and importence (the door).",
+      "why": "The brief named the -ance/-ence, -able/-ible, -ant/-ent rule but no items, and needed 8–12."
+    },
+    {
+      "where": "cases[*].accusation.right",
+      "change": "The right answer sits in different slots across cases (1, 2, 1, 0, 2).",
+      "why": "Position must never give the answer away."
+    },
+    {
+      "where": "cases[*]",
+      "change": "On-screen pieces never say 'Case 1' etc.; they name the night or the place.",
+      "why": "In-world voice; the cases are Surprise Stops."
+    },
+    {
+      "where": "teamNight.roster.lectern, callerCategories",
+      "change": "Dax captains from the bench in both bands; Suki takes his seat at the 8–10 lectern (Nova, Rafi, Mira, Suki). Each call maps to a teammate per band from mockbee specs; a call with no specialist at that lectern goes to the child as a steady-beat word; 'needs questions' is not offered to the younger band.",
+      "why": "The brief seated Dax at the 8–10 lectern with no speciality to call to, and left gaps; the caller logic must match the words' real origins."
+    },
+    {
+      "where": "teamNight.beats.drama",
+      "change": "Written per band: 8–10 Rafi to Mira (a Greek word called as Latin); 11–15 Kwame to Ines (a French word called as Latin).",
+      "why": "The brief's Mira-to-Ines swap cannot happen at either lectern."
+    },
+    {
+      "where": "teamNight.beats.finalWord",
+      "change": "Team Bee rule: the captain may call the tiebreaker to anyone on the roster, so Vesper takes it in every band.",
+      "why": "Vesper sits only at the older lectern; her thread must end in both bands (test 4)."
+    },
+    {
+      "where": "teamNight.beats.idea",
+      "change": "Band-neutral: every word goes to the speller who knows its language; the steady-beat words go to you.",
+      "why": "The brief's speech named teammates who are not seated in one band or the other."
+    },
+    {
+      "where": "teamNight.challenge, rounds[8].pieces.cliff",
+      "change": "One card for both: 'Tomorrow night. Your hall.'",
+      "why": "The brief had 'Tomorrow' (Round IX cliff) and 'Tonight' (§8.1) for the same envelope."
+    },
+    {
+      "where": "teamNight.beats.ravenmere",
+      "change": "Sloane's 'Circuit kids learn on a map. How sweet.' placed at arrival; nothing about Ravenmere's money, class or nationality.",
+      "why": "Condescending, never cruel; no nationality or class played for colour."
+    },
+    {
+      "where": "teamNight.beats.drama (11-15)",
+      "change": "'Kwame goes still' became 'Kwame's hands tighten behind his back'.",
+      "why": "His tell is that he is always dead still, so going still would show nothing."
+    },
+    {
+      "where": "visitors (Juno, Frigg, Sandwich, Cardigan)",
+      "change": "Uncertainty stated plainly: Ovid lets three goddesses argue over June; scholars still argue Frigg or Freyja; the sandwich story can't be proven; nobody knows why the cardigan took the Earl's name.",
+      "why": "docs/05: state uncertainty plainly; never more certain than the sources."
+    },
+    {
+      "where": "visitors (Atlas, Hermes, Hypnos, Psyche, Echo)",
+      "change": "Atlas reached maps through Mercator's 1595 title; hermetic through the legendary 'Thrice-Great Hermes'; hypnosis through James Braid (1843); Psyche from Apuleius; Echo as retold by Ovid.",
+      "why": "Accuracy: the word's real route, not the myth alone."
+    },
+    {
+      "where": "visitors (Newton)",
+      "change": "Dated 1643–1727 (New Style), with a note on the Old Style birth date.",
+      "why": "Accuracy; a reviewer would otherwise find two different birth years."
+    },
+    {
+      "where": "hivePost.postcards.sprints, strait",
+      "change": "No postcard starts a sentence with the child's word slot.",
+      "why": "A lower-case word would otherwise open a sentence."
+    },
+    {
+      "where": "hivePost.beeFileIntro",
+      "change": "Says the scouting report is 'for you and anyone you show it to'.",
+      "why": "Amendment 1: nothing the Pronouncer writes to a child is secret."
+    },
+    {
+      "where": "authorNotes, fairPlay, rounds[].vWhere, deliver notes",
+      "change": "Added author-facing indexes: where every V. clue is planted, every Vale sighting, every Dax wrong with its consequence, and V.'s arrival places.",
+      "why": "For review rounds 2 and 3; never rendered."
+    }
+  ]
+}
