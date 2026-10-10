@@ -7773,34 +7773,33 @@ function ledgerWords(x,c){ c=c||active(); const why=String(x.why||'');
   else if(/^refund:/.test(why)) what='money back for something withdrawn';
   else what=why.replace(/[:_-]/g,' ');
   /* name the round it came from, when Bee's own log has it (the session closes just after it pays) */
-  if(x.a==='bee' && /^(stop|contest|answer|mastery)$/.test(why)){
-    const act=(c.activity||[]).filter(e=>e.ts>=x.t-1000 && e.ts-x.t<15*60000).pop();
-    if(act&&act.label) what+=' — '+act.label; }
+  const act=ledgerSession(x,c); if(act&&act.label) what+=' · '+act.label;
   return what; }
+/* The Bee session a coin came from: Bee logs a session when it ENDS (logActivity → c.activity, newest
+   first), so a coin belongs to the first session that closed at or after it, within 15 minutes. */
+function ledgerSession(x,c){ if(!x||x.a!=='bee'||!/^(stop|contest|answer|mastery)$/.test(String(x.why||''))) return null;
+  return (c.activity||[]).filter(e=>e.ts>=x.t-1000 && e.ts-x.t<15*60000).pop()||null; }
 function walletLines(c,n){ c=c||active(); try{ if(window.SB_DEMO) return []; const W=window.BZ_WALLET; if(!W) return [];
     return W.ledger(walletWho(c)).slice().sort((x,y)=>y.t-x.t).slice(0,n||30); }catch(e){ return []; } }
-/* K9: ONE LINE PER SITTING, NOT PER COIN. Twenty right answers wrote twenty "+1 · a right answer"
-   lines and pushed everything else off the sheet. Earnings of the same kind from the same app in one
-   sitting (no gap over 20 minutes) fold into one line: "+13 · from 13 right answers". Spending, refunds
-   and the one-off move into the family wallet always stay lines of their own. The ledger itself is the
-   family drop-in's and is only read here. */
+/* K9: ONE LINE PER SESSION, NOT PER COIN. Twenty right answers wrote twenty "+1 · a right answer"
+   lines and pushed everything else off the sheet. CONSECUTIVE earnings of the same kind, from the same
+   app, in the same session — Bee's own session log (ledgerSession) when it has one, and never across a
+   gap of over 20 minutes — fold into one line, named by that session: "+13 from 13 right answers ·
+   Spelling Gym · Word Doctor" (road to 4.5, P0.31). Two sessions are two lines even back to back, and a
+   different line between two runs (a finished round, a purchase, a sibling app's coin) keeps them apart.
+   Spending, refunds and the one-off move into the family wallet always stay lines of their own. The
+   ledger is the family drop-in's (BZ_WALLET.ledger) and is only read here. Guard: wallet-coins §8–9. */
 const LEDGER_SITTING=20*60000;
 const LEDGER_MANY={ answer:k=>'from '+k+' right answers', stop:k=>'from '+k+' finished rounds', contest:k=>'from '+k+' contests', mastery:k=>'from '+k+' words mastered on two different days' };
-function walletGroups(c,n){ c=c||active(); const L=walletLines(c,2000); const out=[]; let sit=null, prevT=null;
+function walletGroups(c,n){ c=c||active(); const L=walletLines(c,2000); const out=[]; let prev=null, prevT=null;
   for(const x of L){   /* newest first */
-    if(prevT==null || prevT-x.t>LEDGER_SITTING) sit={};   /* a new sitting */
-    prevT=x.t;
-    const why=String(x.why||''), can=x.n>0 && LEDGER_MANY[why];
-    const key=can?(x.a+'|'+why):null, g=key&&sit[key];
-    if(g){ g.n+=x.n; g.k++; g.old=x; continue; }
-    const row={ a:x.a, t:x.t, n:x.n, why, k:1, top:x, old:x }; out.push(row); if(key) sit[key]=row; }
+    const why=String(x.why||''), can=!!(x.n>0 && LEDGER_MANY[why]), ses=can?ledgerSession(x,c):null;
+    const near=prevT!=null && prevT-x.t<=LEDGER_SITTING; prevT=x.t;
+    if(can && prev && prev.can && near && prev.a===x.a && prev.why===why && prev.ses===ses){ prev.n+=x.n; prev.k++; prev.old=x; continue; }
+    prev={ a:x.a, t:x.t, n:x.n, why, k:1, top:x, old:x, can, ses }; out.push(prev); }
   return out.slice(0,n||30); }
 function walletRowWords(g,c){ if(g.k<2) return ledgerWords(g.top,c);
-  let what=LEDGER_MANY[g.why](g.k);
-  /* name the round only when the whole sitting came from one */
-  const a=ledgerWords(g.top,c), b=ledgerWords(g.old,c), i=a.indexOf(' — ');
-  if(i>0 && a===b) what+=a.slice(i);
-  return what; }
+  return LEDGER_MANY[g.why](g.k)+(g.ses&&g.ses.label?' · '+g.ses.label:''); }
 function walletRowsHTML(c,n){ const L=walletGroups(c,n);
   if(!L.length) return `<p class="bz-empty"><span class="bz-empty-m">${mascotSVG('think')}</span>No coins yet. Every right answer pays one — they land here.</p>`;
   return `<ol class="bz-ledger">${L.map(x=>{ const plus=x.n>0; const app=SHOP_APP_LABEL[x.a]||x.a;
