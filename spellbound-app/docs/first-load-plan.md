@@ -5,6 +5,42 @@ exactly what this batch moved, and sets out the plan for the rest: app3.js split
 taken off the first screen. The next step can work straight from it. The ratchet that holds the gains is
 `tests/first-load.cjs`. The app3 numbers come from `node tools/app3-split-map.cjs`, a read-only analysis.
 
+## Outcome (10 Oct 2026): steps 1 and 2 landed; step 3 next
+
+The steps below land in order, each committed on its own (CLAUDE.md "Road to 4.5, P1 — the boot word tier is lazy" and
+"Road to 4.5, P1 — the app3 split" carry the rules); `tests/first-load.cjs` ratchets after each.
+
+| | before | step 1 | step 2 |
+|---|---:|---:|---:|
+| new visitor, JS gz / total | 905 / 1184 | 554 / 833 | 411 / 691 |
+| returning speller, JS gz / total | 980 / 1276 | 629 / 909 | 487 / 782 |
+
+**Where the code disagreed with this plan, and what was done instead:**
+- *Step 1, "words1 fetched at DOMContentLoaded on Home (like FIRST)".* That is inside the measured window (everything
+  sent until 4 s of quiet) and would have counted the 353 KB it removes. The bundle is FIRST on the idle queue (the
+  first tap) and in every group a word is read through; a tap, an address or the end of setup that needs words waits
+  for it (the hive loader).
+- *Step 1, "the ladder with homIndex fixed to the shipped sounds-data.js".* Measured on the build before: a returning
+  speller's first render had no `SB_HOM` (sounds-data.js is lazy), and it scored every boot record then, for the visit.
+  The ladder is generated with NO homophone bonus, and `trickSeal` scores the tier the same way when it lands — so the
+  ladder and every list order are what children have been climbing.
+- *Step 1, the curriculum file.* The ladder (25 KB gz) is not on a first screen at all: Home never reads it once its
+  dead list counts are deleted (`viewHome` computed fourteen locals it never printed — that, not the cards, was the
+  first-paint read of every boot record). It rides in the `words1` bundle as `curriculum-ladder.js`; only the stages and
+  the word of the hour's seed (~17 KB gz) are a boot script.
+- *Step 1, the word of the hour.* The seed is ~150 words a band, as planned (the full band pools are 174 KB gz), cut
+  evenly from each pool; so the hour's word differs from the old build's. Every other card on Home is byte-identical.
+- *Step 1, not in the plan:* the Journey's Scripps sprinkle depended on load timing (a child ON the journey never had
+  it); it is pinned off. `words-data.js` keeps its `window.SB_DATA={…}` form — boot-lazy makes SB_DATA one object that
+  an assignment merges into — because five tools rewrite that file in that form.
+- *Step 2, "unreached (audit before moving)".* A node nothing reaches stays in app3.js, and so does everything it names
+  (iterated) — otherwise app3 would name a lazy file's code. Shared came to 8 KB, not 23.
+- *Step 2, the pop-ups.* overlays() reaches its lazy pop-ups through `scrDraw(group, () => viewX())` behind their flags
+  (two moved their flag check out to the call site); a bare function argument would be read before the file exists.
+- *Step 2, not in the plan:* an engine whose host view moved to a lazy file must not land before it. gym.js's `open()`
+  starts a round as soon as its group is in and its keys reach only DOM on the page, so the `gym` group carries
+  `scrShared` + `scrGames` (spelling-gym T3 caught a lost Enter; screens-lazy §3 holds it).
+
 ## How it is measured
 
 `tests/first-load.cjs` serves the tree over `tests/lib/serve.cjs`. That server gzips at level 6, as Pages does, and

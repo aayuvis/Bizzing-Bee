@@ -69,10 +69,12 @@ const TARGET = { total: 1.5 * MB, js: 400 * KB };
 /* ROAD TO 4.5, P1.13 step 1 (10 Oct 2026): the boot word tier left the first screen (words-data.js + words-extra.js +
    words-patch.js, boot-lazy's `words1` bundle — Home draws from the generated curriculum-data.js). Measured after: new
    visitor 833 KB / JS 554, returning 909–925 / JS 629 (were 1184 / 905 and 1276 / 980; the fonts vary). Ceilings ~2% over. */
-const CEILING = { 'new visitor': { total: 850 * KB, js: 565 * KB, img: 90 * KB }, 'returning speller': { total: 945 * KB, js: 642 * KB, img: 105 * KB } };
+/* P1.13 step 2 (10 Oct 2026): app3.js split by screen — app3.js keeps the first screens and the shell; each screen's code
+   is a lazy app3-*.js fetched at its door. Measured after: new visitor 691 KB / JS 411, returning 782 / JS 487. */
+const CEILING = { 'new visitor': { total: 705 * KB, js: 420 * KB, img: 90 * KB }, 'returning speller': { total: 800 * KB, js: 497 * KB, img: 105 * KB } };
 /* Scripts that LEFT the boot list (P1.13) or never belonged on it. One coming back to a first screen fails, by name:
-   the boot word tier and the ladder that rides with it are among them (step 1). */
-const OFF_BOOT = /(^|\/)(voice-review-lists|trivia|trivia-icons|advanced|library|words-data|words-extra|words-patch|curriculum-ladder)\.js$|^words-full\//;
+   the boot word tier and the ladder that rides with it are among them (step 1), and app3's lazy screen files (step 2). */
+const OFF_BOOT = /(^|\/)(voice-review-lists|trivia|trivia-icons|advanced|library|words-data|words-extra|words-patch|curriculum-ladder|app3-[a-z0-9-]+)\.js$|^words-full\//;
 /* the opening page shows no Atlas: its data waits for the first tap (boot-lazy FIRST) */
 const OFF_LANDING = /(^|\/)trail-data\.js$/;
 const zlib = require('zlib');
@@ -138,7 +140,7 @@ const fmt = n => (n / KB).toFixed(1).padStart(8) + ' KB';
     ok(m.by.js <= C.js, `${name}: initial JavaScript ${(m.by.js / KB).toFixed(0)} KB gzipped (${(T.gz / KB).toFixed(0)} KB of it script bytes, ${(T.min / KB).toFixed(0)} KB minified, ${(T.raw / KB).toFixed(0)} KB raw) — ceiling ${C.js / KB} KB`);
     ok(m.by.image <= C.img, `${name}: images on the first screen ${(m.by.image / KB).toFixed(0)} KB — ceiling ${C.img / KB} KB` + (m.rows.filter(r => r.kind === 'image').length ? ' (' + m.rows.filter(r => r.kind === 'image').sort((a, b) => b.bytes - a.bytes).slice(0, 3).map(r => r.short.split('?')[0] + ' ' + (r.bytes / KB).toFixed(0) + ' KB').join(', ') + ')' : ''));
     const back = m.rows.filter(r => OFF_BOOT.test(r.short.split('?')[0]) || (name === 'new visitor' && OFF_LANDING.test(r.short.split('?')[0])));
-    ok(!back.length, `${name}: nothing that left the boot list comes back (the voice tester's lists, trivia, the Advanced Pack, the library, the boot word tier${name === 'new visitor' ? ', the Atlas data' : ''})` + (back.length ? ' — ' + back.map(r => r.short).join(', ') : ''));
+    ok(!back.length, `${name}: nothing that left the boot list comes back (the voice tester's lists, trivia, the Advanced Pack, the library, the boot word tier, app3's screen files${name === 'new visitor' ? ', the Atlas data' : ''})` + (back.length ? ' — ' + back.map(r => r.short).join(', ') : ''));
     console.log(`  TARGET family §11: ${(m.total / KB).toFixed(0)}/${TARGET.total / KB} KB total` + (m.total > TARGET.total ? ` — ${((m.total - TARGET.total) / KB).toFixed(0)} KB to go` : ' — MET') +
       `; ${(m.by.js / KB).toFixed(0)}/${TARGET.js / KB} KB JS` + (m.by.js > TARGET.js ? ` — ${((m.by.js - TARGET.js) / KB).toFixed(0)} KB to go` : ' — MET'));
     /* The splash's own cue and stinger (app-art/*.mp3) are the opening show's, reported as

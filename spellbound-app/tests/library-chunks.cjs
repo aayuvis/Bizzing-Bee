@@ -101,12 +101,15 @@ console.log(`  ..    a lookup pays ≤ ${((worst + ixGz + libGz) / 1024).toFixed
 
 /* ---- 5. a child sees the same words through either door ---- */
 /* app3's OWN two doors, run here: fullAdopt (the whole library: fullClean, then mergeHard → hardInto) and fullChunk
-   (one chunk: fullClean, then hardInto), cut out of app3.js from `function mergeHard(` to `function fullLooking(` */
+   (one chunk: fullClean, then hardInto), cut out of app3.js from `const SB_UNSAFE_RE` to `function finderResults(` (the
+   Word Finder's results follow fullFor in app3.js; fullLooking, its "still on its way" line, went to app3-library.js
+   with the Finder in the P1.13 split) */
 const app3 = read('app3.js');
+const A3 = require('./lib/app3-src.cjs');
 const A = sandbox();
 vm.runInContext(read('kid-safe.js'), A, { filename: 'kid-safe.js' });
-const i0 = app3.indexOf('const SB_UNSAFE_RE'), i1 = app3.indexOf('function mergeHard('), i2 = app3.indexOf('function hardInto('), i3 = app3.indexOf('function fullWords('), i4 = app3.indexOf('function fullLooking(');
-ok(i0 > 0 && i1 > i0 && i2 > i1 && i3 > i2 && i4 > i3, 'app3.js holds safeWord/fixCore, then mergeHard, then hardInto + fullClean, then fullWords … fullChunk, fullFor, then fullLooking');
+const i0 = app3.indexOf('const SB_UNSAFE_RE'), i1 = app3.indexOf('function mergeHard('), i2 = app3.indexOf('function hardInto('), i3 = app3.indexOf('function fullWords('), i4 = app3.indexOf('function finderResults(');
+ok(i0 > 0 && i1 > i0 && i2 > i1 && i3 > i2 && i4 > i3 && app3.indexOf('function fullFor(') > i3 && app3.indexOf('function fullFor(') < i4, 'app3.js holds safeWord/fixCore, then mergeHard, then hardInto + fullClean, then fullWords … fullChunk, fullFor, then the Finder\'s results');
 vm.runInContext('var _wdb=null, state={};' + app3.slice(i0, i4) + ';this.__={fullAdopt,fullChunk};', A, { filename: "app3.js (the library's two doors)" });
 A.SB_HARD = JSON.parse(JSON.stringify(HARD));
 const whole = A.__.fullAdopt(JSON.parse(src.SB_FULL));
@@ -128,7 +131,7 @@ ok(!/words-full|library\.js/.test(idx), 'neither the chunks nor library.js are i
 const idle = (bl.match(/var IDLE = \[([\s\S]*?)\];/) || [])[1] || '';
 ok(/libIndex: 'words-full\/index\.js'/.test(bl) && /library: 'library\.js'/.test(bl) && /library: \['libIndex'\]/.test(bl) && !/libIndex|'library'/.test(idle),
   'boot-lazy registers the index and library.js (index first), and neither is on the idle queue');
-const body = (name) => { const i = app3.indexOf('function ' + name + '('); return i < 0 ? '' : app3.slice(i, app3.indexOf('\nfunction ', i + 10)); };
+const body = (name) => A3.body(ROOT, name);   /* in whichever app3 file holds it (tests/lib/app3-src.cjs) */
 ok(/lazyNeed\('library'/.test(body('loadFullLibrary')) && /SB_LIB\.all\(/.test(body('loadFullLibrary')) && /window\.SB_HARD=hard/.test(body('loadFullLibrary')) && /fullAdopt\(/.test(body('loadFullLibrary')),
   'loadFullLibrary asks for the library group and adopts SB_LIB.all()\'s core and shard');
 ok(/fullFor\(q\)/.test(body('finderResults')) && /fullFor\(q\)/.test(body('suggestWords')) && /SB_LIB\.forKey\(q[,)]/.test(body('fullFor')),

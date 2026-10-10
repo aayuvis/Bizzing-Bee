@@ -214,8 +214,9 @@ function landing() {
     const allowed = [];
     const span = (start) => { const i = src.indexOf(start); if (i < 0) return; const j = src.indexOf('\nfunction ', i + 1); allowed.push([i, j < 0 ? src.length : j]); };
     if (f === 'family-shell.js') span('function trailNext(');
-    if (f === 'app3.js') span('function viewProgress(');
-    if (f === 'app3.js') span('function reportCard(');   // the grown-ups' report card (batch C) displays the Atlas position too
+    /* app3's code is split by screen (P1.13): the Progress page lives in app3-grownups.js, the report card in app3.js */
+    if (/^app3(-[a-z0-9-]+)?\.js$/.test(f)) span('function viewProgress(');
+    if (/^app3(-[a-z0-9-]+)?\.js$/.test(f)) span('function reportCard(');   // the grown-ups' report card (batch C) displays the Atlas position too
     let i = -1;
     while ((i = src.indexOf('SB_TRAIL_NEXT(', i + 1)) >= 0) {
       if (allowed.some(([a2, b2]) => i > a2 && i < b2)) { if (f === 'family-shell.js') shellReads++; continue; }

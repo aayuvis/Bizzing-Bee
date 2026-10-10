@@ -191,7 +191,18 @@
     voiceLists: 'voice-review-lists.js',
     ttIcons: 'trivia-icons.js',
     stv: 'trivia.js',
-    adv: 'advanced.js'
+    adv: 'advanced.js',
+    /* THE APP3 SPLIT (road to 4.5, P1.13 step 2). app3.js keeps the first screens and the shell; each screen's own code is
+       one of these, fetched at the screen's door (app3's SCR_NAV guard, scrDraw, the SCR_ACTS stubs) and on the idle
+       queue right after the word tier, so a child's next screen is usually in before the tap. app3-shared.js holds what
+       two or more of them share and runs first (DEPS). CLAUDE.md "Road to 4.5, P1 — the app3 split" has the map. */
+    scrShared: 'app3-shared.js',
+    scrLib: 'app3-library.js',     // the Library's screens and pop-ups
+    scrGym: 'app3-gym.js',         // the Word Gym, the drill, revisions, traps, the coach desk, the first word
+    scrGrown: 'app3-grownups.js',  // the report card, the plan / cloud / account sheets
+    scrGames: 'app3-games.js',     // the classic games under the Play tab
+    scrMe: 'app3-me.js',           // the Collection, the Shop, Evolution, the wallet sheet, Help
+    scrTools: 'app3-tools.js'      // the grown-up's testing tools
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -223,7 +234,10 @@
     forge: ['words1', 'saga2', 'forgeCore', 'forgeData', 'forgeUI'],
     /* the hubs draw on the shared stage kit (SGUI.stage / SB_HUB, saga2.js), so it comes too */
     quizhubs: ['words1', 'loreHub', 'saga2', 'wordband', 'ttIcons'],
-    gym: ['words1', 'saga2', 'gym', 'sents', 'wordband', 'adv'],   // adv: Champ Dictation's hard list is ADV.pool()
+    /* scrShared + scrGames: the screen that hosts it (viewGym's #gym-host, app3-games.js since the app3 split). gym.js's
+       open() starts a round the moment the group is in and keys go to its DOM only while that DOM is on the page, so the
+       engine must never land before its host — or a mode is "ready" on no screen and the first Enter is lost. */
+    gym: ['words1', 'scrShared', 'scrGames', 'saga2', 'gym', 'sents', 'wordband', 'adv'],   // adv: Champ Dictation's hard list is ADV.pool()
     mockbee: ['words1', 'saga2', 'mockbee', 'wordband'],
     daily: ['words1', 'dailyBee', 'saga2', 'sents', 'words2', 'lore', 'wordband'],
     buzz: ['dailyBuzz'],
@@ -234,16 +248,24 @@
     voicetest: ['voiceLists'],
     advCode: ['adv'],   // the Advanced Pack's code alone: its doors behave as they did when it was a boot script
     trivtrain: ['ttIcons'],
-    beeTrivia: ['words1', 'stv', 'ttIcons']
+    beeTrivia: ['words1', 'stv', 'ttIcons'],
+    /* the app3 split's screens: each with the code it shares and the word tier its screens read (Me reads no word) */
+    scrShared: ['words1', 'scrShared'],
+    scrLib: ['words1', 'scrShared', 'scrLib'],
+    scrGym: ['words1', 'scrShared', 'scrGym'],
+    scrGrown: ['words1', 'scrShared', 'scrGrown'],
+    scrGames: ['words1', 'scrShared', 'scrGames'],
+    scrMe: ['scrShared', 'scrMe'],
+    scrTools: ['words1', 'scrShared', 'scrTools']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
   /* words2 and the boot sentences land on the boot tier's records (in order, by word), so the tier comes first */
-  var DEPS = { words2: ['words1'], sents: ['words1'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'] };
+  var DEPS = { words2: ['words1'], sents: ['words1'], scrLib: ['scrShared'], scrGym: ['scrShared'], scrGrown: ['scrShared'], scrGames: ['scrShared'], scrMe: ['scrShared'], scrTools: ['scrShared'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'] };
 
-  var IDLE = ['words1', 'sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
+  var IDLE = ['words1', 'scrShared', 'scrGym', 'scrLib', 'scrGames', 'scrMe', 'scrGrown', 'scrTools', 'sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
     'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'adv', 'ttIcons', 'sync'];
 

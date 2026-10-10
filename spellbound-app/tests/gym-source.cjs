@@ -17,7 +17,8 @@ const ROOT = process.env.SB_ROOT || path.resolve(__dirname, '..');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
-const gym = read('gym.js'), app3 = read('app3.js'), lazy = read('boot-lazy.js'), shell = read('family-shell.js'), index = read('index.html');
+/* app3 = app3.js and the lazy files the P1.13 split moved its screens into (tests/lib/app3-src.cjs) */
+const gym = read('gym.js'), app3 = require('./lib/app3-src.cjs').all(ROOT), lazy = read('boot-lazy.js'), shell = read('family-shell.js'), index = read('index.html');
 const count = (s, re) => (s.match(re) || []).length;
 
 ok(count(gym, /'Spelling Gym'/g) === 1 && /SB_HUB_NAMES\.gym/.test(gym), `gym.js reads the hub's name from SB_HUB_NAMES and types it once, as the fallback (${count(gym, /'Spelling Gym'/g)})`);

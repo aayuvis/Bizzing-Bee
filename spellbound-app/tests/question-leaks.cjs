@@ -33,7 +33,9 @@ const EVEN = (h, label) => { const n = h.reduce((a, b) => a + b, 0); const sh = 
   const r = await pg.evaluate(async () => {
     const W = ms => new Promise(res => setTimeout(res, ms)); const o = { leaks: {}, dup: {}, one: {}, hist: {}, n: {} };
     state.sound = false; window.Audio = function () { return { play: () => Promise.resolve(), pause: () => {} }; }; try { speechSynthesis.speak = () => {}; } catch (e) {}
-    await new Promise(res => SB_LAZY.need(['words', 'atlas', 'lists'], res)); await W(600);
+    /* + the classic games' code (buildMC, the vocab and idiom rounds: app3-shared.js; Magic Squares: app3-games.js —
+       lazy since the P1.13 split), which this test calls straight into */
+    await new Promise(res => SB_LAZY.need(['words', 'atlas', 'lists', 'scrGames'], res)); await W(600);
     state.screen = 'app'; render();
     /* a seeded sample of real words: the risky ones (named by their own definition or sentence) first */
     let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;

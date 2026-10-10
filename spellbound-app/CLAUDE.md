@@ -221,6 +221,69 @@ rejected); the grade map is US grade / UK year / CBSE class with a source on eve
 - `tests/pin-mandatory.cjs`'s known pre-existing failure ("a second boot migrates nothing and keeps the same record")
   passed on this batch's runs, so it is intermittent; this batch did not touch it — it is not fixed, only not seen.
 
+## Road to 4.5, P1 — the app3 split (P1.13 step 2, 10 Oct 2026) — READ FIRST; it overrides the sections below
+The P1 exit gate's last item is first-load JS ≤ 400 KB gzip (`tests/first-load.cjs`). Step 1 (the boot word tier) is the
+section below; the plan, and where the code corrected it, is `docs/first-load-plan.md`. Step 2 split `app3.js` by screen.
+- **WHICH FILE HOLDS WHICH SCREEN.** `app3.js` keeps what the first screens and the shell draw (render, viewApp's chain,
+  Home, the landing, onboarding, Settings, the drawer, the top bar, the Word Atlas's doors), the core of the action table,
+  every name another file reads by bare name, and everything those reach. Each screen's own code is a lazy classic
+  script, moved VERBATIM:
+
+  | file (boot-lazy name) | screens (navs) and pop-ups |
+  |---|---|
+  | `app3-library.js` (`scrLib`) | explore, builder, vocab, journeys, themes, concepts (the list), figurative, ipatrain, typing, quotes, trivtrain, finder; the word card, quote-word, set-deck, full-list and trivia-list pop-ups |
+  | `app3-gym.js` (`scrGym`) | coach, quest, train (the drill), levelup, revisions, traps, coachdesk, leveltest, beeband, firstword |
+  | `app3-grownups.js` (`scrGrown`) | progress / parent (the report card), the plan, the cloud and account sheets |
+  | `app3-games.js` (`scrGames`) | games (and sq / trivia), daily, dailybuzz, forge, gym (the hall's shell) |
+  | `app3-me.js` (`scrMe`) | collection, shop, evolution, help, the wallet sheet — reads no word, so its group carries no `words1` |
+  | `app3-tools.js` (`scrTools`) | debug, voicetest, evofeedback |
+  | `app3-shared.js` (`scrShared`) | what two or more of those share; runs first (DEPS) |
+
+- **THE THREE DOORS — the only ways app3.js reaches a lazy file's code** (a name in a lazy file does not exist until the
+  file has run, so anywhere else is a ReferenceError):
+  1. **viewApp's guard** above the dispatch chain: `SCR_NAV[S.nav]` (nav → group) or, for a word screen, `words1`; until
+     the group is in, the hive loader and `lazyNeed(group, render)`. Then the chain's branch names the view.
+  2. **`scrDraw(group, () => viewX())`** for a pop-up in `overlays()`, behind its flag (`if(S.walletOpen) …`). **Always
+     an arrow**: a bare `viewX` argument is read before scrDraw can hold it.
+  3. **The stubs**: every lazy action is named in `SCR_ACTS` (app3.js, one line per file); `scrStub(group, name)` stands
+     in on `app` until the file's own `Object.assign(app, {…})` replaces it — a call (data-act, a key, a route, a search
+     place, another file) loads the group and runs with the same arguments.
+- **An engine never lands before the screen that hosts it.** The Spelling Gym's group (`gym`) carries `scrShared` +
+  `scrGames`: gym.js's `open()` starts a round as soon as its group is in, and its keys reach only DOM on the page, so a
+  mode "ready" on no screen lost its first Enter (spelling-gym T3 caught it; screens-lazy §3 holds it with the screen
+  file slowed on the wire). An engine whose host view is in a lazy file carries that file's group the same way.
+- **Rules a later session keeps:**
+  - Everything stays a deferred/injected CLASSIC script: no modules, no bundler, `"use strict"` first in every lazy file,
+    and `app` stays app3.js's top-level const (lazy files `Object.assign(app, …)`). The source stays readable — deploy
+    minifies a copy. **Never snapshot a deferred global into a const.**
+  - **A screen file names only app3.js's names, app3-shared.js's and its own; app3-shared.js only app3.js's.** No other
+    shipped file (root scripts, saga-art/, index.html's inline scripts) names a lazy file's code. No top-level name is
+    declared in two app3 files. Home's own buttons are app3's — a door on a first screen is never a stub.
+  - A lazy screen group carries `words1` and `scrShared`. Every lazy file is on the idle queue, right after the word tier,
+    so the next screen is usually in before the tap, and offline after the first visit (sw.js caches what is fetched).
+  - **To add a screen:** write its view, helpers and actions in the file of its family (or a new `app3-<x>.js`: REG, a
+    GROUP with `words1` + `scrShared` + itself, DEPS on `scrShared`, IDLE, and its group in `SCR_GROUP`); add its nav to
+    `SCR_NAV`; put its actions in that file's `Object.assign(app, {…})` AND name them in that file's `SCR_ACTS` line; a
+    pop-up goes in `overlays()` as `if(S.flag) h+=scrDraw('<grp>',()=>viewX());`. A first screen's code stays in
+    app3.js. **To move code back into app3.js** (a first screen or another file needs it): move it verbatim, take it out
+    of the lazy file and out of `SCR_ACTS`.
+  - **Tests**: one that calls a lazy file's function inside `page.evaluate`, or sets `state.nav` straight to a lazy
+    screen, first waits for its group (`SB_LAZY.need('scrGrown', …)`) — `backup-restore`, `trust-v2`, `pin-mandatory`,
+    `question-leaks`, `ux-826` do; `word-gym`'s settle waits for the hive loader to go. One that reads app3's code AS
+    TEXT reads `tests/lib/app3-src.cjs` (`all`, `files`, `body`, `fileOf`): `data-lint`, `gym-source`, `coach-rules`,
+    `word-bank`, `library-chunks` (its anchor now ends at `function finderResults(`), `loading-state`, `no-random`,
+    `one-count`, `trust-v2`, `ux-826`, `home-continue`; `word-door`'s allow-list names the readers under their new
+    files; `asset-budget`'s eager-image list names `app3-library.js` for the shelf.
+- **THE MOVER WAS ONE-TIME, THE GUARDS ARE NOT.** The split was computed from app3's syntax tree (the core = the first
+  screens + the shell + every action a painted thing names + every name another file reads + everything a node nothing
+  reaches names, iterated; a screen's file = what only its screens reach; shared = 2+ files). `tools/app3-split-map.cjs`
+  still measures app3.js (the core now). Guards: **`tests/app3-split.cjs`** (@check, node: the files, one home per name,
+  the three doors, each file's reach, no other file reaching in, the stub table both ways) and **`tests/screens-lazy.cjs`**
+  (browser: every lazy nav from a cold page, every lazy address, a stub call, the wallet and word-card pop-ups, the gym's
+  host, file://).
+- **Measured** (`tests/first-load.cjs`, minified + gzip as deploy ships): new visitor JS 554 → **411 KB** (total 833 →
+  691), returning speller 629 → **487 KB** (909 → 782).
+
 ## Road to 4.5, P1 — the boot word tier is lazy (P1.13 step 1, 10 Oct 2026) — READ FIRST; it overrides the sections below
 The plan is `docs/first-load-plan.md` step 1. `words-data.js` + `words-extra.js` + `words-patch.js` (~368 KB gz) are no
 longer boot scripts. The rules a later session keeps:

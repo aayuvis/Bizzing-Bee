@@ -90,8 +90,9 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(!(await pg.evaluate(() => state.drawerOpen)), 'Esc closes the ☰ drawer');
 
   /* ---- 3. Magic Squares: no line bonus is promised, a claimed square pays a finished round ---- */
-  const app3 = fs.readFileSync(path.join(SRC, 'app3.js'), 'utf8');
+  const app3 = require('./lib/app3-src.cjs').all(SRC);   /* Magic Squares lives in app3-games.js since the P1.13 split */
   ok(!/lines win bonus|row \+\$\{|MAGIC_BONUS\.(row|col|diag|square)/.test(app3), 'Magic Squares no longer prints row/column/diagonal coin bonuses it never paid');
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('scrGames', r)));   /* its code arrives at the Play tab's door */
   const mg = await pg.evaluate(async () => { const W = BZ_WALLET; const n0 = W.ledger('Trusty').length;
     state.nav = 'games'; magicNewBoard(); const g = state.game; g.cell = 0; g.right = 5; magicFinishCell();
     const lines = W.ledger('Trusty').slice(n0); return { lines: lines.map(x => x.why), shown: g.cellResult.coins }; });

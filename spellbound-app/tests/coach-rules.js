@@ -5,7 +5,8 @@
    the page just drops that row, and the one pattern catching the child most is the one
    they hear nothing about. Same for TRAP_CONCEPT_RE, which decides "concepts to revise". */
 const fs = require('fs'), path = require('path');
-const app = fs.readFileSync(path.join(__dirname, '..', 'app3.js'), 'utf8');
+/* app3's code wherever the P1.13 split put it (TRAP_DEFS stayed in app3.js, TRAP_CONCEPT_RE went to app3-gym.js) */
+const app = require('./lib/app3-src.cjs').all(path.join(__dirname, '..'));
 global.window = {};
 require(path.join(__dirname, '..', 'coach-rules.js'));
 const R = window.SB_COACH_RULES;
