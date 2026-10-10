@@ -120,7 +120,12 @@
   function champDraw(level, tier, skip) { let P = []; try { if (W.ADV && typeof ADV.pool === 'function') P = ADV.pool() || []; } catch (e) {}
     if (!P.length) return draw(1, { level: 'champ', tier, skip });
     const [lo, hi] = CHAMP_WIN[shiftLv(level, tier)];
-    const slice = P.slice(lo, hi).filter(w => typable(w) && !skip.has(K(w)));
+    let slice = P.slice(lo, hi).filter(w => typable(w) && !skip.has(K(w)));
+    /* the word bands (the 4.5 brief, P1.2): the hard list keeps only the words inside this child's window for the
+       level — a dictionary-tail word is band 4, so on Easy (band 1) nothing passes and the word comes through the
+       door below, never from the championship list */
+    try { if (W.SB_BAND && typeof SB_BAND.pick === 'function') slice = SB_BAND.pick(kid(), slice, 0, { level: lvResolve(level), tier: tier }) || []; } catch (e) {}
+    if (!slice.length) return draw(1, { level: level, tier, skip });
     const pick = (typeof pickFresh === 'function' ? pickFresh(slice, 1) : slice.slice(0, 1));
     pick.forEach(w => { try { logGameWord(K(w)); } catch (e) {} }); return pick; }
 
