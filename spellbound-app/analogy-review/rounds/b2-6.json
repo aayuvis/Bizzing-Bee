@@ -1,0 +1,1910 @@
+[
+ {
+  "unit": "item:14m",
+  "pick": "approve",
+  "second": [
+   "assent"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "endorse = approve; assent (agree to) is a near-synonym some thesauri share"
+ },
+ {
+  "unit": "item:14n",
+  "pick": "management",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:14o",
+  "pick": "trader",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "broker is related but is an agent, not a merchant"
+ },
+ {
+  "unit": "item:14p",
+  "pick": "unforgettable",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:14q",
+  "pick": "bird",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "passerine is obscure for 8-15"
+ },
+ {
+  "unit": "item:14r",
+  "pick": "incline",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:14s",
+  "pick": "banquet",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "passover/easter are faith festivals used as lowercase distractors; consider swapping for neutral words"
+ },
+ {
+  "unit": "item:14t",
+  "pick": "reptile",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:14u",
+  "pick": "mineral",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "orpiment is very obscure for 8-15"
+ },
+ {
+  "unit": "item:14v",
+  "pick": "west",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "occident is obscure; caucasus/polynesian/volga are lowercase proper nouns"
+ },
+ {
+  "unit": "item:14w",
+  "pick": "film",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:14x",
+  "pick": "esophagus",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "gaster is obscure; tripe also means nonsense"
+ },
+ {
+  "unit": "item:14y",
+  "pick": "courageous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:14z",
+  "pick": "citizenship",
+  "second": [],
+  "unsafe": [
+   "caste"
+  ],
+  "verdict": "",
+  "reason": "caste as a distractor beside nationality/ethnic/ancestry is a sensitive topic for this audience; swap it"
+ },
+ {
+  "unit": "item:15a",
+  "pick": "cleanser",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15b",
+  "pick": "tool",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15c",
+  "pick": "buffoon",
+  "second": [
+   "comedian"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a clown is a comic performer, so comedian is defensible"
+ },
+ {
+  "unit": "item:15d",
+  "pick": "rectangle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "oblong as noun = rectangle; fine"
+ },
+ {
+  "unit": "item:15e",
+  "pick": "vocabulary",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "glossary vs vocabulary is a loose synonym"
+ },
+ {
+  "unit": "item:15f",
+  "pick": "lumpy",
+  "second": [],
+  "unsafe": [
+   "pasty"
+  ],
+  "verdict": "",
+  "reason": "pasty is a common insult for pale skin (plural has a sexual sense); chunky is also used about bodies"
+ },
+ {
+  "unit": "item:15g",
+  "pick": "gem",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "cabochon is very obscure for 8-15"
+ },
+ {
+  "unit": "item:15h",
+  "pick": "push",
+  "second": [
+   "stab"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "thrust also means stab (thrust a knife); violent sense"
+ },
+ {
+  "unit": "item:15i",
+  "pick": "bookcase",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "lena is an odd proper-noun distractor"
+ },
+ {
+  "unit": "item:15j",
+  "pick": "greeting",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15k",
+  "pick": "uncertainty",
+  "second": [
+   "suspicion"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "doubt also means suspicion/mistrust"
+ },
+ {
+  "unit": "item:15l",
+  "pick": "frantic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15m",
+  "pick": "resident",
+  "second": [
+   "native"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "natives = inhabitants in common use"
+ },
+ {
+  "unit": "item:15n",
+  "pick": "reward",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15o",
+  "pick": "prairie",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "steppe/prairie are close but not true synonyms"
+ },
+ {
+  "unit": "item:15p",
+  "pick": "satire",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "no option is a real synonym of irony; satire is a genre, not irony; pair is weak"
+ },
+ {
+  "unit": "item:15q",
+  "pick": "amuse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15r",
+  "pick": "cent",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "penny = cent only in US usage"
+ },
+ {
+  "unit": "item:15s",
+  "pick": "catalog",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15t",
+  "pick": "oneness",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15u",
+  "pick": "avoid",
+  "second": [],
+  "unsafe": [
+   "handicap"
+  ],
+  "verdict": "",
+  "reason": "handicap is a dated, stigmatising disability term"
+ },
+ {
+  "unit": "item:15v",
+  "pick": "monarch",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15w",
+  "pick": "inquiry",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15x",
+  "pick": "sedimentary",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15y",
+  "pick": "every",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15z",
+  "pick": "inn",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16a",
+  "pick": "novice",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16b",
+  "pick": "donation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16c",
+  "pick": "municipality",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16d",
+  "pick": "assistance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16e",
+  "pick": "robbery",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16f",
+  "pick": "flower",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16g",
+  "pick": "sack",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16h",
+  "pick": "revulsion",
+  "second": [
+   "antipathy"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "antipathy = intense dislike/aversion, close to disgust"
+ },
+ {
+  "unit": "item:16i",
+  "pick": "talent",
+  "second": [
+   "proficiency",
+   "competence"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "aptitude ~ ability; thesauri list competence and proficiency too"
+ },
+ {
+  "unit": "item:16j",
+  "pick": "mimic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16k",
+  "pick": "scrupulous",
+  "second": [],
+  "unsafe": [
+   "perverse"
+  ],
+  "verdict": "",
+  "reason": "perverse carries a sexual-deviance connotation (pervert)"
+ },
+ {
+  "unit": "item:16l",
+  "pick": "abrasion",
+  "second": [
+   "nick"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a nick is also a small scratch"
+ },
+ {
+  "unit": "item:16m",
+  "pick": "objective",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16n",
+  "pick": "sprout",
+  "second": [
+   "catapult"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "shoot (move/launch fast) ~ catapult is a weaker but defensible synonym"
+ },
+ {
+  "unit": "item:16o",
+  "pick": "basement",
+  "second": [],
+  "unsafe": [
+   "pub"
+  ],
+  "verdict": "",
+  "reason": "pub is an alcohol venue"
+ },
+ {
+  "unit": "item:16p",
+  "pick": "refusal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "trash is the noun refuse (homograph trap), different link"
+ },
+ {
+  "unit": "item:16q",
+  "pick": "envious",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16r",
+  "pick": "fin",
+  "second": [
+   "shoe"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "flipper is not cleanly a kind of fin (fin is a synonym for swim flippers); dictionary sense makes a swim flipper a kind of shoe; muddled, drop"
+ },
+ {
+  "unit": "item:16s",
+  "pick": "instrument",
+  "second": [
+   "sensor"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "radar is equally a kind of sensor"
+ },
+ {
+  "unit": "item:16t",
+  "pick": "christ",
+  "second": [],
+  "unsafe": [
+   "jesus",
+   "christ"
+  ],
+  "verdict": "",
+  "reason": "a faith's central figure used in a synonym drill, lowercase, words also used as an exclamatory oath; mortal as distractor touches doctrine; cut"
+ },
+ {
+  "unit": "item:16u",
+  "pick": "inspection",
+  "second": [
+   "investigation",
+   "evaluation"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "examination has several synonyms in the options"
+ },
+ {
+  "unit": "item:16v",
+  "pick": "allegation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16w",
+  "pick": "vault",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16x",
+  "pick": "mine",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16y",
+  "pick": "queue",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "ligne/abscissa/iamb are obscure distractors"
+ },
+ {
+  "unit": "item:16z",
+  "pick": "fowl",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17a",
+  "pick": "garment",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17b",
+  "pick": "mire",
+  "second": [
+   "grime",
+   "ooze"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "muck = dirt/mud/sludge; mire, grime and ooze all fit"
+ },
+ {
+  "unit": "item:17c",
+  "pick": "ruin",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17d",
+  "pick": "animal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17e",
+  "pick": "spa",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "resort/spa is a loose synonym"
+ },
+ {
+  "unit": "item:17f",
+  "pick": "spherical",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17g",
+  "pick": "planning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17h",
+  "pick": "enforcement",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17i",
+  "pick": "swallow",
+  "second": [
+   "savor"
+  ],
+  "unsafe": [
+   "cider"
+  ],
+  "verdict": "",
+  "reason": "no clean synonym of sip; swallow (a mouthful) and savor both arguable; cider is alcoholic in UK usage"
+ },
+ {
+  "unit": "item:17j",
+  "pick": "urge",
+  "second": [
+   "stimulus"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "impulse ~ impetus/stimulus in thesauri"
+ },
+ {
+  "unit": "item:17k",
+  "pick": "decoration",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17l",
+  "pick": "defer",
+  "second": [
+   "adjourn"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "adjourn = put off to a later time"
+ },
+ {
+  "unit": "item:17m",
+  "pick": "metal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17n",
+  "pick": "blunt",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17o",
+  "pick": "placate",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17p",
+  "pick": "spout",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17q",
+  "pick": "animal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17r",
+  "pick": "deletion",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17s",
+  "pick": "beg",
+  "second": [
+   "invoke"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "invoke = appeal earnestly to; weaker but defensible"
+ },
+ {
+  "unit": "item:17t",
+  "pick": "stall",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17u",
+  "pick": "proclaim",
+  "second": [
+   "affirm"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "declare = affirm/assert"
+ },
+ {
+  "unit": "item:17v",
+  "pick": "celestial",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17w",
+  "pick": "gush",
+  "second": [
+   "torrent"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a surge of water/feeling ~ a torrent"
+ },
+ {
+  "unit": "item:17x",
+  "pick": "panic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17y",
+  "pick": "question",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17z",
+  "pick": "creature",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:0",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:1",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:2",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:3",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:4",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:5",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:6",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:7",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:8",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "giant is mainly a noun; as adjective fine"
+ },
+ {
+  "unit": "stem:same:9",
+  "pick": "Same meaning",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:0",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:1",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:2",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:3",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:4",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:5",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:6",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:7",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:8",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:9",
+  "pick": "Opposites",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:0",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:1",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:2",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:3",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:4",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:5",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:6",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:7",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:8",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:9",
+  "pick": "Kind of",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:0",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:1",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:2",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:3",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:4",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:5",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:6",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:7",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:8",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:9",
+  "pick": "Part of a whole",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:0",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:1",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:2",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:3",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:4",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:5",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:6",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:7",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:8",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:9",
+  "pick": "Made from",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:0",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:1",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:2",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:3",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:4",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:5",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:6",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:7",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:8",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:9",
+  "pick": "Used for",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:0",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:1",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:2",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:3",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:4",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:5",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:6",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:7",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:8",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:who:9",
+  "pick": "Who does it",
+  "second": [
+   "Word families"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "the agent noun is derived from the verb (bake/baker), so Word families also fits"
+ },
+ {
+  "unit": "stem:family:0",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:1",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:2",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:3",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:4",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'kind' may be confused with the 'Kind of' link label"
+ },
+ {
+  "unit": "stem:family:5",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:6",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:7",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:8",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:9",
+  "pick": "Word families",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:0",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:1",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:2",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:3",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:4",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:5",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:6",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:7",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:8",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:9",
+  "pick": "Stronger and weaker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "'a breeze is not cool' is false/confusing (breezes are often cool; 'not cool' is also slang); say 'breeze does not MEAN cool'"
+ },
+ {
+  "unit": "lesson:opposite:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "with the stems' bare nouns it reads 'petal is part of flower' - missing articles in a spelling/grammar app"
+ },
+ {
+  "unit": "lesson:part:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "'could you find the first thing on or in the second?' is too loose - a cup in a cupboard or a bird in a tree passes; test with 'is part of'"
+ },
+ {
+  "unit": "lesson:part:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": "sweaters are not always wool; 'can be made from' would be safer"
+ },
+ {
+  "unit": "lesson:made:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "fills to 'scissors is used to cut' (stem use:0) - subject-verb agreement error"
+ },
+ {
+  "unit": "lesson:use:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "'mop is a tool, not a job' is wrong: to mop is a cleaning job, so the example contradicts itself; use e.g. bucket"
+ },
+ {
+  "unit": "lesson:who:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": "check {As} conjugates teach->teaches, not 'teachs'"
+ },
+ {
+  "unit": "lesson:who:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:title",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:idea",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": "warm/hot is temperature, not 'feeling or size'; minor"
+ },
+ {
+  "unit": "lesson:degree:bridge",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "fills to ungrammatical 'Hot is a stronger warm'; 'Freezing is a stronger cold' reads as a worse illness"
+ },
+ {
+  "unit": "lesson:degree:spot",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:trap",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "chilly is arguably a step colder than cool, so it is a poor 'same strength' example, and 'the far end' is unexplained"
+ },
+ {
+  "unit": "card:shiva",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "fail",
+  "reason": "text itself is respectful, from the inside, and accurate; but a living, worshipped deity sold as a 'Legendary' collectible avatar (rarity tier ~ power stat; 'legendary' implies legend) beside a historical pantheon needs a named reviewer"
+ },
+ {
+  "unit": "card:zeus",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "pass",
+  "reason": "accurate (Olympia festival, sky/thunder); past tense ignores small modern Hellenic worship, minor"
+ }
+]
