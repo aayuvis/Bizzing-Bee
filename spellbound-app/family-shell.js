@@ -145,7 +145,7 @@
      (gateFeature) and the Advanced Pack's sales page, which asks for the PIN first (T3) */
   var DOOR = { quotes: 'openQuotes', vocab: 'openVocab', typing: 'openTyping', ipatrain: 'openIpaTrain', trivtrain: 'openTrivTrain', adv: 'openAdvanced' };
   var HUB_HIVE = { classic: 1, squares: 1, clock: 1 };   // Hive Mind's modes (lore.js MODES.hive)
-  var PARENT = { train: 'coach', levelup: 'coach', leveltest: 'home', mockbee: 'games', anlbee: 'games', sq: 'games', reader: 'explore',
+  var PARENT = { train: 'coach', levelup: 'coach', leveltest: 'home', mockbee: 'games', anlbee: 'games', anltool: 'explore', sq: 'games', reader: 'explore',
     debug: 'home', voicetest: 'home', evofeedback: 'home', parent: 'progress' };
 
   /* the route of the SCREEN, ignoring layers drawn over it */
@@ -180,6 +180,7 @@
     if (n === 'games' && S.game) return 'play/game';
     if (n === 'gym') return 'gym' + (S.gymMode ? '/' + S.gymMode : '');   // the Spelling Gym hub, and each of its modes
     if (n === 'analogy') return (window.SB_ANL && SB_ANL.route) ? SB_ANL.route() : 'analogies';   // the Analogies tab (9 Oct 2026)
+    if (n === 'anltool') return (window.SB_ANL && SB_ANL.toolRoute) ? SB_ANL.toolRoute() : 'links';   // the Library's Link Finder (10 Oct 2026)
     return NAV_ROUTE[n] || n;
   }
   function routeOf() { var o = overlayRoute(); if (o) return o; return state.settingsOpen && state.screen === 'app' ? 'settings' : baseRoute(); }
@@ -287,6 +288,10 @@
        so a locked stop's address lands on the map; and Mock Analogy Bee at #/anlbee */
     if (head === 'analogies' && typeof app.openAnalogies === 'function') { app.openAnalogies(p.slice(1).join('/')); return; }
     if (head === 'anlbee' && typeof app.openAnlBee === 'function') { app.openAnlBee(); return; }
+    /* the Library's Link Finder: #/links, #/links/<word>, #/links/link/<lesson> */
+    if (head === 'links' && typeof app.openAnlTool === 'function') {
+      if (p[1] === 'link' && p[2]) { app.openAnlTool(null); var lk = p[2]; lazyNeed('analogy', function () { if (state.nav === 'anltool' && window.SB_ANL) SB_ANL.toolAct('link:' + lk); }); return; }
+      app.openAnlTool(p[1] ? decodeURIComponent(p[1]) : null); return; }
     if (head === 'play') {
       app.openGames();
       var pk = p[1] && (PLAY_SLUG[p[1]] || p[1]);

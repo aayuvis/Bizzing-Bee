@@ -364,18 +364,84 @@
     return `<h2 class="anl-h2">Play with links</h2><div class="anl-games">
       <button class="anl-game bee" data-act="openAnlBee"><span class="anl-gic">${ic('trophy', 26)}</span><span class="anl-gt">Mock Analogy Bee</span><span class="anl-gp">Your rivals, one analogy each. Miss the link and you sit down.</span>${bee.played ? `<span class="anl-gb">Best finish: ${ord(bee.best || 7)}</span>` : ''}</button>
       <button class="anl-game clk" data-act="anl" data-arg="clock"><span class="anl-gic">${ic('timer', 26)}</span><span class="anl-gt">Against the Clock</span><span class="anl-gp">Sixty seconds of analogies. A wrong link costs two seconds.</span>${best ? `<span class="anl-gb">${esc(best)}</span>` : ''}</button></div>`; }
+  /* ------------------------------------------------------------------ Learn: one idea a screen, the child doing something on most
+     (owner, 10 Oct 2026: "the UI is primitive and it's not step by step learning"). Eight steps from the lesson's own words and
+     its hand-written stem pairs: the idea → say the link → name a link yourself → how to spot it → the trap → build an analogy
+     a part at a time → try one → ready. Three steps ask; Next waits until they are answered, and a wrong pick says why and lets
+     the child go on (it is a lesson, not a check — nothing is scored or paid). ← / → or Back / Next, 1–3 to pick. */
+  const relOf = (L, p) => (p && p[2]) || L.rels[0];
+  function tile(w, cls) { return `<span class="anl-tile${cls ? ' ' + cls : ''}">${esc(w)}</span>`; }
+  function pairHTML(L, p, o) { o = o || {};
+    return `<div class="anl-pair${o.cls ? ' ' + o.cls : ''}">${tile(p[0], 'a')}<span class="anl-link" aria-hidden="true"><svg viewBox="0 0 120 34" preserveAspectRatio="none"><path d="M4 26 C 34 4, 86 4, 112 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M104 15 L114 25 L100 28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><em>${lic(L.id, 14)} ${esc(o.label || L.title)}</em></span>${o.blank ? tile(o.blankText || '?', 'b blank') : tile(p[1], 'b')}</div>`; }
+  function lessonSteps(L) { const st = (L.stems || []).filter((p) => p && p[0] && p[1]); const [p0, p1, p2, p3, p4] = st;
+    const steps = [];
+    steps.push({ k: 'idea', t: 'The idea', need: !!p0 });
+    steps.push({ k: 'say', t: 'Say the link', need: !!p0, gate: true });
+    steps.push({ k: 'name', t: 'Your turn: name the link', need: !!p1, gate: true });
+    steps.push({ k: 'spot', t: 'How to spot it', need: true });
+    steps.push({ k: 'trap', t: 'Watch out', need: !!L.trap });
+    steps.push({ k: 'build', t: 'Build an analogy', need: !!(p2 && p3), gate: true });
+    steps.push({ k: 'try', t: 'Try one', need: !!(p0 && p4 && st.length >= 5), gate: true });
+    steps.push({ k: 'ready', t: 'Ready', need: true });
+    return { st, steps: steps.filter((x) => x.need) }; }
+  function nameOpts(L, p1) { const near = (NEAR[L.id] || []).filter((id) => PLAIN[id]).slice(0, 2);
+    const lines = [plain(L.id, p1[0], p1[1])].concat(near.map((id) => plain(id, p1[0], p1[1]))); return { lines, ord: perm('learn|' + L.id + '|name', lines.length) }; }
+  function tryOpts(L, st) { const p0 = st[0], target = st[st.length - 1];
+    const pool = st.slice(1, -1).map((p) => p[1]).filter((w) => w !== target[1] && w !== target[0] && w !== p0[0] && w !== p0[1]);
+    const opts = [target[1]].concat([...new Set(pool)].slice(0, 2)); return { target, opts, ord: perm('learn|' + L.id + '|try', opts.length) }; }
   function lessonView() { const s = S(); const hit = stopById(s.stop); if (!hit || !hit.s) { s.v = 'map'; return mapView(); }
-    const L = lesson(hit.s.lesson); const st = L.stems; const ex = [[st[0], st[1]], [st[2], st[3]], [st[4], st[5]]].filter((p) => p[0] && p[1]);
-    const exHTML = ex.map(([p, q], k) => `<li class="anl-ex"><span class="anl-exq">${esc(p[0].toUpperCase())} : ${esc(p[1].toUpperCase())} :: ${esc(q[0].toUpperCase())} : <b>${esc(q[1].toUpperCase())}</b></span>
-      <span class="anl-exb">${esc(linkLine(p[2] || L.rels[0], p[0], p[1]))} ${esc(linkLine(q[2] || L.rels[0], q[0], q[1]))}</span></li>`).join('');
+    const L = lesson(hit.s.lesson); if (!s.ls || s.ls.stop !== hit.s.id) s.ls = { stop: hit.s.id, i: 0, pk: {} };
+    const ls = s.ls; const { st, steps } = lessonSteps(L); ls.i = Math.max(0, Math.min(ls.i, steps.length - 1));
+    const step = steps[ls.i]; const [p0, p1, p2, p3, p4] = st; const pk = ls.pk;
+    const ll = (p) => linkLine(relOf(L, p), p[0], p[1]);
+    let body = '';
+    if (step.k === 'idea') body = `<p class="anl-lead">${esc(L.idea)}</p>${pairHTML(L, p0)}${p1 ? pairHTML(L, p1, { cls: 'two' }) : ''}`;
+    if (step.k === 'say') { const shown = !!pk.say;
+      body = `<p class="anl-lead">Every analogy starts the same way: say, in one sentence, how the first two words are linked.</p>${pairHTML(L, p0)}
+        ${shown ? `<p class="anl-said" role="status">${ic('volume', 16)} ${esc(ll(p0))}</p>` : `<div class="anl-btns center"><button class="anl-btn main" data-act="anl" data-arg="ls:say">${ic('volume', 16)} Say the link</button></div>`}`; }
+    if (step.k === 'name') { const { lines, ord } = nameOpts(L, p1); const v = pk.name;
+      body = `<p class="anl-lead">Which sentence links these two?</p>${pairHTML(L, p1, { label: '?' })}<div class="anl-opts lines">${ord.map((j, n) => {
+        const cls = v == null ? '' : j === 0 ? ' ok' : n === v ? ' no' : ' dim';
+        return `<button class="anl-opt line${cls}" data-act="anl" data-arg="ls:name:${n}"${v != null ? ' disabled' : ''}><span class="anl-k">${n + 1}</span>${esc(lines[j])}</button>`; }).join('')}</div>
+        ${v == null ? '' : ord[v] === 0 ? `<div class="anl-yes"><b>Yes.</b> ${esc(ll(p1))}</div>` : `<div class="anl-miss"><p><b>Not quite.</b> ${esc(ll(p1))}</p></div>`}`; }
+    if (step.k === 'spot') body = `<div class="anl-tipbox">${ic('bulb', 22)}<p>${esc(L.spot)}</p></div>${p2 ? pairHTML(L, p2) + `<p class="anl-said">${esc(ll(p2))}</p>` : ''}`;
+    if (step.k === 'trap') body = `<div class="anl-trapbox">${ic('alert', 22)}<p>${esc(L.trap)}</p></div>
+      <p class="anl-lead">The true link is the one you can say in the sentence, every time:</p>${pairHTML(L, p0)}<p class="anl-said sm">${esc(ll(p0))}</p>`;
+    if (step.k === 'build') { const b = pk.build || 0;
+      body = `<p class="anl-lead">An analogy is two pairs with the <b>same</b> link. Build one, a part at a time.</p>
+        <div class="anl-build"><div class="anl-brow"><span class="anl-bn">1</span>${pairHTML(L, p2)}</div>
+        ${b >= 1 ? `<p class="anl-said sm">${esc(ll(p2))}</p><div class="anl-brow"><span class="anl-bn">2</span>${pairHTML(L, p3, { blank: b < 2 })}</div>` : ''}
+        ${b >= 2 ? `<p class="anl-said sm">${esc(ll(p3))}</p><p class="anl-whole">${esc(p2[0])} is to ${esc(p2[1])} as ${esc(p3[0])} is to <b>${esc(p3[1])}</b>.</p>` : ''}</div>
+        ${b < 2 ? `<div class="anl-btns center"><button class="anl-btn main" data-act="anl" data-arg="ls:build">${b === 0 ? 'Say the link, then bring in ' + esc(p3[0]) : 'Find the word with the same link'}</button></div>` : ''}`; }
+    if (step.k === 'try') { const { target, opts, ord } = tryOpts(L, st); const v = pk.tr;
+      body = `<p class="anl-lead">Your turn. Say the first link, then find the word with the same link.</p>
+        <div class="anl-pairs2">${pairHTML(L, p0)}${pairHTML(L, target, { blank: v == null || ord[v] !== 0, blankText: v != null && ord[v] === 0 ? target[1] : '?' })}</div>
+        <div class="anl-opts n${opts.length}">${ord.map((j, n) => { const cls = v == null ? '' : j === 0 ? ' ok' : n === v ? ' no' : ' dim';
+          return `<button class="anl-opt${cls}" data-act="anl" data-arg="ls:try:${n}"${v != null ? ' disabled' : ''}><span class="anl-k">${n + 1}</span>${esc(opts[j])}</button>`; }).join('')}</div>
+        ${v == null ? '' : ord[v] === 0 ? `<div class="anl-yes"><b>Yes.</b> ${esc(ll(target))}</div>` : `<div class="anl-miss"><p><b>It is ${esc(target[1])}.</b> ${esc(ll(target))}</p><p class="anl-why">The first pair: ${esc(ll(p0))}</p></div>`}`; }
+    if (step.k === 'ready') body = `<div class="anl-ready"><span class="anl-cic big">${lic(L.id, 30)}</span><p class="anl-lead">You know the <b>${esc(L.title.toLowerCase())}</b> link.</p>
+        <ol class="anl-recap"><li>Say how the first two words are linked, in one sentence.</li><li>Say the same sentence with the third word.</li><li>Pick the word that makes it true. Watch for words that only go <i>with</i> it.</li></ol></div>
+        <div class="anl-btns center"><button class="anl-btn" data-act="anl" data-arg="words">${ic('cards', 16)} Meet the words</button><button class="anl-btn main" data-act="anl" data-arg="practice">${ic('pencil', 16)} Start practice</button></div>`;
+    const done = !step.gate || (step.k === 'say' ? !!pk.say : step.k === 'name' ? pk.name != null : step.k === 'build' ? (pk.build || 0) >= 2 : step.k === 'try' ? pk.tr != null : true);
+    const dots = steps.map((x, n) => `<span class="anl-dot${n < ls.i ? ' done' : n === ls.i ? ' on' : ''}" title="${escA(x.t)}"></span>`).join('');
+    const last = ls.i === steps.length - 1;
     return `<div class="anl-page">${head(L.title, esc(hit.r.name), 'anl', hit.r.name, lic(L.id, 20))}
-      <div class="anl-card anl-lesson"><p class="anl-big">${esc(L.idea)}</p>
-        <h3 class="anl-h3">The link, in words</h3><p class="anl-bridge">${esc(bridge(L.bridge, (st[0] || [])[0], (st[0] || [])[1], (st[0] || [])[2] || L.rels[0]))}</p>
-        <h3 class="anl-h3">How to spot it</h3><p>${esc(L.spot)}</p>
-        <h3 class="anl-h3">Watch out</h3><p class="anl-warn">${esc(L.trap)}</p>
-        <h3 class="anl-h3">Worked examples</h3><ol class="anl-exs">${exHTML}</ol>
-        <p class="anl-tip">In every analogy, say the link of the first pair out loud, then look for the word that has the SAME link to the third word.</p>
-        <div class="anl-btns"><button class="anl-btn" data-act="anl" data-arg="words">${ic('cards', 16)} Meet the words</button><button class="anl-btn main" data-act="anl" data-arg="practice">${ic('pencil', 16)} Start practice</button></div></div></div>`; }
+      <div class="anl-card anl-lesson anl-stepper" data-step="${escA(step.k)}">
+        <div class="anl-steps-top"><span class="anl-stepn">Step ${ls.i + 1} of ${steps.length}</span><span class="anl-dots" aria-hidden="true">${dots}</span></div>
+        <h2 class="anl-stept" data-live-prompt="${escA(step.t)}">${esc(step.t)}</h2>
+        <div class="anl-stepbody">${body}</div>
+        <div class="anl-stepnav"><button class="anl-btn" data-act="anl" data-arg="ls:back"${ls.i === 0 ? ' disabled' : ''}>${ic('arrowLeft', 16)} Back</button>
+          ${last ? '' : `<button class="anl-btn main" data-act="anl" data-arg="ls:next"${done ? '' : ' disabled'}>Next ${ic('arrow', 16)}</button>`}</div></div></div>`; }
+  function lessonAct(v) { const s = S(); const ls = s.ls; if (!ls) return; const hit = stopById(s.stop); if (!hit || !hit.s) return;
+    const L = lesson(hit.s.lesson); const { st, steps } = lessonSteps(L); const step = steps[ls.i]; const [k, n] = v.split(':');
+    if (k === 'next') { const ok = !step.gate || (step.k === 'say' ? !!ls.pk.say : step.k === 'name' ? ls.pk.name != null : step.k === 'build' ? (ls.pk.build || 0) >= 2 : ls.pk.tr != null);
+      if (ok && ls.i < steps.length - 1) ls.i++; }
+    else if (k === 'back') { if (ls.i > 0) ls.i--; }
+    else if (k === 'say') { ls.pk.say = 1; try { const p = st[0]; say(linkLine(relOf(L, p), p[0], p[1])); } catch (e) {} }
+    else if (k === 'build') ls.pk.build = Math.min(2, (ls.pk.build || 0) + 1);
+    else if (k === 'name' && step.k === 'name' && ls.pk.name == null) { const o = nameOpts(L, st[1]); if (!(+n >= 0 && +n < o.lines.length)) return; ls.pk.name = +n; try { sfx(o.ord[+n] === 0 ? 'correct' : 'wrong'); } catch (e) {} }
+    else if (k === 'try' && step.k === 'try' && ls.pk.tr == null) { const o = tryOpts(L, st); if (!(+n >= 0 && +n < o.opts.length)) return; ls.pk.tr = +n; try { sfx(o.ord[+n] === 0 ? 'correct' : 'wrong'); } catch (e) {} }
+    render(); }
   function wordsView() { const s = S(); const hit = stopById(s.stop); if (!hit || !hit.s) { s.v = 'map'; return mapView(); }
     const L = lesson(hit.s.lesson); const A0 = D(); const seen = new Set(); const list = [];
     for (const id of hit.s.items) { const it = A0.items[id]; if (!it) continue; for (const w of [it[2], it[3]]) { if (seen.has(w)) continue; seen.add(w); list.push(w); } if (list.length >= 24) break; }
@@ -432,7 +498,8 @@
     if (k === 'stop') { const hit = stopById(v); if (!hit) return; s.reg = hit.r.id; s.stop = v; s.v = 'map'; render();
       setTimeout(() => { try { const el = document.querySelector('.anl-card'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {} }, 30); return; }
     const hit = stopById(s.stop);
-    if (k === 'learn') { if (hit && hit.s) { s.v = 'lesson'; render(); try { window.scrollTo(0, 0); } catch (e) {} } return; }
+    if (k === 'learn') { if (hit && hit.s) { s.v = 'lesson'; s.ls = null; render(); try { window.scrollTo(0, 0); } catch (e) {} } return; }
+    if (k === 'ls') { lessonAct(v); return; }
     if (k === 'words') { if (hit && hit.s) { s.v = 'words'; render(); try { window.scrollTo(0, 0); } catch (e) {} } return; }
     if (k === 'practice' || k === 'check') { if (hit && hit.s) startRun(k); return; }
     if (k === 'level') { if (hit && !hit.s) startRun('level'); return; }
@@ -450,8 +517,14 @@
     if (state.screen !== 'app') return; const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (state.nav === 'anlbee') { beeKey(e); return; }
+    if (state.nav === 'anltool') { const t = state.anlTool; if (t && t.ask && t.ask.picked == null && /^[1-3]$/.test(e.key)) { e.preventDefault(); toolAct('pick:' + (+e.key - 1)); } return; }
     if (state.nav !== 'analogy') return; const s = state.anl; if (!s) return;
     const g = s.run; const k = e.key;
+    if (s.v === 'lesson' && s.ls) { const hit = stopById(s.stop); if (!hit || !hit.s) return; const step = lessonSteps(lesson(hit.s.lesson)).steps[s.ls.i] || {};
+      if (k === 'ArrowRight' || k === 'Enter') { e.preventDefault(); lessonAct('next'); return; }
+      if (k === 'ArrowLeft') { e.preventDefault(); lessonAct('back'); return; }
+      if (/^[1-3]$/.test(k) && (step.k === 'name' || step.k === 'try')) { e.preventDefault(); lessonAct((step.k === 'name' ? 'name:' : 'try:') + (+k - 1)); }
+      return; }
     if (k === 'Escape' && g && s.v === 'run') { e.preventDefault(); act('leave'); return; }
     if (k === 'Enter') { if (s.v === 'run' && g && (g.phase === 'done' || g.picked != null || g.bpick != null)) { e.preventDefault(); cont(); } else if (s.v === 'clock' && !g) { e.preventDefault(); startClock(); } return; }
     if (!g || s.v !== 'run') return;
@@ -553,6 +626,82 @@
   const beeBest = () => { const p = rec().bee || {}; if (!p.played || !p.best) return ''; const n = p.best;
     return 'Best finish: ' + n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th') + (p.wins ? ' · ' + p.wins + ' won' : ''); };
 
+  /* ================================================================== LINK FINDER (the Library's analogy tool) */
+  /* Owner, 10 Oct 2026: "we need analogy tool in the library … a full page stretch thin banner under the book series".
+     Type a word, see every link the Analogy Atlas knows for it — each pair drawn as two tiles and a link, said in a
+     sentence — tap the other word to walk on, or build an analogy from a link and answer it. Or browse a link by kind.
+     Everything comes from analogy-data.js (the items and the lessons' hand-written pairs); nothing is scored or paid. */
+  let IDX = null;
+  function linkIndex() { if (IDX) return IDX; const A0 = D(); const by = {}, seen = new Set(), byLesson = {};
+    const add = (a, b, rel) => { const L = lessonOfRel(rel); if (!L || !a || !b || a === b) return; const key = a + '|' + b + '|' + rel; if (seen.has(key)) return; seen.add(key);
+      const x = { a, b, rel, L: L.id }; (by[a] = by[a] || []).push(x); (by[b] = by[b] || []).push(x); (byLesson[L.id] = byLesson[L.id] || []).push(x); };
+    (A0.lessons || []).forEach((L) => (L.stems || []).forEach((p) => add(p[0], p[1], p[2] || L.rels[0])));
+    Object.keys(A0.items).forEach((id) => { const it = A0.items[id]; add(it[2], it[3], it[0]); });
+    IDX = { by, byLesson, words: Object.keys(by).sort() }; return IDX; }
+  const T = () => (state.anlTool = state.anlTool || { q: '', w: null, lk: null, ask: null });
+  function openTool(w) { stopClock(); const t = T(); t.ask = null; t.lk = null; if (w) { w = String(w).toLowerCase(); t.w = linkIndex().by[w] ? w : null; t.q = t.w ? '' : w; }
+    state.nav = 'anltool'; state.screen = 'app'; state.game = null; try { render(); window.scrollTo(0, 0); } catch (e) {} }
+  const toolRoute = () => { const t = state.anlTool || {}; return 'links' + (t.w ? '/' + encodeURIComponent(t.w) : t.lk ? '/link/' + t.lk : ''); };
+  function suggest(q) { q = String(q || '').trim().toLowerCase(); if (!q) return []; const W0 = linkIndex().words; const out = [];
+    for (const w of W0) { if (w.indexOf(q) === 0) { out.push(w); if (out.length >= 8) break; } } return out; }
+  function pairRow(x, me) { const L = lesson(x.L);
+    const tl = (w) => w === me ? `<span class="anl-tile me">${esc(w)}</span>` : `<button class="anl-tile go" data-act="anlTool" data-arg="word:${escA(w)}" aria-label="${escA('See the links of ' + w)}">${esc(w)}</button>`;
+    return `<li class="anl-lrow"><div class="anl-pair sm">${tl(x.a)}<span class="anl-link" aria-hidden="true"><svg viewBox="0 0 120 34" preserveAspectRatio="none"><path d="M4 26 C 34 4, 86 4, 112 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M104 15 L114 25 L100 28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><em>${lic(L.id, 13)} ${esc(L.title)}</em></span>${tl(x.b)}</div>
+      <p class="anl-lsay">${esc(linkLine(x.rel, x.a, x.b))}</p></li>`; }
+  /* an analogy from one link: a stem pair from that lesson's bank (no shared word), the link's second word to find,
+     and two second words of other pairs in the same lesson as the wrong answers — all fixed by a hash of the link */
+  function makeAsk(x) { const L = lesson(x.L); const I = linkIndex(); const words = [x.a, x.b];
+    const stems = (L.stems || []).filter((p) => (L.id !== 'family' || (p[2] || L.rels[0]) === x.rel) && words.indexOf(p[0]) < 0 && words.indexOf(p[1]) < 0);
+    if (!stems.length) return null; const st = stems[hash('tool|' + x.a + '|' + x.b) % stems.length];
+    const others = [...new Set((I.byLesson[x.L] || []).map((y) => y.b))].filter((w) => w !== x.b && w !== x.a && w !== st[0] && w !== st[1]);
+    if (others.length < 2) return null; const h = hash('tool-o|' + x.a + '|' + x.b); const wrong = [others[h % others.length], others[(h >>> 8) % others.length]];
+    if (wrong[0] === wrong[1]) wrong[1] = others[(h % others.length + 1) % others.length];
+    const opts = [x.b].concat(wrong); const ord = perm('tool|' + x.a + '|' + x.b, opts.length);
+    return { x, a: st[0], b: st[1], srel: st[2] || L.rels[0], c: x.a, opts: ord.map((i) => opts[i]), ans: ord.indexOf(0), picked: null }; }
+  function toolView() { if (!D()) return ''; css(); const t = T(); const I = linkIndex(); const A0 = D();
+    const hd = (() => { try { return pageHead('Link Finder', '', 'Every link the Analogy Atlas knows — type a word', '', 'setNav', 'Library', 'explore', lic('family', 20)); } catch (e) { return '<h1>Link Finder</h1>'; } })();
+    const sug = t.w ? [] : suggest(t.q);
+    const box = `<div class="anl-tbox"><span class="anl-tic">${ic('search', 20)}</span><input data-inp="anlToolType" data-key="anlToolKey" data-fkey="anlTool" value="${escA(t.q || '')}" aria-label="Type a word to see its links" placeholder="Type a word — big, bird, teach…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      ${t.q || t.w ? `<button class="anl-tclear" data-act="anlTool" data-arg="clear" aria-label="Clear">${ic('close', 16)}</button>` : ''}</div>
+      ${sug.length ? `<div class="anl-sugs typed" role="listbox" aria-label="Words that start with ${escA(t.q)}">${sug.map((w) => `<button class="anl-sug" role="option" data-act="anlTool" data-arg="word:${escA(w)}">${esc(w)}</button>`).join('')}</div>` : t.q && !t.w ? `<p class="anl-note">No links for “${esc(t.q)}” yet. Try a shorter start, or browse a link below.</p>` : ''}`;
+    let main = '';
+    if (t.w) { const rows = (I.by[t.w] || []).slice(); const g = {}; rows.forEach((x) => { (g[x.L] = g[x.L] || []).push(x); });
+      const order = (A0.lessons || []).map((l) => l.id).filter((id) => g[id]);
+      const gl = A0.gloss[t.w];
+      let ask = '';
+      if (t.ask) { const q = t.ask; const v = q.picked;
+        ask = `<div class="anl-card anl-askcard"><h3 class="anl-h3">${ic('spark', 15)} An analogy from this link</h3>
+          <div class="anl-q"><span>${esc(q.a.toUpperCase())}</span><i>:</i><span>${esc(q.b.toUpperCase())}</span><i>::</i><span>${esc(q.c.toUpperCase())}</span><i>:</i><span class="anl-blank">${v != null ? esc(q.x.b.toUpperCase()) : '?'}</span></div>
+          <div class="anl-opts n${q.opts.length}">${q.opts.map((o, i) => { const cls = v == null ? '' : i === q.ans ? ' ok' : i === v ? ' no' : ' dim';
+            return `<button class="anl-opt${cls}" data-act="anlTool" data-arg="pick:${i}"${v != null ? ' disabled' : ''}><span class="anl-k">${i + 1}</span>${esc(o)}</button>`; }).join('')}</div>
+          ${v == null ? '' : `<div class="${v === q.ans ? 'anl-yes' : 'anl-miss'}"><p><b>${v === q.ans ? 'Yes.' : 'It is ' + esc(q.x.b) + '.'}</b> ${esc(linkLine(q.x.rel, q.x.a, q.x.b))}</p><p class="anl-why">The first pair: ${esc(linkLine(q.srel, q.a, q.b))}</p></div>`}</div>`; }
+      main = `<div class="anl-card anl-wordhead"><div><h2 class="anl-ct">${esc(t.w)}</h2>${gl ? `<p class="anl-cs">${esc(gl)}</p>` : ''}</div>
+          <button class="anl-say" data-act="anlTool" data-arg="say" aria-label="${escA('Hear ' + t.w)}">${ic('volume', 16)}</button></div>${ask}
+        ${order.map((id) => { const L = lesson(id); const list = g[id].slice(0, 12);
+          return `<section class="anl-lgroup"><h3 class="anl-lg">${lic(id, 16)} ${esc(L.title)} <span>${g[id].length}</span></h3><ul class="anl-lrows">${list.map((x) => pairRow(x, t.w)).join('')}</ul>
+            ${makeAsk(g[id][0]) ? `<button class="anl-btn sm" data-act="anlTool" data-arg="ask:${escA(id)}">${ic('spark', 15)} Make an analogy from this link</button>` : ''}</section>`; }).join('')}`; }
+    else if (t.lk) { const L = lesson(t.lk); const list = (I.byLesson[t.lk] || []).slice(0, 40);
+      main = `<div class="anl-card"><div class="anl-ctop"><span class="anl-cic">${lic(L.id, 24)}</span><div><h2 class="anl-ct">${esc(L.title)}</h2><p class="anl-cs">${esc(L.idea)}</p></div></div>
+        <ul class="anl-lrows">${list.map((x) => pairRow(x, null)).join('')}</ul>
+        <div class="anl-btns"><button class="anl-btn" data-act="anlTool" data-arg="links">${ic('arrowLeft', 16)} Every link</button><button class="anl-btn main" data-act="openAnalogies">Learn it in the Analogy Atlas</button></div></div>`; }
+    if (!t.w && !t.lk && !t.q) { const ws = I.words; const d0 = day(); const pick = [];
+      for (let k = 0; pick.length < 12 && k < 60; k++) { const w = ws[hash(d0 + '|' + k) % ws.length]; if ((I.by[w] || []).length >= 2 && pick.indexOf(w) < 0) pick.push(w); }
+      main = `<h2 class="anl-h2">Try a word</h2><div class="anl-sugs">${pick.map((w) => `<button class="anl-sug" data-act="anlTool" data-arg="word:${escA(w)}">${esc(w)}</button>`).join('')}</div>
+        <h2 class="anl-h2">Browse a link</h2><div class="anl-lgrid">${(A0.lessons || []).map((L) => { const ex = (L.stems || [])[0] || [];
+          return `<button class="anl-lcard" data-act="anlTool" data-arg="link:${escA(L.id)}"><span class="anl-cic">${lic(L.id, 20)}</span><span class="anl-lct">${esc(L.title)}</span><span class="anl-lcx">${esc((ex[0] || '') + ' → ' + (ex[1] || ''))}</span><span class="anl-lcn">${(I.byLesson[L.id] || []).length} pairs</span></button>`; }).join('')}</div>`; }
+    return `<div class="anl-page">${hd}${box}${main}</div>`; }
+  function toolAct(arg) { const t = T(); arg = String(arg || ''); const k = arg.split(':')[0], v = arg.slice(arg.indexOf(':') + 1);
+    if (k === 'word') { t.w = linkIndex().by[v] ? v : null; t.q = ''; t.lk = null; t.ask = null; }
+    else if (k === 'link') { t.lk = lesson(v) ? v : null; t.w = null; t.q = ''; t.ask = null; }
+    else if (k === 'links' || k === 'clear') { t.w = null; t.lk = null; t.q = ''; t.ask = null; }
+    else if (k === 'ask') { const x = (linkIndex().by[t.w] || []).find((y) => y.L === v); t.ask = x ? makeAsk(x) : null; }
+    else if (k === 'pick') { if (t.ask && t.ask.picked == null && +v >= 0 && +v < t.ask.opts.length) { t.ask.picked = +v; try { sfx(+v === t.ask.ans ? 'correct' : 'wrong'); } catch (e) {} } }
+    else if (k === 'say') { try { say(t.w); } catch (e) {} return; }
+    render(); if (k === 'word' || k === 'link' || k === 'ask') { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) {} } }
+  function toolType(v) { const t = T(); t.q = String(v || '').toLowerCase().replace(/[^a-z\- ]/g, ''); if (t.w) t.w = null; t.ask = null; t.lk = null; render(); }
+  function toolKey(e) { const t = T(); if (e.key === 'Enter') { const s0 = suggest(t.q)[0]; if (s0) { e.preventDefault(); toolAct('word:' + s0); } }
+    else if (e.key === 'Escape') { e.preventDefault(); toolAct('clear'); } }
+
   /* ------------------------------------------------------------------ styles (lazy, with the tab) */
   function css() { if (document.getElementById('anl-css')) return; const st = document.createElement('style'); st.id = 'anl-css'; st.textContent = `
 .anl-page{max-width:900px;margin:0 auto}
@@ -584,6 +733,7 @@
 .anl-ctop{display:flex;gap:12px;align-items:flex-start}
 .anl-cic{flex:0 0 auto;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--accent);color:#FFFFFF}
 .anl-cic.chk{background:#7A4FD0}
+.anl-cic.big{width:64px;height:64px;border-radius:20px}
 .anl-ct{font-family:var(--display);font-size:20px;margin:0}
 .anl-cs{margin:4px 0 0;color:var(--muted);line-height:1.45}
 .anl-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
@@ -601,12 +751,8 @@
 .anl-gic{color:#FFD98A}.anl-gt{font-family:var(--display);font-weight:900;font-size:19px}.anl-gp{font-size:13px;opacity:.9;line-height:1.4}.anl-gb{font-size:12px;color:#FFD98A;font-weight:700}
 .anl-lesson p{line-height:1.55;max-width:66ch}
 .anl-big{font-size:17px;line-height:1.5;margin:0}
-.anl-h3{font-family:var(--display);font-size:15px;margin:16px 0 4px;color:var(--accent)}
-.anl-bridge{font-family:var(--display);font-weight:800;font-size:17px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 10%,transparent)}
-.anl-warn{padding:10px 12px;border-radius:12px;background:rgba(242,169,59,.14)}
-.anl-exs{padding-left:20px;display:grid;gap:10px}
-.anl-ex{display:grid;gap:3px}.anl-exq{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;letter-spacing:.02em}.anl-exb{color:var(--muted);font-size:14px}
-.anl-tip{font-size:14px;color:var(--muted)}
+.anl-h3{font-family:var(--display);font-size:15px;margin:16px 0 4px;color:var(--accent);display:flex;align-items:center;gap:6px}
+.anl-askcard .anl-h3{margin-top:0}
 .anl-words{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px}
 .anl-word{display:grid;grid-template-columns:44px minmax(90px,auto) minmax(0,1fr);gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 .anl-say{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--bg2,var(--surface));display:grid;place-items:center;color:var(--accent)}
@@ -617,9 +763,50 @@
 .anl-kind{font-family:var(--display);font-weight:800;flex:1;min-width:0}
 .anl-count,.anl-right{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;display:inline-flex;gap:4px;align-items:center}
 .anl-time{font-family:var(--display);font-weight:900;font-size:22px;color:var(--accent);min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}.anl-time.low{color:var(--bad,#D33)}
-.anl-q{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:6px 10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:clamp(20px,4.6vw,30px);letter-spacing:.02em;margin:6px 0 4px;text-align:center}
-.anl-q i{font-style:normal;color:var(--muted)}
-.anl-blank{min-width:4ch;border-bottom:3px solid currentColor;text-align:center}
+.anl-q{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;font-family:var(--display);font-weight:900;font-size:clamp(17px,4vw,25px);letter-spacing:.01em;margin:6px 0 4px;text-align:center}
+.anl-q span{padding:8px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 11%,var(--paper,#FFFFFF));border:2px solid color-mix(in srgb,var(--accent) 32%,transparent)}
+.anl-q span:nth-of-type(n+3){background:color-mix(in srgb,#2E9E5B 11%,var(--paper,#FFFFFF));border-color:color-mix(in srgb,#2E9E5B 38%,transparent)}
+.anl-q i{font-style:normal;color:var(--muted);font-weight:800}
+.anl-blank{min-width:4ch;text-align:center;border-style:dashed !important}
+/* Learn, one step a screen */
+.anl-stepper{padding:18px 20px 16px;min-height:320px;display:flex;flex-direction:column}
+.anl-steps-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.anl-stepn{font-size:13px;font-weight:700;color:var(--muted)}
+.anl-dots{display:flex;gap:5px}.anl-dot{width:22px;height:6px;border-radius:3px;background:var(--line)}
+.anl-dot.done{background:color-mix(in srgb,var(--accent) 45%,transparent)}.anl-dot.on{background:var(--accent)}
+.anl-stept{font-family:var(--display);font-size:clamp(20px,3.4vw,26px);margin:10px 0 6px}
+.anl-stepbody{flex:1;display:grid;align-content:start;gap:14px}
+.anl-stepbody>*{animation:anl-in .3s ease both}
+@keyframes anl-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.anl-stepbody>*{animation:none}}
+.anl-lead{font-size:18px;line-height:1.5;margin:0;max-width:62ch}
+.anl-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(84px,170px) minmax(0,1fr);align-items:center;gap:6px;max-width:640px;width:100%;margin:0 auto}
+.anl-tile{font-family:var(--display);font-weight:900;font-size:clamp(19px,4.4vw,30px);text-align:center;padding:14px 10px;border-radius:18px;overflow-wrap:anywhere;
+  background:color-mix(in srgb,var(--accent) 11%,var(--paper,#FFFFFF));border:2px solid color-mix(in srgb,var(--accent) 32%,transparent);box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 20%,transparent)}
+.anl-pair.two .anl-tile,.anl-pairs2 .anl-pair+.anl-pair .anl-tile,.anl-brow+.anl-said+.anl-brow .anl-tile{background:color-mix(in srgb,#2E9E5B 11%,var(--paper,#FFFFFF));border-color:color-mix(in srgb,#2E9E5B 38%,transparent);box-shadow:0 3px 0 color-mix(in srgb,#2E9E5B 22%,transparent)}
+.anl-tile.blank{border-style:dashed !important;color:var(--muted);box-shadow:none}
+.anl-link{display:grid;justify-items:center;color:var(--accent);min-width:0}
+.anl-link>svg{width:100%;height:30px;display:block}
+.anl-link em{font-style:normal;font-size:12px;font-weight:800;line-height:1.1;display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);white-space:nowrap;margin-top:-2px;max-width:100%}
+.anl-link em svg{flex:0 0 auto}
+.anl-said{margin:0 auto;max-width:640px;width:100%;font-family:var(--display);font-weight:800;font-size:18px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 9%,transparent);display:flex;gap:8px;align-items:center}
+.anl-said.sm{font-size:15px;padding:8px 12px;font-family:inherit;font-weight:700}
+.anl-tipbox,.anl-trapbox{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;font-size:17px;line-height:1.5}
+.anl-tipbox p,.anl-trapbox p{margin:0}
+.anl-tipbox{background:color-mix(in srgb,#3B82F6 10%,transparent);color:inherit}.anl-tipbox svg{color:#2F6FD8;flex:0 0 auto}
+.anl-trapbox{background:rgba(242,169,59,.16)}.anl-trapbox svg{color:#C77800;flex:0 0 auto}
+.anl-build{display:grid;gap:10px}
+.anl-brow{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:8px}
+.anl-bn{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#FFFFFF;font-weight:800;font-size:14px}
+.anl-whole{text-align:center;font-size:18px;margin:4px 0 0}
+.anl-pairs2{display:grid;gap:12px}
+.anl-ready{display:grid;justify-items:center;text-align:center;gap:10px;color:var(--accent)}
+.anl-ready .anl-lead{color:var(--ink,inherit)}
+.anl-recap{text-align:left;max-width:520px;margin:0;padding-left:22px;display:grid;gap:6px;font-size:16px;line-height:1.45;color:var(--ink,inherit)}
+.anl-btns.center{justify-content:center}
+.anl-stepnav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.anl-btn[disabled]{opacity:.45;cursor:default}
+@media (max-width:480px){.anl-pair{grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)}.anl-link em{font-size:0;padding:4px}.anl-link em svg{width:14px;height:14px}.anl-lead,.anl-tipbox,.anl-trapbox{font-size:16px}}
 .anl-ask{text-align:center;color:var(--muted);margin:6px 0 12px}
 .anl-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .anl-opts.n3,.anl-opts.lines{grid-template-columns:1fr}
@@ -648,12 +835,42 @@
 .anl-rival.me span{color:var(--accent)}
 .anl-rival.sat{opacity:.32;filter:grayscale(1)}
 .anl-rival.right span{color:#2E7D4F}.anl-rival.now span,.anl-rival.miss span{color:#B33A3A}
+/* Link Finder */
+.anl-tbox{display:flex;align-items:center;gap:8px;margin:6px 0 8px;padding:6px 8px 6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--surface,var(--paper))}
+.anl-tbox:focus-within{border-color:var(--accent)}
+.anl-tic{color:var(--muted);display:grid}
+.anl-tbox input{flex:1;min-width:0;min-height:44px;border:0;background:transparent;font-size:18px;font-weight:700;color:inherit;outline:none}
+.anl-tclear{width:44px;height:44px;border-radius:50%;border:0;background:var(--bg2,var(--line));display:grid;place-items:center;color:inherit}
+.anl-sugs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.anl-sug{min-height:44px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--paper,var(--bg2));font-family:var(--display);font-weight:800;font-size:16px;color:inherit}
+.anl-sug:hover{border-color:var(--accent)}
+.anl-wordhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.anl-wordhead .anl-ct{font-size:28px}
+.anl-lgroup{margin-top:14px;padding:14px 16px;border-radius:18px;border:1px solid var(--line);background:var(--paper,var(--bg2))}
+.anl-lg{font-family:var(--display);font-size:17px;margin:0 0 8px;display:flex;align-items:center;gap:7px;color:var(--accent)}
+.anl-lg span{font-size:12px;color:var(--muted);font-weight:700;margin-left:auto}
+.anl-lrows{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.anl-lrow{display:grid;gap:4px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.anl-lrow:last-child{border-bottom:0;padding-bottom:0}
+.anl-pair.sm .anl-tile{font-size:clamp(16px,3.4vw,21px);padding:9px 8px;border-radius:14px}
+.anl-tile.go{cursor:pointer;color:inherit;font:inherit;font-family:var(--display);font-weight:900}
+.anl-tile.go:hover{border-color:var(--accent)}
+.anl-tile.me{background:var(--accent);border-color:var(--accent);color:#FFFFFF}
+.anl-lsay{margin:0;text-align:center;color:var(--muted);font-size:14px}
+.anl-btn.sm{min-height:44px;font-size:14px;margin-top:10px}
+.anl-askcard{border-color:var(--accent)}
+.anl-lgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.anl-lgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.anl-lcard{text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:10px;row-gap:2px;padding:12px;border-radius:16px;border:1px solid var(--line);background:var(--paper,var(--bg2));color:inherit;min-height:88px}
+.anl-lcard .anl-cic{grid-row:1/4;width:40px;height:40px;border-radius:12px}
+.anl-lct{font-family:var(--display);font-weight:800;font-size:16px}.anl-lcx{font-size:14px;color:var(--muted)}.anl-lcn{font-size:12px;color:var(--muted)}
+.anl-lcard:hover{border-color:var(--accent)}
 `; document.head.appendChild(st); }
 
   /* ------------------------------------------------------------------ the door */
-  const API = { open, openRoute, view, beeView, openBee, stop, route, act, beeAct, beeBest, here: () => { const h = here(); return h ? { region: h.r.id, name: h.r.name } : null; },
+  const API = { open, openRoute, view, beeView, openBee, stop, route, act, beeAct, beeBest, toolView, openTool, toolRoute, toolAct, here: () => { const h = here(); return h ? { region: h.r.id, name: h.r.name } : null; },
     _question: question, _bridge: bridgeQ, _linkLine: linkLine };
   W.SB_ANL = API;
-  try { Object.assign(app, { anl: (a) => act(a), anlBee: (a) => beeAct(a) }); } catch (e) {}
-  try { if (state.nav === 'analogy' || state.nav === 'anlbee') render(); } catch (e) {}
+  try { Object.assign(app, { anl: (a) => act(a), anlBee: (a) => beeAct(a), anlTool: (a) => toolAct(a), anlToolType: (v) => toolType(v), anlToolKey: (e) => toolKey(e) }); } catch (e) {}
+  try { if (state.nav === 'analogy' || state.nav === 'anlbee' || state.nav === 'anltool') render(); } catch (e) {}
 })();

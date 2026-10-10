@@ -5,7 +5,8 @@
    analogy.js + analogy-data.js (lazy group `analogy`, cut by tools/analogy/build-app.cjs). This holds:
    1. the tab sits right after Word Gym on the desktop bar and the phone bar, opens the Analogy Atlas at
       #/analogies, and the first region's road carries its stops and a level check
-   2. a stop teaches before it tests: Learn (the link in words, worked examples) and Meet the words
+   2. a stop teaches before it tests: Learn, step by step (the idea → say the link → name one → spot it → the trap →
+      build an analogy → try one → ready; the asking steps hold Next) and Meet the words
    3. practice is relation-first: name the link, then answer; keys 1–3 then A–E, and a tap works too
    4. NEVER THE ANSWER IN PLAIN SIGHT: while a question is open, the answer word is not on screen except as
       one of the options; a miss HOLDS with the answer and why the chosen word tempted, until Continue
@@ -16,6 +17,8 @@
    8. Mock Analogy Bee: its half banner stands beside Mock Spelling Bee in Compete, both one height; a bee
       runs to a finish with a place, and only a podium pays a contest coin
    9. no console errors anywhere on the way
+  10. the Library's Link Finder: a thin full-width banner under the shelf opens #/links — suggestions, a word's links by
+      kind, an analogy built from a link that never shows its answer early, walking on by tapping a word
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/analogies.cjs                              */
 'use strict';
 const { chromium } = require('playwright');
@@ -78,10 +81,28 @@ async function round(pg, rights) { const n = (await run(pg)).n;
     ok(await pg.evaluate(() => { const i = document.querySelector('.anl-board .anl-paint img'); return !!i && i.naturalWidth > 0 && /anl-ponds\.jpg/.test(i.src) && document.querySelectorAll('.anl-rtab').length === 4; }), 'the board is its painted map (loaded), with four regions to choose');
 
     /* 2 — Learn and Meet the words */
-    await pg.click('.anl-btn[data-arg="learn"]'); await W.until(pg, () => !!document.querySelector('.anl-lesson'), null, 4000);
-    const lessonTxt = await pg.evaluate(() => document.querySelector('.anl-lesson').innerText);
-    ok(/How to spot it/i.test(lessonTxt) && /Watch out/i.test(lessonTxt) && (await pg.evaluate(() => document.querySelectorAll('.anl-ex').length)) >= 2, 'Learn shows the link in words, how to spot it, the trap and worked examples');
+    /* Learn is STEP BY STEP (owner, 10 Oct 2026: "the UI is primitive and it's not step by step learning"): one idea a
+       screen, word tiles joined by a drawn link, and the asking steps wait for an answer before Next opens */
+    await pg.click('.anl-btn[data-arg="learn"]'); await W.until(pg, () => !!document.querySelector('.anl-stepper'), null, 4000);
+    const stepOf = () => pg.evaluate(() => { const c = document.querySelector('.anl-stepper'); const nx = document.querySelector('[data-arg="ls:next"]');
+      return { k: c.getAttribute('data-step'), n: document.querySelectorAll('.anl-dot').length, tiles: document.querySelectorAll('.anl-stepper .anl-tile').length, next: nx ? !nx.disabled : null, txt: c.innerText }; });
+    let ls = await stepOf();
+    ok(ls.k === 'idea' && ls.n >= 6 && ls.tiles >= 2 && /Step 1 of/.test(ls.txt), `Learn opens on step 1 of ${ls.n}: the idea, drawn as word tiles joined by a link`);
     ok(/#\/analogies\/.+\/learn/.test(await pg.evaluate(() => location.hash)), 'the lesson has its own address');
+    const seenSteps = [ls.k]; let gated = true;
+    for (let i = 0; i < 10 && ls.next !== null; i++) {
+      if (['say', 'name', 'build', 'try'].includes(ls.k) && ls.next) gated = false;            // an asking step must not open Next before it is answered
+      if (ls.k === 'say') await pg.click('[data-arg="ls:say"]');
+      if (ls.k === 'name') await pg.keyboard.press('1');
+      if (ls.k === 'build') { await pg.click('[data-arg="ls:build"]'); await pg.click('[data-arg="ls:build"]'); }
+      if (ls.k === 'try') { await pg.click('[data-arg^="ls:try:"]'); }
+      await pg.keyboard.press('ArrowRight'); await W.until(pg, (k) => document.querySelector('.anl-stepper').getAttribute('data-step') !== k, ls.k, 3000);
+      ls = await stepOf(); seenSteps.push(ls.k); }
+    ok(gated, 'the asking steps (say, name, build, try) hold Next until the child has done them');
+    ok(['say', 'name', 'spot', 'trap', 'build', 'try', 'ready'].every((k) => seenSteps.includes(k)) && ls.k === 'ready', 'the steps run idea → say → name → spot → trap → build → try → ready, by keyboard (→, 1–3) and tap: ' + seenSteps.join(' → '));
+    ok(!!(await pg.$('.anl-stepper [data-arg="practice"]')) && !!(await pg.$('.anl-stepper [data-arg="words"]')), 'the last step hands on to Meet the words and Start practice');
+    await pg.keyboard.press('ArrowLeft'); ok((await stepOf()).k === 'try', '← goes back a step');
+    await pg.keyboard.press('ArrowRight'); await W.until(pg, () => document.querySelector('.anl-stepper').getAttribute('data-step') === 'ready', null, 3000);
     await pg.click('.anl-btn[data-arg="words"]'); await W.until(pg, () => document.querySelectorAll('.anl-word').length > 5, null, 4000);
     ok(await pg.evaluate(() => [...document.querySelectorAll('.anl-word')].every(r => r.querySelector('.anl-wd').textContent.trim().length > 3)), 'Meet the words lists the stop\'s words, each with its meaning and a speaker button');
 
@@ -186,6 +207,34 @@ async function round(pg, rights) { const n = (await run(pg)).n;
     const end = await pg.evaluate(() => ({ p: state.anlBee.phase, place: state.anlBee.place, coins: state.anlBee.coins, txt: document.querySelector('.anl-page').innerText }));
     ok(end.p === 'done' && end.place >= 1 && end.place <= 8, `the bee runs to a finish (place ${end.place})`);
     ok((end.place <= 3) === (end.coins >= 10), `only a podium pays a contest coin (place ${end.place}, ${end.coins} coins)`);
+    e1.length && errs.push(...e1); await ctx.close();
+
+    /* 10 — the Library's Link Finder (owner, 10 Oct 2026: "analogy tool in the library … a full page stretch thin banner
+       under the book series"): the banner sits under the shelf, spans it, stays thin, and opens #/links; typing suggests,
+       a word shows its links by kind, a link builds an analogy that answers by key, and #/links/<word> opens straight in */
+    ({ ctx, pg, errs: e1 } = await open(b, { hash: '#/explore' }));
+    await W.until(pg, () => !!document.querySelector('.lib-anlband'), null, 10000);
+    const band = await pg.evaluate(() => { const bn = document.querySelector('.lib-anlband').getBoundingClientRect(), sh = document.querySelector('.lib-anlband').previousElementSibling.getBoundingClientRect();
+      const grid = document.querySelector('.lib-grid').getBoundingClientRect(); return { h: bn.height, w: bn.width, shW: sh.width, under: bn.top >= sh.bottom - 1, aboveTiles: bn.bottom <= grid.top + 1 }; });
+    ok(band.under && band.aboveTiles && Math.abs(band.w - band.shW) < 4 && band.h <= 96, `the Link Finder banner sits under the book shelf, as wide as it (${Math.round(band.w)}px) and thin (${Math.round(band.h)}px)`);
+    await pg.click('.lib-anlband'); await W.until(pg, () => !!document.querySelector('.anl-tbox input'), null, 15000);
+    ok(/^#\/links$/.test(await pg.evaluate(() => location.hash)) && (await pg.evaluate(() => document.querySelectorAll('.anl-lcard').length)) === 9, 'it opens the Link Finder at #/links, with the nine links to browse');
+    await pg.click('.anl-tbox input'); await pg.keyboard.type('bi'); await W.until(pg, () => document.querySelectorAll('.anl-sugs.typed .anl-sug').length > 0, null, 4000);
+    const sugs = await pg.evaluate(() => [...document.querySelectorAll('.anl-sugs.typed .anl-sug')].map((x) => x.textContent));
+    ok(sugs.length && sugs.every((w) => w.startsWith('bi')) && !(await pg.$('.anl-lcard')), 'typing suggests words that start with what was typed, and nothing else: ' + sugs.slice(0, 4).join(', '));
+    await pg.keyboard.press('Enter'); await W.until(pg, () => !!document.querySelector('.anl-wordhead'), null, 4000);
+    ok(await pg.evaluate(() => document.querySelectorAll('.anl-lgroup').length >= 1 && document.querySelectorAll('.anl-lrow .anl-tile.me').length >= 1), 'Enter opens the first word: its links, grouped by kind, the word marked in every pair');
+    await pg.evaluate(() => { location.hash = '#/links/big'; }); await W.until(pg, () => state.anlTool && state.anlTool.w === 'big' && !!document.querySelector('.anl-wordhead'), null, 6000);
+    const bigLinks = await pg.evaluate(() => [...document.querySelectorAll('.anl-lg')].map((x) => x.textContent.trim()));
+    ok(bigLinks.length >= 2, '#/links/big opens straight on big: ' + bigLinks.join(' · '));
+    await pg.click('[data-arg^="ask:"]'); await W.until(pg, () => !!document.querySelector('.anl-askcard'), null, 4000);
+    const askLeak = await pg.evaluate(() => { const q = state.anlTool.ask; return document.querySelector('.anl-askcard .anl-q').innerText.toLowerCase().includes(q.x.b.toLowerCase()); });
+    ok(!askLeak, 'the analogy it builds does not show its answer before it is picked');
+    const ans = await pg.evaluate(() => state.anlTool.ask.ans); await pg.keyboard.press(String(ans + 1));
+    ok(await pg.evaluate(() => state.anlTool.ask.picked === state.anlTool.ask.ans && !!document.querySelector('.anl-askcard .anl-yes')), 'a key picks, and the right pick says the link');
+    const w2 = await pg.evaluate(() => { const b0 = document.querySelector('.anl-lrow .anl-tile.go'); return b0 && b0.textContent; });
+    await pg.click('.anl-lrow .anl-tile.go'); await W.until(pg, (w) => state.anlTool.w === w, w2, 4000);
+    ok(await pg.evaluate((w) => location.hash === '#/links/' + encodeURIComponent(w), w2), `tapping the other word walks on to it (${w2})`);
     e1.length && errs.push(...e1); await ctx.close();
 
     /* 1b — the phone bar carries the tab too, and nothing spills sideways */
