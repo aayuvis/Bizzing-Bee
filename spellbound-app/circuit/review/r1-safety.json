@@ -1,0 +1,2250 @@
+[
+ {
+  "path": "fiction",
+  "verdict": "pass",
+  "reason": "L9 label, plain and honest."
+ },
+ {
+  "path": "signoffs.inv",
+  "verdict": "pass",
+  "reason": "Signed openly by a named adult for the Committee. This is the adults-are-open frame."
+ },
+ {
+  "path": "cast.pixel.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.koi.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.beaker.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.panda.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.comet.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.astro.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.scopey.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.melody.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.samurai.tell",
+  "verdict": "pass",
+  "reason": "Mock Bee's fixed tell (test 11). 'Dead still' is an intensity idiom, not violence."
+ },
+ {
+  "path": "cast.goldlegend.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.pronouncer.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.vale.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.barnaby.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.sage.tell",
+  "verdict": "pass",
+  "reason": "Light comic habit for an adult host."
+ },
+ {
+  "path": "cast.tullia.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.bolt.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.hazel.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.salty.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.ratchet.tell",
+  "verdict": "pass",
+  "reason": "A comic raccoon's habit. Things are always returned on screen; 'cannot spell' is never framed as stupidity."
+ },
+ {
+  "path": "cast.dash.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.duchess.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.sloane.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.ash.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.aria.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.arjun.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "cast.mei.tell",
+  "verdict": "pass",
+  "reason": "A rival or host tell (if rendered): a neutral habit, no jab at looks, family or worth."
+ },
+ {
+  "path": "rounds[0].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[0].pieces.inv",
+  "verdict": "pass",
+  "reason": "The key safety line: before the first note, the child is told openly that the letters are a Circuit tradition and that the Committee knows who writes them (amendment 1). Keep it; ~57 words, so leave no room to grow."
+ },
+ {
+  "path": "rounds[0].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[0].pieces.drama",
+  "verdict": "pass",
+  "reason": "A miss without shame: Pip sits down and then cheers loudest. Models good sportsmanship."
+ },
+ {
+  "path": "rounds[0].pieces.laugh",
+  "verdict": "pass",
+  "reason": "The adult's joke is affectionate, not sarcastic. Pip is laughed with, not at."
+ },
+ {
+  "path": "rounds[0].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Light mystery, no fear."
+ },
+ {
+  "path": "rounds[0].pieces.above",
+  "verdict": "pass",
+  "reason": "The rival's letter: warm, names the technique, no gloating."
+ },
+ {
+  "path": "rounds[0].pieces.below",
+  "verdict": "pass",
+  "reason": "The rival's letter: encouraging, names the fix, no shaming of the placing."
+ },
+ {
+  "path": "rounds[0].pieces.v",
+  "verdict": "pass",
+  "reason": "Ambiguous but not unsettling ('So are you' = you are waiting too). The Committee knows the writer, and nothing in it asks for secrecy."
+ },
+ {
+  "path": "rounds[0].pieces.dax",
+  "verdict": "pass",
+  "reason": "Rivalry declared as gamesmanship; no insult. L4."
+ },
+ {
+  "path": "rounds[0].pieces.pip",
+  "verdict": "pass",
+  "reason": "The changes log already removed 'big head' (an appearance jab). The new misuse is harmless."
+ },
+ {
+  "path": "rounds[0].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[0].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[0].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[0].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A chapter hook; light suspense only."
+ },
+ {
+  "path": "rounds[0].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clue card: factual; asks the child for no secret."
+ },
+ {
+  "path": "rounds[1].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[1].pieces.inv",
+  "verdict": "pass",
+  "reason": "Affectionate ribbing of Theo's tell, balanced by 'We admire Theo's curiosity' and the round's lesson that asking is right."
+ },
+ {
+  "path": "rounds[1].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[1].pieces.drama",
+  "verdict": "pass",
+  "reason": "Gentle joke. Theo spells perfectly and comes out the winner of the beat."
+ },
+ {
+  "path": "rounds[1].pieces.laugh",
+  "verdict": "pass",
+  "reason": "The adult is patient, not sarcastic. Vale is in plain sight."
+ },
+ {
+  "path": "rounds[1].pieces.suspense",
+  "verdict": "pass",
+  "reason": "A historical record of a placing; the story later reframes it with warmth. Not shaming."
+ },
+ {
+  "path": "rounds[1].pieces.above",
+  "verdict": "pass",
+  "reason": "The rival's letter: warm, names the technique, no gloating."
+ },
+ {
+  "path": "rounds[1].pieces.below",
+  "verdict": "pass",
+  "reason": "The rival's letter: encouraging, names the fix, no shaming of the placing."
+ },
+ {
+  "path": "rounds[1].pieces.v",
+  "verdict": "pass",
+  "reason": "V. note: intriguing, not cruel. The adults know the writer (R1 invitation); nothing asks the child for secrecy."
+ },
+ {
+  "path": "rounds[1].pieces.dax",
+  "verdict": "pass",
+  "reason": "The wrong is corrected on screen, on the spot (Nova), and spellers fix their notes. L4 satisfied."
+ },
+ {
+  "path": "rounds[1].pieces.beeFileFakeTip.tip",
+  "verdict": "pass",
+  "reason": "The fake tip is shown as wrong, with the real rule. Teaches, doesn't reward the trick."
+ },
+ {
+  "path": "rounds[1].pieces.beeFileFakeTip.truth",
+  "verdict": "pass",
+  "reason": "The fake tip is shown as wrong, with the real rule. Teaches, doesn't reward the trick."
+ },
+ {
+  "path": "rounds[1].pieces.pip",
+  "verdict": "pass",
+  "reason": "Absurd malapropism (a lizard); the joke is on Pip's mix-up, not Theo's looks or worth."
+ },
+ {
+  "path": "rounds[1].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[1].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[1].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[1].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A chapter hook; light suspense only."
+ },
+ {
+  "path": "rounds[1].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clue card: factual; asks the child for no secret."
+ },
+ {
+  "path": "rounds[2].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[2].pieces.inv",
+  "verdict": "pass",
+  "reason": "The Committee's invitation: warm, in-world, no pressure to come back."
+ },
+ {
+  "path": "rounds[2].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[2].pieces.drama",
+  "verdict": "pass",
+  "reason": "Nerves shown with dignity: he keeps tracing. Holds at any placing (L6)."
+ },
+ {
+  "path": "rounds[2].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Gentle comedy; nobody humiliated."
+ },
+ {
+  "path": "rounds[2].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Light mystery prop."
+ },
+ {
+  "path": "rounds[2].pieces.above",
+  "verdict": "pass",
+  "reason": "The rival's letter: warm, names the technique, no gloating."
+ },
+ {
+  "path": "rounds[2].pieces.below",
+  "verdict": "pass",
+  "reason": "The rival's letter: encouraging, names the fix, no shaming of the placing."
+ },
+ {
+  "path": "rounds[2].pieces.v",
+  "verdict": "pass",
+  "reason": "V. note: intriguing, not cruel. The adults know the writer (R1 invitation); nothing asks the child for secrecy."
+ },
+ {
+  "path": "rounds[2].pieces.dax",
+  "verdict": "pass",
+  "reason": "The blame is answered on screen: the cleared child asks calmly in public, Dax has no answer. Theo is not humiliated, and the blame doesn't work."
+ },
+ {
+  "path": "rounds[2].pieces.pip",
+  "verdict": "pass",
+  "reason": "Absurd malapropism (a fish); not an appearance joke."
+ },
+ {
+  "path": "rounds[2].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[2].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[2].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[2].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A chapter hook; light suspense only."
+ },
+ {
+  "path": "rounds[2].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clue card: factual; asks the child for no secret."
+ },
+ {
+  "path": "rounds[3].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[3].pieces.inv",
+  "verdict": "pass",
+  "reason": "The Committee's invitation: warm, in-world, no pressure to come back."
+ },
+ {
+  "path": "rounds[3].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[3].pieces.drama",
+  "verdict": "pass",
+  "reason": "Sports-documentary beat; no harm, no shame."
+ },
+ {
+  "path": "rounds[3].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Gentle comedy; nobody humiliated."
+ },
+ {
+  "path": "rounds[3].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Light peril (a missing bell). No one is in danger."
+ },
+ {
+  "path": "rounds[3].pieces.above",
+  "verdict": "pass",
+  "reason": "The rival's letter: warm, names the technique, no gloating."
+ },
+ {
+  "path": "rounds[3].pieces.below",
+  "verdict": "fix",
+  "reason": "Tone: 'Phantom with an f!' is an exclamation at the child's own miss. It reads as a laugh at a wrong answer, the one thing a below letter must never do. It also presumes the child's missed word. The fix keeps the lesson (ph for f, ask the origin) and states the rule.",
+  "fix_text": "Phantom starts with ph, not f. Ask where a word came from and it tells you its rules: Greek words travel with their luggage. — Mira"
+ },
+ {
+  "path": "rounds[3].pieces.v",
+  "verdict": "pass",
+  "reason": "'Lose more than a round' is ominous for an 8-year-old but stays inside a light mystery, and it resolves as a lost record, not harm. Acceptable."
+ },
+ {
+  "path": "rounds[3].pieces.dax",
+  "verdict": "pass",
+  "reason": "The fake tip is corrected on the spot, and listeners stop trusting him: mocking and tricks don't work."
+ },
+ {
+  "path": "rounds[3].pieces.beeFileFakeTip.tip",
+  "verdict": "pass",
+  "reason": "The fake tip is shown as wrong, with the real rule. Teaches, doesn't reward the trick."
+ },
+ {
+  "path": "rounds[3].pieces.beeFileFakeTip.truth",
+  "verdict": "pass",
+  "reason": "The fake tip is shown as wrong, with the real rule. Teaches, doesn't reward the trick."
+ },
+ {
+  "path": "rounds[3].pieces.pip",
+  "verdict": "pass",
+  "reason": "The changes log already removed 'clear skin' (a comment on a girl's appearance). The new misuse is harmless."
+ },
+ {
+  "path": "rounds[3].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[3].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[3].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Neutral and careful ('claiming to'); no endorsement of the supernatural."
+ },
+ {
+  "path": "rounds[3].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A chapter hook; light suspense only."
+ },
+ {
+  "path": "rounds[3].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clue card: factual; asks the child for no secret."
+ },
+ {
+  "path": "rounds[4].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[4].pieces.inv",
+  "verdict": "pass",
+  "reason": "Names Dax's warning in a circulated invitation, while Case 2 had it said 'quietly'. Weighed and passed: a public, unadorned consequence is the L4 design (the formal warning is read aloud by design), with no adjective or mockery."
+ },
+ {
+  "path": "rounds[4].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[4].pieces.drama",
+  "verdict": "pass",
+  "reason": "A public miss handled with dignity: silence, no laughter, a door held. Nobody humiliates him."
+ },
+ {
+  "path": "rounds[4].pieces.laugh",
+  "verdict": "pass",
+  "reason": "The laugh comes before the crack, as the orderNote requires; 'for the last time today' signals the turn."
+ },
+ {
+  "path": "rounds[4].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Light, spooky-but-safe tension."
+ },
+ {
+  "path": "rounds[4].pieces.above",
+  "verdict": "pass",
+  "reason": "Kwame tells someone where he is going (the child). Warm, self-aware."
+ },
+ {
+  "path": "rounds[4].pieces.below",
+  "verdict": "pass",
+  "reason": "Warm; no shaming of the child's placing."
+ },
+ {
+  "path": "rounds[4].pieces.v",
+  "verdict": "pass",
+  "reason": "'When a strong one breaks' is emotional but not cruel. The note doesn't celebrate the gloat."
+ },
+ {
+  "path": "rounds[4].pieces.dax",
+  "verdict": "pass",
+  "reason": "Mocking is done out of Kwame's hearing (L4). It is clearly wrong on screen: nobody laughs and Rafi turns his back. Mocking visibly fails. The apology in Round VIII names it 'wrong'."
+ },
+ {
+  "path": "rounds[4].pieces.pip",
+  "verdict": "fix",
+  "reason": "Tone: this mail lands straight after Kwame's public miss and walk-out. A joke that he is unflappable reads as irony at his lowest moment, and the round's own orderNote says the laugh comes before the crack, never after it. The fix keeps the word, the turnip misuse and Pip's comic voice, and turns the note into loyalty. pipWord stays as it is.",
+  "fix_text": "Kwame is imperturbable, which means he can't be turned into a turnip. (I wrote this before the round. I'm sending it anyway. I still think so.) — Pip"
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[4].pieces.cliff",
+  "verdict": "pass",
+  "reason": "'The Pronouncer says he's safe' is on screen in the cliff itself (amendment 2). A missing teen is framed safely."
+ },
+ {
+  "path": "rounds[4].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clue card: factual; asks the child for no secret."
+ },
+ {
+  "path": "rounds[5].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[5].pieces.inv",
+  "verdict": "pass",
+  "reason": "The Committee's invitation: warm, in-world, no pressure to come back."
+ },
+ {
+  "path": "rounds[5].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[5].pieces.drama",
+  "verdict": "pass",
+  "reason": "Shows respect between rivals; emotional honesty."
+ },
+ {
+  "path": "rounds[5].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Applauding wrong answers is kindness, not mockery."
+ },
+ {
+  "path": "rounds[5].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Light, spooky-but-safe tension."
+ },
+ {
+  "path": "rounds[5].pieces.above",
+  "verdict": "pass",
+  "reason": "The rival's letter: warm, names the technique, no gloating."
+ },
+ {
+  "path": "rounds[5].pieces.below",
+  "verdict": "pass",
+  "reason": "The rival's letter: encouraging, names the fix, no shaming of the placing."
+ },
+ {
+  "path": "rounds[5].pieces.v",
+  "verdict": "pass",
+  "reason": "V. note: intriguing, not cruel. The adults know the writer (R1 invitation); nothing asks the child for secrecy."
+ },
+ {
+  "path": "rounds[5].pieces.dax",
+  "verdict": "pass",
+  "reason": "Isolation as a consequence, shown without commentary; sets up Kwame reaching out."
+ },
+ {
+  "path": "rounds[5].pieces.pip",
+  "verdict": "pass",
+  "reason": "A body word used absurdly (lungs), not about anyone's looks."
+ },
+ {
+  "path": "rounds[5].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[5].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[5].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[5].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A chapter hook; light suspense only."
+ },
+ {
+  "path": "rounds[5].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clue card: factual; asks the child for no secret."
+ },
+ {
+  "path": "rounds[6].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[6].pieces.inv",
+  "verdict": "pass",
+  "reason": "Respectful of Suki's nerve."
+ },
+ {
+  "path": "rounds[6].pieces.prog",
+  "verdict": "pass",
+  "reason": "Deliberate in-character misprints (the progNote says so). Harmless."
+ },
+ {
+  "path": "rounds[6].pieces.drama",
+  "verdict": "pass",
+  "reason": "Sports-documentary beat; no harm, no shame."
+ },
+ {
+  "path": "rounds[6].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Comic 'borrowing' undone at once by the runner. Vale is named here (the clue's on-screen anchor)."
+ },
+ {
+  "path": "rounds[6].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Light, spooky-but-safe tension."
+ },
+ {
+  "path": "rounds[6].pieces.above",
+  "verdict": "pass",
+  "reason": "The rival's letter: warm, names the technique, no gloating."
+ },
+ {
+  "path": "rounds[6].pieces.below",
+  "verdict": "pass",
+  "reason": "The rival's letter: encouraging, names the fix, no shaming of the placing."
+ },
+ {
+  "path": "rounds[6].pieces.v",
+  "verdict": "pass",
+  "reason": "V. points at the rumour's author. The Committee acts in Case 4, and Vale's own log helps, so the writer is not sitting on bullying."
+ },
+ {
+  "path": "rounds[6].pieces.dax",
+  "verdict": "pass",
+  "reason": "Shows the rumour spreading without convicting him early. The consequence lands in Case 4 and Round VIII."
+ },
+ {
+  "path": "rounds[6].pieces.pip",
+  "verdict": "pass",
+  "reason": "Absurd malapropism (soup); harmless."
+ },
+ {
+  "path": "rounds[6].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[6].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[6].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[6].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A chapter hook; light suspense only."
+ },
+ {
+  "path": "rounds[6].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Names the runner openly as a 16-year-old Committee runner; no secrecy asked of the child."
+ },
+ {
+  "path": "rounds[7].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[7].pieces.inv",
+  "verdict": "pass",
+  "reason": "The warning is noted without naming him; dignified."
+ },
+ {
+  "path": "rounds[7].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[7].pieces.drama",
+  "verdict": "pass",
+  "reason": "Sports-documentary beat; no harm, no shame."
+ },
+ {
+  "path": "rounds[7].pieces.laugh",
+  "verdict": "pass",
+  "reason": "An adult's comic mistake, harmless; it plants the key fairly."
+ },
+ {
+  "path": "rounds[7].pieces.suspense",
+  "verdict": "pass",
+  "reason": "A note addressed to the child by name from the known-to-adults tradition. Acceptable given the R1 framing."
+ },
+ {
+  "path": "rounds[7].pieces.above",
+  "verdict": "pass",
+  "reason": "Dax's apology is specific and owns each wrong ('Mostly Suki'). Reform begins on screen."
+ },
+ {
+  "path": "rounds[7].pieces.below",
+  "verdict": "pass",
+  "reason": "Same apology; 'doesn't feel like winning' shows the cost of playing dirty."
+ },
+ {
+  "path": "rounds[7].pieces.v",
+  "verdict": "pass",
+  "reason": "Reassuring and kind. On its own an anonymous 'I'm on your side' is a trust-building pattern, but the Committee-knows frame covers it."
+ },
+ {
+  "path": "rounds[7].pieces.dax",
+  "verdict": "pass",
+  "reason": "Under observation he follows the rules; isolation shown, not mocked."
+ },
+ {
+  "path": "rounds[7].pieces.pip",
+  "verdict": "pass",
+  "reason": "The joke resolves kindly: 'It means sorry. He is.'"
+ },
+ {
+  "path": "rounds[7].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[7].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[7].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[7].pieces.cliff",
+  "verdict": "pass",
+  "reason": "A chapter hook; light suspense only."
+ },
+ {
+  "path": "rounds[7].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clue card: factual; asks the child for no secret."
+ },
+ {
+  "path": "rounds[8].technique",
+  "verdict": "pass",
+  "reason": "Instructional; no pressure."
+ },
+ {
+  "path": "rounds[8].pieces.inv",
+  "verdict": "pass",
+  "reason": "The Committee's invitation: warm, in-world, no pressure to come back."
+ },
+ {
+  "path": "rounds[8].pieces.prog",
+  "verdict": "pass",
+  "reason": "The host's dry one-liner; nobody targeted."
+ },
+ {
+  "path": "rounds[8].pieces.drama",
+  "verdict": "pass",
+  "reason": "A blackout is spooky but safe; the round continues calmly."
+ },
+ {
+  "path": "rounds[8].pieces.laugh",
+  "verdict": "pass",
+  "reason": "The changes log removed an eyesight joke. The new line uses his own tell. Good."
+ },
+ {
+  "path": "rounds[8].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Light, spooky-but-safe tension."
+ },
+ {
+  "path": "rounds[8].pieces.above",
+  "verdict": "pass",
+  "reason": "Teasing between rivals ('annoying') is warm, and it ends in respect and a gift."
+ },
+ {
+  "path": "rounds[8].pieces.below",
+  "verdict": "pass",
+  "reason": "'Painful to watch' teases a pencil, not the child. Playful; from the owner's brief."
+ },
+ {
+  "path": "rounds[8].pieces.v",
+  "verdict": "pass",
+  "reason": "V. note: intriguing, not cruel. The adults know the writer (R1 invitation); nothing asks the child for secrecy."
+ },
+ {
+  "path": "rounds[8].pieces.dax",
+  "verdict": "pass",
+  "reason": "Reform is earned and visible: his first question, and Theo's reply is generous."
+ },
+ {
+  "path": "rounds[8].pieces.pip",
+  "verdict": "pass",
+  "reason": "Pip's malapropism; the joke is on Pip's mix-up, not on the rival."
+ },
+ {
+  "path": "rounds[8].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[8].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "The word card: neutral."
+ },
+ {
+  "path": "rounds[8].pieces.cliff",
+  "verdict": "pass",
+  "reason": "'Do try to keep up' is condescending, not cruel (§12). Ravenmere's voice."
+ },
+ {
+  "path": "rounds[8].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "A clear on-screen statement that the whole Committee knows who V. is. The adult keeps a promise; he does not ask a child to keep one."
+ },
+ {
+  "path": "turn.scene",
+  "verdict": "pass",
+  "reason": "An older peer reaches out to a boy at his lowest. The model of the arc."
+ },
+ {
+  "path": "turn.choice.labels.true",
+  "verdict": "pass",
+  "reason": "Both choices are kind. Neither label lets the child be unkind (L7)."
+ },
+ {
+  "path": "turn.choice.labels.false",
+  "verdict": "pass",
+  "reason": "'Give them a minute' is respectful, not a snub; it is framed kindly in its line."
+ },
+ {
+  "path": "turn.choice.line.true",
+  "verdict": "pass",
+  "reason": "Shows what loneliness cost him; no guilt laid on the child."
+ },
+ {
+  "path": "turn.choice.line.false",
+  "verdict": "pass",
+  "reason": "Validates giving space; no penalty for the choice."
+ },
+ {
+  "path": "turn.kwame",
+  "verdict": "pass",
+  "reason": "Weighed: 'You said it. You were right.' arrives before Dax apologises and could be read as approving the gloat. Passed because it is the owner's verbatim line, it means 'nobody's perfect', not 'mocking was fine', and Dax names the gloat 'wrong' in his apology two beats later. Lens 3 may want the order checked."
+ },
+ {
+  "path": "turn.dax",
+  "verdict": "pass",
+  "reason": "Honest about fear; a good model of naming why you behave badly."
+ },
+ {
+  "path": "turn.notesIntro",
+  "verdict": "pass",
+  "reason": "Clears Dax and shows the writer was kind to the antagonist too."
+ },
+ {
+  "path": "turn.notes[0]",
+  "verdict": "pass",
+  "reason": "A kind note to the antagonist; the writer is known to the adults."
+ },
+ {
+  "path": "turn.notes[1]",
+  "verdict": "pass",
+  "reason": "A kind note to the antagonist; the writer is known to the adults."
+ },
+ {
+  "path": "turn.notes[2]",
+  "verdict": "pass",
+  "reason": "A kind note to the antagonist; the writer is known to the adults."
+ },
+ {
+  "path": "turn.notes[3]",
+  "verdict": "pass",
+  "reason": "A kind note to the antagonist; the writer is known to the adults."
+ },
+ {
+  "path": "turn.notes[4]",
+  "verdict": "pass",
+  "reason": "A kind note to the antagonist; the writer is known to the adults."
+ },
+ {
+  "path": "turn.daxOnNotes",
+  "verdict": "pass",
+  "reason": "Light; it shows no adult secrecy."
+ },
+ {
+  "path": "turn.apologies[0].text",
+  "verdict": "pass",
+  "reason": "An honest apology that owns picking an easy target. That is the lesson bullying needs."
+ },
+ {
+  "path": "turn.apologies[0].reply",
+  "verdict": "pass",
+  "reason": "Theo accepts; no humiliation in return."
+ },
+ {
+  "path": "turn.apologies[1].text",
+  "verdict": "pass",
+  "reason": "Names the wrong and the motive plainly. Reform is earned."
+ },
+ {
+  "path": "turn.apologies[1].reply",
+  "verdict": "pass",
+  "reason": "Grace, with his own technique as a gift."
+ },
+ {
+  "path": "turn.apologies[2].text",
+  "verdict": "pass",
+  "reason": "Owns both wrongs, the gloat and 'not my problem'."
+ },
+ {
+  "path": "turn.apologies[2].reply",
+  "verdict": "pass",
+  "reason": "Generous, and reframes failure as normal and what teams are for."
+ },
+ {
+  "path": "cases[0].title",
+  "verdict": "pass",
+  "reason": "Case title; in-world."
+ },
+ {
+  "path": "cases[0].place",
+  "verdict": "pass",
+  "reason": "Place line; neutral."
+ },
+ {
+  "path": "cases[0].clock",
+  "verdict": "pass",
+  "reason": "Story clock; pressure without danger."
+ },
+ {
+  "path": "cases[0].impossible",
+  "verdict": "pass",
+  "reason": "Light mystery; nobody in danger."
+ },
+ {
+  "path": "cases[0].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "Weighed: a hidden need for glasses could imply glasses are shameful. Passed: it is a kind, harmless secret and the reveal fixes it positively ('The printer gets glasses')."
+ },
+ {
+  "path": "cases[0].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "A kind secret; nobody humiliated."
+ },
+ {
+  "path": "cases[0].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "A kind secret (pre-round nerves). Not mocked."
+ },
+ {
+  "path": "cases[0].falseSolution",
+  "verdict": "pass",
+  "reason": "The false solution belongs to the story and is pinned on Dax's loudness, not the player (L10)."
+ },
+ {
+  "path": "cases[0].escalation",
+  "verdict": "pass",
+  "reason": "A late-night scene, but light; the venue staff are present."
+ },
+ {
+  "path": "cases[0].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Puzzle instructions; clear."
+ },
+ {
+  "path": "cases[0].puzzle.rule",
+  "verdict": "pass",
+  "reason": "Rule statement; neutral."
+ },
+ {
+  "path": "cases[0].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "'knife' is an everyday silent-k spelling word, not a violence idiom."
+ },
+ {
+  "path": "cases[0].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[8]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[9]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[10]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].puzzle.items[11]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[0].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "A wrong option that gets 'look again'; the child isn't punished for weighing it."
+ },
+ {
+  "path": "cases[0].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[0].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[0].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "Gentle retry."
+ },
+ {
+  "path": "cases[0].reveal[0]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[0].reveal[1]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[0].reveal[2]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[0].reveal[3]",
+  "verdict": "pass",
+  "reason": "Every adult's slip is put right warmly: glasses, forgiveness."
+ },
+ {
+  "path": "cases[0].reveal[4]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[0].reveal[5]",
+  "verdict": "pass",
+  "reason": "Dax repeats the blame after Theo is cleared. Passed: the case's last chill answers it at once ('look at who blamed whom') and Round III's mail corrects it on every path."
+ },
+ {
+  "path": "cases[0].lastChill",
+  "verdict": "pass",
+  "reason": "Spooky-but-safe closer."
+ },
+ {
+  "path": "cases[1].title",
+  "verdict": "pass",
+  "reason": "Case title; in-world."
+ },
+ {
+  "path": "cases[1].place",
+  "verdict": "pass",
+  "reason": "Place line; neutral."
+ },
+ {
+  "path": "cases[1].clock",
+  "verdict": "pass",
+  "reason": "Story clock; pressure without danger."
+ },
+ {
+  "path": "cases[1].impossible",
+  "verdict": "pass",
+  "reason": "Light mystery; nobody in danger."
+ },
+ {
+  "path": "cases[1].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "A child's fear treated kindly."
+ },
+ {
+  "path": "cases[1].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "An adult's lapse; he admits it in the reveal."
+ },
+ {
+  "path": "cases[1].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "Gamesmanship within L4; it gets caught."
+ },
+ {
+  "path": "cases[1].falseSolution",
+  "verdict": "pass",
+  "reason": "'Saboteur' is a mystery word, not violence."
+ },
+ {
+  "path": "cases[1].escalation",
+  "verdict": "pass",
+  "reason": "Raises the stakes without fear."
+ },
+ {
+  "path": "cases[1].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Puzzle instructions; clear."
+ },
+ {
+  "path": "cases[1].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[8]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].puzzle.items[9]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[1].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[1].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[1].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[1].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "Gentle retry."
+ },
+ {
+  "path": "cases[1].reveal[0]",
+  "verdict": "pass",
+  "reason": "The adult admits his lapse ('Bolt admits it'). Adults stay trustworthy."
+ },
+ {
+  "path": "cases[1].reveal[1]",
+  "verdict": "pass",
+  "reason": "A scared 8-year-old treated with sympathy. Owning up is added in reveal[3]'s fix."
+ },
+ {
+  "path": "cases[1].reveal[2]",
+  "verdict": "pass",
+  "reason": "Caught by evidence, not by accusation; no humiliation."
+ },
+ {
+  "path": "cases[1].reveal[3]",
+  "verdict": "fix",
+  "reason": "A behaviour a child could copy: Pip (8) took the Committee's bell out of its case and caused the panic, and the scene rewards it with the honour of ringing it. Nobody says a word about asking first. Keep the kindness and the reward, and add owning up.",
+  "fix_text": "Pip says sorry for taking it without asking. The round starts on time, and the Pronouncer lets him ring the bell."
+ },
+ {
+  "path": "cases[1].reveal[4]",
+  "verdict": "pass",
+  "reason": "Adult correction on screen, quiet and dignified. L4."
+ },
+ {
+  "path": "cases[1].lastChill",
+  "verdict": "pass",
+  "reason": "Spooky-but-safe; fair ambiguity."
+ },
+ {
+  "path": "cases[2].title",
+  "verdict": "pass",
+  "reason": "A missing-person framing, made safe by the safeLine shown before anything else."
+ },
+ {
+  "path": "cases[2].place",
+  "verdict": "pass",
+  "reason": "Place line; neutral."
+ },
+ {
+  "path": "cases[2].clock",
+  "verdict": "pass",
+  "reason": "Sporting pressure, not danger."
+ },
+ {
+  "path": "cases[2].impossible",
+  "verdict": "pass",
+  "reason": "The empty room and bag could alarm an 8-year-old. Passed only because the safeLine is shown first (safeLineNote). Keep that order as a build test."
+ },
+ {
+  "path": "cases[2].safeLine",
+  "verdict": "fix",
+  "reason": "A behaviour a child could copy: a distressed 14-year-old walks out, leaves his bag, and crosses water by ferry without telling any grown-up. As written, the adults know only because Hazel happened to see him go. Amendment 2 made him safe; this makes the safe behaviour Kwame's own: he tells a grown-up where he is going. Plot facts kept: Hazel told the Pronouncer at once, the grown-ups know, the team doesn't know where. This refines amendment 2's wording, so the owner should confirm it.",
+  "fix_text": "He's safe. Kwame told Hazel where he was going on his way out, and she told the Pronouncer at once, so the grown-ups know. What nobody will tell you is where."
+ },
+ {
+  "path": "cases[2].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "A peer secret about coaching, not a secret kept from a grown-up (amendment 2, owner)."
+ },
+ {
+  "path": "cases[2].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "Within L4; it is answered on screen (Round VI dock, the Round VIII apology)."
+ },
+ {
+  "path": "cases[2].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "An adult keeping a teen's whereabouts private while the Pronouncer knows. She asks no child to keep a secret. It is consistent with the safeLine fix."
+ },
+ {
+  "path": "cases[2].falseSolution",
+  "verdict": "pass",
+  "reason": "The adult knows he is safe; his worry is about spelling. Amendment 2 respected."
+ },
+ {
+  "path": "cases[2].escalation",
+  "verdict": "pass",
+  "reason": "Raises the stakes without fear."
+ },
+ {
+  "path": "cases[2].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Puzzle instructions; clear."
+ },
+ {
+  "path": "cases[2].puzzle.note",
+  "verdict": "pass",
+  "reason": "Kwame left word ('Back by sundown'). Good."
+ },
+ {
+  "path": "cases[2].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[2].puzzle.answer",
+  "verdict": "pass",
+  "reason": "Answer card; neutral."
+ },
+ {
+  "path": "cases[2].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[2].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[2].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[2].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "Gentle retry."
+ },
+ {
+  "path": "cases[2].reveal[0]",
+  "verdict": "pass",
+  "reason": "He meets an adult teacher (Ines's cousin). With reveal[2] saying the grown-ups knew, this is not 'meeting a stranger'."
+ },
+ {
+  "path": "cases[2].reveal[1]",
+  "verdict": "pass",
+  "reason": "A peer secret about coaching, kept by agreement (owner amendment 2)."
+ },
+ {
+  "path": "cases[2].reveal[2]",
+  "verdict": "fix",
+  "reason": "Same as the safeLine fix. The reveal is where a child learns how the adults knew, so it should show Kwame telling a grown-up himself. Plot facts kept. Owner to confirm with the safeLine fix.",
+  "fix_text": "Hazel nods. Kwame told her where he was going, and she told the Pronouncer the minute he left. The grown-ups knew he was safe all along; only the team didn't."
+ },
+ {
+  "path": "cases[2].reveal[3]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[2].lastChill",
+  "verdict": "pass",
+  "reason": "Shows Dax's loneliness; it pays off kindly at the turn."
+ },
+ {
+  "path": "cases[3].title",
+  "verdict": "pass",
+  "reason": "Case title; in-world."
+ },
+ {
+  "path": "cases[3].place",
+  "verdict": "pass",
+  "reason": "Place line; neutral."
+ },
+ {
+  "path": "cases[3].clock",
+  "verdict": "pass",
+  "reason": "Story clock; pressure without danger."
+ },
+ {
+  "path": "cases[3].impossible",
+  "verdict": "pass",
+  "reason": "Light mystery; nobody in danger."
+ },
+ {
+  "path": "cases[3].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "A comic adult habit; the things are returned."
+ },
+ {
+  "path": "cases[3].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "A kind, ordinary uncertainty."
+ },
+ {
+  "path": "cases[3].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "The target of the rumour is treated with care."
+ },
+ {
+  "path": "cases[3].falseSolution",
+  "verdict": "pass",
+  "reason": "Pins the story's false solution on a comic adult, not on the player."
+ },
+ {
+  "path": "cases[3].escalation",
+  "verdict": "pass",
+  "reason": "It raises the stakes for Suki without cruelty."
+ },
+ {
+  "path": "cases[3].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Puzzle instructions; clear."
+ },
+ {
+  "path": "cases[3].puzzle.word",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "cases[3].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[3].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[3].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[3].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[3].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "Gentle retry."
+ },
+ {
+  "path": "cases[3].reveal[0]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[3].reveal[1]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[3].reveal[2]",
+  "verdict": "pass",
+  "reason": "Passed for this lens. Note for lens 3: 'V. had seen the word before anyone' sits uneasily with the list being sealed in front of two people, and with Case 5's rule that seeing the word voids a round."
+ },
+ {
+  "path": "cases[3].reveal[3]",
+  "verdict": "pass",
+  "reason": "Peers reporting a rumour to the Committee is a good model; the adult log backs it up."
+ },
+ {
+  "path": "cases[3].reveal[4]",
+  "verdict": "pass",
+  "reason": "States the motive plainly without insult."
+ },
+ {
+  "path": "cases[3].reveal[5]",
+  "verdict": "fix",
+  "reason": "Clarity: 'nobody chases him' can read as children physically chasing a boy, or as a hint that they used to. The intended meaning is that nobody follows him out. The warning, Suki's round and his isolation are all kept.",
+  "fix_text": "The Committee reads Dax a formal warning, aloud, at the gate. Suki's round stands. Dax leaves first, as always. This time nobody follows him out."
+ },
+ {
+  "path": "cases[3].clue.text",
+  "verdict": "pass",
+  "reason": "A factual clearing card. Ratchet's spelling is never mocked as stupidity."
+ },
+ {
+  "path": "cases[3].lastChill",
+  "verdict": "pass",
+  "reason": "Suki's grace to the boy who wronged her."
+ },
+ {
+  "path": "cases[4].title",
+  "verdict": "pass",
+  "reason": "Case title; in-world."
+ },
+ {
+  "path": "cases[4].place",
+  "verdict": "pass",
+  "reason": "Place line; neutral."
+ },
+ {
+  "path": "cases[4].clock",
+  "verdict": "pass",
+  "reason": "Story clock; pressure without danger."
+ },
+ {
+  "path": "cases[4].impossible",
+  "verdict": "pass",
+  "reason": "Light mystery; nobody in danger."
+ },
+ {
+  "path": "cases[4].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "'Terrified' is strong, but it is about nerves, and the case ends in her thanks."
+ },
+ {
+  "path": "cases[4].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "An adult keeps a promise to a teen; it is known to the whole Committee."
+ },
+ {
+  "path": "cases[4].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "Comic; harmless."
+ },
+ {
+  "path": "cases[4].suspects[3].secret",
+  "verdict": "pass",
+  "reason": "An adult's forgetful mistake. Owning it is added in reveal[2]'s fix."
+ },
+ {
+  "path": "cases[4].falseSolution",
+  "verdict": "pass",
+  "reason": "Weighed: 'The hall turns on her' shows group blame on a 15-year-old. Passed because it is the story's false solution, it is corrected on screen, and Vesper ends it with thanks."
+ },
+ {
+  "path": "cases[4].escalation",
+  "verdict": "pass",
+  "reason": "Raises the stakes without fear."
+ },
+ {
+  "path": "cases[4].puzzle.brief",
+  "verdict": "pass",
+  "reason": "The puzzle mechanic; the 'lie' framing is softened for Vesper in the item and reveal fixes."
+ },
+ {
+  "path": "cases[4].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[4].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[4].puzzle.items[2]",
+  "verdict": "fix",
+  "reason": "Tone: the 'why' calls a frightened 15-year-old's brave face a lie, in the same puzzle as an adult's cover-up. An anxious reader learns that hiding nerves is lying. The puzzle mechanic is kept (the wrong ending marks the untrue line) and the judgement is softened. Only the 'why' field changes; the statement, word and correct fields stay.",
+  "fix_text": "why: A confidant is a trusted friend. She means confident, and she isn't: she's nervous, and that's allowed. It's the only untrue thing she says, and it's about her nerves."
+ },
+ {
+  "path": "cases[4].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[4].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[4].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[4].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "An adult's cover-up line. It is resolved by the reveal[2] fix (he owns up)."
+ },
+ {
+  "path": "cases[4].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "As items[6]."
+ },
+ {
+  "path": "cases[4].puzzle.items[8]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[4].puzzle.items[9]",
+  "verdict": "pass",
+  "reason": "Puzzle item: neutral teaching content."
+ },
+ {
+  "path": "cases[4].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[4].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "A wrong option about a trusted adult; the reveal shows he was honest throughout."
+ },
+ {
+  "path": "cases[4].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Accusation option; a wrong pick gets 'look again', no shame."
+ },
+ {
+  "path": "cases[4].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "Gentle retry."
+ },
+ {
+  "path": "cases[4].reveal[0]",
+  "verdict": "pass",
+  "reason": "Reform shown through action."
+ },
+ {
+  "path": "cases[4].reveal[1]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[4].reveal[2]",
+  "verdict": "fix",
+  "reason": "Tone and adults: (a) it names Vesper's nerves a 'lie', as in the item fix; (b) Dash, an adult host, tells two lies to cover his own mistake and never owns it on screen. Every other adult with a secret admits it (Bolt) or is put right (the printer, Sage). Adults in the Circuit must be trustworthy, so Dash owns up. Plot facts kept.",
+  "fix_text": "Vesper's only untrue line was about her nerves, and being nervous is allowed. Dash's were about the door, and he owns up: he went in for his stopwatch and forgot to lock it."
+ },
+ {
+  "path": "cases[4].reveal[3]",
+  "verdict": "pass",
+  "reason": "Earned reform: he defends a rival."
+ },
+ {
+  "path": "cases[4].reveal[4]",
+  "verdict": "pass",
+  "reason": "Staged reveal; clear and kind."
+ },
+ {
+  "path": "cases[4].lastChill",
+  "verdict": "pass",
+  "reason": "Warm; both teens admit a weakness."
+ },
+ {
+  "path": "teamNight.challenge",
+  "verdict": "pass",
+  "reason": "Condescending ('Do try to keep up'), not cruel; §12."
+ },
+ {
+  "path": "teamNight.beats.captaincy[0]",
+  "verdict": "pass",
+  "reason": "Humble, and shows growth."
+ },
+ {
+  "path": "teamNight.beats.captaincy[1]",
+  "verdict": "pass",
+  "reason": "The hall's laugh is surprise, and it stops once they see Kwame means it. It is not ridicule that wins."
+ },
+ {
+  "path": "teamNight.beats.captaincy[2]",
+  "verdict": "pass",
+  "reason": "The wronged children state the facts calmly, so reform is not instant or free."
+ },
+ {
+  "path": "teamNight.beats.captaincy[3]",
+  "verdict": "pass",
+  "reason": "Dax owns his record publicly. Earned reform."
+ },
+ {
+  "path": "teamNight.beats.idea",
+  "verdict": "pass",
+  "reason": "Team Night beat; warm, no humiliation."
+ },
+ {
+  "path": "teamNight.beats.ravenmere",
+  "verdict": "pass",
+  "reason": "'How sweet' is condescending, not cruel. No nationality, money or class is played for colour (blazers and pins are a uniform)."
+ },
+ {
+  "path": "teamNight.beats.drama.8-10",
+  "verdict": "fix",
+  "reason": "Respect and mocking: 'Arjun smirks' sneers at a teammate's wrong call in front of them. That is the mocking-a-miss L4 bars for Dax, and §12 wants Ravenmere condescending, never cruel. It also gives the only sneer to the one Indian-named Ravenmere speller, whose own seed is that he respects the Circuit and won't say so. That reads badly to a diaspora-heavy audience. Sloane's condescension is already her character, and an eyebrow fits 'never smiles'. Everything else in the beat is kept.",
+  "fix_text": "Ravenmere leads all night. In the last round Dax calls a word to Rafi as Latin. It's Greek. Sloane raises an eyebrow. Rafi's finger stops on his palm. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Mira. She spells it."
+ },
+ {
+  "path": "teamNight.beats.drama.11-15",
+  "verdict": "fix",
+  "reason": "Respect and mocking: 'Arjun smirks' sneers at a teammate's wrong call in front of them. That is the mocking-a-miss L4 bars for Dax, and §12 wants Ravenmere condescending, never cruel. It also gives the only sneer to the one Indian-named Ravenmere speller, whose own seed is that he respects the Circuit and won't say so. That reads badly to a diaspora-heavy audience. Sloane's condescension is already her character, and an eyebrow fits 'never smiles'. Everything else in the beat is kept.",
+  "fix_text": "Ravenmere leads all night. In the last round Dax calls a word to Kwame as Latin. It's French. Sloane raises an eyebrow. Kwame's hands tighten behind his back. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Ines. She spells it."
+ },
+ {
+  "path": "teamNight.beats.levelling",
+  "verdict": "pass",
+  "reason": "Team Night beat; warm, no humiliation."
+ },
+ {
+  "path": "teamNight.beats.finalWord",
+  "verdict": "pass",
+  "reason": "Team Night beat; warm, no humiliation."
+ },
+ {
+  "path": "teamNight.beats.after[0]",
+  "verdict": "pass",
+  "reason": "A rival learning to lose, with dry grace."
+ },
+ {
+  "path": "teamNight.beats.after[1]",
+  "verdict": "pass",
+  "reason": "A rivalry hook, not engagement bait: it asks nothing of the child and sets no timer."
+ },
+ {
+  "path": "teamNight.beats.daxPostcard",
+  "verdict": "pass",
+  "reason": "Team Night beat; warm, no humiliation."
+ },
+ {
+  "path": "teamNight.beats.sting",
+  "verdict": "pass",
+  "reason": "Owner decision (amendment 1: the sting still lands in a different hand). It stays safe because Vale and the Pronouncer stand beside the child and open the note with them. The stingAfter fix makes the open door explicit. See r1-safety.md, owner items."
+ },
+ {
+  "path": "teamNight.beats.stingAfter",
+  "verdict": "fix",
+  "reason": "The highest-stakes line in the script for safety. The sting reopens what amendment 1 closed: a note-writer whom no adult knows reaches a child, and the Pronouncer's surprise tells the child that no grown-up knows who it is. The adult is present and says 'together, in the open', which is right. One more sentence makes the safe behaviour explicit: any note can be shown to him. The Season 2 hook stays intact, and the line is not a paywall 'ask a grown-up'.",
+  "fix_text": "The Pronouncer, quietly: 'Then next season we find out who. Together, and in the open. Any note you ever get, you can show me.'"
+ },
+ {
+  "path": "teamNight.beats.mei",
+  "verdict": "pass",
+  "reason": "'Don't tell Sloane' is a peer-to-peer confidence between children, not a secret kept from a grown-up. Passed. For Season 2, keep Mei's notes visible to the adults too."
+ },
+ {
+  "path": "teamNight.beats.coda",
+  "verdict": "pass",
+  "reason": "A season hook; no countdown, no pressure."
+ },
+ {
+  "path": "teamNight.callerCategories[0].call",
+  "verdict": "pass",
+  "reason": "Call label; neutral."
+ },
+ {
+  "path": "teamNight.callerCategories[1].call",
+  "verdict": "pass",
+  "reason": "Call label; neutral."
+ },
+ {
+  "path": "teamNight.callerCategories[2].call",
+  "verdict": "pass",
+  "reason": "Call label; neutral."
+ },
+ {
+  "path": "teamNight.callerCategories[3].call",
+  "verdict": "pass",
+  "reason": "Call label; neutral."
+ },
+ {
+  "path": "teamNight.callerCategories[4].call",
+  "verdict": "pass",
+  "reason": "Call label; neutral."
+ },
+ {
+  "path": "teamNight.callerCategories[5].call",
+  "verdict": "pass",
+  "reason": "Call label; neutral."
+ },
+ {
+  "path": "teamNight.callerCategories[6].call",
+  "verdict": "pass",
+  "reason": "Call label; neutral."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[0].tell",
+  "verdict": "pass",
+  "reason": "A cold rival's tell; not cruel."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[0].speciality",
+  "verdict": "pass",
+  "reason": "A rival's tell or speciality (if rendered); a skill, no nationality or class."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[1].tell",
+  "verdict": "pass",
+  "reason": "A rival's tell or speciality (if rendered); a skill, no nationality or class."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[1].speciality",
+  "verdict": "pass",
+  "reason": "A rival's tell or speciality (if rendered); a skill, no nationality or class."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[2].tell",
+  "verdict": "pass",
+  "reason": "A rival's tell or speciality (if rendered); a skill, no nationality or class."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[2].speciality",
+  "verdict": "pass",
+  "reason": "A rival's tell or speciality (if rendered); a skill, no nationality or class."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[3].tell",
+  "verdict": "pass",
+  "reason": "A skill, not an ethnic trait."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[3].speciality",
+  "verdict": "pass",
+  "reason": "A skill, respectfully stated."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[4].tell",
+  "verdict": "pass",
+  "reason": "A rival's tell or speciality (if rendered); a skill, no nationality or class."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[4].speciality",
+  "verdict": "pass",
+  "reason": "A rival's tell or speciality (if rendered); a skill, no nationality or class."
+ },
+ {
+  "path": "accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "Gentle; never shames a wrong pick."
+ },
+ {
+  "path": "accusation.lookAgainBy.vesper",
+  "verdict": "pass",
+  "reason": "A wrong pick is redirected with the evidence, kindly."
+ },
+ {
+  "path": "accusation.lookAgainBy.pronouncer",
+  "verdict": "pass",
+  "reason": "A wrong pick is redirected with the evidence, kindly."
+ },
+ {
+  "path": "accusation.lookAgainBy.ratchet",
+  "verdict": "pass",
+  "reason": "A wrong pick is redirected with the evidence, kindly."
+ },
+ {
+  "path": "accusation.lookAgainBy.dax",
+  "verdict": "pass",
+  "reason": "A wrong pick is redirected with the evidence, kindly."
+ },
+ {
+  "path": "accusation.reveal[0]",
+  "verdict": "pass",
+  "reason": "Warm and clear; the adults-know frame holds."
+ },
+ {
+  "path": "accusation.reveal[1]",
+  "verdict": "pass",
+  "reason": "'Placed last' is reframed as the root of her kindness; not shaming."
+ },
+ {
+  "path": "accusation.reveal[2]",
+  "verdict": "pass",
+  "reason": "Warm and clear; the adults-know frame holds."
+ },
+ {
+  "path": "accusation.reveal[3]",
+  "verdict": "pass",
+  "reason": "States plainly that the adults always knew (amendment 1)."
+ },
+ {
+  "path": "accusation.reveal[4]",
+  "verdict": "pass",
+  "reason": "Warm and clear; the adults-know frame holds."
+ },
+ {
+  "path": "accusation.closingLetter",
+  "verdict": "fix",
+  "reason": "The season's warmest line is also the one a child will take as the model. It says an unidentified writer sent notes to an 8-year-old after every round, and it shows no adult anywhere in that story. That is the pattern amendment 1 removed from the present day, surviving in Vale's backstory. Calling it a Circuit tradition even then puts the adults back in the frame. 'I never found out who', the Committee's yes and 'You and Dax' are all kept. Lens 3 should check this against the sting and the Season 2 seed ('The Pronouncer doesn't know either'): a tradition the Committee of that time knew about does not have to mean this Pronouncer knows the second hand.",
+  "fix_text": "I placed last, my first season. Somebody wrote to me after every round, a Circuit tradition even then, and I never found out who. When I became the runner, I asked to keep it going, and the Committee said yes. Every season I write to whoever is new, and to whoever needs it. You and Dax, this year. — Vale"
+ },
+ {
+  "path": "accusation.closingChoices[0]",
+  "verdict": "pass",
+  "reason": "Warm and clear; the adults-know frame holds."
+ },
+ {
+  "path": "accusation.closingChoices[1]",
+  "verdict": "pass",
+  "reason": "Models asking the adults first ('I'll ask the Committee'). Good."
+ },
+ {
+  "path": "accusation.closingChoices[2]",
+  "verdict": "pass",
+  "reason": "Warm and clear; the adults-know frame holds."
+ },
+ {
+  "path": "hivePost.postcards.meadow",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.postcards.library",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.postcards.forum",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.postcards.storm",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.postcards.roots",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.postcards.strait",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.postcards.junkyard",
+  "verdict": "pass",
+  "reason": "Deliberate in-character misprint; comic, harmless."
+ },
+ {
+  "path": "hivePost.postcards.sprints",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.postcards.stage",
+  "verdict": "pass",
+  "reason": "The host's postcard: celebrates the child's own words; no pressure."
+ },
+ {
+  "path": "hivePost.diary[0]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[1]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[2]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[3]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[4]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[5]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[6]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[7]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[8]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.diary[9]",
+  "verdict": "pass",
+  "reason": "Level-up line: praise for effort, no streak or return pressure."
+ },
+ {
+  "path": "hivePost.beeFileIntro",
+  "verdict": "pass",
+  "reason": "'For you and anyone you show it to' sets the no-secrets norm. 'The one that beat you' is neutral."
+ },
+ {
+  "path": "hivePost.beeFileFakeTipIntro",
+  "verdict": "pass",
+  "reason": "Neutral."
+ },
+ {
+  "path": "visitors[0].card",
+  "verdict": "pass",
+  "reason": "Framed as what the Greeks told; dated, sourced route to English."
+ },
+ {
+  "path": "visitors[1].card",
+  "verdict": "pass",
+  "reason": "Historical framing ('credited to a legendary...'); respectful."
+ },
+ {
+  "path": "visitors[2].card",
+  "verdict": "pass",
+  "reason": "Respectful, historical framing."
+ },
+ {
+  "path": "visitors[3].card",
+  "verdict": "pass",
+  "reason": "'In Greek stories' framing; respectful. Ovid's darker detail is omitted."
+ },
+ {
+  "path": "visitors[4].card",
+  "verdict": "pass",
+  "reason": "Respectful, historical. 'Blamed on him' is close to how the Greeks put it. The goat legs are an accurate description, not a caricature."
+ },
+ {
+  "path": "visitors[5].card",
+  "verdict": "fix",
+  "reason": "Voice (minor): this is the only card that says 'In Greek myth'. Amendment 4 and the house note frame every card as who the figure was to the ancient Greeks, and keep 'myth' away from anything that might read as 'false'. Matching the other cards' opening removes the word. The facts are unchanged.",
+  "fix_text": "To the ancient Greeks, Tantalus was a king punished in the underworld: the water around him drained away when he bent to drink, and the fruit above him rose out of reach. To tantalise is to keep what someone wants just out of reach."
+ },
+ {
+  "path": "visitors[6].card",
+  "verdict": "pass",
+  "reason": "Historical; the 'It isn't' correction is about hypnotism, not the god."
+ },
+ {
+  "path": "visitors[7].card",
+  "verdict": "pass",
+  "reason": "'Won the love of Cupid' is the only romance in the script. It is passing and non-physical, and fits 8–15. Framed as a story told by Apuleius."
+ },
+ {
+  "path": "visitors[8].card",
+  "verdict": "pass",
+  "reason": "Respectful, historical."
+ },
+ {
+  "path": "visitors[9].card",
+  "verdict": "pass",
+  "reason": "Respectful, historical."
+ },
+ {
+  "path": "visitors[10].card",
+  "verdict": "pass",
+  "reason": "'God of war' and 'fighting' are factual etymology, not a violence idiom (amendment 5 concerns idioms)."
+ },
+ {
+  "path": "visitors[11].card",
+  "verdict": "pass",
+  "reason": "States uncertainty plainly (docs/05)."
+ },
+ {
+  "path": "visitors[12].card",
+  "verdict": "pass",
+  "reason": "Respectful."
+ },
+ {
+  "path": "visitors[13].card",
+  "verdict": "pass",
+  "reason": "Respectful."
+ },
+ {
+  "path": "visitors[14].card",
+  "verdict": "pass",
+  "reason": "Respectful."
+ },
+ {
+  "path": "visitors[15].card",
+  "verdict": "pass",
+  "reason": "Respectful."
+ },
+ {
+  "path": "visitors[16].card",
+  "verdict": "pass",
+  "reason": "Norse figures framed as 'to the Anglo-Saxons / to the Norse'. They are kept by owner amendment 4 although Norse religion has practitioners today. The card never calls the god false."
+ },
+ {
+  "path": "visitors[17].card",
+  "verdict": "pass",
+  "reason": "As Tiw: historical framing, respectful."
+ },
+ {
+  "path": "visitors[18].card",
+  "verdict": "pass",
+  "reason": "As Tiw: historical framing, respectful."
+ },
+ {
+  "path": "visitors[19].card",
+  "verdict": "pass",
+  "reason": "As Tiw; states the scholarly argument plainly."
+ },
+ {
+  "path": "visitors[20].card",
+  "verdict": "pass",
+  "reason": "A real person, dated and sourced. The gambling-table version of the story is (rightly) left out."
+ },
+ {
+  "path": "visitors[21].card",
+  "verdict": "pass",
+  "reason": "A real person, dated and sourced."
+ },
+ {
+  "path": "visitors[22].card",
+  "verdict": "pass",
+  "reason": "A real person; uncertainty stated. His military record is left out, rightly for this card."
+ },
+ {
+  "path": "visitors[23].card",
+  "verdict": "pass",
+  "reason": "A real person, dated and sourced."
+ },
+ {
+  "path": "visitors[24].card",
+  "verdict": "pass",
+  "reason": "A real person, dated and sourced."
+ },
+ {
+  "path": "visitors[25].card",
+  "verdict": "pass",
+  "reason": "Real people, dated and sourced; credits Marie Curie fairly."
+ }
+]
