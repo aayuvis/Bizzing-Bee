@@ -12,8 +12,13 @@
    the same way.)
 
    - three doors in order — Compete · Train · Play — and the cards in SB_PLAY_CARDS, in that order:
-     Mock Spelling Bee and Mock Analogy Bee (two half banners since 9 Oct 2026) · the three hubs (named from SB_HUB_NAMES, never typed) and Daily Bee · Bee Grand
+     Mock Spelling Bee (and Mock Analogy Bee beside it, two half banners since 9 Oct 2026 — ONLY in tester mode since 10 Oct,
+     see below) · the three hubs (named from SB_HUB_NAMES, never typed) and Daily Bee · Bee Grand
      Prix, Type Blaster, Honeycomb Run, Daily Buzz (Word Forge only when its table is signed)
+   (10 Oct 2026, owner — the road to 4.5, decision §1.2/P0.4: "until all three rounds pass: the Analogies tab, the
+   lessons, Mock Analogy Bee and Word Forge stay behind tester mode". Updated deliberately, not loosened: a child's
+   Compete door is Mock Spelling Bee alone, filling the row; a tester's is the two half banners, and both are measured.
+   Proved by breaking: Mock Analogy Bee shown to everyone → the child's lineup, hub names and full-row checks: 5 fail.)
    - none of the cards that left: Bizzillionaire, Beat the Buzzer, Magic Squares, Word Quiz,
      Bee Trivia, Word Snake, Unscramble Stars, Spell Scene
    - every row of every door is full at 1180 (4 columns) and 390 (2), with Word Forge hidden AND shown
@@ -72,15 +77,21 @@ const GONE = ['Bizzillionaire', 'Beat the Buzzer', 'Magic Squares', 'Word Quiz',
     }, GONE);
     const T = vp.n; const r = await measure();
     ok(r.doors.map(d => d.id + ':' + d.head).join() === 'compete:Compete,train:Train,play:Play', `${T}: three doors in order — ${r.doors.map(d => d.head).join(' · ')}`);
-    const want = { compete: ['mockbee', 'mockAnalogy'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun', 'dailyBuzz'] };
-    ok(r.doors.every(d => JSON.stringify(d.keys) === JSON.stringify(want[d.id])), `${T}: the lineup, door by door — ${r.doors.map(d => d.keys.join('/')).join(' | ')}`);
-    ok(r.titles.slice(2, 5).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(2, 5).join(', ')})`);
+    const want = { compete: ['mockbee'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun', 'dailyBuzz'] };
+    ok(r.doors.every(d => JSON.stringify(d.keys) === JSON.stringify(want[d.id])), `${T}: the lineup a child sees, door by door — ${r.doors.map(d => d.keys.join('/')).join(' | ')}`);
+    ok(r.titles.slice(1, 4).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(1, 4).join(', ')})`);
     ok(!r.gone.length, `${T}: none of the cards that left are on the tab` + (r.gone.length ? ' — ' + r.gone.join(', ') : ''));
     ok(r.doors.every(d => d.full), `${T}: every row of every door is full (${r.doors.map(d => d.id + ' ' + d.rows + ' row' + (d.rows > 1 ? 's' : '')).join(', ')})`);
     ok(r.doors.every(d => d.even), `${T}: the cards in a row are one height`);
-    /* since 9 Oct 2026 (owner: "shrinking mock spelling bee banner to half") Mock Spelling Bee is a half banner
+    /* a child: Mock Analogy Bee is behind the analogy gate, so Mock Spelling Bee stands alone and takes its whole row */
+    ok(r.mb && r.mb.hero && r.mb.share > 0.97, `${T}: a child's Mock Spelling Bee is a large tile across its whole door (${r.mb && Math.round(r.mb.share * 100)}%)`);
+    /* a tester: since 9 Oct 2026 (owner: "shrinking mock spelling bee banner to half") Mock Spelling Bee is a half banner
        beside Mock Analogy Bee: a large tile half its door on a desktop, the whole row on a phone */
-    ok(r.mb && r.mb.hero && (T === 'phone' ? r.mb.share > 0.97 : r.mb.share > 0.45 && r.mb.share < 0.55), `${T}: Mock Spelling Bee is a large tile, half its door beside Mock Analogy Bee (${r.mb && Math.round(r.mb.share * 100)}%)`);
+    await pg.evaluate(() => { state.tester = true; render(); }); await still(pg);
+    const rt = await measure();
+    ok(JSON.stringify(rt.doors[0].keys) === '["mockbee","mockAnalogy"]' && rt.doors.every(d => d.full) && rt.mb && rt.mb.hero && (T === 'phone' ? rt.mb.share > 0.97 : rt.mb.share > 0.45 && rt.mb.share < 0.55),
+      `${T}, tester mode: Mock Spelling Bee is a large tile, half its door beside Mock Analogy Bee, every row full (${rt.doors[0].keys.join('/')}, ${rt.mb && Math.round(rt.mb.share * 100)}%)`);
+    await pg.evaluate(() => { state.tester = false; render(); }); await still(pg);
     ok(r.gp && r.gp.hero && r.gp.painted && r.gp.loaded && r.gp.share > (vp.cols === 4 ? 0.45 : 0.97), `${T}: the Grand Prix is a large painted tile and its painting loads (${r.gp && Math.round(r.gp.share * 100)}% of the row)`);
     ok(r.gaps.length && r.gaps.every(g => g >= 0 && g <= 60), `${T}: no small tile is hollow (≤ three lines of slack) — words to Play button ${Math.max(...r.gaps)}px at most`);
     const keyed = r.doors.flatMap(d => d.keys), chipless = keyed.filter((k, i) => r.nolevel[i]);

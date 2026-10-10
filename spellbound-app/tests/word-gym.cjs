@@ -1,17 +1,26 @@
-/* THE PRACTICE TAB IS THE WORD GYM (owner, 4 Oct 2026) — the name changed, nothing else. @check
+/* THE WORD GYM LIVES UNDER THE WORD ATLAS — the second sub-nav, Atlas | Gym. @check
 
-   What a child sees says "Word Gym": the desktop tab row, the phone's bottom bar, the page's
-   own title, the back pill that returns to it and the Progress card that opens it. What a
-   child never sees did not move, so old links and saves still work: the nav key is still
-   'coach', the route is still #/practice.
-   REWRITTEN 4 Oct 2026 (games spec §4.2): #/gym, which used to be a typed alias for this tab, is now the
-   address of the Spelling Gym — the drills hub on the Play tab (gym.js). The tab was not renamed and
-   #/practice still opens it; the last check below now pins both halves of that.
-   Proved by breaking (4 Oct 2026): with the old label back in NAV_TABS, both old page titles
-   and the #/gym alias removed, 7 of 10 fail — both bars, both headings and the route.
+   Owner, 10 Oct 2026 (the road to 4.5, decision §1.1 — final): "The tab row becomes Home · Word Atlas · Analogies ·
+   Library · Play · My Feed. Word Gym stops being a top tab. It becomes the second sub-nav of Word Atlas (Atlas | Gym),
+   using the family's sub-page head pattern. Every deep link into the Gym (#/gym…) keeps working." — and "Update the
+   word-gym test, which expects the old six phone tabs."
+   REWRITTEN for that decision. What a child sees: no Word Gym tab on either bar (nor a "Practice" one); the Atlas map
+   and the Word Gym each open on the sub-nav, two chips "Atlas | Gym", the one you are on marked; the chips swap the
+   two pages by tap and by keyboard; on both pages the Word Atlas tab is the lit one. What a child never sees did not
+   move, so old links and saves still work: the Word Gym's nav key is still 'coach', its route still #/practice, the
+   page is still headed Word Gym, the buttons that open it still say so — and #/gym, #/gym/<mode> still open the
+   Spelling Gym (the Play tab's drill hall, games spec §4.2), which is where they have led since 4 Oct.
+   (Before 10 Oct this test held a "Word Gym" TAB on both bars; that is exactly what the owner removed.)
+   Analogies is not in the bar here: it stands only through the analogy gate (tests/analogy-gate.cjs).
+   Proved by breaking (10 Oct 2026), each run recorded: the Word Gym tab put back in NAV_TABS → both desktop bar
+   checks, the phone bar and "the Word Atlas tab lit" (two tabs lit): 4 fail; the sub-nav taken off the Gym
+   (atlasSubNav('gym') out of coachTrain and viewQuest) → the two "Gym marked" checks fail and the keyboard step has no
+   chip to press (the run stops); the Word Atlas tab lit only for nav 'trail' (atlasTabOn without gymNav) → the four
+   "lights" checks (desktop chooser, gym, phone, #/practice): 4 fail.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/word-gym.cjs                        */
 const { chromium } = require('playwright');
 const path = require('path');
+const W = require('./lib/wait.cjs');
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
@@ -23,57 +32,79 @@ async function open(b, phone, errs, hash) {
   const ctx = await b.newContext(phone ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } : { viewport: { width: 1280, height: 800 } });
   await ctx.addInitScript(k => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, KID);
   const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
-  await pg.goto(URL + (hash || '')); await pg.waitForTimeout(3000);
+  await pg.goto(URL + (hash || '')); await W.booted(pg);
   return { ctx, pg };
 }
-const label = (pg, sel) => pg.evaluate(s => { const e = document.querySelector(s); return e ? e.textContent.replace(/\s+/g, ' ').trim() : null; }, sel);
+/* the page as a child sees it: where the nav is, the address, the sub-nav, and which tab is lit */
+const look = (pg) => pg.evaluate(() => {
+  const ph = innerWidth < 640;
+  const tabs = [...document.querySelectorAll(ph ? 'nav.sb-tabbar [data-act="setNav"]' : '.sb-topnav [data-act="setNav"]')];
+  const sub = document.querySelector('.sb-content .sb-subnav');
+  const chips = sub ? [...sub.querySelectorAll('button')] : [];
+  return { nav: state.nav, h: location.hash,
+    tabs: tabs.map(x => x.textContent.replace(/\s+/g, ' ').trim()), args: tabs.map(x => x.getAttribute('data-arg')),
+    lit: tabs.filter(x => x.getAttribute('aria-current') === 'page').map(x => x.getAttribute('data-arg')),
+    chips: chips.map(x => x.textContent.trim()), cur: chips.filter(x => x.getAttribute('aria-current') === 'page').map(x => x.textContent.trim()),
+    chipH: chips.map(x => Math.round(x.getBoundingClientRect().height)), subR: sub ? Math.round(sub.getBoundingClientRect().right) : 0,
+    h2: (document.querySelector('.sb-content .sb-phead h2') || {}).textContent || '',
+    big: [...document.querySelectorAll('.sb-content span,.sb-content h2')].filter(s => !s.children.length && parseFloat(getComputedStyle(s).fontSize) >= 18).map(s => s.textContent.trim()) };
+});
+const settle = (pg, nav) => W.until(pg, (n) => (Array.isArray(n) ? n.includes(state.nav) : state.nav === n) && !!document.querySelector('.sb-content'), nav, 30000).then(() => W.frames(pg, 2));
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const errs = [];
 
-  /* desktop: the tab row, the page title, and the way back to it */
+  /* ---- desktop: the bar, the two sub-pages, the chips by tap and by key ---- */
   let { ctx, pg } = await open(b, false, errs);
-  const desk = await pg.evaluate(() => [...document.querySelectorAll('.sb-topnav [data-act="setNav"]')].map(x => x.textContent.replace(/\s+/g, ' ').trim()));
-  ok(desk.includes('Word Gym') && !desk.some(t => /practi[cs]e/i.test(t)), `the desktop tab row says Word Gym, never Practice (${desk.join(' · ')})`);
-  ok(await label(pg, '.sb-topnav [data-act="setNav"][data-arg="coach"]') === 'Word Gym', 'the Word Gym tab is still the coach key underneath');
-  /* first visit: the path chooser IS the Word Gym's first screen; after a path is picked, the gym itself */
-  const heading = () => pg.evaluate(() => ({ nav: state.nav, h: location.hash,
-    h2: (document.querySelector('.sb-content .sb-phead h2') || {}).textContent || '',
-    big: [...document.querySelectorAll('.sb-content span,.sb-content h2')].filter(s => !s.children.length && parseFloat(getComputedStyle(s).fontSize) >= 18).map(s => s.textContent.trim()) }));
-  await pg.click('.sb-topnav [data-act="setNav"][data-arg="coach"]'); await pg.waitForTimeout(900);
-  const first = await heading();
-  ok(first.nav === 'quest' && first.h2 === 'Word Gym', `a first visit opens the path chooser, headed Word Gym (${first.nav}: "${first.h2}")`);
-  await pg.evaluate(() => { active().questPath = 'journey'; save(); });
-  await pg.click('.sb-topnav [data-act="setNav"][data-arg="home"]'); await pg.waitForTimeout(600);
-  await pg.click('.sb-topnav [data-act="setNav"][data-arg="coach"]'); await pg.waitForTimeout(900);
-  const page = await heading();
-  ok(page.nav === 'coach' && page.big.includes('Word Gym') && !page.big.includes('Practice'), `the gym itself is headed Word Gym (${page.nav}: ${page.big.slice(0, 3).join(' | ')})`);
-  ok(/^#\/practice$/.test(page.h), `and its address did not move — old links still work (${page.h})`);
-  /* a screen that sends you back names it the same way */
-  await pg.evaluate(() => { state.progTab = 'me'; app.setNav('progress'); }); await pg.waitForTimeout(800);
+  let L = await look(pg);
+  ok(!L.tabs.some(t => /Word Gym|practi[cs]e/i.test(t)) && !L.args.includes('coach'), `the desktop tab row has no Word Gym tab, and no Practice one (${L.tabs.join(' · ')})`);
+  ok(L.args.join() === 'home,trail,explore,games,feed', `Home · Word Atlas · Library · Play · My Feed — Home first, My Feed last (${L.args.join(' · ')})`);
+  await pg.click('.sb-topnav [data-act="setNav"][data-arg="trail"]'); await settle(pg, 'trail');
+  await W.until(pg, () => !!document.querySelector('.sb-content .sb-subnav'), null, 30000);
+  L = await look(pg);
+  ok(L.chips.join('|') === 'Atlas|Gym' && L.cur.join() === 'Atlas' && /^#\/atlas/.test(L.h), `the Word Atlas tab opens the map with its sub-nav "${L.chips.join(' | ')}", Atlas marked (${L.h})`);
+  /* a first visit to the Gym: the path chooser is the Word Gym's first screen */
+  await pg.click('.sb-content .sb-subnav button:nth-child(2)'); await settle(pg, ['quest', 'coach']);
+  L = await look(pg);
+  ok(L.nav === 'quest' && L.h2 === 'Word Gym' && L.h === '#/quest', `the Gym chip opens the Word Gym — a first visit's path chooser, headed Word Gym, at its own #/quest (${L.nav}: "${L.h2}", ${L.h})`);
+  ok(L.chips.join('|') === 'Atlas|Gym' && L.cur.join() === 'Gym', `the Word Gym wears the same sub-nav, Gym marked (${L.cur.join()})`);
+  ok(L.lit.join() === 'trail', `on the Word Gym the Word Atlas tab is the lit one (${L.lit.join() || 'none'})`);
+  /* after a path is picked, the gym itself */
+  await pg.evaluate(() => { active().questPath = 'journey'; save(); app.openCoach(); }); await settle(pg, 'coach');
+  L = await look(pg);
+  ok(L.nav === 'coach' && L.big.includes('Word Gym') && !L.big.includes('Practice') && L.h === '#/practice', `the gym itself is headed Word Gym, nav 'coach', its address unmoved (${L.nav}: ${L.big.slice(0, 3).join(' | ')}, ${L.h})`);
+  ok(L.cur.join() === 'Gym' && L.lit.join() === 'trail', `…with Gym marked on the sub-nav and the Word Atlas tab lit (${L.cur.join()}, ${L.lit.join()})`);
+  /* the Atlas chip, by KEYBOARD: Tab to it, Enter */
+  await pg.focus('.sb-content .sb-subnav button:nth-child(1)'); await pg.keyboard.press('Enter'); await settle(pg, 'trail');
+  L = await look(pg);
+  ok(L.nav === 'trail' && /^#\/atlas/.test(L.h) && L.cur.join() === 'Atlas' && L.lit.join() === 'trail', `Enter on the Atlas chip goes back to the map (${L.nav}, ${L.h})`);
+  /* a screen that sends you to it names it the same way */
+  await pg.evaluate(() => { state.progTab = 'me'; app.setNav('progress'); }); await settle(pg, 'progress');
   const prog = await pg.evaluate(() => [...document.querySelectorAll('[data-act="openCoach"]')].map(x => x.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean));
   ok(prog.some(t => /Word Gym/.test(t)) && !prog.some(t => /^(Open |Back to )?Practice\b/.test(t)), `the buttons that open it say Word Gym (${prog.join(' | ').slice(0, 80)})`);
   await ctx.close();
 
-  /* phone: the bottom bar, six tabs */
+  /* ---- phone: the bottom bar, and the chips under a thumb ---- */
   ({ ctx, pg } = await open(b, true, errs));
-  const bar = await pg.evaluate(() => [...document.querySelectorAll('nav.sb-tabbar [data-act="setNav"]')].map(x => x.textContent.replace(/\s+/g, ' ').trim()));
-  ok(bar.includes('Word Gym') && !bar.some(t => /practi[cs]e/i.test(t)) && bar.length === 6, `the phone's bottom bar says Word Gym (${bar.join(' · ')})`);
-  const fit = await pg.evaluate(() => { const e = [...document.querySelectorAll('nav.sb-tabbar [data-act="setNav"]')].find(x => /Word Gym/.test(x.textContent)); const s = e && e.querySelector('span:last-child');
-    return s ? { sw: s.scrollWidth, cw: s.clientWidth, bw: e.getBoundingClientRect().width } : null; });
-  ok(fit && fit.sw <= fit.cw + 1, `and the label fits its slot on a 390px phone (${fit && Math.round(fit.sw)} in ${fit && Math.round(fit.cw)})`);
+  L = await look(pg);
+  ok(!L.tabs.some(t => /Word Gym|practi[cs]e/i.test(t)) && L.args.join() === 'home,trail,explore,games,feed', `the phone's bottom bar has no Word Gym tab (${L.tabs.join(' · ')})`);
+  const fit = await pg.evaluate(() => [...document.querySelectorAll('nav.sb-tabbar [data-act="setNav"] span:last-child')].every(s => s.scrollWidth <= s.clientWidth + 1));
+  ok(fit, 'every label fits its slot on a 390px phone');
+  await pg.evaluate(() => app.openCoach()); await settle(pg, ['quest', 'coach']);
+  L = await look(pg);
+  ok(L.lit.join() === 'trail' && L.cur.join() === 'Gym' && L.chipH.every(h => h >= 44) && L.subR <= 390, `on a phone the Word Gym lights the Atlas tab, and its chips are thumb-sized and on screen (${L.chipH.join('/')}px, right edge ${L.subR})`);
   await ctx.close();
 
-  /* the old route and the new one both land on it */
-  ({ ctx, pg } = await open(b, false, errs, '#/practice'));
-  const r1 = await pg.evaluate(() => state.nav);
-  await ctx.close();
-  ({ ctx, pg } = await open(b, false, errs, '#/gym'));
-  const r2 = await pg.evaluate(() => state.nav);
-  await ctx.close();
-  ok(/^(coach|quest)$/.test(r1), `#/practice opens it (${r1})`);
-  ok(r2 === 'gym', `#/gym opens the Spelling Gym hub on the Play tab, not this tab (${r2})`);
+  /* ---- every deep link into the Gym keeps working ---- */
+  const at = async (hash, want) => { const o = await open(b, false, errs, hash); await settle(o.pg, want); const r = await o.pg.evaluate(() => ({ nav: state.nav, mode: state.gymMode || null, h: location.hash,
+    lit: [...document.querySelectorAll('.sb-topnav [aria-current="page"]')].map(x => x.getAttribute('data-arg')).join() })); await o.ctx.close(); return r; };
+  const r1 = await at('#/practice', ['quest', 'coach']);
+  ok(/^(coach|quest)$/.test(r1.nav) && r1.lit === 'trail', `#/practice opens the Word Gym, under the Word Atlas tab (${r1.nav}, lit ${r1.lit})`);
+  const r2 = await at('#/gym', 'gym');
+  ok(r2.nav === 'gym' && r2.lit === 'games', `#/gym opens the Spelling Gym hall on the Play tab, as since 4 Oct (${r2.nav}, lit ${r2.lit})`);
+  const r3 = await at('#/gym/sprint', 'gym');
+  ok(r3.nav === 'gym' && r3.mode === 'sprint', `#/gym/<mode> opens that Spelling Gym mode (${r3.nav}/${r3.mode})`);
 
   await b.close();
   ok(!errs.length, errs.length ? 'page errors: ' + errs[0] : 'no page errors');

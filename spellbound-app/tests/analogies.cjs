@@ -3,7 +3,8 @@
    analogy bee … shrinking mock spelling bee banner to half" — "against the clock")
 
    analogy.js + analogy-data.js (lazy group `analogy`, cut by tools/analogy/build-app.cjs). This holds:
-   1. the tab sits right after Word Gym on the desktop bar and the phone bar, opens the Analogy Atlas at
+   1. the tab sits right after Word Atlas on the desktop bar and the phone bar (owner, 10 Oct 2026: "Home · Word Atlas ·
+      Analogies · Library · Play · My Feed" — the Word Gym is no longer a tab), opens the Analogy Atlas at
       #/analogies, and the first region's road carries its stops and a level check
    2. a stop teaches before it tests: Learn, step by step (the idea → say the link → name one → spot it → the trap →
       build an analogy → try one → ready; the asking steps hold Next) and Meet the words
@@ -14,11 +15,18 @@
       passed; passing it walks the region, and passing again on ANOTHER DAY masters it (one mastery coin)
    6. pay: nothing for a round under 6 right; the clock pays nothing for a guesser
    7. Against the Clock counts down in place and holds while a miss is up
-   8. Mock Analogy Bee: its half banner stands beside Mock Spelling Bee in Compete, both one height; a bee
-      runs to a finish with a place, and only a podium pays a contest coin
+   8. Mock Analogy Bee: its half banner stands beside Mock Spelling Bee in Compete, both one height; its seven seats
+      are Mock Bee's own cast — MOCKBEE.rivals(), the same names and the same faces, never the child's own face
+      (owner, 10 Oct 2026, P0.9: "Pip, Nova, Rafi… same faces, same names everywhere"); a bee runs to a finish with
+      a place, and only a podium pays a contest coin
    9. no console errors anywhere on the way
   10. the Library's Link Finder: a thin full-width banner under the shelf opens #/links — suggestions, a word's links by
       kind, an analogy built from a link that never shows its answer early, walking on by tapping a word
+   EVERY PAGE HERE IS OPENED IN TESTER MODE (device key sb_tester): the owner's decision of 10 Oct 2026 — "until all
+   three rounds pass: the Analogies tab, the lessons, Mock Analogy Bee … stay behind tester mode" — so this walk is a
+   tester's. What a child without it meets (nothing at all) is tests/analogy-gate.cjs.
+   Proved by breaking (10 Oct 2026, the cast): the old seven put back (named from the avatar catalogue: "Pixel Pal",
+   "Koi", "Bubbly Beaker", the panda sitting as itself) → the cast checks fail.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/analogies.cjs                              */
 'use strict';
 const { chromium } = require('playwright');
@@ -36,7 +44,7 @@ async function open(b, o) {
   const ctx = await b.newContext({ viewport: vp, isMobile: phone, hasTouch: phone, reducedMotion: 'reduce' });
   await ctx.addInitScript(([k]) => { if (!localStorage.getItem('t_seed')) {
     localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [k] }));
-    localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, [Object.assign({}, KID, o.kid || {})]);
+    localStorage.setItem('sb_splash', '0'); localStorage.setItem('sb_tester', '1'); localStorage.setItem('t_seed', '1'); } }, [Object.assign({}, KID, o.kid || {})]);
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   pg.on('console', m => { if (m.type() === 'error' && !/voice\/w\/|net::ERR_FILE_NOT_FOUND|Failed to load resource/.test(m.text())) errs.push(m.text()); });
   if (o.time) await pg.clock.setFixedTime(o.time);
@@ -66,10 +74,11 @@ async function round(pg, rights) { const n = (await run(pg)).n;
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const errs = [];
   try {
-    /* 1 — the tab, after Word Gym, on both bars */
+    /* 1 — the tab, after Word Atlas, on both bars (owner, 10 Oct 2026: "Home · Word Atlas · Analogies · Library · Play ·
+       My Feed" — it stood after Word Gym until the Word Gym became Word Atlas's sub-nav) */
     let { ctx, pg, errs: e1 } = await open(b);
     const desk = await pg.evaluate(() => [...document.querySelectorAll('.sb-topnav [data-act="setNav"]')].map(x => x.getAttribute('data-arg')));
-    ok(desk.indexOf('analogy') === desk.indexOf('coach') + 1, `the desktop bar has Analogies right after Word Gym (${desk.join(' · ')})`);
+    ok(desk.join() === 'home,trail,analogy,explore,games,feed', `the desktop bar has Analogies right after Word Atlas (${desk.join(' · ')})`);
     await pg.click('.sb-topnav [data-arg="analogy"]'); await atlas(pg);
     ok(await pg.evaluate(() => location.hash) === '#/analogies' || /^#\/analogies/.test(await pg.evaluate(() => location.hash)), 'the tab opens the Analogy Atlas at #/analogies');
     const stops = await pg.evaluate(() => [...document.querySelectorAll('.anl-board .anl-stop')].map(s => ({ chk: s.classList.contains('chk'), locked: s.classList.contains('locked'), w: s.getBoundingClientRect().width, h: s.getBoundingClientRect().height })));
@@ -203,7 +212,18 @@ async function round(pg, rights) { const n = (await run(pg)).n;
     ok(Math.abs(ban.a[0] - ban.m[0]) < 2 && Math.abs(ban.a[1] - ban.m[1]) < 4 && Math.abs(ban.a[2] - ban.m[2]) < 4, `Mock Spelling Bee and Mock Analogy Bee stand side by side as two half banners (${ban.a.map(Math.round)} vs ${ban.m.map(Math.round)})`);
     await pg.click('[data-card="mockAnalogy"] button'); await W.until(pg, () => !!document.querySelector('.anl-field'), null, 20000);
     ok(/#\/anlbee/.test(await pg.evaluate(() => location.hash)), 'the card opens Mock Analogy Bee at #/anlbee');
+    /* the seats are Mock Bee's cast: its names, its faces, and never the child's own (the panda, here) */
+    await W.until(pg, () => !!window.MOCKBEE && document.querySelectorAll('.anl-field .anl-rival:not(.me)').length === 7, null, 20000);
+    const lobby = await pg.evaluate(() => [...document.querySelectorAll('.anl-field .anl-rival:not(.me) span')].map(x => x.textContent.trim()));
     await pg.keyboard.press('Enter'); await W.until(pg, () => state.anlBee && state.anlBee.phase === 'turn', null, 4000);
+    const cast = await pg.evaluate(() => { const mine = active().avatar; const R = MOCKBEE.rivals(mine);
+      return { mine, field: state.anlBee.field.map(r => ({ name: r.name, face: r.id, rid: r.rid })), cast: R.map(r => ({ name: r.name, face: r.face, id: r.id })) }; });
+    const byName = (n) => cast.cast.find(r => r.name === n);
+    ok(cast.field.length === 7 && lobby.length === 7 && cast.field.every(r => !!byName(r.name)) && lobby.join() === cast.field.map(r => r.name).join(),
+      `seven seats, every one a Mock Bee speller by Mock Bee's name, in the lobby and on the stage (${lobby.join(', ')})`);
+    ok(cast.field.every(r => byName(r.name) && byName(r.name).face === r.face && byName(r.name).id === r.rid), 'each wears the face Mock Bee gives that speller (MOCKBEE.rivals)');
+    ok(cast.field.every(r => r.face !== cast.mine) && (!cast.field.some(r => r.rid === cast.mine) || cast.field.some(r => r.rid === cast.mine && r.face !== r.rid)),
+      `no rival wears the child's own face (${cast.mine}) — the speller who would, wears their stand-in`);
     let guard = 0;
     while (guard++ < 40) { const bb = await pg.evaluate(() => ({ p: state.anlBee.phase, ans: state.anlBee.q && state.anlBee.q.ans, n: state.anlBee.q && state.anlBee.q.opts.length, r: state.anlBee.round }));
       if (bb.p === 'done') break;
@@ -245,7 +265,7 @@ async function round(pg, rights) { const n = (await run(pg)).n;
     /* 1b — the phone bar carries the tab too, and nothing spills sideways */
     ({ ctx, pg, errs: e1 } = await open(b, { vp: { width: 390, height: 844 }, hash: '#/analogies' })); await atlas(pg);
     const tabs = await pg.evaluate(() => [...document.querySelectorAll('.sb-tabbar button')].map(x => x.getAttribute('data-arg')));
-    ok(tabs.indexOf('analogy') === tabs.indexOf('coach') + 1, `the phone bar has the tab after Word Gym (${tabs.join(' · ')})`);
+    ok(tabs.join() === 'home,trail,analogy,explore,games,feed', `the phone bar has the tab after Word Atlas, six in all (${tabs.join(' · ')})`);
     ok(await pg.evaluate(() => document.documentElement.scrollWidth <= 391), 'at 390px nothing spills sideways');
     e1.length && errs.push(...e1); await ctx.close();
   } catch (e) { ok(false, 'the walk ran to its end — ' + (e && e.message)); }

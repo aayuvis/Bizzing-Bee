@@ -145,13 +145,22 @@
   }
 
   /* ------------------------------------------------------------ today's session */
+  /* THE ANALOGY GATE (app3 anlOpen; owner, 10 Oct 2026): the 1,576 `analogy` cards ask about analogy-data.js items, which
+     reach a child only once they are released (three review passes each) — until then only in tester mode. They are
+     left out of the pool the session is ranked from, so they are never shown, and never paid. */
+  function anlOk() { try { return typeof window.SB_ANL_OPEN === 'function' && !!window.SB_ANL_OPEN(); } catch (e) { return false; } }
+  var ANL_ROUTE = /^#\/(analogies|anlbee|links)(\/|$)/;
+  function pool(L) {
+    var items = [], ok = anlOk(); groupsFor(L).forEach(function (g) { items = items.concat(decoded(g) || []); });
+    return ok ? items : items.filter(function (it) { return it.kind !== 'analogy'; });
+  }
   function session() {
     var c = kid(), F = rec(c), now = Date.now(), day = Math.floor(now / DAY);
     var nx = null; try { nx = SB_SHELL.nextStep(); if (nx && !nx.ready) nx = null; } catch (e) {}
     var L = levelOf(nx), band = bandOf(c), due = dueOf(c, now);
-    var sig = JSON.stringify([L, nx && nx.arg, band, Object.keys(due).sort()]);
+    var sig = JSON.stringify([L, nx && nx.arg, band, Object.keys(due).sort(), anlOk()]);
     if (F.day === day && F.sig === sig && F.vis === VISIT && F.ids && F.ids.length) return F.ids;
-    var items = []; groupsFor(L).forEach(function (g) { items = items.concat(decoded(g) || []); });
+    var items = pool(L);
     var list = BZ_FEED.feedFor({ items: items, band: band, now: now, signals: signals(c, nx, L), due: due, seen: F.seen,
       extra: extra, level: L, levelName: levelName });
     F.day = day; F.sig = sig; F.vis = VISIT;
@@ -182,6 +191,7 @@
   function card(x) {
     var it = bodyOf(x.id); if (!it) return '';
     it = lapCut(it);
+    if ((it.kind === 'analogy' || ANL_ROUTE.test(it.route || '')) && !anlOk()) return '';   // a session kept from before the gate closed
     var h = BZ_FEED.feedCard(it, x, play[x.id] || {});
     /* the recorded clip (voice-cdn streams it on a hosted build) — played only on a tap, beside the card's own button */
     if (it.clip) h = h.replace('<div class="bzf-row"><a ', '<div class="bzf-row">' + hearBtn(it) + '<a ');
@@ -258,5 +268,5 @@
   });
 
   window.SB_FEED = { view: view, levelOf: levelOf, levelName: levelName, session: session, dueOf: dueOf, signals: signals, answer: answer,
-    groupsFor: groupsFor, lapCut: lapCut, _play: play, reset: function () { for (var k in play) delete play[k]; } };
+    groupsFor: groupsFor, lapCut: lapCut, pool: pool, _play: play, reset: function () { for (var k in play) delete play[k]; } };
 })();
