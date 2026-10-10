@@ -1056,6 +1056,16 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
 - **Deploys run only the node tests** (the data gate, see "Tests run from one command" above): the
   browser guards above are run here, one at a time, before a commit.
 
+## The road to 4.5 (10 Oct 2026) — the owner's calls on the brief's conflicts
+The family v5 brief (`bee-chat-brief-4.5.md`) is the plan. Where it reversed an earlier owner decision, the owner chose:
+- **Daily Buzz stays its own card** (not merged into Daily Bee). **Hive Mind stays as it is** (general trivia kept); Mock
+  Analogy Bee is an owner exception in GAMES-LEDGER, not entered against Hive Mind.
+- **No hats or props on avatars** (accessories were deleted 30 Sep, and deities stay with respectful cards): the 20–60 coin
+  sinks are card frames, name plates, backgrounds and Grand Prix kart/trail skins — never a word, a game or a level.
+- **Onboarding keeps one decision per step**: placement (ages 10+) is its OWN step and only recommends a start stop; buddy and
+  world stay separate steps, with the first free world preselected. The Atlas route, stops, order and unlocks do not change.
+- Out of scope, as the brief says: the Story Spine in any form, the Hive Post, server entitlements and checkout.
+
 ## The Analogies tab (9 Oct 2026, owner: "a separate analogies tab next to the word gym … treat this like word atlas … lessons and words based on that lessons … practice sessions leading to mastery of the level" — "mock analogy bee … shrinking mock spelling bee banner to half" — "against the clock")
 - **Seven tabs now: Home · Word Atlas · Word Gym · Analogies · Library · Play · My Feed** (`NAV_TABS`, icon `navIcon('analogy')`,
   a bridge). The family's `checkShell` counts 4–6; `tests/feed-screen.cjs` allows exactly that finding, and only while the
