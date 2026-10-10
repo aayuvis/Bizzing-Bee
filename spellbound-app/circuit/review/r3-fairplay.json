@@ -1,0 +1,2284 @@
+[
+ {
+  "path": "fiction",
+  "verdict": "pass",
+  "reason": "L9 label on every Hive Post page; true of the script (rivals invented, techniques real)."
+ },
+ {
+  "path": "signoffs.inv",
+  "verdict": "pass",
+  "reason": "The 'V.' in V. Abara is the Pronouncer's red herring, and it is fair: the signoff is drawn upright (invNote), which is exactly what rounds[2] clue and the Pronouncer's look-again rely on. The build must draw it upright or both lose their basis."
+ },
+ {
+  "path": "suspectBoard.portraits[0].label",
+  "verdict": "pass",
+  "reason": "Name only; consistent everywhere."
+ },
+ {
+  "path": "suspectBoard.portraits[0].why",
+  "verdict": "fix",
+  "reason": "Shown from Round I, but 'Violet ink' is first planted in Round III's suspense and 'Already qualified' is Round III's cliff (the RESERVED chair 'now has a name'), so the board spoils that cliff two rounds early. Keep Round I's card to what Round I can know; the clue cards add the rest.",
+  "fix_text": "A V. name. Last year's champion. Silent."
+ },
+ {
+  "path": "suspectBoard.portraits[1].label",
+  "verdict": "pass",
+  "reason": "'V. Abara' gives the child the initial that makes him a fair red herring."
+ },
+ {
+  "path": "suspectBoard.portraits[1].why",
+  "verdict": "pass",
+  "reason": "Every reason is true on screen ('V.' signoff, 'Say it back' in Round I, he reads the list); none is a lie and nothing frames him. Fair red herring."
+ },
+ {
+  "path": "suspectBoard.portraits[2].label",
+  "verdict": "pass",
+  "reason": "Name only."
+ },
+ {
+  "path": "suspectBoard.portraits[2].why",
+  "verdict": "fix",
+  "reason": "Shown from Round I, but 'was where the dictionary went' is Case 4, six rounds later, and it gives away Case 4's answer (Ratchet borrowed the dictionary). It also states an event the child may never see, since Case 4 is optional.",
+  "fix_text": "'Borrows' things, and nobody ever sees him do it."
+ },
+ {
+  "path": "suspectBoard.portraits[3].label",
+  "verdict": "pass",
+  "reason": "Name only."
+ },
+ {
+  "path": "suspectBoard.portraits[3].why",
+  "verdict": "pass",
+  "reason": "True from Round I (the postcard). 'Everyone's first guess' is the brief's design, and Round VIII clears him on screen."
+ },
+ {
+  "path": "suspectBoard.portraits[4].label",
+  "verdict": "pass",
+  "reason": "'The runner' matches how Round I names her on screen (laugh, suspense) before she has a name."
+ },
+ {
+  "path": "suspectBoard.portraits[4].why",
+  "verdict": "fix",
+  "reason": "Shown from Round I, it points at the envelopes (Rounds VII/IX, Case 5) and the keys (Round V) before any of them appear. That makes her the most singled-out portrait on day one, against the aim of hiding her in plain sight. Let the clue cards supply the specifics.",
+  "fix_text": "Always somewhere nobody looks."
+ },
+ {
+  "path": "suspectBoard.portraits[4].labelAfter",
+  "verdict": "pass",
+  "reason": "Updates after Round VII ('Thank you, Vale'); matches the name on Round II's framed programme."
+ },
+ {
+  "path": "cast.pixel.tell",
+  "verdict": "pass",
+  "reason": "Pip, 8, 'starts before the pronouncer finishes' (matches mockbee BOTS). The same in Round I's drama and Round IX's laugh ('nobody can see me start early'). One misused word per note, Rounds I–IX."
+ },
+ {
+  "path": "cast.koi.tell",
+  "verdict": "pass",
+  "reason": "Nova, 9, 'says the word twice' (matches mockbee). The same in Round I's letters, Round II ('Sep-a-rate. Sep-a-rate.') and diary[3]."
+ },
+ {
+  "path": "cast.beaker.tell",
+  "verdict": "pass",
+  "reason": "Rafi, 10, traces letters on his palm (matches mockbee). The same in Round III's drama and letters, and Team Night 8–10 ('finger stops on his palm')."
+ },
+ {
+  "path": "cast.panda.tell",
+  "verdict": "pass",
+  "reason": "Suki, 11, 'breathes out, then spells' (matches mockbee). The same in Round VII, Case 4, the apologies and Team Night. The 'lights do nothing' line is mockbee's own note."
+ },
+ {
+  "path": "cast.comet.tell",
+  "verdict": "pass",
+  "reason": "Dax, 11, rocks on his heels (matches mockbee). The same in Case 2's heel-marks, Round VIII's drama and Round IX ('stops rocking'). 'Fastest in round one' is mockbee's note. The vtell violence idiom is never quoted (amendment 5)."
+ },
+ {
+  "path": "cast.astro.tell",
+  "verdict": "pass",
+  "reason": "Mira, 12, asks for the language of origin every time (matches mockbee). The same in Round IV, the corridor correction ('Greek. Y.'), Case 4's 'kai' and the Greek call at the 8–10 lectern."
+ },
+ {
+  "path": "cast.scopey.tell",
+  "verdict": "pass",
+  "reason": "Theo, 12, asks every question (matches mockbee). His tally runs in order: 212 (Round II), 640 (Round III), 1,204 (turn), 1,977 (Round IX)."
+ },
+ {
+  "path": "cast.melody.tell",
+  "verdict": "pass",
+  "reason": "Ines, 13, mouths the word in French first (matches mockbee). The same in Round VI's invitation and the French call at the 11–15 lectern."
+ },
+ {
+  "path": "cast.samurai.tell",
+  "verdict": "pass",
+  "reason": "Kwame, 14, hands behind his back, dead still (matches mockbee). The same in Round V's drama and Team Night 11–15 ('hands tighten behind his back'). 'Two seasons' is the same everywhere."
+ },
+ {
+  "path": "cast.goldlegend.tell",
+  "verdict": "pass",
+  "reason": "Vesper, 15, does not ask for anything (matches mockbee). Holds until her first question in Round IX's blackout, which Case 5's last chill sets up. 'Last year's champion' is mockbee's own note."
+ },
+ {
+  "path": "cast.pronouncer.tell",
+  "verdict": "pass",
+  "reason": "'Say it back for me' is used the same way in Round I, the accusation, the diary and Vale's echo of it. Warm and open throughout; never lies on screen."
+ },
+ {
+  "path": "cast.vale.tell",
+  "verdict": "pass",
+  "reason": "16 = 8 + eight seasons (Round II's programme and Round VII's card). Left-handed, slanting left (Round III card, Case 1, accusation); at his elbow (Round I). This tell IS the answer: it must never render before the accusation, on her portrait or anywhere else."
+ },
+ {
+  "path": "cast.barnaby.tell",
+  "verdict": "pass",
+  "reason": "Dry programme (Round I) and postcard ('not one bee was fed'). Matches trail.js 'Barnaby the Bear'."
+ },
+ {
+  "path": "cast.sage.tell",
+  "verdict": "pass",
+  "reason": "Dozes on duty: the Case 1 suspect's secret. Archive-silence postcard. Matches trail.js."
+ },
+ {
+  "path": "cast.tullia.tell",
+  "verdict": "pass",
+  "reason": "Always late: Round III's programme and laugh, and the 'This postcard is late' postcard."
+ },
+ {
+  "path": "cast.bolt.tell",
+  "verdict": "pass",
+  "reason": "Forecasts: Round IV's programme and postcard. The broken-lock secret lines up with Case 2's reveal and Round V's card."
+ },
+ {
+  "path": "cast.hazel.tell",
+  "verdict": "pass",
+  "reason": "Rolls up: Round V's programme and laugh; the 'stayed unrolled' postcard. Told the Pronouncer at once (Case 3, amendment 2)."
+ },
+ {
+  "path": "cast.salty.tell",
+  "verdict": "pass",
+  "reason": "Damp, applauds everything: Round VI's programme and laugh, and the postcard."
+ },
+ {
+  "path": "cast.ratchet.tell",
+  "verdict": "pass",
+  "reason": "Borrows, and can't spell: Round VII's programme (misprints), laugh and postcard ('borowed'), and Case 4."
+ },
+ {
+  "path": "cast.dash.tell",
+  "verdict": "pass",
+  "reason": "Starts early: Round VIII's programme and laugh (rings four minutes early with his spare key), Case 5, and the postcard ('no false start. That makes one of us')."
+ },
+ {
+  "path": "cast.duchess.tell",
+  "verdict": "pass",
+  "reason": "Regrets nothing: Round IX's programme and the postcard. The high shelf is Case 5's answer, but it is planted only in art (see cases[4].impossible)."
+ },
+ {
+  "path": "cast.sloane.tell",
+  "verdict": "pass",
+  "reason": "14, never smiles, never asks twice: matches §4.2 and teamNight.ravenmereRoster, and her Team Night lines."
+ },
+ {
+  "path": "cast.ash.tell",
+  "verdict": "pass",
+  "reason": "12, spells in step with his twin: matches §4.2 and the roster ('spell as one, a letter each')."
+ },
+ {
+  "path": "cast.aria.tell",
+  "verdict": "pass",
+  "reason": "12, spells in step with her twin: matches §4.2 and the roster."
+ },
+ {
+  "path": "cast.arjun.tell",
+  "verdict": "pass",
+  "reason": "13, names the origin before the pronouncer finishes: matches §4.2. The same in Team Night's ravenmere beat and drama ('Arjun smirks')."
+ },
+ {
+  "path": "cast.mei.tell",
+  "verdict": "pass",
+  "reason": "10, writes in the air: matches §4.2. Her neat-pencil note seeds the sting's pencil hand."
+ },
+ {
+  "path": "rounds[0].technique",
+  "verdict": "pass",
+  "reason": "Matches Round I's letters (Nova's below letter: 'say it back before your first letter') and V.'s 'Say it back'."
+ },
+ {
+  "path": "rounds[0].pieces.inv",
+  "verdict": "pass",
+  "reason": "Tells the child, before the first note, that the letters are a tradition and that the Committee knows who writes them (amendment 1). Headliners are always seated (§3.5), so 'chairs two and three' holds in every band."
+ },
+ {
+  "path": "rounds[0].pieces.prog",
+  "verdict": "pass",
+  "reason": "Barnaby's dry tell; it makes no claim about the child."
+ },
+ {
+  "path": "rounds[0].pieces.drama",
+  "verdict": "pass",
+  "reason": "Uses mockbee's forgiving first round correctly (change 18). Depends on the hall forcing this outcome; see the season row on scripted hall outcomes."
+ },
+ {
+  "path": "rounds[0].pieces.laugh",
+  "verdict": "pass",
+  "reason": "First sighting of the runner, at the Pronouncer's elbow: in plain sight, and nobody remarks on her."
+ },
+ {
+  "path": "rounds[0].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Plants the runner laying a programme on every chair, which later explains Note 1 'on your chair'. Sets up the RESERVED chair (Round III's cliff, the coda). Needs Vesper kept out of the 11–15 field until Round IX (season row)."
+ },
+ {
+  "path": "rounds[0].pieces.above",
+  "verdict": "pass",
+  "reason": "Works at any above placing. Carries Nova's nan's rule, as the below letter does."
+ },
+ {
+  "path": "rounds[0].pieces.below",
+  "verdict": "pass",
+  "reason": "'So close' is soft enough at any below placing. Carries 'say it back' and the nan's rule."
+ },
+ {
+  "path": "rounds[0].pieces.v",
+  "verdict": "pass",
+  "reason": "Predicts the RESERVED chair's owner, which Round III's cliff pays off. 'Say it back' is the Pronouncer's line, a fair two-way pointer: him, or someone always beside him."
+ },
+ {
+  "path": "rounds[0].pieces.dax",
+  "verdict": "fix",
+  "reason": "'From a venue you haven't reached' assumes Atlas progress. A hall opens on reaching its leg 4 and halls are optional (L2), so a child can reach the Sprints before ever playing the Meadow hall.",
+  "fix_text": "A postcard from the far end of the Circuit: 'Heard you got through the Meadow. The Sprints are mine. — D. (fastest in round one, ask anyone)'"
+ },
+ {
+  "path": "rounds[0].pieces.pip",
+  "verdict": "pass",
+  "reason": "One misused word, with the real meaning a tap away. The joke works because his postcard really did come from the far end."
+ },
+ {
+  "path": "rounds[0].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning, shown on a tap."
+ },
+ {
+  "path": "rounds[0].pieces.cliff",
+  "verdict": "fix",
+  "reason": "'You've only finished the first' asserts progress the child may already be past (same problem as the dax postcard). The fact that holds on every path is the round count. Round VIII's dax line ('his home hall') still pays it off.",
+  "fix_text": "The postcard's stamp is from the Finish Arch, the eighth hall on the Circuit. The Circuit has run one round. How is he already there?"
+ },
+ {
+  "path": "rounds[0].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Arrives with the hall mail on every path. It pairs 'Say it back' (the Pronouncer's line) with 'on your chair' (the runner laid out the chairs): a fair two-suspect card."
+ },
+ {
+  "path": "rounds[1].technique",
+  "verdict": "pass",
+  "reason": "Matches the Pronouncer's Chair in mockbee (definition, part of speech, origin, sentence, say again, alternate pronunciation)."
+ },
+ {
+  "path": "rounds[1].pieces.inv",
+  "verdict": "pass",
+  "reason": "Every request it names is on the Pronouncer's Chair; 'He has to answer' is the bee's own rule."
+ },
+ {
+  "path": "rounds[1].pieces.prog",
+  "verdict": "pass",
+  "reason": "Plants Case 1's answer (the parrot) on every path before the case opens."
+ },
+ {
+  "path": "rounds[1].pieces.drama",
+  "verdict": "fix",
+  "reason": "Eleven questions about one word cannot happen in Mock Bee. The Pronouncer's Chair has six requests, part of speech cannot be asked twice ('already on the card'), and each costs 3 s of a 30 s turn (mockbee.js mbAsk). A careful child who has used the chair will notice.",
+  "fix_text": "Theo asks every question the Pronouncer's chair holds about one word, and spells it perfectly with a second left on the clock. The speller two seats down falls asleep."
+ },
+ {
+  "path": "rounds[1].pieces.laugh",
+  "verdict": "fix",
+  "reason": "Mockbee blocks a second part-of-speech request on the same word, so 'for the eleventh time ... still a noun' contradicts the bee. Spread the gag across the round instead.",
+  "fix_text": "The Pronouncer, for the eleventh time today: 'Yes, Theo. That one is a noun too.' The runner refills his water glass without being asked."
+ },
+ {
+  "path": "rounds[1].pieces.suspense",
+  "verdict": "pass",
+  "reason": "The keystone clue: 'Vale Penrallow, aged 8, placed last', eight seasons back. With Round VII's 'She's sixteen', 8 + 8 = 16 checks out. It names her before the child knows the runner's name: fair, not a giveaway."
+ },
+ {
+  "path": "rounds[1].pieces.above",
+  "verdict": "fix",
+  "reason": "Says the child asked three questions. Mock Bee lets a child ask none, and nothing feeds this line from the chair's log (g.turnAsks).",
+  "fix_text": "You beat me, and I asked more questions than anyone. Imagine what you'll do with eleven. They have to answer. Questions asked this season: 212. — Theo"
+ },
+ {
+  "path": "rounds[1].pieces.below",
+  "verdict": "fix",
+  "reason": "Says the child asked one question; it may have been none, or all six.",
+  "fix_text": "Next time, ask before you spell. Ask five: definition, sentence, part of speech, origin, alternate pronunciation. They have to answer. Questions asked this season: 212. — Theo"
+ },
+ {
+  "path": "rounds[1].pieces.v",
+  "verdict": "fix",
+  "reason": "The prediction ('the list will lie') is fair and Case 1 and the cliff pay it off. But 'You guess instead of asking' states the child's weakness as fact. Brief §5B takes it from the bee file's top error type, and Round IV's card ('V. always knows your weak spot') is only true if it does. Make it a slot, one pre-written line per error type (L7), defaulting to the authored clause.",
+  "fix_text": "{weak} Tonight the list will lie to you. Read it twice. — V."
+ },
+ {
+  "path": "rounds[1].pieces.dax",
+  "verdict": "pass",
+  "reason": "The fake tip is corrected on screen at once, by Nova in her own tell, and the bee file shows the rule: an on-screen consequence."
+ },
+ {
+  "path": "rounds[1].pieces.beeFileFakeTip.tip",
+  "verdict": "pass",
+  "reason": "Shown under 'Corridor tip, checked', never as true."
+ },
+ {
+  "path": "rounds[1].pieces.beeFileFakeTip.truth",
+  "verdict": "pass",
+  "reason": "Corrects the tip. Not a quiz, so printing the spelling here teaches it rather than leaking an answer."
+ },
+ {
+  "path": "rounds[1].pieces.pip",
+  "verdict": "pass",
+  "reason": "One misused word; the real meaning is a tap away."
+ },
+ {
+  "path": "rounds[1].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[1].pieces.cliff",
+  "verdict": "pass",
+  "reason": "Pays off V.'s note at once. 'Every word is wrong' is the URGENT notice's own claim, which the puzzle overturns (colour/color): the story's false claim, not the player's."
+ },
+ {
+  "path": "rounds[1].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Delivers the framed programme on every path. 'Another V.' is a fair pointer."
+ },
+ {
+  "path": "rounds[2].technique",
+  "verdict": "pass",
+  "reason": "Matches Rafi's letters (circum + fer) and the lesson 'fer (carry / bear)'."
+ },
+ {
+  "path": "rounds[2].pieces.inv",
+  "verdict": "pass",
+  "reason": "'Today it seats us' holds for a field of 5, 7 or 9 (change 19). 'Chair four: Rafi' holds because the headliner is always seated."
+ },
+ {
+  "path": "rounds[2].pieces.prog",
+  "verdict": "pass",
+  "reason": "Tullia's tell. Its lateness is paid off in the laugh."
+ },
+ {
+  "path": "rounds[2].pieces.drama",
+  "verdict": "pass",
+  "reason": "Works at any placing ('lasts deep into the round'). Depends on the hall forcing this outcome; see the season row on scripted hall outcomes."
+ },
+ {
+  "path": "rounds[2].pieces.laugh",
+  "verdict": "pass",
+  "reason": "The runner in plain sight again, handing out programmes. That is the same job that puts V.'s notes on chairs."
+ },
+ {
+  "path": "rounds[2].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Plants the violet pen (the Vesper red herring). Her Round IX letter pays it off in both versions."
+ },
+ {
+  "path": "rounds[2].pieces.above",
+  "verdict": "fix",
+  "reason": "'You beat me on circumference' assumes that word came up in the child's bee. pick() may never have served it.",
+  "fix_text": "You beat me. Circum means around; fer means carry: circumference is the line carried around. Split it before you spell it. Draw the next word small on your palm. — Rafi"
+ },
+ {
+  "path": "rounds[2].pieces.below",
+  "verdict": "pass",
+  "reason": "Teaches circum + fer without claiming which word beat the child."
+ },
+ {
+  "path": "rounds[2].pieces.v",
+  "verdict": "pass",
+  "reason": "Predicts the missing bell (Round IV) and points at Pip (Case 2). On a path that skips Case 2 it gets a payoff only once Round IV's drama shows Pip jumping at the thunder (fix given there)."
+ },
+ {
+  "path": "rounds[2].pieces.dax",
+  "verdict": "pass",
+  "reason": "Recaps Case 1's blame on every path, with an on-screen consequence (Theo asks him in public; he has no answer). Places tally 640."
+ },
+ {
+  "path": "rounds[2].pieces.pip",
+  "verdict": "pass",
+  "reason": "One misused word."
+ },
+ {
+  "path": "rounds[2].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[2].pieces.cliff",
+  "verdict": "pass",
+  "reason": "Quotes the Storm invitation as naming Vesper 'already qualified for the Grand Marquee', but rounds[3].pieces.inv as written does not. This line holds once that invitation carries it (fix given there). Without that fix it is a false claim."
+ },
+ {
+  "path": "rounds[2].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "The pivotal card, on every path: the runner's left hand slants like every V. note, and the Pronouncer's is upright. It fairly clears the Pronouncer and points at Vale. A child who skipped Case 1 meets the hand-correction here first; it reads as a recap, not a contradiction."
+ },
+ {
+  "path": "rounds[3].technique",
+  "verdict": "pass",
+  "reason": "Matches Mira's letters ('ph, ch, y') with 'often' (change 25)."
+ },
+ {
+  "path": "rounds[3].pieces.inv",
+  "verdict": "fix",
+  "reason": "Round III's cliff says this invitation names Vesper 'already qualified for the Grand Marquee'. It doesn't. Brief §5C has every invitation from Round IV name her. Add the line, worded so it also explains her empty chair.",
+  "fix_text": "Today's weather: Greek, with a strong chance of ph. Seated in chair one: Mira, who asks every word where it was born. Already qualified for the Grand Marquee: Vesper. Her chair stays empty until then."
+ },
+ {
+  "path": "rounds[3].pieces.prog",
+  "verdict": "pass",
+  "reason": "Plants Case 2 ('a ringing in your ears') on every path."
+ },
+ {
+  "path": "rounds[3].pieces.drama",
+  "verdict": "fix",
+  "reason": "Case 2's answer (Pip took the bell because thunder scares him) and Round III's 'look for the one who's scared of thunder' rest only on Pip's secret inside the optional case. Plant his fear here, on every path, so both the note and the case are fair.",
+  "fix_text": "Thunder hits mid-word. Mira doesn't flinch; she asks the origin, hears 'Greek', and smiles. In the front row, Pip jumps at every clap and pretends he didn't."
+ },
+ {
+  "path": "rounds[3].pieces.laugh",
+  "verdict": "fix",
+  "reason": "Round IX's V. note asks 'who was there every single round?', and the answer has to be visible every round. The runner appears in no on-screen line of Round IV (or Round VI), only in this round's clue card.",
+  "fix_text": "Mira asks for the origin of the word 'the'. The Pronouncer answers, at length, delighted. At his elbow, the runner turns a page and waits, as if she has heard this one before."
+ },
+ {
+  "path": "rounds[3].pieces.suspense",
+  "verdict": "pass",
+  "reason": "The bell vanishes; 'V. called it a round ago' pays off Round III. The case clock needs a venue fix (cases[1].clock)."
+ },
+ {
+  "path": "rounds[3].pieces.above",
+  "verdict": "fix",
+  "reason": "'You asked for the origin twice' states a count the child may not have.",
+  "fix_text": "You beat me. Now ask for the origin every time. Greek words travel with their luggage: ph, ch, y. — Mira"
+ },
+ {
+  "path": "rounds[3].pieces.below",
+  "verdict": "fix",
+  "reason": "'Phantom with an f!' tells the child they misspelled phantom, but pick() may not have served it, and the miss may have been a different word.",
+  "fix_text": "Next time, ask where it came from. Phantom, phrase, physics: if it's Greek, the f sound is often ph. The origin tells you the rules. — Mira"
+ },
+ {
+  "path": "rounds[3].pieces.v",
+  "verdict": "fix",
+  "reason": "'Someone in this hall': the one who loses more than a round is Kwame, in the next hall (the Root Throne). Mockbee's 6–7 and 8–10 fields don't seat Kwame at the Storm.",
+  "fix_text": "Words keep their passports. Check them. Someone on this Circuit is about to lose more than a round. — V."
+ },
+ {
+  "path": "rounds[3].pieces.dax",
+  "verdict": "pass",
+  "reason": "Second fake tip, corrected at once by Mira in her own tell, with an on-screen consequence ('stop listening to him'). It gives away nothing about the bell (change 30)."
+ },
+ {
+  "path": "rounds[3].pieces.beeFileFakeTip.tip",
+  "verdict": "pass",
+  "reason": "Shown as a checked corridor tip."
+ },
+ {
+  "path": "rounds[3].pieces.beeFileFakeTip.truth",
+  "verdict": "pass",
+  "reason": "A correct correction. But it spells R-H-Y-T-H-M in the mail that arrives just before Case 2 asks for rhythm. The fix is on that case item (cases[1].puzzle.items[3]), not here."
+ },
+ {
+  "path": "rounds[3].pieces.pip",
+  "verdict": "pass",
+  "reason": "One misused word."
+ },
+ {
+  "path": "rounds[3].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[3].pieces.cliff",
+  "verdict": "pass",
+  "reason": "Calls back V.'s note; the next round pays it off."
+ },
+ {
+  "path": "rounds[3].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "On every path. A true statement that ties V.'s knowledge to the bee file and the person who carries it. It depends on V.'s notes really naming the child's weak spot (see rounds[1] and rounds[4] v)."
+ },
+ {
+  "path": "rounds[4].technique",
+  "verdict": "pass",
+  "reason": "Matches Kwame's letters ('Prefix, root, suffix: never skip one')."
+ },
+ {
+  "path": "rounds[4].pieces.inv",
+  "verdict": "fix",
+  "reason": "'Dax spells today' is false in the 6–7 band (mockbee seats Pip, Nova, Rafi and Suki plus the headliner). It also broadcasts by name a warning Case 2 gave 'quietly'. And nothing on the main path says the bell came back. Mirror Round VIII's 'one speller', and close the bell.",
+  "fix_text": "Kwame has not misspelled a word in public in two seasons. Seated beside him: you. The bell is back, and Pip will ring it. One speller here is on a first warning from the Committee."
+ },
+ {
+  "path": "rounds[4].pieces.prog",
+  "verdict": "pass",
+  "reason": "Hazel's tell; it sets up the laugh."
+ },
+ {
+  "path": "rounds[4].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Ordered before the crack, as the brief asks (orderNote). 'Sudden death' is a real phase of mockbee."
+ },
+ {
+  "path": "rounds[4].pieces.drama",
+  "verdict": "pass",
+  "reason": "Names the word and the miss. The runner holds the door: plain sight. Depends on the hall forcing this outcome; see the season row on scripted hall outcomes."
+ },
+ {
+  "path": "rounds[4].pieces.dax",
+  "verdict": "pass",
+  "reason": "Kwame is out of the building (L4). Consequence on screen: nobody laughs, and Rafi turns his back."
+ },
+ {
+  "path": "rounds[4].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Calls back Round IV's note. Raises no worry about Kwame's safety."
+ },
+ {
+  "path": "rounds[4].pieces.above",
+  "verdict": "pass",
+  "reason": "Plants the Far Shore and French in both versions (the validator checks this), so Case 3's planted clue reaches every path."
+ },
+ {
+  "path": "rounds[4].pieces.below",
+  "verdict": "pass",
+  "reason": "Same plant as the above letter. 'Nearly had me' is soft enough at any below placing."
+ },
+ {
+  "path": "rounds[4].pieces.v",
+  "verdict": "fix",
+  "reason": "The second clause ('the loud one gets louder') fairly predicts 'not my problem' and the Round VII rumour. But 'You skip the suffix' asserts the child's weakness as fact (see rounds[1].pieces.v). Use the bee-file slot.",
+  "fix_text": "Parts first, then the whole. {weak} And when a strong one breaks, the loud one gets louder. Watch. — V."
+ },
+ {
+  "path": "rounds[4].pieces.pip",
+  "verdict": "pass",
+  "reason": "One misused word."
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[4].pieces.cliff",
+  "verdict": "pass",
+  "reason": "Raises the empty room and settles it in the same line: the Pronouncer says he's safe (amendment 2). Kwame's safety is known before any case opens."
+ },
+ {
+  "path": "rounds[4].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "On every path. It keeps the fair ambiguity: two keys, or a broken lock. After Case 2 has proved the lock broken, 'Unless Bolt is right' reads a little coy, but it never contradicts the case."
+ },
+ {
+  "path": "rounds[5].technique",
+  "verdict": "pass",
+  "reason": "Matches Ines's letters ('Écoute la fin')."
+ },
+ {
+  "path": "rounds[5].pieces.inv",
+  "verdict": "pass",
+  "reason": "'Kwame, who has come back' tells a child who skipped Case 3 that he is safe and back. It matches Case 3's sign-in."
+ },
+ {
+  "path": "rounds[5].pieces.prog",
+  "verdict": "pass",
+  "reason": "Salty's tell; the postcard matches it."
+ },
+ {
+  "path": "rounds[5].pieces.drama",
+  "verdict": "pass",
+  "reason": "Makes public the coaching that Case 3 has Ines admit, which is fine for a child who skipped the case. Depends on the hall forcing this outcome; see the season row on scripted hall outcomes."
+ },
+ {
+  "path": "rounds[5].pieces.laugh",
+  "verdict": "fix",
+  "reason": "The runner is absent from every on-screen line of Round VI, yet Round IX's V. note asks 'who was there every single round?'.",
+  "fix_text": "Salty applauds every word, including the wrong ones. The runner quietly moves the programmes out of splash range."
+ },
+ {
+  "path": "rounds[5].pieces.suspense",
+  "verdict": "fix",
+  "reason": "Vesper denies being V. unprompted. Nothing on screen tells her anyone suspects her (the Suspect Board is the child's own), so a careful child asks how she knows. Give the rumour a source: Pip is the rumour mill (thread D), and it grows thread C's rumours.",
+  "fix_text": "Vesper's letter, two lines: 'Pip is telling everyone I'm V. Not me. I don't write notes. — Vesper.'"
+ },
+ {
+  "path": "rounds[5].pieces.above",
+  "verdict": "pass",
+  "reason": "Works at any above placing; carries 'Écoute la fin'."
+ },
+ {
+  "path": "rounds[5].pieces.below",
+  "verdict": "fix",
+  "reason": "'The quiet letters beat you' says the child's miss was a silent letter. It may have been any word.",
+  "fix_text": "Écoute la fin. Ballet ends in a t you never hear. Listen for the quiet letters next time: they're the loudest ones in the word. — Ines"
+ },
+ {
+  "path": "rounds[5].pieces.v",
+  "verdict": "pass",
+  "reason": "Owner decision (b). Fair: it carries no word, only that an unheard word is coming, which the Committee tells everyone in the next invitation. Its tip is that round's public technique. It is exactly the inference Round VII's card spells out. It needs story order (season row)."
+ },
+ {
+  "path": "rounds[5].pieces.dax",
+  "verdict": "pass",
+  "reason": "Alone on the dock: the on-screen consequence of 'not my problem'. 'He is writing something' gets its payoff once his apology to Kwame says he wrote it there (fix on turn.apologies[2].text)."
+ },
+ {
+  "path": "rounds[5].pieces.pip",
+  "verdict": "pass",
+  "reason": "One misused word."
+ },
+ {
+  "path": "rounds[5].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[5].pieces.cliff",
+  "verdict": "fix",
+  "reason": "Says the Junkyard invitation lists the Circuit table. rounds[6].pieces.inv does not. This line is Case 4's only motive plant, so it has to stand on its own.",
+  "fix_text": "The Circuit table goes up on the Junkyard gate: Suki seventh, Dax eighth, one place behind her."
+ },
+ {
+  "path": "rounds[5].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Honest card: it delivers the denial and asks whether it's true. Round IX's letter answers it."
+ },
+ {
+  "path": "rounds[6].technique",
+  "verdict": "pass",
+  "reason": "Matches Suki's letters and the drama (breathe out, ask everything)."
+ },
+ {
+  "path": "rounds[6].pieces.inv",
+  "verdict": "pass",
+  "reason": "The Committee's announcement that Round VI's note got to first (decision b). That only holds if Round VI's mail reaches the child before this invitation (season row on story order)."
+ },
+ {
+  "path": "rounds[6].pieces.prog",
+  "verdict": "pass",
+  "reason": "Misprints ('borowed', 'evenchually') on every path: Ratchet's clearing evidence, in plain sight."
+ },
+ {
+  "path": "rounds[6].pieces.drama",
+  "verdict": "pass",
+  "reason": "Suki's tell, and the payoff of Round VI's note. Depends on the hall forcing this outcome; see the season row on scripted hall outcomes."
+ },
+ {
+  "path": "rounds[6].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Names the runner 'Vale' in plain sight, the link to Round II's framed programme. Done lightly, as a thank-you."
+ },
+ {
+  "path": "rounds[6].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Sets up Case 4; asserts nothing about the child."
+ },
+ {
+  "path": "rounds[6].pieces.above",
+  "verdict": "pass",
+  "reason": "Works at any above placing."
+ },
+ {
+  "path": "rounds[6].pieces.below",
+  "verdict": "fix",
+  "reason": "'You held your breath on the hard one' asserts something the app cannot know.",
+  "fix_text": "The hard one got you. Next time, breathe out first. Out, not in. Then ask everything. — Suki"
+ },
+ {
+  "path": "rounds[6].pieces.v",
+  "verdict": "pass",
+  "reason": "'He is fast' points at Dax (his tell, and this round's dax line), while Pip and Dash are also fast: a fair clue. Case 4 and Round VIII's apology pay it off."
+ },
+ {
+  "path": "rounds[6].pieces.dax",
+  "verdict": "pass",
+  "reason": "Shows him spreading something without convicting him before Case 4. Every path then gets the consequence (Round VIII's invitation) and his admission (Round VIII's apology)."
+ },
+ {
+  "path": "rounds[6].pieces.pip",
+  "verdict": "pass",
+  "reason": "One misused word."
+ },
+ {
+  "path": "rounds[6].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[6].pieces.cliff",
+  "verdict": "pass",
+  "reason": "Narrates rather than quotes, so it is true whatever the Round VIII invitation says."
+ },
+ {
+  "path": "rounds[6].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "The strongest Vale card: only two people see the sealed list, and it gives her name and her age. With Round II (aged 8, eight seasons back), a careful 10-year-old can name her here. Its claim 'a round before the Committee announced it' needs story order (season row)."
+ },
+ {
+  "path": "rounds[7].technique",
+  "verdict": "pass",
+  "reason": "Matches Dax's fade and V.'s 'Steady beat wins late'."
+ },
+ {
+  "path": "rounds[7].pieces.inv",
+  "verdict": "fix",
+  "reason": "'A speed round' promises a mode the hall doesn't run. A regional round is plain Mock Bee in a venue (§3.5), with the same 30 s turns.",
+  "fix_text": "The Finish Arch, where everyone starts fast and not everyone finishes that way. The Committee notes that one speller has received a formal warning and will spell under observation."
+ },
+ {
+  "path": "rounds[7].pieces.prog",
+  "verdict": "pass",
+  "reason": "Dash's tell; the laugh pays it off."
+ },
+ {
+  "path": "rounds[7].pieces.drama",
+  "verdict": "pass",
+  "reason": "Round one always forgives, so 'flies through round one' holds. The fade itself depends on the hall forcing it. Placing-safe since 'the last two' was removed (change 21). Depends on the hall forcing this outcome; see the season row on scripted hall outcomes."
+ },
+ {
+  "path": "rounds[7].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Plants Case 5's answer (a host's own spare key) on every path."
+ },
+ {
+  "path": "rounds[7].pieces.suspense",
+  "verdict": "pass",
+  "reason": "One of V.'s impossible arrivals, fairly explained: the runner takes the tape down."
+ },
+ {
+  "path": "rounds[7].pieces.above",
+  "verdict": "pass",
+  "reason": "Apologises for every wrong done to the child or in front of them (tips, Theo, bell, Suki). The thread moves in both versions."
+ },
+ {
+  "path": "rounds[7].pieces.below",
+  "verdict": "pass",
+  "reason": "Placing-safe since 'I won by one word' went (change 22). The same apology."
+ },
+ {
+  "path": "rounds[7].pieces.v",
+  "verdict": "pass",
+  "reason": "'Not everyone who writes to you wants to beat you': both Dax and V. write to the child, and the turn pays it off."
+ },
+ {
+  "path": "rounds[7].pieces.dax",
+  "verdict": "pass",
+  "reason": "Pays off Round I's cliff (his home hall). Under observation he whispers no tips: the consequence is holding."
+ },
+ {
+  "path": "rounds[7].pieces.pip",
+  "verdict": "pass",
+  "reason": "The misuse, then the correction: the brief's step towards the finale."
+ },
+ {
+  "path": "rounds[7].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[7].pieces.cliff",
+  "verdict": "pass",
+  "reason": "The prediction ('the envelope will open') is paid off in Case 5. On every path it is paid off once Round IX's suspense says the envelope is new (fix there)."
+ },
+ {
+  "path": "rounds[7].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Clears Dax at VIII, on evidence, on every path."
+ },
+ {
+  "path": "rounds[8].technique",
+  "verdict": "pass",
+  "reason": "A summary of the season's techniques; it matches the drama."
+ },
+ {
+  "path": "rounds[8].pieces.inv",
+  "verdict": "pass",
+  "reason": "'Every speller you have met will be in the hall.' The final's lines put Dax, Theo and Pip at the microphone. Mockbee's fields don't seat them all: 6–7 has no Dax or Theo, 8–10 no Theo, 11–15 no Pip. Round IX must seat the whole Circuit (season row)."
+ },
+ {
+  "path": "rounds[8].pieces.prog",
+  "verdict": "pass",
+  "reason": "Duchess's tell; the Stage postcard matches it."
+ },
+ {
+  "path": "rounds[8].pieces.drama",
+  "verdict": "pass",
+  "reason": "Vesper's first question, set up by Case 5's last chill. Depends on the hall forcing this outcome; see the season row on scripted hall outcomes."
+ },
+ {
+  "path": "rounds[8].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Pip's own tell (change 43). Needs Pip seated in every band (season row)."
+ },
+ {
+  "path": "rounds[8].pieces.suspense",
+  "verdict": "fix",
+  "reason": "On a path that skipped Case 5, Round VIII's 'the envelope will open before anyone opens it' is never paid off. Name the new envelope here, on every path. (The above/below branch also needs Vesper to outlast every other rival; see the season row.)",
+  "fix_text": "The championship word arrives in a new envelope, sealed in front of everyone last night and carried in by the runner. Finish above Vesper and it's yours to spell; finish below and it's hers. Either way, the card shows the word, its origin and the technique that cracks it."
+ },
+ {
+  "path": "rounds[8].pieces.above",
+  "verdict": "pass",
+  "reason": "'The violet pen was mine. Keep it.' clears her in both versions. 'You beat me by asking' matches the blackout drama, where everyone asks."
+ },
+ {
+  "path": "rounds[8].pieces.below",
+  "verdict": "pass",
+  "reason": "'I won' holds only if the hall makes Vesper outlast every other rival whenever she finishes above the child (season row). If not, it should read 'I asked tonight, the first time in a year'."
+ },
+ {
+  "path": "rounds[8].pieces.v",
+  "verdict": "pass",
+  "reason": "Points at whoever was present every round. On screen that is the runner and the Pronouncer only: Vesper's chair stayed empty, Dax missed Round I, Ratchet was at one hall. Fair, once the runner is visible in Rounds IV and VI (laugh fixes there)."
+ },
+ {
+  "path": "rounds[8].pieces.dax",
+  "verdict": "pass",
+  "reason": "His first question, earned through Case 5's 'I don't ask'. Needs Dax and Theo seated in every band (season row). The jump from 1,204 to 1,977 in a round is big, but the blackout final runs on questions."
+ },
+ {
+  "path": "rounds[8].pieces.pip",
+  "verdict": "pass",
+  "reason": "Pip gets one right, as §5D asks."
+ },
+ {
+  "path": "rounds[8].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "Real meaning."
+ },
+ {
+  "path": "rounds[8].pieces.cliff",
+  "verdict": "pass",
+  "reason": "The same card as teamNight.challenge. 'Tomorrow night' is consistent."
+ },
+ {
+  "path": "rounds[8].pieces.clue.text",
+  "verdict": "pass",
+  "reason": "Delivers Case 5's secret on every path. It is true and openly said, and it clears the Pronouncer as V. ('It isn't mine to tell': someone else's secret)."
+ },
+ {
+  "path": "turn.scene",
+  "verdict": "pass",
+  "reason": "Kwame makes the first move, not the child. The same scene follows either choice."
+ },
+ {
+  "path": "turn.choice.labels.true",
+  "verdict": "pass",
+  "reason": "L7: a pre-written choice that only changes flavour (dax.helped)."
+ },
+ {
+  "path": "turn.choice.labels.false",
+  "verdict": "pass",
+  "reason": "L7: a pre-written choice that only changes flavour."
+ },
+ {
+  "path": "turn.choice.line.true",
+  "verdict": "pass",
+  "reason": "The only line the choice changes. 'Both of you' covers Kwame and the child."
+ },
+ {
+  "path": "turn.choice.line.false",
+  "verdict": "pass",
+  "reason": "The only line the choice changes; it rejoins the same scene."
+ },
+ {
+  "path": "turn.kwame",
+  "verdict": "fix",
+  "reason": "In Round V Kwame was out of the building when Dax said it (moved there for L4), so 'You said it' needs him to have heard it second-hand. Say so, or a careful child asks how he knows.",
+  "fix_text": "I crack too. Two seasons, gone in one word. I heard what you said in the corridor. You were right. Welcome."
+ },
+ {
+  "path": "turn.dax",
+  "verdict": "pass",
+  "reason": "His admission. It sets up Team Night's 'I know exactly how fast I am'."
+ },
+ {
+  "path": "turn.notesIntro",
+  "verdict": "pass",
+  "reason": "Pays off Case 3's card on the dock, and Round VIII's 'Not everyone who writes to you'."
+ },
+ {
+  "path": "turn.notes[0]",
+  "verdict": "pass",
+  "reason": "Kind, short, in V.'s voice; nothing in it contradicts the rest of the season."
+ },
+ {
+  "path": "turn.notes[1]",
+  "verdict": "pass",
+  "reason": "Kind, short, in V.'s voice; nothing in it contradicts the rest of the season."
+ },
+ {
+  "path": "turn.notes[2]",
+  "verdict": "pass",
+  "reason": "Kind, short, in V.'s voice; nothing in it contradicts the rest of the season."
+ },
+ {
+  "path": "turn.notes[3]",
+  "verdict": "pass",
+  "reason": "Kind, short, in V.'s voice; nothing in it contradicts the rest of the season."
+ },
+ {
+  "path": "turn.notes[4]",
+  "verdict": "pass",
+  "reason": "Kind, short, in V.'s voice; nothing in it contradicts the rest of the season."
+ },
+ {
+  "path": "turn.daxOnNotes",
+  "verdict": "pass",
+  "reason": "The evidence that clears him (he is a recipient). It mirrors the child's own suspicion of him."
+ },
+ {
+  "path": "turn.apologies[0].text",
+  "verdict": "pass",
+  "reason": "Answers Theo's unanswered 640th question (Round III)."
+ },
+ {
+  "path": "turn.apologies[0].reply",
+  "verdict": "fix",
+  "reason": "Theo asks 'why me?' straight after Dax has answered exactly that. It was already his 640th question ('What made you think it was me?', Round III), so the reply ignores the apology it is replying to. Close the loop and keep the tally.",
+  "fix_text": "Accepted. That answers question 640. Question 1,204: same team now? — Theo"
+ },
+ {
+  "path": "turn.apologies[1].text",
+  "verdict": "pass",
+  "reason": "Owns the rumour and its motive (the table in Round VI's cliff), on every path."
+ },
+ {
+  "path": "turn.apologies[1].reply",
+  "verdict": "pass",
+  "reason": "Suki's tell; repeats Case 4's last chill on purpose."
+ },
+ {
+  "path": "turn.apologies[2].text",
+  "verdict": "fix",
+  "reason": "Round VI shows Dax alone on the dock, 'writing something', and nothing ever says what. Pay it off here, on every path. 'Not my problem' is on screen only in Case 3, but the apology makes it self-explanatory.",
+  "fix_text": "I wrote this on the dock at the Far Shore and didn't send it. What I said in the corridor. And 'not my problem.' Both wrong. Sorry. — D."
+ },
+ {
+  "path": "turn.apologies[2].reply",
+  "verdict": "pass",
+  "reason": "Sets up Kwame proposing him as captain ('That's what a team is for')."
+ },
+ {
+  "path": "cases[0].title",
+  "verdict": "pass",
+  "reason": "In-world title; no 'Case 1'."
+ },
+ {
+  "path": "cases[0].place",
+  "verdict": "pass",
+  "reason": "The night between Rounds II and III; matches the cliff."
+ },
+ {
+  "path": "cases[0].clock",
+  "verdict": "pass",
+  "reason": "The Colosseum round (Round III) at 9:00 next morning; consistent with the escalation at 11:40 p.m."
+ },
+ {
+  "path": "cases[0].impossible",
+  "verdict": "pass",
+  "reason": "An impossible thing that the reveal explains."
+ },
+ {
+  "path": "cases[0].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "Kind secret (glasses); paid off in the reveal."
+ },
+ {
+  "path": "cases[0].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "Kind secret; Sage's dozing tell."
+ },
+ {
+  "path": "cases[0].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "Kind secret; Theo's 'eleven' motif."
+ },
+ {
+  "path": "cases[0].falseSolution",
+  "verdict": "pass",
+  "reason": "The story's false solution, voiced by Dax, never the player's (L10). Its consequence lands in Round III."
+ },
+ {
+  "path": "cases[0].escalation",
+  "verdict": "pass",
+  "reason": "'In exactly the same places' sets up the reveal (the backup was copied)."
+ },
+ {
+  "path": "cases[0].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Says one item isn't wrong without saying which: no leak."
+ },
+ {
+  "path": "cases[0].puzzle.rule",
+  "verdict": "pass",
+  "reason": "A fair hint that also points at the right accusation (the parrot can't say silent letters)."
+ },
+ {
+  "path": "cases[0].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "One answer: 'knife' is the only word that restores a letter you can't hear to 'nife' (silent k). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "One answer: 'wrist' is the only word that restores a letter you can't hear to 'rist' (silent w). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "One answer: 'foreign' is the only word that restores a letter you can't hear to 'forein' (silent g). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "One answer: 'thumb' is the only word that restores a letter you can't hear to 'thum' (silent b). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "One answer: 'listen' is the only word that restores a letter you can't hear to 'lisen' (silent t). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "One answer: 'island' is the only word that restores a letter you can't hear to 'iland' (silent s). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "One answer: 'castle' is the only word that restores a letter you can't hear to 'casle' (silent t). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "One answer: 'column' is the only word that restores a letter you can't hear to 'colum' (silent n). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[8]",
+  "verdict": "pass",
+  "reason": "One answer: 'climb' is the only word that restores a letter you can't hear to 'clim' (silent b). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[9]",
+  "verdict": "pass",
+  "reason": "One answer: 'honest' is the only word that restores a letter you can't hear to 'onest' (silent h). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[10]",
+  "verdict": "pass",
+  "reason": "One answer: 'scissors' is the only word that restores a letter you can't hear to 'sissors' (silent c). The validator checks that the letters dropped are in order. The 'why' must show only after the answer."
+ },
+ {
+  "path": "cases[0].puzzle.items[11]",
+  "verdict": "pass",
+  "reason": "Both spellings are accepted, so no child is marked wrong whichever they choose. 'Isn't wrong at all' holds, and the reveal explains it."
+ },
+ {
+  "path": "cases[0].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "The false solution, available to choose and gently refused."
+ },
+ {
+  "path": "cases[0].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "Right answer, deducible from Round II's programme plus the puzzle's rule."
+ },
+ {
+  "path": "cases[0].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "A plausible wrong choice; the escalation (backup copied) rules it out."
+ },
+ {
+  "path": "cases[0].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "L10: 'not quite, look again'."
+ },
+ {
+  "path": "cases[0].reveal[0]",
+  "verdict": "fix",
+  "reason": "Says 'the apprentice'. Round II's programme and the right accusation say 'the typesetter', and 'the printer' is a separate suspect. Three names for two people; tie them together.",
+  "fix_text": "The typesetter, the printer's apprentice, set the type from the parrot's dictation. A parrot can only say what it hears, so every letter you can't hear went missing."
+ },
+ {
+  "path": "cases[0].reveal[1]",
+  "verdict": "pass",
+  "reason": "Explains the escalation."
+ },
+ {
+  "path": "cases[0].reveal[2]",
+  "verdict": "pass",
+  "reason": "Explains the colour/color item."
+ },
+ {
+  "path": "cases[0].reveal[3]",
+  "verdict": "pass",
+  "reason": "Theo is cleared, which matches Round III's recap on every path."
+ },
+ {
+  "path": "cases[0].reveal[4]",
+  "verdict": "pass",
+  "reason": "The slant clue, shown in the case. Round III's card repeats it on every path."
+ },
+ {
+  "path": "cases[0].reveal[5]",
+  "verdict": "pass",
+  "reason": "Dax's shrug; Round III answers it in public."
+ },
+ {
+  "path": "cases[0].lastChill",
+  "verdict": "pass",
+  "reason": "Points at the blamer (Dax). Round III and the turn pay it off."
+ },
+ {
+  "path": "cases[1].title",
+  "verdict": "pass",
+  "reason": "In-world title."
+ },
+ {
+  "path": "cases[1].place",
+  "verdict": "pass",
+  "reason": "Where the bell's case stands."
+ },
+ {
+  "path": "cases[1].clock",
+  "verdict": "fix",
+  "reason": "Kwame's round is Round V at the Root Throne, but this case is set at the Eye of the Storm with his round '30 minutes' away. The places contradict. Keep the 30 → 15 minute clock by making it the Committee's departure.",
+  "fix_text": "The Committee's coach leaves for the Root Throne in 30 minutes, and Kwame's round can't start without a bell. No bell, no bee."
+ },
+ {
+  "path": "cases[1].impossible",
+  "verdict": "pass",
+  "reason": "A locked case with unbroken glass. The reveal (the lock never worked) explains it."
+ },
+ {
+  "path": "cases[1].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "A kind secret. If it shows only in the reveal, Pip's fear still reaches the accusation through Round IV's drama (fix given there)."
+ },
+ {
+  "path": "cases[1].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "Kind secret; it matches Round V's card ('broken for a year')."
+ },
+ {
+  "path": "cases[1].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "Motive for the spare bell. Its timing matters (season row on case secrets)."
+ },
+ {
+  "path": "cases[1].falseSolution",
+  "verdict": "pass",
+  "reason": "The story's false solution (sabotage), never the player's."
+ },
+ {
+  "path": "cases[1].escalation",
+  "verdict": "fix",
+  "reason": "The evidence against Dax (heel-marks rocked back and forth: his tell) appears only in the reveal, after the child has already accused, yet the right choice names him. Show it before the accusation.",
+  "fix_text": "The spare bell is missing too, and the clock jumps to 15 minutes. Behind the curtain where it stood: two deep heel-marks in the dust, rocked back and forth."
+ },
+ {
+  "path": "cases[1].puzzle.brief",
+  "verdict": "fix",
+  "reason": "Promises every answer is spelled by ph/ch/y. Onomatopoeia (item 2) uses none of them (its rule is 'oe'), and a child who trusts the brief will doubt a right answer.",
+  "fix_text": "A trail of definitions. Each answer is a word built in Greek and spelled by Greek's rules: ph for f, ch for k, y for i, and a few more. Spell it right and it opens the next hiding place."
+ },
+ {
+  "path": "cases[1].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "One answer: acrophobia is the only Greek-built word for 'a fear of heights'."
+ },
+ {
+  "path": "cases[1].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "One answer. Its rule (oe) needs the brief fix."
+ },
+ {
+  "path": "cases[1].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "One answer under the Greek rule (not timeline or sequence)."
+ },
+ {
+  "path": "cases[1].puzzle.items[3]",
+  "verdict": "fix",
+  "reason": "Leaked: Round IV's bee file spells R-H-Y-T-H-M letter by letter, and Round IV's corridor tip names rhythm with Mira's 'Greek. Y.', in the mail that arrives just before this case. Swap it for an unshown y/ph word, e.g. xylophone (Greek xylon, wood + phone, sound).",
+  "fix_text": "an instrument of wooden bars you play with small hammers"
+ },
+ {
+  "path": "cases[1].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "One answer."
+ },
+ {
+  "path": "cases[1].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "One answer under the Greek rule ('dash' isn't Greek and doesn't join words)."
+ },
+ {
+  "path": "cases[1].puzzle.items[6]",
+  "verdict": "fix",
+  "reason": "Two right answers: 'a group singing together' is just as much choir, which is also ch for k and also from Greek khoros (through Latin and French). Change the clue so only chorus fits.",
+  "fix_text": "the part of a song that comes back after every verse"
+ },
+ {
+  "path": "cases[1].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "One answer."
+ },
+ {
+  "path": "cases[1].puzzle.items[8]",
+  "verdict": "fix",
+  "reason": "The Storm visitor card for Echo says 'a sound that comes back ... echo', almost word for word this clue. The Visitors' Book can be open during the case, and Echo stands on a Storm stop before it. Swap the item, e.g. microphone (mikros, small + phone, sound; ph), which Round VII's laugh already features.",
+  "fix_text": "the thing a speller speaks into so the whole hall can hear"
+ },
+ {
+  "path": "cases[1].puzzle.items[9]",
+  "verdict": "fix",
+  "reason": "The Storm visitor card for Psyche prints 'Psychology, the study of the mind', which is this clue and its answer. Swap it, e.g. cylinder (kylindros; y for i).",
+  "fix_text": "a solid shape like a can of beans"
+ },
+ {
+  "path": "cases[1].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "The false solution, refused gently."
+ },
+ {
+  "path": "cases[1].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "A plausible wrong choice. The reveal clears Bolt of theft, and his secret is the lock."
+ },
+ {
+  "path": "cases[1].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Right. Deducible once Pip's fear (Round IV's drama fix) and the heel-marks (escalation fix) are on screen before the accusation."
+ },
+ {
+  "path": "cases[1].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "L10."
+ },
+ {
+  "path": "cases[1].reveal[0]",
+  "verdict": "pass",
+  "reason": "The runner's key 'does nothing': a plain-sight Vale beat. It is case-only, but Round V's card carries the keys on every path."
+ },
+ {
+  "path": "cases[1].reveal[1]",
+  "verdict": "pass",
+  "reason": "Pays off Round III's 'the one who's scared of thunder'."
+ },
+ {
+  "path": "cases[1].reveal[2]",
+  "verdict": "fix",
+  "reason": "Once the escalation shows the heel-marks before the accusation (fix there), this line can no longer call them 'the trail's last clue'. Make it the confirmation instead.",
+  "fix_text": "Those heel-marks behind the curtain were Dax's, rocked back and forth the way he always stands. He hid the spare to stretch the delay."
+ },
+ {
+  "path": "cases[1].reveal[3]",
+  "verdict": "pass",
+  "reason": "With the clock fix, 'on time' means Round V at the Root Throne. Round V's invitation (fix) tells every path that Pip rings it."
+ },
+ {
+  "path": "cases[1].reveal[4]",
+  "verdict": "pass",
+  "reason": "Dax's consequence (a first warning). Round V's invitation carries it to every path."
+ },
+ {
+  "path": "cases[1].lastChill",
+  "verdict": "fix",
+  "reason": "Two problems. 'The bell will ring twice tonight. Listen for the second.' is a V. prediction nothing ever pays off (and Kwame's round isn't tonight); every other V. prediction comes true on screen. And 'if the lock never worked' contradicts this case's own reveal ('The lock never worked. Bolt admits it.'). Keep the fair ambiguity (who could have used it?), not the contradiction.",
+  "fix_text": "Inside the case, where the bell stood: a V. note. 'The bell will ring on time. Not everyone wants it to. — V.' Two people hold keys to that case. But the lock never worked, so anyone could have put it there."
+ },
+ {
+  "path": "cases[2].title",
+  "verdict": "pass",
+  "reason": "In-world title."
+ },
+ {
+  "path": "cases[2].place",
+  "verdict": "pass",
+  "reason": "Matches the route from Round V's hall to Round VI's."
+ },
+ {
+  "path": "cases[2].clock",
+  "verdict": "pass",
+  "reason": "A competitive stake, not a safety one. It matches the reveal's sign-in."
+ },
+ {
+  "path": "cases[2].impossible",
+  "verdict": "pass",
+  "reason": "His bag is left behind, but the safe line has already been shown."
+ },
+ {
+  "path": "cases[2].safeLine",
+  "verdict": "pass",
+  "reason": "Shown first in the cold open: safety before any worry (amendment 2). The adults know."
+ },
+ {
+  "path": "cases[2].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "A kind secret, admitted in the reveal; Round VI's drama is consistent with it."
+ },
+ {
+  "path": "cases[2].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "The card he won't show pays off at the turn. 'Not my problem' gets its consequence in Round VI (alone on the dock)."
+ },
+ {
+  "path": "cases[2].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "The adults were told at once; Kwame's privacy is respected."
+ },
+ {
+  "path": "cases[2].falseSolution",
+  "verdict": "pass",
+  "reason": "Never doubts his safety, only whether he will come back to spell."
+ },
+ {
+  "path": "cases[2].escalation",
+  "verdict": "pass",
+  "reason": "The runner in plain sight; it raises the clock for the team's crossing."
+ },
+ {
+  "path": "cases[2].puzzle.brief",
+  "verdict": "pass",
+  "reason": "'The language English borrowed each one from' fixes the rule to the direct donor. That gives one answer for safari (Swahili, not Arabic), ballet (French, not Italian) and café (French)."
+ },
+ {
+  "path": "cases[2].puzzle.note",
+  "verdict": "fix",
+  "reason": "'Back by sundown' reads as Kwame coming back to the Root Throne, but the clock and the reveal have him signing in at the Far Shore. It sends the child the wrong way.",
+  "fix_text": "safari · yogurt · samovar · hummus · piano · catamaran · café · ballet. Signing in by sundown. — K."
+ },
+ {
+  "path": "cases[2].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): Swahili. The answer choices must not also offer Arabic (its earlier source), or two answers look right."
+ },
+ {
+  "path": "cases[2].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): Turkish."
+ },
+ {
+  "path": "cases[2].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): Russian."
+ },
+ {
+  "path": "cases[2].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): Arabic."
+ },
+ {
+  "path": "cases[2].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): Italian."
+ },
+ {
+  "path": "cases[2].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): Tamil."
+ },
+ {
+  "path": "cases[2].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): French. The choices must not offer Italian or Turkish."
+ },
+ {
+  "path": "cases[2].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "One answer under the on-screen rule (the direct donor): French. The choices must not offer Italian."
+ },
+ {
+  "path": "cases[2].puzzle.answer",
+  "verdict": "pass",
+  "reason": "Shown only after the sort. If it showed before, it would leak the acrostic."
+ },
+ {
+  "path": "cases[2].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "The false solution."
+ },
+ {
+  "path": "cases[2].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "Right. The acrostic gives it, and Kwame's Round V letter planted it."
+ },
+ {
+  "path": "cases[2].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Clearly wrong."
+ },
+ {
+  "path": "cases[2].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "L10."
+ },
+ {
+  "path": "cases[2].reveal[0]",
+  "verdict": "pass",
+  "reason": "An adult teacher on the Far Shore; matches 'practise French'."
+ },
+ {
+  "path": "cases[2].reveal[1]",
+  "verdict": "pass",
+  "reason": "Ines admits the coaching; Round VI's drama is consistent with it."
+ },
+ {
+  "path": "cases[2].reveal[2]",
+  "verdict": "pass",
+  "reason": "The grown-ups knew all along (amendment 2), said openly."
+ },
+ {
+  "path": "cases[2].reveal[3]",
+  "verdict": "pass",
+  "reason": "Matches Round VI's 'Kwame, who has come back'."
+ },
+ {
+  "path": "cases[2].lastChill",
+  "verdict": "pass",
+  "reason": "Sets up the turn's stack of V. notes."
+ },
+ {
+  "path": "cases[3].title",
+  "verdict": "pass",
+  "reason": "In-world title."
+ },
+ {
+  "path": "cases[3].place",
+  "verdict": "pass",
+  "reason": "Round VII's venue."
+ },
+ {
+  "path": "cases[3].clock",
+  "verdict": "pass",
+  "reason": "The ruling is at noon the next day; consistent with 'by evening' in Round VII."
+ },
+ {
+  "path": "cases[3].impossible",
+  "verdict": "pass",
+  "reason": "The reveal explains it (the page was folded, not torn)."
+ },
+ {
+  "path": "cases[3].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "Kind secret, matching Ratchet's tell."
+ },
+ {
+  "path": "cases[3].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "A specific, kind secret. Printing 'kai' is a hint, not an answer."
+ },
+ {
+  "path": "cases[3].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "Kind secret."
+ },
+ {
+  "path": "cases[3].falseSolution",
+  "verdict": "pass",
+  "reason": "The story's false solution. Round VII's misprints (on every path) and the puzzle rule it out."
+ },
+ {
+  "path": "cases[3].escalation",
+  "verdict": "pass",
+  "reason": "Raises the stakes; the reveal explains it."
+ },
+ {
+  "path": "cases[3].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Gives the meaning, not the word; no leak."
+ },
+ {
+  "path": "cases[3].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "The part 'tris' (three): the parts join to the word (the validator checks this), and each meaning has one answer."
+ },
+ {
+  "path": "cases[3].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "The part 'kai' (and): the parts join to the word (the validator checks this), and each meaning has one answer."
+ },
+ {
+  "path": "cases[3].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "The part 'deka' (ten): the parts join to the word (the validator checks this), and each meaning has one answer."
+ },
+ {
+  "path": "cases[3].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "The part 'phobia' (fear): the parts join to the word (the validator checks this), and each meaning has one answer."
+ },
+ {
+  "path": "cases[3].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "One answer from the meaning: decathlon."
+ },
+ {
+  "path": "cases[3].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "One answer from the meaning: trilogy."
+ },
+ {
+  "path": "cases[3].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "One answer from the meaning: pentagon."
+ },
+ {
+  "path": "cases[3].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "One answer from the meaning: octopus."
+ },
+ {
+  "path": "cases[3].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "Right. Deducible: the puzzle proves the word real, which rules out the other two. Round VII's main-path lines (the fast talker in the corridor, V.'s 'He is fast') and Round VI's table name Dax, though he isn't a case suspect."
+ },
+ {
+  "path": "cases[3].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "The false solution."
+ },
+ {
+  "path": "cases[3].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "The puzzle rules it out."
+ },
+ {
+  "path": "cases[3].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "L10."
+ },
+ {
+  "path": "cases[3].reveal[0]",
+  "verdict": "pass",
+  "reason": "Restates the puzzle's proof."
+ },
+ {
+  "path": "cases[3].reveal[1]",
+  "verdict": "pass",
+  "reason": "Explains the missing pages; matches the escalation."
+ },
+ {
+  "path": "cases[3].reveal[2]",
+  "verdict": "pass",
+  "reason": "One of V.'s impossible arrivals. It is case-only, but Round VII's card carries V.'s list knowledge to every path."
+ },
+ {
+  "path": "cases[3].reveal[3]",
+  "verdict": "pass",
+  "reason": "The runner's arrival log: plain sight, and real evidence against Dax."
+ },
+ {
+  "path": "cases[3].reveal[4]",
+  "verdict": "pass",
+  "reason": "The motive, matching Round VI's cliff."
+ },
+ {
+  "path": "cases[3].reveal[5]",
+  "verdict": "pass",
+  "reason": "The formal warning, read openly. Round VIII's invitation carries it to every path."
+ },
+ {
+  "path": "cases[3].clue.text",
+  "verdict": "fix",
+  "reason": "The only card that clears Ratchet is delivered only inside this optional case. That breaks the rule that clue cards ride the hall mail (authorNotes; test 5). On the main path the misprints are shown (Round VII's programme), but the inference is never stated. Deliver a version built only on Round VII's programme with Round VII's mail; the case may repeat it.",
+  "fix_text": "Ratchet's programme says 'borowed' and 'evenchually'. He can't spell. V.'s notes have never had a single misprint."
+ },
+ {
+  "path": "cases[3].lastChill",
+  "verdict": "pass",
+  "reason": "Suki's tell; set up for the apology reply."
+ },
+ {
+  "path": "cases[4].title",
+  "verdict": "pass",
+  "reason": "In-world title."
+ },
+ {
+  "path": "cases[4].place",
+  "verdict": "pass",
+  "reason": "The night before the final; matches Round IX's card."
+ },
+ {
+  "path": "cases[4].clock",
+  "verdict": "fix",
+  "reason": "'Curtain up at 7:00' is the final, tomorrow evening. But the case is the night before, and its escalation at 6:15 reads as 45 minutes to curtain. Give the night its own deadline.",
+  "fix_text": "The Committee meets at 7:00 tonight. If anyone has seen the championship word, tomorrow's final is void."
+ },
+ {
+  "path": "cases[4].impossible",
+  "verdict": "fix",
+  "reason": "The answer (Duchess on a high shelf) is planted only in programme art ('planted'), and the Stage programme may not have arrived when the case opens. Put the plant on screen, before the puzzle.",
+  "fix_text": "At five, the runner carried the sealed envelope into a dressing room and came out; the Pronouncer locked the door. The only key stayed on his belt all night. Now the envelope lies open on the floor, and Duchess is asleep on the top shelf."
+ },
+ {
+  "path": "cases[4].suspects[0].secret",
+  "verdict": "pass",
+  "reason": "A kind secret; 'confidant' in the puzzle matches it."
+ },
+ {
+  "path": "cases[4].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "Honest, and the same as Round IX's card. He never lies."
+ },
+ {
+  "path": "cases[4].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "A cat; nothing is hidden."
+ },
+ {
+  "path": "cases[4].suspects[3].secret",
+  "verdict": "pass",
+  "reason": "A kind secret. Shown before the puzzle, it IS the answer and takes Dax's reveal from him: show it in the reveal (season row on case secrets)."
+ },
+ {
+  "path": "cases[4].falseSolution",
+  "verdict": "pass",
+  "reason": "The story's false solution; the reveal clears her completely."
+ },
+ {
+  "path": "cases[4].escalation",
+  "verdict": "fix",
+  "reason": "Here the new word is 'sealed and ready' at 6:15, then the reveal has the Pronouncer seal a new word in front of everyone: it gets sealed twice.",
+  "fix_text": "6:15. The Pronouncer has a new word ready to seal, but Vesper won't spell tomorrow unless her name is cleared."
+ },
+ {
+  "path": "cases[4].puzzle.brief",
+  "verdict": "pass",
+  "reason": "The rule gives exactly one set of lies."
+ },
+ {
+  "path": "cases[4].puzzle.items[0]",
+  "verdict": "pass",
+  "reason": "'absence' has the right ending, so Vesper's statement is true. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[1]",
+  "verdict": "pass",
+  "reason": "'accessible' has the right ending, so Vesper's statement is true. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[2]",
+  "verdict": "pass",
+  "reason": "'confidant' should be 'confident': the wrong ending marks Vesper's lie. One answer. Confidant is a real word, so the child has to read the meaning; the 'why' explains it after the answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[3]",
+  "verdict": "pass",
+  "reason": "'assurance' has the right ending, so the Pronouncer's statement is true. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[4]",
+  "verdict": "pass",
+  "reason": "'responsible' has the right ending, so the Pronouncer's statement is true. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[5]",
+  "verdict": "pass",
+  "reason": "'relevant' has the right ending, so the Pronouncer's statement is true. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[6]",
+  "verdict": "pass",
+  "reason": "'dependible' should be 'dependable': the wrong ending marks Dash's lie. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[7]",
+  "verdict": "pass",
+  "reason": "'importence' should be 'importance': the wrong ending marks Dash's lie. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[8]",
+  "verdict": "pass",
+  "reason": "'valuable' has the right ending, so Dash's statement is true. One answer."
+ },
+ {
+  "path": "cases[4].puzzle.items[9]",
+  "verdict": "pass",
+  "reason": "'comfortable' has the right ending, so Duchess's statement is true. One answer."
+ },
+ {
+  "path": "cases[4].accusation.choices[0]",
+  "verdict": "pass",
+  "reason": "The false solution. Vesper's true statements rule it out."
+ },
+ {
+  "path": "cases[4].accusation.choices[1]",
+  "verdict": "pass",
+  "reason": "His three statements are true; the choice is refused gently and nothing frames him."
+ },
+ {
+  "path": "cases[4].accusation.choices[2]",
+  "verdict": "pass",
+  "reason": "Right. Deducible: Dash's two lies (the door, the key), Duchess on the shelf (impossible fix), and the true statements of the others."
+ },
+ {
+  "path": "cases[4].accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "L10."
+ },
+ {
+  "path": "cases[4].reveal[0]",
+  "verdict": "pass",
+  "reason": "The reformed Dax clears Vesper: Thread A's proof."
+ },
+ {
+  "path": "cases[4].reveal[1]",
+  "verdict": "pass",
+  "reason": "Pays off V.'s 'open before anyone opens it'."
+ },
+ {
+  "path": "cases[4].reveal[2]",
+  "verdict": "pass",
+  "reason": "Matches the puzzle."
+ },
+ {
+  "path": "cases[4].reveal[3]",
+  "verdict": "pass",
+  "reason": "Dax's arc, on screen."
+ },
+ {
+  "path": "cases[4].reveal[4]",
+  "verdict": "pass",
+  "reason": "The runner carries the new envelope: plain sight. Consistent with the escalation fix."
+ },
+ {
+  "path": "cases[4].lastChill",
+  "verdict": "pass",
+  "reason": "Sets up Round IX: Vesper asks, and Dax asks."
+ },
+ {
+  "path": "teamNight.challenge",
+  "verdict": "pass",
+  "reason": "The same card as Round IX's cliff; 'Tomorrow night' is consistent (change 66)."
+ },
+ {
+  "path": "teamNight.beats.captaincy[0]",
+  "verdict": "pass",
+  "reason": "Vesper, true to her arc: she has only just learned to ask."
+ },
+ {
+  "path": "teamNight.beats.captaincy[1]",
+  "verdict": "pass",
+  "reason": "Kwame, who reached Dax at the turn, proposes him; it holds in either band (everyone is in the hall)."
+ },
+ {
+  "path": "teamNight.beats.captaincy[2]",
+  "verdict": "pass",
+  "reason": "Theo and Suki name real wrongs from the record: honest doubt."
+ },
+ {
+  "path": "teamNight.beats.captaincy[3]",
+  "verdict": "pass",
+  "reason": "He owns his record. 'I shouldn't spell every word' slightly undersells 'spells none himself', but the idea beat says so directly."
+ },
+ {
+  "path": "teamNight.beats.idea",
+  "verdict": "fix",
+  "reason": "The tiebreaker goes to Vesper by a roster rule that is first stated at the moment it is used (finalWord). In the 8–10 band she isn't at the lectern, so it reads as made up on the spot. Plant the rule here, before the match.",
+  "fix_text": "Dax's plan, learned from losing: 'Speed is nothing. Who takes the word is everything.' Each word goes to the speller who knows its language; the steady-beat words, the ones nobody at the lectern owns, go to you. He captains from the bench. Team Bee rules: a tiebreaker may go to anyone on the roster."
+ },
+ {
+  "path": "teamNight.beats.ravenmere",
+  "verdict": "pass",
+  "reason": "Tells match §4.2. Condescending, not cruel."
+ },
+ {
+  "path": "teamNight.beats.drama.8-10",
+  "verdict": "fix",
+  "reason": "The child plays the caller (rules[0]). A scripted wrong call contradicts a child who just called that word right, unless the line makes it Dax's own call.",
+  "fix_text": "Ravenmere leads all night. In the last round Dax takes one call himself: Latin, to Rafi. It's Greek. Arjun smirks. Rafi's finger stops on his palm. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Mira. She spells it."
+ },
+ {
+  "path": "teamNight.beats.drama.11-15",
+  "verdict": "fix",
+  "reason": "Same as 8–10: make the wrong call Dax's own, not the child's. Kwame's French weakness (Round V) makes this a strong payoff.",
+  "fix_text": "Ravenmere leads all night. In the last round Dax takes one call himself: Latin, to Kwame. It's French. Arjun smirks. Kwame's hands tighten behind his back. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Ines. She spells it."
+ },
+ {
+  "path": "teamNight.beats.levelling",
+  "verdict": "fix",
+  "reason": "There is no line for a miss. 'You spell it, and the score is level' is false if the child misspells, and a mastered word can still be missed. L6 and test 7 need a branch that keeps the child's word counting. Keep this line for a right answer and add this one for a miss. The mechanic must then give a second try, with the cases' escalating help, so it always ends right.",
+  "fix_text": "One letter slips. Dax, from the bench: 'Breathe out. Team Bee rules: one second try a night.' You breathe out, ask everything, and spell it right. The score is level."
+ },
+ {
+  "path": "teamNight.beats.finalWord",
+  "verdict": "pass",
+  "reason": "Holds in both bands under the roster rule, once that rule is planted before the match (idea fix). Vesper asking three questions completes thread C."
+ },
+ {
+  "path": "teamNight.beats.after[0]",
+  "verdict": "pass",
+  "reason": "Sloane's tell; condescending, not cruel."
+ },
+ {
+  "path": "teamNight.beats.after[1]",
+  "verdict": "pass",
+  "reason": "The Season 2 hook."
+ },
+ {
+  "path": "teamNight.beats.daxPostcard",
+  "verdict": "fix",
+  "reason": "'Like you said': the child never says 'steady beat' on screen; only V. and the techniques do. What the child did, in every branch, is spell the steady-beat words at Team Night.",
+  "fix_text": "Steady beat. You showed us how tonight. — D. (captain, ask anyone)"
+ },
+ {
+  "path": "teamNight.beats.sting",
+  "verdict": "fix",
+  "reason": "'Back at the Grand Marquee': Team Night is held at the Grand Marquee (teamNight.venue), so nobody has left it.",
+  "fix_text": "Later, in the empty Grand Marquee, Vale and the Pronouncer are stacking chairs beside you when one more note slides under the door. A different hand, small and careful, in pencil: 'There were always two of us. — V.' Vale reads it twice. 'That isn't mine.' For the first time all season, the Pronouncer looks surprised."
+ },
+ {
+  "path": "teamNight.beats.stingAfter",
+  "verdict": "pass",
+  "reason": "The adult stays open and involved (amendment 1)."
+ },
+ {
+  "path": "teamNight.beats.mei",
+  "verdict": "pass",
+  "reason": "The neat pencil seeds the sting's hand. (Vesper's below letter says the child writes in pencil too: a harmless overlap, even a Season 2 joke.)"
+ },
+ {
+  "path": "teamNight.beats.coda",
+  "verdict": "pass",
+  "reason": "Pays off the RESERVED chair (Round I)."
+ },
+ {
+  "path": "teamNight.callerCategories[0].call",
+  "verdict": "pass",
+  "reason": "Mira (8–10) and Kwame (11–15), matching their mockbee spec /greek/ and /latin|greek/."
+ },
+ {
+  "path": "teamNight.callerCategories[1].call",
+  "verdict": "pass",
+  "reason": "Rafi (8–10) and Kwame (11–15), matching mockbee spec. Words of the 'Latin, from Greek' kind need the grading rule in the season row."
+ },
+ {
+  "path": "teamNight.callerCategories[2].call",
+  "verdict": "pass",
+  "reason": "Ines (11–15), matching mockbee /french/. At 8–10 nobody owns French, so it goes to the child as a steady-beat word: consistent with the idea beat."
+ },
+ {
+  "path": "teamNight.callerCategories[3].call",
+  "verdict": "pass",
+  "reason": "Nova (8–10), matching mockbee /old english|germanic/. At 11–15 it goes to the child: consistent."
+ },
+ {
+  "path": "teamNight.callerCategories[4].call",
+  "verdict": "pass",
+  "reason": "Suki (8–10), paying off Round VII; Vesper (11–15). Both are story calls, not mockbee specs, which is right because no spec covers a never-heard word."
+ },
+ {
+  "path": "teamNight.callerCategories[5].call",
+  "verdict": "pass",
+  "reason": "Theo (11–15). It is not offered at the younger lectern, where nobody owns it."
+ },
+ {
+  "path": "teamNight.callerCategories[6].call",
+  "verdict": "pass",
+  "reason": "Always the child: every third word, plus any language nobody at the lectern owns."
+ },
+ {
+  "path": "accusation.lookAgain",
+  "verdict": "pass",
+  "reason": "L10."
+ },
+ {
+  "path": "accusation.lookAgainBy.vesper",
+  "verdict": "fix",
+  "reason": "It clears her only by her own denial ('she told you herself'), which is no evidence in a detective story and teaches the child to take a suspect's word. Anchor it in the slant clue that is on screen on every path (Round III's card).",
+  "fix_text": "Not quite. Look again: the night the list lied, one hand slanted left like every V. note, and it wasn't Vesper's. The violet pen was a gift."
+ },
+ {
+  "path": "accusation.lookAgainBy.pronouncer",
+  "verdict": "pass",
+  "reason": "Has an on-screen basis: Round III's card ('signed under it, straight up') and the upright signoff on every invitation."
+ },
+ {
+  "path": "accusation.lookAgainBy.ratchet",
+  "verdict": "pass",
+  "reason": "True on screen (Round VII's programme, the Junkyard postcard). The inference reaches every path once the clearing card rides Round VII's mail (cases[3].clue.text fix)."
+ },
+ {
+  "path": "accusation.lookAgainBy.dax",
+  "verdict": "pass",
+  "reason": "On every path (Round VIII's card)."
+ },
+ {
+  "path": "accusation.reveal[0]",
+  "verdict": "pass",
+  "reason": "She is staged where she has always been: in plain sight, with the programmes."
+ },
+ {
+  "path": "accusation.reveal[1]",
+  "verdict": "pass",
+  "reason": "Restates the 8 + 8 = 16 the child could check."
+ },
+ {
+  "path": "accusation.reveal[2]",
+  "verdict": "pass",
+  "reason": "Names the clues the child had: the slant, the key, the lists, the elbow, the line."
+ },
+ {
+  "path": "accusation.reveal[3]",
+  "verdict": "pass",
+  "reason": "'Never let one word slip' is true: Round VI's note revealed no word (decision b). The adults' knowledge is said aloud."
+ },
+ {
+  "path": "accusation.reveal[4]",
+  "verdict": "pass",
+  "reason": "Echoes the Pronouncer's line; warm."
+ },
+ {
+  "path": "accusation.closingLetter",
+  "verdict": "pass",
+  "reason": "Explains the tradition (Round I's invitation), the Committee's yes (adults openly involved), and Dax as 'whoever needs it'. 'I never found out who' sets up the sting."
+ },
+ {
+  "path": "accusation.closingChoices[0]",
+  "verdict": "pass",
+  "reason": "L7 pre-written; true (mail never expires)."
+ },
+ {
+  "path": "accusation.closingChoices[1]",
+  "verdict": "pass",
+  "reason": "L7. It routes the child through the Committee, as the adults-know premise needs."
+ },
+ {
+  "path": "accusation.closingChoices[2]",
+  "verdict": "pass",
+  "reason": "L7. Echoes the season's first line."
+ },
+ {
+  "path": "hivePost.postcards.meadow",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.postcards.library",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.postcards.forum",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.postcards.storm",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.postcards.roots",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.postcards.strait",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.postcards.junkyard",
+  "verdict": "pass",
+  "reason": "Ratchet's deliberate misprint, in character (the board relies on it). The child's own words always print correctly."
+ },
+ {
+  "path": "hivePost.postcards.sprints",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.postcards.stage",
+  "verdict": "pass",
+  "reason": "In the host's own tell. It arrives on region complete, so it works whatever the halls or the placing."
+ },
+ {
+  "path": "hivePost.diary[0]",
+  "verdict": "pass",
+  "reason": "Names no character, so it holds at any level and any point in the season."
+ },
+ {
+  "path": "hivePost.diary[1]",
+  "verdict": "fix",
+  "reason": "Names Theo, who is first met in Round II. Level-ups aren't tied to halls, so this can land before that round, or for a child who never plays one. Either deliver it only after Round II's mail, or use the neutral line.",
+  "fix_text": "Level up. Somewhere, a tally of questions just went up by one."
+ },
+ {
+  "path": "hivePost.diary[2]",
+  "verdict": "pass",
+  "reason": "Names no character, so it holds at any level and any point in the season."
+ },
+ {
+  "path": "hivePost.diary[3]",
+  "verdict": "fix",
+  "reason": "Names Nova, who is first met in Round I. Level-ups aren't tied to halls, so this can land before that round, or for a child who never plays one. Either deliver it only after Round I's mail, or use the neutral line.",
+  "fix_text": "Level up. Say it twice: well done, well done."
+ },
+ {
+  "path": "hivePost.diary[4]",
+  "verdict": "fix",
+  "reason": "Names Rafi, who is first met in Round III. Level-ups aren't tied to halls, so this can land before that round, or for a child who never plays one. Either deliver it only after Round III's mail, or use the neutral line.",
+  "fix_text": "Level up. Draw this one small on your palm."
+ },
+ {
+  "path": "hivePost.diary[5]",
+  "verdict": "pass",
+  "reason": "Names no character, so it holds at any level and any point in the season."
+ },
+ {
+  "path": "hivePost.diary[6]",
+  "verdict": "pass",
+  "reason": "Names no character, so it holds at any level and any point in the season."
+ },
+ {
+  "path": "hivePost.diary[7]",
+  "verdict": "fix",
+  "reason": "Names Mira, who is first met in Round IV. Level-ups aren't tied to halls, so this can land before that round, or for a child who never plays one. Either deliver it only after Round IV's mail, or use the neutral line.",
+  "fix_text": "Level up. Ask where every word came from. This one came from you."
+ },
+ {
+  "path": "hivePost.diary[8]",
+  "verdict": "pass",
+  "reason": "Names no character, so it holds at any level and any point in the season."
+ },
+ {
+  "path": "hivePost.diary[9]",
+  "verdict": "fix",
+  "reason": "Names the Pronouncer, who is first met in Round I. Level-ups aren't tied to halls, so this can land before that round, or for a child who never plays one. Either deliver it only after Round I's mail, or use the neutral line.",
+  "fix_text": "Level up. Say it back, then spell it: the routine still works."
+ },
+ {
+  "path": "hivePost.beeFileIntro",
+  "verdict": "fix",
+  "reason": "'Every word you spelled tonight': rounds run by day too (Round VII is 'by evening', Round VIII 'all morning'). Team Night is the only fixed night.",
+  "fix_text": "The bee file: the Pronouncer's scouting report, for you and anyone you show it to. Every word you spelled in this round, the one that beat you, why it did, and the technique that would have caught it. Missed words go to your revision pile."
+ },
+ {
+  "path": "hivePost.beeFileFakeTipIntro",
+  "verdict": "pass",
+  "reason": "Labels the tip as checked: never shown as true."
+ },
+ {
+  "path": "visitors[0].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[1].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[2].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[3].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2. Its wording ('a sound that comes back') matches Case 2's echo clue; the fix is on that item (cases[1].puzzle.items[8])."
+ },
+ {
+  "path": "visitors[4].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2. No case asks this word."
+ },
+ {
+  "path": "visitors[5].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[6].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2. No case asks this word."
+ },
+ {
+  "path": "visitors[7].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2. It prints 'Psychology, the study of the mind', which is Case 2's clue and answer; the fix is on that item (cases[1].puzzle.items[9])."
+ },
+ {
+  "path": "visitors[8].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[9].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[10].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[11].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[12].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[13].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[14].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[15].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[16].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[17].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[18].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[19].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[20].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[21].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[22].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[23].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[24].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "visitors[25].card",
+  "verdict": "pass",
+  "reason": "Outside the story (D9); plays no part in the mystery or the Dax arc. Accuracy belongs to round 2."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "CLUE CHAIN, fair. A careful 10-year-old can name Vale before the accusation from lines that arrive with the hall mail on every path. Round II: 'Vale Penrallow, aged 8, placed last', eight seasons back. Round III: the runner's left hand slants like every V. note, and the Pronouncer's is upright. Round V: the bell-case keys (the Committee's ring, the runner's lanyard). Round VII: 'Thank you, Vale', and only the Pronouncer and the runner see the sealed list ('Her name is Vale. She's sixteen'). Round IX: 'who was there every single round?'. A strong hunch is possible from Round III; it is certain by Round VII. No clue contradicts another once Case 2's last chill is fixed. Every V. prediction comes true on screen except Case 2's 'the bell will ring twice' (fix given)."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "TIMELINE adds up. Vale was 8 eight seasons ago and is 16 now (Round II, Round VII, accusation); runner for three seasons (13–16). Vesper is 15, champion last year. Kwame is 14, two seasons without a public miss. Theo's tally runs 212 → 640 → 1,204 → 1,977 in order. Day order: Round II, then Case 1 at night, then Round III at 9:00; Case 4 rules at noon after Round VII's evening; Case 5 the night before; Round IX at 7:00; Team Night the next night. Case 2's clock (wrong venue) and Case 5's clock (night before vs 45 minutes to curtain) need the fixes given."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "RED HERRING, fair. The Pronouncer never lies on screen and nothing frames him. Every reason to suspect him is true ('V.' signoff, 'Say it back', reads the list, kind). He is cleared on every path by the upright hand (Round III's card) and 'It isn't mine to tell' (Round IX's card). Vesper is cleared by Round VI and Round IX (her look-again should cite the slant; fix given). Dax is cleared at Round VIII, on evidence."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "CLEARINGS ON EVERY PATH. Vesper, Dax and the Pronouncer are cleared by cards that ride the hall mail. Ratchet's clearing card rides only Case 4 (cases[3].clue), so a child who skips that case never sees the inference stated. Deliver it with Round VII's mail (fix given)."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "SCRIPTED HALL OUTCOMES. Each round's drama states what rivals do, but Mock Bee seeds its rivals and will not produce these on its own. Round I: Pip blurts and sits down in round two. Round III: Rafi lasts deep. Round V: Kwame misses reconnaissance (an s) and walks out. Round VI: Ines and Kwame in the last rounds. Round VII: Suki gets the unheard word first and spells it. Round VIII: Dax fades. Round IX: the blackout, and Vesper outlasting every other rival whenever she finishes above the child, or her below letter's 'I won' is false. Rounds I–VIII (11–15) must leave Vesper out of the field, since her chair is empty until the final. Round IX must seat the whole Circuit: its lines put Dax, Theo and Pip at the microphone, and the 6–7, 8–10 and 11–15 fields each lack some of them. The eight-minute cap's co-champions need a line too. The hall runner needs a per-round script (forced word, miss, survival, field). Without it these lines contradict the bee the child just played."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "STORY ORDER. The script assumes Round N's invitation and hall come after Round N−1's mail: Round III's cliff before Round IV's invitation, Round VI's cliff and note before Round VII's invitation, Round VII's card's 'a round before the Committee announced it', Round VIII's cliff before Round IX. But a hall opens on reaching its leg 4, and halls are optional (L2), so a child can reach Round N's invitation, or play its hall, before playing Round N−1. Either hold each invitation and hall until the previous hall's mail is delivered (a hall waiting on a hall, not a stop, region, game or word), or deliver all mail strictly in story order. The same goes for Round I's 'venue you haven't reached' (fix given)."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "CASE SECRETS AND SCENE TAPS. No case writes the format's step 2 (three things to tap, one of them the planted clue). Whether a case can be solved before the accusation depends on when the suspects' secrets show. Case 2 needs Pip's fear and Dax's motive before the accusation; the Round IV drama fix and the Case 2 escalation fix put them on screen. Case 5's Dash secret, shown early, is the answer and takes the clearing from Dax. Rule for the runner: secrets surface in the reveal, and the facts a child needs go in the scene taps or the escalation."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "PUZZLES, one answer each. Case 1 passes (eleven restorable silent letters; colour/color accepts both). Case 3 passes under its on-screen rule (the direct donor); the answer choices must not offer the earlier source language. Case 4 and Case 5 pass. Case 2 does not: rhythm is spelled on screen just before (Round IV's bee file); chorus also fits choir; echo and psychology are printed with their clues on Storm visitor cards; and the brief's ph/ch/y promise excludes onomatopoeia (item fixes given). Case 2 also runs on 'Word Lore · Origins', a pick-the-language quiz, while its puzzle asks for spelling from a definition: it needs a spelling engine. The accusation always resolves, by elimination if nothing else. Team Night's levelling word has no miss branch (fix given)."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "TEAM NIGHT CALLER RULE. Many origins name two languages ('Latin, from Greek'; 'French, from Italian'), and the 8–10 lectern seats both Rafi (Latin) and Mira (Greek), so a call can have two defensible answers. Grade the call on the first language the Pronouncer names (the direct donor, as Case 3's rule already says), say so once on screen, and choose the drama words so the first-named language is the one the line says: Greek-first at 8–10, French-first at 11–15. The callers match mockbee specs otherwise (the validator checks this)."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "V.'S NOTES AND THE CHILD'S WEAKNESS. Brief §5B: each note names the child's weakest technique from the bee file's top error type. The script hard-codes it (Round II's 'You guess instead of asking', Round V's 'You skip the suffix'), and Round IV's card claims 'V. always knows your weak spot'. Add a {weak} slot, filled from one pre-written line per error type (L7), with the authored clause as the default. Several rival letters likewise state counts or words the child may not have (Round II above/below, Round III above, Round IV above/below, Round VI below, Round VII below); fixes are given per line. General encouragement ('You waited', 'So close', 'nearly had me') is fine."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "ABOVE / BELOW PARITY. Both versions of every round letter carry their thread: Nova's rule, Theo's 212, Rafi's circum + fer and palm, Mira's ph/ch/y, Kwame's Far Shore + French, Ines's 'Écoute la fin', Suki's breath, Dax's apology ('Mostly Suki'), Vesper's pen. No round besides Round IX depends on placing, and Round IX states both branches."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "DAX'S ARC. Every wrong has an on-screen consequence that reaches every path. The separate tip: Nova, at once (Round II). Blaming Theo: Theo's public question he can't answer (Round III). The rhythm tip: Mira, at once (Round IV). The bell: a first warning (Case 2, then Round V's invitation). Gloating over Kwame: Rafi turns his back (Round V). 'Not my problem': alone on the dock (Round VI). The rumour: a formal warning (Case 4, then Round VIII's invitation, 'under observation'). The reform is earned across rounds, not switched on: Round VIII's fade, then Kwame's grace, the notes and four apologies; Case 5, where he clears Vesper; Round IX, his first question; Team Night, where he owns his record, captains from the bench and doesn't panic on a wrong call."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "KWAME'S SAFETY AND THE ADULTS. Safety is known before any worry: Round V's cliff raises the empty room and says he's safe in the same line, and Case 3's safe line comes first in the cold open. The adults are openly involved throughout: Round I's invitation says the Committee knows who V. is; the Pronouncer is warm and never lies; Hazel tells at once; the Committee says yes in the closing letter; 'Together, and in the open'."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "OWNER DECISION (a), TEAM NIGHT SEATING: holds. Brief §8.2 contradicts §8.1. It seats Dax at the 8–10 lectern, where no call can reach him (his spec is null, and speed isn't a language). It seats Suki nowhere, though §8.1 gives her 'nobody's heard it'. It seats Vesper at 8–10 nowhere, though §8.1 gives her the tiebreaker. And its Mira→Ines swap is impossible at either lectern. The script fixes all four. Dax is a bench captain in both bands, so his thread is the same everywhere (test 4) and his idea ('Speed is nothing') is how he plays. Suki takes his seat at 8–10, owning a call and spelling under the captain who tried to strike her round. The swap is rewritten per band, and the 11–15 version pays off Kwame's French weakness. Vesper takes the tiebreaker by a roster rule. One fix: plant that rule before the match (teamNight.beats.idea), not at the moment it is used. One clarification: the scripted wrong call must be Dax's own, since the child is the caller (drama fixes)."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "OWNER DECISION (b), VALE'S ROUND VI NOTE: fair, not a cheat. It is insider knowledge by design, which is what makes it a clue, and Round VII's card states the inference and names the only two people who could know. In-world it gives the child no edge: it carries no word, only that an unheard word is coming, which the Committee tells every speller in the very next invitation, and its tip ('Its parts have') is that round's public technique. It is consistent with 'never let one word slip' (accusation). It needs story order (season row): if Round VII's invitation reaches a child before Round VI's mail, the note arrives after the announcement and the card's claim is false."
+ }
+]
