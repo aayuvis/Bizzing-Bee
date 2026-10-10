@@ -22,6 +22,7 @@ const { chromium } = require('playwright');
 const path = require('path');
 const W = require('./lib/wait.cjs');
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
+const RELEASED = require('./lib/analogy-release.cjs').readFlag(path.resolve(__dirname, '..')).value === true;   // the owner's release line (app3.js; released 10 Oct 2026)
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 40, band: 3, bandSeed: 3,
@@ -59,7 +60,7 @@ const settle = (pg, nav) => W.until(pg, (n) => (Array.isArray(n) ? n.includes(st
   let { ctx, pg } = await open(b, false, errs);
   let L = await look(pg);
   ok(!L.tabs.some(t => /Word Gym|practi[cs]e/i.test(t)) && !L.args.includes('coach'), `the desktop tab row has no Word Gym tab, and no Practice one (${L.tabs.join(' · ')})`);
-  ok(L.args.join() === 'home,trail,explore,games,feed', `Home · Word Atlas · Library · Play · My Feed — Home first, My Feed last (${L.args.join(' · ')})`);
+  ok(L.args.join() === (RELEASED ? 'home,trail,analogy,explore,games,feed' : 'home,trail,explore,games,feed'), `Home · Word Atlas · ${RELEASED ? 'Analogies · ' : ''}Library · Play · My Feed — Home first, My Feed last (${L.args.join(' · ')})`);
   await pg.click('.sb-topnav [data-act="setNav"][data-arg="trail"]'); await settle(pg, 'trail');
   await W.until(pg, () => !!document.querySelector('.sb-content .sb-subnav'), null, 30000);
   L = await look(pg);
@@ -88,7 +89,7 @@ const settle = (pg, nav) => W.until(pg, (n) => (Array.isArray(n) ? n.includes(st
   /* ---- phone: the bottom bar, and the chips under a thumb ---- */
   ({ ctx, pg } = await open(b, true, errs));
   L = await look(pg);
-  ok(!L.tabs.some(t => /Word Gym|practi[cs]e/i.test(t)) && L.args.join() === 'home,trail,explore,games,feed', `the phone's bottom bar has no Word Gym tab (${L.tabs.join(' · ')})`);
+  ok(!L.tabs.some(t => /Word Gym|practi[cs]e/i.test(t)) && L.args.join() === (RELEASED ? 'home,trail,analogy,explore,games,feed' : 'home,trail,explore,games,feed'), `the phone's bottom bar has no Word Gym tab (${L.tabs.join(' · ')})`);
   const fit = await pg.evaluate(() => [...document.querySelectorAll('nav.sb-tabbar [data-act="setNav"] span:last-child')].every(s => s.scrollWidth <= s.clientWidth + 1));
   ok(fit, 'every label fits its slot on a 390px phone');
   await pg.evaluate(() => app.openCoach()); await settle(pg, ['quest', 'coach']);

@@ -47,6 +47,7 @@ const path = require('path'), fs = require('fs');
 const { serve } = require('./lib/serve.cjs');
 const { booted, until, frames, still } = require('./lib/wait.cjs');
 const SRC = process.env.SRC || path.resolve(__dirname, '..');
+const RELEASED = require('./lib/analogy-release.cjs').readFlag(SRC).value === true;   // the owner's release line (app3.js; released 10 Oct 2026)
 const PORT = +(process.env.SB_FEED_PORT || 0);
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
@@ -105,8 +106,8 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const f = await checkShell(pg, { phone, bee: true });
     const where = `${tester ? 'tester, ' : ''}${phone ? 'phone' : 'desktop'}, ${dark ? 'dusk' : 'light'}`;
     ok(!f.length, `checkShell on Home, ${where}: [] ${f.length ? JSON.stringify(f) : ''}`);
-    const want = tester ? 'home,trail,analogy,explore,games,feed' : 'home,trail,explore,games,feed';
-    ok(tabs.join() === want, `${where}: ${tester ? 'six' : 'five'} tabs, Home first, no Word Gym, My Feed last — ${tabs.join(' · ')}`);
+    const six = tester || RELEASED, want = six ? 'home,trail,analogy,explore,games,feed' : 'home,trail,explore,games,feed';
+    ok(tabs.join() === want, `${where}: ${six ? 'six' : 'five'} tabs, Home first, no Word Gym, My Feed last — ${tabs.join(' · ')}`);
     await ctx.close();
   }
 

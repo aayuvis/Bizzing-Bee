@@ -27,6 +27,7 @@
 const { chromium } = require('playwright');
 const path = require('path');
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
+const RELEASED = require('./lib/analogy-release.cjs').readFlag(path.resolve(__dirname, '..')).value === true;   // the owner's release line (app3.js; released 10 Oct 2026)
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 40, lists: { journey: { xp: 30 } }, activeList: 'journey',
@@ -131,7 +132,7 @@ async function atlas(pg) {
       return { zero, one, s0, s1, went }; });
     ok(H.zero && H.zero.inStrip && H.zero.n === 0 && H.zero.t === '0 words mastered this week', `${vp.n}: beside Continue, a "mastered this week" chip that says nought honestly ("${H.zero && H.zero.t}")`);
     ok(H.one && H.one.n === 1 && H.one.t === '1 word mastered this week', `${vp.n}: a word mastered this week on evidence counts; one mastered 40 days ago and a carried-over mark do not ("${H.one && H.one.t}")`);
-    ok(H.s0 && H.s0.kind === 'gym' && H.s0.act === 'openGym', `${vp.n}: with nothing due (analogies gated) the second journey card is the Spelling Gym (${H.s0 && H.s0.kind})`);
+    ok(RELEASED ? (H.s0 && H.s0.kind === 'analogy') : (H.s0 && H.s0.kind === 'gym' && H.s0.act === 'openGym'), `${vp.n}: with nothing due the second journey card is ${RELEASED ? 'the Analogy Atlas (released)' : 'the Spelling Gym (analogies gated)'} (${H.s0 && H.s0.kind})`);
     ok(H.s1 && H.s1.kind === 'deck' && H.s1.act === 'openRevisions' && /1 word ready to revise/.test(H.s1.text) && /necessary/.test(H.s1.text) && !/rhythm/.test(H.s1.text) && H.went === 'revisions',
       `${vp.n}: a word missed on an earlier day turns it into the mistakes deck — that word, not today's miss — and a tap opens Your Revisions (${H.s1 && H.s1.text.slice(0, 70)} → ${H.went})`);
     await ctx.close();

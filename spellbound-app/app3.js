@@ -6157,8 +6157,10 @@ const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#
    TESTER MODE is the grown-up's, never a child's: Settings → Grown-ups → Testing tools → Tester mode, or
    ?tester=1, which asks for the grown-up PIN first (family-shell.js) — a child who types it meets the PIN, not
    the content. The testing unlock ("Unlock everything", devUnlock) counts as tester mode. Word Forge keeps its
-   own sign-off gate (SB_FORGE.signedOff) and opens to tester mode the same way. */
-window.SB_ANL_RELEASED=false;
+   own sign-off gate (SB_FORGE.signedOff) and opens to tester mode the same way.
+   RELEASED by the owner on 10 Oct 2026 ("release analogies") on analogy-review/REPORT.md: 1,153 items, every one
+   with three passes in the ledger (tests/analogy-release.cjs checks it on every deploy). */
+window.SB_ANL_RELEASED=true;
 function testerOn(){ try{ return !!(state.devUnlock||state.tester); }catch(e){ return false; } }
 function anlOpen(){ return window.SB_ANL_RELEASED===true||testerOn(); }
 window.SB_ANL_OPEN=anlOpen; window.SB_TESTER_ON=testerOn;
