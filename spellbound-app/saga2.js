@@ -587,7 +587,16 @@
      swallowing keys app-wide. A card no longer on the page holds nothing and lets its keys go (road to 4.5, P1.20:
      the bot harness found it, a Honeycomb round left open before Word Lore's clock). Guard: tests/engine-kit.cjs. */
   const _missOpen=new Set();
-  Object.defineProperty(SGUI,'held',{get(){ _missOpen.forEach(m=>{ if(!m.wrap.isConnected) m.gone(); }); return _missOpen.size>0; }, configurable:true});
+  /* …but a card whose HOST is still on the page is not gone: a game that redraws its own stage (Word Forge does, while
+     the card is up) only knocked it off, so it is put back and keeps holding (10 Oct 2026: Forge sat on its miss with
+     no Continue — forge-game "Enter continues" red in the full suite). Only a host that left the page lets go. */
+  const _missAlive=m=>{ if(m.wrap.isConnected) return true;
+    /* the host redrew in place, or the game drew a NEW stage of its own (same data-sb-stage key): the card goes back on */
+    let h=(m.host&&m.host.isConnected)?m.host:null;
+    if(!h&&m.key){ try{ h=[...document.querySelectorAll('.sb-stage')].find(x=>x.getAttribute('data-sb-stage')===m.key)||null; }catch(e){} }
+    if(h){ try{ if(getComputedStyle(h).position==='static') h.style.position='relative'; h.appendChild(m.wrap); m.host=h; return true; }catch(e){} }
+    m.gone(); return false; };
+  Object.defineProperty(SGUI,'held',{get(){ _missOpen.forEach(_missAlive); return _missOpen.size>0; }, configurable:true});
   const SPK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" stroke="none"/><path d="M15.6 9a4.2 4.2 0 0 1 0 6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>';
   const BULB='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.4.3.6.75.6 1.25h4c0-.5.2-.95.6-1.25A4.4 4.4 0 0 0 8 1.6z" fill="currentColor" opacity=".9"/><path d="M6.4 12.6h3.2M6.9 14.2h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const TICK='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3 8.6l3.2 3L13 4.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -607,12 +616,15 @@
       '<button class="sg-rbtn go sg-miss-go" type="button">Continue <span class="sg-kbd" aria-hidden="true">Enter</span></button></div>';
     host.appendChild(wrap);
     const t0=performance.now(); let closed=false;
-    const ent={ wrap, gone(){ if(closed) return; closed=true; _missOpen.delete(ent); removeEventListener('keydown',onKey,true); } };
+    const key=(!fixed&&host.getAttribute)?host.getAttribute('data-sb-stage'):null;
+    const ent={ wrap, host, key, mo:null, gone(){ if(closed) return; closed=true; _missOpen.delete(ent); removeEventListener('keydown',onKey,true); try{ ent.mo&&ent.mo.disconnect(); }catch(e){} } };
     _missOpen.add(ent);
-    function close(){ if(closed) return; closed=true; _missOpen.delete(ent);
+    /* put it back BEFORE the next paint when the game redraws around it (a game that redraws keeps its card on screen) */
+    try{ ent.mo=new MutationObserver(()=>{ if(!closed&&!wrap.isConnected) _missAlive(ent); }); ent.mo.observe(document.body,{childList:true,subtree:true}); }catch(e){}
+    function close(){ if(closed) return; closed=true; _missOpen.delete(ent); try{ ent.mo&&ent.mo.disconnect(); }catch(e){}
       removeEventListener('keydown',onKey,true); try{ wrap.remove(); }catch(e){}
       try{ if(o.onContinue) o.onContinue(); }catch(e){} }
-    function onKey(e){ if(closed) return; if(!wrap.isConnected){ ent.gone(); return; }   // taken away with its game: not a card any more
+    function onKey(e){ if(closed) return; if(!_missAlive(ent)) return;   // taken away with its game: not a card any more (a redrawn host gets it back)
       if(e.key==='Tab') return;                                   // focus may still move inside the card
       e.stopPropagation();
       if(e.key==='Enter'||e.key===' '&&e.target&&e.target.closest&&e.target.closest('.sg-misscard')){
