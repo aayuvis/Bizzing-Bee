@@ -56,7 +56,7 @@ ok(!!boxes && !/Math\.random/.test(boxes), 'the box zones are placed by design (
 /* ---------------- GP5: the §2.4 table, run from the real helper block ---------------- */
 const a = src.indexOf('/* ===== BEE GRAND PRIX — THE RULES THAT ARE NOT THE ROAD'), z = src.indexOf('/* THE GARAGE:', a);
 ok(a > 0 && z > a, 'the rules block is where the engine reads it');
-const R = new Function('W', 'esc2', src.slice(a, z) + '\nreturn {gpGrade,gpPowerFor,GP_STR,GP_PAR,GP_COMBO,GP_TABLE,GP_CUP};')(() => ({}), x => x);
+const R = new Function('W', 'esc2', src.slice(a, z) + '\nreturn {gpGrade,gpPowerFor,gpStars,GP_STR,GP_PAR,GP_COMBO,GP_TABLE,GP_CUP};')(() => ({}), x => x);
 const want = ['shield', 'oil', 'gust', 'turbo', 'rocket'];
 const got = [1, 2, 3, 4, 5].map(p => R.gpPowerFor(p, 5, 0));
 ok(JSON.stringify(got) === JSON.stringify(want), `by place 1st→5th: ${got.join(', ')} (the table: Shield, Oil slick, Gust, Turbo, Rocket)`);
@@ -73,6 +73,18 @@ ok(R.gpGrade(true, par - 0.01, L, false) === 'clean' && R.gpGrade(true, par + 0.
   `the grade turns on par (1.2s + 0.45s × letters = ${par.toFixed(2)}s for ${L} letters): Clean / Right / Miss`);
 ok(R.gpGrade(true, par * 1.4, L, true) === 'clean' && Math.abs(R.GP_PAR(L, true) - par * 1.5) < 1e-9, 'Calm mode gives par half as long again');
 ok(R.GP_COMBO === 3, `three Clean in a row add a Turbo (COMBO ${R.GP_COMBO})`);
+/* GP7 (road to 4.5, P1.21 — "learning IS the mechanic"): stars by words spelt as well as place. A race's stars are the
+   lower of the place's (1st 3 · 2nd 2 · 3rd 1) and the words' (90%+ 3 · 60%+ 2 · 30%+ 1); 0/6 earns none at ANY place.
+   Proved by breaking (10 Oct 2026): gpStars returning the place's stars alone → both GP7 checks fail. */
+const ST = R.gpStars;
+ok(typeof ST === 'function' && [1, 2, 3, 4, 5, 6].every(p => ST(p, 0, 6) === 0 && ST(p, 1, 6) === 0 && ST(p, 0, 0) === 0),
+  'GP7: 0 of 6 box words (or 1 of 6, or no box met) earns no star at any place — 1st included');
+const S7 = [[1, 6, 6, 3], [1, 4, 6, 2], [1, 2, 6, 1], [2, 6, 6, 2], [3, 6, 6, 1], [4, 6, 6, 0], [2, 3, 6, 1], [1, 5, 6, 2]];
+const s7bad = typeof ST === 'function' ? S7.filter(([p, r, m, want]) => ST(p, r, m) !== want) : S7;
+ok(!s7bad.length, 'GP7: stars are the lower of the place and the words — 6/6 1st 3, 4/6 1st 2, 2/6 1st 1, 6/6 2nd 2, 6/6 3rd 1, 6/6 4th 0'
+  + (s7bad.length ? ' — wrong: ' + s7bad.map(([p, r, m, w]) => `${p}/${r}of${m}→${typeof ST === 'function' ? ST(p, r, m) : '?'} (want ${w})`).join(', ') : ''));
+const fin = engine && body(engine, 'finish');
+ok(!!fin && /stars=gpStars\(place,right,met\)/.test(fin), 'GP7: the finish card takes its stars from gpStars(place, right, met)');
 /* the Cup: four tracks, the fourth ONE entry, each its own origin family */
 ok(R.GP_CUP.length === 4 && new Set(R.GP_CUP.map(c => c.origin)).size === 4 && R.GP_CUP[3].scene === 'bazaar',
   `the Cup is ${R.GP_CUP.map(c => c.scene + ' (' + c.origin + ')').join(', ')}`);

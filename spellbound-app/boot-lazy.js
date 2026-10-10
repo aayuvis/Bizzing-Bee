@@ -129,7 +129,9 @@
        Analogy Bee — the screen and the trail it reads (cut by tools/analogy/build-app.cjs). Fetched at the
        door of #/analogies or #/anlbee only, never on the first screen or the idle queue. */
     anlData: 'analogy-data.js',
-    anlUI: 'analogy.js'
+    anlUI: 'analogy.js',
+    /* Today's ten (road to 4.5, P1.16): the daily session Home's ribbon opens — fetched at its door (app.openToday) only */
+    todayUI: 'today.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -161,7 +163,8 @@
     mockbee: ['saga2', 'mockbee'],
     daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore'],
     buzz: ['dailyBuzz'],
-    analogy: ['anlData', 'anlUI']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
+    analogy: ['anlData', 'anlUI'],   // saga2: the engine kit (SGUI.stage, SGUI.keys)
+    today: ['todayUI', 'sents', 'coachRules']   // the sentences it reads aloud, and the rulebook the miss panel's tip comes from
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and

@@ -168,7 +168,11 @@
     s.run = { kind, ids, seed, i: 0, right: 0, asked: 0, paid: 0, e0: (W.earnedSoFar ? earnedSoFar() : 0), log: [], n: ids.length,
       opts: optsFor(kind, r), reg: r.id, stop: hit && hit.s ? hit.s.id : null, phase: kind === 'practice' ? 'bridge' : 'pick' };
     s.v = 'run'; prep(s.run); store(); render(); }
-  function prep(g) { g.q = question(g.ids[g.i % g.ids.length], g.opts, g.seed + '|' + g.i); g.picked = null; g.bpick = null;
+  /* a '~' before an id marks a COMEBACK on the clock (road to 4.5, P1.20) — one '~' a return: the item missed three
+     questions ago, asked again with its options in a new order until it is right, three times at most — practice, never
+     a first try (pick() neither counts nor pays it) */
+  function prep(g) { const raw = String(g.ids[g.i % g.ids.length]), again = (raw.match(/^~*/) || [''])[0].length;
+    g.q = question(raw.slice(again), g.opts, g.seed + '|' + g.i + (again ? '|again' : '')); if (g.q && again) g.q.again = again; g.picked = null; g.bpick = null;
     if (g.phase === 'bridge') g.bq = bridgeQ(g.q, g.seed + '|' + g.i); }
   /* pay only above chance: nothing until a round holds 6 right, then every right (the clock: 60% and 15 asked) */
   function owed(g) { if (g.kind === 'clock') { const acc = g.asked ? g.right / g.asked : 0; if (acc < 0.6) return 0; return (g.phase === 'done' ? g.right >= 6 : g.asked >= 15) ? g.right : 0; }
@@ -179,11 +183,13 @@
     render(); if (g.bpick === g.bq.ans) after(g, 900, () => { g.phase = 'pick'; render(); }); }
   function pick(i) { const s = S(); const g = s.run; if (!g || g.picked != null || (g.phase !== 'pick')) return; i = +i; const q = g.q; if (!(i >= 0 && i < q.opts.length)) return;
     if (g.kind === 'clock' && g.held) return;
-    const ok = i === q.ans; g.picked = i; g.asked++; if (ok) g.right++;
-    g.log.push({ c: q.c, d: q.d, rel: q.rel, ok, w: q.opts[i] }); rec().seen[q.id] = Date.now();
+    /* THE CLOCK COUNTS FIRST-TRY RIGHTS ONLY (road to 4.5, P1.20; rubric W2): a comeback is neither asked nor right,
+       and never pays; a miss costs 2 s and brings the item back three questions on, until it is right (three times at most) */
+    const ok = i === q.ans; g.picked = i; if (!q.again) { g.asked++; if (ok) g.right++; }
+    g.log.push({ c: q.c, d: q.d, rel: q.rel, ok, w: q.opts[i], again: q.again ? 1 : 0 }); rec().seen[q.id] = Date.now();
     try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
-    if (ok) settle(g);
-    if (g.kind === 'clock') { if (!ok) { clockAdd(-2000); g.held = true; } else after(g, 380, next); render(); return; }
+    if (ok && !q.again) settle(g);
+    if (g.kind === 'clock') { if (!ok) { clockAdd(-2000); g.held = true; if ((q.again | 0) < 3 && g.i + 4 < g.ids.length) g.ids.splice(g.i + 4, 0, '~'.repeat((q.again | 0) + 1) + q.id); } else after(g, 380, next); render(); return; }
     if (ok) after(g, 1500, next); render(); }
   function after(g, ms, fn) { const tok = g.tok = (g.tok || 0) + 1; g.go = () => { if (S().run !== g || g.tok !== tok) return; g.tok++; g.go = null; fn(); };
     setTimeout(() => { if (g.go && g.tok === tok) g.go(); }, ms); }
@@ -493,12 +499,12 @@
       after = ok ? `<div class="anl-yes"><b>Yes.</b> ${esc(line)}</div>`
         : `<div class="anl-miss" role="status"><p><b>The answer is ${esc(q.d)}.</b> ${esc(line)}</p><p class="anl-why">${esc(tempted(q, q.opts[g.picked]))}</p><p class="anl-why">The first pair: ${esc(linkLine(q.rel, q.a, q.b))}</p>
           <button class="anl-btn main" data-act="anl" data-arg="cont">Continue <span class="anl-kb">Enter</span></button></div>`; }
-    return `<div class="anl-page anl-run">${top}<div class="anl-card">${stem}<p class="anl-ask">${g.kind === 'practice' ? 'Step 2 · ' : ''}Which word completes the analogy?</p>
+    return `<div class="anl-page anl-run">${top}<div class="anl-card">${q.again ? `<p class="anl-again">${ic('retry', 14)} Back again — practice, it does not score</p>` : ''}${stem}<p class="anl-ask">${g.kind === 'practice' ? 'Step 2 · ' : ''}Which word completes the analogy?</p>
       <div class="anl-opts n${q.opts.length}">${opts}</div>${after}
       <button class="anl-hear" data-act="anl" data-arg="hear">${ic('volume', 15)} Hear it</button></div></div>`; }
   function doneView(g, kindName) { const pct = Math.round((g.pct || 0) * 100);
-    const words = g.log.map((x) => `<li class="${x.ok ? 'ok' : 'no'}">${x.ok ? ic('check', 13) : ic('close', 13)} ${esc(x.c)} → <b>${esc(x.d)}</b>${x.ok ? '' : ` <span class="anl-was">(you chose ${esc(x.w)})</span>`}</li>`).join('');
-    let head2 = kindName + ': ' + g.right + (g.kind === 'clock' ? ' right' : ' of ' + g.asked);
+    const words = g.log.map((x) => `<li class="${x.ok ? 'ok' : 'no'}">${x.ok ? ic('check', 13) : ic('close', 13)} ${esc(x.c)} → <b>${esc(x.d)}</b>${x.ok ? '' : ` <span class="anl-was">(you chose ${esc(x.w)})</span>`}${x.again ? ' <span class="anl-was">· back again, not scored</span>' : ''}</li>`).join('');
+    let head2 = kindName + ': ' + g.right + (g.kind === 'clock' ? ' right first try' : ' of ' + g.asked);
     let line = '';
     if (g.kind === 'check') line = g.pass ? 'Passed — the next stop is open.' : 'Seven of eight passes. Practise, then check again.';
     if (g.kind === 'level') line = g.masteredNow ? 'Mastered! You passed this level on two different days.' : g.walkedNow ? 'Level passed — the next region is open.' : g.pass ? 'Passed again. Pass on another day to master it.' : 'Eight of ten passes. Practise the stops, then try again.';
@@ -839,6 +845,7 @@
 .anl-btn[disabled]{opacity:.45;cursor:default}
 @media (max-width:480px){.anl-pair{grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)}.anl-link em{font-size:0;padding:4px}.anl-link em svg{width:14px;height:14px}.anl-lead,.anl-tipbox,.anl-trapbox{font-size:16px}}
 .anl-ask{text-align:center;color:var(--muted);margin:6px 0 12px}
+.anl-again{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 8px;font-size:13px;font-weight:700}
 .anl-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .anl-opts.n3,.anl-opts.lines{grid-template-columns:1fr}
 .anl-opts.n5 .anl-opt:last-child{grid-column:1/-1}

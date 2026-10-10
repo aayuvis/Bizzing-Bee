@@ -124,6 +124,7 @@
       if (S.game && !/^(mode|pick|setup)$/.test(S.game.phase || '') && !/^(over|done|result|board)$/.test(S.game.status || '')) return true;
       if (S.nav === 'mockbee' && S.mb && S.mb.view === 'stage') return true;
       if ((S.nav === 'lore' || S.nav === 'hive') && S.qz && S.qz.mode && S.qz.phase === 'play') return true;
+      if (S.nav === 'today' && window.SB_TODAY && SB_TODAY.live()) return true;   // Today's ten, a word open (P1.16)
       return !!document.querySelector('.arc-play,.bz-play');
     } catch (e) { return false; }
   }
@@ -307,6 +308,7 @@
     }
     if (head === 'daily' && typeof app.openDailyBee === 'function') { app.openDailyBee('route'); return; }   // Daily Bee (games spec §5.2) replaces Daily Buzz here
     if (head === 'buzz' && typeof app.openDailyBuzz === 'function') { app.openDailyBuzz(); return; }   // Daily Buzz, back as it was (owner, 5 Oct 2026)
+    if (head === 'today' && typeof app.openToday === 'function') { app.openToday(); return; }   // Today's ten (road to 4.5, P1.16): it resumes where the day's session stands
     /* Word Forge goes through its opener: the table's sign-off (or testing mode) is the lock */
     if (head === 'forge') { if (typeof app.openForge === 'function') app.openForge(); else app.openGames(); return; }
     if (head === 'support') { app.setNav('home'); return; }

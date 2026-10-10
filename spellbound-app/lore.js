@@ -15,6 +15,8 @@
      · pay is `answer` 1 per right, and only above chance: nothing until a round reaches 6 right
        (and 60% in a timed run), then every right counts; Origins pays per typed word; the
        Ladder per rung from the fourth. Two-option items never pay and never count;
+     · the clock counts FIRST-TRY rights only (road to 4.5, P1.20): a miss costs 2 s and the question
+       comes back three on, options turned, until it is right (three times at most) — practice that never counts or pays (againQ);
      · SB_LEVEL.after(key, pct) once at the end of every round, key 'lore/<mode>' / 'hive/<mode>';
      · no run counts anywhere (Bee Trivia's streak flash is gone); the card shows a best, not a tally. */
 (function () {
@@ -354,7 +356,17 @@
       return (g.phase === 'done' ? g.right >= 6 : g.asked >= 15) ? g.right : 0; }
     return g.right >= 6 ? g.right : 0; }
   function settle(g) { let k = owed(g) - g.paid; while (k-- > 0) { g.paid++; try { payG(g); } catch (e) {} } }
+  /* THE CLOCK COUNTS FIRST-TRY RIGHTS ONLY (road to 4.5, P1.20; rubric W2 — the skill gate). A miss on the clock
+     costs two seconds, holds while the why is read, and the question COMES BACK three questions later with its options
+     turned round (againQ) — and again after that while it is still missed, up to three times. Answering it then is
+     retrieval, and good practice, but it is not a first try: it neither counts as asked nor as right, and it never pays.
+     So a guesser spends its minute on questions that cannot score: a guess wins 1 in 4, and each miss costs 2 s plus up
+     to three questions that cannot count, which holds a random player under a tenth of a perfect player's minute at any
+     pace (measured: tests/games-bots.mjs T2b). Returning ONCE was not enough — it bounded a guesser at a seventh, and the
+     harness measured 12% at three seconds a question, too near the 15% gate to hold it. */
+  function againQ(q) { const n = q.opts.length; return Object.assign({}, q, { again: (q.again | 0) + 1, opts: q.opts.slice(1).concat(q.opts.slice(0, 1)), ans: (q.ans + n - 1) % n }); }
   function grade(g, q, i) { const ok = i === q.ans; g.picked = i;
+    if (q.again) { g.log.push({ th: q.th, ok, again: 1 }); try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {} return ok; }   // a comeback: practice, never a first try
     if (!q.two) { g.asked++; if (ok) g.right++; } else { g.two++; }
     g.log.push({ th: q.th, ok, two: !!q.two });
     try { if (q.src === 't' && W.ttBandRecord) ttBandRecord(q.lv || 3, ok); } catch (e) {}
@@ -371,7 +383,9 @@
       render(); if (ok) after(g, 1200, () => { g.picked = null; g.hidden = []; g.hint = ''; g.sentShown = false; if (g.rung >= RUNGS) finish(g); else { render(); speakCur(g); } }); return; }
     if (g.mode === 'squares') { const cell = g.cells[g.sel]; cell.st = ok ? 1 : 2; if (!ok) g.held = true; render();
       if (ok) after(g, 1500, () => nextCell(g)); return; }
-    if (g.mode === 'clock') { if (!ok) { if (g.clock) g.clock.add(-Math.min(2, g.clock.left())); else g.left = Math.max(0, g.left - 2000); hold(g, true); } render(); if (ok) after(g, 450, () => advance(g)); return; }
+    if (g.mode === 'clock') { if (!ok) { if (g.clock) g.clock.add(-Math.min(2, g.clock.left())); else g.left = Math.max(0, g.left - 2000); hold(g, true);
+        if ((q.again | 0) < 3) g.qs.splice(g.i + 4, 0, againQ(q)); }   // three questions on, it comes back — until it is right, up to three times
+      render(); if (ok) after(g, 450, () => advance(g)); return; }
     if (!ok) g.held = true; render(); if (ok) after(g, 2100, () => advance(g)); }
   /* a right answer may move on by itself; a miss never does (FIX-BEE D3) */
   function after(g, ms, fn) { const tok = g.tok = (g.tok || 0) + 1; g.go = () => { if (G() !== g || g.tok !== tok) return; g.tok++; g.go = null; fn(); };
@@ -394,6 +408,9 @@
     advance(g); }
   function advance(g) { if (G() !== g || g.phase !== 'play') return; g.picked = null; g.held = false; g.typed = '';
     g.i++; if (g.mode !== 'clock' && g.i >= g.n) { finish(g); return; }
+    /* the clock's list runs on ahead of the child (the bank again, comebacks left out), so a comeback spliced in
+       three questions on always lands where it was meant to, however long the minute runs */
+    if (g.mode === 'clock' && g.i + 6 >= g.qs.length) g.qs = g.qs.concat(g.qs.filter((x) => !x.again).slice(0, 60));
     render(); speakCur(g); }
   function nextCell(g) { g.picked = null; g.held = false; g.sel = null;
     const L = linesOf(g.cells); if (L > g.lines) { g.lines = L; try { sfx('win'); burstConfetti(70); } catch (e) {} g.lineFlash = L; }
@@ -531,7 +548,7 @@
   function qCard(g, q, extra) { const held = g.held && g.picked != null && g.picked !== q.ans; const right = g.picked != null && g.picked === q.ans;
     const num = g.mode === 'ladder' ? 'Rung ' + (g.rung + 1) + ' of ' + RUNGS + '. ' : g.mode === 'clock' || g.mode === 'squares' ? '' : 'Question ' + (g.i + 1) + ' of ' + g.n + '. ';
     return `<div class="qz-card sg-panel" data-live-prompt="${escA(num + (q.big ? q.prompt + '. ' + (q.sub || '') : (q.sub ? q.sub + ' ' : '') + q.prompt))}">
-      <div class="qz-tag">${esc(q.label || '')}</div>${visual(q)}
+      <div class="qz-tag">${esc(q.label || '')}</div>${q.again ? `<div class="qz-again">${ic('retry', 13)} Back again — practice, it does not score</div>` : ''}${visual(q)}
       ${q.aud || q.say ? `<button class="qz-hear" data-act="qzHear" aria-label="Hear it">${ic('volume', 17)} <span class="qz-hlab">Hear it</span></button>` : ''}
       ${q.big ? `<div class="qz-big">${esc(q.prompt)}</div><div class="qz-sub">${esc(q.sub || '')}</div>` : `${q.sub ? `<div class="qz-sub">${esc(q.sub)}</div>` : ''}<div class="qz-q">${esc(q.prompt)}</div>`}
       ${q.two ? '<div class="qz-two">True or false — just for fun: this one never counts toward your level.</div>' : ''}
@@ -588,9 +605,10 @@
       controls: `<button class="qz-go big" data-act="qzBegin">Start <span class="qz-kb" aria-hidden="true">Enter</span></button>` }); }
 
   function doneView(g) { const m = modeOf(g.hub, g.mode);
-    const big = g.mode === 'ladder' ? 'Rung ' + g.rung + ' of ' + RUNGS : g.mode === 'clock' ? g.right + ' right' : g.right + ' / ' + (g.n - g.two);
+    const big = g.mode === 'ladder' ? 'Rung ' + g.rung + ' of ' + RUNGS : g.mode === 'clock' ? g.right + ' right first try' : g.right + ' / ' + (g.n - g.two);
+    const back = g.mode === 'clock' ? g.log.filter((x) => x.again).length : 0;
     const sub = g.mode === 'ladder' ? (g.rung >= RUNGS ? 'The whole ladder — every rung.' : g.missed ? 'The climb ends on a miss — the answer is above it now.' : 'You stopped climbing.')
-      : g.mode === 'clock' ? (g.asked ? g.asked + ' answered in 60 seconds' : 'No answers this time') : g.mode === 'squares' ? g.lines + (g.lines === 1 ? ' line' : ' lines') + ' scored' : 'right first try';
+      : g.mode === 'clock' ? (g.asked ? g.asked + ' new questions in 60 seconds' + (back ? ' · ' + back + ' came back for another look' : '') : 'No answers this time') : g.mode === 'squares' ? g.lines + (g.lines === 1 ? ' line' : ' lines') + ' scored' : 'right first try';
     const pay = g.coins > 0 ? `<div class="qz-pay">${ic('star', 15)} +${g.coins} coin${g.coins === 1 ? '' : 's'} into your wallet</div>`
       : `<div class="qz-nopay">${g.hub === 'hive' && !hivePays() ? 'Just for fun — no coins in this hub.' : g.mode === 'ladder' ? 'Climb four rungs and every rung pays a coin.' : g.mode === 'clock' ? 'Six right, at least six in ten, and every right answer pays a coin.' : 'Six right and every right answer pays a coin.'}</div>`;
     const L = g.lvl || {}; const names = LVL_NAME;
@@ -683,6 +701,7 @@
 .qz-stage .qz-card{background:color-mix(in srgb,var(--bg2) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .qz-card{width:min(720px,100%);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,3.4vw,28px);text-align:center;box-shadow:var(--glow,var(--sh-rest));color:var(--text)}
 .qz-tag{display:inline-block;padding:3px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-weight:800;font-size:12px;margin-bottom:8px}
+.qz-again{display:flex;align-items:center;justify-content:center;gap:5px;margin:0 0 8px;font-size:13px;font-weight:700;color:var(--ink,var(--text))}
 .qz-big{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,44px);line-height:1.1;margin:4px 0}
 .qz-q{font-size:clamp(16px,2.6vw,20px);font-weight:700;line-height:1.45}.qz-sub{color:var(--muted);font-weight:700;font-size:14px;margin:4px 0}
 .qz-two{font-size:12px;color:var(--muted);margin-top:6px}

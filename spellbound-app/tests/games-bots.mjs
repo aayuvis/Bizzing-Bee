@@ -4,6 +4,11 @@
    saying so. Each game REGISTERS A DRIVER; the harness owns the bots and the checks:
      T1  the random bot earns 0 coins                                   (every driver)
      T2  the random bot scores under 25% of the perfect bot             (drivers that report a score)
+     T2b THE SKILL GATE (road to 4.5, P1.20; rubric W2): the random bot's SCORE as a share of the perfect bot's —
+         the game's own score, `right` — is printed for every game, and held to ≤ 15% for every typed game and
+         every quiz CLOCK (Word Lore's, Hive Mind's, the Analogies'). A fixed round of four options declares
+         `chance` and stays held to chance by T2 instead: 25% is what four options are, whatever the game does,
+         and the summary says so beside its number.
      T6  the finish card's coins are the ledger's change (lib/coins.cjs) (drivers that name a card)
    Bots (seeded — the same run twice is the same run):
      random    types random letters (a word's length) or taps a random option
@@ -18,6 +23,12 @@
        kind:   'type' | 'choice',        // a typed word, or an index into options
        level:  'medium',                 // optional; set through SB_LEVEL before the round
        secs:   20,                       // optional; how long a bot plays if the round does not end itself
+       clock:  true,                     // optional: a timed quiz — T2b holds it to 15% of perfect even with `chance`
+       pace:   3,                        // optional (clocks): game seconds a bot spends on each question — the
+                                         //   driver takes them off the game's own clock, so the round ends on
+                                         //   ITS clock and a miss's cost (2 s, a question that comes back) counts
+       randomRounds: 8,                  // optional: rounds the random bot plays, summed (a luckier sample is
+                                         //   no sample: one 60 s round is a dozen guesses)
        async start(pg, {level}),         // open ONE round through the real opener; return when it is up
        async read(pg),                   // → {target?: string, options?: string[], answer?: number,
                                          //    done?: boolean} — target/answer are the oracle
@@ -100,15 +111,29 @@ async function play(pg, d, b) {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined) });
   const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: [{ name: 'Botty', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 0, band: 4, lists: { journey: { xp: 12 } }, activeList: 'journey' }] };
   const ctx = await b.newContext({ viewport: { width: 1180, height: 860 } });
+  /* THE PAGE IS SEEDED TOO (road to 4.5, P1.20). The bots were seeded but the boards were not: a Squares board, a round's
+     questions and their option order are drawn with the page's Math.random (presentation only — no reward reads it), so the
+     same build gave a different sample every run, and a nine-cell board made T2's two-standard-error ceiling a coin toss
+     about one run in twenty (5 of 9 at chance happens 4.9% of the time). With the page's draws seeded, the same build is the
+     same run; the samples are made big enough to mean something by `randomRounds`, never by moving the ceiling. */
+  await ctx.addInitScript(() => { let s = 0x2b1f0a; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; });
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('t_bots')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_bots', '1'); } } catch (e) {} }, SEED);
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('file://' + ROOT + '/index.html'); ok(await booted(pg), 'the app booted');
   await pg.evaluate(() => new Promise(r => SB_LAZY.need('words2', r)));
   const drivers = DRIVERS.filter(d => !only.length || only.some(q => d.key.includes(q)));
   ok(drivers.length > 0, `${drivers.length} drivers registered: ${drivers.map(d => d.key).join(', ')}`);
+  const GATE = [];   // T2b, per game: the random bot's score as a share of the perfect bot's
   for (const d of drivers) {
     const out = {};
-    for (const name of BOTS) { out[name] = await play(pg, d, bot(name, 7 + name.length)); }
+    for (const name of BOTS) {
+      /* the random bot may play several rounds (randomRounds), each its own seed, summed — rights, asks and coins */
+      const reps = name === 'random' ? (d.randomRounds || 1) : 1; let acc = null;
+      for (let k = 0; k < reps; k++) { const o = await play(pg, d, bot(name, 7 + name.length + 101 * k));
+        if (!acc) { acc = o; continue; }
+        if (acc.res && o.res) { acc.res.right += o.res.right; acc.res.asked += o.res.asked; }
+        acc.r.earned += o.r.earned; acc.r.balance += o.r.balance; acc.r.page += o.r.page; acc.r.events = acc.r.events.concat(o.r.events); acc.steps += o.steps; acc.r.card = null; }
+      out[name] = acc; }
     const R = out.random, P = out.perfect;
     if (R) ok(R.r.earned === 0 && R.r.balance === 0, `T1 ${d.key}: the random bot earns 0 coins (${R.r.earned}${R.r.events.length ? ': ' + R.r.events.join(', ') : ''}; ${R.steps} answers)`);
     /* 4 Oct 2026 (g-lore): a four-option quiz's random bot scores 25% BY CONSTRUCTION — chance — so on ten
@@ -118,9 +143,17 @@ async function play(pg, d, b) {
     if (R && P && R.res && P.res && P.res.asked && d.chance) { const n = Math.max(1, R.res.asked), acc = R.res.right / n, cap = d.chance + 2 * Math.sqrt(d.chance * (1 - d.chance) / n);
       ok(acc <= cap && P.res.right === P.res.asked, `T2 ${d.key}: the random bot is at chance and no higher — ${R.res.right}/${R.res.asked} (${Math.round(acc * 100)}%, chance ${Math.round(d.chance * 100)}%, ceiling ${Math.round(cap * 100)}% at this sample) vs perfect ${P.res.right}/${P.res.asked}`); }
     else if (R && P && R.res && P.res && P.res.asked) ok((R.res.right / Math.max(1, R.res.asked)) < 0.25 * (P.res.right / P.res.asked), `T2 ${d.key}: the random bot scores under 25% of the perfect bot (${R.res.right}/${R.res.asked} vs ${P.res.right}/${P.res.asked})`);
+    /* T2b — the skill gate: the random bot's score per round as a share of the perfect bot's, on the game's own score */
+    if (R && P && R.res && P.res && P.res.right > 0) {
+      const reps = d.randomRounds || 1, share = (R.res.right / reps) / P.res.right, held = !d.chance || d.clock;
+      GATE.push({ key: d.key, share, r: R.res.right / reps, p: P.res.right, held, chance: d.chance });
+      if (held) ok(share <= 0.15, `T2b ${d.key}: the random bot scores ${(share * 100).toFixed(1)}% of the perfect bot (${(R.res.right / reps).toFixed(2)} vs ${P.res.right} a round${reps > 1 ? ', ' + reps + ' random rounds' : ''}) — at most 15%`); }
     for (const name of Object.keys(out)) { const o = out[name]; if (o.r.card != null) coins.check(ok, `T6 ${d.key} (${name})`, o.r.card, o.r);
       if (name !== 'random') console.log(`       ${d.key} · ${name}: ${o.steps} answers, ${o.r.earned} coins (${o.r.events.join(', ') || 'none'})`); }
   }
+  if (GATE.length) { console.log('\n  THE SKILL GATE — the random bot\'s score as a share of the perfect bot\'s, per game (T2b):');
+    GATE.forEach((g) => console.log('    ' + g.key.padEnd(18) + (g.share * 100).toFixed(1).padStart(6) + '%   ' + g.r.toFixed(2).padStart(6) + ' vs ' + String(g.p).padEnd(4)
+      + (g.held ? '  held to 15%' : '  a fixed round of four options — held to chance (' + Math.round(g.chance * 100) + '%) by T2'))); }
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
