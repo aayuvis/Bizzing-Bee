@@ -1,0 +1,2484 @@
+[
+ {
+  "unit": "item:0",
+  "pick": "vacation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:1",
+  "pick": "sister",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "no true synonym of 'sibling' offered; sister is a kind of sibling (hyponym), so the A:B synonym link is not repeated"
+ },
+ {
+  "unit": "item:2",
+  "pick": "devotion",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3",
+  "pick": "posing",
+  "second": [
+   "rest"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'sitting'='posing' only in the portrait-sitting sense; obscure for kids, 'rest' tempting"
+ },
+ {
+  "unit": "item:4",
+  "pick": "object",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:5",
+  "pick": "eater",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "kids know 'diner' as a restaurant; 'one who dines' sense is obscure"
+ },
+ {
+  "unit": "item:6",
+  "pick": "device",
+  "second": [
+   "invention"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:7",
+  "pick": "tavern",
+  "second": [],
+  "unsafe": [
+   "tavern"
+  ],
+  "verdict": "",
+  "reason": "answer is a drinking establishment (alcohol)"
+ },
+ {
+  "unit": "item:8",
+  "pick": "freight",
+  "second": [
+   "package"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "package/shipment arguable"
+ },
+ {
+  "unit": "item:9",
+  "pick": "insect",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:10",
+  "pick": "old",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'adult' is a near-opposite of young but old is clearest"
+ },
+ {
+  "unit": "item:11",
+  "pick": "forget",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:12",
+  "pick": "kind",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:13",
+  "pick": "take",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:14",
+  "pick": "hidden",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:15",
+  "pick": "sell",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:16",
+  "pick": "long",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:17",
+  "pick": "timid",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:18",
+  "pick": "day",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:19",
+  "pick": "sweet",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:20",
+  "pick": "metal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:21",
+  "pick": "grain",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:22",
+  "pick": "vehicle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:23",
+  "pick": "fish",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:24",
+  "pick": "sport",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:25",
+  "pick": "vehicle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:26",
+  "pick": "aircraft",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:27",
+  "pick": "gem",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:28",
+  "pick": "fruit",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:29",
+  "pick": "metal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:30",
+  "pick": "chef",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'cook' is already the agent noun; chef is a synonym, not the derived -er form"
+ },
+ {
+  "unit": "item:31",
+  "pick": "reporter",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:32",
+  "pick": "editor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:33",
+  "pick": "teacher",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:34",
+  "pick": "governor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:35",
+  "pick": "photographer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:36",
+  "pick": "builder",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:37",
+  "pick": "visitor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:38",
+  "pick": "runner",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:39",
+  "pick": "pilot",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "not a morphological agent form like sailor; acceptable"
+ },
+ {
+  "unit": "item:40",
+  "pick": "tall",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:41",
+  "pick": "love",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:42",
+  "pick": "natural",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:43",
+  "pick": "shrink",
+  "second": [
+   "decrease"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "decrease is also an opposite of expand"
+ },
+ {
+  "unit": "item:44",
+  "pick": "open",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:45",
+  "pick": "permanent",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:46",
+  "pick": "accept",
+  "second": [
+   "comply"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "refuse/comply also opposites"
+ },
+ {
+  "unit": "item:47",
+  "pick": "refuse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:48",
+  "pick": "gift",
+  "second": [
+   "charity"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:49",
+  "pick": "beach",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:50",
+  "pick": "camera",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:51",
+  "pick": "cat",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:52",
+  "pick": "guitar",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:53",
+  "pick": "elephant",
+  "second": [
+   "cedar"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a cedar (tree) also has a trunk"
+ },
+ {
+  "unit": "item:54",
+  "pick": "mug",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:55",
+  "pick": "shoe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:56",
+  "pick": "poem",
+  "second": [
+   "poetry"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:57",
+  "pick": "hour",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:58",
+  "pick": "year",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:59",
+  "pick": "bicycle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:60",
+  "pick": "leather",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:61",
+  "pick": "clay",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:62",
+  "pick": "gold",
+  "second": [
+   "metal"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a ring is made of metal generally; gold is just more specific"
+ },
+ {
+  "unit": "item:63",
+  "pick": "write",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:64",
+  "pick": "cut",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:65",
+  "pick": "slow",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:66",
+  "pick": "pour",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:67",
+  "pick": "sew",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:68",
+  "pick": "bore",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'bore' (drill a hole) less familiar to kids than 'boring'"
+ },
+ {
+  "unit": "item:69",
+  "pick": "measure",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:70",
+  "pick": "clean",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:71",
+  "pick": "dry",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:72",
+  "pick": "strain",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:73",
+  "pick": "inclination",
+  "second": [
+   "disposition"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "disposition is also a synonym of tendency"
+ },
+ {
+  "unit": "item:74",
+  "pick": "glimpse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:75",
+  "pick": "ruin",
+  "second": [
+   "calamity"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:76",
+  "pick": "alibi",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "alibi is a narrow legal sense, not a general synonym of excuse"
+ },
+ {
+  "unit": "item:77",
+  "pick": "spite",
+  "second": [
+   "animosity"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "animosity is also a close synonym of malice"
+ },
+ {
+  "unit": "item:78",
+  "pick": "deal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:79",
+  "pick": "blanket",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'cravat','canvases' obscure"
+ },
+ {
+  "unit": "item:80",
+  "pick": "hate",
+  "second": [
+   "animosity"
+  ],
+  "unsafe": [
+   "dickens"
+  ],
+  "verdict": "",
+  "reason": "two synonyms offered; 'dickens' is a minced oath ('what the dickens') with a crude-sounding stem"
+ },
+ {
+  "unit": "item:81",
+  "pick": "adolescent",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:82",
+  "pick": "pail",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:83",
+  "pick": "dangerous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:84",
+  "pick": "choice",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:85",
+  "pick": "argument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:86",
+  "pick": "heroic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:87",
+  "pick": "patience",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'patient' read as noun (clinic, nurse) may confuse"
+ },
+ {
+  "unit": "item:88",
+  "pick": "famous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:89",
+  "pick": "failure",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:90",
+  "pick": "loneliness",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:91",
+  "pick": "certainty",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:92",
+  "pick": "meaningless",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "joyful = full of joy, but meaningless = without meaning; 'meaningful' is missing, so the link is inverted"
+ },
+ {
+  "unit": "item:93",
+  "pick": "lock",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:94",
+  "pick": "boring",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'boring' = drilling is a confusing double sense for kids"
+ },
+ {
+  "unit": "item:95",
+  "pick": "story",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:96",
+  "pick": "gestation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "pregnancy/fetus/gestation: reproductive topic, obscure and possibly sensitive for younger kids"
+ },
+ {
+  "unit": "item:97",
+  "pick": "mirror",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:98",
+  "pick": "sculpture",
+  "second": [
+   "monument"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:99",
+  "pick": "drilling",
+  "second": [],
+  "unsafe": [
+   "smack"
+  ],
+  "verdict": "",
+  "reason": "'smack' is drug slang (heroin) and means hitting; 'boring' double sense confusing"
+ },
+ {
+  "unit": "item:100",
+  "pick": "levy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:101",
+  "pick": "striking",
+  "second": [
+   "hit"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:102",
+  "pick": "deceased",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "death theme; fine but heavy"
+ },
+ {
+  "unit": "item:103",
+  "pick": "pouch",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:104",
+  "pick": "impact",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:105",
+  "pick": "laborer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:106",
+  "pick": "scent",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:107",
+  "pick": "instrument",
+  "second": [
+   "footwear"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'sho' (Japanese mouth organ) is very obscure and reads as a typo of 'shoe', making footwear look right"
+ },
+ {
+  "unit": "item:108",
+  "pick": "scientific",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:109",
+  "pick": "meadow",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:110",
+  "pick": "fraud",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:111",
+  "pick": "metaphorical",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:112",
+  "pick": "shrub",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "andromeda as a shrub genus is very obscure; kids know it as a galaxy/constellation"
+ },
+ {
+  "unit": "item:113",
+  "pick": "prairie",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "no category word (grassland) offered; prairie is a sibling, not a category, so link not repeated"
+ },
+ {
+  "unit": "item:114",
+  "pick": "malicious",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:115",
+  "pick": "vegetation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'aboriginal' as a distractor is an identity term, best avoided"
+ },
+ {
+  "unit": "item:116",
+  "pick": "cheese",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:117",
+  "pick": "plant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "vegetation is not a kind of plant (it is plants collectively); weak member:category link"
+ },
+ {
+  "unit": "item:118",
+  "pick": "adornment",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:119",
+  "pick": "flowering",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:120",
+  "pick": "eagerness",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:121",
+  "pick": "blot",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "no category for smudge offered; blot is a synonym, so robin:bird link is not repeated"
+ },
+ {
+  "unit": "item:122",
+  "pick": "container",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:123",
+  "pick": "tool",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:124",
+  "pick": "lather",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:125",
+  "pick": "",
+  "second": [
+   "buckle",
+   "padlock",
+   "clutch"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "no category word for cleat (fastener/projection); buckle, padlock, clutch are all co-members — item broken"
+ },
+ {
+  "unit": "item:126",
+  "pick": "chill",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:127",
+  "pick": "tedious",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:128",
+  "pick": "trouble",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:129",
+  "pick": "precipitation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "rain is a kind of precipitation (hyponym), not a synonym like gift/present"
+ },
+ {
+  "unit": "item:130",
+  "pick": "capitol",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'abattoir' (slaughterhouse) and 'statehouse' obscure"
+ },
+ {
+  "unit": "item:131",
+  "pick": "plant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "astrantia and the other plant genera are very obscure"
+ },
+ {
+  "unit": "item:132",
+  "pick": "omission",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:133",
+  "pick": "midday",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:134",
+  "pick": "boo",
+  "second": [],
+  "unsafe": [
+   "smack"
+  ],
+  "verdict": "",
+  "reason": "hiss = boo only in the heckling sense; 'smack' is drug slang/hitting"
+ },
+ {
+  "unit": "item:135",
+  "pick": "pointer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:136",
+  "pick": "brush",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'brush' = undergrowth is an obscure sense; 'hedge' tempting"
+ },
+ {
+  "unit": "item:137",
+  "pick": "wince",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:138",
+  "pick": "scenic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:139",
+  "pick": "nothing",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:140",
+  "pick": "shore",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:141",
+  "pick": "couch",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:142",
+  "pick": "shoe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:143",
+  "pick": "boat",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:144",
+  "pick": "circumference",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "girth's other sense is a saddle strap, which the distractors target; obscure"
+ },
+ {
+  "unit": "item:145",
+  "pick": "dwelling",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:146",
+  "pick": "boil",
+  "second": [
+   "papule"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "medical skin-lesion terms (pustule, papule) are obscure and gross; no exact synonym (pimple) offered"
+ },
+ {
+  "unit": "item:147",
+  "pick": "organizational",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "weak synonym; adjective vocabulary too abstract"
+ },
+ {
+  "unit": "item:148",
+  "pick": "annoy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:149",
+  "pick": "endorse",
+  "second": [
+   "assent"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:150",
+  "pick": "coat",
+  "second": [
+   "fell"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "pelt is not a member of a category here; 'fell' (hide) is an archaic synonym; obscure"
+ },
+ {
+  "unit": "item:151",
+  "pick": "container",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:152",
+  "pick": "cookout",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "cookout is not a true synonym of picnic"
+ },
+ {
+  "unit": "item:153",
+  "pick": "stare",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:154",
+  "pick": "suspect",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'murder' as a distractor is violent for younger kids; accused~suspect is not exact (defendant)"
+ },
+ {
+  "unit": "item:155",
+  "pick": "motto",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:156",
+  "pick": "export",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:157",
+  "pick": "crypt",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:158",
+  "pick": "wreath",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:159",
+  "pick": "merchant",
+  "second": [],
+  "unsafe": [
+   "arab"
+  ],
+  "verdict": "",
+  "reason": "'arab' as a distractor beside 'trader' risks an ethnic stereotype"
+ },
+ {
+  "unit": "item:160",
+  "pick": "conviction",
+  "second": [
+   "ideology"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:161",
+  "pick": "manacle",
+  "second": [
+   "fetter"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:162",
+  "pick": "gliding",
+  "second": [],
+  "unsafe": [
+   "climax"
+  ],
+  "verdict": "",
+  "reason": "'climax' has a sexual double meaning"
+ },
+ {
+  "unit": "item:163",
+  "pick": "finish",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:164",
+  "pick": "underside",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:165",
+  "pick": "intellect",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'madness'/'dementia' as distractors could stigmatise mental illness"
+ },
+ {
+  "unit": "item:166",
+  "pick": "shackle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'garter' has a lingerie connotation"
+ },
+ {
+  "unit": "item:167",
+  "pick": "represent",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:168",
+  "pick": "plant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:169",
+  "pick": "sinew",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:170",
+  "pick": "naive",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:171",
+  "pick": "boggy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:172",
+  "pick": "national",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'a national' as a noun for citizen is an obscure sense"
+ },
+ {
+  "unit": "item:173",
+  "pick": "dangerous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:174",
+  "pick": "flavoring",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:175",
+  "pick": "allowance",
+  "second": [
+   "salary"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "salary is also a near-synonym of stipend"
+ },
+ {
+  "unit": "item:176",
+  "pick": "swamp",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:177",
+  "pick": "larva",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "caterpillar is a kind of larva, not an exact synonym"
+ },
+ {
+  "unit": "item:178",
+  "pick": "bookshelf",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:179",
+  "pick": "melody",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:180",
+  "pick": "appendage",
+  "second": [],
+  "unsafe": [
+   "buttock"
+  ],
+  "verdict": "",
+  "reason": "'buttock' is a crude/giggle body word for kids"
+ },
+ {
+  "unit": "item:181",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "no option is a category for cholesterol (lipid/sterol); item broken and too technical"
+ },
+ {
+  "unit": "item:182",
+  "pick": "sprinkle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:183",
+  "pick": "rustic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'rustic' as a noun is obscure; 'peasant' can be used as an insult"
+ },
+ {
+  "unit": "item:184",
+  "pick": "color",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:185",
+  "pick": "buildup",
+  "second": [],
+  "unsafe": [
+   "urine"
+  ],
+  "verdict": "",
+  "reason": "'urine' is a crude bodily word as a distractor"
+ },
+ {
+  "unit": "item:186",
+  "pick": "polite",
+  "second": [
+   "considerate"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "considerate is also a synonym of courteous"
+ },
+ {
+  "unit": "item:187",
+  "pick": "project",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:a",
+  "pick": "juice",
+  "second": [
+   "resin"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "weak link; extract is not really a synonym of juice"
+ },
+ {
+  "unit": "item:b",
+  "pick": "discovery",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:c",
+  "pick": "punishment",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:d",
+  "pick": "consent",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:e",
+  "pick": "patron",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:f",
+  "pick": "reply",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:g",
+  "pick": "walking",
+  "second": [
+   "trek"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:h",
+  "pick": "grid",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "weak synonym"
+ },
+ {
+  "unit": "item:i",
+  "pick": "street",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:j",
+  "pick": "journey",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:k",
+  "pick": "smile",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:l",
+  "pick": "name",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:m",
+  "pick": "cover",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:n",
+  "pick": "dealer",
+  "second": [],
+  "unsafe": [
+   "arab"
+  ],
+  "verdict": "",
+  "reason": "'arab' as a distractor beside 'trader' risks an ethnic stereotype"
+ },
+ {
+  "unit": "item:o",
+  "pick": "proof",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:p",
+  "pick": "monument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:q",
+  "pick": "factory",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:r",
+  "pick": "performing",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:s",
+  "pick": "gadget",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:t",
+  "pick": "shore",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:u",
+  "pick": "sum",
+  "second": [
+   "extent"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:v",
+  "pick": "pig",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:w",
+  "pick": "penny",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:x",
+  "pick": "instructor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:y",
+  "pick": "acting",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:z",
+  "pick": "shrub",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1a",
+  "pick": "heavy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1b",
+  "pick": "win",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1c",
+  "pick": "conceal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1d",
+  "pick": "top",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1e",
+  "pick": "visible",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1f",
+  "pick": "summer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1g",
+  "pick": "guilty",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1h",
+  "pick": "sour",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1i",
+  "pick": "night",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1j",
+  "pick": "soft",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1k",
+  "pick": "float",
+  "second": [
+   "ascend"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1l",
+  "pick": "weak",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1m",
+  "pick": "hate",
+  "second": [
+   "hatred"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "hatred (noun) is also a valid opposite of love"
+ },
+ {
+  "unit": "item:1n",
+  "pick": "small",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1o",
+  "pick": "ancient",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1p",
+  "pick": "push",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1q",
+  "pick": "light",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1r",
+  "pick": "rich",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1s",
+  "pick": "true",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1t",
+  "pick": "false",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1u",
+  "pick": "light",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1v",
+  "pick": "winter",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1w",
+  "pick": "stormy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1x",
+  "pick": "victory",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1y",
+  "pick": "defeat",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:1z",
+  "pick": "brave",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2a",
+  "pick": "tool",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2b",
+  "pick": "insect",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2c",
+  "pick": "flower",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2d",
+  "pick": "color",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2e",
+  "pick": "room",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'mom' as a distractor beside 'kitchen' risks a gender stereotype"
+ },
+ {
+  "unit": "item:2f",
+  "pick": "shape",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2g",
+  "pick": "shoe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a boot is footwear rather than a shoe; acceptable"
+ },
+ {
+  "unit": "item:2h",
+  "pick": "bird",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2i",
+  "pick": "rock",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2j",
+  "pick": "bag",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2k",
+  "pick": "garment",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2l",
+  "pick": "vehicle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2m",
+  "pick": "animal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'young' as an adjective has no category; only the rare noun sense (offspring) makes 'animal' fit; item broken for kids"
+ },
+ {
+  "unit": "item:2n",
+  "pick": "insect",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2o",
+  "pick": "garment",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "a pocket is part of a garment, not a kind of one; link not repeated"
+ },
+ {
+  "unit": "item:2p",
+  "pick": "mineral",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2q",
+  "pick": "vehicle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2r",
+  "pick": "drink",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2s",
+  "pick": "tool",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2t",
+  "pick": "vehicle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2u",
+  "pick": "tool",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2v",
+  "pick": "pig",
+  "second": [
+   "animal"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "hog is a pig and also an animal; both categories valid"
+ },
+ {
+  "unit": "item:2w",
+  "pick": "color",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "coral is primarily a sea animal; colour sense is secondary"
+ },
+ {
+  "unit": "item:2x",
+  "pick": "",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "no category for baking (cooking) offered; item broken"
+ },
+ {
+  "unit": "item:2y",
+  "pick": "bird",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:2z",
+  "pick": "garment",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "laundry is a collection of garments, not a kind of garment; link not repeated"
+ },
+ {
+  "unit": "item:3a",
+  "pick": "reader",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3b",
+  "pick": "actor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3c",
+  "pick": "singer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3d",
+  "pick": "winner",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3e",
+  "pick": "leader",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3f",
+  "pick": "driver",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3g",
+  "pick": "player",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3h",
+  "pick": "designer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3i",
+  "pick": "dancer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3j",
+  "pick": "director",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3k",
+  "pick": "farmer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3l",
+  "pick": "hunter",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3m",
+  "pick": "writer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3n",
+  "pick": "gardener",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3o",
+  "pick": "referee",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'judge' is already the agent noun; no derived form exists, referee only a loose match — item broken"
+ },
+ {
+  "unit": "item:3p",
+  "pick": "sailor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3q",
+  "pick": "baker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3r",
+  "pick": "painter",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3s",
+  "pick": "sculptor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3t",
+  "pick": "explorer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3u",
+  "pick": "guardian",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "'guard' is already an agent noun"
+ },
+ {
+  "unit": "item:3v",
+  "pick": "inventor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3w",
+  "pick": "climber",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3x",
+  "pick": "skater",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3y",
+  "pick": "swimmer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:3z",
+  "pick": "dark",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:4a",
+  "pick": "wavy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:4b",
+  "pick": "dedication",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:4c",
+  "pick": "group",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "weak synonym"
+ },
+ {
+  "unit": "item:4d",
+  "pick": "bush",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:4e",
+  "pick": "field",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:4f",
+  "pick": "message",
+  "second": [
+   "comment"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "comment is also a sense of note"
+ },
+ {
+  "unit": "item:4g",
+  "pick": "departed",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ },
+ {
+  "unit": "item:4h",
+  "pick": "wood",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": ""
+ }
+]

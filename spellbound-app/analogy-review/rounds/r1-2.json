@@ -1,0 +1,5066 @@
+[
+ {
+  "unit": "item:4i",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "mill",
+  "d": "plant",
+  "wrong": [
+   "sack",
+   "shovel",
+   "lumber",
+   "tractor"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:4j",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "ginger",
+  "d": "plant",
+  "wrong": [
+   "curry",
+   "garlic",
+   "soy",
+   "basil"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:4k",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "curry",
+  "d": "dish",
+  "wrong": [
+   "ginger",
+   "soy",
+   "basil",
+   "bun"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A piece of dishware normally used as a container for holding or serving food"
+ },
+ {
+  "unit": "item:4l",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "walnut",
+  "d": "nut",
+  "wrong": [
+   "coconut",
+   "soy",
+   "curry"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Usually large hard-shelled seed"
+ },
+ {
+  "unit": "item:4m",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "zinc",
+  "d": "metal",
+  "wrong": [
+   "platinum",
+   "aluminum",
+   "uranium",
+   "cobalt"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "unit": "item:4n",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "rocket",
+  "d": "vehicle",
+  "wrong": [
+   "jet",
+   "rotor",
+   "helicopter",
+   "ignition"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A conveyance that transports people or objects"
+ },
+ {
+  "unit": "item:4o",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "grey",
+  "d": "color",
+  "wrong": [
+   "brown",
+   "tan",
+   "colorful",
+   "dark"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A visual attribute of things that results from the light they emit or transmit or reflect"
+ },
+ {
+  "unit": "item:4p",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "donkey",
+  "d": "animal",
+  "wrong": [
+   "hen",
+   "raven",
+   "tiger"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A living organism characterized by voluntary movement"
+ },
+ {
+  "unit": "item:4q",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "toe",
+  "d": "foot",
+  "wrong": [
+   "thumb",
+   "hind",
+   "feet",
+   "elbow"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "The part of the leg of a human being below the ankle joint"
+ },
+ {
+  "unit": "item:4r",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "hoof",
+  "d": "horse",
+  "wrong": [
+   "hind",
+   "paw",
+   "toe"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "Solid-hoofed herbivorous quadruped domesticated since prehistoric times"
+ },
+ {
+  "unit": "item:4s",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "key",
+  "d": "piano",
+  "wrong": [
+   "vinyl",
+   "cue",
+   "chord"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A keyboard instrument that is played by depressing keys that cause hammers to strike tuned strings and…"
+ },
+ {
+  "unit": "item:4t",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "collar",
+  "d": "shirt",
+  "wrong": [
+   "sleeve",
+   "hem",
+   "sweater"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A garment worn on the upper half of the body"
+ },
+ {
+  "unit": "item:4u",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "shell",
+  "d": "turtle",
+  "wrong": [
+   "clam",
+   "octopus",
+   "pod"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A sweater or jersey with a high close-fitting collar"
+ },
+ {
+  "unit": "item:4v",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "sleeve",
+  "d": "shirt",
+  "wrong": [
+   "sandal",
+   "sash",
+   "footwear"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A garment worn on the upper half of the body"
+ },
+ {
+  "unit": "item:4w",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 4,
+  "c": "mane",
+  "d": "lion",
+  "wrong": [
+   "paddock",
+   "moorland",
+   "trot",
+   "pony"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "Large gregarious predatory feline of africa and india having a tawny coat with a shaggy mane in the male"
+ },
+ {
+  "unit": "item:4x",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "chapter",
+  "d": "book",
+  "wrong": [
+   "paragraph",
+   "essay",
+   "section",
+   "lesson"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A written work or composition that has been published (printed on pages bound together)"
+ },
+ {
+  "unit": "item:4y",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "pupil",
+  "d": "eye",
+  "wrong": [
+   "iris",
+   "colon",
+   "student"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "The organ of sight"
+ },
+ {
+  "unit": "item:4z",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "sail",
+  "d": "boat",
+  "wrong": [
+   "captain",
+   "fleet",
+   "dock"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A small vessel for travel on water"
+ },
+ {
+  "unit": "item:5a",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 4,
+  "c": "bottle",
+  "d": "glass",
+  "wrong": [
+   "cask",
+   "keg",
+   "carton",
+   "brewer"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A brittle transparent solid with irregular atomic structure"
+ },
+ {
+  "unit": "item:5b",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 4,
+  "c": "pottery",
+  "d": "clay",
+  "wrong": [
+   "shard",
+   "artisan",
+   "porcelain",
+   "bronze"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A very fine-grained soil that is plastic when moist but hard when fired"
+ },
+ {
+  "unit": "item:5c",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "chair",
+  "d": "wood",
+  "wrong": [
+   "gym",
+   "wicker",
+   "wooden",
+   "dresser"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "The hard fibrous lignified substance under the bark of trees"
+ },
+ {
+  "unit": "item:5d",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "wallet",
+  "d": "leather",
+  "wrong": [
+   "spare",
+   "laptop",
+   "purse",
+   "beaver"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "An animal skin made smooth and flexible by removing the hair and then tanning"
+ },
+ {
+  "unit": "item:5e",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 4,
+  "c": "cheese",
+  "d": "milk",
+  "wrong": [
+   "salami",
+   "savory",
+   "attention",
+   "milky"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A white nutritious liquid secreted by mammals and used as food by human beings"
+ },
+ {
+  "unit": "item:5f",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "candle",
+  "d": "wax",
+  "wrong": [
+   "flicker",
+   "torch",
+   "taper",
+   "waxy"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Any of various substances of either mineral origin or plant or animal origin"
+ },
+ {
+  "unit": "item:5g",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 4,
+  "c": "omelet",
+  "d": "egg",
+  "wrong": [
+   "rosemary",
+   "taco",
+   "ass",
+   "tofu"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Animal reproductive body consisting of an ovum or embryo together with nutritive and protective envelopes"
+ },
+ {
+  "unit": "item:5h",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "tire",
+  "d": "rubber",
+  "wrong": [
+   "exhaust",
+   "workout",
+   "slam",
+   "denim"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "An elastic material obtained from the latex sap of trees (especially trees of the genera hevea and ficus)…"
+ },
+ {
+  "unit": "item:5i",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "snowman",
+  "d": "snow",
+  "wrong": [
+   "snowy",
+   "wicker",
+   "denim",
+   "marble"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Precipitation falling from clouds in the form of ice crystals"
+ },
+ {
+  "unit": "item:5j",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "statue",
+  "d": "marble",
+  "wrong": [
+   "monument",
+   "sculptor",
+   "figure",
+   "granite"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Crystallized limestone that is capable of taking a high polish"
+ },
+ {
+  "unit": "item:5k",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "basket",
+  "d": "wicker",
+  "wrong": [
+   "bale",
+   "sack",
+   "oat",
+   "cider"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Slender flexible branches or twigs (especially of willow or some canes)"
+ },
+ {
+  "unit": "item:5l",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "butter",
+  "d": "cream",
+  "wrong": [
+   "lemon",
+   "sauce",
+   "creamy",
+   "broth"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "The best people or things in a group"
+ },
+ {
+  "unit": "item:5m",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "popcorn",
+  "d": "corn",
+  "wrong": [
+   "diner",
+   "hay",
+   "cream",
+   "wicker"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Tall annual cereal grass bearing kernels on large ears: widely cultivated in america in many varieties"
+ },
+ {
+  "unit": "item:5n",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "nail",
+  "d": "iron",
+  "wrong": [
+   "scalp",
+   "razor",
+   "claw",
+   "thumb"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A heavy ductile magnetic metallic element"
+ },
+ {
+  "unit": "item:5o",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "tent",
+  "d": "canvas",
+  "wrong": [
+   "picnic",
+   "recreation",
+   "wicker",
+   "snow"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A heavy, closely woven fabric (used for clothing or chairs or sails or tents)"
+ },
+ {
+  "unit": "item:5p",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "bread",
+  "d": "flour",
+  "wrong": [
+   "burger",
+   "bacon",
+   "broth",
+   "fry"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Fine powdery foodstuff obtained by grinding and sifting the meal of a cereal grain"
+ },
+ {
+  "unit": "item:5q",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "shirt",
+  "d": "cotton",
+  "wrong": [
+   "sweater",
+   "jacket",
+   "top",
+   "scarf"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Soft white fibers from a plant, used to make cloth and thread"
+ },
+ {
+  "unit": "item:5r",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "cake",
+  "d": "flour",
+  "wrong": [
+   "bun",
+   "loaf",
+   "block",
+   "cream"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Fine powdery foodstuff obtained by grinding and sifting the meal of a cereal grain"
+ },
+ {
+  "unit": "item:5s",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "blanket",
+  "d": "wool",
+  "wrong": [
+   "lawn",
+   "sweater",
+   "cover",
+   "felt"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A fabric made from the hair of sheep"
+ },
+ {
+  "unit": "item:5t",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "sweater",
+  "d": "wool",
+  "wrong": [
+   "scarf",
+   "sock",
+   "felt",
+   "nap"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A fabric made from the hair of sheep"
+ },
+ {
+  "unit": "item:5u",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "coin",
+  "d": "metal",
+  "wrong": [
+   "penny",
+   "dollar",
+   "gold",
+   "glass"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "unit": "item:5v",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "window",
+  "d": "glass",
+  "wrong": [
+   "bathroom",
+   "bedroom",
+   "marble",
+   "canvas"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A brittle transparent solid with irregular atomic structure"
+ },
+ {
+  "unit": "item:5w",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "table",
+  "d": "wood",
+  "wrong": [
+   "dinner",
+   "grid",
+   "wooden",
+   "glass"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "The hard fibrous lignified substance under the bark of trees"
+ },
+ {
+  "unit": "item:5x",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "paper",
+  "d": "wood",
+  "wrong": [
+   "sheet",
+   "ink",
+   "daily",
+   "wooden"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "The hard fibrous lignified substance under the bark of trees"
+ },
+ {
+  "unit": "item:5y",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "jam",
+  "d": "fruit",
+  "wrong": [
+   "breakfast",
+   "fix",
+   "cream",
+   "corn"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "The ripened reproductive body of a seed plant"
+ },
+ {
+  "unit": "item:5z",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "jar",
+  "d": "glass",
+  "wrong": [
+   "shelf",
+   "candy",
+   "pot",
+   "bin"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A brittle transparent solid with irregular atomic structure"
+ },
+ {
+  "unit": "item:6a",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "whistle",
+  "d": "signal",
+  "wrong": [
+   "sweep",
+   "catch",
+   "wake",
+   "inflate"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Any nonverbal action or gesture that encodes a message"
+ },
+ {
+  "unit": "item:6b",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "oven",
+  "d": "bake",
+  "wrong": [
+   "shred",
+   "boil",
+   "freeze",
+   "cool"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Cook and make edible by putting in a hot oven"
+ },
+ {
+  "unit": "item:6c",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 4,
+  "c": "grater",
+  "d": "shred",
+  "wrong": [
+   "wake",
+   "sweep",
+   "freeze",
+   "bake"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A tiny or scarcely detectable amount"
+ },
+ {
+  "unit": "item:6d",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "magnet",
+  "d": "attract",
+  "wrong": [
+   "sweep",
+   "strain",
+   "signal",
+   "inflate"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Direct toward itself or oneself by means of some psychological power or physical attributes"
+ },
+ {
+  "unit": "item:6e",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "ladder",
+  "d": "climb",
+  "wrong": [
+   "sweep",
+   "unlock",
+   "catch",
+   "dig"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To get to the top of or go over typically with some effort."
+ },
+ {
+  "unit": "item:6f",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "stove",
+  "d": "cook",
+  "wrong": [
+   "bake",
+   "cool",
+   "shred",
+   "boil"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To prepare food by heating it, as on a stove"
+ },
+ {
+  "unit": "item:6g",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "freezer",
+  "d": "freeze",
+  "wrong": [
+   "wake",
+   "shred",
+   "bake",
+   "cool"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "The withdrawal of heat to change something from a liquid to a solid"
+ },
+ {
+  "unit": "item:6h",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 4,
+  "c": "telescope",
+  "d": "observe",
+  "wrong": [
+   "magnify",
+   "light",
+   "photograph",
+   "sweep"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Discover or determine the existence, presence, or fact of"
+ },
+ {
+  "unit": "item:6i",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "oar",
+  "d": "row",
+  "wrong": [
+   "sweep",
+   "pound",
+   "sew",
+   "catch"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "An arrangement of objects or people side by side in a line"
+ },
+ {
+  "unit": "item:6j",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "glue",
+  "d": "stick",
+  "wrong": [
+   "sew",
+   "shred",
+   "magnify",
+   "bake"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "An implement consisting of a length of wood"
+ },
+ {
+  "unit": "item:6k",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "whisk",
+  "d": "beat",
+  "wrong": [
+   "shred",
+   "bake",
+   "wake",
+   "boil"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A regular route for a sentry or policeman"
+ },
+ {
+  "unit": "item:6l",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "shovel",
+  "d": "dig",
+  "wrong": [
+   "wake",
+   "sweep",
+   "unlock",
+   "shred"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "The site of an archeological exploration"
+ },
+ {
+  "unit": "item:6m",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "broom",
+  "d": "sweep",
+  "wrong": [
+   "shred",
+   "sew",
+   "bore",
+   "catch"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A wide scope"
+ },
+ {
+  "unit": "item:6n",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "alarm",
+  "d": "wake",
+  "wrong": [
+   "freeze",
+   "unlock",
+   "strain",
+   "signal"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "The consequences of an event (especially a catastrophic event)"
+ },
+ {
+  "unit": "item:6o",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "lantern",
+  "d": "light",
+  "wrong": [
+   "sweep",
+   "cool",
+   "wake",
+   "warm"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Electromagnetic radiation that can produce a visual sensation"
+ },
+ {
+  "unit": "item:6p",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "spoon",
+  "d": "stir",
+  "wrong": [
+   "bake",
+   "shred",
+   "cook",
+   "boil"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To mix something by moving a spoon around in it"
+ },
+ {
+  "unit": "item:6q",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "heater",
+  "d": "warm",
+  "wrong": [
+   "freeze",
+   "cool",
+   "wake",
+   "sweep"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Fairly hot in a pleasant way"
+ },
+ {
+  "unit": "item:6r",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "ruler",
+  "d": "measure",
+  "wrong": [
+   "pound",
+   "unlock",
+   "inflate",
+   "magnify"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Any maneuver made as part of progress toward a goal"
+ },
+ {
+  "unit": "item:6s",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "pencil",
+  "d": "draw",
+  "wrong": [
+   "sweep",
+   "magnify",
+   "photograph",
+   "unlock"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To make a picture with a pencil, pen, or crayon"
+ },
+ {
+  "unit": "item:6t",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "key",
+  "d": "unlock",
+  "wrong": [
+   "slow",
+   "stick",
+   "bore",
+   "signal"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Open the lock of"
+ },
+ {
+  "unit": "item:6u",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "camera",
+  "d": "photograph",
+  "wrong": [
+   "magnify",
+   "sweep",
+   "light",
+   "unlock"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A representation of a person or scene in the form of a print or transparent slide"
+ },
+ {
+  "unit": "item:6v",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "hammer",
+  "d": "pound",
+  "wrong": [
+   "bore",
+   "sweep",
+   "sew",
+   "beat"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "16 ounces avoirdupois"
+ },
+ {
+  "unit": "item:6w",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "net",
+  "d": "catch",
+  "wrong": [
+   "sweep",
+   "magnify",
+   "shred",
+   "stick"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A drawback or difficulty that is not readily evident"
+ },
+ {
+  "unit": "item:6x",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "fan",
+  "d": "cool",
+  "wrong": [
+   "attract",
+   "wake",
+   "sweep",
+   "inflate"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "The quality of being at a refreshingly low temperature"
+ },
+ {
+  "unit": "item:6y",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "saw",
+  "d": "cut",
+  "wrong": [
+   "unlock",
+   "wake",
+   "bore",
+   "dig"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A share of the profits"
+ },
+ {
+  "unit": "item:6z",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "scale",
+  "d": "weigh",
+  "wrong": [
+   "inflate",
+   "sweep",
+   "magnify",
+   "freeze"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Have a certain weight"
+ },
+ {
+  "unit": "item:7a",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "possible",
+  "d": "feasible",
+  "wrong": [
+   "probable",
+   "finite",
+   "furthest",
+   "infinite"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Is capable of being done"
+ },
+ {
+  "unit": "item:7b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "home",
+  "d": "residence",
+  "wrong": [
+   "orphan",
+   "vacation",
+   "nowhere",
+   "permanent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any address at which you dwell more than temporarily"
+ },
+ {
+  "unit": "item:7c",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "choice",
+  "d": "pick",
+  "wrong": [
+   "outlook",
+   "preference",
+   "option",
+   "favour"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The person or thing chosen or selected"
+ },
+ {
+  "unit": "item:7d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "supplement",
+  "d": "appendix",
+  "wrong": [
+   "diet",
+   "gluten",
+   "boost",
+   "nutrition"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Supplementary material that is collected and appended at the back of a book"
+ },
+ {
+  "unit": "item:7e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "involvement",
+  "d": "participation",
+  "wrong": [
+   "rejection",
+   "integrity",
+   "continuity",
+   "advocacy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of sharing in the activities of a group"
+ },
+ {
+  "unit": "item:7f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "filling",
+  "d": "stuffing",
+  "wrong": [
+   "hum",
+   "savory",
+   "pastry",
+   "cider"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A mixture of seasoned ingredients used to stuff meats and vegetables"
+ },
+ {
+  "unit": "item:7g",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "seller",
+  "d": "merchant",
+  "wrong": [
+   "buyer",
+   "discount",
+   "commodity",
+   "premium"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A businessperson engaged in retail trade"
+ },
+ {
+  "unit": "item:7h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "counselor",
+  "d": "advisor",
+  "wrong": [
+   "learner",
+   "responder",
+   "tutor",
+   "rookie"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An expert who gives advice"
+ },
+ {
+  "unit": "item:7i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "blend",
+  "d": "mixture",
+  "wrong": [
+   "genre",
+   "korean",
+   "mute",
+   "clash"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A substance consisting of two or more substances mixed together (not in fixed proportions and not with…"
+ },
+ {
+  "unit": "item:7j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "expulsion",
+  "d": "ejection",
+  "wrong": [
+   "phlegm",
+   "impediment",
+   "sputum",
+   "harassment"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of expelling or projecting or ejecting"
+ },
+ {
+  "unit": "item:7k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "intimidation",
+  "d": "bullying",
+  "wrong": [
+   "harassment",
+   "compulsion",
+   "subversion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of intimidating a weaker person to make them do something"
+ },
+ {
+  "unit": "item:7l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "sculpture",
+  "d": "carving",
+  "wrong": [
+   "portrait",
+   "graffiti",
+   "tapestry",
+   "canvases"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A sculpture created by removing material (as wood or ivory or stone) in order to create a desired shape"
+ },
+ {
+  "unit": "item:7m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "uncertainty",
+  "d": "doubt",
+  "wrong": [
+   "spite",
+   "conviction",
+   "certainty",
+   "reliability"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The state of being unsure of something"
+ },
+ {
+  "unit": "item:7n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "seawater",
+  "d": "saltwater",
+  "wrong": [
+   "evaporation",
+   "saline",
+   "beaker",
+   "reservoir"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Water containing salts"
+ },
+ {
+  "unit": "item:7o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "scarce",
+  "d": "sparse",
+  "wrong": [
+   "plentiful",
+   "surplus",
+   "limitless",
+   "abundant"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Thinly scattered or spread out"
+ },
+ {
+  "unit": "item:7p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "comprehension",
+  "d": "grasp",
+  "wrong": [
+   "realization",
+   "cognition",
+   "volition",
+   "actuality"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Understanding of the nature or meaning or quality or magnitude of something"
+ },
+ {
+  "unit": "item:7q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "animosity",
+  "d": "hostility",
+  "wrong": [
+   "malice",
+   "indignation",
+   "resentment",
+   "leniency"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A hostile (very unfriendly) disposition"
+ },
+ {
+  "unit": "item:7r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "feather",
+  "d": "plume",
+  "wrong": [
+   "crest",
+   "peacock",
+   "stork",
+   "stripe"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Anything that resembles a feather in shape or lightness"
+ },
+ {
+  "unit": "item:7s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "editing",
+  "d": "revising",
+  "wrong": [
+   "setup",
+   "simulation",
+   "ball",
+   "font"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Editing that involves writing something again"
+ },
+ {
+  "unit": "item:7t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "grumbling",
+  "d": "rumbling",
+  "wrong": [
+   "clamor",
+   "nag",
+   "bother",
+   "rant"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A loud low dull continuous noise"
+ },
+ {
+  "unit": "item:7u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "pot",
+  "d": "cauldron",
+  "wrong": [
+   "stove",
+   "oven",
+   "artery",
+   "skewer"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A very large pot that is used for boiling"
+ },
+ {
+  "unit": "item:7v",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "math",
+  "d": "arithmetic",
+  "wrong": [
+   "equation",
+   "geometry",
+   "statistic",
+   "theorem"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The branch of pure mathematics dealing with the theory of numerical calculations"
+ },
+ {
+  "unit": "item:7w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "pursuit",
+  "d": "chase",
+  "wrong": [
+   "endeavor",
+   "ambition",
+   "liberation",
+   "hobby"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of pursuing in an effort to overtake or capture"
+ },
+ {
+  "unit": "item:7x",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "dominate",
+  "d": "prevail",
+  "wrong": [
+   "wield",
+   "overrun",
+   "exploit"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Be larger in number, quantity, power, status or importance"
+ },
+ {
+  "unit": "item:7y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "narrative",
+  "d": "tale",
+  "wrong": [
+   "scenario",
+   "biography",
+   "prose",
+   "manga"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A message that tells the particulars of an act or occurrence or course of events"
+ },
+ {
+  "unit": "item:7z",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "barrier",
+  "d": "obstacle",
+  "wrong": [
+   "embankment",
+   "parapet",
+   "defensive",
+   "moat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something immaterial that stands in the way and must be circumvented or surmounted"
+ },
+ {
+  "unit": "item:8a",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "child",
+  "d": "childish",
+  "wrong": [
+   "pediatric",
+   "juvenile",
+   "minor",
+   "newborn"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Indicating a lack of maturity"
+ },
+ {
+  "unit": "item:8b",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "rain",
+  "d": "rainy",
+  "wrong": [
+   "sunny",
+   "muddy",
+   "golden",
+   "dangerous"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Wet by periods of rain"
+ },
+ {
+  "unit": "item:8c",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "arrive",
+  "d": "arrival",
+  "wrong": [
+   "monday",
+   "noon",
+   "leave",
+   "tuesday"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of reaching a place at the end of a journey"
+ },
+ {
+  "unit": "item:8d",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "celebrate",
+  "d": "celebration",
+  "wrong": [
+   "heritage",
+   "beloved",
+   "honor",
+   "victory"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A joyful occasion for special festivities to mark some happy event"
+ },
+ {
+  "unit": "item:8e",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "significant",
+  "d": "significance",
+  "wrong": [
+   "payable",
+   "famine",
+   "average",
+   "shortage"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being significant"
+ },
+ {
+  "unit": "item:8f",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "subtle",
+  "d": "subtlety",
+  "wrong": [
+   "clarity",
+   "gloss",
+   "blur"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A subtle difference in meaning, opinion, or attitude"
+ },
+ {
+  "unit": "item:8g",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "accept",
+  "d": "acceptance",
+  "wrong": [
+   "skeptic",
+   "agnostic",
+   "refuse",
+   "admiration"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The mental attitude that something is believable and should be accepted as true"
+ },
+ {
+  "unit": "item:8h",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "spine",
+  "d": "spiny",
+  "wrong": [
+   "caudal",
+   "vertebral",
+   "alveolar",
+   "pectoral"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Having spines"
+ },
+ {
+  "unit": "item:8i",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "method",
+  "d": "methodical",
+  "wrong": [
+   "computational",
+   "statistical",
+   "empirical",
+   "diagnostic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Characterized by method and orderliness"
+ },
+ {
+  "unit": "item:8j",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "taste",
+  "d": "tasteful",
+  "wrong": [
+   "pleasant",
+   "wonderful",
+   "fruity",
+   "fizzy"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Having or showing or conforming to good taste"
+ },
+ {
+  "unit": "item:8k",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "inactive",
+  "d": "inactivity",
+  "wrong": [
+   "activation",
+   "depletion",
+   "metabolism",
+   "active"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being inactive"
+ },
+ {
+  "unit": "item:8l",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "sentiment",
+  "d": "sentimental",
+  "wrong": [
+   "stoic",
+   "idealistic",
+   "indifferent",
+   "profound"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Given to or marked by sentiment or sentimentality"
+ },
+ {
+  "unit": "item:8m",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "bake",
+  "d": "bakery",
+  "wrong": [
+   "oatmeal",
+   "dough",
+   "roast",
+   "bun"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A workplace where baked goods (breads and cakes and pastries) are produced or sold"
+ },
+ {
+  "unit": "item:8n",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "motivation",
+  "d": "motivational",
+  "wrong": [
+   "purposeful",
+   "initiative",
+   "selfish"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to motivation"
+ },
+ {
+  "unit": "item:8o",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "emit",
+  "d": "emission",
+  "wrong": [
+   "flash",
+   "wavelength",
+   "lumen",
+   "radiation"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of emitting"
+ },
+ {
+  "unit": "item:8p",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "require",
+  "d": "requirement",
+  "wrong": [
+   "paperwork",
+   "oversight",
+   "protocol",
+   "certification"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Required activity"
+ },
+ {
+  "unit": "item:8q",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "purpose",
+  "d": "purposeful",
+  "wrong": [
+   "inherent",
+   "particular",
+   "intent",
+   "objective"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Serving as or indicating the existence of a purpose or goal"
+ },
+ {
+  "unit": "item:8r",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "duty",
+  "d": "dutiful",
+  "wrong": [
+   "supervisory",
+   "clerical",
+   "menial"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Willingly obedient out of a sense of duty and respect"
+ },
+ {
+  "unit": "item:8s",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "acid",
+  "d": "acidic",
+  "wrong": [
+   "fatty",
+   "chemical",
+   "caustic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Being or containing an acid"
+ },
+ {
+  "unit": "item:8t",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "productive",
+  "d": "productivity",
+  "wrong": [
+   "scarcity",
+   "tolerance",
+   "usefulness",
+   "livelihood"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being productive or having the power to produce"
+ },
+ {
+  "unit": "item:8u",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 3,
+  "c": "similar",
+  "d": "similarity",
+  "wrong": [
+   "appearance",
+   "texture",
+   "type"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being similar"
+ },
+ {
+  "unit": "item:8v",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "rotate",
+  "d": "rotation",
+  "wrong": [
+   "pivot",
+   "compressor",
+   "rotational",
+   "propulsion"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of rotating as if on an axis"
+ },
+ {
+  "unit": "item:8w",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "retire",
+  "d": "retirement",
+  "wrong": [
+   "senior",
+   "junior",
+   "dedication",
+   "leadership"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being retired from one's business or occupation"
+ },
+ {
+  "unit": "item:8x",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "hormone",
+  "d": "hormonal",
+  "wrong": [
+   "adrenal",
+   "pituitary",
+   "metabolic",
+   "physiological"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to or caused by hormones"
+ },
+ {
+  "unit": "item:8y",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "install",
+  "d": "installation",
+  "wrong": [
+   "server",
+   "desktop",
+   "router",
+   "demolition"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of installing something (as equipment)"
+ },
+ {
+  "unit": "item:8z",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "derive",
+  "d": "derivation",
+  "wrong": [
+   "phenol",
+   "halogen",
+   "extract"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The source or origin from which something derives (i.e. comes or issues)"
+ },
+ {
+  "unit": "item:9a",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "system",
+  "d": "systemic",
+  "wrong": [
+   "organizational",
+   "regulatory",
+   "analog"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Affecting an entire system"
+ },
+ {
+  "unit": "item:9b",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "effect",
+  "d": "effective",
+  "wrong": [
+   "hormonal",
+   "adverse",
+   "effectiveness"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Producing or capable of producing an intended result or having a striking effect"
+ },
+ {
+  "unit": "item:9c",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "continue",
+  "d": "continuation",
+  "wrong": [
+   "disruption",
+   "resume",
+   "abort",
+   "inactivity"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of continuing an activity without interruption"
+ },
+ {
+  "unit": "item:9d",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "intervene",
+  "d": "intervention",
+  "wrong": [
+   "reconciliation",
+   "termination",
+   "proximity",
+   "impediment"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of intervening (as to mediate a dispute, etc.)"
+ },
+ {
+  "unit": "item:9e",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "hill",
+  "d": "hilly",
+  "wrong": [
+   "grassy",
+   "steeper",
+   "snowy",
+   "andean"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Having hills and crags"
+ },
+ {
+  "unit": "item:9f",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "government",
+  "d": "governmental",
+  "wrong": [
+   "executive",
+   "corporate",
+   "nonprofit",
+   "elect"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Relating to or dealing with the affairs or structure of government or politics or the state"
+ },
+ {
+  "unit": "item:9g",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "recommend",
+  "d": "recommendation",
+  "wrong": [
+   "prescription",
+   "massage",
+   "bedside"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Something (as a course of action) that is recommended as advisable"
+ },
+ {
+  "unit": "item:9h",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 5,
+  "c": "kettle",
+  "d": "boil",
+  "wrong": [
+   "bake",
+   "shred",
+   "wake",
+   "cook"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A painful sore with a hard core filled with pus"
+ },
+ {
+  "unit": "item:9i",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 5,
+  "c": "pump",
+  "d": "inflate",
+  "wrong": [
+   "sweep",
+   "freeze",
+   "cool",
+   "clean"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Exaggerate or make bigger"
+ },
+ {
+  "unit": "item:9j",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 5,
+  "c": "microscope",
+  "d": "magnify",
+  "wrong": [
+   "observe",
+   "strain",
+   "light",
+   "freeze"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Increase in size, volume or significance"
+ },
+ {
+  "unit": "item:9k",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 6,
+  "c": "bleach",
+  "d": "bleacher",
+  "wrong": [
+   "turpentine",
+   "oleoresin",
+   "peroxide",
+   "artisan"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A worker who bleaches (cloth or flour etc.)"
+ },
+ {
+  "unit": "item:9l",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "debate",
+  "d": "debater",
+  "wrong": [
+   "argument",
+   "disagreement",
+   "conference",
+   "stance"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who engages in debate"
+ },
+ {
+  "unit": "item:9m",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "supervise",
+  "d": "supervisor",
+  "wrong": [
+   "administrator",
+   "provider",
+   "trainee",
+   "assist"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who supervises the work done by others"
+ },
+ {
+  "unit": "item:9n",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "inhabit",
+  "d": "inhabitant",
+  "wrong": [
+   "fauna",
+   "sioux",
+   "siberia",
+   "nebraska"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who inhabits a particular place"
+ },
+ {
+  "unit": "item:9o",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "settle",
+  "d": "settler",
+  "wrong": [
+   "mediation",
+   "dispute",
+   "resolve",
+   "pact"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who settles in a new colony or moves into new country"
+ },
+ {
+  "unit": "item:9p",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "perfume",
+  "d": "perfumer",
+  "wrong": [
+   "fragrance",
+   "mastic",
+   "beeswax",
+   "linseed"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who makes (and sells) perfumes"
+ },
+ {
+  "unit": "item:9q",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "intrude",
+  "d": "intruder",
+  "wrong": [
+   "occupancy",
+   "consent",
+   "mediation",
+   "dissent"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who intrudes on the privacy or property of another without permission"
+ },
+ {
+  "unit": "item:9r",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 6,
+  "c": "agitate",
+  "d": "agitator",
+  "wrong": [
+   "turbulence",
+   "gush",
+   "revulsion",
+   "aversion"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "One who agitates"
+ },
+ {
+  "unit": "item:9s",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "transmit",
+  "d": "transmitter",
+  "wrong": [
+   "morse",
+   "modem",
+   "scanner",
+   "telegraph"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who transmits a message"
+ },
+ {
+  "unit": "item:9t",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "ranch",
+  "d": "rancher",
+  "wrong": [
+   "farmhand",
+   "mow",
+   "estate",
+   "bunk"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who owns or operates a ranch"
+ },
+ {
+  "unit": "item:9u",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 4,
+  "c": "follow",
+  "d": "follower",
+  "wrong": [
+   "rule",
+   "syntax",
+   "leader",
+   "translator"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who accepts the leadership of another"
+ },
+ {
+  "unit": "item:9v",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 4,
+  "c": "compose",
+  "d": "composer",
+  "wrong": [
+   "elegy",
+   "punk",
+   "lyric",
+   "solo"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who composes music as a profession"
+ },
+ {
+  "unit": "item:9w",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 4,
+  "c": "translate",
+  "d": "translator",
+  "wrong": [
+   "cipher",
+   "compiler",
+   "shorthand",
+   "lexicon"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who translates written messages from one language to another"
+ },
+ {
+  "unit": "item:9x",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 4,
+  "c": "rescue",
+  "d": "rescuer",
+  "wrong": [
+   "shipwreck",
+   "firefighter",
+   "salvation",
+   "hostage"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who rescues you from harm or danger"
+ },
+ {
+  "unit": "item:9y",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 7,
+  "c": "vacation",
+  "d": "vacationer",
+  "wrong": [
+   "weekday",
+   "weekend",
+   "holiday",
+   "bookstore"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone on vacation"
+ },
+ {
+  "unit": "item:9z",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 7,
+  "c": "perpetrate",
+  "d": "perpetrator",
+  "wrong": [
+   "accomplice",
+   "felon",
+   "murder",
+   "misconduct"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who perpetrates wrongdoing"
+ },
+ {
+  "unit": "item:a0",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 5,
+  "c": "generous",
+  "d": "generosity",
+  "wrong": [
+   "hospitality",
+   "donation",
+   "benefactor",
+   "satisfaction"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The trait of being willing to give your money or time"
+ },
+ {
+  "unit": "item:a1",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "allow",
+  "d": "allowance",
+  "wrong": [
+   "permit",
+   "modem",
+   "interface",
+   "passport"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "An amount allowed or granted (as during a given period)"
+ },
+ {
+  "unit": "item:a2",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "shrub",
+  "d": "shrubby",
+  "wrong": [
+   "evergreen",
+   "thorny",
+   "prickly",
+   "spiny"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to or resembling a shrub"
+ },
+ {
+  "unit": "item:a3",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "disperse",
+  "d": "dispersal",
+  "wrong": [
+   "convection",
+   "evaporation",
+   "aerosol",
+   "vapor"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of dispersing or diffusing something"
+ },
+ {
+  "unit": "item:a4",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "liberate",
+  "d": "liberation",
+  "wrong": [
+   "bondage",
+   "confinement",
+   "oppression",
+   "onus"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of liberating someone or something"
+ },
+ {
+  "unit": "item:a5",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "joy",
+  "d": "joyous",
+  "wrong": [
+   "ecstatic",
+   "sorrowful",
+   "sad",
+   "delightful"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Full of or characterized by joy"
+ },
+ {
+  "unit": "item:a6",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "expression",
+  "d": "expressive",
+  "wrong": [
+   "conversational",
+   "contradictory",
+   "literal",
+   "implicit"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Characterized by expression"
+ },
+ {
+  "unit": "item:a7",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "annul",
+  "d": "annulment",
+  "wrong": [
+   "revoke",
+   "repeal",
+   "postponement",
+   "null"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being cancelled or annulled"
+ },
+ {
+  "unit": "item:a8",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 5,
+  "c": "abnormal",
+  "d": "abnormality",
+  "wrong": [
+   "fibrosis",
+   "proliferation",
+   "enlargement",
+   "thyroid"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "An abnormal physical condition resulting from defective genes or developmental deficiencies"
+ },
+ {
+  "unit": "item:a9",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "style",
+  "d": "stylistic",
+  "wrong": [
+   "fashionable",
+   "chic",
+   "trendy",
+   "unconventional"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to style (especially in the use of language)"
+ },
+ {
+  "unit": "item:aa",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "enclose",
+  "d": "enclosure",
+  "wrong": [
+   "bower",
+   "partition",
+   "capsule",
+   "passageway"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A structure consisting of an area that has been enclosed for some purpose"
+ },
+ {
+  "unit": "item:ab",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "neat",
+  "d": "neatness",
+  "wrong": [
+   "patchwork",
+   "plait",
+   "wobbly",
+   "mismatch"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being neat and smart and trim"
+ },
+ {
+  "unit": "item:ac",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "stabilize",
+  "d": "stabilization",
+  "wrong": [
+   "reactivity",
+   "pipeline",
+   "conduction",
+   "plaque"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of stabilizing something or making it more stable"
+ },
+ {
+  "unit": "item:ad",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "vibrate",
+  "d": "vibration",
+  "wrong": [
+   "resonance",
+   "audible",
+   "sibilant",
+   "heartbeat"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of vibrating"
+ },
+ {
+  "unit": "item:ae",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "responsive",
+  "d": "responsiveness",
+  "wrong": [
+   "stimuli",
+   "arousal",
+   "stimulus",
+   "activation"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Responsive to stimulation"
+ },
+ {
+  "unit": "item:af",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "serpent",
+  "d": "serpentine",
+  "wrong": [
+   "mythical",
+   "reptilian",
+   "fearsome",
+   "mythological"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Resembling a serpent in form"
+ },
+ {
+  "unit": "item:ag",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "chalk",
+  "d": "chalky",
+  "wrong": [
+   "crumbly",
+   "chunky",
+   "mineral"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Composed of or containing or resembling calcium carbonate or calcite or chalk"
+ },
+ {
+  "unit": "item:ah",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "acknowledge",
+  "d": "acknowledgment",
+  "wrong": [
+   "affidavit",
+   "assertion",
+   "salute",
+   "confirmation"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state or quality of being recognized or acknowledged"
+ },
+ {
+  "unit": "item:ai",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "observe",
+  "d": "observance",
+  "wrong": [
+   "horoscope",
+   "watch",
+   "astrologer",
+   "magnifier"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of observing"
+ },
+ {
+  "unit": "item:aj",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "recite",
+  "d": "recitation",
+  "wrong": [
+   "chant",
+   "gospel",
+   "sung",
+   "chorus"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Written matter that is recited from memory"
+ },
+ {
+  "unit": "item:ak",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "dialect",
+  "d": "dialectal",
+  "wrong": [
+   "vernacular",
+   "linguistic",
+   "fluent"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Belonging to or characteristic of a dialect"
+ },
+ {
+  "unit": "item:al",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "deduction",
+  "d": "deductive",
+  "wrong": [
+   "circumstantial",
+   "obligatory",
+   "permissible"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Relating to logical deduction"
+ },
+ {
+  "unit": "item:am",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "arouse",
+  "d": "arousal",
+  "wrong": [
+   "aversion",
+   "antipathy",
+   "disgust",
+   "indignation"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of arousing"
+ },
+ {
+  "unit": "item:an",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "genuine",
+  "d": "genuineness",
+  "wrong": [
+   "originality",
+   "pretense",
+   "practicality",
+   "sensibility"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being genuine"
+ },
+ {
+  "unit": "item:ao",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "construct",
+  "d": "constructive",
+  "wrong": [
+   "interwoven",
+   "pictorial",
+   "watertight"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Constructing or tending to construct or improve or promote development"
+ },
+ {
+  "unit": "item:ap",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "transgress",
+  "d": "transgression",
+  "wrong": [
+   "obedience",
+   "subversion",
+   "repeal",
+   "redress"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of transgressing"
+ },
+ {
+  "unit": "item:aq",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "flavor",
+  "d": "flavorful",
+  "wrong": [
+   "tangy",
+   "fruity",
+   "pungent",
+   "sweeter"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Full of flavor"
+ },
+ {
+  "unit": "item:ar",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "restless",
+  "d": "restlessness",
+  "wrong": [
+   "nightmare",
+   "loneliness",
+   "squirm",
+   "clamor"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being ceaselessly moving or active"
+ },
+ {
+  "unit": "item:as",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "specialize",
+  "d": "specialization",
+  "wrong": [
+   "technical",
+   "terminology",
+   "professional",
+   "jargon"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of specializing"
+ },
+ {
+  "unit": "item:at",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "humor",
+  "d": "humorous",
+  "wrong": [
+   "expressive",
+   "imaginative",
+   "pensive",
+   "nostalgic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Full of or characterized by humor"
+ },
+ {
+  "unit": "item:au",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 5,
+  "c": "prominent",
+  "d": "prominence",
+  "wrong": [
+   "extension",
+   "stature",
+   "cusp",
+   "contour"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being prominent: widely known or eminent"
+ },
+ {
+  "unit": "item:av",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "oxidize",
+  "d": "oxidation",
+  "wrong": [
+   "alkali",
+   "hydroxide",
+   "nitrate",
+   "phosphorus"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The process of oxidizing"
+ },
+ {
+  "unit": "item:aw",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "feather",
+  "d": "feathery",
+  "wrong": [
+   "iridescent",
+   "downy",
+   "furry",
+   "lacy"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Resembling or suggesting a feather or feathers"
+ },
+ {
+  "unit": "item:ax",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "metamorphosis",
+  "d": "metamorphic",
+  "wrong": [
+   "mutant",
+   "asexual",
+   "ovarian",
+   "rudimentary"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to metamorphosis (especially of rocks)"
+ },
+ {
+  "unit": "item:ay",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "rhetoric",
+  "d": "rhetorical",
+  "wrong": [
+   "stylistic",
+   "allegorical",
+   "introductory",
+   "thematic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to rhetoric"
+ },
+ {
+  "unit": "item:az",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "odor",
+  "d": "odorless",
+  "wrong": [
+   "rancid",
+   "acrid",
+   "smelly",
+   "pungent"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Having no odor"
+ },
+ {
+  "unit": "item:b0",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 6,
+  "c": "nibble",
+  "d": "devour",
+  "wrong": [
+   "munch",
+   "bitten",
+   "overcook",
+   "wiggle"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Destroy completely"
+ },
+ {
+  "unit": "item:b1",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 5,
+  "c": "sip",
+  "d": "gulp",
+  "wrong": [
+   "lemonade",
+   "drizzle",
+   "taste",
+   "cocoa"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A large and hurried swallow"
+ },
+ {
+  "unit": "item:b2",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 5,
+  "c": "drizzle",
+  "d": "downpour",
+  "wrong": [
+   "cornbread",
+   "skillet",
+   "sprinkle",
+   "spoonful"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A heavy rain"
+ },
+ {
+  "unit": "item:b3",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 5,
+  "c": "hot",
+  "d": "scorching",
+  "wrong": [
+   "humid",
+   "breezy",
+   "spicy",
+   "cooler"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Make very hot and dry"
+ },
+ {
+  "unit": "item:b4",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 4,
+  "c": "sad",
+  "d": "miserable",
+  "wrong": [
+   "ecstatic",
+   "patriotic",
+   "pathetic",
+   "nostalgic"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Is very unhappy uneasy or uncomfortable"
+ },
+ {
+  "unit": "item:b5",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 4,
+  "c": "surprised",
+  "d": "astonished",
+  "wrong": [
+   "terrified",
+   "exhausted",
+   "thrilled",
+   "fascinated"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Affect with wonder"
+ },
+ {
+  "unit": "item:b6",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "breeze",
+  "d": "gale",
+  "wrong": [
+   "sway",
+   "sunflower",
+   "monsoon",
+   "dew"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A strong wind moving 45-90 knots"
+ },
+ {
+  "unit": "item:b7",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "happy",
+  "d": "ecstatic",
+  "wrong": [
+   "hopeless",
+   "sad",
+   "joyful",
+   "unhappy"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Feeling great rapture or delight"
+ },
+ {
+  "unit": "item:b8",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "cool",
+  "d": "frigid",
+  "wrong": [
+   "humid",
+   "hot",
+   "warm",
+   "moist"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Extremely cold"
+ },
+ {
+  "unit": "item:b9",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "bad",
+  "d": "terrible",
+  "wrong": [
+   "nasty",
+   "evil",
+   "miserable",
+   "scorching"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Causing fear or dread or terror"
+ },
+ {
+  "unit": "item:ba",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "smart",
+  "d": "brilliant",
+  "wrong": [
+   "careless",
+   "flashy",
+   "frantic",
+   "delighted"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Of surpassing excellence"
+ },
+ {
+  "unit": "item:bb",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "quiet",
+  "d": "silent",
+  "wrong": [
+   "restless",
+   "loud",
+   "silence",
+   "frantic"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Marked by absence of sound"
+ },
+ {
+  "unit": "item:bc",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "worried",
+  "d": "frantic",
+  "wrong": [
+   "astonished",
+   "terrified",
+   "thrilled",
+   "exhausted"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Excessively agitated"
+ },
+ {
+  "unit": "item:bd",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 3,
+  "c": "scared",
+  "d": "terrified",
+  "wrong": [
+   "thrilled",
+   "astonished",
+   "scorching",
+   "exhausted"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Fill with terror"
+ },
+ {
+  "unit": "item:be",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "speak",
+  "d": "shout",
+  "wrong": [
+   "spoke",
+   "hate",
+   "ecstatic",
+   "fascinated"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A loud utterance"
+ },
+ {
+  "unit": "item:bf",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "wet",
+  "d": "soaked",
+  "wrong": [
+   "mud",
+   "asphalt",
+   "muddy",
+   "scrub"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Submerge in a liquid"
+ },
+ {
+  "unit": "item:bg",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 7,
+  "c": "angry",
+  "d": "furious",
+  "wrong": [
+   "resentful",
+   "sullen",
+   "irascible",
+   "gruff"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Marked by extreme and violent energy"
+ },
+ {
+  "unit": "item:bh",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "good",
+  "d": "excellent",
+  "wrong": [
+   "delighted",
+   "ecstatic",
+   "exhausted",
+   "astonished"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Very good"
+ },
+ {
+  "unit": "item:bi",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "pleased",
+  "d": "delighted",
+  "wrong": [
+   "fascinated",
+   "exhausted",
+   "terrified",
+   "astonished"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Give pleasure to or be pleasing to"
+ },
+ {
+  "unit": "item:bj",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "hill",
+  "d": "mountain",
+  "wrong": [
+   "rise",
+   "gale",
+   "lake",
+   "river"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A land mass that projects well above its surroundings"
+ },
+ {
+  "unit": "item:bk",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "hungry",
+  "d": "starving",
+  "wrong": [
+   "grumpy",
+   "devour",
+   "miserable",
+   "gulp"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "The act of depriving of food or subjecting to famine"
+ },
+ {
+  "unit": "item:bl",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "annoyed",
+  "d": "angry",
+  "wrong": [
+   "terrified",
+   "astonished",
+   "thrilled",
+   "fascinated"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Feeling and showing a high degree of strong displeasure and usually of antagonism."
+ },
+ {
+  "unit": "item:bm",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "dirty",
+  "d": "filthy",
+  "wrong": [
+   "greasy",
+   "scorching",
+   "downpour",
+   "soaked"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Disgustingly dirty"
+ },
+ {
+  "unit": "item:bn",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "tired",
+  "d": "exhausted",
+  "wrong": [
+   "terrified",
+   "scorching",
+   "astonished",
+   "fascinated"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Wear out completely"
+ },
+ {
+  "unit": "item:bo",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "pretty",
+  "d": "beautiful",
+  "wrong": [
+   "beauty",
+   "delighted",
+   "scorching",
+   "excellent"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Delighting the senses or exciting intellectual or emotional admiration"
+ },
+ {
+  "unit": "item:bp",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 2,
+  "c": "dim",
+  "d": "dark",
+  "wrong": [
+   "darkness",
+   "frantic",
+   "frigid",
+   "scorching"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Absence of light or illumination"
+ },
+ {
+  "unit": "item:bq",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 1,
+  "c": "pond",
+  "d": "lake",
+  "wrong": [
+   "creek",
+   "pool",
+   "frigid",
+   "gulp"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A body of (usually fresh) water surrounded by land"
+ },
+ {
+  "unit": "item:br",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 1,
+  "c": "big",
+  "d": "huge",
+  "wrong": [
+   "tiny",
+   "mini",
+   "small",
+   "largest"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Unusually great in size or amount or degree or especially extent or scope"
+ },
+ {
+  "unit": "item:bs",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 1,
+  "c": "stream",
+  "d": "river",
+  "wrong": [
+   "flow",
+   "lake",
+   "gulp",
+   "frigid"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "A large natural stream of water."
+ },
+ {
+  "unit": "item:bt",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 1,
+  "c": "small",
+  "d": "tiny",
+  "wrong": [
+   "large",
+   "big",
+   "soaked",
+   "huge"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Extremely small in size or amount"
+ },
+ {
+  "unit": "item:bu",
+  "kind": "item",
+  "rel": "degree",
+  "link": "Stronger and weaker",
+  "level": 1,
+  "c": "warm",
+  "d": "hot",
+  "wrong": [
+   "cold",
+   "frigid",
+   "gulp",
+   "downpour"
+  ],
+  "bridge": "{B} is a stronger {A}.",
+  "gloss": "Used of physical heat"
+ },
+ {
+  "unit": "item:bv",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "selfish",
+  "d": "generous",
+  "wrong": [
+   "unacceptable",
+   "trustworthy",
+   "greedy",
+   "generosity"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Willing to give and share unstintingly"
+ },
+ {
+  "unit": "item:bw",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "courage",
+  "d": "cowardice",
+  "wrong": [
+   "boldness",
+   "bravery",
+   "audacity",
+   "mercy"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The trait of lacking courage"
+ },
+ {
+  "unit": "item:bx",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "praise",
+  "d": "criticize",
+  "wrong": [
+   "commend",
+   "acclaim",
+   "appreciate",
+   "salute"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Find fault with"
+ },
+ {
+  "unit": "item:by",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "criticize",
+  "d": "praise",
+  "wrong": [
+   "dismiss",
+   "detract",
+   "condemn",
+   "ambition"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "An expression of approval and commendation"
+ },
+ {
+  "unit": "item:bz",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "generous",
+  "d": "selfish",
+  "wrong": [
+   "lavish",
+   "conciliatory",
+   "bountiful",
+   "decent"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Concerned chiefly or only with yourself and your advantage to the exclusion of others"
+ },
+ {
+  "unit": "item:c0",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "cowardice",
+  "d": "courage",
+  "wrong": [
+   "timidity",
+   "selfish",
+   "cautious",
+   "timid"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "A quality of spirit that enables you to face danger or pain without showing fear"
+ },
+ {
+  "unit": "item:c1",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "compatible",
+  "d": "incompatible",
+  "wrong": [
+   "dissimilar",
+   "applicable",
+   "consistent",
+   "adaptable"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Not compatible"
+ },
+ {
+  "unit": "item:c2",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "impatience",
+  "d": "patience",
+  "wrong": [
+   "exasperation",
+   "indignation",
+   "provocation",
+   "harshness"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The capacity to accept or tolerate delay, trouble, or suffering without becoming angry or upset"
+ },
+ {
+  "unit": "item:c3",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "colorful",
+  "d": "colorless",
+  "wrong": [
+   "vibrant",
+   "silken",
+   "bright",
+   "lacy"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Lacking in variety and interest"
+ },
+ {
+  "unit": "item:c4",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "disprove",
+  "d": "prove",
+  "wrong": [
+   "contradict",
+   "conjecture",
+   "provable",
+   "deny"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Be shown or be found to be"
+ },
+ {
+  "unit": "item:c5",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "thoughtless",
+  "d": "thoughtful",
+  "wrong": [
+   "immoral",
+   "negligent",
+   "careless",
+   "cowardly"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having intellectual depth"
+ },
+ {
+  "unit": "item:c6",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "tasteless",
+  "d": "tasteful",
+  "wrong": [
+   "odorless",
+   "volatile",
+   "bland",
+   "taste"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having or showing or conforming to good taste"
+ },
+ {
+  "unit": "item:c7",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "polite",
+  "d": "impolite",
+  "wrong": [
+   "ridiculous",
+   "considerate",
+   "genteel",
+   "decent"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Not polite or showing good manners"
+ },
+ {
+  "unit": "item:c8",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "tasteful",
+  "d": "tasteless",
+  "wrong": [
+   "genteel",
+   "gaudy",
+   "womanly",
+   "stylish"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Lacking flavor"
+ },
+ {
+  "unit": "item:c9",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "patience",
+  "d": "impatience",
+  "wrong": [
+   "perseverance",
+   "prudence",
+   "tolerance",
+   "mentor"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "A lack of patience"
+ },
+ {
+  "unit": "item:ca",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "thoughtful",
+  "d": "thoughtless",
+  "wrong": [
+   "preachy",
+   "reverent",
+   "considerate",
+   "profound"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Showing lack of careful thought"
+ },
+ {
+  "unit": "item:cb",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "reasonable",
+  "d": "unreasonable",
+  "wrong": [
+   "believable",
+   "sufficient",
+   "sensible",
+   "constructive"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Not reasonable"
+ },
+ {
+  "unit": "item:cc",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "colorless",
+  "d": "colorful",
+  "wrong": [
+   "odorless",
+   "volatile",
+   "color",
+   "soluble"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having striking color"
+ },
+ {
+  "unit": "item:cd",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 6,
+  "c": "available",
+  "d": "unavailable",
+  "wrong": [
+   "reliable",
+   "convenient",
+   "affordable",
+   "flyer"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Not available or accessible or at hand"
+ },
+ {
+  "unit": "item:ce",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 5,
+  "c": "prove",
+  "d": "disprove",
+  "wrong": [
+   "validate",
+   "attest",
+   "convince",
+   "verify"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Prove to be false"
+ },
+ {
+  "unit": "item:cf",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "safe",
+  "d": "dangerous",
+  "wrong": [
+   "sure",
+   "convenient",
+   "danger",
+   "available"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Involving or causing danger or risk"
+ },
+ {
+  "unit": "item:cg",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "stale",
+  "d": "fresh",
+  "wrong": [
+   "frothy",
+   "musty",
+   "freshness",
+   "fizzy"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Recently made, produced, or harvested"
+ },
+ {
+  "unit": "item:ch",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "exclude",
+  "d": "include",
+  "wrong": [
+   "withdrawn",
+   "oust",
+   "gotten",
+   "forbidden"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Have as a part, be made up out of"
+ },
+ {
+  "unit": "item:ci",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "dangerous",
+  "d": "safe",
+  "wrong": [
+   "lethal",
+   "harmless",
+   "unsafe",
+   "safety"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Strongbox where valuables can be safely kept"
+ },
+ {
+  "unit": "item:cj",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "include",
+  "d": "exclude",
+  "wrong": [
+   "kit",
+   "highlight",
+   "comprise",
+   "restock"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Prevent from being included or considered or accepted"
+ },
+ {
+  "unit": "item:ck",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "scarce",
+  "d": "plentiful",
+  "wrong": [
+   "meager",
+   "surplus",
+   "rare",
+   "limitless"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Existing in great number or quantity"
+ },
+ {
+  "unit": "item:cl",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "ascend",
+  "d": "descend",
+  "wrong": [
+   "descendant",
+   "sink",
+   "float",
+   "shrink"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Move downward and lower, but not necessarily all the way"
+ },
+ {
+  "unit": "item:cm",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "plentiful",
+  "d": "scarce",
+  "wrong": [
+   "surplus",
+   "abundant",
+   "affluent",
+   "limitless"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Deficient in quantity or number compared with the demand"
+ },
+ {
+  "unit": "item:cn",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "fresh",
+  "d": "stale",
+  "wrong": [
+   "nutty",
+   "new",
+   "generous",
+   "sunny"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "No longer fresh"
+ },
+ {
+  "unit": "item:co",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "irrational",
+  "d": "rational",
+  "wrong": [
+   "delusion",
+   "elation",
+   "skepticism",
+   "indignation"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Based on clear, sensible thinking"
+ },
+ {
+  "unit": "item:cp",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "successful",
+  "d": "unsuccessful",
+  "wrong": [
+   "costly",
+   "olympic",
+   "effective"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Not successful"
+ },
+ {
+  "unit": "item:cq",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "shameful",
+  "d": "shameless",
+  "wrong": [
+   "immoral",
+   "vile",
+   "disgraceful"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Feeling no shame"
+ },
+ {
+  "unit": "item:cr",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "shameless",
+  "d": "shameful",
+  "wrong": [
+   "insolent",
+   "immoral",
+   "shame",
+   "surly"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Deserving or bringing disgrace or shame"
+ },
+ {
+  "unit": "item:cs",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "meaningful",
+  "d": "meaningless",
+  "wrong": [
+   "contradictory",
+   "factual",
+   "significant",
+   "definitive"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having no meaning or direction or purpose"
+ },
+ {
+  "unit": "item:ct",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "inequality",
+  "d": "equality",
+  "wrong": [
+   "ethnicity",
+   "equity",
+   "exclusion",
+   "capitalism"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The quality of being the same in quantity or measure or value or status"
+ },
+ {
+  "unit": "item:cu",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 4,
+  "c": "powerful",
+  "d": "powerless",
+  "wrong": [
+   "potent",
+   "mighty",
+   "forceful",
+   "heaviest"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Lacking power"
+ },
+ {
+  "unit": "item:cv",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "wrench",
+  "d": "tool",
+  "wrong": [
+   "flex",
+   "torque",
+   "twist",
+   "stoppage"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation"
+ },
+ {
+  "unit": "item:cw",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "snake",
+  "d": "reptile",
+  "wrong": [
+   "scorpion",
+   "canine",
+   "kangaroo",
+   "anteater"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any cold-blooded vertebrate of the class reptilia including tortoises, turtles, snakes, lizards,…"
+ },
+ {
+  "unit": "item:cx",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "lemonade",
+  "d": "drink",
+  "wrong": [
+   "drizzle",
+   "popcorn",
+   "muffin",
+   "salsa"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A single serving of a beverage"
+ },
+ {
+  "unit": "item:cy",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "frog",
+  "d": "amphibian",
+  "wrong": [
+   "kangaroo",
+   "grasshopper",
+   "naturalist",
+   "shrew"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A cold-blooded vertebrate animal that can live both in water and on land, such as a frog, toad, or salamander"
+ },
+ {
+  "unit": "item:cz",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "cheddar",
+  "d": "cheese",
+  "wrong": [
+   "flavour",
+   "salami",
+   "dumpling",
+   "salsa"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A solid food prepared from the pressed curd of milk"
+ },
+ {
+  "unit": "item:d0",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "lathe",
+  "d": "tool",
+  "wrong": [
+   "stave",
+   "cutter",
+   "weld",
+   "screw"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation"
+ },
+ {
+  "unit": "item:d1",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "taro",
+  "d": "plant",
+  "wrong": [
+   "radish",
+   "sesame",
+   "parsnip",
+   "dill"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:d2",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "civet",
+  "d": "mammal",
+  "wrong": [
+   "marten",
+   "blackbird",
+   "asiatic",
+   "muskrat"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any warm-blooded vertebrate having the skin more or less covered with hair"
+ },
+ {
+  "unit": "item:d3",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "dolomite",
+  "d": "rock",
+  "wrong": [
+   "olivine",
+   "basalt",
+   "rocky"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A lump or mass of hard consolidated mineral matter"
+ },
+ {
+  "unit": "item:d4",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "scape",
+  "d": "flower",
+  "wrong": [
+   "marshland",
+   "fjord",
+   "plateau"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A plant cultivated for its blooms or blossoms"
+ },
+ {
+  "unit": "item:d5",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "heartwood",
+  "d": "wood",
+  "wrong": [
+   "rind",
+   "hazel",
+   "wooden",
+   "sorrel"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "The hard fibrous lignified substance under the bark of trees"
+ },
+ {
+  "unit": "item:d6",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "pupa",
+  "d": "insect",
+  "wrong": [
+   "nematode",
+   "pincer",
+   "bivalve"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Small air-breathing arthropod"
+ },
+ {
+  "unit": "item:d7",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "cello",
+  "d": "instrument",
+  "wrong": [
+   "saxophone",
+   "soloist",
+   "instrumental",
+   "sonata"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "unit": "item:d8",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "jute",
+  "d": "plant",
+  "wrong": [
+   "fibre",
+   "twine",
+   "homespun",
+   "caulk"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:d9",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "zither",
+  "d": "instrument",
+  "wrong": [
+   "harp",
+   "fret",
+   "instrumental",
+   "saxophone"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "unit": "item:da",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "windstorm",
+  "d": "storm",
+  "wrong": [
+   "smog",
+   "hydrant",
+   "stormy",
+   "trickle"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A period of very bad weather with strong winds and rain, often with thunder and lightning"
+ },
+ {
+  "unit": "item:db",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "clove",
+  "d": "flower",
+  "wrong": [
+   "raisin",
+   "parsley",
+   "kale",
+   "sesame"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A plant cultivated for its blooms or blossoms"
+ },
+ {
+  "unit": "item:dc",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "horseshoe",
+  "d": "metal",
+  "wrong": [
+   "halter",
+   "swivel",
+   "girth",
+   "noose"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "unit": "item:dd",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "cornfield",
+  "d": "plant",
+  "wrong": [
+   "farmhand",
+   "barnyard",
+   "patio",
+   "ewe"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:de",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "specie",
+  "d": "coin",
+  "wrong": [
+   "habitat",
+   "diversity",
+   "subfamily",
+   "subclass"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A flat metal piece (usually a disc) used as money"
+ },
+ {
+  "unit": "item:df",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "dulcimer",
+  "d": "instrument",
+  "wrong": [
+   "saxophone",
+   "harp",
+   "instrumental"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "unit": "item:dg",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "mullet",
+  "d": "fish",
+  "wrong": [
+   "leek",
+   "broil",
+   "sorghum",
+   "mutton"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of various mostly cold-blooded aquatic vertebrates usually having scales and breathing through gills"
+ },
+ {
+  "unit": "item:dh",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "appetizer",
+  "d": "drink",
+  "wrong": [
+   "bacon",
+   "platter",
+   "starter",
+   "barbecue"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A single serving of a beverage"
+ },
+ {
+  "unit": "item:di",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "quince",
+  "d": "tree",
+  "wrong": [
+   "licorice",
+   "cranberry",
+   "caraway",
+   "coriander"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A tall perennial woody plant having a main trunk and branches forming a distinct elevated crown"
+ },
+ {
+  "unit": "item:dj",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "flea",
+  "d": "insect",
+  "wrong": [
+   "larvae",
+   "mite",
+   "anteater",
+   "parasite"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Small air-breathing arthropod"
+ },
+ {
+  "unit": "item:dk",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "airship",
+  "d": "aircraft",
+  "wrong": [
+   "diesel",
+   "barge",
+   "conduit",
+   "motorboat"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A vehicle that can fly"
+ },
+ {
+  "unit": "item:dl",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "termite",
+  "d": "insect",
+  "wrong": [
+   "burrow",
+   "slug",
+   "larvae"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Small air-breathing arthropod"
+ },
+ {
+  "unit": "item:dm",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "capsicum",
+  "d": "plant",
+  "wrong": [
+   "currant",
+   "grapefruit",
+   "apricot",
+   "hazelnut"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:dn",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "caraway",
+  "d": "plant",
+  "wrong": [
+   "coriander",
+   "parsley",
+   "kale",
+   "tarragon"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:do",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "chestnut",
+  "d": "wood",
+  "wrong": [
+   "holly",
+   "hazel",
+   "wooden",
+   "lilac"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "The hard fibrous lignified substance under the bark of trees"
+ },
+ {
+  "unit": "item:dp",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "chime",
+  "d": "instrument",
+  "wrong": [
+   "clang",
+   "jingle",
+   "ding",
+   "instrumental"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "unit": "item:dq",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "hummingbird",
+  "d": "bird",
+  "wrong": [
+   "parakeet",
+   "daisy",
+   "flit",
+   "thistle"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "unit": "item:dr",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "gemstone",
+  "d": "rock",
+  "wrong": [
+   "beryl",
+   "luster",
+   "rocky"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A lump or mass of hard consolidated mineral matter"
+ },
+ {
+  "unit": "item:ds",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "cicada",
+  "d": "insect",
+  "wrong": [
+   "lark",
+   "partridge",
+   "locust",
+   "rustle"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Small air-breathing arthropod"
+ },
+ {
+  "unit": "item:dt",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "flamenco",
+  "d": "dance",
+  "wrong": [
+   "jive",
+   "minstrel",
+   "dancer"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "To perform a series of steps and movements, usually to music."
+ },
+ {
+  "unit": "item:du",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "rumba",
+  "d": "dance",
+  "wrong": [
+   "jive",
+   "minstrel",
+   "dancer"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "To perform a series of steps and movements, usually to music."
+ },
+ {
+  "unit": "item:dv",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "drape",
+  "d": "cloth",
+  "wrong": [
+   "blouse",
+   "bodice",
+   "robe",
+   "velvet"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Something made by weaving or knitting natural or synthetic fibers"
+ },
+ {
+  "unit": "item:dw",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "seagull",
+  "d": "bird",
+  "wrong": [
+   "swipe",
+   "screech",
+   "gull"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "unit": "item:dx",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "magnifier",
+  "d": "instrument",
+  "wrong": [
+   "spectra",
+   "microscopy",
+   "lens",
+   "instrumental"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "unit": "item:dy",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "receptacle",
+  "d": "container",
+  "wrong": [
+   "repository",
+   "occupant",
+   "storage",
+   "cupboard"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any object that can be used to hold things (especially a large metal boxlike object of standardized…"
+ },
+ {
+  "unit": "item:dz",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "grouse",
+  "d": "bird",
+  "wrong": [
+   "badger",
+   "civet",
+   "hyena",
+   "marten"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "unit": "item:e0",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "alligator",
+  "d": "reptile",
+  "wrong": [
+   "raccoon",
+   "mink",
+   "feline",
+   "tusk"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any cold-blooded vertebrate of the class reptilia including tortoises, turtles, snakes, lizards,…"
+ },
+ {
+  "unit": "item:e1",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "anemone",
+  "d": "plant",
+  "wrong": [
+   "toad",
+   "crocodile",
+   "auk",
+   "reef"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:e2",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "reassure",
+  "d": "reassurance",
+  "wrong": [
+   "migraine",
+   "anesthesia",
+   "oncologist"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of reassuring"
+ },
+ {
+  "unit": "item:e3",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "formula",
+  "d": "formulaic",
+  "wrong": [
+   "alpha",
+   "replaceable",
+   "analytic",
+   "beta"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Characterized by or in accordance with some formula"
+ },
+ {
+  "unit": "item:e4",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "response",
+  "d": "responsive",
+  "wrong": [
+   "adverse",
+   "impulsive",
+   "reflex",
+   "responsiveness"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Containing or using responses"
+ },
+ {
+  "unit": "item:e5",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "annoy",
+  "d": "annoyance",
+  "wrong": [
+   "bother",
+   "upset",
+   "blunder",
+   "muddle"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The psychological state of being irritated or annoyed"
+ },
+ {
+  "unit": "item:e6",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 6,
+  "c": "vaporize",
+  "d": "vaporization",
+  "wrong": [
+   "aerosol",
+   "blender",
+   "wetness",
+   "convection"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Annihilation by vaporizing something"
+ },
+ {
+  "unit": "item:e7",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "resource",
+  "d": "resourceful",
+  "wrong": [
+   "nonprofit",
+   "sustainable",
+   "inefficient",
+   "affluent"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Having inner resources"
+ }
+]
