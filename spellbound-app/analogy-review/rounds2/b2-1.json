@@ -1,0 +1,2084 @@
+[
+ {
+  "unit": "item:6",
+  "pick": "device",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:8",
+  "pick": "freight",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:10",
+  "pick": "old",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:12",
+  "pick": "kind",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite; 'kindness' is a noun, not a match"
+ },
+ {
+  "unit": "item:13",
+  "pick": "take",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:14",
+  "pick": "hidden",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite; 'invisible' would be cleaner but hidden is fine"
+ },
+ {
+  "unit": "item:15",
+  "pick": "sell",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:16",
+  "pick": "long",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:18",
+  "pick": "day",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:21",
+  "pick": "grain",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:27",
+  "pick": "gem",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:30",
+  "pick": "chef",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). If the hidden pair were verb:product, stew/broth/bread would fit instead."
+ },
+ {
+  "unit": "item:33",
+  "pick": "teacher",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). If the hidden pair were verb:noun, 'instruction' would fit."
+ },
+ {
+  "unit": "item:39",
+  "pick": "pilot",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'wing' would fit a verb:tool pair."
+ },
+ {
+  "unit": "item:42",
+  "pick": "natural",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite; 'nature' is a noun"
+ },
+ {
+  "unit": "item:43",
+  "pick": "shrink",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:44",
+  "pick": "open",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:45",
+  "pick": "permanent",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:46",
+  "pick": "accept",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:47",
+  "pick": "refuse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite; 'bread' is an odd distractor"
+ },
+ {
+  "unit": "item:48",
+  "pick": "gift",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:49",
+  "pick": "beach",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:50",
+  "pick": "camera",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:53",
+  "pick": "elephant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:55",
+  "pick": "shoe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:56",
+  "pick": "poem",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:57",
+  "pick": "hour",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:59",
+  "pick": "bicycle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:62",
+  "pick": "gold",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made from; 'golden' is an adjective, not a material"
+ },
+ {
+  "unit": "item:63",
+  "pick": "write",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:64",
+  "pick": "cut",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:69",
+  "pick": "measure",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:72",
+  "pick": "strain",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:73",
+  "pick": "inclination",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:75",
+  "pick": "ruin",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:77",
+  "pick": "spite",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:79",
+  "pick": "blanket",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:80",
+  "pick": "animosity",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:82",
+  "pick": "pail",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:87",
+  "pick": "patience",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "adjective:noun"
+ },
+ {
+  "unit": "item:92",
+  "pick": "meaningless",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "FLAWED: joyful = full of joy, so the parallel is 'meaningful', which is not offered; 'meaningless' reverses the sense (it parallels 'joyless'). Only derived form of 'meaning' on offer."
+ },
+ {
+  "unit": "item:98",
+  "pick": "sculpture",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:103",
+  "pick": "pouch",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:105",
+  "pick": "laborer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:115",
+  "pick": "vegetation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; fauna is a trap, not a synonym"
+ },
+ {
+  "unit": "item:119",
+  "pick": "flowering",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:124",
+  "pick": "lather",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:128",
+  "pick": "trouble",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:137",
+  "pick": "wince",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:138",
+  "pick": "scenic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; distractor 'lurid' carries sensational/gory connotations, judged acceptable"
+ },
+ {
+  "unit": "item:139",
+  "pick": "nothing",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:140",
+  "pick": "shore",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:144",
+  "pick": "circumference",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; 'girth' is uncommon for 8-15 and the horse-tack distractors play on its other sense"
+ },
+ {
+  "unit": "item:149",
+  "pick": "endorse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:151",
+  "pick": "container",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:159",
+  "pick": "merchant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:161",
+  "pick": "manacle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; manacle/pillory are obscure for younger players"
+ },
+ {
+  "unit": "item:163",
+  "pick": "finish",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:164",
+  "pick": "underside",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; 'bottom' has a mild body sense but is not a swear word or insult"
+ },
+ {
+  "unit": "item:166",
+  "pick": "shackle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:175",
+  "pick": "allowance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:176",
+  "pick": "swamp",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym (swamp is a kind of wetland; close enough)"
+ },
+ {
+  "unit": "item:178",
+  "pick": "bookshelf",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:185",
+  "pick": "buildup",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; albumin/melanin are obscure distractors"
+ },
+ {
+  "unit": "item:186",
+  "pick": "polite",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:187",
+  "pick": "project",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:g",
+  "pick": "walking",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym (loose)"
+ },
+ {
+  "unit": "item:i",
+  "pick": "street",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:j",
+  "pick": "journey",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:k",
+  "pick": "smile",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m",
+  "pick": "cover",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:n",
+  "pick": "dealer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:o",
+  "pick": "proof",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:q",
+  "pick": "factory",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:r",
+  "pick": "performing",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym (loose)"
+ },
+ {
+  "unit": "item:s",
+  "pick": "gadget",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:w",
+  "pick": "penny",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:x",
+  "pick": "instructor",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:y",
+  "pick": "acting",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:1d",
+  "pick": "top",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite; 'bottom' has a mild body sense, not a swear or insult"
+ },
+ {
+  "unit": "item:1k",
+  "pick": "float",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:1m",
+  "pick": "hate",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:1n",
+  "pick": "small",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:1q",
+  "pick": "light",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:1w",
+  "pick": "stormy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:1z",
+  "pick": "brave",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:2e",
+  "pick": "room",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:2g",
+  "pick": "shoe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category (a boot is footwear; 'shoe' is a loose category)"
+ },
+ {
+  "unit": "item:2v",
+  "pick": "animal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; pork/ham are its meat, not its category"
+ },
+ {
+  "unit": "item:3h",
+  "pick": "designer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). "
+ },
+ {
+  "unit": "item:3j",
+  "pick": "director",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). "
+ },
+ {
+  "unit": "item:3w",
+  "pick": "climber",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'ladder' would fit a verb:tool pair."
+ },
+ {
+  "unit": "item:3y",
+  "pick": "swimmer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'crawl'/'dive' would fit a verb:kind-of pair."
+ },
+ {
+  "unit": "item:4b",
+  "pick": "dedication",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:4c",
+  "pick": "group",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:4e",
+  "pick": "field",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:4f",
+  "pick": "message",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:4j",
+  "pick": "plant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:4k",
+  "pick": "dish",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:4n",
+  "pick": "vehicle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:4o",
+  "pick": "color",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; mixes UK 'grey' with US 'color'"
+ },
+ {
+  "unit": "item:4p",
+  "pick": "animal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:4q",
+  "pick": "foot",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:4r",
+  "pick": "horse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:4t",
+  "pick": "shirt",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:4w",
+  "pick": "lion",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:4x",
+  "pick": "book",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole"
+ },
+ {
+  "unit": "item:4y",
+  "pick": "eye",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "part:whole; 'student' is a deliberate trap on pupil's other sense"
+ },
+ {
+  "unit": "item:5b",
+  "pick": "clay",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5c",
+  "pick": "wood",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of; 'wooden' is an adjective"
+ },
+ {
+  "unit": "item:5g",
+  "pick": "egg",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5h",
+  "pick": "rubber",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5j",
+  "pick": "marble",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5k",
+  "pick": "wicker",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5l",
+  "pick": "cream",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5m",
+  "pick": "corn",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made from"
+ },
+ {
+  "unit": "item:5r",
+  "pick": "flour",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5s",
+  "pick": "wool",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5u",
+  "pick": "metal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of"
+ },
+ {
+  "unit": "item:5w",
+  "pick": "wood",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made of; 'wooden' is an adjective"
+ },
+ {
+  "unit": "item:5x",
+  "pick": "wood",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "made from (wood pulp)"
+ },
+ {
+  "unit": "item:6c",
+  "pick": "shred",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6d",
+  "pick": "attract",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6f",
+  "pick": "cook",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6g",
+  "pick": "freeze",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6h",
+  "pick": "observe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6i",
+  "pick": "row",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6j",
+  "pick": "stick",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6k",
+  "pick": "beat",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6l",
+  "pick": "dig",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6m",
+  "pick": "sweep",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6n",
+  "pick": "wake",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6p",
+  "pick": "stir",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6r",
+  "pick": "measure",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6v",
+  "pick": "pound",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6w",
+  "pick": "catch",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6y",
+  "pick": "cut",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:6z",
+  "pick": "weigh",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:7a",
+  "pick": "feasible",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; 'probable' is close but means more than possible"
+ },
+ {
+  "unit": "item:7b",
+  "pick": "residence",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7c",
+  "pick": "pick",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7f",
+  "pick": "stuffing",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7g",
+  "pick": "merchant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7i",
+  "pick": "mixture",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7k",
+  "pick": "bullying",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7n",
+  "pick": "saltwater",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7p",
+  "pick": "grasp",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7q",
+  "pick": "hostility",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7r",
+  "pick": "plume",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7w",
+  "pick": "chase",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:7z",
+  "pick": "obstacle",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:8a",
+  "pick": "childish",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun:derived adjective; 'childish' is mildly pejorative, 'juvenile' is not derived"
+ },
+ {
+  "unit": "item:8c",
+  "pick": "arrival",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb:noun"
+ },
+ {
+  "unit": "item:8g",
+  "pick": "acceptance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb:noun"
+ },
+ {
+  "unit": "item:8h",
+  "pick": "spiny",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun:adjective (full of spines); distractors pectoral/alveolar/caudal very obscure"
+ },
+ {
+  "unit": "item:8j",
+  "pick": "tasteful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun:derived adjective; weak: 'tasty' is the flavour sense, tasteful is aesthetic"
+ },
+ {
+  "unit": "item:8m",
+  "pick": "bakery",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "weak: explanation is the act of explaining, but bakery is a place, not the act ('baking' is the parallel and is not offered)"
+ },
+ {
+  "unit": "item:8v",
+  "pick": "rotation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb:noun"
+ },
+ {
+  "unit": "item:9e",
+  "pick": "hilly",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun:adjective"
+ },
+ {
+  "unit": "item:9h",
+  "pick": "boil",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:9i",
+  "pick": "inflate",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:9j",
+  "pick": "magnify",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "tool:function"
+ },
+ {
+  "unit": "item:9p",
+  "pick": "perfumer",
+  "second": [
+   "fragrance"
+  ],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'perfume' is mainly a noun here, so a synonym pair (fragrance) is just as likely as maker-of."
+ },
+ {
+  "unit": "item:9t",
+  "pick": "rancher",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). "
+ },
+ {
+  "unit": "item:9v",
+  "pick": "composer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). elegy/lyric would fit a verb:product pair."
+ },
+ {
+  "unit": "item:9x",
+  "pick": "rescuer",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'salvation' would fit a verb:noun pair."
+ },
+ {
+  "unit": "item:a1",
+  "pick": "allowance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb:noun; 'allowance' mostly means pocket money to a child, so the link is muddy"
+ },
+ {
+  "unit": "item:a4",
+  "pick": "liberation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb:noun"
+ },
+ {
+  "unit": "item:a7",
+  "pick": "annulment",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb:noun"
+ },
+ {
+  "unit": "item:a8",
+  "pick": "abnormality",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "adjective:noun"
+ },
+ {
+  "unit": "item:a9",
+  "pick": "stylistic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun:derived adjective; weak: joyful = full of joy, so 'stylish' is the parallel; 'stylistic' means relating to style, and chic/fashionable tempt on meaning"
+ },
+ {
+  "unit": "item:ae",
+  "pick": "responsiveness",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "adjective:noun"
+ },
+ {
+  "unit": "item:ax",
+  "pick": "metamorphic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun:adjective; obscure for 8-15 (metamorphic is mostly a rock word)"
+ },
+ {
+  "unit": "item:b0",
+  "pick": "devour",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:b3",
+  "pick": "scorching",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:b4",
+  "pick": "miserable",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:b5",
+  "pick": "astonished",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:b6",
+  "pick": "gale",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:b7",
+  "pick": "ecstatic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bc",
+  "pick": "frantic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bd",
+  "pick": "terrified",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bf",
+  "pick": "soaked",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bg",
+  "pick": "furious",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bi",
+  "pick": "delighted",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bk",
+  "pick": "starving",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bn",
+  "pick": "exhausted",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bp",
+  "pick": "dark",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bq",
+  "pick": "lake",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree (size)"
+ },
+ {
+  "unit": "item:br",
+  "pick": "huge",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:bs",
+  "pick": "river",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree (size)"
+ },
+ {
+  "unit": "item:bu",
+  "pick": "hot",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "degree"
+ },
+ {
+  "unit": "item:c3",
+  "pick": "colorless",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:c4",
+  "pick": "prove",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:c5",
+  "pick": "thoughtful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:c6",
+  "pick": "tasteful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite (aesthetic sense); 'tasteless' also means bland, which muddies it"
+ },
+ {
+  "unit": "item:c8",
+  "pick": "tasteless",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:ci",
+  "pick": "safe",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:ck",
+  "pick": "plentiful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:cl",
+  "pick": "descend",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:cp",
+  "pick": "unsuccessful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:d1",
+  "pick": "plant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; taro is unfamiliar to many 8-15"
+ },
+ {
+  "unit": "item:d2",
+  "pick": "mammal",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; civet is obscure"
+ },
+ {
+  "unit": "item:d7",
+  "pick": "instrument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:d9",
+  "pick": "instrument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; zither is obscure"
+ },
+ {
+  "unit": "item:di",
+  "pick": "tree",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; weak: quince is known as a fruit, and 'fruit' is not offered; quince is obscure"
+ },
+ {
+  "unit": "item:dj",
+  "pick": "insect",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:dm",
+  "pick": "plant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; 'capsicum' is the UK/Indian/Aus word for pepper"
+ },
+ {
+  "unit": "item:dn",
+  "pick": "plant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; caraway is obscure"
+ },
+ {
+  "unit": "item:dp",
+  "pick": "instrument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category; weak: 'chime' is usually a sound (like ding/jingle/clang); 'chimes' is the instrument"
+ },
+ {
+  "unit": "item:dt",
+  "pick": "dance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:du",
+  "pick": "dance",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:dw",
+  "pick": "bird",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:dx",
+  "pick": "instrument",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "member:category"
+ },
+ {
+  "unit": "item:e4",
+  "pick": "responsive",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "noun:adjective"
+ },
+ {
+  "unit": "item:e6",
+  "pick": "vaporization",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "verb:noun"
+ },
+ {
+  "unit": "item:e8",
+  "pick": "aggressiveness",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "adjective:noun"
+ },
+ {
+  "unit": "item:e9",
+  "pick": "meaningful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:eb",
+  "pick": "wobbly",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:ec",
+  "pick": "unrealistic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:ed",
+  "pick": "powerful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:ee",
+  "pick": "realistic",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:ef",
+  "pick": "steady",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:eg",
+  "pick": "advantageous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ei",
+  "pick": "schooling",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ej",
+  "pick": "jealous",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ek",
+  "pick": "screech",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym (loose)"
+ },
+ {
+  "unit": "item:el",
+  "pick": "servile",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; obsequious is advanced vocabulary"
+ },
+ {
+  "unit": "item:eo",
+  "pick": "narrator",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ep",
+  "pick": "fierce",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:er",
+  "pick": "aerate",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym; distractor 'belch' is mildly crude but judged OK"
+ },
+ {
+  "unit": "item:es",
+  "pick": "ellipse",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ev",
+  "pick": "spattering",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ew",
+  "pick": "aware",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ey",
+  "pick": "debris",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f1",
+  "pick": "misprint",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f2",
+  "pick": "careful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym (loose)"
+ },
+ {
+  "unit": "item:f3",
+  "pick": "associate",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f5",
+  "pick": "figurative",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym (loose)"
+ },
+ {
+  "unit": "item:f6",
+  "pick": "ventilate",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fa",
+  "pick": "liberate",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fc",
+  "pick": "wreckage",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fd",
+  "pick": "preoccupation",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ff",
+  "pick": "brighten",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fg",
+  "pick": "cautious",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fh",
+  "pick": "reckless",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fi",
+  "pick": "effortful",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite; 'effortful' is a rare word"
+ },
+ {
+  "unit": "item:fj",
+  "pick": "important",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fk",
+  "pick": "irrational",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fl",
+  "pick": "unimportant",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fm",
+  "pick": "impractical",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fn",
+  "pick": "arrive",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fo",
+  "pick": "sunny",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fp",
+  "pick": "noisy",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fq",
+  "pick": "leave",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fr",
+  "pick": "success",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fs",
+  "pick": "rude",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:ft",
+  "pick": "proud",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fu",
+  "pick": "shallow",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fv",
+  "pick": "wild",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ },
+ {
+  "unit": "item:fw",
+  "pick": "deep",
+  "second": [],
+  "unsafe": [],
+  "verdict": "",
+  "reason": "opposite"
+ }
+]
