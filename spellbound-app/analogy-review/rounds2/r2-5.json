@@ -1,0 +1,129 @@
+[
+ {
+  "unit": "item:30",
+  "kind": "item",
+  "analogy": "invent is to inventor as cook is to …",
+  "options": [
+   "chef",
+   "broth",
+   "bread",
+   "heat",
+   "stew"
+  ]
+ },
+ {
+  "unit": "item:33",
+  "kind": "item",
+  "analogy": "sail is to sailor as teach is to …",
+  "options": [
+   "composer",
+   "teacher",
+   "follower",
+   "instruction"
+  ]
+ },
+ {
+  "unit": "item:39",
+  "kind": "item",
+  "analogy": "sail is to sailor as fly is to …",
+  "options": [
+   "skater",
+   "wing",
+   "prey",
+   "pilot",
+   "hunter"
+  ]
+ },
+ {
+  "unit": "item:3h",
+  "kind": "item",
+  "analogy": "sing is to singer as design is to …",
+  "options": [
+   "sculptor",
+   "designer",
+   "visitor",
+   "builder",
+   "skater"
+  ]
+ },
+ {
+  "unit": "item:3j",
+  "kind": "item",
+  "analogy": "drive is to driver as direct is to …",
+  "options": [
+   "translator",
+   "rescuer",
+   "pilot",
+   "director",
+   "reporter"
+  ]
+ },
+ {
+  "unit": "item:3w",
+  "kind": "item",
+  "analogy": "swim is to swimmer as climb is to …",
+  "options": [
+   "steep",
+   "ladder",
+   "climber",
+   "annual",
+   "skier"
+  ]
+ },
+ {
+  "unit": "item:3y",
+  "kind": "item",
+  "analogy": "sing is to singer as swim is to …",
+  "options": [
+   "crawl",
+   "swimmer",
+   "pro",
+   "dip",
+   "dive"
+  ]
+ },
+ {
+  "unit": "item:9p",
+  "kind": "item",
+  "analogy": "invent is to inventor as perfume is to …",
+  "options": [
+   "linseed",
+   "beeswax",
+   "fragrance",
+   "mastic",
+   "perfumer"
+  ]
+ },
+ {
+  "unit": "item:9t",
+  "kind": "item",
+  "analogy": "sing is to singer as ranch is to …",
+  "options": [
+   "rancher",
+   "estate",
+   "mow",
+   "bunk"
+  ]
+ },
+ {
+  "unit": "item:9v",
+  "kind": "item",
+  "analogy": "paint is to painter as compose is to …",
+  "options": [
+   "solo",
+   "elegy",
+   "lyric",
+   "composer"
+  ]
+ },
+ {
+  "unit": "item:9x",
+  "kind": "item",
+  "analogy": "teach is to teacher as rescue is to …",
+  "options": [
+   "rescuer",
+   "shipwreck",
+   "salvation"
+  ]
+ }
+]

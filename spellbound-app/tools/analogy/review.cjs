@@ -33,7 +33,10 @@ function units() { if (CYCLE > 1) return JSON.parse(fs.readFileSync(path.join(RD
    answer), C, and the options shuffled; no answer and no link name */
 const STEMS_OK = CYCLE > 1 && fs.existsSync(path.join(RD, 'stems-ok.json')) ? new Set(JSON.parse(fs.readFileSync(path.join(RD, 'stems-ok.json'), 'utf8'))) : null;
 function blind(u) { if (u.kind === 'item') { const L = lessonOf[u.rel]; const opts = [u.d].concat(u.wrong.slice(0, 4));
-    const pool = (L.stems || []).filter((x, i) => (!STEMS_OK || STEMS_OK.has('stem:' + L.id + ':' + i)) && ((x[2] || u.rel) === u.rel || L.id !== 'family') && !opts.includes(x[0]) && !opts.includes(x[1]) && x[0] !== u.c && x[1] !== u.c);
+    /* prefer pairs that already shipped; a lesson whose pairs are all still under review uses its own pairs (never "?") */
+    const fits = (x) => ((x[2] || u.rel) === u.rel || L.id !== 'family') && !opts.includes(x[0]) && !opts.includes(x[1]) && x[0] !== u.c && x[1] !== u.c;
+    const okPool = (L.stems || []).filter((x, i) => STEMS_OK && STEMS_OK.has('stem:' + L.id + ':' + i) && fits(x));
+    const pool = okPool.length ? okPool : (L.stems || []).filter((x, i) => ((x[2] || u.rel) === u.rel || L.id !== 'family') && !opts.includes(x[0]) && !opts.includes(x[1]) && x[0] !== u.c && x[1] !== u.c);
     const st = pool.length ? pool[fnv('r2|' + u.unit) % pool.length] : ['?', '?'];
     const ord = opts.map((o, i) => [fnv('r2o|' + u.unit + '|' + o), o]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
     return { unit: u.unit, kind: 'item', analogy: st[0] + ' is to ' + st[1] + ' as ' + u.c + ' is to …', options: ord }; }
