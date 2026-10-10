@@ -1,0 +1,1302 @@
+[
+ {
+  "unit": "item:q4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qa",
+  "verdict": "pass",
+  "reason": "enlarge exact; lengthen is narrower (one dimension)"
+ },
+ {
+  "unit": "item:qc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qd",
+  "verdict": "pass",
+  "reason": "soot is a specific substance, not a synonym"
+ },
+ {
+  "unit": "item:qg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ra",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:re",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ri",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rl",
+  "verdict": "fail",
+  "reason": "meat -> flesh at L1: 'flesh' is broader than meat (meat is animal flesh eaten as food; flesh is also human body tissue and fruit pulp), so this is a broader-word match, not same meaning. An 8-year-old reads 'flesh' as skin/body, and the gloss shown ('soft tissue of the body of a vertebrate: mainly muscle tissue and fat') describes body tissue, not food."
+ },
+ {
+  "unit": "item:rm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ry",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:se",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:si",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:so",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ss",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:st",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:su",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t2",
+  "verdict": "pass",
+  "reason": "pin in its jewellery sense = brooch"
+ },
+ {
+  "unit": "item:t5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:te",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:th",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:to",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ts",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ty",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u6",
+  "verdict": "fail",
+  "reason": "'plump' is a distractor for 'pig'. It invites the fat-insult reading ('pig means plump'), and pig and hog are both common insults for a greedy or fat person. Swap 'plump' for a neutral word; the pig -> hog pair itself is fine."
+ },
+ {
+  "unit": "item:u7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u9",
+  "verdict": "fail",
+  "reason": "surplus -> excess at L2 (age ~9): both surplus and excess are economics/academic vocabulary (around Year 6-7) that a 9-year-old does not know, and every distractor (revenue, premium, export, investment) is adult finance vocabulary too. It is too obscure for the level."
+ },
+ {
+  "unit": "item:ua",
+  "verdict": "fail",
+  "reason": "exhaustion is 'extreme fatigue': a stronger/weaker pair, which this game teaches separately as 'Stronger and weaker', not same meaning. The gloss shown is also ungrammatical ('Is weariness from exertion'), a broken fragment a child would see."
+ },
+ {
+  "unit": "item:ub",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ud",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ue",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ug",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ui",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:un",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:up",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ut",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ux",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:v0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:v1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:v3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:v4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:v5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:v6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:v7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vb",
+  "verdict": "fail",
+  "reason": "Two distractors are the same word in two spellings (optimise / optimize). In a spelling app, a child may read one as a misspelling, which is confusing. It also leaves one fewer real choice, because two options that are one word cannot both be the answer. Drop one."
+ },
+ {
+  "unit": "item:vc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ve",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vf",
+  "verdict": "pass",
+  "reason": "bird sense; standard animal word"
+ },
+ {
+  "unit": "item:vh",
+  "verdict": "pass",
+  "reason": "lane/alley near-synonyms; nothing competes"
+ },
+ {
+  "unit": "item:vi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vn",
+  "verdict": "fail",
+  "reason": "aqua -> cyan are near colour shades, not synonyms. Aqua is a blue-green (aquamarine/turquoise family) and cyan is the printing primary; they coincide only in web colour codes. Aqua's main sense is also 'water'. This is a related-word match, too loose for 'Same meaning'."
+ },
+ {
+  "unit": "item:vo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:vx",
+  "verdict": "fail",
+  "reason": "gruel is defined as a THIN porridge, so it is a kind of porridge (narrower), not a synonym. The gloss shown ('...boiling oatmeal... until thick') describes thick porridge, which contradicts what gruel is (thin and watery)."
+ },
+ {
+  "unit": "item:vy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w4",
+  "verdict": "fail",
+  "reason": "cast (the actors in one particular production) and troupe (a standing, often touring company of performers) are related but not the same. For a child the main sense of 'cast' is a plaster cast or casting a spell/shadow, and the distractors hex and shadow play on exactly those collocations. That makes the item confusing and the link loose."
+ },
+ {
+  "unit": "item:w5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wa",
+  "verdict": "fail",
+  "reason": "A climber is a kind of vine (a climbing vine; WordNet puts climber under vine), so this is narrower, not same meaning. A vine can also creep or trail. At L3 'climber' also means a person who climbs, which is confusing."
+ },
+ {
+  "unit": "item:wb",
+  "verdict": "fail",
+  "reason": "factory -> mill at L2 (age ~9): to a child a mill is a windmill or flour mill, a particular kind of factory at most, so the pair reads as 'a kind of', not same meaning. The gloss uses 'plant' in its industrial sense, which a 9-year-old will read as a growing plant."
+ },
+ {
+  "unit": "item:wc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wd",
+  "verdict": "pass",
+  "reason": "harmful is the direct antonym; fatal is an extreme, not the opposite"
+ },
+ {
+  "unit": "item:we",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ws",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ww",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:wx",
+  "verdict": "fail",
+  "reason": "minstrel -> bard: a minstrel is a medieval travelling singer/musician-entertainer and a bard is a poet (the gloss shown, 'A lyric poet', is bard's sense, not minstrel's), so the link is loose. Both are archaic for L4 (age ~11). 'minstrel' also names performers in US blackface minstrel shows, an association better kept away from a children's drill."
+ },
+ {
+  "unit": "item:wy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xe",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xp",
+  "verdict": "pass",
+  "reason": "eye-sense traps are fair"
+ },
+ {
+  "unit": "item:xq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:xy",
+  "verdict": "fail",
+  "reason": "'fend' (as in 'fend off' = ward off, repel) is a defensible near-synonym of deter ('deter/fend off an attack'). It is the same closeness that got 'repel' and 'repulse' dropped from this item last cycle. Only one other distractor (entrap) is left."
+ },
+ {
+  "unit": "item:xz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:y1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:y2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:y4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:y6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:y7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:y8",
+  "verdict": "pass",
+  "reason": "noun sense tested fairly; framework/foundation are not a body's build"
+ },
+ {
+  "unit": "item:y9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ya",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ye",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ys",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yu",
+  "verdict": "pass",
+  "reason": "general bliss sense; neutral"
+ },
+ {
+  "unit": "item:yw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:yy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z0",
+  "verdict": "pass",
+  "reason": "neutral word-family item"
+ },
+ {
+  "unit": "item:z1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z2",
+  "verdict": "fail",
+  "reason": "A board is a kind of committee (WordNet: 'a committee having supervisory powers'), so it is narrower, not same meaning. For this audience 'board' first means a plank or an exam board (CBSE/state board), and every distractor (skate, roller, bulletin, fulcrum) pulls on the plank sense. That is confusing at L4."
+ },
+ {
+  "unit": "item:z3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:za",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zg",
+  "verdict": "pass",
+  "reason": "ecological = environmental; geographic/geographical is a duplicated distractor (untidy, not a second answer)"
+ },
+ {
+  "unit": "item:zh",
+  "verdict": "fail",
+  "reason": "A festival is a kind of celebration ('a day or period set aside for feasting and celebration', per the gloss shown); a birthday party is a celebration but not a festival. This is narrower, not same meaning. The remaining distractor 'graduation' is also a kind of celebration, which makes the item muddled."
+ },
+ {
+  "unit": "item:zi",
+  "verdict": "fail",
+  "reason": "bard -> minstrel: a bard is a poet, and the gloss shown ('A singer of folk songs') is minstrel's sense, not bard's, so the link is loose. Both words are archaic for L4 (age ~11), and 'minstrel' also names performers in US blackface minstrel shows."
+ },
+ {
+  "unit": "item:zj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zp",
+  "verdict": "fail",
+  "reason": "girth is the circumference of a body or trunk specifically (narrower), and the gloss shown ('The distance around a person's body') frames it as a body-size word, which in everyday use means fatness ('a man of some girth'). The distractors also double up (vertex / vertices)."
+ },
+ {
+  "unit": "item:zq",
+  "verdict": "pass",
+  "reason": "gloss pins rider to an animal rider, which equals equestrian"
+ },
+ {
+  "unit": "item:zs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:zz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10e",
+  "verdict": "fail",
+  "reason": "In the school science a child meets at this age (L6, ~13), evaporation is ONE kind of vaporization (the other is boiling), so 'same meaning' teaches a distinction the science class will mark wrong."
+ },
+ {
+  "unit": "item:10g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10q",
+  "verdict": "pass",
+  "reason": "everyday synonym pair at L2"
+ },
+ {
+  "unit": "item:10r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10t",
+  "verdict": "fail",
+  "reason": "The distractor 'vert' (a heraldry/skate-slang term) reads to a child as a non-word or misspelling in a spelling app, in the same class as 'ness' and 'lena', which were dropped elsewhere. 'posit' is adult vocabulary. For a child 'flip' mostly means to turn over (a coin, a pancake), and only its acrobatic sense matches somersault, so the item is confusing as built."
+ },
+ {
+  "unit": "item:10u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11a",
+  "verdict": "pass",
+  "reason": ""
+ }
+]
