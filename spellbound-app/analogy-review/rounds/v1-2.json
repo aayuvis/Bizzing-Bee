@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:4i",
+  "verdict": "fail",
+  "reason": "(d) 'plant' here means a factory (see gloss) - far too adult/ambiguous at level 2, a child reads plant as a green plant; a mill is also a machine (pepper mill), so 'kind of' is muddled"
+ },
+ {
+  "unit": "item:4j",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'plant' is glossed 'Buildings for carrying on industrial labor' (factory), which is false for ginger"
+ },
+ {
+  "unit": "item:4k",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'dish' is glossed as dishware ('a piece of dishware ... container'), but curry is a dish in the meal sense"
+ },
+ {
+  "unit": "item:4l",
+  "verdict": "pass",
+  "reason": "walnut is a nut; distractors not categories"
+ },
+ {
+  "unit": "item:4m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4q",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'feet' is just the plural of the answer - a toe is equally part of feet"
+ },
+ {
+  "unit": "item:4r",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'hind' also means a female deer, which has hooves (less common sense, but defensible); 'hind' is also a confusing non-word distractor in its common sense"
+ },
+ {
+  "unit": "item:4s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4t",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'sweater' - many sweaters (polo/collared sweaters) have a collar"
+ },
+ {
+  "unit": "item:4u",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'clam' - a shell is just as much part of a clam (and arguably 'pod' is a pea's shell); also gloss for 'turtle' is the turtleneck-sweater sense"
+ },
+ {
+  "unit": "item:4v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4w",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'pony' - a pony has a mane too"
+ },
+ {
+  "unit": "item:4x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4y",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'iris' - the pupil is the opening in the middle of the iris, so 'pupil is part of the iris' is defensible"
+ },
+ {
+  "unit": "item:4z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5a",
+  "verdict": "fail",
+  "reason": "(c) wrong options 'keg', 'cask', 'brewer' are beer/alcohol words"
+ },
+ {
+  "unit": "item:5b",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'porcelain' - pottery can be made of porcelain ('made of porcelain' is everyday usage)"
+ },
+ {
+  "unit": "item:5c",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'wicker' - wicker chairs are common, so chair is made from wicker is equally right"
+ },
+ {
+  "unit": "item:5d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5g",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'ass' - a common swear word/body insult"
+ },
+ {
+  "unit": "item:5h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5j",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'granite' - statues are commonly made from granite (and bronze)"
+ },
+ {
+  "unit": "item:5k",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'cider' is an alcoholic drink in the UK/India usage; doubtful for a child audience"
+ },
+ {
+  "unit": "item:5l",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'cream' is glossed 'The best people or things in a group', not the dairy cream butter is made from"
+ },
+ {
+  "unit": "item:5m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5n",
+  "verdict": "fail",
+  "reason": "(d) 'nail' is ambiguous - the body-part distractors (scalp, claw, thumb) push the fingernail sense, which is not made from iron; modern nails are steel, so the claim is shaky"
+ },
+ {
+  "unit": "item:5o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5s",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'felt' - felt blankets exist (felt is itself wool), so blanket made from felt is defensible"
+ },
+ {
+  "unit": "item:5t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5u",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'gold' - gold coins exist; coin is made from gold is equally right"
+ },
+ {
+  "unit": "item:5v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5w",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'glass' - glass tables are common"
+ },
+ {
+  "unit": "item:5x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6c",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'shred' is glossed 'A tiny or scarcely detectable amount' (noun), not the verb a grater does"
+ },
+ {
+  "unit": "item:6d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6f",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'boil' - a stove is used to boil (and many stoves bake); several options are right"
+ },
+ {
+  "unit": "item:6g",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'cool' - a freezer cools/keeps food cold; defensible answer"
+ },
+ {
+  "unit": "item:6h",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'magnify' - a telescope is used to magnify; equally right"
+ },
+ {
+  "unit": "item:6i",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'row' is glossed 'An arrangement of objects or people side by side in a line', not the rowing verb; also 'sweep' is a rowing term (sweep oar)"
+ },
+ {
+  "unit": "item:6j",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'stick' is glossed 'An implement consisting of a length of wood', not the verb glue does"
+ },
+ {
+  "unit": "item:6k",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'beat' is glossed 'A regular route for a sentry or policeman', not beating eggs"
+ },
+ {
+  "unit": "item:6l",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'dig' is glossed 'The site of an archeological exploration' (noun)"
+ },
+ {
+  "unit": "item:6m",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'sweep' is glossed 'A wide scope'"
+ },
+ {
+  "unit": "item:6n",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'signal' - an alarm is used to signal (danger, fire); also gloss for 'wake' is 'the consequences of an event'"
+ },
+ {
+  "unit": "item:6o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6r",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'measure' is glossed 'Any maneuver made as part of progress toward a goal'"
+ },
+ {
+  "unit": "item:6s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6v",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'beat' - a hammer is used to beat (metal); also gloss for 'pound' is '16 ounces avoirdupois', the weight sense"
+ },
+ {
+  "unit": "item:6w",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'catch' is glossed 'A drawback or difficulty that is not readily evident'"
+ },
+ {
+  "unit": "item:6x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6y",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'cut' is glossed 'A share of the profits'"
+ },
+ {
+  "unit": "item:6z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7c",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'option' is a straight synonym of choice ('preference' too)"
+ },
+ {
+  "unit": "item:7d",
+  "verdict": "fail",
+  "reason": "(a)/(d) only one rare sense matches (supplement to a book); a child knows supplement as a vitamin and appendix as a body part - confusing"
+ },
+ {
+  "unit": "item:7e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7f",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'cider' (alcoholic in UK/India usage); filling/stuffing also only match in one food sense"
+ },
+ {
+  "unit": "item:7g",
+  "verdict": "fail",
+  "reason": "(a) 'merchant' is a narrower word - a merchant is a kind of seller (a trader in goods), not a same-meaning word"
+ },
+ {
+  "unit": "item:7h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7i",
+  "verdict": "fail",
+  "reason": "(d) wrong option 'korean' is a nationality written in lower case (wrong spelling for a spelling app) and used as a throwaway distractor"
+ },
+ {
+  "unit": "item:7j",
+  "verdict": "fail",
+  "reason": "(c)/(d) wrong options 'phlegm' and 'sputum' are gross medical body-fluid words, 'sputum' obscure; 'harassment' adult - unsuitable distractor set"
+ },
+ {
+  "unit": "item:7k",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'harassment' is also a near-synonym of intimidation; (a) bullying is a kind of intimidation rather than the same meaning"
+ },
+ {
+  "unit": "item:7l",
+  "verdict": "fail",
+  "reason": "(a) 'carving' is a kind of sculpture (the gloss itself says 'a sculpture created by removing material'), not a same-meaning word"
+ },
+ {
+  "unit": "item:7m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7n",
+  "verdict": "fail",
+  "reason": "(a)/(b) seawater is a kind of saltwater (narrower), and wrong option 'saline' (salt water) is also defensible"
+ },
+ {
+  "unit": "item:7o",
+  "verdict": "fail",
+  "reason": "(a) weak match - scarce means in short supply, sparse means thinly scattered; not the same meaning for a careful child"
+ },
+ {
+  "unit": "item:7p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7q",
+  "verdict": "fail",
+  "reason": "(b) wrong options 'malice' and 'resentment' are near-synonyms of animosity"
+ },
+ {
+  "unit": "item:7r",
+  "verdict": "fail",
+  "reason": "(a) a plume is a large showy feather (narrower) and its common sense is a plume of smoke - not a clean same-meaning pair"
+ },
+ {
+  "unit": "item:7s",
+  "verdict": "fail",
+  "reason": "(a) the gloss itself defines revising as a kind of editing - narrower, not the same meaning"
+ },
+ {
+  "unit": "item:7t",
+  "verdict": "fail",
+  "reason": "(a)/(b) grumbling means complaining, rumbling is a low noise - only a weak sense matches; wrong options 'nag' and 'rant' fit the common sense of grumbling better"
+ },
+ {
+  "unit": "item:7u",
+  "verdict": "fail",
+  "reason": "(a) a cauldron is a kind of pot (gloss: 'a very large pot'), not the same meaning; 'pot' is also drug slang"
+ },
+ {
+  "unit": "item:7v",
+  "verdict": "fail",
+  "reason": "(a) arithmetic is a branch (kind) of math, not the same meaning; 'geometry' would be equally 'right' by that logic"
+ },
+ {
+  "unit": "item:7w",
+  "verdict": "fail",
+  "reason": "(b) wrong options 'hobby' and 'endeavor' match another common sense of pursuit ('leisure pursuits')"
+ },
+ {
+  "unit": "item:7x",
+  "verdict": "fail",
+  "reason": "(a) dominate and prevail are not the same meaning (prevail = win out / be widespread); weak match"
+ },
+ {
+  "unit": "item:7y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8c",
+  "verdict": "fail",
+  "reason": "(d) wrong options 'monday' and 'tuesday' are proper nouns shown in lower case - wrong spelling in a spelling app"
+ },
+ {
+  "unit": "item:8d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8h",
+  "verdict": "fail",
+  "reason": "(d) distractors (vertebral, caudal) frame spine as the backbone, whose adjective is 'spinal'; 'spiny' belongs to the prickle sense - confusing"
+ },
+ {
+  "unit": "item:8i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8m",
+  "verdict": "fail",
+  "reason": "(a) the link is action -> naming the action (decide/decision); 'bakery' is a place, not the act of baking"
+ },
+ {
+  "unit": "item:8n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9a",
+  "verdict": "fail",
+  "reason": "(d) 'systemic' is obscure/adult at level 4; the child-natural adjective of system is 'systematic', so the item misleads"
+ },
+ {
+  "unit": "item:9b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9e",
+  "verdict": "fail",
+  "reason": "(d) wrong option 'andean' is a proper adjective written in lower case - wrong spelling"
+ },
+ {
+  "unit": "item:9f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9h",
+  "verdict": "fail",
+  "reason": "GLOSS (unsafe/wrong): 'boil' is glossed 'A painful sore with a hard core filled with pus' - wrong sense and gross; relation itself is fine"
+ },
+ {
+  "unit": "item:9i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9j",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'observe' - a microscope is used to observe; equally right"
+ },
+ {
+  "unit": "item:9k",
+  "verdict": "fail",
+  "reason": "(d) 'bleacher' as a person who bleaches is obscure (children know bleachers as stadium seats); distractors oleoresin/turpentine obscure"
+ },
+ {
+  "unit": "item:9l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9n",
+  "verdict": "fail",
+  "reason": "(c)/(d) wrong options 'sioux' (an Indigenous nation used as a throwaway distractor), 'siberia', 'nebraska' - proper nouns in lower case"
+ },
+ {
+  "unit": "item:9o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "fail",
+  "reason": "(a)/(d) 'perfume' is a noun to a child; 'a perfumer is a person who perfumes' is odd; 'mastic' obscure"
+ },
+ {
+  "unit": "item:9q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9s",
+  "verdict": "fail",
+  "reason": "(a) a transmitter is a device to almost everyone, not 'a person who transmits'; wrong option 'morse' is a proper noun in lower case"
+ },
+ {
+  "unit": "item:9t",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'farmhand' is also a person who works a ranch/farm; 'ranch' as a verb is also awkward"
+ },
+ {
+  "unit": "item:9u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9v",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'punk' is a common insult ('you little punk')"
+ },
+ {
+  "unit": "item:9w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9x",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'firefighter' is also a person who rescues; 'hostage' also heavy"
+ },
+ {
+  "unit": "item:9y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9z",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'felon' is also a person who perpetrates wrongdoing; 'murder' violent distractor"
+ },
+ {
+  "unit": "item:a0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a4",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'bondage' has a sexual double meaning"
+ },
+ {
+  "unit": "item:a5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a8",
+  "verdict": "fail",
+  "reason": "(c) gloss shown for 'abnormality' speaks of 'defective genes or developmental deficiencies' - stigmatising disability framing; medical distractors (fibrosis, thyroid)"
+ },
+ {
+  "unit": "item:a9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:aa",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ab",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ac",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ad",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'arousal' has a sexual double meaning"
+ },
+ {
+  "unit": "item:af",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ag",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ah",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ai",
+  "verdict": "fail",
+  "reason": "(d) the natural noun of observe is 'observation'; 'observance' is the religious/rule sense - confusing; astrology distractors"
+ },
+ {
+  "unit": "item:aj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ak",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:al",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:am",
+  "verdict": "fail",
+  "reason": "(c) 'arouse'/'arousal' carry a sexual double meaning"
+ },
+ {
+  "unit": "item:an",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ao",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:aq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ar",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:as",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:at",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:au",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:av",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:aw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ax",
+  "verdict": "fail",
+  "reason": "(c)/(d) wrong options 'ovarian' and 'asexual' are reproductive/sexual words; metamorphic is chiefly the rock sense while a child knows metamorphosis from butterflies"
+ },
+ {
+  "unit": "item:ay",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:az",
+  "verdict": "fail",
+  "reason": "(a) 'odorless' means WITHOUT odor - not 'the same idea with a new job' (that would be odorous)"
+ },
+ {
+  "unit": "item:b0",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'munch' is also a stronger nibble; gloss for devour is 'destroy completely'"
+ },
+ {
+  "unit": "item:b1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'pathetic' is a common insult"
+ },
+ {
+  "unit": "item:b5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'monsoon' is a seasonal wind - an Indian-heritage child may defend it as a stronger breeze"
+ },
+ {
+  "unit": "item:b7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b9",
+  "verdict": "fail",
+  "reason": "(b) wrong options 'nasty' and 'evil' are also stronger forms of bad; gloss for terrible is the 'causing terror' sense"
+ },
+ {
+  "unit": "item:ba",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bc",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'terrified' is also a stronger form of worried (fear)"
+ },
+ {
+  "unit": "item:bd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:be",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:br",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'largest' - a child can defend the superlative as 'stronger big'"
+ },
+ {
+  "unit": "item:bs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:by",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c8",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'gaudy' is also an opposite of tasteful; gloss for tasteless is 'lacking flavor', the wrong sense"
+ },
+ {
+  "unit": "item:c9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ca",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ce",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ch",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ci",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'harmless' is also an opposite of dangerous; gloss for 'safe' is 'Strongbox where valuables can be kept' (wrong sense)"
+ },
+ {
+  "unit": "item:cj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ck",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'surplus' (and 'limitless') is a defensible opposite of scarce"
+ },
+ {
+  "unit": "item:cl",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'sink' is a defensible opposite of ascend (go down)"
+ },
+ {
+  "unit": "item:cm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:co",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cp",
+  "verdict": "fail",
+  "reason": "(d) wrong option 'olympic' is a proper adjective in lower case"
+ },
+ {
+  "unit": "item:cq",
+  "verdict": "fail",
+  "reason": "(a) shameful (disgraceful) and shameless (feeling no shame) are not opposites - a shameless act is usually shameful"
+ },
+ {
+  "unit": "item:cr",
+  "verdict": "fail",
+  "reason": "(a) shameless and shameful are not true opposites (see shameful/shameless)"
+ },
+ {
+  "unit": "item:cs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ct",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'equity' is a defensible opposite of inequality; 'ethnicity' and 'capitalism' are loaded distractors"
+ },
+ {
+  "unit": "item:cu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d0",
+  "verdict": "fail",
+  "reason": "(d) 'lathe' is obscure at level 5 and is a machine rather than a hand tool; also 'screw' (vulgar double meaning)"
+ },
+ {
+  "unit": "item:d1",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'plant' is glossed as a factory ('Buildings for carrying on industrial labor')"
+ },
+ {
+  "unit": "item:d2",
+  "verdict": "fail",
+  "reason": "(c) wrong option 'asiatic' is a dated, often offensive ethnic term (and a proper adjective in lower case)"
+ },
+ {
+  "unit": "item:d3",
+  "verdict": "fail",
+  "reason": "(d) 'dolomite' is obscure and is chiefly a mineral, so 'kind of rock' is ambiguous"
+ },
+ {
+  "unit": "item:d4",
+  "verdict": "fail",
+  "reason": "(a) a scape is a leafless flower stalk, not a kind of flower; distractors point to the landscape sense - wrong and confusing"
+ },
+ {
+  "unit": "item:d5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d6",
+  "verdict": "fail",
+  "reason": "(a) a pupa is a life stage of an insect, not a kind of insect"
+ },
+ {
+  "unit": "item:d7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d8",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'fibre' - jute is a kind of fibre; also 'plant' glossed as a factory"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:da",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:db",
+  "verdict": "fail",
+  "reason": "(a) a clove is a spice (a dried bud) or a garlic segment - 'kind of flower' is wrong/confusing for a child"
+ },
+ {
+  "unit": "item:dc",
+  "verdict": "fail",
+  "reason": "(a) a horseshoe is MADE of metal, not a kind of metal; (c) wrong option 'noose'"
+ },
+ {
+  "unit": "item:dd",
+  "verdict": "fail",
+  "reason": "(a) a cornfield is a field, not a kind of plant (and 'plant' is glossed as a factory)"
+ },
+ {
+  "unit": "item:de",
+  "verdict": "fail",
+  "reason": "(d) 'specie' is obscure and will be read as 'species' (distractors habitat/subfamily reinforce that)"
+ },
+ {
+  "unit": "item:df",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dh",
+  "verdict": "fail",
+  "reason": "(a) an appetizer is food, not a kind of drink; wrong option 'starter' is its synonym"
+ },
+ {
+  "unit": "item:di",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dj",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'parasite' - a flea is a kind of parasite"
+ },
+ {
+  "unit": "item:dk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dm",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'plant' is glossed as a factory ('Buildings for carrying on industrial labor')"
+ },
+ {
+  "unit": "item:dn",
+  "verdict": "fail",
+  "reason": "GLOSS-ONLY: relation is right, but the gloss shown for d in Meet the words is the wrong sense - 'plant' is glossed as a factory; caraway also obscure at level 5"
+ },
+ {
+  "unit": "item:do",
+  "verdict": "fail",
+  "reason": "(a)/(d) chestnut is a nut/tree to a child; 'kind of wood' is weak and confusing"
+ },
+ {
+  "unit": "item:dp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dr",
+  "verdict": "fail",
+  "reason": "(a) a gemstone is a mineral/crystal, not a kind of rock"
+ },
+ {
+  "unit": "item:ds",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:du",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dv",
+  "verdict": "fail",
+  "reason": "(a) a drape is a curtain made OF cloth, not a kind of cloth (velvet would be)"
+ },
+ {
+  "unit": "item:dw",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'gull' - a seagull is a kind of gull"
+ },
+ {
+  "unit": "item:dx",
+  "verdict": "fail",
+  "reason": "(b) wrong option 'lens' - a magnifier is a kind of lens"
+ },
+ {
+  "unit": "item:dy",
+  "verdict": "fail",
+  "reason": "(a) receptacle and container are synonyms, not 'kind of'"
+ },
+ {
+  "unit": "item:dz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e1",
+  "verdict": "fail",
+  "reason": "(a)/(d) a sea anemone is an animal and the distractors (reef, toad, auk) point to it; 'plant' is glossed as a factory"
+ },
+ {
+  "unit": "item:e2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e6",
+  "verdict": "fail",
+  "reason": "GLOSS: 'vaporization' is glossed 'Annihilation by vaporizing something' - violent/wrong sense; relation itself is fine"
+ },
+ {
+  "unit": "item:e7",
+  "verdict": "pass",
+  "reason": ""
+ }
+]
