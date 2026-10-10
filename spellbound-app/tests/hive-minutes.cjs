@@ -34,10 +34,16 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
-  const ctx = await b.newContext({ viewport: { width: 1000, height: 900 } });
+  /* a PERSISTENT profile (10 Oct 2026): this walk leaves the page and comes back, then counts what the feed kept. An
+     off-the-record context holds localStorage in memory, and on a loaded or long run a reload there can start on EMPTY
+     storage — the quiet full run read "(0)", i.e. the real feed was gone, not written to by ?demo (pin-mandatory measured
+     the artefact: off-the-record 3 of 48 reloads empty, on-disk 0 of 72). */
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-hivemin-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 900 },
+    executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
   await ctx.clock.install();
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('t_hm')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_hm', '1'); } } catch (e) {} }, SEED);
-  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   const boot = async u => { await pg.goto(u || URL); await pg.waitForTimeout(2500);
     return pg.evaluate(() => typeof state !== 'undefined' && state.screen === 'app' && !!window.BZ_ACTIVITY); };
   const feed = () => pg.evaluate(() => { try { return JSON.parse(localStorage.getItem('bizzing.activity') || 'null'); } catch (e) { return null; } });
@@ -107,6 +113,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
   await boot();
   ok(await mins() === 3, `a ?demo drill, hidden and left, adds nothing to the real feed (${await mins()})`);
 
+  await ctx.close(); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
   await b.close();
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   console.log(fails ? `\n${fails} FAILED` : '\nall good — a one-minute drill reaches the Hive, once');

@@ -3941,8 +3941,13 @@
     const cx=cv.getContext('2d'); cx.setTransform(dpr,0,0,dpr,0,0);
     let word='',spelled=0,drops=[],basket=Wd/2,vx=0,wordsDone=0,lives=3,over=false,dropT=0,bonk=0,score=0,loop=null,last=0;
     const ccRound=[]; let ccClean=true;    // the round's words, and whether this one was caught clean
+    /* THE WORD FLOOR (6 s): a word nobody finishes moves on, logged as missed — no heart lost, and it does not count
+       toward the round's quota (only real catches do). Without it a round could run on with words asked and none
+       resolved, and its result card listed nothing (result-screen, 10 Oct 2026: the floor this engine is documented
+       to have was missing). */
+    const WORD_FLOOR_MS=6000; let wordT=0;
     const BW=64;
-    function layout(){ curW=feed.next(); word=curW.w.toLowerCase(); spelled=0; drops=[]; ccClean=true;
+    function layout(){ curW=feed.next(); word=curW.w.toLowerCase(); spelled=0; drops=[]; ccClean=true; wordT=0;
       host.querySelector('#sg-cc-slots').innerHTML=word.split('').map((ch,i)=>'<span class="sg-tl'+(i<spelled?' done':i===spelled?' next':'')+'">'+(i<spelled?ch.toUpperCase():'•')+'</span>').join('');
       const mn=host.querySelector('#sg-cc-mean'); if(mn){ const m=meaningText(curW); mn.textContent=m?('💡 '+m):''; }
       try{ say(word); }catch(e){} }
@@ -4003,6 +4008,7 @@
       shake.end(cx);
     }
     function frame(){ if(over){ if(loop){clearInterval(loop);loop=null;} return; } const now=Date.now(), dt=Math.min(50,now-last); last=now;
+      wordT+=dt; if(wordT>=WORD_FLOOR_MS){ ccRound.push({w:word,ok:false}); try{ layout(); setHud(); }catch(e){} }
       try{ step(dt); if(!over) draw(); }catch(e){} }
     const key=e=>{ if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){ vx=-6; e.preventDefault(); } else if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){ vx=6; e.preventDefault(); } };
     const keyup=e=>{ if(['ArrowLeft','ArrowRight','a','A','d','D'].includes(e.key)) vx=0; };
@@ -4043,13 +4049,16 @@
     const stage=host.querySelector('#sg-rst'), laneEl=host.querySelector('#sg-rl');
     let wi=0, li=0, hearts=4, score=0, notes=[], over=false, loop=null, spawnT=0, beatT=0;
     const srRound=[]; let srClean=true;    // the round's words, and whether this one was played clean
+    /* THE WORD FLOOR (6 s), as combCatcher's: an unfinished word moves to the back of the list, logged as missed;
+       no heart lost, and the quota still needs every word finished */
+    const WORD_FLOOR_MS=6000; let wordT=0;
     function cur(){ return words[wi]||words[words.length-1]||{w:'honey'}; }   // never index past the end
     function need(){ return cur().w.toLowerCase()[li]; }
     function renderSlots(){ const w=cur().w.toLowerCase();
       host.querySelector('#sg-rslots').innerHTML=w.split('').map((ch,ix)=>'<span class="sg-slot'+(ix<li?' fill':ix===li?' next':'')+'">'+(ix<li?ch.toUpperCase():'')+'</span>').join('');
       host.querySelector('#sg-rh').textContent='❤'.repeat(Math.max(0,hearts));
       host.querySelector('#sg-rs').textContent='⭐ '+score; }
-    function newWord(){ li=0; srClean=true; const w=cur();
+    function newWord(){ li=0; srClean=true; wordT=0; const w=cur();
       host.querySelector('#sg-rw').textContent='🎵 '+(wi+1)+'/'+CFG.words;
       host.querySelector('#sg-rmean').innerHTML=meaningHTML(w);
       renderSlots(); try{ say(w.w); }catch(e){} }
@@ -4072,6 +4081,7 @@
         srClean=false; hearts--; renderSlots(); try{ if(typeof sfx==='function') sfx('wrong'); }catch(e){}
         if(hearts<=0) finish(false); } }
     function frame(){ if(over) return;
+      wordT+=16.7; if(wordT>=WORD_FLOOR_MS){ srRound.push({w:cur().w,ok:false}); if(words.length>1) words.push(words.splice(wi,1)[0]); notes.forEach(n=>{ try{ n.el.remove(); }catch(e){} }); notes=[]; newWord(); return; }
       const H=stage.clientHeight; spawnT+=16.7; beatT+=16.7;
       if(spawnT>=CFG.gap){ spawnT=0; spawn(); }
       if(beatT>=CFG.gap){ beatT=0; const hit=host.querySelector('#sg-rhit');
