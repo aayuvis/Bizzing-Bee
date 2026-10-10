@@ -150,19 +150,35 @@
      left out of the pool the session is ranked from, so they are never shown, and never paid. */
   function anlOk() { try { return typeof window.SB_ANL_OPEN === 'function' && !!window.SB_ANL_OPEN(); } catch (e) { return false; } }
   var ANL_ROUTE = /^#\/(analogies|anlbee|links)(\/|$)/;
-  function pool(L) {
+  /* THE WORD BANDS (the 4.5 brief, P1.5, P1.4): a card about a word carries that word's band (`wb`, cut by
+     tools/build-feed.cjs from wordband-data.js). A child's feed holds word cards of THEIR band and the one below —
+     never above — and ranks their own band first, so the top band reads top-band words (the audit's 14–15 feed
+     showed government, loyal, satisfactory). The band is SB_BAND.child: the one model the games and the word of
+     the hour read. A window holding fewer than MIN_WORD word cards on the levels a child can be shown widens
+     DOWNWARD to band 1, never up. Cards with no word (a lesson, a place, a game, a story) carry no band. */
+  var MIN_WORD = 60, TOP = 0.75;
+  function wordBand(c) { try { if (window.SB_BAND) return SB_BAND.child(c).band; } catch (e) {} return 0; }
+  function bandWin(items, B) {
+    if (!B) return { lo: 1, hi: 4 };
+    var lo = Math.max(1, B - 1), n = items.filter(function (it) { return it.wb && it.wb >= lo && it.wb <= B; }).length;
+    return { lo: n >= MIN_WORD ? lo : 1, hi: B };
+  }
+  function pool(L, B) {
     var items = [], ok = anlOk(); groupsFor(L).forEach(function (g) { items = items.concat(decoded(g) || []); });
-    return ok ? items : items.filter(function (it) { return it.kind !== 'analogy'; });
+    if (!ok) items = items.filter(function (it) { return it.kind !== 'analogy'; });
+    if (B == null) B = wordBand(kid());
+    var w = bandWin(items, B);
+    return items.filter(function (it) { return !it.wb || (it.wb >= w.lo && it.wb <= w.hi); });
   }
   function session() {
     var c = kid(), F = rec(c), now = Date.now(), day = Math.floor(now / DAY);
     var nx = null; try { nx = SB_SHELL.nextStep(); if (nx && !nx.ready) nx = null; } catch (e) {}
     var L = levelOf(nx), band = bandOf(c), due = dueOf(c, now);
-    var sig = JSON.stringify([L, nx && nx.arg, band, Object.keys(due).sort(), anlOk()]);
+    var B = wordBand(c), sig = JSON.stringify([L, nx && nx.arg, band, B, Object.keys(due).sort(), anlOk()]);
     if (F.day === day && F.sig === sig && F.vis === VISIT && F.ids && F.ids.length) return F.ids;
-    var items = pool(L);
+    var items = pool(L, B), top = function (it) { var e = extra(it); return it.wb && it.wb === B ? { s: ((e && e.s) || 0) + TOP, why: e && e.why } : e; };
     var list = BZ_FEED.feedFor({ items: items, band: band, now: now, signals: signals(c, nx, L), due: due, seen: F.seen,
-      extra: extra, level: L, levelName: levelName });
+      extra: top, level: L, levelName: levelName });
     F.day = day; F.sig = sig; F.vis = VISIT;
     F.ids = list.map(function (x) { return { id: x.id, why: x.why, tier: x.tier, g: rows[x.id].g }; });
     list.forEach(function (x) { F.seen[x.id] = day; });
@@ -268,5 +284,5 @@
   });
 
   window.SB_FEED = { view: view, levelOf: levelOf, levelName: levelName, session: session, dueOf: dueOf, signals: signals, answer: answer,
-    groupsFor: groupsFor, lapCut: lapCut, pool: pool, _play: play, reset: function () { for (var k in play) delete play[k]; } };
+    groupsFor: groupsFor, lapCut: lapCut, pool: pool, wordBand: wordBand, bandWin: bandWin, _play: play, reset: function () { for (var k in play) delete play[k]; } };
 })();

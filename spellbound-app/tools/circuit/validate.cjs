@@ -180,7 +180,7 @@ const build = Array.isArray(S.build) ? S.build : [];
 const B = (id) => build.find((b) => b.id === id);
 
 // 1. The build entries the script relies on exist, each with a rule, the review rows it answers, and a test.
-for (const id of ['story-order', 'hall-fields', 'scripted-outcomes', 'slots', 'no-placing', 'case-origins-authored', 'case-scenes', 'team-night', 'clue-cards-ride-mail']) {
+for (const id of ['story-order', 'hall-fields', 'scripted-outcomes', 'slots', 'no-placing', 'case-origins-authored', 'case2-spelling-engine', 'case-scenes', 'team-night', 'clue-cards-ride-mail', 'signoff-upright']) {
   const b = B(id);
   if (!b) { fail('build lacks ' + id); continue; }
   if (typeof b.rule !== 'string' || !b.rule || typeof b.test !== 'string' || !b.test || !Array.isArray(b.why) || !b.why.length) fail(`build ${id} needs rule, why[] and test`);
@@ -196,8 +196,17 @@ const answersOf = (c, i) => i === 0 ? c.puzzle.items.filter((x) => !x.bothCorrec
   : i === 1 ? c.puzzle.items.map((x) => x.word)
   : i === 3 ? c.puzzle.items.filter((x) => x.word).map((x) => x.word)
   : i === 4 ? c.puzzle.items.filter((x) => !x.ok).map((x) => x.correct) : [];
+// (Cycle 2) Mock Bee prints its own lines in every hall from Round I: the stage openers, the announcer's pools, the
+// result line and the Play card. A case answer printed there is printed before the case (it caught 'microphone').
+const mbBlock = (open, close) => { const i = src.indexOf(open); return i < 0 ? '' : src.slice(i, src.indexOf(close, i)); };
+const MB_SCREEN = [mbBlock('const STAGE_OPEN = [', '];'), mbBlock('const SAY = {', '\n  };'),
+  ...src.split('\n').filter((l) => /promise:|the microphone is yours/.test(l))]
+  .map((b) => b.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, ''))
+  .flatMap((b) => [...b.matchAll(/'((?:[^'\\\n]|\\.)*)'/g)].map((m) => m[1])).filter((s) => /\s/.test(s));
+if (MB_SCREEN.length < 40 || !MB_SCREEN.some((s) => /to the microphone/.test(s))) fail(`could not read Mock Bee's on-screen lines (${MB_SCREEN.length})`);
 const anytime = [S.fiction, (S.signoffs || {}).inv, ...strs(S.hivePost), ...strs(S.slotLines || {}),
-  ...((S.suspectBoard || {}).portraits || []).flatMap((p) => [p.label, p.why, p.labelAfter].filter(Boolean))].map((s) => ({ p: 'anytime', s }));
+  ...((S.suspectBoard || {}).portraits || []).flatMap((p) => [p.label, p.why, p.labelAfter].filter(Boolean))].map((s) => ({ p: 'anytime', s }))
+  .concat(MB_SCREEN.map((s) => ({ p: 'mockbee.js (on screen in every hall)', s })));
 const CASE_AUTHOR = new Set(['engine', 'engineKey', 'theme', 'planted', 'clueOnScreen', 'safeLineNote', 'homeLanguageNote', 'answer', 'id', 'after', 'act']);
 S.cases.forEach((c, k) => {
   const ans = answersOf(c, k); if (!ans.length) return;
@@ -208,7 +217,7 @@ S.cases.forEach((c, k) => {
   S.cases.slice(0, k).forEach((d, j) => Object.entries(d).filter(([kk]) => !CASE_AUTHOR.has(kk)).forEach(([kk, v]) => seen.push(...strs(v).map((s) => ({ p: `cases[${j}].${kk}`, s })))));
   if (c.after >= 8) seen.push(...strs(S.turn).map((s) => ({ p: 'turn', s })));
   S.visitors.filter((v) => ACT_I(v.act) <= ACT_I(c.act)).forEach((v) => seen.push({ p: 'visitors:' + v.figure, s: v.card }));
-  ['title', 'place', 'clock', 'impossible', 'safeLine', 'taps', 'escalation', 'falseSolution'].forEach((kk) => seen.push(...strs(c[kk]).map((s) => ({ p: `cases[${k}].${kk}`, s }))));
+  ['title', 'place', 'lateLine', 'clock', 'impossible', 'safeLine', 'taps', 'escalation', 'falseSolution'].forEach((kk) => seen.push(...strs(c[kk]).map((s) => ({ p: `cases[${k}].${kk}`, s }))));
   seen.push(...strs([c.puzzle.brief, c.puzzle.card, c.puzzle.rule].filter(Boolean)).map((s) => ({ p: `cases[${k}].puzzle`, s })));
   for (const w of ans) {
     const re = new RegExp('\\b' + w + '\\b', 'i');
@@ -322,6 +331,8 @@ for (const [p, m] of Object.entries(HF.micLines || {})) {
 }
 
 // 10. The Ravenmere roster matches BEE-CIRCUIT.md §4.2 (test 11): ages and tells, in the cast and the roster.
+//     (Cycle 2) A tell the script revises against the brief is recorded in ownerQuestions[].revises; while §4.2 still
+//     says the old wording, the tell is read as revised and the old phrase may not appear on screen anywhere.
 const brief = fs.readFileSync(path.join(APP, 'circuit/BEE-CIRCUIT.md'), 'utf8');
 const sec42 = brief.slice(brief.indexOf('### 4.2'), brief.indexOf('## 5.'));
 const RAV = [];
@@ -331,10 +342,17 @@ for (const line of sec42.split('\n').filter((l) => l.startsWith('| **'))) {
   ids.forEach((id) => RAV.push({ id, age: +cells[2], tell: cells[3] }));
 }
 if (RAV.length !== 5) fail('could not read the five Ravenmere spellers from §4.2');
+const REV42 = (S.ownerQuestions || []).map((q) => q.revises).filter((r) => r && r.section === '§4.2');
+for (const rv of REV42) {
+  if (!rv.from || !rv.to) fail('ownerQuestions revises §4.2 without from/to');
+  else if (!RAV.some((r) => r.tell === rv.from)) warn(`§4.2 no longer says "${rv.from}": the owner has amended the brief, so drop the revision from ownerQuestions`);
+  if (rv.phrase) for (const l of screenLeaves) if (l.s.toLowerCase().includes(rv.phrase.toLowerCase())) fail(`"${rv.phrase}" is on screen at ${l.p}, but ownerQuestions revises it out of §4.2`);
+}
 for (const r of RAV) {
+  const want = (REV42.find((rv) => rv.from === r.tell) || {}).to || r.tell;
   const c = S.cast[r.id], ro = S.teamNight.ravenmereRoster.find((x) => x.id === r.id);
-  if (!c || c.age !== r.age || c.tell !== r.tell) fail(`cast ${r.id} does not match §4.2 (${r.age}, "${r.tell}")`);
-  if (!ro || ro.age !== r.age || ro.tell !== r.tell) fail(`ravenmereRoster ${r.id} does not match §4.2 (${r.age}, "${r.tell}")`);
+  if (!c || c.age !== r.age || c.tell !== want) fail(`cast ${r.id} does not match §4.2 (${r.age}, "${want}")`);
+  if (!ro || ro.age !== r.age || ro.tell !== want) fail(`ravenmereRoster ${r.id} does not match §4.2 (${r.age}, "${want}")`);
 }
 
 // 11. No on-screen puzzle text sits under a key the author notes hide (Kwame's note is `card`), and every case
@@ -343,6 +361,87 @@ S.cases.forEach((c) => {
   if ('note' in c.puzzle) fail(`case ${c.id} puzzle has a 'note' key: authorNotes hide every note field, so it would not render`);
   if (!Array.isArray(c.taps) || c.taps.length !== 3 || !c.taps.every((t) => typeof t === 'string' && t)) fail(`case ${c.id} needs three scene taps`);
 });
+
+/* ==================================================================================================
+   Review cycle 2 (c2-r1-safety, c2-r2-accuracy, c2-r3-fairplay and the decisions taken on them). Each check below was
+   proved by breaking a copy of the script once (circuit/review/applied-c2.json). Check 2 also reads Mock Bee's own
+   on-screen lines now, and check 10 reads §4.2 through ownerQuestions[].revises.
+   ================================================================================================== */
+const sentences = (s) => String(s).split(/(?<=[.!?])\s+/);
+
+// 12. Every invitation names its headliners (a cliff that previews "the X invitation" depends on it: Round VIII's
+//     stopped naming Dax and only a person noticed).
+S.rounds.forEach((r) => r.headliners.forEach((h) => {
+  const b = BOTS.find((x) => x.id === h);
+  if (b && !new RegExp('\\b' + b.name + '\\b').test(r.pieces.inv)) fail(`round ${r.n} invitation does not name its headliner ${b.name}`);
+}));
+
+// 13. Story order across the season's last two doors: Team Night and the accusation both open after Round IX, so a
+//     Team Night line that names Vale must be held until the accusation's closing letter (build[id=story-order].holds),
+//     and every case carries the one line it opens with when played after its next round's mail.
+const SO = B('story-order') || {};
+const holds = Array.isArray(SO.holds) ? SO.holds : [];
+for (const h of holds) {
+  for (const p of h.paths || []) if (typeof getPath(S, p) !== 'string') fail(`story-order holds ${p}, which is not a line`);
+  if (typeof getPath(S, h.until) !== 'string') fail(`story-order holds until ${h.until}, which is not a line`);
+}
+const heldTillAccused = new Set(holds.filter((h) => h.until === 'accusation.closingLetter').flatMap((h) => h.paths || []));
+for (const l of screenLeaves) if (l.p.startsWith('teamNight') && /\bVale\b/.test(l.s) && !heldTillAccused.has(l.p)) fail(`${l.p} names Vale and Team Night can come before the accusation: hold it until accusation.closingLetter (build[id=story-order].holds)`);
+S.cases.forEach((c) => {
+  const ll = c.lateLine;
+  if (typeof ll !== 'string' || !ll.trim()) fail(`case ${c.id} has no lateLine (the line a late case opens with, build[id=story-order])`);
+  else if (ll.trim().split(/\s+/).length > 10) fail(`case ${c.id} lateLine is more than one short line`);
+});
+
+// 14. Team Night: the drama's re-call is a rule the child has been told (callRules), not a second try.
+if (Object.values((S.teamNight.beats || {}).drama || {}).some((s) => /\bre-calls?\b/.test(s)) && !/call may be changed/i.test(S.teamNight.beats.callRules || '')) fail('Team Night drama re-calls a word, but callRules does not say a call may be changed');
+
+// 15. Slots: a {weak} fallback is advice for a child with no weak spot, never a diagnosis; a slot prints a word as
+//     the library spells it (capitals included), never lower case.
+for (const [n, s] of Object.entries(((S.slotLines || {}).weak || {}).byRound || {})) {
+  if (/^You\b/.test(s)) fail(`slotLines.weak.byRound.${n} starts 'You': a fallback reaches only children whose bee file shows no weak spot`);
+  if (!/^No weak spot yet\./.test(s)) fail(`slotLines.weak.byRound.${n} must open 'No weak spot yet.' (it prints only when the bee file shows none)`);
+}
+for (const [name, d] of Object.entries(SLOTS)) if (/lower[ -]case/i.test(String(d.source))) fail(`slot {${name}} prints lower case: print the library's own spelling, capitals included`);
+
+// 16. No line reports what the child did in the hall unless a slot fills it from the log (build[id=no-placing]):
+//     asked, waited, breathed out, went slow, built it, heard them, beat someone by asking.
+const CLAIM = /\b[Yy]ou(?:'ve)? (?:asked|waited|breathed(?: out)?|did it|went slow|built it|heard them)\b|\bbeat me by asking\b/;
+for (const l of screenLeaves) for (const s of sentences(l.s)) if (CLAIM.test(s) && !/\{[A-Za-z0-9]+\}/.test(s)) fail(`${l.p} claims an action the hall log does not hold: "${s}"`);
+
+// 17. Case 2 runs on a spelling engine (never the Word Lore quizzes), and its heel-marks point at a suspect whose
+//     card can carry the tell (build[id=case-scenes]: suspect cards show cast.*.tell).
+if (/^lore\//.test(S.cases[1].engineKey || '') || /Word Lore/.test(S.cases[1].engine || '')) fail(`case c2's engine is ${S.cases[1].engineKey}: it needs a spelling engine (build[id=case2-spelling-engine])`);
+if (/heel/.test(S.cases[1].escalation) && !S.cases[1].suspects.some((x) => S.cast[x.who] && /heel/.test(S.cast[x.who].tell))) fail('case c2 escalation shows heel-marks, but no suspect card can carry a heel tell');
+if (!/tell/.test((B('case-scenes') || {}).rule || '')) fail('build[id=case-scenes] no longer shows suspect tells');
+
+// 18. Origins: the build names exactly the Case 2 items the library calls non-Greek, and Case 3's choice exclusions
+//     name Case 3 words and never the word's own answer.
+const CO = B('case-origins-authored') || {};
+const LIBO = new Map(window.SB_DATA.nsf.map((r) => [String(r.w).toLowerCase(), r.o]));
+const nonGreek = S.cases[1].puzzle.items.map((x) => x.word).filter((w) => !/greek/i.test(String(LIBO.get(w))));
+if (!sameSet(nonGreek, CO.libraryNonGreek || [])) fail(`case-origins-authored names [${CO.libraryNonGreek}] as non-Greek in the library; the library says [${nonGreek}]`);
+for (const w of nonGreek) if (!new RegExp('\\b' + w + '\\b').test(CO.rule || '')) fail(`case-origins-authored rule does not name ${w}`);
+for (const [w, langs] of Object.entries(CO.choicesExclude || {})) {
+  const it = S.cases[2].puzzle.items.find((x) => x.word === w);
+  if (!it) { fail(`choicesExclude names ${w}, which is not a Case 3 word`); continue; }
+  if (langs.includes(it.home)) fail(`choicesExclude for ${w} excludes its own answer ${it.home}`);
+  for (const lg of langs) if (!new RegExp(w + ': no [^;)]*\\b' + lg + '\\b').test(CO.rule || '')) fail(`case-origins-authored rule does not say ${w}: no ${lg}`);
+}
+
+// 19. Round VII's unheard word is the word Case 4 disputes.
+const o7 = outc.find((o) => o.round === 7) || {};
+if (o7.word !== S.cases[3].puzzle.word) fail(`scripted-outcomes round 7 word "${o7.word}" is not Case 4's word "${S.cases[3].puzzle.word}"`);
+
+// 20. Round IX: every band hears Dax's first question (round9-unseated-lines, recommendation taken), so Dax is seated
+//     in every band's final and no Round IX line is gated by band.
+if (HF.micLines) fail('hall-fields still gates Round IX lines by band (micLines); the decision seats Dax in every band instead');
+for (const band of Object.keys(MB_BANDS)) if (!(((HF.fields || {})[band] || {})[9] || []).includes('comet')) fail(`Dax is not seated in Round IX at ${band}, and rounds[8].pieces.dax is delivered in every band`);
+
+// 21. The sting happens in company and the Pronouncer's answer widens to any grown-up the child trusts (lens 1).
+const sting = (S.teamNight.beats || {}).sting || '', after = (S.teamNight.beats || {}).stingAfter || '';
+if (/\bempty\b/i.test(sting) || !/\bCommittee\b/.test(sting)) fail('the sting must happen with the Committee in the room, never in an empty hall');
+if (!/any grown-up you trust/.test(after)) fail("stingAfter must point the child to any grown-up they trust, not one adult");
 
 console.log(JSON.stringify({ pieceCount, rounds: S.rounds.length, cases: S.cases.length, visitors: S.visitors.length, strings, longest, changes: (S.changes || []).length }, null, 0));
 console.log('WARN', warns.length); warns.forEach((w) => console.log('  ' + w));

@@ -1,0 +1,419 @@
+[
+  {
+    "lens": "c2-r1-safety",
+    "path": "cases[0].taps[0]",
+    "action": "applied",
+    "newPath": [
+      "cases[0].taps[0]",
+      "rounds[1].pieces.prog",
+      "cases[0].planted[0]"
+    ],
+    "note": "fix_text as given (decision: the press-and-parrot line). rounds[1].pieces.prog changes with it so the tap quotes it: 'Our press is run by a typesetter and a parrot. We are not sure which is in charge.' The plant still works: the programme puts a parrot at the press, the perch and green feather tap repeats it, and reveal[0] (parrot's dictation) pays it off."
+  },
+  {
+    "lens": "c2-r1-safety",
+    "path": "teamNight.beats.sting",
+    "action": "applied",
+    "newPath": [
+      "teamNight.beats.sting",
+      "build[id=story-order].holds"
+    ],
+    "note": "fix_text as given, 58 words: 'while the Committee clears the Grand Marquee', never an empty building (decision). Lens 3's row on the same line is the ordering, held in build[id=story-order].holds; validate.cjs check 21 keeps the Committee in the room."
+  },
+  {
+    "lens": "c2-r1-safety",
+    "path": "teamNight.beats.stingAfter",
+    "action": "applied",
+    "newPath": [
+      "teamNight.beats.stingAfter",
+      "build[id=story-order].holds"
+    ],
+    "note": "fix_text as given: '…you can show me, or any grown-up you trust.' (decision). Held with the sting until the closing letter. validate.cjs check 21."
+  },
+  {
+    "lens": "c2-r1-safety",
+    "path": "slotLines.weak.byRound.2",
+    "action": "merged",
+    "note": "One line for all three lenses: 'No weak spot yet. Still, ask before you spell.' Lens 1's 'No weak spot yet' and its 'anyway' (true for a child with no misses and for one who asked on every miss), lens 3's 'Ask before you spell', lens 2's advice not diagnosis. Does not start 'You' (lens 3's test). build[id=slots] now ranks only named families, so plain misses never hide the noask habit."
+  },
+  {
+    "lens": "c2-r1-safety",
+    "path": "slotLines.weak.byRound.5",
+    "action": "merged",
+    "note": "'No weak spot yet. Never skip the suffix.' Lens 1's text verbatim; lens 2 and lens 3 gave 'Never skip the suffix.', which it contains."
+  },
+  {
+    "lens": "c2-r1-safety",
+    "path": "cases[4].puzzle.brief",
+    "action": "applied",
+    "note": "Residue named in c2-r1-safety.md (not a row): 'Every statement with a wrong ending is a lie' → 'is untrue', which matches the why on Vesper's line. The author-facing changes entry that says 'Vesper's only lie' and 'dependible' is history and was left as it is."
+  },
+  {
+    "lens": "c2-r1-safety",
+    "path": "c2-r1-safety.md owner views (ravenmere-names, suspect-board-dax, mockbee-faces, second-hand)",
+    "action": "owner",
+    "newPath": [
+      "ownerQuestions[id=ravenmere-names].views",
+      "ownerQuestions[id=suspect-board-dax].views",
+      "ownerQuestions[id=mockbee-faces].views",
+      "ownerQuestions[id=second-hand].views"
+    ],
+    "note": "Each view recorded on its question: Ravenmere acceptable with two Season 2 briefs; keep Dax's board line; re-face Suki (Nova's Koi is Dojo too); second-hand supported with fixes 3 and 4 applied and a new condition (never ask the child to keep notes from their own grown-ups)."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "visitors[0].card",
+    "action": "applied",
+    "newPath": [
+      "visitors[0].card",
+      "visitors[0].sources"
+    ],
+    "note": "fix_text as given, 58 words: Mercator named the Atlas; it came out in 1595, the year after he died. Sources: the 1595 primary now says it was published after his death by his son Rumold; Britannica (died 2 December 1594) and the Library of Congress catalogue added."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "build[id=case-origins-authored]",
+    "action": "build",
+    "newPath": [
+      "build[id=case-origins-authored].rule",
+      ".test",
+      ".libraryNonGreek",
+      ".choicesExclude"
+    ],
+    "note": "Lens 2's text as rule and test. Rechecked after the megaphone swap: megaphone is Greek in the library, so Case 2's non-Greek items stay three (hyphen, chorus, cylinder). Case 3 exclusions in full (safari Arabic; cafe Italian, Turkish, Arabic; ballet Italian, Latin, Greek; piano French, Latin; catamaran Hindi, Malayalam). validate.cjs check 18 recomputes libraryNonGreek from the library and checks every exclusion is in the rule and never the item's own answer."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "cast.ash.tell",
+    "action": "applied",
+    "newPath": [
+      "cast.ash.tell",
+      "ownerQuestions[id=twins-tell]"
+    ],
+    "note": "'spell as a pair, one letter each' (decision). BEE-CIRCUIT.md not edited; the revision of §4.2 and §8.1 is recorded in ownerQuestions[id=twins-tell].revises, and validate.cjs check 10 reads §4.2 through it and fails on 'in unison' anywhere on screen."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "cast.aria.tell",
+    "action": "applied",
+    "newPath": [
+      "cast.aria.tell",
+      "ownerQuestions[id=twins-tell]"
+    ],
+    "note": "As cast.ash.tell."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "teamNight.ravenmereRoster[1].tell",
+    "action": "applied",
+    "newPath": "ownerQuestions[id=twins-tell]",
+    "note": "As cast.ash.tell."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "teamNight.ravenmereRoster[2].tell",
+    "action": "applied",
+    "newPath": "ownerQuestions[id=twins-tell]",
+    "note": "As cast.ash.tell."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "teamNight.beats.ravenmere",
+    "action": "applied",
+    "newPath": "ownerQuestions[id=twins-tell]",
+    "note": "fix_text with 'one letter each' in place of its 'a letter each' (decision: the same words in every place the tell appears). 54 words."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "rounds[4].pieces.pipWord.real",
+    "action": "applied",
+    "note": "fix_text as given: 'calm; not easily upset or flustered'."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "slotLines.weak.byFamily.vow",
+    "action": "applied",
+    "note": "Widened from the fix_text (decision: name ie/ei, ough/augh and vowel runs, as app3 trickAnal scores vow): 'You mix up vowel teams: ie or ei, ough or augh, and three vowels in a row.' Reads in both carrier notes."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "slotLines.weak.byRound.2",
+    "action": "merged",
+    "note": "See c2-r1-safety's row: 'No weak spot yet. Still, ask before you spell.' Advice, never a diagnosis; true of every child who gets it."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "slotLines.weak.byRound.5",
+    "action": "merged",
+    "note": "See c2-r1-safety's row: 'No weak spot yet. Never skip the suffix.'"
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "hivePost.beeFileIntro",
+    "action": "merged",
+    "note": "One line with lens 3's: '…Every word you spelled in this round and, if one beat you, why it did and the technique that would have caught it. One tap puts your missed words on your revision pile.' (decision: the tap, as Mock Bee's button does). 48 words. §9's 'are added' is listed for the owner in ownerQuestions[id=app-data-outside-script]."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "c2-r2-accuracy.md owner item 1 (twins)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=twins-tell]",
+    "note": "New question: accept and amend BEE-CIRCUIT.md §4.2 and §8.1 (then drop 'revises'), or reverse."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "c2-r2-accuracy.md owner item 2 (catamaran donor)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=accuracy-reverify]",
+    "note": "Folded into the re-verify question: open M-W's catamaran entry; Hindi and Malayalam stay out of the choices either way (build)."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "c2-r2-accuracy.md owner item 3 (app data outside the script)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=app-data-outside-script]",
+    "note": "New question: the library's unflappable origin, eponyms-master's atlas story, BEE-CIRCUIT.md §10 'tantalise', and (from lens 3) the library's triskaidekaphobia origin 'English'. No app data edited."
+  },
+  {
+    "lens": "c2-r2-accuracy",
+    "path": "c2-r2-accuracy.md owner item 4 (re-verify with opened pages)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=accuracy-reverify]",
+    "note": "Still open; now covers both cycles' fixes, Mercator/Rumold, unflappable, and megaphone in place of microphone."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "rounds[1].pieces.drama",
+    "action": "applied",
+    "note": "fix_text as given: 'with seconds left on the clock', which is what build[id=scripted-outcomes] round 2 forces."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "rounds[7].pieces.inv",
+    "action": "applied",
+    "note": "fix_text as given: 'Seated: Dax, fastest in round one.' Dax is seated in every band's Round VIII. validate.cjs check 12: every invitation names its headliners."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "cases[1].escalation",
+    "action": "build",
+    "newPath": "build[id=case-scenes]",
+    "note": "Line kept. Suspect cards show each suspect's tell, so the heel-marks point at Dax at 6–7 too. validate.cjs check 17 fails if no Case 2 suspect's tell can carry the heel-marks."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "cases[1].puzzle.items[8].clue",
+    "action": "applied",
+    "note": "fix_text as given (decision: microphone → megaphone)."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "cases[1].puzzle.items[8].word",
+    "action": "applied",
+    "note": "megaphone: in the library (Greek, y6), printed nowhere in the script before Case 2 and nowhere in Mock Bee. validate.cjs check 2 now counts Mock Bee's on-screen lines as seen before a case; with microphone put back it fails on the announcer's 'to the microphone'."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "cases[1].puzzle.items[8].greek",
+    "action": "applied",
+    "newPath": [
+      "cases[1].puzzle.items[8].greek",
+      "ownerQuestions[id=accuracy-reverify]"
+    ],
+    "note": "fix_text as given: 'megas (great) + phone (sound)'. rule stays 'ph'. Listed for sourcing in place of microphone."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "cases[2].reveal[2]",
+    "action": "applied",
+    "note": "fix_text as given (decision): 'The grown-ups knew where he was all along'. Lens 1's cycle-1 safety point (the adults knew) is kept, not weakened."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "teamNight.beats.callRules",
+    "action": "applied",
+    "note": "fix_text with the existing 'When I give an origin,' kept (it says when the rule applies): 'Three more Team Bee rules… A call may be changed until the speller says a letter. And each team has one second try at a spelling a night.' 54 words. validate.cjs check 14."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "teamNight.beats.levellingMiss",
+    "action": "applied",
+    "note": "fix_text as given: Dax says 'Ask anything you need'; the line no longer says what the child did."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "teamNight.beats.sting",
+    "action": "build",
+    "newPath": [
+      "build[id=story-order].holds",
+      "teamNight.opens"
+    ],
+    "note": "Held with stingAfter until the accusation's closing letter; played first, they arrive as the next mail once the accusation is solved (decision). Text is lens 1's. validate.cjs check 13: a Team Night line naming Vale must be held."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "hivePost.beeFileIntro",
+    "action": "merged",
+    "note": "See c2-r2-accuracy's row: 'if one beat you' no longer assumes a miss."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "slotLines.weak.byRound.2",
+    "action": "merged",
+    "note": "See c2-r1-safety's row. validate.cjs check 15: every byRound clause opens 'No weak spot yet.' and none starts 'You'."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "slotLines.weak.byRound.5",
+    "action": "merged",
+    "note": "See c2-r1-safety's row."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:story-order",
+    "action": "build",
+    "newPath": [
+      "build[id=story-order]",
+      "cases[0].lateLine",
+      "cases[1].lateLine",
+      "cases[2].lateLine",
+      "cases[3].lateLine",
+      "cases[4].lateLine"
+    ],
+    "note": "Rule, holds and test extended as given. The late-case line is authored per case so it can be reviewed: 'The night the list lied.' / 'The night the bell went missing.' / 'The day Kwame walked out.' / 'The night the rumour broke.' / 'The night before the final.' validate.cjs check 13 (holds and lateLine)."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:scripted-outcomes",
+    "action": "build",
+    "newPath": [
+      "build[id=scripted-outcomes].outcomes[round=7]",
+      "[round=8]",
+      "[round=9]",
+      "cases[3].suspects[1].secret"
+    ],
+    "note": "Round 7: word triskaidekaphobia, never served to the child, Suki's five chair requests, her origin request answered as the library gives it. Round 8: the cut to the result card. Round 9: Dax (every band) and Pip (where seated) standing at the blackout, Dax's definition request, every rival asking after it, Vesper's tell never re-read, the Vesper-misses-first branch. Mira's secret (now rendered in the reveal) reads 'sure it's built from Greek', which agrees with the library's 'English'. validate.cjs check 19 (Round VII's word is Case 4's)."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:slots",
+    "action": "build",
+    "newPath": [
+      "build[id=slots].rule",
+      ".slots.weak",
+      ".slots.missed",
+      ".slots.spelled",
+      ".slots.w1",
+      "hivePost.postcardNote"
+    ],
+    "note": "Words print exactly as the library spells them, capitals included; {weak} fallback is advice and opens 'No weak spot yet.'; plain misses are not ranked (lens 1). Test additions as given. validate.cjs check 15."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:no-placing",
+    "action": "build",
+    "newPath": [
+      "build[id=no-placing]",
+      "rounds[8].pieces.v",
+      "rounds[8].pieces.above",
+      "rounds[8].pieces.below",
+      "rounds[0].pieces.above",
+      "rounds[4].pieces.below",
+      "rounds[5].pieces.above",
+      "rounds[6].pieces.above",
+      "rounds[7].pieces.above"
+    ],
+    "note": "Rule extended to claimed actions. The three Round IX lines reworded (lens 3's V. note; 'You beat me.' and 'This Circuit asked everything all season.'; 'Watching this Circuit ask everything'). The extended rule also caught five unchanged letters that report what the child did ('You waited', 'You built it from parts', 'You heard them', breathed out 'You did it today', 'You went slow on purpose'); each now gives the rival's advice instead, on the changed list for cycle 3. validate.cjs check 16."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:case2-spelling-engine",
+    "action": "build",
+    "newPath": [
+      "cases[1].engine",
+      "cases[1].engineKey",
+      "build[id=case2-spelling-engine]"
+    ],
+    "note": "engineKey gym/warmup, engine 'Spelling Gym · Warm-up' (ten words, no clock, hints on hand; gym.js). validate.cjs check 17 fails on a Word Lore engine."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:case-scenes",
+    "action": "build",
+    "note": "Rule and test rewritten as given: suspect cards show tells; the reveal shows every secret its lines do not state; Case 3's safeLine named as the one deliberate early secret; no Ask Kwame in Case 3."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:team-night",
+    "action": "build",
+    "newPath": [
+      "build[id=team-night]",
+      "teamNight.rules[0]",
+      "teamNight.rules[5]"
+    ],
+    "note": "The re-call rule (Dax or the child as caller), the second try as a spelling retry reserved for the levelling word, help from that lectern's teammates. rules[0] and rules[5] (author-facing) brought into line; rules[5] no longer names Theo and Mira."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "build:signoff-upright",
+    "action": "build",
+    "note": "Extended as given: Vesper's letters violet, upright or right-slanting; Dax's and every rival's letters not left-slanting; the sting's note small upright pencil. Test as given."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "season (CONTINUITY)",
+    "action": "applied",
+    "newPath": [
+      "cases[2].reveal[2]",
+      "rounds[7].pieces.inv",
+      "build[id=story-order].holds"
+    ],
+    "note": "All three breaks fixed by their rows above."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "season (ANSWERS PRINTED EARLIER)",
+    "action": "applied",
+    "newPath": [
+      "cases[1].puzzle.items[8]",
+      "tools/circuit/validate.cjs check 2"
+    ],
+    "note": "microphone → megaphone. Mock Bee's stage openers, announcer pools, result line and Play card join check 2's seen set. Lessons are not added: by the review's own standard a word studied in a lesson is recall (chorus is in Round II's)."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "season (ROUND IX OWNER QUESTION)",
+    "action": "applied",
+    "newPath": [
+      "rounds[8].alsoSeated",
+      "rounds[8].pieces.dax",
+      "rounds[8].pieces.laugh",
+      "build[id=hall-fields]",
+      "build[id=scripted-outcomes].outcomes[round=9]",
+      "ownerQuestions[id=round9-unseated-lines]"
+    ],
+    "note": "Recommendation taken (decision): Dax seated in every band's final (fields['6-7'][9] gains comet), Theo 'somewhere in the dark', Pip 'Good. Now nobody can see me jump.', both standing at the blackout where seated, micLines deleted, a visible audience in every band (lens 3's hall-fields pass note). ownerQuestions records it as resolved unless the owner reverses it. validate.cjs check 20."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "season (SLOT LINES)",
+    "action": "applied",
+    "newPath": [
+      "slotLines.weak.byRound",
+      "build[id=slots]"
+    ],
+    "note": "Both defects fixed by the slot rows above."
+  },
+  {
+    "lens": "c2-r3-fairplay",
+    "path": "season (BUILD SUFFICIENCY)",
+    "action": "build",
+    "newPath": [
+      "build[id=scripted-outcomes]",
+      "build[id=case-scenes]",
+      "build[id=team-night]",
+      "build[id=case2-spelling-engine]"
+    ],
+    "note": "Every unforced outcome listed is now forced or ruled; see the build rows."
+  }
+]

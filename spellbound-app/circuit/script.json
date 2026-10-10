@@ -1,7 +1,7 @@
 {
   "season": 1,
   "fiction": "A story about a spelling season. The rivals are made up; the techniques are real.",
-  "status": "DRAFT, review cycle 1 applied (circuit/review/applied.json). Lines changed or added since the three reviews are listed in circuit/review/changed-paths.json for the next cycle. Overrides: AMENDMENTS.md (10 Oct 2026).",
+  "status": "DRAFT, review cycle 2 applied (circuit/review/applied-c2.json; cycle 1: applied.json). Lines changed or added in cycle 2 are listed in circuit/review/changed-paths-c2.json for the next cycle. Overrides: AMENDMENTS.md (10 Oct 2026).",
   "authorNotes": [
     "cast.*.role, suspectBoard.portraits[].clearedBy, fairPlay, rounds[].deliver and every *Note / note field are author-facing. Never render them; they spoil the mystery.",
     "Every key under rounds[].pieces is one on-screen line (≤ 60 words), read aloud by the device voice on a tap (amendment 3). pipWord, clue and beeFileFakeTip are small objects whose string fields are each one line.",
@@ -155,13 +155,13 @@
     "ash": {
       "name": "Ash Lindqvist",
       "age": 12,
-      "tell": "spell in unison, one letter each",
+      "tell": "spell as a pair, one letter each",
       "role": "Ravenmere. Memorised lists. Has never spelled apart from Aria."
     },
     "aria": {
       "name": "Aria Lindqvist",
       "age": 12,
-      "tell": "spell in unison, one letter each",
+      "tell": "spell as a pair, one letter each",
       "role": "Ravenmere. Memorised lists. Has never spelled apart from Ash."
     },
     "arjun": {
@@ -233,7 +233,7 @@
         "drama": "Pip blurts his first word before the Pronouncer has finished it. Round one forgives, so he stays standing. In round two he does it again, and sits down. Then he cheers louder than anyone for every speller left.",
         "laugh": "The Pronouncer: 'Say it back for me.' Pip: 'Say it back for me.' The Pronouncer: 'Not the instructions, Pip.' At his elbow, the Committee's runner doesn't even blink.",
         "suspense": "Before the doors open, the Committee's runner lays a programme on every chair. At the end of the row sits one chair with a card that reads RESERVED. Nobody sits in it.",
-        "above": "You waited. I saw. My nan's rule: say it twice. Once to hear it, once to check you heard it. — Nova",
+        "above": "You beat me. Now wait for the whole word, every time. My nan's rule: say it twice. Once to hear it, once to check you heard it. — Nova",
         "below": "So close. Say it back before your first letter, like the Pronouncer asks. My nan's rule: say it twice. — Nova",
         "v": "Say it back. The chair at the end of the row is waiting for someone. So are you. — V.",
         "dax": "A postcard from the far end of the Circuit: 'Heard you got through the Meadow. The Sprints are mine. — D. (fastest in round one, ask anyone)'",
@@ -267,8 +267,8 @@
       "vWhere": "folded inside your programme",
       "pieces": {
         "inv": "The Grand Archive requests silence, which Theo will not provide. You may ask the Pronouncer for a definition, a sentence, the part of speech. He has to answer.",
-        "prog": "We admire Theo's curiosity. We have ordered more chairs. Our press is run by a typesetter who learned English from a parrot. — Sage",
-        "drama": "Theo asks every question the Pronouncer's chair holds about one word, and spells it perfectly with a second left on the clock. The speller two seats down falls asleep.",
+        "prog": "We admire Theo's curiosity. We have ordered more chairs. Our press is run by a typesetter and a parrot. We are not sure which is in charge. — Sage",
+        "drama": "Theo asks every question the Pronouncer's chair holds about one word, and spells it perfectly with seconds left on the clock. The speller two seats down falls asleep.",
         "laugh": "The Pronouncer, for the eleventh time today: 'Yes, Theo. That one is a noun too.' The runner refills his water glass without being asked.",
         "suspense": "By the Archive door hangs a programme from every season, framed. Eight seasons back, one line: 'Newest speller: Vale Penrallow, aged 8, placed last.'",
         "above": "You beat me. Questions you asked this round: {asked}. Mine: every one the chair holds, every word. Imagine what you'll do when you ask them all. They have to answer. Questions asked this season: 212. — Theo",
@@ -409,14 +409,14 @@
         "laugh": "Hazel rolls into a ball during sudden death. The hall laughs, for the last time today.",
         "suspense": "The hall stays quiet long after the door shuts. A round ago, V. wrote that someone would lose more than a round.",
         "above": "Now you know my weakness. French. Build every word from parts and you'll never crack like I did. I'm going to the Far Shore to fix mine. — K.",
-        "below": "You built it from parts and nearly had me. Prefix, root, suffix: never skip one. I have a weakness now. French. I'm going to the Far Shore to fix it. — K.",
+        "below": "Build every word from its parts and you'll have me next time. Prefix, root, suffix: never skip one. I have a weakness now. French. I'm going to the Far Shore to fix it. — K.",
         "v": "Parts first, then the whole. {weak} And when a strong one breaks, the loud one gets louder. Watch. — V.",
         "dax": "Kwame is already out of the building when Dax says it, loud, in the corridor: 'Told you. Nobody's perfect. Two seasons, gone in one word.' Nobody laughs. Rafi turns his back on him.",
         "pip": "Kwame is unflappable, which means nobody can flip him like a flapjack. (I wrote this before the round. I'm sending it anyway. I still think so.) — Pip",
         "pipWord": {
           "word": "unflappable",
           "misuse": "nobody can flip him like a flapjack",
-          "real": "calm; impossible to upset or fluster"
+          "real": "calm; not easily upset or flustered"
         },
         "cliff": "Kwame's room is empty, his bag still on the bed. The Pronouncer says he's safe, and that's all he'll say. Surprise Stop 3: URGENT.",
         "clue": {
@@ -449,7 +449,7 @@
         "drama": "Ines faces Kwame, the speller she has secretly coached, in the last rounds. She tells the Pronouncer it's the hardest she has ever had to spell against anyone.",
         "laugh": "Salty applauds every word, including the wrong ones. The runner quietly moves the programmes out of splash range.",
         "suspense": "Vesper's letter, two lines: 'Pip is telling everyone I'm V. Not me. I don't write notes. — Vesper.'",
-        "above": "Écoute la fin. Listen to the ending. French hides its letters at the end. You heard them today. — Ines",
+        "above": "Écoute la fin. Listen to the ending. French hides its letters at the end. You beat me today. Listen for them every time. — Ines",
         "below": "Écoute la fin. Ballet ends in a t you never hear. Listen for the quiet letters next time: they're the loudest ones in the word. — Ines",
         "v": "The silent letters are the loudest. Next round, a word none of you has heard. Its parts have. — V.",
         "dax": "Dax sits alone on the dock. Nobody sits with him. He is writing something.",
@@ -487,7 +487,7 @@
         "drama": "The unheard word comes to Suki first, and for the first time ever she freezes. She breathes out, asks all five questions, and spells it right.",
         "laugh": "Ratchet tries to 'borrow' the Pronouncer's microphone mid-round. The runner takes it back without a word. 'Thank you, Vale,' says the Pronouncer.",
         "suspense": "By evening the rumour is everywhere: the word is fake, and Suki's round should be struck. Surprise Stop 4.",
-        "above": "The lights do something to everyone. I breathe out first. Out, not in. You did it today. — Suki",
+        "above": "The lights do something to everyone. I breathe out first. Out, not in. You beat me today, so now you know my trick. — Suki",
         "below": "You'll spell {missed} next time. Breathe out first. Out, not in. Then ask everything. — Suki",
         "v": "Breathe out before the hard ones, not after. And the rumour has one author. He is fast. — V.",
         "dax": "Dax is out of the hall before Suki's last letter, talking fast in the corridor. By evening everyone has heard the rumour. Nobody can say who said it first.",
@@ -528,12 +528,12 @@
       "vWhere": "under the Finish Arch, while it was taped off",
       "turn": "see top-level turn",
       "pieces": {
-        "inv": "The Finish Arch, where everyone starts fast and not everyone finishes that way. The Committee notes that one speller has received a formal warning and will spell under observation.",
+        "inv": "The Finish Arch, where everyone starts fast and not everyone finishes that way. Seated: Dax, fastest in round one. The Committee notes that one speller has received a formal warning and will spell under observation.",
         "prog": "The round will start at the bell. — Dash",
         "drama": "Dax flies through round one, then fades, rocking on his heels, exactly as his tell says. After the last word, the screen cuts straight to the result card.",
         "laugh": "Dash lets himself into the bell room with his own spare key and rings the bell four minutes early. The round starts anyway.",
         "suspense": "The Finish Arch is taped off all morning. At the bell, the runner takes the tape down. Underneath lies a folded card with your name on it, in the slanting hand.",
-        "above": "You went slow on purpose and beat me. I'm sorry about the fake tips. And Theo. And the bell. And Suki. Mostly Suki. — D.",
+        "above": "You beat me. Fast isn't everything; I'm learning that. I'm sorry about the fake tips. And Theo. And the bell. And Suki. Mostly Suki. — D.",
         "below": "I finished ahead of you today, and it doesn't feel like winning. I'm sorry about the fake tips. And Theo. And the bell. And Suki. Mostly Suki. — D.",
         "v": "Steady beat wins late. Not everyone who writes to you wants to beat you. — V.",
         "dax": "His home hall: he sent you that first postcard from here. Under observation, he doesn't whisper a single tip. He doesn't talk to anyone at all.",
@@ -560,6 +560,9 @@
       "headliners": [
         "goldlegend"
       ],
+      "alsoSeated": [
+        "comet"
+      ],
       "technique": "Everything at once: wait, ask, find the origin, take it apart, breathe out, keep the beat.",
       "lesson": "Championship Vocabulary: The Final 10",
       "lessonGi": 111,
@@ -570,12 +573,12 @@
         "inv": "The final. Every speller you have met will be in the hall. Seated in chair one: Vesper, defending champion. Curtain up at seven.",
         "prog": "The management regrets nothing. — Duchess",
         "drama": "Halfway through, the Grand Marquee's lights go out. The round goes on by voice alone, and Theo's way becomes everyone's way: ask first, spell second. Then Vesper, who has never asked for anything, speaks into the dark: 'Language of origin, please.' The hall goes silent.",
-        "laugh": "Pip, in the dark: 'Good. Now nobody can see me start early.'",
+        "laugh": "Pip, in the dark: 'Good. Now nobody can see me jump.'",
         "suspense": "The championship word arrives in a new envelope, sealed in front of everyone last night and carried in by the runner. Finish above Vesper and it's yours to spell; finish below and it's hers. Either way, the card shows the word, its origin and the technique that cracks it.",
-        "above": "You beat me by asking. I stopped asking the year I won, because it felt weak. Watching you ask everything was annoying. Then useful. The violet pen was mine. Keep it. — Vesper",
-        "below": "I won because I asked, the first time in a year. You asked everything all season. Annoying. Then useful. The violet pen was mine. You were writing in pencil; it was painful to watch. Keep it. — Vesper",
-        "v": "You asked everything tonight. Ask one more: who was there every single round? — V.",
-        "dax": "In the dark, Dax stops rocking on his heels. 'Could I have the definition, please?' Theo, somewhere to his left: 'Your first. I'm on 1,977.'",
+        "above": "You beat me. I stopped asking the year I won, because it felt weak. Watching this Circuit ask everything was annoying. Then useful. The violet pen was mine. Keep it. — Vesper",
+        "below": "I won because I asked, the first time in a year. This Circuit asked everything all season. Annoying. Then useful. The violet pen was mine. You were writing in pencil; it was painful to watch. Keep it. — Vesper",
+        "v": "Ask everything. Then ask one more: who was there every single round? — V.",
+        "dax": "In the dark, Dax stops rocking on his heels. 'Could I have the definition, please?' Theo, somewhere in the dark: 'Your first. I'm on 1,977.'",
         "pip": "Vesper is formidable. I looked it up. It means what it sounds like. — Pip",
         "pipWord": {
           "word": "formidable",
@@ -651,10 +654,11 @@
       "engine": "Spelling Gym · Spot the Error",
       "engineKey": "gym/spot",
       "theme": "The Library, 'every rule English wrote down': proofreading by the rules.",
+      "lateLine": "The night the list lied.",
       "clock": "The Colosseum round is at 9:00, and the Pronouncer reads from paper.",
       "impossible": "Every word on the only list is misspelled. The press was locked, and the printer swears he checked.",
       "taps": [
-        "Sage's programme, still on the desk: 'Our press is run by a typesetter who learned English from a parrot.'",
+        "Sage's programme, still on the desk: 'Our press is run by a typesetter and a parrot. We are not sure which is in charge.'",
         "A perch beside the typesetter's stool. On it, one green feather.",
         "Theo's chair by the press, and a stack of definition cards in his neat hand."
       ],
@@ -674,7 +678,7 @@
       ],
       "falseSolution": "Theo tampered with it. Dax says so first, and loudest.",
       "planted": [
-        "Round II programme (Sage): 'Our press is run by a typesetter who learned English from a parrot.'",
+        "Round II programme (Sage): 'Our press is run by a typesetter and a parrot. We are not sure which is in charge.' With the perch and the green feather (taps), it puts a parrot at the press; the reveal says it dictated.",
         "Round II V. note: 'Tonight the list will lie to you. Read it twice.'"
       ],
       "escalation": "11:40 p.m. The backup list turns up. It's misprinted too, in exactly the same places.",
@@ -774,9 +778,10 @@
       "title": "The Bell That Went Missing",
       "act": "storm",
       "place": "the Eye of the Storm",
-      "engine": "Word Lore · Origins",
-      "engineKey": "lore/origins",
+      "engine": "Spelling Gym · Warm-up",
+      "engineKey": "gym/warmup",
       "theme": "The Storm, 'Greek blows in like weather': a Greek clue trail.",
+      "lateLine": "The night the bell went missing.",
       "clock": "The Committee's coach leaves for the Root Throne in 30 minutes, and Kwame's round can't start without a bell. No bell, no bee.",
       "impossible": "The bell vanished from a locked glass case, and the glass is unbroken.",
       "taps": [
@@ -858,9 +863,9 @@
             "rule": "ph, y"
           },
           {
-            "clue": "the small thing on a stand that a speller speaks into, so the whole hall can hear",
-            "word": "microphone",
-            "greek": "mikros (small) + phone (sound)",
+            "clue": "a cone you shout through, so your voice carries to the far end of a field",
+            "word": "megaphone",
+            "greek": "megas (great) + phone (sound)",
             "rule": "ph"
           },
           {
@@ -899,6 +904,7 @@
       "engine": "Word Lore · Origins",
       "engineKey": "lore/origins",
       "theme": "The Strait, 'words that came ashore': loanwords.",
+      "lateLine": "The day Kwame walked out.",
       "clock": "Kwame must sign in at the Far Shore by sundown, or he's off the Circuit.",
       "impossible": "His bag is still on his bed, but he's gone. All he left is a note written in loanwords.",
       "safeLine": "He's safe. Kwame told Hazel where he was going on his way out, and she told the Pronouncer at once, so the grown-ups know. What nobody will tell you is where.",
@@ -979,7 +985,7 @@
       "reveal": [
         "He took the early ferry across the Strait to practise French with Ines's cousin, who teaches it on the Far Shore.",
         "Ines admits the coaching. Kwame asked her to keep it quiet, and she did.",
-        "Hazel nods. Kwame told her where he was going, and she told the Pronouncer the minute he left. The grown-ups knew he was safe all along; only the team didn't.",
+        "Hazel nods. Kwame told her where he was going, and she told the Pronouncer the minute he left. The grown-ups knew where he was all along; only the team didn't.",
         "Kwame signs in at the Far Shore with minutes to spare."
       ],
       "lastChill": "On the dock you glimpse Dax, alone, reading a card he doesn't show anyone."
@@ -993,6 +999,7 @@
       "engine": "Word Forge (once signed off), else Word Lore · Roots",
       "engineKey": "forge|lore/roots",
       "theme": "The Junkyard, 'everything ever made has a name': words built from parts.",
+      "lateLine": "The night the rumour broke.",
       "clock": "The Committee rules at noon. If the word is fake, Suki's round is struck.",
       "impossible": "The dictionary page where the word should be is missing.",
       "taps": [
@@ -1007,7 +1014,7 @@
         },
         {
           "who": "astro",
-          "secret": "She's sure the word is Greek, but not sure of one small part, kai, and hides it."
+          "secret": "She's sure it's built from Greek, but not sure of one small part, kai, and hides it."
         },
         {
           "who": "panda",
@@ -1119,6 +1126,7 @@
       "engine": "Spelling Gym · Spot the Error",
       "engineKey": "gym/spot",
       "theme": "The Big Stage, 'endings decide everything': the lie is a wrong ending.",
+      "lateLine": "The night before the final.",
       "clock": "The Committee meets at 7:00 tonight. If anyone has seen the championship word, tomorrow's final is void.",
       "impossible": "At five, the runner carried the sealed envelope into a dressing room and came out; the Pronouncer locked the door. The only key stayed on his belt all night. Now the envelope lies open on the floor, and Duchess is asleep on the top shelf.",
       "taps": [
@@ -1153,7 +1161,7 @@
       ],
       "escalation": "6:15. The Pronouncer has a new word ready to seal, but Vesper won't spell tomorrow unless her name is cleared.",
       "puzzle": {
-        "brief": "Ten statements from four people. Check each ending: -ance or -ence, -able or -ible, -ant or -ent. Every statement with a wrong ending is a lie. Rule people out, then choose what happened.",
+        "brief": "Ten statements from four people. Check each ending: -ance or -ence, -able or -ible, -ant or -ent. Every statement with a wrong ending is untrue. Rule people out, then choose what happened.",
         "items": [
           {
             "who": "goldlegend",
@@ -1251,7 +1259,7 @@
   "teamNight": {
     "act": "stage",
     "venue": "the Grand Marquee",
-    "opens": "Once Round IX is done, at any placing. Replayable against Ravenmere's second team with a short programme; the story does not repeat.",
+    "opens": "Once Round IX is done, at any placing. The sting and stingAfter wait for the accusation's closing letter (build[id=story-order]): played first, they arrive as the next mail once the accusation is solved. Replayable against Ravenmere's second team with a short programme; the story does not repeat.",
     "challenge": "A navy envelope with a silver crest: 'Ravenmere Academy challenges the Bee Circuit to a Team Bee. Tomorrow night. Your hall. Do try to keep up. — Sloane, Captain.'",
     "challengeNote": "The same card as rounds[8].pieces.cliff; it is the Team Night invitation.",
     "beats": {
@@ -1262,22 +1270,22 @@
         "Dax says nothing for a long beat. Then: 'Yes. And I know exactly how fast I am, and where I fall apart. That's why I shouldn't spell every word. Nobody should.'"
       ],
       "idea": "Dax's plan, learned from losing: 'Speed is nothing. Who takes the word is everything.' Each word goes to the speller who knows its language; the steady-beat words, the ones nobody at the lectern owns, go to you. He captains from the bench and spells none himself. Team Bee rules: a tiebreaker may go to anyone on the roster.",
-      "ravenmere": "Ravenmere arrive in navy blazers and silver pins. Sloane, at the door: 'Circuit kids learn on a map. How sweet.' She never asks a question twice. The Lindqvist twins spell in unison, a letter each. Arjun names the origin before the Pronouncer finishes. Mei writes every word in the air. Flawless, and certain.",
-      "callRules": "The Pronouncer, before the first word: 'Two more Team Bee rules. When I give an origin, the first language I name is the call: French, from Latin, is a French word. And each team has one second try a night.'",
+      "ravenmere": "Ravenmere arrive in navy blazers and silver pins. Sloane, at the door: 'Circuit kids learn on a map. How sweet.' She never asks a question twice. The Lindqvist twins spell as a pair, one letter each. Arjun names the origin before the Pronouncer finishes. Mei writes every word in the air. Flawless, and certain.",
+      "callRules": "The Pronouncer, before the first word: 'Three more Team Bee rules. When I give an origin, the first language I name is the call: French, from Latin, is a French word. A call may be changed until the speller says a letter. And each team has one second try at a spelling a night.'",
       "drama": {
         "8-10": "Ravenmere leads all night. In the last round Dax takes one call himself: Latin, to Rafi. It's Greek. Sloane raises an eyebrow. Rafi's finger stops on his palm. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Mira. She spells it.",
         "11-15": "Ravenmere leads all night. In the last round Dax takes one call himself: Latin, to Kwame. It's French. Sloane raises an eyebrow. Kwame's hands tighten behind his back. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Ines. She spells it."
       },
       "levelling": "The word before the tiebreaker is yours. You spell it, and the score is level.",
-      "levellingMiss": "One letter slips. Dax, from the bench: 'Breathe out. Second try.' You breathe out, ask everything, and spell it right. The score is level.",
+      "levellingMiss": "One letter slips. Dax, from the bench: 'Breathe out. Second try. Ask anything you need.' This time it ends right, and the score is level.",
       "finalWord": "The tiebreaker comes down to Sloane and the Circuit. Team Bee rules: the captain may call it to anyone on the roster. Dax calls it to Vesper, the champion who never asks. In front of everyone, Vesper asks three questions. She spells it right. The Circuit wins.",
       "after": [
         "Sloane, who has never lost: 'Accuracy is manners. So is losing, apparently.'",
         "The last letter of the season, on navy card: 'Next season. Our hall. Our list. Ravenmere does not lose twice. — Sloane'"
       ],
       "daxPostcard": "Steady beat. You showed us how tonight. — D. (captain, ask anyone)",
-      "sting": "Later, in the empty Grand Marquee, Vale and the Pronouncer are stacking chairs beside you when one more note slides under the door. A different hand, small and careful, in pencil: 'There were always two of us. — V.' Vale reads it twice. 'That isn't mine.' For the first time all season, the Pronouncer looks surprised.",
-      "stingAfter": "The Pronouncer, quietly: 'Then next season we find out who. Together, and in the open. Any note you ever get, you can show me.'",
+      "sting": "Later, while the Committee clears the Grand Marquee, Vale and the Pronouncer are stacking chairs beside you when one more note slides under the door. A different hand, small and careful, in pencil: 'There were always two of us. — V.' Vale reads it twice. 'That isn't mine.' For the first time all season, the Pronouncer looks surprised.",
+      "stingAfter": "The Pronouncer, quietly: 'Then next season we find out who. Together, and in the open. Any note you ever get, you can show me, or any grown-up you trust.'",
       "mei": "Folded into your programme, a tiny note in neat pencil: 'Your captain is good. Don't tell Sloane I said so. — M.'",
       "coda": "The Atlas chip changes to 'The Bee Circuit · Season 2: Ravenmere'. On the Meadow board, the RESERVED chair is back, waiting for someone new."
     },
@@ -1364,12 +1372,12 @@
       }
     ],
     "rules": [
-      "The child plays the captain's caller: from the definition and the Ask-the-Pronouncer answers, pick the call. A right call sends the word to that seat; a wrong call sends it to the wrong seat, whose simulated chance falls.",
+      "The child plays the captain's caller: from the definition and the Ask-the-Pronouncer answers, pick the call. A right call sends the word to that seat; a wrong call sends it to the wrong seat, whose simulated chance falls. A call may be changed until the speller says a letter, by Dax or by the child (callRules says so).",
       "Every third word is the child's own to spell (steady beat). The word before the tiebreaker is the child's and is always one the bee file shows mastered.",
       "The Circuit always wins narrowly; Ravenmere's misses are seeded so the last words decide it. The child's play changes the margin, the lines and the stamp, never the outcome.",
       "Contest coins pay only on the child's own spelled words and right calls. The bee file afterwards shows origin-calling accuracy.",
       "A call is graded on the first language the Pronouncer names (the direct donor, as Case 3 rules): 'French, from Latin' is a French call. callRules says so on screen before the first word.",
-      "Each team has one second try a night. The child's levelling word uses it on a miss, with the cases' escalating help (Ask Theo, Ask Mira… then the answer shown), so the word always ends right and the score is level (levellingMiss)."
+      "Each team has one second try at a spelling a night, reserved for the child's levelling word; teammates' simulated misses never spend it. On a miss it carries the cases' escalating help, asked of the teammates at that band's lectern, then the answer shown, so the word always ends right and the score is level (levellingMiss)."
     ],
     "ravenmereRoster": [
       {
@@ -1384,14 +1392,14 @@
         "id": "ash",
         "name": "Ash Lindqvist",
         "age": 12,
-        "tell": "spell in unison, one letter each",
+        "tell": "spell as a pair, one letter each",
         "speciality": "memorised lists"
       },
       {
         "id": "aria",
         "name": "Aria Lindqvist",
         "age": 12,
-        "tell": "spell in unison, one letter each",
+        "tell": "spell as a pair, one letter each",
         "speciality": "memorised lists"
       },
       {
@@ -1458,7 +1466,7 @@
       "sprints": "Three words, {w1}, {w2} and {w3}: steady beat, no false start. That makes one of us. — Dash",
       "stage": "The management has reviewed {w1}, {w2} and {w3}, and regrets nothing. Curtain. — Duchess"
     },
-    "postcardNote": "junkyard keeps one deliberate misprint (borrowed), in character; the child's own words are always printed correctly.",
+    "postcardNote": "junkyard keeps one deliberate misprint (borrowed), in character; the child's own words are always printed exactly as the library spells them, capitals included.",
     "diary": [
       "Level up. Same routine, one level deeper: say it, spell it, say it again.",
       "Level up. Somewhere, a tally of questions just went up by one.",
@@ -1471,7 +1479,7 @@
       "Level up. Fast is a start; this was earned at a steady pace.",
       "Level up. Say it back, then spell it: the routine still works."
     ],
-    "beeFileIntro": "The bee file: the Pronouncer's scouting report, for you and anyone you show it to. Every word you spelled in this round, the one that beat you, why it did, and the technique that would have caught it. Missed words go to your revision pile.",
+    "beeFileIntro": "The bee file: the Pronouncer's scouting report, for you and anyone you show it to. Every word you spelled in this round and, if one beat you, why it did and the technique that would have caught it. One tap puts your missed words on your revision pile.",
     "beeFileFakeTipIntro": "Corridor tip, checked."
   },
   "slotLines": {
@@ -1483,13 +1491,13 @@
         "gk": "You spell Greek the way it sounds.",
         "end": "You guess the ending.",
         "dbl": "You lose count of double letters.",
-        "vow": "You guess the quiet vowels.",
+        "vow": "You mix up vowel teams: ie or ei, ough or augh, and three vowels in a row.",
         "hom": "You spell the sound, not the meaning.",
         "epon": "Words named after people catch you out."
       },
       "byRound": {
-        "2": "You guess instead of asking.",
-        "5": "You skip the suffix."
+        "2": "No weak spot yet. Still, ask before you spell.",
+        "5": "No weak spot yet. Never skip the suffix."
       }
     }
   },
@@ -1501,7 +1509,7 @@
       "figure": "Atlas",
       "word": "atlas",
       "kind": "classical-myth",
-      "card": "To the ancient Greeks, Atlas was a Titan who held up the sky. Later tellings made him a wise king of Mauretania who studied the stars. In 1595 Gerardus Mercator named his book of maps Atlas in that king's honour, and the word came to mean any book of maps.",
+      "card": "To the ancient Greeks, Atlas was a Titan who held up the sky. Later tellings made him a wise king of Mauretania who studied the stars. Gerardus Mercator named his book of maps Atlas in that king's honour. It came out in 1595, the year after he died, and the word came to mean any book of maps.",
       "sources": [
         {
           "type": "primary",
@@ -1509,7 +1517,7 @@
         },
         {
           "type": "primary",
-          "ref": "Gerardus Mercator, Atlas sive Cosmographicae Meditationes (Duisburg, 1595)"
+          "ref": "Gerardus Mercator, Atlas sive Cosmographicae Meditationes (Duisburg, 1595), left unfinished at his death and published by his son Rumold"
         },
         {
           "type": "dictionary",
@@ -1522,6 +1530,14 @@
         {
           "type": "reference",
           "ref": "Encyclopaedia Britannica, 'atlas (maps)'"
+        },
+        {
+          "type": "reference",
+          "ref": "Encyclopaedia Britannica, 'Gerardus Mercator' (died 2 December 1594, Duisburg)"
+        },
+        {
+          "type": "reference",
+          "ref": "Library of Congress, Atlas sive Cosmographicae Meditationes (1595): 'edited and published by his son, Rumold Mercator, in 1595' (loc.gov/item/map55000728)"
         }
       ]
     },
@@ -2103,7 +2119,7 @@
     "daxReformOnScreen": [
       "r8 the turn: admits why he rushes, shows V.'s notes, apologises to the child, Theo, Suki and Kwame by name",
       "c5: spots Dash's key and clears Vesper",
-      "r9: asks his first question",
+      "r9: asks his first question (every band: Round IX seats him in every band)",
       "teamNight: owns his record in front of the team, captains from the bench, does not panic on a wrong call"
     ],
     "vNotes": [
@@ -3099,12 +3115,178 @@
       "review": [
         "r3-fairplay.md: What the validator already checks, and what this review adds"
       ]
+    },
+    {
+      "where": "rounds[1].pieces.prog, cases[0].taps[0], cases[0].planted[0]",
+      "change": "Sage's programme: 'Our press is run by a typesetter and a parrot. We are not sure which is in charge.' The tap quotes it; the perch and feather still put the parrot at the press.",
+      "why": "The parrot joke laughed at how a person learned English (c2 lens 1, fix 5).",
+      "lens": [
+        "c2-r1-safety"
+      ],
+      "review": [
+        "cases[0].taps[0]"
+      ]
+    },
+    {
+      "where": "teamNight.beats.sting, stingAfter; build[id=story-order].holds; teamNight.opens",
+      "change": "The sting happens while the Committee clears the Grand Marquee; the Pronouncer says any note can be shown to him or any grown-up the child trusts. Both wait for the accusation's closing letter.",
+      "why": "No empty building at night with a note from an unknown writer (lens 1); Vale's \"That isn't mine\" named her before the child could (lens 3). Decision.",
+      "lens": [
+        "c2-r1-safety",
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "teamNight.beats.sting",
+        "teamNight.beats.stingAfter",
+        "build:story-order"
+      ]
+    },
+    {
+      "where": "slotLines.weak.byRound.2, .5, byFamily.vow; build[id=slots]",
+      "change": "Fallbacks open 'No weak spot yet.' and give advice; vow names ie/ei, ough/augh and three-vowel runs; plain misses are not ranked; slot words print as the library spells them, capitals included.",
+      "why": "The fallbacks rebuked exactly the children with no weak spot; vow misnamed app3's family; lower case misprinted Wednesday.",
+      "lens": [
+        "c2-r1-safety",
+        "c2-r2-accuracy",
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "slotLines.weak.byRound.2",
+        "slotLines.weak.byRound.5",
+        "slotLines.weak.byFamily.vow",
+        "build:slots"
+      ]
+    },
+    {
+      "where": "visitors[0].card, sources",
+      "change": "Mercator named the Atlas; it came out in 1595, the year after he died (his son Rumold published it).",
+      "why": "Mercator died on 2 December 1594 (lens 2, fix 1).",
+      "lens": [
+        "c2-r2-accuracy"
+      ],
+      "review": [
+        "visitors[0].card"
+      ]
+    },
+    {
+      "where": "cast.ash.tell, cast.aria.tell, teamNight.ravenmereRoster[1–2].tell, teamNight.beats.ravenmere; ownerQuestions[id=twins-tell]",
+      "change": "The twins 'spell as a pair, one letter each'. validate.cjs reads §4.2 through the recorded revision.",
+      "why": "'In unison' means together, at the same time, which one letter each cannot be. Revises BEE-CIRCUIT.md §4.2 and §8.1 (not edited); decision, recorded for the owner.",
+      "lens": [
+        "c2-r2-accuracy"
+      ],
+      "review": [
+        "cast.ash.tell",
+        "cast.aria.tell",
+        "teamNight.beats.ravenmere"
+      ]
+    },
+    {
+      "where": "rounds[4].pieces.pipWord.real; hivePost.beeFileIntro",
+      "change": "unflappable: 'calm; not easily upset or flustered'. The bee file names the word that beat you only if one did, and says one tap puts missed words on the revision pile.",
+      "why": "'Impossible to upset' was imperturbable's meaning; Mock Bee files missed words from a button; a winner has no word that beat them.",
+      "lens": [
+        "c2-r2-accuracy",
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "rounds[4].pieces.pipWord.real",
+        "hivePost.beeFileIntro"
+      ]
+    },
+    {
+      "where": "cases[1].puzzle.items[8], cases[1].engine/engineKey; build[id=case-origins-authored], [id=case2-spelling-engine]",
+      "change": "microphone → megaphone ('a cone you shout through…', megas + phone). Case 2 runs on the Spelling Gym's Warm-up. The case-origins rule names the three library non-Greek items and the full Case 3 exclusions (cafe, ballet, piano, catamaran).",
+      "why": "Mock Bee prints 'microphone' in every hall, in the clue's own context; the data named the Origins quiz the build forbids; the exclusions were incomplete.",
+      "lens": [
+        "c2-r2-accuracy",
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "cases[1].puzzle.items[8].word",
+        "build[id=case-origins-authored]",
+        "build:case2-spelling-engine"
+      ]
+    },
+    {
+      "where": "rounds[1].pieces.drama, rounds[7].pieces.inv, cases[2].reveal[2], teamNight.beats.callRules, levellingMiss, teamNight.rules[0], [5]",
+      "change": "Theo spells with seconds left; the Finish Arch invitation seats Dax; the grown-ups knew where Kwame was; a call may be changed until the speller says a letter, and the second try is a spelling retry; levellingMiss says what the mechanic guarantees.",
+      "why": "Continuity and fair play (lens 3).",
+      "lens": [
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "rounds[1].pieces.drama",
+        "rounds[7].pieces.inv",
+        "cases[2].reveal[2]",
+        "teamNight.beats.callRules",
+        "teamNight.beats.levellingMiss"
+      ]
+    },
+    {
+      "where": "rounds[8] (alsoSeated, dax, laugh, v, above, below); build[id=hall-fields], [id=scripted-outcomes]; ownerQuestions[id=round9-unseated-lines]",
+      "change": "Dax is seated in every band's final; Theo answers 'somewhere in the dark'; Pip: 'Now nobody can see me jump.'; micLines deleted. V. and Vesper's letters no longer say the child asked.",
+      "why": "Lens 3's Round IX recommendation (decision); no-placing extended to claimed actions.",
+      "lens": [
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "r3-fairplay:season/ROUND IX",
+        "build:no-placing"
+      ]
+    },
+    {
+      "where": "rounds[0].pieces.above, rounds[4].pieces.below, rounds[5].pieces.above, rounds[6].pieces.above, rounds[7].pieces.above",
+      "change": "The result letters no longer report what the child did in the hall (waited, built it from parts, heard the endings, breathed out, went slow); each gives the rival's advice instead.",
+      "why": "build[id=no-placing] now covers claimed actions (asked, waited, breathed out); these five broke it.",
+      "lens": [
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "build:no-placing"
+      ]
+    },
+    {
+      "where": "cases[].lateLine (new); cases[3].suspects[1].secret; cases[4].puzzle.brief",
+      "change": "Each case has the line it opens with when played late ('The night the bell went missing.'). Mira is sure the word is built from Greek. Case 5's brief says a wrong ending is untrue, not a lie.",
+      "why": "Cases never expire, so a late clock needs its night (lens 3, story-order); Mira's secret now renders and the library calls the word English; lens 1's residue.",
+      "lens": [
+        "c2-r3-fairplay",
+        "c2-r1-safety"
+      ],
+      "review": [
+        "build:story-order",
+        "build:case-scenes",
+        "build:scripted-outcomes"
+      ]
+    },
+    {
+      "where": "build: story-order, hall-fields, scripted-outcomes, slots, no-placing, case-origins-authored, case2-spelling-engine, case-scenes, team-night, signoff-upright",
+      "change": "Cycle 2 build fixes: the sting held; late-case lines; Round VII names triskaidekaphobia and Suki's five requests; Round IX forces Dax and Pip standing, rivals asking, Vesper's tell unread and the Vesper-misses-first branch; Round VIII cuts to the result card; suspect cards show tells and reveals every secret; no Ask Kwame; the re-call rule; upright hands.",
+      "why": "c2-r3-fairplay build rows.",
+      "lens": [
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "build:*"
+      ]
+    },
+    {
+      "where": "tools/circuit/validate.cjs",
+      "change": "Cycle 2 checks: Mock Bee's on-screen lines count as seen before a case; invitations name headliners; Team Night lines naming Vale are held; cases have a lateLine; callRules states the re-call; twins read §4.2 through the revision; fallbacks open 'No weak spot yet.'; no lower case; no claimed action; Case 2's engine; origins lists; Dax seated; sting in company.",
+      "why": "The cheap checks c2-r3-fairplay.md proposes, and the decisions taken.",
+      "lens": [
+        "c2-r3-fairplay"
+      ],
+      "review": [
+        "c2-r3-fairplay.md: What validate.cjs could add"
+      ]
     }
   ],
   "build": [
     {
       "id": "story-order",
-      "rule": "Mail arrives in story order. A hall, and its invitation, opens only after the previous hall's mail has been delivered (Round N waits on Round N−1's mail, as well as on reaching its own leg 4). A case pin appears only after its trigger round's mail. This is a hall waiting on a hall: no stop, region, game or word waits on it, so L2 holds.",
+      "rule": "Mail arrives in story order. A hall, and its invitation, opens only after the previous hall's mail has been delivered (Round N waits on Round N−1's mail, as well as on reaching its own leg 4). A case pin appears only after its trigger round's mail. This is a hall waiting on a hall: no stop, region, game or word waits on it, so L2 holds. Team Night's sting and stingAfter play only after the accusation's closing letter has been delivered: if Team Night is played first, they wait, and arrive as the next mail once the accusation is solved, so no Team Night line names Vale before the child does (holds). A case opened after its next round's mail opens with its lateLine (cases[].lateLine, such as 'The night the bell went missing.'), so its URGENT clock reads as then; cases never expire. Both are a story beat waiting on a story beat, which L2 allows.",
       "why": [
         "r3-fairplay:season/STORY ORDER",
         "r3-fairplay:rounds[0].pieces.dax",
@@ -3112,13 +3294,26 @@
         "r3-fairplay:rounds[3].pieces.inv",
         "r3-fairplay:rounds[5].pieces.cliff",
         "r3-fairplay:rounds[5].pieces.v (pass, needs story order)",
-        "r3-fairplay:rounds[6].pieces.inv (pass, needs story order)"
+        "r3-fairplay:rounds[6].pieces.inv (pass, needs story order)",
+        "c2-r3-fairplay:build:story-order",
+        "c2-r3-fairplay:teamNight.beats.sting",
+        "c2-r3-fairplay:season/CONTINUITY"
       ],
-      "test": "A bot reaches leg 4 of the Junkyard with Rounds V and VI unplayed: no Round VII invitation and no Junkyard hall pin until Round VI's mail is delivered; then both. Round VI's V. note always lands before Round VII's invitation, and Round III's cliff before Round IV's invitation. Proved by breaking: open halls on leg 4 alone and the bot meets Round VII's invitation first."
+      "test": "A bot reaches leg 4 of the Junkyard with Rounds V and VI unplayed: no Round VII invitation and no Junkyard hall pin until Round VI's mail is delivered; then both. Round VI's V. note always lands before Round VII's invitation, and Round III's cliff before Round IV's invitation. Proved by breaking: open halls on leg 4 alone and the bot meets Round VII's invitation first. Team Night first: a bot that plays Team Night before accusing never sees 'Vale' in a Team Night beat, and gets the sting and stingAfter as the next mail after the closing letter. A bot that opens Case 2 after Round V's mail sees its lateLine before the clock. Proved by breaking: deliver the sting at Team Night and the bot reads 'Vale reads it twice' before naming V. validate.cjs checks that every Team Night line naming Vale is held until the closing letter, and that every case has a lateLine.",
+      "holds": [
+        {
+          "paths": [
+            "teamNight.beats.sting",
+            "teamNight.beats.stingAfter"
+          ],
+          "until": "accusation.closingLetter",
+          "why": "Vale reads the note and says 'That isn't mine', which names her as V.; Team Night and the accusation both open after Round IX."
+        }
+      ]
     },
     {
       "id": "hall-fields",
-      "rule": "Who sits in each hall, per age band: the band's mockbee field, plus the round's headliners and alsoSeated, who are always seated. Vesper's chair is empty in Rounds I–VIII in every band (she is taken out of the 11–15 field), and Round IX seats the band's field plus Vesper. The chair numbers an invitation names are kept (Round I: Pip 2, Nova 3; Round III: Rafi 4; Round IV: Mira 1; Round IX: Vesper 1), and in Round V the child sits beside Kwame. An invitation names only a rival seated in every band that round (Round IV names Vesper as not seated, on purpose). In Round IX a line that puts a rival at the microphone is delivered only in a band whose Round IX field seats that rival (micLines).",
+      "rule": "Who sits in each hall, per age band: the band's mockbee field, plus the round's headliners and alsoSeated, who are always seated. Vesper's chair is empty in Rounds I–VIII in every band (she is taken out of the 11–15 field), and Round IX seats the band's field plus Vesper. The chair numbers an invitation names are kept (Round I: Pip 2, Nova 3; Round III: Rafi 4; Round IV: Mira 1; Round IX: Vesper 1), and in Round V the child sits beside Kwame. An invitation names only a rival seated in every band that round (Round IV names Vesper as not seated, on purpose). Round IX also seats Dax in every band (alsoSeated, which adds a seat only at 6–7), so his first question (rounds[8].pieces.dax) is delivered in every band. Theo answers it 'somewhere in the dark' and Pip's blackout line needs no seat, because Round IX shows the rest of the Circuit as a visible audience in every band: its invitation says every speller the child has met is in the hall. No Round IX line is gated by band.",
       "why": [
         "r3-fairplay:season/SCRIPTED HALL OUTCOMES",
         "r3-fairplay:rounds[4].pieces.inv",
@@ -3127,9 +3322,11 @@
         "r3-fairplay:rounds[0].pieces.suspense (pass, needs Vesper out of the 11–15 field)",
         "r3-fairplay:rounds[8].pieces.inv (pass, needs seats)",
         "r3-fairplay:rounds[8].pieces.laugh (pass, needs Pip seated)",
-        "r3-fairplay:rounds[8].pieces.dax (pass, needs Dax and Theo seated)"
+        "r3-fairplay:rounds[8].pieces.dax (pass, needs Dax and Theo seated)",
+        "c2-r3-fairplay:season/ROUND IX OWNER QUESTION (round9-unseated-lines, recommendation taken)",
+        "c2-r3-fairplay:build:hall-fields (pass: a visible audience at 6–7)"
       ],
-      "test": "For every band and round, the hall's seated field equals fields[band][n]; Vesper is never seated before Round IX; every name in an invitation is seated in that hall in every band (validate.cjs checks the script side). Round IX shows rounds[8].pieces.dax (Dax asks, Theo answers with his tally) only at 11–15, and rounds[8].pieces.laugh (Pip) only at 6–7 and 8–10. Proved by breaking: seat Vesper in Round I at 11–15, and put 'Dax spells today' back into Round V's invitation.",
+      "test": "For every band and round, the hall's seated field equals fields[band][n]; Vesper is never seated before Round IX; every name in an invitation is seated in that hall in every band (validate.cjs checks the script side). Round IX seats Dax in every band, shows the rest of the Circuit as its audience, and delivers every Round IX line in every band. Proved by breaking: seat Vesper in Round I at 11–15, and put 'Dax spells today' back into Round V's invitation. Drop comet from Round IX's alsoSeated and validate.cjs fails.",
       "fields": {
         "6-7": {
           "1": [
@@ -3191,6 +3388,7 @@
             "koi",
             "beaker",
             "panda",
+            "comet",
             "goldlegend"
           ]
         },
@@ -3364,26 +3562,6 @@
         "4": [
           "goldlegend"
         ]
-      },
-      "micLines": {
-        "rounds[8].pieces.laugh": {
-          "rivals": [
-            "pixel"
-          ],
-          "bands": [
-            "6-7",
-            "8-10"
-          ]
-        },
-        "rounds[8].pieces.dax": {
-          "rivals": [
-            "comet",
-            "scopey"
-          ],
-          "bands": [
-            "11-15"
-          ]
-        }
       }
     },
     {
@@ -3400,9 +3578,12 @@
         "r3-fairplay:rounds[8].pieces.drama (pass, depends)",
         "r3-fairplay:rounds[8].pieces.suspense",
         "r3-fairplay:rounds[8].pieces.below (pass, needs Vesper to outlast)",
-        "r3-fairplay:rounds[1].pieces.drama"
+        "r3-fairplay:rounds[1].pieces.drama",
+        "c2-r3-fairplay:build:scripted-outcomes",
+        "c2-r3-fairplay:rounds[1].pieces.drama",
+        "c2-r3-fairplay:season/BUILD SUFFICIENCY"
       ],
-      "test": "Run every hall on 50 seeds in each band with a bot that wins and a bot that misses its first word after round one: every forced outcome below happens, and every drama line is true of the hall log. Proved by breaking: drop one round's script and its drama line is false on most seeds.",
+      "test": "Run every hall on 50 seeds in each band with a bot that wins and a bot that misses its first word after round one: every forced outcome below happens (the bot logs each one: Round VII's word and Suki's five requests, Round VIII's cut to the result card, Round IX's standing rivals, their requests, Vesper's tell and the Vesper-misses-first branch), and every drama line is true of the hall log. Proved by breaking: drop one round's script and its drama line is false on most seeds.",
       "outcomes": [
         {
           "round": 1,
@@ -3456,16 +3637,18 @@
           "lines": [
             "rounds[6].pieces.drama",
             "rounds[6].pieces.inv",
-            "rounds[5].pieces.v"
+            "rounds[5].pieces.v",
+            "cases[3].puzzle.brief"
           ],
-          "force": "The round holds one word outside every word the child has met (the unheard word, built from parts the round's lesson teaches). It goes to Suki before it can reach the child, and she spells it right."
+          "force": "The unheard word is triskaidekaphobia, the word Case 4 disputes: outside every word the child has met, and built from parts the round's lesson teaches. It goes to Suki before it can reach the child, and is never served to the child. Her turn shows five Pronouncer's Chair requests (definition, sentence, part of speech, origin, alternate pronunciation) before she spells it right. Her origin request is answered as the library gives it ('English'); Case 4's 'every part is Greek' is about the word's parts, which agrees.",
+          "word": "triskaidekaphobia"
         },
         {
           "round": 8,
           "lines": [
             "rounds[7].pieces.drama"
           ],
-          "force": "Dax spells every round-one word right and misses in a later round; he never stands at the cap."
+          "force": "Dax spells every round-one word right and misses in a later round; he never stands at the cap. After the last word, the hall skips its recap animation and opens the result card."
         },
         {
           "round": 9,
@@ -3473,15 +3656,18 @@
             "rounds[8].pieces.drama",
             "rounds[8].pieces.suspense",
             "rounds[8].pieces.above",
-            "rounds[8].pieces.below"
+            "rounds[8].pieces.below",
+            "rounds[8].pieces.dax",
+            "rounds[8].pieces.laugh",
+            "rounds[8].pieces.v"
           ],
-          "force": "The lights go out halfway through; on her next turn Vesper asks for the language of origin. Vesper outlasts every other rival. If the child goes out before her, Vesper wins the final and spells the championship word. If the cap falls with both standing, there are no co-champions: the championship word goes to the child and decides it (right: above; wrong: Vesper spells it: below)."
+          "force": "The lights go out halfway through. Dax (seated in every band) and Pip (where seated) are both still standing when they do, and Dax's next turn shows a definition request. After the blackout, every rival turn shows at least one Pronouncer's Chair request (Mock Bee's bots never ask, so the hall adds it). On her next turn Vesper asks for the language of origin; once she has asked, the announcer never reads her tell ('does not ask for anything') again. Vesper outlasts every other rival. If the child goes out before her, Vesper wins the final and spells the championship word. If Vesper misses before the child, the child spells the championship word and finishes above either way. If the cap falls with both standing, there are no co-champions: the championship word goes to the child and decides it (right: above; wrong: Vesper spells it: below)."
         }
       ]
     },
     {
       "id": "slots",
-      "rule": "A {name} token in an on-screen line is filled at render from the child's own bee file, never invented. Each slot below names its source and its fallback; a line never prints a raw token. The words a slot prints come from the child's own record; the clauses it prints come from slotLines.",
+      "rule": "A {name} token in an on-screen line is filled at render from the child's own bee file, never invented. Each slot below names its source and its fallback; a line never prints a raw token. The words a slot prints come from the child's own record; the clauses it prints come from slotLines. A slot prints a word exactly as the library spells it, capitals included (Wednesday, never wednesday). A {weak} fallback is advice, never a diagnosis.",
       "why": [
         "r3-fairplay:season/V.'S NOTES AND THE CHILD'S WEAKNESS",
         "r3-fairplay:rounds[1].pieces.v",
@@ -3492,17 +3678,23 @@
         "r3-fairplay:rounds[3].pieces.below",
         "r3-fairplay:rounds[6].pieces.below",
         "r3-fairplay:rounds[3].pieces.clue.text (pass, depends on V. naming the weak spot)",
-        "r1-safety:rounds[3].pieces.below"
+        "r1-safety:rounds[3].pieces.below",
+        "c2-r3-fairplay:build:slots",
+        "c2-r1-safety:slotLines.weak.byRound.2",
+        "c2-r1-safety:slotLines.weak.byRound.5",
+        "c2-r2-accuracy:slotLines.weak.byRound.2",
+        "c2-r2-accuracy:slotLines.weak.byRound.5",
+        "c2-r3-fairplay:season/SLOT LINES"
       ],
-      "test": "Render every slotted line for a child with no misses, a child who never asks, and a child whose misses are all French: no raw {token} survives, each fill matches the bee file, and Round IV's card ('V. always knows your weak spot') is true of the V. notes the child got. validate.cjs checks every token is declared here. Proved by breaking: a token with no declaration fails the validator; a renderer that skips the slot prints a raw token and the render test fails.",
+      "test": "Render every slotted line for a child with no misses, a child who never asks, and a child whose misses are all French: no raw {token} survives, each fill matches the bee file, and Round IV's card ('V. always knows your weak spot') is true of the V. notes the child got. validate.cjs checks every token is declared here. Proved by breaking: a token with no declaration fails the validator; a renderer that skips the slot prints a raw token and the render test fails. Render with a missed 'Wednesday' and with a child who has no misses: 'wednesday' never appears, and the no-miss child's V. notes open 'No weak spot yet.'. A child who asked on every miss never gets 'You guess instead of asking.'. validate.cjs checks every byRound clause opens 'No weak spot yet.' and no slot source prints lower case.",
       "slots": {
         "weak": {
           "usedAt": [
             "rounds[1].pieces.v",
             "rounds[4].pieces.v"
           ],
-          "source": "The child's bee files from every Circuit hall played so far. Each missed word counts once: as 'noask' if the child made no Pronouncer's Chair request on it (mockbee record() keeps each word's asks in g.mine), otherwise as its trick family (app3 trickAnal(w).cls: dbl, vow, end, hom, silent, gk, fr, epon). The most frequent wins; a tie goes to the most recent miss. Prints slotLines.weak.byFamily[that family].",
-          "fallback": "No miss yet, or only 'plain' misses: slotLines.weak.byRound[the round number]."
+          "source": "The child's bee files from every Circuit hall played so far. Each missed word counts once: as 'noask' if the child made no Pronouncer's Chair request on it (mockbee record() keeps each word's asks in g.mine), otherwise as its trick family (app3 trickAnal(w).cls: dbl, vow, end, hom, silent, gk, fr, epon). 'plain' misses are not ranked, so a child with more plain misses than noask ones is still told about the noask habit. The most frequent named family wins; a tie goes to the most recent miss. Prints slotLines.weak.byFamily[that family].",
+          "fallback": "No miss in a named family yet (no miss at all, or only 'plain' ones): slotLines.weak.byRound[the round number], which is advice, never a diagnosis, and opens 'No weak spot yet.'"
         },
         "asked": {
           "usedAt": [
@@ -3517,7 +3709,7 @@
             "rounds[3].pieces.below",
             "rounds[6].pieces.below"
           ],
-          "source": "This hall's bee file: 'the one that beat you', the last word the child missed in this hall (g.mine, ok false), printed in its correct spelling, lower case.",
+          "source": "This hall's bee file: 'the one that beat you', the last word the child missed in this hall (g.mine, ok false), printed exactly as the library spells it, capitals included.",
           "fallback": {
             "rounds[3].pieces.below": "a word",
             "rounds[6].pieces.below": "the hard one"
@@ -3527,7 +3719,7 @@
           "usedAt": [
             "rounds[2].pieces.above"
           ],
-          "source": "This hall's bee file: the hardest word (app3 spellDiff) the child spelled right in this hall, printed correctly, lower case.",
+          "source": "This hall's bee file: the hardest word (app3 spellDiff) the child spelled right in this hall, printed exactly as the library spells it, capitals included.",
           "fallback": "still to come (the child spelled none right; Round III's scripted outcome makes this all but impossible for a child above Rafi)."
         },
         "w1": {
@@ -3542,7 +3734,7 @@
             "hivePost.postcards.sprints",
             "hivePost.postcards.stage"
           ],
-          "source": "Region complete (§9): the first of three of the child's own words from that region's family, spelled right on that region's stops, printed correctly.",
+          "source": "Region complete (§9): the first of three of the child's own words from that region's family, spelled right on that region's stops, printed exactly as the library spells it, capitals included.",
           "fallback": "None: the postcard is sent only when three such words exist."
         },
         "w2": {
@@ -3579,7 +3771,7 @@
     },
     {
       "id": "no-placing",
-      "rule": "Every result line works whether the child wins or goes out first. Above and below letters are chosen by the child's place against the headliner only; a child still standing at the cap counts as above (Round IX settles a shared cap with the championship word, see scripted-outcomes). Nothing else in a round depends on placing, except rounds[8].pieces.suspense, which states both branches. No line claims a count, a word or a miss the hall log does not hold (slots fill those).",
+      "rule": "Every result line works whether the child wins or goes out first. Above and below letters are chosen by the child's place against the headliner only; a child still standing at the cap counts as above (Round IX settles a shared cap with the championship word, see scripted-outcomes). Nothing else in a round depends on placing, except rounds[8].pieces.suspense, which states both branches. No line claims a count, a word, a miss or an action (asked, waited, breathed out, went slow) the hall log does not hold; slots fill the ones it does. A result letter may give advice or speak of the whole Circuit, never report what the child did.",
       "why": [
         "r3-fairplay:season/SCRIPTED HALL OUTCOMES",
         "r3-fairplay:season/V.'S NOTES AND THE CHILD'S WEAKNESS",
@@ -3589,13 +3781,17 @@
         "r3-fairplay:rounds[3].pieces.above",
         "r3-fairplay:rounds[3].pieces.below",
         "r3-fairplay:rounds[5].pieces.below",
-        "r3-fairplay:rounds[6].pieces.below"
+        "r3-fairplay:rounds[6].pieces.below",
+        "c2-r3-fairplay:build:no-placing",
+        "c2-r3-fairplay:teamNight.beats.levellingMiss",
+        "c2-r3-fairplay:hivePost.beeFileIntro",
+        "r3 extension: rounds[8].pieces.v, .above, .below; rounds[0].pieces.above, rounds[4].pieces.below, rounds[5].pieces.above, rounds[6].pieces.above, rounds[7].pieces.above"
       ],
-      "test": "Play every hall with a bot that wins and a bot that goes out first, in each band: every delivered line is checked against the hall log (no claimed count, word or miss the log lacks), and the season still reaches the Team Night coda. Proved by breaking: put 'You asked three questions' back and the first-out bot's log contradicts it."
+      "test": "Play every hall with a bot that wins and a bot that goes out first, in each band: every delivered line is checked against the hall log (no claimed count, word, miss or action the log lacks), and the season still reaches the Team Night coda. Proved by breaking: put 'You asked three questions' back and the first-out bot's log contradicts it. A bot that asks nothing all season reads no line that says it asked. validate.cjs fails on a line that says the child asked, waited, breathed out or went slow without a slot to fill it."
     },
     {
       "id": "case-origins-authored",
-      "rule": "The cases show the AUTHORED origin, never the library's o field: Case 2's hints and reveal print each item's greek field (the library gives hyphen, chorus, echo, psychology, rhythm, phantom and cylinder a non-Greek origin, and is not edited for this); Case 4 prints its authored parts; Mira's Ask hint on a case reads the case's field. Case 3 grades the direct donor (the language English borrowed each word from); the answer choices for an item never offer that item's earlier source (safari: no Arabic; cafe: no Italian or Turkish; ballet: no Italian), and the Ask Ines hint gives the direct donor.",
+      "rule": "The cases show the AUTHORED origin, never the library's o field: Case 2's hints and reveal print each item's greek field (the library gives three of its items, hyphen, chorus and cylinder, a non-Greek origin, as it does phantom, and is not edited for this); Case 4 prints its authored parts; Mira's Ask hint on a case reads the case's field. Case 3 grades the direct donor (the language English borrowed each word from); the answer choices for an item never offer that item's earlier source or a donor another dictionary gives instead (safari: no Arabic; cafe: no Italian, Turkish or Arabic; ballet: no Italian, Latin or Greek; piano: no French or Latin; catamaran: no Hindi or Malayalam), and the Ask Ines hint gives the direct donor.",
       "why": [
         "r2-accuracy owner item 1 (library origins vs the Greek trail)",
         "r2-accuracy:cases[1].puzzle.items[3].word (pass, app-data conflict)",
@@ -3607,43 +3803,79 @@
         "r2-accuracy:cases[2].puzzle.brief (pass, risk noted)",
         "r3-fairplay:cases[2].puzzle.items[0] (pass, condition)",
         "r3-fairplay:cases[2].puzzle.items[6] (pass, condition)",
-        "r3-fairplay:cases[2].puzzle.items[7] (pass, condition)"
+        "r3-fairplay:cases[2].puzzle.items[7] (pass, condition)",
+        "c2-r2-accuracy:build[id=case-origins-authored]",
+        "c2-r3-fairplay:cases[1].puzzle.items[8] (megaphone, Greek in the library)"
       ],
-      "test": "Open every Case 2 item's origin hint and reveal: the text equals the item's greek field, and 'Latin', 'French' or 'English' never appears as its origin. Case 3: no item's choices include its earlier source. Proved by breaking: point the hint at the library's o and five items read non-Greek."
+      "test": "Open every Case 2 item's origin hint and reveal: the text equals the item's greek field, and 'Latin', 'French' or 'English' never appears as its origin. Case 3: no item's choices include a language listed above for it (choicesExclude). Proved by breaking: point the hint at the library's o and three items (hyphen, chorus, cylinder) read non-Greek. validate.cjs recomputes libraryNonGreek from the library and checks choicesExclude against Case 3's items.",
+      "libraryNonGreek": [
+        "hyphen",
+        "chorus",
+        "cylinder"
+      ],
+      "choicesExclude": {
+        "safari": [
+          "Arabic"
+        ],
+        "cafe": [
+          "Italian",
+          "Turkish",
+          "Arabic"
+        ],
+        "ballet": [
+          "Italian",
+          "Latin",
+          "Greek"
+        ],
+        "piano": [
+          "French",
+          "Latin"
+        ],
+        "catamaran": [
+          "Hindi",
+          "Malayalam"
+        ]
+      }
     },
     {
       "id": "case2-spelling-engine",
-      "rule": "Case 2's puzzle is spell-from-the-definition (the trail asks for a spelling, and each spelling opens the next hiding place). It needs a spelling engine (the Spelling Gym's Warm-up shape: a definition, a typed spelling, hints on hand), not the pick-the-language Origins quiz its engine field names. The engine choice belongs to the case-runner build, not to the script.",
+      "rule": "Case 2's puzzle is spell-from-the-definition (the trail asks for a spelling, and each spelling opens the next hiding place). It needs a spelling engine, not the pick-the-language Origins quiz its engine field used to name. cases[1].engine and engineKey name the Spelling Gym's Warm-up (gym/warmup: a definition, a typed spelling, ten words, no clock, hints on hand), because circuit-data.js is generated from the script. The case-runner build may pick another spelling engine, never a Word Lore quiz.",
       "why": [
-        "r3-fairplay:season/PUZZLES, one answer each"
+        "r3-fairplay:season/PUZZLES, one answer each",
+        "c2-r3-fairplay:build:case2-spelling-engine"
       ],
-      "test": "The careful bot solves Case 2 by typing each word from its clue; the random bot earns 0. Proved by breaking: run it on Origins and the items cannot be answered as written."
+      "test": "The careful bot solves Case 2 by typing each word from its clue; the random bot earns 0. Proved by breaking: run it on Origins and the items cannot be answered as written. validate.cjs fails if cases[1].engineKey is a Word Lore engine."
     },
     {
       "id": "case-scenes",
-      "rule": "Each case runs the format's seven steps. Step 2 shows the case's three taps (cases[].taps) after the cold open and before the puzzle; one of them repeats the clue planted earlier. The facts a child needs to accuse go in the taps or the escalation; a suspect's secret surfaces only in the reveal. Case 3's safeLine is the first thing on screen, before the empty room.",
+      "rule": "Each case runs the format's seven steps. Step 2 shows the case's three taps (cases[].taps) after the cold open and before the puzzle; one of them repeats the clue planted earlier. Each suspect card shows the suspect's name and, where the cast gives one, their tell (cast.*.tell), so Case 2's heel-marks point at Dax in every band, 6–7 included, where he is not seated before the case. The facts a child needs to accuse go in the taps, the escalation or the suspect cards. A suspect's secret is never shown before the reveal, and the reveal shows every suspects[].secret its lines do not already state (Dax's 'Not my problem' in Case 3; Mira's doubt about kai and Suki's hidden stakes in Case 4). The one deliberate exception is Hazel's: Case 3's safeLine states it first, before the empty room (amendment 2), and no build moves it to pass this rule. A case never offers a hint button for a rival missing from it: no 'Ask Kwame' in Case 3.",
       "why": [
         "r3-fairplay:season/CASE SECRETS AND SCENE TAPS",
         "r3-fairplay:cases[1].escalation",
         "r3-fairplay:cases[4].impossible",
         "r1-safety:cases[2].impossible (pass, condition: keep the order as a build test)",
         "r3-fairplay:cases[1].suspects[2].secret (pass, timing)",
-        "r3-fairplay:cases[4].suspects[3].secret (pass, show in the reveal)"
+        "r3-fairplay:cases[4].suspects[3].secret (pass, show in the reveal)",
+        "c2-r3-fairplay:build:case-scenes",
+        "c2-r3-fairplay:cases[1].escalation"
       ],
-      "test": "Every case renders three taps before its puzzle; no suspect secret renders before the reveal; Case 3's first rendered line is its safeLine. Proved by breaking: render secrets in the scene and Case 5's answer shows before Dax finds it; move the safeLine after the impossible and the order test fails."
+      "test": "Every case renders three taps before its puzzle; every suspect card with a cast tell shows it; no suspect secret renders before the reveal except Case 3's safeLine, which is its first rendered line; every secret has rendered by the end of the reveal; Case 3 offers no Ask Kwame. In the 6–7 band, Case 2's Dax card reads 'rocks on his heels' before the puzzle, and Case 3's reveal renders 'Not my problem'. Proved by breaking: render secrets in the scene and Case 5's answer shows before Dax finds it; move the safeLine after the impossible and the order test fails; hide the tells and the 6–7 Dax card is blank."
     },
     {
       "id": "team-night",
-      "rule": "A call is graded on the first language the Pronouncer names (callRules says so on screen before the first word). The scripted drama word is Greek-first at the 8–10 lectern and French-first at 11–15, and never Latin-first, so Dax's own Latin call is wrong under the rule. Each team has one second try a night: if the child misses the levelling word, levellingMiss plays and the second try carries the cases' escalating help until the word ends right, so the score is always level before the tiebreaker. The tiebreaker goes to Vesper by the roster rule the idea beat plants.",
+      "rule": "A call is graded on the first language the Pronouncer names (callRules says so on screen before the first word). The scripted drama word is Greek-first at the 8–10 lectern and French-first at 11–15, and never Latin-first, so Dax's own Latin call is wrong under the rule. Each team has one second try at a spelling a night: if the child misses the levelling word, levellingMiss plays and the second try carries the cases' escalating help until the word ends right, so the score is always level before the tiebreaker. The tiebreaker goes to Vesper by the roster rule the idea beat plants. A call may be changed until the speller says a letter (callRules says so on screen), by Dax or by the child as caller; Dax's re-call in the drama is that rule, not the second try. The one second try is a spelling retry, used only on the child's levelling word; teammates' simulated misses never spend it. Its escalating help is asked of the teammates at that band's lectern, then the answer shown.",
       "why": [
         "r3-fairplay:season/TEAM NIGHT CALLER RULE",
         "r3-fairplay:teamNight.beats.levelling",
         "r3-fairplay:teamNight.beats.idea",
         "r3-fairplay:teamNight.beats.drama.8-10",
         "r3-fairplay:teamNight.beats.drama.11-15",
-        "r3-fairplay:teamNight.callerCategories[1].call (pass, needs the grading rule)"
+        "r3-fairplay:teamNight.callerCategories[1].call (pass, needs the grading rule)",
+        "c2-r3-fairplay:build:team-night",
+        "c2-r3-fairplay:teamNight.beats.callRules",
+        "c2-r3-fairplay:teamNight.beats.levellingMiss"
       ],
-      "test": "A call on a 'French, from Latin' word scores only French. The drama word's first-named origin is Greek at 8–10 and French at 11–15. A bot that misses the levelling word still reaches a level score and the coda on every seed (test 7). Proved by breaking: grade on any named language and the 8–10 drama word has two right calls."
+      "test": "A call on a 'French, from Latin' word scores only French. The drama word's first-named origin is Greek at 8–10 and French at 11–15. A bot that misses the levelling word still reaches a level score and the coda on every seed (test 7). Proved by breaking: grade on any named language and the 8–10 drama word has two right calls. A call changed before the first letter is graded as the new call; teammates' misses leave the second try unspent; the help at each lectern names only that lectern's teammates."
     },
     {
       "id": "clue-cards-ride-mail",
@@ -3656,11 +3888,12 @@
     },
     {
       "id": "signoff-upright",
-      "rule": "The Pronouncer's signoff on every invitation is drawn in an upright hand; V.'s notes and the runner's writing slant left. The Round III card and the Pronouncer's look-again rely on it.",
+      "rule": "The Pronouncer's signoff on every invitation is drawn in an upright hand; V.'s notes and the runner's writing slant left. The Round III card and the Pronouncer's look-again rely on it. Vesper's letters (Round VI's suspense, Round IX's above and below) are drawn in violet, upright or slanting right, because her look-again depends on it. Dax's cards and every other rival letter do not slant left. The sting's note is small, upright pencil, visibly unlike V.'s hand. Only V.'s notes and the runner's own writing slant left.",
       "why": [
-        "r3-fairplay:signoffs.inv (pass, condition)"
+        "r3-fairplay:signoffs.inv (pass, condition)",
+        "c2-r3-fairplay:build:signoff-upright"
       ],
-      "test": "Screenshot every invitation and V. note: the signoff's slant is upright and every V. note slants left. Proved by breaking: draw the signoff in the V. hand and the look-again's claim is false on screen."
+      "test": "Screenshot every invitation and every letter: the signoff stands upright, and only V. notes and the runner's correction slant left; Vesper's letters are violet and do not slant left; the sting's pencil note is upright. Proved by breaking: draw the signoff in the V. hand and the look-again's claim is false on screen."
     }
   ],
   "ownerQuestions": [
@@ -3676,6 +3909,9 @@
       ],
       "from": [
         "r1-safety owner item 3"
+      ],
+      "views": [
+        "c2-r1-safety: acceptable for Season 1 as written. Arjun is the only Indian name in the season and is on the rival side; for Season 2, neither Arjun nor Mei is ever the means by which Ravenmere is unkind (Arjun's seed should pay off warmly), and any new Circuit speller is a chance to reflect the diaspora on the child's own side."
       ]
     },
     {
@@ -3686,6 +3922,9 @@
       ],
       "from": [
         "r1-safety owner item 5"
+      ],
+      "views": [
+        "c2-r1-safety: keep. 'He's set on beating you' describes behaviour, not worth."
       ]
     },
     {
@@ -3698,6 +3937,9 @@
       ],
       "from": [
         "r1-safety owner item 5"
+      ],
+      "views": [
+        "c2-r1-safety: yes, re-face Suki. Kwame's Samurai and Shadow Ninja are lower priority. Nova wears Koi, also from the Dojo pack (mockbee.js BOTS), so Suki's pairing is the real issue. Faces are Mock Bee's shared cast, so this reaches beyond the Circuit."
       ]
     },
     {
@@ -3710,6 +3952,9 @@
       ],
       "from": [
         "r1-safety owner item 2"
+      ],
+      "views": [
+        "c2-r1-safety: support, with conditions. Applied in cycle 2: the sting happens while the Committee clears the Grand Marquee (never an empty building), and stingAfter points the child to the Pronouncer or any grown-up they trust. Hold Season 2 to the recorded condition, and add one: the resolution never asks the child to keep the notes from their own grown-ups (Mei's 'Don't tell Sloane' is a confidence between peers and is fine)."
       ]
     },
     {
@@ -3718,24 +3963,75 @@
       "paths": [
         "rounds[8].pieces.dax",
         "rounds[8].pieces.laugh",
-        "build[id=hall-fields].micLines"
+        "build[id=hall-fields].micLines",
+        "rounds[8].alsoSeated",
+        "build[id=scripted-outcomes].outcomes[round=9]"
       ],
       "from": [
-        "r3-fairplay:season/SCRIPTED HALL OUTCOMES"
-      ]
+        "r3-fairplay:season/SCRIPTED HALL OUTCOMES",
+        "c2-r3-fairplay:season/ROUND IX OWNER QUESTION",
+        "c2-r1-safety: no safety objection either way"
+      ],
+      "status": "resolved (cycle 2), unless the owner reverses it",
+      "resolution": "Lens 3's recommendation, taken: Dax is seated in every band's final (rounds[8].alsoSeated, one extra seat at 6–7 only); Theo answers 'somewhere in the dark'; Pip's line is 'Good. Now nobody can see me jump.', which needs no seat and pays off his Round IV thunder; Dax and Pip (where seated) are forced standing at the blackout (scripted-outcomes); micLines is deleted. Every band now sees Dax's first question, which pays off V.'s 'Ask one question. Just one.' and Case 5's 'I don't ask.' Seating the whole Circuit was rejected: ten rivals in a 6–7 bee Mock Bee sizes at four, against the 8-minute cap. To reverse: restore micLines and drop comet from Round IX's alsoSeated."
     },
     {
       "id": "accuracy-reverify",
-      "question": "Lens 2 could search but not open pages. The next accuracy pass should open each cited page for the 13 fixes and the Case 3 donor languages, and source the four new Case 2 items (xylophone, chorus as the Greek play's singers, microphone, cylinder). Schedule it with the next review cycle?",
+      "question": "Lens 2 could search but not open pages, in both cycles. The next accuracy pass should open each cited page for cycle 1's 13 fixes and cycle 2's 12, the Case 3 donor languages (Merriam-Webster's catamaran entry could not be retrieved: Etymonline gives 'Hindi or Malayalam, from Tamil'; OED, Collins and Wiktionary give Tamil; keep Hindi and Malayalam out of the choices either way), Mercator's death (1594) and Rumold's 1595 edition, unflappable's meaning, and the Case 2 items (xylophone, chorus as the Greek play's singers, megaphone, which replaced microphone in cycle 2, and cylinder). Schedule it with the next review cycle?",
       "paths": [
         "cases[1].puzzle.items[3]",
         "cases[1].puzzle.items[6]",
         "cases[1].puzzle.items[8]",
         "cases[1].puzzle.items[9]",
-        "visitors"
+        "visitors",
+        "visitors[0].card",
+        "rounds[4].pieces.pipWord.real",
+        "cases[2].puzzle.items[5]"
       ],
       "from": [
-        "r2-accuracy owner item 6"
+        "r2-accuracy owner item 6",
+        "c2-r2-accuracy owner items 2 and 4",
+        "c2-r3-fairplay:cases[1].puzzle.items[8].greek (source megaphone)"
+      ]
+    },
+    {
+      "id": "twins-tell",
+      "question": "The twins' tell now reads 'spell as a pair, one letter each' (cast.ash, cast.aria, the Ravenmere roster and the Ravenmere beat). This revises BEE-CIRCUIT.md §4.2 ('spell in unison, one letter each') and §8.1 ('spell in unison, a letter each'), your cycle-1 choice: Merriam-Webster gives 'in unison' as 'together, at the same time', so the old wording contradicts itself and teaches the word wrongly in a spelling app. BEE-CIRCUIT.md was not edited. Accept, and amend §4.2 and §8.1 to match (then drop 'revises' here), or reverse?",
+      "paths": [
+        "cast.ash.tell",
+        "cast.aria.tell",
+        "teamNight.ravenmereRoster[1].tell",
+        "teamNight.ravenmereRoster[2].tell",
+        "teamNight.beats.ravenmere"
+      ],
+      "from": [
+        "c2-r2-accuracy:cast.ash.tell (fixes 3–7)",
+        "c2-r2-accuracy owner item 1"
+      ],
+      "revises": {
+        "doc": "BEE-CIRCUIT.md",
+        "section": "§4.2",
+        "alsoSection": "§8.1",
+        "from": "spell in unison, one letter each",
+        "to": "spell as a pair, one letter each",
+        "phrase": "in unison"
+      },
+      "revisesNote": "validate.cjs reads §4.2 through this revision while §4.2 still says the old wording, and fails if the old phrase is on screen anywhere."
+    },
+    {
+      "id": "app-data-outside-script",
+      "question": "Four facts outside the script disagree with it. (1) The word library gives unflappable the origin 'Latin'; it is an English formation of the 1950s (M-W, Etymonline). (2) eponyms/eponyms-master.json's atlas story still says Mercator put the sky-holding Titan on his 1595 cover, the claim the Visitors' Book corrected; keep that story off the Circuit. (3) BEE-CIRCUIT.md §10 still lists 'tantalise'; the library and the script spell tantalize. (4) The library gives triskaidekaphobia the origin 'English', so Suki's Round VII origin request shows 'English' while Case 4 says every part is Greek (they agree: an English coinage from Greek parts). Also, §9 says missed words 'are added' to the revision pile; the bee file now says one tap does it, as Mock Bee's button does. Edit the app data and the brief, or leave them?",
+      "paths": [
+        "rounds[4].pieces.pipWord",
+        "visitors[0].card",
+        "visitors[5].word",
+        "build[id=scripted-outcomes].outcomes[round=7]",
+        "hivePost.beeFileIntro"
+      ],
+      "from": [
+        "c2-r2-accuracy owner item 3",
+        "c2-r2-accuracy:hivePost.beeFileIntro",
+        "c2-r3-fairplay:build:scripted-outcomes"
       ]
     }
   ]

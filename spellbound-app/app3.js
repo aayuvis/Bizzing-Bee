@@ -1882,15 +1882,35 @@ function wohFit(e){ if(!e||!e.w||!e.d||!e.p) return false; const k=String(e.w).t
   if((window.SB_WORDS_HELD||[]).indexOf(k)>=0) return false;
   if(typeof window.SB_GLOSS_OK==='function'&&!SB_GLOSS_OK(e.d,e.w)) return false;
   return !(e.y>6); }
-let _wohPool=null;
-function wohPool(){ if(_wohPool) return _wohPool; const src=(window.SB_DATA&&SB_DATA.nsf)||[]; const out=[];
+let _wohPool=null, _wohBand={};
+/* THE WORD OF THE HOUR IS THE CHILD'S BAND'S (the 4.5 brief, P1.6, P1.4): wohPool(b) is the band-b pool — every
+   wohFit word (the kid-gloss rule above stays) of five to thirteen letters that kid-safe.js passes for an
+   eight-year-old (Home is every child's), in band b exactly: by wordband-data.js once it has landed, and before
+   that by each record's own CEILING (SB_BAND.bounds — at most that band whatever the library adds, so never
+   above). Home's first screen carries only the boot word tier, which holds no band-4 word at all: a band with
+   nothing loaded yet gives null and the tile holds its space (cardHold) until the library lands, never a word
+   from another band. wohPool() with no band is the whole old pool (tests/struck-words.cjs reads it). */
+function wohPool(b){ const src=(window.SB_DATA&&SB_DATA.nsf)||[];
+  if(b){ const B=window.SB_BAND, on=!!(B&&B.ready&&B.ready()), k=src.length+'|'+on; const m=_wohBand[b];
+    if(m&&m.k===k) return m.p; const p=[];
+    for(const e of src){ if(!e||!e.w||!e.d||!e.p||/[^a-zA-Z]/.test(e.w)) continue; const len=e.w.length; if(len<5||len>13||!wohFit(e)) continue;
+      if(window.SB_KID_SAFE&&!SB_KID_SAFE.check(e,8)) continue;
+      if((on?B.of(e):B.bounds(e).hi)===b) p.push(e); }
+    _wohBand[b]={k,p}; return p; }
+  if(_wohPool) return _wohPool; const out=[];
   for(const e of src){ if(!e||!e.w||!e.d||!e.p||!e.s) continue; if(/[^a-zA-Z]/.test(e.w)) continue;
     const len=e.w.length; if(len<7||len>13) continue;
     // Prefer vetted bee words (bee-probability score) at a challenging-but-real level.
     const good=(e.bp&&e.bp>=60&&e.bp<=97)||(!e.bp&&e.y&&e.y>=3&&e.y<=4); if(good&&wohFit(e)) out.push(e); }
   _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7&&wohFit(e)); return _wohPool; }
+/* the band the hour is picked for: the child's (SB_BAND.child), once the Atlas is on the page — its region sets
+   a floor, and a band read before it landed could change under the child's eyes */
+function wohBandNow(){ try{ if(window.SB_BAND&&window.SB_TRAIL) return SB_BAND.child(active()).band; }catch(e){} return 0; }
 function wordOfHour(){
   const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
+  if(window.SB_BAND){ const b=wohBandNow(); if(!b) return null;
+    return settled('woh|'+b,hr,()=>{ const pool=wohPool(b); if(!pool.length) return null;
+      const h=((hr*2654435761)>>>0)%pool.length; return pool[h]||pool[0]||null; }); }
   return settled('woh',hr,()=>{ const pool=wohPool(); if(!pool.length) return null;
     const h=((hr*2654435761)>>>0)%pool.length; return pool[h]||pool[0]||null; }); }
 // Quote of the hour — same deterministic hourly rotation, a different mixing constant so the
@@ -11861,29 +11881,60 @@ function nwReview(c){ const idx=nwIndex(), out=[]; let wi=null; try{ wi=wordInde
   for(const m of miss){ const k=nkey(m&&m.w?m.w:m); const r=rec(k)||(m&&m.w?m:null); if(r) out.push(r); }
   const M=c.mast||{}; for(const k of Object.keys(M)){ const e=M[k]; if(e&&typeof e==='object'&&(e.due==null||e.due<=today)&&(e.b|0)<=2){ const r=rec(k); if(r) out.push(r); } }
   return nwDedupe(out); }
+/* THE WORD BANDS live inside this door (the 4.5 brief, P1.1–P1.3; owner: "there is no second door"). SB_BAND
+   (wordband.js) is the model: a level is a window of word bands around the child's band — Easy is band 1 only,
+   whoever the child — and nwBand() keeps a pool to that window and nothing above it (SB_BAND.pick, which filters
+   what it is handed and reads no corpus). The corpus comes by band (nwBandSlice), not by the old y-window. The
+   in-round climb (tier) moves the window a band, or takes the trickier half where it cannot move. Review is the
+   child's own words and is not banded. Guard: tests/word-band.cjs. */
+function nwBandOn(){ return !!(window.SB_BAND&&typeof SB_BAND.pick==='function'); }
+function nwBand(c,o,pool,min){ return SB_BAND.pick(c,pool,0,{level:nwLevel(c,o),tier:o.tier,min})||[]; }
+let _nwBy=null;
+/* the corpus by word band — what a band window draws from (rebuilt as the library or the band file lands) */
+function nwBandSlice(lo,hi){ const by=corpusBands(), v=(window.SB_WORDBAND&&SB_WORDBAND.v)||'';
+  if(!(_nwBy&&_nwBy._n===by._n&&_nwBy._v===v)){ const o={1:[],2:[],3:[],4:[]};
+    for(let y=1;y<=9;y++) for(const w of by[y]||[]) o[SB_BAND.of(w)].push(w);
+    try{ Object.defineProperty(o,'_n',{value:by._n}); Object.defineProperty(o,'_v',{value:v}); }catch(e){} _nwBy=o; }
+  let out=[]; for(let b=lo;b<=hi;b++) out=out.concat(_nwBy[b]||[]); return out; }
 function nwPool(c,o){ const purpose=NW_PURPOSES[o.purpose]?o.purpose:'drill'; const [lo,hi]=nwRange(c,o); const keep=nwFilters(c,o);
   if(purpose==='review') return nwReview(c).filter(keep);
   if(purpose==='forge') return nwTable(window.SB_FORGE_TABLE).filter(keep);
   if(purpose==='paths') return nwTable(window.SB_PATHS_TABLE).filter(keep);
+  const BW=nwBandOn()?SB_BAND.win(c,nwLevel(c,o),o.tier):null;
   const inWin=w=>{ const y=w.y||3; return y>=lo&&y<=hi; };
   if(o.theme){ const t=themeOf(o.theme); if(!themeOpen(t,c)) return [];
-    const all=themeWords(o.theme).filter(keep); const f=all.filter(inWin); return f.length>=10?f:all; }
+    const all=themeWords(o.theme).filter(keep);
+    if(BW) return nwBand(c,o,all,10);
+    const f=all.filter(inWin); return f.length>=10?f:all; }
   let personal=[];
   if(c===active()&&purpose!=='lore'){ try{ const miss=new Set((state.missedWords||[]).map(m=>nkey(m.w)));
-    personal=gameWords({}).filter(w=>inWin(w)||miss.has(nkey(w.w))); }catch(e){ personal=[]; } }
-  let pool=nwDedupe(personal.concat(corpusSlice(lo,hi))).filter(keep);
+    personal=gameWords({}).filter(w=>BW||inWin(w)||miss.has(nkey(w.w))); }catch(e){ personal=[]; } }
+  let pool=nwDedupe(personal.concat(BW?nwBandSlice(BW.lo,BW.hi):corpusSlice(lo,hi))).filter(keep);
   if(purpose==='lore') pool=pool.filter(w=>w.o&&w.d&&w.d.length>4);
   if(purpose==='contest'){ const bee=pool.filter(w=>w.nt); if(bee.length>=60) pool=bee; }   /* real competition words first (mockbee's beeList reads the same tag) */
-  return pool; }
+  return BW?nwBand(c,o,pool):pool; }
 /* the same word for every child in a band on a date: rendezvous hashing, so the pick holds as the
    library grows under it unless a NEW word outranks it (wait for the second shard, 'words2') */
 function nwHash(s){ let h=0x811c9dc5; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return h>>>0; }
 const NW_DAILY_Y={'5-7':[1,2],'8-10':[2,4],'11-13':[3,6],'14-18':[4,8]};
+/* Daily Bee's word (P1.1/P1.4): the same for every child of a WORD band on a date, from that band — never above
+   it. Before wordband.js existed it was the age band's rarity window (NW_DAILY_Y), which is still the path when
+   the band model is not on the page. */
+const _nwDaily={};   /* a band's day pool, kept while the library and the band file stand still */
 function nwDaily(c,n,o){ const band=(ageBandOf(c)||{}).k||'8-10'; const d=o.date||(()=>{ const t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); })();
   const r=NW_DAILY_Y[band]||[2,4]; const age=parseInt(band,10)||9;
   const safe=w=>(window.SB_KID_SAFE?SB_KID_SAFE.check(w,age):safeWord(w));
-  const pool=corpusSlice(r[0],r[1]).filter(w=>w.d&&w.d.length>4&&w.s&&/[a-z]/i.test(w.s)&&w.w.length>=4&&safe(w));
-  return pool.map(w=>({w, h:nwHash(d+'|'+band+'|'+nkey(w.w))})).sort((a,b)=>a.h-b.h||(a.w.w<b.w.w?-1:1)).slice(0,n).map(x=>x.w); }
+  const fit=w=>w.d&&w.d.length>4&&w.s&&/[a-z]/i.test(w.s)&&w.w.length>=4&&safe(w);
+  let pool, tag=band;
+  if(nwBandOn()){ const B=SB_BAND.child(c).band, k=B+'|'+age+'|'+((window.SB_DATA&&SB_DATA.nsf)||[]).length+'|'+((window.SB_WORDBAND&&SB_WORDBAND.v)||'');
+    pool=_nwDaily[k]; if(!pool){ const all=nwBandSlice(1,B).filter(fit); pool=all.filter(w=>SB_BAND.of(w)===B); if(pool.length<50) pool=all; _nwDaily[k]=pool; }
+    tag='band'+B; }
+  else pool=corpusSlice(r[0],r[1]).filter(fit);
+  /* the n lowest hashes (ties by word) — what sorting the whole pool and slicing gave, without the sort */
+  const top=[], pre=d+'|'+tag+'|', lt=(h,w,x)=>h<x.h||(h===x.h&&w.w<x.w.w);
+  for(const w of pool){ const h=nwHash(pre+nkey(w.w)); if(top.length>=n&&!lt(h,w,top[top.length-1])) continue;
+    let i=top.length; while(i>0&&lt(h,w,top[i-1])) i--; top.splice(i,0,{w,h}); if(top.length>n) top.pop(); }
+  return top.map(x=>x.w); }
 function nextWords(child, n, opts){ opts=opts||{}; const c=child||active(); n=Math.max(0,Math.floor(+n||0)); if(!c||!n) return [];
   if(opts.purpose==='daily') return nwDaily(c,n,opts);
   const pool=nwPool(c,opts); let out;
@@ -13552,6 +13603,7 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
      is stale: the catalogue, the word index, the theme classifications, the
      word-of-the-hour pool and the sound lists all rebuild on the next render. */
   if(name==='words2'){ _catStatic=null; _wIdx=null; _wohPool=null; _wdb=null; _sndCache=null; _themeCache={}; }
+  if(name==='wordband'||name==='words2'){ _wohBand={}; _nwBy=null; }   /* the word bands (P1.1): every band-keyed pool rebuilds */
 });
 
 (function init(){

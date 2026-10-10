@@ -31,7 +31,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
 const DATA = /^(words-|voice-|trivia-q|trivia-words|trivia-data|trivia-icons|adv-|concepts-data|concept-scripts|lessons-data|story-data|figurative-data|nsf-|scripps-data|sounds-data|southasia-data|trail-data|trail-map-data|themes-data|theme-lore|tips-data|quotes|icons|avatars-art|avatar-|cover-art|game-art|kid-safe|word-|saga-art)/;
 const DOOR = 'the door itself (games spec §1.1)';
 const ALLOW = {
-  'app3.js': { corpusBands: DOOR, corpusSlice: DOOR, nwIndex: DOOR, nwPool: DOOR, nwDaily: DOOR,
+  'app3.js': { corpusBands: DOOR, corpusSlice: DOOR, nwIndex: DOOR, nwPool: DOOR, nwDaily: DOOR, nwBandSlice: DOOR + ' — the corpus by word band (P1.1)',
     mergeHard: 'loads the 130k library', fullWords: 'loads the 130k library', loadFullLibrary: 'loads the 130k library', openAdvanced: 'loads the library for the Advanced Pack',
     defaultStages: 'the Word Gym’s study lists', journeySorted: 'the Word Gym’s study lists', rawListWords: 'the Word Gym’s study lists',
     coachCatalog: 'the Word Gym’s list catalogue', catStatic: 'the Word Gym’s list catalogue', soundLists: 'the sound lists (catalogue)', ipaPool: 'the Sound Alphabet trainer', selectList: 'choosing a study list',

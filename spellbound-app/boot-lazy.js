@@ -47,6 +47,10 @@
        the door of every screen that shows a card. voice/pipeline/split-sentences.js writes it. */
     sents: 'words-data-s.js',
     words2: 'words-data-2.js',          // the rest of the core library (32,944 words)
+    /* THE WORD BANDS (the 4.5 brief, P1.1): every served word's band 1–4, cut by tools/wordband/build.cjs. Read only
+       through wordband.js (SB_BAND, a boot script — the model and each record's own ceiling); every game's group
+       and the feed's bring it, so a game never draws on the ceiling alone. 75 KB gzipped, never on the first screen. */
+    wordband: 'wordband-data.js',
     lore: 'words-lore.js',              // etymology + memory hint, merged onto SB_DATA
     concepts: 'concepts-data.js',       // the 121-chapter course
     trail: 'trail-data.js',             // Word Atlas curriculum
@@ -158,18 +162,18 @@
     sounds: ['sounds', 'pron'],
     coach: ['coachRules', 'concepts', 'sents', 'words2'],
     cloud: ['sync'],
-    arcade: ['saga2'],
+    arcade: ['saga2', 'wordband'],
     /* everything any volume of the in-app reader can render */
     reader: ['reader', 'eponbk', 'ultrabk', 'poems', 'concepts', 'advConcepts', 'southasia', 'fig', 'quotes'],
-    feed: ['feedEngine', 'feedMeta', 'feedView'],
+    feed: ['feedEngine', 'feedMeta', 'feedView', 'wordband'],
     forge: ['saga2', 'forgeCore', 'forgeData', 'forgeUI'],
     /* the hubs draw on the shared stage kit (SGUI.stage / SB_HUB, saga2.js), so it comes too */
-    quizhubs: ['loreHub', 'saga2'],
-    gym: ['saga2', 'gym', 'sents'],
-    mockbee: ['saga2', 'mockbee'],
-    daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore'],
+    quizhubs: ['loreHub', 'saga2', 'wordband'],
+    gym: ['saga2', 'gym', 'sents', 'wordband'],
+    mockbee: ['saga2', 'mockbee', 'wordband'],
+    daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore', 'wordband'],
     buzz: ['dailyBuzz'],
-    analogy: ['anlData', 'anlUI'],   // saga2: the engine kit (SGUI.stage, SGUI.keys)
+    analogy: ['anlData', 'anlUI', 'wordband'],   // saga2: the engine kit (SGUI.stage, SGUI.keys)
     placement: ['placeData', 'placeUI'],
     curriculum: ['trail', 'concepts', 'objectives', 'gradeMap']
   };
@@ -179,7 +183,7 @@
      whatever order they arrive. */
   var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'] };
 
-  var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
+  var IDLE = ['sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
     'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'sync'];
 
