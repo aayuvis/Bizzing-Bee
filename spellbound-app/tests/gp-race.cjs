@@ -69,7 +69,8 @@ const want = k => !ONLY || ONLY.includes(k);
   });
   const runMany = (spec, n) => pg.evaluate(({ spec, n }) => { const out = []; const scenes = ['meadow', 'sunset', 'city', 'bazaar'];
     for (let i = 1; i <= n; i++) { const r = window.__gpRace({ ...spec, seed: i * 7919, scene: scenes[i % 4] });
-      out.push(r.res ? { p: r.res.place, t: r.res.raceT, met: r.res.met, right: r.res.right, log: r.log.map(x => ({ secs: x.secs, ok: x.ok })) } : { p: 9 }); r.destroy(); }
+      const lit = document.querySelectorAll('.gpr-host .sg-endcard .sg-rstar.won').length;   // the stars the finish card actually draws
+      out.push(r.res ? { p: r.res.place, t: r.res.raceT, met: r.res.met, right: r.res.right, stars: r.res.stars, lit, log: r.log.map(x => ({ secs: x.secs, ok: x.ok })) } : { p: 9 }); r.destroy(); }
     return out; }, { spec, n });
   const avg = a => a.reduce((s, x) => s + x, 0) / a.length;
 
@@ -168,8 +169,18 @@ const want = k => !ONLY || ONLY.includes(k);
     ok(!ps.includes(1) && avg(ps) >= 4, `GP1: random steering + perfect spelling never wins — average ${avg(ps).toFixed(2)}, places ${ps.join('')}`);
   }
   if (want('GP2')) {
-    const a = (await runMany({ steer: 'line', spell: 'miss' }, 20)).map(x => x.p), c = (await runMany({ steer: 'line', spell: 'clean' }, 20)).map(x => x.p);
+    const A = await runMany({ steer: 'line', spell: 'miss' }, 20), Cl = await runMany({ steer: 'line', spell: 'clean' }, 20);
+    const a = A.map(x => x.p), c = Cl.map(x => x.p);
     const wa = a.filter(p => p === 1).length, wc = c.filter(p => p === 1).length;
+    /* GP7 live (road to 4.5, P1.21): stars by words as well as place — 0 of N box words earns no star even across
+       the line first, and the card draws what the result says. Proved by breaking: gpStars by place alone →
+       the 0/N races that finish on the podium show stars, and this fails. */
+    const zero = A.filter(x => x.met > 0 && x.right === 0), podium0 = zero.filter(x => x.p <= 3);
+    ok(zero.length >= 15 && zero.every(x => x.stars === 0 && x.lit === 0) && podium0.length > 0,
+      `GP7: every box word missed earns no star, podium or not — ${zero.length} races at 0/N, ${podium0.length} of them on the podium (places ${podium0.map(x => x.p).join('')}), stars ${[...new Set(zero.map(x => x.stars + '/' + x.lit))].join(',')}`);
+    const won = Cl.filter(x => x.p === 1 && x.met > 0 && x.right === x.met);
+    ok(won.length > 0 && won.every(x => x.stars === 3 && x.lit === 3) && Cl.every(x => x.stars === Math.min(x.p === 1 ? 3 : x.p === 2 ? 2 : x.p === 3 ? 1 : 0, 3) && x.lit === x.stars),
+      `GP7: every word Clean — the place decides (${won.length} wins with 3 stars; stars by place ${Cl.map(x => x.p + ':' + x.stars).join(' ')})`);
     ok(avg(a) >= 2 && avg(a) <= 4 && wa <= 4, `GP2a: racing line, every box word missed — average ${avg(a).toFixed(2)} (2nd–4th), wins ${wa}/20 (≤ 4); places ${a.join('')}`);
     ok(wc >= 13, `GP2b: racing line, every box word Clean — wins ${wc}/20 (≥ 13); places ${c.join('')}`);
     ok(avg(a) - avg(c) >= 1, `GP2: spelling is worth at least a place — ${avg(a).toFixed(2)} → ${avg(c).toFixed(2)}`);

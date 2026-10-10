@@ -2235,7 +2235,7 @@ function realAcc(c){ c=c||active(); const at=(c.attempts||[]).slice(-120); const
    "Practice time" deliberately means words only — the clock stops in the Arcade, the saga,
    trivia and every other feature, so the number can't be inflated by playing games. */
 const TGT_DEF={app:30, prac:15};                       // minutes/day out of the box
-const PRACTICE_NAVS=['coach','train','levelup','revisions'];
+const PRACTICE_NAVS=['coach','train','levelup','revisions','today'];
 /* A DRILL THAT CAME FROM A STOP BELONGS TO THE ATLAS, NOT TO PRACTICE.
    startTrain sets nav:'train', and both nav bars counted 'train' as the Practice
    tab — so walking a stop on the Word Atlas visibly threw the child into another
@@ -2971,6 +2971,9 @@ const app = {
   exitTrain:()=>{ if((state.sessionDone||0)>0){ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, []); } if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; try{ if(window.SB_TRAIL_PRACTICED) SB_TRAIL_PRACTICED(u, state.sessionRight||0, state.sessionDone||0); }catch(e){} if(/^ul\d+$/.test(u)){ state.trailReturn=null; state.coachSession=false; try{ app.ultraAct(Math.floor(parseInt(u.slice(2),10)/4)); }catch(e){ app.setNav('trail'); } return; } state.trailReturn=null; state.coachSession=false; state.nav='trail'; app.trailUnit(u); return; } if(state.coachSession){ state.coachSession=false; app.openCoach(); } else if(state.trainBack==='revisions'){ state.trainBack=null; app.openRevisions(); } else if(state.trainBack==='themes'){ state.trainBack=null; app.setNav('themes'); } else app.setNav('home'); },
   // Revisions — the words you flagged to revise; complete them or drill them again
   openRevisions:()=>set({nav:'revisions', screen:'app'}),
+  /* Today's ten (road to 4.5, P1.16): today.js is lazy (group `today`) — the screen holds a loader until it lands */
+  openToday:()=>{ clearGTimer(); state.game=null; if(window.SB_TODAY){ SB_TODAY.open(); return; } set({nav:'today', screen:'app'});
+    lazyNeed('today',()=>{ if(state.nav==='today'&&window.SB_TODAY) SB_TODAY.open(); }); },
   reviseComplete:(word)=>{ const c=active(); const m=(c.missed||[]).find(x=>nkey(x.w)===nkey(word));   // moves it off the pile; mastery needs a spelling (FIX-BEE D5)
     if(m){ c.reviseHistory=c.reviseHistory||[]; if(!c.reviseHistory.some(x=>nkey(x.w)===nkey(word))) c.reviseHistory.unshift(Object.assign({},m,{doneTs:now()})); if(c.reviseHistory.length>300) c.reviseHistory=c.reviseHistory.slice(0,300); }
     clearMiss(word); save(); flash('Completed ✓ — saved to Revise history'); render(); },
@@ -6157,8 +6160,10 @@ const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#
    TESTER MODE is the grown-up's, never a child's: Settings → Grown-ups → Testing tools → Tester mode, or
    ?tester=1, which asks for the grown-up PIN first (family-shell.js) — a child who types it meets the PIN, not
    the content. The testing unlock ("Unlock everything", devUnlock) counts as tester mode. Word Forge keeps its
-   own sign-off gate (SB_FORGE.signedOff) and opens to tester mode the same way. */
-window.SB_ANL_RELEASED=false;
+   own sign-off gate (SB_FORGE.signedOff) and opens to tester mode the same way.
+   RELEASED by the owner on 10 Oct 2026 ("release analogies") on analogy-review/REPORT.md: 1,153 items, every one
+   with three passes in the ledger (tests/analogy-release.cjs checks it on every deploy). */
+window.SB_ANL_RELEASED=true;
 function testerOn(){ try{ return !!(state.devUnlock||state.tester); }catch(e){ return false; } }
 function anlOpen(){ return window.SB_ANL_RELEASED===true||testerOn(); }
 window.SB_ANL_OPEN=anlOpen; window.SB_TESTER_ON=testerOn;
@@ -6563,6 +6568,11 @@ function missWhy(wo, typed){ const w=String((wo&&wo.w)||wo||'').toLowerCase(); i
   if(!k && homPartners(w).length) k='hom';
   const R=(window.SB_COACH_RULES||{})[k]||null;
   if(!R) lazyNeed('coachRules');
+  /* P1.19 (road to 4.5): the tip is matched to the TYPE of this mistake (SB_MISS_ERR, coach-rules.js — a dropped
+     final e, a double, ie/ei, -able/-ible, a silent letter, a vowel…), read from the typed letters against the word;
+     the concept family speaks only when no rule matches (or until the rulebook has landed). */
+  let E=null; if(typed){ try{ E=window.SB_MISS_ERR?SB_MISS_ERR(typed,w,{hom:homPartners(w),isWord:x=>!!wordIndex()[x]}):null; }catch(e){} }
+  if(E) return { k:E.fam||k||'plain', err:E.t, label:E.label, tip:E.tip, hook:full.h||rec.h||'', cols };
   const tip=(R&&R.check)||((typeof TRAP_TIP!=='undefined'&&TRAP_TIP[k])||MISS_TIP_X[k])||MISS_TIP_X.plain;
   return { k:k||'plain', label:(R&&R.label)||MISS_LABEL[k]||'How to get it next time', tip, hook:full.h||rec.h||'', cols }; }
 /* The whole miss panel. typed='' (asked to see it / picked nothing) still shows the word in
@@ -6575,7 +6585,7 @@ function missFeedbackHTML(wo, typed, opts){ opts=opts||{}; const why=missWhy(wo,
   const cols=why.cols.map(c=>`<span class="sb-mdcol" data-op="${c.op}" style="display:inline-flex;flex-direction:column;gap:3px">${cell(c.t,c.op,'t')}${cell(c.w,c.op,'w')}</span>`).join('');
   const nDiff=why.cols.filter(c=>c.op!=='ok').length;
   const summary=(typed?'You wrote '+typed+'. ':'')+'The word is spelled '+word.split('').join(' ')+'. '+(typed?nDiff+' letter'+(nDiff===1?'':'s')+' differ.':'');
-  return `<div class="sb-miss" data-why="${escA(why.k)}" style="text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:14px;animation:sb-pop .3s ease both">
+  return `<div class="sb-miss" data-why="${escA(why.k)}" data-err="${escA(why.err||'')}" style="text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:14px;animation:sb-pop .3s ease both">
       <div style="font-weight:800;font-size:14.5px;color:var(--text);margin-bottom:9px">${opts.head||(typed?'Not this time — here is the word, letter by letter':'Here is the word, letter by letter')}</div>
       <div role="img" aria-label="${escA(summary)}" style="display:flex;align-items:flex-start;gap:8px">
         <span aria-hidden="true" style="display:inline-flex;flex-direction:column;gap:3px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">${typed?'<span style="height:1.45em;display:flex;align-items:center">You</span>':''}<span style="height:1.45em;display:flex;align-items:center">Word</span></span>
@@ -6956,7 +6966,7 @@ function viewApp(){
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='trail'?atlasTabOn(S)   /* the Atlas and its Word Gym (owner, 10 Oct 2026) */
       :key==='games'?(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')
-      :S.nav===key;
+      :(S.nav===key||(key==='home'&&S.nav==='today'));   /* Today's ten is Home's (P1.16) */
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
     return `<button data-act="setNav" data-arg="${key}" aria-current="${on?'page':'false'}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
@@ -6996,6 +7006,7 @@ function viewApp(){
   else if(S.nav==='analogy') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.view():(lazyNeed('analogy',()=>{ if(state.nav==='analogy') render(); }), hiveLoader('opening the Analogy Atlas…')));
   else if(S.nav==='anltool') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.toolView():(lazyNeed('analogy',()=>{ if(state.nav==='anltool') render(); }), hiveLoader('opening the Link Finder…')));
   else if(S.nav==='anlbee') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.beeView():(lazyNeed('analogy',()=>{ if(state.nav==='anlbee') render(); }), hiveLoader('opening the bee…')));
+  else if(S.nav==='today') content=(window.SB_TODAY?SB_TODAY.view():(lazyNeed('today',()=>{ if(state.nav==='today') render(); }), hiveLoader('getting today’s ten ready…')));
   else if(S.nav==='forge') content=viewForge();
   else if(S.nav==='gym') content=viewGym();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
@@ -7127,7 +7138,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(k==='trail')?atlasTabOn(S):(S.nav===k||(k==='games'&&(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(k==='trail')?atlasTabOn(S):(S.nav===k||(k==='home'&&S.nav==='today')||(k==='games'&&(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -7219,25 +7230,6 @@ function goodDaysCard(){ const c=active(); ensureLists(c); const t=todayKey(); c
     </div>
     <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:space-between">${dots}</div>
   </div>`; }
-// festive confetti streamers — a few, gently floating (kept light so the card stays clean)
-function streamers(){
-  const R=[[9,16,'#FFD23F',22],[26,70,'#36E0C8',-26],[46,22,'#FFFFFF',40],[70,68,'#FFE27A',-16],[86,26,'#36E2FF',30],[60,46,'#FFFFFF',-22]];
-  const D=[[16,44,'#fff'],[78,18,'#FFE27A'],[40,80,'#36E2FF']];
-  return `<div style="position:absolute;inset:0;pointer-events:none;overflow:hidden">`+
-    R.map(([l,t,co,r],i)=>`<span style="position:absolute;left:${l}%;top:${t}%;width:5px;height:14px;background:${co};border-radius:6px;opacity:.8;--r:${r}deg;transform:rotate(${r}deg);animation:sb-confetti ${3+(i%3)}s ease-in-out ${(i*0.45).toFixed(2)}s infinite"></span>`).join('')+
-    D.map(([l,t,co])=>`<span style="position:absolute;left:${l}%;top:${t}%;width:5px;height:5px;border-radius:50%;background:${co};opacity:.7"></span>`).join('')+
-  `</div>`;
-}
-/* The Atlas tile shows the act the speller is actually standing in, painted with
-   the same scenery the Word Atlas and the books use — so the home screen and the
-   journey are visibly the same place. */
-function atlasWorld(c){ try{ const T=window.SB_TRAIL; if(!T) return 'meadow';
-    const tr=c.trail||{}; const done=tr.done||{};
-    let world='meadow';
-    for(const a of (T.honey.acts||[])){ const us=(T.honey.units||[]).filter(u=>u.act===a.id);
-      if(!us.length) continue; world=a.world;
-      if(!us.every(u=>(done[u.id]||{})[tr.lap||1])) break; }
-    return world; }catch(e){ return 'meadow'; } }
 function paintedTileArt(world,h,eager){   /* eager: Home's first screen — a lazy image above the fold waits its turn (audit v4 B6) */
   return `<span style="position:relative;display:block;width:100%;height:${h}px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
     <img src="app-art/w-${world}-r2.jpg" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
@@ -7347,6 +7339,28 @@ function homeSecondCard(c){
       ${chips?`<span class="s2-chips">${chips}</span>`:''}
       <span class="s2-go">${esc(K.go)} ${iconSVG('arrow',14,2.4)}</span>
     </span></button>`; }
+/* TODAY, IN ONE LINE (road to 4.5, P1.17 — rubric B4, "a daily reason to return"): the daily ring, the day's session
+   (Today's ten, today.js) and My Feed's status, one strip in row 2 — above the two journey cards from 640px, under
+   Continue on a phone. Read from the child's own record (c.today, c.feed, the day log), so it costs Home's first
+   screen no file. Every control in it is an OUTLINE: Continue stays Home's one filled button (family-check).
+   A NEW child (P1.18 — rubric B9) gets the FIRST-DAY CARD in its place instead: what a day here is, and ONE Start —
+   the same first stop Continue opens, so day one has one way in, not two. The ribbon (and Today's ten) from day two.
+   New = set up today (kid.fr), or, for a record with no set-up day, nothing on it yet. Guard: tests/today-session.cjs. */
+function firstDay(c){ try{ const t=todayKey(); if(c.fr) return c.fr===t;
+    const tr=c.trail||{}; return !(c.daysPlayed||[]).some(d=>d!==t)&&!Object.keys(tr.done||{}).length&&!Object.keys(c.mast||{}).length&&!(c.activity||[]).length; }catch(e){ return false; } }
+function homeToday(c){ const m=todayMetrics(c), rings=[m.pApp,m.pPrac,m.pWords], shut=rings.filter(v=>v>=1).length;
+  if(firstDay(c)) return `<div class="sb-today sb-first" role="group" aria-labelledby="sb-first-h"><span class="sb-first-ic" aria-hidden="true">${iconSVG('sun',30,2.2)}</span>
+    <span class="sb-first-b"><b id="sb-first-h">Day one, ${esc(c.name||'speller')}!</b>
+    <span>Start with your first stop on the Word Atlas. From tomorrow, Today's ten waits here: ten words, about five minutes.</span></span>
+    <button class="sb-td-b sb-first-go" data-act="goNext">${iconSVG('steps',15)} Start</button></div>`;
+  const T=c.today&&c.today.d===todayKey()?c.today:null, n=T?(T.res||[]).length:0, N=T?(T.ws||[]).length||10:10, ok=T?(T.res||[]).filter(x=>x.ok).length:0;
+  const s=!T||!n?['about 5 minutes','Start']:T.done?[ok+' of '+N+' right','See it']:[n+' of '+N+' done','Carry on'];
+  const F=c.feed||{}, fd=Math.floor(Date.now()/864e5), paid=Object.keys(F.paid||{}).filter(k=>F.paid[k]===fd).length;
+  const feed=F.day===fd&&(F.ids||[]).length?(paid?paid+' answered today':'opened today'):'new cards today';
+  return `<div class="sb-today" role="group" aria-label="Today">
+    <button class="sb-td-b" data-act="openCoachDesk" aria-label="${escA('Daily goal: '+shut+' of 3 rings closed')}">${ringsSVG(26,rings)}<span><b>${shut}/3</b><i> rings</i></span></button>
+    <button class="sb-td-b sb-td-main" data-act="openToday" aria-label="${escA("Today's ten: "+s[0]+'. '+s[1])}"><span><b>Today's ten</b><i> · ${s[0]}</i></span><span class="sb-td-go">${s[1]}<span class="sb-td-ar"> ${iconSVG('arrow',13,2.4)}</span></span></button>
+    ${state.feedOff?'':`<button class="sb-td-b" data-act="setNav" data-arg="feed" aria-label="${escA('My Feed: '+feed)}">${navIcon('feed',18,true)}<span><b><i>My </i>Feed</b><i> · ${feed}</i></span></button>`}</div>`; }
 function viewHome(){
   const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const focusedH=((c.ageMode)||((c.age||9)<=11?'playful':'focused'))==='focused';
@@ -7476,6 +7490,7 @@ function viewHome(){
         if(!nx&&started) return cardHold('You are here',innerWidth>=900?238:300);
         return homeHereCard(c,nx); })()}
       ${homeSecondCard(c)}
+      ${homeToday(c)}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${qohTile}</div>`; })()}
     <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a>${tmLine()}</div>
@@ -8268,6 +8283,7 @@ function drillLive(){ try{ const S=state; if(S.screen!=='app') return false;
     if((S.nav==='lore'||S.nav==='hive') && S.qz && S.qz.mode && S.qz.phase==='play') return true;   /* a hub round: Origins asks for a spelling */
     if(S.nav==='games' && S.game && S.game.status==='play') return true;
     if(S.nav==='gym' && window.SB_GYM && SB_GYM.live()) return true;
+    if(S.nav==='today' && window.SB_TODAY && SB_TODAY.live()) return true;   /* Today's ten: a word is open */
     if(S.nav==='adv' && S.adv && /^(drill|scan|mock)$/.test(S.adv.mode||'') && !S.adv.done) return true;
     if(S.nav==='leveltest' && S.lt && S.lt.placed==null) return true;
     if(S.readerQuiz && !S.readerQuiz.over) return true;
@@ -8376,19 +8392,6 @@ function conceptCardHTML(ch, allChs){
       <div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">${footL}${footR}</div>
     </div>
   </button>`;
-}
-function conceptBigCard(ch, allChs){
-  const ci=allChs.indexOf(ch); const st=conceptStat(ch); const locked=!isConceptUnlocked(ci);
-  const _L=locked?conceptLock(ci):null;
-  const tag=locked?lockChip(_L.kind,_L.text):`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
-  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${_L.kind==='learn'?'🧭 Take me there':'For grown-ups'}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
-  return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
-    <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.12;margin-bottom:4px;display:flex;align-items:center;gap:9px">${locked?`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',22,2.2)}</span>`:''}${esc(conceptShort(ch.title))}</div>
-    <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:13px">${esc(conceptRoots(ch.title))}</div>
-    <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?(_L.kind==='learn'?'This chapter opens on the Atlas, at the stop that teaches it — walk there and its pattern, worked examples and word list are yours.':'This chapter comes with the family plan.'):esc(ch.concept||'')}</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">${tag}${cta}</div>
-  </div>`;
 }
 function famCoverBG(fam){ const f=CONCEPT_FAM[fam]||CONCEPT_FAM.Advanced; const t=CONCEPT_TEX[f.tex]||CONCEPT_TEX.stripes;
   return `background-color:${f.c};background-image:${t[0]},linear-gradient(135deg,${f.c},${f.c2});background-size:${t[1]},100% 100%;background-position:center`; }
@@ -11655,33 +11658,6 @@ function gameArtSVG(type,size){ size=size||58;
   // fallback: existing icon set with float
   const gm=GAMES.find(g=>g.type===type);
   return `<div class="sb-theme-art">${iconSVG((gm&&gm.ic)||'spark',46,2)}</div>`; }
-// Meaningful, self-animating emblems for the Home journey cards — each scene tells its journey's story,
-// mirroring the arcade game scenes (motion lives inside the SVG, not a generic float on the box).
-function journeyArtSVG(kind,size){ size=size||26;
-  const W=(inner)=>`<svg viewBox="0 0 48 48" width="${size}" height="${size}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 2px 4px rgba(0,0,0,.18))">${inner}</svg>`;
-  const P=(d,extra)=>`<path d="${d}"${extra?' '+extra:''}/>`;
-  if(kind==='coach'){ // Coaching — three rising level-bars light in turn while a chevron climbs above them
-    const bars=[[11,30,10],[21,22,18],[31,14,26]].map(([x,y,h],i)=>
-      `<rect x="${x}" y="${y}" width="6" height="${h}" rx="1.6" fill="#fff" fill-opacity=".18" style="animation:sb-ga-cell 2.8s linear infinite;animation-delay:${(i*0.5).toFixed(2)}s"/>`).join('');
-    return W(bars+`<g style="animation:sb-jr-rise 2.8s ease-in-out infinite">`+P('M30 12l4-4 4 4')+`</g>`); }
-  if(kind==='concept'){ // Concepts — letter tiles light in sequence, an underline sweeps the pattern
-    const tiles=[10,20,30].map((x,i)=>
-      `<rect x="${x}" y="14" width="8" height="8" rx="1.8" fill="#fff" fill-opacity=".18" style="animation:sb-ga-cell 3s linear infinite;animation-delay:${(i*0.5).toFixed(2)}s"/>`).join('');
-    const letters=['a','b','c'].map((L,i)=>`<text x="${14+i*10}" y="20.6" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="7" fill="#fff" stroke="none">${L}</text>`).join('');
-    return W(tiles+letters+`<g style="animation:sb-ga-scan 3s ease-in-out infinite">`+P('M13 30h9',' stroke-opacity=".95"')+`</g>`); }
-  if(kind==='book'){ // Word Journeys — an open book whose page turns
-    return W(P('M24 14v22')+P('M24 14C20 11 14 11 8 12v22c6-1 12-1 16 2')+P('M24 14c4-3 10-3 16-2v22c-6-1-12-1-16 2')+
-      `<g style="animation:sb-jr-flip 3.2s ease-in-out infinite;transform-origin:24px 24px">`+P('M24 14c3-2 7-2.4 10-1.6v20c-3-.8-7-.4-10 1.6z',' fill="rgba(255,255,255,.24)"')+`</g>`); }
-  if(kind==='theme'){ // Theme Journeys — a painter's palette whose colour dabs pop in turn, with a sparkle
-    const dabs=[[16,20],[24,15],[32,19],[30,28]].map(([x,y],i)=>
-      `<circle cx="${x}" cy="${y}" r="2.6" fill="#fff" fill-opacity=".2" style="animation:sb-ga-cell 3.2s linear infinite;animation-delay:${(i*0.5).toFixed(2)}s"/>`).join('');
-    return W(P('M24 8C14 8 7 15 7 23c0 6 5 8 9 8 3 0 3 4 6 5 8 2 18-5 18-14C40 14 33 8 24 8z')+dabs+
-      `<g style="animation:sb-ga-star 3.2s ease-in-out infinite;transform-origin:20px 22px">`+P('M20 18l1.3 3 3.3.3-2.5 2.2.8 3.2-2.9-1.7-2.9 1.7.8-3.2-2.5-2.2 3.3-.3z',' fill="rgba(255,255,255,.92)" stroke="none"')+`</g>`); }
-  if(kind==='joystick'){ // Arcade — the stick waggles while a button presses
-    return W(P('M13 42h22a3 3 0 0 0 3-3v-5H10v5a3 3 0 0 0 3 3z')+
-      `<g style="animation:sb-ga-joy 2.4s ease-in-out infinite;transform-origin:24px 34px">`+P('M24 34V16')+`<circle cx="24" cy="12" r="5" fill="rgba(255,255,255,.3)"/></g>`+
-      `<circle cx="33" cy="29" r="2.4" fill="#fff" stroke="none" style="animation:sb-ga-press 2.4s ease-in-out infinite;transform-origin:33px 29px"/>`); }
-  return `<div class="sb-theme-art">${iconSVG('spark',size,2)}</div>`; }
 const MC_ORIGINS=['Latin','Greek','French','Old English','Norse','Spanish','Italian','German','Arabic','Japanese','Hindi','Sanskrit','Dutch','Russian','Hebrew','Portuguese'];
 // generate plausible wrong spellings (double/drop/swap letters, ie↔ei, ent↔ant, ible↔able …)
 function misspellings(w, n){ const out=new Set();
@@ -13365,7 +13341,7 @@ function render(){
   if(state.nav==='forge'&&state.screen==='app'){ try{ const h=document.getElementById('fg-host'); if(h){ if(window.SB_FORGE_UI) SB_FORGE_UI.mount(h); else lazyNeed('forge', ()=>{ const h2=document.getElementById('fg-host'); if(h2&&window.SB_FORGE_UI) SB_FORGE_UI.mount(h2); }); } }catch(e){} }   /* Word Forge draws its own stage into the shell */
   if(state.nav==='gym'&&state.screen==='app'){ try{ const h=document.getElementById('gym-host'); if(h&&window.SB_GYM) SB_GYM.mount(h); }catch(e){} }   /* the Spelling Gym keeps its own DOM and is re-attached, so a render never wipes a half-typed word */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
-  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby'))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
+  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='today'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby'))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the

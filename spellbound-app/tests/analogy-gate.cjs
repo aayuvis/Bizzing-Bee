@@ -193,15 +193,16 @@ const pressPin = async (pg, digits) => { for (const d of digits) await pg.keyboa
     /* off again: the Settings switch needs no PIN to turn it OFF, and the surfaces go */
     await pg.evaluate(() => app.toggleTester()); await W.frames(pg, 3);
     S = await seen(pg); B = await bars(pg);
-    ok(!S.tester && S.stored === '0' && !B.desk.includes('analogy'), 'switched off: the tab goes');
+    /* released (owner, 10 Oct 2026): tester mode off leaves the released tab and #/anlbee where every child has them */
+    ok(!S.tester && S.stored === '0' && (released ? B.desk.includes('analogy') : !B.desk.includes('analogy')), released ? 'switched off: tester mode goes, the released tab stays' : 'switched off: the tab goes');
     S = await typed(pg, '#/anlbee');
-    ok(!S.anlNav && !S.screen, `…and #/anlbee lands on ${S.nav} again`);
+    ok(released ? (S.nav === 'anlbee' || !!S.anlNav) : (!S.anlNav && !S.screen), released ? `…and #/anlbee still opens Mock Analogy Bee (${S.nav})` : `…and #/anlbee lands on ${S.nav} again`);
     e1.length && errs.push(...e1); await ctx.close();
     /* ?tester=0 switches it off */
     ({ ctx, pg, errs: e1 } = await open(b, { tester: true, q: '?tester=0' }));
     await W.until(pg, () => !state.tester, null, 10000).catch(() => {});
     S = await seen(pg); B = await bars(pg);
-    ok(!S.tester && S.stored === '0' && !B.desk.includes('analogy') && !/tester=/.test(S.search), '?tester=0 switches tester mode off, no PIN needed');
+    ok(!S.tester && S.stored === '0' && (released ? B.desk.includes('analogy') : !B.desk.includes('analogy')) && !/tester=/.test(S.search), '?tester=0 switches tester mode off, no PIN needed');
     e1.length && errs.push(...e1); await ctx.close();
   } catch (e) { ok(false, 'the walk ran to its end — ' + (e && e.message)); }
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

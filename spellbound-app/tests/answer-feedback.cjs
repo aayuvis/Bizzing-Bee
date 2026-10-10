@@ -13,6 +13,9 @@
    the Mock Spelling Bee at the microphone, a typed game card (Daily Buzz) and a multiple-choice
    game card (Word Quiz · Spellings). Each: right advances, wrong holds (checked after 4s, longer
    than any old timer) and shows why, Next moves on.
+   P1.19 (road to 4.5, 10 Oct 2026): the practice card's tip is matched to the mistake's TYPE (SB_MISS_ERR in the lazy
+   rulebook) — "comitee" names the missing mm and tt, never the word's family. Proved by breaking: missWhy's call to
+   SB_MISS_ERR taken out → the panel carries no data-err and the check fails.
    Every step waits for the STATE it needs (`U`, below) — the screen drawn, the panel up, the
    card moved on — never for a guessed number of milliseconds. The 4s holds stay: they are the
    check that nothing moves on by itself.
@@ -69,6 +72,10 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     o.pcNoShake = !/sb-shake/.test(document.querySelector('#root').innerHTML.split('data-act="speak"')[0].slice(-600));
     await W(4000);
     o.pcHeld = state.status === 'wrong' && state.gi === 0 && !!missOn();
+    /* P1.19 (road to 4.5): the tip names THIS mistake's type once the rulebook is in (coach-rules.js, lazy) — the panel
+       redraws when it lands; here it is asked for and waited on, never assumed */
+    await new Promise((res) => SB_LAZY.need('coachRules', res)); render(); await U(() => !!(document.querySelector('.sb-miss') || {}).dataset && document.querySelector('.sb-miss').dataset.err);
+    o.pcErr = { err: (document.querySelector('.sb-miss') || { dataset: {} }).dataset.err, tip: ((document.querySelector('.sb-miss .sb-mwhy') || {}).innerText || '').replace(/\s+/g, ' ') };
     state.typed = 'knigh'; app.check(); await W(80);   // retyping does not change the panel's record of the attempt
     app.next(); await U(() => state.gi === 1 && state.status === 'idle' && !missOn(), 5000);
     o.pcNext = state.gi === 1 && state.status === 'idle' && !missOn();
@@ -153,6 +160,8 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
 
   ok(r.oopsIsKind, "the mascot's 'oops' and 'sad' moods draw the kind 'think' face — no tear, no frown");
   ok(r.pcPanel && r.pcPanel.why === 'double' && r.pcPanel.cols >= 9, 'practice card: a miss shows the word letter by letter and WHY (committee → double letters)');
+  ok(r.pcErr && r.pcErr.err === 'dbl-miss' && /committee has mm and tt/.test(r.pcErr.tip) && !/Greek/.test(r.pcErr.tip),
+    `practice card: the tip is matched to the mistake's TYPE — "comitee" is a missing double (${r.pcErr && r.pcErr.err}: "${r.pcErr && r.pcErr.tip.slice(0, 80)}")`);
   ok(r.pcMood === 'think' && r.pcNoTear && r.pcNoShake, 'practice card: the bee stays kind on a miss (mood think, no tear, no head-shake)');
   ok(r.pcHeld, 'practice card: the miss HOLDS (still there after 4s)');
   ok(r.pcPanel && /So close — 2 letters off/.test(r.pcPanel.txt), 'practice card: a near miss says "So close — 2 letters off" IN the panel\'s headline, where it covers nothing');

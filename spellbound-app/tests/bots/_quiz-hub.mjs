@@ -10,7 +10,15 @@ const { until } = require('../lib/wait.cjs');
 export function hubDriver(hub, mode) {
   const typed = mode === 'origins';
   /* four options: a guess wins one in four (chance, for T2) — except Origins (typed) and the Ladder, scored by its climb */
-  return { key: hub + '/' + mode, kind: typed ? 'type' : 'choice', chance: typed || mode === 'ladder' ? undefined : 0.25, level: 'easy', secs: mode === 'clock' ? 20 : mode === 'ladder' ? 30 : 45, maxSteps: 60,
+  /* the clock (road to 4.5, P1.20): played to the end of ITS sixty seconds, a bot spending PACE game seconds on each
+     question (taken off the game's clock before it answers), the random bot over EIGHT minutes — one minute is about
+     seven guesses, so its share of a perfect minute swings ±6 points; eight average it to about ±2 — so T2b measures
+     what the clock counts (first-try rights) against what the perfect bot gets in the same minute. The fixed rounds
+     keep the one round T1 and T2 were written for (T1's "6 of 10 pays" is the product's rule, read per round). */
+  const clock = mode === 'clock', PACE = 3;
+  return { key: hub + '/' + mode, kind: typed ? 'type' : 'choice', chance: typed || mode === 'ladder' ? undefined : 0.25, level: 'easy',
+    clock, pace: clock ? PACE : undefined, randomRounds: clock ? 8 : 1,
+    secs: clock ? 120 : mode === 'ladder' ? 30 : 45, maxSteps: clock ? 160 : 60,
     async start(pg, { level }) {
       await pg.evaluate(([h, m, l]) => { state.screen = 'app'; try { SB_LEVEL.set(h + '/' + m, l || 'easy'); } catch (e) {} (h === 'lore' ? app.openLore : app.openHive)(m); }, [hub, mode, level]);
       await until(pg, (m) => !!(window.SB_QHUB && state.qz && state.qz.mode === m && state.qz.phase !== 'loading'), mode, 45000);
@@ -24,9 +32,11 @@ export function hubDriver(hub, mode) {
           const q2 = SB_QHUB._cur(); return q2 && q2.stage === 'type' ? { target: q2.word.w } : { done: false }; }
         return { options: q.opts.slice(), answer: q.ans }; }, typed); },
     async answer(pg, v) {
-      await pg.evaluate(([v, typed]) => { const g = state.qz; if (!g || g.phase !== 'play') return;
+      await pg.evaluate(([v, typed, pace]) => { const g = state.qz; if (!g || g.phase !== 'play') return;
+        /* a clock: the bot's thinking time comes off the game's own clock (SGUI.clock, or the fallback's g.left) */
+        if (pace) { try { if (g.clock && g.clock.add) g.clock.add(-Math.min(pace, Math.max(0, g.clock.left() - 0.05))); else g.left = Math.max(50, g.left - pace * 1000); } catch (e) {} }
         if (typed) { app.qzType(String(v)); app.qzSubmit(); } else { const q = SB_QHUB._cur(); let i = +v; if (g.hidden && g.hidden.indexOf(i) >= 0) i = q.ans; app.qzPick(i); }
-        if (state.qz === g && g.phase === 'play' && (g.held || g.go || (SB_QHUB._cur() || {}).stage === 'done')) app.qzGo(); }, [v, typed]); },
+        if (state.qz === g && g.phase === 'play' && (g.held || g.go || (SB_QHUB._cur() || {}).stage === 'done')) app.qzGo(); }, [v, typed, clock ? PACE : 0]); },
     async result(pg) {
       await pg.evaluate(() => { const g = state.qz; if (g && g.phase === 'play') SB_QHUB.finish(g); });
       await until(pg, () => state.qz && state.qz.phase === 'done' && !!document.querySelector('.qz-done'), null, 10000);

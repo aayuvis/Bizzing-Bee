@@ -33,6 +33,7 @@ const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 const { booted, until, still } = require('./lib/wait.cjs');
 const ROOT = process.env.SB_ROOT || path.resolve(__dirname, '..');
+const RELEASED = require('./lib/analogy-release.cjs').readFlag(ROOT).value === true;   // the owner's release line (app3.js; released 10 Oct 2026)
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
@@ -77,14 +78,17 @@ const GONE = ['Bizzillionaire', 'Beat the Buzzer', 'Magic Squares', 'Word Quiz',
     }, GONE);
     const T = vp.n; const r = await measure();
     ok(r.doors.map(d => d.id + ':' + d.head).join() === 'compete:Compete,train:Train,play:Play', `${T}: three doors in order — ${r.doors.map(d => d.head).join(' · ')}`);
-    const want = { compete: ['mockbee'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun', 'dailyBuzz'] };
+    const want = { compete: RELEASED ? ['mockbee', 'mockAnalogy'] : ['mockbee'], train: ['gym', 'lore', 'hive', 'dailyBee'], play: ['beeGrandPrix', 'typeBlaster', 'honeycombRun', 'dailyBuzz'] };
     ok(r.doors.every(d => JSON.stringify(d.keys) === JSON.stringify(want[d.id])), `${T}: the lineup a child sees, door by door — ${r.doors.map(d => d.keys.join('/')).join(' | ')}`);
-    ok(r.titles.slice(1, 4).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(1, 4).join(', ')})`);
+    const hubAt = RELEASED ? 2 : 1;   // Mock Analogy Bee sits beside Mock Spelling Bee in Compete once released
+    ok(r.titles.slice(hubAt, hubAt + 3).join() === r.names.join(), `${T}: the hubs are named from SB_HUB_NAMES (${r.titles.slice(hubAt, hubAt + 3).join(', ')})`);
     ok(!r.gone.length, `${T}: none of the cards that left are on the tab` + (r.gone.length ? ' — ' + r.gone.join(', ') : ''));
     ok(r.doors.every(d => d.full), `${T}: every row of every door is full (${r.doors.map(d => d.id + ' ' + d.rows + ' row' + (d.rows > 1 ? 's' : '')).join(', ')})`);
     ok(r.doors.every(d => d.even), `${T}: the cards in a row are one height`);
     /* a child: Mock Analogy Bee is behind the analogy gate, so Mock Spelling Bee stands alone and takes its whole row */
-    ok(r.mb && r.mb.hero && r.mb.share > 0.97, `${T}: a child's Mock Spelling Bee is a large tile across its whole door (${r.mb && Math.round(r.mb.share * 100)}%)`);
+    /* released (owner, 10 Oct 2026): a child meets the two half banners, exactly as a tester did before */
+    const half = RELEASED && T !== 'phone';
+    ok(r.mb && r.mb.hero && (half ? r.mb.share > 0.45 && r.mb.share < 0.55 : r.mb.share > 0.97), `${T}: a child's Mock Spelling Bee is a large tile ${half ? 'half its door beside Mock Analogy Bee' : 'across its whole door'} (${r.mb && Math.round(r.mb.share * 100)}%)`);
     /* a tester: since 9 Oct 2026 (owner: "shrinking mock spelling bee banner to half") Mock Spelling Bee is a half banner
        beside Mock Analogy Bee: a large tile half its door on a desktop, the whole row on a phone */
     await pg.evaluate(() => { state.tester = true; render(); }); await still(pg);

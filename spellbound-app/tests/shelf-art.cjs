@@ -24,6 +24,7 @@
    knowing about too.                                                              */
 const { chromium } = require('playwright');
 const SRC = process.env.SHELF_SRC || require('path').resolve(__dirname, '..');
+const RELEASED = require('./lib/analogy-release.cjs').readFlag(SRC).value === true;   // the owner's release line (app3.js; released 10 Oct 2026)
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 
@@ -78,8 +79,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
 
   const home = await pg.evaluate(() => [...document.querySelectorAll('button,a')]
     .map(x => (x.textContent || '').trim())
-    .filter(t => /^(Home|Word Atlas|Library|Play|My Feed)$/.test(t)));   // brief 4.5 decision 1 (10 Oct 2026): the Word Gym is under the Atlas; a child sees five (Analogies waits for its release)
-  ok(new Set(home).size === 5, `the five tabs are there after onboarding — ${[...new Set(home)].join(' · ') || 'NONE'}`);
+    .filter(t => /^(Home|Word Atlas|Analogies|Library|Play|My Feed)$/.test(t)));   // brief 4.5 decision 1 (10 Oct 2026): six tabs, the Word Gym under the Atlas; Analogies released by the owner the same day
+  ok(new Set(home).size === (RELEASED ? 6 : 5), `the ${RELEASED ? 'six' : 'five'} tabs are there after onboarding — ${[...new Set(home)].join(' · ') || 'NONE'}`);
 
   await pg.evaluate(() => {
     const l = [...document.querySelectorAll('button,a')].find(x => x.offsetParent && /^Library$/i.test((x.textContent || '').trim()));

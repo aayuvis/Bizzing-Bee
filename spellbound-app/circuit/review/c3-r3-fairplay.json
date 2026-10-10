@@ -1,0 +1,265 @@
+[
+ {
+  "path": "cast.ash.tell",
+  "verdict": "pass",
+  "reason": "The twins' tell is the same on every on-screen surface: cast.ash, cast.aria, ravenmereRoster[1] and [2], and teamNight.beats.ravenmere all say 'spell as a pair, one letter each'. 'In unison' and 'a letter each' survive only in author-facing changes[] and ownerQuestions. validate.cjs check 10 fails if 'in unison' reaches the screen."
+ },
+ {
+  "path": "cast.aria.tell",
+  "verdict": "pass",
+  "reason": "The same as cast.ash.tell."
+ },
+ {
+  "path": "rounds[0].pieces.above",
+  "verdict": "fix",
+  "reason": "'You waited. I saw.' became 'You beat me.', a placing claim. Two things the build does not yet force can make it false. (1) Round I has two headliners, Pip and Nova. build[id=no-placing] chooses the letter 'against the headliner only' and does not say which one. Pip is forced to sit down in round two (scripted-outcomes round 1), so a builder who compares against Pip, or against the first headliner listed (pixel), sends Nova's 'You beat me.' to nearly every child, including one who went out before Nova. (2) At the cap Mock Bee ends 'Everyone still standing shares the title' (mockbee.js timeCalled: co-champions). The rule counts a child standing at the cap as above, so a child who shares the title with Nova reads 'You beat me.' straight after the announcer said they share it. Keep the line and close both gaps in the build.",
+  "fix_text": "Add to build[id=no-placing].rule: 'Round I's letters are Nova's, so the child is placed against Nova (koi), not Pip. In Rounds I–VIII a hall never ends in a title shared with the headliner: if time would be called with the child and the headliner both standing, the headliner takes one more word before the cap and misses it. Round IX settles a shared cap with the championship word instead. So an above letter's \"You beat me\" is always true of the hall log.' Add to its test: 'Round I compares with Nova; run every hall to the cap with the child and the headliner standing; the result card shows no shared title, and the above letter is delivered.'"
+ },
+ {
+  "path": "rounds[1].pieces.prog",
+  "verdict": "pass",
+  "reason": "The plant is still fair, and is if anything sharper. 'Our press is run by a typesetter and a parrot. We are not sure which is in charge' puts the parrot at the press and hints it calls the letters. The perch-and-feather tap repeats it, and reveal[0] (the parrot's dictation) pays it off. cases[0].taps[0] quotes this line word for word, and planted[0] matches."
+ },
+ {
+  "path": "rounds[1].pieces.drama",
+  "verdict": "pass",
+  "reason": "'With seconds left on the clock' is exactly what build[id=scripted-outcomes] round 2 forces ('with time left'). It is reachable on the real clock: a 30 s turn, 3 s a request, at most six requests (mockbee.js TURN_MS, Q_COST, CHAIR)."
+ },
+ {
+  "path": "rounds[4].pieces.below",
+  "verdict": "pass",
+  "reason": "It no longer reports what the child did. It is reachable: Kwame is forced out at his first word after round one, so a child below him went out in round two before his turn. 'Next time' comes true, because Kwame is seated beside the child again in Round VI (alsoSeated in every band). Both versions still plant 'Far Shore' and 'French' (validate.cjs)."
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "'Not easily upset' now fits the round, where Kwame does crack. Pip's coda ('I still think so') reads as loyalty, not a contradiction."
+ },
+ {
+  "path": "rounds[5].pieces.above",
+  "verdict": "fix",
+  "reason": "'You beat me today' is a placing claim. build[id=scripted-outcomes] round 6 explicitly allows Ines to 'stand at the cap', and the rule counts a child standing at the cap as above. In that hall the announcer says 'Everyone still standing shares the title', and then Ines writes 'You beat me today.' The rest of the letter is advice and holds. The fix is the same shared-cap rule as rounds[0].pieces.above.",
+  "fix_text": "Keep the line. Apply the shared-cap rule in build[id=no-placing] (see rounds[0].pieces.above), and in build[id=scripted-outcomes] round 6 read Ines's 'or both stand at the cap' as 'or both stand at the cap with the child already out'."
+ },
+ {
+  "path": "rounds[6].pieces.above",
+  "verdict": "fix",
+  "reason": "The same gap. Suki's round forces nothing about her exit (scripted-outcomes round 7 forces only the unheard word and her five requests), so she can stand at the cap beside the child. 'You beat me today' would then contradict the shared title on screen. 'So now you know my trick' is fine: her trick is on screen in the drama and her tell.",
+  "fix_text": "Keep the line. Apply the shared-cap rule in build[id=no-placing] (see rounds[0].pieces.above)."
+ },
+ {
+  "path": "rounds[7].pieces.inv",
+  "verdict": "pass",
+  "reason": "It names the headliner again (validate.cjs check 12). Round VII's cliff ('The Finish Arch invitation: Dax's own round') and Round VIII's dax line ('His home hall') are true on the main path. Dax is seated at the Finish Arch in every band, 6–7 included. 'Fastest in round one' matches his Round I postcard and the drama ('flies through round one')."
+ },
+ {
+  "path": "rounds[7].pieces.above",
+  "verdict": "pass",
+  "reason": "'You beat me' is true whenever the above letter is chosen. Scripted-outcomes round 8 forces Dax to miss in a later round and never stand at the cap, so no shared title is possible with him. The apologies name only wrongs shown on screen."
+ },
+ {
+  "path": "rounds[8].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Works in every band. 'In the dark' needs no seat, and Round IX shows the rest of the Circuit as a visible audience (build[id=hall-fields]), so Pip can speak at 11–15, where he is not seated. 'Jump' pays off Round IV's drama, which is on every path. 'Start early', Pip's tell, is gone, so the line no longer needs him at the microphone."
+ },
+ {
+  "path": "rounds[8].pieces.above",
+  "verdict": "pass",
+  "reason": "'You beat me' is true: Round IX settles a shared cap with the championship word (scripted-outcomes round 9), so above always means the child outlasted Vesper. 'Watching this Circuit ask everything' speaks of the whole Circuit, which every rival does after the blackout (forced). The violet pen keeps her clearing."
+ },
+ {
+  "path": "rounds[8].pieces.below",
+  "verdict": "pass",
+  "reason": "'I won' is true: Vesper outlasts every other rival, and a child below her means she wins, or spells the championship word at a shared cap. 'This Circuit asked everything all season' is about the whole Circuit. Weighed: 'You were writing in pencil' says something about the child, but it is a story prop from the brief (§5C), not a hall action. The log cannot contradict it, because the child writes nothing in the app. build[id=no-placing]'s new wording ('never report what the child did') is broader than its own test ('what the child did in the hall'); see the build row."
+ },
+ {
+  "path": "rounds[8].pieces.v",
+  "verdict": "pass",
+  "reason": "'You asked everything tonight' is gone, so the note makes no claim about what the child did (check 16). 'Who was there every single round?' still points only at the runner and the Pronouncer, the two people in every round's mail (check 8). The upright hand (Round III card) and 'It isn't mine to tell' (Round IX card, same mail) have already cleared the Pronouncer."
+ },
+ {
+  "path": "rounds[8].pieces.dax",
+  "verdict": "pass",
+  "reason": "Delivered in every band. Dax is seated in every band's final (alsoSeated comet; fields 6-7, 8-10 and 11-15 for round 9 all include comet; checks 9 and 20). He is forced standing at the blackout, and his next turn shows a definition request. Theo answers 'somewhere in the dark', which is true whether he is seated (11–15) or in the audience (6–7, 8–10). 'Your first' holds: Mock Bee's bots never ask, Round VIII forces no request, and Case 5's last chill has Dax say 'I don't ask.'"
+ },
+ {
+  "path": "cases[0].lateLine",
+  "verdict": "pass",
+  "reason": "It dates the case to the night of Round II's mail ('Tonight the list will lie'), so a Case 1 opened after Round III reads as then. It does not name the answer."
+ },
+ {
+  "path": "cases[0].taps[0]",
+  "verdict": "pass",
+  "reason": "It quotes rounds[1].pieces.prog exactly, so the planted clue really is planted earlier (L10). The scene's other two taps are unchanged."
+ },
+ {
+  "path": "cases[1].lateLine",
+  "verdict": "pass",
+  "reason": "It dates the case to rounds[3].pieces.suspense ('That night … the Committee bell vanishes'). After Round V's invitation ('The bell is back'), a late Case 2 now reads as a flashback, not a contradiction."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].clue",
+  "verdict": "pass",
+  "reason": "It has one answer. The brief requires Greek parts and Greek spellings (ph), which rules out bullhorn and loudhailer. The Warm-up engine also says each word aloud (gym.js say1). It prints no other item's answer (check 2)."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].word",
+  "verdict": "pass",
+  "reason": "It is not printed before the case. That covers the script's earlier mail and cases, the anytime surfaces, the visitor cards up to the Storm, and Mock Bee's stage openers, announcer pools, result line and Play card (validate.cjs check 2, which now reads mockbee.js and caught microphone). Lessons: megaphone is a word of concepts-data chapter 59 'phon / phone', taught at u56 in the Roots, after the Storm. A child meets it first only by opening Case 2 late, which is recall, the standard cycle 2 set. Microphone, by contrast, is u1, in the Meadow."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].greek",
+  "verdict": "pass",
+  "reason": "The case prints this field (build[id=case-origins-authored]). The library's own origin for megaphone is also 'Greek', so there is no hint/library conflict, and libraryNonGreek stays three (check 18)."
+ },
+ {
+  "path": "cases[2].lateLine",
+  "verdict": "pass",
+  "reason": "A late Case 3 is opened after Round VI's mail, by which time Round VI's invitation has said 'Kwame, who has come back'. So the line reads as then, and no fear is renewed. One build conflict, though: build[id=case-scenes] still requires the safeLine to be 'its first rendered line', and build[id=story-order] says a late case 'opens with its lateLine'. See the build:case-scenes row."
+ },
+ {
+  "path": "cases[2].reveal[2]",
+  "verdict": "pass",
+  "reason": "This was the cycle-2 continuity fix. It now agrees with Round V's cliff ('he's safe, and that's all he'll say') and the safeLine ('What nobody will tell you is where'): the team knew he was safe but not where. Hazel's secret ('Where he went is Kwame's to tell') agrees too."
+ },
+ {
+  "path": "cases[3].lateLine",
+  "verdict": "pass",
+  "reason": "It dates the case to rounds[6].pieces.suspense ('By evening the rumour is everywhere'), with the Committee ruling at noon. A case opened after Round VIII's turn ('The rumour was mine') now reads as a flashback."
+ },
+ {
+  "path": "cases[3].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "It no longer contradicts the screen. In Round VII Suki's origin request is answered as the library gives it ('English'), and 'sure it's built from Greek' is a claim about parts, which agrees. Under build[id=case-scenes] it renders in the reveal, after the puzzle has shown kai = 'and', so nothing about the answer leaks early."
+ },
+ {
+  "path": "cases[4].lateLine",
+  "verdict": "pass",
+  "reason": "A late Case 5 is opened after the final. 'The night before the final' frames Vesper's 'won't spell tomorrow' and her last chill ('Ask everything tomorrow') as then, consistent with Round IX's Dax question having already happened."
+ },
+ {
+  "path": "cases[4].puzzle.brief",
+  "verdict": "pass",
+  "reason": "It still has exactly one answer. All three of the Pronouncer's statements are right-ended, so they are not untrue, and he is ruled out. Vesper's two right-ended lines say the envelope was never accessible from her room; her one untrue line (confidant) is about her nerves, so she is ruled out. Dash's two wrong-ended lines (reliible, importence) make 'I locked the side door' and 'my key is of no importance' untrue, which leaves choice 3 (Duchess through Dash's door). 'Untrue' matches reveal[2]. No answer is printed before the case (check 2)."
+ },
+ {
+  "path": "teamNight.beats.ravenmere",
+  "verdict": "pass",
+  "reason": "Each tell matches the cast and the roster. It names no Circuit suspect, so it is safe in any story order."
+ },
+ {
+  "path": "teamNight.beats.callRules",
+  "verdict": "pass",
+  "reason": "The re-call in both drama beats is now a rule the child has been told (check 14). In both, Dax re-calls before any letter is said: Rafi's finger stops on his palm, and Kwame's hands tighten. 'One second try at a spelling' matches levellingMiss and rules[5], and the re-call does not spend it."
+ },
+ {
+  "path": "teamNight.beats.levellingMiss",
+  "verdict": "pass",
+  "reason": "It no longer reports what the child did ('You breathe out, ask everything' is gone). 'This time it ends right' is true even when the escalating help ends by showing the answer (rules[5])."
+ },
+ {
+  "path": "teamNight.beats.sting",
+  "verdict": "pass",
+  "reason": "'Vale reads it twice. That isn't mine.' names her as V., and it is now held until accusation.closingLetter (build[id=story-order].holds; check 13 fails on any unheld Team Night line naming Vale). Both orders work. Accusation first: the sting plays at Team Night as written. Team Night first: it arrives after the closing letter, and 'Later, while the Committee clears the Grand Marquee' follows the accusation scene in the hall. The other people present (the Committee, Vale, the Pronouncer) leave Mei and Vesper open as the second hand, as season2Seeds[1] needs."
+ },
+ {
+  "path": "teamNight.beats.stingAfter",
+  "verdict": "pass",
+  "reason": "It is held with the sting, and it stays meaningful only straight after it."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[1].tell",
+  "verdict": "pass",
+  "reason": "The same as cast.ash.tell."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[2].tell",
+  "verdict": "pass",
+  "reason": "The same as cast.aria.tell."
+ },
+ {
+  "path": "hivePost.beeFileIntro",
+  "verdict": "fix",
+  "reason": "'If one beat you' fixes the assumed miss. But 'One tap puts your missed words on your revision pile' now promises a button on the bee file, and no build entry provides one. The tap that exists is on Mock Bee's own recap ('Add missed words to revision', mbAddMissed), a different screen from the Hive Post's bee file, which can be opened any time later. Without a build line, the bee file can ship with no tap and the line is false. Mock Bee also says 'list' ('On your revision list'), not 'pile'.",
+  "fix_text": "Add a build entry (or extend build[id=slots]): 'The bee file carries one button, \"Add missed words to revision\", the same action as Mock Bee's recap (mbAddMissed, the child's own filing). It is shown only when the hall had a miss, and after the tap, or if the recap's tap already filed them, it reads \"On your revision pile\". Test: open a bee file with a miss; one tap files every missed word once; a winner's bee file shows no button.' Use one word for the pile across the bee file and Mock Bee."
+ },
+ {
+  "path": "slotLines.weak.byFamily.vow",
+  "verdict": "pass",
+  "reason": "It reads as a sentence in both V. notes, before 'Tonight the list will lie to you' and between 'Parts first, then the whole.' and 'And when a strong one breaks'. It prints only when vow is the child's top named family, so Round IV's card ('V. always knows your weak spot') holds. Whether each named pattern belongs to the family is an accuracy question, not one of placing or continuity."
+ },
+ {
+  "path": "slotLines.weak.byRound.2",
+  "verdict": "pass",
+  "reason": "It opens 'No weak spot yet.' and does not start 'You' (check 15). It is true of every child who can receive it: no miss, or only plain ones, which are no longer ranked. Round IV's card stays true, because V. knows there is none."
+ },
+ {
+  "path": "slotLines.weak.byRound.5",
+  "verdict": "pass",
+  "reason": "The same as byRound.2. It reads between 'Parts first, then the whole.' and 'And when a strong one breaks…'."
+ },
+ {
+  "path": "visitors[0].card",
+  "verdict": "pass",
+  "reason": "No continuity effect. It is a Storm visitor card, and check 2 holds it to printing no Case 2 answer. It names no suspect."
+ },
+ {
+  "path": "build:story-order",
+  "verdict": "pass",
+  "reason": "The hold, the late-case lines and the test do what the cycle-2 fix asked, and validate.cjs check 13 enforces both. Optional: when Team Night is played first, its coda ('The Atlas chip changes to … Season 2: Ravenmere') plays before the accusation and before the held sting. That is not a fair-play break, but the chip announces Season 2 while Season 1's mystery is still open, and the Season 2 hook then arrives after the season's coda. Holding teamNight.beats.coda with the sting and stingAfter would keep the coda last in both orders."
+ },
+ {
+  "path": "build:case-scenes",
+  "verdict": "fix",
+  "reason": "Its rule and test still say Case 3's safeLine 'is its first rendered line'. build[id=story-order] now says a case opened late 'opens with its lateLine', and every case has one (check 13). On a late Case 3 the two tests cannot both pass, and the one a builder is likely to bend is the safeLine order.",
+  "fix_text": "Rule: 'Case 3's safeLine is the first line of the case after its lateLine (shown only when the case opens after Round VI's mail), and always before the impossible and the taps.' Test: 'Open Case 3 on time and late: the safeLine renders before the impossible in both, and the late open renders the lateLine first.'"
+ },
+ {
+  "path": "build:no-placing (and build:scripted-outcomes rounds 3 and 6)",
+  "verdict": "fix",
+  "reason": "The extended rule is right, but it leaves out the two placing gaps the reworded letters expose. (1) It does not say which of Round I's two headliners the letter compares against. (2) It counts a child standing at the cap as above, while Mock Bee ends a capped hall with a shared title, and scripted-outcomes rounds 3 and 6 explicitly allow Rafi and Ines to stand at the cap. The same gap touches the unchanged 'You beat me.' openers of Theo (Round II), Rafi (Round III) and Mira (Round IV). Also, the new sentence 'never report what the child did' is wider than its test ('in the hall'), and read literally it catches Vesper's pencil line.",
+  "fix_text": "Add to the rule: 'Round I's letters are Nova's, so the child is placed against Nova. In Rounds I–VIII a hall never ends in a title shared with the headliner: if time would be called with the child and the headliner both standing, the headliner takes one more word before the cap and misses it, so an above letter's \"You beat me\" is true of the hall log (Round IX settles a shared cap with the championship word).' Change 'never report what the child did' to 'never report what the child did in the hall (a story detail the brief gives the child, such as Vesper's pencil, is not a hall action)'. In scripted-outcomes rounds 3 and 6, read 'or stands at the cap' as 'or stands at the cap with the child already out'."
+ },
+ {
+  "path": "build:hall-fields",
+  "verdict": "pass",
+  "reason": "Dax (comet) is seated in every band's final, a visible audience is present in every band, and micLines is gone (checks 9 and 20). Every Round IX line is delivered in every band. The 6–7 final seats six (Mock Bee's four plus Dax and Vesper), the cost cycle 2 accepted."
+ },
+ {
+  "path": "build:slots, build:team-night, build:case2-spelling-engine, build:case-origins-authored, build:signoff-upright",
+  "verdict": "pass",
+  "reason": "slots: capitals kept; plain misses not ranked, so a noask habit still surfaces; the fallback is advice. team-night: the re-call is a rule, the second try is reserved for the levelling word, and help comes from that lectern's teammates. case2-spelling-engine: the Warm-up types from a definition and speaks the word, so every item has one answer; a Word Lore engine fails check 17. case-origins-authored: with the exclusions, every Case 3 item offers exactly one defensible language, and hummus needs no Turkish exclusion (Wiktionary gives Turkish only for the variant 'humus'). signoff-upright: Vesper's violet letters do not slant left, so her look-again holds, and the sting's pencil note is unlike V.'s hand."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "CLUE CHAIN. A careful 10-year-old can still name Vale from the cards every child receives with hall mail. Round I: note 1 was on the chair the runner set out. Round II: 'Vale Penrallow, aged 8, placed last', eight seasons back. Round III: the runner's left-slanting hand against the Pronouncer's upright one. Round IV: the runner carries the bee file. Round V: the runner's key. Round VII: 'Her name is Vale. She's sixteen.' and the sealed list. Round IX: 'It isn't mine to tell' and 'who was there every single round?'. Every other suspect is cleared on the main path: Vesper in Rounds VI and IX, Ratchet in Round VII (clue2), Dax in Round VIII, the Pronouncer in Rounds III and IX. Nothing in this cycle's 40 lines weakens a link; rounds[8].pieces.v is cleaner without its claim about the child."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "NAMING ORDER. No line names Vale as V. before the accusation in any order the build allows. Rounds and cases name her only as the runner ('Thank you, Vale'; the Round VII card). Team Night's only line that does is the held sting (check 13). The accusation and Team Night both open after Round IX, and the held pair arrives as the next mail after the closing letter."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "PUZZLES. Case 2's megaphone has one answer, and it is printed in no earlier mail, case, anytime surface, visitor card or Mock Bee line. Its only lesson is in the Roots, after the Storm. Case 5 still resolves to one choice. Case 3's exclusions leave one defensible language per item."
+ },
+ {
+  "path": "season",
+  "verdict": "pass",
+  "reason": "ROUND IX in every band, with Dax seated. Dax's question, Theo's reply from the dark and Pip's blackout line are delivered at 6–7, 8–10 and 11–15, and no Round IX line is gated by band. Vesper outlasting every rival, the championship-word branches and Dax's reform beat (daxReformOnScreen r9) all hold."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "NO PLACING. The five letters reworded as rival advice no longer report actions, but three of them now claim a placing ('You beat me') that the hall log can contradict: Round I (two headliners; a shared cap), and Rounds VI and VII (a shared cap). The fix is two sentences in build[id=no-placing], given on that row. It also covers the unchanged Round II–IV openers. Rounds VIII and IX are already safe (Dax never at the cap; Round IX's championship word).",
+  "fix_text": "The build:no-placing row’s text: Round I is placed against Nova, and Rounds I–VIII never end in a title shared with the headliner."
+ },
+ {
+  "path": "season",
+  "verdict": "fix",
+  "reason": "BUILD SUFFICIENCY. Two lines depend on something the build does not yet say. The bee file's 'One tap' needs a button on the bee file (hivePost.beeFileIntro row). Case 3's safeLine-first test contradicts the late-case lateLine (build:case-scenes row). Both fixes are build text only; no on-screen line changes.",
+  "fix_text": "The hivePost.beeFileIntro row’s build entry (the bee file’s one button) and the build:case-scenes row’s rule and test (the safeLine comes first after the lateLine)."
+ }
+]
