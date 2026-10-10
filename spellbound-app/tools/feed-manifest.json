@@ -1,5 +1,5 @@
 {
- "total": 28830,
+ "total": 28399,
  "agnostic": 3891,
  "byKind": {
   "place": 9,
@@ -11,7 +11,7 @@
   "origin": 3169,
   "play": 3468,
   "spotlight": 5529,
-  "analogy": 1572,
+  "analogy": 1141,
   "sounds": 622,
   "saying": 1312,
   "game": 3,
@@ -23,51 +23,51 @@
   [
    1,
    "the Meadow",
-   2221
+   2200
   ],
   [
    2,
    "the Great Library",
-   2812
+   2753
   ],
   [
    3,
    "the Roman Forum",
-   3515
+   3469
   ],
   [
    4,
    "the Storm of Elements",
-   2827
+   2738
   ],
   [
    5,
    "the Root Kingdoms",
-   3125
+   3039
   ],
   [
    6,
    "the Wide Strait",
-   2772
+   2727
   ],
   [
    7,
    "the Trickster Junkyard",
-   2048
+   1998
   ],
   [
    8,
    "the Subject Sprints",
-   2988
+   2962
   ],
   [
    9,
    "the Big Stage",
-   2631
+   2622
   ]
  ],
  "stigmaDropped": 4,
- "nearDuplicatesDropped": 1463,
+ "nearDuplicatesDropped": 1464,
  "nearDuplicateExamples": [
   [
    "uq-u1-1",

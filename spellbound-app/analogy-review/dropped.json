@@ -1,0 +1,1810 @@
+[
+ {
+  "unit": "item:0",
+  "why": "Agree with both fails. 'friday', 'december', 'easter' are proper nouns shown lowercase (not allowed as filler) and 'feast' (feast day) is a defensible synonym of holiday; dropping all four leaves no wrong options."
+ },
+ {
+  "unit": "item:1",
+  "why": "Agree with both fails: a sister is a kind of sibling, not the same meaning; no true synonym offered."
+ },
+ {
+  "unit": "item:3",
+  "why": "Agree with both fails: sitting = posing only in the portrait sense; a child reads sitting as being seated and 'rest' is tempting."
+ },
+ {
+  "unit": "item:5",
+  "why": "Agree with both fails: to children 'diner' is a restaurant; the 'one who dines' sense is obscure at L2, and eater is broader."
+ },
+ {
+  "unit": "item:7",
+  "why": "Agree with both fails: tavern/bar are drinking-establishment words (gloss says 'licensed to sell alcoholic drinks') and 'spit' is a crude option."
+ },
+ {
+  "unit": "item:68",
+  "why": "Agree with both fails: 'bore' at L3 reads as 'be dull' and its gloss confirms that sense ('a person who evokes boredom'); 'dig' is also arguable. Too confusing to rescue."
+ },
+ {
+  "unit": "item:76",
+  "why": "Agree with both fails: an alibi is a narrow legal kind of excuse (being elsewhere at a crime), not the same meaning."
+ },
+ {
+  "unit": "item:92",
+  "why": "Agree with r1 (and r2's own 'FLAWED' note): the bridge for this link says '{A} becomes {B}: the same idea with a new job', and 'meaningless' reverses the idea (without meaning); the parallel to the noun->adjective pairs in this set (hill:hilly, child:childish) is 'meaningful', which is not offered. The item would teach that -less keeps the same idea. That is a c/d defect, so dropping options cannot rescue it."
+ },
+ {
+  "unit": "item:93",
+  "why": "Agree with r1: a latch fastens a door but does not lock it ('latched but not locked' is the everyday distinction), so latch/lock is not the same meaning. Doubtful, so it does not ship."
+ },
+ {
+  "unit": "item:94",
+  "why": "Agree with both fails: 'boring' to a child means dull; drilling = boring is a confusing sense, and bunker/weld are obscure."
+ },
+ {
+  "unit": "item:96",
+  "why": "Agree with both fails: pregnancy/gestation/fetus is a reproductive topic, and 'gestation' is obscure at L4."
+ },
+ {
+  "unit": "item:97",
+  "why": "Agree with r1: a mirror is one kind of reflector and a bike reflector is not a mirror; the words are not interchangeable."
+ },
+ {
+  "unit": "item:99",
+  "why": "Agree with both fails: 'smack' is heroin slang and a hit, and 'boring' reads as dull to a child."
+ },
+ {
+  "unit": "item:100",
+  "why": "Agree with r1 over r2: 'levy' is too formal and obscure for L2 (age 9), and 'payment' is arguably close to tax."
+ },
+ {
+  "unit": "item:101",
+  "why": "Agree with both fails: the gloss is the adjective 'striking' (impressive); 'hit' is a family member. Dropping hit leaves only puck and flick, and flick is itself a light hit, so it is not rescuable."
+ },
+ {
+  "unit": "item:102",
+  "why": "Agree with both fails: 'deceased' is formal and adult for L2 and the option set is death-themed (coffin, memorial, death)."
+ },
+ {
+  "unit": "item:103",
+  "why": "Link (a): 'pouch' is a narrower word for 'bag'. Dictionaries define a pouch as 'a small bag', so d is a kind of c, which is the 'A kind of' link, not 'Same meaning'. The shown gloss ('a sack or satchel of moderate size') also does not describe a pouch."
+ },
+ {
+  "unit": "item:107",
+  "why": "Agree with both fails: 'sho' is a very obscure Japanese mouth organ that reads as a typo of 'shoe', making footwear look right."
+ },
+ {
+  "unit": "item:110",
+  "why": "Agree with both fails: cheat and chess do not mean the same; the pair is broken."
+ },
+ {
+  "unit": "item:112",
+  "why": "Agree with both fails: andromeda as a shrub genus is obscure; children know it as a galaxy."
+ },
+ {
+  "unit": "item:113",
+  "why": "Agree with both fails: a steppe is grassland, not a kind of tree; broken pair."
+ },
+ {
+  "unit": "item:117",
+  "why": "Agree with both fails: vegetation is plants collectively, not a kind of plant, and the gloss is the factory sense."
+ },
+ {
+  "unit": "item:121",
+  "why": "Agree with both fails: a smudge is not a kind of insect; broken pair."
+ },
+ {
+  "unit": "item:125",
+  "why": "Agree with both fails: a cleat is not a kind of metal, and buckle/padlock/clutch are co-members; broken."
+ },
+ {
+  "unit": "item:129",
+  "why": "Agree with both fails: rain is a kind of precipitation, not the same meaning (snow is precipitation too)."
+ },
+ {
+  "unit": "item:130",
+  "why": "Agree with both fails: statehouse is US-specific and obscure, and 'abattoir' (slaughterhouse) is an unsuitable option."
+ },
+ {
+  "unit": "item:131",
+  "why": "Agree with both fails: astrantia and every distractor are obscure botanical genera; gloss is the factory sense."
+ },
+ {
+  "unit": "item:133",
+  "why": "Rounds 1-2 passed it, but every wrong option (july, december, november, tuesday) is a month or weekday - a proper noun shown lowercase as filler, which a spelling app must not display. Dropping them would leave no options, so it cannot be rescued."
+ },
+ {
+  "unit": "item:134",
+  "why": "Agree with both fails: hiss = boo only in the heckling sense, and 'smack' is drug slang."
+ },
+ {
+  "unit": "item:135",
+  "why": "Agree with r1 over r2: arrow = pointer only in the sign/cursor sense; the main sense (projectile) makes 'bullet' look right, and after dropping it only intercept and 'stab' (a weapon word) remain."
+ },
+ {
+  "unit": "item:136",
+  "why": "Agree with both fails: brush = undergrowth is a sense most L4 children do not know, and 'hedge' is tempting."
+ },
+ {
+  "unit": "item:146",
+  "why": "Agree with both fails: pustule/boil/papule are gross medical terms, a pustule is not a boil, and 'papule' is arguable."
+ },
+ {
+  "unit": "item:147",
+  "why": "Agree with both fails: structural does not mean organizational."
+ },
+ {
+  "unit": "item:150",
+  "why": "Agree with both fails: a pelt is an animal skin, not a kind of coat garment; 'fell' is an archaic synonym."
+ },
+ {
+  "unit": "item:152",
+  "why": "Agree with both fails: a picnic is not a cookout (picnic food need not be cooked)."
+ },
+ {
+  "unit": "item:154",
+  "why": "Agree with both fails: accused is not the same as suspect, and 'murder' is a violent option at L2."
+ },
+ {
+  "unit": "item:157",
+  "why": "Agree with r1 over r2: a crypt is an underground vault and not every tomb is one; 'monument' is arguable and the set is heavily death-themed. Doubtful."
+ },
+ {
+  "unit": "item:158",
+  "why": "Agree with r1 over r2: a garland (a string of flowers, a mala to most of this audience) is not a wreath (a ring, with funeral associations); 'turban' as filler beside it is also poor."
+ },
+ {
+  "unit": "item:160",
+  "why": "Agree with both fails: 'ideology' is arguable, 'conviction' at L2 also means a criminal conviction, and capitalism/feminism are political filler."
+ },
+ {
+  "unit": "item:162",
+  "why": "Agree with both fails: soaring (rising high) is not gliding, and 'climax' has a sexual double meaning."
+ },
+ {
+  "unit": "item:165",
+  "why": "Agree with both fails: 'dementia' and 'madness' as filler stigmatise mental illness. Dropping them leaves perception and 'animus' (Latin for mind), which is arguable, so it cannot be rescued."
+ },
+ {
+  "unit": "item:168",
+  "why": "Agree with r1: the plural 'cacti' as 'a kind of plant' gives an ungrammatical bridge in a spelling app, and the gloss is the factory sense; dropping options cannot fix c."
+ },
+ {
+  "unit": "item:172",
+  "why": "Agree with both fails: 'a national' as a noun meaning citizen is obscure for L1 (age 8)."
+ },
+ {
+  "unit": "item:176",
+  "why": "Link (a): a swamp is one TYPE of wetland (wetlands include marshes, bogs, fens and swamps; WordNet puts swamp under wetland). d is a narrower word, so 'Same meaning' is false and the pair teaches the 'A kind of' link under the wrong name."
+ },
+ {
+  "unit": "item:177",
+  "why": "Agree with both fails: a caterpillar is one kind of larva (a maggot is a larva too); not the same meaning."
+ },
+ {
+  "unit": "item:180",
+  "why": "Agree with both fails: 'buttock' is a giggle body word, and 'extremity' (a hand or foot) is not quite appendage (a limb) and reads as 'extreme' to a child."
+ },
+ {
+  "unit": "item:181",
+  "why": "Agree with both fails: cholesterol is not a kind of animal; broken pair."
+ },
+ {
+  "unit": "item:183",
+  "why": "Agree with both fails: 'rustic' as a noun is obscure and demeaning at L2, and 'peasant' is used as an insult."
+ },
+ {
+  "unit": "item:a",
+  "why": "Agree with both fails: juice is a kind of extract, and resin and latex are plant extracts too."
+ },
+ {
+  "unit": "item:e",
+  "why": "Agree with r1 over r2: 'patron' at L2 mainly means supporter or sponsor and is advanced for age 9."
+ },
+ {
+  "unit": "item:h",
+  "why": "Agree with both fails: a network is not a grid."
+ },
+ {
+  "unit": "item:t",
+  "why": "Rounds 1-2 passed it, but three of four wrong options are proper nouns shown lowercase as filler (atlantic, pacific, ohio). Dropping them leaves only northwest, under the 2-option minimum, so it cannot be rescued."
+ },
+ {
+  "unit": "item:u",
+  "why": "Agree with both fails: 'extent' is a synonym of amount and 'gross' is arguable; dropping them leaves only one wrong option."
+ },
+ {
+  "unit": "item:y",
+  "why": "Link (a): acting is one kind of performing. Singing, dancing, playing music and doing magic are all performing but not acting, so d is narrower than c. A careful child can see 'you can perform a song without acting', so 'Same meaning' is not exactly true."
+ },
+ {
+  "unit": "item:1f",
+  "why": "Rounds 1-2 passed it, but all four wrong options (december, november, october, july) are month names shown lowercase as filler. Cannot be rescued by dropping."
+ },
+ {
+  "unit": "item:1i",
+  "why": "Rounds 1-2 passed it, but three wrong options (february, july, october) are month names shown lowercase as filler; dropping them leaves only 'month', under the 2-option minimum."
+ },
+ {
+  "unit": "item:1v",
+  "why": "Rounds 1-2 passed it, but three wrong options (july, october, december) are month names shown lowercase as filler; dropping them leaves only 'afternoon', under the 2-option minimum."
+ },
+ {
+  "unit": "item:2c",
+  "why": "Agree with r1: 'pink' is defensible (rose is a shade of pink) and 'june' is a lowercase proper noun; dropping both leaves no wrong options."
+ },
+ {
+  "unit": "item:2m",
+  "why": "Agree with both fails: 'young' is not a kind of animal; broken pair."
+ },
+ {
+  "unit": "item:2o",
+  "why": "Agree with both fails: a pocket is part of a garment, not a kind of one."
+ },
+ {
+  "unit": "item:2s",
+  "why": "Agree with r1: a scoop is arguably a kind of spoon and 'spit' is crude; dropping both leaves only one wrong option."
+ },
+ {
+  "unit": "item:2w",
+  "why": "Agree with both fails: coral to an 8-9 year old is the sea creature; 'coral is a kind of colour' is a secondary sense and ambiguous at L2."
+ },
+ {
+  "unit": "item:2x",
+  "why": "Agree with both fails: baking is not a kind of cake; broken pair."
+ },
+ {
+  "unit": "item:2z",
+  "why": "Agree with both fails: laundry is clothes collectively, not a kind of garment."
+ },
+ {
+  "unit": "item:3o",
+  "why": "Agree with both fails: 'judge' is already the agent noun; referee is a loose match."
+ },
+ {
+  "unit": "item:3u",
+  "why": "Agree with both fails: 'guard' is already the agent noun, and defender/escort also guard."
+ },
+ {
+  "unit": "item:4a",
+  "why": "Agree with r1 over r2: curly and wavy are contrasted categories in everyday talk (curly vs wavy hair), not the same meaning."
+ },
+ {
+  "unit": "item:4g",
+  "why": "Agree with r1 over r2: 'departed' at L2 reads as 'left' (the train departed); it is a euphemism, and the options are a death set (coffin, memorial, death)."
+ },
+ {
+  "unit": "item:4i",
+  "why": "Agree with both fails: 'plant' in the factory sense is too adult at L2; a child reads plant as greenery."
+ },
+ {
+  "unit": "item:4u",
+  "why": "Agree with both fails: a clam has a shell too (and a pod is a pea's shell), and the gloss is the turtleneck sense; dropping both leaves one option."
+ },
+ {
+  "unit": "item:5a",
+  "why": "Agree with both fails: cask/keg/brewer are beer words; dropping them leaves one option (and bottles are often plastic)."
+ },
+ {
+  "unit": "item:5n",
+  "why": "Agree with both fails: the body-part distractors push the fingernail sense (not iron), and modern nails are steel; the pair is shaky."
+ },
+ {
+  "unit": "item:7d",
+  "why": "Agree with both fails: supplement = appendix only in the book sense; a child knows a vitamin supplement and the appendix organ."
+ },
+ {
+  "unit": "item:7j",
+  "why": "Agree with both fails: phlegm and sputum are gross body-fluid words and 'harassment' is adult; dropping them leaves one option."
+ },
+ {
+  "unit": "item:7l",
+  "why": "Agree with r1 over r2: a carving is one kind of sculpture (clay and bronze sculptures are not carvings), and the gloss itself says so."
+ },
+ {
+  "unit": "item:7o",
+  "why": "Agree with both fails: scarce (in short supply) and sparse (thinly scattered) are only near-synonyms; a careful child would not equate them."
+ },
+ {
+  "unit": "item:7s",
+  "why": "Agree with r1: children are explicitly taught revising and editing as different steps of the writing process; the gloss calls revising a kind of editing."
+ },
+ {
+  "unit": "item:7t",
+  "why": "Agree with both fails: grumbling means complaining; only the stomach sense matches rumbling, and 'nag'/'rant' fit better."
+ },
+ {
+  "unit": "item:7u",
+  "why": "Agree with both fails: a cauldron is a very large pot, not a plain synonym, and 'pot' is also drug slang."
+ },
+ {
+  "unit": "item:7v",
+  "why": "Agree with both fails: arithmetic is a branch of maths, as geometry is."
+ },
+ {
+  "unit": "item:7x",
+  "why": "Agree with both fails: dominate and prevail are not the same meaning, and 'overrun' is as defensible."
+ },
+ {
+  "unit": "item:8h",
+  "why": "Agree with r1: caudal, alveolar and pectoral are anatomy jargon far too obscure at L4 (age 11), and they frame 'spine' as the backbone, whose adjective is 'spinal', while 'spiny' belongs to the prickle sense; the circular gloss 'Having spines' lets a child learn spiny = having a backbone. All three remaining distractors are the problem, so dropping cannot leave two sound options. r2's own note calls them very obscure."
+ },
+ {
+  "unit": "item:9a",
+  "why": "Agree with r1 over r2: 'systemic' is adult vocabulary at L4, and the child-natural adjective of system is 'systematic'."
+ },
+ {
+  "unit": "item:9k",
+  "why": "Agree with both fails: 'bleacher' as a person is obscure (children know bleachers as seats), and oleoresin/turpentine are obscure."
+ },
+ {
+  "unit": "item:9n",
+  "why": "Agree with both fails: 'sioux', 'siberia', 'nebraska' are lowercase proper nouns, one a people's name; dropping them leaves one option."
+ },
+ {
+  "unit": "item:9s",
+  "why": "Agree with r1 over r2: to almost everyone a transmitter is a device, and then modem/telegraph also transmit; 'morse' is a lowercase proper noun."
+ },
+ {
+  "unit": "item:9z",
+  "why": "Agree with both fails: 'felon' and 'accomplice' are also people who do wrong, and 'murder' is violent; dropping them leaves one option."
+ },
+ {
+  "unit": "item:a7",
+  "why": "Agree with r1 over r2: annul/annulment is legal/adult vocabulary (chiefly the annulment of a marriage or a law) and too obscure for L5 (age 12); the pair itself is the problem, so no drop or gloss change rescues it."
+ },
+ {
+  "unit": "item:ai",
+  "why": "Agree with R1/R2: the noun a child knows for observe is 'observation'; 'observance' is mainly the keeping-a-rule/religious-custom noun, so the item teaches the wrong partner. Dropping the astrology distractors would not fix that."
+ },
+ {
+  "unit": "item:am",
+  "why": "Agree with R1/R2: both c (arouse) and d (arousal) carry a common sexual sense; cannot be rescued by dropping options."
+ },
+ {
+  "unit": "item:az",
+  "why": "Agree with R1/R2: the bridge says 'the same idea with a new job', but odorless means WITHOUT odour; R2's blind solver picked 'smelly' as the adjective of odour. The pair does not fit its own link."
+ },
+ {
+  "unit": "item:b8",
+  "why": "Overrules R1's pass: the answer itself is 'frigid', which has a dictionary sexual sense (an insult aimed at women); a double-meaning word cannot be the answer for 8-15, and an answer cannot be dropped."
+ },
+ {
+  "unit": "item:b9",
+  "why": "Agree with R1/R2: 'nasty' and 'evil' are also stronger forms of bad, and so is 'miserable' (miserable weather, a miserable day). Dropping all three leaves one wrong option, below the minimum; the gloss is also the 'causing terror' sense."
+ },
+ {
+  "unit": "item:bq",
+  "why": "Overturn the double pass: this link's bridge reads '{B} is a stronger {A}', so the item asserts 'a lake is a stronger pond', which is false - a lake is a bigger body of still water, not a stronger one. Size is not strength, so the link is not true of c -> d (unlike breeze->gale or stream->river, where the flow itself is stronger). A c/d defect: dropping options cannot rescue it."
+ },
+ {
+  "unit": "item:cq",
+  "why": "Agree with R1/R2: shameful (disgraceful) and shameless (feeling no shame) are not opposites; a shameless act is usually shameful. False antonym."
+ },
+ {
+  "unit": "item:cr",
+  "why": "Agree with R1/R2: shameless and shameful are not opposites; the item teaches a false antonym."
+ },
+ {
+  "unit": "item:ct",
+  "why": "Agree with R1/R2: 'equity' is a defensible opposite of inequality, and 'ethnicity'/'capitalism' beside inequality read as political. Removing all three leaves one wrong option; cannot be rescued."
+ },
+ {
+  "unit": "item:d0",
+  "why": "Agree with R1/R2: a lathe is a machine, not the hand 'implement' the gloss describes, it is obscure at level 5, 'screw' has a vulgar slang sense, and 'cutter' is arguable (a lathe cuts). Too many problems to rescue."
+ },
+ {
+  "unit": "item:d3",
+  "why": "Agree with R1/R2: dolomite is obscure at level 6 and is chiefly known as a mineral, so 'a kind of rock' is not clean."
+ },
+ {
+  "unit": "item:d4",
+  "why": "Agree with R1/R2: a scape is a leafless flower stalk, not a kind of flower; distractors bait the landscape sense. Broken."
+ },
+ {
+  "unit": "item:d6",
+  "why": "Agree with R1/R2: a pupa is a life stage of an insect, not a kind of insect."
+ },
+ {
+  "unit": "item:d8",
+  "why": "Agree with R1/R2: jute is at least as well known as a fibre as a plant, so 'fibre' is a second answer; 'twine' is also arguable (crafters call jute twine 'jute'), 'caulk' sounds like a vulgar word, and 'plant' is glossed as a factory. Dropping fibre, twine and caulk leaves one option."
+ },
+ {
+  "unit": "item:db",
+  "why": "Agree with R1/R2: a clove is a spice (a dried bud) or a garlic segment to a child; 'kind of flower' is wrong/confusing."
+ },
+ {
+  "unit": "item:dc",
+  "why": "Agree with R1/R2: a horseshoe is made OF metal, not a kind of metal; 'noose' is also unsuitable."
+ },
+ {
+  "unit": "item:dd",
+  "why": "Agree with R1/R2: a cornfield is a field, not a kind of plant; no option is a true category."
+ },
+ {
+  "unit": "item:de",
+  "why": "Agree with R1/R2: 'specie' is very obscure and reads as a misspelling of 'species', which the distractors bait."
+ },
+ {
+  "unit": "item:df",
+  "why": "Agree with R1 over R2: dulcimer is too obscure for level 5 (unlike zither it is not a childhood word), and 'harp' is a plausible pick for a stringed box instrument; dropping harp leaves only two options around an unknown word."
+ },
+ {
+  "unit": "item:dh",
+  "why": "Agree with R1/R2: an appetizer is food, not a kind of drink, and the blind solver picked 'starter'. Broken link."
+ },
+ {
+  "unit": "item:do",
+  "why": "Agree with R1/R2: to a child a chestnut is a nut or a tree; 'kind of wood' is a stretch."
+ },
+ {
+  "unit": "item:dr",
+  "why": "Agree with R1/R2: gemstones are mostly minerals/crystals, not rocks; the link is loose."
+ },
+ {
+  "unit": "item:dv",
+  "why": "Agree with R1 over R2: a drape is a curtain made OF cloth, not a kind of cloth (velvet is). The link is not exactly true."
+ },
+ {
+  "unit": "item:dy",
+  "why": "Agree with R1 over R2: receptacle and container are synonyms, not a 'kind of' pair; the game has a separate Same-meaning link, so this teaches the wrong link. The gloss also leans on the shipping-container sense."
+ },
+ {
+  "unit": "item:e1",
+  "why": "Agree with R1/R2: the distractors (reef, toad, auk) point at the sea anemone, which is an animal; 'flower' would be the natural category and is absent; 'plant' is glossed as a factory."
+ },
+ {
+  "unit": "item:ea",
+  "why": "Agree with R1/R2: 'feminism' offered as an opposite of equality and 'supremacy' are politically loaded, and supremacy/domination are arguable opposites. Dropping them leaves one option."
+ },
+ {
+  "unit": "item:eh",
+  "why": "Agree with R1/R2: illustrative (clarifying by examples) does not mean descriptive; loose."
+ },
+ {
+  "unit": "item:em",
+  "why": "Agree with R1/R2 that 'monstrous' (and 'abominable') are second synonyms, and further: hideous means EXTREMELY ugly, so this is a Stronger/weaker pair mislabelled Same meaning. Dropping options does not fix the link."
+ },
+ {
+  "unit": "item:en",
+  "why": "Agree with R1/R2: a birdhouse is a small nest box, an aviary a large enclosure; not the same meaning. 'abattoir' is also grim."
+ },
+ {
+  "unit": "item:eq",
+  "why": "Agree with R1: earthenware is one kind of pottery (beside stoneware and porcelain), so this is a Kind-of pair labelled Same meaning."
+ },
+ {
+  "unit": "item:et",
+  "why": "Agree with R1/R2: a silhouette is a dark outline shape, not a shadow; related, not same meaning."
+ },
+ {
+  "unit": "item:eu",
+  "why": "Agree with R1/R2: the gloss itself says a pinafore is a sleeveless DRESS; only in one UK sense is it an apron. Ambiguous."
+ },
+ {
+  "unit": "item:ex",
+  "why": "Agree with R1: a chauffeur is a particular kind of driver (one employed to drive someone), so this is a Kind-of pair labelled Same meaning; R2 also failed it."
+ },
+ {
+  "unit": "item:ez",
+  "why": "Agree with R1/R2: children know potpourri as dried petals, not a medley; 'cardamon' is a variant spelling in a spelling app; 'horehound' is obscure and giggle-prone."
+ },
+ {
+  "unit": "item:f0",
+  "why": "Agree with R1/R2: as a noun, cunning is also trickery and sleight, and 'stealth' overlaps too; dropping all of them leaves one option."
+ },
+ {
+  "unit": "item:f4",
+  "why": "Agree with R1: the gullet is the oesophagus (as the gloss says), narrower than throat, and larynx is also arguable as throat. Not same meaning."
+ },
+ {
+  "unit": "item:f7",
+  "why": "Agree with R1/R2: a boutique is a kind of shop, and stall/bakery are also kinds of shop; no true synonym."
+ },
+ {
+  "unit": "item:f8",
+  "why": "Agree with R1/R2: a chrysalis is a butterfly/moth pupa (narrower), and 'teat' is unsuitable."
+ },
+ {
+  "unit": "item:f9",
+  "why": "Agree with R1: unattractive -> ugly is a degree pair (unattractive < ugly < hideous), the app's Stronger/weaker link, not Same meaning."
+ },
+ {
+  "unit": "item:fb",
+  "why": "Agree with R1: tailoring and dressmaking are related crafts, not the same; 'corset' unnecessary."
+ },
+ {
+  "unit": "item:fe",
+  "why": "Agree with R1/R2: antagonistic, militant and defiant are all synonyms of combative (arguably closer than argumentative); dropping them leaves one option."
+ },
+ {
+  "unit": "item:gj",
+  "why": "Agree with R1/R2: benignity is obscure, and neoplasm/cyst/fibrosis frame benign as tumour vocabulary; dropping them leaves one option."
+ },
+ {
+  "unit": "item:gp",
+  "why": "Agree with R1/R2: 'abettal' is extremely rare (abetment is usual) and the distractors are adult crime terms."
+ },
+ {
+  "unit": "item:gs",
+  "why": "Agree with R1/R2: pleura/pleural is specialist anatomy, too obscure even at level 9."
+ },
+ {
+  "unit": "item:gt",
+  "why": "Agree with R1/R2: enteron/enteric is specialist vocabulary, too obscure for level 8."
+ },
+ {
+  "unit": "item:h4",
+  "why": "Agree with R1/R2: mesoderm/mesodermal is embryology jargon, too obscure for level 7; 'ovarian' also unsuitable."
+ },
+ {
+  "unit": "item:hg",
+  "why": "Agree with R1/R2: a cantaloupe is a kind of melon (blind solver picked melon); 'vine' describes the plant, not the fruit."
+ },
+ {
+  "unit": "item:hi",
+  "why": "Agree with R1/R2: carcajou is very obscure and its synonym 'wolverine' is a trap; 'cracidae' is a taxon in lower case."
+ },
+ {
+  "unit": "item:hl",
+  "why": "Agree with R1/R2: amboyna is an obscure timber name, too obscure for level 8."
+ },
+ {
+  "unit": "item:hm",
+  "why": "Agree with R1/R2: magnesia is magnesium oxide, a compound (the mineral is periclase); the link is not clean."
+ },
+ {
+  "unit": "item:ho",
+  "why": "Agree with R1/R2: friedcake (a doughnut) is obscure/regional and 'kind of cake' is doubtful."
+ },
+ {
+  "unit": "item:hq",
+  "why": "Agree with R1/R2: aquilegia is obscure, 'pansy' is also a homophobic insult, and 'plant' is glossed as a factory."
+ },
+ {
+  "unit": "item:hr",
+  "why": "Agree with R1: caladium is a horticultural name too obscure for level 7, and 'pavilion' plays on the factory gloss; hiding the gloss does not cure the obscurity."
+ },
+ {
+  "unit": "item:ht",
+  "why": "Agree with R1: 'mustelid' is a zoological family term, too obscure for level 7."
+ },
+ {
+  "unit": "item:hu",
+  "why": "Agree with R1: curassow is obscure for level 8, and every distractor is equally obscure."
+ },
+ {
+  "unit": "item:hz",
+  "why": "Agree with R1/R2: a pyre is a pile of wood for burning (usually a funeral), not a kind of wood; the blind solver picked 'bonfire'."
+ },
+ {
+  "unit": "item:i0",
+  "why": "Agree with R1/R2: iodoform is an antiseptic compound, not a kind of sweet. Broken."
+ },
+ {
+  "unit": "item:i2",
+  "why": "Agree with R1/R2: 'melon' is the natural category (blind pick), and 'cantaloup' is a variant spelling."
+ },
+ {
+  "unit": "item:i3",
+  "why": "Agree with R1/R2: cassia is mostly a tree genus and a spice; 'kind of shrub' is not clean, and it is obscure."
+ },
+ {
+  "unit": "item:i5",
+  "why": "Agree with R1: euphorbia is obscure, every distractor is a lower-case Latin genus name, and 'plant' is glossed as a factory."
+ },
+ {
+  "unit": "item:i8",
+  "why": "Agree with R1: ageratum is obscure for level 7, distractors (vitis, cassia, cornel) are obscure genus names, and 'plant' is glossed as a factory."
+ },
+ {
+  "unit": "item:i9",
+  "why": "Agree with R1/R2: althaea is obscure, 'liliaceae' is a taxon in lower case, and 'plant' is glossed as a factory."
+ },
+ {
+  "unit": "item:ic",
+  "why": "Agree with R1/R2: a rhizome is an underground stem (part of a plant), not a kind of plant."
+ },
+ {
+  "unit": "item:ie",
+  "why": "Agree with R1: 'japonica' is an obscure botanical epithet, too obscure for level 7."
+ },
+ {
+  "unit": "item:ii",
+  "why": "Agree with R1/R2: ornamentation is the primary synonym of embellishment (blind pick); exaggeration is a secondary sense."
+ },
+ {
+  "unit": "item:ij",
+  "why": "Agree with R1: a schematic is a kind of diagram (its own gloss says so); not same meaning."
+ },
+ {
+  "unit": "item:ik",
+  "why": "Agree with R1/R2: fluorescence is a kind of luminescence; not same meaning."
+ },
+ {
+  "unit": "item:il",
+  "why": "Agree with R1/R2: a bean is one kind of legume (peas and lentils are others); not same meaning."
+ },
+ {
+  "unit": "item:im",
+  "why": "Agree with R1/R2: a boutique is a kind of shop; 'lyon' is a place name in lower case."
+ },
+ {
+  "unit": "item:in",
+  "why": "Agree with R1/R2: metazoa is a taxonomic group name, very obscure; 'subkingdom' was the blind pick."
+ },
+ {
+  "unit": "item:io",
+  "why": "Agree with R1/R2: gramma (grama grass) is very obscure and reads as 'grandma'."
+ },
+ {
+  "unit": "item:ip",
+  "why": "Agree with R1: caragana is an obscure plant genus, too obscure for level 8."
+ },
+ {
+  "unit": "item:iq",
+  "why": "Agree with R1/R2: a thallus is a plant body (a part), not a kind of plant; 'plant' is glossed as a factory."
+ },
+ {
+  "unit": "item:iv",
+  "why": "Both rounds passed, but I fail it on suitability. tonal/tonality are music-theory terms well beyond a level-5 (about age 11) child, and the shown gloss ('Any of 24 major or minor diatonic scales that provide the tonal framework...') is the technical 'key' sense rather than the quality-of-being-tonal sense the link implies, and is itself unreadable at that age. Hiding the gloss would not fix the level. R2's own note flagged the obscurity."
+ },
+ {
+  "unit": "item:ix",
+  "why": "I agree with both rounds. Whiteness, complexion and melanin put skin-colour words next to 'discolor', which is a colourism risk for this audience. Dropping those three would leave only one wrong option (pigmentation), so it cannot be fixed."
+ },
+ {
+  "unit": "item:jf",
+  "why": "I agree with both rounds. liter/litre is one word in its US and UK spellings, not two words that mean the same. In a spelling app it teaches the wrong lesson."
+ },
+ {
+  "unit": "item:jg",
+  "why": "I agree with both rounds. A portfolio (a large flat case for drawings) is not a briefcase. The two are related objects, not synonyms."
+ },
+ {
+  "unit": "item:ji",
+  "why": "I agree with both rounds. A magistrate is a particular kind of judge (a lay or lower-court judge), so the pair is narrower-to-broader, not the same meaning."
+ },
+ {
+  "unit": "item:jk",
+  "why": "I agree with both rounds. Grease is one kind of lubricant (the gloss itself says 'a thick fatty oil used to lubricate'), so the pair is narrower-to-broader, not the same meaning."
+ },
+ {
+  "unit": "item:jm",
+  "why": "I agree with both rounds. 'beating' at level 1 reads as violence. The gloss gives the winner's sense ('the act of overcoming'), which makes 'win' and 'victory' arguable answers too, so the item is ambiguous."
+ },
+ {
+  "unit": "item:js",
+  "why": "Link (a) and level (d): in everyday and British use, 'extremities' means the hands and feet (Oxford, Cambridge), which are only the ends of the limbs. The 'limb' sense is medical register ('upper/lower extremities'). To an 11-year-old, extremity means 'the farthest point' or 'an extreme'. So only a technical sense matches, and even that is narrower in common use. Too weak and too adult for L4."
+ },
+ {
+  "unit": "item:jw",
+  "why": "I agree with both rounds. Smog is haze caused by pollution, so it is a narrower term, not the same meaning as haze."
+ },
+ {
+  "unit": "item:jx",
+  "why": "I agree with R1. The gloss defines exhaustion as 'extreme fatigue', which tells the child it is the stronger word. That makes it a stronger/weaker pair under a 'same meaning' link. Doubtful, so it does not ship."
+ },
+ {
+  "unit": "item:jz",
+  "why": "I agree with both rounds. To a child, 'grumble' means complain. It matches 'rumble' only in the weak secondary sense of a low noise."
+ },
+ {
+  "unit": "item:k0",
+  "why": "I agree with both rounds. To a child, 'bike' means a bicycle, so motorcycle is right only in a secondary sense, and 'scooter' muddies it further."
+ },
+ {
+  "unit": "item:k5",
+  "why": "I agree with both rounds. Tavern, bar and mug make a pub-and-alcohol theme unsuitable at level 2, and the gloss for 'bar' is the metal-rod sense."
+ },
+ {
+  "unit": "item:k7",
+  "why": "I agree with both rounds. 'dickens' is a lowercase proper name and a mild oath. 'romantic' = 'idealist' depends on a rare noun sense that children will read as love. Unsafe and confusing."
+ },
+ {
+  "unit": "item:k9",
+  "why": "I agree with both rounds. 'limber' as a vehicle (an artillery cart) is archaic, and children know limber only as 'flexible'."
+ },
+ {
+  "unit": "item:kf",
+  "why": "I agree with both rounds. An acquisition is any getting of possession, and a purchase is one way of getting it. Broader, not the same meaning."
+ },
+ {
+  "unit": "item:kh",
+  "why": "I agree with both rounds. Fumes are not clearly 'a kind of cloud', and 'vapor' is at least as defensible a category. R2's blind solver picked it."
+ },
+ {
+  "unit": "item:kn",
+  "why": "I agree with both rounds. Shopping includes searching, so it is not the same as purchasing, and 'acquisition' is an equally defensible synonym of purchasing."
+ },
+ {
+  "unit": "item:kq",
+  "why": "I agree with both rounds. Prairie and steppe are region-specific grasslands, not exact synonyms, and 'alaskan', 'abel' and 'sahara' are proper nouns shown in lowercase as filler."
+ },
+ {
+  "unit": "item:kw",
+  "why": "I agree with both rounds. A kettle is made of metal, not a kind of metal. The link is false."
+ },
+ {
+  "unit": "item:ky",
+  "why": "I agree with R1. 'schist' sounds like a common swear word, which is a guaranteed snigger for ages 8 to 15."
+ },
+ {
+  "unit": "item:l0",
+  "why": "I agree with both rounds. A clan is a kin group within a people, not the same as a tribe. The gloss's '(usually preliterate)' framing is loaded, and 'ethnic' is used as filler."
+ },
+ {
+  "unit": "item:l1",
+  "why": "I agree with both rounds. 'penetrate' carries a sexual double meaning for this age band, and it is not the same as 'enter' (it means passing through against resistance)."
+ },
+ {
+  "unit": "item:l4",
+  "why": "I agree with both rounds. A chauffeur is a particular kind of driver, one employed to drive others, so the pair is narrower-to-broader."
+ },
+ {
+  "unit": "item:l6",
+  "why": "I agree with both rounds. A melody is the tune, one part of a song, so the two words are related, not the same."
+ },
+ {
+  "unit": "item:l7",
+  "why": "I agree with both rounds. Compost is one kind of fertilizer, so the pair is narrower-to-broader."
+ },
+ {
+  "unit": "item:lf",
+  "why": "I agree with both rounds. A monolith is a block or monument made of stone, not a kind of stone, and 'pillar' muddies it further."
+ },
+ {
+  "unit": "item:li",
+  "why": "I agree with both rounds. A defendant is the accused in court, while a suspect is merely under suspicion. They are related legal words, not the same meaning."
+ },
+ {
+  "unit": "item:lo",
+  "why": "I agree with both rounds. 'several' (more than two but not many) and 'some' (an unspecified amount) are not the same meaning, and the gloss 'Quantifier' teaches nothing."
+ },
+ {
+  "unit": "item:lt",
+  "why": "I agree with both rounds. A beneficiary is one particular kind of recipient (of a will, insurance or benefit). The gloss makes recipient the broader word."
+ },
+ {
+  "unit": "item:lw",
+  "why": "I agree with both rounds. The gloss is the factory sense of 'plant', and seaweed is algae, not a true plant, so the link itself is doubtful."
+ },
+ {
+  "unit": "item:m1",
+  "why": "I agree with both rounds. Authority is rightful power, not power itself. 'leadership' is arguable, and 'authority' is advanced for level 1. Doubtful."
+ },
+ {
+  "unit": "item:m2",
+  "why": "I agree with both rounds. 'ornis' (the bird life of a region) is extremely obscure and is not a kind of bird."
+ },
+ {
+  "unit": "item:m6",
+  "why": "I agree with both rounds. Lumber is sawn timber, a processed kind of wood, so wood is broader, and 'plank' is arguable."
+ },
+ {
+  "unit": "item:m8",
+  "why": "I agree with both rounds. Feasting (eating lavishly) is not the same as dining, and 'easter' is a festival name shown in lowercase."
+ },
+ {
+  "unit": "item:md",
+  "why": "I agree with both rounds. Rainfall is one kind of precipitation (snow, sleet and hail are others), so the pair is narrower-to-broader."
+ },
+ {
+  "unit": "item:mf",
+  "why": "Level (d) and loose fit: 'elicit' (and 'evoke') are secondary-school academic words, too advanced for L4 (about age 11). They also overlap only in the 'call forth a response' sense: you evoke a memory or an image, but you elicit an answer or information ('the smell elicited memories' is odd). Move it to L7 or above, or cut it."
+ },
+ {
+  "unit": "item:mn",
+  "why": "I agree with both rounds. A breakthrough is an important discovery, so the pair is narrower-to-broader, and 'revelation' is an equally defensible synonym."
+ },
+ {
+  "unit": "item:mp",
+  "why": "I agree with both rounds. 'brushing' is an action, not a kind of tool. The link is false."
+ },
+ {
+  "unit": "item:mv",
+  "why": "I agree with both rounds. A bureaucrat is a particular, negatively coloured kind of official, and 'bureaucratic' fits the adjective reading of 'official'."
+ },
+ {
+  "unit": "item:mz",
+  "why": "I agree with both rounds. Spice is one kind of seasoning, and ginger and mustard are seasonings too, so the item has more than one defensible answer."
+ },
+ {
+  "unit": "item:n0",
+  "why": "I agree with both rounds. 'optical' is about light and optics, not a clean synonym of 'visual'. 'graphic' is defensible, and 'optical' is hard at level 2."
+ },
+ {
+  "unit": "item:n2",
+  "why": "I agree with both rounds. 'hypothesis' and 'axiom' are defensible synonyms of assumption. Dropping them and the 'hypotheses' plural would leave only 'certainty', so it cannot be fixed."
+ },
+ {
+  "unit": "item:n5",
+  "why": "I agree with both rounds. A cape is a headland, not a peninsula, and 'balkan', 'arabian' and 'canada' are proper nouns shown in lowercase."
+ },
+ {
+  "unit": "item:n8",
+  "why": "I agree with both rounds. Tumbling is one kind of acrobatics, and 'somersault' (a tumbling move) is also defensible."
+ },
+ {
+  "unit": "item:nf",
+  "why": "I agree with R1. 'ugly' is a common playground body insult, and appearance-judgement pairs are unsuitable for 8 to 15."
+ },
+ {
+  "unit": "item:nl",
+  "why": "I agree with both rounds. 'fastener' is a more natural answer for pin (R2's blind solver chose it). 'pinion' (to pin down) is also defensible, and 'knob' is vulgar slang. Dropping all three would leave one option."
+ },
+ {
+  "unit": "item:nq",
+  "why": "I agree with both rounds. 'gestation' is adult and obscure at level 4, and a cluster of pregnancy and puberty words is unsuitable distractor material for this age band."
+ },
+ {
+  "unit": "item:ns",
+  "why": "I agree with both rounds. Shellfish include crustaceans, not only mollusks, and many mollusks are not shellfish, so the link is false."
+ },
+ {
+  "unit": "item:nu",
+  "why": "R2's obscurity point decides it. 'flounce' as a dress trim is obscure even at level 7: children know the word only as 'to storm off', and the distractors are all garment words. Doubtful, so it does not ship."
+ },
+ {
+  "unit": "item:nw",
+  "why": "I agree with both rounds. archil/orchil is two spellings of a lichen dye, far too obscure for any child, and 'aal' is too."
+ },
+ {
+  "unit": "item:ny",
+  "why": "I agree with both rounds. A cocoon (a silk case) is not a chrysalis (a butterfly pupa), 'sucker' is an insult, and 'anopheles' is obscure."
+ },
+ {
+  "unit": "item:o0",
+  "why": "I agree with both rounds. A sabot is a wooden clog, so 'clog' is equally defensible, and 'sabot' is obscure at level 5."
+ },
+ {
+  "unit": "item:o2",
+  "why": "Link (a): a platter is a large serving plate or dish, while a tray is a flat board with a rim for carrying things (Cambridge). They are related tableware, not the same thing. A cafeteria tray is not a platter, and the gloss shown is tray's 'receptacle' sense, not a dish."
+ },
+ {
+  "unit": "item:o3",
+  "why": "I agree with both rounds. Most acacias are trees and 'tree' is not offered, so 'shrub' is not clearly the category."
+ },
+ {
+  "unit": "item:o5",
+  "why": "I agree with both rounds. Spice is one kind of flavoring, and 'sweetener' is also a flavoring, so there is no exact synonym."
+ },
+ {
+  "unit": "item:o6",
+  "why": "I agree with R1. Body-part distractors (eyesight, retinal, pituitary) beside 'abnormality'/'defect' frame bodies as defective, which stigmatises disability. abnormality is also not exactly 'defect'."
+ },
+ {
+  "unit": "item:o9",
+  "why": "I agree with both rounds. An essay is not an article (a school essay is not a published piece). A loose synonym at level 1."
+ },
+ {
+  "unit": "item:oa",
+  "why": "I agree with both rounds. 'thong' has an underwear meaning and 'pinion' is defensible. Dropping both leaves 'padlock' and 'bridle', and bridle (to restrain, curb) is itself arguable for the verb shackle, so it cannot be fixed cleanly."
+ },
+ {
+  "unit": "item:ob",
+  "why": "I agree with both rounds. 'hell' and 'damnation' are swear words and faith terms. Dropping them leaves 'adversary' and 'cruelty', and cruelty is arguable as a near-synonym of evil, so it cannot be fixed."
+ },
+ {
+  "unit": "item:oc",
+  "why": "I agree with both rounds. A child's allowance (pocket money) is not a grant. A weak, confusing synonym."
+ },
+ {
+  "unit": "item:og",
+  "why": "I agree with both rounds. 'arnica' and the distractors (buckthorn, capparis, artemisia) are too obscure, and arnica is better called an herb or a plant."
+ },
+ {
+  "unit": "item:oj",
+  "why": "I agree with both rounds. 'shrink' as slang for psychiatrist mocks mental-health care, and 'recoil' is defensible (shrink back)."
+ },
+ {
+  "unit": "item:oo",
+  "why": "I agree with both rounds. 'chute' primarily means a slide or channel. As 'parachute' it is an informal clipping that confuses a child."
+ },
+ {
+  "unit": "item:or",
+  "why": "I agree with both rounds. A ski is not a kind of metal. The link is false."
+ },
+ {
+  "unit": "item:oz",
+  "why": "Agree with R1. At L2 (age ~9) range = scope only in the abstract 'extent' sense, and scope, threshold and infrared are well above that level; 'width' is also arguable for range's extent/span sense. Dropping width would not fix the level problem, and the gloss ends in a stray colon. Doubtful, so it does not ship."
+ },
+ {
+  "unit": "item:p3",
+  "why": "Agree with both rounds: hay is cut and dried grass used as fodder, not a kind of grass, and 'crop' is equally defensible as its category. Link not exactly true."
+ },
+ {
+  "unit": "item:p4",
+  "why": "Agree with both rounds: a politician is broader than a lawmaker (legislator); not the same meaning."
+ },
+ {
+  "unit": "item:p6",
+  "why": "Overturning R1's pass: a snout is specifically an animal's long projecting nose and mouth (the gloss itself says so), narrower than 'nose'; applied to a person it is a mocking word. Not the same meaning."
+ },
+ {
+  "unit": "item:p8",
+  "why": "Agree with both rounds: sugar is a kind of sweetener, not the same meaning; 'sugary' adds family confusion."
+ },
+ {
+  "unit": "item:p9",
+  "why": "Agree with both rounds: juice is not an extract (an extract is obtained by steeping); weak synonym at L2."
+ },
+ {
+  "unit": "item:pa",
+  "why": "Agree with both rounds: a household need not be a family, and 'establishment' is a listed synonym of household. Link loose."
+ },
+ {
+  "unit": "item:pc",
+  "why": "Agree with both rounds: 'sweet' is a taste adjective, not a category glycerin belongs to; chemistry distractors (acetone, hexane, emulsifier) are too obscure."
+ },
+ {
+  "unit": "item:pd",
+  "why": "amorphous -> shapeless is sound, but all four distractors are technical jargon (orthorhombic, monoclinic, ferric, colloidal) too obscure for 8-15, as R2 says; dropping two still leaves only chemistry jargon. Not rescuable mechanically."
+ },
+ {
+  "unit": "item:pf",
+  "why": "Agree with both rounds: a chair is a kind of seat, not the same meaning."
+ },
+ {
+  "unit": "item:pj",
+  "why": "Agree with both rounds: 'corylus' and distractors vitis, calamus, agathis are Latin genus names far too obscure for 8-15."
+ },
+ {
+  "unit": "item:pl",
+  "why": "client = customer is exact, but at L1 (age 8) client is above level and the only two remaining distractors, patent and pension, are adult business vocabulary; nothing more can be dropped (two must remain). Too obscure for its level, so fail despite both rounds passing."
+ },
+ {
+  "unit": "item:po",
+  "why": "Agree with both rounds: sap is not juice, 'latex' is itself a plant sap and so defensible, and 'juicy' is the answer's family. Not rescuable."
+ },
+ {
+  "unit": "item:pv",
+  "why": "Agree with both rounds: a franchise is not the same as a dealership (franchise is also the right to vote); adult business vocabulary."
+ },
+ {
+  "unit": "item:pz",
+  "why": "Agree with both rounds: vulnerability is not a clean synonym of exposure, and 'vulnerable' (the answer's family) confuses."
+ },
+ {
+  "unit": "item:q3",
+  "why": "Agree with both rounds: 'fowl' ordinarily means poultry, a kind of bird; bird is the broader word, so not the same meaning."
+ },
+ {
+  "unit": "item:q6",
+  "why": "Overturning R1's pass: a kernel is chiefly the inner part of a seed or nut (or a cereal grain), not a synonym of seed, and the gloss 'a small hard fruit' would confuse a child. Doubtful, so it does not ship."
+ },
+ {
+  "unit": "item:qb",
+  "why": "Agree with R1: the answer 'wrong' used as a noun reads as a quiz verdict and will be misread by a child; the item cannot be rescued by dropping options."
+ },
+ {
+  "unit": "item:qd",
+  "why": "Agree with R2. Thesauruses list soot as a synonym of grime (grimy black dirt), so soot is a second defensible answer, and dropping it would leave only silt, below the two-option minimum. Cannot be rescued."
+ },
+ {
+  "unit": "item:qe",
+  "why": "Agree with both rounds: a tomato is botanically a fruit, a well-known fact for children; 'kind of vegetable' is contestable."
+ },
+ {
+  "unit": "item:qf",
+  "why": "Agree with both rounds: magma is molten rock, not 'a kind of rock' to a child, and 'scum' is a common insult."
+ },
+ {
+  "unit": "item:ql",
+  "why": "Agree with both rounds: jubilation, ecstasy and rapture are all synonyms of euphoria, and 'ecstasy' is a drug name. Dropping them would leave fewer than two options."
+ },
+ {
+  "unit": "item:qn",
+  "why": "Agree with R1: a crane is a machine that uses a hoist, not the same thing, and 'crane' the bird with 'roost' adds ambiguity."
+ },
+ {
+  "unit": "item:qr",
+  "why": "Agree with both rounds: conifers are mostly trees, not shrubs, and 'evergreen' is the category a blind solver picks."
+ },
+ {
+  "unit": "item:qt",
+  "why": "Agree with both rounds: cement is an ingredient of concrete, not the same thing - a common misconception to avoid teaching."
+ },
+ {
+  "unit": "item:qu",
+  "why": "Agree with both rounds: hemorrhage is heavy bleeding (stronger), and the medical vocabulary (coronary, transfusion) is unsuitable here."
+ },
+ {
+  "unit": "item:qx",
+  "why": "Agree with both rounds: a novelist is a kind of author, not the same meaning."
+ },
+ {
+  "unit": "item:qy",
+  "why": "Agree with both rounds: earthenware is one kind of pottery (low-fired porous clay), narrower than pottery."
+ },
+ {
+  "unit": "item:r1",
+  "why": "Agree with both rounds: 'sabot' is too obscure for L5, and 'clog' read as a blockage makes 'congestion' defensible."
+ },
+ {
+  "unit": "item:r2",
+  "why": "Agree with R1: soap and detergent are different cleaning agents (detergent is synthetic); not the same meaning."
+ },
+ {
+  "unit": "item:r3",
+  "why": "Agree with both rounds: 'malvaceae' (a botanical family, mostly not trees) and araceae, ranunculus, dicot are far too obscure, and the link is wrong."
+ },
+ {
+  "unit": "item:r5",
+  "why": "Agree with both rounds: a reservoir is a (usually artificial) lake, not a synonym, and 'lagoon' is as defensible - the blind solver picked it."
+ },
+ {
+  "unit": "item:rd",
+  "why": "Agree with both rounds: 'outstanding' and 'incredible' are both synonyms of extraordinary; dropping both would leave one option."
+ },
+ {
+  "unit": "item:rf",
+  "why": "Agree with both rounds: a parcel is a package, not a container, and 'bundle' is a defensible match."
+ },
+ {
+  "unit": "item:rh",
+  "why": "Agree with both rounds: gluttony is greed for food specifically (and a religious 'deadly sin' term), narrower than greed."
+ },
+ {
+  "unit": "item:rj",
+  "why": "Agree with both rounds: an airplane is a kind of aircraft, not the same meaning."
+ },
+ {
+  "unit": "item:rl",
+  "why": "Agree with R1. At L1 (age 8) 'flesh' reads as the body, and the gloss shown ('soft tissue of the body of a vertebrate') teaches body tissue rather than food; meat is flesh eaten as food, a narrower word. Bacon and lamb (kinds of meat) also pull an 8-year-old. Doubtful at this level, so it does not ship."
+ },
+ {
+  "unit": "item:ro",
+  "why": "Overturning R1's pass: a gown is a long, formal dress - a kind of dress, not a synonym (a school dress is not a gown)."
+ },
+ {
+  "unit": "item:ru",
+  "why": "Agree with both rounds: a participant is not the same as a member, and 'wager' is a gambling word."
+ },
+ {
+  "unit": "item:rv",
+  "why": "Agree with both rounds: bevel/chamfer and rabbet, mortice are woodworking jargon too obscure for 8-15, and 'miter' is a kind of bevel."
+ },
+ {
+  "unit": "item:rx",
+  "why": "Overturning R1's pass: a municipality can be a city or a town, and the gloss defines town as 'smaller than a city', so town is narrower; 'hamlet' is also close. Not exactly the same meaning."
+ },
+ {
+  "unit": "item:s0",
+  "why": "Overturning R1's pass: a tray (flat carrier with a rim) and a platter (large serving dish) are different objects, and 'container' is a broader term a tray belongs to. Doubtful."
+ },
+ {
+  "unit": "item:s2",
+  "why": "Agree with both rounds: arithmetic is one branch of mathematics, not the same meaning."
+ },
+ {
+  "unit": "item:s4",
+  "why": "Agree with R1: 'canadian' and 'scotland' are proper nouns lowercased in a spelling app, and 'alp' is near highland; dropping all three leaves one option."
+ },
+ {
+  "unit": "item:sa",
+  "why": "Agree with R1: a latch fastens without locking; not the same as a lock."
+ },
+ {
+  "unit": "item:sb",
+  "why": "Agree with R1: a bonfire is a large celebratory or signal fire (per its own gloss), not a campfire."
+ },
+ {
+  "unit": "item:sf",
+  "why": "Agree with both rounds: 'peculiarity' is a synonym of trait, and the gender filler 'masculinity'/'masculine' is out of place; dropping all three leaves one option."
+ },
+ {
+  "unit": "item:sk",
+  "why": "Agree with both rounds: 'sheen' is at least as close to gleam as sparkle is (gleam is a steady shine, sparkle is flashing points), and the gloss shows sparkle's 'merriment' sense. d is not clearly the one answer."
+ },
+ {
+  "unit": "item:sp",
+  "why": "Agree with both rounds: palaver, gabble and blabber are all synonyms of prattle."
+ },
+ {
+  "unit": "item:sq",
+  "why": "Agree with R1: citizenship and nationality are not the same (and sensitive for diaspora families), and the gloss shows the 'people of common origin' sense."
+ },
+ {
+  "unit": "item:sw",
+  "why": "Agree with R1: a plateau is a kind of highland (flat elevated land); highland is broader."
+ },
+ {
+  "unit": "item:sz",
+  "why": "Agree with R1: 'ravine' fits the chasm gloss ('deep, narrow opening with steep sides') as well as chasm does, and an abyss (a bottomless depth) is not exactly a chasm. Doubtful."
+ },
+ {
+  "unit": "item:t0",
+  "why": "Agree with both rounds: stillness is chiefly absence of motion, and 'tranquility' is as defensible - the blind solver picked it."
+ },
+ {
+  "unit": "item:t1",
+  "why": "Agree with R1: a grotto is a small cave and a cavern a large one, and the gloss shows cavern's figurative 'large dark space' sense."
+ },
+ {
+  "unit": "item:t3",
+  "why": "Agree with R1: a petal is also part of a violet or a pink (both flowers), and with only two wrong options nothing can be dropped."
+ },
+ {
+  "unit": "item:t4",
+  "why": "Overturning R1's pass: a giggle is a high, silly laugh and a chuckle a low, quiet one - two different laughs, not the same meaning."
+ },
+ {
+  "unit": "item:t7",
+  "why": "Agree with R1: to a child lava is molten rock, so 'lava is a kind of rock' is confusing, and 'rocky' is the answer's own family."
+ },
+ {
+  "unit": "item:ta",
+  "why": "Agree with both rounds: 'cloudy' (and 'dreamy') are defensible synonyms of hazy; dropping them would leave one option."
+ },
+ {
+  "unit": "item:td",
+  "why": "Agree with R1: a shelf is a flat board and a rack a framework; not the same meaning."
+ },
+ {
+  "unit": "item:tf",
+  "why": "Agree with R1 that 'june' is a lowercased month name, and more: a blaze is a large fierce fire while a flame is a single tongue of fire, so the link is not exact. Dropping june does not rescue it."
+ },
+ {
+  "unit": "item:tg",
+  "why": "Agree with both rounds: a pebble is a small stone, narrower than stone."
+ },
+ {
+  "unit": "item:ti",
+  "why": "Agree with both rounds: 'irish' and 'welsh' are lowercased nationality names ('welsh' is also a slur verb); dropping both leaves one option."
+ },
+ {
+  "unit": "item:tj",
+  "why": "Overturning R1's pass: a gymnast is a sports athlete and an acrobat a performer; overlapping, not the same meaning."
+ },
+ {
+  "unit": "item:tk",
+  "why": "Agree with R1: a chime is a set of tuned bells (per its own gloss), not a bell."
+ },
+ {
+  "unit": "item:tl",
+  "why": "Agree with both rounds: 'aalii' and 'baptisia' are far too obscure, and 'cactuses' is a non-standard plural."
+ },
+ {
+  "unit": "item:tm",
+  "why": "Agree with R1: straighten (make straight) and align (put in line) overlap but are not the same meaning; 'crook' is a criminal word as filler."
+ },
+ {
+  "unit": "item:tn",
+  "why": "Agree with both rounds: decent, sufficient and reasonable are all defensible synonyms of acceptable."
+ },
+ {
+  "unit": "item:tq",
+  "why": "Agree with both rounds: a pine is a kind of conifer, not the same meaning."
+ },
+ {
+  "unit": "item:tr",
+  "why": "Agree with both rounds: aircraft is broader than airplane."
+ },
+ {
+  "unit": "item:tu",
+  "why": "Agree with both rounds: 'sucker' is a playground insult with a crude double meaning, and 'dupe' as a verb makes 'hoax' fit."
+ },
+ {
+  "unit": "item:tv",
+  "why": "Agree with both rounds: awareness is not the same as knowledge, and 'realization' (the blind pick) and 'cognition' are as defensible."
+ },
+ {
+  "unit": "item:tw",
+  "why": "Agree with R1: a suspect is not the accused (accused is a later legal step); crime vocabulary at L2."
+ },
+ {
+  "unit": "item:tz",
+  "why": "Overturning R1's pass: the maths distractors (logarithm, topology) cue the mathematical sense, where a subgroup is not a subset; 'topology' is also too obscure for L5. Doubtful."
+ },
+ {
+  "unit": "item:u2",
+  "why": "Agree with R1: a clock is one kind of timepiece (watches are another); timepiece is broader."
+ },
+ {
+  "unit": "item:u4",
+  "why": "Agree with both rounds: 'hypothesis' and 'axiom' are defensible synonyms of assumption; dropping them (and the plural 'hypotheses') leaves one option."
+ },
+ {
+  "unit": "item:u8",
+  "why": "Agree with both rounds: a pomegranate is thought of as a fruit (and the plant is often a shrub); 'tree' is not the clear category."
+ },
+ {
+  "unit": "item:u9",
+  "why": "Agree with R1. At L2 (age ~9) surplus and excess are above level, and every distractor (revenue, premium, export, investment) is adult finance vocabulary. The level problem runs through the whole item, so dropping options cannot rescue it."
+ },
+ {
+  "unit": "item:ul",
+  "why": "Overturning R1's pass: the standard English spelling is 'consommé'; showing 'consomme' in a spelling app teaches a misspelling, and the word is marginal even at L8."
+ },
+ {
+  "unit": "item:um",
+  "why": "Agree with R1: 'propriety' is too advanced for L4 (age 11), as are skepticism and objectivity among the options."
+ },
+ {
+  "unit": "item:ur",
+  "why": "Agree with both rounds: 'aborigine' is a dated/offensive term, and 'turkic', 'malay', 'borneo' are lowercased ethnic/place names."
+ },
+ {
+  "unit": "item:us",
+  "why": "Agree with R1: to a child a skyline is the outline of buildings against the sky, not the horizon."
+ },
+ {
+  "unit": "item:uw",
+  "why": "Overturning R1's pass: a canyon is a large deep gorge while a ravine is a smaller narrow one (the gloss 'narrow steep-sided valley' undersells a canyon); WordNet makes canyon a kind of ravine. Not exactly the same meaning."
+ },
+ {
+  "unit": "item:uy",
+  "why": "Agree with R1: 'governmental' is only a weak synonym of political (a political party is not governmental), and 'government' is the answer's own root."
+ },
+ {
+  "unit": "item:v2",
+  "why": "Agree with r1 and r2: 'cosmopolitan' is overwhelmingly an adjective (and a cocktail/magazine name); the noun sense 'sophisticate' is obscure even at L8, and every distractor is a lower-cased proper noun used as filler."
+ },
+ {
+  "unit": "item:v8",
+  "why": "Agree with both rounds: magic = witchcraft only in the sorcery sense (stage magic is not witchcraft), and 'shaman' (a real religious role) and 'witchcraft' itself (a practice some adherents hold as religion) sit beside wizard/ghost as fantasy. Not rescuable by dropping."
+ },
+ {
+  "unit": "item:v9",
+  "why": "Agree with both rounds: 'jesus' is a sacred name lower-cased as a throwaway distractor, and 'doom' is only an unpleasant fate, not the same as fate."
+ },
+ {
+  "unit": "item:va",
+  "why": "Agree with both rounds: to a child a mango is a fruit; 'mango is a kind of tree' is true only of the plant, and no option offers 'fruit'. Misleading."
+ },
+ {
+  "unit": "item:vg",
+  "why": "Agree with r1/r2: a fresco is a kind of mural (painted on wet plaster), not the same meaning, and 'graffiti' is also a wall painting. Link not exact."
+ },
+ {
+  "unit": "item:vn",
+  "why": "Link (a) and (d): aqua and cyan are two different colour names, not one word's synonyms. Aqua is a light blue-green, and WordNet files it with turquoise/aquamarine. Cyan is a separate synset, 'a primary subtractive color for light', and that technical printer-ink gloss is what the child is shown. Aqua's other sense (water) also pulls the other way. A careful child cannot be sure these 'mean the same'."
+ },
+ {
+  "unit": "item:vp",
+  "why": "Agree with both rounds: 'tumble' mainly means fall; 'flip' matches only the gymnastics sense, and 'plop' (fall heavily) is at least as close. No single defensible answer."
+ },
+ {
+  "unit": "item:vr",
+  "why": "sorrowful = sad is sound, but tearful and somber (both rounds) are standard synonyms, and 'pitiful' also overlaps ('a sorrowful/pitiful sight'). Dropping all three would leave one wrong option, so it cannot be rescued."
+ },
+ {
+  "unit": "item:vs",
+  "why": "Agree with r1: engraving and etching are distinct printmaking techniques, and the gloss defines a print from an etched plate, which an engraving is not."
+ },
+ {
+  "unit": "item:vt",
+  "why": "Agree with r1: a watch is one kind of timepiece (clocks are timepieces too), and the gloss itself says 'a small portable timepiece'. Link not 'same meaning'."
+ },
+ {
+  "unit": "item:vu",
+  "why": "Agree with both rounds: 'weapon is a kind of instrument' rests on a generic sense no child recognises, the gloss is generic, firearm/cannon are hyponyms the other way, and the whole option set is weapons vocabulary."
+ },
+ {
+  "unit": "item:vv",
+  "why": "Agree with both rounds: at L4 'brush' is the tool; the undergrowth sense is obscure, and 'broom' is a defensible tool-sense answer. Cannot be rescued by dropping alone."
+ },
+ {
+  "unit": "item:vx",
+  "why": "Link (a): gruel is defined as 'a THIN porridge' (WordNet puts it under porridge; Oxford: thin liquid food of oatmeal), so porridge is the broader word and gruel a kind of it. That is the 'A kind of' link, not 'Same meaning'."
+ },
+ {
+  "unit": "item:vz",
+  "why": "Agree with both rounds: 'neoplasm' is a technical medical term, far too obscure at L5, and tumour vocabulary is heavy for this age."
+ },
+ {
+  "unit": "item:w1",
+  "why": "Agree with r1: an announcement is one kind of statement (a bank statement or a maths statement is not an announcement), and the gloss 'a formal public statement' makes d narrower; 'affidavit' is another kind. Link not exact."
+ },
+ {
+  "unit": "item:w8",
+  "why": "Agree with both rounds that confederacy and affiliation are defensible; dropping them leaves only affiliate and 'ethnic' (a filler word that should not be there), and the gloss is the business-contract sense of partnership. Too many faults to rescue."
+ },
+ {
+  "unit": "item:wf",
+  "why": "Agree with r1: juice (from fruit) and sap (fluid circulating in a plant) are related, not the same meaning; 'blood' is a grim distractor."
+ },
+ {
+  "unit": "item:wl",
+  "why": "Agree with both rounds: to a child a cucumber is a vegetable; 'kind of vine' is true only of the plant and there is no 'vegetable' option. Misleading."
+ },
+ {
+  "unit": "item:wn",
+  "why": "Agree with both rounds: roe is fish eggs, not a kind of fish. The link is false."
+ },
+ {
+  "unit": "item:wo",
+  "why": "Agree with r1: a melody is the tune alone and a song has words, and the gloss 'a short musical composition with words' contradicts 'melody'."
+ },
+ {
+  "unit": "item:wp",
+  "why": "Agree with r1: at L1 'class' is a school class and 'category' is a hard word for age 8, with school-word distractors pulling the other way. Too hard for its level; cannot be rescued."
+ },
+ {
+  "unit": "item:wu",
+  "why": "r1 passed it and r2 failed it without a reason; on a fresh look a hairpiece is usually a partial piece (toupee, extension), and a wig is one kind of hairpiece, so this is a kind-of pair, not the same meaning. Failed for the same reason as timepiece/watch on this sheet."
+ },
+ {
+  "unit": "item:wv",
+  "why": "Agree with both rounds: the gloss defines 'plant' as a factory, peppermint and thyme are also plants, and a child knows licorice as a sweet."
+ },
+ {
+  "unit": "item:wz",
+  "why": "Agree with both rounds: hiking is a kind of walking (a long walk, per the gloss), not the same meaning."
+ },
+ {
+  "unit": "item:x1",
+  "why": "Agree with both rounds: 'corporeal' is too obscure at L5 (age 12)."
+ },
+ {
+  "unit": "item:x2",
+  "why": "Agree with both rounds: litre/liter are spelling variants of one word, not two words with the same meaning, and confusing in a spelling app."
+ },
+ {
+  "unit": "item:xa",
+  "why": "Agree with both rounds: ash (powdery residue) and soot (black carbon from smoke) are different substances."
+ },
+ {
+  "unit": "item:xb",
+  "why": "Agree with both rounds: 'occident' is archaic and obscure, 'indy' is not a word, and 'arabia' is a lower-cased proper noun used as filler."
+ },
+ {
+  "unit": "item:xh",
+  "why": "Agree with r1: a plane is one kind of aircraft (helicopters and balloons are aircraft too), and the gloss itself says so. Link not exact."
+ },
+ {
+  "unit": "item:xi",
+  "why": "Agree with both rounds: extortion is obtaining by threats, not overcharging; 'fraud' is as close; adult crime vocabulary."
+ },
+ {
+  "unit": "item:xj",
+  "why": "Agree with both rounds: notable and incredible are standard synonyms of remarkable; dropping them leaves one wrong option, so it cannot be rescued."
+ },
+ {
+  "unit": "item:xl",
+  "why": "Agree with both rounds: 'ass' is a common swear word, and a statue is a kind of sculpture (the gloss says so), so even without it the link is not exact."
+ },
+ {
+  "unit": "item:xs",
+  "why": "Agree with both rounds: 'abhorrer' is a rare, near-nonce word, not one to teach."
+ },
+ {
+  "unit": "item:xu",
+  "why": "Agree with r1: a song has words and a tune is the melody alone; related, not the same meaning. Failed for the same reason as melody/song."
+ },
+ {
+  "unit": "item:xv",
+  "why": "Agree with both rounds: a click and a clink are different sounds."
+ },
+ {
+  "unit": "item:xw",
+  "why": "Agree with both rounds: fun is enjoyment, entertainment is an activity or show; related, not the same."
+ },
+ {
+  "unit": "item:xy",
+  "why": "Side with r1 over r2. Only entrap and fend are left as wrong options, and 'fend' (MW: to keep or ward off, repel; 'fend off an attack') is as close to deter as 'repel', which cycle 1 dropped from this very item as defensible ('spikes deter / fend off climbers'). A careful child can defend fend. It cannot be dropped, since that would leave a single wrong option, so the item cannot be rescued."
+ },
+ {
+  "unit": "item:y0",
+  "why": "Agree with r1: at L1 'plant' means a green plant and the factory sense is too hard for age 8; 'industry' is also used for a factory in Indian English."
+ },
+ {
+  "unit": "item:y3",
+  "why": "Agree with both rounds: 'denial' mainly means saying something is untrue and only weakly 'rejection', and 'abuse' is a heavy distractor at L2."
+ },
+ {
+  "unit": "item:y5",
+  "why": "Agree with both rounds: 'contradict' and 'negate' are listed synonyms of refute; dropping them leaves one wrong option."
+ },
+ {
+  "unit": "item:yb",
+  "why": "Agree with both rounds: 'arousal' has a sexual sense and 'neurosis' is a clinical term as filler; dropping both leaves one wrong option."
+ },
+ {
+  "unit": "item:yc",
+  "why": "Agree with both rounds: a moraine is a ridge of glacial debris, not a kind of stone."
+ },
+ {
+  "unit": "item:yg",
+  "why": "Agree with both rounds: 'bait' and 'entrap' are defensible synonyms of entice; dropping them leaves one wrong option, and the gloss repeats 'entice'."
+ },
+ {
+  "unit": "item:yi",
+  "why": "Agree with both rounds: granule/grain is near-synonymy, not 'kind of', and 'speck' also fits."
+ },
+ {
+  "unit": "item:ym",
+  "why": "Agree with r1: reasoning is a kind of thinking (the gloss says 'thinking that is coherent and logical'). Link not exact."
+ },
+ {
+  "unit": "item:yt",
+  "why": "Agree with both rounds: manure is one kind of fertilizer, as the gloss shows. Link not exact."
+ },
+ {
+  "unit": "item:yv",
+  "why": "Agree with both rounds: likeness also means a portrait, so representation, depiction and effigy are all defensible; dropping them leaves one option."
+ },
+ {
+  "unit": "item:yz",
+  "why": "Agree with both rounds: caulk is one kind of filler (the gloss says so), it is obscure at L4, and r2 notes it sounds like a vulgar word."
+ },
+ {
+  "unit": "item:ze",
+  "why": "Agree with r1: the gloss defines an airport as an airfield with tower, hangars and passenger facilities, a narrower kind. Link not exact."
+ },
+ {
+  "unit": "item:zh",
+  "why": "Link (a): a festival is one kind of celebration, a special, organised, often religious or cultural one (Oxford: 'a day or period of celebration'). A birthday party or a win is a celebration but not a festival, so d is narrower than c, and 'Same meaning' teaches the 'A kind of' link under the wrong name. It also leaves 'graduation', another occasion that is celebrated, nearer than a clean distractor should be."
+ },
+ {
+  "unit": "item:zk",
+  "why": "Agree with r1: 'warmer' is first the comparative of warm (and 'cooler' plays on it); warmer = heater is confusing at L2."
+ },
+ {
+  "unit": "item:zn",
+  "why": "Agree with both rounds: a child does not know a waffle as a kind of cake, and the gloss 'baked in an oven' is wrong for a waffle."
+ },
+ {
+  "unit": "item:zr",
+  "why": "Agree with r1: viewing (watching) and screening (showing a film) are not the same, and it is too hard at L2."
+ },
+ {
+  "unit": "item:zt",
+  "why": "Agree with both rounds: logic (reasoning) and rationale (the reasons for something) are not synonyms."
+ },
+ {
+  "unit": "item:zu",
+  "why": "Agree with both rounds: 'embryonic' is defensible, and ovarian/glandular are odd anatomy filler; dropping all three leaves one option."
+ },
+ {
+  "unit": "item:10b",
+  "why": "Agree with both rounds: a poll (a survey or vote) and a questionnaire (a list of questions) are related, not the same."
+ },
+ {
+  "unit": "item:10e",
+  "why": "Side with r1 over r2. In the school science a 12-13-year-old is taught (states of matter), vaporization is the whole liquid-to-gas change and evaporation is one kind of it, the other being boiling. Teaching 'vaporization means the same as evaporation' contradicts the distinction the child is marked on. Not rescuable by dropping options or hiding the gloss."
+ },
+ {
+  "unit": "item:10f",
+  "why": "Agree with r1: a gesture is one kind of motion (the gloss: 'motion of hands or body'), and jolt/rotation are other kinds. Link not exact."
+ },
+ {
+  "unit": "item:10h",
+  "why": "Agree with both rounds: prudence and deliberation are defensible, and 'premeditation' carries a criminal connotation."
+ },
+ {
+  "unit": "item:10j",
+  "why": "Agree with both rounds: the gloss is lawn grass, which maize is not, and a child knows maize as a crop."
+ },
+ {
+  "unit": "item:10l",
+  "why": "Agree with both rounds: yeast is one kind of leaven, and 'leaven' is obscure at L4."
+ },
+ {
+  "unit": "item:10m",
+  "why": "Agree with both rounds: 'suck' is crude slang, and swallow = sip is weak (a sip is a small drink)."
+ },
+ {
+  "unit": "item:10p",
+  "why": "Agree with r1: a banker is one kind of financier (the gloss says so), and 'broker' is arguable."
+ },
+ {
+  "unit": "item:10z",
+  "why": "Agree with r1: a carving is one kind of sculpture, and 'woodwork' is arguable. Link not exact."
+ },
+ {
+  "unit": "item:11g",
+  "why": "Agree with both rounds: a tiara is one kind of crown, and wreath/garland are also crowns. Not rescuable."
+ },
+ {
+  "unit": "item:11p",
+  "why": "Side with r2 over r1: the gloss itself defines a sequoia as EITHER of two trees, of which the redwood is one, so d is broader than c rather than the same meaning; 'appalachian' is a lowercase proper noun used as filler, and the gloss lowercases 'california'. Too doubtful to rescue."
+ },
+ {
+  "unit": "item:11r",
+  "why": "Agree with both rounds: a quilt is one kind of blanket/bedding (stitched, stuffed layers), so d is narrower than c, not the same meaning."
+ },
+ {
+  "unit": "item:11t",
+  "why": "Agree with both rounds: 'autoclave' is a technical lab word, too obscure for L7; an autoclave is also one kind of sterilizer, and the gloss shown describes the autoclave, not d."
+ },
+ {
+  "unit": "item:11u",
+  "why": "Agree with both rounds: a cookout is an outdoor barbecue and a picnic is a packed outdoor meal; related, not the same meaning."
+ },
+ {
+  "unit": "item:11w",
+  "why": "Agree with both rounds: a news article is not an essay, and at L1 'article' also means a/an or an item. The link is false."
+ },
+ {
+  "unit": "item:11z",
+  "why": "Side with r2 over r1: a shroud is a burial wrapping MADE of cloth, not a kind of cloth (as muslin or denim is); WordNet files it under garment. 'mesh' is itself a kind of fabric, so the item is muddled, and the death theme adds nothing."
+ },
+ {
+  "unit": "item:12a",
+  "why": "Agree with both rounds: 'pillory' is obscure for L7 with a punishment theme, it is an instrument only in the 'instrument of punishment' sense, and the gloss shows the tool-requiring-skill sense."
+ },
+ {
+  "unit": "item:12c",
+  "why": "Agree with both rounds: melting (solid to liquid by heat) and dissolving (going into solution) are different processes; the item teaches a science error."
+ },
+ {
+  "unit": "item:12f",
+  "why": "Agree with both rounds: 'drove' as a noun is obscure at L2 (age 9) and reads as the past tense of 'drive'."
+ },
+ {
+  "unit": "item:12h",
+  "why": "Agree with both rounds: forage is fodder, grass is a kind of forage (reverse of the claim), and 'browse' is equally forage. No clean answer."
+ },
+ {
+  "unit": "item:12l",
+  "why": "Agree with both rounds: a subpoena is one kind of summons (for witnesses), so d is narrower; it is also an obscure legal term at L6."
+ },
+ {
+  "unit": "item:12m",
+  "why": "Agree with both rounds: dissolving and melting are different processes (the gloss itself says melting is by heat); teaches a science error."
+ },
+ {
+  "unit": "item:12s",
+  "why": "Agree with r2's concern: 'ruth' reads as a lowercase proper name and 'agnostic' is a faith-position word beside 'liar'. Dropping both would leave only 'diction', fewer than two wrong options, so it cannot be fixed."
+ },
+ {
+  "unit": "item:12v",
+  "why": "Agree with both rounds: a drummer is one kind of percussionist, so d is broader than c."
+ },
+ {
+  "unit": "item:12y",
+  "why": "Agree with both rounds: a suspect has not been charged and a defendant has, so the link is false; a crime topic at L2 besides."
+ },
+ {
+  "unit": "item:12z",
+  "why": "Agree with both rounds that 'lingerie' (and 'bodice') are unsuitable, and more: a blouse is a kind of shirt (a woman's top), so the link is not same meaning. Cannot be rescued by dropping options."
+ },
+ {
+  "unit": "item:13c",
+  "why": "Agree with r1: a fixation is an unhealthy, obsessive preoccupation (the gloss itself defines it through preoccupation), so it is stronger, not the same; distractors use mental-health terms casually."
+ },
+ {
+  "unit": "item:13d",
+  "why": "Agree with both rounds: an agitator stirs up political unrest, which is not the same as a troublemaker; 'activist' is defensible and the item equates activists with troublemakers. The gloss is circular."
+ },
+ {
+  "unit": "item:13e",
+  "why": "Agree with both rounds: a grotto is a small (often decorated) kind of cave, so d is broader."
+ },
+ {
+  "unit": "item:13g",
+  "why": "Agree with r1: a padlock is one kind of lock, so d is broader, not the same meaning."
+ },
+ {
+  "unit": "item:13l",
+  "why": "Agree with both rounds: a grill is made of metal, it is not a kind of metal; and the blind solver reached for 'stove'. Link false."
+ },
+ {
+  "unit": "item:13m",
+  "why": "Agree with both rounds: the gloss itself defines a meadow as a kind of field; d is narrower than c."
+ },
+ {
+  "unit": "item:13o",
+  "why": "Agree with r1: a newborn is a narrower kind of baby; 'calf'/'cub' are newborn animals and 'pregnancy' is unsuitable at L2."
+ },
+ {
+  "unit": "item:13p",
+  "why": "Agree with both rounds: a vassal was a free landholder and a serf was unfree; historically false, and obscure at L4."
+ },
+ {
+  "unit": "item:13t",
+  "why": "Agree with both rounds: a tactic is a short-term move and a strategy is the overall plan; too hard for L2 besides."
+ },
+ {
+  "unit": "item:13w",
+  "why": "Side with r2 over r1: a fleece is the whole coat of a sheep, and to a child today fleece is mostly a synthetic fabric, while the gloss defines wool as fabric. Not exactly the same; too doubtful to ship."
+ },
+ {
+  "unit": "item:13z",
+  "why": "Agree with both rounds: 'petri' is not a standalone word (it is the eponym in 'Petri dish')."
+ },
+ {
+  "unit": "item:14a",
+  "why": "Agree with r1: 'garland' and 'gild' are both verbs meaning to adorn in a particular way, defensible answers. Dropping both leaves only 'brooch', fewer than two wrong options."
+ },
+ {
+  "unit": "item:14b",
+  "why": "Agree with both rounds: a mechanic repairs machines and a machinist operates machine tools; not the same."
+ },
+ {
+  "unit": "item:14c",
+  "why": "Agree with both rounds: performing matches playing only in the music/role sense, and the gloss leads with 'having fun with a game'. Not exact at L2."
+ },
+ {
+  "unit": "item:14j",
+  "why": "Agree with both rounds: to a child a kettle is for tea; it matches cauldron only in an old cooking-pot sense; 'aorta' is a stray distractor."
+ },
+ {
+  "unit": "item:14k",
+  "why": "Agree with both rounds that 'torrent' and 'geyser' are defensible. And after dropping them, 'sluice' (verb: pour or flow freely) is also defensible, leaving only 'jolt'. Cannot be fixed."
+ },
+ {
+  "unit": "item:14n",
+  "why": "Side with r1 over r2. The link is sound, but L2 is about age 9, and 'administration' is an office and government word a 9-year-old does not reliably know (cycle 1 already flagged L2 as ambitious). Unlike a word-family item, a same-meaning item cannot be solved by suffix, so the child is guessing at an unknown word. A level that is wrong cannot be fixed by dropping options or hiding the gloss."
+ },
+ {
+  "unit": "item:14q",
+  "why": "Agree with both rounds: 'passerine' is a technical ornithology term, too obscure even at L8."
+ },
+ {
+  "unit": "item:14u",
+  "why": "Agree with both rounds: 'orpiment' (an arsenic mineral) is far too obscure for L7."
+ },
+ {
+  "unit": "item:14v",
+  "why": "Agree with both rounds: 'occident' is archaic and loaded at L6, and caucasus/volga/polynesian are lowercase proper and ethnic names used as filler."
+ },
+ {
+  "unit": "item:14z",
+  "why": "Agree with both rounds: 'caste' and 'ethnic' are sensitive distractors, and 'nationality' also has an ethnic-group sense, so 'ancestry' becomes arguable. Dropping all three would leave only 'adoption'."
+ },
+ {
+  "unit": "item:15a",
+  "why": "Side with r1 over r2: soap is one kind of cleanser, so d is broader, not the same meaning."
+ },
+ {
+  "unit": "item:15c",
+  "why": "Agree with both rounds: 'buffoon' is an insult word (the gloss says 'a rude or vulgar fool') and 'comedian' is a defensible synonym of clown."
+ },
+ {
+  "unit": "item:15d",
+  "why": "Side with r1 over r2: an oblong is a non-square rectangle or any elongated shape, not exactly 'rectangle'; and 'malayan'/'peruvian' are lowercase nationality words used as filler."
+ },
+ {
+  "unit": "item:15e",
+  "why": "Agree with both rounds: a glossary is a list of terms with meanings, a vocabulary is the words a person or language uses. Not synonyms."
+ },
+ {
+  "unit": "item:15f",
+  "why": "Agree with both rounds: 'chunky' and 'pasty' are both used to tease about bodies, and 'lump' is a family form. Dropping the unsafe options leaves fewer than two."
+ },
+ {
+  "unit": "item:15g",
+  "why": "Agree with both rounds: 'cabochon' is very obscure for L7, and the gloss shows 'gem' as 'art highly prized'."
+ },
+ {
+  "unit": "item:15m",
+  "why": "Agree with both rounds: 'native' is defensible (the gloss even says 'or who was born there'), and 'nebraska'/'turkic' are lowercase proper and ethnic names. Dropping all three leaves only 'peninsula'."
+ },
+ {
+  "unit": "item:15n",
+  "why": "Side with r1 over r2: 'brazilian' is a lowercase nationality word with an adult grooming sense, and 'medal' is a kind of prize, close enough to argue. Dropping both leaves only 'won'. The gloss's 'retribution for wrongdoing' is also off for 'prize'."
+ },
+ {
+  "unit": "item:15o",
+  "why": "Agree with both rounds: steppe and prairie are two different regional grasslands, not one meaning."
+ },
+ {
+  "unit": "item:15p",
+  "why": "Agree with both rounds: satire is a genre that often uses irony, not irony itself; the gloss is sarcasm's."
+ },
+ {
+  "unit": "item:15r",
+  "why": "Side with r2 over r1: penny = cent only in American usage. In Britain a penny is 1/100 of a pound, not a cent, and much of the audience is British or Indian."
+ },
+ {
+  "unit": "item:15s",
+  "why": "Side with r1 over r2: a catalog is one kind of list (of items, often for sale), and receipt/dictionary are equally kinds of list. Muddled at L2."
+ },
+ {
+  "unit": "item:15v",
+  "why": "Side with r1 over r2: a monarch may be a king, queen or emperor, so 'monarch' is the category and d is broader."
+ },
+ {
+  "unit": "item:15z",
+  "why": "Side with r1 over r2: the gloss itself defines an inn as a kind of hotel, and in British use an inn is a pub. Not the same meaning."
+ },
+ {
+  "unit": "item:16b",
+  "why": "Side with r1 over r2: a donation is a gift to a cause, a narrower kind of gift; the true synonym would be 'present'."
+ },
+ {
+  "unit": "item:16c",
+  "why": "Side with r1 over r2: a municipality is any self-governing city or town (broader than 'town'), and 'moscow' is a lowercase proper noun."
+ },
+ {
+  "unit": "item:16e",
+  "why": "Side with r1 over r2: robbery is theft by threat or violence (the gloss says so), a narrower kind of theft; 'fraud' is also close."
+ },
+ {
+  "unit": "item:16f",
+  "why": "Side with r1 over r2: a floret is one small flower inside a flower head (or a piece of broccoli), so part-of competes with kind-of; the gloss shows 'flower' as a plant grown for blooms. Too doubtful."
+ },
+ {
+  "unit": "item:16r",
+  "why": "Agree with both rounds: a flipper is a swim fin or an animal's limb, not a kind of shoe, and 'fin' is what a flipper is."
+ },
+ {
+  "unit": "item:16s",
+  "why": "Agree with both rounds: 'sensor' is equally a category for radar, 'wireless' arguable, and the gloss shows instrument as a skill tool where a child expects a musical instrument."
+ },
+ {
+  "unit": "item:16t",
+  "why": "Agree with both rounds: 'Christ' is a title whose application to Jesus is a Christian belief, not a word synonym; a faith's central figure in a lowercase synonym drill; 'mortal' touches doctrine."
+ },
+ {
+  "unit": "item:16u",
+  "why": "Agree with both rounds: 'investigation' and 'evaluation' are both defensible; dropping them leaves only 'diagnosis'."
+ },
+ {
+  "unit": "item:16x",
+  "why": "Side with r1 over r2: a quarry is an open pit for stone, a narrower kind of excavation than a mine; 'quarry' also means prey."
+ },
+ {
+  "unit": "item:16y",
+  "why": "Agree with both rounds: ligne/abscissa/iamb are obscure (and 'ligne' looks like a misspelling of 'line'); dropping them leaves only 'parallel'."
+ },
+ {
+  "unit": "item:17b",
+  "why": "Agree with both rounds: 'mire' and 'grime' fit muck at least as well as 'ooze' (the blind solver chose mire), and muck = ooze is itself loose (muck is also manure)."
+ },
+ {
+  "unit": "item:17e",
+  "why": "Agree with both rounds: the gloss itself makes a spa a kind of (health) resort; d is narrower."
+ },
+ {
+  "unit": "item:17g",
+  "why": "Side with r1 over r2: scheduling is fixing times, a narrower part of planning, not the same meaning."
+ },
+ {
+  "unit": "item:17i",
+  "why": "Agree with both rounds: a sip is a tiny taste and a swallow a gulp; 'savor' is arguable and 'cider' can be alcoholic."
+ },
+ {
+  "unit": "stem:same:5",
+  "why": "Side with r1 over r2: 'mad' means angry only in informal American use; in British and Indian English it means crazy, a stigmatising word. A worked example must be clean for the whole audience."
+ },
+ {
+  "unit": "stem:who:0",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'baker' is 'bake' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Bake and baker are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:1",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'teacher' is 'teach' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Teach and teacher are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:2",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'sailor' is 'sail' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Sail and sailor are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:3",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'painter' is 'paint' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Paint and painter are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:4",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'farmer' is 'farm' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Farm and farmer are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:5",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'singer' is 'sing' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Sing and singer are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:6",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'actor' is 'act' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Act and actor are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:7",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'driver' is 'drive' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Drive and driver are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:8",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'swimmer' is 'swim' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Swim and swimmer are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:9",
+  "why": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'inventor' is 'invent' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Invent and inventor are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix."
+ },
+ {
+  "unit": "stem:who:n0",
+  "why": "I agree with both rounds. 'cook' is just as commonly a noun for the person, so cook : chef reads as two people-words that mean about the same, and a chef is also a kind of cook. The relation-first step offers 'Cook means about the same as chef', which is true, so the stem has two right links. As the A:B example it would also steer a child to synonym traps such as 'fragrance' in item:9p."
+ },
+ {
+  "unit": "stem:who:n4",
+  "why": "I side with r2's fail over r1's pass. 'tutor' is an everyday verb in children's lives ('she tutors me in maths', 'I get tutored'), and to tutor is to teach, one to one. So the offered 'Teach means about the same as tutor' is defensible, and the stem has two right links: the problem this new set was written to remove. As an A:B example it would also steer a child toward synonym traps. Fail."
+ }
+]

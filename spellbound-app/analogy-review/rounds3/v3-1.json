@@ -1,0 +1,499 @@
+[
+ {
+  "unit": "item:8",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A shipment and freight are both goods sent by carrier, and thesauri list them as synonyms. 'freight' is a known word at L2 (freight train). inventory (stock on hand), receipt (proof of payment, or the act of receiving) and premium (a payment) do not mean a shipment. The broken gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "pass",
+  "reason": "I overrule r1's fail. Thesauri give pouch as a synonym of bag, and the bridge only claims 'about the same'. Here the narrower word is the everyday word for the thing, as with swamp/wetland. In Practice the child names the link of the A:B stem, not of bag -> pouch, so 'Kind of' cannot become a second answer. towel, bin (a container, not a bag), express and laundry are not synonyms, so pouch is the one answer. The gloss is loose ('moderate size' where 'small' is usual), but it is the container sense, not the animal-pouch sense, so it shows the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. handcuff = manacle (one WordNet synset), a fair word at L7. A pillory locks the head and hands in a public frame, so it is not a handcuff. deterrent and impediment are not restraints worn on the wrist. The garbled gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "pass",
+  "reason": "I overrule r1's hyponym fail. Merriam-Webster's thesaurus lists wetland among the synonyms of swamp, and swamp is the everyday word a child uses for a wetland. The bridge claims only 'about the same', and the item's own c -> d link is never asked in the name-the-link step. habitat (a wetland is one) and creek (a stream or inlet) are not synonyms. The gloss 'low land that is seasonally flooded' is swamp's land sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:185",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. accumulation = buildup. melanin (a pigment) and breakdown (nearly the opposite) do not compete, and two wrong options remain. The gloss is the right sense. It reuses the clue word, but Meet the words already lists c beside d and no definition is on screen during a question, so it gives nothing away.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y",
+  "verdict": "pass",
+  "reason": "I overrule r1's hyponym fail and agree with r2. Thesauri list performing under acting, and the bridge only claims 'about the same'. The gloss pins the drama sense, which also rules out 'acting head'. solo is a performance by one person and audition is a try-out, so neither means acting, and acting is the one answer at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. possible = feasible. 'probable' is the classic near-miss: Merriam-Webster files it under related words, not synonyms, and 'possible but not probable' is the distinction worth teaching. finite, furthest and infinite are unrelated. The gloss with the stray 'Is' is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. Merriam-Webster gives perfumer as 'one that perfumes; a maker of perfumes', so 'a perfumer is a person who perfumes' is true, and the gloss says so. It is the only person among fragrance (the synonym trap), beeswax and linseed. The answer is easy to work out at L5.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. responsive -> responsiveness is the exact adjective-to-noun form. stimuli, stimulus and activation share no root, and having the singular and plural of one word creates no second answer. The gloss, which showed the wrong part of speech, is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. Miserable is a stronger sad. ecstatic is a stronger happy, nostalgic is a wistful longing rather than a stronger sadness, and patriotic is unrelated. The broken gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A gale is a stronger breeze. sway, sunflower and dew are not winds. The gloss with the false knot range is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. Hot is a stronger warm. cold is the opposite trap, and gulp and downpour are unrelated. The usage-note gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A zither is a kind of instrument, and zither is a known alphabet-book word at L5. A fret is a part, a saxophone is a sibling, and instrumental is another word form; none is a category a zither belongs to. The tool-sense gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e8",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. aggressive -> aggressiveness is the exact family form, and repulse, harassment, exploitation and antagonist share no root. r2's note is fair, but harassment and exploitation are schoolroom words (anti-bullying policies, exploitation of resources), not sexual, gory or slur words, so they are acceptable at L6. The praise-sense gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. envious = jealous in ordinary use. wary, giddy, unhappy and impassive are not synonyms. The broken gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:es",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. oval and ellipse are one WordNet synset. round (circular) and lob (a high shot) are not synonyms, and two wrong options remain. r1 noted that the gloss is cut off at 'cutting completely…'. That is the app's standard display truncation, used on many glosses, and the visible part ('a closed plane curve…') is the right sense for L7, so the gloss does not need hiding.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. loud is the opposite of quiet. silent and calm are synonym traps, and humble is unrelated. With 'restless' gone, nothing offers the calm/agitated sense of quiet. The gloss is right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. entrance is the noun opposite of exit. None of shut, ascend, sink or exclude is the opposite of exit in either the noun or the verb reading. The contradictory gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. gelatin -> gelatinous is exact. greasy, gummy and preservative share no root. gummy describes a similar texture but is not a form of gelatin, so it is a fair trap. 'Thick like gelatin' is the right sense, and the word suits L8.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. continuance is a real noun of continue, and the gloss pins the 'continuing without interruption' sense, not the legal adjournment sense. resume is a synonym trap in the wrong word class, and disruption and inactivity share no root, so continuance is the one family form on offer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A synthesizer is a kind of instrument. Amplifier, sonata, instrumental and multimedia are not categories it belongs to. The tool-sense gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. Marinara is a kind of sauce. mozzarella, cutlet and brioche are other foods, not its category. All are ordinary common nouns now that 'parmesan' is gone. The gloss is the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:js",
+  "verdict": "pass",
+  "reason": "I overrule r1's fail. Merriam-Webster's body sense of extremity is 'a limb of the body', and thesauri list extremity for limb. The gloss shown ('an external body part that projects from the body') teaches exactly that sense before the question. hind (only in 'hind leg'), femur, elbow and sternum are parts or bones, not limbs, so extremity is the one answer. It is a stretch word at L4, but not an obscure one.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. 'A citation for bravery' is a current, common sense of citation, thesauri pair it with commendation, and the gloss teaches exactly that sense, which answers r2's familiarity note. condemnation is the opposite trap. earnest (even as 'a pledge'), frivolity and discontent do not mean praise.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. loyalty = devotion. betrayal is the opposite trap. leadership, agony and believer are not synonyms, and 'believer' is a neutral word, used with no mockery. The word-pile gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A bump from a knock is a swelling; thesauri list both with lump. shin, sag (nearly the opposite) and eyelash do not compete now that 'blister' is gone. The gloss is the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "pass",
+  "reason": "I overrule r1's fail and agree with r2. evoke and elicit share one WordNet synset ('call forth emotions, feelings and responses'), and Meet the words shows that shared definition for both words before practice. sublime, heighten and mute are not synonyms. Both words are standard academic vocabulary, a stretch at L4 rather than obscure, and the item is solvable once the words have been met.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:o2",
+  "verdict": "pass",
+  "reason": "I overrule r1's fail. The bridge claims only 'about the same', and thesauri list tray with platter for a flat serving piece (a cheese tray or platter, a party tray or platter). The gloss shown for tray (a receptacle for holding or serving food) fits a platter. taco, cornbread and truffle are foods, and a bag is not flat tableware, so tray is the one defensible answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:od",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. contempt = disdain (the feeling of scorn). insult and affront are acts, not the feeling, so they are near-misses but not synonyms, and acceptance is unrelated. The garbled gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:on",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. legacy = inheritance (what is handed down). claimant, eyewitness and landowner are people. The succession-sense gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:p0",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A racehorse is a kind of horse. rodeo (an event), equestrian (a rider) and handler (a person) are not its category now that 'thoroughbred' is gone. The gloss is horse's animal sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ph",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. Nutmeg is a kind of spice. parsley (a herb), almond, coconut and soy are other foods, not categories nutmeg belongs to. Nutmeg is not a true nut, so 'almond' and 'coconut' are not categories for it either. The preservative-sense gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:r6",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. beg = entreat, and the gloss 'ask for or request earnestly' is the shared sense. bully, grumble and shun do not compete now that 'beggar' is gone. entreat is formal but fair at L5.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:u6",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. pig = hog, used here in the farm-animal sense with an animal gloss. pig is core early vocabulary. Using it as a name-calling word does not make it a vulgar double-meaning word in the sense the rule targets ('knob', 'beaver'), and ruling it out would rule out half the animal words in English. hen and pigeon do not compete. The gloss is factual and neutral.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ua",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. exhaustion = fatigue in ordinary use. laziness (unwillingness, not tiredness), dizziness, fortitude and boredom are not synonyms. The fragment gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ut",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. crease and wrinkle are one WordNet synset, and the gloss is the right sense. sandpaper, fray and thumbnail do not compete now that 'matt' is gone.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vb",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. customize = personalize, and the gloss is right. optimize (to make best), covet and recalculate are not synonyms, and the doubled 'optimise' spelling is gone.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vn",
+  "verdict": "pass",
+  "reason": "I overrule r1's fail and agree with r2. Dictionaries define both words as a greenish blue: aqua is 'a shade of blue tinged with green' in this app's own gloss, cyan is greenish-blue, and in the web colour names aqua and cyan are literally the same colour. So 'about the same' holds. amber is a different colour (orange-yellow) and sluice is the water-sense trap, so cyan is the one answer. The gloss is technical but it is cyan's only sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:vx",
+  "verdict": "pass",
+  "reason": "I overrule r1's fail. gruel is a thin porridge, and thesauri list porridge as gruel's synonym. The bridge only claims 'about the same', and the item's own link is never asked in the name-the-link step. omelet, marinade, barbecue and coriander are other foods, so porridge is the one answer. The gloss is porridge's only sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w4",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. In its theatre sense, cast (the actors) = troupe, which thesauri list together, and the gloss pins the performers sense. hex, shadow, spotlight and backdrop play on other senses of cast or on the stage, but none is a group of performers. r2's 'loose' names no competing answer. The gloss lacks a comma but reads plainly.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wa",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A vine is a climbing plant, and the gloss pins climber's plant sense, so the child is not left with 'a person who climbs'. shrub, fern, annual and bush are other plant types, not climbers. The gloss names the clue word, but Meet the words already lists c beside d and hides definitions during questions, so that leaks nothing.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wb",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. factory and mill are one WordNet synset (steel mill, paper mill), and the gloss is that shared definition. shipment, annual and worker cannot compete now that 'industry' is gone.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wi",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. certify -> certification is the verb-to-noun form. confirmation belongs to confirm, and applicant, subscription and publisher share no root. The franchise-sense gloss is already hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wx",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. minstrel and bard are given as each other's synonyms (medieval poet-singers), and both are met in Robin Hood and Shakespeare at about 11. The bare word minstrel means the medieval singer; the blackface sense belongs to 'minstrel show'. tango, duet and columnist are not poet-singers. The gloss 'a lyric poet' is bard's sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yy",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. hole = opening, and the gloss is right. A peg fills a hole, and a dent is a dip that does not go through, so neither is an opening. Now that 'screw' is gone, peg beside hole is ordinary ('a square peg in a round hole').",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z2",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. In the governing-body sense the gloss shows, board = committee (WordNet: 'a committee having supervisory powers'). skate, roller and bulletin are compound traps (skateboard, bulletin board) and fulcrum is a seesaw part; none is a group, so committee is the one answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zh",
+  "verdict": "pass",
+  "reason": "I overrule r1's fail and agree with r2. Dictionaries define festival as 'a day or period of celebration', and thesauri list festival among celebration's synonyms; the bridge only claims 'about the same'. graduation is the finishing of a course and its ceremony, not a word for celebration, and supper is a meal, so festival is the one answer at L2. The gloss is right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zi",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. bard = minstrel, the mirror of item:wx, and the gloss 'a singer of folk songs' is minstrel's ordinary sense, not the 'minstrel show' sense. maiden is a girl, an epic is a poem and a ballad is a song, not the singer, so minstrel is the one person-word that fits.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zp",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. circumference = girth (the distance around, as of a tree trunk), as thesauri list. vertex/vertices, longitude and median are not distances around. Having both vertex and vertices is untidy but creates no second answer. The body-size gloss is already hidden, so the fatness sense is not taught.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10t",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. flip = somersault (Merriam-Webster: 'a somersault, especially in the air'), and the gloss pins the acrobatic sense. upside (an advantage) and posit (to propose) are not synonyms, and two wrong options remain.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13s",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. meaning and significance share one WordNet synset ('the message that is intended or expressed or signified'), which is exactly the gloss shown. prestige is standing or reputation, which Merriam-Webster files as related to importance, not as a synonym of significance. meaningful and notable are adjectives. So meaning is the one noun that means the same.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15i",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. In everyday use a bookshelf is the piece of furniture, and Cambridge gives 'a set of shelves for books'. alcove, workspace and attic are places, so bookcase is the one answer. The gloss is right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17n",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. blunt is the canonical opposite of sharp at L1, and the gloss is right. sour (a sharp taste, near-synonym) and strong are not opposites, and two wrong options remain now that 'smooth' and 'thick' are gone.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:0",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'baker' is 'bake' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Bake and baker are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:1",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'teacher' is 'teach' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Teach and teacher are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:2",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'sailor' is 'sail' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Sail and sailor are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:3",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'painter' is 'paint' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Paint and painter are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:4",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'farmer' is 'farm' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Farm and farmer are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:5",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'singer' is 'sing' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Sing and singer are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:6",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'actor' is 'act' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Act and actor are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:7",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'driver' is 'drive' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Drive and driver are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:8",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'swimmer' is 'swim' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Swim and swimmer are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:9",
+  "verdict": "fail",
+  "reason": "I side with r2's fail and overrule the earlier round-3 passes. 'Who does it' is true of this pair, but 'inventor' is 'invent' plus an agent ending, so the Word-families line is also true of it. That line matters in the product: the relation-first step ('How are these two linked?') and Learn's 'Your turn: name the link' offer the Word-families line ('Invent and inventor are one idea doing two different jobs') as a wrong option beside 'Who does it'. By the family lesson's own definition ('the same idea, a new job') that line is true here, so a child who learned that lesson is marked wrong for a correct answer. The new non-derived stems (pilot, doctor, thief, mechanic, waiter, lifeguard) were written to remove exactly this. This is a stem with two right answers, which no drop or gloss change can fix.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n0",
+  "verdict": "fail",
+  "reason": "I agree with both rounds. 'cook' is just as commonly a noun for the person, so cook : chef reads as two people-words that mean about the same, and a chef is also a kind of cook. The relation-first step offers 'Cook means about the same as chef', which is true, so the stem has two right links. As the A:B example it would also steer a child to synonym traps such as 'fragrance' in item:9p.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n1",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A pilot is the person who flies the aircraft, and 'Fly is what pilot does' is the clear link. To a child, pilot reads first as a person-noun, so the offered 'Fly means about the same as pilot' reads false. The rarer verb 'to pilot' is narrower than fly (passengers and birds fly too), and the blind solver saw no second link. The family line does not fit, because pilot is not built from fly.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n2",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A doctor is a person who heals; Merriam-Webster's definition of doctor is 'a person skilled in the healing arts'. The words are common and kid-safe. 'Heal means about the same as doctor' and the family line are both false, so 'Who does it' is the one link.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n3",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A thief is exactly a person who steals, and thief is not built from steal, so the family line is false; 'means about the same' is false too, because one is an action and the other a person. The pair is story-common (Ali Baba) and kid-safe.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n4",
+  "verdict": "fail",
+  "reason": "I side with r2's fail over r1's pass. 'tutor' is an everyday verb in children's lives ('she tutors me in maths', 'I get tutored'), and to tutor is to teach, one to one. So the offered 'Teach means about the same as tutor' is defensible, and the stem has two right links: the problem this new set was written to remove. As an A:B example it would also steer a child toward synonym traps. Fail.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n5",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A mechanic is a person whose job is repairing machines (Cambridge), and mechanic is not built from repair. No same-meaning or family line fits, so 'Who does it' is the one link.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n6",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A waiter is a person who serves food at tables. waiter comes from 'wait', not from serve, so the family line is false, and 'Serve means about the same as waiter' is false too, because one is an action and the other a person. waiter is the ordinary job word for anyone who waits tables.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:n7",
+  "verdict": "pass",
+  "reason": "Both rounds passed and I agree. A lifeguard is a person who watches swimmers and rescues them if they are in danger (Cambridge). lifeguard is not built from rescue, and no other offered link fits.",
+  "drop": [],
+  "gloss": "keep"
+ }
+]

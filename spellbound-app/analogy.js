@@ -458,10 +458,12 @@
     else if (k === 'name' && step.k === 'name' && ls.pk.name == null) { const o = nameOpts(L, st[1]); if (!(+n >= 0 && +n < o.lines.length)) return; ls.pk.name = +n; try { sfx(o.ord[+n] === 0 ? 'correct' : 'wrong'); } catch (e) {} }
     else if (k === 'try' && step.k === 'try' && ls.pk.tr == null) { const o = tryOpts(L, st); if (!(+n >= 0 && +n < o.opts.length)) return; ls.pk.tr = +n; try { sfx(o.ord[+n] === 0 ? 'correct' : 'wrong'); } catch (e) {} }
     render(); }
+  /* a word whose library meaning a reviewer read as the wrong sense for its pair shows this instead (analogy-review, glossHeld) */
+  const HELD_LINE = 'More than one meaning \u2014 the link shows which one.';
   function wordsView() { const s = S(); const hit = stopById(s.stop); if (!hit || !hit.s) { s.v = 'map'; return mapView(); }
-    const L = lesson(hit.s.lesson); const A0 = D(); const seen = new Set(); const list = [];
+    const L = lesson(hit.s.lesson); const A0 = D(); const seen = new Set(); const list = []; const held = new Set(A0.glossHeld || []);
     for (const id of safeIds(hit.s.items)) { const it = A0.items[id]; if (!it) continue; for (const w of [it[2], it[3]]) { if (seen.has(w)) continue; seen.add(w); list.push(w); } if (list.length >= 24) break; }
-    const rows = list.map((w) => `<li class="anl-word"><button class="anl-say" data-act="anl" data-arg="say:${escA(w)}" aria-label="${escA('Hear ' + w)}">${ic('volume', 16)}</button><span class="anl-ww">${esc(w)}</span><span class="anl-wd">${esc(A0.gloss[w] || '')}</span></li>`).join('');
+    const rows = list.map((w) => `<li class="anl-word"><button class="anl-say" data-act="anl" data-arg="say:${escA(w)}" aria-label="${escA('Hear ' + w)}">${ic('volume', 16)}</button><span class="anl-ww">${esc(w)}</span><span class="anl-wd">${esc(A0.gloss[w] || (held.has(w) ? HELD_LINE : ''))}</span></li>`).join('');
     return `<div class="anl-page">${head('Meet the words', esc(L.title + ' · ' + hit.r.name), 'anl', hit.r.name, lic(L.id, 20))}
       <div class="anl-card"><p class="anl-note">The words you will link in this stop. Read each one and hear it; knowing a word is half of every analogy.</p><ul class="anl-words">${rows}</ul>
       <div class="anl-btns"><button class="anl-btn main" data-act="anl" data-arg="practice">${ic('pencil', 16)} Start practice</button></div></div></div>`; }

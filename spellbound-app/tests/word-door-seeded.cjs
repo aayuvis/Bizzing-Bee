@@ -138,7 +138,9 @@ ok(/nextWords\.pool\(active\(\), o\)/.test(lore) && /purpose: 'lore'/.test(lore)
     D.items.zzseed1 = ['same', 1, 'cripple', 'lame', 'happy|a', 'sad|a', 'tall|a'];
     D.items.zzseed2 = ['same', 1, 'glad', 'happy', 'lunatic|a', 'sad|a', 'tall|a'];
     D.items.zzseed3 = ['same', 1, 'glad', 'happy', 'maggots|a', 'sad|a', 'tall|a'];
-    D.regions[0].stops[0].items.push('zzseed1', 'zzseed2', 'zzseed3');
+    /* the review (10 Oct) cut every real item about murder, so one is seeded: the filter must still refuse it */
+    D.items.zzseed4 = ['same', 1, 'glad', 'happy', 'murder|a', 'sad|a', 'tall|a'];
+    D.regions[0].stops[0].items.push('zzseed1', 'zzseed2', 'zzseed3', 'zzseed4');
     vm.runInContext(read('kid-safe.js'), W, { filename: 'kid-safe.js' });
     W.SB_UNSAFE_RE = UNSAFE; W.SB_CORE_STRIKE = STRIKE;
     W.kidSafe = (w, c) => W.SB_KID_SAFE.check(w, (c || {}).age || age);
@@ -146,7 +148,7 @@ ok(/nextWords\.pool\(active\(\), o\)/.test(lore) && /purpose: 'lore'/.test(lore)
     const all = Object.keys(D.items), keep = new Set(W.SB_ANL._safeIds(all));
     const murder = all.filter((id) => D.items[id].slice(2).some((x) => String(x).split('|')[0] === 'murder'));
     ok(!keep.has('zzseed1') && !keep.has('zzseed2'), `Analogy, age ${age}: a seeded item with a stigma word as C, answer or wrong answer is never asked`);
-    if (age < 11) ok(!keep.has('zzseed3') && murder.length && murder.every((id) => !keep.has(id)), `Analogy, age 8: an item with maggots, and the ${murder.length} real items about murder, are never asked`);
+    if (age < 11) ok(!keep.has('zzseed3') && murder.includes('zzseed4') && murder.every((id) => !keep.has(id)), `Analogy, age 8: an item with maggots, and the ${murder.length} items about murder (one seeded), are never asked`);
     else ok(keep.has('zzseed3'), 'Analogy, age 12: the item with maggots is asked from eleven');
     ok(keep.size >= all.length - 20, `Analogy, age ${age}: the filter guards without gutting the Atlas — ${keep.size} of ${all.length} items stand`);
   }

@@ -316,12 +316,18 @@
     wordowl:'A made-up champion, drawn for Bizzing Bee: an owl who has read every dictionary twice.' };
   const SACRED = new Set(['buddha','thor','athena','poseidon','apollo','hades','loki','odin','zeus',
     'ganesha','saraswati','hanuman','lakshmi','durga','rama','krishna','shiva','naga']);
+  /* The two Legendary deity avatars carry a respectful card (owner, 10 Oct 2026: they stay, each with a card saying who
+     they are to the people who honour them — never a joke, a power stat or "myth" meaning "false"). The words passed the
+     same three agent-review rounds as the analogy content: analogy-review/analogy-review.json, units card:shiva and
+     card:zeus; the shipped text is analogy-review/deity-cards-shipped.json. Change a word and it is reviewed again. */
+  const HONOURED = {"shiva": "Shiva is one of the most loved gods in Hinduism, honoured by Hindu families all over the world today. Many families pray to him as the one who protects, changes and makes new beginnings possible. In many homes and temples he is shown in quiet meditation, with the river Ganga flowing from his hair. Many families keep the festival of Maha Shivaratri, a night of prayer, with songs and stories. Families who honour him each do it in their own way. If yours does, ask them how.", "zeus": "Zeus was honoured by the people of ancient Greece as the king of their gods, the god of the sky and thunder. They built great temples for him, and the Olympic Games began long ago as a festival held in his honour at Olympia. His stories have been told for thousands of years, and they are still loved and retold today."};
   Object.keys(RETIER).forEach(pk=>{ const R=RETIER[pk]; Object.keys(R).forEach(r=>R[r].forEach(id=>{
     const a=AV.find(x=>x.id===id); if(!a) return; a.pack=pk; a.rarity=r; a.price=RAR[r].price; a.sell=0; ARCH.delete(id); })); });
   AV.forEach(a=>{ const pk=LIVE_PACKS.find(p=>p.id===a.pack); a.worldN=pk?pk.world:null;
     if(MILESTONE[a.id]&&a.rarity==='legendary') a.milestone=Object.assign({id:'av-'+a.id},MILESTONE[a.id]);
     if(REAL[a.id]){ a.real=1; a.about=REAL[a.id].about; if(REAL[a.id].src) a.src=REAL[a.id].src; if(REAL[a.id].sacred) a.sacred=1; }
     if(FICTION[a.id]) a.about=FICTION[a.id];
+    if(HONOURED[a.id]) a.about=HONOURED[a.id];
     if(SACRED.has(a.id)) a.sacred=1; });
   const LIVE = LIVE_PACKS.flatMap(p=>{ const R=RETIER[p.id]; return ['free','rare','epic','legendary'].flatMap(r=>R[r]); })
     .map(id=>AV.find(a=>a.id===id)).filter(Boolean);

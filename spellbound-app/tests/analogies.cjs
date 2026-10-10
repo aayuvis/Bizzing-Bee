@@ -104,7 +104,12 @@ async function round(pg, rights) { const n = (await run(pg)).n;
     await pg.keyboard.press('ArrowLeft'); ok((await stepOf()).k === 'try', '← goes back a step');
     await pg.keyboard.press('ArrowRight'); await W.until(pg, () => document.querySelector('.anl-stepper').getAttribute('data-step') === 'ready', null, 3000);
     await pg.click('.anl-btn[data-arg="words"]'); await W.until(pg, () => document.querySelectorAll('.anl-word').length > 5, null, 4000);
-    ok(await pg.evaluate(() => [...document.querySelectorAll('.anl-word')].every(r => r.querySelector('.anl-wd').textContent.trim().length > 3)), 'Meet the words lists the stop\'s words, each with its meaning and a speaker button');
+    /* a word the review held back (its library meaning was the wrong sense for its pair) says so instead — never a wrong meaning */
+    const mw = await pg.evaluate(() => { const held = new Set(window.SB_ANALOGY.glossHeld || []), rows = [...document.querySelectorAll('.anl-word')];
+      return { rows: rows.length, speak: rows.every(r => r.querySelector('.anl-say')), bad: rows.filter(r => { const w = r.querySelector('.anl-ww').textContent.trim(), d = r.querySelector('.anl-wd').textContent.trim();
+        return held.has(w) ? (d !== 'More than one meaning \u2014 the link shows which one.' || window.SB_ANALOGY.gloss[w]) : !(d.length > 3 && d === window.SB_ANALOGY.gloss[w]); }).map(r => r.querySelector('.anl-ww').textContent.trim()),
+        held: rows.filter(r => held.has(r.querySelector('.anl-ww').textContent.trim())).length }; });
+    ok(mw.rows > 5 && mw.speak && !mw.bad.length, `Meet the words lists the stop's words, each with its meaning and a speaker button (${mw.held} held back by the review say so)` + (mw.bad.length ? ': ' + mw.bad.join(', ') : ''));
 
     /* 3 + 4 — practice, relation first; a miss holds */
     await pg.click('.anl-btn[data-arg="practice"]'); await W.until(pg, () => !!(state.anl.run && state.anl.run.q), null, 4000);
