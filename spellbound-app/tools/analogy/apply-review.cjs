@@ -87,4 +87,32 @@ if (cmd === 'ship') {
   console.log('shipped ' + Object.keys(shipped).length + ' units (' + Object.keys(items).length + ' items); dropped ' + dropped.length + '; lessons all reviewed: ' + lessonsOk + '; cards: ' + Object.keys(cardOut).join(', ') + (thin.length ? '\nthin: ' + thin.join(' · ') : ''));
   fs.writeFileSync(path.join(DIR, 'dropped.json'), JSON.stringify(dropped, null, 1) + '\n');
 }
-if (!['plan', 'ship'].includes(cmd)) console.log('usage: apply-review.cjs plan | ship');
+/* REPORT.md — what the owner releases on: counts per round and cycle, every fix, every unit dropped, and why */
+if (cmd === 'ship' || cmd === 'report') {
+  const rows1 = rowsOf(R1, 1), rows2 = rowsOf(R2, 2), U = units1();
+  const c2 = fs.existsSync(path.join(R2, 'units.json')) ? read(path.join(R2, 'units.json')) : [];
+  const led = read(path.join(DIR, 'analogy-review.json')); const dropped = read(path.join(DIR, 'dropped.json'));
+  const cnt = (rows, round) => { const r = rows.filter((x) => x.round === round); const c = {}; r.forEach((x) => { c[x.verdict] = (c[x.verdict] || 0) + 1; }); return r.length + ' (' + Object.entries(c).map(([k, v]) => v + ' ' + k).join(', ') + ')'; };
+  const kinds = (list) => { const k = {}; list.forEach((u) => { const t = String(u.unit || u).split(':')[0]; k[t] = (k[t] || 0) + 1; }); return Object.entries(k).map(([a, b]) => b + ' ' + a + (b === 1 ? '' : 's')).join(', '); };
+  const shippedIds = new Set(); const P = byUnit(led); Object.keys(P).forEach((id) => { if (three(P[id])) shippedIds.add(id); });
+  const fixes = rows1.filter((r) => r.round === 3 && r.verdict === 'fix');
+  const L = [];
+  L.push('# Analogy content review — the round-3 report', '');
+  L.push('The owner releases the Analogies tab, its lessons, Mock Analogy Bee, Against the Clock, the Link Finder and My Feed\'s analogy cards on this report (brief 4.5, decision 2). Until then they are reachable only in tester mode.', '');
+  L.push('**How it was reviewed.** Three independent agent rounds over every unit — ' + U.length + ' units: ' + kinds(U) + '. Round 1 saw the answer and judged uniqueness, accuracy and kid-safety. Round 2 was a different agent that solved every item BLIND (the item as a child meets it, options shuffled, no answer, no link name) and never saw round 1. Round 3, a third agent, adjudicated every disagreement and re-checked passes. A unit ships only with a pass in rounds 1, 2 and 3 of one cycle. Units round 3 fixed (wrong options dropped, a wrong-sense gloss hidden, wording rewritten) or passed over an earlier fail went through all three rounds again (cycle 2); anything without three passes there was dropped. Ledger: `analogy-review.json` ({item, round, verdict, reason, cycle}); every sheet and verdict is in `rounds/` and `rounds2/`.', '');
+  L.push('**The four known faults were caught in round 1:** sibling:sister as a synonym (item:1), the "ass" option (item:5g, item:xl), censure/reproach (item:ow) and cache/archive (item:xc) — round 1\'s prompt did not need fixing.', '');
+  L.push('## Counts', '', '| | round 1 | round 2 (blind) | round 3 |', '|---|---|---|---|');
+  L.push('| cycle 1 | ' + cnt(rows1, 1) + ' | ' + cnt(rows1, 2) + ' | ' + cnt(rows1, 3) + ' |');
+  if (rows2.length) L.push('| cycle 2 | ' + cnt(rows2, 1) + ' | ' + cnt(rows2, 2) + ' | ' + cnt(rows2, 3) + ' |');
+  L.push('', '**Shipped: ' + shippedIds.size + ' units** (' + kinds([...shippedIds]) + '). **Dropped: ' + dropped.length + '** (' + kinds(dropped) + ').', '');
+  L.push('Round 2 scoring: in cycle 1 a blind item failed on a different pick, a second defensible answer, an unsafe word OR any written worry (stricter than the brief; round 3 adjudicated every one). From cycle 2 the brief\'s own rule: a different pick, a second defensible answer or an unsafe word fails, and a worry passes to round 3 as a note. 11 cycle-2 items first shown with an empty A:B pair were solved again on a fair sheet (`rounds2/superseded-b2-1.json`).', '');
+  L.push('## Every fix (round 3, cycle 1)', '', '| unit | dropped options | gloss | why |', '|---|---|---|---|');
+  fixes.forEach((r) => L.push('| ' + r.item + ' | ' + (r.drop || []).join(', ') + ' | ' + (r.gloss === 'hide' ? 'hidden' : '') + ' | ' + String(r.reason).replace(/\|/g, '/').replace(/\n/g, ' ').slice(0, 220) + ' |'));
+  const tf = rows1.filter((r) => r.round === 3 && r.fix_text); if (tf.length) { L.push('', '### Wording rewritten', ''); tf.forEach((r) => L.push('- **' + r.item + '**: ' + r.fix_text)); }
+  L.push('', '## Every unit dropped', '', '| unit | why |', '|---|---|');
+  dropped.forEach((d) => L.push('| ' + d.unit + ' | ' + String(d.why).replace(/\|/g, '/').replace(/\n/g, ' ').slice(0, 240) + ' |'));
+  L.push('', '## For the owner', '', '- Round 2 of cycle 1 failed the Shiva card on principle (a living, worshipped god as a "Legendary" collectible beside a historical pantheon), not on its words. Its words passed. The avatar\'s place in the packs is your decision (10 Oct: Shiva and Zeus stay, each with a respectful card); the reviewers were told not to judge it, and this note is here so you see the concern.', '- The data shown to a child is exactly what shipped: `analogy-data.js` was cut to the shipped items (same ids and words the reviewers read), with a gloss only where a reviewer read it and kept it.');
+  fs.writeFileSync(path.join(DIR, 'REPORT.md'), L.join('\n') + '\n');
+  console.log('wrote analogy-review/REPORT.md (' + L.length + ' lines)');
+}
+if (!['plan', 'ship', 'report'].includes(cmd)) console.log('usage: apply-review.cjs plan | ship | report');
