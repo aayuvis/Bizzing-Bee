@@ -1006,6 +1006,42 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   without first finding the mechanism. `levels.cjs` ("after a reload the levels are still the child's") did the same in
   a 5 Oct suite run — 0 kept in the household — and passed alone, before and after that day's change.
 
+## Road to 4.5, P0 — landing and parent truth, child data, wallet, Hive minutes (10 Oct 2026)
+- **The opening page types no count** (P0.21/P0.22). Beyond the Audit v4 set, SB_COUNT now also reads
+  `regions`, `mbRivals`/`mbSpellers`, `gpPowers` (SB_FACTS, held to trail-data.js / mockbee.js BANDS /
+  saga2.js PWSVG), `books`/`companions` (SB_SHELF), `graded` (SB_TIERS.regional words), `tiers`,
+  `freeWorlds`, `worldPrice` (BZ_AVATARS). factFill also fills plan tokens `{free.words}` `{beginner.mo}`
+  `{regional.yr}` from SB_TIERS, and a plan blurb (pricing.js) says `{words}` (`tierBlurb`). The rule a
+  parent is told comes from one place: `sbRule()` / `worldRuleTxt()` / `tierNames()` / `sbWorldsFor(id)`
+  (asks `BZ_AVATARS.worldOpen` — a paid plan IS the family plan and opens every world). Three claims were
+  false and are gone: "eleven spellers" (fields are 4/6/8 rivals by age band), the Spelling Duel (left in
+  the games rebuild — the row is Family Bee night), "Hats" (money buys a grown-up's plan). The crawler
+  copy in index.html (table, FAQ, JSON-LD) must say WORD FOR WORD what the rendered page says —
+  `one-count` compares them. Guard: `tests/one-count.cjs` (proved by breaking: 16 typed or wrong figures, 16 fails).
+- **No "still being built" banner on the public landing at launch** — only in testing mode
+  (`state.devUnlock`). `trust-v2` §2 holds both halves.
+- **The Parent Zone plan card states today's rule** (P0.23): free = `worldRuleTxt()` + the avatar prices;
+  paid = "<plan> · family plan", every world. Its button opens the plan sheet (`openTiers`, SB_TIERS).
+  The old "Go Premium" page ("$59/yr", "4 worlds", "never with coins") is deleted: `showPaywall` (a
+  locked list, `goPaywall`) now draws the same plan sheet behind the same PIN guard, and `closeTiers`
+  clears both flags. `tierEntRows` reads worlds from the engine too. Guard: `trust-v2` §15.
+- **A child is an age BAND on every grown-up screen** (P0.24): "Ages 8–10" (`ageBandOf(c).n`), never
+  "Age 9" — `c.age` is only the midpoint kept for old readers. Guards: `onboarding-age`, `trust-v2` §15.
+- **Wallet history is one line per SESSION** (P0.31): consecutive coins of one kind from one app in one
+  Bee session (`ledgerSession` — the first `c.activity` entry to close after the coin) fold into
+  "+13 from 13 right answers · Spelling Gym · Word Doctor"; a 20-minute gap, another session or any line
+  between them splits. Bee's render only — BZ_WALLET.ledger is read, never changed. Guard: `wallet-coins` §9.
+- **A one-minute drill reaches the Hive** (P0.32/P0.33): family-shell.js shadows the drop-in's count
+  (same events, tick and idle rules) and on `visibilitychange`→hidden / `pagehide` stops the tracker and
+  writes the leftover rounded to the nearest minute in the drop-in's shape; a fresh tracker starts at
+  the next real input (a returned-to tab is not a touch). The drop-in is untouched. Guard:
+  `tests/hive-minutes.cjs` (page.clock; real typing; a real pagehide; ?demo writes nothing).
+- **The activity port cites its upstream by sha256** of the vendored original (P0.28);
+  `family-dropins` fails when the vendored file and the citation part.
+- **Run tests in a fresh worktree with the main checkout's node_modules on NODE_PATH**
+  (`NODE_PATH=/opt/node22/lib/node_modules:<main>/spellbound-app/node_modules`): without esbuild,
+  `first-load` serves unminified JS and fails its ratchet by ~230 KB for no reason in the code.
+
 ## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
 
 - **Miss panel**: no toast shows while a visible `.sb-miss` is on screen (`_toastVsMiss`, after
