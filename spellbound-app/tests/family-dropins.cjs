@@ -25,6 +25,16 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
 ok(fs.readFileSync(path.join(APP, 'bizzing-avatars.css'), 'utf8') === fs.readFileSync(path.join(FAM, 'bizzing-avatars.css'), 'utf8'),
   'bizzing-avatars.css is byte-identical to the family drop-in');
 
+/* (road to 4.5, P0.28) the activity port's header cites the upstream it was ported from by the
+   vendored original's sha256 — a re-vendored original with a stale citation fails here.
+   Proved by breaking: one character of the cited hash changed → this fails. */
+{
+  const sha = require('crypto').createHash('sha256').update(fs.readFileSync(path.join(FAM, 'bizzing-activity.js'))).digest('hex');
+  const head = fs.readFileSync(path.join(APP, 'bizzing-activity.js'), 'utf8').split('*/')[0];
+  const cited = (head.match(/sha256 ([0-9a-f]{64})/) || [])[1];
+  ok(cited === sha, `bizzing-activity.js cites the vendored original's sha256 (${(cited || 'none').slice(0, 12)}… vs ${sha.slice(0, 12)}…)`);
+}
+
 /* a fake localStorage shared by both worlds, so the wallet both read is the same wallet */
 function mkStore() { const m = new Map(); return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), clear: () => m.clear(), _m: m }; }
 
