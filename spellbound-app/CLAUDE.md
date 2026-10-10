@@ -88,10 +88,59 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
 - UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
   headings free of emoji.
 
+## The road to 4.5 — P0: tabs, shell, the analogy gate (10 Oct 2026) — READ FIRST; it overrides the sections below
+Brief: the family v5 audit's "road to 4.5" (owner decisions final, 10 Oct 2026). What this batch changed, and the rules:
+- **Six tabs, Word Gym under Word Atlas** (owner: "Home · Word Atlas · Analogies · Library · Play · My Feed. Word Gym
+  stops being a top tab. It becomes the second sub-nav of Word Atlas (Atlas | Gym)"). `NAV_TABS()` draws both bars;
+  `atlasSubNav(on)` (app3) is the sub-nav — two chips, `aria-current` on the one you are on, 44px, never accent-filled —
+  drawn at the top of the Atlas overview (trail.js `viewAtlas`) and of the Word Gym (`coachTrain` top bar, `viewQuest`).
+  The Word Gym keeps nav `coach`, route `#/practice` (its first-visit chooser `quest`, `#/quest`); `atlasTabOn()` lights
+  the Word Atlas tab for the map, an Atlas drill and every Word Gym screen (`gymNav`). `#/gym` and `#/gym/<mode>` are
+  still the Spelling Gym on Play (games spec §4.2). The phone bar's 7-tab label shrink is deleted. Desktop tabs carry
+  `aria-current` too. Guard: `tests/word-gym.cjs` (rewritten for the decision).
+- **The family shell check passes with NO allowance**: `checkShell(page,{phone,bee:true})` returns [] on Home, desk and
+  phone, light and dusk, for a child (five tabs while analogies are gated) and a tester (six). `tests/feed-screen.cjs`
+  carries no ownerHome / ownerTabs filter any more.
+- **Home's row 2 is two cards again** (P0.2): "You are here" (`homeHereCard`, now map-over-words at every width) and
+  `homeSecondCard` — the MISTAKES DECK when revision words are due (`homeDueWords`: a word missed on an earlier day, or a
+  slipped mastery record whose gap is over — the same "due" as bee-feed `dueOf`; opens Your Revisions), else the ANALOGY
+  ATLAS through the gate, else (gated) the SPELLING GYM. Code-drawn (gradient + glyph), no painting — first-load budget.
+  Its button is an outline; Continue stays the one filled button. Two columns from 900px, 547px each at 1280.
+- **"Stop n of N" is the board's own count** (P0.16, `SB_TRAIL_NEXT().stop/.stops`, unchanged) and the strip beside
+  Continue carries a **"N words mastered this week" chip** (`.sb-home-mast`, `weekProgress(c).words`: mastered on evidence
+  since Monday, legacy marks excluded; nought says nought). Guard: `tests/home-here.cjs`.
+- **THE ANALOGY GATE** (P0.4/P0.5): `window.SB_ANL_RELEASED=false;` (app3, above NAV_TABS) is the one release line.
+  `anlOpen()` = released, or `testerOn()` (= `state.devUnlock || state.tester`). Closed, NOTHING analogy reaches a child:
+  no Analogies tab, no Mock Analogy Bee card (`playCardShown`; `app.playCard` refuses an unshown card), no Link Finder
+  banner, no search place, `openAnalogies`/`openAnlTool`/`openAnlBee` land on Home (the Library for links) and fetch
+  nothing, `viewApp` re-homes any analogy nav before drawing, `#/links/link/…` fetches nothing, and bee-feed's `pool()`
+  drops kind `analogy` (the session signature carries the gate). Word Forge's sign-off gate opens to `testerOn()` too.
+  **Tester mode** is the grown-up's: Settings → Grown-ups → Testing tools → Tester mode (`toggleTester`, PIN to switch
+  on, never to switch off), or **`?tester=1`**, which family-shell applies only after the grown-up PIN (the address is
+  applied first as a child meets it, then the PIN; a right PIN switches it on and re-opens the address); `?tester=0`
+  switches it off. Device key `tester` (`sb_tester`), like `devunlock`. Guards: `tests/analogy-gate.cjs` (browser: a
+  child by tap and typed address, the PIN, a tester's every surface) and **`tests/analogy-release.cjs`** (node, data
+  gate): the flag is one literal line, and if it is ever true EVERY item in analogy-data.js needs three passes in
+  `analogy-review/analogy-review.json` — rows `{item, round, verdict, reason}` (+ optional `sig` =
+  `JSON.stringify(SB_ANALOGY.items[id])`, which must still match), the LAST row per item and round decides, a missing
+  ledger is zero passes. Shared rule: `tests/lib/analogy-release.cjs`. **Round 3 must write a row for every item** (not
+  only the disagreements and the 10% sample) or those items never reach three passes.
+- **Mock Analogy Bee seats Mock Bee's cast** (P0.9/P0.10): `MOCKBEE.rivals(mine)` (mockbee.js, now with `age`/`voc` and
+  an optional face to avoid) is the one cast; analogy.js `castFor()` takes the seven nearest the bee's level by the
+  cast's own `lvl`, Mock Bee's names and faces (`faceOf` → `alt` for the child's own face), chance from `voc`.
+  `openAnlBee` loads `['analogy','mockbee']`. Guard: `tests/analogies.cjs` (now opened in tester mode).
+- **T3** (P0.29/P0.30): the child's Atlas line "More continents come with the Advanced Pack" is words only (no "Show a
+  grown-up"); the door is ONE quiet line in the Parent Zone (`advParentLine` → `ultraUpsell`, behind the PIN). The
+  Library's locked shelf says "Comes with the family plan" — no 👑, no plan name. Guards: `trust-v2.cjs` §8b,
+  `atlas-layout.cjs` §3.
+- **Tests in a worktree need `node_modules`** (esbuild for first-load's minify, axe-core for feed-screen's contrast):
+  symlink the main checkout's `spellbound-app/node_modules` into the worktree, or both fail for the wrong reason.
+
 ## My Feed (2 Oct 2026, FAMILY-STANDARD §6a) — the sixth tab, LAST, after Play
-- **Tabs: Home · Word Atlas · Word Gym · Library · Play · My Feed** (`NAV_TABS()` in app3.js draws both
-  bars; `navIcon('feed')`/`iconSVG('feed')`). The family's `checkShell(page,{phone,bee:true})` still returns
-  [] with six (`tests/feed-screen.cjs`). A grown-up's switch behind the PIN (`toggleFeed`, household `fo`)
+- **Tabs: Home · Word Atlas · Analogies · Library · Play · My Feed** since 10 Oct 2026 (the Word Gym is Word Atlas's
+  sub-nav; Analogies only through the analogy gate — see "The road to 4.5" above) (`NAV_TABS()` in app3.js draws both
+  bars; `navIcon('feed')`/`iconSVG('feed')`). The family's `checkShell(page,{phone,bee:true})` returns
+  [] with five or six (`tests/feed-screen.cjs`). A grown-up's switch behind the PIN (`toggleFeed`, household `fo`)
   takes the tab and the ☰ row away; `#/feed` then says it is off.
 - **The engine is the family's**: `bizzing-feed.js` is a CLASSIC PORT (window.BZ_FEED) of
   `Bizzing_Schedule/integration/bizzing-feed.js` — the body line for line, only `export` removed; the
@@ -981,15 +1030,17 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   homing (`_mwHome`) until layout is real; `.atlas-pop.rider` lifts the card clear of the avatar.
   Guards: `home-here.cjs` (@check), `home-continue.cjs`, `one-count.cjs` §5, `home-first-paint.cjs`
   (the card's map and avatar are already loaded the moment it paints). The family's shell-check REF
-  still describes the old two-card row — feed-screen allows exactly that difference until upstream
-  re-measures Bee.
-- **Word Gym**: tab name only — key `coach`, route `#/practice` (+ `#/gym` alias). `tests/word-gym.cjs`.
+  still describes the old two-card row — and since 10 Oct 2026 Home HAS two cards again (homeSecondCard), so
+  feed-screen allows nothing.
+- **Word Gym**: key `coach`, route `#/practice` — since 10 Oct 2026 not a tab at all but Word Atlas's second sub-nav
+  (Atlas | Gym); `#/gym` is the Spelling Gym. `tests/word-gym.cjs`.
 - **Grand Prix upright** (supersedes "ON A PHONE THE GRAND PRIX RACES SIDEWAYS"): road full width,
   62% of the play area; Steer Left / Brake / Steer Right in the thumb zone BELOW the road; spelling
   card at the top; turning the phone re-lays out the same race, releases held inputs, and waits for an
   open spelling card. Sideways/tablet/desktop unchanged. `tests/gp-landscape.cjs`.
 - **Paid continents** (supersedes the "Locked continents" bullet below): one quiet line, "More
-  continents come with the Advanced Pack", one "Show a grown-up" button (atlasAdvDoor → PIN).
+  continents come with the Advanced Pack" — words only since 10 Oct 2026; the door is one quiet line in the Parent
+  Zone (`advParentLine`).
 - **Tests wait on state, never on a sleep** (`tests/lib/wait.cjs`: `booted`, `until`, `raceTime`,
   `still`); measure colour with transitions off; any free port, never a fixed one;
   `node tests/lib/run.cjs --cpu 4 --repeat 3 <names>` finds a sleep before a loaded machine does;
@@ -1057,9 +1108,9 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   browser guards above are run here, one at a time, before a commit.
 
 ## The Analogies tab (9 Oct 2026, owner: "a separate analogies tab next to the word gym … treat this like word atlas … lessons and words based on that lessons … practice sessions leading to mastery of the level" — "mock analogy bee … shrinking mock spelling bee banner to half" — "against the clock")
-- **Seven tabs now: Home · Word Atlas · Word Gym · Analogies · Library · Play · My Feed** (`NAV_TABS`, icon `navIcon('analogy')`,
-  a bridge). The family's `checkShell` counts 4–6; `tests/feed-screen.cjs` allows exactly that finding, and only while the
-  seventh tab is Analogies after Word Gym. On a phone the bar shrinks its labels when it holds seven (`index.html`, `:has`).
+- **SUPERSEDED 10 Oct 2026** ("The road to 4.5" above): six tabs, Analogies right after Word Atlas, and ONLY in tester
+  mode until the content is released (the analogy gate); the 7-tab allowance and the phone label shrink are gone.
+  (Was: seven tabs, Analogies after Word Gym, icon `navIcon('analogy')`, a bridge.)
 - **`analogy.js` + `analogy-data.js`, lazy group `analogy`** (never first load): `#/analogies[/<region|stop>[/learn|/words]]`,
   `#/analogies/clock`, `#/anlbee`. Openers `app.openAnalogies` / `app.openAnlBee` live in app3 so the Play card stands live.
 - **The Analogy Atlas**: four regions by Bee level band (Twin Ponds 1–2 · Orchard Hill 3–4 · Workshop Valley 5–6 · Bridge

@@ -146,6 +146,31 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(!pw.out.length, 'no "ask a grown-up", price, plan button or "Manage plan" on any child screen' + (pw.out.length ? ' — ' + pw.out.join(' | ') : ''));
   ok(pw.asked, 'the Advanced Pack\'s sales page asks for the grown-up PIN before it draws');
 
+  /* ---- 8b. (T3, owner 10 Oct 2026 — the road to 4.5, P0.29/P0.30) the last two doors leave the child's screens:
+     "Remove the last 'Show a grown-up' doors from the child Atlas; one quiet line in the Parent Zone" and "Remove the
+     👑 Regional Speller chip from the child Library". The Atlas keeps its one quiet line, words only; the Library's
+     locked shelf says "Comes with the family plan" and names no plan; the door to the Advanced Pack is ONE quiet line
+     in the Parent Zone — behind the PIN — and opens the pack's own page, which asks for the PIN again.
+     Proved by breaking (10 Oct 2026), each run recorded: the button put back in trail.js advLine → the Atlas check
+     fails; the old crowned "Regional Speller" button back in libShelf → the Library check fails; advParentLine()
+     dropped from viewParent → the Parent Zone check fails (1 each). */
+  const t3 = await pg.evaluate(async () => { const W = ms => new Promise(r => setTimeout(r, ms)); const txt = () => (document.querySelector('.sb-content') || document.body).innerText;
+    state.pinDlg = null; render();
+    await new Promise(r => SB_LAZY.need('atlas', r)); app.openTrail(); await W(700);
+    const atlas = { line: !!document.querySelector('.atlas-more'), door: !!document.querySelector('.sb-content [data-act="atlasAdvDoor"]'), grown: /Show a grown-up/i.test(txt()) };
+    app.setNav('explore'); await W(500);
+    const lib = { shelf: !!document.querySelector('.bk-shelf'), plan: /Regional Speller/i.test(txt()) || /👑/.test(txt()), crown: !!document.querySelector('.bk-shelf .bk-all'), quiet: /Comes with the family plan/.test(txt()) };
+    app.setNav('parent'); await W(200); const asked = !!state.pinDlg; let pz = { line: false };
+    for (const k of '2468') app.pinKey(k); await W(300);
+    const L = document.querySelector('.sb-pz-adv');
+    if (L) { pz = { line: true, words: /More continents/.test(L.innerText) && /Advanced Pack/.test(L.innerText), price: /\$\s?\d/.test(L.innerText), one: document.querySelectorAll('.sb-pz-adv').length === 1 };
+      state.pinDlg = null; L.querySelector('button').click(); await W(900); pz.again = !!state.pinDlg; state.pinDlg = null; render(); }
+    state.progTab = 'me'; app.setNav('home'); await W(200);
+    return { atlas, lib, asked, pz }; });
+  ok(t3.atlas.line && !t3.atlas.door && !t3.atlas.grown, 'the child\'s Atlas keeps its one quiet line and carries no "Show a grown-up" door ' + JSON.stringify(t3.atlas));
+  ok(t3.lib.shelf && !t3.lib.plan && !t3.lib.crown && t3.lib.quiet, 'the child\'s Library names no plan and wears no crown: the locked shelf says "Comes with the family plan" ' + JSON.stringify(t3.lib));
+  ok(t3.asked && t3.pz.line && t3.pz.one && t3.pz.words && !t3.pz.price && t3.pz.again, 'the Advanced Pack\'s door is one quiet line in the Parent Zone, behind the PIN, and the pack\'s page asks for the PIN again ' + JSON.stringify(t3.pz));
+
   /* ---- 9. (S3) the three privacy statements say the same thing as privacy.html ---- */
   { const idx = fs.readFileSync(path.join(SRC, 'index.html'), 'utf8'), pol = fs.readFileSync(path.join(SRC, 'privacy.html'), 'utf8');
     const said = [app3, idx].join('\n');

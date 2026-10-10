@@ -35,6 +35,12 @@
   var Q = ''; try { Q = location.search || ''; } catch (e) {}
   var DEMO = !!window.SB_DEMO;
   var FROM_HIVE = /[?&]from=hive(?:&|$)/.test(Q);
+  /* ?tester=1 — TESTER MODE, the grown-up's (the analogy gate, app3 above NAV_TABS; owner, 10 Oct 2026). It turns on
+     ONLY after the grown-up PIN: the address is applied as a child would meet it (a gated screen lands on Home), then
+     the PIN dialog opens over it, and only a right PIN switches tester mode on and re-opens the address asked for.
+     Cancelled, nothing changes. ?tester=0 switches it off (never gated). Either way the query leaves the address bar,
+     so a reload does not ask again. */
+  var TESTER_Q = (Q.match(/[?&]tester=([01])(?:&|$)/) || [])[1] || null;
   var pad = function (n) { return String(n).padStart(2, '0'); };
   var ymd = function (d) { d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
   var H = function (s) { try { return esc(s); } catch (e) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) { return '&#' + ch.charCodeAt(0) + ';'; }); } };
@@ -290,7 +296,8 @@
     if (head === 'anlbee' && typeof app.openAnlBee === 'function') { app.openAnlBee(); return; }
     /* the Library's Link Finder: #/links, #/links/<word>, #/links/link/<lesson> */
     if (head === 'links' && typeof app.openAnlTool === 'function') {
-      if (p[1] === 'link' && p[2]) { app.openAnlTool(null); var lk = p[2]; lazyNeed('analogy', function () { if (state.nav === 'anltool' && window.SB_ANL) SB_ANL.toolAct('link:' + lk); }); return; }
+      /* the opener holds the analogy gate (app3 anlOpen): gated, it lands on the Library and nothing is fetched here either */
+      if (p[1] === 'link' && p[2]) { app.openAnlTool(null); var lk = p[2]; if (state.nav === 'anltool') lazyNeed('analogy', function () { if (state.nav === 'anltool' && window.SB_ANL) SB_ANL.toolAct('link:' + lk); }); return; }
       app.openAnlTool(p[1] ? decodeURIComponent(p[1]) : null); return; }
     if (head === 'play') {
       app.openGames();
@@ -365,15 +372,35 @@
     /* a deep link (the Hive's #/continue, a shared #/atlas) is applied once the first
        screen has painted, through the same openers as a tap */
     if (incoming && incoming !== top && kids) R.pending = incoming;
+    if (TESTER_Q && kids) R.tester = { on: TESTER_Q === '1', route: incoming && incoming !== top ? incoming : null };
+  }
+  /* the query, out of the address bar (the hash and the history entry stay as they are) */
+  function dropTesterQuery() {
+    try {
+      var q = location.search.replace(/([?&])tester=[01](&|$)/, function (m, a, b) { return b ? a : ''; }).replace(/[?&]$/, '');
+      history.replaceState(history.state, '', location.pathname + q + location.hash);
+    } catch (e) {}
+  }
+  function askTester() {
+    var t = R.tester; R.tester = null; if (!t) return;
+    dropTesterQuery();
+    if (!t.on) { if (state.tester && app.testerSet) app.testerSet(false); return; }
+    if (state.tester) return;   // already on: nothing to ask
+    if (typeof pinGate !== 'function' || !app.testerSet) return;
+    pinGate(function () {
+      app.testerSet(true);
+      if (t.route) { R.last = null; R.applying = true; try { applyRoute(t.route); } catch (e) {} finally { R.applying = false; } }
+    }, 'Tester mode — grown-ups only');
   }
   function afterRender() {
     if (!R.booted) return;
     if (R.pending != null) {
       var r = R.pending; R.pending = null; syncHash();
-      setTimeout(function () { try { applyRoute(r); } catch (e) {} }, 0);
+      setTimeout(function () { try { applyRoute(r); } catch (e) {} if (R.tester) setTimeout(askTester, 0); }, 0);
       return;
     }
     syncHash();
+    if (R.tester) setTimeout(askTester, 0);   /* after the first screen (and any deep link) — a route drops the PIN dialog */
     scheduleWatch();
   }
 

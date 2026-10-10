@@ -534,21 +534,32 @@
 
   /* ================================================================== MOCK ANALOGY BEE */
   /* Seven spellers and you, one analogy each a round. Round one sits nobody down. A miss after that
-     and you sit down; the last speller standing wins. The rivals are the Mock Spelling Bee's cast,
-     and whether a rival is right is a hash of the bee, the round and the rival — never a roll. */
-  const CAST = [['pixel', 'Pixel', 0.9], ['koi', 'Koi', 0.88], ['beaker', 'Beaker', 0.86], ['panda', 'Panda', 0.84], ['comet', 'Comet', 0.82], ['astro', 'Astro', 0.8], ['melody', 'Melody', 0.78]];
+     and you sit down; the last speller standing wins. Whether a rival is right is a hash of the bee, the
+     round and the rival — never a roll.
+     THE RIVALS ARE MOCK BEE'S CAST (owner, 10 Oct 2026 — the road to 4.5, P0.9/P0.10: "Mock Analogy Bee seats come
+     from MOCKBEE.rivals() — Pip, Nova, Rafi… same faces, same names everywhere"). This file used to keep its own
+     seven and name them from the avatar catalogue, so the panda Mock Bee calls Suki was "Panda" here and Pip was
+     "Pixel Pal". Now the seats are MOCKBEE.rivals(): Mock Bee's names, and its faces — a rival whose face is the
+     child's own wears that rival's `alt`, exactly as on the Mock Bee stage. The seven are the run of the cast
+     (ordered by the cast's own `lvl`) nearest the bee's level; a rival's chance on an analogy comes from the same
+     profile's `voc` — how well they know what words mean — so Theo, who asks for every definition, is the one to
+     beat here, and Pip, who never asks, is not. */
+  const SEATS = 7;
+  const skillOf = (r) => 0.72 + 0.22 * (+r.voc || 0.5);
   const LVL_LO = { easy: 1, medium: 3, hard: 5, champ: 7 };
   function beeLevel() { let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {}
     if (LVL_LO[L]) return LVL_LO[L]; const h = here(); return h ? h.r.lv[0] : 1; }
   function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); return [...ids]; }
   const B = () => state.anlBee;
   function openBee() { stopClock(); state.anlBee = { phase: 'lobby' }; state.nav = 'anlbee'; state.screen = 'app'; state.game = null; try { render(); } catch (e) {} }
-  const SPARE = ['scopey', 'samurai', 'crystal', 'neko', 'ninja'];
-  /* a rival never wears the child's own face: the next spare in the cast takes that seat */
-  function castFor() { const c = kid(); const mine = c && c.avatar; const used = new Set(CAST.map((x) => x[0]));
-    return CAST.map(([id, name, sk]) => { if (id !== mine) return [id, name, sk]; const alt = SPARE.find((x) => !used.has(x) && x !== mine && (!W.SB_AVATARS || SB_AVATARS.byId[x])) || id; used.add(alt); return [alt, name, sk]; }); }
-  function beeStart() { const lo = beeLevel(); const seed = day() + '|bee|' + (rec().n++); const names = castFor().map(([id, name, sk]) => {
-      let nm = name; try { if (W.SB_AVATARS && SB_AVATARS.byId[id]) nm = SB_AVATARS.byId[id].name || name; } catch (e) {} return { id, name: nm, sk, out: 0 }; });
+  /* the seven seats: [face, name, chance, rival id] from Mock Bee's cast, for the child on screen ([] until mockbee.js is in) */
+  function castFor(lo) { const c = kid(); const mine = (c && c.avatar) || 'bizzy';
+    const all = (W.MOCKBEE && typeof MOCKBEE.rivals === 'function') ? MOCKBEE.rivals(mine).slice().sort((a, b) => a.lvl - b.lvl) : [];
+    if (!all.length) return [];
+    const from = Math.max(0, Math.min(all.length - SEATS, Math.round(((lo || beeLevel()) - 1) / 2)));
+    return all.slice(from, from + SEATS).map((r) => [r.face, r.name, skillOf(r), r.id]); }
+  function beeStart() { if (!castFor().length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') beeStart(); }); } catch (e) {} return; }
+    const lo = beeLevel(); const seed = day() + '|bee|' + (rec().n++); const names = castFor(lo).map(([id, name, sk, rid]) => ({ id, rid, name, sk, out: 0 }));
     state.anlBee = { phase: 'turn', seed, lo, round: 1, field: names, me: { out: 0 }, used: {}, log: [], e0: (W.earnedSoFar ? earnedSoFar() : 0) };
     store(); beeAsk(); }
   function beeAsk() { const b = B(); const lv = Math.min(9, b.lo + Math.floor((b.round - 1) / 2)); const pool = beePool();
@@ -559,7 +570,7 @@
     b.picked = i; const ok = i === q.ans; b.log.push({ c: q.c, d: q.d, ok, w: q.opts[i] }); rec().seen[q.id] = Date.now();
     try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
     /* the rivals' turn: each standing rival is right with a chance that falls as the rounds climb */
-    b.calls = []; b.field.forEach((r) => { if (r.out) return; const p = r.sk - 0.035 * (b.round - 1); const right = (hash(b.seed + '|' + b.round + '|' + r.id) % 1000) / 1000 < p; b.calls.push({ r, right }); });
+    b.calls = []; b.field.forEach((r) => { if (r.out) return; const p = r.sk - 0.035 * (b.round - 1); const right = (hash(b.seed + '|' + b.round + '|' + (r.rid || r.id)) % 1000) / 1000 < p; b.calls.push({ r, right }); });
     if (b.round > 1) { b.calls.forEach((x) => { if (!x.right) x.r.out = b.round; }); if (!ok) b.me.out = b.round; }
     const standing = b.field.filter((r) => !r.out).length + (b.me.out ? 0 : 1);
     if (standing === 0) { /* everybody missed: the round runs again, nobody sits down */ b.calls.forEach((x) => { if (x.r.out === b.round) x.r.out = 0; }); if (b.me.out === b.round) b.me.out = 0; b.again = 1; } else b.again = 0;
@@ -572,7 +583,7 @@
     b.round++; beeAsk(); }
   /* out, or the last one standing: the rest is resolved at once from the same hash */
   function beeFinish() { const b = B(); let r = b.round;
-    while (b.field.filter((x) => !x.out).length > (b.me.out ? 1 : 0) && r < 40) { r++; b.field.forEach((x) => { if (x.out) return; const p = x.sk - 0.035 * (r - 1); if ((hash(b.seed + '|' + r + '|' + x.id) % 1000) / 1000 >= p) x.out = r; });
+    while (b.field.filter((x) => !x.out).length > (b.me.out ? 1 : 0) && r < 40) { r++; b.field.forEach((x) => { if (x.out) return; const p = x.sk - 0.035 * (r - 1); if ((hash(b.seed + '|' + r + '|' + (x.rid || x.id)) % 1000) / 1000 >= p) x.out = r; });
       if (!b.field.some((x) => !x.out)) { const last = b.field.filter((x) => x.out === r); last.forEach((x) => { x.out = 0; }); if (last.length === 1) break; } }
     const outAt = (x) => (x.out || 999); const myOut = b.me.out || 999;
     b.place = 1 + b.field.filter((x) => outAt(x) > myOut).length;
@@ -588,7 +599,9 @@
     const me = c && W.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 46) : '';
     const face = (id) => { try { return W.SB_AVATAR ? SB_AVATAR(id, 46) : ''; } catch (e) { return ''; } };
     const hd = (t, sub) => { try { return pageHead(t, '', sub || '', W.coinChip ? coinChip() : '', 'openAnalogies', 'Analogies', null, ic('trophy', 20)); } catch (e) { return '<h1>' + esc(t) + '</h1>'; } };
-    if (b.phase === 'lobby') { const cast = castFor().map(([id, name]) => { let nm = name; try { if (W.SB_AVATARS && SB_AVATARS.byId[id]) nm = SB_AVATARS.byId[id].name || name; } catch (e) {} return `<li class="anl-rival">${face(id)}<span>${esc(nm)}</span></li>`; }).join('');
+    if (b.phase === 'lobby') { const seats = castFor();
+      if (!seats.length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') render(); }); } catch (e) {} }
+      const cast = seats.map(([id, name]) => `<li class="anl-rival">${face(id)}<span>${esc(name)}</span></li>`).join('');
       const p = rec().bee; const ord = (n) => n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th');
       return `<div class="anl-page">${hd('Mock Analogy Bee', 'One analogy each, round by round')}
         <div class="anl-card anl-center"><ul class="anl-field">${cast}<li class="anl-rival me">${me}<span>You</span></li></ul>

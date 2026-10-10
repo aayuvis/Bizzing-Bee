@@ -8,7 +8,8 @@
 
    Rules live in forge-core.js (join, racks, reasons, grading — shared with the build and the
    tests); the words are forge-data.js, a CITED table the owner signs off. The card and the route
-   stay shut while SB_FORGE.signedOff is false, except in testing mode (devUnlock), for review.
+   stay shut while SB_FORGE.signedOff is false, except in tester mode (app3 testerOn: the testing unlock or the
+   grown-up's Tester mode, owner 10 Oct 2026), for review.
 
    Levels (SB_LEVEL key 'wordForge'):
      Easy   exact parts as tiles                     — practice: no coins (tiles alone never pay)
@@ -33,8 +34,9 @@
   function data() { return window.SB_FORGE || { rows: [], roots: [] }; }
   function kid() { try { return active(); } catch (e) { return null; } }
   function dev() { try { return !!state.devUnlock; } catch (e) { return false; } }
+  function tester() { try { return window.SB_TESTER_ON ? !!SB_TESTER_ON() : dev(); } catch (e) { return false; } }
   function signed() { return !!(window.SB_FORGE && SB_FORGE.signedOff); }
-  function open() { return signed() || dev(); }
+  function open() { return signed() || tester(); }
   function today() { try { if (typeof mastDay === 'function') return mastDay(); } catch (e) {} var d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function em(t) { return esc(t).replace(/\*([^*]+)\*/g, '<b>$1</b>'); }

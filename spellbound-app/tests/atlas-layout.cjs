@@ -13,9 +13,14 @@
    3. The paid continents are ONE QUIET LINE (owner, 4 Oct 2026; audit v4 C5). Two locked
       panels (Advanced Rounds, Ultra — "Show a grown-up" + "Look at the map" over blurred
       boards) became one sentence under the Honey map, "More continents come with the Advanced
-      Pack", and one "Show a grown-up": the same PIN-gated door. No paid board, no peek, no
-      price, and never the words "ask a grown-up" (FIX-BEE v2 T3). A tester or a pack holder
-      still sees all three continents and no line.
+      Pack". No paid board, no peek, no price, and never the words "ask a grown-up" (FIX-BEE v2
+      T3). A tester or a pack holder still sees all three continents and no line.
+      UPDATED 10 Oct 2026 — the owner (the road to 4.5, P0.29): "Remove the last 'Show a grown-up'
+      doors from the child Atlas; one quiet line in the Parent Zone." The line used to carry one
+      "Show a grown-up" button; now it is words only and holds NO control, and the door lives in
+      the Parent Zone (trust-v2 holds that). An address into a paid continent still meets the
+      grown-up PIN, never the pack. Proved by breaking (10 Oct 2026): the button put back in
+      advLine → the line check and the "words only" check fail (2).
    4. The road sign at a region's earned edge is never cut by a phone's window (audit v4 §4).
    5. A region's board says what it teaches (audit v4 D2), read from its own stops.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/atlas-layout.cjs */
@@ -206,21 +211,21 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
       const lines = [...document.querySelectorAll('.atlas-more')], doors = [...document.querySelectorAll('[data-act="atlasAdvDoor"]')];
       o.lines = lines.length; o.doors = doors.length; o.boards = document.querySelectorAll('.atlas-board').length;
       o.peek = document.querySelectorAll('[data-act="atlasPeek"]').length;
-      o.said = lines.length === 1 && /^More continents come with the Advanced Pack\s*Show a grown-up$/.test(lines[0].innerText.replace(/\s+/g, ' ').trim());
-      o.door = doors.length === 1 && doors[0].tagName === 'BUTTON' && lines[0].contains(doors[0]) && /^Show a grown-up$/.test(doors[0].textContent.trim());
+      o.said = lines.length === 1 && /^More continents come with the Advanced Pack$/.test(lines[0].innerText.replace(/\s+/g, ' ').trim());
+      /* words only (owner, 10 Oct 2026): no control in the line, no grown-up door anywhere on the child's Atlas */
+      o.door = !!lines[0] && !lines[0].querySelector('button,a,[data-act]') && !/Show a grown-up/i.test(t);
       const bd = document.querySelector('.atlas-board'); o.under = !!(bd && lines[0] && lines[0].getBoundingClientRect().top >= bd.getBoundingClientRect().bottom);
-      o.tall = doors[0] ? Math.round(doors[0].getBoundingClientRect().height) : 0;
-      o.filled = doors[0] ? getComputedStyle(doors[0]).backgroundColor : '';
       o.paidNames = /Ultra Champions|THE LAST CONTINENT|90% GATES|Advanced Rounds/.test(t);
-      state.pinDlg = null; doors[0].click(); await W(300); o.pin = !!state.pinDlg; o.noSheet = !state.showTiers && state.nav === 'trail'; state.pinDlg = null; render(); await W(200);
+      /* an address into a paid continent still meets the grown-up PIN, never the pack (atlasAdvDoor) */
+      state.pinDlg = null; location.hash = '#/atlas/exp/proving'; await W(900); o.pin = !!state.pinDlg; o.noSheet = !state.showTiers; state.pinDlg = null; app.openTrail(); await W(400);
       /* a tester sees all three continents and no line */
       state.devUnlock = true; render(); await W(300);
       o.devBoards = document.querySelectorAll('.atlas-board').length; o.devLine = document.querySelectorAll('.atlas-more').length; state.devUnlock = false; render();
       return o; });
-    ok(d.lines === 1 && d.said && d.door && d.doors === 1 && d.under, 'a free child\'s Atlas says ONE quiet line under the map — "More continents come with the Advanced Pack" — with one "Show a grown-up" ' + JSON.stringify(d));
+    ok(d.lines === 1 && d.said && d.under, 'a free child\'s Atlas says ONE quiet line under the map — "More continents come with the Advanced Pack" ' + JSON.stringify(d));
+    ok(d.door && d.doors === 0, 'the line is words only: no "Show a grown-up", no door on the child\'s Atlas (owner, 10 Oct 2026 — it is one quiet line in the Parent Zone)');
     ok(d.boards === 1 && !d.peek && !d.paidNames, 'and draws no paid continent: one board, no "Look at the map", no Advanced Rounds or Ultra heading');
-    ok(d.tall >= 44, 'its one button is a 44px target (' + d.tall + 'px)');
-    ok(d.pin && d.noSheet, '"Show a grown-up" opens the grown-up PIN — the pack is drawn only behind it');
+    ok(d.pin && d.noSheet, 'an address into a paid continent (#/atlas/exp/proving) meets the grown-up PIN — the pack is drawn only behind it');
     ok(d.devBoards === 3 && d.devLine === 0, 'a tester (or a pack holder) still sees all three continents, and no line (' + d.devBoards + ' boards)');
     ok(!d.price && !d.askWords, 'no price and no "ask a grown-up" on the child\'s Atlas (FIX-BEE v2 T3)');
     ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));

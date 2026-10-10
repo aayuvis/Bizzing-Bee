@@ -51,10 +51,15 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   let { ctx, pg } = await open(b, URL, errs);
   const seen = {};
   const tab = async (arg) => { await pg.click('.sb-topnav [data-act="setNav"][data-arg="' + arg + '"]'); await pg.waitForTimeout(900); };
+  /* the Word Gym is no longer a tab (owner, 10 Oct 2026 — the road to 4.5: "Word Gym stops being a top tab. It becomes
+     the second sub-nav of Word Atlas (Atlas | Gym)"), so the walk reaches it the way a child now does — the Atlas's
+     Gym chip — and comes back by the Atlas chip; its address is unchanged */
+  const sub = async (n) => { await pg.click('.sb-content .sb-subnav button:nth-child(' + n + ')'); await pg.waitForTimeout(900); };
   seen.home = (await where(pg)).h;
   await tab('trail'); seen.atlas = (await where(pg)).h;
+  await sub(2); seen.practice = (await where(pg)).h;
+  await sub(1);
   await pg.evaluate(() => app.trailUnit('u3')); await pg.waitForTimeout(900); seen.stop = (await where(pg)).h;
-  await tab('coach'); seen.practice = (await where(pg)).h;
   await tab('explore'); seen.library = (await where(pg)).h;
   await tab('games'); seen.play = (await where(pg)).h;
   /* the coin chip opens the wallet sheet (FIX-BEE v2, §1.1); its "Open the Shop" is a real screen with a route */
@@ -67,11 +72,12 @@ const where = pg => pg.evaluate(() => typeof state === 'undefined' ? { url: loca
   const back = async () => { await pg.goBack({ timeout: 4000 }).catch(() => null); await pg.waitForTimeout(900); return where(pg); };
   let w = await back(); const b1 = w.nav === 'games' && w.h === '#/play';
   w = await back(); const b2 = w.nav === 'explore' && w.h === '#/library';
-  w = await back(); const b3 = w.nav === 'coach' || w.nav === 'quest';
-  w = await back(); const b4 = w.nav === 'trail' && w.tv === 'unit' && w.tu === 'u3';
-  w = await back(); const b5 = w.nav === 'trail' && w.tv === 'map';
-  w = await back(); const b6 = w.nav === 'home' && w.h === '#/home';
-  ok(b1 && b2 && b3 && b4 && b5 && b6, `Back walks the Shop → Play → Library → Practice → the stop → the Atlas → Home (${[b1, b2, b3, b4, b5, b6].map(x => x ? '✓' : '✗').join('')})`);
+  w = await back(); const b3 = w.nav === 'trail' && w.tv === 'unit' && w.tu === 'u3';
+  w = await back(); const b4 = w.nav === 'trail' && w.tv === 'map';
+  w = await back(); const b5 = w.nav === 'coach' || w.nav === 'quest';
+  w = await back(); const b6 = w.nav === 'trail' && w.tv === 'map';
+  w = await back(); const b7 = w.nav === 'home' && w.h === '#/home';
+  ok(b1 && b2 && b3 && b4 && b5 && b6 && b7, `Back walks the Shop → Play → Library → the stop → the Atlas → the Word Gym → the Atlas → Home (${[b1, b2, b3, b4, b5, b6, b7].map(x => x ? '✓' : '✗').join('')})`);
   w = await back(); w = await back(); w = await back();
   ok(w.url.indexOf('index.html') > 0 && w.screen === 'app' && w.nav === 'home', 'three more Backs on Home never leave the app (' + w.url.split('/').pop() + ')');
 

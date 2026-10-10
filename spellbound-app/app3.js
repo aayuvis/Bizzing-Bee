@@ -3330,23 +3330,37 @@ const app = {
      #/analogies/<region|stop>[/learn|/words], #/analogies/clock; Mock Analogy Bee is #/anlbee */
   /* while the files load the tab shows its loader; when they land, the screen opens ONLY if the child is still
      waiting on it — a late load must never pull a child back from wherever they went in the meantime */
-  openAnalogies:(sub)=>{ clearGTimer(); state.game=null; const parts=String(sub||'').split('/').filter(Boolean), late=!window.SB_ANL;
+  /* THE ANALOGY GATE (anlOpen, above NAV_TABS): until the content is released, or in tester mode, each door lands on
+     Home (the Link Finder on the Library) and fetches nothing — a typed address goes through these same doors */
+  openAnalogies:(sub)=>{ if(!anlOpen()){ app.setNav('home'); return; }
+    clearGTimer(); state.game=null; const parts=String(sub||'').split('/').filter(Boolean), late=!window.SB_ANL;
     if(late) app.setNav('analogy');
     lazyNeed('analogy', ()=>{ if(late && state.nav!=='analogy') return; try{ if(window.SB_ANL) SB_ANL.openRoute(parts); }catch(e){} }); },
   /* the Library's Link Finder (owner, 10 Oct 2026), the same lazy group; #/links, #/links/<word> */
-  openAnlTool:(w)=>{ clearGTimer(); state.game=null; const late=!window.SB_ANL; const word=(typeof w==='string'&&/^[a-z][a-z\- ]*$/i.test(w))?w:null;
+  openAnlTool:(w)=>{ if(!anlOpen()){ app.setNav('explore'); return; }
+    clearGTimer(); state.game=null; const late=!window.SB_ANL; const word=(typeof w==='string'&&/^[a-z][a-z\- ]*$/i.test(w))?w:null;
     if(late) app.setNav('anltool');
     lazyNeed('analogy', ()=>{ if(late && state.nav!=='anltool') return; try{ if(window.SB_ANL) SB_ANL.openTool(word); }catch(e){} }); },
-  openAnlBee:()=>{ clearGTimer(); state.game=null; const late=!window.SB_ANL;
+  /* Mock Analogy Bee seats Mock Bee's own cast (MOCKBEE.rivals, owner 10 Oct 2026), so its door brings that file too */
+  openAnlBee:()=>{ if(!anlOpen()){ app.setNav('home'); return; }
+    clearGTimer(); state.game=null; const late=!(window.SB_ANL&&window.MOCKBEE);
     if(late) app.setNav('anlbee');
-    lazyNeed('analogy', ()=>{ if(late && state.nav!=='anlbee') return; try{ if(window.SB_ANL) SB_ANL.openBee(); }catch(e){} }); },
+    lazyNeed(['analogy','mockbee'], ()=>{ if(late && state.nav!=='anlbee') return; try{ if(window.SB_ANL) SB_ANL.openBee(); }catch(e){} }); },
+  /* TESTER MODE (see the analogy gate above NAV_TABS): the grown-up's switch in Settings → Testing tools, behind the
+     PIN; ?tester=1 reaches testerSet through family-shell.js only after the PIN. Kept on this device (store key
+     'tester'), like the testing unlock. Switching it off is never gated. */
+  toggleTester:()=>{ if(state.tester){ app.testerSet(false); return; } pinGate(()=>app.testerSet(true),'Testing tools — grown-ups only'); },
+  testerSet:(on)=>{ state.tester=!!on; try{ SB_STORE.set('tester',on?'1':'0'); }catch(e){}
+    _placeIdx=null;   // search's places list the Play cards a child can reach
+    try{ if(window.SB_FEED&&SB_FEED.reset) SB_FEED.reset(); }catch(e){}
+    flash(on?'Tester mode on — content still under review is open on this device':'Tester mode off'); render(); },
   openDailyBuzz:()=>{ clearGTimer(); try{ if(window.SB_DAILY_BUZZ&&SB_DAILY_BUZZ.close) SB_DAILY_BUZZ.close(); }catch(e){} state.game=null;
     lazyNeed('buzz', ()=>{ if(state.nav==='dailybuzz') render(); }); app.setNav('dailybuzz'); },
   /* WORD FORGE (games spec §5.1), a screen in the shell like Daily Buzz: nav 'forge', #/forge. Its table is
      cited data the OWNER signs off — until SB_FORGE.signedOff the door stays shut (a typed address lands on
      Play), except in testing mode, which opens it for review. forge.js draws into #fg-host after render. */
   openForge:()=>{ clearGTimer(); lazyNeed('forge', ()=>{
-      const ok=!!((window.SB_FORGE&&SB_FORGE.signedOff)||state.devUnlock);
+      const ok=!!((window.SB_FORGE&&SB_FORGE.signedOff)||testerOn());
       if(!ok){ app.openGames(); return; }
       state.game=null; app.setNav('forge'); }); },
   /* THE SPELLING GYM (games spec §4.2): one hub for the drills, its own lazy file (gym.js, boot-lazy
@@ -3613,7 +3627,7 @@ const app = {
      depend on app3's string render or on saga2's board/beats. */
   arcadeMenu:(k)=>{ try{ arcadeMenu(k); }catch(e){ try{ app.arcadePlay(k); }catch(_){} } },
   /* a Play-tab card (SB_PLAY_CARDS): its own opener, the arcade start menu, or "coming" */
-  playCard:(k)=>{ const card=SB_PLAY_CARDS.find(x=>x.k===k); if(!card) return;
+  playCard:(k)=>{ const card=SB_PLAY_CARDS.find(x=>x.k===k); if(!card||!playCardShown(card)) return;   /* a card the tab does not show opens nothing (a stale tap, a search place) */
     if(card.arcade){ app.arcadeMenu(k); return; }
     if(typeof app[card.open]==='function'){ app[card.open](); return; }
     flash(playCardName(k)+' is coming soon'); },
@@ -5978,11 +5992,43 @@ function viewIpaTrain(){ const S=state; const it=S.it; const pool=ipaPool();
    accent and a coloured glyph on it would be unreadable. */
 const NAV_TINT={ home:'#F0A93C', atlas:'#6C4FE0', practice:'#E8458C', library:'#0E8A78',
   play:'#3B6FE0', hive:'#C8901B', progress:'#C8901B', feed:'#D2553A', analogy:'#2E9E5B' };
+/* THE ANALOGY GATE (owner, 10 Oct 2026 — the road to 4.5, decision §1.2, P0.4/P0.5). The analogy content
+   (analogy-data.js) was written by Claude; three independent agent rounds review it, every verdict a row in
+   analogy-review/analogy-review.json, and "an item ships only with three passes". Until the owner releases it on
+   the round-3 report, EVERY surface that reads it — the Analogies tab, its lessons and Against the Clock, Mock
+   Analogy Bee (Play card + #/anlbee), the Library's Link Finder (#/links) and My Feed's analogy cards — is
+   reachable ONLY in tester mode. This one line is the release; tests/analogy-release.cjs refuses `true` while
+   any item lacks its three passes, and tests/analogy-gate.cjs holds every surface to it in the browser.
+   TESTER MODE is the grown-up's, never a child's: Settings → Grown-ups → Testing tools → Tester mode, or
+   ?tester=1, which asks for the grown-up PIN first (family-shell.js) — a child who types it meets the PIN, not
+   the content. The testing unlock ("Unlock everything", devUnlock) counts as tester mode. Word Forge keeps its
+   own sign-off gate (SB_FORGE.signedOff) and opens to tester mode the same way. */
+window.SB_ANL_RELEASED=false;
+function testerOn(){ try{ return !!(state.devUnlock||state.tester); }catch(e){ return false; } }
+function anlOpen(){ return window.SB_ANL_RELEASED===true||testerOn(); }
+window.SB_ANL_OPEN=anlOpen; window.SB_TESTER_ON=testerOn;
+/* where a gated analogy screen lands instead: Home, or the Library for its Link Finder */
+const ANL_NAVS={analogy:'home', anlbee:'home', anltool:'explore'};
 /* The tabs, in the family order. My Feed is the LAST tab, after Play (owner, 2 Oct 2026,
-   FAMILY-STANDARD §6a) — and it goes, with its ☰ row, when a grown-up switches it off. */
-/* Analogies sits right after the Word Gym (owner, 9 Oct 2026: "a separate analogies tab next to the word gym") */
-function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas'],['coach','Word Gym','practice'],['analogy',phone?'Analogy':'Analogies','analogy'],['explore','Library','library'],['games','Play','play']];
+   FAMILY-STANDARD §6a) — and it goes, with its ☰ row, when a grown-up switches it off.
+   SIX TABS, WORD GYM UNDER WORD ATLAS (owner, 10 Oct 2026 — the road to 4.5, decision §1.1): "Home · Word Atlas ·
+   Analogies · Library · Play · My Feed. Word Gym stops being a top tab and becomes the second sub-nav of Word Atlas
+   (Atlas | Gym)" — atlasSubNav(), drawn on the Atlas map and on the Word Gym. Its nav key is still 'coach' and its
+   route still #/practice, and the Word Atlas tab lights for both. Analogies sits right after Word Atlas, and only
+   while the analogy gate is open (anlOpen) — five tabs until then, which the family's 4–6 allows. */
+function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas':'Word Atlas','atlas']];
+  if(anlOpen()) t.push(['analogy',phone?'Analogy':'Analogies','analogy']);
+  t.push(['explore','Library','library'],['games','Play','play']);
   if(!state.feedOff) t.push(['feed','My Feed','feed']); return t; }
+/* the Word Gym's screens: they belong to the Word Atlas tab now (a drill from an Atlas stop always did) */
+function gymNav(S){ S=S||state; return S.nav==='coach'||S.nav==='quest'||S.nav==='levelup'||(S.nav==='train'&&!atlasDrill()); }
+function atlasTabOn(S){ S=S||state; return S.nav==='trail'||atlasDrill()||gymNav(S); }
+/* THE WORD ATLAS's SUB-NAV — Atlas | Gym (owner, 10 Oct 2026), the family's sub-page head: two chips at the top of
+   the Atlas map and of the Word Gym, the one you are on marked (aria-current), each a real button (Tab + Enter, or
+   a tap). `on` is 'atlas' or 'gym'. */
+function atlasSubNav(on){
+  const chip=(k,act,ic,label)=>`<button data-act="${act}" class="sb-subchip" aria-current="${on===k?'page':'false'}">${navIcon(ic,18,on===k)}<span>${label}</span></button>`;
+  return `<nav class="sb-subnav" aria-label="Word Atlas">${chip('atlas','openTrail','atlas','Atlas')}${chip('gym','openCoach','practice','Gym')}</nav>`; }
 function navIcon(key,size,plain){ size=size||22;
   const tint=plain?'currentColor':(NAV_TINT[key]||'currentColor');
   const w=(inner)=>`<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${tint}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0">${inner}</svg>`;
@@ -6051,10 +6097,11 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
     ${pageHead('The Library','everything the Atlas teaches')}
     ${libShelf()}
-    <button class="lib-anlband" data-act="openAnlTool" aria-label="Open the Link Finder">
+    ${/* the Link Finder reads the analogy items: behind the analogy gate (anlOpen) until they are released */
+      anlOpen()?`<button class="lib-anlband" data-act="openAnlTool" aria-label="Open the Link Finder">
       <span class="lib-anlic">${navIcon('analogy',26,true)}</span>
       <span class="lib-anltx"><b>Link Finder</b><span>Type any word and see how it links to others: twins, opposites, parts, word families. Then build an analogy from it.</span></span>
-      <span class="lib-anlgo">Open ${iconSVG('arrow',16,2.4)}</span></button>
+      <span class="lib-anlgo">Open ${iconSVG('arrow',16,2.4)}</span></button>`:''}
     <div class="lib-grid">${tiles}</div>
   </div>`; }
 
@@ -6163,7 +6210,7 @@ function libShelf(){
      whole row is ~400KB; load it eagerly (and warmSpines() below fetches it during
      idle time on Home, so the Library usually opens with every book already drawn). */
   const img=(b)=>`<img src="app-art/spines/${b.s}.png" alt="" loading="eager" fetchpriority="high" decoding="async">`;
-  const attrs=(b)=>`data-act="openBook" data-arg="${escA(b.s)}" title="${escA(b.t)}${ok?'':' — Regional Speller'}"`;
+  const attrs=(b)=>`data-act="openBook" data-arg="${escA(b.s)}" title="${escA(b.t)}"`;
 
   const upright=(b,i)=>`<button class="bk-sp" ${attrs(b)}
       style="--a:${b.a};--bh:${bh(b.t,i,b.s)}%;${LEAN[i]?`--lean:${LEAN[i]}deg;margin:0 9px`:''}">${img(b)}${title(b,i)}</button>`;
@@ -6191,11 +6238,15 @@ function libShelf(){
         <div class="bk-kick">Read</div>
         <div class="bk-title">The Book Series</div>
       </div>
-      <button class="bk-all" data-act="openBooks">${iconSVG(ok?'book':'crown',13)} ${ok?'Open the shelf':'Regional Speller'}</button>
+      ${/* NO PAYWALL ON A CHILD'S SCREEN (FIX-BEE v2 T3; owner, 10 Oct 2026 — the road to 4.5, P0.30: "Remove the 👑
+           Regional Speller chip from the child Library"). Locked, the shelf says one quiet line and names no plan; the
+           plan is sold behind the grown-up PIN (a tap still goes through openBooks, whose plan sheet asks for it). */
+        ok?`<button class="bk-all" data-act="openBooks">${iconSVG('book',13)} Open the shelf</button>`
+          :`<span class="bk-lockline">${iconSVG('lock',13)} Comes with the family plan</span>`}
     </div>
     <div class="bk-books">${row(0,half)}${row(half,SB_SHELF.length)}</div>
     <div class="bk-wood"></div>
-    <div class="bk-foot">${SB_SHELF.length} books · 19 volumes and 4 companions${ok?' · opens in a new tab':' · included with 👑 Regional Speller'}</div>
+    <div class="bk-foot">${SB_SHELF.length} books · 19 volumes and 4 companions${ok?' · opens in a new tab':''}</div>
   </div>`; }
 /* Advanced Mode entry — a gated hero banner. Unlocks at Level 12, Bee Band 7, or by paying. */
 function advBanner(c){ if(!advModeOn(c)) return '';   /* T3: no offer on a child's screen — the pack is sold behind the PIN */
@@ -6736,6 +6787,10 @@ function mastDueCard(){ const due=mastDueWords(active(),30); if(!due.length) ret
 /* ===================== APP SHELL ===================== */
 function viewApp(){
   const S=state;
+  /* the analogy gate, where it cannot be walked round: whatever set the nav (an opener, a stale tap, analogy.js's own
+     links, tester mode switched off on the screen), a gated analogy screen is never drawn — it lands on Home, or the
+     Library for the Link Finder, and the hash follows */
+  if(ANL_NAVS[S.nav]&&!anlOpen()){ try{ if(window.SB_ANL) SB_ANL.stop(); }catch(e){} S.nav=ANL_NAVS[S.nav]; }
   const EXPLORE_NAVS=SB_EXPLORE_NAVS;
   const NAV_ART={home:'home',coach:'practice',explore:'explore',games:'arcade',progress:'progress',collection:'collection'};
   /* FIVE tabs. My Hive is not one: it is where your coins go, so the COINS PILL is its
@@ -6744,13 +6799,12 @@ function viewApp(){
      a tab either — it opens from Settings and the drawer. */
   const navTabs=NAV_TABS().map(([key,label,ic])=>{
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
-      :key==='coach'?(S.nav==='coach'||(S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest')
-      :key==='trail'?(S.nav==='trail'||atlasDrill())
+      :key==='trail'?atlasTabOn(S)   /* the Atlas and its Word Gym (owner, 10 Oct 2026) */
       :key==='games'?(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')
       :S.nav===key;
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
-    return `<button data-act="setNav" data-arg="${key}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
+    return `<button data-act="setNav" data-arg="${key}" aria-current="${on?'page':'false'}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';
   if(S.nav==='home') content=viewHome();
@@ -6918,7 +6972,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(S.nav===k||(k==='games'&&(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive'))||(k==='coach'&&((S.nav==='train'&&!atlasDrill())||S.nav==='levelup'||S.nav==='quest'))||(k==='trail'&&atlasDrill()));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(k==='trail')?atlasTabOn(S):(S.nav===k||(k==='games'&&(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -7089,11 +7143,55 @@ function homeHereCard(c,nx){
         <span class="sb-continue" style="flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">${iconSVG('steps',15)} ${label}</span>
         <span class="sb-home-where">
           <span class="sb-here-rail" role="progressbar" aria-label="${escA('How far along '+region)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${rpct}">${rail.map(v=>`<i class="${v===2?'d':v===1?'n':''}"></i>`).join('')||'<i></i>'}</span>
-          <span class="sb-home-pos">${esc(SB_SHELL.levelWords(c))}<br>${esc('This week: '+wk.stops+' stop'+(wk.stops===1?'':'s')+', '+wk.words+' word'+(wk.words===1?'':'s')+' mastered')}</span>
+          <span class="sb-home-pos">${esc(SB_SHELL.levelWords(c))}</span>
+          ${/* MASTERED THIS WEEK (owner, 10 Oct 2026 — the road to 4.5, P0.16): a small chip, words mastered ON EVIDENCE
+               since Monday (c.mast, right on two separate days — weekProgress), never time or self-marks; nought says
+               nought. The count above it is the board's own ("Stop n of N", SB_TRAIL_NEXT: stops + checkpoints). */''}
+          <span class="sb-home-mast" data-week-mastered="${wk.words}">${iconSVG('check',12,2.6)} ${esc(wk.words+' word'+(wk.words===1?'':'s')+' mastered this week')}</span>
         </span>
       </span>
     </span></button>`;
 }
+/* THE SECOND JOURNEY CARD (owner, 10 Oct 2026 — the road to 4.5, P0.2: "journey card back to 547 px, second journey
+   card restored (mistakes deck when due, else Analogy Atlas)"). Row 2 is Bee's two-card row again — the family's
+   shell REF measures it — with "You are here" first. Beside it, ONE quiet card (Continue stays Home's only filled
+   button):
+     · the MISTAKES DECK when revision words are due — a word missed on an earlier day, or one whose mastery slipped
+       and whose gap is over: the same "due" My Feed puts first (bee-feed.js dueOf) — opening Your Revisions;
+     · otherwise the ANALOGY ATLAS — but only through the analogy gate (anlOpen: released, or tester mode). Until the
+       content is released a child is never sent to it, so the card is the SPELLING GYM (the Play tab's drill hall).
+   Drawn in code — the hub's own gradient and glyph, no painting — because Home's first screen has a byte budget
+   (tests/first-load.cjs). */
+function homeDueWords(c){ const out=new Set(), now=Date.now(), DAY=864e5;
+  try{ (c.missed||[]).forEach(m=>{ if(m&&m.w&&m.ts&&now-m.ts>=DAY) out.add(nkey(m.w)); }); }catch(e){}
+  try{ const M=c.mast||{}, today=mastDay();
+    for(const k in M){ if(!Object.prototype.hasOwnProperty.call(M,k)) continue; const r=M[k];
+      if(r&&(r.miss>0||r.lp>0)&&(r.b>=1?today>=r.due:today>r.d)) out.add(k); } }catch(e){}
+  return [...out]; }
+function homeSecondCard(c){
+  const due=homeDueWords(c);
+  const kind=due.length?'deck':anlOpen()?'analogy':'gym';
+  const K={
+    deck:{act:'openRevisions', grad:'linear-gradient(135deg,#F0B429,#C8791B)', art:`<span class="s2-ic">${iconSVG('retry',34,2.2)}</span>`,
+      kick:'Your mistakes deck', title:due.length+' word'+(due.length===1?'':'s')+' ready to revise',
+      sub:'Missed on an earlier day, and the gap is over. Spell them again and they stick.', go:'Revise',
+      chips:due.slice(0,4)},
+    analogy:{act:'openAnalogies', grad:'linear-gradient(150deg,#1E6B45,#163A5A)', art:`<span class="s2-ic">${navIcon('analogy',38,true)}</span>`,
+      kick:'The Analogy Atlas', title:'Find the link', sub:'Twins, opposites, parts and word families — one link at a time.', go:'Open'},
+    gym:{act:'openGym', grad:(PLAY_ART.gym||{}).grad||'linear-gradient(135deg,#FF5FA2,#C8458C)',
+      art:(typeof gameArtSVG==='function'?`<span class="s2-art">${gameArtSVG('beat',84)}</span>`:`<span class="s2-ic">${iconSVG('bolt',34)}</span>`),
+      kick:hubName('gym'), title:'Warm up your spelling', sub:(PLAY_TEXT.gym||{}).p||'', go:'Train'}
+  }[kind];
+  const chips=(K.chips||[]).map(w=>`<span class="s2-chip">${esc(w)}</span>`).join('');
+  return `<button class="sb-lift sb-home-second" data-act="${K.act}" data-kind="${kind}" aria-label="${escA(K.kick+': '+K.title)}">
+    <span class="s2-band" aria-hidden="true" style="background:${K.grad}">${K.art}</span>
+    <span class="s2-body">
+      <span class="sb-cs">${esc(K.kick)}</span>
+      <span class="s2-title">${esc(K.title)}</span>
+      <span class="s2-sub">${esc(K.sub)}</span>
+      ${chips?`<span class="s2-chips">${chips}</span>`:''}
+      <span class="s2-go">${esc(K.go)} ${iconSVG('arrow',14,2.4)}</span>
+    </span></button>`; }
 function viewHome(){
   const S=state; const c=active(); ensureLists(c); const theme=S.theme; const evo=EVO[theme]||EVO.spellbound;
   const focusedH=((c.ageMode)||((c.age||9)<=11?'playful':'focused'))==='focused';
@@ -7220,6 +7318,7 @@ function viewHome(){
           ||Object.keys(tr.chk||{}).length>0||Object.keys(tr.seen||{}).length>0; }catch(e){ return false; } })();
         if(!nx&&started) return cardHold('You are here',innerWidth>=900?238:300);
         return homeHereCard(c,nx); })()}
+      ${homeSecondCard(c)}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px">${tipOfDay(true,true)}${qohTile}</div>`; })()}
     <div style="text-align:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line)"><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a>${tmLine()}</div>
@@ -9850,7 +9949,8 @@ function viewQuest(){
       <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:14px;color:var(--treasure-deep,#8A5B00)">Story vault</span><span style="display:block;font-size:12px;color:var(--treasure-deep,#8A5B00);opacity:.85">${un.length} of ${all} word-history tales unlocked</span></span>
       <span style="color:var(--treasure-deep,#8A5B00);font-weight:800">→</span></button>`:'';
   return `<div style="animation:sb-rise .35s ease both;max-width:640px;margin:0 auto">
-    ${pageHead('Word Gym','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Word Atlas tab.')}
+    ${atlasSubNav('gym')}
+    ${pageHead('Word Gym','pick your training path','The Bizzing Bee ladder, your own lists, or Ultra — switch any time, all progress kept. Looking for the concept journey? That’s the Atlas, beside Gym above.')}
     <div style="display:flex;flex-direction:column;gap:12px">${aUnlocked?(ultraTile+paths):paths}</div>
     ${vault}
   </div>`;
@@ -10201,6 +10301,15 @@ function certDraw(x, c, withAv){ return new Promise(res=>{ const W=1600,H=1130; 
   if(withAv){ try{ const h=String(avatarSVG(c.avatar||'bizzy',384)||''); const m=h.match(/<img[^>]*src="([^"]+)"/);
       const src=m?m[1]:(/^\s*<svg/.test(h)?'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(/xmlns=/.test(h)?h:h.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"')):''); if(src) add(src,170,230,260); }catch(e){} }
   Promise.all(imgs).then(()=>res(cv)); }); }
+/* THE ADVANCED PACK's DOOR LIVES HERE NOW (owner, 10 Oct 2026 — the road to 4.5, P0.29: "Remove the last 'Show a
+   grown-up' doors from the child Atlas; one quiet line in the Parent Zone"). The child's Atlas says only "More
+   continents come with the Advanced Pack"; the way to the pack is this one quiet line, behind the Parent Zone's PIN,
+   through the same door the Atlas used (ultraUpsell → the pack's page, which asks for the PIN again). Nothing when
+   the pack is on — or under the testing unlock, which opens it anyway. */
+function advParentLine(){ try{ if(advModeOn(active())) return ''; }catch(e){ return ''; }
+  return `<div class="sb-pz-adv" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 0;padding:10px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line)">
+    <span style="flex:1;min-width:200px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:650;color:var(--muted)">${iconSVG('lock',14)} More continents on the Word Atlas, the Advanced Rounds and Ultra Champions, come with the Advanced Pack.</span>
+    <button data-act="ultraUpsell" style="min-height:44px;padding:0 14px;border-radius:10px;background:transparent;border:1px solid var(--line);color:var(--text);font-weight:800;font-size:12.5px">About the pack</button></div>`; }
 function viewParent(){
   const S=state;
   const sub=S.premium
@@ -10238,6 +10347,7 @@ function viewParent(){
     <div style="${sub.cardStyle}"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG(sub.ic,26)}</div>
       <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${sub.title}</div><div style="font-size:13px;color:var(--muted)">${sub.body}</div></div>
       <button data-act="goPaywall" style="${sub.btnStyle}">${sub.btn}</button></div></div>
+    ${advParentLine()}
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:20px 2px 12px">Spellers</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${kids}</div>
     <div style="margin-top:18px">${reportCardHTML(active())}${parentAnalytics()}</div>
@@ -10850,6 +10960,7 @@ function viewSettings(){
       ${_parent?'':`<div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Parent account</span><span class="bz-row-s">Optional, for cloud backup.</span></div><button data-act="openAuth" data-arg="signin" class="bz-btn">Sign in</button></div>`}
       <details class="bz-row bz-row-col bz-tools"><summary class="bz-row-l">Testing tools</summary>
         ${sw('toggleDevUnlock','Unlock everything',!!S.devUnlock,'Opens every gate for testing. It never changes a child’s coins or collection.')}
+        ${sw('toggleTester','Tester mode',!!S.tester,'Shows content still under review on this device: the Analogies tab, Mock Analogy Bee, the Link Finder and Word Forge. Children never see it. ?tester=1 asks for this PIN first.')}
         ${(c&&c.devCoins)?sw('toggleDevCoins','Test coins',true,'Left on by an older build. Switch off to restore the real balance.'):''}
         ${S.devUnlock?`<div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Report a bug</span><span class="bz-row-s">Notes stay on this device.</span></div><button data-act="bugToggle" class="bz-btn">Open</button></div>`:''}
         <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Support console</span><span class="bz-row-s">Profiles and plans on this device. Local only.</span></div><button data-act="openAdmin" class="bz-btn">Open</button></div>
@@ -10927,7 +11038,7 @@ function coachTrain(){
     </div>`; }).join('');
   const pausedShelf=pausedKeys.length?`<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Paused</span>${pausedKeys.map(k=>`<button data-act="resumeList" data-arg="${escA(k)}" title="Tap to resume training this list" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:12px">${SB_ICON('play',{size:14})} ${esc(dockLabel(k))} <span style="font-size:12px">L${listStageIdx(c,k)+1}</span></button>`).join('')}</div>`:'';
   const addBtn=`<button data-act="coachSetupOpen" style="white-space:nowrap;padding:8px 13px;border-radius:10px;font-weight:800;font-size:13px;border:1px dashed var(--line);background:transparent;color:var(--accent)">+ Add list</button>`;
-  const topBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Gym</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('flag',14,2.4)} Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
+  const topBar=`${atlasSubNav('gym')}<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">${backPill('goHome','Home',null)}<span style="font-family:var(--display);font-weight:800;font-size:20px;margin-left:4px">Word Gym</span><button data-act="openQuestChooser" title="Change your practice path" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('steps',13)} My path</button>${(()=>{ const n=missTraps().length; return `<button data-act="openTraps" title="Your weak patterns" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${n?'var(--fix-tint,#FBE9E7)':'var(--surface2)'};border:1px solid ${n?'var(--fix,#C4453C)':'var(--line)'};color:${n?'var(--fix,#C4453C)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('target',13)} Traps${n?' · '+n:''}</button>`; })()}${(()=>{ const r=((active().missed)||[]).length; return `<button data-act="openRevisions" title="Words you marked to revise" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:${r?'color-mix(in srgb,var(--treasure,#F0B429) 18%,transparent)':'var(--surface2)'};border:1px solid ${r?'var(--treasure,#F0B429)':'var(--line)'};color:${r?'var(--treasure-deep,#8A5B00)':'var(--muted)'};font-weight:800;font-size:12px">${iconSVG('flag',14,2.4)} Revise${r?' · '+r:''}</button>`; })()}${(()=>{ /* Ultra rides here as a pill. It used to be a full-width
       purple banner between the header and the tabs, which ate a whole row of Practice and
       pushed the thing the child came for below the fold — for a pack most of them do not
       own. A pill says the same thing and costs 40px. */
@@ -12201,8 +12312,11 @@ const PLAY_ART = {
 function playCardName(k){ if(k==='gym'||k==='lore'||k==='hive') return hubName(k);
   const g=(window.SB_ARCADE_GAMES||[]).find(x=>x.k===k); return (PLAY_TEXT[k]&&PLAY_TEXT[k].n)||(g&&g.n)||k; }
 function playCardLive(card){ if(card.arcade) return !!(window.SB_ARCADE_GAMES||[]).find(x=>x.k===card.k); return typeof app[card.open]==='function'; }
-/* Word Forge stands on the tab only once its morpheme table is signed off (g-forge's SB_FORGE.signedOff), or under the testing unlock */
-function playCardShown(card){ return card.k==='wordForge' ? !!((window.SB_FORGE&&SB_FORGE.signedOff)||state.devUnlock) : true; }
+/* Word Forge stands on the tab only once its morpheme table is signed off (g-forge's SB_FORGE.signedOff), or in tester
+   mode; Mock Analogy Bee only through the analogy gate (anlOpen — released, or tester mode; owner, 10 Oct 2026) */
+function playCardShown(card){ if(card.k==='wordForge') return !!((window.SB_FORGE&&SB_FORGE.signedOff)||testerOn());
+  if(card.k==='mockAnalogy') return anlOpen();
+  return true; }
 function playCardsShown(){ return SB_PLAY_CARDS.filter(playCardShown); }
 /* the child's own best on a card, quietly — a number they set, never a target the card sets (G9) */
 function playCardBest(card,c){
@@ -13287,6 +13401,7 @@ window.addEventListener('sb-lazy', e => { const name = e && e.detail;
     state.screen=(s.children&&s.children.length)?'app':'landing'; state.nav='home';
   } }catch(e){}
   try{ if(SB_STORE.get('devunlock')==='1'){ state.devUnlock=true; state.premium=true; } }catch(e){}
+  try{ if(SB_STORE.get('tester')==='1') state.tester=true; }catch(e){}   /* tester mode, the grown-up's (the analogy gate) */
   /* (the test-coin reset and the accessory, world-cut and Aurora refunds are store.js steps
      v2_to_v3 … v5_to_v6 now; the flashes below still read the receipts they leave on a child) */
   /* FIX-BEE: Bee coins become Bizzing coins, 1:1, once per child (walletSync). It runs AFTER

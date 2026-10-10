@@ -2,8 +2,10 @@
 
    shell      checkShell(page, {phone, bee:true}) — the family's own measurement of Bee's chrome
               (tests/lib/family/shell-check.mjs, vendored byte for byte) — returns [] on Home,
-              desktop and phone, light and dark, with SEVEN tabs since 9 Oct 2026 (the owner's Analogies tab after
-              Word Gym): … Play · My Feed, My Feed last
+              desktop and phone, light and dusk, with no allowance at all since 10 Oct 2026 (the road to
+              4.5): five tabs for a child (Home · Word Atlas · Library · Play · My Feed) while analogies are
+              gated, six in tester mode (… Word Atlas · Analogies · Library …), My Feed last, the Word Gym
+              under Word Atlas, and Home's two journey cards at Bee's 547px
    screen     #/feed: the page head, about twenty cards each saying why, then the finished card
               last, pointing at Continue; no likes, views or streaks; no sound before a tap;
               nothing wider than a 390px phone; the My Feed tab is the lit one
@@ -61,7 +63,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     o = o || {};
     const ctx = await b.newContext({ viewport: o.phone ? { width: 390, height: 844 } : { width: 1280, height: 800 }, isMobile: !!o.phone, hasTouch: !!(o.phone || o.touch),
       deviceScaleFactor: 1, colorScheme: o.dark ? 'dark' : 'light', serviceWorkers: 'block' });
-    await ctx.addInitScript(s => { try { if (!sessionStorage.getItem('t_seed')) { localStorage.clear(); localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); sessionStorage.setItem('t_seed', '1'); } } catch (e) {} }, o.seed || seedOf());
+    await ctx.addInitScript(([s, t]) => { try { if (!sessionStorage.getItem('t_seed')) { localStorage.clear(); localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); if (t) localStorage.setItem('sb_tester', '1'); sessionStorage.setItem('t_seed', '1'); } } catch (e) {} }, [o.seed || seedOf(), !!o.tester]);
     /* count every sound: a clip, a speech utterance, or WebAudio starting */
     await ctx.addInitScript(() => { window.__snd = 0; const A = window.Audio; window.Audio = function () { window.__snd++; return new A(...arguments); };
       try { const sp = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { window.__snd++; return sp(u); }; } catch (e) {} });
@@ -82,26 +84,27 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
       return !!end && css.length >= 2 && css.every(l => !!l.sheet) && ids.length > 0 && !!document.querySelector(`.bzf-card[data-id="${ids[0].id}"]`); }, null, 30000);
     await frames(pg, 2); };
 
-  /* ---- shell: Bee's chrome with six tabs, measured by the family's own check ---- */
-  for (const dark of [false, true]) for (const phone of [false, true]) {
-    const { ctx, pg } = await open({ phone, dark, seed: seedOf(dark ? 'dusk' : 'light') });
+  /* ---- shell: Bee's chrome, measured by the family's own check — and NOTHING allowed ----
+     The road to 4.5 (owner, 10 Oct 2026, decisions §1.1 and P0.2): "checkShell(bee:true) must return [] on desk and
+     phone, light and dusk" — six tabs with the Word Gym under Word Atlas, the journey card back to 547px, the second
+     journey card restored. So the two allowances this block used to carry are gone: the 4 Oct "the REF still
+     describes the old two-card row" (Home has its two cards again) and the 9 Oct "7 tabs (4–6)" for the Analogies
+     tab (the bar holds six at most now). A child's bar is FIVE while the analogy content is gated (Analogies stands
+     only in tester mode — tests/analogy-gate.cjs), and a tester's is the six; the family's 4–6 takes both, and both
+     are measured, light and dusk.
+     Proved by breaking (10 Oct 2026), each run recorded: homeSecondCard dropped from Home → all eight checkShell
+     passes fail ("second journey card: missing" / "second missing on phone home"); the Word Gym tab back in NAV_TABS →
+     the eight tab-order checks fail and the four tester desktop/phone shells say "7 tabs (4–6)" (10 fail). */
+  for (const tester of [false, true]) for (const dark of [false, true]) for (const phone of [false, true]) {
+    const { ctx, pg } = await open({ phone, dark, tester, seed: seedOf(dark ? 'dusk' : 'light') });
     await pg.evaluate(() => app.setNav('home'));
-    await until(pg, () => state.nav === 'home' && !!document.querySelector('.sb-fam-bar') && !!document.querySelector('.sb-content')); await frames(pg, 2);
-    /* THE OWNER'S HOME (4 Oct 2026, "HOME screen should take to world atlas and show kids where they
-       are"): the "You are here" card takes row 2 alone and the training-journey card has left Home.
-       The family's REF in shell-check.mjs (vendored byte for byte) was measured on the old two-card
-       row, so until upstream re-measures Bee exactly these findings are that change, not drift —
-       the card must span the row (1107px at 1280) — and anything else still fails. */
-    const ownerHome = m => /^second journey card: missing$|^second missing on phone home$/.test(m)
-      || (/^next-on-your-journey card width is (\d+)px, Bee's is 547px$/.test(m) && Math.abs(+RegExp.$1 - 1107) <= 5);
-    /* THE OWNER'S ANALOGIES TAB (9 Oct 2026, "a separate analogies tab next to the word gym"): Bee carries a
-       seventh tab, and the family's check counts 4–6. Until the family standard takes it, exactly that one
-       finding is allowed — and only while the seventh tab is Analogies, right after Word Gym. */
-    const tabs = await pg.evaluate(ph => [...document.querySelectorAll(ph ? 'nav.sb-tabbar button' : '.sb-topnav button')].map(x => x.textContent.trim()), phone);
-    const ownerTabs = m => m === '7 tabs (4–6)' && tabs.length === 7 && /Word Gym$/.test(tabs[2]) && /Analog/.test(tabs[3]);
-    const f = (await checkShell(pg, { phone, bee: true })).filter(m => !ownerHome(m) && !ownerTabs(m));
-    ok(!f.length, `checkShell on Home, ${phone ? 'phone' : 'desktop'}, ${dark ? 'dark' : 'light'}: [] ${f.length ? JSON.stringify(f) : ''}`);
-    ok(tabs.length === 7 && /Analog/.test(tabs[3]) && /My Feed$/.test(tabs[6]) && /Play$/.test(tabs[5]), `seven tabs, Analogies after Word Gym, My Feed last: ${tabs.join(' · ')}`);
+    await until(pg, () => state.nav === 'home' && !!document.querySelector('.sb-fam-bar') && !!document.querySelector('.sb-content .sb-home-second')); await frames(pg, 2);
+    const tabs = await pg.evaluate(ph => [...document.querySelectorAll(ph ? 'nav.sb-tabbar button' : '.sb-topnav button')].map(x => x.getAttribute('data-arg')), phone);
+    const f = await checkShell(pg, { phone, bee: true });
+    const where = `${tester ? 'tester, ' : ''}${phone ? 'phone' : 'desktop'}, ${dark ? 'dusk' : 'light'}`;
+    ok(!f.length, `checkShell on Home, ${where}: [] ${f.length ? JSON.stringify(f) : ''}`);
+    const want = tester ? 'home,trail,analogy,explore,games,feed' : 'home,trail,explore,games,feed';
+    ok(tabs.join() === want, `${where}: ${tester ? 'six' : 'five'} tabs, Home first, no Word Gym, My Feed last — ${tabs.join(' · ')}`);
     await ctx.close();
   }
 
