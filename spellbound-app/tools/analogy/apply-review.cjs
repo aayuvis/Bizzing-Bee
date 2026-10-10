@@ -17,6 +17,8 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const APP = path.resolve(__dirname, '..', '..'), DIR = path.join(APP, 'analogy-review');
 const R1 = path.join(DIR, 'rounds'), R2 = path.join(DIR, 'rounds2');
+const RD = (n) => path.join(DIR, n === 1 ? 'rounds' : 'rounds' + n);
+const cycles = () => { let n = 1; while (fs.existsSync(path.join(RD(n + 1), 'units.json'))) n++; return n; };
 const read = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 function rowsOf(dir, cycle) { const rows = []; if (!fs.existsSync(dir)) return rows;
   for (const f of fs.readdirSync(dir).filter((f) => /^v\d-\d+\.json$/.test(f)).sort()) { const round = +f[1];
@@ -29,6 +31,24 @@ process.env.REVIEW_CYCLE = '1';
 const units1 = () => { delete require.cache[require.resolve('./review.cjs')]; return require('./review.cjs').units(); };
 const cmd = process.argv[2];
 
+if (cmd === 'plan' && cycles() >= 2) {
+  /* the next cycle: from the last cycle's round 3 — a fix is applied and re-reviewed; a pass over an earlier fail is re-checked */
+  const N = cycles(), rows = rowsOf(RD(N), N), P = byUnit(rows), U = read(path.join(RD(N), 'units.json'));
+  if (U.some((u) => !(P[u.unit] || {})[3])) { console.log('cycle ' + N + ' is not complete'); process.exit(1); }
+  const next = []; const t = { ship: 0, drop: 0, fixed: 0, recheck: 0 };
+  for (const u of U) { const p = P[u.unit], r3 = p[3];
+    if (three(p)) { t.ship++; continue; } if (r3.verdict === 'fail') { t.drop++; continue; }
+    const v = Object.assign({}, u, { ['cycle' + N]: r3.verdict === 'fix' ? 'fixed in round 3: ' + r3.reason : 'passed by round 3 over an earlier fail: ' + r3.reason });
+    if (r3.verdict === 'fix') { t.fixed++;
+      if (u.kind === 'item') { if (r3.drop) v.wrong = u.wrong.filter((w) => !r3.drop.includes(w)); if (r3.gloss === 'hide') { v.gloss = ''; v.glossHidden = true; } }
+      else if ((u.kind === 'text' || u.kind === 'card') && r3.fix_text) v.text = r3.fix_text; }
+    else t.recheck++;
+    next.push(v); }
+  fs.mkdirSync(RD(N + 1), { recursive: true }); fs.writeFileSync(path.join(RD(N + 1), 'units.json'), JSON.stringify(next, null, 1));
+  if (fs.existsSync(path.join(RD(N), 'stems-ok.json'))) fs.copyFileSync(path.join(RD(N), 'stems-ok.json'), path.join(RD(N + 1), 'stems-ok.json'));
+  console.log('cycle ' + N + ': ' + t.ship + ' ship, ' + t.drop + ' dropped; cycle ' + (N + 1) + ' gets ' + next.length + ' (' + t.fixed + ' fixed, ' + t.recheck + ' re-checked)');
+  process.exit(0);
+}
 if (cmd === 'plan') {
   const rows = rowsOf(R1, 1), P = byUnit(rows), U = units1();
   const missing = U.filter((u) => !(P[u.unit] || {})[3] && !three(P[u.unit])).length;
@@ -51,16 +71,15 @@ if (cmd === 'plan') {
 }
 
 if (cmd === 'ship') {
-  const rows1 = rowsOf(R1, 1), rows2 = rowsOf(R2, 2), P1 = byUnit(rows1), P2 = byUnit(rows2), U = units1();
-  const c2 = fs.existsSync(path.join(R2, 'units.json')) ? read(path.join(R2, 'units.json')) : [];
-  const c2by = {}; c2.forEach((u) => { c2by[u.unit] = u; });
+  const U = units1(), NC = cycles(); const C = [];
+  for (let n = 1; n <= NC; n++) { const rows = rowsOf(RD(n), n); const by = {}; (n === 1 ? U : read(path.join(RD(n), 'units.json'))).forEach((u) => { by[u.unit] = u; }); C.push({ n, rows, P: byUnit(rows), by }); }
   const shipped = {}, ledger = [], dropped = [];
   for (const u of U) {
-    /* a unit that went through cycle 2 is decided by cycle 2: new evidence is never ignored */
-    if (!c2by[u.unit] && three(P1[u.unit])) { shipped[u.unit] = u; ledger.push(...rows1.filter((r) => r.item === u.unit)); continue; }
-    if (c2by[u.unit] && three(P2[u.unit])) { shipped[u.unit] = c2by[u.unit]; ledger.push(...rows2.filter((r) => r.item === u.unit)); continue; }
-    const last = c2by[u.unit] ? rows2.filter((r) => r.item === u.unit) : rows1.filter((r) => r.item === u.unit);
-    ledger.push(...last); dropped.push({ unit: u.unit, why: (last.filter((r) => r.verdict !== 'pass').pop() || {}).reason || 'not three passes' }); }
+    /* a unit is decided by the LAST cycle it went through: new evidence is never ignored */
+    const c = C.slice().reverse().find((x) => x.by[u.unit]); const mine = c.rows.filter((r) => r.item === u.unit);
+    ledger.push(...mine);
+    if (three(c.P[u.unit])) { shipped[u.unit] = c.by[u.unit]; continue; }
+    dropped.push({ unit: u.unit, why: (mine.filter((r) => r.verdict !== 'pass').pop() || {}).reason || 'not three passes' }); }
   fs.writeFileSync(path.join(DIR, 'analogy-review.json'), JSON.stringify(ledger, null, 1) + '\n');
   /* analogy-data.js, cut to what shipped */
   const ctx = { window: {} }; const src = fs.readFileSync(path.join(APP, 'analogy-data.js'), 'utf8'); vm.runInNewContext(src, ctx); const A = ctx.window.SB_ANALOGY;
@@ -89,26 +108,25 @@ if (cmd === 'ship') {
 }
 /* REPORT.md — what the owner releases on: counts per round and cycle, every fix, every unit dropped, and why */
 if (cmd === 'ship' || cmd === 'report') {
-  const rows1 = rowsOf(R1, 1), rows2 = rowsOf(R2, 2), U = units1();
-  const c2 = fs.existsSync(path.join(R2, 'units.json')) ? read(path.join(R2, 'units.json')) : [];
+  const rows1 = rowsOf(R1, 1), U = units1(), NC = cycles();
   const led = read(path.join(DIR, 'analogy-review.json')); const dropped = read(path.join(DIR, 'dropped.json'));
   const cnt = (rows, round) => { const r = rows.filter((x) => x.round === round); const c = {}; r.forEach((x) => { c[x.verdict] = (c[x.verdict] || 0) + 1; }); return r.length + ' (' + Object.entries(c).map(([k, v]) => v + ' ' + k).join(', ') + ')'; };
   const kinds = (list) => { const k = {}; list.forEach((u) => { const t = String(u.unit || u).split(':')[0]; k[t] = (k[t] || 0) + 1; }); return Object.entries(k).map(([a, b]) => b + ' ' + a + (b === 1 ? '' : 's')).join(', '); };
   const shippedIds = new Set(); const P = byUnit(led); Object.keys(P).forEach((id) => { if (three(P[id])) shippedIds.add(id); });
-  const fixes = rows1.filter((r) => r.round === 3 && r.verdict === 'fix');
+  const fixes = []; for (let n = 1; n <= NC; n++) fixes.push(...rowsOf(RD(n), n).filter((r) => r.round === 3 && r.verdict === 'fix'));
   const L = [];
   L.push('# Analogy content review — the round-3 report', '');
   L.push('The owner releases the Analogies tab, its lessons, Mock Analogy Bee, Against the Clock, the Link Finder and My Feed\'s analogy cards on this report (brief 4.5, decision 2). Until then they are reachable only in tester mode.', '');
-  L.push('**How it was reviewed.** Three independent agent rounds over every unit — ' + U.length + ' units: ' + kinds(U) + '. Round 1 saw the answer and judged uniqueness, accuracy and kid-safety. Round 2 was a different agent that solved every item BLIND (the item as a child meets it, options shuffled, no answer, no link name) and never saw round 1. Round 3, a third agent, adjudicated every disagreement and re-checked passes. A unit ships only with a pass in rounds 1, 2 and 3 of one cycle. Units round 3 fixed (wrong options dropped, a wrong-sense gloss hidden, wording rewritten) or passed over an earlier fail went through all three rounds again (cycle 2); anything without three passes there was dropped. Ledger: `analogy-review.json` ({item, round, verdict, reason, cycle}); every sheet and verdict is in `rounds/` and `rounds2/`.', '');
+  L.push('**How it was reviewed.** Three independent agent rounds over every unit — ' + U.length + ' units: ' + kinds(U) + '. Round 1 saw the answer and judged uniqueness, accuracy and kid-safety. Round 2 was a different agent that solved every item BLIND (the item as a child meets it, options shuffled, no answer, no link name) and never saw round 1. Round 3, a third agent, adjudicated every disagreement and re-checked passes. A unit ships only with a pass in rounds 1, 2 and 3 of one cycle. Units round 3 fixed (wrong options dropped, a wrong-sense gloss hidden, wording rewritten) or passed over an earlier fail went through all three rounds again in the next cycle (' + NC + ' cycles in all); a unit is decided by the last cycle it went through, and anything without three passes there was dropped. Ledger: `analogy-review.json` ({item, round, verdict, reason, cycle}); every sheet and verdict is in `rounds/` and `rounds2/`.', '');
   L.push('**The four known faults were caught in round 1:** sibling:sister as a synonym (item:1), the "ass" option (item:5g, item:xl), censure/reproach (item:ow) and cache/archive (item:xc) — round 1\'s prompt did not need fixing.', '');
   L.push('## Counts', '', '| | round 1 | round 2 (blind) | round 3 |', '|---|---|---|---|');
   L.push('| cycle 1 | ' + cnt(rows1, 1) + ' | ' + cnt(rows1, 2) + ' | ' + cnt(rows1, 3) + ' |');
-  if (rows2.length) L.push('| cycle 2 | ' + cnt(rows2, 1) + ' | ' + cnt(rows2, 2) + ' | ' + cnt(rows2, 3) + ' |');
+  for (let n = 2; n <= NC; n++) { const rr = rowsOf(RD(n), n); if (rr.length) L.push('| cycle ' + n + ' | ' + cnt(rr, 1) + ' | ' + cnt(rr, 2) + ' | ' + cnt(rr, 3) + ' |'); }
   L.push('', '**Shipped: ' + shippedIds.size + ' units** (' + kinds([...shippedIds]) + '). **Dropped: ' + dropped.length + '** (' + kinds(dropped) + ').', '');
-  L.push('Round 2 scoring: in cycle 1 a blind item failed on a different pick, a second defensible answer, an unsafe word OR any written worry (stricter than the brief; round 3 adjudicated every one). From cycle 2 the brief\'s own rule: a different pick, a second defensible answer or an unsafe word fails, and a worry passes to round 3 as a note. 11 cycle-2 items first shown with an empty A:B pair were solved again on a fair sheet (`rounds2/superseded-b2-1.json`).', '');
-  L.push('## Every fix (round 3, cycle 1)', '', '| unit | dropped options | gloss | why |', '|---|---|---|---|');
-  fixes.forEach((r) => L.push('| ' + r.item + ' | ' + (r.drop || []).join(', ') + ' | ' + (r.gloss === 'hide' ? 'hidden' : '') + ' | ' + String(r.reason).replace(/\|/g, '/').replace(/\n/g, ' ').slice(0, 220) + ' |'));
-  const tf = rows1.filter((r) => r.round === 3 && r.fix_text); if (tf.length) { L.push('', '### Wording rewritten', ''); tf.forEach((r) => L.push('- **' + r.item + '**: ' + r.fix_text)); }
+  L.push('Round 2 scoring: in cycle 1 a blind item failed on a different pick, a second defensible answer, an unsafe word OR any written worry (stricter than the brief; round 3 adjudicated every one). From cycle 2 on, the brief\'s own rule: a different pick, a second defensible answer or an unsafe word fails, and a worry passes to round 3 as a note. 11 cycle-2 items first shown with an empty A:B pair were solved again on a fair sheet (`rounds2/superseded-b2-1.json`).', '');
+  L.push('## Every fix (round 3, every cycle)', '', '| cycle | unit | dropped options | gloss | why |', '|---|---|---|---|---|');
+  fixes.forEach((r) => L.push('| ' + r.cycle + ' | ' + r.item + ' | ' + (r.drop || []).join(', ') + ' | ' + (r.gloss === 'hide' ? 'hidden' : '') + ' | ' + String(r.reason).replace(/\|/g, '/').replace(/\n/g, ' ').slice(0, 220) + ' |'));
+  const tf = fixes.filter((r) => r.fix_text); if (tf.length) { L.push('', '### Wording rewritten', ''); tf.forEach((r) => L.push('- **' + r.item + '**: ' + r.fix_text)); }
   L.push('', '## Every unit dropped', '', '| unit | why |', '|---|---|');
   dropped.forEach((d) => L.push('| ' + d.unit + ' | ' + String(d.why).replace(/\|/g, '/').replace(/\n/g, ' ').slice(0, 240) + ' |'));
   L.push('', '## For the owner', '', '- Round 2 of cycle 1 failed the Shiva card on principle (a living, worshipped god as a "Legendary" collectible beside a historical pantheon), not on its words. Its words passed. The avatar\'s place in the packs is your decision (10 Oct: Shiva and Zeus stay, each with a respectful card); the reviewers were told not to judge it, and this note is here so you see the concern.', '- The data shown to a child is exactly what shipped: `analogy-data.js` was cut to the shipped items (same ids and words the reviewers read), with a gloss only where a reviewer read it and kept it.');

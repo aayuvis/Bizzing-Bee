@@ -1,0 +1,1487 @@
+[
+ {
+  "unit": "item:wq",
+  "verdict": "pass",
+  "reason": "Both rounds pass. screech = squeal (a high, piercing cry; tyres screech/squeal). hoot, honk and growl are low or different calls, none a synonym. Gloss is squeal's noun sense, which fits.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wr",
+  "verdict": "pass",
+  "reason": "Both rounds pass. stomach = belly in everyday use; digestion, lung, ulcer and bladder are a process, other organs or an illness, not the same. 'belly' is a plain word, not an insult. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ws",
+  "verdict": "pass",
+  "reason": "Both rounds pass. motorist = driver exactly; streetcar, scooter, taxicab are vehicles, not people. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wt",
+  "verdict": "pass",
+  "reason": "Both rounds pass. puzzle = riddle (something hard to understand or solve); clue, solver, theorem, combo are not the same thing. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ww",
+  "verdict": "pass",
+  "reason": "Both rounds pass. repay = reimburse; mortgage (a loan), resent and expend (spend) are not paying back. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wx",
+  "verdict": "pass",
+  "reason": "Disagree with r1's fail. Dictionaries and thesauri pair minstrel and bard as travelling poet-singers, and the bridge only claims 'means about the same as'. Both words are met at 11 in Robin Hood, Shakespeare ('the Bard') and fantasy stories, so not too obscure for L4. 'minstrel' on its own is the standard word for a medieval singer; the blackface sense belongs to the compound 'minstrel show' and is not the word's ordinary meaning. tango, duet, columnist do not compete. Gloss 'a lyric poet' is bard's sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:wy",
+  "verdict": "pass",
+  "reason": "Both rounds pass. capable -> capability is a clean adjective-to-noun family pair, solvable by its suffix even at L2; state, worthy, render are not of the family. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x0",
+  "verdict": "pass",
+  "reason": "Both rounds pass. move -> movement is the verb-to-noun family; halt, decision, arrival, imagination are other words. Gloss stays hidden as cycle 1 set it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. estimate = guess (a rough judgement); probability, average, percentage are maths terms, not synonyms. Gloss gives the opinion-on-incomplete-evidence sense, which fits.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. gritty = grainy (sandy, granular), and the gloss is that sense; crumbly, briny, chunky, soapy are other textures or tastes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x5",
+  "verdict": "pass",
+  "reason": "Both rounds pass. tight/loose are direct opposites. 'fast' (held fast) and 'narrow' are near-synonyms of tight, not opposites; expand and pull are actions. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. leaping = jumping exactly; swoop, trot, dove, twirl are other movements. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x7",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A xylophone is a kind of instrument; strum, mouthpiece, fret are an action or parts, and 'instrumental' is an adjective. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x8",
+  "verdict": "pass",
+  "reason": "Both rounds pass. victory = triumph; 'won' is a verb, defeat the opposite, bravery and betrayal unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:x9",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A butterfly is a kind of insect; peacock and eagle are birds, daisy a flower, orb unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xc",
+  "verdict": "pass",
+  "reason": "Both rounds pass (r2 notes cache is advanced; fine at L5). cache = hoard (a hidden store), as the gloss shows; retrieval and encryption are the computing senses, not stores. Two wrong options remain, which is allowed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xd",
+  "verdict": "pass",
+  "reason": "Both rounds pass. price = cost; premium, buyer, salary, investment are not the amount a thing costs. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xe",
+  "verdict": "pass",
+  "reason": "Both rounds pass. gorge = ravine; lagoon, trough, rowboat, trickle are not steep narrow valleys (a trough is a shallow depression). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xf",
+  "verdict": "pass",
+  "reason": "Both rounds pass. amuse = entertain; hoax, jest, parody are things you might do, not the same as amusing. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xg",
+  "verdict": "pass",
+  "reason": "Both rounds pass. fleck = speck exactly; topaz and amethyst are gems. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xk",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cooling = chilling (the process of becoming cooler), which the gloss shows; freeze is a verb and an extreme, evaporation/vapour/condensation are other processes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xm",
+  "verdict": "pass",
+  "reason": "Both rounds pass. answer = response; verdict, apology, guess, refusal are particular kinds of reply, not the same word. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xn",
+  "verdict": "pass",
+  "reason": "Both rounds pass; r2's note on obscure distractors is style, not a defect - forewing, operculum, thorax, pincer are body parts and none means the lower side. 'bottom' is the ordinary word for the lowest part, not a swear word or insult. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xo",
+  "verdict": "pass",
+  "reason": "Both rounds pass. derision = mockery; jealousy and indignation are other feelings. Gloss is mockery's sense (it uses 'derision', as many glosses here use the clue word; that is a design pattern, not a wrong sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xp",
+  "verdict": "pass",
+  "reason": "Both rounds pass. pupil = student; iris, eye, colon pull on the eye sense of pupil but none means a learner - a fair trap. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xq",
+  "verdict": "pass",
+  "reason": "Both rounds pass. debris = rubble; silt, hydrant, rainwater, smog are not broken remains. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xr",
+  "verdict": "pass",
+  "reason": "Both rounds pass. conservation = preservation; wetland, tourism, cleanup, habitat are related topics, not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xt",
+  "verdict": "pass",
+  "reason": "Both rounds pass; coiffure is a fair L8 spelling word. hairdo = coiffure exactly; frizz, cabochon, tutu, lacework are not hairstyles. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xx",
+  "verdict": "pass",
+  "reason": "Both rounds pass. stumble and stagger both mean to walk unsteadily (thesaurus pair); wow, jog, flop, wink do not. Gloss is the unsteady-gait sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xy",
+  "verdict": "fail",
+  "reason": "Side with r1 over r2. Only entrap and fend are left as wrong options, and 'fend' (MW: to keep or ward off, repel; 'fend off an attack') is as close to deter as 'repel', which cycle 1 dropped from this very item as defensible ('spikes deter / fend off climbers'). A careful child can defend fend. It cannot be dropped, since that would leave a single wrong option, so the item cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:xz",
+  "verdict": "pass",
+  "reason": "Both rounds pass. posture = stance; stoop is one bent posture, stature is height (r2's trap, not a synonym), upright an adjective, flexibility unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y1",
+  "verdict": "pass",
+  "reason": "Both rounds pass. uncovering = revealing (making something known); forgery, eyewitness, vandal, legacy are not. Gloss shows that sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y2",
+  "verdict": "pass",
+  "reason": "Both rounds pass. false -> falsehood is the adjective-to-noun family; fake (synonym of false), flaw and true are not its noun. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. affection = fondness; gratitude, goodwill, admiration, compassion are related but different feelings. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A sardine is a kind of fish; lobster, squid, abalone are sea creatures that are not fish, saltwater an adjective. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y7",
+  "verdict": "pass",
+  "reason": "Both rounds pass. increase = gain ('a gain in weight'); reduction is the opposite, efficiency and insulin unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y8",
+  "verdict": "pass",
+  "reason": "Both rounds pass; r1 already answers r2's note that build is read as a verb first: the gloss pins the noun sense and at L6 that is fair. build (noun) = physique; framework, prop, prototype, foundation are structures or models, not a body's shape.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y9",
+  "verdict": "pass",
+  "reason": "Both rounds pass. youth -> youthful is the word-family link; juvenile and adolescent mean young but are not formed from youth, so they do not fit the link (r2 notes this). maiden and beloved are unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ya",
+  "verdict": "pass",
+  "reason": "Both rounds pass. luggage = baggage exactly; van, fare, wallet, freight (goods shipped) are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yd",
+  "verdict": "pass",
+  "reason": "Both rounds pass. basement = cellar; bathroom, attic, hydrant, bathtub are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ye",
+  "verdict": "pass",
+  "reason": "Both rounds pass. revulsion = disgust; exasperation and indignation are other feelings, acceptance the opposite. r2 notes 'harassment' is heavy; it is an everyday word in school anti-bullying talk and not unsafe, and it is plainly not a synonym. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yf",
+  "verdict": "pass",
+  "reason": "Both rounds pass. disbelief = skepticism; jealousy, doom, wrath, anticipation are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yh",
+  "verdict": "pass",
+  "reason": "Both rounds pass. grieve = mourn; solace, repent, comforted, cherish are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yj",
+  "verdict": "pass",
+  "reason": "Both rounds pass. series = sequence; motif, booklet, trio, narration are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yk",
+  "verdict": "pass",
+  "reason": "Both rounds pass. attribute (noun) = trait; goodness and notion are not, and masculine/masculinity are an untidy duplicate but neither is a synonym and neither is unsafe. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yl",
+  "verdict": "pass",
+  "reason": "Both rounds pass. fluffy = downy; curly, velvety (smooth-soft), lacy are other textures and 'down' is the noun, not a describing word. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yn",
+  "verdict": "pass",
+  "reason": "Both rounds pass. knowledge = awareness in the 'knowledge/awareness of the danger' sense the gloss shows; ethic, mystic, metaphysics, aptitude (talent) are not.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yo",
+  "verdict": "pass",
+  "reason": "Both rounds pass. belligerence = aggression; malice (wish to harm), retaliation, snub, abhorrence are different. Gloss right; a fair L8 word.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yp",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A fox is a kind of mammal; rabbit, hound, leopard, deer are fellow animals, none a group a fox belongs to. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yq",
+  "verdict": "pass",
+  "reason": "Both rounds pass. appraisal = assessment; depreciation, salary, sufficiency, shareholder are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yr",
+  "verdict": "pass",
+  "reason": "Both rounds pass. speculation = conjecture; skepticism and paradox are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ys",
+  "verdict": "pass",
+  "reason": "Both rounds pass. reliable = dependable; available, fastest, clearer are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yu",
+  "verdict": "pass",
+  "reason": "Both rounds pass. paradise = heaven in the general 'place of complete bliss' sense the gloss shows, neutral across faiths; swan, robin, fairy are not, 'heavenly' is the adjective. r2 notes fairy's dated slur sense: 'fairy' is core children's vocabulary (fairy tale, tooth fairy) and not a common swear word or insult today, so it stays.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yw",
+  "verdict": "pass",
+  "reason": "Both rounds pass. droop = sag; lob, tuft, maroon are not. Gloss is the right verb sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yx",
+  "verdict": "pass",
+  "reason": "Both rounds pass; r2's 'weak' note is answered by the thesaurus: superiority is listed for excellence (the quality of being better), and the gloss shows that shared sense. prestige is the reputation that follows excellence, not excellence itself; sophistication, utmost, estimation are further off.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:yy",
+  "verdict": "fix",
+  "reason": "Side with r2's fail on safety, not on the link. hole = opening is right and the gloss fits, but 'screw' has a common crude slang sense and here sits next to 'hole' and 'peg', which turns an innocent set into innuendo for older children - the swear-word rule applies even in the innocent sense. Drop it; peg and dent remain (a peg fills a hole, a dent is a hollow, neither is an opening).",
+  "drop": [
+   "screw"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z0",
+  "verdict": "pass",
+  "reason": "Both rounds pass. astrology -> astrological is the noun-to-adjective family, presented neutrally; sociological, theological, humanistic belong to other nouns. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z1",
+  "verdict": "pass",
+  "reason": "Both rounds pass. smooth/rough are direct opposites; crisp, thick, soft, cloudy are not opposites of smooth. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z2",
+  "verdict": "pass",
+  "reason": "Disagree with r1's fail. Thesauri give committee as a synonym of board in the governing-body sense ('a board/committee of examiners'), and the bridge claims only 'means about the same as'. Indian children know exactly this sense from 'the CBSE board'. skate, roller, bulletin, fulcrum pull on the plank sense (bulletin is a goes-with trap, as the lesson teaches), but none means a group, so committee is the only defensible answer. Gloss is the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. creative = imaginative; renewable, contemporary, speculative (based on guesswork) are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. caustic = corrosive in the chemical sense the gloss shows; vapour, wetness, lather are not.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z5",
+  "verdict": "pass",
+  "reason": "Both rounds pass. hobby = pastime; showcase, weekend, enthusiast (a person), debut are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. string = twine (a light cord), as the gloss shows; pluck, fret, lute, percussion pull on the music sense but none is a cord.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z7",
+  "verdict": "pass",
+  "reason": "Both rounds pass. bias = prejudice; conviction, persuasion, volition, dissent are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z8",
+  "verdict": "pass",
+  "reason": "Both rounds pass. effortless = easy; breathless, flawless, incredible, dizzy are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z9",
+  "verdict": "pass",
+  "reason": "Both rounds pass. rewriting = revising; signer, compilation, reprint (printing again unchanged), clarification are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:za",
+  "verdict": "pass",
+  "reason": "Both rounds pass. unsuitable = inappropriate; appropriate is the opposite, satisfactory and negligent are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zb",
+  "verdict": "pass",
+  "reason": "Both rounds pass. incorporation = inclusion; signer, issuer, substitution are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zc",
+  "verdict": "pass",
+  "reason": "Both rounds pass. parachute = chute (its short form, same meaning); helicopter, foremast, tow, glider are not. Gloss pins the parachute sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zd",
+  "verdict": "pass",
+  "reason": "Both rounds pass. crumble = disintegrate; shatter is sudden violent breaking, demolish is to knock down, uproot unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zf",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cart = wagon; truck and van are motor vehicles to a child, sack unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zg",
+  "verdict": "pass",
+  "reason": "Both rounds pass. ecological = environmental; geographical/geographic (an untidy duplicate, not a second answer) and evolutionary are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zh",
+  "verdict": "pass",
+  "reason": "Disagree with r1's fail. Thesauri list festival among the synonyms of celebration, and the bridge claims only 'means about the same as'; at L2 that is the right level of precision. 'graduation' is the finishing of a course (its ceremony may be celebrated, but the word does not mean celebration), and supper is a meal, so festival is the one defensible answer. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zi",
+  "verdict": "pass",
+  "reason": "Disagree with r1's fail, for the same reasons as item:wx: bard and minstrel are given as each other's synonyms (travelling poet-singers), the words are met at 11 in Robin Hood and Shakespeare, and plain 'minstrel' is the medieval word, not the 'minstrel show'. maiden, epic, ballad (what a minstrel sings) do not compete. Gloss 'a singer of folk songs' is minstrel's sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zj",
+  "verdict": "pass",
+  "reason": "Both rounds pass. ancient/modern are direct opposites; elder and old are synonyms of ancient, love and answer unrelated. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zl",
+  "verdict": "pass",
+  "reason": "Both rounds pass. authenticity = genuineness; correctness and confirmation are different, signer unrelated, 'genuine' the adjective. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zm",
+  "verdict": "pass",
+  "reason": "Both rounds pass. assistant = helper; boss, senior, executive are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zo",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Purple is a kind of colour; pink and violet are fellow colours (r2's temptation), not the category, and 'colorful' is an adjective. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zp",
+  "verdict": "fix",
+  "reason": "Partly side with r1. circumference = girth holds in the 'distance around something' sense (the girth of a tree trunk; thesauri list girth under circumference), and vertex/vertices, longitude, median do not compete (the vertex/vertices duplicate is untidy, not a second answer). But the gloss shown, 'the distance around a person's body', is the narrow body-size sense - the one everyday English uses for fatness ('a man of some girth') - not the geometric sense the clue word needs. Hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:zq",
+  "verdict": "pass",
+  "reason": "Both rounds pass. equestrian (noun) = rider, and the gloss pins an animal rider; handler, racer, judo, rocker are not.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zs",
+  "verdict": "pass",
+  "reason": "Both rounds pass. routine = habit ('my morning routine/habit'), as the gloss shows; rehearsal, overtime, recital are not.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zv",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cranium -> cranial is the noun-to-adjective family; parietal, vertebral, pelvic, frontal are other anatomy adjectives. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zw",
+  "verdict": "pass",
+  "reason": "Both rounds pass. reporter = journalist; email, investigator, bard are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zx",
+  "verdict": "pass",
+  "reason": "Both rounds pass. stiffness = rigidity; elasticity and flexibility are opposites, eyesight and spasm (a sudden contraction) are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zy",
+  "verdict": "pass",
+  "reason": "Both rounds pass. sun -> sunny is the noun-to-adjective family; golden, rainy, magical, natural are not formed from sun. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:zz",
+  "verdict": "pass",
+  "reason": "Both rounds pass. canyon = gorge; headland, cove, crag, boulder are other landforms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10a",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A tuba is a kind of instrument; clapper, cymbal, drummer, instrumental do not compete. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10c",
+  "verdict": "pass",
+  "reason": "Both rounds pass. enroll -> enrollment is the verb-to-noun family; learner, academy, certification are not of it and 'join' is a verb. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10d",
+  "verdict": "pass",
+  "reason": "Both rounds pass; r2's 'weak' note is answered as for item:yx - thesauri pair superiority and excellence, and the gloss shows the shared sense. humility is the opposite, patriotism unrelated, 'excel' the verb.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10e",
+  "verdict": "fail",
+  "reason": "Side with r1 over r2. In the school science a 12-13-year-old is taught (states of matter), vaporization is the whole liquid-to-gas change and evaporation is one kind of it, the other being boiling. Teaching 'vaporization means the same as evaporation' contradicts the distinction the child is marked on. Not rescuable by dropping options or hiding the gloss.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10g",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A mackerel is a kind of fish; auk (a bird), crayfish, baboon are not fish. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10i",
+  "verdict": "pass",
+  "reason": "Both rounds pass. limitation = constraint; oversight and dependency are not. Gloss stays hidden as cycle 1 set it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10k",
+  "verdict": "pass",
+  "reason": "Both rounds pass. inside (noun) = interior; spot, word, find, there are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10n",
+  "verdict": "pass",
+  "reason": "Both rounds pass. perfume = fragrance (a pleasant smell); mastic, beeswax, linseed, balsam are substances (balsam is a perfume ingredient, not a smell). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10o",
+  "verdict": "pass",
+  "reason": "Both rounds pass; r2's note on obscure anatomy distractors is style, not a second answer. narrowing = constriction exactly; navel, jugular, colon, mesentery cannot be confused with it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10q",
+  "verdict": "pass",
+  "reason": "Both rounds pass. insect = bug in everyday speech; worm, spider, toad are other creatures. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10r",
+  "verdict": "pass",
+  "reason": "Both rounds pass. r2's note that livestock is a collective noun is fair but does not break the link: farm animals are a kind of animal, and the bridge 'livestock is a kind of animal' reads correctly. hay and crop are produce, 'domestic' an adjective, and sheep is an instance of livestock (the reverse direction). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10s",
+  "verdict": "pass",
+  "reason": "Both rounds pass. doubt = skepticism; certainty and conviction are opposites, contradiction is different. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10t",
+  "verdict": "fix",
+  "reason": "Partly side with r1. flip = somersault is a dictionary sense (MW: a somersault, especially in the air; children say 'do a flip'), the gloss pins it, and no option is a synonym. But 'vert' reads to most children as a fragment of 'vertical' or a misspelling, the same class as 'ness' and 'gaster' that cycle 1 dropped from a spelling app. Drop it; upside and posit remain, neither a synonym ('posit' is advanced but harmless as a distractor).",
+  "drop": [
+   "vert"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10u",
+  "verdict": "pass",
+  "reason": "Both rounds pass. gulp = swallow (verb); fridge, hydrant, wiggle, lifeguard are not. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10v",
+  "verdict": "pass",
+  "reason": "Both rounds pass. blunt/sharp are direct opposites; timid, tame, cowardice are not opposites of blunt in any sense (the opposite of outspoken is tactful, not timid). Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10w",
+  "verdict": "pass",
+  "reason": "Both rounds pass. champion = winner; triumph is the win not the winner, boxer a kind of fighter. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10x",
+  "verdict": "pass",
+  "reason": "Both rounds pass. improper = inappropriate; negligent, untrue, inconvenient are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10y",
+  "verdict": "pass",
+  "reason": "Both rounds pass. useful -> usefulness is the adjective-to-noun family; retrieval, formulation, necessary, avail are not formed from useful. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11a",
+  "verdict": "pass",
+  "reason": "Both rounds pass. sneaky = underhanded (marked by deception); extra and silent are not (silent describes sound, not deceit). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11b",
+  "verdict": "pass",
+  "reason": "Both rounds pass. tubular = cylindrical exactly; warty, conical (a different shape), narrower are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11c",
+  "verdict": "pass",
+  "reason": "Both rounds pass. music -> musical is the noun-to-adjective family; joyful, heroic, magical, rainy are not. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11d",
+  "verdict": "pass",
+  "reason": "Both rounds pass; r2 notes currency is near rather than exact, and the gloss pins the shared sense (notes and coins in use). premium, asset, cage, investment do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11e",
+  "verdict": "pass",
+  "reason": "Both rounds pass. fury = wrath; elation and fear are other feelings, emotion the category. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11f",
+  "verdict": "pass",
+  "reason": "Both rounds pass. history -> historic is in the word family; famous, scientific, heroic, powerful are not formed from history. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11h",
+  "verdict": "pass",
+  "reason": "Both rounds pass. apprentice = trainee; junior is a near-miss r2 rightly rejects, veteran the opposite, barber and custodian jobs. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11i",
+  "verdict": "pass",
+  "reason": "Both rounds pass. plausible = credible; doubtful and improbable are opposites, apologetic unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11j",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A spoke is part of a wheel; 'whisper' is a fair trap on spoke as past of speak, and a spoke is not part of a bar. Gloss right (truncated but the sense is clear).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11k",
+  "verdict": "pass",
+  "reason": "Both rounds pass. intrude = interfere (thesauri list it); confide, consent, dissent are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11l",
+  "verdict": "pass",
+  "reason": "Both rounds pass. liking = fondness; goodwill, closeness, gratitude, familiarity are related but different. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11m",
+  "verdict": "pass",
+  "reason": "Both rounds pass. exaggeration = embellishment, as the gloss shows; attractiveness, vividness, absurd are not. Fair at L7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11n",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Peel is part of an orange; candy and shred are not wholes it belongs to. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11o",
+  "verdict": "pass",
+  "reason": "Both rounds pass. inappropriate = unsuitable exactly; plausible, blatant, unintentional are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11q",
+  "verdict": "pass",
+  "reason": "Both rounds pass. chill (noun) = coldness, as the gloss shows; cornbread and drizzle are not.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11s",
+  "verdict": "pass",
+  "reason": "Both rounds pass. narrator = storyteller; playwright, melodrama, thriller, memoir are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11v",
+  "verdict": "pass",
+  "reason": "Both rounds pass. nobility = aristocracy (the hereditary class) as the gloss shows; prestige is reputation or standing, not the class or noble character, and blockbuster is unrelated.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11x",
+  "verdict": "pass",
+  "reason": "Both rounds pass. chamber = room; portal, barn, interior are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11y",
+  "verdict": "pass",
+  "reason": "Both rounds pass. alley = lane (a narrow way); driveway, subway, highway are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12b",
+  "verdict": "pass",
+  "reason": "Both rounds pass. successive = sequential; eleven, tertiary, cyclical are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12d",
+  "verdict": "pass",
+  "reason": "Both rounds pass. figurative = symbolic (emblematic; thesauri pair them); subjective, implicit, communicative are not and 'symbol' is the noun trap. Gloss right; fair at L7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12e",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A chicken is a kind of bird; lamb, roast, ham, pork pull on the meat sense but none is a category a chicken belongs to. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12g",
+  "verdict": "pass",
+  "reason": "Both rounds pass. prejudice = bias; injustice, conviction, distrust, dissent are different. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12i",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A crocodile is a reptile; cetacean, urchin, hedgehog, toad are not groups it belongs to. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12j",
+  "verdict": "pass",
+  "reason": "Both rounds pass. savor = taste in the flavour sense the gloss shows; soy, oatmeal, ginger are foods. r2's note on 'ginger': here it is the everyday spice (adrak in most of the audience's kitchens), not a common swear word or body insult, so it stays.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12k",
+  "verdict": "pass",
+  "reason": "Both rounds pass. eradicate = exterminate (destroy completely); the gloss pins the pest sense, which is safe. deter, taint, repulse are not synonyms and 'exterminator' is the noun.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12n",
+  "verdict": "pass",
+  "reason": "Both rounds pass. believable = plausible; sensible (practical), constructive, unrealistic are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12o",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A drill is a kind of tool; bore is what it does, tackle (fishing gear), cleanup and golfer do not contain a drill. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12p",
+  "verdict": "pass",
+  "reason": "Both rounds pass. fate = destiny; prophecy, mortal, soul are not. Gloss right and faith-neutral.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12q",
+  "verdict": "pass",
+  "reason": "Both rounds pass. arrogance = conceit; jealousy and envy are other feelings, and boldness is courage or daring, not an inflated opinion of oneself. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12r",
+  "verdict": "pass",
+  "reason": "Both rounds pass. perch = roost; sparrow and heron are birds, flit an action, arbor a bower. Gloss stays hidden as cycle 1 set it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12t",
+  "verdict": "pass",
+  "reason": "Both rounds pass. crease = fold; fray, hunch, fuzz are not. Gloss is the verb sense, which fits.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12u",
+  "verdict": "pass",
+  "reason": "Both rounds pass. awe = wonder; r2 rightly notes terror is only the old dread sense, and sadness, affection, optimism are other feelings. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12w",
+  "verdict": "pass",
+  "reason": "Both rounds pass. front = fore (the front part; 'to the fore'), a common homophone word at L4; slap, femur, elbow are unrelated and affront is only a look-alike. The gloss gives the ship/aircraft use of fore, which is a correct instance of 'front part'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12x",
+  "verdict": "pass",
+  "reason": "Both rounds pass (r2 notes the distractors are obscure, which is not a defect). An artichoke is a kind of plant; russet (a colour/apple) and bur (a prickly seed case) are not groups it belongs to. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13a",
+  "verdict": "pass",
+  "reason": "Both rounds pass. adorable = lovable; gaudy and flamboyant are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13b",
+  "verdict": "pass",
+  "reason": "Both rounds pass. baby = infant; cub is the young of certain animals (narrower, as r2 says) and mother unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13f",
+  "verdict": "pass",
+  "reason": "Both rounds pass. trash = garbage; mop, bread, driveway are not. Gloss stays hidden as cycle 1 set it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13h",
+  "verdict": "pass",
+  "reason": "Both rounds pass. goodbye = farewell; hello is the opposite, wink, smirk, fidget unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13i",
+  "verdict": "pass",
+  "reason": "Both rounds pass. vendor = seller; bakery, bazaar, deli, stall are places, not people. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13j",
+  "verdict": "pass",
+  "reason": "Both rounds pass. sunshine = sunlight; midday, cooler, sunflower are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13k",
+  "verdict": "pass",
+  "reason": "Both rounds pass. revive = resuscitate in the gloss's sense (bring back to consciousness); reinvent, relapse, recoup, recondition each mean something else. Fair at L7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13n",
+  "verdict": "pass",
+  "reason": "Both rounds pass. crevice = fissure (a narrow crack); a ravine is a large valley, and dune, bracken, trickle are unrelated. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13q",
+  "verdict": "pass",
+  "reason": "Both rounds pass. pretending = feigning; tease, hoax (a trick, a thing), doom are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13r",
+  "verdict": "pass",
+  "reason": "Both rounds pass. drama = play (a stage work), as the gloss shows; comedian and epic are not. Two wrong options remain.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13s",
+  "verdict": "fix",
+  "reason": "Partly side with r1. significance = meaning is a standard sense ('the significance of a symbol'), and the gloss shows it. But significance's commoner sense is importance, and 'greatness' is close enough to importance ('the greatness/significance of the discovery') for a careful 11-year-old to defend. Drop it. prestige (reputation), meaningful and notable (adjectives) remain, none a noun meaning the same.",
+  "drop": [
+   "greatness"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13u",
+  "verdict": "pass",
+  "reason": "Both rounds pass. boss = supervisor; advisor, assistant, sergeant (a rank) are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13v",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Shellfish are animals; mussel is the reverse direction (a kind of shellfish), and roe, haddock, tofu do not contain shellfish. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13x",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Mistletoe is a kind of plant; bur (a seed case) and muskrat (an animal) are not groups it belongs to. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:13y",
+  "verdict": "pass",
+  "reason": "Both rounds pass. decode = decipher; rewrite, edit, compile are different acts. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14d",
+  "verdict": "pass",
+  "reason": "Both rounds pass. swell = billow (a large sea wave; to rise and bulge); spurt, windstorm, wetness, whirlpool are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14e",
+  "verdict": "pass",
+  "reason": "Both rounds pass. classic (noun) = masterpiece; the gloss shows the noun sense, and rerun, combo, cookbook, narrator do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14f",
+  "verdict": "pass",
+  "reason": "Both rounds pass. annoy = irritate; blunder and muddle are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14g",
+  "verdict": "pass",
+  "reason": "Both rounds pass. attach = fasten; limber, subordinate are not, and padlock is a specific lock, not the same meaning. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14h",
+  "verdict": "pass",
+  "reason": "Both rounds pass. honest -> honesty is the adjective-to-noun family; truth is related in meaning but not formed from honest (r2 notes this). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14i",
+  "verdict": "pass",
+  "reason": "Both rounds pass. settler = colonist (WordNet synset), neutral wording; homestead and farmland are places. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14l",
+  "verdict": "pass",
+  "reason": "Both rounds pass. continuous = uninterrupted; successive, recurrent, monotone, monotonous each mean something else. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14m",
+  "verdict": "pass",
+  "reason": "Both rounds pass. endorse = approve; libel and empower are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14n",
+  "verdict": "fail",
+  "reason": "Side with r1 over r2. The link is sound, but L2 is about age 9, and 'administration' is an office and government word a 9-year-old does not reliably know (cycle 1 already flagged L2 as ambitious). Unlike a word-family item, a same-meaning item cannot be solved by suffix, so the child is guessing at an unknown word. A level that is wrong cannot be fixed by dropping options or hiding the gloss.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14o",
+  "verdict": "pass",
+  "reason": "Both rounds pass. merchant = trader; bazaar, import, cart are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14r",
+  "verdict": "pass",
+  "reason": "Both rounds pass. slope = incline; steep and steeper are the form traps, plateau and crag landforms. Gloss stays hidden as cycle 1 set it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14s",
+  "verdict": "pass",
+  "reason": "Both rounds pass. feast = banquet; supper is an ordinary evening meal and anniversary a date. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14w",
+  "verdict": "pass",
+  "reason": "Both rounds pass. movie = film; television, dot, theater (where you watch) are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14x",
+  "verdict": "pass",
+  "reason": "Both rounds pass. gullet = esophagus; tripe and reflux are not, and r2 judges them not unsafe, which I agree with. Gloss right; fair at L7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14y",
+  "verdict": "pass",
+  "reason": "Both rounds pass. brave = courageous; veteran and ruthless are not and 'courage' is the noun trap. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15h",
+  "verdict": "pass",
+  "reason": "Both rounds pass. thrust = push, as the gloss shows; rotor and crank are machine parts. Two wrong options remain.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15i",
+  "verdict": "pass",
+  "reason": "Disagree with r1's fail. Cambridge defines bookshelf as 'a shelf, or a set of shelves, for books' and in everyday speech a bookshelf is the piece of furniture; the bridge claims only 'means about the same as'. Even a child who reads bookshelf as one shelf of a bookcase lands on the same answer, so no competing answer exists: alcove, workspace, attic are places. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15k",
+  "verdict": "pass",
+  "reason": "Both rounds pass. doubt = uncertainty; certainty and conviction are opposite traps, contradiction different. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15u",
+  "verdict": "pass",
+  "reason": "Both rounds pass. evade = avoid; bail, arrest, defraud are not, and crime-themed words are fine at this age. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16h",
+  "verdict": "pass",
+  "reason": "Both rounds pass. disgust = revulsion; resentment and anger are other feelings, acceptance the opposite. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16i",
+  "verdict": "pass",
+  "reason": "Both rounds pass. aptitude = talent (natural ability); intellect (reasoning power) and upbringing are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16j",
+  "verdict": "pass",
+  "reason": "Both rounds pass. imitator = mimic; parody is an imitation, not a person who imitates, and columnist and entertainer are not imitators by meaning. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16k",
+  "verdict": "pass",
+  "reason": "Both rounds pass. r2's note that the item is solvable by suffix is true of every word-family item and not a defect; 'scruples' is known by 14. obstinate and blameless are not formed from scruple. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16l",
+  "verdict": "pass",
+  "reason": "Both rounds pass. scratch = abrasion; dent, blot, shin are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16n",
+  "verdict": "pass",
+  "reason": "Both rounds pass. shoot = sprout in the plant sense the gloss pins; aerial, arrow, bombardment pull on other senses but none is new growth. r2's note on violent framing: bombardment and arrow are ordinary history/storybook words, not gore.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16o",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cellar = basement; granary, urn, cupboard are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16p",
+  "verdict": "pass",
+  "reason": "Both rounds pass. refuse -> refusal is the verb-to-noun family; trash (the noun refuse) is a homograph trap but not a form of the verb, and dare, argument, arrival are other words. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16q",
+  "verdict": "pass",
+  "reason": "Both rounds pass. jealous ~ envious is the everyday pair; mad, regretful, cynical, fearful are not. Gloss stays hidden as cycle 1 set it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17j",
+  "verdict": "pass",
+  "reason": "Both rounds pass. impulse = urge; volition (deliberate will) and receptor are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17l",
+  "verdict": "pass",
+  "reason": "Both rounds pass. postpone = defer; annul, repeal, revoke mean cancel. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17n",
+  "verdict": "fix",
+  "reason": "Side with r1 on 'thick'. sharp/blunt is the canonical pair and the gloss is right, but 'thick' is a standard opposite of sharp in the mind sense (sharp-witted vs thick-headed), and in that sense it is a playground insult for being slow. Drop it; sour (a sharp taste, a near-synonym) and strong remain, neither an opposite.",
+  "drop": [
+   "thick"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17r",
+  "verdict": "pass",
+  "reason": "Both rounds pass. omission ~ deletion (something left out or removed; thesauri pair them); insertion is the opposite, parentheses, contradictory, spoof unrelated. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17s",
+  "verdict": "pass",
+  "reason": "Both rounds pass. entreat = beg; jeer, mourn, absolve are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17t",
+  "verdict": "pass",
+  "reason": "Both rounds pass. booth = stall (a market stall); van, bazaar, inn, discount are not. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17u",
+  "verdict": "pass",
+  "reason": "Both rounds pass. declare = proclaim; condemn is not, and 'shall' is an odd but harmless modal verb. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17w",
+  "verdict": "pass",
+  "reason": "Both rounds pass. surge = gush (a sudden rapid flow), as the gloss shows; blizzard and hurricane are storms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:8",
+  "verdict": "pass",
+  "reason": "Both rounds pass. huge = giant (adjective: a giant pumpkin); r2's 'stronger' worry does not hold, as both are at the top of the size scale.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:0",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a baker is exactly the person who bakes. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:1",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a teacher is exactly the person who teaches. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:2",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a sailor is exactly the person who sails. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:3",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a painter is exactly the person who paints. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:4",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a farmer is exactly the person who farms. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:5",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a singer is exactly the person who sings. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:6",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and an actor is exactly the person who acts. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:7",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a driver is exactly the person who drives. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:8",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and a swimmer is exactly the person who swims. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:who:9",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail, as cycle 1 did. A stem is a worked example and needs only its link to be true, and an inventor is exactly the person who invents. That the agent noun is formed with a suffix does not make 'Who does it' false; it is the more specific link, and analogies take the most specific one. Whether the lesson should also say that person-words go to 'Who does it' is lesson design for the owner, not a fault in this pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. kind -> kindness is a textbook adjective-to-quality family pair; r2's worry that 'kind' sounds like the 'Kind of' label is a coincidence of spelling, not an error.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:same:trap",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Accurate and clear: cool and breeze go together, but breeze does not MEAN cool. It names the trap exactly.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:part:bridge",
+  "verdict": "pass",
+  "reason": "Both rounds pass. 'The {A} is part of the {B}.' reads correctly for the singular part-whole pairs (the spoke is part of the wheel; the peel is part of the orange).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:part:spot",
+  "verdict": "pass",
+  "reason": "Both rounds pass. The test is about making up the whole, and the counter-example (a cup on a table) is exactly the location confusion it guards against.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:use:bridge",
+  "verdict": "pass",
+  "reason": "Both rounds pass. 'We use the {A} to {B}.' has no verb agreement on {A}, so it is correct for scissors and broom alike; r2's caveat (a noun as B) is a data rule, not a fault in the wording.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:use:trap",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Accurate: a bucket shares the broom's cupboard but is a thing, not the job; the answer is sweep. Clear for 8+.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:degree:idea",
+  "verdict": "pass",
+  "reason": "Both rounds pass. 'The same idea, turned up' covers temperature, loudness and quality alike, and warm -> hot -> scorching is a correct ladder.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:degree:bridge",
+  "verdict": "pass",
+  "reason": "Both rounds pass. '{B} is a stronger word than {A}' is grammatical and matches the idea and trap texts, which order pairs weaker to stronger (warm -> hot, big -> huge).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:degree:trap",
+  "verdict": "pass",
+  "reason": "Both rounds pass. big and large really are the same strength and huge is stronger, so the trap is described accurately.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "card:shiva",
+  "verdict": "pass",
+  "reason": "Both rounds pass. The words are accurate and from the inside: Shiva as loved and honoured today; protector, transformer and the one who makes new beginnings possible (a fair child's rendering of how devotees see him); the meditating Gangadhara form with Ganga in his hair; Maha Shivaratri as a night of prayer. Hedged ('many families', 'each in their own way', 'if yours does, ask them how'), no numbers or dates, no ranking, no joke. r2's concern about the Legendary tier and the pack pairing is a product decision for the owner and a tradition reviewer, not a fault in this text.",
+  "drop": [],
+  "gloss": "keep"
+ }
+]
