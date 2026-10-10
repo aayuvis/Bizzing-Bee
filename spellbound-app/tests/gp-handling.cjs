@@ -15,7 +15,7 @@
      NODE_PATH=/opt/node22/lib/node_modules node tests/gp-handling.cjs                    */
 const { chromium } = require('playwright');
 const path = require('path');
-const { booted, until, raceTime, lazy, RACE_DT_MAX } = require('./lib/wait.cjs');
+const { booted, until, raceTime, lazy } = require('./lib/wait.cjs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
@@ -74,9 +74,10 @@ const key = (pg, type, k) => pg.evaluate(([type, k]) => dispatchEvent(new Keyboa
   /* read inside the page, frame by frame, for 2.5s of race — a read from outside lands
      whenever the round trip lets it */
   const c = await pg.evaluate(() => { const c = window._race.toBend(4); window._race.setV(1); window._race.steerTo(0); return c; });
-  const maxX = await pg.evaluate(([secs, cap]) => new Promise(r => { let acc = 0, last = null, m = 0;
-    const f = ts => { if (last != null) acc += Math.min(cap, (ts - last) / 1000); last = ts; m = Math.max(m, Math.abs(window._race.state().x));
-      if (acc >= secs) r(m); else requestAnimationFrame(f); }; requestAnimationFrame(f); }), [2.5, RACE_DT_MAX]);
+  /* (10 Oct 2026) on the race's own clock, raceT — counting frames at a fixed clamp drifted from it on a loaded machine */
+  const maxX = await pg.evaluate(([secs]) => new Promise(r => { const t0 = window._race.state().raceT; let m = 0;
+    const f = () => { const s = window._race.state(); m = Math.max(m, Math.abs(s.x));
+      if (s.raceT - t0 >= secs) r(m); else requestAnimationFrame(f); }; requestAnimationFrame(f); }), [2.5]);
   ok(maxX > 0.95, `hands off through a curve-${Math.abs(c)} bend at speed, the kart ends up on the grass (reached ${maxX.toFixed(2)} of 0.95)`);
 
   /* 4 — AND STEERING INTO IT HOLDS IT. Same bend, same speed, driven the way a person
@@ -90,10 +91,10 @@ const key = (pg, type, k) => pg.evaluate(([type, k]) => dispatchEvent(new Keyboa
      1.5s of race. Driven from outside, each look-and-press was a round trip, and on a loaded
      machine the kart covered most of the bend between the look and the press: a person
      reacting that late does run off (the old run saw 1.20 with the wheel held 550ms). */
-  const drive = await pg.evaluate(([c, into, cap]) => new Promise(r => {
+  const drive = await pg.evaluate(([c, into]) => new Promise(r => {
     const key = (type) => dispatchEvent(new KeyboardEvent(type, { key: into, bubbles: true }));
-    let worst = 0, down = false, heldFor = 0, i = 0, acc = 0, last = null, next = 0;
-    const f = ts => { if (last != null) acc += Math.min(cap, (ts - last) / 1000); last = ts;
+    let worst = 0, down = false, heldFor = 0, i = 0, next = 0; const t0 = window._race.state().raceT;
+    const f = () => { const acc = window._race.state().raceT - t0;   // race time, from the race's own clock
       if (acc >= next) {
         const s = window._race.state(); worst = Math.max(worst, Math.abs(s.x));
         const inside = (c > 0 ? 1 : -1) * s.x;              // how far toward the inside of the turn
@@ -105,7 +106,7 @@ const key = (pg, type, k) => pg.evaluate(([type, k]) => dispatchEvent(new Keyboa
         if (i >= 30) { if (down) key('keyup'); return r({ worst, heldFor }); }
       }
       requestAnimationFrame(f); };
-    requestAnimationFrame(f); }), [c, into, RACE_DT_MAX]);
+    requestAnimationFrame(f); }), [c, into]);
   const worst = drive.worst, heldFor = drive.heldFor;
   ok(heldFor > 0 && worst < 0.95, `steering into the same bend keeps it on the road (widest ${worst.toFixed(2)}, wheel held ${heldFor}ms)`);
 

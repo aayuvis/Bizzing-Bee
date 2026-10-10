@@ -2147,9 +2147,17 @@
     else if (right > L && left < L) dx = L - left;                 // cut at the left: the same, the other way
     sg.style.setProperty('--sdx', Math.round(dx / z) + 'px');
   } catch (_) {} }
+  /* …AND IT IS FITTED AGAIN WHEN THE BOARD CHANGES SIZE, not only when the camera moves (P0.18/P0.17:
+     "390px Junkyard stop card 162–485"). A panorama is as wide as its painting, so until the painting has
+     loaded the board is a sliver and the first fit is made against it. When the painting lands the board
+     grows to ~3,500px; if the camera's place does not change (stop 1 sits at scroll 0) no scroll event
+     fires, and the card kept the sliver's nudge — 116px off the phone's right edge, for good. The board
+     is watched instead: any change of its size refits the card and the sign. Guards: mobile-layout.cjs
+     (the Junkyard over http with its painting held back 1.5 s) and atlas-layout.cjs. */
+  function popWatch(bd) { try { if (bd._popRO || !window.ResizeObserver) return; bd._popRO = new ResizeObserver(() => popFitSoon()); bd._popRO.observe(bd); } catch (_) {} }
   function popFit() { try {
     const pan = document.getElementById('sb-pan'), p = pan && pan.querySelector('.atlas-pop'); if (!p) return;
-    const bd = p.offsetParent; if (!bd || !bd.offsetWidth) return;
+    const bd = p.offsetParent; if (bd) popWatch(bd); if (!bd || !bd.offsetWidth) return;
     const br = bd.getBoundingClientRect(), wr = pan.getBoundingClientRect();
     /* #root carries a CSS zoom (1.09, or the text-size setting): rects are zoomed, offsets
        are not — so work in screen pixels and hand the nudge back in CSS pixels */

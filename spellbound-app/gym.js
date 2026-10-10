@@ -695,8 +695,13 @@
 .gym-art{display:grid;place-items:center;width:100%;height:100%;color:var(--treasure-deep,#8A5B00)}
 .gym-art svg{width:58%;height:58%}
 [data-mode="dusk"] .gym-art{color:var(--treasure,#F0B429)}
-@container sgstage (max-width:640px){ .gym-root .sb-stage .sg-st-c{max-width:58cqw} .gym-cline{gap:3px} .gym-ctitle .sg-st-title{max-width:100%;font-size:14.5px;padding:6px 8px}
+@container sgstage (max-width:640px){ .gym-root .sb-stage .sg-st-c{max-width:min(58cqw,calc(100cqw - 160px))} .gym-cline{gap:3px} .gym-ctitle .sg-st-title{max-width:100%;font-size:14.5px;padding:6px 8px;white-space:normal;text-wrap:balance;overflow:visible;text-overflow:clip;line-height:1.12}
   .gym-root .gym-back,.gym-root .gym-spacer{width:40px;height:40px} }
+/* P0.17: a mode's name is never cut on a phone. Between Back and its mirrored spacer the title has ~100px at
+   390, and "Spot the Error" ellipsised to "Spot the Er…" (Champ Dictation and Level Challenge with it), so on
+   a phone it may take a second line, balanced, instead. And the centre never takes more than leaves each
+   stat its 64px (gutters 2×10 + gaps 2×6 + 2×64 = 160): at 58cqw a 360px phone put the left stat under
+   Back. Guard: tests/mobile-layout.cjs (every gym mode, 390 and 360). */
 .gym-stage .sg-st-n{font-family:var(--display);font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}.gym-stage .sg-st-t{font-size:11.5px;color:var(--muted);font-weight:700}
 .gym-stage .sg-st-ic{display:grid;place-items:center}
 .sb-content:has(> .sb-gympage){padding-bottom:0!important}
