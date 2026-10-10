@@ -433,7 +433,7 @@
       body = `<p class="anl-lead">Your turn. Say the first link, then find the word with the same link.</p>
         <div class="anl-pairs2">${pairHTML(L, p0)}${pairHTML(L, target, { blank: v == null || ord[v] !== 0, blankText: v != null && ord[v] === 0 ? target[1] : '?' })}</div>
         <div class="anl-opts n${opts.length}">${ord.map((j, n) => { const cls = v == null ? '' : j === 0 ? ' ok' : n === v ? ' no' : ' dim';
-          return `<button class="anl-opt${cls}" data-act="anl" data-arg="ls:try:${n}"${v != null ? ' disabled' : ''}><span class="anl-k">${n + 1}</span>${esc(opts[j])}</button>`; }).join('')}</div>
+          return `<button class="anl-opt${cls}" data-act="anl" data-arg="ls:try:${n}"${v != null ? ' disabled' : ''}><span class="anl-k">${n + 1}</span><span class="anl-ow">${esc(opts[j])}</span></button>`; }).join('')}</div>
         ${v == null ? '' : ord[v] === 0 ? `<div class="anl-yes"><b>Yes.</b> ${esc(ll(target))}</div>` : `<div class="anl-miss"><p><b>It is ${esc(target[1])}.</b> ${esc(ll(target))}</p><p class="anl-why">The first pair: ${esc(ll(p0))}</p></div>`}`; }
     if (step.k === 'ready') body = `<div class="anl-ready"><span class="anl-cic big">${lic(L.id, 30)}</span><p class="anl-lead">You know the <b>${esc(L.title.toLowerCase())}</b> link.</p>
         <ol class="anl-recap"><li>Say how the first two words are linked, in one sentence.</li><li>Say the same sentence with the third word.</li><li>Pick the word that makes it true. Watch for words that only go <i>with</i> it.</li></ol></div>
@@ -487,7 +487,7 @@
       return `<div class="anl-page anl-run">${top}<div class="anl-card">${stem}<p class="anl-ask">Step 1 · How are these two linked?</p><div class="anl-opts lines">${opts}</div>
         ${g.bpick != null && g.bpick !== B.ans ? `<div class="anl-miss"><p><b>The link:</b> ${esc(B.lines[B.ans])}</p><button class="anl-btn main" data-act="anl" data-arg="cont">Now the analogy <span class="anl-kb">Enter</span></button></div>` : ''}</div></div>`; }
     const opts = q.opts.map((o, i) => { const st = g.picked == null ? '' : i === q.ans ? ' ok' : i === g.picked ? ' no' : ' dim';
-      return `<button class="anl-opt${st}" data-act="anl" data-arg="pick:${i}"${g.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span>${esc(o)}</button>`; }).join('');
+      return `<button class="anl-opt${st}" data-act="anl" data-arg="pick:${i}"${g.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('');
     let after = '';
     if (g.picked != null) { const ok = g.picked === q.ans; const line = linkLine(q.rel, q.c, q.d);
       after = ok ? `<div class="anl-yes"><b>Yes.</b> ${esc(line)}</div>`
@@ -636,7 +636,7 @@
         <ul class="anl-log">${words}</ul><div class="anl-btns"><button class="anl-btn" data-act="openAnalogies">${ic('arrowLeft', 16)} Analogies</button><button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('retry', 16)} New bee <span class="anl-kb">Enter</span></button></div></div></div>`; }
     const q = b.q; if (!q) return '';
     const opts = q.opts.map((o, i) => { const st = b.picked == null ? '' : i === q.ans ? ' ok' : i === b.picked ? ' no' : ' dim';
-      return `<button class="anl-opt${st}" data-act="anlBee" data-arg="pick:${i}"${b.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span>${esc(o)}</button>`; }).join('');
+      return `<button class="anl-opt${st}" data-act="anlBee" data-arg="pick:${i}"${b.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('');
     let res = '';
     if (b.phase === 'result') { const ok = b.picked === q.ans; const sat = (b.calls || []).filter((x) => !x.right && b.round > 1).map((x) => x.r.name);
       res = `<div class="${ok ? 'anl-yes' : 'anl-miss'}"><p><b>${ok ? 'Right!' : 'The answer is ' + esc(q.d) + '.'}</b> ${esc(linkLine(q.rel, q.c, q.d))}</p>${ok ? '' : `<p class="anl-why">${esc(tempted(q, q.opts[b.picked]))}</p>`}
@@ -704,7 +704,7 @@
         ask = `<div class="anl-card anl-askcard"><h3 class="anl-h3">${ic('spark', 15)} An analogy from this link</h3>
           <div class="anl-q"><span>${esc(q.a.toUpperCase())}</span><i>:</i><span>${esc(q.b.toUpperCase())}</span><i>::</i><span>${esc(q.c.toUpperCase())}</span><i>:</i><span class="anl-blank">${v != null ? esc(q.x.b.toUpperCase()) : '?'}</span></div>
           <div class="anl-opts n${q.opts.length}">${q.opts.map((o, i) => { const cls = v == null ? '' : i === q.ans ? ' ok' : i === v ? ' no' : ' dim';
-            return `<button class="anl-opt${cls}" data-act="anlTool" data-arg="pick:${i}"${v != null ? ' disabled' : ''}><span class="anl-k">${i + 1}</span>${esc(o)}</button>`; }).join('')}</div>
+            return `<button class="anl-opt${cls}" data-act="anlTool" data-arg="pick:${i}"${v != null ? ' disabled' : ''}><span class="anl-k">${i + 1}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('')}</div>
           ${v == null ? '' : `<div class="${v === q.ans ? 'anl-yes' : 'anl-miss'}"><p><b>${v === q.ans ? 'Yes.' : 'It is ' + esc(q.x.b) + '.'}</b> ${esc(linkLine(q.x.rel, q.x.a, q.x.b))}</p><p class="anl-why">The first pair: ${esc(linkLine(q.srel, q.a, q.b))}</p></div>`}</div>`; }
       main = `<div class="anl-card anl-wordhead"><div><h2 class="anl-ct">${esc(t.w)}</h2>${gl ? `<p class="anl-cs">${esc(gl)}</p>` : ''}</div>
           <button class="anl-say" data-act="anlTool" data-arg="say" aria-label="${escA('Hear ' + t.w)}">${ic('volume', 16)}</button></div>${ask}
@@ -845,6 +845,12 @@
 @media (min-width:720px){.anl-opts.n3{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .anl-opt{min-height:52px;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--bg2,var(--surface));font-family:var(--display);font-weight:800;font-size:17px;display:flex;align-items:center;gap:10px;text-align:left;color:inherit}
 .anl-opt.line{font-family:inherit;font-weight:600;font-size:15px}
+/* A word option never runs out of its button (P0.17: "establishment" crossed its button on a 390px
+   phone in Against the Clock). The word is its own flex item that may shrink (min-width:0) and, as
+   the last resort, wrap; below 560px the four words stack one to a row, as Word Lore's options do,
+   so a long word has the whole card's width instead of half of it. Guard: tests/mobile-layout.cjs. */
+.anl-ow{min-width:0;overflow-wrap:anywhere}
+@media (max-width:560px){.anl-opts{grid-template-columns:1fr}.anl-opt{min-height:48px}}
 .anl-opt:not([disabled]):hover{border-color:var(--accent)}
 .anl-opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .anl-opt.ok{border-color:#2E9E5B;background:rgba(46,158,91,.14)}

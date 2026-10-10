@@ -8,7 +8,8 @@
    types from a keyboard as well as by touch, in both modes.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/pin-mandatory.cjs                    */
 const { chromium } = require('playwright');
-const path = require('path');
+const path = require('path'), fs = require('fs'), os = require('os');
+const { booted } = require('./lib/wait.cjs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const SB_STORE_REC = /^p1\$[0-9a-f]{16,64}\$\d+\$[0-9a-f]{64}$/;   // store.js's PIN record: "p1$<salt>$<rounds>$<sha-256>"
@@ -94,12 +95,24 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(!k1.dlg && k1.nav === 'home' && k2.dlg && k2.dlg.wrong && !k3.dlg && k3.nav === 'progress' && k3.tab === 'parent',
     'Escape cancels; a wrong PIN typed by keyboard opens nothing; the right one, on the numpad, opens the parent zone');
 
-  /* ---- 6. (audit v4 Q1) a household that kept the four digits (before v9) is migrated once ---- */
+  /* ---- 6. (audit v4 Q1) a household that kept the four digits (before v9) is migrated once ----
+     IN A PERSISTENT PROFILE (10 Oct 2026, P0.18 "pin-mandatory (migration)"): this check reloads the page and
+     needs localStorage to survive the reload, the way it does in a child's browser. Playwright's throwaway
+     contexts are off-the-record — localStorage held in memory — and under a busy machine a reload there
+     sometimes hands the new document an EMPTY storage: the init script finds 0 keys where the page left 5,
+     re-seeds the v8 household and the migration runs again ("a second boot migrates nothing" red in the
+     audit's full run, and 1 of 3 in a --repeat 3 here). Measured with this section in a loop beside six busy
+     processes: off-the-record 3 of 48 reloads empty, forced onto one renderer process 2 of 24 (so it is not a
+     process swap), a persistent on-disk profile 0 of 72. The storage, not the app. The reloaded document now
+     also says what it found at its start, so a lost storage can never again be read as a second migration. */
   { const old = { sv: 8, theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1357', children: seed.children };
-    const c2 = await b.newContext({ viewport: { width: 900, height: 1000 } });
-    await c2.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, old);
-    const p2 = await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
-    await p2.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await p2.waitForTimeout(2800);
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sb-pin-profile-'));
+    const c2 = await chromium.launchPersistentContext(dir, { viewport: { width: 900, height: 1000 },
+      executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
+    await c2.addInitScript(s => { try { window.__startKeys = localStorage.length;
+      if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, old);
+    const p2 = c2.pages()[0] || await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
+    await p2.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await booted(p2);
     const m = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, mem: state.parentPin }));
     /* 4 Oct 2026 (games foundations): steps v9→v10 (levels) and v10→v11 (bests) now follow v8→v9, so
        a pre-v9 household runs v8_to_v9 FIRST and once, then the later steps — no longer v8_to_v9 alone */
@@ -108,10 +121,12 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     for (const k of '1357') await p2.evaluate(k => app.pinKey(k), k);
     const opened = await p2.evaluate(() => state.nav === 'progress' && state.progTab === 'parent' && !state.pinDlg);
     ok(opened, 'and its old PIN, 1357, still opens the parent zone');
-    await p2.reload(); await p2.waitForTimeout(2600);
-    const m2 = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin }));
+    const kept = await p2.evaluate(() => localStorage.length);
+    await p2.reload(); await booted(p2);
+    const m2 = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, start: window.__startKeys }));
+    ok(m2.start === kept && kept > 0, `the reloaded page starts on the storage the first boot left (${m2.start} keys of ${kept})`);
     ok(m2.ran.length === 0 && m2.disk === m.disk, 'a second boot migrates nothing and keeps the same record');
-    await c2.close(); }
+    await c2.close(); fs.rmSync(dir, { recursive: true, force: true }); }
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();

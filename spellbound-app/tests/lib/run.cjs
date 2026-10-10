@@ -39,9 +39,19 @@
                                             machine catches it; timeouts are scaled to match
      --repeat <n>                           run the picked tests n times (a flake is a rate)
    Env: SB_CHROME overrides the browser; SB_TEST_TIMEOUT (seconds) overrides every timeout;
-   SB_CPU_THROTTLE is the same as --cpu. */
+   SB_CPU_THROTTLE is the same as --cpu.
+
+   THE FULL-SUITE RECORD (P0.18, 10 Oct 2026). A run of the WHOLE suite — no names, no --check,
+   --node-only, --browser-only or --root — writes tests/build/last-full.json:
+     { commit, tree, dirty, stable, passed, failed, failedTests, total, at, secs, cpu, repeat }
+   `tree` is the git tree hash of spellbound-app AS IT WAS TESTED — the working files, not just HEAD,
+   so a run on uncommitted changes names the tree those changes become once committed. `stable` says
+   the tree was the same when the run ended as when it began (a test, or a person, editing files
+   mid-run makes a record that certifies nothing). deploy-prod.sh / deploy-internal.sh refuse to
+   publish unless this record is green and its tree is the one being deployed. A partial run never
+   writes it, and never deletes it. */
 'use strict';
-const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
+const fs = require('fs'), path = require('path'), os = require('os'), { spawn, execFileSync } = require('child_process');
 
 const HERE = path.resolve(__dirname, '..');            // spellbound-app/tests
 const APP = path.resolve(HERE, '..');                  // spellbound-app
@@ -64,6 +74,7 @@ const SOURCE_TEXT = {
   'reader.cjs': 'art paths read from reader.js text', 'ux-826.cjs': 'timings read from app3.js text',
   'result-screen.cjs': "engines' toString must contain SGUI.result (a renamed local in minified code)",
   'telemetry.cjs': 'drives backend.html, which is never deployed',
+  'deploy-gate.cjs': 'drives deploy-*.sh and tests/lib/run.cjs, which never ship in a deploy tree',
 };
 
 /* Known-slow tests get a longer leash. Seconds. Everything else gets DEFAULT_TIMEOUT.
@@ -130,6 +141,28 @@ function discover(dir) {
 const isBrowser = src => /require\(\s*['"]playwright['"]\s*\)/.test(src);
 const optsIn = src => /^\s*(\/\/|\/?\*).*@check\b/m.test(src);
 
+/* The tree a run tested: HEAD's spellbound-app tree when the folder is clean; when it is not, the tree
+   its working files would make, written through a throwaway copy of the index (the real index and the
+   working files are never touched; only changed files are re-hashed, so it costs about what git status
+   costs). null fields, with the reason, when this is not a git checkout. */
+function treeState() {
+  const git = (args, env) => execFileSync('git', args, { cwd: APP, env: Object.assign({}, process.env, env || {}), stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 << 20 }).toString().trim();
+  try {
+    const prefix = git(['rev-parse', '--show-prefix']).replace(/\/$/, '');
+    const commit = git(['rev-parse', 'HEAD']);
+    const dirty = git(['status', '--porcelain', '--untracked-files=all', '--', '.']) !== '';
+    let tree = git(['rev-parse', 'HEAD:' + prefix]);
+    if (dirty) {
+      const tmp = path.join(os.tmpdir(), 'sb-tree-' + process.pid + '-' + Date.now() + '.idx');
+      try { fs.copyFileSync(path.resolve(APP, git(['rev-parse', '--git-path', 'index'])), tmp);
+        git(['add', '-A', '--', '.'], { GIT_INDEX_FILE: tmp });
+        tree = git(['write-tree', '--prefix=' + prefix + '/'], { GIT_INDEX_FILE: tmp }); }
+      finally { fs.rmSync(tmp, { force: true }); }
+    }
+    return { commit, tree, dirty };
+  } catch (e) { return { commit: null, tree: null, dirty: null, why: String((e.stderr && e.stderr.toString()) || e.message).trim().slice(0, 200) }; }
+}
+
 let current = null;
 process.on('SIGINT', () => { try { if (current) process.kill(-current.pid, 'SIGKILL'); } catch (e) {} process.exit(130); });
 function runOne(dir, file, env, limit) {
@@ -172,6 +205,9 @@ function runOne(dir, file, env, limit) {
   const textSkipped = ROOT ? picked.filter(f => SOURCE_TEXT[f]) : [];
   if (ROOT) picked = picked.filter(f => !SOURCE_TEXT[f]);
   const missingCheck = CHECK_ONLY ? CHECK.filter(f => !all.includes(f)) : [];
+  /* the whole suite, and only the whole suite, is recorded for the deploy gate (see the header) */
+  const FULL = !CHECK_ONLY && !BROWSER_ONLY && !NODE_ONLY && !ROOT && !filters.length;
+  const tree0 = FULL ? treeState() : null;
 
   const chrome = chromePath();
   const env = Object.assign({}, process.env, {
@@ -221,6 +257,18 @@ function runOne(dir, file, env, limit) {
     console.log(`\n--- ${r.f} (${r.res}) — last lines of ${path.join('tests/build/logs', r.log)}`);
     const out = fs.readFileSync(path.join(logDir, r.log), 'utf8').trim().split('\n');
     console.log(out.slice(-15).map(l => '    ' + l.slice(0, 200)).join('\n'));
+  }
+  if (FULL) {
+    const tree1 = treeState();
+    const rec = { commit: tree0.commit, tree: tree0.tree, dirty: !!(tree0.dirty || tree1.dirty),
+      stable: !!tree0.tree && tree0.tree === tree1.tree, passed: rows.length - bad.length, failed: bad.length,
+      failedTests: bad.map(r => r.f + ' (' + r.res + ')'), total: rows.length, at: new Date().toISOString(),
+      secs: Math.round((Date.now() - T0) / 1000), cpu: CPU > 1 ? CPU : 1, repeat: REPEAT };
+    if (tree0.why || tree1.why) rec.why = tree0.why || tree1.why;
+    fs.writeFileSync(path.join(HERE, 'build', 'last-full.json'), JSON.stringify(rec, null, 2) + '\n');
+    console.log(`\n  full-suite record → tests/build/last-full.json: ${rec.failed ? 'RED' : 'green'} for tree ${String(rec.tree).slice(0, 12)}` +
+      (rec.dirty ? ' (working files, uncommitted — deployable once committed exactly as tested)' : ' (commit ' + String(rec.commit).slice(0, 9) + ')') +
+      (rec.stable ? '' : ' — the tree CHANGED during the run, so this record certifies nothing'));
   }
   process.exit(bad.length || !rows.length ? 1 : 0);
 })();

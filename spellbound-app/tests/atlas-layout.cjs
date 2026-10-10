@@ -115,11 +115,17 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
     const pops = [];
     for (const [act, dev] of [['meadow', 0], ['meadow', 1], ['junkyard', 1], ['stage', 1]]) {
       const r = await pg.evaluate(async ([act, dev]) => {
-        state.devUnlock = !!dev; app.trailAct('honey|' + act); await new Promise(res => setTimeout(res, 900));
+        /* (10 Oct 2026, P0.18) wait for the board to be REAL — its painting loaded, the card drawn, two frames for
+           the camera and the refit — never a fixed sleep: the audit's "Junkyard stop card 162–485" was a card
+           fitted to the sliver of board drawn before the painting landed, read after 650ms on a loaded machine */
+        const raf = () => new Promise(res => requestAnimationFrame(() => requestAnimationFrame(res)));
+        const settle = async (pop) => { const t0 = performance.now(); while (performance.now() - t0 < 15000) { const i = document.querySelector('#sb-pan img');
+            if ((!i || (i.complete && i.naturalWidth > 0)) && (!pop || document.querySelector('.atlas-pop'))) break; await raf(); } await raf(); await raf(); };
+        state.devUnlock = !!dev; app.trailAct('honey|' + act); await settle(false);
         const args = [...document.querySelectorAll('.atlas-stop')].map(e => +e.dataset.arg);
         const pick = [0, 1, Math.floor(args.length / 2), args.length - 2, args.length - 1].filter((v, i, a) => v >= 0 && a.indexOf(v) === i);
         const out = [];
-        for (const k of pick) { app.trailPick(args[k]); await new Promise(res => setTimeout(res, 650));
+        for (const k of pick) { app.trailPick(args[k]); await settle(true);
           const p = document.querySelector('.atlas-pop'), pan = document.getElementById('sb-pan');
           if (!p) { out.push(act + ' stop ' + (k + 1) + ': no callout'); continue; }
           const pr = p.getBoundingClientRect(), wr = pan.getBoundingClientRect();

@@ -439,18 +439,30 @@
      so a game, a hub or a test can use one piece without the others.
      ========================================================================== */
 
-  /* ---- 1. ONE CLOCK (§1.4). Physics at a fixed 1/120 s, as many steps as real time needs
-     (at most 12 a frame), render once per animation frame. It pauses while the page is
-     hidden, while the caller holds it, and while a miss card is up (SGUI.held): a clock
-     that runs under the card a child is reading takes the time it was meant to give. The
-     body is the spec's, word for word, plus that one SGUI.held term. Every timed thing in
-     the games — a moving kart, a draining ring, a Sprint's seconds — runs on real time
-     through this, never on `dt = Math.min(0.05, …)` (which slows the game on a slow phone)
-     or on a setInterval that counts its own ticks (which slows the clock). */
+  /* ---- 1. ONE CLOCK (§1.4). Physics at a fixed 1/120 s, as many steps as real time needs,
+     render once per animation frame. It pauses while the page is hidden, while the caller
+     holds it, and while a miss card is up (SGUI.held): a clock that runs under the card a
+     child is reading takes the time it was meant to give. Every timed thing in the games —
+     a moving kart, a draining ring, a Sprint's seconds — runs on real time through this,
+     never on `dt = Math.min(0.05, …)` (which slows the game on a slow phone) or on a
+     setInterval that counts its own ticks (which slows the clock).
+     ONE DEPARTURE FROM THE SPEC'S BODY (10 Oct 2026, P0.18 "gp-play (clock)"): the spec ran
+     "at most 12 a frame" and carried what it could not run into the next frame. 12 steps is
+     0.1 s, so a frame slower than 100ms — a busy phone, or the suite's 4× throttle on a loaded
+     machine — ran behind the wall clock (the race at 93% under 8×, 73% under 16×, and GP7 red),
+     and the carried backlog was then paid back up to 6× fast the moment frames recovered: the
+     kart lurched forward. Now a frame runs every step its own time needs, up to the same 0.25 s
+     clip (30 steps, ~1.5ms of physics even throttled), and nothing is carried past one step: a
+     stall over 0.25 s is not play, and it is never fast-forwarded later either. A step is still
+     1/120 s, so no physics changes. Guards: tests/engine-kit.cjs (frames of 50–240ms in full, no
+     catch-up burst), tests/gp-play.cjs GP7. */
+  const SG_MAX_STEPS=30;   // 30 × 1/120 s = the 0.25 s a single frame may count
   function sgLoop(update, render){ let acc=0, last=performance.now(), raf, held=false;
     function tick(now){ raf=requestAnimationFrame(tick); if(document.hidden||held||SGUI.held){ last=now; return; }
       acc+=Math.min(0.25,(now-last)/1000); last=now; let n=0;
-      while(acc>=1/120 && n<12){ update(1/120); acc-=1/120; n++; } render(acc*120); }
+      while(acc>=1/120 && n<SG_MAX_STEPS){ update(1/120); acc-=1/120; n++; }
+      if(acc>=1/120) acc%=1/120;   // never a backlog to pay back later
+      render(acc*120); }
     raf=requestAnimationFrame(tick);
     return { hold(v){ held=!!v; }, stop(){ cancelAnimationFrame(raf); } }; }
   W().sgLoop=sgLoop;
