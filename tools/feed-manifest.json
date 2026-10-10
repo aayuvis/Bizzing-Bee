@@ -1,16 +1,19 @@
 {
- "total": 14169,
- "agnostic": 3016,
+ "total": 28874,
+ "agnostic": 3893,
  "byKind": {
   "place": 9,
   "lesson": 760,
-  "quiz": 209,
-  "word": 1546,
-  "usage": 2212,
+  "quiz": 208,
+  "word": 1545,
+  "usage": 6665,
   "hook": 1511,
-  "origin": 1268,
+  "origin": 3169,
   "play": 3498,
-  "spotlight": 689,
+  "spotlight": 5531,
+  "analogy": 1576,
+  "sounds": 623,
+  "saying": 1312,
   "game": 3,
   "story": 36,
   "character": 60,
@@ -20,50 +23,50 @@
   [
    1,
    "the Meadow",
-   797
+   2222
   ],
   [
    2,
    "the Great Library",
-   1159
+   2817
   ],
   [
    3,
    "the Roman Forum",
-   1975
+   3521
   ],
   [
    4,
    "the Storm of Elements",
-   1135
+   2837
   ],
   [
    5,
    "the Root Kingdoms",
-   1516
+   3127
   ],
   [
    6,
    "the Wide Strait",
-   1329
+   2773
   ],
   [
    7,
    "the Trickster Junkyard",
-   412
+   2054
   ],
   [
    8,
    "the Subject Sprints",
-   1493
+   2994
   ],
   [
    9,
    "the Big Stage",
-   1337
+   2636
   ]
  ],
- "nearDuplicatesDropped": 398,
+ "nearDuplicatesDropped": 1465,
  "nearDuplicateExamples": [
   [
    "uq-u1-1",
@@ -106,50 +109,50 @@
    "wo-abandoning"
   ],
   [
-   "uq-u12-1",
-   "uq-u13-1"
+   "ws-sixteen",
+   "ws-five"
   ],
   [
-   "uq-u12-1",
-   "uq-u14-1"
+   "ws-children",
+   "ws-child"
   ]
  ],
  "libraryWordsHeldBackPerLevel": [
   [
    1,
-   611
+   41
   ],
   [
    2,
-   759
+   189
   ],
   [
    3,
-   2043
+   1473
   ],
   [
    4,
-   1087
+   517
   ],
   [
    5,
-   1519
+   949
   ],
   [
    6,
-   1516
+   946
   ],
   [
    7,
-   1019
+   449
   ],
   [
    8,
-   3504
+   2934
   ],
   [
    9,
-   3105
+   2535
   ]
  ]
 }
