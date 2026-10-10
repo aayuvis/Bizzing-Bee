@@ -33,11 +33,14 @@ const DOOR = 'the door itself (games spec §1.1)';
 const ALLOW = {
   'app3.js': { corpusBands: DOOR, corpusSlice: DOOR, nwIndex: DOOR, nwPool: DOOR, nwDaily: DOOR, nwBandSlice: DOOR + ' — the corpus by word band (P1.1)',
     mergeHard: 'loads the 130k library', fullWords: 'loads the 130k library', loadFullLibrary: 'loads the 130k library', openAdvanced: 'loads the library for the Advanced Pack',
+    fullAdopt: 'loads the 130k library (P1.12: cleans it and merges the shard)', fullFor: 'search looks a word up in its letter’s chunk (P1.12)', fullLooking: 'search says a lookup is still on its way (P1.12)',
     defaultStages: 'the Word Gym’s study lists', journeySorted: 'the Word Gym’s study lists', rawListWords: 'the Word Gym’s study lists',
     coachCatalog: 'the Word Gym’s list catalogue', catStatic: 'the Word Gym’s list catalogue', soundLists: 'the sound lists (catalogue)', ipaPool: 'the Sound Alphabet trainer', selectList: 'choosing a study list',
     themePool: 'Theme Journeys (themeDefs gates minBand)', themeWords: 'Theme Journeys (themeDefs gates minBand)', themeStat: 'Theme Journeys', viewThemeDetail: 'Theme Journeys',
     finderResults: 'search looks a word up, never serves one to spell', suggestWords: 'search suggestions look a word up', wordDB: 'search and the word card look a word up', viewFinder: 'the Word Finder', b2Idx: 'the List Builder’s index',
     wohPool: 'Home’s word of the hour (wohFit)', vocDeckWords: 'the Vocabulary section’s decks' },
+  'boot-lazy.js': { '(top level)': 'registers the 130k library’s chunk index as a lazy file — a path, not a read (P1.12)' },
+  'library.js': { reg: 'the 130k library’s chunk reader names a chunk file for boot-lazy (P1.12)' },
   'advanced.js': { advActivate: 'loads the library when the pack switches on', hardPool: 'the Advanced Pack’s Ultra road (a course, not a Play-tab game)' },
   'trail.js': { widx: 'the Atlas’s word index (lookup by key)' },
   'family-shell.js': { sampleHousehold: 'the ?demo household' },
@@ -54,6 +57,7 @@ for (const f of files) {
     if (/function\s+$/.test(src.slice(Math.max(0, m.index - 12), m.index))) continue;   // a definition, not a read
     reads++;
     const names = chain(S, m.index).map(x => x.name).filter(x => x !== '(anon)');
+    if (!names.length) names.push('(top level)');   // a read outside any named function — allowed only by a '(top level)' line WITH its reason
     const allow = ALLOW[f] || {};
     if (!names.some(nm => allow[nm])) bad.push(`${f}:${src.slice(0, m.index).split('\n').length} ${names[0] || '(top level)'}() reads ${m[0].replace(/\($/, '')}`);
   }

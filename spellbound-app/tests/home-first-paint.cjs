@@ -80,7 +80,7 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   /* ---- a new visitor and ?demo preload nothing ---- */
   for (const [label, url] of [['new visitor', 'index.html'], ['?demo', 'index.html?demo']]) {
     const c2 = await b.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: 'block' });
-    if (label === '?demo') await c2.addInitScript(() => { try { localStorage.setItem('sb_home_art', JSON.stringify(['app-art/w-meadow-r2.jpg'])); } catch (e) {} });
+    if (label === '?demo') await c2.addInitScript(() => { try { localStorage.setItem('sb_home_art', JSON.stringify(['app-art/w-meadow-r2.webp'])); } catch (e) {} });
     const p2 = await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
     await p2.goto(srv.url + url); await p2.waitForTimeout(2500);
     const n = await p2.evaluate(() => document.querySelectorAll('link[rel="preload"][as="image"]').length);

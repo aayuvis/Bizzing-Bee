@@ -3,7 +3,8 @@
    The landing page was showing painted world backdrops — the art the games are drawn
    ON, with no game on it. To a child that is eight pictures of empty scenery. This
    drives the actual app and photographs what it actually looks like.
-   Output: app-art/shots/*.jpg  (run from spellbound-app/)
+   Output: app-art/shots/*.jpg  (run from spellbound-app/) — then `python3 tools/art/webp.py app-art/shots/*.jpg`:
+   the landing asks for app-art/shots/<name>.webp since the road to 4.5, P1.14 (tests/asset-budget.cjs).
       python3 -m http.server 8991
       NODE_PATH=/opt/node22/lib/node_modules /opt/node22/bin/node qa/shots.cjs   */
 const { chromium } = require('playwright');

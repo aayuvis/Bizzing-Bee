@@ -22,6 +22,12 @@
    loaded), so the page posts the list of what it already fetched and the worker copies those
    into the cache — mostly out of the HTTP cache, so it costs little or nothing on the wire.
 
+   LAZY FILES ARE CACHED AS THEY ARRIVE (road to 4.5, P1). The library's lettered chunks (words-full/, P1.12), the
+   scripts that left the boot list (P1.13: the voice tester's lists, trivia, the Advanced Pack — boot-lazy's idle
+   queue fetches the Advanced Pack and the trivia stickers after the first tap, so they are offline too) and the
+   WebP plates (P1.14) are same-origin GETs like any other: asset() keeps each the first time it is fetched. There
+   is no list here to keep in step — the warm-up hands over whatever the first visit fetched.
+
    What it never does: talk to any host the page does not already talk to, or touch anything
    that is not a GET. It holds no information about the child — only the app's own files. */
 'use strict';

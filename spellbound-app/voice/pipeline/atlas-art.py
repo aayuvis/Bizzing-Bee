@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Painted art for the Word Atlas map and the Library tiles.
 
+SERVED AS WEBP (road to 4.5, P1.14): the app asks for app-art/<name>.webp. This still writes the JPEG; then run
+  python3 tools/art/webp.py app-art/<name>.jpg
+which converts it by the one rule (q80, 35 dB floor, never heavier) and deletes the JPEG. tests/asset-budget.cjs
+fails on a JPEG plate left in app-art/.
+
 The Atlas is called an atlas, so it should be one: a single illustrated world map
 whose regions ARE the acts of the journey, with a road running through them. The
 map is generated once at a size the app can serve (1600px wide, ~250KB), and the

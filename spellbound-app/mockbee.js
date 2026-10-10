@@ -43,7 +43,7 @@
   const LS = 'sb_mockbee';                /* store.js names this key; only SB_STORE touches it */
   const CAP_MS = 8 * 60 * 1000;           /* §4.1: the length cap */
   const TURN_MS = 30000, CALM_TURN_MS = 45000, Q_COST = 3000;
-  const PLATE = 'app-art/sgw-stage.jpg';  /* the painted stage the arcade already ships: curtains, lamps, empty seats */
+  const PLATE = 'app-art/sgw-stage.webp';  /* the painted stage the arcade already ships: curtains, lamps, empty seats */
 
   /* ---------------- the field ---------------- */
   /* `alt` is a rival's stand-in face. A rival must never wear the child's own avatar — "Suki" in

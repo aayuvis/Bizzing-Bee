@@ -143,7 +143,29 @@
     objectives: 'objectives.js',
     gradeMap: 'grade-map-data.js',
     /* Today's ten (road to 4.5, P1.16): the daily session Home's ribbon opens — fetched at its door (app.openToday) only */
-    todayUI: 'today.js'
+    todayUI: 'today.js',
+    /* THE 130k LIBRARY, A LETTER AT A TIME (road to 4.5, P1.12). words-full.js / words-hard.js (47 MB) are the
+       SOURCE and are never fetched: tools/library-chunks.cjs cuts them into words-full/ — this index (the chunk
+       bounds and the library's own order) and 86 chunks of ≤ ~200 KB gz, which library.js (SB_LIB) registers here
+       as `wf:<chunk>` and asks for one at a time. A lookup (the Finder, the header search) fetches only the chunk
+       its letters fall in; loadFullLibrary fetches them all. Never on the first screen or the idle queue. */
+    libIndex: 'words-full/index.js',
+    library: 'library.js',
+    /* OUT OF THE BOOT LIST (road to 4.5, P1.13 — first-load JS). Each was a deferred script in index.html that
+       neither first screen reads (measured: a getter on every global they define, logged through Home's and the
+       landing's first paint — tests/first-load.cjs holds them out):
+         voiceLists  the Word Voice Tester's two queues (SB_VOICE_REVIEW / SB_VOICE_PRIORITY, ~16 KB gz). The clip
+                     version they used to ride with stays a boot script (voice-review.js): voice-cdn stamps every
+                     clip with it.
+         ttIcons     the chapter stickers (SB_TT_ICON_ART, ~7 KB gz) — Trivia Training and Hive Mind only.
+         stv         Bee Trivia (STV, ~7 KB gz). Unreachable since the games rebuild (#/trivia and openTrivia go to
+                     Word Lore / Hive Mind); kept for the trivia bank's leak check, which asks for it.
+         adv         the Advanced Pack (ADV, ~10 KB gz). app3 already treats it as lazy — every read is guarded
+                     and the doors (openAdvanced, ultraUpsell, setNav('adv')) ask for the `advanced` group. */
+    voiceLists: 'voice-review-lists.js',
+    ttIcons: 'trivia-icons.js',
+    stv: 'trivia.js',
+    adv: 'advanced.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -151,18 +173,18 @@
     words: ['sents', 'words2', 'lore'],
     card: ['sents', 'words2', 'lore', 'alts', 'syn', 'sounds', 'pron'],
     concepts: ['concepts', 'cscript'],
-    advanced: ['advConcepts', 'advTips', 'southasia'],
+    advanced: ['advConcepts', 'advTips', 'southasia', 'adv'],
     /* advConcepts too: the map draws the Advanced Rounds (locked or not), and a stop
        whose chapter is an `ai` ref resolves through SB_ADV_CONCEPTS — without it chOf()
        is undefined and setsOf() throws. The idle queue used to hide that. */
-    atlas: ['trail', 'concepts', 'cscript', 'southasia', 'advConcepts', 'objectives'],
+    atlas: ['trail', 'concepts', 'cscript', 'southasia', 'advConcepts', 'objectives', 'adv'],   // adv: the Ultra road reads ADV.pool()
     quotes: ['quotes'],
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
-    lists: ['sents', 'words2', 'lessons', 'vocab26', 'finals500', 'scripps'],
+    lists: ['sents', 'words2', 'lessons', 'vocab26', 'finals500', 'scripps', 'adv'],   // adv: the Ultra list is ADV's
     themes: ['sents', 'words2', 'themeLore'],
     sounds: ['sounds', 'pron'],
-    coach: ['coachRules', 'concepts', 'sents', 'words2'],
+    coach: ['coachRules', 'concepts', 'sents', 'words2', 'adv'],
     cloud: ['sync'],
     arcade: ['saga2', 'wordband'],
     /* everything any volume of the in-app reader can render */
@@ -170,25 +192,29 @@
     feed: ['feedEngine', 'feedMeta', 'feedView', 'wordband'],
     forge: ['saga2', 'forgeCore', 'forgeData', 'forgeUI'],
     /* the hubs draw on the shared stage kit (SGUI.stage / SB_HUB, saga2.js), so it comes too */
-    quizhubs: ['loreHub', 'saga2', 'wordband'],
-    gym: ['saga2', 'gym', 'sents', 'wordband'],
+    quizhubs: ['loreHub', 'saga2', 'wordband', 'ttIcons'],
+    gym: ['saga2', 'gym', 'sents', 'wordband', 'adv'],   // adv: Champ Dictation's hard list is ADV.pool()
     mockbee: ['saga2', 'mockbee', 'wordband'],
     daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore', 'wordband'],
     buzz: ['dailyBuzz'],
     analogy: ['anlData', 'anlUI', 'wordband'],   // saga2: the engine kit (SGUI.stage, SGUI.keys)
     placement: ['placeData', 'placeUI'],
     curriculum: ['trail', 'concepts', 'objectives', 'gradeMap'],
-    today: ['todayUI', 'sents', 'coachRules', 'wordband']   // the sentences it reads aloud, and the rulebook the miss panel's tip comes from
+    today: ['todayUI', 'sents', 'coachRules', 'wordband'],   // the sentences it reads aloud, and the rulebook the miss panel's tip comes from
+    voicetest: ['voiceLists'],
+    advCode: ['adv'],   // the Advanced Pack's code alone: its doors behave as they did when it was a boot script
+    trivtrain: ['ttIcons'],
+    beeTrivia: ['stv', 'ttIcons']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'] };
 
   var IDLE = ['sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'sync'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'adv', 'ttIcons', 'sync'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]
@@ -351,7 +377,11 @@
     start();
   }
   function afterLoad() {
-    idle(function () { FIRST.forEach(function (n) { load(n); }); }, { timeout: 1500 });
+    /* The opening page (a new visitor) shows no Atlas, so FIRST waits for the first tap there like the rest of the
+       queue (P1.13: 76 KB gz off a new visitor's first load). Every screen past it that reads the Atlas asks at its
+       door (setup's first lesson and placement go through lazyNeed('atlas'), Continue through goNext). */
+    var landing = false; try { landing = !!document.querySelector('#root .sb-lnav'); } catch (e) {}
+    if (!landing) idle(function () { FIRST.forEach(function (n) { load(n); }); }, { timeout: 1500 });
     if (saveData) return;
     ARM.forEach(function (ev) { window.addEventListener(ev, onFirstAct, { capture: true, passive: true }); });
   }
@@ -363,11 +393,14 @@
      about it. Deferred scripts have all run by DOMContentLoaded, so `app` (a top-level
      const in app3.js — a bare name, not window.app) exists by then. A tap that arrives
      before the code does simply runs when it lands. */
-  var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade', openLore: 'quizhubs', openHive: 'quizhubs' };
+  var DOORS = { arcadePlay: 'arcade', arcadeMenu: 'arcade', dbgSaga: 'arcade', openLore: 'quizhubs', openHive: 'quizhubs',
+    /* P1.13: the screens whose code or data left the boot list wait for it at their door */
+    openVoiceTest: 'voicetest', openTrivTrain: 'trivtrain',
+    openAdvanced: 'advCode', advJump: 'advCode', advGo: 'advCode', advConcept: 'advCode', arcAdvDict: 'advCode' };
   /* KICKS start a screen's data the moment its door is opened but do NOT hold the screen:
      it draws at once from what is in hand and redraws as each file lands (every load
      re-renders). For screens that are useful before the whole library is in. */
-  var KICKS = { openBuilder: ['themes', 'lists'], openFinder: 'words', openTraps: 'card' };
+  var KICKS = { openBuilder: ['themes', 'lists'], openFinder: ['words', 'library'], openTraps: 'card' };
   document.addEventListener('DOMContentLoaded', function () {
     /* A RETURNING SPELLER'S HOME NEEDS THE ATLAS FRONTIER NOW (audit v4 B6). Home holds "Next on your
        journey" until trail-data.js lands, and after `load` + an idle slice that was seconds after the
@@ -375,6 +408,11 @@
        the boot JS is in: if Home is what that render drew, ask for FIRST now. (Not app3's `state` —
        inside this file that name is the loader's own.) A new visitor still waits for `load`. */
     try { if (document.querySelector('#root .sb-home-r2')) FIRST.forEach(function (n) { load(n); }); } catch (e) {}
+    /* worlds4.js runs after app3's first render (a later deferred script), so the eight worlds it registers — and the
+       landing's "80 evolution forms across eight worlds", "All 8 worlds" — reach the screen on the NEXT render. Home
+       gets one when the Atlas data lands; the opening page asks for no data any more (FIRST waits for a tap there,
+       P1.13), so it is given that render here. (tests/one-count.cjs caught the landing keeping its fallback copy.) */
+    try { if (document.querySelector('#root .sb-lnav')) softRender(); } catch (e) {}
     try {
       if (typeof app === 'undefined') return;
       Object.keys(DOORS).forEach(function (k) {
@@ -398,7 +436,7 @@
      word shard: ask for it the moment the box is focused, not when the first suggestion
      would already have been drawn from the boot tier alone. */
   document.addEventListener('focusin', function (e) {
-    try { if (e.target && e.target.closest && e.target.closest('.sb-hsearch')) need('words'); } catch (err) {}
+    try { if (e.target && e.target.closest && e.target.closest('.sb-hsearch')) need(['words', 'library']); } catch (err) {}
   }, true);
 
   window.SB_LAZY = { need: need, ready: ready, reg: REG, group: GROUP, start: start,

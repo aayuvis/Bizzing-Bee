@@ -145,7 +145,7 @@ tar -C "$SRC" \
     --exclude=./TESTING-PROTOCOL.md --exclude='./TESTING-FINDINGS-*.md' \
     --exclude=./READ-ME-FIRST.md --exclude=./DESIGN-SYSTEM-HANDOVER.md \
     --exclude=./UX-FEEDBACK-LOG.md --exclude=./TRAIL-CURRICULUM.md \
-    --exclude=./_cut.txt \
+    --exclude=./_cut.txt --exclude=./words-full.js --exclude=./words-hard.js \
     -cf - . | tar -C "$WT" -xf -
 
 rm -rf "$WT"/CLAUDE.md "$WT"/AUDIT_BRIEF.md "$WT"/TESTING-PROTOCOL.md \
@@ -155,7 +155,27 @@ rm -rf "$WT"/CLAUDE.md "$WT"/AUDIT_BRIEF.md "$WT"/TESTING-PROTOCOL.md \
        "$WT"/pipeline "$WT"/eponyms "$WT"/trivia-all.json \
        "$WT"/champions-pack.py "$WT"/drops.log \
        "$WT"/voice/rebuild-queue.json
+# THE 130k LIBRARY SHIPS AS ITS CHUNKS (road to 4.5, P1.12): words-full.js (45 MB) and words-hard.js are the
+# SOURCE that tools/library-chunks.cjs cuts into words-full/, and nothing on the site fetches either any more
+# (library.js reads the chunks). Excluded above, and any copy an earlier deploy left on the branch goes here —
+# shipping both would put the library on the site twice.
+rm -f "$WT"/words-full.js "$WT"/words-hard.js
 rm -f "$WT"/voice/tq*.mp3
+
+# TREES THE SOURCE OWNS WHOLE ARE MIRRORED, NOT MERGED (road to 4.5, P1.12/P1.14). The copy above extracts over the
+# live branch and never deletes, so a file the source REPLACED stays on the site for good: the 111 JPEG plates that
+# became WebP (24.5 MB), a library chunk renamed by a re-cut. app-art/ and words-full/ are written only by the source
+# (tools/art/webp.py, tools/library-chunks.cjs), so whatever the source no longer has is removed from the deploy tree.
+# Step 6 still counts both trees against the source, so the mirror cannot quietly drop what the source does have.
+MIRRORED=0
+for d in app-art words-full; do
+  [ -d "$WT/$d" ] || continue
+  while IFS= read -r -d '' f; do
+    rel="${f#"$WT/$d/"}"
+    if [ ! -e "$SRC/$d/$rel" ]; then rm -f "$f"; MIRRORED=$((MIRRORED+1)); fi
+  done < <(find "$WT/$d" -type f -print0)
+done
+echo "   app-art/ and words-full/ mirror the source ($MIRRORED stale file(s) removed)"
 echo "   files: $(find "$WT" -type f -not -path '*/.git/*' | wc -l)"
 
 # ---------- 3b. minify the COPY (never the source) ----------
@@ -192,7 +212,7 @@ while read -r r; do
   case "$r" in http*|//*|data:*|\#*) continue;; esac
   [ -e "$WT/$r" ] || { echo "   MISSING: $r"; MISS=$((MISS+1)); }
 done < <(cat "$WT/index.html" "$WT/boot-lazy.js" 2>/dev/null \
-         | grep -oE "['\"][A-Za-z0-9._/-]+\.(js|css|json|html|woff2?|png|jpg|svg|mp3)" \
+         | grep -oE "['\"][A-Za-z0-9._/-]+\.(js|css|json|html|woff2?|png|jpg|webp|svg|mp3)" \
          | tr -d "'\"" | sort -u)
 [ "$MISS" -eq 0 ] || die "$MISS referenced asset(s) missing from the deploy tree"
 echo "   all referenced assets present"
@@ -205,8 +225,9 @@ echo "   $STUBS book redirect stubs intact"
 # nothing when a stray `--exclude=./app-art/spines` dropped all 23 book spines out of
 # the copy. They went on being referenced with loading="eager" and no onerror, so the
 # Library's shelf shipped 23 broken images and nothing anywhere reported it. Count the
-# trees instead of grepping for the names.
-for d in app-art avatars; do
+# trees instead of grepping for the names. words-full/ is counted for the same reason: library.js builds
+# `words-full/<chunk>.js` from the index at run time, so no literal path names any chunk (P1.12).
+for d in app-art avatars words-full; do
   [ -d "$SRC/$d" ] || continue
   A="$(find "$SRC/$d" -type f | wc -l)"; B="$(find "$WT/$d" -type f 2>/dev/null | wc -l)"
   [ "$B" -ge "$A" ] || die "$d: $B files in the deploy tree, $A in the source — the copy dropped $((A-B))"

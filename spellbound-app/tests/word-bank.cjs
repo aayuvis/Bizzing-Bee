@@ -475,8 +475,13 @@ ok(/128k clip manifest/.test(fs.readFileSync(SRC + '/boot-lazy.js', 'utf8')),
   'the clip manifest is still described as what it is');
 
 // ---- it is wired to load, and it is not in the boot path ----
-ok(/words-hard\.js/.test(app3), 'the shard is fetched alongside the core library');
-ok(!/src="words-hard\.js/.test(idx), 'and it is NOT a boot script — the library loads on demand');
+/* Since P1.12 (10 Oct 2026) the page fetches neither source file: tools/library-chunks.cjs cuts words-full.js AND
+   words-hard.js into words-full/ (each chunk carries its letter's core records `c` and shard records `h`), and
+   loadFullLibrary hands SB_LIB.all()'s shard to mergeHard as SB_HARD. tests/library-chunks.cjs holds the chunks
+   to both sources record for record; this holds the pair together. */
+const lib = fs.readFileSync(SRC + '/library.js', 'utf8');
+ok(/window\.SB_HARD=hard/.test(app3) && /rebuild\(I, I\.hseq, 'hard', I\.h\)/.test(lib), 'the shard is fetched alongside the core library (in the same chunks, handed to mergeHard)');
+ok(!/src="words-hard\.js/.test(idx) && !/words-full|library\.js/.test(idx), 'and it is NOT a boot script — the library loads on demand');
 
 /* ---- the library must be cache-busted like everything else ----
    index.html declares itself uncacheable and every asset it names carries a
@@ -484,8 +489,15 @@ ok(!/src="words-hard\.js/.test(idx), 'and it is NOT a boot script — the librar
    bare, so a returning child kept the library they already had. Harmless while
    the file only grew at the end, and not harmless at all the first time the
    records themselves were rewritten in place by a re-banding. */
-ok(/s\.src='words-full\.js'\+AV/.test(app3pre), 'words-full.js is fetched with the asset stamp');
-ok(/h\.src='words-hard\.js'\+AV/.test(app3pre), 'words-hard.js is fetched with the asset stamp');
+/* P1.12: the chunks, their index and library.js all come through boot-lazy, whose inject() stamps every file it
+   fetches; library.js registers each chunk as a boot-lazy name rather than writing a script tag of its own, and
+   app3 writes none for the library any more. */
+const bl = fs.readFileSync(SRC + '/boot-lazy.js', 'utf8');
+ok(/s\.src = src \+ V\(\);/.test(bl) && /libIndex: 'words-full\/index\.js'/.test(bl) && /library: 'library\.js'/.test(bl),
+  'the library index and its reader are fetched by boot-lazy, with the asset stamp');
+ok(/SB_LAZY\.reg\[k\] = 'words-full\/' \+ name \+ '\.js'/.test(lib) && /SB_LAZY\.need\(names\.map\(reg\)/.test(lib) && !/createElement\('script'\)/.test(lib)
+  && !/\.src='words-(full|hard)/.test(app3pre),
+  'every chunk is fetched through boot-lazy too (stamped), and nothing writes a bare library script tag');
 
 console.log(fails ? '\n' + fails + ' FAILED' : '\nall good');
 process.exit(fails ? 1 : 0);

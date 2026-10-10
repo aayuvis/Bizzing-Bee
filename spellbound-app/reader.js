@@ -221,7 +221,7 @@
   /* ---- SPREADS: a chapter is a sequence of pages, ONE on screen at a time.
      Play-tested verdict on the first cut: "boring... too many at a time... no
      visuals". So every spread leads with the world's own painted banner (the
-     app-art/w-*.jpg set the Atlas and the printed books share), content is
+     app-art/w-*.webp set the Atlas and the printed books share), content is
      capped per page, and the mascot rides along. ---- */
   const BANNERS = ['elements','engine','forum','grandtrunk','greysea','junkyard','library','meadow','origami','stage','strait','vibe','warfield'];
   const bWorld = v => BANNERS.indexOf(v.world) >= 0 ? v.world : (v.world === 'night' ? 'greysea' : 'stage');
@@ -234,7 +234,7 @@
   const dvArt = slug => ART + artOf(slug) + '-divider.jpg';
   const bnr = (v, i, tall, plate) => {
     const w = bWorld(v); const r = (i % 2) ? 3 : 2;
-    const fall = `app-art/w-${w}-r${r}.jpg`;
+    const fall = `app-art/w-${w}-r${r}.webp`;
     return `<div style="position:relative;height:${tall ? (plate ? 210 : 172) : 96}px;overflow:hidden;flex:none">
       <img src="${plate || fall}" alt="" decoding="async" onerror="if(this.dataset.f){this.style.display='none'}else{this.dataset.f=1;this.src='${fall}'}"
         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${plate ? '50% 30%' : ((i * 29) % 78 + 8) + '% ' + (28 + (i * 17) % 44) + '%'}">
