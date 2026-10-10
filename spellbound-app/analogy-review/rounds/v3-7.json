@@ -1,0 +1,1563 @@
+[
+ {
+  "unit": "item:2",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: dedication/devotion are synonyms; mentor, mastery, agony do not compete; gloss is run-on but shows the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: item/object are synonyms; buyer, bin, sort do not compete; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: bug means insect; spider, toad, slug, tick are creatures, not synonyms; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:11",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: remember/forget are opposites; no option competes; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; the link holds (visible/hidden are opposites) and no option competes, but the gloss 'Prevent from being seen or discovered' is the verb 'hide', not the adjective 'hidden' - wrong sense. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:17",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: brave/timid opposites; dare is a near-synonym of brave, not its opposite; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:19",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: sour/sweet opposite tastes; stale, tame, ginger, almond do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:20",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: gold is a kind of metal; ruby, blue, amber are not categories gold belongs to; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:22",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: bus is a kind of vehicle; a coach is a kind of bus, not the reverse; subway does not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:24",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: tennis is a sport; hockey, soccer, football are sports, not categories; puck no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:25",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: truck is a vehicle; cart, freight, trailer, railway are not truck's category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:26",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a jet is an aircraft; rocket, rotor, ignition do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:28",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: apple is a fruit; mustard, ginger, walnut, bean are not apple's category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:29",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: copper is a metal; platinum/aluminum are metals, not categories; flint, ceramic no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:31",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a reporter reports; editor, reader, audit, account are not the doer of report.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:32",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an editor edits; reporter, writer, translator do other things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:34",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a governor governs; leader, guardian, follower, feminist are not the agent of govern. Feminist is a neutral word, not unsafe.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:35",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a photographer photographs; caption, chart, picture, skater do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:36",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a builder builds; framework, prop, figure, foundation are things, not doers.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:37",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a visitor visits; tour, stay, rescuer, translator do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:38",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a runner runs; reset, streak, skater, translator do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:40",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: short/tall opposites; brief, summary, blunt are near-synonyms of short, not opposites.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:41",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: hate/love opposites; hatred, anger are synonyms; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:50",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but 'optic' (an optical instrument, or the eye itself) is a whole that a lens is genuinely part of, so camera is not the one defensible answer. Drop optic; laser, infrared and vision remain.",
+  "drop": [
+   "optic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:51",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a claw is part of a cat; hind (a doe, which has hooves), beak, nail, fin are not wholes with claws.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:52",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a string is part of a guitar; fret, thread, tape, drum are not its whole.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:54",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a handle is part of a mug; staff, caution, grip are not wholes it belongs to.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:59",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but a ship's helm is 'a tiller or wheel and its steering gear', so a wheel is part of a helm too. Drop helm; pivot and propeller remain.",
+  "drop": [
+   "helm"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:60",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: boots are made from leather; denim boots are a rare fashion item, not a defensible general answer; jacket, kick, beef no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:61",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: bricks are made from clay; marble, canvas, wood, toy do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:63",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; pen is used to write and no option competes, but the gloss 'Produce a literary work' is the authoring sense, not forming letters with a pen. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:65",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a brake is used to slow; signal, wake, unlock, sweep do not compete; gloss is the same core sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:66",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a funnel is used to pour liquid into a narrow opening; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:70",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: soap is used to clean; the gloss is the adjective but the meaning is transparent and not misleading.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:71",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a towel is used to dry; gloss 'Not wet' conveys the meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:74",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: glance/glimpse near-synonyms (a quick look); fumble, swipe, acceptance, grin do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:78",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: bargain/deal synonyms; broker, buyer, pension, mortgage do not compete; gloss is the bargain sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:82",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but 'tub' is a near-synonym of bucket in everyday use (a tub/bucket of ice cream or popcorn), so pail is not the only defensible answer. Drop tub; faucet, artery, bale remain.",
+  "drop": [
+   "tub"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:83",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: danger -> dangerous; fraught, imminent, unharmed, heroic are not its family form.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:84",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: choose -> choice; preference is a synonym, not choose's family form.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:85",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: argue -> argument; philosopher, reformer, critic, economist do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:86",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: hero -> heroic; wizard, novel, tragic, magical not in the family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:88",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: fame -> famous; no other option is fame's family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:89",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: fail -> failure; default and refusal are different words, not fail's family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:90",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: lonely -> loneliness; lovely, oasis, brook, stranger do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:91",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: certain -> certainty; inevitable is a different word; others unrelated.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:95",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: narrative/story synonyms; biography is a kind of narrative, scenario a plot outline, neither the same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:104",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: collision/impact synonyms; explosion, bombardment, accelerator, photon do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:109",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: pasture/meadow synonyms; a lawn is mown grass, not pasture; boar, cattle, sow are animals.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:111",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: figurative/metaphorical synonyms at level 7; subjective, implicit etc. do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:114",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: spiteful/malicious synonyms; vile, immoral, abominable mean wicked/disgusting, not intending harm.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:116",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: ricotta is a cheese; flatbread, cutlet, hummus, tahini are other foods; level 7 fine.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:118",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: decoration/adornment synonyms; wreath, drapery are kinds of decoration, not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:120",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: enthusiasm/eagerness synonyms; elation, rapture, mirth are joy words; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:123",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an axe is a tool; vertex, pivot, overlap do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:126",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: coldness/chill synonyms; wetness, depletion, blindness, fluctuation do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:127",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: tiresome/tedious synonyms; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:132",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: omit -> omission; grammar-word distractors are not omit's family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:133",
+  "verdict": "fail",
+  "reason": "Rounds 1-2 passed it, but every wrong option (july, december, november, tuesday) is a month or weekday - a proper noun shown lowercase as filler, which a spelling app must not display. Dropping them would leave no options, so it cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:138",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; picturesque/scenic is a sound synonym and lurid/dingy/spooky do not compete, but the gloss 'Used of locations' is a truncated usage note that shows no meaning at all. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:139",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; zero/nothing holds, but the gloss 'A quantity of no importance' reads to a child as 'an unimportant amount', not 'none at all'. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:141",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: sofa/couch synonyms; furniture is its category, not a synonym.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:142",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a lace is part of a shoe; linen and string are not wholes it belongs to.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:143",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a rowboat is a boat; sailboat and dugout are boats too, not rowboat's category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:145",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: residence/dwelling synonyms; dean, diocese, deacon, seclusion do not compete (neutral words, not faith-mocking).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:153",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: gaze/stare synonyms; doom, twilight, admiration, awe do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:156",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: import/export opposites; investment, premium etc. do not compete; familiar enough at level 1.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:167",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: symbolize/represent (stand for) synonyms; enthrone, blazon, divest do not compete; gloss is the stand-for sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:169",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: tendon/sinew synonyms; bones and navel words do not compete and are not insults.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:170",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: gullible/naive synonyms; docile means submissive, not easily fooled.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:171",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: marshy/boggy synonyms; mossy, upland, sandy, outback (a common noun) do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:174",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: seasoning/flavoring synonyms; thyme and ginger are kinds of seasoning, not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:179",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: tune/melody synonyms; melodic is an adjective; others unrelated.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:182",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: drizzle/sprinkle (light rain) synonyms; downpour is the opposite; gloss is the rain sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:184",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: vermilion is a color; mauve and maroon are colors, not categories; topaz, colorful no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: finding/discovery synonyms; investigation is the process, discover the verb.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: penalty/punishment synonyms; punish is the verb, violation the offence.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: permission/consent synonyms; grant (money or land given), lease, passport, landlord do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: response/reply synonyms; trigger, stimulus, prompt cause a response.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:l",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: title/name synonyms; earl and emperor are kinds of title, not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:p",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: memorial/monument synonyms; coffin, cemetery, bard do not compete and are not gory.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:t",
+  "verdict": "fail",
+  "reason": "Rounds 1-2 passed it, but three of four wrong options are proper nouns shown lowercase as filler (atlantic, pacific, ohio). Dropping them leaves only northwest, under the 2-option minimum, so it cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:v",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: hog/pig synonyms; ham, gravy, bun, beaver do not compete; all are ordinary animal/food words in their primary sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:z",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: bush/shrub synonyms; bog, lush, annual, cactus do not compete; primary senses only.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1a",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: light/heavy opposites (dark is not offered); lamp, flash, cloudy, float do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1b",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: lose/win opposites; lost, winner are forms, not opposites.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1c",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: reveal/conceal opposites; gloss is the right verb sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1e",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: hidden/visible opposites; reveal and conceal are verbs, not the adjective opposite.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1f",
+  "verdict": "fail",
+  "reason": "Rounds 1-2 passed it, but all four wrong options (december, november, october, july) are month names shown lowercase as filler. Cannot be rescued by dropping.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1g",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: innocent/guilty opposites; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1i",
+  "verdict": "fail",
+  "reason": "Rounds 1-2 passed it, but three wrong options (february, july, october) are month names shown lowercase as filler; dropping them leaves only 'month', under the 2-option minimum.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1j",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: hard/soft opposites; tough, difficult, rough are near-synonyms of hard.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1l",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: strong/weak opposites; firm, mighty are synonyms, weakness a noun.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1o",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: modern/ancient opposites; early, oldest, new do not oppose modern.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1p",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: pull/push opposites; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1r",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: poor/rich opposites; scarce, risky, lend, selfish do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1s",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: false/true opposites; truth is the noun, mistaken a synonym.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1u",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: dark/light opposites; gray, grey, shadow, streak do not oppose dark; the noun gloss fits 'the dark/the light'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1v",
+  "verdict": "fail",
+  "reason": "Rounds 1-2 passed it, but three wrong options (july, october, december) are month names shown lowercase as filler; dropping them leaves only 'afternoon', under the 2-option minimum.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1x",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: defeat/victory opposites; loss is a synonym of defeat.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1y",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: victory/defeat opposites; won, win, success are on victory's side.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2a",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a hammer is a tool; brass and pound are not its category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2b",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an ant is an insect; swarm and predator are not its category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2d",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: red is a color; ruby, streak, colorful are not its category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2f",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a circle is a shape; a ring is a kind of circle, not the reverse; axis no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2h",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an eagle is a bird; crest, swoop, dolphin do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2j",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a backpack is a bag; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2k",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a sweater is a garment; sock and jacket are garments, not categories; wool, nap no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2l",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a car is a vehicle; garage, trailer, freight, pedal do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2n",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a fly is an insect; hawk, prey, tick, swarm are not its category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2p",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an ore is a mineral (a mineral containing a valuable constituent); uranium, coal, aluminum, zinc are not ore's category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2q",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a van is a vehicle; caravan, subway, booth, freight are not its category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2r",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: tea is a drink; soy, ginger, honey do not compete; gloss conveys beverage.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2t",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an aircraft is a vehicle; a jet is a kind of aircraft, not the reverse.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2u",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a shovel is a tool; driveway, mop, dig do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2y",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an owl is a bird; robin is another bird, not a category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3a",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a reader reads; text, poem, translator, writer do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3b",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an actor acts; director, leader do other things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3c",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a singer sings; composer and dancer do other things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3e",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a leader leads; led is a tense, director/doctor/actor other doers.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3f",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a driver drives; a pilot flies, not 'drives'; others no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3g",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a player plays; composer, singer, director do other things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3h",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; design -> designer is sound and no option competes, but the gloss defines an interior designer ('designing architectural interiors and their furnishings'), a narrow profession, not 'a person who designs'. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:3i",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a dancer dances; jazz, singer, composer, skater do not compete; performer gloss is the dominant sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3j",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; direct -> director is sound and no option competes, but the gloss 'Someone who controls resources and expenditures' is the finance-manager sense, not 'one who directs' as an 8-year-old meets it. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:3k",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a farmer farms; fed, hunter, builder, skater do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3l",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a hunter hunts; prey, fox, guardian, skater do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3m",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a writer writes; translator and composer do other things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3n",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a gardener gardens; hedge, blossom, backyard, bush are things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3p",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a sailor sails; captain commands, ship/fleet/dock are things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3q",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a baker bakes; pastry, oatmeal, roast, dough are foods.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3r",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a painter paints; mural, plaster, color, master do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3s",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a sculptor sculpts; slab, skater, builder, baker do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3t",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an explorer explores; geography, ecology, rescuer, hunter do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3v",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an inventor invents; cipher, narrator, translator, writer do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3x",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a skater skates; swimmer, runner, hunter do other things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3y",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; swim -> swimmer is sound and no option competes, but the gloss 'A trained athlete who participates in swimming meets' teaches the competitive sense only - everyday 'swimmer' is anyone who swims. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:3z",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: light/dark opposites (heavy not offered); lamp, flash, cloudy, float do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4d",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: shrub/bush synonyms; tree, cactus, annual, fern are other plants.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4h",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: lumber is a kind of wood; a plank is a kind of lumber, not the reverse.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4l",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a walnut is a nut; coconut, soy, curry are not its category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4m",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: zinc is a metal; the other metals are not categories.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4v",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a sleeve is part of a shirt; sandal, sash, footwear do not have sleeves.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4x",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but many books group chapters into sections or parts, so 'a chapter is part of a section' is defensible. Drop section; paragraph, essay, lesson remain.",
+  "drop": [
+   "section"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4z",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a sail is part of a boat; captain, fleet, dock are not wholes it is part of.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5d",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: wallets are made from leather; spare, laptop, purse, beaver are not materials of a wallet.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5e",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: cheese is made from milk; milky, salami, savory, attention do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5f",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: candles are made from wax; a taper is a candle, not its material.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5h",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; tire is made from rubber and no option competes, but the gloss prints the genus names lowercase ('hevea and ficus') - a miscapitalisation a spelling app would display, and too technical for level 3. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:5i",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a snowman is made from snow; wicker, denim, marble, snowy do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5m",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; popcorn is made from corn and no option competes, but the gloss shows the plant ('Tall annual cereal grass...') rather than the kernels, and prints 'america' lowercase. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:5o",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a tent is made from canvas; picnic, recreation, wicker, snow do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5p",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: bread is made from flour; burger, bacon, broth, fry are foods, not its material.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5q",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: shirts are made from cotton; the other options are garments, not materials.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5r",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but many cakes are made with cream (cream cakes, cheesecake), so 'cream' is a partly defensible material beside flour. Drop cream; bun, loaf, block remain.",
+  "drop": [
+   "cream"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5t",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: sweaters are made from wool; felt is a wool product, not knitted into sweaters; scarf, sock, nap no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5y",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: jam is made from fruit; fix, cream, corn, breakfast are not its material.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5z",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: jars are made from glass; shelf, candy, pot, bin are not materials.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6a",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a whistle is used to signal; catch, wake, sweep, inflate are not its purpose.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6b",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an oven is used to bake; boil, freeze, cool, shred are not oven functions.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6d",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; a magnet is used to attract and no option competes, but the gloss ('by means of some psychological power or physical attributes') is the person-attracts-attention sense, not magnetic force. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6o",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a lantern is used to light; warm and cool are not its purpose; noun gloss conveys light.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6q",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a heater is used to warm; freeze, cool, wake, sweep do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6s",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a pencil is used to draw; write is not offered; others no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6t",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a key is used to unlock; slow, stick, bore, signal do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6u",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a camera is used to photograph; magnify, light, unlock, sweep are not its purpose.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6x",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a fan is used to cool; attract, wake, sweep, inflate do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6z",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; a scale is used to weigh and no option competes, but the gloss 'Have a certain weight' is the intransitive sense (it weighs 5 kg), not measuring weight. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:7b",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; home/residence is sound, but 'orphan' as a wrong answer beside 'home' frames an orphaned or fostered child as the not-home option - needlessly hurtful filler. Drop orphan; vacation, nowhere, permanent remain.",
+  "drop": [
+   "orphan"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7e",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: involvement/participation synonyms; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7h",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: counselor/advisor synonyms; a tutor teaches, learner/rookie/responder no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7m",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: uncertainty/doubt synonyms; certainty and conviction are opposites.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7p",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but thesauri list 'realization' as a synonym of comprehension and 'cognition' overlaps it, so grasp is not the only defensible answer. Drop both; volition and actuality remain.",
+  "drop": [
+   "realization",
+   "cognition"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7y",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: narrative/tale synonyms; biography, scenario, prose, manga do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7z",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; barrier/obstacle is sound and the physical-barrier distractors are hyponyms, not synonyms, but the gloss restricts obstacle to 'Something immaterial...', which contradicts the physical barrier the item frames and reads to a child as 'unimportant'. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:8b",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: rain -> rainy; sunny, muddy are other weather adjectives, not rain's family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8d",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: celebrate -> celebration; no option is its family form.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8e",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: significant -> significance; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8f",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: subtle -> subtlety; clarity, gloss, blur do not compete; gloss a valid sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8g",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; accept -> acceptance is sound, but with a gloss about believing something true, 'agnostic' as a wrong answer reads as judging a stance on faith. Drop agnostic; skeptic, refuse, admiration remain.",
+  "drop": [
+   "agnostic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8i",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: method -> methodical; the other -al adjectives are not method's family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8k",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: inactive -> inactivity; active is the opposite, activation a different idea.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8l",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: sentiment -> sentimental; stoic, idealistic etc. not its family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8n",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: motivation -> motivational; purposeful, initiative, selfish do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8o",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: emit -> emission; radiation is a different word, not emit's family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8p",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: require -> requirement; paperwork, protocol etc. do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8q",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: purpose -> purposeful; intent and objective are synonyms, not family forms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8r",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: duty -> dutiful; supervisory, clerical, menial do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8s",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: acid -> acidic; caustic, chemical, fatty are not its family; acid is the science sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8t",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: productive -> productivity; usefulness is a synonym, not family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8v",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but 'rotational' is itself in rotate's word family (the same idea with a new job), so rotation is not the one defensible answer. Drop rotational; pivot, compressor, propulsion remain.",
+  "drop": [
+   "rotational"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8w",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: retire -> retirement; senior, junior etc. do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8x",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: hormone -> hormonal; adrenal, pituitary etc. are not its family; biology sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8y",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: install -> installation; demolition is the opposite, the rest are devices.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8z",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: derive -> derivation; extract is a synonym, not family; phenol, halogen no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9c",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: continue -> continuation; resume is a synonym, not family; abort is the everyday stop sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9d",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: intervene -> intervention; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9f",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: government -> governmental; executive, corporate etc. are not its family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9g",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: recommend -> recommendation; prescription is a different word.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9i",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed; a pump is used to inflate and no option competes, but the gloss leads with 'Exaggerate', the figurative sense (inflated claims), not filling with air. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:9l",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a debater debates; argument, stance etc. are not doers.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9m",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a supervisor supervises; administrator and trainee do other things.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9o",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a settler settles; mediation, dispute, resolve, pact are not doers.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9q",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an intruder intrudes; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9r",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: an agitator agitates; turbulence, gush, revulsion, aversion are not doers.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9u",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a follower follows; a leader leads; others no.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9w",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a translator translates; cipher, compiler, shorthand, lexicon are not doers.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9y",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: a vacationer is on vacation; holiday is a synonym of the activity, not the person.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a0",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: generous -> generosity; hospitality, donation, benefactor are other words.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a3",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: disperse -> dispersal; convection etc. do not compete.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a5",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: joy -> joyous; ecstatic, delightful are other words, not joy's family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a6",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: expression -> expressive; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a7",
+  "verdict": "fix",
+  "reason": "Rounds 1-2 passed, but 'null' is the root of annul (annul = make null), so a child can defend 'annul becomes null' as the same idea with a new job. Drop null; revoke, repeal, postponement remain.",
+  "drop": [
+   "null"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:aa",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: enclose -> enclosure; bower, partition etc. are other words.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ab",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: neat -> neatness; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ac",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: stabilize -> stabilization; no option competes.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:af",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: serpent -> serpentine; reptilian belongs to reptile, not serpent.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ag",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: chalk -> chalky; crumbly, chunky are other -y adjectives.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ah",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: acknowledge -> acknowledgment; confirmation is a synonym, not family.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:aj",
+  "verdict": "pass",
+  "reason": "Agree with rounds 1-2: recite -> recitation; chant, gospel (the music genre), sung, chorus are not its family.",
+  "drop": [],
+  "gloss": "keep"
+ }
+]
