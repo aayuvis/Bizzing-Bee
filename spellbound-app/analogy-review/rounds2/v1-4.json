@@ -1,0 +1,532 @@
+[
+ {
+  "unit": "item:11b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:11y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13s",
+  "verdict": "fail",
+  "reason": "'significance' most often means importance, which is the sense a child knows ('of great significance'); in that sense 'greatness' is arguable as the same meaning, so a careful 11-year-old can defend it over 'meaning'. The answer depends on the less familiar sense, and the distractors include an adjective of the answer ('meaningful') that adds to the confusion."
+ },
+ {
+  "unit": "item:13u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14n",
+  "verdict": "fail",
+  "reason": "'administration' is too adult for level 2 (age 9): it is an office/government word, not one a 9-year-old reliably knows, and its other senses (a government; giving medicine) make it confusing. The verb 'manage' as a same-family distractor compounds the confusion at this age."
+ },
+ {
+  "unit": "item:14o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15i",
+  "verdict": "fail",
+  "reason": "The link is not exact: a bookshelf is, first, a single shelf, and a bookcase is the piece of furniture made of shelves, so a bookshelf is often PART OF a bookcase rather than the same thing. 'Same meaning' holds only in loose everyday usage; a doubtful link fails."
+ },
+ {
+  "unit": "item:15k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17n",
+  "verdict": "fail",
+  "reason": "'thick' is a defensible second opposite of 'sharp': sharp (clever, quick-witted) vs thick (slow, dim) is a standard informal pair, and 'thick' in that sense is a playground insult. Swap 'thick' for a plainly non-opposite word."
+ },
+ {
+  "unit": "item:17r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "card:shiva",
+  "verdict": "pass",
+  "reason": ""
+ }
+]
