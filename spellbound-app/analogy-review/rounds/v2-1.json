@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:0",
+  "verdict": "fail",
+  "reason": "synonyms"
+ },
+ {
+  "unit": "item:1",
+  "verdict": "fail",
+  "reason": "no true synonym of 'sibling' offered; sister is a kind of sibling (hyponym), so the A:B synonym link is not repeated"
+ },
+ {
+  "unit": "item:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3",
+  "verdict": "fail",
+  "reason": "second defensible: rest · 'sitting'='posing' only in the portrait-sitting sense; obscure for kids, 'rest' tempting"
+ },
+ {
+  "unit": "item:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5",
+  "verdict": "fail",
+  "reason": "kids know 'diner' as a restaurant; 'one who dines' sense is obscure"
+ },
+ {
+  "unit": "item:6",
+  "verdict": "fail",
+  "reason": "second defensible: invention"
+ },
+ {
+  "unit": "item:7",
+  "verdict": "fail",
+  "reason": "unsafe: tavern · answer is a drinking establishment (alcohol)"
+ },
+ {
+  "unit": "item:8",
+  "verdict": "fail",
+  "reason": "second defensible: package · package/shipment arguable"
+ },
+ {
+  "unit": "item:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10",
+  "verdict": "fail",
+  "reason": "'adult' is a near-opposite of young but old is clearest"
+ },
+ {
+  "unit": "item:11",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:13",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:18",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:19",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:20",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:21",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:22",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:23",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:24",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:25",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:26",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:27",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:28",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:29",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:30",
+  "verdict": "fail",
+  "reason": "'cook' is already the agent noun; chef is a synonym, not the derived -er form"
+ },
+ {
+  "unit": "item:31",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:32",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:33",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:34",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:35",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:36",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:37",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:38",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:39",
+  "verdict": "fail",
+  "reason": "not a morphological agent form like sailor; acceptable"
+ },
+ {
+  "unit": "item:40",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:41",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:42",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:43",
+  "verdict": "fail",
+  "reason": "second defensible: decrease · decrease is also an opposite of expand"
+ },
+ {
+  "unit": "item:44",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:45",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:46",
+  "verdict": "fail",
+  "reason": "second defensible: comply · refuse/comply also opposites"
+ },
+ {
+  "unit": "item:47",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:48",
+  "verdict": "fail",
+  "reason": "second defensible: charity"
+ },
+ {
+  "unit": "item:49",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:50",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:51",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:52",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:53",
+  "verdict": "fail",
+  "reason": "second defensible: cedar · a cedar (tree) also has a trunk"
+ },
+ {
+  "unit": "item:54",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:55",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:56",
+  "verdict": "fail",
+  "reason": "second defensible: poetry"
+ },
+ {
+  "unit": "item:57",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:58",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:59",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:60",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:61",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:62",
+  "verdict": "fail",
+  "reason": "second defensible: metal · a ring is made of metal generally; gold is just more specific"
+ },
+ {
+  "unit": "item:63",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:64",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:65",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:66",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:67",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:68",
+  "verdict": "fail",
+  "reason": "'bore' (drill a hole) less familiar to kids than 'boring'"
+ },
+ {
+  "unit": "item:69",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:70",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:71",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:72",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:73",
+  "verdict": "fail",
+  "reason": "second defensible: disposition · disposition is also a synonym of tendency"
+ },
+ {
+  "unit": "item:74",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:75",
+  "verdict": "fail",
+  "reason": "second defensible: calamity"
+ },
+ {
+  "unit": "item:76",
+  "verdict": "fail",
+  "reason": "alibi is a narrow legal sense, not a general synonym of excuse"
+ },
+ {
+  "unit": "item:77",
+  "verdict": "fail",
+  "reason": "second defensible: animosity · animosity is also a close synonym of malice"
+ },
+ {
+  "unit": "item:78",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:79",
+  "verdict": "fail",
+  "reason": "'cravat','canvases' obscure"
+ },
+ {
+  "unit": "item:80",
+  "verdict": "fail",
+  "reason": "blind pick “hate”, intended “animosity” · second defensible: animosity · unsafe: dickens · two synonyms offered; 'dickens' is a minced oath ('what the dickens') with a crude-sounding stem"
+ },
+ {
+  "unit": "item:81",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:82",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:83",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:84",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:85",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:86",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:87",
+  "verdict": "fail",
+  "reason": "'patient' read as noun (clinic, nurse) may confuse"
+ },
+ {
+  "unit": "item:88",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:89",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:90",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:91",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:92",
+  "verdict": "fail",
+  "reason": "joyful = full of joy, but meaningless = without meaning; 'meaningful' is missing, so the link is inverted"
+ },
+ {
+  "unit": "item:93",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:94",
+  "verdict": "fail",
+  "reason": "'boring' = drilling is a confusing double sense for kids"
+ },
+ {
+  "unit": "item:95",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:96",
+  "verdict": "fail",
+  "reason": "pregnancy/fetus/gestation: reproductive topic, obscure and possibly sensitive for younger kids"
+ },
+ {
+  "unit": "item:97",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:98",
+  "verdict": "fail",
+  "reason": "second defensible: monument"
+ },
+ {
+  "unit": "item:99",
+  "verdict": "fail",
+  "reason": "unsafe: smack · 'smack' is drug slang (heroin) and means hitting; 'boring' double sense confusing"
+ },
+ {
+  "unit": "item:100",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:101",
+  "verdict": "fail",
+  "reason": "second defensible: hit"
+ },
+ {
+  "unit": "item:102",
+  "verdict": "fail",
+  "reason": "death theme; fine but heavy"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:104",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:105",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:106",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:107",
+  "verdict": "fail",
+  "reason": "second defensible: footwear · 'sho' (Japanese mouth organ) is very obscure and reads as a typo of 'shoe', making footwear look right"
+ },
+ {
+  "unit": "item:108",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:109",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:110",
+  "verdict": "fail",
+  "reason": "blind pick “fraud”, intended “chess”"
+ },
+ {
+  "unit": "item:111",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:112",
+  "verdict": "fail",
+  "reason": "andromeda as a shrub genus is very obscure; kids know it as a galaxy/constellation"
+ },
+ {
+  "unit": "item:113",
+  "verdict": "fail",
+  "reason": "blind pick “prairie”, intended “tree” · no category word (grassland) offered; prairie is a sibling, not a category, so link not repeated"
+ },
+ {
+  "unit": "item:114",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:115",
+  "verdict": "fail",
+  "reason": "'aboriginal' as a distractor is an identity term, best avoided"
+ },
+ {
+  "unit": "item:116",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:117",
+  "verdict": "fail",
+  "reason": "vegetation is not a kind of plant (it is plants collectively); weak member:category link"
+ },
+ {
+  "unit": "item:118",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:119",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:120",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:121",
+  "verdict": "fail",
+  "reason": "blind pick “blot”, intended “insect” · no category for smudge offered; blot is a synonym, so robin:bird link is not repeated"
+ },
+ {
+  "unit": "item:122",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:123",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:124",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:125",
+  "verdict": "fail",
+  "reason": "blind pick “—”, intended “metal” · second defensible: buckle, padlock, clutch · no category word for cleat (fastener/projection); buckle, padlock, clutch are all co-members — item broken"
+ },
+ {
+  "unit": "item:126",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:127",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:128",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:129",
+  "verdict": "fail",
+  "reason": "rain is a kind of precipitation (hyponym), not a synonym like gift/present"
+ },
+ {
+  "unit": "item:130",
+  "verdict": "fail",
+  "reason": "'abattoir' (slaughterhouse) and 'statehouse' obscure"
+ },
+ {
+  "unit": "item:131",
+  "verdict": "fail",
+  "reason": "astrantia and the other plant genera are very obscure"
+ },
+ {
+  "unit": "item:132",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:133",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:134",
+  "verdict": "fail",
+  "reason": "unsafe: smack · hiss = boo only in the heckling sense; 'smack' is drug slang/hitting"
+ },
+ {
+  "unit": "item:135",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:136",
+  "verdict": "fail",
+  "reason": "'brush' = undergrowth is an obscure sense; 'hedge' tempting"
+ },
+ {
+  "unit": "item:137",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:138",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:139",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:140",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:141",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:142",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:143",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:144",
+  "verdict": "fail",
+  "reason": "girth's other sense is a saddle strap, which the distractors target; obscure"
+ },
+ {
+  "unit": "item:145",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:146",
+  "verdict": "fail",
+  "reason": "second defensible: papule · medical skin-lesion terms (pustule, papule) are obscure and gross; no exact synonym (pimple) offered"
+ },
+ {
+  "unit": "item:147",
+  "verdict": "fail",
+  "reason": "weak synonym; adjective vocabulary too abstract"
+ },
+ {
+  "unit": "item:148",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:149",
+  "verdict": "fail",
+  "reason": "second defensible: assent"
+ },
+ {
+  "unit": "item:150",
+  "verdict": "fail",
+  "reason": "second defensible: fell · pelt is not a member of a category here; 'fell' (hide) is an archaic synonym; obscure"
+ },
+ {
+  "unit": "item:151",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:152",
+  "verdict": "fail",
+  "reason": "cookout is not a true synonym of picnic"
+ },
+ {
+  "unit": "item:153",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:154",
+  "verdict": "fail",
+  "reason": "'murder' as a distractor is violent for younger kids; accused~suspect is not exact (defendant)"
+ },
+ {
+  "unit": "item:155",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:156",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:157",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:158",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:159",
+  "verdict": "fail",
+  "reason": "unsafe: arab · 'arab' as a distractor beside 'trader' risks an ethnic stereotype"
+ },
+ {
+  "unit": "item:160",
+  "verdict": "fail",
+  "reason": "second defensible: ideology"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "fail",
+  "reason": "second defensible: fetter"
+ },
+ {
+  "unit": "item:162",
+  "verdict": "fail",
+  "reason": "unsafe: climax · 'climax' has a sexual double meaning"
+ },
+ {
+  "unit": "item:163",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:164",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:165",
+  "verdict": "fail",
+  "reason": "'madness'/'dementia' as distractors could stigmatise mental illness"
+ },
+ {
+  "unit": "item:166",
+  "verdict": "fail",
+  "reason": "'garter' has a lingerie connotation"
+ },
+ {
+  "unit": "item:167",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:168",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:169",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:170",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:171",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:172",
+  "verdict": "fail",
+  "reason": "'a national' as a noun for citizen is an obscure sense"
+ },
+ {
+  "unit": "item:173",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:174",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:175",
+  "verdict": "fail",
+  "reason": "second defensible: salary · salary is also a near-synonym of stipend"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:177",
+  "verdict": "fail",
+  "reason": "caterpillar is a kind of larva, not an exact synonym"
+ },
+ {
+  "unit": "item:178",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:179",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:180",
+  "verdict": "fail",
+  "reason": "unsafe: buttock · 'buttock' is a crude/giggle body word for kids"
+ },
+ {
+  "unit": "item:181",
+  "verdict": "fail",
+  "reason": "blind pick “—”, intended “animal” · no option is a category for cholesterol (lipid/sterol); item broken and too technical"
+ },
+ {
+  "unit": "item:182",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:183",
+  "verdict": "fail",
+  "reason": "'rustic' as a noun is obscure; 'peasant' can be used as an insult"
+ },
+ {
+  "unit": "item:184",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:185",
+  "verdict": "fail",
+  "reason": "unsafe: urine · 'urine' is a crude bodily word as a distractor"
+ },
+ {
+  "unit": "item:186",
+  "verdict": "fail",
+  "reason": "second defensible: considerate · considerate is also a synonym of courteous"
+ },
+ {
+  "unit": "item:187",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a",
+  "verdict": "fail",
+  "reason": "second defensible: resin · weak link; extract is not really a synonym of juice"
+ },
+ {
+  "unit": "item:b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g",
+  "verdict": "fail",
+  "reason": "second defensible: trek"
+ },
+ {
+  "unit": "item:h",
+  "verdict": "fail",
+  "reason": "weak synonym"
+ },
+ {
+  "unit": "item:i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:n",
+  "verdict": "fail",
+  "reason": "unsafe: arab · 'arab' as a distractor beside 'trader' risks an ethnic stereotype"
+ },
+ {
+  "unit": "item:o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u",
+  "verdict": "fail",
+  "reason": "second defensible: extent"
+ },
+ {
+  "unit": "item:v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1k",
+  "verdict": "fail",
+  "reason": "second defensible: ascend"
+ },
+ {
+  "unit": "item:1l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1m",
+  "verdict": "fail",
+  "reason": "second defensible: hatred · hatred (noun) is also a valid opposite of love"
+ },
+ {
+  "unit": "item:1n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2e",
+  "verdict": "fail",
+  "reason": "'mom' as a distractor beside 'kitchen' risks a gender stereotype"
+ },
+ {
+  "unit": "item:2f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2g",
+  "verdict": "fail",
+  "reason": "a boot is footwear rather than a shoe; acceptable"
+ },
+ {
+  "unit": "item:2h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2m",
+  "verdict": "fail",
+  "reason": "'young' as an adjective has no category; only the rare noun sense (offspring) makes 'animal' fit; item broken for kids"
+ },
+ {
+  "unit": "item:2n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2o",
+  "verdict": "fail",
+  "reason": "a pocket is part of a garment, not a kind of one; link not repeated"
+ },
+ {
+  "unit": "item:2p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2v",
+  "verdict": "fail",
+  "reason": "blind pick “pig”, intended “animal” · second defensible: animal · hog is a pig and also an animal; both categories valid"
+ },
+ {
+  "unit": "item:2w",
+  "verdict": "fail",
+  "reason": "coral is primarily a sea animal; colour sense is secondary"
+ },
+ {
+  "unit": "item:2x",
+  "verdict": "fail",
+  "reason": "blind pick “—”, intended “cake” · no category for baking (cooking) offered; item broken"
+ },
+ {
+  "unit": "item:2y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2z",
+  "verdict": "fail",
+  "reason": "laundry is a collection of garments, not a kind of garment; link not repeated"
+ },
+ {
+  "unit": "item:3a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3o",
+  "verdict": "fail",
+  "reason": "'judge' is already the agent noun; no derived form exists, referee only a loose match — item broken"
+ },
+ {
+  "unit": "item:3p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3u",
+  "verdict": "fail",
+  "reason": "'guard' is already an agent noun"
+ },
+ {
+  "unit": "item:3v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4c",
+  "verdict": "fail",
+  "reason": "weak synonym"
+ },
+ {
+  "unit": "item:4d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4f",
+  "verdict": "fail",
+  "reason": "second defensible: comment · comment is also a sense of note"
+ },
+ {
+  "unit": "item:4g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4h",
+  "verdict": "pass",
+  "reason": ""
+ }
+]

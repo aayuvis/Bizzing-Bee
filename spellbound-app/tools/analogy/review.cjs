@@ -2,6 +2,7 @@
 /* review.cjs — the three agent-review rounds over the analogy content (owner, 10 Oct 2026: "the analogy content
    is reviewed by agents, not a human: three independent rounds").
      node tools/analogy/review.cjs sheets <round> [size]   write analogy-review/rounds/r<round>-<n>.json for the agents
+     node tools/analogy/review.cjs blind2                   round 2's blind answers (b2-*) → verdicts (v2-*)
      node tools/analogy/review.cjs ledger                   fold every analogy-review/rounds/v<round>-*.json verdict file
                                                              into analogy-review/analogy-review.json ({item, round, verdict, reason})
      node tools/analogy/review.cjs status                   passes per unit, what still needs a round
@@ -49,6 +50,26 @@ if (cmd === 'sheets') { const round = +process.argv[3], size = +(process.argv[4]
   for (const f of fs.readdirSync(RD).filter((f) => f.startsWith('r' + round + '-'))) fs.unlinkSync(path.join(RD, f));
   const n = Math.ceil(U.length / size); for (let i = 0; i < n; i++) fs.writeFileSync(path.join(RD, 'r' + round + '-' + (i + 1) + '.json'), JSON.stringify(U.slice(i * size, (i + 1) * size), null, 1));
   console.log('round ' + round + ': ' + U.length + ' units in ' + n + ' sheets'); }
+else if (cmd === 'blind2') {
+  /* round 2's blind answers → verdicts: an item passes only if the solver picked the intended answer, named no second
+     defensible answer and flagged no unsafe word; a stem only if it named the stem's own link and nothing else */
+  const byId = {}; units().forEach((u) => { byId[u.unit] = u; }); let n = 0, pass = 0;
+  for (const f of fs.readdirSync(RD).filter((f) => /^b2-\d+\.json$/.test(f))) { const out = [];
+    for (const b of JSON.parse(fs.readFileSync(path.join(RD, f), 'utf8'))) { const u = byId[b.unit]; if (!u) continue; n++;
+      const second = (b.second || []).filter(Boolean), unsafe = (b.unsafe || []).filter(Boolean); let verdict, reason;
+      if (u.kind === 'item') { const ok = String(b.pick || '').toLowerCase() === u.d.toLowerCase();
+        /* a worry the solver wrote down (a broken link, an obscure word, a doubt) fails it too: a doubtful item fails */
+        const worry = String(b.reason || '').trim();
+        verdict = ok && !second.length && !unsafe.length && !worry ? 'pass' : 'fail';
+        reason = [ok ? '' : 'blind pick “' + (b.pick || '—') + '”, intended “' + u.d + '”', second.length ? 'second defensible: ' + second.join(', ') : '', unsafe.length ? 'unsafe: ' + unsafe.join(', ') : '', worry].filter(Boolean).join(' · '); }
+      else if (u.kind === 'stem') { const ok = String(b.pick || '').toLowerCase() === u.link.toLowerCase();
+        const worry = String(b.reason || '').trim();
+        verdict = ok && !second.length && !unsafe.length && !worry ? 'pass' : 'fail';
+        reason = [ok ? '' : 'blind link “' + (b.pick || '—') + '”, intended “' + u.link + '”', second.length ? 'also fits: ' + second.join(', ') : '', unsafe.length ? 'unsafe: ' + unsafe.join(', ') : '', worry].filter(Boolean).join(' · '); }
+      else { verdict = b.verdict === 'pass' ? 'pass' : 'fail'; reason = b.reason || ''; }
+      if (verdict === 'pass') pass++; out.push({ unit: b.unit, verdict, reason }); }
+    fs.writeFileSync(path.join(RD, f.replace(/^b2-/, 'v2-')), JSON.stringify(out, null, 1)); }
+  console.log('round 2: ' + n + ' units, ' + pass + ' pass, ' + (n - pass) + ' fail'); }
 else if (cmd === 'ledger') { const rows = ledger(); fs.writeFileSync(path.join(DIR, 'analogy-review.json'), JSON.stringify(rows, null, 1) + '\n');
   const P = passes(rows); const three = Object.values(P).filter((p) => p[1] === 'pass' && p[2] === 'pass' && p[3] !== 'fail').length; console.log(rows.length + ' verdicts; ' + three + ' units with no failing round'); }
 else if (cmd === 'status') { const P = passes(ledger()); const U = units(); const c = { r1: 0, r2: 0, r3: 0 }; U.forEach((u) => { const p = P[u.unit] || {}; if (p[1]) c.r1++; if (p[2]) c.r2++; if (p[3]) c.r3++; }); console.log(U.length + ' units', c); }
