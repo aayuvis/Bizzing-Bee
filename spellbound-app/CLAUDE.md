@@ -114,6 +114,12 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
   (`seen`, `paid`, today's `ids`). Only a right answer pays, once, through `addCoins('answer')`; a wrong
   one holds with Continue. A "Hear it" button plays the recorded clip on a tap — no sound before one.
 - `#/word/<w>` opens a word's card (family-shell `applyRoute`, the same door as a search suggestion).
+- **Doubled on 10 Oct 2026** (owner: "double the feed cards… e.g. analogies"): 14,169 → **28,874**. New kinds, each
+  resolved against its source by `tests/feed-content.cjs`: `analogy` (every Analogy Atlas item as a question — stem
+  from its lesson's bank, level = the item's own; plus each lesson's idea / spot-it / trap, no level, route
+  `#/analogies`), `sounds` (homophone groups, each word with the library's meaning) and `saying` (two written
+  pronunciations). Library spotlights per region 80 → 650. The build drops any card whose words are on
+  struck-words' INSULT list (a library sentence or origin can carry one).
 
 ## FIX-BEE (2 Oct 2026) — the family standard, applied. READ THIS BEFORE THE OLDER SECTIONS.
 The October family audit (brief: `/root/.claude/uploads/…/FIX-BEE.md`; standard:

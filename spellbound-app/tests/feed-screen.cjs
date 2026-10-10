@@ -278,7 +278,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
             : p[0] === 'stop' ? S.nav === 'trail' && S.trailUnit === p[1]
             : p[0] === 'atlas' ? S.nav === 'trail' && S.trailAct === p[2]
             : p[0] === 'play' ? S.nav === 'games' : p[0] === 'trivia' ? S.nav === 'lore' /* 4 Oct 2026: Bee Trivia split; its word stories are Word Lore's Roots (games spec §4.3) */ : p[0] === 'figurative' ? S.nav === 'figurative'
-            : p[0] === 'hive' ? S.nav === 'collection' : false;
+            : p[0] === 'hive' ? S.nav === 'collection' : p[0] === 'analogies' ? S.nav === 'analogy' : false;
           if (good && (document.querySelector('.sb-content') || {}).innerText) return true;
           await W(50);
         }
