@@ -461,6 +461,17 @@ const FREE_THEMES = ['spellbound','aurora'];           // two starters; the othe
    child goes LOOKING for more. */
 const ONB_AVS = ['bizzy','panda','froggy','trice','luna'];
 const ONB_THEMES = ['spellbound','aurora'];
+/* ONBOARDING'S STEPS, BY NAME (road to 4.5, P1.7/P1.22 — owner, 10 Oct 2026: one decision per step; placement
+   is its OWN step for the 10+ bands; buddy and world stay separate, the first free world preselected).
+   name → age band → [placement, ages 11–13 and 14–18 only] → buddy → world → daily goal. A step is read by
+   its key, never its number, because the placement step comes and goes with the band. placement.js is lazy
+   (boot-lazy `placement`) and draws the step's card; this file only routes to it. */
+const ONB_PLACE_BANDS = ['11-13','14-18'];
+function onbKeys(){ const d=state.draft||{}; const b=d.ageBand||bandForAge(d.age).k;
+  return ['name','age'].concat(ONB_PLACE_BANDS.indexOf(b)>=0?['place']:[]).concat(['buddy','world','goal']); }
+function onbKey(){ const K=onbKeys(); return K[Math.max(0,Math.min(K.length-1,state.onbStep|0))]; }
+/* arriving at the placement step: fetch the engine and its words, then start (or keep) the run */
+function onbPlaceBegin(){ lazyNeed('placement',()=>{ try{ if(state.screen==='onboarding'&&onbKey()==='place'&&window.SB_PLACE&&SB_PLACE.begin) SB_PLACE.begin(); }catch(e){} }); }
 const PREMIUM_THEMES = ['aurora','anime'];             // included with Premium
 function coinsOf(){ return active().coins||0; }
 /* ---- BIZZING COINS: one family wallet (FAMILY-STANDARD §1, FIX-BEE Harmonise) ----
@@ -2316,6 +2327,30 @@ const ageBandOf=(c)=>{ c=c||active(); const b=c&&c.ageBand&&AGE_BANDS.find(x=>x.
 function setAgeBand(c,k){ const b=AGE_BANDS.find(x=>x.k===k); if(!c||!b) return false;
   c.ageBand=b.k; c.age=b.mid; return true; }
 function masteredCount(){ try{ return Object.keys(state.luMastered||{}).filter(k=>state.luMastered[k]).length; }catch(e){ return 0; } }
+/* ===================== RESUME AN UNFINISHED DRILL AT ITS CARD (road to 4.5, P1.15) =====================
+   An Atlas stop's drill (Practice from a stop — `trailReturn` set, nav 'train') used to live only in `state`:
+   leave it for Home, close the tab or reload, and the words, the card and the score were gone; Continue
+   reopened the stop. Now the drill is kept ON THE CHILD while it is unfinished — `c.resume` = the stop, the
+   words (keys, in order), the card index, the score so far, the right and wrong lists — written when the drill
+   starts and on every card it moves on (`resumeMark`), and deleted the moment it finishes (`resumeClear`).
+   Continue — Home's, the drawer's and `#/continue`, all through family-shell's goNext — asks `SB_RESUME()`
+   first and, when there is a drill to go back to, reopens it at THAT card (`app.resumeDrill`), the same
+   words in the same order. Nothing is scored by resuming: the evidence was written when each card was
+   answered. A record older than RESUME_DAYS is left alone (the map is the better door after a fortnight).
+   Per child, so a sibling never inherits it. Guard: tests/drill-resume.cjs. */
+const RESUME_DAYS=14;
+function resumeMark(){ try{ const S=state, c=active(); if(!c) return;
+    if(S.nav!=='train' || !S.trailReturn || S.sessionOver || !Array.isArray(S.sessionWords) || !S.sessionWords.length) return;
+    c.resume={ u:S.trailReturn, crs:S.trailCourse==='exp'?'exp':'honey', lbl:String(S.sessionLabel||'').slice(0,80),
+      ws:S.sessionWords.map(w=>w&&w.w).filter(Boolean), gi:S.gi|0, r:S.sessionRight|0, d:S.sessionDone|0,
+      ok:(S.sessionCorrect||[]).map(x=>x&&x.w).filter(Boolean), no:(S.sessionWrong||[]).map(x=>x&&x.w).filter(Boolean), at:Date.now() };
+    save(); }catch(e){} }
+function resumeClear(){ try{ const c=active(); if(c&&c.resume){ delete c.resume; save(); } }catch(e){} }
+function resumeOf(c){ try{ c=c||active(); const r=c&&c.resume;
+    if(!r||!r.u||!Array.isArray(r.ws)||!r.ws.length||(r.gi|0)<0||(r.gi|0)>=r.ws.length) return null;
+    if(Date.now()-(+r.at||0)>RESUME_DAYS*864e5) return null;
+    return r; }catch(e){ return null; } }
+window.SB_RESUME=resumeOf;
 function coachReadiness(){ const pool=coachPool(); const srs=state.coachSrs||{}; let nw=0,lr=0,rv=0,ms=0;
   pool.forEach(r=>{ const st=srsState(srs[nkey(r.w)]); if(st==='new')nw++; else if(st==='learning')lr++; else if(st==='review')rv++; else ms++; });
   const size=pool.length||1; const seen=lr+rv+ms;
@@ -2366,31 +2401,48 @@ const app = {
   pickAvatar:(id)=>set({draft:{...state.draft,avatar:id}}),
   pickGoal:(v)=>set({draft:{...state.draft,goal:+v}}),
   onbBeeDate:(v)=>{ state.draft.beeDate=v||null; },
-  onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'landing'}); } else set({onbStep:state.onbStep-1}); },
+  onbBack:()=>{ if(state.onbStep===0){ set({screen: state.addingMore?'app':'landing'}); return; } set({onbStep:state.onbStep-1}); if(onbKey()==='place') onbPlaceBegin(); },
   pickAvatar:(id)=>{ if(window.SB_AVATARS&&SB_AVATARS.byId[id]&&SB_AVATARS.byId[id].rarity!=='free'&&state.screen==='onboarding'){ flash('🔒 '+SB_AVATARS.byId[id].name+' is waiting in your Collection — its card says how to win it.'); return; } state.draft.avatar=id; render(); },
   onbWorld:(id)=>{ if(FREE_THEMES.indexOf(id)<0){ flash('That world opens later — start in one of these two'); return; } state.draft.theme=id; state.theme=id; render(); },
-  onbNext:()=>{ const S=state;
-    if(S.onbStep===0 && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
-    if(S.onbStep===3 && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
-    if(S.onbStep<4){ set({onbStep:S.onbStep+1}); return; }
-    app._finishOnb(); set({screen:'app', nav:'home'});
+  onbNext:()=>{ const S=state; const K=onbKeys(), k=K[Math.min(K.length-1,S.onbStep|0)];
+    if(k==='name' && !S.draft.name.trim()){ flash('Add a name to continue'); return; }
+    /* the placement step's Continue is its choice; while words are still being asked its primary is "Next word" */
+    if(k==='place'){ const p=S.draft.pl;
+      if(!p || !window.SB_PLACE){ onbPlaceBegin(); flash('One moment — the words are on their way'); return; }
+      if(!p.skipped && !SB_PLACE.done(p.s)){ app.placeNext(); return; } }
+    if(k==='world' && !S.draft.theme){ flash('Pick a world first — every speller chooses their own'); return; }
+    if(S.onbStep<K.length-1){ const nk=K[S.onbStep+1];
+      /* P1.22: the first free world is PRESELECTED, so that step is one tap on Continue (it is still the child's
+         choice — the other one is a tap away, and the look only changes when a world is tapped) */
+      if(nk==='world' && !S.draft.theme) S.draft.theme=ONB_THEMES.find(id=>FREE_THEMES.indexOf(id)>=0)||FREE_THEMES[0];
+      set({onbStep:S.onbStep+1}); if(nk==='place') onbPlaceBegin(); return; }
+    const placed=app._finishOnb(); set({screen:'app', nav:'home'});
     /* A8 (FIX-BEE v2): the first thing a new speller does is SPELL — one spoken word, right inside
-       the first minute, celebrated — and then the first Atlas lesson through the one next step. */
-    try{ app.firstWord(); }catch(e){ try{ app.goStep(); }catch(e2){} }
+       the first minute, celebrated — and then the first Atlas lesson through the one next step.
+       A child who has just spelled twelve placement words has done that: they go straight INTO the
+       stop they chose (app.goStep reads the start line), and the first right one is their first word. */
+    if(placed && placed.n){ try{ if(placed.ok) SB_SHELL.milestone&&SB_SHELL.milestone('first-word'); }catch(e){} try{ app.goStep(); }catch(e){} }
+    else { try{ app.firstWord(); }catch(e){ try{ app.goStep(); }catch(e2){} } }
     /* If they picked a paid plan on the landing page, land them back on it rather
        than dropping them at the bottom of the ladder to find it again. The tier is
        NOT applied here — nobody has paid yet; the sheet is where that happens. */
     if(state.landWant && state.landWant!=='free'){ const want=state.landWant; state.landWant=null;
       setTimeout(()=>{ try{ state.tierUpsell={feature:'plan', label:'the plan you picked', need:want};
         set({showTiers:true}); }catch(e){} }, 700); } },
-  _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, ageBand:S.draft.ageBand||bandForAge(S.draft.age).k, avatar:S.draft.avatar, theme:S.theme, goal:S.draft.goal, level:1, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
+  _finishOnb:()=>{ const S=state; const kid={ name:S.draft.name.trim()||'Speller', age:S.draft.age, ageBand:S.draft.ageBand||bandForAge(S.draft.age).k, avatar:S.draft.avatar, theme:(S.draft.theme&&FREE_THEMES.indexOf(S.draft.theme)>=0)?S.draft.theme:S.theme, goal:S.draft.goal, level:1, acc:0, xp:0, week:[0,0,0,0,0,0,0] };
     if(S.draft.beeDate) kid.milestone={ label:(S.draft.beeLabel||'the bee'), date:S.draft.beeDate };
+    /* placement (P1.7): the region the child CHOSE becomes their start line on Tier 1 (trail.js startIdx) — only
+       where Continue starts; nothing is marked walked. The suggestion and the run stay beside it for the report
+       card. A band below 11 never had the step, so a run left in the draft from an earlier band is ignored. */
+    let placed=null; try{ if(onbKeys().indexOf('place')>=0 && window.SB_PLACE && SB_PLACE.record) placed=SB_PLACE.record(); }catch(e){}
+    if(placed && !placed.skipped && placed.u){ let at=''; try{ at=SB_SHELL.ymd(); }catch(e){}
+      kid.trail={ lap:1, done:{}, chk:{}, seen:{}, elap:1, edone:{}, echk:{}, start:{ u:placed.u, act:placed.act, pick:placed.pick, rec:placed.rec, n:placed.n, ok:placed.ok, at } }; }
     /* fr = the day this child was set up: the opening splash stays away all of that first day */
     try{ kid.fr=SB_SHELL.ymd(); }catch(e){}
     /* the word book goes with the child: the one who was active keeps theirs, the new one starts empty */
     try{ if(S.children.length) SB_SHELL.bookOut(S.children[S.activeIdx]); SB_SHELL.bookIn(kid,true); }catch(e){}
-    const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.goalDone=0; state.addingMore=false; save();
-    try{ SB_SHELL.startActivity(); }catch(e){} },
+    const newIdx=S.children.length; state.children=[...S.children,kid]; state.activeIdx=newIdx; state.theme=kid.theme; state.goalDone=0; state.addingMore=false; save();
+    try{ SB_SHELL.startActivity(); }catch(e){} return placed; },
   startLevelTest:()=>{ if(state.screen==='onboarding'){ if(!state.draft.name.trim()){ flash('Add a name first'); return; } app._finishOnb(); }
     /* The placement test walks the difficulty-band ladder itself (not stage lists), so its
        result IS the Bee Band — the Quest start is then derived from the same number. */
@@ -2865,7 +2917,19 @@ const app = {
   /* cardIdx MUST reset with gi: a stale Card-view index left the flashcard showing
      word 7 of the new session while speak() said word 0 — "shows psychopharmacologically
      but says asphyxiated" (Amrita 8.26). */
-  startTrain:()=>{ lazyNeed(['card','audio']); state.sessionRight=0; state.sessionDone=0; state.sessionListKey=null; state.gi=0; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; set({nav:'train', screen:'app', status:'idle', typed:'', mood:'happy', showDef:false, showSent:false, showOrigin:false, cardIdx:0, cardDone:false, reviseIdx:0}); setTimeout(speak,350); },
+  /* P1.15: back into the unfinished drill at its card (resumeOf above). The words' cards need the library's
+     records (meaning, sentence, respelling), which may still be landing — so it waits for them, then rebuilds
+     the session exactly as it was left. */
+  resumeDrill:()=>{ const r=resumeOf(); if(!r){ try{ app.goNext(); }catch(e){} return; }
+    lazyNeed(['words','card','audio'],()=>{ const r2=resumeOf(); if(!r2) return; const idx=wordIndex();
+      const rec=k=>{ const x=idx[nkey(k)]||{w:k}; return { w:x.w||k, d:x.d||'', s:x.s||'', p:x.p||'', o:'', r:x.h||'' }; };
+      state.trailReturn=r2.u; state.trailCourse=r2.crs; state.sessionLabel=r2.lbl; state.sessionWords=r2.ws.map(rec);
+      state.coachSession=false; state.trainBack=null; state.sessionListKey=null; state.sessionOver=false;
+      state.sessionCorrect=(r2.ok||[]).map(rec); state.sessionWrong=(r2.no||[]).map(rec);
+      state.sessionRight=r2.r|0; state.sessionDone=r2.d|0; state.gi=r2.gi|0;
+      set({nav:'train', screen:'app', status:'idle', typed:'', mood:'happy', showDef:false, showSent:false, showOrigin:false, cardIdx:0, cardDone:false, reviseIdx:0});
+      setTimeout(speak,350); }); },
+  startTrain:()=>{ lazyNeed(['card','audio']); state.sessionRight=0; state.sessionDone=0; state.sessionListKey=null; state.gi=0; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; set({nav:'train', screen:'app', status:'idle', typed:'', mood:'happy', showDef:false, showSent:false, showOrigin:false, cardIdx:0, cardDone:false, reviseIdx:0}); resumeMark(); setTimeout(speak,350); },
   newBatch:()=>{ newCoachBatch(); flash('Fresh set of words ✨'); },
   startLevelUp:()=>{ const c=active(); ensureLists(c); c.activeList='default'; app.openCoach(); },
   reviseNav:(dir)=>{ const N=(state.sessionWords&&state.sessionWords.length)||LEVEL_WORDS.length; let i=(state.reviseIdx||0)+(dir==='next'?1:-1); set({reviseIdx:Math.max(0,Math.min(N-1,i))}); },
@@ -3090,7 +3154,7 @@ const app = {
     } },
   next:()=>{ clearTimeout(state._advTimer); state._advTimer=null;
     const N=(state.sessionWords&&state.sessionWords.length)||0;
-    if(N && state.gi>=N-1){ state.sessionOver=true;
+    if(N && state.gi>=N-1){ state.sessionOver=true; resumeClear();   /* finished: nothing left to resume (P1.15) */
       try{ const k=state.sessionListKey; if(k&&k[0]!=='_') getList(active(),k).gi=0; }catch(e){}
       if((state.sessionDone||0)>0){ try{ logActivity(state.coachSession?'concept':'practice', state.sessionLabel||'Practice', {done:state.sessionDone,right:state.sessionRight}, (state.sessionWrong||[]).map(x=>x.w)); }catch(e){} }
       /* An Atlas session reports its score the moment it COMPLETES. It used to report
@@ -3102,7 +3166,7 @@ const app = {
       try{ if(window.SB_TM) SB_TM.rec({k:'sess', r:state.sessionRight||0, d:state.sessionDone||0, lbl:String(state.sessionLabel||'').slice(0,40)}); }catch(e){}
       state.tmReacted=false;
       set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); return; }
-    state.gi+=1; try{ const k=state.sessionListKey; if(k&&k[0]!=='_'){ getList(active(),k).gi=state.gi; save(); } }catch(e){}
+    state.gi+=1; try{ const k=state.sessionListKey; if(k&&k[0]!=='_'){ getList(active(),k).gi=state.gi; save(); } }catch(e){} resumeMark();
     set({typed:'', status:'idle', mood:'happy', showDef:false, showSent:false, showOrigin:false}); setTimeout(speak,250); },
   restartSession:()=>{ state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; state.sessionRight=0; state.sessionDone=0; state.gi=0; set({typed:'', status:'idle', mood:'happy'}); setTimeout(speak,300); },
   drillMisspelt:()=>{ const wrong=(state.sessionWrong||[]).slice(); if(!wrong.length){ flash('Nothing to redo — all correct! 🎉'); return; } state.sessionWords=wrong; state.sessionLabel=(state.sessionLabel||'Practice').replace(/ · misspelt$/,'')+' · misspelt'; state.sessionOver=false; state.sessionCorrect=[]; state.sessionWrong=[]; state.sessionRight=0; state.sessionDone=0; state.gi=0; set({typed:'', status:'idle', mood:'happy'}); setTimeout(speak,300); },
@@ -4877,9 +4941,12 @@ function viewOnboarding(){
   /* ONE DECISION PER SCREEN — the shape Bizzing Finance uses, and the reason it works:
      a child answers a question and moves on. This used to be three steps, the first of
      which asked for a name, an age band AND a buddy off a grid of twenty at once, under
-     a heading that named none of them. Five steps now, each with one thing on it. */
-  const LAST=4;
-  const dots=[0,1,2,3,4].map(i=>`<div class="sb-onb-dot${i===S.onbStep?' now':(i<S.onbStep?' done':'')}"></div>`).join('');
+     a heading that named none of them. Five steps now, each with one thing on it — six for
+     the 11+ bands, whose placement step (P1.7) asks one thing too: where to start. Steps are
+     read by KEY (onbKeys), because that one comes and goes with the band. */
+  const K=onbKeys(), LAST=K.length-1, k=K[Math.min(LAST,S.onbStep|0)];
+  const dots=K.map((_,i)=>`<div class="sb-onb-dot${i===S.onbStep?' now':(i<S.onbStep?' done':'')}"></div>`).join('');
+  let foot={ label:S.onbStep===LAST?'Start spelling →':'Continue', act:'onbNext', blocked:(k==='name'&&!S.draft.name.trim()) };
   /* Two of the five steps ask for very little — a name, a face — and a 260px card
      floating in a 900px phone is the "dead space" complaint in another costume. They
      get art instead of air: the bee greets you on the way in, and the buddy you are
@@ -4887,7 +4954,7 @@ function viewOnboarding(){
   const shell=(title,sub,body,art)=>`<div class="sb-onb-card">${art?`<div class="sb-onb-art">${art}</div>`:''}<h2>${title}</h2><p class="sb-onb-sub">${sub}</p>${body}</div>`;
   let card='';
 
-  if(S.onbStep===0){
+  if(k==='name'){
     /* THE POINT OF COLLECTION. privacy.html must be linked here — it is one of the four
        places the COPPA notice is required, and splitting the old combined step is exactly
        the kind of edit that loses it. */
@@ -4895,7 +4962,7 @@ function viewOnboarding(){
       `<input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana, or Fox" style="width:100%;padding:15px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:17px;font-weight:700;outline:none">
       <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">This name and the age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p>`, avatarSVG('bizzy',320));
 
-  } else if(S.onbStep===1){
+  } else if(k==='age'){
     const cur=bandForAge(S.draft.age).k;
     card=shell("How old is "+esc(S.draft.name.trim()||'your speller')+"?","A range, never a birthday — it sets the starting word difficulty, and you can change it in Settings.",
       `<div style="display:grid;gap:10px">${AGE_BANDS.map(b=>{ const on=b.k===cur;
@@ -4903,7 +4970,16 @@ function viewOnboarding(){
           <span><span style="display:block;font-family:var(--display);font-weight:800;font-size:18px">${b.n}</span><span style="display:block;font-size:12.5px;font-weight:650;opacity:.8;margin-top:2px">${b.sub}</span></span>
           ${on?`<span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-weight:900">✓</span>`:''}</button>`; }).join('')}</div>`);
 
-  } else if(S.onbStep===2){
+  } else if(k==='place'){
+    /* PLACEMENT (P1.7) — its own step, one decision: where to start. placement.js draws it (lazy); until it has
+       landed the card holds its place and the step's primary waits. */
+    const v=(window.SB_PLACE&&SB_PLACE.view)?SB_PLACE.view():null;
+    if(!v||!S.draft.pl){ if(!viewOnboarding._asked){ viewOnboarding._asked=true; setTimeout(()=>{ viewOnboarding._asked=false; onbPlaceBegin(); },0); } }
+    const pv=v||{ title:'Where shall we start?', sub:'Getting your words ready…', body:'<div role="status" style="padding:30px 0;text-align:center;color:var(--muted)">One moment…</div>', next:{ label:'Next word →', act:'placeNext', blocked:true } };
+    card=shell(pv.title, pv.sub, pv.body, pv.art);
+    foot={ label:pv.next.label, act:pv.next.act, blocked:!!pv.next.blocked };
+
+  } else if(k==='buddy'){
     const avs=ONB_AVS.map(id=>SB_AVATARS.byId[id]).filter(Boolean);
     card=shell("Pick a buddy","Your speller's face around the app. There are plenty more to collect later — these five are ready now.",
       `<div class="sb-onb-hero">${avatarSVG(S.draft.avatar,320)}</div>
@@ -4911,7 +4987,7 @@ function viewOnboarding(){
       <div class="sb-onb-avs">${avs.map(a=>{ const on=S.draft.avatar===a.id;
         return `<button class="sb-onb-av${on?' on':''}" data-act="pickAvatar" data-arg="${a.id}" title="${escA(a.name)}" aria-label="${escA(a.name)}" aria-pressed="${on?'true':'false'}"><span class="sb-onb-avart">${avatarSVG(a.id,128)}</span></button>`; }).join('')}</div>`);
 
-  } else if(S.onbStep===3){
+  } else if(k==='world'){
     const worldCards=ONB_THEMES.map(id=>THEMES.find(t=>t.id===id)).filter(Boolean)
       .map(t=>worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld')).join('');
     card=shell("Choose a world","A world is the look of the app and a character that grows as your speller levels up. Two to start with — the rest unlock later. You can switch any time.",
@@ -4929,14 +5005,15 @@ function viewOnboarding(){
         <p style="margin:0 0 8px;font-size:12px;color:var(--muted)">A competition coming up? Add the date — the app counts down to it and paces practice. You can set or change it in Settings any time.</p>
         <input type="date" data-chg="onbBeeDate" value="${escA(S.draft.beeDate||'')}" style="width:100%;max-width:220px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:14px;font-weight:700;outline:none">
       </div>
-      <button data-act="startLevelTest" style="width:100%;margin-top:14px;display:flex;align-items:center;gap:11px;text-align:left;padding:13px 15px;border-radius:12px;border:1px dashed var(--accent);background:var(--chip);color:var(--text)"><span style="color:var(--accent)">${iconSVG('target',20)}</span><span style="min-width:0"><span style="display:block;font-weight:800;font-size:14px">Find my word difficulty first <span style="color:var(--muted);font-weight:650">(optional, ~3 min)</span></span><span style="display:block;font-size:12px;color:var(--muted)">Words climb band by band until we find what you're ready for — it sets your word difficulty, your games and your Word Gym start in one go.</span></span></button>
       <div style="margin-top:14px">${voiceUpgradeTip()}</div>`);
+    /* the dashed "Find my word difficulty first" card that sat here is gone (P1.7): placement is a step of its
+       own for the 11+ bands, and the band-ladder test still lives on the word-difficulty page */
   }
   /* Three bands, not one centred stack: progress at the top, the question next to
      it, the actions pinned where a thumb is. The old frame centred everything in
      100dvh, which on a phone is ~290px of nothing above the heading and a primary
      button hanging off the bottom edge once the dev banner takes its 56px. */
-  const blocked=(S.onbStep===0&&!S.draft.name.trim());
+  const blocked=foot.blocked;
   return `<div class="sb-onb">
     <div class="sb-onb-in">
       <div class="sb-onb-head">
@@ -4946,7 +5023,7 @@ function viewOnboarding(){
       <div class="sb-onb-body">${card}</div>
       <div class="sb-onb-foot">
         <button class="sb-onb-back" data-act="onbBack">${S.onbStep===0?'Cancel':'Back'}</button>
-        <button class="sb-onb-next" data-act="onbNext"${blocked?' aria-disabled="true"':''} style="opacity:${blocked?'.5':'1'}">${S.onbStep===LAST?'Start spelling →':'Continue'}</button>
+        <button class="sb-onb-next" data-act="${foot.act}"${blocked?' aria-disabled="true"':''} style="opacity:${blocked?'.5':'1'}">${foot.label}</button>
       </div>
     </div>
   </div>`;
@@ -9157,7 +9234,10 @@ function reportCard(c){ c=c||active(); const out={ name:(c&&c.name)||'' };
     else out.time={ feed:false, minutes:0, days:0 }; }catch(e){ out.time={ feed:false, minutes:0, days:0 }; }
   /* progress */
   try{ const tn=window.SB_TRAIL_NEXT?SB_TRAIL_NEXT():null;
-    out.progress={ atlas:tn?{ cleared:tn.done, at:tn.allDone?'every stop on this tier':tn.title, region:tn.act||'', tier:tn.lap||1 }:null };
+    out.progress={ atlas:tn?{ cleared:tn.done, at:tn.allDone?'every stop on this tier':tn.title, region:tn.act||'', act:tn.actId||'', tier:tn.lap||1 }:null };
+    /* P1.7: where onboarding's placement started this child, and what it suggested (c.trail.start) */
+    try{ const st=(c.trail||{}).start; if(st&&st.u){ const T=window.SB_TRAIL, A=T&&T.honey&&T.honey.acts||[], nm=i=>{ const a=A[i]; return a?String(a.title).replace(/^Act [IVX]+ · /,''):''; };
+      out.progress.placed={ chose:nm(st.pick)||st.act, suggested:nm(st.rec), n:st.n|0, ok:st.ok|0, at:st.at||'' }; } }catch(e){}
     const lk=activeListKey(); out.progress.stage=listStageIdx(c,lk)+1; out.progress.list=listLabel(lk).split(' · ')[0]; }catch(e){ out.progress=out.progress||{atlas:null}; }
   /* mastery — one pass */
   const M=(c&&c.mast)||{}; const today=mastDay(); const week=Date.now()-7*864e5; const idx=wordIndex();
@@ -9185,8 +9265,14 @@ function reportCardHTML(c){ c=c||active(); let R; try{ R=reportCard(c); }catch(e
   const time=T.feed?box('Time',`${T.minutes} active minute${T.minutes===1?'':'s'}`,`over the last 7 days, on ${T.days} day${T.days===1?'':'s'}. Time is effort, not learning — it is here so you can see the habit.`)
     :box('Time','Not recorded yet','Active minutes appear once the Bizzing family activity feed is on for this device.');
   const at=P.atlas; if(!at) lazyNeed('atlas');   // the map's data rides the idle queue; it re-renders when it lands
+  const pl=P.placed;
   const prog=box('Progress', at?`${at.cleared} Atlas stop${at.cleared===1?'':'s'} cleared`:`Stage ${P.stage||1}`,
-    (at?`Now at <b>${esc(at.at)}</b>${at.region?' · '+esc(at.region):''} (tier ${at.tier}). `:'')+(P.list?`Spelling: Stage ${P.stage||1} of ${esc(P.list)}.`:''));
+    (at?`Now at <b>${esc(at.at)}</b>${at.region?' · '+esc(at.region):''} (tier ${at.tier}). `:'')+(P.list?`Spelling: Stage ${P.stage||1} of ${esc(P.list)}.`:'')+
+    (pl?` <span class="sb-rc-placed">Started at <b>${esc(pl.chose)}</b> after placement (${pl.ok} of ${pl.n} words right${pl.suggested&&pl.suggested!==pl.chose?'; it suggested '+esc(pl.suggested):''}) — the stops before it are open and not counted as walked.</span>`:''));
+  /* P1.9 / P1.10: the "I can…" objectives with their evidence, and the sourced grade map — objectives.js and
+     grade-map-data.js are lazy (boot-lazy `curriculum`); the trail map's word pools come through trail.js */
+  let cur='';
+  try{ if(window.SB_OBJ && window.SB_GRADE_MAP) cur=SB_OBJ.reportSection(c, at&&at.act); else { lazyNeed('curriculum'); cur='<div class="sb-rc-curriculum" role="status" style="margin-top:14px;font-size:12.5px;color:var(--muted)">Loading what they can do, region by region…</div>'; } }catch(e){}
   const famLine=m.families.length?`<div style="margin-top:8px;font-size:12.5px;line-height:1.5">${m.families.slice(0,4).map(f=>`<b>${f.n}</b> ${esc(f.label.toLowerCase())}`).join(' · ')}</div>`:'';
   const mast=box('Mastery', `${m.retained} word${m.retained===1?'':'s'} mastered`,
     `Spelled right on two different days, a day or more apart — so it stuck.${m.newThisWeek?` <b>${m.newThisWeek}</b> new this week.`:''}`+
@@ -9200,6 +9286,7 @@ function reportCardHTML(c){ c=c||active(); let R; try{ R=reportCard(c); }catch(e
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Report card · ${esc(R.name||'your speller')}</div><span style="font-size:12px;color:var(--muted);font-weight:700">what ${esc(R.name||'they')} can now do, from evidence</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0">${time}${prog}${mast}</div>
     ${lines.length?`<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5">${lines.join('')}</div>`:''}
+    ${cur}
     ${/* standard §13: the grown-ups page links to the Hive's family-wide view (a link, not a request) */''}
     <a class="sb-hive-grown" href="https://aayuvis.github.io/Bizzing_Schedule/#grown" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;font-weight:800;color:var(--accent);text-decoration:none">⬡ The whole family in the Bizzing Hive →</a>
   </div>`; }

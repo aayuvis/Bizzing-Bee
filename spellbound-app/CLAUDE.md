@@ -136,6 +136,91 @@ Brief: the family v5 audit's "road to 4.5" (owner decisions final, 10 Oct 2026).
 - **Tests in a worktree need `node_modules`** (esbuild for first-load's minify, axe-core for feed-screen's contrast):
   symlink the main checkout's `spellbound-app/node_modules` into the worktree, or both fail for the wrong reason.
 
+## Road to 4.5, P1 — placement, grade map, objectives (10 Oct 2026) — READ FIRST; it overrides the sections below
+Brief rows P1.7–P1.10, P1.15, P1.22, under the owner's final calls (which override the brief): onboarding keeps ONE
+decision per step; placement is its OWN step and only recommends; buddy and world stay separate (P1.23's merge is
+rejected); the grade map is US grade / UK year / CBSE class with a source on every row. The rules a later session keeps:
+- **Onboarding steps are read by KEY, never by number** (`onbKeys()` / `onbKey()`, app3): `name → age → [place] →
+  buddy → world → goal`. The `place` step exists only for `ONB_PLACE_BANDS` = 11–13 and 14–18 ("10+"), so a step's
+  index moves with the band — never write `onbStep===3` again. The COPPA notice stays on `name`. The dashed
+  "Find my word difficulty first" card on the goal step is GONE (P1.7: a step, not a card); the old band-ladder test
+  (`startLevelTest`, nav `leveltest`) still exists for the word-difficulty page only. Supersedes "FIVE STEPS" below
+  (five, or six for 11+) and FIX-BEE's '"Find my level" is a setup choice'.
+- **The first free world is PRESELECTED** (`onbNext` sets `draft.theme` on arriving at `world`; P1.22). The look
+  changes only when a world is tapped; `_finishOnb` takes `draft.theme` (a free one) and makes it the live theme.
+- **Taps to the first word (P1.22, counted by `tests/first-run.cjs` with real clicks): 7** for an 8–10 child who
+  keeps the preselected band (Start free · name box · Continue ×4 · Start spelling; 8 if they tap another band);
+  **5** for an 11+ child, whose first word is placement's (Start free · name box · Continue · band · Continue). The
+  full 11+ setup is those 5, the twelve words, the choice, then Continue ×3 and Start spelling.
+- **PLACEMENT** (`placement.js`, lazy group `placement` with `placement-data.js`): its own step; first twelve words
+  (a box, the word SPOKEN, the meaning as a hint, never the word in print, no right/wrong per word — the missed ones
+  are listed with their spellings after the twelfth), then ONE decision: the suggested start region, preselected,
+  with one easier and one harder beside it (`SB_PLACE.options`). Keyboard (Enter, R to hear again) and touch (foot
+  "Next word", "Hear it again", "Skip — start at the beginning"). Skipped or not offered → the A8 first word as before;
+  placed → "Start spelling" goes straight INTO the chosen stop's lesson (`app.goStep`), the twelve were the first words.
+  **It writes no mastery, no coins, no band** — a measurement is not practice — only `c.trail.start`.
+- **The engine is pure and deterministic** (no Math.random — `tests/placement.cjs` makes it throw): a level is a
+  START REGION 0–8; P(right) = .85 below the level · .40 at it · .15 one above · .10 beyond; the next region is the one
+  minimising expected posterior entropy, ≤4 asks a region; suggestion = most likely level (ties to the easier); the
+  prior leans by band (11–13 → Forum, 14–18 → Storm) but is broad. Validated (P1.8): a bot of known level is placed
+  EXACTLY at all 9 levels × 2 bands; 810 runs with one answer in 6/5/4 flipped, slipped or lucky all land within one
+  region; a bot on the library's difficulty scale lands within one; scattered 10% noise: 99.2% within one (ceiling 1%).
+  Re-run the test after touching the constants, the prior or the data — never retune to the test's bots alone.
+- **The words are CUT, never typed**: `node tools/build-placement.cjs` (through `tools/feed-corpus.cjs`, as the page
+  loads the corpus) takes each region's words from its own Tier-1 stops at the library band `y = region + 1` (the road
+  read as a difficulty ladder: a region's FIRST set is its easiest — the Big Stage's opens "strut, pity" — so S1 words
+  would place every decent speller at the end). Filters: plain a–z 4–14 letters, a clip, a clean meaning that does not
+  carry the word's first five letters, no homophone / two-pronunciation / marked spelling, no stop that teaches
+  homophones, homonyms or accent marks, no meaning naming a faith, kid-safe at age 9, no two words sharing six letters.
+  `tests/placement.cjs` rebuilds and compares — change the corpus or the trail → re-run the tool.
+- **THE START LINE** (`trail.js` `startIdx`/`reachIn`/`reach`): `c.trail.start = {u, act, pick, rec, n, ok, at}`. It
+  moves only where the walk BEGINS (Tier 1, Honey course). `reach` = first unwalked node at/after the start — EVERY lock
+  reads it (trailUnit/trailChk, SB_TRAIL_OPEN, the act board, the list view, the overview pins); `frontier` = where
+  Continue goes (reach, or, once the road from the start is walked to its end, the first unwalked stop behind it). With
+  no start line both are the old frontier — a child never placed sees no change. Nothing before the start is marked
+  walked; those stops stay open (pins 'open' on the overview, 'part' on Home's map, never fogged); the lap still needs
+  every stop walked. `SB_TRAIL_NEXT().done` counts WALKED stops (the report card prints it). Guard: `placement-step.cjs`.
+- **THE GRADE MAP** (P1.9): `grade-map/grade-map.json` is the research record (12 documents fetched from verified public
+  mirrors because the official hosts were blocked; each `url` is the official location, `fetched_from` the mirror,
+  `sha256` or `via` a hashed document). The page reads `grade-map-data.js`, WRITTEN by `node tools/build-grade-map.cjs`
+  (refuses a map that breaks the rules) — never edit it by hand. Rules (`tests/grade-map.cjs`, @check, data gate):
+  every region row cites a document; a stop that claims a grade/year/class cites a document OF THAT FRAMEWORK; a stop
+  with no source says "not mapped" in all three; the regions and their 128 stops match `SB_TRAIL` exactly. Coverage
+  today: 110 stops mapped to at least one framework, 18 "not mapped" in all three; US 100/128 · UK 108/128 · CBSE 29/128
+  (only the Class IX 2026-27 English curriculum was found; no CBSE 3–8 document). Extend ONLY with a cited document,
+  and re-fetch from the official hosts before publishing. Shown only on the report card (Parent Zone, behind the PIN).
+- **"I CAN…" OBJECTIVES** (P1.10, `objectives.js`, `SB_OBJ`, lazy in `atlas` and `curriculum`): one per concept
+  category of a region (the chapter's `category` before " — "), 22 over the nine regions, every stop in exactly one.
+  The only authored words are `CAN` (one sentence per category); every example in its brackets must appear in a title of
+  its own stops (`tests/objectives.cjs`, @check). Linked to its stops (opened through `trailUnit`) and to each stop's
+  Practice and Quiz. **Moved ONLY by evidence**: recomputed from `c.mast` on every read over the words of its stops'
+  pools and teaching words — SECURE at `SECURE_AT` (10) words mastered on evidence; a slipped word comes out at once;
+  legacy marks, stops walked, time, XP and coins are not inputs. Child: quiet lines under the region board's "What
+  you'll master here" (the sentence without its examples, a ✓ when secure, "N mastered", never a total). Grown-up: the
+  report card's "What they can do, region by region" — objectives with evidence and stop links, the grade map per
+  region and per stop, and the documents. The current region opens by default (`reportCard().progress.atlas.act`).
+- **RESUME** (P1.15, app3 `resumeMark`/`resumeClear`/`resumeOf`/`app.resumeDrill`, family-shell `goNext`): an Atlas
+  stop's drill (`trailReturn`, nav `train`) is kept on the child as `c.resume` while unfinished — written at start and
+  on every card advance, deleted when it finishes — and Continue (Home, drawer, `#/continue`, `?from=hive`) goes back
+  to THAT card, same words, same order, same score, before it considers the map. Resuming scores nothing. Per child;
+  older than `RESUME_DAYS` (14) is ignored. Guard: `tests/drill-resume.cjs` (a reload in the middle).
+- **Lazy, never first load**: boot-lazy `placement` (placement-data.js + placement.js), `objectives` (in `atlas`),
+  `gradeMap` + `curriculum` (report card). Nothing was added to index.html.
+- **Proved by breaking** (each fault put back in a scratch copy, the test watched to fail): grade-map — a hand edit to
+  grade-map-data.js (2 fail), a mapped stop's sources removed in the record (3), plus eight planted faults inside the
+  test itself; objectives — an example no stop teaches, legacy marks counted, secure one word late, box-1 counted as
+  mastered; placement (node) — a hand-edited word, Math.random in the choice, eleven words, a model that expects no
+  slips, a non-adaptive run, a choice of two easier; placement-step — world not preselected, start line ignored, the
+  next stop opening one early, a coin per placement word, a mastery record per placement word (caught only by the
+  second-child walk: a first child does not exist yet), the stops before the start marked walked, the word printed on
+  the step (the first version of that check read textContent and MISSED it — "start.antithesisWord" has no word
+  boundary; it reads every text node and attribute now); drill-resume — no mark on a card advance, Continue not asking,
+  a finished drill not cleared; onboarding-age — placement offered to 8–10; onboarding-layout — the placement card
+  spilling (and its new "skipped" screen caught a real fault the first time it ran: a 44% card, now filled with the
+  start it names); first-run — the world needing a tap again (11 taps), the 11+ first word printed.
+- `tests/pin-mandatory.cjs`'s known pre-existing failure ("a second boot migrates nothing and keeps the same record")
+  passed on this batch's runs, so it is intermittent; this batch did not touch it — it is not fixed, only not seen.
+
 ## My Feed (2 Oct 2026, FAMILY-STANDARD §6a) — the sixth tab, LAST, after Play
 - **Tabs: Home · Word Atlas · Analogies · Library · Play · My Feed** since 10 Oct 2026 (the Word Gym is Word Atlas's
   sub-nav; Analogies only through the analogy gate — see "The road to 4.5" above) (`NAV_TABS()` in app3.js draws both
@@ -569,7 +654,7 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
   never with the size argument.** The two thin steps (name, buddy) got art instead of air —
   Bizzy greets you, and the chosen buddy is shown big. Classes live in index.html's `<style>`
   under `.sb-onb*`. Guard: `tests/onboarding-layout.cjs` — measured geometry at 430×900 on
-  all five steps (card top, heading height, Continue on-screen, no avatar overlap, nothing
+  all five steps and placement's three screens — words, choice, skipped (card top, heading height, Continue on-screen, no avatar overlap, nothing
   spilling the card, card fills ≥50% of its screen). `SHOT=1` writes PNGs to `tests/build/`.
 - **AGE IS A RANGE, NOT A NUMBER, and the name is a DISPLAY name.** Onboarding and Settings
   ask for one of four bands (`AGE_BANDS`: 5–7 / 8–10 / 11–13 / 14–18) — never a birthday-exact

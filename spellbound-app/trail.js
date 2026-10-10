@@ -200,7 +200,28 @@
   const passedNode = (c, node) => node.kind === 'unit'
     ? (!!(doneMap(c)[node.u.id] || {})[lapOf(c)] || (((tr(c).st || {})[node.u.id + ':' + lapOf(c)] || {}).p || 0) >= PGATE)
     : !!chkMap(c)[lapOf(c) + ':' + node.id];
-  function frontier(c) { const s = seq(c); for (let i = 0; i < s.length; i++) if (!passedNode(c, s[i])) return i; return s.length; }
+  /* THE START LINE (road to 4.5, P1.7 — owner, 10 Oct 2026: placement "only chooses where Continue starts").
+     A child placed in onboarding carries `tr(c).start = {u, act, pick, rec, n, ok, at}`: the entry stop of
+     the region they chose. It never changes the route, the stops, their order or the rule that opens them —
+     a stop still opens when the one before it is walked — it moves only where the walk BEGINS, on Tier 1 of
+     the Honey course. Nothing before the start line is marked walked (no evidence is invented); those stops
+     stay open behind the child, and the lap still needs every stop walked (seq().every(passed) below).
+       reach(c)    — the furthest open node: the first one not walked at or after the start line.
+                     Every lock reads this. With no start line it IS the old frontier, so nothing changes
+                     for a child who was never placed.
+       frontier(c) — where Continue goes: reach, or — once the road from the start line is walked to its end
+                     — the first stop still unwalked behind it.
+     Guard: tests/placement-step.cjs (the route and the open rule unchanged, the earlier stops open and not
+     walked, Continue at the chosen stop) and tests/placement.cjs. */
+  function startIdx(c, s) {
+    if (course() !== 'honey' || lapOf(c) !== 1) return 0;
+    const st = tr(c).start; if (!st || !st.u) return 0;
+    const i = s.findIndex(n => n.kind === 'unit' && n.u.id === st.u); return i > 0 ? i : 0;
+  }
+  function reachIn(c, s) { for (let i = startIdx(c, s); i < s.length; i++) if (!passedNode(c, s[i])) return i; return s.length; }
+  function reach(c) { return reachIn(c, seq(c)); }
+  function frontier(c) { const s = seq(c); const e = reachIn(c, s); if (e < s.length) return e;
+    for (let i = 0; i < s.length; i++) if (!passedNode(c, s[i])) return i; return s.length; }
 
   /* ---- word pools ---- */
   let _idx = null;
@@ -224,6 +245,8 @@
     s2.onload = () => { needMap._q.forEach(f => { try { f(); } catch (e) {} }); needMap._p = false; };
     s2.onerror = () => { needMap._p = false; flash('Could not load the Word Atlas word pools'); };
     document.head.appendChild(s2); }
+  /* the one door to the word pools for other files (objectives.js reads them for the "I can…" evidence) */
+  window.SB_TRAIL_NEEDMAP = needMap;
   /* A ROUND IS THE ACT'S SIZE, NOT A FLAT 24. The word map holds five rounds of N
      per chapter — 15 in the Meadow ramping to 50 on the Big Stage — so a practice
      batch of 24 would cut Act I's rounds in half and Act IX's to a third, and the
@@ -375,12 +398,15 @@
       /* where the stop sits in its OWN region, counted the way the region's board counts it
          ("Stop 3 of 13": this tier's stops AND its checkpoints) — Home quotes these */
       const inAct = s.map((n, k) => k).filter(k => s[k].act === node.act);
+      /* `done` counts the stops WALKED before this one: a placed child's start line skips stops it never
+         marks walked, so the index alone would report them cleared (the report card prints this number) */
+      let skipped = 0; for (let k = 0; k < Math.min(i, s.length); k++) if (!passedNode(c, s[k])) skipped++;
       return {
         kind: node.kind,
         title: cut > 0 ? raw.slice(0, cut) : raw,
         sub: node.kind === 'chk' ? 'mixed quiz — no new words' : (cut > 0 ? raw.slice(cut + 3) : ''),
         act: act.title || '', world: act.world || 'meadow',
-        done: Math.min(i, s.length), total: s.length, lap: lapOf(c), allDone: atEnd,
+        done: Math.min(i, s.length) - skipped, total: s.length, lap: lapOf(c), allDone: atEnd,
         go: node.kind === 'unit' ? 'trailUnit' : 'trailChk',
         arg: node.kind === 'unit' ? node.u.id : (course() + '|' + node.id),
         crs: course(), actId: node.act, node: atEnd ? null : i,
@@ -406,13 +432,13 @@
         pins: P.map(([id, x, y], i) => ({ id, x, y, st: i ? 'ahead' : 'here' })) };
       const prev = state.trailCourse; state.trailCourse = crs;
       try {
-        const s = seq(c), fr = frontier(c);
+        const s = seq(c), fr = frontier(c), rc = reachIn(c, s);
         let here = -1, stops = [];
         const pins = P.map(([id, x, y], i) => {
           const ns = s.map((n, k) => ({ n, k })).filter(z => z.n.act === id);
           const dn = ns.filter(z => passedNode(c, z.n)).length, at = ns.some(z => z.k === fr);
           if (at) { here = i; stops = ns.map(z => passedNode(c, z.n) ? 2 : z.k === fr ? 1 : 0); }
-          return { id, x, y, st: ns.length && dn >= ns.length ? 'done' : at ? 'here' : dn ? 'part' : 'ahead' };
+          return { id, x, y, st: ns.length && dn >= ns.length ? 'done' : at ? 'here' : (dn || ns.some(z => z.k <= rc)) ? 'part' : 'ahead' };   /* behind a start line: reached */
         });
         /* every stop of the tier walked: the child stands at the end of the road */
         if (here < 0) { here = Math.max(0, pins.length - 1);
@@ -439,7 +465,7 @@
       if (Object.keys(done[t.unit] || {}).length) return true;
       if (Object.keys(T2.st || {}).some(k => k.split(':')[0] === t.unit && ((T2.st[k] || {}).p || 0) >= PGATE)) return true;
       const prev = state.trailCourse; state.trailCourse = t.course;
-      try { const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === t.unit); return i >= 0 && i <= frontier(c); }
+      try { const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === t.unit); return i >= 0 && i <= reachIn(c, s); }
       finally { state.trailCourse = prev; }
     } catch (e) { return false; } };
   /* Where is this concept taught? The reverse of SB_TRAIL_NEXT: given a concept
@@ -499,7 +525,7 @@
     if (crs === 'exp' && !advOn() && !devOn()) { app2.atlasAdvDoor(); return; }
     state.trailCourse = crs;
     const s = seq(c); const i = s.findIndex(n => n.kind === 'unit' && n.u.id === id);
-    if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
+    if (i > reachIn(c, s) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
     /* nav is set here too: Home's "Next on your journey" card calls this from
        outside the Atlas, and a stop must open wherever it is opened from. */
     set({ nav: 'trail', screen: 'app', trailView: 'unit', trailUnit: id, tq: null });
@@ -514,7 +540,7 @@
     if (crs === 'exp' && !advOn() && !devOn()) { app2.atlasAdvDoor(); return; }
     state.trailCourse = crs === 'exp' ? 'exp' : 'honey';
     const s = seq(c); const i = s.findIndex(n => n.kind === 'chk' && n.id === id);
-    if (i > frontier(c) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
+    if (i > reachIn(c, s) && !devOn()) { flash('Locked — clear the earlier stops first'); return; }
     const items = buildCheckpoint(c, { id });
     set({ nav: 'trail', screen: 'app', trailView: 'quiz', trailUnit: null, trailChk: id, tq: { items, i: 0, score: 0, picked: null, typed: '', missed: [], over: false } }); tqAutoSay(); };
   /* "Next stop →" from a cleared stop: the node AFTER this one on the route — a unit
@@ -759,8 +785,8 @@
       : label}</span>`;
     return `<span style="${base}background:var(--bg2);border:1.5px solid var(--line);color:var(--muted);font-family:var(--display);font-weight:700;font-size:13px">${label}</span>`;
   }
-  function nodeHTML(c, node, i, fr, world) {
-    const passed = passedNode(c, node); const isCur = i === fr; const locked = i > fr;
+  function nodeHTML(c, node, i, fr, world, rc) {
+    const passed = passedNode(c, node); const isCur = i === fr; const locked = i > (rc == null ? fr : rc);   /* the reach, not the frontier: behind a start line is open */
     const kind = passed ? 'passed' : isCur ? 'cur' : 'locked';
     const [a, d] = ACCENT[world] || ACCENT.meadow;
     const chk = node.kind === 'chk';
@@ -821,7 +847,7 @@
   }
   /* one course's run of act sections (assumes state.trailCourse === crs) */
   function actSections(c, crs) {
-    const s = seq(c); const fr = frontier(c);
+    const s = seq(c); const fr = frontier(c), rc = reachIn(c, s);
     const reg = crs === 'exp' ? 3 : 2;
     let acts = '';
     for (const act of actsOf(crs)) {
@@ -846,7 +872,7 @@
           </div></div>
         <div style="position:relative;padding:16px 14px 18px 14px">
           ${railHTML(nodes, c, fr, a)}
-          ${nodes.map(x => nodeHTML(c, x.n, x.i, fr, world)).join('')}
+          ${nodes.map(x => nodeHTML(c, x.n, x.i, fr, world, rc)).join('')}
         </div></section>`;
     }
     const total = s.length, done = s.filter(n => passedNode(c, n)).length;
@@ -1159,14 +1185,14 @@
     const img = crs === 'exp' ? 'atlas-adv' : 'atlas-map';
     /* an act is done when every stop in it is passed; the current act is the first
        that is not — the same frontier the stops use */
-    const s = seq(c); const fr = frontier(c);
+    const s = seq(c); const fr = frontier(c), rc = reachIn(c, s);
     const statOf = id => { const ns = s.map((n, i) => ({ n, i })).filter(x => x.n.act === id);
-      return { total: ns.length, done: ns.filter(x => passedNode(c, x.n)).length, here: ns.some(x => x.i === fr) }; };
+      return { total: ns.length, done: ns.filter(x => passedNode(c, x.n)).length, here: ns.some(x => x.i === fr), open: ns.some(x => x.i <= rc) }; };
     let curIdx = -1; const keyRows = [];
     const cells = pins.map(([id, x, y], i) => {
       const act = acts.find(a2 => a2.id === id); if (!act) return '';
       const st = statOf(id);
-      const state2 = st.total && st.done >= st.total ? 'done' : st.here ? 'cur' : st.done ? 'cur' : 'locked';
+      const state2 = st.total && st.done >= st.total ? 'done' : st.here ? 'cur' : st.done ? 'cur' : st.open ? 'open' : 'locked';   /* 'open': behind a start line — reached, not walked, never fogged */
       if (st.here) curIdx = i;
       const [a, d] = ACCENT[act.world] || ACCENT.meadow;
       const av = state2 === 'cur' && window.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 26) : '';
@@ -2850,7 +2876,7 @@
     const acts = actsOf(crs);
     const act = acts.find(a2 => a2.id === state.trailAct);
     if (!act) return viewAtlas();
-    const s = seq(c); const fr = frontier(c);
+    const s = seq(c); const fr = frontier(c), rc = reachIn(c, s);
     const nodes = s.map((n, i) => ({ n, i })).filter(x => x.n.act === act.id);
     if (!nodes.length) return viewAtlas();
     const world = act.world; const guide = GUIDE[world] || 'honeypot';
@@ -2931,7 +2957,7 @@
     if (isMW) mwClamp(edge, (popNew || _fresh) && !shut ? (pts[sel] || pts[0]).x : null);
 
     const cur = nodes[sel], node = cur.n,
-      locked = cur.i > fr && !devOn() && !(isMW && mwPairOpen(c, nodes, fr, sel));
+      locked = cur.i > rc && !devOn() && !(isMW && mwPairOpen(c, nodes, fr, sel));
     const u = node.kind === 'unit' ? node.u : null;
     const raw = u ? String(u.title || '') : 'Checkpoint';
     const cut = raw.indexOf(' — ');
@@ -3020,7 +3046,12 @@
     const ts = nodes.filter(x => x.n.kind === 'unit').map(x => String(x.n.u.title || '').split(' — ')[0].replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
     if (!ts.length) return '';
     const shown = ts.slice(0, 3), more = ts.length - shown.length;
-    return `<span class="atlas-master" style="display:block;font-size:12.5px;color:var(--text);font-weight:650;line-height:1.4;margin-top:3px">What you’ll master here: ${esc(shown.join(', '))}${more > 0 ? ' and ' + more + ' more' : ''}</span>`;
+    /* road to 4.5, P1.10: the region's "I can…" objectives as quiet lines under it — derived from these
+       same stops' chapters and moved only by the child's mastery evidence (objectives.js, lazy in the
+       `atlas` group; nothing is drawn until it has landed) */
+    let can = '';
+    try { if (window.SB_OBJ && nodes[0]) can = SB_OBJ.boardLines(active(), nodes[0].n.act, nodes.filter(x => x.n.kind === 'unit').map(x => x.n.u.id)); } catch (e) {}
+    return `<span class="atlas-master" style="display:block;font-size:12.5px;color:var(--text);font-weight:650;line-height:1.4;margin-top:3px">What you’ll master here: ${esc(shown.join(', '))}${more > 0 ? ' and ' + more + ' more' : ''}</span>${can}`;
   }
   /* one line of flavour per world, so an act page says where you are */
   const WORLD_LINE = { meadow: 'first words, first wins', library: 'every rule English wrote down',

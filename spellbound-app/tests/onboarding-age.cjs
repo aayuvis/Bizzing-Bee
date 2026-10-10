@@ -16,12 +16,22 @@ const { chromium } = require('playwright');
     /* ONE DECISION PER SCREEN. Walk the whole flow and record what each step asks for —
        the failure this catches is a step quietly growing a second question, which is what
        the old step 0 was: a name, an age band and a buddy off a grid of twenty. */
-    for(let i=0;i<8;i++){
+    for(let i=0;i<10;i++){
+      /* (road to 4.5, P1.7) the 14–18 band walks the PLACEMENT step too — its own step, its words first
+         (one thing: a word to spell) and then its one decision (where to start). Wait for its lazy file. */
+      if(onbKey()==='place'){ for(let t=0;t<40&&!(state.draft.pl&&document.querySelector('[data-inp="placeType"],[data-act="placePick"]'));t++) await wait(100); }
       const h=(document.querySelector('h2')||{}).textContent||'';
-      const asks=['onDraftBand','pickAvatar','onbWorld','pickGoal']
+      const asks=['onDraftBand','pickAvatar','onbWorld','pickGoal','placePick']
         .filter(a=>document.querySelector('[data-act="'+a+'"]'))
-        .concat(document.querySelector('[data-inp="onDraftName"]')?['name']:[]);
-      out.steps.push({ step:state.onbStep, h, asks });
+        .concat(document.querySelector('[data-inp="onDraftName"]')?['name']:[])
+        .concat(document.querySelector('[data-inp="placeType"]')?['placeWord']:[]);
+      out.steps.push({ step:state.onbStep, key:onbKey(), h, asks });
+      if(asks.includes('placeWord')){
+        /* answer all twelve "not yet" through the box, by keyboard, exactly as a child who knows none would */
+        for(let n=0;n<12&&document.querySelector('[data-inp="placeType"]');n++){ const box=document.querySelector('[data-inp="placeType"]');
+          box.value='zz'; box.dispatchEvent(new Event('input',{bubbles:true})); box.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); await wait(80); }
+        continue;
+      }
       if(document.querySelector('[data-inp="onDraftAge"]')) out.slider=true;
       if(asks.includes('pickAvatar')) out.avCount=document.querySelectorAll('[data-act="pickAvatar"]').length;
       if(asks.includes('onbWorld')){
@@ -41,8 +51,17 @@ const { chromium } = require('playwright');
     out.txt=out.steps.map(s=>s.h).join(' | ');
     out.bands=(out.steps.find(s=>s.asks.includes('onDraftBand'))||{}).asks?4:0;
     const c=state.children[0]||{}; out.kidBand=c.ageBand; out.kidAge=c.age; out.landed=state.screen;
+    out.start=((c.trail||{}).start)||null;
+    /* the step comes with the band: none for 5–7 or 8–10, one for 11–13 and 14–18 */
+    const keysFor=k=>{ const d=state.draft; state.draft={name:'x',age:9,ageBand:k}; const K=onbKeys(); state.draft=d; return K.join(','); };
+    out.keys={}; ['5-7','8-10','11-13','14-18'].forEach(k=>{ out.keys[k]=keysFor(k); });
     return out;
   });
+  /* (road to 4.5, P1.7) placement is its own step for the 10+ bands only, and a run is recorded as a start */
+  const PL='name,age,place,buddy,world,goal', NOPL='name,age,buddy,world,goal';
+  if(r.keys['5-7']!==NOPL||r.keys['8-10']!==NOPL||r.keys['11-13']!==PL||r.keys['14-18']!==PL) errs.push('the placement step is not offered to exactly the 11–13 and 14–18 bands: '+JSON.stringify(r.keys));
+  if(!r.steps.some(s=>s.key==='place'&&s.asks.join()==='placeWord')||!r.steps.some(s=>s.key==='place'&&s.asks.join()==='placePick')) errs.push('the 14–18 walk did not meet the placement step\'s words and then its choice: '+JSON.stringify(r.steps.map(s=>s.key+':'+s.asks.join('+'))));
+  if(!r.start||r.start.n!==12||r.start.u!=='u1') errs.push('twelve "not yet" answers should start at the Meadow (u1) and be recorded: '+JSON.stringify(r.start));
   /* the promise this file has always held */
   if(r.slider) errs.push('the exact-age slider survives in onboarding');
   if(r.landed!=='app') errs.push('onboarding did not finish — stuck on '+r.landed);

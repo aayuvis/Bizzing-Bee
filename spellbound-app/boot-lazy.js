@@ -129,7 +129,15 @@
        Analogy Bee — the screen and the trail it reads (cut by tools/analogy/build-app.cjs). Fetched at the
        door of #/analogies or #/anlbee only, never on the first screen or the idle queue. */
     anlData: 'analogy-data.js',
-    anlUI: 'analogy.js'
+    anlUI: 'analogy.js',
+    /* Road to 4.5, P1 (10 Oct 2026). The placement STEP of onboarding (11+ bands): its engine and view, and the
+       words it asks (cut by tools/build-placement.cjs) — fetched at the door of that step only. The "I can…"
+       objectives (the region board and the report card read them) and the sourced grade map (the report card,
+       behind the PIN, only). None of it is on the first screen or the idle queue. */
+    placeData: 'placement-data.js',
+    placeUI: 'placement.js',
+    objectives: 'objectives.js',
+    gradeMap: 'grade-map-data.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -141,7 +149,7 @@
     /* advConcepts too: the map draws the Advanced Rounds (locked or not), and a stop
        whose chapter is an `ai` ref resolves through SB_ADV_CONCEPTS — without it chOf()
        is undefined and setsOf() throws. The idle queue used to hide that. */
-    atlas: ['trail', 'concepts', 'cscript', 'southasia', 'advConcepts'],
+    atlas: ['trail', 'concepts', 'cscript', 'southasia', 'advConcepts', 'objectives'],
     quotes: ['quotes'],
     figurative: ['fig'],
     audio: ['voiceWords', 'voiceFrench'],
@@ -161,13 +169,15 @@
     mockbee: ['saga2', 'mockbee'],
     daily: ['dailyBee', 'saga2', 'sents', 'words2', 'lore'],
     buzz: ['dailyBuzz'],
-    analogy: ['anlData', 'anlUI']   // saga2: the engine kit (SGUI.stage, SGUI.keys)
+    analogy: ['anlData', 'anlUI'],   // saga2: the engine kit (SGUI.stage, SGUI.keys)
+    placement: ['placeData', 'placeUI'],
+    curriculum: ['trail', 'concepts', 'objectives', 'gradeMap']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
-  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'] };
+  var DEPS = { sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'] };
 
   var IDLE = ['sents', 'words2', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',

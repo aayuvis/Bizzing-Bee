@@ -10,7 +10,7 @@
        Continue button pushed off the bottom edge.
 
    Geometry, not markup: every check below is measured from the live DOM at phone size,
-   on every one of the five steps. Run:
+   on every one of the five steps, and on the placement step's two screens (11+ bands). Run:
      NODE_PATH=/opt/node22/lib/node_modules node tests/onboarding-layout.cjs
    SHOT=1 also writes a PNG per step into tests/build/.                               */
 const { chromium } = require('playwright');
@@ -38,7 +38,27 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
     await pg.waitForTimeout(600);
     if (process.env.SHOT) await pg.screenshot({ path: path.join(__dirname, 'build', 'onb-' + step + '.png') });
 
-    report.push(await pg.evaluate(() => {
+    report.push(await pg.evaluate(MEASURE));
+  }
+  /* (road to 4.5, P1.7) the PLACEMENT step of the 11+ bands, both of its screens: the words, and the choice */
+  {
+    await pg.evaluate(() => { state.children = []; state.screen = 'onboarding'; state.devBannerOff = false;
+      state.draft = { name: 'Ahana', age: 12, ageBand: '11-13', avatar: 'bizzy', theme: 'spellbound', goal: 10 };
+      state.onbStep = onbKeys().indexOf('place'); render(); });
+    await pg.waitForFunction(() => !!(state.draft.pl && document.querySelector('[data-inp="placeType"]')), null, { timeout: 15000 });
+    await pg.waitForTimeout(300);
+    if (process.env.SHOT) await pg.screenshot({ path: path.join(__dirname, 'build', 'onb-place-words.png') });
+    report.push(await pg.evaluate(MEASURE));
+    await pg.evaluate(() => { const p = state.draft.pl; let it; while ((it = SB_PLACE.pick(p.s, SB_PLACE_DATA))) SB_PLACE.answer(p.s, SB_PLACE_DATA, it.r < 3, it.r < 3 ? it.w : ''); render(); });
+    await pg.waitForFunction(() => !!document.querySelector('[data-act="placePick"]'), null, { timeout: 5000 });
+    await pg.waitForTimeout(300);
+    if (process.env.SHOT) await pg.screenshot({ path: path.join(__dirname, 'build', 'onb-place-choose.png') });
+    report.push(await pg.evaluate(MEASURE));
+    await pg.evaluate(() => { state.draft.pl.skipped = true; render(); }); await pg.waitForTimeout(400);
+    if (process.env.SHOT) await pg.screenshot({ path: path.join(__dirname, 'build', 'onb-place-skipped.png') });
+    report.push(await pg.evaluate(MEASURE));
+  }
+  function MEASURE() {
       const R = el => el.getBoundingClientRect();
       const frame = document.querySelector('.sb-onb');
       const head = document.querySelector('.sb-onb-head');
@@ -75,7 +95,6 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
         tileW: tiles.length ? Math.round(tiles[0].width) : 0,
         frameH: frame ? Math.round(R(frame).height) : 0,
       };
-    }));
   }
   if (process.env.SHOT) {
     await pg.setViewportSize({ width: 1280, height: 860 });
@@ -85,7 +104,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
   }
   await b.close();
 
-  const names = ['name', 'age band', 'buddy', 'world', 'goal'];
+  const names = ['name', 'age band', 'buddy', 'world', 'goal', 'placement words', 'placement choice', 'placement skipped'];
   report.forEach((r, i) => console.log(`  · ${names[i]}: heading at y=${r.h2Top}, Continue ${r.nextTop}–${r.nextBottom}, card ${r.cardW}px`));
   console.log('');
 
@@ -111,7 +130,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
      never the button. */
   const off = report.filter(r => r.nextBottom > H || r.nextBottom < 0);
   ok(!off.length, off.length ? `Continue is off-screen on ${off.length} step(s) (bottom y=${off.map(r => r.nextBottom).join(', ')})`
-                             : `Continue sits inside the viewport on all five steps (lowest edge y=${Math.max(...report.map(r => r.nextBottom))})`);
+                             : `Continue sits inside the viewport on all six steps (the five every child sees, and placement's two screens) (lowest edge y=${Math.max(...report.map(r => r.nextBottom))})`);
 
   /* 3 — THE BUDDIES DO NOT TOUCH. Measured art box against art box. */
   const bud = report[2];
@@ -124,7 +143,7 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
   ok(worstSpill <= 1, worstSpill > 1 ? `something overflows its card by ${worstSpill}px` : 'nothing overflows the card on any step');
   ok(report.every(r => r.docW <= W + 1), `no horizontal page scroll (widest ${Math.max(...report.map(r => r.docW))}px of ${W})`);
 
-  ok(!errs.length, errs.length ? 'page errors: ' + errs[0] : 'no page errors across the five steps');
+  ok(!errs.length, errs.length ? 'page errors: ' + errs[0] : 'no page errors across the five steps and placement');
   console.log(fails ? `\n${fails} FAILED\n` : '\nall good\n');
   process.exit(fails ? 1 : 0);
 })();
