@@ -23,9 +23,14 @@ const KID = (name, extra) => Object.assign({ name, age: 9, ageBand: '8-10', avat
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const errs = [];
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  /* a PERSISTENT profile (10 Oct 2026): resuming is about what survives a reload, and an off-the-record context can
+     start a reloaded page on EMPTY storage under load — a full run read the resumed word as "null" (pin-mandatory measured
+     the artefact: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+  const dir = require('fs').mkdtempSync(path.join(require('os').tmpdir(), 'sb-resume-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 390, height: 844 }, hasTouch: true,
+    executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   await ctx.addInitScript(k => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, children: k })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, [KID('Mira'), KID('Ravi')]);
-  const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+  const pg = ctx.pages()[0] || await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
   await pg.goto(URL); await pg.waitForTimeout(2500);
   await pg.evaluate(() => new Promise(r => SB_LAZY.need(['atlas', 'words'], r)));
   /* open the stop's drill the way its card's "Train these words" does */
@@ -82,6 +87,7 @@ const KID = (name, extra) => Object.assign({ name, age: 9, ageBand: '8-10', avat
   await pg.tap('.sb-content [data-act="goNext"]'); await pg.waitForTimeout(2000);
   ok(!old && await pg.evaluate(() => state.nav === 'trail'), 'a drill left more than a fortnight ago is not resumed — Continue goes to the map');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
+  await ctx.close(); try { require('fs').rmSync(dir, { recursive: true, force: true }); } catch (e) {}
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
 })();
