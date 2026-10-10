@@ -43,7 +43,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     wide: (() => { const el = document.getElementById('sb-pan');
       return el && el.firstElementChild.clientWidth > el.clientWidth * 2; })(),
   }));
-  ok(fresh.pano, 'the Meadow rides its four-plate PANORAMA (map-meadow-pano.jpg)');
+  ok(fresh.pano, 'the Meadow rides its four-plate PANORAMA (map-meadow-pano.webp)');
   ok(fresh.stops >= 3 && fresh.stops <= 5, 'a fresh child sees ONE leg — ' + fresh.stops + ' stops, not 13');
   ok(/Lollipop Grove/.test(fresh.sign) && /clear the road/.test(fresh.hint), 'the bend is TEASED: a signpost names the next leg (' + fresh.sign.trim() + ')');
   ok(fresh.lms === 1 && fresh.wander, 'leg one carries its landmark, and the wanderer stands somewhere in earned country');
@@ -336,7 +336,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
   const tj = fs.readFileSync(SRC + '/trail.js', 'utf8');
   ok(/THE LIVING MEADOW/.test(tj) && /reveal law/i.test(tj), 'the Living Meadow section and its reveal law are documented in trail.js');
   ok(/mwSeed/.test(tj) && /deterministic/.test(tj), 'the daily seed is deterministic (child + date, offline)');
-  ok(fs.existsSync(SRC + '/app-art/map-meadow-pano.jpg'), 'the panorama plate ships');
+  ok(fs.existsSync(SRC + '/app-art/map-meadow-pano.webp'), 'the panorama plate ships');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
   await b.close();
   process.exit(fails ? 1 : 0);

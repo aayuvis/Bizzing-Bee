@@ -265,7 +265,7 @@ const CHILD = { name: 'Ravi', avatar: 'bee', coins: 240, pow: {}, age: 11,
     const srv = await serve(SRC);
     for (const W of [390, 360]) {
       const { ctx, pg, errs } = await open5(W, srv.url + 'index.html');
-      await pg.route(/map-junkyard-pano\.jpg/, async r => { await new Promise(res => setTimeout(res, 1500)); await r.continue(); });
+      await pg.route(/map-junkyard-pano\.webp/, async r => { await new Promise(res => setTimeout(res, 1500)); await r.continue(); });
       await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r)));
       await pg.evaluate(() => { state.devUnlock = true; try { active().trail = active().trail || {}; active().trail.ambV = { junkyard: 1 }; } catch (e) {} app.trailToMap(); app.trailAct('honey|junkyard'); });
       await until(pg, () => !!document.querySelector('.atlas-stop'), null, 30000);

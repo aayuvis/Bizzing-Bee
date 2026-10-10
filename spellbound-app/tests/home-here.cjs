@@ -99,7 +99,7 @@ async function atlas(pg) {
           const railOk = C.rail.length === A.ns.stops && C.rail.filter(v => v === 2).length === A.ns.stopsDone && C.rail.indexOf(1) === A.ns.stop - 1 && C.rail.filter(v => v === 1).length === 1;
           ok(railOk, `${tag}: the rail is the region's ${A.ns.stops} stops, ${A.ns.stopsDone} walked, stop ${A.ns.stop} marked (${C.rail.join('')})`);
           ok(C.label === (A.ns.done ? 'Continue' : 'Start'), `${tag}: the one button reads "${C.label}"`);
-          ok(C.img === 'app-art/atlas-map.jpg', `${tag}: the picture is the World Atlas painting, not a region panorama (${C.img})`);
+          ok(C.img === 'app-art/atlas-map.webp', `${tag}: the picture is the World Atlas painting, not a region panorama (${C.img})`);
         }
         ok(C.art && C.avIn && C.pinIn, `${tag} ${mode}: the child's avatar is drawn on their pin, inside the window`);
       }

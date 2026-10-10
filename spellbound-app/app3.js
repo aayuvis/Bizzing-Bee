@@ -1715,54 +1715,68 @@ function mergeHard(){ try{
     const H=window.SB_HARD; if(!Array.isArray(H)||!H.length) return;
     if(!Array.isArray(window.SB_FULL)) return;
     if(window.SB_FULL._hard) return;                 // already in
-    const seen=new Set(window.SB_FULL.map(r=>String(r&&r.w||'').toLowerCase()));
-    /* THE SHARD GOES THROUGH fixCore TOO. It ran safeWord alone, so the 1,915
-       championship words bypassed CORE_STRIKE and CORE_FIX entirely — the
-       guard caught `balisong` (a butterfly KNIFE, sanitised in its own gloss as
-       a "folding pocket tool") re-entering the library after fixCore had struck
-       it. A strike list that covers one of two merge paths is not a strike
-       list; this is the same fault as the block list that covered one of three
-       entry points. */
-    let add=H.filter(r=>{ const k=String(r&&r.w||'').toLowerCase();
-      return k && !seen.has(k) && safeWord(r); });
-    try{ add=fixCore(add); }catch(e){}
-    let n=0; for(const r of add){ const k=String(r&&r.w||'').toLowerCase();
-      if(!k||seen.has(k)) continue; seen.add(k); window.SB_FULL.push(r); n++; }
+    const n=hardInto(window.SB_FULL, H);
     try{ Object.defineProperty(window.SB_FULL,'_hard',{value:n,enumerable:false}); }catch(e){}
     _wdb=null; }catch(e){} }
+/* The championship shard onto a library array, ONE rule for both ways in (the whole library and a lettered
+   chunk — P1.12): a shard word the array already has is skipped, the rest go through safeWord AND fixCore.
+   THE SHARD GOES THROUGH fixCore TOO. It ran safeWord alone, so the 1,915 championship words bypassed
+   CORE_STRIKE and CORE_FIX entirely — the guard caught `balisong` (a butterfly KNIFE, sanitised in its own
+   gloss as a "folding pocket tool") re-entering the library after fixCore had struck it. A strike list that
+   covers one of two merge paths is not a strike list; this is the same fault as the block list that covered
+   one of three entry points. */
+function hardInto(arr, H){
+  const seen=new Set(arr.map(r=>String(r&&r.w||'').toLowerCase()));
+  let add=(H||[]).filter(r=>{ const k=String(r&&r.w||'').toLowerCase();
+    return k && !seen.has(k) && safeWord(r); });
+  try{ add=fixCore(add); }catch(e){}
+  let n=0; for(const r of add){ const k=String(r&&r.w||'').toLowerCase();
+    if(!k||seen.has(k)) continue; seen.add(k); arr.push(r); n++; }
+  return n; }
+/* what a child may see of a list of RAW library records: safeWord, then fixCore (strikes, repairs, stigma) */
+function fullClean(v){ try{ v=v.filter(safeWord); }catch(e){} try{ v=fixCore(v); }catch(e){} return v; }
 function fullWords(){ try{
     if(Array.isArray(window.SB_FULL)){ mergeHard(); return window.SB_FULL; }
     if(typeof window.SB_FULL!=='string' || !window.SB_FULL) return null;
-    let v=JSON.parse(window.SB_FULL);
+    const v=JSON.parse(window.SB_FULL);
     if(!Array.isArray(v)) return null;
-    try{ v=v.filter(safeWord); }catch(e){}
-    try{ v=fixCore(v); }catch(e){}
-    window.SB_FULL=v; _wdb=null;                     // drop any index built off the string
-    mergeHard();
-    return v; }catch(e){ return null; } }
+    return fullAdopt(v); }catch(e){ return null; } }
+/* the whole library becomes SB_FULL: cleaned, then the shard merged (once — mergeHard stamps `_hard`) */
+function fullAdopt(v){ v=fullClean(v); window.SB_FULL=v; _wdb=null; mergeHard(); return v; }
+/* THE 130k LIBRARY IS LETTERED CHUNKS (road to 4.5, P1.12). words-full.js (45 MB) and words-hard.js stay the
+   source in the repo and are never fetched: tools/library-chunks.cjs cuts them into words-full/ (an index and 86
+   chunks of ≤ ~200 KB gz) and library.js (SB_LIB, lazy group `library`) is their one reader. A LOOKUP — the Word
+   Finder, the header search — fetches only the chunk its letters fall in (fullFor); the WHOLE library (the Whole
+   Hive list, the Ultra road, Champ Dictation, "Load the whole library") is every chunk, rebuilt by SB_LIB.all in
+   words-full.js's own order, so nothing that ranks by that order moves. Both go through fullClean + hardInto. */
 function loadFullLibrary(then){ if(window.SB_FULL){ fullWords(); _fullState='loaded'; state.fullLoaded=true; if(then) then(); return; }
   if(_fullState==='loading') return; _fullState='loading'; state.fullLoading=true; render();
-  /* STAMP BOTH. index.html declares itself uncacheable and every asset it points
-     at carries a ?v=; these two were the exception, fetched bare, so a returning
-     child kept the library they already had however far it had moved on. That
-     went unnoticed while the file only ever grew at the end; it bites the moment
-     the words themselves change — a re-banding rewrites every record in place.
-     boot-lazy has always appended SB_ASSET_V for the files it owns (words-data-2
-     among them); this is the same stamp, applied to the two files app3 fetches
-     for itself. */
-  const AV=String(window.SB_ASSET_V||'');
-  const s=document.createElement('script'); s.src='words-full.js'+AV;
-  s.onload=()=>{ _fullState='loaded'; _wdb=null; state.fullLoading=false; state.fullLoaded=true;
-    fullWords();                                     // JSON string -> filtered array
-    /* the championship shard follows; the library is usable either way, so a
-       missing or slow shard must never hold up the door */
-    const h=document.createElement('script'); h.src='words-hard.js'+AV;
-    h.onload=()=>{ fullWords(); _wdb=null; render(); };
-    h.onerror=()=>{};
-    document.head.appendChild(h);
-    if(then) then(); render(); flash('Full library ready — '+countTxt('library')+' words 📚'); };
-  s.onerror=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load words-full.js — keep it in the same folder'); };
-  document.head.appendChild(s); }
+  const fail=()=>{ _fullState='error'; state.fullLoading=false; render(); flash('Couldn’t load the word library — try again in a moment'); };
+  lazyNeed('library',()=>{ if(!window.SB_LIB){ fail(); return; }
+    SB_LIB.all((core,hard)=>{ if(!core){ fail(); return; }
+      _fullState='loaded'; state.fullLoading=false; state.fullLoaded=true;
+      window.SB_HARD=hard; fullAdopt(core.slice());     // cleaned, the shard merged; SB_LIB keeps its own raw copy
+      _wdb=null;
+      if(then) then(); render(); flash('Full library ready — '+countTxt('library')+' words 📚'); }); }); }
+/* A lookup's share of the library: the records a child may see from the chunk(s) q falls in, or null while
+   they load (asked for here, once; boot-lazy re-renders when they land). Null too once the whole library is in —
+   the caller reads SB_FULL then. Each chunk is cleaned once and kept. */
+const _fullCk={};
+function fullChunk(n){ if(_fullCk[n]) return _fullCk[n];
+  const p=window.SB_LIB&&SB_LIB.part(n); if(!p) return null;
+  const v=fullClean(p.core.slice()); hardInto(v, p.hard);
+  return (_fullCk[n]=v); }
+function fullFor(q){ if(Array.isArray(window.SB_FULL)) return null;
+  q=nkey(q||''); if(q.length<2) return null;
+  if(!window.SB_LIB){ lazyNeed('library'); return null; }
+  /* the chunk's own callback redraws at once — boot-lazy's softRender would wait out its 140 ms window */
+  const hit=SB_LIB.forKey(q,()=>{ try{ if(state.nav==='finder'||state.hq) render(); }catch(e){} }); if(!hit) return null;
+  let out=[]; for(const n of hit.names){ const v=fullChunk(n); if(v) out=out.concat(v); }
+  return out; }
+/* is a lookup for q still on its way? (the Finder says "looking" rather than "no matches") */
+function fullLooking(q){ if(Array.isArray(window.SB_FULL)) return false; q=nkey(q||''); if(q.length<2) return false;
+  if(!window.SB_LIB) return !!(window.SB_LAZY&&SB_LAZY.state('library')==='loading');
+  return SB_LIB.looking(q); }
 /* ---- Word Finder: search the whole library, open a learn card, add to lists ---- */
 function finderResults(q){ q=nkey((q||'').trim()); if(q.length<2) return [];
   const seen=new Set(); const exact=[],starts=[],contains=[];
@@ -1770,7 +1784,7 @@ function finderResults(q){ q=nkey((q||'').trim()); if(q.length<2) return [];
       if(k===q){ seen.add(k); exact.push(r); }
       else if(k.startsWith(q)){ if(starts.length<40){ seen.add(k); starts.push(r); } }
       else if(starts.length<8 && contains.length<12 && k.includes(q)){ seen.add(k); contains.push(r); } } };
-  scan((window.SB_DATA&&SB_DATA.nsf)||[]); if(window.SB_FULL) scan(window.SB_FULL);
+  scan((window.SB_DATA&&SB_DATA.nsf)||[]); if(window.SB_FULL) scan(window.SB_FULL); else scan(fullFor(q)||[]);   /* a lookup fetches only its letter's chunk (P1.12) */
   return exact.concat(starts,contains).slice(0,24); }
 /* Header autocomplete. finderResults() is exhaustive by design — it sweeps both pools to
    rank exact / prefix / substring hits — and that is fine on the Finder page, where a
@@ -1779,7 +1793,7 @@ function finderResults(q){ q=nkey((q||'').trim()); if(q.length<2) return [];
    only if there is room does it look for substrings. */
 function suggestWords(q, n){ q=nkey((q||'').trim()); n=n||7; if(q.length<2) return [];
   const seen=new Set(), exact=[], starts=[], contains=[];
-  const pools=[(window.SB_DATA&&SB_DATA.nsf)||[], window.SB_FULL||[]];
+  const pools=[(window.SB_DATA&&SB_DATA.nsf)||[], window.SB_FULL||(q.length>=3&&fullFor(q))||[]];   /* the library by letter from the third letter (P1.12) */
   for(const pool of pools){
     for(let i=0;i<pool.length;i++){ const r=pool[i]; if(!r||!r.w) continue;
       const k=nkey(r.w); if(seen.has(k)) continue;
@@ -4487,7 +4501,7 @@ function viewLanding() {
   ].filter(([f]) => (window.SB_ARCADE_GAMES || []).some(g => 'game-' + g.k === f))   /* only games the arcade still has (Keep Flying was cut, FIX-BEE v2 G11) */
    .map(([f, name, hook], i) => `<figure style="margin:0;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column">
       <span style="position:relative;display:block;aspect-ratio:16/11;overflow:hidden;background:#241E33">
-        <img data-lsrc="app-art/shots/${f}.jpg" alt="${escA(name)} — gameplay from Bizzing Bee"
+        <img data-lsrc="app-art/shots/${f}.webp" alt="${escA(name)} — gameplay from Bizzing Bee"
              loading="lazy" decoding="async"
              style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block">
       </span>
@@ -4644,7 +4658,7 @@ function landShowcase(){
         <h3 style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.15;margin:0 0 10px">${esc(t)}</h3>
         <p style="font-size:15px;line-height:1.6;color:var(--muted);margin:0;max-width:32em">${esc(b)}</p></div>
       <div style="border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 44px rgba(20,12,50,.16);background:var(--bg2)">
-        <img data-lsrc="app-art/shots/${f}.jpg" alt="${escA(t)} — a screen from Bizzing Bee"
+        <img data-lsrc="app-art/shots/${f}.webp" alt="${escA(t)} — a screen from Bizzing Bee"
              loading="lazy" decoding="async"
              style="display:block;width:100%;height:auto;aspect-ratio:1200/834"></div>
     </div>`).join('');
@@ -6211,7 +6225,7 @@ function navIcon(key,size,plain){ size=size||22;
   return (M[key]||M.home)();
 }
 function viewExplore(){ const c=active(); ensureLists(c); const S=state;
-  /* Seven destinations, each with its own painted header (app-art/lib-*.jpg, made by
+  /* Seven destinations, each with its own painted header (app-art/lib-*.webp, made by
      voice/pipeline/atlas-art.py). The Library had gradients and line icons before,
      which read as a settings screen; a library should look like the thing it holds. */
   const cAll=(S.conceptData||[]); const cDone=cAll.filter(ch=>conceptStat(ch).done).length;
@@ -6220,7 +6234,7 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   const tTxt=countTxt('trivia'); const themeN=themeDefs().length; const mine=myThemes().length;
   const qTxt=countTxt('quotes'), fTxt=countTxt('idioms');
   const tile=(o)=>`<button data-act="${o.act}" ${o.arg?`data-arg="${escA(o.arg)}"`:''} class="lib-tile${o.lock?' lib-locked':''}"${o.lock?' aria-label="Locked — included with the Regional Speller plan"':''}>
-      <span class="lib-art"><img src="app-art/${o.img}.jpg" alt="" loading="lazy" decoding="async">
+      <span class="lib-art"><img src="app-art/${o.img}.webp" alt="" loading="lazy" decoding="async">
         <span class="lib-kick">${esc(o.kick)}</span><span class="lib-h">${esc(o.title)}</span></span>
       <span class="lib-body"><p>${esc(o.blurb)}</p>
         <span class="lib-foot"><span class="lib-go" style="background:${o.c}">${iconSVG(o.ic||'book',14)} ${esc(o.cta||'Open')}</span>
@@ -7240,7 +7254,7 @@ function atlasWorld(c){ try{ const T=window.SB_TRAIL; if(!T) return 'meadow';
     return world; }catch(e){ return 'meadow'; } }
 function paintedTileArt(world,h,eager){   /* eager: Home's first screen — a lazy image above the fold waits its turn (audit v4 B6) */
   return `<span style="position:relative;display:block;width:100%;height:${h}px;overflow:hidden;background:linear-gradient(160deg,#4a3f7a,#241e46)">
-    <img src="app-art/w-${world}-r2.jpg" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <img src="app-art/w-${world}-r2.webp" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.16),rgba(14,9,32,.42))"></span></span>`;
 }
 /* YOU ARE HERE (owner, 4 Oct 2026: "HOME screen should take to world atlas and show kids where they
@@ -7250,7 +7264,7 @@ function paintedTileArt(world,h,eager){   /* eager: Home's first screen — a la
    that region's board counts it (stops and checkpoints of this tier), and the stop's name, with a
    rail of the region's stops beside Continue. The WHOLE card is one button (app.goNext: the region
    opens with this stop selected); the pill inside it is the one filled primary on Home.
-   The picture is the overview's (atlas-map.jpg, 116KB, one for every child), not a region's own
+   The picture is the overview's (atlas-map.webp, 99KB — 113KB as the JPEG it was until P1.14 — one for every child), not a region's own
    panorama (0.6–1MB each): Home's first screen has a budget (tests/first-load.cjs), and the region
    painting is what Continue opens. Where the pins and road are is trail.js's (SB_TRAIL_HERE). */
 function homeHereCard(c,nx){
@@ -7280,7 +7294,7 @@ function homeHereCard(c,nx){
   return `<button class="sb-lift sb-home-next sb-here" data-act="goNext" aria-label="${escA(aria)}">
     <span class="sb-here-map" aria-hidden="true">
       <span class="sb-here-board" style="--x:${(+at.x).toFixed(2)};--y:${(+at.y).toFixed(2)}">
-        <img src="app-art/${H&&H.img||'atlas-map.jpg'}" alt="" decoding="async">
+        <img src="app-art/${H&&H.img||'atlas-map.webp'}" alt="" decoding="async">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="sb-here-road">
           ${road?`<path d="${road}" class="sb-here-ghost" vector-effect="non-scaling-stroke"/>`:''}
           ${hi>0?`<path d="${walked}" class="sb-here-walk" vector-effect="non-scaling-stroke"/>`:''}</svg>
@@ -10403,7 +10417,7 @@ function parentActivityCard(){ const S=state; const c=active(); const acts=(c.ac
   </div>`; }
 function actIcon(kind){ return ({practice:'pencil',buzz:'flame',beat:'target',boss:'crown',meaning:'book',spell:'spark',origin:'grid',written:'pencil',oral:'volume',concept:'grid'})[kind]||'spark'; }
 function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
-  const total=window.SB_FULL?countTxt('library'):sbOver(((window.SB_DATA||{}).nsf||[]).length);   /* the served corpus until the library is in */
+  const total=countTxt('library')||sbOver(((window.SB_DATA||{}).nsf||[]).length);   /* a lookup reaches the whole library, a letter's chunk at a time (P1.12) */
   const loadBtn=(!window.SB_FULL)?`<button data-act="finderLoadFull" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:12px">${S.fullLoading?'Loading the full library…':iconSVG('book',14,2.2)+' Load the whole library — '+countTxt('library')+' words'}</button>`:'';
   let body='';
   if(S.finderSel){ const w=S.finderSel;
@@ -10425,7 +10439,8 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
     body = q.trim().length<2
       ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="font-size:34px;margin-bottom:8px">🔎</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
       : (rs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px">${cells}</div>`
-        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the full library of '+countTxt('library')+' words below.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`);
+        :(fullLooking(q)?`<div class="sb-card" style="text-align:center;padding:30px 20px" data-finder-looking><div class="sb-ct">Looking “${esc(q)}” up in the whole library…</div></div>`
+        :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the whole library below to find it inside longer words.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`));
   }
   return `<div style="max-width:860px;margin:0 auto">
     ${pageHead('Word Finder','search '+total+' words','',loadBtn)}
@@ -10881,7 +10896,7 @@ function viewThemeDetail(){
 /* the painted world banner, shared with the Word Atlas */
 function themeBannerHTML(world){
   return `<span style="position:absolute;inset:0;background:linear-gradient(160deg,#4a3f7a,#241e46)"></span>
-    <img src="app-art/w-${world}-r2.jpg" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <img src="app-art/w-${world}-r2.webp" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
     <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.4) 0%,rgba(14,9,32,.06) 38%,rgba(14,9,32,.55) 100%)"></span>`;
 }
 const clampTxt=(x,n)=>{ x=String(x||''); return x.length>n?x.slice(0,n-1).replace(/[,;:\s]+\S*$/,'')+'…':x; };
@@ -12369,7 +12384,7 @@ function arcadeMenu(k){
            (SB_KART_ART) — the picked kart and the raced kart are one drawing */
         if(o.imgs) return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><span style="display:grid;grid-template-columns:1fr 1fr;gap:2px;aspect-ratio:16/9;overflow:hidden;border-radius:8px">${o.imgs.map(im=>`<img src="${arcGart(im)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`).join('')}</span><span>${esc(o.n)}</span></button>`;
         const kt=(gr.kind==='kart'&&window.SB_KART_ART)?SB_KART_ART.thumb(o.v,168):'';
-        const src=kt||(gr.kind==='world'?('app-art/sgw-'+o.img+'.jpg'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'')):arcGart(o.img));
+        const src=kt||(gr.kind==='world'?('app-art/sgw-'+o.img+'.webp'+(window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'')):arcGart(o.img));
         return `<button class="arcm-opt arcm-opt-img${on}" data-v="${escA(o.v)}" title="${escA(o.n)}"><img src="${src}" alt="${escA(o.n)}" loading="lazy"><span>${esc(o.n)}</span></button>`; }
       return `<button class="arcm-opt arcm-opt-chip${on}" data-v="${escA(o.v)}">${esc(o.n)}</button>`;
     }).join('');
@@ -12512,9 +12527,9 @@ const PLAY_ART = {
   hive:{grad:'linear-gradient(135deg,#F0A93C,#C8791B)', plate:'hive', game:'trivia'},
   dailyBee:{grad:'linear-gradient(135deg,#2FA35C,#1E7D45)', plate:'daily', game:'daily'},
   dailyBuzz:{grad:'linear-gradient(110deg,#1E7D45,#2FA35C 46%,#3FBF6E)', game:'daily'},   // the green its banner wore
-  beeGrandPrix:{grad:'linear-gradient(150deg,#2A1A4A,#1B1235)', img:'app-art/arc-grandprix.jpg', cta:'Start your engine'},
+  beeGrandPrix:{grad:'linear-gradient(150deg,#2A1A4A,#1B1235)', img:'app-art/arc-grandprix.webp', cta:'Start your engine'},
   typeBlaster:{grad:'linear-gradient(150deg,#1B2A4A,#121B35)', shot:'typeBlaster'},
-  honeycombRun:{grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)', img:'app-art/arc-honeycomb.jpg', cta:'Enter the maze'},
+  honeycombRun:{grad:'linear-gradient(150deg,#4A2A10,#2E1A0A)', img:'app-art/arc-honeycomb.webp', cta:'Enter the maze'},
   wordForge:{grad:'linear-gradient(150deg,#5A2A10,#2E140A)', plate:'forge', cta:'Light the forge'},
 };
 function playCardName(k){ if(k==='gym'||k==='lore'||k==='hive') return hubName(k);
@@ -12538,7 +12553,7 @@ function playCardBest(card,c){
   return ''; }
 function playCardPicture(card,big){ const A=PLAY_ART[card.k]||{}; const V=window.SB_ASSET_V?('?v='+window.SB_ASSET_V):'';
   if(A.img) return A.img+V;
-  if(A.shot) return 'app-art/shots/game-'+A.shot+'.jpg'+V;
+  if(A.shot) return 'app-art/shots/game-'+A.shot+'.webp'+V;
   if(A.plate){ try{ if(typeof window.SB_PLATE==='function'){ const u=SB_PLATE(A.plate); if(u) return u; } }catch(e){}
     /* saga2 (and SB_PLATE) loads with the arcade, after this tab first draws: the same rule, here */
     return 'app-art/stage/'+A.plate+'-'+(document.documentElement.getAttribute('data-mode')==='dusk'?'night':'day')+'.webp'; }

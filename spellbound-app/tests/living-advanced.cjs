@@ -12,7 +12,7 @@ const EXPS = ['proving', 'greysea', 'liars', 'grandtrunk', 'farflung', 'factory'
 const ULTRA = ['uproving', 'ulibrary', 'ucrucible', 'uobservatory', 'uchampionship'];
 (async () => {
   for (const a of EXPS.concat(ULTRA))
-    ok(fs.existsSync(SRC + '/app-art/map-' + a + '-pano.jpg'), a + ' has its panorama');
+    ok(fs.existsSync(SRC + '/app-art/map-' + a + '-pano.webp'), a + ' has its panorama');
   const tj = fs.readFileSync(SRC + '/trail.js', 'utf8');
   ok(EXPS.concat(ULTRA).every(a => tj.includes("'lv-hero-" + a + "'") && tj.includes("'lv-lm-" + a + "'")),
     'every expedition and landmark names its keyed hero and landmark art');
@@ -62,7 +62,7 @@ const ULTRA = ['uproving', 'ulibrary', 'ucrucible', 'uobservatory', 'uchampionsh
         secrets: document.querySelectorAll('.atlas-secret').length,
         caches: document.querySelectorAll('.atlas-tre').length };
     }, ai);
-    ok(v.view === 'ultra' && v.src === 'map-' + ULTRA[ai] + '-pano.jpg',
+    ok(v.view === 'ultra' && v.src === 'map-' + ULTRA[ai] + '-pano.webp',
       ULTRA[ai] + ' opens on its own panorama (' + v.src + ')');
     ok(v.lms >= 1 && v.heroes >= 1, ULTRA[ai] + ' fields its landmark and hero set-piece');
     ok(v.secrets === 3 && v.caches === 3,
@@ -76,6 +76,7 @@ const ULTRA = ['uproving', 'ulibrary', 'ucrucible', 'uobservatory', 'uchampionsh
     /* the champions' road is behind the Advanced Pack, so stand in as a real
        PAYING champion rather than a tester: pack on, test mode off — that is
        the only state in which the reveal is actually spent */
+    await new Promise(r => SB_LAZY.need('advanced', r));   // advanced.js is lazy since P1.13 (10 Oct 2026)
     const realActive = window.ADV && ADV.active;
     if (window.ADV) ADV.active = () => true;
     state.devUnlock = false;

@@ -221,6 +221,133 @@ rejected); the grade map is US grade / UK year / CBSE class with a source on eve
 - `tests/pin-mandatory.cjs`'s known pre-existing failure ("a second boot migrates nothing and keeps the same record")
   passed on this batch's runs, so it is intermittent; this batch did not touch it — it is not fixed, only not seen.
 
+## Road to 4.5, P1 — load weight (10 Oct 2026) — READ FIRST; it overrides the sections below
+Brief rows P1.12 (the dictionary), P1.14 (asset weight) and P1.13 outside app3.js (first-load JS). app3.js was NOT split
+here; another batch was editing it. The plan for that split is **`docs/first-load-plan.md`**: per-file numbers, what
+reads the boot word shard at first paint, the files app3 splits into and in what order, and the budget after each step.
+- **THE 130k LIBRARY IS LETTERED CHUNKS (P1.12).** `words-full.js` (45 MB) and `words-hard.js` stay the **source** in
+  the repo. Every tool and data test reads them, and nothing on the site fetches either.
+  - **The generator.** `node tools/library-chunks.cjs` cuts both into `words-full/`. It writes `index.js`
+    (`SB_FULL_IX`: each chunk's lowest headword `b`, its file `f`, the record counts, and the ORDER of both sources
+    as run-length pairs `seq`/`hseq`) and 86 chunks. Each chunk is ≤ ~200 KB gz, holds `c` (its core records) and
+    `h` (its shard records) as JSON strings in source order, and is "a letter, or a stretch of one": a letter over
+    `CAP` splits by its next letters, and accented headwords go to `accents.js`.
+  - **Never edit a chunk.** Change the source and re-run the tool. `--check` compares; `--stats` prints the plan.
+    `tests/library-chunks.cjs` (@check, node) rebuilds and compares byte for byte. It also asserts that:
+    - `library.js` rebuilds both source arrays EXACTLY (records and order);
+    - the cut partitions headwords by key;
+    - a lookup is one chunk and never comes back empty;
+    - chunks are ≤ 220 KB gz;
+    - app3's `fullClean` + `hardInto` serve the same words through either door;
+    - nothing shipped fetches the sources;
+    - the deploy scripts keep the sources off the site.
+  - **The reader.** **`library.js` (`SB_LIB`, boot-lazy `library`, index first via `libIndex`)** is the only reader.
+    - `chunkFor(q)` names the ONE chunk at q's place. `forKey(q, cb)` returns its raw records, or null while it
+      loads. `namesFor(q)` gives every chunk a prefix could touch. `all(cb)` rebuilds the whole library in source
+      order.
+    - It registers chunks in boot-lazy as `wf:<chunk>`, so they are stamped, fire `sb-lazy`, re-render and are
+      cached offline as fetched.
+  - **What app3 does with them.** app3 owns what a child sees.
+    - `fullClean` (safeWord + fixCore) and `hardInto` (the shard merge, through fixCore) are ONE rule for both doors.
+      `mergeHard` and `fullAdopt` use them for the whole library, `fullChunk(n)` for a chunk.
+    - `loadFullLibrary` = `lazyNeed('library')` → `SB_LIB.all` → `SB_HARD` + `fullAdopt`. That serves the Whole
+      Hive list, the Ultra road (hardPool), Champ Dictation and "Load the whole library".
+    - A LOOKUP is `fullFor(q)`, which fetches only q's chunk. The Word Finder asks for it from two letters; the
+      header search from three. Results land with an immediate render.
+    - `SB_FULL` is set only when the WHOLE library is in, so every `window.SB_FULL` "is the library loaded?" check
+      keeps its meaning.
+  - **Words that span chunks.** "non" starts ~10,000 headwords across four chunks: a lookup shows the first of them
+    until the next letter is typed. Matches *inside* a word in other letters need "Load the whole library".
+  - **Measured.** `tests/dictionary.cjs` is a phone (4× CPU, 9 Mbps, 60 ms), served gzipped and minified. Three
+    library-only words, one from each of the three heaviest chunks, show in 250–900 ms on a loaded machine (median
+    gated < 1 s), each fetching one chunk. The whole library loads in ~8 s unthrottled and equals app3's filter over
+    the sources (127,793 words, the same order). It works under file:// too.
+  - **The deploy.** Both deploy scripts exclude the two sources, `rm` any live copy, and count `words-full/` like
+    the art trees: chunk paths are built at run time, so no literal names them. They MIRROR `app-art/` and
+    `words-full/`, deleting what the source no longer has (a re-cut renames chunks; the plates became WebP).
+- **PLATES ARE WEBP (P1.14).**
+  - **The conversion.** `python3 tools/art/webp.py` converted all 111 JPEG plates in `app-art/`: Atlas boards and
+    panoramas, world banners, Library tiles, play-fields, analogy maps, landing shots. 24.5 MB → 15.5 MB; `app-art/`
+    went 31.0 → 22.1 MB. **The rule is q80 method 6, a 35 dB PSNR floor against the source (quality up by 5 until
+    met), and NEVER heavier than the JPEG** (quality down by 5 while the floor holds: map-library went q75).
+  - **AVIF was measured.** It came to 13.5 MB, but iPads that stop at iOS 15 cannot decode it, and WebP is already
+    the avatars' and stages' format. The tool's header says so.
+  - **What was not touched:**
+    - avatars (their own rule: q95 full size, PNG thumbs);
+    - `app-art/spines/*.png` (160-colour palette art);
+    - the SVG sprites (already WebP inside);
+    - **`app-art/lib-books.jpg`**: the og:image / twitter:image card stays a JPEG for crawlers. `SOCIAL_CARDS` in
+      the tool lists it, and `lib-books.webp` is the app's own copy.
+  - **The pipeline still writes JPEG.** `act-maps.py`, `saga-worlds.py`, `app-banners.py`, `atlas-art.py`,
+    `analogy-maps.py` and `qa/shots.cjs` still write JPEG; their headers say to run `tools/art/webp.py <file>` after.
+  - **Every reference now says `.webp`.** That covers trail.js (`LIV` panoramas, `ACT` maps, banners), the Library
+    tiles, the landing shots, `SB_PLATE`'s neighbours (`sgw-*`, the arcade tiles), analogy `ART`, mockbee's stage,
+    the reader's fallback and the splash. The parse-time Home preload now takes only `.png`/`.webp`, so a stale
+    `sb_home_art` note naming a `.jpg` is skipped.
+  - **Guard: `tests/asset-budget.cjs`** (@check, node). It holds:
+    - no JPEG plate, and no shipped reference to an app-art JPEG (the og card aside);
+    - every raster ≤ 700 KB;
+    - `app-art/` raster ≤ 19.0 MB and the folder ≤ 22.6 MB, a RATCHET: lower it, never raise it;
+    - every app-art path and every named panorama or analogy map exists;
+    - every plate `<img>` below the fold carries `loading="lazy"` (or `data-lsrc`), except a named `ABOVE` list,
+      each with its reason.
+
+    `tests/first-load.cjs` holds the first screens' image bytes (`CEILING.img`).
+- **FIRST-LOAD JS (P1.13, outside app3).**
+  - **The test.** `tests/first-load.cjs` prints every first-screen script as raw / minified / gzip and ratchets the
+    gzip (`CEILING`: new visitor 1210 KB total / JS 925 / img 90; returning 1305 / 1000 / 105). Measured:
+
+    | | before (total / JS) | after (total / JS / images) |
+    |---|---|---|
+    | new visitor | 1300 / 1021 | 1184 / **905** / 83 |
+    | returning speller | 1330 / 1021 | 1276 / **981** / 99 |
+  - **What left the boot list.** Each is read by no first paint, measured with a getter on every global it defines
+    across four children. Each now arrives through boot-lazy at its door:
+    - `voice-review-lists.js` (the voice tester's two queues; group `voicetest`, door `openVoiceTest`). **Bump
+      `SB_VOICE_VER` in `voice-review.js`; add rebuilt words to `SB_VOICE_REVIEW` in `voice-review-lists.js`.**
+    - `trivia.js` (unreachable Bee Trivia; group `beeTrivia`).
+    - `trivia-icons.js` (groups `trivtrain` and `quizhubs`, idle).
+    - `advanced.js` (groups `advanced`, `atlas`, `gym`, `coach`, `lists`, idle; doors `openAdvanced`, `advJump`,
+      `advGo`, `advConcept`, `arcAdvDict` — they wait for the code alone, group `advCode`).
+  - **The opening page fetches no Atlas data.** FIRST waits for the first tap there, so a new visitor saves 75.5 KB.
+    boot-lazy gives the landing one `softRender` at DOMContentLoaded. worlds4.js registers its worlds after app3's
+    first paint, and `one-count` caught the landing keeping its fallback copy without that render.
+  - **A test that calls `ADV` or `STV` waits first:** `SB_LAZY.need('advanced'|'beeTrivia')`. `living-advanced`,
+    `mastery-evidence`, `question-leaks` and `dictionary` do.
+  - **Still on the first screen, and why** (the plan's steps):
+    - `words-data.js` (353 KB gz): `defaultStages`, `journeySorted`, `wohPool` and `trickAnal` read every boot
+      record at Home's first render, so the curriculum must become generated data before the shard can go lazy;
+    - app3.js (307 KB);
+    - Home's Atlas card (trail-data 75 + trail.js 49).
+  - **The split map.** `node tools/app3-split-map.cjs` (read-only) measures app3: paint core ~111 KB gz, actions
+    ~33, screens' own code ~146 (Library 59, Word Gym 39, grown-ups 25, classic games 12, Me 7, tools 6), shared ~23.
+- **Proved by breaking** (each fault put in, the test watched to fail, the fault taken out; the harness is recorded in
+  each test's header):
+  - **library-chunks:**
+    - a hand edit in one chunk's definition: 3 fail (generated, "the core comes back", the lettered door);
+    - library.js rebuilding in letter order: 2 fail (the core and the shard come back in the wrong order);
+    - a bound inside a letter nudged one letter on: 2 fail (generated, the lookup's one chunk);
+    - `CAP` raised to 1.3 MB and the chunks re-cut: 1 fails (326 KB > 220);
+    - `fullChunk` without `hardInto`, so lookups miss the championship words: 1 fails ("a 1622 vs 1651 …");
+    - app3 writing a `words-full.js` script tag again: 1 fails (wiring).
+  - **dictionary:**
+    - `chunkFor` pointed one chunk late: 3 fail (the Finder lookups, the header search, file://);
+    - the whole library rebuilt in letter order: 1 fails ("the same order").
+  - **asset-budget:**
+    - a JPEG plate restored: 1 fails ("no JPEG");
+    - trail.js asking for `.jpg`: 2 fail (the reference check, "every named plate ships");
+    - a panorama at q95: 3 fail (1,419 KB > 700, both ratchets);
+    - an analogy map renamed: 1 fails;
+    - the Library tiles' `loading="lazy"` removed: 1 fails;
+    - the mirror loop taken out of `deploy-prod.sh`: 1 fails.
+  - **first-load:**
+    - the three moved scripts put back in index.html: 6 fail (both screens' totals and JS ceilings — 939 > 925 and
+      1014 > 1000 — and "nothing that left the boot list comes back", naming all three);
+    - FIRST restored on the landing: 3 fail (the new visitor's total, its JS at 981, and the check naming
+      `trail-data.js`);
+    - Home's card pointed back at `atlas-map.jpg`: 2 fail (total, and images at 213 KB > 105).
+  - **one-count** caught the landing's lost render (see above) the first time it ran on this batch.
+
 ## My Feed (2 Oct 2026, FAMILY-STANDARD §6a) — the sixth tab, LAST, after Play
 - **Tabs: Home · Word Atlas · Analogies · Library · Play · My Feed** since 10 Oct 2026 (the Word Gym is Word Atlas's
   sub-nav; Analogies only through the analogy gate — see "The road to 4.5" above) (`NAV_TABS()` in app3.js draws both
@@ -1860,7 +1987,8 @@ out of saga2.js so a retune cannot quietly undo them.
   (`kokoro-v1.0.int8.onnx`, `voices-v1.0.bin`) come from the thewh1teagle/kokoro-onnx GitHub
   release — **needs github.com allowlisted; not on PyPI.** Params & scripts in
   `VOICE-PIPELINE.md`. **Match the library: 0.95× for normal words, 1.0× for ultra-short.**
-- After rebuild: add words to `SB_VOICE_REVIEW`; commit `voice/w/*.mp3` + `voice-review.js`.
+- After rebuild: add words to `SB_VOICE_REVIEW` (in `voice-review-lists.js` since 10 Oct 2026) and bump `SB_VOICE_VER`
+  (still in `voice-review.js`); commit `voice/w/*.mp3` + both files.
 - You cannot audition audio here — the parent's **Re-review tab** is the quality gate.
 - **Model hosting:** the model files are attached to this repo's **`kokoro-model-v1`
   release** — fetch via the GitHub API asset endpoints (in scope for any session on this
@@ -2282,6 +2410,9 @@ out of saga2.js so a retune cannot quietly undo them.
   `tests/ux-826.cjs`.
 
 ## The 130,000-word library — core plus the championship shard
+- **Since 10 Oct 2026 the page never fetches `words-full.js` or `words-hard.js`**: it reads the lettered chunks in
+  `words-full/` through `library.js` (see "Road to 4.5, P1 — load weight" above). Everything below about the two
+  files is still true of the SOURCE, which every tool and data test reads; "fetches" now means "SB_LIB.all() rebuilds".
 - `words-full.js` holds the generated core (128,197 records, a JSON string).
   `words-hard.js` is the **championship shard**: 1,915 long, obscure and
   foreign-origin words the core never had, gathered field by field across 60
@@ -2468,7 +2599,10 @@ out of saga2.js so a retune cannot quietly undo them.
   **under ~250MB**. If a deploy "did nothing", check the run's conclusion before you blame
   the browser (incognito showing the old build is the tell that it is not cache).
   Site weight today: **183MB** — voice 53MB, avatars 33MB, app-art 7.6MB. It was 256MB,
-  over the line, until the books moved off it (below).
+  over the line, until the books moved off it (below). (10 Oct 2026, P1.12/P1.14: the deploy copy measures ~194MB
+  before minifying; the library ships as its chunks instead of words-full.js + words-hard.js — about the same
+  weight — and app-art is 22.1MB of WebP instead of 31.0MB. The deploy now MIRRORS app-art/ and words-full/, so the
+  24.5MB of replaced JPEG plates leave gh-pages on the next deploy: expect the live site near ~175MB.)
 - **Every book image is `loading="lazy"`** — `lazyImgs()` in mkbooks.js stamps it at emit,
   one choke point for ~100 `<img>` per volume. Eager, a tapped spine downloaded every
   plate in the book at once, which read as "the shelf takes a long time to load". The

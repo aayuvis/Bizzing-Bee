@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """App-sized world banners, cut from the book series' painted scenery strips.
 
+SERVED AS WEBP (road to 4.5, P1.14): the app asks for app-art/<name>.webp. This still writes the JPEG; then run
+  python3 tools/art/webp.py app-art/<name>.jpg
+which converts it by the one rule (q80, 35 dB floor, never heavier) and deletes the JPEG. tests/asset-budget.cjs
+fails on a JPEG plate left in app-art/.
+
 The books already own 39 painted strips (13 worlds x 3 light registers) at
 1584x672. The Word Atlas needs the same scenery as a wide act banner, but at a
 weight a tablet can carry on a screen that shows nine of them: this crops each

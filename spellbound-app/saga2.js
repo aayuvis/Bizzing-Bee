@@ -202,7 +202,7 @@
   }
   /* The PAINTED play field. The vector plate above is a few dozen filled paths,
      and next to the painted act board the child has just walked across it reads
-     as a diagram. Each world has a painting now (app-art/sgw-<world>.jpg, built
+     as a diagram. Each world has a painting now (app-art/sgw-<world>.webp, built
      by voice/pipeline/saga-worlds.py), composed to be played over: open and
      low-contrast through the middle, detail pushed to the top and bottom edges,
      and a stop darker than daylight so a gold bee reads against it.
@@ -216,7 +216,7 @@
     const img=new Image();
     img.onload=()=>{ _pCache[id]=img; };
     img.onerror=()=>{ _pCache[id]=false; };
-    img.src='app-art/sgw-'+id+'.jpg';
+    img.src='app-art/sgw-'+id+'.webp';
     return null;
   }
   /* cover-fit without distortion, whichever source we have */
@@ -859,7 +859,7 @@
         '<div class="sg-dmid"><button type="button" class="sg-dbtn" data-d="left" aria-label="Left">'+SGUI.chev(-1)+'</button>'+
         '<button type="button" class="sg-dbtn" data-d="down" aria-label="Down">'+SGUI.chev(0).replace('M9 5l7 7-7 7','M5 9l7 7 7-7')+'</button>'+
         '<button type="button" class="sg-dbtn" data-d="right" aria-label="Right">'+SGUI.chev(1)+'</button></div></div>';
-    host.innerHTML=AK.stage({ plate:'app-art/sgw-'+(world==='cosmos'?'cosmos':world==='hive'?'hive':'meadow')+'.jpg', name:'honeycomb', cls:'hc-stage', region:false, label:'Honeycomb Run',
+    host.innerHTML=AK.stage({ plate:'app-art/sgw-'+(world==='cosmos'?'cosmos':world==='hive'?'hive':'meadow')+'.webp', name:'honeycomb', cls:'hc-stage', region:false, label:'Honeycomb Run',
       hud:{ left:'<span class="arcx-stat hc-lives" id="hc-lives" aria-label="Lives"></span>',
             center:'<span class="arcx-hc"><span class="arcx-title">Honeycomb Run</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="hc-time"></span><span class="arcx-prog" id="hc-gates"></span></span>',
             right:'<span class="arcx-stat hc-score"><b id="hc-score">0</b><i>honey</i></span>' },
@@ -4206,7 +4206,7 @@
     const touch=AK.touch();
     /* the world: the painted pair from the stage kit (grey + restored, one composition), or —
        until those exist — one painting shown grey and in colour, which is the same promise */
-    const FALLBACK='app-art/sgw-meadow.jpg';
+    const FALLBACK='app-art/sgw-meadow.webp';
     let greyUrl=AK.plate('blaster-grey'), colUrl=AK.plate('blaster-color'), filtered=false;
     if(!greyUrl||!colUrl){ greyUrl=colUrl=FALLBACK; filtered=true; }
     /* regions: a jittered grid with shared corners, so the pieces tile the scene exactly */

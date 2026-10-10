@@ -97,6 +97,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     state.sessionWords = [W2, W1]; state.cardIdx = 0; const s3 = snap();
     app.cardAdvance('next'); app.cardAdvance('revise');
     o.cardSwipe = snap() === s3;
+    await new Promise(r => SB_LAZY.need('advanced', r));   // advanced.js is lazy since P1.13 (10 Oct 2026)
     const s4 = snap();
     try { state.adv = { mode: 'scan', words: [W2, W1], all: [W2, W1], bi: 0, i: 0, know: [], gaps: [], drillIdx: 0, right: 0 }; ADV.scanMark(true); } catch (e) { o.scanErr = String(e); }
     o.ultraScan = JSON.parse(snap()).mast && JSON.stringify(JSON.parse(snap()).mast) === JSON.stringify(JSON.parse(s4).mast) && JSON.stringify(state.luMastered) === JSON.stringify(JSON.parse(s4).lu);
