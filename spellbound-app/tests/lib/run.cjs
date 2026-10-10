@@ -75,6 +75,7 @@ const SOURCE_TEXT = {
   'result-screen.cjs': "engines' toString must contain SGUI.result (a renamed local in minified code)",
   'telemetry.cjs': 'drives backend.html, which is never deployed',
   'deploy-gate.cjs': 'drives deploy-*.sh and tests/lib/run.cjs, which never ship in a deploy tree',
+  'dictionary.cjs': 'computes the library it expects from words-full.js + words-hard.js, the SOURCE, which never ships (the deploy tree has only words-full/)',
 };
 
 /* Known-slow tests get a longer leash. Seconds. Everything else gets DEFAULT_TIMEOUT.

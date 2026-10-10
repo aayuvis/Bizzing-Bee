@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """One painted sub-map per act.
 
+SERVED AS WEBP (road to 4.5, P1.14): the app asks for app-art/<name>.webp. This still writes the JPEG; then run
+  python3 tools/art/webp.py app-art/<name>.jpg
+which converts it by the one rule (q80, 35 dB floor, never heavier) and deletes the JPEG. tests/asset-budget.cjs
+fails on a JPEG plate left in app-art/.
+
 The Atlas has three continent maps. Tapping a region used to open a 880x244
 scenery STRIP with the stops laid along it — the same strip the act banner used,
 which is why two acts that share a world looked identical (roots and factory are

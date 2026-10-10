@@ -95,8 +95,8 @@ def main():
     json.dump(sorted(set(done)), open(os.path.join(HERE, 'voice-new-keys.json'), 'w'))
     print('wrote voice-new-keys.json — now:')
     print('  1. append these keys to SB_WVOICE in voice-words.js')
-    print('  2. add the words to SB_VOICE_REVIEW in voice-review.js')
-    print('  3. bump SB_VOICE_VER')
+    print('  2. add the words to SB_VOICE_REVIEW in voice-review-lists.js')
+    print('  3. bump SB_VOICE_VER (voice-review.js)')
     print('  4. commit voice/w/*.mp3 to main (NOT gh-pages)')
 
 

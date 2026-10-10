@@ -3057,7 +3057,7 @@
   if(!st.children || !st.children.length) return;
   var art=[]; try{ art=JSON.parse(localStorage.getItem('sb_home_art')||'[]')||[]; }catch(e){}
   for(var i=0;i<art.length && i<5;i++){ var u=String(art[i]||'');
-    if(!/^(avatars|app-art)\/[a-z0-9\/._-]+\.(png|webp|jpe?g)$/i.test(u)) continue;
+    if(!/^(avatars|app-art)\/[a-z0-9\/._-]+\.(png|webp)$/i.test(u)) continue;   /* app-art is WebP since P1.14: a note naming an old .jpg is skipped, not preloaded */
     var l=document.createElement('link'); l.rel='preload'; l.as='image'; l.href=u; l.setAttribute('fetchpriority','high'); l.setAttribute('data-home-art','');
     document.head.appendChild(l); }
 }catch(e){} })();
@@ -3101,7 +3101,7 @@
     for(li=0;li<7;li++) letters+='<b style="animation-delay:'+(1.1+li*0.14).toFixed(2)+'s;font-style:italic">'+word[li]+'</b>';
     letters+='<b style="animation-delay:2.08s"><sup>™</sup></b><b>&nbsp;</b>';
     for(li=8;li<11;li++) letters+='<b style="animation-delay:'+(1.1+li*0.14).toFixed(2)+'s">'+word[li]+'</b>';
-    d.innerHTML='<img class="spl-art" alt="" src="app-art/sgw-'+t[4]+'.jpg" onerror="this.remove()">'
+    d.innerHTML='<img class="spl-art" alt="" src="app-art/sgw-'+t[4]+'.webp" onerror="this.remove()">'
       +'<div class="spl-veil"></div>'+sparks
       +'<div class="spl-bars"></div>'
       +'<svg class="spl-trail" viewBox="0 0 1000 200" preserveAspectRatio="none"><defs><linearGradient id="splg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+t[1]+'" stop-opacity="0"/><stop offset=".55" stop-color="'+t[1]+'" stop-opacity=".5"/><stop offset="1" stop-color="#FFFDF4"/></linearGradient></defs><path d="M-20 62 Q 240 128 480 42 T 1020 44" fill="none" stroke="url(#splg)" stroke-width="2.4" stroke-linecap="round" pathLength="1160"/></svg>'
@@ -3562,7 +3562,6 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="wordband.js?v=20261010d"></script>
 <script defer src="themes-data.js?v=20261010d"></script>
 <script defer src="quotes.js?v=20261010d"></script>
-<script defer src="trivia-icons.js?v=20261010d"></script>
 <script defer src="trivia-data.js?v=20261010d"></script>
 <script defer src="tips-data.js?v=20261010d"></script>
 <script defer src="voice-manifest.js?v=20261010d"></script>
@@ -3587,8 +3586,9 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 <script defer src="worlds4.js?v=20261010d"></script>
   <!-- saga-art/*.js, saga-art-dom.js and saga2.js (the arcade engines, ~110KB gzipped) are
        NOT boot scripts any more: boot-lazy.js loads them, in order, at the door of a game. -->
-<script defer src="trivia.js?v=20261010d"></script>
-<script defer src="advanced.js?v=20261010d"></script>
+  <!-- trivia.js (Bee Trivia, unreachable since the games rebuild), trivia-icons.js (the chapter stickers of Trivia
+       Training and Hive Mind) and advanced.js (the Advanced Pack) left the boot list in the road to 4.5, P1.13:
+       none of them is read by Home's or the landing's first paint. boot-lazy.js loads them at their doors. -->
 <script defer src="trail-road.js?v=20261010d"></script>
 <script defer src="trail.js?v=20261010d"></script>
 </body>

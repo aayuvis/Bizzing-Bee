@@ -202,7 +202,7 @@
   }
   /* The PAINTED play field. The vector plate above is a few dozen filled paths,
      and next to the painted act board the child has just walked across it reads
-     as a diagram. Each world has a painting now (app-art/sgw-<world>.jpg, built
+     as a diagram. Each world has a painting now (app-art/sgw-<world>.webp, built
      by voice/pipeline/saga-worlds.py), composed to be played over: open and
      low-contrast through the middle, detail pushed to the top and bottom edges,
      and a stop darker than daylight so a gold bee reads against it.
@@ -216,7 +216,7 @@
     const img=new Image();
     img.onload=()=>{ _pCache[id]=img; };
     img.onerror=()=>{ _pCache[id]=false; };
-    img.src='app-art/sgw-'+id+'.jpg';
+    img.src='app-art/sgw-'+id+'.webp';
     return null;
   }
   /* cover-fit without distortion, whichever source we have */
@@ -587,7 +587,16 @@
      swallowing keys app-wide. A card no longer on the page holds nothing and lets its keys go (road to 4.5, P1.20:
      the bot harness found it, a Honeycomb round left open before Word Lore's clock). Guard: tests/engine-kit.cjs. */
   const _missOpen=new Set();
-  Object.defineProperty(SGUI,'held',{get(){ _missOpen.forEach(m=>{ if(!m.wrap.isConnected) m.gone(); }); return _missOpen.size>0; }, configurable:true});
+  /* …but a card whose HOST is still on the page is not gone: a game that redraws its own stage (Word Forge does, while
+     the card is up) only knocked it off, so it is put back and keeps holding (10 Oct 2026: Forge sat on its miss with
+     no Continue — forge-game "Enter continues" red in the full suite). Only a host that left the page lets go. */
+  const _missAlive=m=>{ if(m.wrap.isConnected) return true;
+    /* the host redrew in place, or the game drew a NEW stage of its own (same data-sb-stage key): the card goes back on */
+    let h=(m.host&&m.host.isConnected)?m.host:null;
+    if(!h&&m.key){ try{ h=[...document.querySelectorAll('.sb-stage')].find(x=>x.getAttribute('data-sb-stage')===m.key)||null; }catch(e){} }
+    if(h){ try{ if(getComputedStyle(h).position==='static') h.style.position='relative'; h.appendChild(m.wrap); m.host=h; return true; }catch(e){} }
+    m.gone(); return false; };
+  Object.defineProperty(SGUI,'held',{get(){ _missOpen.forEach(_missAlive); return _missOpen.size>0; }, configurable:true});
   const SPK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" stroke="none"/><path d="M15.6 9a4.2 4.2 0 0 1 0 6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>';
   const BULB='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.4.3.6.75.6 1.25h4c0-.5.2-.95.6-1.25A4.4 4.4 0 0 0 8 1.6z" fill="currentColor" opacity=".9"/><path d="M6.4 12.6h3.2M6.9 14.2h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const TICK='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3 8.6l3.2 3L13 4.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -607,12 +616,15 @@
       '<button class="sg-rbtn go sg-miss-go" type="button">Continue <span class="sg-kbd" aria-hidden="true">Enter</span></button></div>';
     host.appendChild(wrap);
     const t0=performance.now(); let closed=false;
-    const ent={ wrap, gone(){ if(closed) return; closed=true; _missOpen.delete(ent); removeEventListener('keydown',onKey,true); } };
+    const key=(!fixed&&host.getAttribute)?host.getAttribute('data-sb-stage'):null;
+    const ent={ wrap, host, key, mo:null, gone(){ if(closed) return; closed=true; _missOpen.delete(ent); removeEventListener('keydown',onKey,true); try{ ent.mo&&ent.mo.disconnect(); }catch(e){} } };
     _missOpen.add(ent);
-    function close(){ if(closed) return; closed=true; _missOpen.delete(ent);
+    /* put it back BEFORE the next paint when the game redraws around it (a game that redraws keeps its card on screen) */
+    try{ ent.mo=new MutationObserver(()=>{ if(!closed&&!wrap.isConnected) _missAlive(ent); }); ent.mo.observe(document.body,{childList:true,subtree:true}); }catch(e){}
+    function close(){ if(closed) return; closed=true; _missOpen.delete(ent); try{ ent.mo&&ent.mo.disconnect(); }catch(e){}
       removeEventListener('keydown',onKey,true); try{ wrap.remove(); }catch(e){}
       try{ if(o.onContinue) o.onContinue(); }catch(e){} }
-    function onKey(e){ if(closed) return; if(!wrap.isConnected){ ent.gone(); return; }   // taken away with its game: not a card any more
+    function onKey(e){ if(closed) return; if(!_missAlive(ent)) return;   // taken away with its game: not a card any more (a redrawn host gets it back)
       if(e.key==='Tab') return;                                   // focus may still move inside the card
       e.stopPropagation();
       if(e.key==='Enter'||e.key===' '&&e.target&&e.target.closest&&e.target.closest('.sg-misscard')){
@@ -866,7 +878,7 @@
         '<div class="sg-dmid"><button type="button" class="sg-dbtn" data-d="left" aria-label="Left">'+SGUI.chev(-1)+'</button>'+
         '<button type="button" class="sg-dbtn" data-d="down" aria-label="Down">'+SGUI.chev(0).replace('M9 5l7 7-7 7','M5 9l7 7 7-7')+'</button>'+
         '<button type="button" class="sg-dbtn" data-d="right" aria-label="Right">'+SGUI.chev(1)+'</button></div></div>';
-    host.innerHTML=AK.stage({ plate:'app-art/sgw-'+(world==='cosmos'?'cosmos':world==='hive'?'hive':'meadow')+'.jpg', name:'honeycomb', cls:'hc-stage', region:false, label:'Honeycomb Run',
+    host.innerHTML=AK.stage({ plate:'app-art/sgw-'+(world==='cosmos'?'cosmos':world==='hive'?'hive':'meadow')+'.webp', name:'honeycomb', cls:'hc-stage', region:false, label:'Honeycomb Run',
       hud:{ left:'<span class="arcx-stat hc-lives" id="hc-lives" aria-label="Lives"></span>',
             center:'<span class="arcx-hc"><span class="arcx-title">Honeycomb Run</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="hc-time"></span><span class="arcx-prog" id="hc-gates"></span></span>',
             right:'<span class="arcx-stat hc-score"><b id="hc-score">0</b><i>honey</i></span>' },
@@ -4220,7 +4232,7 @@
     const touch=AK.touch();
     /* the world: the painted pair from the stage kit (grey + restored, one composition), or —
        until those exist — one painting shown grey and in colour, which is the same promise */
-    const FALLBACK='app-art/sgw-meadow.jpg';
+    const FALLBACK='app-art/sgw-meadow.webp';
     let greyUrl=AK.plate('blaster-grey'), colUrl=AK.plate('blaster-color'), filtered=false;
     if(!greyUrl||!colUrl){ greyUrl=colUrl=FALLBACK; filtered=true; }
     /* regions: a jittered grid with shared corners, so the pieces tile the scene exactly */

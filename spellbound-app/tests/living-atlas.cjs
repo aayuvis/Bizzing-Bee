@@ -13,7 +13,7 @@ const ACTS = ['library', 'forum', 'storm', 'roots', 'strait', 'junkyard', 'sprin
 (async () => {
   // ---- the art ships: a pano and keyed sprites for every act ----
   for (const a of ACTS) {
-    ok(fs.existsSync(SRC + '/app-art/map-' + a + '-pano.jpg'), a + ' has its panorama (map-' + a + '-pano.jpg)');
+    ok(fs.existsSync(SRC + '/app-art/map-' + a + '-pano.webp'), a + ' has its panorama (map-' + a + '-pano.webp)');
   }
   ok(ACTS.every(a => {
     const t = fs.readFileSync(SRC + '/trail.js', 'utf8');

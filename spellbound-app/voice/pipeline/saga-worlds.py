@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """One painted play-field backdrop per saga world.
 
+SERVED AS WEBP (road to 4.5, P1.14): the app asks for app-art/<name>.webp. This still writes the JPEG; then run
+  python3 tools/art/webp.py app-art/<name>.jpg
+which converts it by the one rule (q80, 35 dB floor, never heavier) and deletes the JPEG. tests/asset-budget.cjs
+fails on a JPEG plate left in app-art/.
+
 The engines draw their gameplay onto a canvas over a backdrop, and that backdrop
 was the flat vector WORLD_ART plate — a few dozen filled paths. Next to the
 painted act boards the child has just walked across, it reads as a diagram. So

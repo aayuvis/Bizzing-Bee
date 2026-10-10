@@ -111,6 +111,7 @@ const EVEN = (h, label) => { const n = h.reduce((a, b) => a + b, 0); const sh = 
 
     /* ---- 5. trivia, all five levels ---- */
     for (let lv = 1; lv <= 5; lv++) await new Promise(res => ttNeed(lv, res));
+    await new Promise(res => SB_LAZY.need('beeTrivia', res));   // trivia.js (STV) is lazy since P1.13 (10 Oct 2026)
     let tq = 0;
     for (let lv = 1; lv <= 5; lv++) for (let rep = 0; rep < 12; rep++) { const qs = STV._pool({ th: 'mix', lv, ths: [] }, 40);
       qs.forEach(q => { tq++;

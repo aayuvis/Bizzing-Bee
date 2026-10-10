@@ -108,7 +108,11 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
       const e0 = earnedSoFar(); let guard = 0, keyUsed = false;
       while (g.phase === 'play' && guard++ < 600) {
         if (state.qz !== g) return { err: 'round replaced' };
-        if (/\d+ right in a row|streak/i.test(document.querySelector('#root').innerText) || window._flashes.some(f => /in a row/i.test(f))) runCount.push(h + '/' + m);
+        /* a run count is CHROME: "streak" is looked for in the hub's own words only — the bank's question, options and
+           facts can carry the word honestly (49 library records do: "comets streak across the sky"), and once did in a
+           full-suite run; "N right in a row" is looked for everywhere */
+        const chrome = (() => { const cl = document.querySelector('#root').cloneNode(true); cl.querySelectorAll('.qz-q,.qz-big,.qz-sub,.qz-opt,.qz-fact,.qz-mans,.qz-okf,.qz-cart,.qz-ok').forEach(x => x.remove()); return cl.textContent; })();
+        if (/\d+ right in a row/i.test(document.querySelector('#root').innerText) || /streak/i.test(chrome) || window._flashes.some(f => /in a row/i.test(f))) runCount.push(h + '/' + m);
         if (m === 'squares' && g.sel == null) { app.qzCell(g.cells.findIndex(c => !c.st)); continue; }
         if (m === 'clock' && g.asked + g.two >= 24) { SB_QHUB.finish(g); break; }
         const q = SB_QHUB._cur();

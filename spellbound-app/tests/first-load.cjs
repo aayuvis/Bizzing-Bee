@@ -19,6 +19,17 @@
 
    It measures the tree it is pointed at: SRC=<dir> (a deploy tree, which is minified by
    deploy-*.sh) — by default the source folder. `REPORT=1` prints every resource.
+   EVERY SCRIPT THREE WAYS (road to 4.5, P1.13): for each first screen it prints each script's raw size (the source),
+   minified size (deploy's copy) and gzip (of the minified bytes, level 6 — what a phone downloads), and their totals;
+   the JS figure it ratchets is the gzip one, which is what the family's "≤ 400 KB" means. It also holds the first
+   screen's images (`img`, the asset half of P1.14) and fails, by name, on any script that LEFT the boot list coming
+   back (OFF_BOOT) — and on the landing, on the Atlas data (OFF_LANDING). The plan for the rest of the way to 400 KB
+   is docs/first-load-plan.md.
+   Proved by breaking (each put back after): voice-review-lists.js, trivia-icons.js and advanced.js put back in
+   index.html (6 fail: both screens' total and JS ceilings — 939 > 925, 1014 > 1000 — and "nothing that left the
+   boot list comes back", naming all three); FIRST restored on the landing (3 fail: the new visitor's total, its JS
+   at 981 > 925, and the check naming trail-data.js); Home's Atlas card pointed back at atlas-map.jpg (2 fail: the
+   returning speller's total and its images, 213 KB > 105).
    Run: node tests/first-load.cjs                                                         */
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
@@ -44,7 +55,30 @@ const TARGET = { total: 1.5 * MB, js: 400 * KB };
    standard has no load screens for now (−240KB of its audio and art). Both first screens are now
    ~1.27MB: the 1.5MB family target is MET. The 400KB JS target is not: words-data.js (354KB) and
    app3.js (288KB) are what is left. */
-const CEILING = { 'new visitor': { total: 1330 * KB, js: 1050 * KB }, 'returning speller': { total: 1330 * KB, js: 1050 * KB } };
+/* ROAD TO 4.5, P1 — load weight (10 Oct 2026). Measured before: new visitor 1300 KB / JS 1021 KB, returning speller
+   1330 KB / JS 1021 KB (image 113 KB). The batch took four scripts nobody's first paint reads out of index.html
+   (the voice tester's lists, trivia.js, trivia-icons.js, advanced.js — boot-lazy loads them at their doors), held
+   the Atlas data off the opening page (FIRST waits for the first tap there), and served the plates as WebP: new
+   visitor ~1184 KB / JS 905, returning ~1276 KB / JS 981 (image 99). The ceilings below are those with ~2%
+   headroom. What is left to the 400 KB target is app3.js (~310 KB gz) and the boot word shard (~353 KB gz): the
+   plan that takes both off the first screen, screen by screen, is docs/first-load-plan.md.
+     js   = the JavaScript's GZIPPED bytes as the server sent them (minified as deploy ships it) — the family's
+            "initial JavaScript ≤ 400 KB gzipped" is this figure, and it is the ratchet.
+     img  = the images' bytes on the first screen (the ASSET half of P1.14: a plate that grows, or a new picture
+            on a first screen, fails here). */
+const CEILING = { 'new visitor': { total: 1210 * KB, js: 925 * KB, img: 90 * KB }, 'returning speller': { total: 1305 * KB, js: 1000 * KB, img: 105 * KB } };
+/* Scripts that LEFT the boot list (P1.13) or never belonged on it. One coming back to a first screen fails, by name. */
+const OFF_BOOT = /(^|\/)(voice-review-lists|trivia|trivia-icons|advanced|library)\.js$|^words-full\//;
+/* the opening page shows no Atlas: its data waits for the first tap (boot-lazy FIRST) */
+const OFF_LANDING = /(^|\/)trail-data\.js$/;
+const zlib = require('zlib');
+const { minifyJs } = require('../tools/minify.cjs');
+/* raw (the source file) · minified (as deploy-*.sh ships it) · gzip (of the minified bytes, level 6 — what the
+   server sends, less its headers), for one file of the tree under test */
+const weigh = (rel) => { const f = path.join(SRC, rel.split('?')[0]); let raw = 0, min = 0, gz = 0;
+  try { const t = fs.readFileSync(f, 'utf8'); raw = Buffer.byteLength(t); let m = t; try { m = minifyJs(t, path.basename(f)); } catch (e) {}
+    min = Buffer.byteLength(m); gz = zlib.gzipSync(m, { level: 6 }).length; } catch (e) {}
+  return { raw, min, gz }; };
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234',
@@ -90,8 +124,17 @@ const fmt = n => (n / KB).toFixed(1).padStart(8) + ' KB';
     if (process.env.REPORT) m.rows.slice().sort((a, b) => b.bytes - a.bytes).forEach(r => console.log('   ' + fmt(r.bytes) + '  ' + r.kind.padEnd(6) + r.short + (r.failed ? '  [' + r.failed + ']' : '')));
     else m.rows.slice().sort((a, b) => b.bytes - a.bytes).slice(0, 8).forEach(r => console.log('   ' + fmt(r.bytes) + '  ' + r.kind.padEnd(6) + r.short));
     const C = CEILING[name];
+    /* every script on this first screen, three ways: what a developer edits, what deploy ships, what a phone downloads */
+    const js = m.rows.filter(r => r.kind === 'js').map(r => Object.assign({ f: r.short.split('?')[0] }, weigh(r.short))).sort((a, b) => b.gz - a.gz);
+    const T = js.reduce((t, r) => ({ raw: t.raw + r.raw, min: t.min + r.min, gz: t.gz + r.gz }), { raw: 0, min: 0, gz: 0 });
+    console.log(`  JS, ${js.length} files:      raw ${(T.raw / KB).toFixed(0).padStart(5)} KB · minified ${(T.min / KB).toFixed(0).padStart(5)} KB · gzip ${(T.gz / KB).toFixed(0).padStart(4)} KB`);
+    (process.env.REPORT ? js : js.slice(0, 14)).forEach(r => console.log(`     ${(r.raw / KB).toFixed(1).padStart(8)} raw ${(r.min / KB).toFixed(1).padStart(8)} min ${(r.gz / KB).toFixed(1).padStart(7)} gz  ${r.f}`));
+    if (!process.env.REPORT && js.length > 14) console.log(`     … ${js.length - 14} more under ${(js[14].gz / KB).toFixed(1)} KB gz each (REPORT=1 lists them all)`);
     ok(m.total <= C.total, `${name}: first screen ${(m.total / KB).toFixed(0)} KB transferred — ceiling ${C.total / KB} KB`);
-    ok(m.by.js <= C.js, `${name}: initial JavaScript ${(m.by.js / KB).toFixed(0)} KB gzipped — ceiling ${C.js / KB} KB`);
+    ok(m.by.js <= C.js, `${name}: initial JavaScript ${(m.by.js / KB).toFixed(0)} KB gzipped (${(T.gz / KB).toFixed(0)} KB of it script bytes, ${(T.min / KB).toFixed(0)} KB minified, ${(T.raw / KB).toFixed(0)} KB raw) — ceiling ${C.js / KB} KB`);
+    ok(m.by.image <= C.img, `${name}: images on the first screen ${(m.by.image / KB).toFixed(0)} KB — ceiling ${C.img / KB} KB` + (m.rows.filter(r => r.kind === 'image').length ? ' (' + m.rows.filter(r => r.kind === 'image').sort((a, b) => b.bytes - a.bytes).slice(0, 3).map(r => r.short.split('?')[0] + ' ' + (r.bytes / KB).toFixed(0) + ' KB').join(', ') + ')' : ''));
+    const back = m.rows.filter(r => OFF_BOOT.test(r.short.split('?')[0]) || (name === 'new visitor' && OFF_LANDING.test(r.short.split('?')[0])));
+    ok(!back.length, `${name}: nothing that left the boot list comes back (the voice tester's lists, trivia, the Advanced Pack, the library${name === 'new visitor' ? ', the Atlas data' : ''})` + (back.length ? ' — ' + back.map(r => r.short).join(', ') : ''));
     console.log(`  TARGET family §11: ${(m.total / KB).toFixed(0)}/${TARGET.total / KB} KB total` + (m.total > TARGET.total ? ` — ${((m.total - TARGET.total) / KB).toFixed(0)} KB to go` : ' — MET') +
       `; ${(m.by.js / KB).toFixed(0)}/${TARGET.js / KB} KB JS` + (m.by.js > TARGET.js ? ` — ${((m.by.js - TARGET.js) / KB).toFixed(0)} KB to go` : ' — MET'));
     /* The splash's own cue and stinger (app-art/*.mp3) are the opening show's, reported as
