@@ -191,18 +191,10 @@
     } catch (e) {}
   };
   function availableIn(u, lap) { if (course() === 'exp') return lap === 1 || !!(doneMap(active())[u.id] || {})[lap - 1] === false ? lap === 1 : true; return (u.laps || [u.lap || 1]).includes(lap); }
-  function seq(c) { // ordered nodes for the current lap: units + checkpoint markers every 4th
-    const lap = lapOf(c); const out = [];
-    for (const act of actsOf(course())) {
-      let n = 0;
-      for (const id of act.units) { const u = unit(id);
-        if (course() === 'honey' && !(u.laps || [u.lap || 1]).includes(lap)) continue;
-        out.push({ kind: 'unit', u, act: act.id }); n++;
-        if (n % (T().rules.checkpointEvery || 4) === 0) out.push({ kind: 'chk', id: act.id + ':' + n, act: act.id });
-      }
-    }
-    return out;
-  }
+  /* ordered nodes for the current lap: units + checkpoint markers every 4th. The road is trail-road.js's
+     (SB_TRAIL_ROAD.nodes) — the ONE count the board, Home's "Stop n of N" and My Feed's place cards all
+     read (the 4.5 brief, P0.14), so no two of them can disagree about how long a region is. */
+  function seq(c) { return window.SB_TRAIL_ROAD.nodes(T(), course(), lapOf(c)); }
   /* a UNIT opens the road behind it at Practice >= PGATE (or a legacy quiz pass);
      a CHECKPOINT is still its quiz — the every-4th-stop consolidation stays a quiz */
   const passedNode = (c, node) => node.kind === 'unit'

@@ -152,7 +152,11 @@
   /* ---- trivia items (Roots, Hive Mind, the board and the clock) ---- */
   const QUOTED = /[“"]([A-Za-z][A-Za-z' -]*)[”"]/g;
   function quotedWords(q) { const out = []; let m; QUOTED.lastIndex = 0; while ((m = QUOTED.exec(q.q || ''))) out.push(m[1]); return out; }
-  function safeTriv(q) { if (!W.kidSafe) return true;
+  function safeTriv(q) {
+    /* the stigma scan over everything the question shows — prompt, options, fact (kid-safe.js; the bank is
+       cleaned at rest by tools/stigma-fix.cjs, and this holds if a regenerated bank brings one back) */
+    try { if (W.SB_KID_SAFE && SB_KID_SAFE.stigmaHit && SB_KID_SAFE.stigmaHit([q.q, q.f || ''].concat(q.c || []).join(' | '))) return false; } catch (e) {}
+    if (!W.kidSafe) return true;
     const ws = quotedWords(q).concat((q.c || []).filter((o) => /^[a-z]+$/i.test(String(o))));
     return ws.every((x) => kidOK({ w: String(x).toLowerCase() })); }
   function trivDraw(ths, lv, n, two) { const all = T().questions || []; const has = new Set(ths);

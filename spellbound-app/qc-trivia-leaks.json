@@ -1,0 +1,806 @@
+{
+ "note": "Root questions that printed their answer (the 4.5 brief, P0.34, 10 Oct 2026): a content word of the right answer whose first five letters sit inside the word or root the prompt quotes, and in no wrong option (tools/root-leak.cjs). Deleted by tools/root-leaks.cjs from the served bank and trivia-all.json, never reworded. Re-run it after any regeneration of trivia-words.js.",
+ "deleted": [
+  {
+   "id": "w4027",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "wheat",
+   "q": "The word “buckwheat” is built on the root “boekweit”. What does that root mean?",
+   "answer": "beech wheat"
+  },
+  {
+   "id": "w4098",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "ginge",
+   "q": "Which of these words is built on a root meaning “preserved ginger”?",
+   "answer": "gingerbread"
+  },
+  {
+   "id": "w4127",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 4,
+   "stem": "pract",
+   "q": "Which of these words is built on a root meaning “to practice”?",
+   "answer": "practitioner"
+  },
+  {
+   "id": "w4270",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "capac",
+   "q": "The word “incapacitated” is built on the root “capacitas”. What does that root mean?",
+   "answer": "capacity"
+  },
+  {
+   "id": "w4342",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 4,
+   "stem": "pictu",
+   "q": "Which of these words is built on a root meaning “like a picture”?",
+   "answer": "picturesque"
+  },
+  {
+   "id": "w4402",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "cerem",
+   "q": "The word “unceremonious” is built on the root “caerimonia”. What does that root mean?",
+   "answer": "sacred rite/ceremony"
+  },
+  {
+   "id": "w4413",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "maneu",
+   "q": "The word “outmaneuvering” is built on the root “manœuvrer”. What does that root mean?",
+   "answer": "to maneuver"
+  },
+  {
+   "id": "w4415",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 1,
+   "stem": "nail",
+   "q": "The word “hangnail” is built on the root “angnægl”. What does that root mean?",
+   "answer": "painful nail"
+  },
+  {
+   "id": "w4487",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 4,
+   "stem": "luxur",
+   "q": "The word “luscious” is built on the root “luxuriosus”. What does that root mean?",
+   "answer": "luxuriant"
+  },
+  {
+   "id": "w4493",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "press",
+   "q": "The word “incompressible” is built on the root “comprimere”. What does that root mean?",
+   "answer": "to press together"
+  },
+  {
+   "id": "w4515",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "appro",
+   "q": "The word “unapproachable” is built on the root “aprochier”. What does that root mean?",
+   "answer": "to approach"
+  },
+  {
+   "id": "w4581",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "appoi",
+   "q": "The word “disappointingly” is built on the root “appointer”. What does that root mean?",
+   "answer": "to arrange/appoint"
+  },
+  {
+   "id": "w4590",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 4,
+   "stem": "venge",
+   "q": "Which of these words is built on a root meaning “to avenge”?",
+   "answer": "vengeance"
+  },
+  {
+   "id": "w4616",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "know",
+   "q": "The word “knowledge” is built on the root “cnawan”. What does that root mean?",
+   "answer": "to know"
+  },
+  {
+   "id": "w4623",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "solid",
+   "q": "The word “unconsolidated” is built on the root “consolidare”. What does that root mean?",
+   "answer": "to make solid"
+  },
+  {
+   "id": "w4624",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "mark",
+   "q": "The word “remarkable” is built on the root “remarquer”. What does that root mean?",
+   "answer": "to mark again"
+  },
+  {
+   "id": "w4634",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "ginge",
+   "q": "The word “gingerbread” is built on the root “gingebrat”. What does that root mean?",
+   "answer": "preserved ginger"
+  },
+  {
+   "id": "w4660",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "press",
+   "q": "The word “oppress” is built on the root “opprimere”. What does that root mean?",
+   "answer": "to press against"
+  },
+  {
+   "id": "w4743",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "porti",
+   "q": "The word “reapportionment” is built on the root “portionner”. What does that root mean?",
+   "answer": "to divide into portions"
+  },
+  {
+   "id": "w4761",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "seed",
+   "q": "The word “linseed” is built on the root “linsæd”. What does that root mean?",
+   "answer": "flax seed"
+  },
+  {
+   "id": "w4786",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "human",
+   "q": "The word “dehumanization” is built on the root “humanus”. What does that root mean?",
+   "answer": "human"
+  },
+  {
+   "id": "w4792",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "hashi",
+   "q": "The word “assassin” is built on the root “hashshashin”. What does that root mean?",
+   "answer": "hashish users"
+  },
+  {
+   "id": "w4832",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "form",
+   "q": "The word “platform” is built on the root “plate-forme”. What does that root mean?",
+   "answer": "flat form"
+  },
+  {
+   "id": "w4841",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "trap",
+   "q": "The word “entrapment” is built on the root “trapper”. What does that root mean?",
+   "answer": "to trap"
+  },
+  {
+   "id": "w4929",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "respo",
+   "q": "Which of these words is built on a root meaning “to respond”?",
+   "answer": "responsible"
+  },
+  {
+   "id": "w4946",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 4,
+   "stem": "pictu",
+   "q": "The word “picturesque” is built on the root “pittoresque”. What does that root mean?",
+   "answer": "like a picture"
+  },
+  {
+   "id": "w4971",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 4,
+   "stem": "pract",
+   "q": "The word “practitioner” is built on the root “practicare”. What does that root mean?",
+   "answer": "to practice"
+  },
+  {
+   "id": "w4977",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "cinde",
+   "q": "Which of these words is built on a root meaning “little cinder girl”?",
+   "answer": "cinderella"
+  },
+  {
+   "id": "w5039",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 4,
+   "stem": "noble",
+   "q": "The word “ignoble” is built on the root “ignobilis”. What does that root mean?",
+   "answer": "not noble"
+  },
+  {
+   "id": "w5058",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "part",
+   "q": "The word “parcel” is built on the root “particella”. What does that root mean?",
+   "answer": "small part"
+  },
+  {
+   "id": "w5086",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "towar",
+   "q": "The word “untoward” is built on the root “toweard”. What does that root mean?",
+   "answer": "facing toward"
+  },
+  {
+   "id": "w5164",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "potio",
+   "q": "The word “poisonous” is built on the root “potio”. What does that root mean?",
+   "answer": "drink/potion"
+  },
+  {
+   "id": "w5222",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "wink",
+   "q": "The word “twinkly” is built on the root “twinclian”. What does that root mean?",
+   "answer": "to wink"
+  },
+  {
+   "id": "w5227",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "starv",
+   "q": "The word “starvation” is built on the root “svelta”. What does that root mean?",
+   "answer": "to die/starve"
+  },
+  {
+   "id": "w5228",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "conta",
+   "q": "The word “uncontaminated” is built on the root “contaminare”. What does that root mean?",
+   "answer": "to defile by contact"
+  },
+  {
+   "id": "w5231",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "separ",
+   "q": "The word “several” is built on the root “separare”. What does that root mean?",
+   "answer": "to separate"
+  },
+  {
+   "id": "w5240",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 2,
+   "stem": "part",
+   "q": "The word “particle” is built on the root “particula”. What does that root mean?",
+   "answer": "small part"
+  },
+  {
+   "id": "w5270",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "natio",
+   "q": "The word “denationalized” is built on the root “natio”. What does that root mean?",
+   "answer": "nation"
+  },
+  {
+   "id": "w5402",
+   "file": "trivia-words.js",
+   "th": "wroots",
+   "lv": 3,
+   "stem": "time",
+   "q": "The word “untimely” is built on the root “tima”. What does that root mean?",
+   "answer": "time"
+  },
+  {
+   "id": "w5457",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "organ",
+   "q": "Break “microorganisms” into its two original pieces. What did those pieces mean?",
+   "answer": "small + instrument/organ"
+  },
+  {
+   "id": "w5469",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "chemi",
+   "q": "Inside “electrochemical” sits the piece “khemeia”. What does that piece mean?",
+   "answer": "alchemy/chemistry"
+  },
+  {
+   "id": "w5500",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "able",
+   "q": "Inside “curable” sits the piece “-able”. What does that piece mean?",
+   "answer": "able to be"
+  },
+  {
+   "id": "w5536",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "know",
+   "q": "Break “knowledge” into its two original pieces. What did those pieces mean?",
+   "answer": "to know + act/state suffix"
+  },
+  {
+   "id": "w5551",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "move",
+   "q": "Inside “commotion” sits the piece “movere”. What does that piece mean?",
+   "answer": "to move"
+  },
+  {
+   "id": "w5574",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "loin",
+   "q": "Break “sirloin” into its two original pieces. What did those pieces mean?",
+   "answer": "over/above + loin"
+  },
+  {
+   "id": "w5632",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 4,
+   "stem": "over",
+   "q": "“sovereign” was handed down through more than one language. What did the oldest word in that chain mean?",
+   "answer": "over"
+  },
+  {
+   "id": "w5636",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "cell",
+   "q": "Break “nitrocellulose” into its two original pieces. What did those pieces mean?",
+   "answer": "niter + small cell"
+  },
+  {
+   "id": "w5640",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "infor",
+   "q": "Break “disinformation” into its two original pieces. What did those pieces mean?",
+   "answer": "false + to shape/inform"
+  },
+  {
+   "id": "w5648",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "spher",
+   "q": "Inside “ionosphere” sits the piece “sphaira”. What does that piece mean?",
+   "answer": "ball/sphere"
+  },
+  {
+   "id": "w5687",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "able",
+   "q": "Break “curable” into its two original pieces. What did those pieces mean?",
+   "answer": "to care for + able to be"
+  },
+  {
+   "id": "w5746",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "coat",
+   "q": "Inside “petticoat” sits the piece “cote”. What does that piece mean?",
+   "answer": "coat"
+  },
+  {
+   "id": "w5747",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "shot",
+   "q": "Break “upshot” into its two original pieces. What did those pieces mean?",
+   "answer": "upward + shot"
+  },
+  {
+   "id": "w5759",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 5,
+   "stem": "judge",
+   "q": "Break “abjudged” into its two original pieces. What did those pieces mean?",
+   "answer": "away + to judge"
+  },
+  {
+   "id": "w5816",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "angle",
+   "q": "Break “triangle” into its two original pieces. What did those pieces mean?",
+   "answer": "three + angle"
+  },
+  {
+   "id": "w5818",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "chang",
+   "q": "Break “interchangeable” into its two original pieces. What did those pieces mean?",
+   "answer": "to change + capable of"
+  },
+  {
+   "id": "w5878",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "angle",
+   "q": "Inside “triangle” sits the piece “angulus”. What does that piece mean?",
+   "answer": "angle"
+  },
+  {
+   "id": "w5902",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "illus",
+   "q": "Break “disillusionment” into its two original pieces. What did those pieces mean?",
+   "answer": "apart + illusion"
+  },
+  {
+   "id": "w5935",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "chemi",
+   "q": "Break “electrochemical” into its two original pieces. What did those pieces mean?",
+   "answer": "amber + alchemy/chemistry"
+  },
+  {
+   "id": "w5963",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "coat",
+   "q": "Break “petticoat” into its two original pieces. What did those pieces mean?",
+   "answer": "small + coat"
+  },
+  {
+   "id": "w5974",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "organ",
+   "q": "Inside “microorganism” sits the piece “organon”. What does that piece mean?",
+   "answer": "instrument/organ"
+  },
+  {
+   "id": "w5989",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "light",
+   "q": "Inside “floodlight” sits the piece “leoht”. What does that piece mean?",
+   "answer": "light"
+  },
+  {
+   "id": "w6027",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "magne",
+   "q": "Break “diamagnetic” into its two original pieces. What did those pieces mean?",
+   "answer": "through/across + magnet"
+  },
+  {
+   "id": "w6049",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "acid",
+   "q": "Inside “antacid” sits the piece “acidus”. What does that piece mean?",
+   "answer": "sour/acid"
+  },
+  {
+   "id": "w6126",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "spher",
+   "q": "Break “ionosphere” into its two original pieces. What did those pieces mean?",
+   "answer": "going + ball/sphere"
+  },
+  {
+   "id": "w6157",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "fathe",
+   "q": "Break “forefather” into its two original pieces. What did those pieces mean?",
+   "answer": "before + father"
+  },
+  {
+   "id": "w6173",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "acid",
+   "q": "Break “antacid” into its two original pieces. What did those pieces mean?",
+   "answer": "against + sour/acid"
+  },
+  {
+   "id": "w6186",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 4,
+   "stem": "count",
+   "q": "Break “viscount” into its two original pieces. What did those pieces mean?",
+   "answer": "deputy + count"
+  },
+  {
+   "id": "w6201",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "magne",
+   "q": "Break “diamagnetism” into its two original pieces. What did those pieces mean?",
+   "answer": "through/across + magnet"
+  },
+  {
+   "id": "w6231",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "infor",
+   "q": "Inside “disinformation” sits the piece “informare”. What does that piece mean?",
+   "answer": "to shape/inform"
+  },
+  {
+   "id": "w6235",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "organ",
+   "q": "Break “microorganism” into its two original pieces. What did those pieces mean?",
+   "answer": "small + instrument/organ"
+  },
+  {
+   "id": "w6236",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "seed",
+   "q": "Inside “linseed” sits the piece “sæd”. What does that piece mean?",
+   "answer": "seed"
+  },
+  {
+   "id": "w6242",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "know",
+   "q": "Inside “knowledge” sits the piece “cnawan”. What does that piece mean?",
+   "answer": "to know"
+  },
+  {
+   "id": "w6285",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "magne",
+   "q": "Inside “diamagnetic” sits the piece “magnes”. What does that piece mean?",
+   "answer": "magnet"
+  },
+  {
+   "id": "w6291",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "organ",
+   "q": "Inside “microorganisms” sits the piece “organon”. What does that piece mean?",
+   "answer": "instrument/organ"
+  },
+  {
+   "id": "w6330",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 5,
+   "stem": "join",
+   "q": "Inside “abjoint” sits the piece “jungere”. What does that piece mean?",
+   "answer": "to join"
+  },
+  {
+   "id": "w6358",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "color",
+   "q": "Inside “discolorations” sits the piece “color”. What does that piece mean?",
+   "answer": "color"
+  },
+  {
+   "id": "w6372",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "away",
+   "q": "Inside “throwaway” sits the piece “aweg”. What does that piece mean?",
+   "answer": "away"
+  },
+  {
+   "id": "w6389",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 1,
+   "stem": "nail",
+   "q": "Break “hangnail” into its two original pieces. What did those pieces mean?",
+   "answer": "pain + nail"
+  },
+  {
+   "id": "w6399",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "sympa",
+   "q": "Break “parasympathetic” into its two original pieces. What did those pieces mean?",
+   "answer": "beside + sympathetic"
+  },
+  {
+   "id": "w6418",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "distr",
+   "q": "Break “redistributing” into its two original pieces. What did those pieces mean?",
+   "answer": "again + to distribute"
+  },
+  {
+   "id": "w6427",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 5,
+   "stem": "omen",
+   "q": "Inside “abhominable” sits the piece “omen”. What does that piece mean?",
+   "answer": "omen"
+  },
+  {
+   "id": "w6467",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "conti",
+   "q": "Break “discontinuance” into its two original pieces. What did those pieces mean?",
+   "answer": "apart + to continue"
+  },
+  {
+   "id": "w6492",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "work",
+   "q": "Break “fretwork” into its two original pieces. What did those pieces mean?",
+   "answer": "to cut + work"
+  },
+  {
+   "id": "w6498",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "distr",
+   "q": "Break “redistribution” into its two original pieces. What did those pieces mean?",
+   "answer": "again + to distribute"
+  },
+  {
+   "id": "w6530",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "seed",
+   "q": "Break “linseed” into its two original pieces. What did those pieces mean?",
+   "answer": "flax + seed"
+  },
+  {
+   "id": "w6564",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 4,
+   "stem": "count",
+   "q": "Inside “viscount” sits the piece “comes”. What does that piece mean?",
+   "answer": "count"
+  },
+  {
+   "id": "w6569",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "distr",
+   "q": "Inside “redistributing” sits the piece “distribuere”. What does that piece mean?",
+   "answer": "to distribute"
+  },
+  {
+   "id": "w6586",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 3,
+   "stem": "spher",
+   "q": "Break “hemisphere” into its two original pieces. What did those pieces mean?",
+   "answer": "half + ball/sphere"
+  },
+  {
+   "id": "w6592",
+   "file": "trivia-words.js",
+   "th": "wbreak",
+   "lv": 2,
+   "stem": "loin",
+   "q": "Inside “sirloin” sits the piece “longe”. What does that piece mean?",
+   "answer": "loin"
+  }
+ ]
+}

@@ -1,0 +1,549 @@
+{
+ "note": "Stigma scan, 10 Oct 2026 (the 4.5 brief, P0.11–P0.13). The list is kid-safe.js SB_KID_SAFE.stigma, read by tools/stigma.cjs; tools/stigma-fix.cjs made every change below and wrote no new text: a sentence that hurts someone for a disability, their mental health, their ethnicity or their body was REMOVED (the word keeps its meaning), a trivia question showing one in its prompt or options was deleted, and a trivia fact lost only the sentences that carried one. Re-run the tool after any regeneration of words-data*.js, concepts-data.js or the trivia bank, or these come back.",
+ "sentencesDeleted": [
+  {
+   "store": "words-data-2.js",
+   "w": "crippled",
+   "hit": "crippled",
+   "s": "This measure crippled our efforts."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "frail",
+   "hit": "An invalid",
+   "s": "An invalid's frail body."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "insanely",
+   "hit": "She behaved insanely",
+   "s": "She behaved insanely during the argument, throwing her notebook across the room."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "leper",
+   "hit": "leper",
+   "s": "In the historical novel, the compassionate doctor devoted his life to caring for every leper in the remote colony."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "leprosy",
+   "hit": "suffering from leprosy",
+   "s": "Missionaries in the nineteenth century established hospitals dedicated to treating patients suffering from leprosy."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "looney",
+   "hit": "looney",
+   "s": "The crowd backed away from the looney who was shouting at the lampposts in the park."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "lunacy",
+   "hit": "lunacy",
+   "s": "The judge declared it an act of pure lunacy to attempt climbing the frozen waterfall without any gear."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "lunatic",
+   "hit": "lunatic",
+   "s": "The townspeople thought him a lunatic for trying to sail across the ocean alone in a rowboat."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "madman",
+   "hit": "madman",
+   "s": "The villain in the story was portrayed as a madman whose chaotic plans threatened the entire city."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "maniac",
+   "hit": "maniac",
+   "s": "The crowd watched in stunned disbelief as the maniac on the skateboard launched himself off the highest ramp in the park, executing three mid-air flips before landing flawlessly on the narrow concrete path below."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "roamed",
+   "hit": "gypsies",
+   "s": "The gypsies roamed the woods."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "lepers",
+   "hit": "lepers",
+   "s": "The ancient village was rumored to have once been a refuge for lepers who were turned away from the city."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "lunatics",
+   "hit": "lunatics",
+   "s": "The old tale claimed that lunatics were driven mad by the light of the full moon."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "madmen",
+   "hit": "madmen",
+   "s": "History books are filled with tales of madmen who rose to power and brought ruin to their nations."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "maniacal",
+   "hit": "maniacal",
+   "s": "The villain in the film let out a maniacal laugh as he revealed his outrageous plan, his eyes wide and frenzied, making every person in the audience feel genuinely uneasy and frightened by his behavior."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "maniacs",
+   "hit": "maniacs",
+   "s": "The fans screamed like maniacs when their favorite band finally walked onto the stage."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "midgets",
+   "hit": "midgets",
+   "s": "The circus performers included acrobats, clowns, and midgets who delighted the crowd."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "dumbly",
+   "hit": "dumbly",
+   "s": "He stared dumbly at the test paper, unable to recall a single answer he had studied the night before."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "lamely",
+   "hit": "lamely",
+   "s": "`I don't know, Edward,' she answered lamely."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "madwoman",
+   "hit": "madwoman",
+   "s": "In the old novel, the mysterious madwoman locked in the attic revealed a dark secret about the family."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "nutter",
+   "hit": "nutter",
+   "s": "Only a complete nutter would go surfing during a thunderstorm, yet there he was on the waves."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "spectacle",
+   "hit": "cripples",
+   "s": "The tragic spectacle of cripples trying to escape."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "dumbness",
+   "hit": "dumbness",
+   "s": "The dumbness of the plan became clear the moment the paper boat began to sink."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "lameness",
+   "hit": "lameness of",
+   "s": "The lameness of the villain's excuse made everyone in the courtroom roll their eyes."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "pallid",
+   "hit": "the invalid",
+   "s": "The pallid face of the invalid."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "anomia",
+   "hit": "suffered from anomia",
+   "s": "After the stroke, the patient suffered from anomia and could not recall the word for simple things like a spoon."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "paraplegia",
+   "hit": "suffered paraplegia",
+   "s": "After the diving accident, the doctors explained that he had suffered paraplegia and would need a wheelchair."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "neurasthenia",
+   "hit": "suffered from neurasthenia",
+   "s": "After months of overwork, the doctor suspected the patient suffered from neurasthenia."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "psychoses",
+   "hit": "suffering from severe psychoses",
+   "s": "The psychiatrist devoted her career to treating patients suffering from severe psychoses."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "psychotherapist",
+   "hit": "crippling",
+   "s": "The psychotherapist used cognitive behavioral techniques to help her client overcome a crippling fear of flying."
+  },
+  {
+   "store": "words-data-s.js",
+   "w": "roam",
+   "hit": "gypsies",
+   "s": "The gypsies roamed the woods."
+  },
+  {
+   "store": "words-data-s.js",
+   "w": "freaks",
+   "hit": "freaks",
+   "s": "In the early days of the traveling circus, performers labeled as freaks were often simply extraordinary individuals whose unusual talents or appearances set them apart from ordinary crowds."
+  },
+  {
+   "store": "words-data-s.js",
+   "w": "escape",
+   "hit": "mental hospital",
+   "s": "He made his escape from the mental hospital."
+  },
+  {
+   "store": "words-data-s.js",
+   "w": "freak",
+   "hit": "freak",
+   "s": "Scientists were amazed when a freak with unusual bioluminescent markings was discovered deep in the ocean, displaying colors and patterns never before documented in any known marine species."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "lazar",
+   "hit": "lazar",
+   "s": "In medieval literature, the lazar was often depicted as a lonely figure shunned by society."
+  },
+  {
+   "store": "words-data-2.js",
+   "w": "bedlamite",
+   "hit": "bedlamite",
+   "s": "In the old novel, the villagers unkindly called the wandering stranger a bedlamite."
+  },
+  {
+   "store": "words-patch.js",
+   "w": "dumbness",
+   "hit": "dumbness",
+   "s": "The dumbness of the plan became clear the moment the paper boat began to sink."
+  },
+  {
+   "store": "words-patch.js",
+   "w": "bedlamite",
+   "hit": "bedlamite",
+   "s": "In the old novel, the villagers unkindly called the wandering stranger a bedlamite."
+  }
+ ],
+ "chapterExDeleted": [
+  {
+   "store": "concepts-data.js",
+   "chapter": 76,
+   "title": "spec / spect / spic (see / look)",
+   "w": "spectacle",
+   "hit": "cripples",
+   "ex": "the tragic spectacle of cripples trying to escape"
+  },
+  {
+   "store": "adv-concepts-data.js",
+   "chapter": 37,
+   "title": "Doublets — one root, two arrivals, two spellings",
+   "w": "frail",
+   "hit": "An invalid",
+   "ex": "An invalid's frail body."
+  }
+ ],
+ "triviaDeleted": [
+  {
+   "id": "t30944",
+   "file": "trivia-q2.js",
+   "th": "eponyms",
+   "lv": 2,
+   "hit": "lunatic",
+   "q": "Which word meaning \"a person behaving wildly or foolishly\" comes from the Roman goddess and personification of the moon?",
+   "c": [
+    "lunatic",
+    "cantaloupe",
+    "sousaphone",
+    "theremin"
+   ]
+  },
+  {
+   "id": "t23342",
+   "file": "trivia-q3.js",
+   "th": "lit",
+   "lv": 3,
+   "hit": "hunchbacked",
+   "q": "Which classic novel's hero is the hunchbacked bell-ringer Quasimodo?",
+   "c": [
+    "The Hunchback of Notre-Dame",
+    "Les Miserables",
+    "The Phantom of the Opera",
+    "The Count of Monte Cristo"
+   ]
+  },
+  {
+   "id": "t28655",
+   "file": "trivia-q3.js",
+   "th": "langs",
+   "lv": 3,
+   "hit": "lunatic",
+   "q": "\"Alphabet soup\" aside, the word \"lunatic\" once linked odd behaviour to the...?",
+   "c": [
+    "Moon",
+    "Sun",
+    "Tides",
+    "Stars"
+   ]
+  },
+  {
+   "id": "t13767",
+   "file": "trivia-q4.js",
+   "th": "myth",
+   "lv": 4,
+   "hit": "lunatic",
+   "q": "Why does 'lunatic' contain the Latin word for moon?",
+   "c": [
+    "People once blamed the moon for changing moods",
+    "It described night workers",
+    "It meant pale as the moon",
+    "It honoured a moon goddess"
+   ]
+  },
+  {
+   "id": "t6205",
+   "file": "trivia-q5.js",
+   "th": "bugs",
+   "lv": 5,
+   "hit": "Gypsy",
+   "q": "Which moth boasts one of the largest wing areas of any insect, named after a Greek Titan?",
+   "c": [
+    "Atlas moth",
+    "Luna moth",
+    "Death's-head hawkmoth",
+    "Gypsy moth"
+   ]
+  },
+  {
+   "id": "t10276",
+   "file": "trivia-q5.js",
+   "th": "plants",
+   "lv": 5,
+   "hit": "dumb",
+   "q": "Needle-sharp crystals of calcium oxalate, a houseplant nicknamed dumb cane, and a mouth left numb and swollen point to which structures?",
+   "c": [
+    "raphides",
+    "stomata",
+    "trichomes",
+    "plastids"
+   ]
+  },
+  {
+   "id": "t22718",
+   "file": "trivia-q5.js",
+   "th": "words",
+   "lv": 5,
+   "hit": "Gypsy",
+   "q": "A region of the modern Czech Republic, mistaken French assumptions about where Roma travellers came from, and a word for an unconventional artist converge on which term?",
+   "c": [
+    "Bohemian",
+    "Gypsy caravan",
+    "Vagabond",
+    "Nomad"
+   ]
+  },
+  {
+   "id": "t22742",
+   "file": "trivia-q5.js",
+   "th": "words",
+   "lv": 5,
+   "hit": "Eskimo",
+   "q": "A 2004 coinage by an economics blogger, headline templates like 'X is the new Y', and a joke about Eskimo words for snow converge on which term?",
+   "c": [
+    "Snowclone",
+    "Cliche",
+    "Idiom",
+    "Catchphrase"
+   ]
+  },
+  {
+   "id": "t23596",
+   "file": "trivia-q5.js",
+   "th": "lit",
+   "lv": 5,
+   "hit": "crippled",
+   "q": "A hand crippled at Lepanto, five years as a captive in Algiers, and a second part written to spite an impostor point to which author?",
+   "c": [
+    "Miguel de Cervantes",
+    "Lope de Vega",
+    "Mateo Aleman",
+    "Francisco de Quevedo"
+   ]
+  },
+  {
+   "id": "t26325",
+   "file": "trivia-q5.js",
+   "th": "quotes",
+   "lv": 5,
+   "hit": "Dumb",
+   "q": "Two secretaries dictated to at once, a nickname of 'the Dumb Ox' from classmates, and 'Wonder is the desire for knowledge' identify whom?",
+   "c": [
+    "Thomas Aquinas",
+    "Duns Scotus",
+    "Albertus Magnus",
+    "Bonaventure"
+   ]
+  },
+  {
+   "id": "t29092",
+   "file": "trivia-q5.js",
+   "th": "langs",
+   "lv": 5,
+   "hit": "Eskimo",
+   "q": "Which claim about Eskimo languages and snow words is widely considered a linguistic myth?",
+   "c": [
+    "That they have hundreds of unrelated snow words",
+    "That they have no snow words",
+    "That they cannot describe ice",
+    "That they borrowed the words"
+   ]
+  },
+  {
+   "id": "w419",
+   "file": "trivia-words.js",
+   "th": "wmeaning",
+   "lv": 2,
+   "hit": "Eskimo",
+   "q": "What does “tint” mean?",
+   "c": [
+    "A light shade of a color, or a small trace of color",
+    "an Eskimo canoe",
+    "a place set apart for graves or tombs",
+    "annual or perennial herb with aromatic leaves"
+   ]
+  },
+  {
+   "id": "w1372",
+   "file": "trivia-words.js",
+   "th": "wmeaning",
+   "lv": 2,
+   "hit": "Eskimo",
+   "q": "What does “adjourn” mean?",
+   "c": [
+    "close at the end of a session",
+    "made, copied, or sold illegally",
+    "an Eskimo canoe",
+    "Plural of abhorrer; persons who intensely detest something."
+   ]
+  },
+  {
+   "id": "w1395",
+   "file": "trivia-words.js",
+   "th": "wmeaning",
+   "lv": 5,
+   "hit": "Eskimo",
+   "q": "What does “bestial” mean?",
+   "c": [
+    "resembling a beast; showing lack of human sensibility",
+    "a situation in which life seems irrational and meaningless; --Albert Camus",
+    "an Eskimo canoe",
+    "a dish with cheeses and other vegetables"
+   ]
+  },
+  {
+   "id": "w2259",
+   "file": "trivia-words.js",
+   "th": "wmeaning",
+   "lv": 5,
+   "hit": "Eskimo",
+   "q": "What does “unrepudiated” mean?",
+   "c": [
+    "Not repudiated or denied; never having been rejected, disowned, or declared invalid by anyone.",
+    "something (as a course of action) that is recommended as advisable",
+    "an Eskimo canoe",
+    "become glassy; lose clear vision"
+   ]
+  },
+  {
+   "id": "w2843",
+   "file": "trivia-words.js",
+   "th": "wmeaning",
+   "lv": 3,
+   "hit": "Eskimo",
+   "q": "What does “procrastinator” mean?",
+   "c": [
+    "someone who postpones work (especially out of laziness or habitual carelessness)",
+    "given or giving freely",
+    "intelligence achieved far ahead of normal developmental schedules",
+    "an Eskimo canoe"
+   ]
+  },
+  {
+   "id": "w3811",
+   "file": "trivia-words.js",
+   "th": "wstories",
+   "lv": 4,
+   "hit": "LUNATIC",
+   "q": "The word LUNATIC comes from a Latin word meaning what?",
+   "c": [
+    "Moon",
+    "Night",
+    "Wolf",
+    "Madness"
+   ]
+  }
+ ],
+ "triviaFactsTrimmed": [
+  {
+   "id": "t20140",
+   "file": "trivia-q5.js",
+   "th": "art",
+   "hit": "madman",
+   "was": "Experts confirmed in 2021 that Munch himself wrote the 'painted by a madman' note.",
+   "now": null
+  },
+  {
+   "id": "t29079",
+   "file": "trivia-q5.js",
+   "th": "langs",
+   "hit": "lunatic",
+   "was": "Astrology also gave English \"saturnine,\" \"mercurial\" and \"lunatic\" — a whole mood chart in the sky.",
+   "now": null
+  },
+  {
+   "id": "t29091",
+   "file": "trivia-q5.js",
+   "th": "langs",
+   "hit": "Eskimo",
+   "was": "The name mocks the tired claim that Eskimo languages have countless words for snow.",
+   "now": null
+  },
+  {
+   "id": "t29851",
+   "file": "trivia-q5.js",
+   "th": "explore",
+   "hit": "crippled",
+   "was": "Their crippled craft swung around the Moon's far side at 400,171 kilometres from home.",
+   "now": null
+  },
+  {
+   "id": "t29884",
+   "file": "trivia-q5.js",
+   "th": "explore",
+   "hit": "crippling",
+   "was": "His insistence on fresh and pickled food kept scurvy from crippling his crews.",
+   "now": null
+  },
+  {
+   "id": "t30892",
+   "file": "trivia-q5.js",
+   "th": "eponyms",
+   "hit": "dumb",
+   "was": "Its other name is dumb cane: the sap contains needle-shaped crystals that make the mouth and throat swell, temporarily robbing anyone who chews it of speech. It remains a popular office plant.",
+   "now": "It remains a popular office plant."
+  },
+  {
+   "id": "w134",
+   "file": "trivia-words.js",
+   "th": "wmeaning",
+   "hit": "crippling",
+   "was": "Example: The psychotherapist used cognitive behavioral techniques to help her client overcome a crippling fear of flying.",
+   "now": null
+  }
+ ]
+}
