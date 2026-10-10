@@ -12,13 +12,16 @@
    every disagreement and re-checks a 10% sample of passes (chosen by hash, never by chance). */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
-const APP = path.resolve(__dirname, '..', '..'), DIR = path.join(APP, 'analogy-review'), RD = path.join(DIR, 'rounds');
+const APP = path.resolve(__dirname, '..', '..'), DIR = path.join(APP, 'analogy-review');
+/* cycle 1 reviews everything as built; cycle 2 reviews what round 3 fixed or passed over an earlier fail (REVIEW_CYCLE=2) */
+const CYCLE = +(process.env.REVIEW_CYCLE || 1), RD = path.join(DIR, CYCLE === 1 ? 'rounds' : 'rounds' + CYCLE);
 const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync(path.join(APP, 'analogy-data.js'), 'utf8'), ctx);
 const A = ctx.window.SB_ANALOGY;
 const CARDS = JSON.parse(fs.readFileSync(path.join(DIR, 'deity-cards.json'), 'utf8'));
 const fnv = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h; };
 const lessonOf = {}; A.lessons.forEach((l) => l.rels.forEach((r) => { lessonOf[r] = l; }));
-function units() { const U = [];
+function units() { if (CYCLE > 1) return JSON.parse(fs.readFileSync(path.join(RD, 'units.json'), 'utf8'));
+  const U = [];
   for (const [id, it] of Object.entries(A.items)) { const [rel, lv, c, d] = it; const L = lessonOf[rel];
     U.push({ unit: 'item:' + id, kind: 'item', rel, link: L ? L.title : rel, level: lv, c, d, wrong: it.slice(4).map((x) => String(x).split('|')[0]),
       bridge: L ? L.bridge : '', gloss: A.gloss[d] || '' }); }
@@ -28,21 +31,24 @@ function units() { const U = [];
   return U; }
 /* round 2: the item as a child meets it — a stem pair from its lesson's bank (no shared word, never containing the
    answer), C, and the options shuffled; no answer and no link name */
+const STEMS_OK = CYCLE > 1 && fs.existsSync(path.join(RD, 'stems-ok.json')) ? new Set(JSON.parse(fs.readFileSync(path.join(RD, 'stems-ok.json'), 'utf8'))) : null;
 function blind(u) { if (u.kind === 'item') { const L = lessonOf[u.rel]; const opts = [u.d].concat(u.wrong.slice(0, 4));
-    const pool = (L.stems || []).filter((x) => ((x[2] || u.rel) === u.rel || L.id !== 'family') && !opts.includes(x[0]) && !opts.includes(x[1]) && x[0] !== u.c && x[1] !== u.c);
+    const pool = (L.stems || []).filter((x, i) => (!STEMS_OK || STEMS_OK.has('stem:' + L.id + ':' + i)) && ((x[2] || u.rel) === u.rel || L.id !== 'family') && !opts.includes(x[0]) && !opts.includes(x[1]) && x[0] !== u.c && x[1] !== u.c);
     const st = pool.length ? pool[fnv('r2|' + u.unit) % pool.length] : ['?', '?'];
     const ord = opts.map((o, i) => [fnv('r2o|' + u.unit + '|' + o), o]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
     return { unit: u.unit, kind: 'item', analogy: st[0] + ' is to ' + st[1] + ' as ' + u.c + ' is to …', options: ord }; }
   if (u.kind === 'stem') return { unit: u.unit, kind: 'stem', pair: [u.a, u.b], links: A.lessons.map((l) => l.title) };
   return { unit: u.unit, kind: u.kind, what: u.what, text: u.text }; }
 function ledger() { const rows = []; if (fs.existsSync(RD)) for (const f of fs.readdirSync(RD).filter((f) => /^v\d-.*\.json$/.test(f)).sort()) {
-    const round = +f[1]; for (const v of JSON.parse(fs.readFileSync(path.join(RD, f), 'utf8'))) rows.push({ item: v.unit || v.item, round, verdict: v.verdict, reason: v.reason || '' }); }
+    const round = +f[1]; for (const v of JSON.parse(fs.readFileSync(path.join(RD, f), 'utf8'))) rows.push({ item: v.unit || v.item, round, verdict: v.verdict, reason: v.reason || '', cycle: CYCLE,
+      ...(v.drop && v.drop.length ? { drop: v.drop } : {}), ...(v.gloss === 'hide' ? { gloss: 'hide' } : {}), ...(v.fix_text ? { fix_text: v.fix_text } : {}) }); }
   return rows; }
 function passes(rows) { const P = {}; for (const r of rows) { const p = P[r.item] = P[r.item] || {}; p[r.round] = r.verdict; } return P; }
 const cmd = process.argv[2];
 if (cmd === 'sheets') { const round = +process.argv[3], size = +(process.argv[4] || 280); fs.mkdirSync(RD, { recursive: true });
   let U = units(); if (round === 2) U = U.map(blind);
-  if (round === 3) { const P = passes(ledger()); const all = units();
+  if (round === 3 && CYCLE > 1) { const rows = ledger(); U = units().map((u) => Object.assign({ why: 'cycle 2: every unit is adjudicated (it was fixed, or passed by round 3 over an earlier fail)', verdicts: rows.filter((r) => r.item === u.unit) }, u)); }
+  else if (round === 3) { const P = passes(ledger()); const all = units();
     const dis = all.filter((u) => { const p = P[u.unit] || {}; return p[1] !== 'pass' || p[2] !== 'pass'; });
     const ok = all.filter((u) => !dis.includes(u) && fnv('r3sample|' + u.unit) % 10 === 0);
     const rows = ledger(); U = dis.map((u) => Object.assign({ why: 'disagreement', verdicts: rows.filter((r) => r.item === u.unit) }, u))
@@ -70,7 +76,7 @@ else if (cmd === 'blind2') {
       if (verdict === 'pass') pass++; out.push({ unit: b.unit, verdict, reason }); }
     fs.writeFileSync(path.join(RD, f.replace(/^b2-/, 'v2-')), JSON.stringify(out, null, 1)); }
   console.log('round 2: ' + n + ' units, ' + pass + ' pass, ' + (n - pass) + ' fail'); }
-else if (cmd === 'ledger') { const rows = ledger(); fs.writeFileSync(path.join(DIR, 'analogy-review.json'), JSON.stringify(rows, null, 1) + '\n');
+else if (cmd === 'ledger') { const rows = ledger(); fs.writeFileSync(path.join(DIR, CYCLE === 1 ? 'cycle1.json' : 'cycle' + CYCLE + '.json'), JSON.stringify(rows, null, 1) + '\n');
   const P = passes(rows); const three = Object.values(P).filter((p) => p[1] === 'pass' && p[2] === 'pass' && p[3] !== 'fail').length; console.log(rows.length + ' verdicts; ' + three + ' units with no failing round'); }
 else if (cmd === 'status') { const P = passes(ledger()); const U = units(); const c = { r1: 0, r2: 0, r3: 0 }; U.forEach((u) => { const p = P[u.unit] || {}; if (p[1]) c.r1++; if (p[2]) c.r2++; if (p[3]) c.r3++; }); console.log(U.length + ' units', c); }
 else { console.log('usage: review.cjs sheets <1|2|3> [size] | ledger | status'); }
