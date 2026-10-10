@@ -1,0 +1,5047 @@
+[
+ {
+  "unit": "item:mk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "declaration",
+  "d": "statement",
+  "wrong": [
+   "confirmation",
+   "prosecution",
+   "approval",
+   "confession"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A message that is stated or declared"
+ },
+ {
+  "unit": "item:ml",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "smile",
+  "d": "grin",
+  "wrong": [
+   "frown",
+   "wink",
+   "agony"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A facial expression characterized by turning up the corners of the mouth"
+ },
+ {
+  "unit": "item:mm",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "humane",
+  "d": "humanity",
+  "wrong": [
+   "leniency",
+   "skepticism",
+   "classical",
+   "realization"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being humane"
+ },
+ {
+  "unit": "item:mn",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "discovery",
+  "d": "breakthrough",
+  "wrong": [
+   "recent",
+   "eyewitness",
+   "revelation",
+   "forgery"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A productive insight"
+ },
+ {
+  "unit": "item:mo",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 8,
+  "c": "aggression",
+  "d": "belligerence",
+  "wrong": [
+   "harassment",
+   "boldness",
+   "abashment",
+   "forcefulness"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A hostile attitude"
+ },
+ {
+  "unit": "item:mp",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "brushing",
+  "d": "tool",
+  "wrong": [
+   "scrub",
+   "sunburn",
+   "pillow"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation"
+ },
+ {
+  "unit": "item:mq",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "nonsense",
+  "d": "gibberish",
+  "wrong": [
+   "jest",
+   "mumble",
+   "elocution",
+   "anecdote"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Unintelligible talking"
+ },
+ {
+  "unit": "item:mr",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "griddle",
+  "d": "utensil",
+  "wrong": [
+   "skillet",
+   "cornbread",
+   "flatbread",
+   "broiler"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement for practical use (especially in a household)"
+ },
+ {
+  "unit": "item:ms",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "flower",
+  "d": "blossom",
+  "wrong": [
+   "petal",
+   "clover",
+   "lily",
+   "purple"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Reproductive organ of angiosperm plants especially one having showy or colorful parts"
+ },
+ {
+  "unit": "item:mt",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "verse",
+  "d": "poetry",
+  "wrong": [
+   "sung",
+   "composer",
+   "poetic",
+   "accent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Literature in metrical form"
+ },
+ {
+  "unit": "item:mu",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "headgear",
+  "d": "headdress",
+  "wrong": [
+   "sling",
+   "footwear",
+   "girth",
+   "crossbar"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Clothing for the head"
+ },
+ {
+  "unit": "item:mv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "official",
+  "d": "bureaucrat",
+  "wrong": [
+   "notary",
+   "charter",
+   "artisan",
+   "bureaucratic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An official of a bureaucracy"
+ },
+ {
+  "unit": "item:mw",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "crimson",
+  "d": "color",
+  "wrong": [
+   "emerald",
+   "ruby",
+   "colorful"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A visual attribute of things that results from the light they emit or transmit or reflect"
+ },
+ {
+  "unit": "item:mx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "cruel",
+  "d": "vicious",
+  "wrong": [
+   "reckless",
+   "ruthless",
+   "kind",
+   "dreadful"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Able or disposed to inflict pain or suffering"
+ },
+ {
+  "unit": "item:my",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "shameful",
+  "d": "scandalous",
+  "wrong": [
+   "immoral",
+   "vile",
+   "tactless",
+   "pitiable"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Is disgraceful or shocking behavior"
+ },
+ {
+  "unit": "item:mz",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "seasoning",
+  "d": "spice",
+  "wrong": [
+   "ginger",
+   "parsley",
+   "salad",
+   "mustard"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Aromatic substances of vegetable origin used as a preservative"
+ },
+ {
+  "unit": "item:n0",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "visual",
+  "d": "optical",
+  "wrong": [
+   "sensory",
+   "graphic",
+   "artistic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Of or relating to or involving light or optics"
+ },
+ {
+  "unit": "item:n1",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "disappearance",
+  "d": "vanishing",
+  "wrong": [
+   "revelation",
+   "eclipse",
+   "landslide",
+   "chronicle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A sudden or mysterious disappearance"
+ },
+ {
+  "unit": "item:n2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "assumption",
+  "d": "premise",
+  "wrong": [
+   "axiom",
+   "hypothesis",
+   "hypotheses",
+   "certainty"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A statement that is assumed to be true and from which a conclusion can be drawn"
+ },
+ {
+  "unit": "item:n3",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "unhurried",
+  "d": "leisurely",
+  "wrong": [
+   "brisk",
+   "hasty",
+   "giddy",
+   "desultory"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Not hurried or forced"
+ },
+ {
+  "unit": "item:n4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "creature",
+  "d": "animal",
+  "wrong": [
+   "serpent",
+   "hare",
+   "turtle",
+   "wolf"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A living organism characterized by voluntary movement"
+ },
+ {
+  "unit": "item:n5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "peninsula",
+  "d": "cape",
+  "wrong": [
+   "balkan",
+   "arabian",
+   "caucasus",
+   "canada"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A strip of land projecting into a body of water"
+ },
+ {
+  "unit": "item:n6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "display",
+  "d": "exhibition",
+  "wrong": [
+   "artwork",
+   "ruby",
+   "array",
+   "emblem"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of exhibiting"
+ },
+ {
+  "unit": "item:n7",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "pacify",
+  "d": "appease",
+  "wrong": [
+   "reproach",
+   "retaliate",
+   "discontent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause to be more favorably inclined"
+ },
+ {
+  "unit": "item:n8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "tumbling",
+  "d": "acrobatics",
+  "wrong": [
+   "bounce",
+   "downhill",
+   "somersault",
+   "skier"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The gymnastic moves of an acrobat"
+ },
+ {
+  "unit": "item:n9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "improbable",
+  "d": "unlikely",
+  "wrong": [
+   "plausible",
+   "truthful",
+   "trite",
+   "unrealistic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Not likely to be true or to occur or to have occurred"
+ },
+ {
+  "unit": "item:na",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "drip",
+  "d": "trickle",
+  "wrong": [
+   "vat",
+   "beaker",
+   "sawdust",
+   "skillet"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Flowing in drops"
+ },
+ {
+  "unit": "item:nb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "magnitude",
+  "d": "size",
+  "wrong": [
+   "scalar",
+   "continuum",
+   "average",
+   "trillion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The physical magnitude of something (how big it is)"
+ },
+ {
+  "unit": "item:nc",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "drawer",
+  "d": "container",
+  "wrong": [
+   "folder",
+   "laptop",
+   "till",
+   "towel"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any object that can be used to hold things (especially a large metal boxlike object of standardized…"
+ },
+ {
+  "unit": "item:nd",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "erratic",
+  "d": "unpredictable",
+  "wrong": [
+   "apathetic",
+   "unfriendly",
+   "listless",
+   "lethargic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Not capable of being foretold"
+ },
+ {
+  "unit": "item:ne",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "stall",
+  "d": "booth",
+  "wrong": [
+   "bazaar",
+   "vendor",
+   "shop",
+   "bakery"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A table (in a restaurant or bar) surrounded by two high-backed benches"
+ },
+ {
+  "unit": "item:nf",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "ugly",
+  "d": "unattractive",
+  "wrong": [
+   "adorable",
+   "duller",
+   "cynical",
+   "untidy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Lacking beauty or charm"
+ },
+ {
+  "unit": "item:ng",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "somersault",
+  "d": "flip",
+  "wrong": [
+   "swipe",
+   "downhill",
+   "squat",
+   "hurdle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An acrobatic feat in which the feet roll over the head (either forward or backward) and return"
+ },
+ {
+  "unit": "item:nh",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "horseman",
+  "d": "rider",
+  "wrong": [
+   "cavalier",
+   "herder",
+   "reindeer",
+   "handler"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A traveler who actively rides an animal (as a horse or camel)"
+ },
+ {
+  "unit": "item:ni",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "inheritance",
+  "d": "legacy",
+  "wrong": [
+   "heir",
+   "eldest",
+   "spouse",
+   "beneficiary"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A gift of personal property by will"
+ },
+ {
+  "unit": "item:nj",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "low",
+  "d": "high",
+  "wrong": [
+   "lower",
+   "ascend",
+   "scarce",
+   "sink"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "A lofty level or position or degree"
+ },
+ {
+  "unit": "item:nk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "probability",
+  "d": "likelihood",
+  "wrong": [
+   "decimal",
+   "statistic",
+   "minimum"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The probability of a specified outcome"
+ },
+ {
+  "unit": "item:nl",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "pin",
+  "d": "brooch",
+  "wrong": [
+   "pinion",
+   "fastener",
+   "knob",
+   "eyelet"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A clasp or ornament"
+ },
+ {
+  "unit": "item:nm",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "carve",
+  "d": "sculpt",
+  "wrong": [
+   "gild",
+   "sunken",
+   "sculptor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Create by shaping stone or wood or any other hard material"
+ },
+ {
+  "unit": "item:nn",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "equestrian",
+  "d": "horseman",
+  "wrong": [
+   "handler",
+   "racer",
+   "judo",
+   "rocker"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A man skilled in equitation"
+ },
+ {
+  "unit": "item:no",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 8,
+  "c": "argumentative",
+  "d": "quarrelsome",
+  "wrong": [
+   "humorless",
+   "moralistic",
+   "tactless",
+   "dogmatic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Given to quarreling"
+ },
+ {
+  "unit": "item:np",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "few",
+  "d": "handful",
+  "wrong": [
+   "thirty",
+   "minute",
+   "forty",
+   "fifty"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A small number or amount"
+ },
+ {
+  "unit": "item:nq",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "gestation",
+  "d": "pregnancy",
+  "wrong": [
+   "tertiary",
+   "natal",
+   "pregnant",
+   "puberty"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The state of being pregnant"
+ },
+ {
+  "unit": "item:nr",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "craftsman",
+  "d": "artisan",
+  "wrong": [
+   "carpenter",
+   "engraver",
+   "bartender",
+   "mason"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A skilled worker who practices some trade or handicraft"
+ },
+ {
+  "unit": "item:ns",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "mollusk",
+  "d": "shellfish",
+  "wrong": [
+   "carapace",
+   "pincer",
+   "abalone",
+   "snail"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A water animal with a hard outer covering, such as a crab, shrimp, or clam"
+ },
+ {
+  "unit": "item:nt",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "empty",
+  "d": "full",
+  "wrong": [
+   "exit",
+   "stale",
+   "plentiful",
+   "entrance"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The time when the moon is fully illuminated"
+ },
+ {
+  "unit": "item:nu",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "ruffle",
+  "d": "flounce",
+  "wrong": [
+   "bodice",
+   "blouse",
+   "kimono",
+   "petticoat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A strip of pleated material used as a decoration or a trim"
+ },
+ {
+  "unit": "item:nv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "fuzzy",
+  "d": "downy",
+  "wrong": [
+   "velvety",
+   "lacy",
+   "down",
+   "matt"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Like down or as soft as down"
+ },
+ {
+  "unit": "item:nw",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 8,
+  "c": "archil",
+  "d": "orchil",
+  "wrong": [
+   "aal",
+   "candlenut",
+   "heartwood",
+   "boxwood"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A purple dye made from certain lichens, used to color cloth."
+ },
+ {
+  "unit": "item:nx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "suitability",
+  "d": "fitness",
+  "wrong": [
+   "evaluation",
+   "assessment",
+   "examiner",
+   "specification"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The quality of being suitable"
+ },
+ {
+  "unit": "item:ny",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "cocoon",
+  "d": "chrysalis",
+  "wrong": [
+   "caterpillar",
+   "kapok",
+   "anopheles",
+   "sucker"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Pupa of a moth or butterfly enclosed in a cocoon"
+ },
+ {
+  "unit": "item:nz",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "scribble",
+  "d": "scrawl",
+  "wrong": [
+   "memo",
+   "notebook",
+   "jog",
+   "shuffle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Poor handwriting"
+ },
+ {
+  "unit": "item:o0",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "sabot",
+  "d": "shoe",
+  "wrong": [
+   "cobbler",
+   "bricklayer",
+   "clog",
+   "hone"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Footwear shaped to fit the foot (below the ankle) with a flexible upper of leather or plastic and a sole…"
+ },
+ {
+  "unit": "item:o1",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "fondness",
+  "d": "liking",
+  "wrong": [
+   "jealousy",
+   "derision",
+   "acceptance",
+   "animosity"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A feeling of pleasure and enjoyment"
+ },
+ {
+  "unit": "item:o2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "platter",
+  "d": "tray",
+  "wrong": [
+   "taco",
+   "cornbread",
+   "bag",
+   "truffle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An open receptacle for holding or displaying or serving articles or food"
+ },
+ {
+  "unit": "item:o3",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "acacia",
+  "d": "shrub",
+  "wrong": [
+   "spruce",
+   "cypress",
+   "shrubby",
+   "cactus"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A low woody perennial plant usually having several major stems"
+ },
+ {
+  "unit": "item:o4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "intellect",
+  "d": "mind",
+  "wrong": [
+   "aptitude",
+   "empathy",
+   "mindful",
+   "acuity"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "That which is responsible for one's thoughts and feelings"
+ },
+ {
+  "unit": "item:o5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "flavoring",
+  "d": "spice",
+  "wrong": [
+   "thyme",
+   "apricot",
+   "cookery",
+   "sweetener"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Aromatic substances of vegetable origin used as a preservative"
+ },
+ {
+  "unit": "item:o6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "abnormality",
+  "d": "defect",
+  "wrong": [
+   "eyesight",
+   "retinal",
+   "defective",
+   "pituitary"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A fault or flaw that keeps something from being perfect"
+ },
+ {
+  "unit": "item:o7",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "rogue",
+  "d": "scoundrel",
+  "wrong": [
+   "felon",
+   "swindler",
+   "murder",
+   "treachery"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A wicked or evil person"
+ },
+ {
+  "unit": "item:o8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "twelve",
+  "d": "dozen",
+  "wrong": [
+   "six",
+   "twenty",
+   "nine",
+   "fifteen"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The cardinal number that is the sum of eleven and one"
+ },
+ {
+  "unit": "item:o9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "essay",
+  "d": "article",
+  "wrong": [
+   "reader",
+   "comment",
+   "editor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Nonfictional prose forming an independent part of a publication"
+ },
+ {
+  "unit": "item:oa",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "shackle",
+  "d": "fetter",
+  "wrong": [
+   "pinion",
+   "thong",
+   "padlock",
+   "bridle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A shackle for the ankles or feet"
+ },
+ {
+  "unit": "item:ob",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "evil",
+  "d": "wickedness",
+  "wrong": [
+   "hell",
+   "adversary",
+   "damnation",
+   "cruelty"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Morally objectionable behavior"
+ },
+ {
+  "unit": "item:oc",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "allowance",
+  "d": "grant",
+  "wrong": [
+   "tuition",
+   "monthly",
+   "bonuses",
+   "brokerage"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any monetary aid"
+ },
+ {
+  "unit": "item:od",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "contempt",
+  "d": "disdain",
+  "wrong": [
+   "derision",
+   "insult",
+   "acceptance",
+   "affront"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A feeling of contempt for something regarded as unworthy of or beneath one scorn"
+ },
+ {
+  "unit": "item:oe",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "cheap",
+  "d": "expensive",
+  "wrong": [
+   "trendy",
+   "sell",
+   "export",
+   "import"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "High in price or charging high prices"
+ },
+ {
+  "unit": "item:of",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "silo",
+  "d": "granary",
+  "wrong": [
+   "chowder",
+   "barley",
+   "maize",
+   "pantry"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A storehouse for grain"
+ },
+ {
+  "unit": "item:og",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "arnica",
+  "d": "flower",
+  "wrong": [
+   "buckthorn",
+   "mimosa",
+   "capparis",
+   "artemisia"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A plant cultivated for its blooms or blossoms"
+ },
+ {
+  "unit": "item:oh",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "guidance",
+  "d": "advice",
+  "wrong": [
+   "assistance",
+   "tutor",
+   "supervision",
+   "mentor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A proposal for an appropriate course of action"
+ },
+ {
+  "unit": "item:oi",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "opponent",
+  "d": "rival",
+  "wrong": [
+   "boxer",
+   "puck",
+   "tennis",
+   "champion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The contestant you hope to defeat"
+ },
+ {
+  "unit": "item:oj",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 8,
+  "c": "shrink",
+  "d": "psychiatrist",
+  "wrong": [
+   "squirt",
+   "recoil",
+   "plunger",
+   "shudder"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A physician who specializes in psychiatry"
+ },
+ {
+  "unit": "item:ok",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "verification",
+  "d": "confirmation",
+  "wrong": [
+   "testimony",
+   "authenticity",
+   "perjury",
+   "validity"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Additional proof that something that was believed (some fact or hypothesis or theory) is correct"
+ },
+ {
+  "unit": "item:ol",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "viewpoint",
+  "d": "perspective",
+  "wrong": [
+   "tenet",
+   "racism",
+   "humanism",
+   "atheism"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A way of regarding situations or topics etc."
+ },
+ {
+  "unit": "item:om",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "closing",
+  "d": "shutting",
+  "wrong": [
+   "zipper",
+   "gap",
+   "takeoff",
+   "reset"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of closing something"
+ },
+ {
+  "unit": "item:on",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "legacy",
+  "d": "inheritance",
+  "wrong": [
+   "claimant",
+   "eyewitness",
+   "landowner"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Hereditary succession to a title or an office or property"
+ },
+ {
+  "unit": "item:oo",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "chute",
+  "d": "parachute",
+  "wrong": [
+   "hydrant",
+   "rowboat",
+   "tarmac",
+   "convoy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Rescue equipment consisting of a device that fills with air and retards your fall"
+ },
+ {
+  "unit": "item:op",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "exhale",
+  "d": "exhalation",
+  "wrong": [
+   "yawn",
+   "turbulence",
+   "dizziness",
+   "recoil"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Exhaled breath"
+ },
+ {
+  "unit": "item:oq",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "mixing",
+  "d": "blending",
+  "wrong": [
+   "batch",
+   "ingredient",
+   "mixture"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Mixing different things together thoroughly and smoothly"
+ },
+ {
+  "unit": "item:or",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "ski",
+  "d": "metal",
+  "wrong": [
+   "sled",
+   "rider",
+   "tow"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "unit": "item:os",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "contentment",
+  "d": "fulfillment",
+  "wrong": [
+   "elation",
+   "discontent",
+   "acceptance",
+   "indignation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A feeling of satisfaction at having achieved your desires"
+ },
+ {
+  "unit": "item:ot",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "black",
+  "d": "blackish",
+  "wrong": [
+   "brownish",
+   "tawny",
+   "reddish",
+   "khaki"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of something that is somewhat black"
+ },
+ {
+  "unit": "item:ou",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "necktie",
+  "d": "tie",
+  "wrong": [
+   "headband",
+   "doublet",
+   "bodice",
+   "overcoat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A strip of cloth worn around the neck, mostly by men, with a shirt"
+ },
+ {
+  "unit": "item:ov",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "saltwater",
+  "d": "seawater",
+  "wrong": [
+   "spawn",
+   "bream",
+   "eel",
+   "catfish"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Water containing salts"
+ },
+ {
+  "unit": "item:ow",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "condemnation",
+  "d": "censure",
+  "wrong": [
+   "misdeed",
+   "reproach",
+   "repentance",
+   "discontent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Harsh criticism or disapproval"
+ },
+ {
+  "unit": "item:ox",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "prong",
+  "d": "tine",
+  "wrong": [
+   "knob",
+   "slash",
+   "screw",
+   "cutter"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Prong on a fork or pitchfork or antler"
+ },
+ {
+  "unit": "item:oy",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "rigidity",
+  "d": "stiffness",
+  "wrong": [
+   "elasticity",
+   "adhesion",
+   "flexibility",
+   "solidity"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The physical property of being inflexible and hard to bend"
+ },
+ {
+  "unit": "item:oz",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "range",
+  "d": "scope",
+  "wrong": [
+   "threshold",
+   "infrared",
+   "width",
+   "average"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An area in which something acts or operates or has power or control:"
+ },
+ {
+  "unit": "item:p0",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "racehorse",
+  "d": "horse",
+  "wrong": [
+   "thoroughbred",
+   "rodeo",
+   "equestrian",
+   "handler"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Solid-hoofed herbivorous quadruped domesticated since prehistoric times"
+ },
+ {
+  "unit": "item:p1",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "resonance",
+  "d": "resonant",
+  "wrong": [
+   "audible",
+   "melodic",
+   "auditory",
+   "vocal"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Characterized by resonance"
+ },
+ {
+  "unit": "item:p2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "setting",
+  "d": "surroundings",
+  "wrong": [
+   "niche",
+   "installation",
+   "recreation",
+   "groundwork"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The environmental condition"
+ },
+ {
+  "unit": "item:p3",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 1,
+  "c": "hay",
+  "d": "grass",
+  "wrong": [
+   "crop",
+   "fed",
+   "sack",
+   "barn"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Narrow-leaved green herbage: grown as lawns"
+ },
+ {
+  "unit": "item:p4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "lawmaker",
+  "d": "politician",
+  "wrong": [
+   "advisory",
+   "advisor",
+   "eyewitness"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A leader engaged in civil administration"
+ },
+ {
+  "unit": "item:p5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "fair",
+  "d": "carnival",
+  "wrong": [
+   "auction",
+   "buyer",
+   "discount",
+   "contribution"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A festival marked by merrymaking and processions"
+ },
+ {
+  "unit": "item:p6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "nose",
+  "d": "snout",
+  "wrong": [
+   "throat",
+   "cheek",
+   "mouth",
+   "drivel"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A long projecting or anterior elongation of an animal's head"
+ },
+ {
+  "unit": "item:p7",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "inappropriate",
+  "d": "improper",
+  "wrong": [
+   "unacceptable",
+   "plausible",
+   "blatant",
+   "unintentional"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Not suitable or right or appropriate"
+ },
+ {
+  "unit": "item:p8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "sweetener",
+  "d": "sugar",
+  "wrong": [
+   "soy",
+   "nutmeg",
+   "sugary",
+   "turmeric"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A white crystalline carbohydrate used as a sweetener and preservative"
+ },
+ {
+  "unit": "item:p9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "juice",
+  "d": "extract",
+  "wrong": [
+   "lemon",
+   "citrus",
+   "attention",
+   "garlic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A solution obtained by steeping or soaking a substance (usually in water)"
+ },
+ {
+  "unit": "item:pa",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "household",
+  "d": "family",
+  "wrong": [
+   "establishment",
+   "dairy",
+   "management"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A social unit living together"
+ },
+ {
+  "unit": "item:pb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "adornment",
+  "d": "ornament",
+  "wrong": [
+   "drapery",
+   "bodice",
+   "apparel",
+   "pleat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something used to beautify"
+ },
+ {
+  "unit": "item:pc",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "glycerin",
+  "d": "sweet",
+  "wrong": [
+   "emulsifier",
+   "acetone",
+   "hexane",
+   "tartar"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Tasting like sugar or honey"
+ },
+ {
+  "unit": "item:pd",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "amorphous",
+  "d": "shapeless",
+  "wrong": [
+   "orthorhombic",
+   "monoclinic",
+   "ferric",
+   "colloidal"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having no definite form or distinct shape"
+ },
+ {
+  "unit": "item:pe",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "mask",
+  "d": "disguise",
+  "wrong": [
+   "wearer",
+   "respirator",
+   "sho",
+   "apparel"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An outward semblance that misrepresents the true nature of something"
+ },
+ {
+  "unit": "item:pf",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "seat",
+  "d": "chair",
+  "wrong": [
+   "auditorium",
+   "passenger",
+   "tier"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A seat for one person, with a support for the back"
+ },
+ {
+  "unit": "item:pg",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "story",
+  "d": "narrative",
+  "wrong": [
+   "fable",
+   "memoir",
+   "biography",
+   "fantasy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A message that tells the particulars of an act or occurrence or course of events"
+ },
+ {
+  "unit": "item:ph",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "nutmeg",
+  "d": "spice",
+  "wrong": [
+   "parsley",
+   "almond",
+   "coconut",
+   "soy"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Aromatic substances of vegetable origin used as a preservative"
+ },
+ {
+  "unit": "item:pi",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "defender",
+  "d": "protector",
+  "wrong": [
+   "fighter",
+   "fortress",
+   "champion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who cares for persons or property"
+ },
+ {
+  "unit": "item:pj",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "corylus",
+  "d": "shrub",
+  "wrong": [
+   "vitis",
+   "calamus",
+   "shrubby",
+   "agathis"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A low woody perennial plant usually having several major stems"
+ },
+ {
+  "unit": "item:pk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "collaboration",
+  "d": "teamwork",
+  "wrong": [
+   "nonprofit",
+   "diplomacy",
+   "elective",
+   "participation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cooperative work done by a team (especially when it is effective)"
+ },
+ {
+  "unit": "item:pl",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "client",
+  "d": "customer",
+  "wrong": [
+   "audit",
+   "patent",
+   "pension"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who pays for goods or services"
+ },
+ {
+  "unit": "item:pm",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 2,
+  "c": "beauty",
+  "d": "beautiful",
+  "wrong": [
+   "magical",
+   "heroic",
+   "natural",
+   "joyful"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Delighting the senses or exciting intellectual or emotional admiration"
+ },
+ {
+  "unit": "item:pn",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "constraint",
+  "d": "limitation",
+  "wrong": [
+   "exclusion",
+   "volition",
+   "confinement",
+   "bondage"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A principle that limits the extent of something"
+ },
+ {
+  "unit": "item:po",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "sap",
+  "d": "juice",
+  "wrong": [
+   "latex",
+   "citrus",
+   "attention",
+   "juicy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The liquid part that can be extracted from plant or animal tissue by squeezing or cooking"
+ },
+ {
+  "unit": "item:pp",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 2,
+  "c": "cruel",
+  "d": "cruelty",
+  "wrong": [
+   "timid",
+   "mercy",
+   "kind"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A cruel act"
+ },
+ {
+  "unit": "item:pq",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "motorboat",
+  "d": "boat",
+  "wrong": [
+   "tow",
+   "scooter",
+   "loader",
+   "sleigh"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A small vessel for travel on water"
+ },
+ {
+  "unit": "item:pr",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "fashionable",
+  "d": "stylish",
+  "wrong": [
+   "gaudy",
+   "tasteful",
+   "courtly",
+   "genteel"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having elegance or taste or refinement in manners or dress"
+ },
+ {
+  "unit": "item:ps",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "employee",
+  "d": "worker",
+  "wrong": [
+   "pension",
+   "nonprofit",
+   "administrator",
+   "investor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who works at a specific occupation"
+ },
+ {
+  "unit": "item:pt",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "reappear",
+  "d": "resurface",
+  "wrong": [
+   "nick",
+   "sprang",
+   "squint"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Reappear on the surface"
+ },
+ {
+  "unit": "item:pu",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "easy",
+  "d": "effortless",
+  "wrong": [
+   "facile",
+   "clearer",
+   "docile"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Requiring or apparently requiring no effort"
+ },
+ {
+  "unit": "item:pv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "franchise",
+  "d": "dealership",
+  "wrong": [
+   "broker",
+   "shareholder",
+   "bargain",
+   "mortgage"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A business established or operated under an authorization to sell or distribute a company's goods or…"
+ },
+ {
+  "unit": "item:pw",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "faulty",
+  "d": "defective",
+  "wrong": [
+   "accidental",
+   "incorrect",
+   "defect",
+   "clearer"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having a defect"
+ },
+ {
+  "unit": "item:px",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "curtain",
+  "d": "drape",
+  "wrong": [
+   "velvet",
+   "hem",
+   "denim",
+   "decorator"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Hanging cloth used as a blind (especially for a window)"
+ },
+ {
+  "unit": "item:py",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "atmosphere",
+  "d": "atmospheric",
+  "wrong": [
+   "suburban",
+   "dreamy",
+   "thermal"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Relating to or located in the atmosphere"
+ },
+ {
+  "unit": "item:pz",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "exposure",
+  "d": "vulnerability",
+  "wrong": [
+   "ultraviolet",
+   "bleach",
+   "radiation",
+   "vulnerable"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The state of being vulnerable or exposed"
+ },
+ {
+  "unit": "item:q0",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "fissure",
+  "d": "crack",
+  "wrong": [
+   "cavern",
+   "indentation",
+   "magma",
+   "chasm"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A long narrow opening"
+ },
+ {
+  "unit": "item:q1",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 4,
+  "c": "blade",
+  "d": "knife",
+  "wrong": [
+   "prong",
+   "slash"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "Edge tool used as a cutting instrument"
+ },
+ {
+  "unit": "item:q2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "horseman",
+  "d": "equestrian",
+  "wrong": [
+   "cavalier",
+   "stallion",
+   "herder",
+   "reindeer"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A man skilled in equitation"
+ },
+ {
+  "unit": "item:q3",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "fowl",
+  "d": "bird",
+  "wrong": [
+   "weasel",
+   "bison",
+   "beaver"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "unit": "item:q4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "collaboration",
+  "d": "cooperation",
+  "wrong": [
+   "nonprofit",
+   "diplomacy",
+   "elective",
+   "participation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Joint operation or action"
+ },
+ {
+  "unit": "item:q5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "speck",
+  "d": "fleck",
+  "wrong": [
+   "glint",
+   "glimmer",
+   "orb"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A small fragment of something broken off from the whole"
+ },
+ {
+  "unit": "item:q6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "kernel",
+  "d": "seed",
+  "wrong": [
+   "pulp",
+   "coconut",
+   "apple",
+   "barley"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A small hard fruit"
+ },
+ {
+  "unit": "item:q7",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "cup",
+  "d": "container",
+  "wrong": [
+   "goblet",
+   "bowl",
+   "scoop",
+   "spoon"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any object that can be used to hold things (especially a large metal boxlike object of standardized…"
+ },
+ {
+  "unit": "item:q8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "proclaim",
+  "d": "declare",
+  "wrong": [
+   "affirm",
+   "accuse",
+   "invoke",
+   "condemn"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "State emphatically and authoritatively"
+ },
+ {
+  "unit": "item:q9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "plane",
+  "d": "airplane",
+  "wrong": [
+   "ecliptic",
+   "meridian",
+   "airship",
+   "perimeter"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An aircraft that has a fixed wing and is powered by propellers or jets"
+ },
+ {
+  "unit": "item:qa",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "expand",
+  "d": "enlarge",
+  "wrong": [
+   "lengthen",
+   "deform",
+   "shrink"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To make something bigger in size, scope, or extent"
+ },
+ {
+  "unit": "item:qb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "injustice",
+  "d": "wrong",
+  "wrong": [
+   "conviction",
+   "dishonesty",
+   "fairness",
+   "distrust"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "That which is contrary to the principles of justice or law"
+ },
+ {
+  "unit": "item:qc",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "excuse",
+  "d": "justification",
+  "wrong": [
+   "dishonesty",
+   "credibility",
+   "perjury"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something (such as a fact or circumstance) that shows an action to be reasonable or necessary"
+ },
+ {
+  "unit": "item:qd",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "grime",
+  "d": "filth",
+  "wrong": [
+   "soot",
+   "muck",
+   "silt",
+   "crock"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any substance considered disgustingly foul or unpleasant"
+ },
+ {
+  "unit": "item:qe",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "tomato",
+  "d": "vegetable",
+  "wrong": [
+   "mustard",
+   "spinach",
+   "parsley",
+   "broccoli"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Edible seeds or roots or stems or leaves or bulbs or tubers or nonsweet fruits of any of numerous…"
+ },
+ {
+  "unit": "item:qf",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "magma",
+  "d": "rock",
+  "wrong": [
+   "crater",
+   "volcano",
+   "rocky",
+   "scum"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A lump or mass of hard consolidated mineral matter"
+ },
+ {
+  "unit": "item:qg",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "timetable",
+  "d": "schedule",
+  "wrong": [
+   "checklist",
+   "miscalculation",
+   "derailment",
+   "shutdown"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A plan of procedure"
+ },
+ {
+  "unit": "item:qh",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "asleep",
+  "d": "awake",
+  "wrong": [
+   "sad",
+   "happy",
+   "laugh",
+   "calm"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Stop sleeping"
+ },
+ {
+  "unit": "item:qi",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "stringy",
+  "d": "fibrous",
+  "wrong": [
+   "rubbery",
+   "flaccid",
+   "pasty",
+   "pulpy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having or resembling fibers especially fibers used in making cordage such as those of jute"
+ },
+ {
+  "unit": "item:qj",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "chicory",
+  "d": "plant",
+  "wrong": [
+   "quince",
+   "apricot",
+   "endive",
+   "coriander"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Buildings for carrying on industrial labor"
+ },
+ {
+  "unit": "item:qk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "trainee",
+  "d": "apprentice",
+  "wrong": [
+   "visa",
+   "chairman",
+   "registrar",
+   "enrollment"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Works for an expert to learn a trade"
+ },
+ {
+  "unit": "item:ql",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 8,
+  "c": "euphoria",
+  "d": "elation",
+  "wrong": [
+   "jubilation",
+   "mirth",
+   "ecstasy",
+   "rapture"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An exhilarating psychological state of pride and optimism"
+ },
+ {
+  "unit": "item:qm",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "fibrous",
+  "d": "stringy",
+  "wrong": [
+   "connective",
+   "medullary",
+   "epithelial",
+   "vascular"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Lean and sinewy"
+ },
+ {
+  "unit": "item:qn",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "crane",
+  "d": "hoist",
+  "wrong": [
+   "wicker",
+   "rafter",
+   "anchor",
+   "roost"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Lifting device for raising heavy or cumbersome objects"
+ },
+ {
+  "unit": "item:qo",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 8,
+  "c": "hairstyle",
+  "d": "coiffure",
+  "wrong": [
+   "beret",
+   "bodice",
+   "pinafore",
+   "blouse"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The arrangement of the hair (especially a woman's hair)"
+ },
+ {
+  "unit": "item:qp",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 2,
+  "c": "just",
+  "d": "justice",
+  "wrong": [
+   "extra",
+   "end",
+   "letter",
+   "plus"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being just or fair"
+ },
+ {
+  "unit": "item:qq",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "unable",
+  "d": "incapable",
+  "wrong": [
+   "able",
+   "impossible",
+   "viable",
+   "capable"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Lacking capacity or ability"
+ },
+ {
+  "unit": "item:qr",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "conifer",
+  "d": "shrub",
+  "wrong": [
+   "cacti",
+   "hickory",
+   "evergreen",
+   "poplar"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A low woody perennial plant usually having several major stems"
+ },
+ {
+  "unit": "item:qs",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "igniter",
+  "d": "lighter",
+  "wrong": [
+   "combustion",
+   "refrigerant",
+   "charcoal"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A substance used to ignite or kindle a fire"
+ },
+ {
+  "unit": "item:qt",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "concrete",
+  "d": "cement",
+  "wrong": [
+   "abstract",
+   "masonry",
+   "amber",
+   "brick"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The hard grey paved surface of concrete."
+ },
+ {
+  "unit": "item:qu",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "bleeding",
+  "d": "hemorrhage",
+  "wrong": [
+   "blockage",
+   "coronary",
+   "transfusion",
+   "airway"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A profuse discharge of blood"
+ },
+ {
+  "unit": "item:qv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "twig",
+  "d": "sprig",
+  "wrong": [
+   "willow",
+   "birch",
+   "spruce",
+   "dandelion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A small branch or division of a branch (especially a terminal division)"
+ },
+ {
+  "unit": "item:qw",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "dusk",
+  "d": "nightfall",
+  "wrong": [
+   "bayou",
+   "cornfield",
+   "roost",
+   "rustle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The time of day immediately following sunset"
+ },
+ {
+  "unit": "item:qx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "author",
+  "d": "novelist",
+  "wrong": [
+   "memoir",
+   "biography",
+   "edition",
+   "publisher"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "One who writes novels"
+ },
+ {
+  "unit": "item:qy",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "pottery",
+  "d": "earthenware",
+  "wrong": [
+   "shard",
+   "lithograph",
+   "figurine",
+   "replica"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Ceramic ware made of porous clay fired at low heat"
+ },
+ {
+  "unit": "item:qz",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "giraffe",
+  "d": "animal",
+  "wrong": [
+   "zebra",
+   "antelope",
+   "ostrich",
+   "feline"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A living organism characterized by voluntary movement"
+ },
+ {
+  "unit": "item:r0",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "harden",
+  "d": "solidify",
+  "wrong": [
+   "leach",
+   "thicken",
+   "slag"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To make something become firm and hard, or to change from a liquid into that state."
+ },
+ {
+  "unit": "item:r1",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "clog",
+  "d": "sabot",
+  "wrong": [
+   "congestion",
+   "leak",
+   "boot",
+   "spurt"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A shoe carved from a single block of wood"
+ },
+ {
+  "unit": "item:r2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "soap",
+  "d": "detergent",
+  "wrong": [
+   "grease",
+   "lotion",
+   "clean",
+   "blender"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A surface-active chemical widely used in industry and laundering"
+ },
+ {
+  "unit": "item:r3",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 8,
+  "c": "malvaceae",
+  "d": "tree",
+  "wrong": [
+   "dicot",
+   "araceae",
+   "ranunculus"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A tall perennial woody plant having a main trunk and branches forming a distinct elevated crown"
+ },
+ {
+  "unit": "item:r4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "exhibition",
+  "d": "show",
+  "wrong": [
+   "gallery",
+   "artwork",
+   "auction",
+   "scenery"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of publicly exhibiting or entertaining"
+ },
+ {
+  "unit": "item:r5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "lake",
+  "d": "reservoir",
+  "wrong": [
+   "ocean",
+   "reef",
+   "estuary",
+   "lagoon"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A place where water is collected or stored"
+ },
+ {
+  "unit": "item:r6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "beg",
+  "d": "entreat",
+  "wrong": [
+   "beggar",
+   "bully",
+   "grumble",
+   "shun"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Ask for or request earnestly"
+ },
+ {
+  "unit": "item:r7",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "dusk",
+  "d": "twilight",
+  "wrong": [
+   "dawn",
+   "meadow",
+   "lagoon"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The time of day immediately following sunset"
+ },
+ {
+  "unit": "item:r8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "ornament",
+  "d": "adornment",
+  "wrong": [
+   "garland",
+   "drapery",
+   "trimming",
+   "embroidery"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A decoration of color or interest that is added to relieve plainness"
+ },
+ {
+  "unit": "item:r9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "penalize",
+  "d": "punish",
+  "wrong": [
+   "disqualify",
+   "litigate",
+   "punishment",
+   "probate"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Impose a penalty on"
+ },
+ {
+  "unit": "item:ra",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "food",
+  "d": "sustenance",
+  "wrong": [
+   "vegetarian",
+   "aperitif",
+   "calorie",
+   "pickle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A source of materials to nourish the body"
+ },
+ {
+  "unit": "item:rb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "ancestry",
+  "d": "lineage",
+  "wrong": [
+   "nationality",
+   "kinship",
+   "bantu",
+   "slavic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The descendants of one individual"
+ },
+ {
+  "unit": "item:rc",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "compile",
+  "d": "compilation",
+  "wrong": [
+   "glossary",
+   "reprint",
+   "cipher",
+   "dictionary"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Something that is compiled (as into a single book or file)"
+ },
+ {
+  "unit": "item:rd",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "extraordinary",
+  "d": "remarkable",
+  "wrong": [
+   "outstanding",
+   "incredible",
+   "heroic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Unusual or striking"
+ },
+ {
+  "unit": "item:re",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "guardian",
+  "d": "protector",
+  "wrong": [
+   "traitor",
+   "captivity",
+   "wife",
+   "widow"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who cares for persons or property"
+ },
+ {
+  "unit": "item:rf",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "parcel",
+  "d": "container",
+  "wrong": [
+   "receipt",
+   "shipment",
+   "bundle",
+   "tenant"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any object that can be used to hold things (especially a large metal boxlike object of standardized…"
+ },
+ {
+  "unit": "item:rg",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "engine",
+  "d": "motor",
+  "wrong": [
+   "fuel",
+   "ignition",
+   "computer",
+   "aircraft"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Machine that converts other forms of energy into mechanical energy and so imparts motion"
+ },
+ {
+  "unit": "item:rh",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "greed",
+  "d": "gluttony",
+  "wrong": [
+   "cruelty",
+   "stoic",
+   "hedonism",
+   "wickedness"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Habitual eating to excess"
+ },
+ {
+  "unit": "item:ri",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "fashionable",
+  "d": "trendy",
+  "wrong": [
+   "gaudy",
+   "tasteful",
+   "courtly",
+   "genteel"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "In accord with the latest fad"
+ },
+ {
+  "unit": "item:rj",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "aircraft",
+  "d": "airplane",
+  "wrong": [
+   "spacecraft",
+   "rocket",
+   "missile",
+   "propulsion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An aircraft that has a fixed wing and is powered by propellers or jets"
+ },
+ {
+  "unit": "item:rk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "harvest",
+  "d": "crop",
+  "wrong": [
+   "wheat",
+   "sow",
+   "corn"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The yield from plants in a single growing season"
+ },
+ {
+  "unit": "item:rl",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "meat",
+  "d": "flesh",
+  "wrong": [
+   "bacon",
+   "lamb",
+   "fry"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The soft tissue of the body of a vertebrate: mainly muscle tissue and fat"
+ },
+ {
+  "unit": "item:rm",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "expense",
+  "d": "cost",
+  "wrong": [
+   "tuition",
+   "pension",
+   "mortgage",
+   "donation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The total spent for goods or services including money and time and labor"
+ },
+ {
+  "unit": "item:rn",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 1,
+  "c": "agree",
+  "d": "agreement",
+  "wrong": [
+   "refusal",
+   "arrival",
+   "argument",
+   "decision"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The statement (oral or written) of an exchange of promises"
+ },
+ {
+  "unit": "item:ro",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "gown",
+  "d": "dress",
+  "wrong": [
+   "wig",
+   "velvet",
+   "apron"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A one-piece garment for a woman"
+ },
+ {
+  "unit": "item:rp",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "copy",
+  "d": "duplicate",
+  "wrong": [
+   "dictation",
+   "edition",
+   "print",
+   "imitator"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something additional of the same kind"
+ },
+ {
+  "unit": "item:rq",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "oat",
+  "d": "grain",
+  "wrong": [
+   "coconut",
+   "nutmeg",
+   "simmer",
+   "beet"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A relatively small granular particle of a substance"
+ },
+ {
+  "unit": "item:rr",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 7,
+  "c": "asymmetry",
+  "d": "asymmetrical",
+  "wrong": [
+   "dimensional",
+   "geometrical",
+   "orthorhombic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Characterized by asymmetry in the spatial arrangement or placement of parts or components"
+ },
+ {
+  "unit": "item:rs",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "lack",
+  "d": "shortage",
+  "wrong": [
+   "quality",
+   "simplicity",
+   "modesty",
+   "tact"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The property of being an amount by which something is less than expected or required"
+ },
+ {
+  "unit": "item:rt",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "commerce",
+  "d": "trade",
+  "wrong": [
+   "tariff",
+   "enterprise",
+   "consumer",
+   "outlet"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The commercial exchange (buying and selling on domestic or international markets) of goods and services"
+ },
+ {
+  "unit": "item:ru",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "participant",
+  "d": "member",
+  "wrong": [
+   "competition",
+   "wager",
+   "analyst"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "One of the persons who compose a social group (especially individuals who have joined and participate in a…"
+ },
+ {
+  "unit": "item:rv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "bevel",
+  "d": "chamfer",
+  "wrong": [
+   "rabbet",
+   "miter",
+   "cutter",
+   "mortice"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Two surfaces meeting at an angle different from 90 degrees"
+ },
+ {
+  "unit": "item:rw",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "master",
+  "d": "virtuoso",
+  "wrong": [
+   "apprentice",
+   "laureate",
+   "academy",
+   "craftsmanship"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who is dazzlingly skilled in any field"
+ },
+ {
+  "unit": "item:rx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "municipality",
+  "d": "town",
+  "wrong": [
+   "gentry",
+   "seaport",
+   "federation",
+   "hamlet"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An urban area with a fixed boundary that is smaller than a city"
+ },
+ {
+  "unit": "item:ry",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "cookout",
+  "d": "barbecue",
+  "wrong": [
+   "brunch",
+   "cornbread",
+   "bread",
+   "muffin"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A meal or gathering where food is grilled outdoors"
+ },
+ {
+  "unit": "item:rz",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "privacy",
+  "d": "seclusion",
+  "wrong": [
+   "occupant",
+   "snug",
+   "reserve",
+   "homestead"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The quality of being secluded from the presence or view of others"
+ },
+ {
+  "unit": "item:s0",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "tray",
+  "d": "platter",
+  "wrong": [
+   "carton",
+   "canister",
+   "container",
+   "curry"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A large shallow dish used for serving food"
+ },
+ {
+  "unit": "item:s1",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "rubble",
+  "d": "debris",
+  "wrong": [
+   "landfill",
+   "hydrant",
+   "landslide",
+   "shipwreck"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The remains of things broken down or destroyed"
+ },
+ {
+  "unit": "item:s2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "arithmetic",
+  "d": "math",
+  "wrong": [
+   "matrices",
+   "subset",
+   "algorithm",
+   "calculator"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A science (or group of related sciences) dealing with the logic of quantity and shape and arrangement"
+ },
+ {
+  "unit": "item:s3",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 2,
+  "c": "dark",
+  "d": "darkness",
+  "wrong": [
+   "gray",
+   "twilight",
+   "shadow",
+   "streak"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Absence of light or illumination"
+ },
+ {
+  "unit": "item:s4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "highland",
+  "d": "upland",
+  "wrong": [
+   "alp",
+   "canadian",
+   "scotland",
+   "southwest"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Elevated (e.g., mountainous) land"
+ },
+ {
+  "unit": "item:s5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "confirmation",
+  "d": "verification",
+  "wrong": [
+   "precedent",
+   "endorsement",
+   "notary",
+   "referral"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Additional proof that something that was believed (some fact or hypothesis or theory) is correct"
+ },
+ {
+  "unit": "item:s6",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "algebra",
+  "d": "algebraic",
+  "wrong": [
+   "arithmetic",
+   "computational",
+   "decimal",
+   "determinant"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to algebra"
+ },
+ {
+  "unit": "item:s7",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "capable",
+  "d": "able",
+  "wrong": [
+   "unable",
+   "worthy",
+   "ability"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having needed powers or resources to do something."
+ },
+ {
+  "unit": "item:s8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "motor",
+  "d": "engine",
+  "wrong": [
+   "mover",
+   "vehicle",
+   "computer",
+   "pedal"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Motor that converts thermal energy to mechanical work"
+ },
+ {
+  "unit": "item:s9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "counterfeit",
+  "d": "forgery",
+  "wrong": [
+   "reprint",
+   "libel",
+   "copyright",
+   "shoddy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A copy that is represented as the original"
+ },
+ {
+  "unit": "item:sa",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "lock",
+  "d": "latch",
+  "wrong": [
+   "zipper",
+   "plug",
+   "device",
+   "pinion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A simple bar or catch used to fasten a door or gate"
+ },
+ {
+  "unit": "item:sb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "campfire",
+  "d": "bonfire",
+  "wrong": [
+   "ember",
+   "crackle",
+   "cookout",
+   "puddle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A large outdoor fire that is lighted as a signal or in celebration"
+ },
+ {
+  "unit": "item:sc",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "manure",
+  "d": "dung",
+  "wrong": [
+   "soybean",
+   "hay",
+   "leach",
+   "rye"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Fecal matter of animals"
+ },
+ {
+  "unit": "item:sd",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "sandal",
+  "d": "shoe",
+  "wrong": [
+   "sleeve",
+   "shawl",
+   "sash"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Footwear shaped to fit the foot (below the ankle) with a flexible upper of leather or plastic and a sole…"
+ },
+ {
+  "unit": "item:se",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "guess",
+  "d": "supposition",
+  "wrong": [
+   "refutation",
+   "probable",
+   "posit",
+   "solver"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A message expressing an opinion based on incomplete evidence"
+ },
+ {
+  "unit": "item:sf",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "trait",
+  "d": "attribute",
+  "wrong": [
+   "peculiarity",
+   "masculinity",
+   "masculine",
+   "empathy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A construct whereby objects or individuals can be distinguished"
+ },
+ {
+  "unit": "item:sg",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 1,
+  "c": "create",
+  "d": "creation",
+  "wrong": [
+   "producer",
+   "description",
+   "choice",
+   "imagination"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The human act of creating"
+ },
+ {
+  "unit": "item:sh",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "leftover",
+  "d": "remainder",
+  "wrong": [
+   "crumb",
+   "compost",
+   "yogurt"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something left after other parts have been taken away"
+ },
+ {
+  "unit": "item:si",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "sycamore",
+  "d": "tree",
+  "wrong": [
+   "hazel",
+   "calamus",
+   "briar"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A tall perennial woody plant having a main trunk and branches forming a distinct elevated crown"
+ },
+ {
+  "unit": "item:sj",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "surroundings",
+  "d": "environment",
+  "wrong": [
+   "outlook",
+   "spontaneity",
+   "threshold",
+   "comprehension"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The totality of surrounding conditions"
+ },
+ {
+  "unit": "item:sk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "gleam",
+  "d": "sparkle",
+  "wrong": [
+   "emerald",
+   "sheen",
+   "acceptance",
+   "gild"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Merriment expressed by a brightness, gleam, or animation of countenance"
+ },
+ {
+  "unit": "item:sl",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "legging",
+  "d": "garment",
+  "wrong": [
+   "overcoat",
+   "thong",
+   "footwear",
+   "sling"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An article of clothing"
+ },
+ {
+  "unit": "item:sm",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "eagerness",
+  "d": "enthusiasm",
+  "wrong": [
+   "antipathy",
+   "awkwardness",
+   "patience",
+   "acceptance"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A feeling of excitement"
+ },
+ {
+  "unit": "item:sn",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "meaning",
+  "d": "significance",
+  "wrong": [
+   "singular",
+   "pronoun",
+   "significant",
+   "tense"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The quality of being significant"
+ },
+ {
+  "unit": "item:so",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "announcement",
+  "d": "declaration",
+  "wrong": [
+   "reporter",
+   "notification",
+   "presenter",
+   "subscriber"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A statement that is emphatic and explicit (spoken or written)"
+ },
+ {
+  "unit": "item:sp",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "prattle",
+  "d": "chatter",
+  "wrong": [
+   "palaver",
+   "gabble",
+   "blabber"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Rapid, continuous, and often trivial or meaningless talk"
+ },
+ {
+  "unit": "item:sq",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "citizenship",
+  "d": "nationality",
+  "wrong": [
+   "privilege",
+   "tenure",
+   "adoption",
+   "successor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "People having common origins or traditions and often comprising a nation"
+ },
+ {
+  "unit": "item:sr",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "money",
+  "d": "currency",
+  "wrong": [
+   "investment",
+   "pay",
+   "cage",
+   "dollar"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The metal or paper medium of exchange that is presently used"
+ },
+ {
+  "unit": "item:ss",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "contradict",
+  "d": "deny",
+  "wrong": [
+   "assert",
+   "testify",
+   "alibi"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Declare untrue"
+ },
+ {
+  "unit": "item:st",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "headland",
+  "d": "cape",
+  "wrong": [
+   "crag",
+   "dune",
+   "lagoon",
+   "cove"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A strip of land projecting into a body of water"
+ },
+ {
+  "unit": "item:su",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "dinner",
+  "d": "supper",
+  "wrong": [
+   "diner",
+   "guest",
+   "food",
+   "bread"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A light evening meal"
+ },
+ {
+  "unit": "item:sv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "advice",
+  "d": "guidance",
+  "wrong": [
+   "consultation",
+   "perk",
+   "favour",
+   "mentor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something that provides direction or advice as to a decision or course of action"
+ },
+ {
+  "unit": "item:sw",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "plateau",
+  "d": "highland",
+  "wrong": [
+   "marshland",
+   "headland",
+   "lowland",
+   "ravine"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Elevated (e.g., mountainous) land"
+ },
+ {
+  "unit": "item:sx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "praise",
+  "d": "acclaim",
+  "wrong": [
+   "dedication",
+   "admiration",
+   "reviewer",
+   "salute"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Enthusiastic approval"
+ },
+ {
+  "unit": "item:sy",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "allocate",
+  "d": "assign",
+  "wrong": [
+   "deduct",
+   "reassign",
+   "assignment",
+   "repaid"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To give a job, task, or duty to someone"
+ },
+ {
+  "unit": "item:sz",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "abyss",
+  "d": "chasm",
+  "wrong": [
+   "crag",
+   "cavern",
+   "loch",
+   "ravine"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A deep, narrow opening in the earth with steep sides"
+ },
+ {
+  "unit": "item:t0",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "stillness",
+  "d": "silence",
+  "wrong": [
+   "tranquility",
+   "melancholy",
+   "silent",
+   "restlessness"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Absence of sound or noise"
+ },
+ {
+  "unit": "item:t1",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "grotto",
+  "d": "cavern",
+  "wrong": [
+   "loch",
+   "cityscape",
+   "cavernous",
+   "pavilion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any large dark enclosed space"
+ },
+ {
+  "unit": "item:t2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "brooch",
+  "d": "pin",
+  "wrong": [
+   "emerald",
+   "sequin",
+   "necklace",
+   "pendant"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A piece of jewelry that is pinned onto the wearer's garment"
+ },
+ {
+  "unit": "item:t3",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "petal",
+  "d": "flower",
+  "wrong": [
+   "violet",
+   "pink"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A plant cultivated for its blooms or blossoms"
+ },
+ {
+  "unit": "item:t4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "giggle",
+  "d": "chuckle",
+  "wrong": [
+   "fidget",
+   "boo",
+   "wink",
+   "shriek"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A soft partly suppressed laugh"
+ },
+ {
+  "unit": "item:t5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "unsafe",
+  "d": "dangerous",
+  "wrong": [
+   "unfit",
+   "convenient",
+   "danger",
+   "makeshift"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Involving or causing danger or risk"
+ },
+ {
+  "unit": "item:t6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "plea",
+  "d": "appeal",
+  "wrong": [
+   "redress",
+   "forgiveness",
+   "eviction",
+   "redemption"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Earnest or urgent request"
+ },
+ {
+  "unit": "item:t7",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "lava",
+  "d": "rock",
+  "wrong": [
+   "sediment",
+   "crater",
+   "rocky",
+   "dune"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A lump or mass of hard consolidated mineral matter"
+ },
+ {
+  "unit": "item:t8",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "selection",
+  "d": "choice",
+  "wrong": [
+   "preview",
+   "font",
+   "reprint",
+   "dissertation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The person or thing chosen or selected"
+ },
+ {
+  "unit": "item:t9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "try",
+  "d": "attempt",
+  "wrong": [
+   "dare",
+   "want",
+   "question"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Earnest and conscientious activity intended to do or accomplish something"
+ },
+ {
+  "unit": "item:ta",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "hazy",
+  "d": "misty",
+  "wrong": [
+   "cloudy",
+   "dreamy",
+   "mist"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Filled or abounding with fog or mist"
+ },
+ {
+  "unit": "item:tb",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "cyclist",
+  "d": "bicyclist",
+  "wrong": [
+   "motorbike",
+   "walker",
+   "cruise",
+   "pothole"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who rides a bicycle"
+ },
+ {
+  "unit": "item:tc",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "old",
+  "d": "new",
+  "wrong": [
+   "brave",
+   "cowardice",
+   "ancient",
+   "guilty"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Not of long duration"
+ },
+ {
+  "unit": "item:td",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "shelf",
+  "d": "rack",
+  "wrong": [
+   "closet",
+   "jar",
+   "bedroom"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Framework for holding objects"
+ },
+ {
+  "unit": "item:te",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "disagreement",
+  "d": "dispute",
+  "wrong": [
+   "mediation",
+   "consensus",
+   "contention",
+   "reconciliation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A disagreement or argument about something important"
+ },
+ {
+  "unit": "item:tf",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "blaze",
+  "d": "flame",
+  "wrong": [
+   "twilight",
+   "june",
+   "moonlight",
+   "sunset"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The process of combustion of inflammable materials producing heat and light and (often) smoke"
+ },
+ {
+  "unit": "item:tg",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "stone",
+  "d": "pebble",
+  "wrong": [
+   "slab",
+   "lithograph",
+   "bedrock",
+   "glyph"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A small smooth rounded rock"
+ },
+ {
+  "unit": "item:th",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "habit",
+  "d": "routine",
+  "wrong": [
+   "outlook",
+   "needy",
+   "upbringing",
+   "attitude"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A customary or usual procedure"
+ },
+ {
+  "unit": "item:ti",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "term",
+  "d": "word",
+  "wrong": [
+   "context",
+   "irish",
+   "welsh"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A unit of language that native speakers can identify"
+ },
+ {
+  "unit": "item:tj",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "gymnast",
+  "d": "acrobat",
+  "wrong": [
+   "fencer",
+   "jab",
+   "batsman",
+   "twirl"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An athlete who performs acts requiring skill and agility and coordination"
+ },
+ {
+  "unit": "item:tk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "bell",
+  "d": "chime",
+  "wrong": [
+   "rung",
+   "clarion",
+   "accordion",
+   "clapper"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A percussion instrument consisting of a set of tuned bells that are struck with a hammer"
+ },
+ {
+  "unit": "item:tl",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 8,
+  "c": "aalii",
+  "d": "shrub",
+  "wrong": [
+   "gladiolus",
+   "cactuses",
+   "shrubby",
+   "baptisia"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A low woody perennial plant usually having several major stems"
+ },
+ {
+  "unit": "item:tm",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "straighten",
+  "d": "align",
+  "wrong": [
+   "tighten",
+   "ratchet",
+   "crook",
+   "tying"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Place in a line or arrange so as to be parallel or straight"
+ },
+ {
+  "unit": "item:tn",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "acceptable",
+  "d": "satisfactory",
+  "wrong": [
+   "decent",
+   "sufficient",
+   "reasonable",
+   "impractical"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Giving satisfaction"
+ },
+ {
+  "unit": "item:to",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "otter",
+  "d": "mammal",
+  "wrong": [
+   "elk",
+   "wildcat",
+   "trout"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any warm-blooded vertebrate having the skin more or less covered with hair"
+ },
+ {
+  "unit": "item:tp",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "maze",
+  "d": "labyrinth",
+  "wrong": [
+   "subway",
+   "lena",
+   "spaceship"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An intricate combination of paths"
+ },
+ {
+  "unit": "item:tq",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "pine",
+  "d": "conifer",
+  "wrong": [
+   "maple",
+   "birch",
+   "flamboyant",
+   "beech"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any gymnospermous tree or shrub bearing cones"
+ },
+ {
+  "unit": "item:tr",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "airplane",
+  "d": "aircraft",
+  "wrong": [
+   "tow",
+   "elevator",
+   "ambulance",
+   "motorboat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A vehicle that can fly"
+ },
+ {
+  "unit": "item:ts",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "woodworking",
+  "d": "carpentry",
+  "wrong": [
+   "metalwork",
+   "hone",
+   "engraver",
+   "workshop"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The craft of a carpenter: making things out of wood"
+ },
+ {
+  "unit": "item:tt",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 1,
+  "c": "safe",
+  "d": "safety",
+  "wrong": [
+   "vault",
+   "freedom",
+   "bravery",
+   "patience"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being certain that adverse effects will not be caused by some agent under defined conditions"
+ },
+ {
+  "unit": "item:tu",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "dupe",
+  "d": "sucker",
+  "wrong": [
+   "hoax",
+   "rascal",
+   "blunder"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who is gullible and easy to take advantage of"
+ },
+ {
+  "unit": "item:tv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "awareness",
+  "d": "knowledge",
+  "wrong": [
+   "empathy",
+   "realization",
+   "motivation",
+   "cognition"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Is acquaintance with facts as from study or investigation"
+ },
+ {
+  "unit": "item:tw",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "suspect",
+  "d": "accused",
+  "wrong": [
+   "crime",
+   "arrest",
+   "clue",
+   "testimony"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Blamed for having done something wrong"
+ },
+ {
+  "unit": "item:tx",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "agile",
+  "d": "nimble",
+  "wrong": [
+   "arboreal",
+   "nocturnal",
+   "predatory",
+   "stocky"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Moving quickly and lightly"
+ },
+ {
+  "unit": "item:ty",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "blizzard",
+  "d": "snowstorm",
+  "wrong": [
+   "shiver",
+   "torrent",
+   "thunderstorm",
+   "rescuer"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A storm with widespread snowfall accompanied by strong winds"
+ },
+ {
+  "unit": "item:tz",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "subset",
+  "d": "subgroup",
+  "wrong": [
+   "arithmetic",
+   "identifier",
+   "logarithm",
+   "topology"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A distinct and often subordinate group within a group"
+ },
+ {
+  "unit": "item:u0",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "guitar",
+  "d": "instrument",
+  "wrong": [
+   "keyboard",
+   "fret",
+   "instrumental"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A device that requires skill for proper use"
+ },
+ {
+  "unit": "item:u1",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "whetstone",
+  "d": "stone",
+  "wrong": [
+   "swab",
+   "nick",
+   "stony",
+   "workbench"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A lump or mass of hard consolidated mineral matter"
+ },
+ {
+  "unit": "item:u2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "clock",
+  "d": "timepiece",
+  "wrong": [
+   "rotary",
+   "chronology",
+   "airfoil",
+   "shutter"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A measuring instrument or device for keeping time"
+ },
+ {
+  "unit": "item:u3",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "insufficient",
+  "d": "inadequate",
+  "wrong": [
+   "adequate",
+   "surplus",
+   "sufficient",
+   "substantial"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Lacking the requisite qualities or resources to meet a task"
+ },
+ {
+  "unit": "item:u4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "assumption",
+  "d": "supposition",
+  "wrong": [
+   "axiom",
+   "inference",
+   "hypothesis",
+   "hypotheses"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A message expressing an opinion based on incomplete evidence"
+ },
+ {
+  "unit": "item:u5",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "lose",
+  "d": "misplace",
+  "wrong": [
+   "lost",
+   "retain",
+   "win",
+   "diminish"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Place (something) where one cannot find it again"
+ },
+ {
+  "unit": "item:u6",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "pig",
+  "d": "hog",
+  "wrong": [
+   "hen",
+   "plump",
+   "beaver",
+   "pigeon"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A large farm animal with a broad snout, raised for meat"
+ },
+ {
+  "unit": "item:u7",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 4,
+  "c": "triangle",
+  "d": "shape",
+  "wrong": [
+   "hexagon",
+   "geometry",
+   "vertex",
+   "conic"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any spatial attributes (especially as defined by outline)"
+ },
+ {
+  "unit": "item:u8",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "pomegranate",
+  "d": "tree",
+  "wrong": [
+   "juniper",
+   "papaya",
+   "currant",
+   "radish"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A tall perennial woody plant having a main trunk and branches forming a distinct elevated crown"
+ },
+ {
+  "unit": "item:u9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "surplus",
+  "d": "excess",
+  "wrong": [
+   "revenue",
+   "premium",
+   "export",
+   "investment"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A quantity much larger than is needed"
+ },
+ {
+  "unit": "item:ua",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "exhaustion",
+  "d": "fatigue",
+  "wrong": [
+   "laziness",
+   "dizziness",
+   "fortitude",
+   "boredom"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Is weariness from exertion"
+ },
+ {
+  "unit": "item:ub",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "equal",
+  "d": "equivalent",
+  "wrong": [
+   "metric",
+   "liter",
+   "newton"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person or thing equal to another in value or measure or force or effect or significance"
+ },
+ {
+  "unit": "item:uc",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "bellow",
+  "d": "roar",
+  "wrong": [
+   "clang",
+   "husky",
+   "whistle",
+   "creak"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A deep prolonged loud noise"
+ },
+ {
+  "unit": "item:ud",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "mire",
+  "d": "bog",
+  "wrong": [
+   "trample",
+   "muck",
+   "grime",
+   "rubble"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Wet spongy ground of decomposing vegetation"
+ },
+ {
+  "unit": "item:ue",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "reasonable",
+  "d": "sensible",
+  "wrong": [
+   "sufficient",
+   "trustworthy",
+   "unfair",
+   "truthful"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Showing reason or sound judgment"
+ },
+ {
+  "unit": "item:uf",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "pollute",
+  "d": "contaminate",
+  "wrong": [
+   "grime",
+   "defile",
+   "percolate",
+   "overburden"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To make something impure, unsafe, or unusable by introducing harmful or undesirable substances into it."
+ },
+ {
+  "unit": "item:ug",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "revising",
+  "d": "rewriting",
+  "wrong": [
+   "documentation",
+   "compilation",
+   "evaluation",
+   "specification"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Editing that involves writing something again"
+ },
+ {
+  "unit": "item:uh",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "trap",
+  "d": "snare",
+  "wrong": [
+   "pry",
+   "escape",
+   "zipper",
+   "bunker"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something (often something deceptively attractive) that catches you unawares"
+ },
+ {
+  "unit": "item:ui",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "sorrow",
+  "d": "sadness",
+  "wrong": [
+   "fury",
+   "joy",
+   "anger",
+   "agony"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Emotions experienced when not in a state of well-being"
+ },
+ {
+  "unit": "item:uj",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "batsman",
+  "d": "batter",
+  "wrong": [
+   "quarterback",
+   "shortstop",
+   "athlete",
+   "acrobat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A ballplayer who is batting"
+ },
+ {
+  "unit": "item:uk",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "systematic",
+  "d": "methodical",
+  "wrong": [
+   "sociological",
+   "computational",
+   "method",
+   "conceptual"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Characterized by method and orderliness"
+ },
+ {
+  "unit": "item:ul",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 8,
+  "c": "consomme",
+  "d": "soup",
+  "wrong": [
+   "marinara",
+   "macaroon",
+   "risotto"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Liquid food especially of meat or fish or vegetable stock often containing pieces of solid food"
+ },
+ {
+  "unit": "item:um",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "decency",
+  "d": "propriety",
+  "wrong": [
+   "skepticism",
+   "leniency",
+   "conscience",
+   "objectivity"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Correct or appropriate behavior"
+ },
+ {
+  "unit": "item:un",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "hare",
+  "d": "mammal",
+  "wrong": [
+   "wildcat",
+   "hound",
+   "tiger",
+   "weasel"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any warm-blooded vertebrate having the skin more or less covered with hair"
+ },
+ {
+  "unit": "item:uo",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "mutter",
+  "d": "mumble",
+  "wrong": [
+   "grin",
+   "wink",
+   "smirk",
+   "shrug"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A soft indistinct utterance"
+ },
+ {
+  "unit": "item:up",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "float",
+  "d": "sink",
+  "wrong": [
+   "ascend",
+   "stormy",
+   "cloudy",
+   "shallow"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Plumbing fixture consisting of a water basin fixed to a wall or floor and having a drainpipe"
+ },
+ {
+  "unit": "item:uq",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "rejection",
+  "d": "refusal",
+  "wrong": [
+   "involvement",
+   "abuse",
+   "conviction"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of refusing"
+ },
+ {
+  "unit": "item:ur",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "native",
+  "d": "aborigine",
+  "wrong": [
+   "turkic",
+   "inhabitant",
+   "borneo",
+   "malay"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An indigenous person who was born in a particular place"
+ },
+ {
+  "unit": "item:us",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "skyline",
+  "d": "horizon",
+  "wrong": [
+   "skyscraper",
+   "rooftop",
+   "marshland",
+   "scape"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The line that forms the apparent border between earth and sky"
+ },
+ {
+  "unit": "item:ut",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "crease",
+  "d": "wrinkle",
+  "wrong": [
+   "matt",
+   "sandpaper",
+   "fray",
+   "thumbnail"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A slight depression in the smoothness of a surface"
+ },
+ {
+  "unit": "item:uu",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "select",
+  "d": "choose",
+  "wrong": [
+   "chosen",
+   "evaluate",
+   "choice",
+   "qualify"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To pick one thing out of several possibilities"
+ },
+ {
+  "unit": "item:uv",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "tracking",
+  "d": "trailing",
+  "wrong": [
+   "conservation",
+   "identification",
+   "fingerprint",
+   "pinpoint"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The pursuit (of a person or animal) by following tracks or marks they left behind"
+ }
+]
