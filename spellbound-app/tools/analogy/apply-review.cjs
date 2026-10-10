@@ -56,7 +56,8 @@ if (cmd === 'ship') {
   const c2by = {}; c2.forEach((u) => { c2by[u.unit] = u; });
   const shipped = {}, ledger = [], dropped = [];
   for (const u of U) {
-    if (three(P1[u.unit])) { shipped[u.unit] = u; ledger.push(...rows1.filter((r) => r.item === u.unit)); continue; }
+    /* a unit that went through cycle 2 is decided by cycle 2: new evidence is never ignored */
+    if (!c2by[u.unit] && three(P1[u.unit])) { shipped[u.unit] = u; ledger.push(...rows1.filter((r) => r.item === u.unit)); continue; }
     if (c2by[u.unit] && three(P2[u.unit])) { shipped[u.unit] = c2by[u.unit]; ledger.push(...rows2.filter((r) => r.item === u.unit)); continue; }
     const last = c2by[u.unit] ? rows2.filter((r) => r.item === u.unit) : rows1.filter((r) => r.item === u.unit);
     ledger.push(...last); dropped.push({ unit: u.unit, why: (last.filter((r) => r.verdict !== 'pass').pop() || {}).reason || 'not three passes' }); }

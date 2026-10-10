@@ -88,30 +88,6 @@
   "reason": "member:category"
  },
  {
-  "unit": "item:30",
-  "pick": "chef",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). If the hidden pair were verb:product, stew/broth/bread would fit instead."
- },
- {
-  "unit": "item:33",
-  "pick": "teacher",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). If the hidden pair were verb:noun, 'instruction' would fit."
- },
- {
-  "unit": "item:39",
-  "pick": "pilot",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'wing' would fit a verb:tool pair."
- },
- {
   "unit": "item:42",
   "pick": "natural",
   "second": [],
@@ -712,38 +688,6 @@
   "reason": "member:category; pork/ham are its meat, not its category"
  },
  {
-  "unit": "item:3h",
-  "pick": "designer",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). "
- },
- {
-  "unit": "item:3j",
-  "pick": "director",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). "
- },
- {
-  "unit": "item:3w",
-  "pick": "climber",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'ladder' would fit a verb:tool pair."
- },
- {
-  "unit": "item:3y",
-  "pick": "swimmer",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'crawl'/'dive' would fit a verb:kind-of pair."
- },
- {
   "unit": "item:4b",
   "pick": "dedication",
   "second": [],
@@ -1294,40 +1238,6 @@
   "unsafe": [],
   "verdict": "",
   "reason": "tool:function"
- },
- {
-  "unit": "item:9p",
-  "pick": "perfumer",
-  "second": [
-   "fragrance"
-  ],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'perfume' is mainly a noun here, so a synonym pair (fragrance) is just as likely as maker-of."
- },
- {
-  "unit": "item:9t",
-  "pick": "rancher",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). "
- },
- {
-  "unit": "item:9v",
-  "pick": "composer",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). elegy/lyric would fit a verb:product pair."
- },
- {
-  "unit": "item:9x",
-  "pick": "rescuer",
-  "second": [],
-  "unsafe": [],
-  "verdict": "",
-  "reason": "A:B pair is shown as '?', so the link cannot be checked; picked the doer noun (consistent with the other '?' items). 'salvation' would fit a verb:noun pair."
  },
  {
   "unit": "item:a1",

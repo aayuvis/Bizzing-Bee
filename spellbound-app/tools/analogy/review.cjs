@@ -67,13 +67,15 @@ else if (cmd === 'blind2') {
     for (const b of JSON.parse(fs.readFileSync(path.join(RD, f), 'utf8'))) { const u = byId[b.unit]; if (!u) continue; n++;
       const second = (b.second || []).filter(Boolean), unsafe = (b.unsafe || []).filter(Boolean); let verdict, reason;
       if (u.kind === 'item') { const ok = String(b.pick || '').toLowerCase() === u.d.toLowerCase();
-        /* a worry the solver wrote down (a broken link, an obscure word, a doubt) fails it too: a doubtful item fails */
+        /* cycle 1 also failed any worry the solver wrote down (stricter than the brief, harmless: round 3 adjudicated every
+           disagreement). From cycle 2 the brief's own rule: a different pick, a second defensible answer or an unsafe word
+           fails; a note passes on to round 3 as a note, and round 3 adjudicates every cycle-2 unit */
         const worry = String(b.reason || '').trim();
-        verdict = ok && !second.length && !unsafe.length && !worry ? 'pass' : 'fail';
-        reason = [ok ? '' : 'blind pick “' + (b.pick || '—') + '”, intended “' + u.d + '”', second.length ? 'second defensible: ' + second.join(', ') : '', unsafe.length ? 'unsafe: ' + unsafe.join(', ') : '', worry].filter(Boolean).join(' · '); }
+        verdict = ok && !second.length && !unsafe.length && (CYCLE > 1 || !worry) ? 'pass' : 'fail';
+        reason = [ok ? '' : 'blind pick “' + (b.pick || '—') + '”, intended “' + u.d + '”', second.length ? 'second defensible: ' + second.join(', ') : '', unsafe.length ? 'unsafe: ' + unsafe.join(', ') : '', worry ? (verdict === 'pass' ? 'note: ' : '') + worry : ''].filter(Boolean).join(' · '); }
       else if (u.kind === 'stem') { const ok = String(b.pick || '').toLowerCase() === u.link.toLowerCase();
         const worry = String(b.reason || '').trim();
-        verdict = ok && !second.length && !unsafe.length && !worry ? 'pass' : 'fail';
+        verdict = ok && !second.length && !unsafe.length && (CYCLE > 1 || !worry) ? 'pass' : 'fail';
         reason = [ok ? '' : 'blind link “' + (b.pick || '—') + '”, intended “' + u.link + '”', second.length ? 'also fits: ' + second.join(', ') : '', unsafe.length ? 'unsafe: ' + unsafe.join(', ') : '', worry].filter(Boolean).join(' · '); }
       else { verdict = b.verdict === 'pass' ? 'pass' : 'fail'; reason = b.reason || ''; }
       if (verdict === 'pass') pass++; out.push({ unit: b.unit, verdict, reason }); }
