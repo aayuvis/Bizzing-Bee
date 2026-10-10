@@ -1,0 +1,1589 @@
+[
+ {
+  "unit": "item:ek",
+  "verdict": "pass",
+  "reason": "Both rounds pass. squeal ~ screech (high-pitched cry) is a thesaurus pair; cluck/meow/coo/moo are other animal calls, none a synonym. Gloss is the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:el",
+  "verdict": "pass",
+  "reason": "Both rounds pass. obsequious = servile; coy/boorish/tactful/surly are not synonyms. Advanced but right for level 9; gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eo",
+  "verdict": "pass",
+  "reason": "Both rounds pass. storyteller = narrator; ballad/romance/saga/memoir are kinds of story, not tellers. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ep",
+  "verdict": "pass",
+  "reason": "Both rounds pass. ferocious = fierce; wildcat/omnivorous/crepuscular/insectivorous are not synonyms (obscure distractors are harmless). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:er",
+  "verdict": "pass",
+  "reason": "Both rounds pass. ventilate = aerate (expose to air). 'belch' is an everyday word, not vulgar or a body insult; pressurize/bilge/effuse do not mean ventilate. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:es",
+  "verdict": "fix",
+  "reason": "Link and gloss sound: oval = ellipse; round/lob are not synonyms. But 'knob' is labelled taboo slang in British English (penis; 'you knob' as an insult), and the rule fails a word that is also a common insult even in an innocent sense; this audience includes UK families. Drop it; round and lob remain.",
+  "drop": [
+   "knob"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ev",
+  "verdict": "pass",
+  "reason": "Both rounds pass. splashing ~ spattering (drops flying out noisily); slush/puddle/skim/plop are not synonyms (a plop is a single drop-in sound). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ew",
+  "verdict": "pass",
+  "reason": "Both rounds pass. conscious = aware; perceptive means insightful, not conscious; subjective/psychic/paranormal are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ey",
+  "verdict": "pass",
+  "reason": "Both rounds pass. wreckage = debris; the harbour words are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f1",
+  "verdict": "pass",
+  "reason": "Both rounds pass. typo = misprint exactly; impression/cursive/photostat/epigraph are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f2",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop. attentive ~ careful (heedful) is a thesaurus pair; the remaining heedless/neglectful are antonyms, so careful is the only defensible answer. Two wrong options is the allowed minimum.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. colleague = associate; classmate is a school peer, not a synonym; nepotism/advisor/congressman differ. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f5",
+  "verdict": "pass",
+  "reason": "Both rounds pass. symbolic = figurative (not literal); stylistic/runic/phonetic/italic are not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. aerate = ventilate; leach/enrich/reabsorb/percolate are soil/water processes, not synonyms. Gloss is a correct sense of ventilate.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fa",
+  "verdict": "pass",
+  "reason": "Both rounds pass. emancipate = liberate; 'liberation' is a noun trap; depose/extort/amnesty differ. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fc",
+  "verdict": "pass",
+  "reason": "Both rounds pass. debris = wreckage; silt/alluvium are sediment, hydrant/rainwater unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fd",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'neurotic'. fixation = preoccupation; partiality (a liking/bias), preoccupy (verb trap) and vulnerability are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ff",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'floodlight'. illuminate = brighten; moonlight (verb: work a second job), flicker and foreground are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fg",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cautious is the opposite of reckless; irresponsible/foolhardy/unruly are near-synonyms of reckless and vicious is unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fh",
+  "verdict": "pass",
+  "reason": "Both rounds pass. reckless is the opposite of cautious; wary/attentive/hesitant are synonyms, trustworthy unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fi",
+  "verdict": "pass",
+  "reason": "Both rounds pass; R2's note that 'effortful' is rare does not sink it: it is a dictionary word, morphologically transparent and the exact opposite at level 7. easy is a synonym; breathless/flawless/effort are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fj",
+  "verdict": "pass",
+  "reason": "Both rounds pass. important is the exact opposite of unimportant; irrelevant/insignificant are synonyms, ignorant/importance are traps. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fk",
+  "verdict": "pass",
+  "reason": "Both rounds pass. rational -> irrational exact; metaphysics/paradox/ethic/realism are not opposites. Gloss stays hidden (it was the maths sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fl",
+  "verdict": "pass",
+  "reason": "Both rounds pass. unimportant is the exact opposite of important; crucial is a synonym; optional (opposite: required), advisory, firsthand are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fm",
+  "verdict": "pass",
+  "reason": "Both rounds pass. impractical is the exact opposite; functional is a synonym; ethical/empirical/proficient unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fn",
+  "verdict": "pass",
+  "reason": "Both rounds pass. arrive is the opposite of leave; vacation matches leave (noun), arrival is the noun trap. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fo",
+  "verdict": "pass",
+  "reason": "Both rounds pass. sunny is the opposite of cloudy; hazy/murky/unclear are synonyms, twilight unrelated. 'Bright and pleasant' reads correctly for weather.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fp",
+  "verdict": "pass",
+  "reason": "Both rounds pass. noisy is the opposite of silent; sneaky/tricky/forget/remember are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fq",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. arrive -> leave is a true opposite; appear (near-synonym), day and begin are not opposites. Gloss stays hidden (it was the noun 'time off').",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fr",
+  "verdict": "pass",
+  "reason": "Both rounds pass. success is the opposite of failure; default/breakdown are near-synonyms, liability/violation unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fs",
+  "verdict": "pass",
+  "reason": "Both rounds pass. rude is the opposite of polite; decent/respectful/kindly are synonyms, awkward unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ft",
+  "verdict": "pass",
+  "reason": "Both rounds pass. proud is the standard opposite of humble; modest is a synonym, pride a noun trap. The gloss is the sense the dictionary pairs with humble as its antonym.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fu",
+  "verdict": "pass",
+  "reason": "Both rounds pass. shallow is the opposite of deep; depression/cavern/rich/dark are not (rich is a deep-colour synonym). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fv",
+  "verdict": "pass",
+  "reason": "Both rounds pass. wild is the opposite of tame; helpless/timid/reckless/selfish are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fw",
+  "verdict": "pass",
+  "reason": "Both rounds pass. shallow -> deep exact; wad/estuary/trout/inlet are not opposites. Gloss stays hidden (it was the noun sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fx",
+  "verdict": "pass",
+  "reason": "Both rounds pass. failure is the opposite of success; recognition/ambition/arrival/merit are not. Gloss acceptable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "fix",
+  "reason": "Agree with R1 over the cycle-1 overrule: quiet also means calm/still (a quiet night, a quiet child), and dictionaries give restless/agitated as its antonyms in that sense, so 'restless' is a second defensible opposite. loud is the clean answer; drop restless. silent/calm (synonyms) and humble remain.",
+  "drop": [
+   "restless"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fz",
+  "verdict": "pass",
+  "reason": "Both rounds pass. proud -> humble is a true opposite; loyal/cowardice/victory/polite are not. Gloss stays hidden (it was the verb sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g0",
+  "verdict": "pass",
+  "reason": "Both rounds pass. polite is the opposite of rude; awkward/sarcastic/vain/cowardice are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g1",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. sunny -> cloudy is a clear opposite; joyful is a synonym of sunny's cheerful sense, summer/winter unrelated. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g2",
+  "verdict": "pass",
+  "reason": "Both rounds pass. frequent is the opposite of rare (a rare vs a frequent event); unusual/scarce are synonyms, difficult/rich unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. ascend is the exact opposite of descend; sink is a synonym, float opposes sink not descend, bottom/stormy unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. decrease is the opposite of increase; boost/buildup are synonyms, likelihood/efficiency unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g5",
+  "verdict": "pass",
+  "reason": "Both rounds pass. tame is the opposite of wild; hardy/timid/innocent/reckless are not clean opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. silent is the opposite of noisy; loud is a synonym; 'silence' is the noun of the opposite (opposes noise, not noisy), a fair word-class trap at level 3. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "fix",
+  "reason": "Agree with R1 over the cycle-1 overrule: the link is right (entrance is the opposite of exit; shut/ascend/sink/exclude are not), but the shown gloss 'Something that provides access (to get in or get out)' tells the child an entrance is also a way out, contradicting the item. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:g8",
+  "verdict": "pass",
+  "reason": "Both rounds pass. loud -> quiet exact; cry/noisy/sad/laugh are not opposites. Gloss stays hidden (it was the noun 'calm weather').",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g9",
+  "verdict": "pass",
+  "reason": "Both rounds pass. exit is the opposite of entrance; tall/cowardice/empty/shut are not. Gloss right (a way out).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ga",
+  "verdict": "pass",
+  "reason": "Both rounds pass. frequent -> rare exact; tame/happy/humble/awake are not opposites. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gb",
+  "verdict": "pass",
+  "reason": "Both rounds pass. increase is the opposite of decrease; decline is a synonym; minimum/likelihood/threshold are not opposites. Noun gloss acceptable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gc",
+  "verdict": "pass",
+  "reason": "Both rounds pass. careful is the opposite of careless; hasty/reckless are synonyms, unhappy/smart unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gd",
+  "verdict": "pass",
+  "reason": "Both rounds pass. disrespect is the opposite of respect; bravery/compassion/admiration/kindness are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ge",
+  "verdict": "pass",
+  "reason": "Both rounds pass. stormy -> calm is a true opposite; twilight/cloudy/brave/dark are not. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gf",
+  "verdict": "pass",
+  "reason": "Both rounds pass. expand is the opposite of shrink; decrease is a synonym, ascend/sink/pull are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gg",
+  "verdict": "pass",
+  "reason": "Both rounds pass; R2's note on obscure distractors does not matter because only d is taught and membrane/membranous is transparent school science at level 8. No other option shares the root. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gh",
+  "verdict": "pass",
+  "reason": "Both rounds pass. odorous is the adjective of odor; rancid/acrid/corrosive/pungent describe smells but are not the derived form. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gi",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'absinthe'. acrid -> acridity is an exact adjective-to-noun pair, transparent at level 8 (acrid smoke); wormwood/sorrel/thyme share no root. Gloss is phrased loosely but names the right (smell) sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gk",
+  "verdict": "pass",
+  "reason": "Both rounds pass. spontaneous -> spontaneity exact; impromptu is a synonym, not family; trance/ionization/agitation unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gl",
+  "verdict": "pass",
+  "reason": "Both rounds pass. false -> falseness exact; fake/true/semblance/plausibility are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gm",
+  "verdict": "pass",
+  "reason": "Both rounds pass. nitrogen -> nitrogenous is transparent at level 8; carbonic belongs to carbon, not nitrogen; no other option shares the root.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "fix",
+  "reason": "Link and gloss sound: gelatin -> gelatinous; greasy/gummy/preservative share no root. But 'pasty' is a body insult (pasty-faced, pale-skinned) - the same word cycle-1 round 3 dropped from item:ly for that reason - so drop it here too for consistency. greasy/gummy/preservative remain.",
+  "drop": [
+   "pasty"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:go",
+  "verdict": "pass",
+  "reason": "Both rounds pass. typography -> typographical exact; graphical shares only a fragment. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gq",
+  "verdict": "pass",
+  "reason": "Both rounds pass; colloids are taught in early secondary science, so colloidal is fine at level 7 and no other option shares the root.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gr",
+  "verdict": "pass",
+  "reason": "Both rounds pass. luxury -> luxurious exact; extravagant/expensive describe luxury but are not the derived form. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gu",
+  "verdict": "pass",
+  "reason": "Both rounds pass. entangle -> entanglement exact; tether/slack/aileron/shackle share no root. Gloss stays hidden (it was the trap sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gv",
+  "verdict": "pass",
+  "reason": "Both rounds pass. oscillate -> oscillation exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gw",
+  "verdict": "pass",
+  "reason": "Both rounds pass. magnetize -> magnetization exact; electromagnet is a different word, not the verb's noun. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gx",
+  "verdict": "pass",
+  "reason": "Both rounds pass. preoccupy -> preoccupation exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gy",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'pathetic'. rapture -> rapturous exact; sorrowful/regretful/thankful share no root. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gz",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'eleusinian'. mystery -> mysterious exact; suspenseful/imponderable/allegorical are other roots. The gloss shows the right sense; its stray leading 'Is' is cosmetic (worth stripping in the data, not a reason to hold the item).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h0",
+  "verdict": "pass",
+  "reason": "Both rounds pass. utter -> utterance exact; lament/lamentation/declamation/disapproval are other roots. Gloss is the speech sense, correct.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h1",
+  "verdict": "pass",
+  "reason": "Both rounds pass. desire -> desirous exact; obsessive/compulsive are everyday adjectives, not diagnostic labels, and futile/considerate are unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h2",
+  "verdict": "pass",
+  "reason": "Both rounds pass. bronchi -> bronchial exact and school biology at level 7; purulent is a medical term, not gore; distractor obscurity is harmless as only d is taught.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. advantage -> advantageous exact; illicit/gullible/underhanded/managerial are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h5",
+  "verdict": "pass",
+  "reason": "Both rounds pass; effortful is uncommon but a real, transparent dictionary word and the only family member offered (diligent/ambitious/futile/hardworking are other roots). Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cheerful -> cheerfulness exact; mirth/delight are related nouns but other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h7",
+  "verdict": "pass",
+  "reason": "Both rounds pass. polygon -> polygonal exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h8",
+  "verdict": "pass",
+  "reason": "Both rounds pass. excel -> excellence exact; prodigy/doctorate/solver/adept are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h9",
+  "verdict": "pass",
+  "reason": "Both rounds pass. convex -> convexity exact; concavity is the opposite's family. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ha",
+  "verdict": "pass",
+  "reason": "Both rounds pass. avoid -> avoidance exact; escape/swerve/extrication/secrecy are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hb",
+  "verdict": "pass",
+  "reason": "Both rounds pass. trivial -> triviality exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hc",
+  "verdict": "pass",
+  "reason": "Both rounds pass. allegory -> allegorical exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "fix",
+  "reason": "Link and gloss sound: continuance is a real noun of continue; disruption/resume/inactivity share no root. Agree with R1 over the cycle-1 overrule: 'abort' as random filler carries a dominant adult sense (ending a pregnancy) that parents of 8-15s will object to whatever sense was meant, and nothing is lost by removing it. Drop abort; three wrong options remain.",
+  "drop": [
+   "abort"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:he",
+  "verdict": "pass",
+  "reason": "Both rounds pass. foundation -> foundational exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hf",
+  "verdict": "pass",
+  "reason": "Both rounds pass. intimidate -> intimidation is the verb's noun; timidity is the noun of timid, not of intimidate, so it is a fair trap. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hh",
+  "verdict": "pass",
+  "reason": "Both rounds pass. gneiss is a (metamorphic) rock, a classic spelling word at level 7; basalt/olivine/mica are siblings or minerals, rocky an adjective. Gloss conveys rock.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hj",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'sulfide'. pyrite is a mineral; hematite is a sibling, arsenate a salt, lanthanum an element. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "fix",
+  "reason": "Agree with R1 over the cycle-1 overrule: the link is right (a synthesizer is a musical instrument; amplifier/sonata/multimedia/instrumental fail it), but the gloss is the general 'device that requires skill' sense, not the musical one, and the same gloss was hidden for piano, harpsichord and oboe. Hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:hn",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A stethoscope is an instrument, and here the general 'device that requires skill' gloss is the right (medical-instrument) sense; eardrum/migraine/ultrasound/instrumental are not its categories.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hp",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A llama is an animal; muskrat/marmoset/anteater/walruses are animals, not categories, so animal is the only answer. R2's level-mismatch note is about elegance, not correctness.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hs",
+  "verdict": "pass",
+  "reason": "Both rounds pass. honeysuckle is the familiar climbing vine; myrtle/primrose/crocus/cornel are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hv",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A gardenia is a shrub; myrtle/zinnia/dianthus are siblings, shrubby a family trap. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hw",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'twill'. gabardine is a fabric; argyle is a pattern, chemise a garment, crinoline a different fabric/petticoat, none a category of gabardine. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "fix",
+  "reason": "Link and gloss sound: marinara is a sauce; mozzarella/cutlet/brioche are not its categories. But 'parmesan' is a proper adjective (of Parma) that dictionaries capitalise, shown in lowercase as filler - the same call cycle-1 round 3 made for 'alsatian'. Drop it; mozzarella/cutlet/brioche remain.",
+  "drop": [
+   "parmesan"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hy",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. quiche is a dish (of food); marinara/anchovy/quince are not its categories. Gloss stays hidden (it was the dishware sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i1",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'aqua'. turquoise is a mineral; glint/dapple/fleck are not categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. diorite is an igneous rock found on school rock-classification charts; olivine (mineral), marl and basalt are siblings, rocky an adjective. Acceptable at level 7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A monotreme is a mammal; platypus is the reverse direction (a kind of monotreme); fissiped/copepod/decapod are not its categories. Fine at level 8. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i7",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'malaysian'. mesquite is a tree; hazel/myrtle/sedge are siblings. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ia",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A pterodactyl (pterosaur) is a reptile; dragonfly/narwhal/papillon/platypus are not its categories. Gloss right for reptile.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ib",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A chrysanthemum is a flower; dianthus/marigold/carnation/primrose are sibling flowers. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:id",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'overall'. A coverall is a garment; overcoat/dolman/necktie are siblings. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:if",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'buttock'. A quadruped is an animal; tarsus/incisor/pectoral are body parts. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ig",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. excess = overabundance; anemia and depletion are near-opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ih",
+  "verdict": "pass",
+  "reason": "Both rounds pass; R2's 'weak pair' note does not hold: the dictionary lists introduce/acquaint/present together ('cause to come to know personally'), which is the gloss. formulate/reformulate/restate/modernize are not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ir",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'turnip'. rutabaga is a vegetable; dill/radish/taro are siblings. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:is",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. A harpsichord is an instrument; tambourine is a sibling, pavane/minuet dances, instrumental an adjective. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:it",
+  "verdict": "pass",
+  "reason": "Both rounds pass. malachite is a mineral; topaz/beryl/chalcedony/amethyst are siblings. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:iu",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cancel -> cancellation exact; dismissal/postponement/lapse/forfeit are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:iv",
+  "verdict": "fail",
+  "reason": "Both rounds passed, but I fail it on suitability. tonal/tonality are music-theory terms well beyond a level-5 (about age 11) child, and the shown gloss ('Any of 24 major or minor diatonic scales that provide the tonal framework...') is the technical 'key' sense rather than the quality-of-being-tonal sense the link implies, and is itself unreadable at that age. Hiding the gloss would not fix the level. R2's own note flagged the obscurity.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:iw",
+  "verdict": "pass",
+  "reason": "Both rounds pass. alphabet -> alphabetic exact; cursive/numeral/phonetic/shorthand are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:iy",
+  "verdict": "pass",
+  "reason": "Both rounds pass. conversation -> conversational exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:iz",
+  "verdict": "pass",
+  "reason": "Both rounds pass. conceal -> concealment exact; disguise/covert/motive/semblance are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j0",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cycle -> cyclical exact; lunar/successive/tertiary/aerobic are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j1",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cruel is the opposite of kind; cruelty is a noun trap, tame/frequent/accept are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j2",
+  "verdict": "pass",
+  "reason": "Both rounds pass. artificial is the opposite of natural; inherent/permanent/true/tame are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. tall -> short; high is a synonym, narrow opposes wide, sunny/entrance unrelated. Gloss stays hidden (it was the length/duration sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. cheap is the opposite of expensive; costly is a synonym; gross (an ordinary word) and import/export are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j5",
+  "verdict": "pass",
+  "reason": "Both rounds pass. asleep is the opposite of awake. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. innocent is the opposite of guilty; cowardice/reckless/cruel/selfish are not. Gloss stays hidden (it was the noun sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j7",
+  "verdict": "pass",
+  "reason": "Both rounds pass. tight is the opposite of loose; dirty/thick/cloudy/shrink are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j8",
+  "verdict": "pass",
+  "reason": "Both rounds pass. advantageous = beneficial; taxable/illicit/stingy/transferable are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j9",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. dread = apprehension (fearful anticipation); a nightmare is a bad dream or ordeal and timidity is shyness, neither means dread. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ja",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A beetle is an insect; toad/larvae/cacti/shrew are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jb",
+  "verdict": "pass",
+  "reason": "Both rounds pass. mutter = murmur; grin/wink/smirk/shrug are gestures. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jc",
+  "verdict": "pass",
+  "reason": "Both rounds pass. envoy = delegate (a representative sent for others); correspondent/registrar/subscriber/visa are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jd",
+  "verdict": "pass",
+  "reason": "Both rounds pass. flood = deluge; wildfire/landslide/rubble/outage are other events. Gloss is a shared sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:je",
+  "verdict": "pass",
+  "reason": "Both rounds pass. epinephrine = adrenaline (the EpiPen word); pituitary/embolism/gallbladder are clearly wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jh",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. joke = jest; silly is an adjective and nonsense means meaningless talk, not a joke. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jj",
+  "verdict": "pass",
+  "reason": "Both rounds pass. automobile = car exactly; trailer/fender/aircraft/tow are related words. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jl",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Sandstone is a rock; basalt/feldspar are siblings, meteorite is not its category, rocky an adjective. Gloss conveys rock.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jn",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A basket is a container; wicker is a material, bale a bundle, sack a sibling container, cane a material. Gloss's general sense leads.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jo",
+  "verdict": "pass",
+  "reason": "Both rounds pass. sloth (the vice) = laziness, as the gloss shows; the animal distractors are a fair trap and none means laziness.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jp",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'murder'. rogue = rascal; felon is a legal term for a convicted criminal, cabal a group, traitor a betrayer. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jq",
+  "verdict": "pass",
+  "reason": "Both rounds pass. appease = pacify; retaliate/harass/pester run the other way, forgive differs. Gloss is a shared sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jr",
+  "verdict": "pass",
+  "reason": "Both rounds pass. commit (a crime) = perpetrate; abet/mastermind/trespass are different acts, perpetrator a noun. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:js",
+  "verdict": "pass",
+  "reason": "R1 failed on difficulty and looseness; I side with R2 and cycle-1 round 3. Dictionaries give 'a limb of the body' as extremity's first anatomical sense (upper/lower extremities), and thesauri list extremity for limb; hind/femur/elbow/sternum are parts, not synonyms, so the answer is unambiguous. extremity is a stretch word, not an obscure one, at level 4.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jt",
+  "verdict": "pass",
+  "reason": "Both rounds pass. writer = author; biography/reader/editor are related but different. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "pass",
+  "reason": "R1 failed on the narrow award sense; I side with R2 and cycle-1 round 3. 'A citation for bravery' is a real, current sense that dictionaries pair with commendation, the gloss teaches exactly that sense, and the other options (condemnation an opposite; earnest/frivolity/discontent unrelated) leave citation as the only defensible answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jv",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. belly = stomach in everyday use; pelvis/thorax/femur are other body regions. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:jy",
+  "verdict": "pass",
+  "reason": "Both rounds pass. imagine -> imagination exact; picture/creation/arrival/description are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k1",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. exactness = precision; brevity/criterion are not synonyms. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k2",
+  "verdict": "pass",
+  "reason": "Both rounds pass. marriage = matrimony; husband/kinship/paternity/niece are family words, not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Eggplant is a vegetable; parsley/kale/cauliflower/rosemary are siblings. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k4",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'sheen'. sparkle = gleam; emerald/lantern/opal are things, not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k6",
+  "verdict": "pass",
+  "reason": "Both rounds pass. bravery = courage; heroic is an adjective, triumph/mercy/betrayal differ. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k8",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. A piano is an instrument; recital/instrumental/composer fail the link. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ka",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'decency'. correctness = accuracy; criterion/discretion/authenticity are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kb",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. partnership = alliance; kinship and equity are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kc",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'paleozoic'. A tortoise is a reptile; otter/salamander/crayfish are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kd",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. alienate = estrange; distrust/mistrust/confide/abash are not synonyms. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ke",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. wrinkle = crease; freckle/fuzz are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kg",
+  "verdict": "pass",
+  "reason": "Both rounds pass. longing = craving (intense desire); sorrow/inspiration/agony/joy are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ki",
+  "verdict": "pass",
+  "reason": "Both rounds pass. shattering = smashing; windshield/weld/grit/sawdust are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kj",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. sorry = apologetic; pointless/optimistic are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kk",
+  "verdict": "pass",
+  "reason": "Both rounds pass. flatterer = sycophant; talker/knave/satirist are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kl",
+  "verdict": "pass",
+  "reason": "Both rounds pass. navigation -> navigational exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:km",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. queue = line; picket (a stake or a protester), stairway/sentry/roadway are not synonyms. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ko",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'bulk'. size = magnitude; thickness is one dimension, decrease/average differ. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kp",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. sell -> buy; sold is a tense of sell, export opposes import, buyer a noun. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "fix",
+  "reason": "Link is sound (loyalty = devotion; betrayal/leadership/agony/believer are not synonyms), but agree with R1: the gloss 'Strong attachment zeal enthusiasm' has lost its punctuation and reads as a word pile to a level-2 (about age 9) child, so it does not show the sense usably. Hiding is the only mechanical remedy; the pair stands without it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:ks",
+  "verdict": "pass",
+  "reason": "Both rounds pass. import is the opposite of export; sell/lend/plentiful/scarce are not. Noun gloss matches the noun use.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kt",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A peacock is a bird; crimson/crest/emerald are not categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ku",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. vicious = cruel; cruelty is a noun, pitiable differs. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kv",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'racket'. A bat (animal) is a mammal; whistle/cricket/flick are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kx",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. Broccoli is a plant; parsley/pea/blueberry are siblings. Gloss stays hidden (it was the factory sense).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:kz",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. Turmeric is a plant; nutmeg/apricot/cola/cumin are sibling plants, not its categories. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:l2",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'levant'. cape = headland (geographic sense, shown by the gloss); banner/lapel/turban are garment traps, used neutrally. Fine at level 4.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:l3",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'conjecture'. supposition = assumption; misconception/censorship are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:l5",
+  "verdict": "pass",
+  "reason": "Both rounds pass. sadness = sorrow; rage/fury/anger/optimism are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:l8",
+  "verdict": "pass",
+  "reason": "Both rounds pass; R2's 'loose' note does not hold: to deny a claim is to contradict it, and dictionaries define deny with 'contradict'. assert/affirm/confess run the other way, forgiven unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:l9",
+  "verdict": "pass",
+  "reason": "Both rounds pass. untruth = falsehood; liar is a person, perjury an offence, false an adjective, contradictory differs. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:la",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. progress = advancement; recovery/resume/disruption are not synonyms. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lb",
+  "verdict": "pass",
+  "reason": "Both rounds pass. questionable = doubtful; believable is an opposite, sensible/pessimistic/prudent differ. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lc",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. kingdom = realm; heir/reign are not synonyms. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ld",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. fireplace = hearth in common use; alcove/rooftop/patio/bathtub are wrong. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:le",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Corundum is a mineral (the 9 on the school Mohs scale); beryl/hematite/graphite are siblings, osmium an element. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lg",
+  "verdict": "pass",
+  "reason": "Both rounds pass. rival = opponent; faction/triumph/champion/contest are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lh",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'humble'. high -> low; height/peak/tall are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lj",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'brother'. friend = pal; sister and gas are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lk",
+  "verdict": "pass",
+  "reason": "Both rounds pass. drape (noun) = curtain; blouse/bodice/denim/plaid are garments or fabrics. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ll",
+  "verdict": "pass",
+  "reason": "Both rounds pass. incapable = unable; capable/able are opposites, liable/lax unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lm",
+  "verdict": "pass",
+  "reason": "Both rounds pass. panic = terror; upset/bother/agony are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ln",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'secrecy'. confidence = certainty (with confidence = with certainty); gratitude/generosity differ and certain is the adjective trap. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lp",
+  "verdict": "pass",
+  "reason": "Both rounds pass. A barge is a boat; wharf/waterway/quay/freight are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lq",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. animosity = hatred (lasting intense dislike, which is the gloss); anger is a passing emotion and indignation is anger at unfairness, neither a synonym. Fine at level 4.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lr",
+  "verdict": "pass",
+  "reason": "Both rounds pass. certificate = credential; subscription/shareholder/applicant/debit are wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ls",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. An oboe is an instrument; harp/saxophone/bass are siblings, instrumental an adjective. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lu",
+  "verdict": "pass",
+  "reason": "Both rounds pass. spool = bobbin; pulley/batten/worker/artisan are wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lv",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'lingerie'. flannel is a fabric; sweater/overcoat are garments, plaid a pattern. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lx",
+  "verdict": "pass",
+  "reason": "Both rounds pass. talkative = loquacious at level 9; boastful/vain/lighthearted/affable are not. The gloss shows the right sense; its stray leading 'Is' is cosmetic.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ly",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'pasty'. lacquer = varnish; absorbent/gypsum/inlay are wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:lz",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'ethnic'. nation = country; treaty/union are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m0",
+  "verdict": "pass",
+  "reason": "Both rounds pass. farewell = goodbye; jest/jolly/smirk/dear are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m3",
+  "verdict": "pass",
+  "reason": "Both rounds pass. fear = fright; cruelty/torment/anger/agony are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. able -> ability exact; can is a synonym of able, not its family noun; honesty/truth/freedom are other roots. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "fix",
+  "reason": "Link and gloss sound: bump (a lump from a knock) = swelling; shin/sag/eyelash are wrong. Agree with R1 over the cycle-1 overrule that 'blister' is also a raised bump on the skin, so a careful child can defend it in the same injury sense. Drop blister; shin/sag/eyelash remain.",
+  "drop": [
+   "blister"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m7",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. predict = foretell; calculate/theorize/determine/fathom are not synonyms. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m9",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'tramp'. An ambulance is a vehicle; motorist/baggage/taxicab are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ma",
+  "verdict": "pass",
+  "reason": "Both rounds pass. marshy = swampy; mossy/upland/sandy/outback are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mb",
+  "verdict": "pass",
+  "reason": "Both rounds pass. grudge = grievance (the shared dictionary sense in the gloss); mistrust/miser/forgiveness/wrath are not.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mc",
+  "verdict": "pass",
+  "reason": "Both rounds pass. company = business; buyer/investment/pension are wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:me",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 fix. monument = memorial; legacy and cemetery are not synonyms. Gloss stays hidden.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "pass",
+  "reason": "R1 failed on level only; I side with R2. evoke = elicit (call forth a response) is exact, both are standard middle-school academic vocabulary (a stretch at level 4, not obscure), and sublime/heighten/mute leave elicit the only defensible answer. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mg",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'mansion'. hall = corridor (the gloss sense); palace/grand/barn are not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mh",
+  "verdict": "pass",
+  "reason": "Both rounds pass. decrease = reduction; increase is the opposite, inflation/minimum/likelihood wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mi",
+  "verdict": "pass",
+  "reason": "Both rounds pass. bland = tasteless (lacking flavour, as the gloss shows); flavorful is the opposite, nutty/wonderful/fizzy differ.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mj",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. undergrowth = brush; scurry/cheetah are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mk",
+  "verdict": "pass",
+  "reason": "Both rounds pass. declaration = statement; confirmation/prosecution/approval/confession are specific acts. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ml",
+  "verdict": "pass",
+  "reason": "Both rounds pass. smile = grin; frown is the opposite, wink/agony differ. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mm",
+  "verdict": "pass",
+  "reason": "Both rounds pass; humanity's dictionary sense 'the quality of being humane' is the gloss, and it shares the root, so the family link holds. leniency/skepticism/classical/realization are other roots.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mo",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. aggression = belligerence; harassment/abashment are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mq",
+  "verdict": "pass",
+  "reason": "Both rounds pass. nonsense = gibberish; jest/mumble/elocution/anecdote are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mr",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'skillet'. A griddle is a cooking utensil; cornbread/flatbread/broiler are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ms",
+  "verdict": "pass",
+  "reason": "Both rounds pass. flower = blossom; petal is a part, clover/lily are kinds, purple a colour. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mt",
+  "verdict": "pass",
+  "reason": "Both rounds pass. verse = poetry; poetic is the adjective trap, sung/composer/accent wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mu",
+  "verdict": "pass",
+  "reason": "Both rounds pass. headgear = headdress; sling/footwear/girth/crossbar wrong. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mw",
+  "verdict": "pass",
+  "reason": "Both rounds pass. Crimson is a color; emerald/ruby are sibling colours, colorful an adjective. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:mx",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'ruthless'. cruel = vicious; reckless/kind/dreadful are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:my",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drops. shameful = scandalous; tactless/pitiable are not. The gloss shows the right sense; its stray leading 'Is' is cosmetic.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:n1",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'eclipse'. disappearance = vanishing; revelation/landslide/chronicle are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:n3",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'desultory'. unhurried = leisurely; brisk/hasty are opposites, giddy differs. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:n4",
+  "verdict": "pass",
+  "reason": "Both rounds pass. creature = animal; serpent/hare/turtle/wolf are kinds of creature, not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:n6",
+  "verdict": "pass",
+  "reason": "Both rounds pass after the cycle-1 drop of 'array'. display = exhibition; artwork/ruby/emblem are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:n7",
+  "verdict": "pass",
+  "reason": "Both rounds pass. pacify = appease; reproach/retaliate run the other way, discontent is a noun. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ }
+]

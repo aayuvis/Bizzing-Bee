@@ -1,0 +1,7003 @@
+[
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "dedication",
+  "d": "devotion",
+  "wrong": [
+   "mentor",
+   "mastery",
+   "agony"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Strong attachment zeal enthusiasm"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "item",
+  "d": "object",
+  "wrong": [
+   "buyer",
+   "bin",
+   "sort"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A tangible and visible entity"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "bug",
+  "d": "insect",
+  "wrong": [
+   "spider",
+   "toad",
+   "slug",
+   "tick"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Small air-breathing arthropod"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:11",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:11",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:11",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "remember",
+  "d": "forget",
+  "wrong": [
+   "think",
+   "swap",
+   "sneak",
+   "silent"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Dismiss from the mind"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:14",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:14",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:14",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "visible",
+  "d": "hidden",
+  "wrong": [
+   "apparent",
+   "unclear",
+   "darker",
+   "reveal"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Prevent from being seen or discovered"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:17",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:17",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:17",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "brave",
+  "d": "timid",
+  "wrong": [
+   "dare",
+   "veteran",
+   "doom",
+   "stole"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Shy and easily frightened"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:19",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:19",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:19",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "sour",
+  "d": "sweet",
+  "wrong": [
+   "ginger",
+   "almond",
+   "stale",
+   "tame"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Tasting like sugar or honey"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:20",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:20",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:20",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 1,
+  "c": "gold",
+  "d": "metal",
+  "wrong": [
+   "ruby",
+   "blue",
+   "amber"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:22",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:22",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:22",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "bus",
+  "d": "vehicle",
+  "wrong": [
+   "subway",
+   "coach"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A conveyance that transports people or objects"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:24",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:24",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:24",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "tennis",
+  "d": "sport",
+  "wrong": [
+   "hockey",
+   "soccer",
+   "football",
+   "puck"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An active diversion requiring physical exertion and competition"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:25",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:25",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:25",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "truck",
+  "d": "vehicle",
+  "wrong": [
+   "cart",
+   "freight",
+   "trailer",
+   "railway"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A conveyance that transports people or objects"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:26",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:26",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:26",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "jet",
+  "d": "aircraft",
+  "wrong": [
+   "rocket",
+   "rotor",
+   "ignition"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A vehicle that can fly"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:28",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:28",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:28",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "apple",
+  "d": "fruit",
+  "wrong": [
+   "mustard",
+   "ginger",
+   "walnut",
+   "bean"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "The ripened reproductive body of a seed plant"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:29",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:29",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:29",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "copper",
+  "d": "metal",
+  "wrong": [
+   "platinum",
+   "aluminum",
+   "flint",
+   "ceramic"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:31",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:31",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:31",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "report",
+  "d": "reporter",
+  "wrong": [
+   "audit",
+   "account",
+   "editor",
+   "reader"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who investigates and reports or edits news stories"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:32",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:32",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:32",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "edit",
+  "d": "editor",
+  "wrong": [
+   "email",
+   "translator",
+   "reporter",
+   "writer"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person responsible for the editorial aspects of publication"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:34",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:34",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:34",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 2,
+  "c": "govern",
+  "d": "governor",
+  "wrong": [
+   "feminist",
+   "leader",
+   "follower",
+   "guardian"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "The head of a state government"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:35",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:35",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:35",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 2,
+  "c": "photograph",
+  "d": "photographer",
+  "wrong": [
+   "caption",
+   "chart",
+   "picture",
+   "skater"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who takes photographs professionally"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:36",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:36",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:36",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 2,
+  "c": "build",
+  "d": "builder",
+  "wrong": [
+   "framework",
+   "prop",
+   "figure",
+   "foundation"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone whose job is putting up houses and other structures"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:37",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:37",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:37",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 2,
+  "c": "visit",
+  "d": "visitor",
+  "wrong": [
+   "tour",
+   "stay",
+   "rescuer",
+   "translator"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who visits"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:38",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:38",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:38",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 2,
+  "c": "run",
+  "d": "runner",
+  "wrong": [
+   "reset",
+   "streak",
+   "skater",
+   "translator"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who runs, especially in a race"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:40",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:40",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:40",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "short",
+  "d": "tall",
+  "wrong": [
+   "brief",
+   "summary",
+   "blunt",
+   "forget"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Higher from top to bottom than most others"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:41",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:41",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:41",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "hate",
+  "d": "love",
+  "wrong": [
+   "hatred",
+   "anger",
+   "selfish",
+   "timid"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "A strong positive emotion of regard and affection"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:50",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:50",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:50",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "lens",
+  "d": "camera",
+  "wrong": [
+   "optic",
+   "laser",
+   "infrared",
+   "vision"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "Equipment for taking photographs (usually consisting of a lightproof box with a lens at one end and…"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:51",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:51",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:51",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "claw",
+  "d": "cat",
+  "wrong": [
+   "hind",
+   "beak",
+   "nail",
+   "fin"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A small, furry animal kept as a pet that purrs and meows"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:52",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:52",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:52",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "string",
+  "d": "guitar",
+  "wrong": [
+   "fret",
+   "drum",
+   "thread",
+   "tape"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A stringed instrument usually having six strings"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:54",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:54",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:54",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "handle",
+  "d": "mug",
+  "wrong": [
+   "staff",
+   "caution",
+   "grip"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A large, sturdy cup with a handle for hot drinks."
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:59",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:59",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:59",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 5,
+  "c": "wheel",
+  "d": "bicycle",
+  "wrong": [
+   "pivot",
+   "propeller",
+   "helm"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A wheeled vehicle that has two wheels and is moved by foot pedals"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:60",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:60",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:60",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "boot",
+  "d": "leather",
+  "wrong": [
+   "jacket",
+   "kick",
+   "beef",
+   "denim"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "An animal skin made smooth and flexible by removing the hair and then tanning"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:61",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:61",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:61",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "brick",
+  "d": "clay",
+  "wrong": [
+   "toy",
+   "marble",
+   "canvas",
+   "wood"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A very fine-grained soil that is plastic when moist but hard when fired"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:63",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:63",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:63",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "pen",
+  "d": "write",
+  "wrong": [
+   "unlock",
+   "sweep",
+   "sew",
+   "photograph"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Produce a literary work"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:65",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:65",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:65",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "brake",
+  "d": "slow",
+  "wrong": [
+   "unlock",
+   "sweep",
+   "wake",
+   "signal"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Lose velocity"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:66",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:66",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:66",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "funnel",
+  "d": "pour",
+  "wrong": [
+   "sweep",
+   "boil",
+   "freeze",
+   "shred"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To dispense from a container."
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:70",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:70",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:70",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "soap",
+  "d": "clean",
+  "wrong": [
+   "shred",
+   "boil",
+   "freeze",
+   "cool"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Free from dirt, marks, or mess"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:71",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:71",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:71",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "towel",
+  "d": "dry",
+  "wrong": [
+   "shred",
+   "sew",
+   "bake",
+   "wake"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Not wet"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:74",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:74",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:74",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "glance",
+  "d": "glimpse",
+  "wrong": [
+   "fumble",
+   "swipe",
+   "acceptance",
+   "grin"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A quick look"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:78",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:78",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:78",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "bargain",
+  "d": "deal",
+  "wrong": [
+   "broker",
+   "buyer",
+   "pension",
+   "mortgage"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An offering of a combination of products at a special price"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:82",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:82",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:82",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "bucket",
+  "d": "pail",
+  "wrong": [
+   "tub",
+   "faucet",
+   "artery",
+   "bale"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A roughly cylindrical vessel that is open at the top"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:83",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:83",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:83",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "danger",
+  "d": "dangerous",
+  "wrong": [
+   "fraught",
+   "imminent",
+   "unharmed",
+   "heroic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Involving or causing danger or risk"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:84",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:84",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:84",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "choose",
+  "d": "choice",
+  "wrong": [
+   "preference",
+   "bargain",
+   "negotiator",
+   "arrival"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The person or thing chosen or selected"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:85",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:85",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:85",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "argue",
+  "d": "argument",
+  "wrong": [
+   "philosopher",
+   "reformer",
+   "critic",
+   "economist"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A fact or assertion offered as evidence that something is true"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:86",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:86",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:86",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "hero",
+  "d": "heroic",
+  "wrong": [
+   "wizard",
+   "novel",
+   "tragic",
+   "magical"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Very brave and daring"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:88",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:88",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:88",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "fame",
+  "d": "famous",
+  "wrong": [
+   "heroic",
+   "childish",
+   "joyful",
+   "magical"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Widely known and esteemed"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:89",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:89",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:89",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "fail",
+  "d": "failure",
+  "wrong": [
+   "default",
+   "refusal",
+   "arrival",
+   "enjoyment"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "An act that fails"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:90",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:90",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:90",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "lonely",
+  "d": "loneliness",
+  "wrong": [
+   "lovely",
+   "oasis",
+   "brook",
+   "stranger"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being alone in solitary isolation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:91",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:91",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:91",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "certain",
+  "d": "certainty",
+  "wrong": [
+   "mammalian",
+   "microbiology",
+   "inevitable",
+   "found"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being certain"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:95",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:95",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:95",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "narrative",
+  "d": "story",
+  "wrong": [
+   "scenario",
+   "biography",
+   "prose",
+   "commentary"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A message that tells the particulars of an act or occurrence or course of events"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:104",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:104",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:104",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "collision",
+  "d": "impact",
+  "wrong": [
+   "accelerator",
+   "explosion",
+   "bombardment",
+   "photon"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The striking of one body against another"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:109",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:109",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:109",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "pasture",
+  "d": "meadow",
+  "wrong": [
+   "lawn",
+   "boar",
+   "cattle",
+   "sow"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A field where grass or alfalfa are grown to be made into hay"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:111",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:111",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:111",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "figurative",
+  "d": "metaphorical",
+  "wrong": [
+   "subjective",
+   "implicit",
+   "communicative",
+   "substantive"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Expressing one thing in terms normally denoting another"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:114",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:114",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:114",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "spiteful",
+  "d": "malicious",
+  "wrong": [
+   "cowardly",
+   "abominable",
+   "vile",
+   "immoral"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Marked by evil intention"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:116",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:116",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:116",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "ricotta",
+  "d": "cheese",
+  "wrong": [
+   "flatbread",
+   "cutlet",
+   "hummus",
+   "tahini"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A solid food prepared from the pressed curd of milk"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:118",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:118",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:118",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "decoration",
+  "d": "adornment",
+  "wrong": [
+   "drapery",
+   "wreath",
+   "shawl",
+   "swimsuit"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A decoration of color or interest that is added to relieve plainness"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:120",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:120",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:120",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "enthusiasm",
+  "d": "eagerness",
+  "wrong": [
+   "elation",
+   "rapture",
+   "acceptance",
+   "mirth"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A positive feeling of wanting to push ahead with something"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:123",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:123",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:123",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "axe",
+  "d": "tool",
+  "wrong": [
+   "vertex",
+   "pivot",
+   "overlap"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:126",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:126",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:126",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "coldness",
+  "d": "chill",
+  "wrong": [
+   "wetness",
+   "depletion",
+   "blindness",
+   "fluctuation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Coldness due to a cold environment"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:127",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:127",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:127",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "tiresome",
+  "d": "tedious",
+  "wrong": [
+   "optimistic",
+   "hesitant",
+   "impatient",
+   "tearful"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Too long, slow, or dull"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:132",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:132",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:132",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "omit",
+  "d": "omission",
+  "wrong": [
+   "modifier",
+   "pronunciation",
+   "punctuation",
+   "parentheses"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of omitting"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:133",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:133",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:133",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "noon",
+  "d": "midday",
+  "wrong": [
+   "july",
+   "december",
+   "november",
+   "tuesday"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The middle of the day"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:138",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:138",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:138",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "picturesque",
+  "d": "scenic",
+  "wrong": [
+   "lurid",
+   "dingy",
+   "spooky"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Used of locations"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:139",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:139",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:139",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "zero",
+  "d": "nothing",
+  "wrong": [
+   "total",
+   "maximum",
+   "volt",
+   "gross"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A quantity of no importance"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:141",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:141",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:141",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "sofa",
+  "d": "couch",
+  "wrong": [
+   "mattress",
+   "upstairs",
+   "furniture",
+   "plush"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An upholstered seat for more than one person"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:142",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:142",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:142",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "lace",
+  "d": "shoe",
+  "wrong": [
+   "linen",
+   "string"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "Footwear shaped to fit the foot (below the ankle) with a flexible upper of leather or plastic and a sole…"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:143",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:143",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:143",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "rowboat",
+  "d": "boat",
+  "wrong": [
+   "sailboat",
+   "paddock",
+   "dugout",
+   "upstairs"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A small vessel for travel on water"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:145",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:145",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:145",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "residence",
+  "d": "dwelling",
+  "wrong": [
+   "dean",
+   "diocese",
+   "deacon",
+   "seclusion"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Housing that someone is living in"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:153",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:153",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:153",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "gaze",
+  "d": "stare",
+  "wrong": [
+   "doom",
+   "twilight",
+   "admiration",
+   "awe"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A fixed look with eyes open wide"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:156",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:156",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:156",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "import",
+  "d": "export",
+  "wrong": [
+   "investment",
+   "premium",
+   "expensive",
+   "plentiful"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Commodities (goods or services) sold to a foreign country"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:167",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:167",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:167",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "symbolize",
+  "d": "represent",
+  "wrong": [
+   "enthrone",
+   "blazon",
+   "divest"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Take the place of or be parallel or equivalent to"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:169",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:169",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:169",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "tendon",
+  "d": "sinew",
+  "wrong": [
+   "humerus",
+   "femur",
+   "umbilical",
+   "navel"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A cord or band of inelastic tissue connecting a muscle with its bony attachment"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:170",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:170",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:170",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "gullible",
+  "d": "naive",
+  "wrong": [
+   "vindictive",
+   "selfish",
+   "docile",
+   "unkind"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Unsophisticated or ingenuous"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:171",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:171",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:171",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "marshy",
+  "d": "boggy",
+  "wrong": [
+   "mossy",
+   "upland",
+   "sandy",
+   "outback"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Soft and watery"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:174",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:174",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:174",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "seasoning",
+  "d": "flavoring",
+  "wrong": [
+   "thyme",
+   "cookery",
+   "barbecue",
+   "ginger"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something added to food primarily for the savor it imparts"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:179",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:179",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:179",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "tune",
+  "d": "melody",
+  "wrong": [
+   "sung",
+   "hush",
+   "melodic",
+   "guitar"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A succession of notes forming a distinctive sequence"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:182",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:182",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:182",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "drizzle",
+  "d": "sprinkle",
+  "wrong": [
+   "cornbread",
+   "skillet",
+   "downpour",
+   "spoonful"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A light shower that falls in some locations and not others nearby"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:184",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:184",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:184",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "vermilion",
+  "d": "color",
+  "wrong": [
+   "mauve",
+   "topaz",
+   "colorful",
+   "maroon"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A visual attribute of things that results from the light they emit or transmit or reflect"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "finding",
+  "d": "discovery",
+  "wrong": [
+   "survey",
+   "investigation",
+   "discover"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of discovering something"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:c",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:c",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:c",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "penalty",
+  "d": "punishment",
+  "wrong": [
+   "default",
+   "warrant",
+   "punish",
+   "violation"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of punishing"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "permission",
+  "d": "consent",
+  "wrong": [
+   "passport",
+   "lease",
+   "grant",
+   "landlord"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Permission to do something"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "response",
+  "d": "reply",
+  "wrong": [
+   "trigger",
+   "stimulus",
+   "prompt"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An answer given to a question, request, or comment"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:l",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "title",
+  "d": "name",
+  "wrong": [
+   "earl",
+   "grant",
+   "emperor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A language unit by which a person or thing is known"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "memorial",
+  "d": "monument",
+  "wrong": [
+   "coffin",
+   "cemetery",
+   "bard"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A structure erected to commemorate persons or events"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "coast",
+  "d": "shore",
+  "wrong": [
+   "atlantic",
+   "pacific",
+   "ohio",
+   "northwest"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The land along the edge of a body of water"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:v",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:v",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:v",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "hog",
+  "d": "pig",
+  "wrong": [
+   "ham",
+   "gravy",
+   "beaver",
+   "bun"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Domestic swine"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:z",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "bush",
+  "d": "shrub",
+  "wrong": [
+   "bog",
+   "lush",
+   "annual",
+   "cactus"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A low woody perennial plant usually having several major stems"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1a",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1a",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1a",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "light",
+  "d": "heavy",
+  "wrong": [
+   "lamp",
+   "flash",
+   "cloudy",
+   "float"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Weighing a great deal"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1b",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "lose",
+  "d": "win",
+  "wrong": [
+   "lost",
+   "winner",
+   "permanent",
+   "decrease"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "A victory (as in a race or other competition)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1c",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1c",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1c",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "reveal",
+  "d": "conceal",
+  "wrong": [
+   "clue",
+   "scan",
+   "unlock",
+   "confirm"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Prevent from being seen or discovered"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1e",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1e",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "hidden",
+  "d": "visible",
+  "wrong": [
+   "sneaky",
+   "conceal",
+   "silent",
+   "reveal"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Capable of being seen"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1f",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "winter",
+  "d": "summer",
+  "wrong": [
+   "december",
+   "november",
+   "october",
+   "july"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The warmest time of year, coming between spring and autumn"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1g",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1g",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1g",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "innocent",
+  "d": "guilty",
+  "wrong": [
+   "scary",
+   "tragic",
+   "selfish",
+   "nasty"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Responsible for or chargeable with a reprehensible act"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1i",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1i",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "day",
+  "d": "night",
+  "wrong": [
+   "february",
+   "july",
+   "month",
+   "october"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The time after sunset and before sunrise while it is dark outside"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1j",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1j",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1j",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "hard",
+  "d": "soft",
+  "wrong": [
+   "tough",
+   "difficult",
+   "finish",
+   "rough"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Yielding readily to pressure or weight"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1l",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1l",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "strong",
+  "d": "weak",
+  "wrong": [
+   "firm",
+   "mighty",
+   "weakness",
+   "lend"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Wanting in physical strength"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1o",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1o",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1o",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "modern",
+  "d": "ancient",
+  "wrong": [
+   "early",
+   "oldest",
+   "borrow",
+   "new"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Very old"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1p",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "pull",
+  "d": "push",
+  "wrong": [
+   "snap",
+   "shrink",
+   "tight",
+   "ascend"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The act of applying force in order to move something away"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1r",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1r",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "poor",
+  "d": "rich",
+  "wrong": [
+   "risky",
+   "lend",
+   "scarce",
+   "selfish"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having a lot of money or valuable things"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1s",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1s",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 2,
+  "c": "false",
+  "d": "true",
+  "wrong": [
+   "mistaken",
+   "truth",
+   "conceal",
+   "guilty"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Agreeing with the facts"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1u",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1u",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1u",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "dark",
+  "d": "light",
+  "wrong": [
+   "gray",
+   "streak",
+   "shadow",
+   "grey"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Electromagnetic radiation that can produce a visual sensation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1v",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1v",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1v",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "summer",
+  "d": "winter",
+  "wrong": [
+   "afternoon",
+   "july",
+   "october",
+   "december"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "The coldest season, coming between autumn and spring"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1x",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1x",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1x",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "defeat",
+  "d": "victory",
+  "wrong": [
+   "feat",
+   "loss",
+   "cruel",
+   "selfish"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "A successful ending of a struggle or contest"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:1y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:1y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:1y",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "victory",
+  "d": "defeat",
+  "wrong": [
+   "won",
+   "success",
+   "win",
+   "cowardice"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "An unsuccessful ending to a struggle or contest"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2a",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2a",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2a",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "hammer",
+  "d": "tool",
+  "wrong": [
+   "brass",
+   "pound"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2b",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "ant",
+  "d": "insect",
+  "wrong": [
+   "swarm",
+   "predator"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Small air-breathing arthropod"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2d",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "red",
+  "d": "color",
+  "wrong": [
+   "ruby",
+   "streak",
+   "colorful"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A visual attribute of things that results from the light they emit or transmit or reflect"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2f",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "circle",
+  "d": "shape",
+  "wrong": [
+   "axis",
+   "ring"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any spatial attributes (especially as defined by outline)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2h",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2h",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "eagle",
+  "d": "bird",
+  "wrong": [
+   "crest",
+   "swoop",
+   "dolphin"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2j",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2j",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2j",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "backpack",
+  "d": "bag",
+  "wrong": [
+   "driveway",
+   "closet",
+   "sweater",
+   "laptop"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A flexible container with a single opening"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2k",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2k",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2k",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "sweater",
+  "d": "garment",
+  "wrong": [
+   "sock",
+   "nap",
+   "wool",
+   "jacket"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An article of clothing"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2l",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2l",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "car",
+  "d": "vehicle",
+  "wrong": [
+   "garage",
+   "trailer",
+   "freight",
+   "pedal"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A conveyance that transports people or objects"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2n",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2n",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2n",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "fly",
+  "d": "insect",
+  "wrong": [
+   "hawk",
+   "prey",
+   "tick",
+   "swarm"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Small air-breathing arthropod"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2p",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "ore",
+  "d": "mineral",
+  "wrong": [
+   "uranium",
+   "coal",
+   "aluminum",
+   "zinc"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Solid homogeneous inorganic substances occurring in nature having a definite chemical composition"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2q",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2q",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "van",
+  "d": "vehicle",
+  "wrong": [
+   "caravan",
+   "subway",
+   "booth",
+   "freight"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A conveyance that transports people or objects"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2r",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2r",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "tea",
+  "d": "drink",
+  "wrong": [
+   "soy",
+   "ginger",
+   "honey"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A single serving of a beverage"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2t",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "aircraft",
+  "d": "vehicle",
+  "wrong": [
+   "jet",
+   "rotor",
+   "radar",
+   "flight"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A conveyance that transports people or objects"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2u",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2u",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2u",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "shovel",
+  "d": "tool",
+  "wrong": [
+   "driveway",
+   "mop",
+   "dig"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:2y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:2y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:2y",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "owl",
+  "d": "bird",
+  "wrong": [
+   "leopard",
+   "tiger",
+   "robin"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3a",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3a",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3a",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "read",
+  "d": "reader",
+  "wrong": [
+   "text",
+   "poem",
+   "translator",
+   "writer"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who enjoys reading"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3b",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "act",
+  "d": "actor",
+  "wrong": [
+   "action",
+   "law",
+   "director",
+   "leader"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A theatrical performer"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3c",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3c",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3c",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "sing",
+  "d": "singer",
+  "wrong": [
+   "song",
+   "sung",
+   "composer",
+   "dancer"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who sings"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3e",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3e",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "lead",
+  "d": "leader",
+  "wrong": [
+   "led",
+   "director",
+   "doctor",
+   "actor"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who rules or guides or inspires others"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3f",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "drive",
+  "d": "driver",
+  "wrong": [
+   "push",
+   "rescuer",
+   "pilot",
+   "leader"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "The operator of a motor vehicle"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3g",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3g",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3g",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "play",
+  "d": "player",
+  "wrong": [
+   "show",
+   "composer",
+   "singer",
+   "director"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who participates in or is skilled at some game"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3h",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3h",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "design",
+  "d": "designer",
+  "wrong": [
+   "builder",
+   "skater",
+   "visitor",
+   "sculptor"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who specializes in designing architectural interiors and their furnishings"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3i",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3i",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 2,
+  "c": "dance",
+  "d": "dancer",
+  "wrong": [
+   "jazz",
+   "singer",
+   "composer",
+   "skater"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A performer who dances professionally"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3j",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3j",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3j",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "direct",
+  "d": "director",
+  "wrong": [
+   "rescuer",
+   "translator",
+   "reporter",
+   "pilot"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who controls resources and expenditures"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3k",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3k",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3k",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "farm",
+  "d": "farmer",
+  "wrong": [
+   "fed",
+   "hunter",
+   "builder",
+   "skater"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who operates a farm"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3l",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3l",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 1,
+  "c": "hunt",
+  "d": "hunter",
+  "wrong": [
+   "prey",
+   "fox",
+   "skater",
+   "guardian"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who hunts game"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3m",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3m",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3m",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "write",
+  "d": "writer",
+  "wrong": [
+   "graph",
+   "script",
+   "translator",
+   "composer"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Writes (books or stories or articles or the like) professionally (for pay)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3n",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3n",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3n",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "garden",
+  "d": "gardener",
+  "wrong": [
+   "hedge",
+   "blossom",
+   "backyard",
+   "bush"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who takes care of a garden"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3p",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "sail",
+  "d": "sailor",
+  "wrong": [
+   "ship",
+   "captain",
+   "fleet",
+   "dock"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Any member of a ship's crew"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3q",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3q",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "bake",
+  "d": "baker",
+  "wrong": [
+   "pastry",
+   "oatmeal",
+   "roast",
+   "dough"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who bakes commercially"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3r",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3r",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "paint",
+  "d": "painter",
+  "wrong": [
+   "mural",
+   "plaster",
+   "color",
+   "master"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "An artist who paints"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3s",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3s",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "sculpt",
+  "d": "sculptor",
+  "wrong": [
+   "slab",
+   "skater",
+   "builder",
+   "baker"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who practices the art of sculpture"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3t",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "explore",
+  "d": "explorer",
+  "wrong": [
+   "geography",
+   "ecology",
+   "rescuer",
+   "hunter"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who travels into little known regions (especially for some scientific purpose)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3v",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3v",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3v",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "invent",
+  "d": "inventor",
+  "wrong": [
+   "cipher",
+   "narrator",
+   "translator",
+   "writer"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who is the first to think of or make something"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3x",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3x",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3x",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "skate",
+  "d": "skater",
+  "wrong": [
+   "flick",
+   "swimmer",
+   "runner",
+   "hunter"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who skates"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3y",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 3,
+  "c": "swim",
+  "d": "swimmer",
+  "wrong": [
+   "crawl",
+   "dive",
+   "dip",
+   "pro"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A trained athlete who participates in swimming meets"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:3z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:3z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:3z",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "light",
+  "d": "dark",
+  "wrong": [
+   "lamp",
+   "flash",
+   "cloudy",
+   "float"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Absence of light or illumination"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "shrub",
+  "d": "bush",
+  "wrong": [
+   "tree",
+   "cactus",
+   "annual",
+   "fern"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A low woody perennial plant usually having several major stems"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4h",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4h",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "lumber",
+  "d": "wood",
+  "wrong": [
+   "sack",
+   "plank",
+   "wooden"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "The hard fibrous lignified substance under the bark of trees"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": "walnut is a nut; distractors not categories"
+   },
+   {
+    "item": "item:4l",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4l",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "walnut",
+  "d": "nut",
+  "wrong": [
+   "coconut",
+   "soy",
+   "curry"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Usually large hard-shelled seed"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4m",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4m",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4m",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "zinc",
+  "d": "metal",
+  "wrong": [
+   "platinum",
+   "aluminum",
+   "uranium",
+   "cobalt"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any of several chemical elements that are usually shiny solids that conduct heat or electricity and can be…"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4v",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4v",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4v",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 3,
+  "c": "sleeve",
+  "d": "shirt",
+  "wrong": [
+   "sandal",
+   "sash",
+   "footwear"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A garment worn on the upper half of the body"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4x",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4x",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4x",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "chapter",
+  "d": "book",
+  "wrong": [
+   "paragraph",
+   "essay",
+   "section",
+   "lesson"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A written work or composition that has been published (printed on pages bound together)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:4z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:4z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:4z",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "sail",
+  "d": "boat",
+  "wrong": [
+   "captain",
+   "fleet",
+   "dock"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A small vessel for travel on water"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5d",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "wallet",
+  "d": "leather",
+  "wrong": [
+   "spare",
+   "laptop",
+   "purse",
+   "beaver"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "An animal skin made smooth and flexible by removing the hair and then tanning"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5e",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5e",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 4,
+  "c": "cheese",
+  "d": "milk",
+  "wrong": [
+   "salami",
+   "savory",
+   "attention",
+   "milky"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A white nutritious liquid secreted by mammals and used as food by human beings"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5f",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "candle",
+  "d": "wax",
+  "wrong": [
+   "flicker",
+   "torch",
+   "taper",
+   "waxy"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Any of various substances of either mineral origin or plant or animal origin"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5h",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5h",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "tire",
+  "d": "rubber",
+  "wrong": [
+   "exhaust",
+   "workout",
+   "slam",
+   "denim"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "An elastic material obtained from the latex sap of trees (especially trees of the genera hevea and ficus)…"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5i",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5i",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 3,
+  "c": "snowman",
+  "d": "snow",
+  "wrong": [
+   "snowy",
+   "wicker",
+   "denim",
+   "marble"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Precipitation falling from clouds in the form of ice crystals"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5m",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5m",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5m",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "popcorn",
+  "d": "corn",
+  "wrong": [
+   "diner",
+   "hay",
+   "cream",
+   "wicker"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Tall annual cereal grass bearing kernels on large ears: widely cultivated in america in many varieties"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5o",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5o",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5o",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "tent",
+  "d": "canvas",
+  "wrong": [
+   "picnic",
+   "recreation",
+   "wicker",
+   "snow"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A heavy, closely woven fabric (used for clothing or chairs or sails or tents)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5p",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "bread",
+  "d": "flour",
+  "wrong": [
+   "burger",
+   "bacon",
+   "broth",
+   "fry"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Fine powdery foodstuff obtained by grinding and sifting the meal of a cereal grain"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5q",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5q",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "shirt",
+  "d": "cotton",
+  "wrong": [
+   "sweater",
+   "jacket",
+   "top",
+   "scarf"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Soft white fibers from a plant, used to make cloth and thread"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5r",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5r",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "cake",
+  "d": "flour",
+  "wrong": [
+   "bun",
+   "loaf",
+   "block",
+   "cream"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "Fine powdery foodstuff obtained by grinding and sifting the meal of a cereal grain"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5t",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 2,
+  "c": "sweater",
+  "d": "wool",
+  "wrong": [
+   "scarf",
+   "sock",
+   "felt",
+   "nap"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A fabric made from the hair of sheep"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5y",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "jam",
+  "d": "fruit",
+  "wrong": [
+   "breakfast",
+   "fix",
+   "cream",
+   "corn"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "The ripened reproductive body of a seed plant"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:5z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:5z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:5z",
+  "kind": "item",
+  "rel": "material",
+  "link": "Made from",
+  "level": 1,
+  "c": "jar",
+  "d": "glass",
+  "wrong": [
+   "shelf",
+   "candy",
+   "pot",
+   "bin"
+  ],
+  "bridge": "{A} is made from {B}.",
+  "gloss": "A brittle transparent solid with irregular atomic structure"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6a",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6a",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6a",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "whistle",
+  "d": "signal",
+  "wrong": [
+   "sweep",
+   "catch",
+   "wake",
+   "inflate"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Any nonverbal action or gesture that encodes a message"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6b",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "oven",
+  "d": "bake",
+  "wrong": [
+   "shred",
+   "boil",
+   "freeze",
+   "cool"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Cook and make edible by putting in a hot oven"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6d",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 3,
+  "c": "magnet",
+  "d": "attract",
+  "wrong": [
+   "sweep",
+   "strain",
+   "signal",
+   "inflate"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Direct toward itself or oneself by means of some psychological power or physical attributes"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6o",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6o",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6o",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "lantern",
+  "d": "light",
+  "wrong": [
+   "sweep",
+   "cool",
+   "wake",
+   "warm"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Electromagnetic radiation that can produce a visual sensation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6q",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6q",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "heater",
+  "d": "warm",
+  "wrong": [
+   "freeze",
+   "cool",
+   "wake",
+   "sweep"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Fairly hot in a pleasant way"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6s",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6s",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "pencil",
+  "d": "draw",
+  "wrong": [
+   "sweep",
+   "magnify",
+   "photograph",
+   "unlock"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "To make a picture with a pencil, pen, or crayon"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6t",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "key",
+  "d": "unlock",
+  "wrong": [
+   "slow",
+   "stick",
+   "bore",
+   "signal"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Open the lock of"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6u",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6u",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6u",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 2,
+  "c": "camera",
+  "d": "photograph",
+  "wrong": [
+   "magnify",
+   "sweep",
+   "light",
+   "unlock"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "A representation of a person or scene in the form of a print or transparent slide"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6x",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6x",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6x",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "fan",
+  "d": "cool",
+  "wrong": [
+   "attract",
+   "wake",
+   "sweep",
+   "inflate"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "The quality of being at a refreshingly low temperature"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:6z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:6z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:6z",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 1,
+  "c": "scale",
+  "d": "weigh",
+  "wrong": [
+   "inflate",
+   "sweep",
+   "magnify",
+   "freeze"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Have a certain weight"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:7b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:7b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:7b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "home",
+  "d": "residence",
+  "wrong": [
+   "orphan",
+   "vacation",
+   "nowhere",
+   "permanent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any address at which you dwell more than temporarily"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:7e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:7e",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:7e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "involvement",
+  "d": "participation",
+  "wrong": [
+   "rejection",
+   "integrity",
+   "continuity",
+   "advocacy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of sharing in the activities of a group"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:7h",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:7h",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:7h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "counselor",
+  "d": "advisor",
+  "wrong": [
+   "learner",
+   "responder",
+   "tutor",
+   "rookie"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An expert who gives advice"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:7m",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:7m",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:7m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "uncertainty",
+  "d": "doubt",
+  "wrong": [
+   "spite",
+   "conviction",
+   "certainty",
+   "reliability"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The state of being unsure of something"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:7p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:7p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:7p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "comprehension",
+  "d": "grasp",
+  "wrong": [
+   "realization",
+   "cognition",
+   "volition",
+   "actuality"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Understanding of the nature or meaning or quality or magnitude of something"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:7y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:7y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:7y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "narrative",
+  "d": "tale",
+  "wrong": [
+   "scenario",
+   "biography",
+   "prose",
+   "manga"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A message that tells the particulars of an act or occurrence or course of events"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:7z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:7z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:7z",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "barrier",
+  "d": "obstacle",
+  "wrong": [
+   "embankment",
+   "parapet",
+   "defensive",
+   "moat"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Something immaterial that stands in the way and must be circumvented or surmounted"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8b",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8b",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8b",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "rain",
+  "d": "rainy",
+  "wrong": [
+   "sunny",
+   "muddy",
+   "golden",
+   "dangerous"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Wet by periods of rain"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8d",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "celebrate",
+  "d": "celebration",
+  "wrong": [
+   "heritage",
+   "beloved",
+   "honor",
+   "victory"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A joyful occasion for special festivities to mark some happy event"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8e",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8e",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8e",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "significant",
+  "d": "significance",
+  "wrong": [
+   "payable",
+   "famine",
+   "average",
+   "shortage"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being significant"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8f",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "subtle",
+  "d": "subtlety",
+  "wrong": [
+   "clarity",
+   "gloss",
+   "blur"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A subtle difference in meaning, opinion, or attitude"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8g",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8g",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8g",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "accept",
+  "d": "acceptance",
+  "wrong": [
+   "skeptic",
+   "agnostic",
+   "refuse",
+   "admiration"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The mental attitude that something is believable and should be accepted as true"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8i",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8i",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "method",
+  "d": "methodical",
+  "wrong": [
+   "computational",
+   "statistical",
+   "empirical",
+   "diagnostic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Characterized by method and orderliness"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8k",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8k",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8k",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "inactive",
+  "d": "inactivity",
+  "wrong": [
+   "activation",
+   "depletion",
+   "metabolism",
+   "active"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being inactive"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8l",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8l",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "sentiment",
+  "d": "sentimental",
+  "wrong": [
+   "stoic",
+   "idealistic",
+   "indifferent",
+   "profound"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Given to or marked by sentiment or sentimentality"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8n",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8n",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8n",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "motivation",
+  "d": "motivational",
+  "wrong": [
+   "purposeful",
+   "initiative",
+   "selfish"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to motivation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8o",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8o",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8o",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "emit",
+  "d": "emission",
+  "wrong": [
+   "flash",
+   "wavelength",
+   "lumen",
+   "radiation"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of emitting"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8p",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8p",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8p",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "require",
+  "d": "requirement",
+  "wrong": [
+   "paperwork",
+   "oversight",
+   "protocol",
+   "certification"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Required activity"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8q",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8q",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "purpose",
+  "d": "purposeful",
+  "wrong": [
+   "inherent",
+   "particular",
+   "intent",
+   "objective"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Serving as or indicating the existence of a purpose or goal"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8r",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8r",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "duty",
+  "d": "dutiful",
+  "wrong": [
+   "supervisory",
+   "clerical",
+   "menial"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Willingly obedient out of a sense of duty and respect"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8s",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8s",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8s",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "acid",
+  "d": "acidic",
+  "wrong": [
+   "fatty",
+   "chemical",
+   "caustic"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Being or containing an acid"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8t",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8t",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8t",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 4,
+  "c": "productive",
+  "d": "productivity",
+  "wrong": [
+   "scarcity",
+   "tolerance",
+   "usefulness",
+   "livelihood"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being productive or having the power to produce"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8v",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8v",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8v",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "rotate",
+  "d": "rotation",
+  "wrong": [
+   "pivot",
+   "compressor",
+   "rotational",
+   "propulsion"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of rotating as if on an axis"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8w",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8w",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8w",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 3,
+  "c": "retire",
+  "d": "retirement",
+  "wrong": [
+   "senior",
+   "junior",
+   "dedication",
+   "leadership"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being retired from one's business or occupation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8x",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8x",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8x",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 4,
+  "c": "hormone",
+  "d": "hormonal",
+  "wrong": [
+   "adrenal",
+   "pituitary",
+   "metabolic",
+   "physiological"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Of or relating to or caused by hormones"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8y",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "install",
+  "d": "installation",
+  "wrong": [
+   "server",
+   "desktop",
+   "router",
+   "demolition"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of installing something (as equipment)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:8z",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:8z",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:8z",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "derive",
+  "d": "derivation",
+  "wrong": [
+   "phenol",
+   "halogen",
+   "extract"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The source or origin from which something derives (i.e. comes or issues)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9c",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9c",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9c",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "continue",
+  "d": "continuation",
+  "wrong": [
+   "disruption",
+   "resume",
+   "abort",
+   "inactivity"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of continuing an activity without interruption"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9d",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9d",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9d",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "intervene",
+  "d": "intervention",
+  "wrong": [
+   "reconciliation",
+   "termination",
+   "proximity",
+   "impediment"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of intervening (as to mediate a dispute, etc.)"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9f",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9f",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9f",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 3,
+  "c": "government",
+  "d": "governmental",
+  "wrong": [
+   "executive",
+   "corporate",
+   "nonprofit",
+   "elect"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Relating to or dealing with the affairs or structure of government or politics or the state"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9g",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9g",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9g",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 4,
+  "c": "recommend",
+  "d": "recommendation",
+  "wrong": [
+   "prescription",
+   "massage",
+   "bedside"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Something (as a course of action) that is recommended as advisable"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9i",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9i",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9i",
+  "kind": "item",
+  "rel": "function",
+  "link": "Used for",
+  "level": 5,
+  "c": "pump",
+  "d": "inflate",
+  "wrong": [
+   "sweep",
+   "freeze",
+   "cool",
+   "clean"
+  ],
+  "bridge": "{A} is used to {B}.",
+  "gloss": "Exaggerate or make bigger"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9l",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9l",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9l",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "debate",
+  "d": "debater",
+  "wrong": [
+   "argument",
+   "disagreement",
+   "conference",
+   "stance"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who engages in debate"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9m",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9m",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9m",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "supervise",
+  "d": "supervisor",
+  "wrong": [
+   "administrator",
+   "provider",
+   "trainee",
+   "assist"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who supervises the work done by others"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9o",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9o",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9o",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "settle",
+  "d": "settler",
+  "wrong": [
+   "mediation",
+   "dispute",
+   "resolve",
+   "pact"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who settles in a new colony or moves into new country"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9q",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9q",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9q",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 5,
+  "c": "intrude",
+  "d": "intruder",
+  "wrong": [
+   "occupancy",
+   "consent",
+   "mediation",
+   "dissent"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone who intrudes on the privacy or property of another without permission"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9r",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9r",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9r",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 6,
+  "c": "agitate",
+  "d": "agitator",
+  "wrong": [
+   "turbulence",
+   "gush",
+   "revulsion",
+   "aversion"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "One who agitates"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9u",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9u",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9u",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 4,
+  "c": "follow",
+  "d": "follower",
+  "wrong": [
+   "rule",
+   "syntax",
+   "leader",
+   "translator"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who accepts the leadership of another"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9w",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9w",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9w",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 4,
+  "c": "translate",
+  "d": "translator",
+  "wrong": [
+   "cipher",
+   "compiler",
+   "shorthand",
+   "lexicon"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "A person who translates written messages from one language to another"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:9y",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:9y",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:9y",
+  "kind": "item",
+  "rel": "agent",
+  "link": "Who does it",
+  "level": 7,
+  "c": "vacation",
+  "d": "vacationer",
+  "wrong": [
+   "weekday",
+   "weekend",
+   "holiday",
+   "bookstore"
+  ],
+  "bridge": "{B} is a person who {As}.",
+  "gloss": "Someone on vacation"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:a0",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:a0",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:a0",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 5,
+  "c": "generous",
+  "d": "generosity",
+  "wrong": [
+   "hospitality",
+   "donation",
+   "benefactor",
+   "satisfaction"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The trait of being willing to give your money or time"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:a3",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:a3",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:a3",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "disperse",
+  "d": "dispersal",
+  "wrong": [
+   "convection",
+   "evaporation",
+   "aerosol",
+   "vapor"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of dispersing or diffusing something"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:a5",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:a5",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:a5",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "joy",
+  "d": "joyous",
+  "wrong": [
+   "ecstatic",
+   "sorrowful",
+   "sad",
+   "delightful"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Full of or characterized by joy"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:a6",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:a6",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:a6",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "expression",
+  "d": "expressive",
+  "wrong": [
+   "conversational",
+   "contradictory",
+   "literal",
+   "implicit"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Characterized by expression"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:a7",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:a7",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:a7",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "annul",
+  "d": "annulment",
+  "wrong": [
+   "revoke",
+   "repeal",
+   "postponement",
+   "null"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being cancelled or annulled"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:aa",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:aa",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:aa",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "enclose",
+  "d": "enclosure",
+  "wrong": [
+   "bower",
+   "partition",
+   "capsule",
+   "passageway"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "A structure consisting of an area that has been enclosed for some purpose"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:ab",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:ab",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:ab",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 6,
+  "c": "neat",
+  "d": "neatness",
+  "wrong": [
+   "patchwork",
+   "plait",
+   "wobbly",
+   "mismatch"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state of being neat and smart and trim"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:ac",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:ac",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:ac",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "stabilize",
+  "d": "stabilization",
+  "wrong": [
+   "reactivity",
+   "pipeline",
+   "conduction",
+   "plaque"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of stabilizing something or making it more stable"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:af",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:af",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:af",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 6,
+  "c": "serpent",
+  "d": "serpentine",
+  "wrong": [
+   "mythical",
+   "reptilian",
+   "fearsome",
+   "mythological"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Resembling a serpent in form"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:ag",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:ag",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:ag",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 5,
+  "c": "chalk",
+  "d": "chalky",
+  "wrong": [
+   "crumbly",
+   "chunky",
+   "mineral"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Composed of or containing or resembling calcium carbonate or calcite or chalk"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:ah",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:ah",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:ah",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "acknowledge",
+  "d": "acknowledgment",
+  "wrong": [
+   "affidavit",
+   "assertion",
+   "salute",
+   "confirmation"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The state or quality of being recognized or acknowledged"
+ },
+ {
+  "why": "individual re-check of a double pass (the 10% sample found 5 of 43 needing a fix)",
+  "verdicts": [
+   {
+    "item": "item:aj",
+    "round": 1,
+    "verdict": "pass",
+    "reason": ""
+   },
+   {
+    "item": "item:aj",
+    "round": 2,
+    "verdict": "pass",
+    "reason": ""
+   }
+  ],
+  "unit": "item:aj",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 5,
+  "c": "recite",
+  "d": "recitation",
+  "wrong": [
+   "chant",
+   "gospel",
+   "sung",
+   "chorus"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Written matter that is recited from memory"
+ }
+]

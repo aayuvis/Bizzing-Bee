@@ -1,0 +1,1637 @@
+[
+ {
+  "unit": "item:11b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "tubular",
+  "d": "cylindrical",
+  "wrong": [
+   "warty",
+   "conical",
+   "narrower"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having the form of a cylinder",
+  "cycle1": "fixed in round 3: tubular = cylindrical is exact. Agree with both rounds that 'oriental' is a dated, offensive term: drop it. warty/conical/narrower remain."
+ },
+ {
+  "unit": "item:11c",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 1,
+  "c": "music",
+  "d": "musical",
+  "wrong": [
+   "joyful",
+   "heroic",
+   "magical",
+   "rainy"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: music -> musical is the noun-to-adjective family; joyful/heroic/magical/rainy are not of it. r2's fail gives only the relation name, no defect, and I find none. But the gloss is the noun 'a musical' (a show): hide it.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:11d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "cash",
+  "d": "currency",
+  "wrong": [
+   "premium",
+   "asset",
+   "cage",
+   "investment"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The metal or paper medium of exchange that is presently used",
+  "cycle1": "passed by round 3 over an earlier fail: cash = currency (money in notes and coins, as the gloss shows); premium/asset/cage/investment are not. r2's fail gives only the relation name, no defect, and I find none."
+ },
+ {
+  "unit": "item:11e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "fury",
+  "d": "wrath",
+  "wrong": [
+   "elation",
+   "emotion",
+   "fear"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Intense anger (usually on an epic scale)",
+  "cycle1": "fixed in round 3: fury = wrath is sound. Agree with r1 that 'indignation' (anger) is defensible: drop it. elation/emotion/fear remain."
+ },
+ {
+  "unit": "item:11f",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 1,
+  "c": "history",
+  "d": "historic",
+  "wrong": [
+   "famous",
+   "scientific",
+   "heroic",
+   "powerful"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Belonging to the past",
+  "cycle1": "passed by round 3 over an earlier fail: history -> historic is the noun-to-adjective family; famous/scientific/heroic/powerful are not of it. Gloss right. r2's fail gives only the relation name, no defect, and I find none."
+ },
+ {
+  "unit": "item:11h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "apprentice",
+  "d": "trainee",
+  "wrong": [
+   "veteran",
+   "junior",
+   "barber",
+   "custodian"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who is being trained",
+  "cycle1": "passed by round 3 over an earlier fail: apprentice = trainee; veteran/junior/barber/custodian are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none."
+ },
+ {
+  "unit": "item:11i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "plausible",
+  "d": "credible",
+  "wrong": [
+   "doubtful",
+   "improbable",
+   "apologetic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Capable of being believed",
+  "cycle1": "fixed in round 3: plausible = credible is sound. 'trustworthy' is a synonym of credible ('a credible witness') and a child could defend it: drop it. doubtful/improbable/apologetic remain."
+ },
+ {
+  "unit": "item:11j",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "spoke",
+  "d": "wheel",
+  "wrong": [
+   "whisper",
+   "bar"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A simple machine consisting of a circular frame with spokes (or a solid disc) that can rotate on a shaft or…",
+  "cycle1": "passed by round 3 over an earlier fail: a spoke is part of a wheel; 'whisper' plays on spoke as past of speak, and a spoke is not part of a bar. Gloss right. r2's fail gives only the relation name, no defect, and I find none."
+ },
+ {
+  "unit": "item:11k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "intrude",
+  "d": "interfere",
+  "wrong": [
+   "confide",
+   "consent",
+   "dissent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Come between so as to be hindrance or obstacle",
+  "cycle1": "passed by round 3 over an earlier fail: intrude = interfere; confide/consent/dissent are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none."
+ },
+ {
+  "unit": "item:11l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "liking",
+  "d": "fondness",
+  "wrong": [
+   "goodwill",
+   "closeness",
+   "gratitude",
+   "familiarity"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A predisposition to like something",
+  "cycle1": "passed by round 3 over an earlier fail: liking = fondness; goodwill/closeness/gratitude/familiarity are not. Gloss right. r2's fail gives only the relation name, no defect, and I find none."
+ },
+ {
+  "unit": "item:11m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "exaggeration",
+  "d": "embellishment",
+  "wrong": [
+   "attractiveness",
+   "vividness",
+   "absurd"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Elaboration of an interpretation by the use of decorative (sometimes fictitious) detail",
+  "cycle1": "fixed in round 3: exaggeration = embellishment is sound and the gloss shows it. Agree with r1 that 'caricature' (an exaggerated portrayal) is defensible: drop it. attractiveness/vividness/absurd remain."
+ },
+ {
+  "unit": "item:11n",
+  "kind": "item",
+  "rel": "part",
+  "link": "Part of a whole",
+  "level": 2,
+  "c": "peel",
+  "d": "orange",
+  "wrong": [
+   "candy",
+   "shred"
+  ],
+  "bridge": "{A} is part of {B}.",
+  "gloss": "A round, juicy citrus fruit with a thick, colorful peel.",
+  "cycle1": "passed by round 3 over an earlier fail: peel is part of an orange; candy and shred are not wholes it belongs to. Gloss right. r2's fail gives only the relation name, no defect, and I find none."
+ },
+ {
+  "unit": "item:11o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "inappropriate",
+  "d": "unsuitable",
+  "wrong": [
+   "plausible",
+   "blatant",
+   "unintentional"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Not meant or adapted for a particular purpose",
+  "cycle1": "fixed in round 3: Agree with r1/r2: 'unacceptable' is a common thesaurus synonym of 'inappropriate', so two answers fit. inappropriate = unsuitable is exact and the gloss is the right sense; dropping 'unacceptable' leaves plausible/blatant/unintentional, none defensible."
+ },
+ {
+  "unit": "item:11q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "chill",
+  "d": "coldness",
+  "wrong": [
+   "cornbread",
+   "drizzle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The sensation produced by low temperatures",
+  "cycle1": "fixed in round 3: Agree with both rounds that 'pub' is an alcohol venue and 'shiver' is defensible (a chill = a shivering fit). chill = coldness is exact and the gloss is the right sense; dropping pub and shiver leaves cornbread/drizzle."
+ },
+ {
+  "unit": "item:11s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "narrator",
+  "d": "storyteller",
+  "wrong": [
+   "playwright",
+   "melodrama",
+   "thriller",
+   "memoir"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who tells a story",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: a narrator is someone who tells a story, which is exactly a storyteller (WordNet lists them together). playwright/melodrama/thriller/memoir are all clearly not the same meaning; gloss is right."
+ },
+ {
+  "unit": "item:11v",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "nobility",
+  "d": "aristocracy",
+  "wrong": [
+   "blockbuster",
+   "prestige"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A privileged class holding hereditary titles",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'nobility' also means noble character, so 'dignity' is defensible, and 'royalty' is close enough to tempt. nobility = aristocracy (the hereditary class) is exact and the gloss is that sense; dropping dignity and royalty leaves blockbuster/prestige, neither a synonym."
+ },
+ {
+  "unit": "item:11x",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "chamber",
+  "d": "room",
+  "wrong": [
+   "portal",
+   "barn",
+   "interior"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An area within a building enclosed by walls and floor and ceiling",
+  "cycle1": "fixed in round 3: Agree with both rounds that 'cavity' is defensible (a heart chamber is a cavity). chamber = room is exact in its usual sense and the gloss shows that sense; dropping 'cavity' leaves portal/barn/interior."
+ },
+ {
+  "unit": "item:11y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "alley",
+  "d": "lane",
+  "wrong": [
+   "driveway",
+   "subway",
+   "highway"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A narrow way or road",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: alley and lane are both a narrow way or road, and thesauri give each as the other's synonym (a bowling alley is even a bowling lane). driveway/subway/highway are not narrow lanes; gloss is right."
+ },
+ {
+  "unit": "item:12b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "successive",
+  "d": "sequential",
+  "wrong": [
+   "eleven",
+   "tertiary",
+   "cyclical"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "In regular succession without gaps",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'serial' (in a series) is a defensible synonym of 'successive'. successive = sequential is exact; dropping 'serial' leaves eleven/tertiary/cyclical."
+ },
+ {
+  "unit": "item:12d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "figurative",
+  "d": "symbolic",
+  "wrong": [
+   "subjective",
+   "implicit",
+   "symbol",
+   "communicative"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Relating to or using or proceeding by means of symbols",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: 'figurative' has the dictionary sense 'emblematic, symbolic', and thesauri list symbolic as its synonym. subjective/implicit/symbol/communicative are not the same meaning; gloss is the right sense of symbolic."
+ },
+ {
+  "unit": "item:12e",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 2,
+  "c": "chicken",
+  "d": "bird",
+  "wrong": [
+   "lamb",
+   "roast",
+   "ham",
+   "pork"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Warm-blooded egg-laying vertebrates characterized by feathers and forelimbs modified as wings",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'category' fail: a chicken is a kind of bird. The distractors lamb/roast/ham/pork are meats, not categories a chicken belongs to, so bird is the only defensible answer; gloss is right."
+ },
+ {
+  "unit": "item:12g",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "prejudice",
+  "d": "bias",
+  "wrong": [
+   "injustice",
+   "conviction",
+   "distrust",
+   "dissent"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A partiality that prevents objective consideration of an issue or situation",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: prejudice = bias exactly (a partiality that prevents fair judgement, the gloss shown). injustice, conviction, distrust and dissent are each different things."
+ },
+ {
+  "unit": "item:12i",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "crocodile",
+  "d": "reptile",
+  "wrong": [
+   "cetacean",
+   "urchin",
+   "hedgehog",
+   "toad"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "Any cold-blooded vertebrate of the class reptilia including tortoises, turtles, snakes, lizards,…",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'category' fail: a crocodile is a reptile, and none of cetacean/urchin/hedgehog/toad is a group a crocodile belongs to. The gloss shows the right sense."
+ },
+ {
+  "unit": "item:12j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "savor",
+  "d": "taste",
+  "wrong": [
+   "soy",
+   "oatmeal",
+   "ginger"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The flavor of food that you notice with your tongue",
+  "cycle1": "fixed in round 3: Agree with both rounds that 'relish' (to savour; a pleasing flavour) is defensible. savor = taste in the flavour sense is exact and the gloss shows it; dropping 'relish' leaves soy/oatmeal/ginger."
+ },
+ {
+  "unit": "item:12k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "eradicate",
+  "d": "exterminate",
+  "wrong": [
+   "deter",
+   "taint",
+   "exterminator",
+   "repulse"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To get rid of pests completely",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: eradicate and exterminate share a WordNet synset (destroy completely), and the gloss pins the pest sense. deter/taint/repulse are not synonyms and 'exterminator' is a noun, not a fit for a verb."
+ },
+ {
+  "unit": "item:12n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "believable",
+  "d": "plausible",
+  "wrong": [
+   "sensible",
+   "constructive",
+   "unrealistic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Apparently reasonable and valid, and truthful",
+  "cycle1": "fixed in round 3: Agree with r1 that 'trustworthy' is defensible for 'believable' (a believable witness is a credible one). believable = plausible is exact; dropping it leaves sensible/constructive/unrealistic, none the same meaning."
+ },
+ {
+  "unit": "item:12o",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 3,
+  "c": "drill",
+  "d": "tool",
+  "wrong": [
+   "tackle",
+   "cleanup",
+   "bore",
+   "golfer"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "An implement used in the practice of a vocation",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'category' fail: a drill is a kind of tool. 'bore' is what a drill does, not a group it belongs to; tackle/cleanup/golfer do not contain a drill. Gloss is right."
+ },
+ {
+  "unit": "item:12p",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "fate",
+  "d": "destiny",
+  "wrong": [
+   "prophecy",
+   "mortal",
+   "soul"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An event (or a course of events) that will inevitably happen in the future",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'jesus' lowercased as a throwaway distractor is disrespectful. fate = destiny is exact; dropping it leaves prophecy/mortal/soul."
+ },
+ {
+  "unit": "item:12q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "arrogance",
+  "d": "conceit",
+  "wrong": [
+   "jealousy",
+   "boldness",
+   "envy"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An excessively favorable opinion of oneself",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'swagger' (arrogant manner) is a listed synonym of arrogance. arrogance = conceit is exact; dropping it leaves jealousy/boldness/envy."
+ },
+ {
+  "unit": "item:12r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "perch",
+  "d": "roost",
+  "wrong": [
+   "sparrow",
+   "flit",
+   "arbor",
+   "heron"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Disagree with r2's bare fail on the link: Merriam-Webster defines a perch as 'a roost for a bird', so perch = roost holds. But the gloss shown ('a shelter with perches for fowl') is the hen-house sense, which is not a perch; hide it.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:12t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "crease",
+  "d": "fold",
+  "wrong": [
+   "fray",
+   "hunch",
+   "fuzz"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "To bend something over so one part lies on another.",
+  "cycle1": "fixed in round 3: Disagree with r2's bare fail on the link: crease = fold is exact and the gloss is the verb sense. But 'matt' reads as a lowercase name (or a variant spelling of matte) in a spelling app; drop it, leaving fray/hunch/fuzz."
+ },
+ {
+  "unit": "item:12u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "awe",
+  "d": "wonder",
+  "wrong": [
+   "terror",
+   "sadness",
+   "affection",
+   "optimism"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The feeling aroused by something strange and surprising",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: awe = wonder (WordNet groups them; the gloss is that feeling). terror, sadness, affection and optimism are each a different feeling."
+ },
+ {
+  "unit": "item:12w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "front",
+  "d": "fore",
+  "wrong": [
+   "slap",
+   "affront",
+   "femur",
+   "elbow"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Front part of a vessel or aircraft",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: fore means the front part (to the fore), and it is a common homophone word at L4. slap, affront, femur and elbow are not synonyms; 'affront' is only a look-alike."
+ },
+ {
+  "unit": "item:12x",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 7,
+  "c": "artichoke",
+  "d": "plant",
+  "wrong": [
+   "russet",
+   "bur"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Agree with r1: the gloss shows 'plant' as a factory and 'fennel'/'briar' are equally kinds of plant. An artichoke is a plant; dropping fennel and briar leaves russet/bur, neither a group an artichoke belongs to, and hiding the gloss removes the wrong sense.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:13a",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "adorable",
+  "d": "lovable",
+  "wrong": [
+   "gaudy",
+   "flamboyant"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having characteristics that attract love or affection",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'delightful' is a standard synonym of 'adorable'. adorable = lovable is exact; dropping it leaves gaudy/flamboyant."
+ },
+ {
+  "unit": "item:13b",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "baby",
+  "d": "infant",
+  "wrong": [
+   "mother",
+   "cub"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A very young child (birth to 1 year) who has not yet begun to walk or talk",
+  "cycle1": "fixed in round 3: Agree with both rounds that 'pregnancy' and 'fetus' are unsuitable throwaway distractors at L2. baby = infant is exact and the gloss is right; dropping them leaves mother/cub ('cub' is the young of certain animals, not the same meaning as baby)."
+ },
+ {
+  "unit": "item:13f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "trash",
+  "d": "garbage",
+  "wrong": [
+   "mop",
+   "bread",
+   "driveway"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Disagree with r2's bare fail on the link: trash = garbage. But the gloss shown ('food that is discarded') is the narrow sense in which garbage is NOT trash, so hide it; and 'bin' is defensible in the 'throw it in the trash' (= the bin) sense, so drop it, leaving mop/bread/driveway.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:13h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "goodbye",
+  "d": "farewell",
+  "wrong": [
+   "hello",
+   "wink",
+   "smirk",
+   "fidget"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An acknowledgment or expression of goodwill at parting",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: goodbye = farewell exactly, the gloss is right, and hello/wink/smirk/fidget are not partings."
+ },
+ {
+  "unit": "item:13i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "vendor",
+  "d": "seller",
+  "wrong": [
+   "bakery",
+   "bazaar",
+   "deli",
+   "stall"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who promotes or exchanges goods or services for money",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: vendor = seller exactly. bakery, bazaar, deli and stall are places, not people who sell."
+ },
+ {
+  "unit": "item:13j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "sunshine",
+  "d": "sunlight",
+  "wrong": [
+   "midday",
+   "cooler",
+   "sunflower"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The rays of the sun",
+  "cycle1": "fixed in round 3: Disagree with r2's bare fail on the link: sunshine = sunlight. But 'november' is a lowercase proper noun used as filler; drop it, leaving midday/cooler/sunflower."
+ },
+ {
+  "unit": "item:13k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "revive",
+  "d": "resuscitate",
+  "wrong": [
+   "reinvent",
+   "relapse",
+   "recoup",
+   "recondition"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause to regain consciousness",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: revive = resuscitate in the gloss's sense (cause to regain consciousness). reinvent, relapse, recoup and recondition each mean something else."
+ },
+ {
+  "unit": "item:13n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "crevice",
+  "d": "fissure",
+  "wrong": [
+   "dune",
+   "bracken",
+   "trickle",
+   "ravine"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Disagree with r2's bare fail on the link: crevice = fissure (WordNet's crack/crevice/fissure synset). But the gloss shown ('a long narrow depression in a surface') is the anatomical groove sense, not the crack; hide it. ravine, dune, bracken and trickle are not synonyms.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:13q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "pretending",
+  "d": "feigning",
+  "wrong": [
+   "tease",
+   "hoax",
+   "doom"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Pretending with intention to deceive",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: pretending = feigning, and the gloss is right. A hoax is a trick (a thing), tease and doom are not pretending."
+ },
+ {
+  "unit": "item:13r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "drama",
+  "d": "play",
+  "wrong": [
+   "comedian",
+   "epic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A dramatic work intended for performance by actors on a stage",
+  "cycle1": "fixed in round 3: Disagree with r2's bare fail on the link: a drama is a play. But 'broadway' is a lowercase proper noun used as filler; drop it, leaving comedian/epic."
+ },
+ {
+  "unit": "item:13s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "significance",
+  "d": "meaning",
+  "wrong": [
+   "greatness",
+   "prestige",
+   "meaningful",
+   "notable"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The message that is intended or expressed or signified",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: significance = meaning (the significance of a symbol), the sense the gloss shows. greatness and prestige are not importance, and meaningful/notable are adjectives."
+ },
+ {
+  "unit": "item:13u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "boss",
+  "d": "supervisor",
+  "wrong": [
+   "advisor",
+   "assistant",
+   "sergeant"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who supervises the work done by others",
+  "cycle1": "fixed in round 3: Agree with r1 that 'executive' is defensible for 'boss'. boss = supervisor is exact and the gloss is right; dropping it leaves advisor/assistant/sergeant."
+ },
+ {
+  "unit": "item:13v",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 5,
+  "c": "shellfish",
+  "d": "animal",
+  "wrong": [
+   "roe",
+   "haddock",
+   "mussel",
+   "tofu"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "A living organism characterized by voluntary movement",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'category' fail: shellfish are animals. 'mussel' is a kind of shellfish (the reverse direction), and roe/haddock/tofu do not contain shellfish; gloss is right."
+ },
+ {
+  "unit": "item:13x",
+  "kind": "item",
+  "rel": "kind",
+  "link": "Kind of",
+  "level": 6,
+  "c": "mistletoe",
+  "d": "plant",
+  "wrong": [
+   "bur",
+   "muskrat"
+  ],
+  "bridge": "{A} is a kind of {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Agree with r1: the gloss shows 'plant' as a factory and 'holly' is also a kind of plant. Mistletoe is a plant; dropping holly leaves bur/muskrat, and hiding the gloss removes the wrong sense.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:13y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "decode",
+  "d": "decipher",
+  "wrong": [
+   "rewrite",
+   "edit",
+   "compile"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Convert code into ordinary language",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: decode = decipher (convert code into ordinary language). rewrite/edit/compile are different acts."
+ },
+ {
+  "unit": "item:14d",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "swell",
+  "d": "billow",
+  "wrong": [
+   "spurt",
+   "windstorm",
+   "wetness",
+   "whirlpool"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A large sea wave",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: a swell and a billow are both a large sea wave (the gloss), and both verbs mean to rise and bulge. spurt/windstorm/wetness/whirlpool are not waves."
+ },
+ {
+  "unit": "item:14e",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "classic",
+  "d": "masterpiece",
+  "wrong": [
+   "rerun",
+   "combo",
+   "cookbook",
+   "narrator"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The most outstanding work of a creative artist or craftsman",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: a classic and a masterpiece are both a work of the highest excellence (thesauri pair them). rerun, combo, cookbook and narrator are plainly wrong; gloss is right."
+ },
+ {
+  "unit": "item:14f",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "annoy",
+  "d": "irritate",
+  "wrong": [
+   "blunder",
+   "muddle"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause annoyance in",
+  "cycle1": "fixed in round 3: Agree with r1: 'nag' and 'inconvenience' are listed synonyms of 'annoy'. annoy = irritate is exact; dropping both leaves blunder/muddle."
+ },
+ {
+  "unit": "item:14g",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "attach",
+  "d": "fasten",
+  "wrong": [
+   "limber",
+   "padlock",
+   "subordinate"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Cause to be firmly attached",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'affix' is a standard synonym of 'attach'. attach = fasten holds; dropping 'affix' leaves limber/padlock/subordinate."
+ },
+ {
+  "unit": "item:14h",
+  "kind": "item",
+  "rel": "quality",
+  "link": "Word families",
+  "level": 2,
+  "c": "honest",
+  "d": "honesty",
+  "wrong": [
+   "apology",
+   "kindness",
+   "generosity",
+   "truth"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The quality of being honest",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare fail: honest -> honesty is exactly the adjective-to-quality word-family link, and none of apology/kindness/generosity/truth is formed from 'honest'."
+ },
+ {
+  "unit": "item:14i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "settler",
+  "d": "colonist",
+  "wrong": [
+   "homestead",
+   "farmland"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A person who settles in a new colony or moves into new country",
+  "cycle1": "fixed in round 3: Agree with r2: 'crete' and 'andes' are lowercase proper nouns used as filler. settler = colonist is exact (WordNet synset) and the gloss is right; dropping them leaves homestead/farmland."
+ },
+ {
+  "unit": "item:14l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "continuous",
+  "d": "uninterrupted",
+  "wrong": [
+   "successive",
+   "recurrent",
+   "monotone",
+   "monotonous"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Having undisturbed continuity",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2's bare 'synonym' fail: continuous = uninterrupted exactly. successive (one after another), recurrent, monotone and monotonous each mean something else."
+ },
+ {
+  "unit": "item:14m",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "endorse",
+  "d": "approve",
+  "wrong": [
+   "libel",
+   "empower"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Give sanction to",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'assent' is a defensible near-synonym. endorse = approve (give sanction to) is exact; dropping it leaves libel/empower."
+ },
+ {
+  "unit": "item:14n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "administration",
+  "d": "management",
+  "wrong": [
+   "enforcement",
+   "manage"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of managing something",
+  "cycle1": "fixed in round 3: Side with r1 over r2: 'oversight' (supervision) is a defensible synonym of administration/management. The link is exact and the gloss right; dropping it leaves enforcement/manage. L2 is ambitious for 'administration', so the rounds should recheck the level."
+ },
+ {
+  "unit": "item:14o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "merchant",
+  "d": "trader",
+  "wrong": [
+   "bazaar",
+   "import",
+   "cart"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone who purchases and maintains an inventory of goods to be sold",
+  "cycle1": "fixed in round 3: r1 passed and r2 failed on 'broker'. Thesauri list broker among synonyms for merchant/dealer, so it is close enough to argue; drop it. merchant = trader is exact; bazaar/import/cart remain."
+ },
+ {
+  "unit": "item:14r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "slope",
+  "d": "incline",
+  "wrong": [
+   "steeper",
+   "steep",
+   "plateau",
+   "crag"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Re-check finds a defect both rounds passed: slope = incline is exact, but the gloss 'an elevated geological formation' describes a hill and fits the distractors 'plateau' and 'crag' just as well, so it points away from the answer. Hide it.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:14s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "feast",
+  "d": "banquet",
+  "wrong": [
+   "supper",
+   "anniversary"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A ceremonial dinner party for many people",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'easter' and 'passover' are faith festivals shown lowercased as throwaway distractors, and in the liturgical sense both ARE feasts. feast = banquet is exact; dropping them leaves supper/anniversary."
+ },
+ {
+  "unit": "item:14w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 1,
+  "c": "movie",
+  "d": "film",
+  "wrong": [
+   "television",
+   "dot",
+   "theater"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A form of entertainment that enacts a story by sound and a sequence of images giving the illusion of…",
+  "cycle1": "fixed in round 3: Side with r1 over r2: 'video' is a defensible answer (watch a video = a movie for many children). movie = film is exact; dropping 'video' leaves television/dot/theater."
+ },
+ {
+  "unit": "item:14x",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "gullet",
+  "d": "esophagus",
+  "wrong": [
+   "tripe",
+   "reflux"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The passage between the pharynx and the stomach",
+  "cycle1": "fixed in round 3: Side with r2 on 'gaster': an obscure entomology word, not suitable even as a distractor. gullet = esophagus is exact and the gloss is right; dropping 'gaster' leaves tripe/reflux."
+ },
+ {
+  "unit": "item:14y",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "brave",
+  "d": "courageous",
+  "wrong": [
+   "veteran",
+   "courage",
+   "ruthless"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Possessing or displaying courage",
+  "cycle1": "fixed in round 3: Side with r1 over r2: 'daredevil' is used as an adjective (daring, bold) and some thesauri list it under brave. brave = courageous is exact; dropping it leaves veteran/courage/ruthless."
+ },
+ {
+  "unit": "item:15h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 2,
+  "c": "thrust",
+  "d": "push",
+  "wrong": [
+   "rotor",
+   "crank"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The act of applying force in order to move something away",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'stab' is a defensible (and violent) sense of thrust. thrust = push is exact and the gloss right; dropping 'stab' leaves rotor/crank."
+ },
+ {
+  "unit": "item:15i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 6,
+  "c": "bookshelf",
+  "d": "bookcase",
+  "wrong": [
+   "alcove",
+   "workspace",
+   "attic"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A piece of furniture with shelves for storing books",
+  "cycle1": "fixed in round 3: Agree with both rounds that 'lena' is a lowercase proper name used as filler. bookshelf = bookcase holds in the common sense (Cambridge: 'a shelf, or a set of shelves, for books'); dropping 'lena' leaves alcove/workspace/attic."
+ },
+ {
+  "unit": "item:15k",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "doubt",
+  "d": "uncertainty",
+  "wrong": [
+   "certainty",
+   "contradiction",
+   "conviction"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Being unsettled or in doubt or dependent on chance",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'suspicion' is a standard synonym of doubt. doubt = uncertainty is exact; dropping it leaves certainty/contradiction/conviction."
+ },
+ {
+  "unit": "item:15u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "evade",
+  "d": "avoid",
+  "wrong": [
+   "bail",
+   "arrest",
+   "defraud"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Stay clear from",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'handicap' is a dated, stigmatising disability term. evade = avoid is exact and the gloss is right; dropping it leaves bail/arrest/defraud."
+ },
+ {
+  "unit": "item:16h",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "disgust",
+  "d": "revulsion",
+  "wrong": [
+   "resentment",
+   "acceptance",
+   "anger"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Intense aversion",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'antipathy' (strong aversion) is defensible. disgust = revulsion is exact; dropping it leaves resentment/acceptance/anger."
+ },
+ {
+  "unit": "item:16i",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "aptitude",
+  "d": "talent",
+  "wrong": [
+   "intellect",
+   "upbringing"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Natural abilities or qualities",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'proficiency' and 'competence' are listed near-synonyms of aptitude. aptitude = talent (natural ability) is exact; dropping both leaves intellect/upbringing."
+ },
+ {
+  "unit": "item:16j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "imitator",
+  "d": "mimic",
+  "wrong": [
+   "parody",
+   "columnist",
+   "entertainer"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Someone, especially an actor, who copies another person's voice, look, or actions.",
+  "cycle1": "fixed in round 3: Side with r1 over r2: 'mime' (to imitate; an imitating performer) is defensible. imitator = mimic is exact; dropping it leaves parody/columnist/entertainer."
+ },
+ {
+  "unit": "item:16k",
+  "kind": "item",
+  "rel": "relating",
+  "link": "Word families",
+  "level": 7,
+  "c": "scruple",
+  "d": "scrupulous",
+  "wrong": [
+   "obstinate",
+   "blameless"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "Having scruples",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'perverse' carries the 'pervert' association and should not be here. scruple -> scrupulous is a clean word-family pair, and 'scruples' is known at 13; dropping 'perverse' leaves obstinate/blameless."
+ },
+ {
+  "unit": "item:16l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "scratch",
+  "d": "abrasion",
+  "wrong": [
+   "dent",
+   "blot",
+   "shin"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An abraded area where the skin is torn or worn off",
+  "cycle1": "fixed in round 3: Agree with both rounds: a nick is a small cut or scratch, so it is defensible. scratch = abrasion holds and the gloss is right; dropping it leaves dent/blot/shin."
+ },
+ {
+  "unit": "item:16n",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "shoot",
+  "d": "sprout",
+  "wrong": [
+   "aerial",
+   "arrow",
+   "bombardment"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Any new growth of a plant such as a new branch or a bud",
+  "cycle1": "fixed in round 3: Side with r2 over r1: 'catapult' (to move suddenly at speed) matches the 'shoot forward' sense of shoot. shoot = sprout in the plant sense is exact and the gloss pins it; dropping 'catapult' leaves aerial/arrow/bombardment."
+ },
+ {
+  "unit": "item:16o",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "cellar",
+  "d": "basement",
+  "wrong": [
+   "granary",
+   "urn",
+   "cupboard"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "The lowermost portion of a structure partly or wholly below ground level",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'pub' is an alcohol venue. cellar = basement is exact; dropping it leaves granary/urn/cupboard."
+ },
+ {
+  "unit": "item:16p",
+  "kind": "item",
+  "rel": "action",
+  "link": "Word families",
+  "level": 2,
+  "c": "refuse",
+  "d": "refusal",
+  "wrong": [
+   "dare",
+   "trash",
+   "argument",
+   "arrival"
+  ],
+  "bridge": "{A} becomes {B}: the same idea with a new job.",
+  "gloss": "The act of refusing",
+  "cycle1": "passed by round 3 over an earlier fail: Side with r1 over r2: the link is the verb-to-act-noun word family, and 'trash' (the noun refuse) is a deliberate homograph trap but not a form of the verb. So refusal is the only answer under the link; gloss is right."
+ },
+ {
+  "unit": "item:16q",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 7,
+  "c": "jealous",
+  "d": "envious",
+  "wrong": [
+   "mad",
+   "regretful",
+   "cynical",
+   "fearful"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Overturning the double pass on the gloss only. jealous ~ envious is a sound everyday pair, and mad/regretful/cynical/fearful are not twins. But the gloss 'Showing extreme cupidity' defines envy as greed (cupidity = greed for money or possessions) and uses a word no child knows; it drops the 'wanting what someone else has' sense. Hide the gloss.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:17j",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "impulse",
+  "d": "urge",
+  "wrong": [
+   "volition",
+   "receptor"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "An instinctive motive",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'stimulus' is a listed synonym of impulse (impetus). impulse = urge is exact and the gloss right; dropping it leaves volition/receptor."
+ },
+ {
+  "unit": "item:17l",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "postpone",
+  "d": "defer",
+  "wrong": [
+   "annul",
+   "repeal",
+   "revoke"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Hold back to a later time",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'adjourn' (put off to a later time) is defensible. postpone = defer is exact; dropping it leaves annul/repeal/revoke."
+ },
+ {
+  "unit": "item:17n",
+  "kind": "item",
+  "rel": "antonym",
+  "link": "Opposites",
+  "level": 1,
+  "c": "sharp",
+  "d": "blunt",
+  "wrong": [
+   "sour",
+   "strong",
+   "thick"
+  ],
+  "bridge": "{A} is the opposite of {B}.",
+  "gloss": "Having an edge or point that is not sharp",
+  "cycle1": "fixed in round 3: Side with r1 over r2: thesauri give 'smooth' as an opposite of sharp (sharp vs smooth edges, taste), so two answers fit for an 8-year-old. sharp/blunt is the canonical pair; dropping 'smooth' leaves sour/strong/thick."
+ },
+ {
+  "unit": "item:17r",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "omission",
+  "d": "deletion",
+  "wrong": [
+   "insertion",
+   "parentheses",
+   "contradictory",
+   "spoof"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Overturning the double pass on the gloss only. omission ~ deletion is a sound pair (leaving something out), and insertion is the opposite, parentheses/contradictory/spoof unrelated. But the gloss 'Any process whereby sounds or words are left out of spoken words or phrases' is the technical speech-sound sense, not the everyday 'something left out/removed' sense a child will apply. Hide the gloss.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:17s",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "entreat",
+  "d": "beg",
+  "wrong": [
+   "jeer",
+   "mourn",
+   "absolve"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Call upon in supplication",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'invoke' (appeal earnestly to) is defensible. entreat = beg is exact; dropping it leaves jeer/mourn/absolve."
+ },
+ {
+  "unit": "item:17t",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 3,
+  "c": "booth",
+  "d": "stall",
+  "wrong": [
+   "van",
+   "bazaar",
+   "inn",
+   "discount"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "",
+  "cycle1": "fixed in round 3: Overturning the double pass on the gloss only. booth ~ stall (a market stall) is right, and van/bazaar/inn/discount are not twins. But the gloss 'A division of a stable or barn accommodating one animal' is the horse-stall sense, the wrong one for booth. Hide the gloss.",
+  "glossHidden": true
+ },
+ {
+  "unit": "item:17u",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 4,
+  "c": "declare",
+  "d": "proclaim",
+  "wrong": [
+   "condemn",
+   "shall"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "Declare formally",
+  "cycle1": "fixed in round 3: Agree with r1: 'affirm' and 'decree' are both defensible synonyms of declare. declare = proclaim is exact; dropping both leaves condemn/shall."
+ },
+ {
+  "unit": "item:17w",
+  "kind": "item",
+  "rel": "synonym",
+  "link": "Same meaning",
+  "level": 5,
+  "c": "surge",
+  "d": "gush",
+  "wrong": [
+   "blizzard",
+   "hurricane"
+  ],
+  "bridge": "{A} means about the same as {B}.",
+  "gloss": "A sudden rapid flow (as of water)",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'torrent' is defensible, and 'geyser' (a gush of water) is as well. surge = gush (a sudden rapid flow) holds; dropping both leaves blizzard/hurricane."
+ },
+ {
+  "unit": "stem:same:8",
+  "kind": "stem",
+  "link": "Same meaning",
+  "rel": "synonym",
+  "a": "huge",
+  "b": "giant",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: 'giant' is a standard adjective (a giant pumpkin) meaning huge. A clean same-meaning example."
+ },
+ {
+  "unit": "stem:who:0",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "bake",
+  "b": "baker",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a baker is exactly who bakes. That the agent noun is also derived from the verb does not make the 'Who does it' link false; the stem only needs its link to be true."
+ },
+ {
+  "unit": "stem:who:1",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "teach",
+  "b": "teacher",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a teacher is exactly who teaches. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:2",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "sail",
+  "b": "sailor",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a sailor is exactly who sails. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:3",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "paint",
+  "b": "painter",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a painter is exactly who paints. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:4",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "farm",
+  "b": "farmer",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a farmer is exactly who farms. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:5",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "sing",
+  "b": "singer",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a singer is exactly who sings. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:6",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "act",
+  "b": "actor",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: an actor is exactly who acts. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:7",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "drive",
+  "b": "driver",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a driver is exactly who drives. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:8",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "swim",
+  "b": "swimmer",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: a swimmer is exactly who swims. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:who:9",
+  "kind": "stem",
+  "link": "Who does it",
+  "rel": "agent",
+  "a": "invent",
+  "b": "inventor",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: an inventor is exactly who invents. Being derived from the verb does not make 'Who does it' false."
+ },
+ {
+  "unit": "stem:family:4",
+  "kind": "stem",
+  "link": "Word families",
+  "rel": "quality",
+  "a": "kind",
+  "b": "kindness",
+  "cycle1": "passed by round 3 over an earlier fail: Disagree with r2: kind -> kindness is a textbook adjective-to-quality pair. That 'kind' also appears in the 'Kind of' label is a coincidence of spelling, not an error in the example."
+ },
+ {
+  "unit": "lesson:same:trap",
+  "kind": "text",
+  "what": "analogy lesson “Same meaning”, its trap",
+  "text": "Watch for a word that goes WITH the word but does not MEAN the same. Cool and breeze often go together, but breeze does not mean cool.",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'a breeze is not cool' reads as a false claim (breezes are often cool, and 'not cool' is slang). The point is that breeze does not MEAN cool."
+ },
+ {
+  "unit": "lesson:part:bridge",
+  "kind": "text",
+  "what": "analogy lesson “Part of a whole”, its bridge",
+  "text": "The {A} is part of the {B}.",
+  "cycle1": "fixed in round 3: Side with r2 over r1: with bare nouns the template reads 'petal is part of flower', which drops the articles in a spelling app. 'The ... the ...' works for every singular stem (the month is part of the year, the key is part of the piano). Fill it only with singular nouns."
+ },
+ {
+  "unit": "lesson:part:spot",
+  "kind": "text",
+  "what": "analogy lesson “Part of a whole”, its spot",
+  "text": "Ask: is the first thing one of the pieces that make up the second? A wheel is part of a bicycle. A cup on a table is not part of the table.",
+  "cycle1": "fixed in round 3: Agree with both rounds: 'could you find the first thing on or in the second?' is a location test that a cup on a table or a fish in a pond passes. The test must be about making up the whole."
+ },
+ {
+  "unit": "lesson:use:bridge",
+  "kind": "text",
+  "what": "analogy lesson “Used for”, its bridge",
+  "text": "We use the {A} to {B}.",
+  "cycle1": "fixed in round 3: Agree with both rounds: with the stem scissors/cut it renders 'scissors is used to cut', a grammar error. 'We use the {A} to {B}' has no verb agreement on {A}, so it is correct for scissors and knife alike."
+ },
+ {
+  "unit": "lesson:use:trap",
+  "kind": "text",
+  "what": "analogy lesson “Used for”, its trap",
+  "text": "Another thing from the same place is a trap. For broom, bucket tempts you because it lives in the same cupboard, but a bucket is a thing, not a job. The answer is the job a broom does: sweep.",
+  "cycle1": "fixed in round 3: Side with r2 over r1: 'mop is a tool, not a job' contradicts itself, since to mop IS a cleaning job. A bucket shares the cupboard but is not an action."
+ },
+ {
+  "unit": "lesson:degree:idea",
+  "kind": "text",
+  "what": "analogy lesson “Stronger and weaker”, its idea",
+  "text": "Some pairs are the same idea, turned up. Warm turned up is hot. Hot turned up is scorching.",
+  "cycle1": "fixed in round 3: Overturning the double pass, taking up round 2's note. The text says pairs are 'the same feeling or size, turned up' and then gives warm/hot/scorching, which is temperature, neither a feeling nor a size; the items in this link also turn up weather, loudness, wetness and quality. The opening claim is inaccurate as written. Generalise it and keep the examples."
+ },
+ {
+  "unit": "lesson:degree:bridge",
+  "kind": "text",
+  "what": "analogy lesson “Stronger and weaker”, its bridge",
+  "text": "{B} is a stronger word than {A}.",
+  "cycle1": "fixed in round 3: Side with r2 over r1: 'Hot is a stronger warm' is ungrammatical, and 'Freezing is a stronger cold' reads as an illness. Talking about the words fixes both: 'Starving is a stronger word than hungry', 'Gulp is a stronger word than sip'."
+ },
+ {
+  "unit": "lesson:degree:trap",
+  "kind": "text",
+  "what": "analogy lesson “Stronger and weaker”, its trap",
+  "text": "A near twin at the SAME strength is the trap. For big, large tempts you, but large is just as strong as big. The stronger word is huge.",
+  "cycle1": "fixed in round 3: Agree with both rounds: chilly is colder than cool, so it is not 'the SAME strength', and 'the far end' has no scale. Use a pair that really is the same strength."
+ },
+ {
+  "unit": "card:shiva",
+  "kind": "card",
+  "what": "the avatar card for Shiva (a Legendary avatar in the Indian Gods / European Gods pack)",
+  "text": "Shiva is one of the most loved gods in Hinduism, honoured by Hindu families all over the world today. Many families pray to him as the one who protects, changes and makes new beginnings possible. In many homes and temples he is shown in quiet meditation, with the river Ganga flowing from his hair. Many families keep the festival of Maha Shivaratri, a night of prayer, with songs and stories. Families who honour him each do it in their own way. If yours does, ask them how.",
+  "cycle1": "fixed in round 3: Agree with r1 that the text is respectful, accurate and from the inside (Ganga in his hair, meditation, Maha Shivaratri as a night of prayer). The closing line presumes every reader's family honours Shiva, and many in the audience are Muslim, Sikh, Christian, Jain or not religious. r2's objection to the 'Legendary' collectible tier is a product decision for the owner, not a fault in these words."
+ }
+]

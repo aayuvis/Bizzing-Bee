@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:e8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ea",
+  "verdict": "fail",
+  "reason": "Distractor set is politically charged: \"feminism\" offered as a candidate opposite of \"equality\" (implies feminism opposes equality), alongside \"supremacy\" (white-supremacy association); \"supremacy\"/\"domination\" are also arguable opposites of equality."
+ },
+ {
+  "unit": "item:eb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ec",
+  "verdict": "fail",
+  "reason": "Wrong option \"visionary\" (impractical, idealistic) is a listed near-antonym of \"realistic\" — second defensible opposite."
+ },
+ {
+  "unit": "item:ed",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ee",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ef",
+  "verdict": "fail",
+  "reason": "Gloss for \"steady\" is the boyfriend/girlfriend noun sense (\"A person loved by another person\") — wrong sense shown to the child for wobbly/steady."
+ },
+ {
+  "unit": "item:eg",
+  "verdict": "fail",
+  "reason": "Wrong option \"wholesome\" (beneficial to health, salutary) is a defensible synonym of \"beneficial\"."
+ },
+ {
+  "unit": "item:eh",
+  "verdict": "fail",
+  "reason": "\"illustrative\" (clarifying by examples, per gloss) does not mean \"descriptive\" — weak/related word, not same meaning."
+ },
+ {
+  "unit": "item:ei",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ek",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:el",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:em",
+  "verdict": "fail",
+  "reason": "Wrong option \"monstrous\" (and arguably \"abominable\") is a standard synonym of \"hideous\"."
+ },
+ {
+  "unit": "item:en",
+  "verdict": "fail",
+  "reason": "A birdhouse is a small nest box; an aviary is a large enclosure — not the same meaning. Wrong option \"abattoir\" (slaughterhouse) is also needlessly grim for children."
+ },
+ {
+  "unit": "item:eo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ep",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:eq",
+  "verdict": "fail",
+  "reason": "Earthenware is a KIND of pottery (low-fired clay); \"pottery\" is broader, not same meaning."
+ },
+ {
+  "unit": "item:er",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:es",
+  "verdict": "fail",
+  "reason": "Wrong option \"oblong\" (elongated, egg/oval-shaped) is commonly given as a synonym of \"oval\"; second defensible answer."
+ },
+ {
+  "unit": "item:et",
+  "verdict": "fail",
+  "reason": "A silhouette is a dark outline/shape, not a shadow — related words, not the same meaning."
+ },
+ {
+  "unit": "item:eu",
+  "verdict": "fail",
+  "reason": "Gloss itself says a pinafore is a sleeveless DRESS resembling an apron — not the same as an apron (only true in one UK sense); ambiguous."
+ },
+ {
+  "unit": "item:ev",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ew",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ex",
+  "verdict": "fail",
+  "reason": "A chauffeur is a KIND of driver (one paid to drive someone); \"driver\" is the broader word, not same meaning."
+ },
+ {
+  "unit": "item:ey",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ez",
+  "verdict": "fail",
+  "reason": "Potpourri means \"medley\" only in a secondary sense (kids know it as dried petals); wrong option \"horehound\" is obscure and sounds like a crude word; \"cardamon\" is a misspelling of cardamom."
+ },
+ {
+  "unit": "item:f0",
+  "verdict": "fail",
+  "reason": "Wrong option \"sleight\" means deceitful craftiness (cunning), and \"trickery\" is also close — second defensible synonyms."
+ },
+ {
+  "unit": "item:f1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:f2",
+  "verdict": "fail",
+  "reason": "Wrong option \"considerate\" is a dictionary sense of \"attentive\" (heedful of others' comfort); also \"careful\" is only a loose match for attentive."
+ },
+ {
+  "unit": "item:f3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:f4",
+  "verdict": "fail",
+  "reason": "Gullet is the oesophagus (gloss: passage from pharynx to stomach) — narrower than \"throat\", not the same meaning."
+ },
+ {
+  "unit": "item:f5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:f6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:f7",
+  "verdict": "fail",
+  "reason": "A boutique is a KIND of (small, fashionable) shop — narrower word, not same meaning."
+ },
+ {
+  "unit": "item:f8",
+  "verdict": "fail",
+  "reason": "A chrysalis is a butterfly/moth pupa — narrower than \"pupa\", not same meaning. Wrong option \"teat\" is an unsuitable body word for this audience; \"anopheles\"/\"tunicate\" obscure."
+ },
+ {
+  "unit": "item:f9",
+  "verdict": "fail",
+  "reason": "\"ugly\" is a stronger word than \"unattractive\" (unattractive < ugly < hideous) — the app's \"Stronger and weaker\" link describes the pair better than \"Same meaning\"."
+ },
+ {
+  "unit": "item:fa",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fb",
+  "verdict": "fail",
+  "reason": "Tailoring (suits, fitted garments) is not dressmaking — related crafts, not same meaning; wrong option \"corset\" is also unnecessary."
+ },
+ {
+  "unit": "item:fc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fd",
+  "verdict": "fail",
+  "reason": "Wrong option \"neurotic\" is a stigmatising mental-health label often used as an insult."
+ },
+ {
+  "unit": "item:fe",
+  "verdict": "fail",
+  "reason": "Wrong options \"antagonistic\" and \"militant\" (and \"defiant\") are synonyms of \"combative\" — multiple defensible answers."
+ },
+ {
+  "unit": "item:ff",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fk",
+  "verdict": "fail",
+  "reason": "Gloss for \"irrational\" is the maths sense (\"A real number that cannot be expressed as a rational number\") — wrong sense for rational/irrational as opposites of reason."
+ },
+ {
+  "unit": "item:fl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fq",
+  "verdict": "fail",
+  "reason": "Gloss for \"leave\" is the noun sense (\"period of time absent from work\") — wrong sense for arrive/leave; wrong option \"went\" (past of go) also invites a child to treat it as a valid opposite of arrive."
+ },
+ {
+  "unit": "item:fr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ft",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fw",
+  "verdict": "fail",
+  "reason": "Gloss for \"deep\" is the noun sense (\"The central and most intense or profound part\") — wrong sense for shallow/deep."
+ },
+ {
+  "unit": "item:fx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:fz",
+  "verdict": "fail",
+  "reason": "Gloss for \"humble\" is the verb sense (\"Cause to be unpretentious\") — wrong part of speech for proud/humble."
+ },
+ {
+  "unit": "item:g0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g1",
+  "verdict": "fail",
+  "reason": "Gloss for \"cloudy\" (\"Lacking definite form or limits\") is the wrong sense; wrong option \"stormy\" is also a defensible opposite of \"sunny\"."
+ },
+ {
+  "unit": "item:g2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g8",
+  "verdict": "fail",
+  "reason": "Gloss for \"quiet\" is a noun sense (\"A period of calm weather\") — wrong sense for loud/quiet."
+ },
+ {
+  "unit": "item:g9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ga",
+  "verdict": "fail",
+  "reason": "Gloss for \"rare\" (\"Not widely known\") is not the sense that is the opposite of \"frequent\" (happening seldom) — mismatched teaching."
+ },
+ {
+  "unit": "item:gb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ge",
+  "verdict": "fail",
+  "reason": "Gloss for \"calm\" is the noun sense (\"Steadiness of mind under stress\") — wrong sense for stormy/calm weather."
+ },
+ {
+  "unit": "item:gf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gi",
+  "verdict": "fail",
+  "reason": "Wrong option \"absinthe\" is an alcoholic drink — alcohol word unsuitable for 8–15."
+ },
+ {
+  "unit": "item:gj",
+  "verdict": "fail",
+  "reason": "\"benignity\" is obscure, and the wrong options (neoplasm, cyst, marrow, fibrosis) frame \"benign\" as tumour/disease vocabulary — grim and confusing against the gloss \"kind and gentle\"."
+ },
+ {
+  "unit": "item:gk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:go",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gp",
+  "verdict": "fail",
+  "reason": "\"abettal\" is an extremely rare form (abetment is standard) — too obscure; distractors are adult crime terms (felon, larceny, barratry)."
+ },
+ {
+  "unit": "item:gq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gs",
+  "verdict": "fail",
+  "reason": "\"pleura\"/\"pleural\" is specialist anatomy (lung lining) — too obscure even at level 9; distractors equally technical (mastoid, peritoneal)."
+ },
+ {
+  "unit": "item:gt",
+  "verdict": "fail",
+  "reason": "\"enteron\"/\"enteric\" is specialist zoology/medical vocabulary — too obscure for level 8."
+ },
+ {
+  "unit": "item:gu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:gz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h4",
+  "verdict": "fail",
+  "reason": "\"mesoderm\"/\"mesodermal\" is embryology jargon — too obscure for level 7."
+ },
+ {
+  "unit": "item:h5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:h9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ha",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:he",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hg",
+  "verdict": "fail",
+  "reason": "Wrong option \"melon\" is the most natural category for cantaloupe (\"a cantaloupe is a kind of melon\") — a second defensible answer; \"vine\" describes the plant, not the fruit."
+ },
+ {
+  "unit": "item:hh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hi",
+  "verdict": "fail",
+  "reason": "\"carcajou\" is obscure (another name for the wolverine), and \"wolverine\" appears as a wrong option — confusing; \"cracidae\" also obscure."
+ },
+ {
+  "unit": "item:hj",
+  "verdict": "fail",
+  "reason": "Wrong option \"sulfide\" is also a valid category: pyrite is iron sulfide (iron disulfide)."
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hl",
+  "verdict": "fail",
+  "reason": "\"amboyna\" is an obscure timber name — too obscure for level 8."
+ },
+ {
+  "unit": "item:hm",
+  "verdict": "fail",
+  "reason": "Magnesia is magnesium oxide, a chemical compound (the mineral form is periclase) — \"a kind of mineral\" is not cleanly true; obscure."
+ },
+ {
+  "unit": "item:hn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ho",
+  "verdict": "fail",
+  "reason": "\"friedcake\" is obscure/regional (a doughnut) — too obscure; calling it a kind of \"cake\" is also doubtful."
+ },
+ {
+  "unit": "item:hp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hq",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\") — wrong sense; \"aquilegia\" is also obscure (columbine)."
+ },
+ {
+  "unit": "item:hr",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\") — wrong sense; \"caladium\" obscure."
+ },
+ {
+  "unit": "item:hs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ht",
+  "verdict": "fail",
+  "reason": "\"mustelid\" is a zoological family term — too obscure for level 7."
+ },
+ {
+  "unit": "item:hu",
+  "verdict": "fail",
+  "reason": "\"curassow\" is obscure for level 8 (as are distractors muntjac, merganser, jerboa)."
+ },
+ {
+  "unit": "item:hv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hw",
+  "verdict": "fail",
+  "reason": "Wrong option \"twill\" is also a valid category: gabardine is a tightly woven twill fabric."
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:hy",
+  "verdict": "fail",
+  "reason": "Gloss for \"dish\" is the dishware sense (\"A piece of dishware ... container for holding or serving food\") — wrong sense for quiche as a dish of food."
+ },
+ {
+  "unit": "item:hz",
+  "verdict": "fail",
+  "reason": "A pyre is a pile of wood for burning (usually a funeral pyre) — not a KIND of wood; also carries a death/cremation association."
+ },
+ {
+  "unit": "item:i0",
+  "verdict": "fail",
+  "reason": "Iodoform is an antiseptic chemical compound, not \"a kind of sweet\" — link false; word obscure."
+ },
+ {
+  "unit": "item:i1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:i2",
+  "verdict": "fail",
+  "reason": "\"cantaloup\" is a variant spelling; wrong option \"melon\" is the natural category (a cantaloupe is a kind of melon) — second defensible answer."
+ },
+ {
+  "unit": "item:i3",
+  "verdict": "fail",
+  "reason": "\"cassia\" is obscure and ambiguous (a genus of trees and shrubs, and also a cinnamon-like spice) — \"kind of shrub\" is not cleanly true."
+ },
+ {
+  "unit": "item:i4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:i5",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\") — wrong sense; \"euphorbia\" obscure."
+ },
+ {
+  "unit": "item:i6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:i7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:i8",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\") — wrong sense; \"ageratum\" obscure."
+ },
+ {
+  "unit": "item:i9",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\") — wrong sense; \"althaea\" obscure."
+ },
+ {
+  "unit": "item:ia",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ib",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ic",
+  "verdict": "fail",
+  "reason": "A rhizome is an underground plant STEM (part of a plant), not a kind of plant; gloss for \"plant\" is also the factory sense."
+ },
+ {
+  "unit": "item:id",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ie",
+  "verdict": "fail",
+  "reason": "\"japonica\" is an obscure botanical epithet (Japanese quince/camellia) — too obscure for level 7."
+ },
+ {
+  "unit": "item:if",
+  "verdict": "fail",
+  "reason": "Wrong option \"buttock\" is a body word children treat as crude/insulting (cf. \"butt\") — unsafe for this audience."
+ },
+ {
+  "unit": "item:ig",
+  "verdict": "fail",
+  "reason": "Wrong option \"obesity\" is a stigmatising body term; \"indulgence\" (overindulgence, excess) is also a defensible synonym of \"excess\"."
+ },
+ {
+  "unit": "item:ih",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ii",
+  "verdict": "fail",
+  "reason": "Wrong option \"ornamentation\" is the primary synonym of \"embellishment\" — better answer than \"exaggeration\" (only a secondary sense)."
+ },
+ {
+  "unit": "item:ij",
+  "verdict": "fail",
+  "reason": "A schematic is a KIND of diagram (gloss: diagram of an electrical or mechanical system) — narrower, not same meaning."
+ },
+ {
+  "unit": "item:ik",
+  "verdict": "fail",
+  "reason": "Fluorescence is a KIND of luminescence — narrower/broader pair, not same meaning."
+ },
+ {
+  "unit": "item:il",
+  "verdict": "fail",
+  "reason": "A bean is a kind of legume (legume is the broader family incl. peas, lentils) — not same meaning."
+ },
+ {
+  "unit": "item:im",
+  "verdict": "fail",
+  "reason": "A boutique is a KIND of shop — \"shop\" is broader, not same meaning; wrong option \"lyon\" is a lower-cased place name."
+ },
+ {
+  "unit": "item:in",
+  "verdict": "fail",
+  "reason": "\"metazoa\" is a taxonomic group name (all multicellular animals), not a kind of animal; obscure."
+ },
+ {
+  "unit": "item:io",
+  "verdict": "fail",
+  "reason": "\"gramma\" (grama grass) is obscure and reads as a spelling of \"grandma\" — confusing."
+ },
+ {
+  "unit": "item:ip",
+  "verdict": "fail",
+  "reason": "\"caragana\" is an obscure plant genus — too obscure for level 8."
+ },
+ {
+  "unit": "item:iq",
+  "verdict": "fail",
+  "reason": "A thallus is a plant BODY (part of an alga/lichen/liverwort), not a kind of plant; gloss for \"plant\" is also the factory sense."
+ },
+ {
+  "unit": "item:ir",
+  "verdict": "fail",
+  "reason": "Wrong option \"turnip\" is also a defensible category: rutabaga is the swede / \"yellow turnip\"."
+ },
+ {
+  "unit": "item:is",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:it",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:iu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:iv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:iw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ix",
+  "verdict": "fail",
+  "reason": "Distractor set (pigmentation, whiteness, complexion, melanin) clusters skin-colour words around \"discolour/discoloration\" — reads as racially loaded; unsafe framing."
+ },
+ {
+  "unit": "item:iy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:iz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j6",
+  "verdict": "fail",
+  "reason": "Gloss for \"innocent\" is the noun sense (\"A person who lacks knowledge of evil\") — wrong sense for guilty/innocent."
+ },
+ {
+  "unit": "item:j7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:j9",
+  "verdict": "fail",
+  "reason": "Wrong option \"fright\" (and arguably \"panic\") is a standard synonym of \"dread\"."
+ },
+ {
+  "unit": "item:ja",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:je",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jf",
+  "verdict": "fail",
+  "reason": "\"liter\"/\"litre\" is a US/UK spelling variant of one word, not a pair of synonyms — confusing as a \"same meaning\" analogy in a spelling app."
+ },
+ {
+  "unit": "item:jg",
+  "verdict": "fail",
+  "reason": "A portfolio (gloss: large flat case for loose papers/drawings) is not a briefcase — related objects, not same meaning."
+ },
+ {
+  "unit": "item:jh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ji",
+  "verdict": "fail",
+  "reason": "A magistrate is a KIND of judge (lay/lower-court judge) — narrower, not same meaning."
+ },
+ {
+  "unit": "item:jj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jk",
+  "verdict": "fail",
+  "reason": "Grease is a KIND of lubricant (gloss: a thick fatty oil used to lubricate) — narrower, not same meaning."
+ },
+ {
+  "unit": "item:jl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jm",
+  "verdict": "fail",
+  "reason": "At level 1 \"beating\" reads as physical violence; gloss \"act of overcoming or outdoing\" is the winner's sense, which makes wrong options \"win\"/\"victory\" defensible — ambiguous."
+ },
+ {
+  "unit": "item:jn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:js",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jv",
+  "verdict": "fail",
+  "reason": "Belly is the abdomen; gloss gives \"stomach\" as the internal organ — not the same meaning. Wrong option \"posterior\" (bottom) is also a snigger word."
+ },
+ {
+  "unit": "item:jw",
+  "verdict": "fail",
+  "reason": "Smog (gloss: air pollution by smoke and fog) is a kind of haze, not the same as haze."
+ },
+ {
+  "unit": "item:jx",
+  "verdict": "fail",
+  "reason": "Gloss defines exhaustion as \"Extreme fatigue\" — a stronger/weaker pair, which the app's \"Stronger and weaker\" link describes better than \"Same meaning\"."
+ },
+ {
+  "unit": "item:jy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:jz",
+  "verdict": "fail",
+  "reason": "\"grumble\" primarily means complain; matches \"rumble\" only in a weak secondary sense — ambiguous for a child."
+ },
+ {
+  "unit": "item:k0",
+  "verdict": "fail",
+  "reason": "For children \"bike\" means bicycle first; motorcycle is only a secondary sense — ambiguous. Wrong option \"scooter\" (motor scooter) muddies it further."
+ },
+ {
+  "unit": "item:k1",
+  "verdict": "fail",
+  "reason": "Wrong option \"correctness\" is a listed synonym of \"exactness\" — second defensible answer."
+ },
+ {
+  "unit": "item:k2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:k3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:k4",
+  "verdict": "fail",
+  "reason": "Wrong option \"sheen\" (a shine/gleam) is close enough to \"sparkle\"/\"gleam\" to be defensible."
+ },
+ {
+  "unit": "item:k5",
+  "verdict": "fail",
+  "reason": "\"tavern\"/\"bar\" are alcohol-venue words, unsuitable at level 2; gloss for \"bar\" is also the wrong sense (\"A long straight piece of solid metal or wood\")."
+ },
+ {
+  "unit": "item:k6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:k7",
+  "verdict": "fail",
+  "reason": "Wrong option \"dickens\" contains a crude slang word; \"romantic\" -> \"idealist\" relies on a rare noun sense children will read as love/romance; \"masculinity\" also out of place."
+ },
+ {
+  "unit": "item:k8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:k9",
+  "verdict": "fail",
+  "reason": "\"limber\" as a vehicle (gun-carriage cart) is archaic/obscure; children know \"limber\" as flexible — confusing."
+ },
+ {
+  "unit": "item:ka",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ke",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kf",
+  "verdict": "fail",
+  "reason": "\"acquisition\" is broader than \"purchase\" (a purchase is one kind of acquisition — gloss: acquiring possession) — not same meaning."
+ },
+ {
+  "unit": "item:kg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kh",
+  "verdict": "fail",
+  "reason": "Fumes are not \"a kind of cloud\" in any clear sense; wrong option \"vapor\" is at least as defensible a category for fume (fumes are vapour/gas)."
+ },
+ {
+  "unit": "item:ki",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kj",
+  "verdict": "fail",
+  "reason": "Wrong option \"ashamed\" (and \"unhappy\", as in \"feel sorry\") are listed synonyms of \"sorry\" — second defensible answers."
+ },
+ {
+  "unit": "item:kk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:km",
+  "verdict": "fail",
+  "reason": "Gloss for \"line\" (\"people or things one BESIDE another\") describes a row/rank, not a queue (one behind another) — inaccurate teaching."
+ },
+ {
+  "unit": "item:kn",
+  "verdict": "fail",
+  "reason": "Shopping (searching for and buying) is not the same as purchasing; wrong option \"acquisition\" is an equally defensible synonym of purchasing."
+ },
+ {
+  "unit": "item:ko",
+  "verdict": "fail",
+  "reason": "Wrong option \"bulk\" (size, volume) is a standard synonym of \"size\" — second defensible answer."
+ },
+ {
+  "unit": "item:kp",
+  "verdict": "fail",
+  "reason": "Gloss for \"buy\" is the noun sense (\"An advantageous purchase\") — wrong sense for sell/buy at level 1; wrong option \"bought\" is a form of the answer itself."
+ },
+ {
+  "unit": "item:kq",
+  "verdict": "fail",
+  "reason": "Prairie and steppe are region-specific grasslands (gloss ties steppe to Russia/Siberia) — related, not same meaning; wrong options include proper names lower-cased (\"abel\", \"alaskan\", \"sahara\")."
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ks",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ku",
+  "verdict": "fail",
+  "reason": "Wrong option \"vile\" (wicked, depraved) is a listed synonym of \"vicious\"."
+ },
+ {
+  "unit": "item:kv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:kw",
+  "verdict": "fail",
+  "reason": "A kettle is not a kind of metal — link false (at best \"made from\")."
+ },
+ {
+  "unit": "item:kx",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\") — wrong sense; \"vegetable\" is the more natural category for broccoli."
+ },
+ {
+  "unit": "item:ky",
+  "verdict": "fail",
+  "reason": "\"schist\" is pronounced like a common swear word — a guaranteed snigger/double-meaning for 8–15."
+ },
+ {
+  "unit": "item:kz",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\") — wrong sense; children know turmeric as a spice, so \"plant\" is not the clear category."
+ },
+ {
+  "unit": "item:l0",
+  "verdict": "fail",
+  "reason": "A clan is a subgroup (kin group), not the same as a tribe; gloss \"(usually preliterate) people\" is a loaded/colonial framing; \"ethnic\" used as a noun-like distractor is dated and potentially offensive."
+ },
+ {
+  "unit": "item:l1",
+  "verdict": "fail",
+  "reason": "\"penetrate\" carries a sexual double meaning for older children, and \"enter\" -> \"penetrate\" (pass through by overcoming resistance) is not the same meaning."
+ },
+ {
+  "unit": "item:l2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:l3",
+  "verdict": "fail",
+  "reason": "Wrong option \"conjecture\" is a standard synonym of \"supposition\" — second defensible answer."
+ },
+ {
+  "unit": "item:l4",
+  "verdict": "fail",
+  "reason": "A chauffeur is a KIND of driver (one employed to drive someone) — narrower, not same meaning."
+ },
+ {
+  "unit": "item:l5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:l6",
+  "verdict": "fail",
+  "reason": "A melody is the tune — one part of a song (which also has words); related, not same meaning."
+ },
+ {
+  "unit": "item:l7",
+  "verdict": "fail",
+  "reason": "Compost is a KIND of fertilizer (gloss: any substance such as manure ... used to make soil fertile) — narrower/broader, not same meaning."
+ },
+ {
+  "unit": "item:l8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:l9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:la",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ld",
+  "verdict": "fail",
+  "reason": "Gloss says the hearth is \"The floor of a fireplace\" — a PART of a fireplace, so the item contradicts its own gloss as \"same meaning\"."
+ },
+ {
+  "unit": "item:le",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lf",
+  "verdict": "fail",
+  "reason": "A monolith is a single large block/monument made OF stone, not a kind of stone; wrong option \"pillar\" muddies it further."
+ },
+ {
+  "unit": "item:lg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:li",
+  "verdict": "fail",
+  "reason": "A defendant (accused in court) is not the same as a suspect (under suspicion) — related legal words, not same meaning."
+ },
+ {
+  "unit": "item:lj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ll",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ln",
+  "verdict": "fail",
+  "reason": "For children \"confidence\" means self-belief; \"certainty\" matches only one sense weakly. Wrong option \"secrecy\" also fits the \"in confidence\" sense."
+ },
+ {
+  "unit": "item:lo",
+  "verdict": "fail",
+  "reason": "\"several\" (more than two, not many) and \"some\" (an unspecified amount) are not the same meaning; gloss \"Quantifier\" teaches nothing."
+ },
+ {
+  "unit": "item:lp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lq",
+  "verdict": "fail",
+  "reason": "Wrong options \"malice\" and \"resentment\" are listed synonyms of \"animosity\" — multiple defensible answers."
+ },
+ {
+  "unit": "item:lr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ls",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lt",
+  "verdict": "fail",
+  "reason": "\"recipient\" is broader than \"beneficiary\" (gloss: \"A person who receives something\"); a beneficiary is a particular kind of recipient."
+ },
+ {
+  "unit": "item:lu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lv",
+  "verdict": "fail",
+  "reason": "Wrong option \"lingerie\" (women's underwear) is unsuitable for 8–15; \"plaid\" is also a fabric, muddying the category."
+ },
+ {
+  "unit": "item:lw",
+  "verdict": "fail",
+  "reason": "Gloss for \"plant\" is the factory sense (\"Buildings for carrying on industrial labor\"); seaweed is also scientifically algae, not a true plant."
+ },
+ {
+  "unit": "item:lx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ly",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:lz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m1",
+  "verdict": "fail",
+  "reason": "Authority means rightful power, not just power; wrong option \"leadership\" is an arguable synonym; \"authority\" is advanced for level 1."
+ },
+ {
+  "unit": "item:m2",
+  "verdict": "fail",
+  "reason": "\"ornis\" is an extremely obscure word (the bird life of a region), and it is not \"a kind of bird\"."
+ },
+ {
+  "unit": "item:m3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m6",
+  "verdict": "fail",
+  "reason": "Lumber is sawn timber — a kind of (processed) wood; \"wood\" is broader. Wrong option \"plank\" is also arguably defensible."
+ },
+ {
+  "unit": "item:m7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m8",
+  "verdict": "fail",
+  "reason": "Feasting (eating a lavish meal) is not the same as dining (gloss: eating dinner) — related, not same meaning."
+ },
+ {
+  "unit": "item:m9",
+  "verdict": "fail",
+  "reason": "Wrong option \"tramp\" is a pejorative for a homeless person and a sexual insult — unsafe for 8–15."
+ },
+ {
+  "unit": "item:ma",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:md",
+  "verdict": "fail",
+  "reason": "Rainfall is one KIND of precipitation (snow, sleet, hail are others) — narrower, not same meaning."
+ },
+ {
+  "unit": "item:me",
+  "verdict": "fail",
+  "reason": "Gloss for \"memorial\" is the wrong sense (\"A recognition of meritorious service\"); wrong option \"tomb\" (a monument over a grave) is arguably defensible; grave-themed distractors."
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mj",
+  "verdict": "fail",
+  "reason": "\"brush\" reads first as a hairbrush/paintbrush for children — ambiguous; wrong option \"bracken\" (fern undergrowth) is arguably also a synonym of undergrowth."
+ }
+]

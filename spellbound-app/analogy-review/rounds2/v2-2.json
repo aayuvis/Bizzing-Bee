@@ -1,0 +1,1302 @@
+[
+ {
+  "unit": "item:fx",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:fz",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g0",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g1",
+  "verdict": "pass",
+  "reason": "note: opposites; sunny/cloudy is a loose antonym pair but clear enough"
+ },
+ {
+  "unit": "item:g2",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g3",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g4",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g5",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g6",
+  "verdict": "pass",
+  "reason": "note: opposites; \"silence\" is a close noun near-miss (noisy is an adjective, so silent is right)"
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g8",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:g9",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:ga",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:gb",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:gc",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:gd",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:ge",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:gf",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:gg",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; distractors arachnoid/epithelial/mucous are very obscure for 8-15"
+ },
+ {
+  "unit": "item:gh",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; acrid/rancid/pungent describe smells but are not the derived form"
+ },
+ {
+  "unit": "item:gi",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; acrid/acridity and wormwood/sorrel are obscure for 8-15"
+ },
+ {
+  "unit": "item:gk",
+  "verdict": "pass",
+  "reason": "note: adjective to noun"
+ },
+ {
+  "unit": "item:gl",
+  "verdict": "pass",
+  "reason": "note: adjective to noun"
+ },
+ {
+  "unit": "item:gm",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; chemistry distractors (carbonyl, acetic) obscure"
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:go",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:gq",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; colloid/miscible obscure for 8-15"
+ },
+ {
+  "unit": "item:gr",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; extravagant describes luxury but is not the derived form"
+ },
+ {
+  "unit": "item:gu",
+  "verdict": "pass",
+  "reason": "note: verb to noun; aileron obscure"
+ },
+ {
+  "unit": "item:gv",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:gw",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:gx",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:gy",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:gz",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:h0",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:h1",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:h2",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; bronchi/mastoid/purulent obscure medical terms"
+ },
+ {
+  "unit": "item:h3",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:h5",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; \"effortful\" is real but uncommon"
+ },
+ {
+  "unit": "item:h6",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; mirth/delight are related nouns but not the derived form"
+ },
+ {
+  "unit": "item:h7",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:h8",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:h9",
+  "verdict": "pass",
+  "reason": "note: adjective to noun"
+ },
+ {
+  "unit": "item:ha",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:hb",
+  "verdict": "pass",
+  "reason": "note: adjective to noun"
+ },
+ {
+  "unit": "item:hc",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "pass",
+  "reason": "note: verb to noun; \"continuation\" is the commoner form but continuance is valid"
+ },
+ {
+  "unit": "item:he",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:hf",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:hh",
+  "verdict": "pass",
+  "reason": "note: instance to category; gneiss obscure, basalt is an instance not the category"
+ },
+ {
+  "unit": "item:hj",
+  "verdict": "pass",
+  "reason": "note: instance to category; lanthanum/arsenate obscure"
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:hn",
+  "verdict": "pass",
+  "reason": "note: instance to category (medical instrument)"
+ },
+ {
+  "unit": "item:hp",
+  "verdict": "pass",
+  "reason": "note: instance to category; level mismatch (salmon:fish is specific, llama:animal is broad; mammal would match better)"
+ },
+ {
+  "unit": "item:hs",
+  "verdict": "pass",
+  "reason": "note: instance to category; honeysuckle can also be a shrub; cornel obscure"
+ },
+ {
+  "unit": "item:hv",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:hw",
+  "verdict": "pass",
+  "reason": "note: instance to category; gabardine/crinoline/chemise obscure"
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:hy",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:i1",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:i4",
+  "verdict": "pass",
+  "reason": "note: instance to category; diorite/marl obscure"
+ },
+ {
+  "unit": "item:i6",
+  "verdict": "pass",
+  "reason": "note: instance to category; monotreme/copepod/decapod/fissiped obscure; platypus is the reverse direction"
+ },
+ {
+  "unit": "item:i7",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:ia",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:ib",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:id",
+  "verdict": "pass",
+  "reason": "note: instance to category; dolman obscure"
+ },
+ {
+  "unit": "item:if",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:ig",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ih",
+  "verdict": "pass",
+  "reason": "note: synonyms; weak pair, introduce and acquaint are not clean synonyms (\"present\" would be better)"
+ },
+ {
+  "unit": "item:ir",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:is",
+  "verdict": "pass",
+  "reason": "note: instance to category; minuet/pavane obscure"
+ },
+ {
+  "unit": "item:it",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:iu",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:iv",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; tonal/modal/phonology obscure for 8-15"
+ },
+ {
+  "unit": "item:iw",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:iy",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:iz",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:j0",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:j1",
+  "verdict": "pass",
+  "reason": "note: opposites; \"cruelty\" is a noun near-miss"
+ },
+ {
+  "unit": "item:j2",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:j3",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:j4",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:j5",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:j6",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:j7",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:j8",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:j9",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ja",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:jb",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jc",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jd",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:je",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jh",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jj",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jl",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:jn",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:jo",
+  "verdict": "pass",
+  "reason": "note: synonyms (sloth the vice, not the animal)"
+ },
+ {
+  "unit": "item:jp",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jq",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jr",
+  "verdict": "pass",
+  "reason": "note: synonyms (crime sense)"
+ },
+ {
+  "unit": "item:js",
+  "verdict": "pass",
+  "reason": "note: synonyms; extremity often means hand/foot, but limb = extremity is standard"
+ },
+ {
+  "unit": "item:jt",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "pass",
+  "reason": "note: synonyms; citation-as-commendation is an uncommon sense for 8-15"
+ },
+ {
+  "unit": "item:jv",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:jy",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:k1",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:k2",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:k3",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:k4",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:k6",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:k8",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:ka",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kb",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kc",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:kd",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ke",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kg",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ki",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kj",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kk",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kl",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:km",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ko",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kp",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ks",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:kt",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:ku",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:kv",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:kx",
+  "verdict": "pass",
+  "reason": "note: instance to category; weak - broccoli is itself a vegetable, so \"plant\" is a level up and pea is a same-level instance"
+ },
+ {
+  "unit": "item:kz",
+  "verdict": "pass",
+  "reason": "note: instance to category; weak - \"spice\" would be the natural category; nutmeg/cumin are instances"
+ },
+ {
+  "unit": "item:l2",
+  "verdict": "pass",
+  "reason": "note: synonyms; uses the geographic sense of cape, which many 8-15s will not know"
+ },
+ {
+  "unit": "item:l3",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:l5",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:l8",
+  "verdict": "pass",
+  "reason": "note: synonyms; deny/contradict is a loose pair"
+ },
+ {
+  "unit": "item:l9",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:la",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lb",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lc",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ld",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:le",
+  "verdict": "pass",
+  "reason": "note: instance to category; corundum/osmium obscure"
+ },
+ {
+  "unit": "item:lg",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lh",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:lj",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lk",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ll",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lm",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ln",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lp",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:lq",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lr",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ls",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:lu",
+  "verdict": "pass",
+  "reason": "note: synonyms; batten obscure"
+ },
+ {
+  "unit": "item:lv",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:lx",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ly",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:lz",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:m0",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:m3",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:m4",
+  "verdict": "pass",
+  "reason": "note: adjective to noun"
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:m7",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:m9",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:ma",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mb",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mc",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:me",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mg",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mh",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mi",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mj",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mk",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ml",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mm",
+  "verdict": "pass",
+  "reason": "note: adjective to noun (humaneness would be exact; humanity is defensible)"
+ },
+ {
+  "unit": "item:mo",
+  "verdict": "pass",
+  "reason": "note: synonyms; abashment obscure"
+ },
+ {
+  "unit": "item:mq",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mr",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:ms",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mt",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mu",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:mw",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:mx",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:my",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:n1",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:n3",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:n4",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:n6",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:n7",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:n9",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:na",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nb",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nc",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:nd",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ne",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ng",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nh",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ni",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nj",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:nk",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nm",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nn",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:no",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:np",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nr",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nt",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:nv",
+  "verdict": "pass",
+  "reason": "note: synonyms; \"down\" is the noun near-miss"
+ },
+ {
+  "unit": "item:nx",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:nz",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:o1",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:o2",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:o4",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:o7",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:o8",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:od",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:oe",
+  "verdict": "pass",
+  "reason": "note: opposites"
+ },
+ {
+  "unit": "item:of",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:oh",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:oi",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ok",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ol",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:om",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:on",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:op",
+  "verdict": "pass",
+  "reason": "note: verb to noun"
+ },
+ {
+  "unit": "item:oq",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:os",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ot",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; weak - black is already an adjective and -ish changes the meaning to \"somewhat\""
+ },
+ {
+  "unit": "item:ou",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ov",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ow",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ox",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:oy",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:oz",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:p0",
+  "verdict": "pass",
+  "reason": "note: instance to category; thoroughbred is a breed, not every racehorse is one"
+ },
+ {
+  "unit": "item:p1",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:p2",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:p5",
+  "verdict": "pass",
+  "reason": "note: synonyms (fair as a noun); the adjective sense of fair may mislead"
+ },
+ {
+  "unit": "item:p7",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pb",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pe",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pg",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ph",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:pi",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pk",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pl",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pm",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:pn",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pp",
+  "verdict": "pass",
+  "reason": "note: adjective to noun"
+ },
+ {
+  "unit": "item:pq",
+  "verdict": "pass",
+  "reason": "note: instance to category"
+ },
+ {
+  "unit": "item:pr",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:ps",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pt",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pu",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:pw",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:px",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:py",
+  "verdict": "pass",
+  "reason": "note: noun to adjective"
+ },
+ {
+  "unit": "item:q0",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ },
+ {
+  "unit": "item:q1",
+  "verdict": "pass",
+  "reason": "note: part to whole"
+ },
+ {
+  "unit": "item:q2",
+  "verdict": "pass",
+  "reason": "note: synonyms"
+ }
+]

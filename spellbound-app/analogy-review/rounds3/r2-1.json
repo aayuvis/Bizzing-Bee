@@ -1,0 +1,935 @@
+[
+ {
+  "unit": "item:8",
+  "kind": "item",
+  "analogy": "close is to shut as shipment is to …",
+  "options": [
+   "receipt",
+   "freight",
+   "premium",
+   "inventory"
+  ]
+ },
+ {
+  "unit": "item:103",
+  "kind": "item",
+  "analogy": "big is to large as bag is to …",
+  "options": [
+   "laundry",
+   "express",
+   "pouch",
+   "towel",
+   "bin"
+  ]
+ },
+ {
+  "unit": "item:161",
+  "kind": "item",
+  "analogy": "gift is to present as handcuff is to …",
+  "options": [
+   "deterrent",
+   "impediment",
+   "manacle",
+   "pillory"
+  ]
+ },
+ {
+  "unit": "item:176",
+  "kind": "item",
+  "analogy": "gift is to present as wetland is to …",
+  "options": [
+   "creek",
+   "swamp",
+   "habitat"
+  ]
+ },
+ {
+  "unit": "item:185",
+  "kind": "item",
+  "analogy": "begin is to start as accumulation is to …",
+  "options": [
+   "melanin",
+   "breakdown",
+   "buildup"
+  ]
+ },
+ {
+  "unit": "item:y",
+  "kind": "item",
+  "analogy": "quick is to fast as performing is to …",
+  "options": [
+   "audition",
+   "solo",
+   "acting"
+  ]
+ },
+ {
+  "unit": "item:7a",
+  "kind": "item",
+  "analogy": "begin is to start as possible is to …",
+  "options": [
+   "furthest",
+   "probable",
+   "feasible",
+   "finite",
+   "infinite"
+  ]
+ },
+ {
+  "unit": "item:9p",
+  "kind": "item",
+  "analogy": "invent is to inventor as perfume is to …",
+  "options": [
+   "linseed",
+   "beeswax",
+   "fragrance",
+   "perfumer"
+  ]
+ },
+ {
+  "unit": "item:ae",
+  "kind": "item",
+  "analogy": "brave is to bravery as responsive is to …",
+  "options": [
+   "stimuli",
+   "stimulus",
+   "activation",
+   "responsiveness"
+  ]
+ },
+ {
+  "unit": "item:b4",
+  "kind": "item",
+  "analogy": "cold is to freezing as sad is to …",
+  "options": [
+   "ecstatic",
+   "miserable",
+   "nostalgic",
+   "patriotic"
+  ]
+ },
+ {
+  "unit": "item:b6",
+  "kind": "item",
+  "analogy": "angry is to furious as breeze is to …",
+  "options": [
+   "sway",
+   "dew",
+   "gale",
+   "sunflower"
+  ]
+ },
+ {
+  "unit": "item:bu",
+  "kind": "item",
+  "analogy": "small is to tiny as warm is to …",
+  "options": [
+   "gulp",
+   "cold",
+   "hot",
+   "downpour"
+  ]
+ },
+ {
+  "unit": "item:d9",
+  "kind": "item",
+  "analogy": "circle is to shape as zither is to …",
+  "options": [
+   "fret",
+   "instrument",
+   "saxophone",
+   "instrumental"
+  ]
+ },
+ {
+  "unit": "item:e8",
+  "kind": "item",
+  "analogy": "dark is to darkness as aggressive is to …",
+  "options": [
+   "repulse",
+   "antagonist",
+   "aggressiveness",
+   "exploitation",
+   "harassment"
+  ]
+ },
+ {
+  "unit": "item:ej",
+  "kind": "item",
+  "analogy": "choose is to pick as envious is to …",
+  "options": [
+   "unhappy",
+   "jealous",
+   "impassive",
+   "giddy",
+   "wary"
+  ]
+ },
+ {
+  "unit": "item:es",
+  "kind": "item",
+  "analogy": "begin is to start as oval is to …",
+  "options": [
+   "ellipse",
+   "round",
+   "lob"
+  ]
+ },
+ {
+  "unit": "item:fy",
+  "kind": "item",
+  "analogy": "push is to pull as quiet is to …",
+  "options": [
+   "silent",
+   "calm",
+   "loud",
+   "humble"
+  ]
+ },
+ {
+  "unit": "item:g7",
+  "kind": "item",
+  "analogy": "arrive is to leave as exit is to …",
+  "options": [
+   "sink",
+   "entrance",
+   "shut",
+   "exclude",
+   "ascend"
+  ]
+ },
+ {
+  "unit": "item:gn",
+  "kind": "item",
+  "analogy": "music is to musical as gelatin is to …",
+  "options": [
+   "preservative",
+   "gummy",
+   "greasy",
+   "gelatinous"
+  ]
+ },
+ {
+  "unit": "item:hd",
+  "kind": "item",
+  "analogy": "move is to movement as continue is to …",
+  "options": [
+   "continuance",
+   "inactivity",
+   "resume",
+   "disruption"
+  ]
+ },
+ {
+  "unit": "item:hk",
+  "kind": "item",
+  "analogy": "carrot is to vegetable as synthesizer is to …",
+  "options": [
+   "sonata",
+   "multimedia",
+   "instrumental",
+   "amplifier",
+   "instrument"
+  ]
+ },
+ {
+  "unit": "item:hx",
+  "kind": "item",
+  "analogy": "rose is to flower as marinara is to …",
+  "options": [
+   "mozzarella",
+   "brioche",
+   "sauce",
+   "cutlet"
+  ]
+ },
+ {
+  "unit": "item:js",
+  "kind": "item",
+  "analogy": "quick is to fast as limb is to …",
+  "options": [
+   "extremity",
+   "hind",
+   "sternum",
+   "femur",
+   "elbow"
+  ]
+ },
+ {
+  "unit": "item:ju",
+  "kind": "item",
+  "analogy": "simple is to easy as commendation is to …",
+  "options": [
+   "frivolity",
+   "earnest",
+   "citation",
+   "condemnation",
+   "discontent"
+  ]
+ },
+ {
+  "unit": "item:kr",
+  "kind": "item",
+  "analogy": "shout is to yell as loyalty is to …",
+  "options": [
+   "believer",
+   "leadership",
+   "devotion",
+   "betrayal",
+   "agony"
+  ]
+ },
+ {
+  "unit": "item:m5",
+  "kind": "item",
+  "analogy": "big is to large as bump is to …",
+  "options": [
+   "swelling",
+   "eyelash",
+   "sag",
+   "shin"
+  ]
+ },
+ {
+  "unit": "item:mf",
+  "kind": "item",
+  "analogy": "quick is to fast as evoke is to …",
+  "options": [
+   "sublime",
+   "heighten",
+   "elicit",
+   "mute"
+  ]
+ },
+ {
+  "unit": "item:o2",
+  "kind": "item",
+  "analogy": "simple is to easy as platter is to …",
+  "options": [
+   "taco",
+   "bag",
+   "cornbread",
+   "tray",
+   "truffle"
+  ]
+ },
+ {
+  "unit": "item:od",
+  "kind": "item",
+  "analogy": "quick is to fast as contempt is to …",
+  "options": [
+   "disdain",
+   "acceptance",
+   "insult",
+   "affront"
+  ]
+ },
+ {
+  "unit": "item:on",
+  "kind": "item",
+  "analogy": "shout is to yell as legacy is to …",
+  "options": [
+   "eyewitness",
+   "landowner",
+   "claimant",
+   "inheritance"
+  ]
+ },
+ {
+  "unit": "item:p0",
+  "kind": "item",
+  "analogy": "robin is to bird as racehorse is to …",
+  "options": [
+   "horse",
+   "handler",
+   "equestrian",
+   "rodeo"
+  ]
+ },
+ {
+  "unit": "item:ph",
+  "kind": "item",
+  "analogy": "salmon is to fish as nutmeg is to …",
+  "options": [
+   "soy",
+   "spice",
+   "almond",
+   "parsley",
+   "coconut"
+  ]
+ },
+ {
+  "unit": "item:r6",
+  "kind": "item",
+  "analogy": "begin is to start as beg is to …",
+  "options": [
+   "entreat",
+   "grumble",
+   "bully",
+   "shun"
+  ]
+ },
+ {
+  "unit": "item:u6",
+  "kind": "item",
+  "analogy": "quick is to fast as pig is to …",
+  "options": [
+   "hog",
+   "hen",
+   "pigeon"
+  ]
+ },
+ {
+  "unit": "item:ua",
+  "kind": "item",
+  "analogy": "gift is to present as exhaustion is to …",
+  "options": [
+   "dizziness",
+   "laziness",
+   "boredom",
+   "fatigue",
+   "fortitude"
+  ]
+ },
+ {
+  "unit": "item:ut",
+  "kind": "item",
+  "analogy": "shout is to yell as crease is to …",
+  "options": [
+   "thumbnail",
+   "fray",
+   "wrinkle",
+   "sandpaper"
+  ]
+ },
+ {
+  "unit": "item:vb",
+  "kind": "item",
+  "analogy": "begin is to start as customize is to …",
+  "options": [
+   "personalize",
+   "covet",
+   "optimize",
+   "recalculate"
+  ]
+ },
+ {
+  "unit": "item:vn",
+  "kind": "item",
+  "analogy": "close is to shut as aqua is to …",
+  "options": [
+   "sluice",
+   "cyan",
+   "amber"
+  ]
+ },
+ {
+  "unit": "item:vx",
+  "kind": "item",
+  "analogy": "gift is to present as gruel is to …",
+  "options": [
+   "porridge",
+   "marinade",
+   "omelet",
+   "barbecue",
+   "coriander"
+  ]
+ },
+ {
+  "unit": "item:w4",
+  "kind": "item",
+  "analogy": "quick is to fast as cast is to …",
+  "options": [
+   "backdrop",
+   "shadow",
+   "spotlight",
+   "troupe",
+   "hex"
+  ]
+ },
+ {
+  "unit": "item:wa",
+  "kind": "item",
+  "analogy": "begin is to start as vine is to …",
+  "options": [
+   "shrub",
+   "climber",
+   "annual",
+   "bush",
+   "fern"
+  ]
+ },
+ {
+  "unit": "item:wb",
+  "kind": "item",
+  "analogy": "simple is to easy as factory is to …",
+  "options": [
+   "shipment",
+   "mill",
+   "annual",
+   "worker"
+  ]
+ },
+ {
+  "unit": "item:wi",
+  "kind": "item",
+  "analogy": "move is to movement as certify is to …",
+  "options": [
+   "applicant",
+   "confirmation",
+   "publisher",
+   "subscription",
+   "certification"
+  ]
+ },
+ {
+  "unit": "item:wx",
+  "kind": "item",
+  "analogy": "choose is to pick as minstrel is to …",
+  "options": [
+   "duet",
+   "columnist",
+   "tango",
+   "bard"
+  ]
+ },
+ {
+  "unit": "item:yy",
+  "kind": "item",
+  "analogy": "big is to large as hole is to …",
+  "options": [
+   "opening",
+   "peg",
+   "dent"
+  ]
+ },
+ {
+  "unit": "item:z2",
+  "kind": "item",
+  "analogy": "close is to shut as board is to …",
+  "options": [
+   "skate",
+   "roller",
+   "fulcrum",
+   "bulletin",
+   "committee"
+  ]
+ },
+ {
+  "unit": "item:zh",
+  "kind": "item",
+  "analogy": "big is to large as celebration is to …",
+  "options": [
+   "supper",
+   "graduation",
+   "festival"
+  ]
+ },
+ {
+  "unit": "item:zi",
+  "kind": "item",
+  "analogy": "shout is to yell as bard is to …",
+  "options": [
+   "epic",
+   "maiden",
+   "minstrel",
+   "ballad"
+  ]
+ },
+ {
+  "unit": "item:zp",
+  "kind": "item",
+  "analogy": "big is to large as circumference is to …",
+  "options": [
+   "girth",
+   "longitude",
+   "median",
+   "vertices",
+   "vertex"
+  ]
+ },
+ {
+  "unit": "item:10t",
+  "kind": "item",
+  "analogy": "choose is to pick as flip is to …",
+  "options": [
+   "upside",
+   "posit",
+   "somersault"
+  ]
+ },
+ {
+  "unit": "item:13s",
+  "kind": "item",
+  "analogy": "simple is to easy as significance is to …",
+  "options": [
+   "notable",
+   "meaningful",
+   "meaning",
+   "prestige"
+  ]
+ },
+ {
+  "unit": "item:15i",
+  "kind": "item",
+  "analogy": "simple is to easy as bookshelf is to …",
+  "options": [
+   "alcove",
+   "attic",
+   "bookcase",
+   "workspace"
+  ]
+ },
+ {
+  "unit": "item:17n",
+  "kind": "item",
+  "analogy": "ancient is to modern as sharp is to …",
+  "options": [
+   "blunt",
+   "strong",
+   "sour"
+  ]
+ },
+ {
+  "unit": "stem:who:0",
+  "kind": "stem",
+  "pair": [
+   "bake",
+   "baker"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:1",
+  "kind": "stem",
+  "pair": [
+   "teach",
+   "teacher"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:2",
+  "kind": "stem",
+  "pair": [
+   "sail",
+   "sailor"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:3",
+  "kind": "stem",
+  "pair": [
+   "paint",
+   "painter"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:4",
+  "kind": "stem",
+  "pair": [
+   "farm",
+   "farmer"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:5",
+  "kind": "stem",
+  "pair": [
+   "sing",
+   "singer"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:6",
+  "kind": "stem",
+  "pair": [
+   "act",
+   "actor"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:7",
+  "kind": "stem",
+  "pair": [
+   "drive",
+   "driver"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:8",
+  "kind": "stem",
+  "pair": [
+   "swim",
+   "swimmer"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:9",
+  "kind": "stem",
+  "pair": [
+   "invent",
+   "inventor"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n0",
+  "kind": "stem",
+  "pair": [
+   "cook",
+   "chef"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n1",
+  "kind": "stem",
+  "pair": [
+   "fly",
+   "pilot"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n2",
+  "kind": "stem",
+  "pair": [
+   "heal",
+   "doctor"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n3",
+  "kind": "stem",
+  "pair": [
+   "steal",
+   "thief"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n4",
+  "kind": "stem",
+  "pair": [
+   "teach",
+   "tutor"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n5",
+  "kind": "stem",
+  "pair": [
+   "repair",
+   "mechanic"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n6",
+  "kind": "stem",
+  "pair": [
+   "serve",
+   "waiter"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ },
+ {
+  "unit": "stem:who:n7",
+  "kind": "stem",
+  "pair": [
+   "rescue",
+   "lifeguard"
+  ],
+  "links": [
+   "Same meaning",
+   "Opposites",
+   "Kind of",
+   "Part of a whole",
+   "Made from",
+   "Used for",
+   "Who does it",
+   "Word families",
+   "Stronger and weaker"
+  ]
+ }
+]

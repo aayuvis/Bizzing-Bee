@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:0",
+  "verdict": "fail",
+  "reason": "(b) 'feast' is a defensible synonym of holiday (a religious feast/festival day); 'easter' is a proper noun shown lowercase"
+ },
+ {
+  "unit": "item:1",
+  "verdict": "fail",
+  "reason": "(a) sister is a KIND of sibling (narrower), not the same meaning"
+ },
+ {
+  "unit": "item:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3",
+  "verdict": "fail",
+  "reason": "(a)/(d) sitting = posing only in the narrow portrait sense; a child reads sitting as being seated"
+ },
+ {
+  "unit": "item:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5",
+  "verdict": "fail",
+  "reason": "(a) eater is broader than diner; 'diner' to most kids is a restaurant, so the pair is confusing"
+ },
+ {
+  "unit": "item:6",
+  "verdict": "fail",
+  "reason": "(a)/(b) device is broader than gadget (a gadget is a small device); 'invention' is a thesaurus synonym of gadget and the gloss itself says 'invented'"
+ },
+ {
+  "unit": "item:7",
+  "verdict": "fail",
+  "reason": "(c) tavern/bar are alcohol words (gloss: 'licensed to sell alcoholic drinks'); 'spit' as an option is crude"
+ },
+ {
+  "unit": "item:8",
+  "verdict": "fail",
+  "reason": "(b) 'package' reads as the same thing as a shipment to a child (my shipment/package arrived)"
+ },
+ {
+  "unit": "item:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:10",
+  "verdict": "fail",
+  "reason": "(b) 'adult' is a defensible opposite of young (young animal vs adult animal; listed antonym)"
+ },
+ {
+  "unit": "item:11",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:12",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('a category of things' = kind the noun), teaching the wrong word"
+ },
+ {
+  "unit": "item:13",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('income or profit' = take the noun)"
+ },
+ {
+  "unit": "item:14",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('activity of persuading someone to buy' = a sell, noun)"
+ },
+ {
+  "unit": "item:16",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('desire strongly' = to long for)"
+ },
+ {
+  "unit": "item:17",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:18",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense (24-hour rotation day, which contains the night; the opposite of night is daytime)"
+ },
+ {
+  "unit": "item:19",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:20",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:21",
+  "verdict": "fail",
+  "reason": "(b) in British English 'corn' means cereal grain incl. wheat; also gloss shown for d is the wrong sense ('granular particle', a grain of sand)"
+ },
+ {
+  "unit": "item:22",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:23",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:24",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:25",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:26",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:27",
+  "verdict": "fail",
+  "reason": "(b) a baseball diamond is a kind of 'field'; also gloss shown for d is the wrong sense (gem = 'art highly prized')"
+ },
+ {
+  "unit": "item:28",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:29",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:30",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:31",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:32",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:33",
+  "verdict": "fail",
+  "reason": "(b) 'mentor' is also one who teaches (thesaurus synonym of teacher/tutor)"
+ },
+ {
+  "unit": "item:34",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:35",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:36",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:37",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:38",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:39",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:40",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:41",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:42",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('someone regarded as certain to succeed' = a natural, noun)"
+ },
+ {
+  "unit": "item:43",
+  "verdict": "fail",
+  "reason": "(b) 'decrease' is also an opposite of expand"
+ },
+ {
+  "unit": "item:44",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('a clear unobstructed space' = the open, noun)"
+ },
+ {
+  "unit": "item:45",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('waves in the hair made with heat and chemicals' = a perm)"
+ },
+ {
+  "unit": "item:46",
+  "verdict": "fail",
+  "reason": "(b) 'comply' is a defensible opposite of refuse; also gloss shown for d is the wrong sense ('consider or hold as true')"
+ },
+ {
+  "unit": "item:47",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('food that is discarded' = refuse/rubbish, different pronunciation) - teaches the wrong word"
+ },
+ {
+  "unit": "item:48",
+  "verdict": "fail",
+  "reason": "(b) 'charity' is a thesaurus synonym of donation"
+ },
+ {
+  "unit": "item:49",
+  "verdict": "fail",
+  "reason": "(a) beach is a KIND of shore (sandy shore), narrower; gloss is beach's"
+ },
+ {
+  "unit": "item:50",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:51",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:52",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:53",
+  "verdict": "fail",
+  "reason": "(b) a trunk is also part of a tree, so 'cedar' is a defensible whole"
+ },
+ {
+  "unit": "item:54",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:55",
+  "verdict": "fail",
+  "reason": "(c) 'bottom' is a double-meaning body word (buttocks) and invites 'sole is the bottom' confusion"
+ },
+ {
+  "unit": "item:56",
+  "verdict": "fail",
+  "reason": "(b) 'poetry' is a defensible whole for verse (verse is part of poetry; verse also means poetry)"
+ },
+ {
+  "unit": "item:57",
+  "verdict": "fail",
+  "reason": "(b) a minute is also part of a 'week'; a different distractor needed"
+ },
+ {
+  "unit": "item:58",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:59",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:60",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:61",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:62",
+  "verdict": "fail",
+  "reason": "(b) 'metal' is also what a ring is made from"
+ },
+ {
+  "unit": "item:63",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:64",
+  "verdict": "fail",
+  "reason": "(b) scissors can be used to 'shred'; also gloss shown for d is the wrong sense ('a share of the profits')"
+ },
+ {
+  "unit": "item:65",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:66",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:67",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:68",
+  "verdict": "fail",
+  "reason": "(d) 'bore' to a child means dull/boring and the gloss confirms it ('a person who evokes boredom'); 'dig' also arguable"
+ },
+ {
+  "unit": "item:69",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('any maneuver made toward a goal' = a measure, noun)"
+ },
+ {
+  "unit": "item:70",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:71",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:72",
+  "verdict": "fail",
+  "reason": "(d) gloss shown for d is the wrong sense (physics deformation); 'strain' as a sieve's use is an uncommon sense for L5"
+ },
+ {
+  "unit": "item:73",
+  "verdict": "fail",
+  "reason": "(b) 'disposition' is a dictionary synonym of tendency/inclination"
+ },
+ {
+  "unit": "item:74",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:75",
+  "verdict": "fail",
+  "reason": "(b) 'calamity' is close enough to devastation to be defended"
+ },
+ {
+  "unit": "item:76",
+  "verdict": "fail",
+  "reason": "(a) an alibi is a specific KIND of excuse (being elsewhere at a crime); crime-specific gloss"
+ },
+ {
+  "unit": "item:77",
+  "verdict": "fail",
+  "reason": "(b) 'animosity' and 'resentment' are thesaurus synonyms of malice"
+ },
+ {
+  "unit": "item:78",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:79",
+  "verdict": "fail",
+  "reason": "(a) a quilt is a kind of bed covering, not the same as a blanket; 'cravat'/'canvases' odd"
+ },
+ {
+  "unit": "item:80",
+  "verdict": "fail",
+  "reason": "(b) 'hate' is a synonym of hatred; 'dickens' is an obscure minced oath"
+ },
+ {
+  "unit": "item:81",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:82",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:83",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:84",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:85",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:86",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:87",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:88",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:89",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:90",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:91",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:92",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:93",
+  "verdict": "fail",
+  "reason": "(a) a latch is not a lock (a latch fastens, need not lock); related, not same"
+ },
+ {
+  "unit": "item:94",
+  "verdict": "fail",
+  "reason": "(d) 'boring' to a child means dull; confusing; distractors obscure (bunker, weld)"
+ },
+ {
+  "unit": "item:95",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:96",
+  "verdict": "fail",
+  "reason": "(c)/(d) pregnancy/gestation/fetus is an adult topic and 'gestation' is obscure at L4"
+ },
+ {
+  "unit": "item:97",
+  "verdict": "fail",
+  "reason": "(a) a mirror is a KIND of reflector (narrower), not the same meaning"
+ },
+ {
+  "unit": "item:98",
+  "verdict": "fail",
+  "reason": "(a) a statue is a KIND of sculpture; (b) 'monument' also arguable"
+ },
+ {
+  "unit": "item:99",
+  "verdict": "fail",
+  "reason": "(c) option 'smack' is drug slang (heroin) and a hit; (d) 'boring' reads as dull to a child"
+ },
+ {
+  "unit": "item:100",
+  "verdict": "fail",
+  "reason": "(d) 'levy' is too formal/obscure for L2 (age 9)"
+ },
+ {
+  "unit": "item:101",
+  "verdict": "fail",
+  "reason": "(d) gloss shown for d is the wrong sense ('so unusual or impressive' = striking adj); 'hit' option muddles the word family"
+ },
+ {
+  "unit": "item:102",
+  "verdict": "fail",
+  "reason": "(d) 'deceased' is formal/adult for L2; gloss is the noun sense; death-themed distractors"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "fail",
+  "reason": "(a) a pouch is a small KIND of bag (narrower)"
+ },
+ {
+  "unit": "item:104",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:105",
+  "verdict": "fail",
+  "reason": "(b)/(c) 'menial' as a noun means a servant/labourer (defensible) and is a demeaning word"
+ },
+ {
+  "unit": "item:106",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:107",
+  "verdict": "fail",
+  "reason": "(d) 'sho' (Japanese mouth organ) is far too obscure; distractors footwear/sandal suggest it was confused with 'shoe'"
+ },
+ {
+  "unit": "item:108",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:109",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:110",
+  "verdict": "fail",
+  "reason": "(a) cheat and chess are not the same meaning - broken pair"
+ },
+ {
+  "unit": "item:111",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:112",
+  "verdict": "fail",
+  "reason": "(d) 'andromeda' as a shrub genus is obscure; children know it as a galaxy"
+ },
+ {
+  "unit": "item:113",
+  "verdict": "fail",
+  "reason": "(a) a steppe is grassland, not a kind of tree - broken pair"
+ },
+ {
+  "unit": "item:114",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:115",
+  "verdict": "fail",
+  "reason": "(c) lowercase 'aboriginal' used as a throwaway distractor - ethnicity term, risky"
+ },
+ {
+  "unit": "item:116",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:117",
+  "verdict": "fail",
+  "reason": "(a) vegetation is plants collectively, not a kind of plant; gloss shown for d is the wrong sense ('buildings for industrial labor')"
+ },
+ {
+  "unit": "item:118",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:119",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:120",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:121",
+  "verdict": "fail",
+  "reason": "(a) a smudge is not a kind of insect - broken pair"
+ },
+ {
+  "unit": "item:122",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:123",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:124",
+  "verdict": "fail",
+  "reason": "(a) lather is a KIND of foam (soap foam), narrower"
+ },
+ {
+  "unit": "item:125",
+  "verdict": "fail",
+  "reason": "(a) a cleat is not a kind of metal - broken pair"
+ },
+ {
+  "unit": "item:126",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:127",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:128",
+  "verdict": "fail",
+  "reason": "(c) 'disability' offered beside difficulty/trouble implies disability = trouble (stigmatising); (b) 'distress' also arguable"
+ },
+ {
+  "unit": "item:129",
+  "verdict": "fail",
+  "reason": "(a) rain is a KIND of precipitation (narrower)"
+ },
+ {
+  "unit": "item:130",
+  "verdict": "fail",
+  "reason": "(d) US-specific (statehouse/capitol) and obscure for L7 diaspora; 'abattoir' = slaughterhouse"
+ },
+ {
+  "unit": "item:131",
+  "verdict": "fail",
+  "reason": "(d) 'astrantia' (and every distractor) is an obscure botanical genus; gloss shown for d is the wrong sense (industrial plant)"
+ },
+ {
+  "unit": "item:132",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:133",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:134",
+  "verdict": "fail",
+  "reason": "(a) hiss = boo only in one weak sense (main sense: a snake/steam sound); (c) 'smack' is drug slang"
+ },
+ {
+  "unit": "item:135",
+  "verdict": "fail",
+  "reason": "(a)/(d) arrow = pointer only in the sign sense; the main sense (projectile) makes 'bullet' look right"
+ },
+ {
+  "unit": "item:136",
+  "verdict": "fail",
+  "reason": "(d) 'brush' = undergrowth is a sense most L4 children don't know (hairbrush); 'hedge' arguable"
+ },
+ {
+  "unit": "item:137",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:138",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:139",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:140",
+  "verdict": "fail",
+  "reason": "(a) shore is broader than beach (beach is a sandy shore)"
+ },
+ {
+  "unit": "item:141",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:142",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:143",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:144",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:145",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:146",
+  "verdict": "fail",
+  "reason": "(c)/(d) pustule/boil/pus is gross medical vocabulary; pustule (small) is not the same as boil (large); 'boil' ambiguous"
+ },
+ {
+  "unit": "item:147",
+  "verdict": "fail",
+  "reason": "(a) structural does not mean organizational; gloss is organizational's"
+ },
+ {
+  "unit": "item:148",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:149",
+  "verdict": "fail",
+  "reason": "(b) 'assent' is also a synonym of approve"
+ },
+ {
+  "unit": "item:150",
+  "verdict": "fail",
+  "reason": "(a) a pelt is an animal skin, not a kind of coat (garment)"
+ },
+ {
+  "unit": "item:151",
+  "verdict": "fail",
+  "reason": "(b) in British English a purse is a small wallet, so 'wallet' is defensible"
+ },
+ {
+  "unit": "item:152",
+  "verdict": "fail",
+  "reason": "(a) a picnic is not a cookout (picnic food need not be cooked); gloss is cookout's"
+ },
+ {
+  "unit": "item:153",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:154",
+  "verdict": "fail",
+  "reason": "(a) accused is not the same as suspect (accused has been charged); (c) 'murder' option at L2 (age 9)"
+ },
+ {
+  "unit": "item:155",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:156",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:157",
+  "verdict": "fail",
+  "reason": "(a) a crypt is an underground vault, not every tomb is one; (b) 'monument' arguable; heavy death set"
+ },
+ {
+  "unit": "item:158",
+  "verdict": "fail",
+  "reason": "(a) a garland (string/chain of flowers, a mala) is not a wreath (a ring, funeral connotation)"
+ },
+ {
+  "unit": "item:159",
+  "verdict": "fail",
+  "reason": "(c) lowercase 'arab' as a distractor beside trader/merchant/bazaar is an ethnic stereotype"
+ },
+ {
+  "unit": "item:160",
+  "verdict": "fail",
+  "reason": "(b) 'ideology' arguable; (d) 'conviction' at L2 is advanced and also means a criminal conviction; political distractors"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "fail",
+  "reason": "(b) 'fetter' is also a synonym of manacle"
+ },
+ {
+  "unit": "item:162",
+  "verdict": "fail",
+  "reason": "(a) soaring (rising high) is not gliding; gloss is the sport of gliding"
+ },
+ {
+  "unit": "item:163",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('a decorative texture' = a finish, noun)"
+ },
+ {
+  "unit": "item:164",
+  "verdict": "fail",
+  "reason": "(c) 'bottom' is a double-meaning body word (buttocks)"
+ },
+ {
+  "unit": "item:165",
+  "verdict": "fail",
+  "reason": "(c) 'dementia' and 'madness' as options - stigmatising mental-health terms"
+ },
+ {
+  "unit": "item:166",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:167",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:168",
+  "verdict": "fail",
+  "reason": "'cacti' (plural) is a kind of 'plant' (singular) - grammatical mismatch; gloss shown for d is the wrong sense (industrial plant)"
+ },
+ {
+  "unit": "item:169",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:170",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:171",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:172",
+  "verdict": "fail",
+  "reason": "(d) 'national' as a noun meaning citizen is too obscure for L1 (age 8)"
+ },
+ {
+  "unit": "item:173",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:174",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:175",
+  "verdict": "fail",
+  "reason": "(b) 'salary' is a dictionary synonym of stipend"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "fail",
+  "reason": "(a) a swamp is a KIND of wetland (narrower); 'nile' lowercase proper noun"
+ },
+ {
+  "unit": "item:177",
+  "verdict": "fail",
+  "reason": "(a) a caterpillar is a KIND of larva (narrower)"
+ },
+ {
+  "unit": "item:178",
+  "verdict": "fail",
+  "reason": "(a) by the gloss a bookshelf is one shelf, i.e. part of a bookcase, not the same thing"
+ },
+ {
+  "unit": "item:179",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:180",
+  "verdict": "fail",
+  "reason": "(c) 'buttock' option; (d) 'extremity' to a child means extreme degree"
+ },
+ {
+  "unit": "item:181",
+  "verdict": "fail",
+  "reason": "(a) cholesterol is not a kind of animal - broken pair"
+ },
+ {
+  "unit": "item:182",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:183",
+  "verdict": "fail",
+  "reason": "(c)/(d) 'rustic' as a noun is a demeaning, obscure term for L2; 'peasant' is also used as an insult"
+ },
+ {
+  "unit": "item:184",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:185",
+  "verdict": "fail",
+  "reason": "(c) 'urine' as a throwaway distractor is toilet-giggle bait; other options obscure medical terms"
+ },
+ {
+  "unit": "item:186",
+  "verdict": "fail",
+  "reason": "(b) 'considerate' (and 'kindly') are thesaurus synonyms of courteous"
+ },
+ {
+  "unit": "item:187",
+  "verdict": "fail",
+  "reason": "(b) 'initiative' (a new plan/project) is arguable"
+ },
+ {
+  "unit": "item:a",
+  "verdict": "fail",
+  "reason": "(a) juice is a kind of extract, not the same; (b) 'resin' and 'latex' are also plant extracts"
+ },
+ {
+  "unit": "item:b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e",
+  "verdict": "fail",
+  "reason": "(d) 'patron' at L2 is advanced and mainly means supporter/sponsor; ambiguous"
+ },
+ {
+  "unit": "item:f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:g",
+  "verdict": "fail",
+  "reason": "(a) hiking is a KIND of walking (narrower); (b) 'trek' is a synonym of hike"
+ },
+ {
+  "unit": "item:h",
+  "verdict": "fail",
+  "reason": "(a) a network is not a grid; gloss is grid's"
+ },
+ {
+  "unit": "item:i",
+  "verdict": "fail",
+  "reason": "(a) a street is a kind of road (in a town); (b) 'path' arguable"
+ },
+ {
+  "unit": "item:j",
+  "verdict": "fail",
+  "reason": "(b) 'vacation' is arguably the same as a trip to a child"
+ },
+ {
+  "unit": "item:k",
+  "verdict": "fail",
+  "reason": "(a) a grin is a KIND of smile (a broad smile), narrower"
+ },
+ {
+  "unit": "item:l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:m",
+  "verdict": "fail",
+  "reason": "(a) a blanket is a kind of cover, not the same meaning"
+ },
+ {
+  "unit": "item:n",
+  "verdict": "fail",
+  "reason": "(c) lowercase 'arab' as a distractor beside trader/dealer/bazaar is an ethnic stereotype"
+ },
+ {
+  "unit": "item:o",
+  "verdict": "fail",
+  "reason": "(a) evidence is not proof; (b) 'testimony' is a kind of evidence and 'give evidence' = testify"
+ },
+ {
+  "unit": "item:p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q",
+  "verdict": "fail",
+  "reason": "(a) mill = factory only in one sense (a child thinks of a grain mill/windmill)"
+ },
+ {
+  "unit": "item:r",
+  "verdict": "fail",
+  "reason": "(a) playing = performing only in the drama sense; (c) 'poker' (gambling) option"
+ },
+ {
+  "unit": "item:s",
+  "verdict": "fail",
+  "reason": "(a) device is broader than gadget (a gadget is a small device)"
+ },
+ {
+  "unit": "item:t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u",
+  "verdict": "fail",
+  "reason": "(b) 'extent' is a thesaurus synonym of amount; 'gross' arguable"
+ },
+ {
+  "unit": "item:v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:w",
+  "verdict": "fail",
+  "reason": "(a) gloss shown for d is the wrong sense and contradicts the pair: the UK penny is not a cent; for UK children penny != cent"
+ },
+ {
+  "unit": "item:x",
+  "verdict": "fail",
+  "reason": "(b) 'mentor' is a synonym of tutor; tutor is also a kind of instructor"
+ },
+ {
+  "unit": "item:y",
+  "verdict": "fail",
+  "reason": "(a) acting is a KIND of performing (narrower)"
+ },
+ {
+  "unit": "item:z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1d",
+  "verdict": "fail",
+  "reason": "(c) 'bottom' plus 'behind' as an option - double-meaning body words"
+ },
+ {
+  "unit": "item:1e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1k",
+  "verdict": "fail",
+  "reason": "(b) 'ascend' is also an opposite of sink (go down vs go up)"
+ },
+ {
+  "unit": "item:1l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1m",
+  "verdict": "fail",
+  "reason": "(b) 'hatred' is also the opposite of love (noun)"
+ },
+ {
+  "unit": "item:1n",
+  "verdict": "fail",
+  "reason": "(b) 'mini' means small, so it is a defensible opposite of big; gloss shown for d is the wrong sense ('slender part of the back')"
+ },
+ {
+  "unit": "item:1o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1q",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('electromagnetic radiation' is light as in lamp, not weight)"
+ },
+ {
+  "unit": "item:1r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1w",
+  "verdict": "fail",
+  "reason": "(b) 'storm' is the opposite of calm as a noun (the calm before the storm)"
+ },
+ {
+  "unit": "item:1x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:1z",
+  "verdict": "fail",
+  "reason": "(b) 'reckless' is arguably an opposite of timid"
+ },
+ {
+  "unit": "item:2a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2c",
+  "verdict": "fail",
+  "reason": "(b) rose is also a shade of pink, so 'pink' is defensible"
+ },
+ {
+  "unit": "item:2d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2e",
+  "verdict": "fail",
+  "reason": "(c) 'mom' as a distractor in a kitchen item is a gender stereotype (mom belongs in the kitchen)"
+ },
+ {
+  "unit": "item:2f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2g",
+  "verdict": "fail",
+  "reason": "(a) a boot is footwear but not a shoe; the gloss itself says shoes are below the ankle"
+ },
+ {
+  "unit": "item:2h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2m",
+  "verdict": "fail",
+  "reason": "(a) 'young' is not a kind of animal - broken pair"
+ },
+ {
+  "unit": "item:2n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2o",
+  "verdict": "fail",
+  "reason": "(a) a pocket is PART of a garment, not a kind of one"
+ },
+ {
+  "unit": "item:2p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2s",
+  "verdict": "fail",
+  "reason": "(b) a scoop is arguably a kind of 'spoon' (ladle); 'spit' crude-adjacent"
+ },
+ {
+  "unit": "item:2t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2v",
+  "verdict": "fail",
+  "reason": "(b) a hog is a kind of 'pig' - defensible"
+ },
+ {
+  "unit": "item:2w",
+  "verdict": "fail",
+  "reason": "(d) coral's main sense is the sea animal; coral as a colour at L2 is ambiguous"
+ },
+ {
+  "unit": "item:2x",
+  "verdict": "fail",
+  "reason": "(a) baking is not a kind of cake - broken pair"
+ },
+ {
+  "unit": "item:2y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:2z",
+  "verdict": "fail",
+  "reason": "(a) laundry is clothes collectively, not a kind of garment"
+ },
+ {
+  "unit": "item:3a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3o",
+  "verdict": "fail",
+  "reason": "(a) the one who judges is a judge; referee is a different answer, confusing"
+ },
+ {
+  "unit": "item:3p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3u",
+  "verdict": "fail",
+  "reason": "(a)/(b) the one who guards is a guard; 'defender' and 'escort' also guard"
+ },
+ {
+  "unit": "item:3v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3w",
+  "verdict": "fail",
+  "reason": "pair fine, but gloss shown for d is the wrong sense ('a vine or climbing plant')"
+ },
+ {
+  "unit": "item:3x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:3z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4a",
+  "verdict": "fail",
+  "reason": "(a) curly and wavy hair are different, not the same meaning"
+ },
+ {
+  "unit": "item:4b",
+  "verdict": "fail",
+  "reason": "(b) 'loyalty' matches the gloss ('wholehearted fidelity')"
+ },
+ {
+  "unit": "item:4c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4e",
+  "verdict": "fail",
+  "reason": "(a) a meadow is a KIND of field (narrower)"
+ },
+ {
+  "unit": "item:4f",
+  "verdict": "fail",
+  "reason": "(b) 'comment' is a thesaurus synonym of note"
+ },
+ {
+  "unit": "item:4g",
+  "verdict": "fail",
+  "reason": "(d) 'departed' at L2 reads as 'left' (the train departed); euphemism, death set"
+ },
+ {
+  "unit": "item:4h",
+  "verdict": "pass",
+  "reason": ""
+ }
+]

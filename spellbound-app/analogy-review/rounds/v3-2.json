@@ -1,0 +1,1640 @@
+[
+ {
+  "unit": "item:a4",
+  "verdict": "fix",
+  "reason": "Agree with R1/R2 that 'bondage' has a strong sexual sense and must go. liberate -> liberation is an exact word-family pair, the gloss is the right sense, and confinement/oppression/onus share no root with liberate, so the item is sound once 'bondage' is dropped.",
+  "drop": [
+   "bondage"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a8",
+  "verdict": "fix",
+  "reason": "abnormal -> abnormality is an exact word-family pair. Agree with R1/R2: 'fibrosis' and 'thyroid' are obscure medical distractors (drop), and the gloss frames abnormality as 'defective genes or developmental deficiencies', a medical/stigmatising sense rather than 'something not normal' (hide). Remaining proliferation/enlargement share no root.",
+  "drop": [
+   "fibrosis",
+   "thyroid"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:a9",
+  "verdict": "pass",
+  "reason": "Overrules R2: stylistic is a correct adjective in the style word family; 'stylish' is not offered, so nothing competes. fashionable/chic/trendy/unconventional are meaning-neighbours, not word-family members. Gloss is the right sense; fine at level 6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "fix",
+  "reason": "Agree 'arousal' has a common sexual sense and must be dropped. responsive -> responsiveness is an exact word-family pair; stimuli/stimulus/activation share no root, and the gloss describes the right sense.",
+  "drop": [
+   "arousal"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ai",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: the noun a child knows for observe is 'observation'; 'observance' is mainly the keeping-a-rule/religious-custom noun, so the item teaches the wrong partner. Dropping the astrology distractors would not fix that.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:am",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: both c (arouse) and d (arousal) carry a common sexual sense; cannot be rescued by dropping options.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ax",
+  "verdict": "fix",
+  "reason": "metamorphosis -> metamorphic is an exact word-family pair and the gloss ('of or relating to metamorphosis') is right. Agree 'ovarian' and 'asexual' are reproductive words out of place here; drop them, leaving mutant/rudimentary, neither of which shares the root.",
+  "drop": [
+   "asexual",
+   "ovarian"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:az",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: the bridge says 'the same idea with a new job', but odorless means WITHOUT odour; R2's blind solver picked 'smelly' as the adjective of odour. The pair does not fit its own link.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b0",
+  "verdict": "fix",
+  "reason": "nibble -> devour is a true stronger/weaker pair. Agree with R1 (overruling R2's pass): 'munch' is also a stronger nibble; 'bitten' (bite) is too, so drop both. The gloss 'Destroy completely' is the wrong sense of devour; hide. overcook/wiggle remain.",
+  "drop": [
+   "munch",
+   "bitten"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "fix",
+  "reason": "sad -> miserable is a true stronger pair and the gloss is the right sense. Agree with R1 over R2: 'pathetic' is a common playground put-down and also means 'causing sadness', so it is both unsuitable and arguable; drop it. ecstatic/patriotic/nostalgic remain.",
+  "drop": [
+   "pathetic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "fix",
+  "reason": "breeze -> gale is a true stronger pair and the gloss fits. Agree with R1 over R2: monsoon is literally a seasonal wind, and a child from an Indian household may defend it as a stronger breeze; drop it. sway/sunflower/dew remain.",
+  "drop": [
+   "monsoon"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b8",
+  "verdict": "fail",
+  "reason": "Overrules R1's pass: the answer itself is 'frigid', which has a dictionary sexual sense (an insult aimed at women); a double-meaning word cannot be the answer for 8-15, and an answer cannot be dropped.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b9",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: 'nasty' and 'evil' are also stronger forms of bad, and so is 'miserable' (miserable weather, a miserable day). Dropping all three leaves one wrong option, below the minimum; the gloss is also the 'causing terror' sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bc",
+  "verdict": "fix",
+  "reason": "worried -> frantic is a true stronger pair (frantic with worry) and the gloss is right. Agree 'terrified' is defensible as an extreme of worried; drop it. astonished/thrilled/exhausted remain and none is a stronger worried.",
+  "drop": [
+   "terrified"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bp",
+  "verdict": "fix",
+  "reason": "dim -> dark is a true stronger pair. Drop 'frigid': 'frigid' has a dictionary sexual sense (an insult aimed at women), so it is a double-meaning word and cannot appear for 8-15; R2 was right to flag it, R1's pass missed it. The gloss 'Absence of light' is the noun sense, not the adjective used here; hide. darkness/frantic/scorching remain.",
+  "drop": [
+   "frigid"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:bq",
+  "verdict": "fix",
+  "reason": "pond -> lake is a true stronger pair and the gloss is right. Drop 'frigid': 'frigid' has a dictionary sexual sense (an insult aimed at women), so it is a double-meaning word and cannot appear for 8-15; R2 was right to flag it, R1's pass missed it. creek/pool/gulp remain; none is a bigger pond.",
+  "drop": [
+   "frigid"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:br",
+  "verdict": "fix",
+  "reason": "big -> huge is a true stronger pair and the gloss is right. Agree with R1 over R2: 'largest' (superlative of large) is defensible as a stronger big; drop it. tiny/mini/small remain.",
+  "drop": [
+   "largest"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bs",
+  "verdict": "fix",
+  "reason": "stream -> river is a true stronger pair and the gloss is right. Drop 'frigid': 'frigid' has a dictionary sexual sense (an insult aimed at women), so it is a double-meaning word and cannot appear for 8-15; R2 was right to flag it, R1's pass missed it. flow/lake/gulp remain; a lake is not a stronger stream.",
+  "drop": [
+   "frigid"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "fix",
+  "reason": "warm -> hot is a true stronger pair. Drop 'frigid': 'frigid' has a dictionary sexual sense (an insult aimed at women), so it is a double-meaning word and cannot appear for 8-15; R2 was right to flag it, R1's pass missed it. cold/gulp/downpour remain.",
+  "drop": [
+   "frigid"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c6",
+  "verdict": "pass",
+  "reason": "Overrules R2: tasteful is the true opposite of tasteless in its 'poor taste' sense, and the gloss shows exactly that sense. 'tasty' is not offered, so the second sense of tasteless gives no competing option; bland is a synonym, odorless/volatile/taste are not opposites.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c8",
+  "verdict": "fix",
+  "reason": "tasteful -> tasteless is a true opposite. Agree with R1/R2: 'gaudy' is also an opposite of tasteful (drop), and 'womanly' beside tasteful/genteel reads as a gender stereotype (drop). The gloss 'Lacking flavor' is the wrong sense (hide). genteel/stylish remain.",
+  "drop": [
+   "gaudy",
+   "womanly"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:ci",
+  "verdict": "fix",
+  "reason": "dangerous -> safe is a true opposite. Agree 'harmless' is also an opposite of dangerous; drop it. The gloss is the strongbox noun sense of safe; hide. lethal/unsafe/safety remain.",
+  "drop": [
+   "harmless"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:ck",
+  "verdict": "fix",
+  "reason": "scarce -> plentiful is a true opposite and the gloss is right. Agree 'surplus' and 'limitless' are near-opposites a child could defend; drop both. meager/rare remain (both synonyms).",
+  "drop": [
+   "surplus",
+   "limitless"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cl",
+  "verdict": "fix",
+  "reason": "ascend -> descend is the exact opposite and the gloss is right. Agree with R1 over R2: 'sink' (go down) is a defensible opposite of ascend; drop it. descendant/float/shrink remain.",
+  "drop": [
+   "sink"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cp",
+  "verdict": "fix",
+  "reason": "successful -> unsuccessful is an exact opposite. Agree with R1 over R2: 'olympic' is a proper adjective in lower case; drop it. costly/effective remain (two).",
+  "drop": [
+   "olympic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cq",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: shameful (disgraceful) and shameless (feeling no shame) are not opposites; a shameless act is usually shameful. False antonym.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cr",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: shameless and shameful are not opposites; the item teaches a false antonym.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ct",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: 'equity' is a defensible opposite of inequality, and 'ethnicity'/'capitalism' beside inequality read as political. Removing all three leaves one wrong option; cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d0",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a lathe is a machine, not the hand 'implement' the gloss describes, it is obscure at level 5, 'screw' has a vulgar slang sense, and 'cutter' is arguable (a lathe cuts). Too many problems to rescue.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d1",
+  "verdict": "fix",
+  "reason": "Agree with R1 (gloss-only): taro is truly a kind of plant and radish/sesame/parsnip/dill are not categories it belongs to, but 'plant' is glossed as a factory. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:d2",
+  "verdict": "fix",
+  "reason": "civet -> mammal is true and the gloss is right. Agree 'asiatic' is a dated, sometimes offensive proper adjective in lower case; drop it. marten/blackbird/muskrat are not categories a civet belongs to.",
+  "drop": [
+   "asiatic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d3",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: dolomite is obscure at level 6 and is chiefly known as a mineral, so 'a kind of rock' is not clean.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d4",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a scape is a leafless flower stalk, not a kind of flower; distractors bait the landscape sense. Broken.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d6",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a pupa is a life stage of an insect, not a kind of insect.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d8",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: jute is at least as well known as a fibre as a plant, so 'fibre' is a second answer; 'twine' is also arguable (crafters call jute twine 'jute'), 'caulk' sounds like a vulgar word, and 'plant' is glossed as a factory. Dropping fibre, twine and caulk leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "fix",
+  "reason": "Overrules R1's obscurity fail: zither is a familiar alphabet-book word, and 'instrument' is the only category on offer. But some zithers are sold as harps (lap harp, autoharp), so a child can defend 'harp'; drop it. The gloss is the general 'instrument' sense, which a zither fits. fret/instrumental/saxophone remain.",
+  "drop": [
+   "harp"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:db",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a clove is a spice (a dried bud) or a garlic segment to a child; 'kind of flower' is wrong/confusing.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dc",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a horseshoe is made OF metal, not a kind of metal; 'noose' is also unsuitable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dd",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a cornfield is a field, not a kind of plant; no option is a true category.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:de",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: 'specie' is very obscure and reads as a misspelling of 'species', which the distractors bait.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:df",
+  "verdict": "fail",
+  "reason": "Agree with R1 over R2: dulcimer is too obscure for level 5 (unlike zither it is not a childhood word), and 'harp' is a plausible pick for a stringed box instrument; dropping harp leaves only two options around an unknown word.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dh",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: an appetizer is food, not a kind of drink, and the blind solver picked 'starter'. Broken link.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:di",
+  "verdict": "pass",
+  "reason": "Overrules R2: quince is a small tree as well as its fruit, so 'quince is a kind of tree' is true; 'fruit' is not offered and licorice/cranberry/caraway/coriander are not categories a quince belongs to. Gloss is the right sense; fine at level 6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dj",
+  "verdict": "fix",
+  "reason": "flea -> insect is true and the gloss is right. Agree a flea is also a parasite; drop it. larvae/mite/anteater are not categories a flea belongs to (a mite is an arachnid).",
+  "drop": [
+   "parasite"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dm",
+  "verdict": "fix",
+  "reason": "Agree with R1 (gloss-only): capsicum is a kind of plant and the fruit distractors are not categories it belongs to, but 'plant' is glossed as a factory. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:dn",
+  "verdict": "fix",
+  "reason": "Agree with R1 (gloss-only): caraway is a kind of plant and the herb distractors are not categories it belongs to; caraway (seeds) is a familiar kitchen word, so not too obscure, but 'plant' is glossed as a factory. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:do",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: to a child a chestnut is a nut or a tree; 'kind of wood' is a stretch.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dr",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: gemstones are mostly minerals/crystals, not rocks; the link is loose.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dt",
+  "verdict": "fix",
+  "reason": "flamenco -> dance is true. Partly agree with R2: 'minstrel' carries the blackface minstrel-show history; drop it, leaving jive/dancer (flamenco is not a kind of jive). The gloss is the VERB sense of dance while flamenco is a kind of dance (noun); hide.",
+  "drop": [
+   "minstrel"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:du",
+  "verdict": "fix",
+  "reason": "rumba -> dance is true. Drop 'minstrel' (blackface minstrel-show association, as R2 flagged), leaving jive/dancer. The gloss is the verb sense of dance, not the noun used here; hide.",
+  "drop": [
+   "minstrel"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:dv",
+  "verdict": "fail",
+  "reason": "Agree with R1 over R2: a drape is a curtain made OF cloth, not a kind of cloth (velvet is). The link is not exactly true.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dw",
+  "verdict": "fix",
+  "reason": "seagull -> bird is true and the gloss is right. Agree a seagull is a gull, so 'gull' is a second answer; drop it. swipe/screech remain.",
+  "drop": [
+   "gull"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dx",
+  "verdict": "fix",
+  "reason": "magnifier -> instrument is true. Agree a magnifier is a lens; drop it. spectra/microscopy/instrumental remain. Gloss is the general instrument sense, which fits.",
+  "drop": [
+   "lens"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dy",
+  "verdict": "fail",
+  "reason": "Agree with R1 over R2: receptacle and container are synonyms, not a 'kind of' pair; the game has a separate Same-meaning link, so this teaches the wrong link. The gloss also leans on the shipping-container sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e1",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: the distractors (reef, toad, auk) point at the sea anemone, which is an animal; 'flower' would be the natural category and is absent; 'plant' is glossed as a factory.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e6",
+  "verdict": "fix",
+  "reason": "Agree with R1 (overruling R2's pass on the gloss only): vaporize -> vaporization is exact and the distractors share no root, but the gloss 'Annihilation by vaporizing something' is the violent sense. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:e8",
+  "verdict": "pass",
+  "reason": "Overrules R2 (whose note is not a fault): aggressive -> aggressiveness is an exact word-family pair, no other option shares the root, the gloss is a correct sense, and the words are suitable at level 6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e9",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): meaningful is the exact opposite of meaningless; pointless is a synonym and pitiful/unhappy/discontent are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ea",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: 'feminism' offered as an opposite of equality and 'supremacy' are politically loaded, and supremacy/domination are arguable opposites. Dropping them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eb",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): wobbly is the plain opposite of steady; buoyancy/hurdle/sweetheart/rev are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ec",
+  "verdict": "fix",
+  "reason": "realistic -> unrealistic is exact. Agree with R1 that 'visionary' (idealistic, impractical) is a near-opposite; drop it. cinematic/practical/artistic remain.",
+  "drop": [
+   "visionary"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ed",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): powerful is the exact opposite of powerless; helpless is a synonym, lax/power are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ee",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): realistic is the exact opposite of unrealistic; idealistic/fanciful are synonyms, stoic/mediocre unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ef",
+  "verdict": "fix",
+  "reason": "Agree with R1: wobbly -> steady is a true opposite and snug/sag/doorknob/freezer are not opposites, but the gloss shows the 'boyfriend/girlfriend' noun sense. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:eg",
+  "verdict": "fix",
+  "reason": "beneficial -> advantageous is a true synonym and the gloss is right. Agree 'wholesome' is a defensible synonym; 'productive' is also listed as one in some thesauri. Drop both; nutritional/advantage remain.",
+  "drop": [
+   "wholesome",
+   "productive"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eh",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: illustrative (clarifying by examples) does not mean descriptive; loose.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ei",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): education and schooling are interchangeable in everyday use (her education/her schooling); curriculum/seminar/literacy/humanitarian are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): envious = jealous; the wrong options are not synonyms. Gloss is the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ek",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given; R2's own note confirms the sense): squeal and screech are both high-pitched cries; cluck/meow/coo/moo are animal calls, not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:el",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): obsequious = servile; coy/boorish/tactful/surly are not synonyms. Advanced but right for level 9.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:em",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2 that 'monstrous' (and 'abominable') are second synonyms, and further: hideous means EXTREMELY ugly, so this is a Stronger/weaker pair mislabelled Same meaning. Dropping options does not fix the link.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:en",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a birdhouse is a small nest box, an aviary a large enclosure; not the same meaning. 'abattoir' is also grim.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eo",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): storyteller = narrator; ballad/romance/saga/memoir are kinds of story, not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ep",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): ferocious = fierce; the wrong options are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eq",
+  "verdict": "fail",
+  "reason": "Agree with R1: earthenware is one kind of pottery (beside stoneware and porcelain), so this is a Kind-of pair labelled Same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:er",
+  "verdict": "pass",
+  "reason": "Overrules R2: ventilate = aerate (expose to fresh air). 'belch' is an everyday word for burp, not vulgar; pressurize/bilge/effuse are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:es",
+  "verdict": "fix",
+  "reason": "oval -> ellipse is a standard synonym pair and the gloss is the right (if technical) sense. Agree 'oblong' is commonly used for oval shapes; drop it. round/lob/knob remain.",
+  "drop": [
+   "oblong"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:et",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a silhouette is a dark outline shape, not a shadow; related, not same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:eu",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: the gloss itself says a pinafore is a sleeveless DRESS; only in one UK sense is it an apron. Ambiguous.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ev",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): splashing ~ spattering (drops flying out noisily); slush/puddle/skim/plop are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ew",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): conscious = aware. perceptive means quick to notice/insightful, not conscious; subjective/psychic/paranormal are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ex",
+  "verdict": "fail",
+  "reason": "Agree with R1: a chauffeur is a particular kind of driver (one employed to drive someone), so this is a Kind-of pair labelled Same meaning; R2 also failed it.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ey",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): wreckage and debris are standard synonyms; the harbour words are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ez",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: children know potpourri as dried petals, not a medley; 'cardamon' is a variant spelling in a spelling app; 'horehound' is obscure and giggle-prone.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f0",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: as a noun, cunning is also trickery and sleight, and 'stealth' overlaps too; dropping all of them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f1",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): typo = misprint; impression/cursive/photostat/epigraph are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f2",
+  "verdict": "fix",
+  "reason": "attentive -> careful is a thesaurus synonym (heedful) and the gloss mentions attention. Agree 'considerate' is a dictionary sense of attentive, and 'kindly' rides on the same sense; drop both. heedless/neglectful (antonyms) remain.",
+  "drop": [
+   "considerate",
+   "kindly"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f3",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): colleague = associate; classmate is the school word, not a synonym; nepotism/advisor/congressman are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f4",
+  "verdict": "fail",
+  "reason": "Agree with R1: the gullet is the oesophagus (as the gloss says), narrower than throat, and larynx is also arguable as throat. Not same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f5",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): symbolic = figurative (not literal); stylistic/runic/phonetic/italic are not synonyms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f6",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): aerate = ventilate; leach/enrich/reabsorb/percolate are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f7",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a boutique is a kind of shop, and stall/bakery are also kinds of shop; no true synonym.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f8",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a chrysalis is a butterfly/moth pupa (narrower), and 'teat' is unsuitable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:f9",
+  "verdict": "fail",
+  "reason": "Agree with R1: unattractive -> ugly is a degree pair (unattractive < ugly < hideous), the app's Stronger/weaker link, not Same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fa",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): emancipate = liberate; 'liberation' is a word-family trap, not a synonym; depose/extort/amnesty differ. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fb",
+  "verdict": "fail",
+  "reason": "Agree with R1: tailoring and dressmaking are related crafts, not the same; 'corset' unnecessary.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fc",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): debris = wreckage; silt/hydrant/rainwater/alluvium are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fd",
+  "verdict": "fix",
+  "reason": "fixation -> preoccupation is a true synonym and the gloss is right. Agree 'neurotic' is a stigmatising mental-health label; drop it. partiality/preoccupy/vulnerability remain.",
+  "drop": [
+   "neurotic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fe",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: antagonistic, militant and defiant are all synonyms of combative (arguably closer than argumentative); dropping them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ff",
+  "verdict": "fix",
+  "reason": "illuminate -> brighten is a true synonym and the gloss is right. Overrules R2 and refines R1: as a verb, 'floodlight' means to illuminate with floodlights, a defensible synonym; drop it. moonlight/flicker/foreground remain.",
+  "drop": [
+   "floodlight"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fg",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): cautious is the opposite of reckless; the wrong options are synonyms of reckless. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fh",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): reckless is the opposite of cautious; wary/attentive/hesitant are synonyms, trustworthy unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fi",
+  "verdict": "pass",
+  "reason": "Overrules R2: effortful is uncommon but a real, transparent word and the exact morphological opposite; easy is a synonym, breathless/flawless/effort are not opposites. Fine at level 7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fj",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): important is the exact opposite of unimportant; irrelevant/insignificant are synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fk",
+  "verdict": "fix",
+  "reason": "Agree with R1: rational -> irrational is exact and the distractors are not opposites, but the gloss is the maths noun sense. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:fl",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): unimportant is the exact opposite of important; optional means not required, not unimportant; crucial is a synonym. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fm",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): impractical is the exact opposite of practical; functional is a synonym. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fn",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): arrive is the opposite of leave; 'vacation' matches leave (noun), it is not an opposite. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fo",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): sunny is the opposite of cloudy; hazy/murky/unclear are synonyms. Gloss acceptable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fp",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): noisy is the opposite of silent; no other option is. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fq",
+  "verdict": "fix",
+  "reason": "Agree with R1: arrive -> leave is a true opposite, but 'went' (past of go) invites a child to call it the opposite of arrive (drop), and the gloss is the noun sense 'time off work' (hide). appear/day/begin remain.",
+  "drop": [
+   "went"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:fr",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): success is the opposite of failure; default/breakdown are synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fs",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): rude is the opposite of polite; the others are synonyms or unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ft",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): proud is the standard opposite of humble; modest is a synonym. The gloss sense is the one paired with humble.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fu",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): shallow is the opposite of deep. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fv",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): wild is the opposite of tame; the others are not. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fw",
+  "verdict": "fix",
+  "reason": "Agree with R1: shallow -> deep is exact and the distractors are not opposites, but the gloss is the noun sense ('the central and most profound part'). Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:fx",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): failure is the opposite of success. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): loud is the opposite of quiet; silent/calm are synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:fz",
+  "verdict": "fix",
+  "reason": "Agree with R1: proud -> humble is a true opposite and the distractors are not opposites, but the gloss is the verb sense. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:g0",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): polite is the opposite of rude. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g1",
+  "verdict": "fix",
+  "reason": "Agree with R1/R2: sunny -> cloudy is a true opposite, but 'stormy' is also defensible (drop) and the gloss 'lacking definite form' is the wrong sense (hide). joyful/summer/winter remain.",
+  "drop": [
+   "stormy"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:g2",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): frequent is the opposite of rare; unusual/scarce are synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g3",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): ascend is the exact opposite of descend; float means drift on the surface, not go up; sink is a synonym. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g4",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): decrease is the opposite of increase. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g5",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): tame is the opposite of wild. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g6",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): silent is the opposite of noisy; loud is a synonym. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): entrance is the opposite of exit. Gloss acceptable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g8",
+  "verdict": "fix",
+  "reason": "Agree with R1: loud -> quiet is exact, but the gloss is the noun sense 'calm weather'. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:g9",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): exit is the opposite of entrance. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ga",
+  "verdict": "fix",
+  "reason": "Agree with R1: frequent -> rare is exact, but the gloss 'not widely known' is not the 'seldom' sense. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:gb",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): increase is the opposite of decrease; decline is a synonym. Gloss acceptable for the noun use.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gc",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): careful is the opposite of careless. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gd",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): disrespect is the opposite of respect. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ge",
+  "verdict": "fix",
+  "reason": "Agree with R1: stormy -> calm is a true opposite, but the gloss is the noun 'steadiness of mind'. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:gf",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): expand is the opposite of shrink. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gg",
+  "verdict": "pass",
+  "reason": "Overrules R2: membrane is a school-science word and membranous is transparent from it at level 8; no other option shares the root. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gh",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): odorous is the adjective of odor; the others are not in the family. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gi",
+  "verdict": "fix",
+  "reason": "acrid -> acridity is an exact word-family pair. Agree 'absinthe' is an alcoholic drink; drop it. wormwood/sorrel/thyme remain.",
+  "drop": [
+   "absinthe"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gj",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: benignity is obscure, and neoplasm/cyst/fibrosis frame benign as tumour vocabulary; dropping them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gk",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): spontaneous -> spontaneity is exact; impromptu is a synonym, not family. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gl",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): false -> falseness is exact; no other option shares the root. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gm",
+  "verdict": "pass",
+  "reason": "Overrules R2: nitrogen is a school-science word and nitrogenous is transparent at level 8; no other option shares the root.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): gelatin -> gelatinous is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:go",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): typography -> typographical is exact; graphical shares only a fragment, not the word. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gp",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: 'abettal' is extremely rare (abetment is usual) and the distractors are adult crime terms.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gq",
+  "verdict": "pass",
+  "reason": "Overrules R2: colloids are taught in early secondary science, so colloidal is fine at level 7; no other option shares the root.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gr",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): luxury -> luxurious is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gs",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: pleura/pleural is specialist anatomy, too obscure even at level 9.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gt",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: enteron/enteric is specialist vocabulary, too obscure for level 8.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gu",
+  "verdict": "fix",
+  "reason": "Overrules R2's bare fail on the relation, which is exact (entangle -> entanglement), and the distractors share no root. But the gloss shows the 'trap that ensnares its victim' sense rather than the act or state of entangling; hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:gv",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): oscillate -> oscillation is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gw",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): magnetize -> magnetization is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gx",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): preoccupy -> preoccupation is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gy",
+  "verdict": "fix",
+  "reason": "rapture -> rapturous is exact and the gloss is right. Drop 'pathetic', a common put-down (same call as item:b4). sorrowful/regretful/thankful remain.",
+  "drop": [
+   "pathetic"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:gz",
+  "verdict": "fix",
+  "reason": "mystery -> mysterious is exact. Agree with R2 that 'eleusinian' is a proper adjective in lower case (and names a religious rite); drop it. suspenseful/imponderable/allegorical remain.",
+  "drop": [
+   "eleusinian"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h0",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): utter -> utterance is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h1",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): desire -> desirous is exact; obsessive/compulsive are everyday adjectives here, not labels. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h2",
+  "verdict": "pass",
+  "reason": "Overrules R2: bronchi -> bronchial is exact; 'purulent' is a medical term, not vulgar, sexual or gory, so it does not make the item unsafe.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h3",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): advantage -> advantageous is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h4",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: mesoderm/mesodermal is embryology jargon, too obscure for level 7; 'ovarian' also unsuitable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h5",
+  "verdict": "pass",
+  "reason": "Overrules R2: effortful is uncommon but real and transparent; it is the only family member offered. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h6",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): cheerful -> cheerfulness is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h7",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): polygon -> polygonal is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h8",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): excel -> excellence is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h9",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): convex -> convexity is exact; concavity is the opposite's family. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ha",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): avoid -> avoidance is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hb",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): trivial -> triviality is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hc",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): allegory -> allegorical is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "pass",
+  "reason": "Overrules R2: continuance is a real noun of continue (continuation is more common but not offered). 'abort' is used in its everyday stop-a-task sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:he",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): foundation -> foundational is exact. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hf",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): intimidate -> intimidation is exact; timidity is a different root. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hg",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a cantaloupe is a kind of melon (blind solver picked melon); 'vine' describes the plant, not the fruit.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hh",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): gneiss is a rock (metamorphic), a classic spelling word at level 7; basalt/mica/olivine are not categories it belongs to, 'rocky' is a family trap.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hi",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: carcajou is very obscure and its synonym 'wolverine' is a trap; 'cracidae' is a taxon in lower case.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hj",
+  "verdict": "fix",
+  "reason": "pyrite -> mineral is true (fool's gold) and the gloss is right. Agree pyrite is iron sulfide; drop 'sulfide'. hematite/arsenate/lanthanum remain.",
+  "drop": [
+   "sulfide"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): a synthesizer is a (musical) instrument; amplifier/sonata/multimedia are not its categories. The gloss is the general instrument sense, which fits.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hl",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: amboyna is an obscure timber name, too obscure for level 8.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hm",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: magnesia is magnesium oxide, a compound (the mineral is periclase); the link is not clean.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hn",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): a stethoscope is an instrument, and the gloss fits it well; eardrum/migraine/ultrasound are not its categories.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ho",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: friedcake (a doughnut) is obscure/regional and 'kind of cake' is doubtful.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hp",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): a llama is an animal; the other options are animals, not categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hq",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: aquilegia is obscure, 'pansy' is also a homophobic insult, and 'plant' is glossed as a factory.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hr",
+  "verdict": "fail",
+  "reason": "Agree with R1: caladium is a horticultural name too obscure for level 7, and 'pavilion' plays on the factory gloss; hiding the gloss does not cure the obscurity.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hs",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): honeysuckle is the familiar climbing vine; myrtle/primrose/crocus/cornel are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ht",
+  "verdict": "fail",
+  "reason": "Agree with R1: 'mustelid' is a zoological family term, too obscure for level 7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hu",
+  "verdict": "fail",
+  "reason": "Agree with R1: curassow is obscure for level 8, and every distractor is equally obscure.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hv",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): a gardenia is a shrub; myrtle/zinnia/dianthus are not its categories, 'shrubby' is a family trap. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hw",
+  "verdict": "fix",
+  "reason": "gabardine -> fabric is true and the gloss is right. Agree gabardine is a twill weave, so 'twill' is a second category; drop it. argyle/chemise/crinoline remain.",
+  "drop": [
+   "twill"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): marinara is a sauce; mozzarella/cutlet/brioche/parmesan are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:hy",
+  "verdict": "fix",
+  "reason": "quiche -> dish (of food) is true. Agree with R1 that the gloss is the dishware sense; hide. 'alsatian' is a proper adjective in lower case; drop. marinara/anchovy/quince remain.",
+  "drop": [
+   "alsatian"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:hz",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a pyre is a pile of wood for burning (usually a funeral), not a kind of wood; the blind solver picked 'bonfire'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i0",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: iodoform is an antiseptic compound, not a kind of sweet. Broken.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i1",
+  "verdict": "fix",
+  "reason": "Overrules R2's bare fail: turquoise is a mineral and the gloss is right. But children know turquoise as a colour, and 'aqua' is a neighbouring blue-green they could defend; drop it. glint/dapple/fleck remain.",
+  "drop": [
+   "aqua"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i2",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: 'melon' is the natural category (blind pick), and 'cantaloup' is a variant spelling.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i3",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: cassia is mostly a tree genus and a spice; 'kind of shrub' is not clean, and it is obscure.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i4",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): diorite is an igneous rock; olivine (a mineral), marl and basalt are not categories it belongs to, 'rocky' is a family trap. Acceptable at level 7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i5",
+  "verdict": "fail",
+  "reason": "Agree with R1: euphorbia is obscure, every distractor is a lower-case Latin genus name, and 'plant' is glossed as a factory.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i6",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): a monotreme is a mammal; 'platypus' is the reverse (a kind of monotreme), and fissiped/copepod/decapod are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i7",
+  "verdict": "fix",
+  "reason": "mesquite -> tree is true and the gloss is right. 'malaysian' is a national name in lower case used as filler; drop it. hazel/myrtle/sedge remain.",
+  "drop": [
+   "malaysian"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i8",
+  "verdict": "fail",
+  "reason": "Agree with R1: ageratum is obscure for level 7, distractors (vitis, cassia, cornel) are obscure genus names, and 'plant' is glossed as a factory.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i9",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: althaea is obscure, 'liliaceae' is a taxon in lower case, and 'plant' is glossed as a factory.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ia",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): pterosaurs are reptiles; dragonfly/narwhal/papillon/platypus are not its categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ib",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): a chrysanthemum is a flower; the others are flowers, not categories. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ic",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a rhizome is an underground stem (part of a plant), not a kind of plant.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:id",
+  "verdict": "fix",
+  "reason": "coverall -> garment is true and the gloss is right. Agree with R2 that 'overall' is a near-synonym a child could choose; drop it. overcoat/dolman/necktie remain.",
+  "drop": [
+   "overall"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ie",
+  "verdict": "fail",
+  "reason": "Agree with R1: 'japonica' is an obscure botanical epithet, too obscure for level 7.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:if",
+  "verdict": "fix",
+  "reason": "quadruped -> animal is true and the gloss is right. Agree 'buttock' is a giggle-prone body word; drop it. tarsus/incisor/pectoral remain.",
+  "drop": [
+   "buttock"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ig",
+  "verdict": "fix",
+  "reason": "excess -> overabundance is a true synonym and the gloss is right. Agree 'obesity' is body-stigmatising and 'indulgence' is a defensible synonym of excess; drop both. anemia/depletion remain.",
+  "drop": [
+   "obesity",
+   "indulgence"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ih",
+  "verdict": "pass",
+  "reason": "Overrules R2 (no fault given): introduce = acquaint (cause to come to know); formulate/reformulate/restate/modernize are not synonyms. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ii",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: ornamentation is the primary synonym of embellishment (blind pick); exaggeration is a secondary sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ij",
+  "verdict": "fail",
+  "reason": "Agree with R1: a schematic is a kind of diagram (its own gloss says so); not same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ik",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: fluorescence is a kind of luminescence; not same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:il",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a bean is one kind of legume (peas and lentils are others); not same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:im",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a boutique is a kind of shop; 'lyon' is a place name in lower case.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:in",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: metazoa is a taxonomic group name, very obscure; 'subkingdom' was the blind pick.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:io",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: gramma (grama grass) is very obscure and reads as 'grandma'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ip",
+  "verdict": "fail",
+  "reason": "Agree with R1: caragana is an obscure plant genus, too obscure for level 8.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:iq",
+  "verdict": "fail",
+  "reason": "Agree with R1/R2: a thallus is a plant body (a part), not a kind of plant; 'plant' is glossed as a factory.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ir",
+  "verdict": "fix",
+  "reason": "rutabaga -> vegetable is true and the gloss is right. Agree the rutabaga is the swede or 'yellow turnip', so 'turnip' is a second category; drop it. dill/radish/taro remain.",
+  "drop": [
+   "turnip"
+  ],
+  "gloss": "keep"
+ }
+]

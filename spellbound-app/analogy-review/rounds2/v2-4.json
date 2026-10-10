@@ -1,0 +1,532 @@
+[
+ {
+  "unit": "item:11b",
+  "verdict": "pass",
+  "reason": "note: Synonyms; tubular = cylindrical. Clean."
+ },
+ {
+  "unit": "item:11c",
+  "verdict": "pass",
+  "reason": "note: Noun to adjective. Clean."
+ },
+ {
+  "unit": "item:11d",
+  "verdict": "pass",
+  "reason": "note: Synonyms; currency is a near rather than exact synonym of cash (cash = notes and coins in hand), but nothing else fits."
+ },
+ {
+  "unit": "item:11e",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Emotion is the category trap. Clean."
+ },
+ {
+  "unit": "item:11f",
+  "verdict": "pass",
+  "reason": "note: Noun to adjective. Historical is the more direct adjective of history; historic (= important in history) still works. Clean."
+ },
+ {
+  "unit": "item:11h",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Junior is a weak near-miss (an apprentice is junior in rank) but not a synonym; acceptable."
+ },
+ {
+  "unit": "item:11i",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:11j",
+  "verdict": "pass",
+  "reason": "note: Part of a whole. Whisper is a deliberate pun on spoke = past tense of speak; fair trap but may confuse younger children."
+ },
+ {
+  "unit": "item:11k",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:11l",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:11m",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Embellishment is advanced vocabulary but correct."
+ },
+ {
+  "unit": "item:11n",
+  "verdict": "pass",
+  "reason": "note: Part of a whole. Clean."
+ },
+ {
+  "unit": "item:11o",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:11q",
+  "verdict": "pass",
+  "reason": "note: Synonyms (chill as noun). Chill also means relax, but no option exploits it. Cornbread is an odd distractor."
+ },
+ {
+  "unit": "item:11s",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:11v",
+  "verdict": "pass",
+  "reason": "note: Synonyms (nobility as a class). Clean."
+ },
+ {
+  "unit": "item:11x",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:11y",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:12b",
+  "verdict": "pass",
+  "reason": "note: Synonyms; consecutive would be the exact match, sequential is close enough. Eleven is an odd distractor."
+ },
+ {
+  "unit": "item:12d",
+  "verdict": "pass",
+  "reason": "note: Synonyms; symbol is the part-of-speech trap. Implicit is not a synonym. Clean."
+ },
+ {
+  "unit": "item:12e",
+  "verdict": "pass",
+  "reason": "note: Kind of. Pork/ham/lamb/roast play on chicken-as-meat but none is the category. Clean."
+ },
+ {
+  "unit": "item:12g",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:12i",
+  "verdict": "pass",
+  "reason": "note: Kind of. Cetacean is obscure for 8-year-olds but only a distractor."
+ },
+ {
+  "unit": "item:12j",
+  "verdict": "pass",
+  "reason": "note: Synonyms (savor ~ taste). Ginger is harmless here as a spice, though in the UK it is also a playground taunt for red-haired children; worth swapping if an easy alternative exists."
+ },
+ {
+  "unit": "item:12k",
+  "verdict": "pass",
+  "reason": "note: Synonyms; exterminator is the word-form trap. Clean."
+ },
+ {
+  "unit": "item:12n",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:12o",
+  "verdict": "pass",
+  "reason": "note: Kind of. Bore is what a drill does (Used for), not its category, so not a second answer."
+ },
+ {
+  "unit": "item:12p",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:12q",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:12r",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Sparrow/heron play on birds that perch. Clean."
+ },
+ {
+  "unit": "item:12t",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:12u",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Terror is a near-miss (old sense of awe includes dread) but not equally defensible."
+ },
+ {
+  "unit": "item:12w",
+  "verdict": "pass",
+  "reason": "note: Synonyms; affront is the sound-alike trap. Fore as a standalone word is rare for children; slap/elbow/femur are random distractors."
+ },
+ {
+  "unit": "item:12x",
+  "verdict": "pass",
+  "reason": "note: Kind of. Russet and bur are obscure distractors. Clean."
+ },
+ {
+  "unit": "item:13a",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:13b",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Cub is a young animal, narrower than baby, not a synonym."
+ },
+ {
+  "unit": "item:13f",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:13h",
+  "verdict": "pass",
+  "reason": "note: Synonyms; hello is the opposite trap. Clean."
+ },
+ {
+  "unit": "item:13i",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:13j",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:13k",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Resuscitate is advanced but correct; recondition/recoup are not synonyms."
+ },
+ {
+  "unit": "item:13n",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Ravine is a large gorge, not a crevice. Clean."
+ },
+ {
+  "unit": "item:13q",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:13r",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:13s",
+  "verdict": "pass",
+  "reason": "note: Synonyms; meaningful is the form trap. Significance more often means importance than meaning, but meaning is valid and nothing else is closer."
+ },
+ {
+  "unit": "item:13u",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:13v",
+  "verdict": "pass",
+  "reason": "note: Kind of. Mussel is the reversed-direction trap (a mussel is a kind of shellfish), not a second answer; animal is very broad, which may puzzle children."
+ },
+ {
+  "unit": "item:13x",
+  "verdict": "pass",
+  "reason": "note: Kind of. Clean."
+ },
+ {
+  "unit": "item:13y",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14d",
+  "verdict": "pass",
+  "reason": "note: Synonyms (swell ~ billow, as wave or as verb). Billow is advanced vocabulary."
+ },
+ {
+  "unit": "item:14e",
+  "verdict": "pass",
+  "reason": "note: Synonyms, using classic as a noun; children may read classic as an adjective first."
+ },
+ {
+  "unit": "item:14f",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14g",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14h",
+  "verdict": "pass",
+  "reason": "note: Adjective to noun. Truth is related but not the noun form of honest. Clean."
+ },
+ {
+  "unit": "item:14i",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14l",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14m",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14n",
+  "verdict": "pass",
+  "reason": "note: Synonyms; manage is the form trap. Clean."
+ },
+ {
+  "unit": "item:14o",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14r",
+  "verdict": "pass",
+  "reason": "note: Synonyms; steep/steeper are the form traps. Clean."
+ },
+ {
+  "unit": "item:14s",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14w",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:14x",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Anatomy words; reflux and tripe (offal) are slightly gross/medical but not unsafe."
+ },
+ {
+  "unit": "item:14y",
+  "verdict": "pass",
+  "reason": "note: Synonyms; courage is the form trap. Clean."
+ },
+ {
+  "unit": "item:15h",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:15i",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:15k",
+  "verdict": "pass",
+  "reason": "note: Synonyms; certainty/conviction are opposite traps. Clean."
+ },
+ {
+  "unit": "item:15u",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Crime-themed distractors (bail, arrest, defraud) are fine."
+ },
+ {
+  "unit": "item:16h",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:16i",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:16j",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Parody is an imitation, not an imitator. Clean."
+ },
+ {
+  "unit": "item:16k",
+  "verdict": "pass",
+  "reason": "note: Noun to adjective. Scruple is obscure for 8-15 and most children will solve it by suffix pattern alone."
+ },
+ {
+  "unit": "item:16l",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:16n",
+  "verdict": "pass",
+  "reason": "note: Synonyms, using shoot in the plant sense. The weapon sense is far more familiar to children and the distractors (arrow, bombardment) lean into it; confusing and slightly violent framing."
+ },
+ {
+  "unit": "item:16o",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:16p",
+  "verdict": "pass",
+  "reason": "note: Verb to noun. Trash is a homograph trap (refuse, noun = rubbish); it is a synonym of the noun, a different link, so not a second answer, but tricky."
+ },
+ {
+  "unit": "item:16q",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:17j",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:17l",
+  "verdict": "pass",
+  "reason": "note: Synonyms; repeal/revoke/annul mean cancel. Clean."
+ },
+ {
+  "unit": "item:17n",
+  "verdict": "pass",
+  "reason": "note: Opposites. Sour is the taste-sense trap, not an opposite. Clean."
+ },
+ {
+  "unit": "item:17r",
+  "verdict": "pass",
+  "reason": "note: Synonyms; insertion is the opposite trap. Omission and deletion are near rather than exact synonyms."
+ },
+ {
+  "unit": "item:17s",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:17t",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "item:17u",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Shall is an odd distractor. Clean."
+ },
+ {
+  "unit": "item:17w",
+  "verdict": "pass",
+  "reason": "note: Synonyms. Clean."
+ },
+ {
+  "unit": "stem:same:8",
+  "verdict": "pass",
+  "reason": "Huge and giant are near-equal in strength; Stronger and weaker is a slight risk if a child reads giant as bigger, but Same meaning is clearly best."
+ },
+ {
+  "unit": "stem:who:0",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but baker is literally a suffix form of bake, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:1",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but teacher is literally a suffix form of teach, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:2",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but sailor is literally a suffix form of sail, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:3",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but painter is literally a suffix form of paint, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:4",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but farmer is literally a suffix form of farm, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:5",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but singer is literally a suffix form of sing, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:6",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but actor is literally a suffix form of act, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:7",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but driver is literally a suffix form of drive, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:8",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but swimmer is literally a suffix form of swim, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:who:9",
+  "verdict": "fail",
+  "reason": "also fits: Word families · Who does it is the more specific link, but inventor is literally a suffix form of invent, i.e. a member of its word family; a child who picks Word families has a defensible answer. Either accept both or have the lesson say person-words always go to Who does it."
+ },
+ {
+  "unit": "stem:family:4",
+  "verdict": "pass",
+  "reason": "Adjective to noun by suffix. The word kind may make Kind of tempting by sound alone; worth watching."
+ },
+ {
+  "unit": "lesson:same:trap",
+  "verdict": "pass",
+  "reason": "Accurate, clear, good example."
+ },
+ {
+  "unit": "lesson:part:bridge",
+  "verdict": "pass",
+  "reason": "Template reads naturally for part-of pairs (The petal is part of the flower)."
+ },
+ {
+  "unit": "lesson:part:spot",
+  "verdict": "pass",
+  "reason": "Clear test with a good counter-example."
+ },
+ {
+  "unit": "lesson:use:bridge",
+  "verdict": "pass",
+  "reason": "Works when B is a verb (We use the broom to sweep); would read badly if any Used-for pair has a noun as B."
+ },
+ {
+  "unit": "lesson:use:trap",
+  "verdict": "pass",
+  "reason": "Clear and accurate."
+ },
+ {
+  "unit": "lesson:degree:idea",
+  "verdict": "pass",
+  "reason": "Clear and accurate."
+ },
+ {
+  "unit": "lesson:degree:bridge",
+  "verdict": "pass",
+  "reason": "Correct only if every Stronger-and-weaker pair is stored weaker to stronger; a stronger-to-weaker pair would make this sentence false."
+ },
+ {
+  "unit": "lesson:degree:trap",
+  "verdict": "pass",
+  "reason": "Accurate and consistent with the idea text."
+ },
+ {
+  "unit": "card:shiva",
+  "verdict": "pass",
+  "reason": "Text is respectful, from the inside, hedged (many families, ask your family) and accurate: Gangadhara iconography, meditation, Maha Shivaratri as a night of prayer; protects/changes/new beginnings is a fair Shaiva rendering. Caution on framing, not text: a living, worshipped deity as a Legendary-rarity collectible in a pack alongside European Gods risks ranking deities and implying equivalence with mythology; a reviewer from the tradition should sign off on the pack design."
+ }
+]

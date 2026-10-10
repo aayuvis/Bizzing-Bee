@@ -1,0 +1,1302 @@
+[
+ {
+  "unit": "item:fx",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "fail",
+  "reason": "Wrong option 'restless' is a second defensible opposite of quiet in its calm/still sense (a quiet night vs a restless night; dictionaries list restless/agitated as antonyms of quiet = calm). Drop 'restless'."
+ },
+ {
+  "unit": "item:fz",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g0",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g2",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g3",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g4",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g5",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g6",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "fail",
+  "reason": "Gloss for 'entrance' reads 'Something that provides access (to get in or get out)' - it tells the child an entrance is also a way out, which undercuts 'exit is the opposite of entrance'. Hide or replace with the 'way in' sense."
+ },
+ {
+  "unit": "item:g8",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:g9",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ga",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gc",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gd",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ge",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gf",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gg",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gh",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gi",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gk",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gl",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gm",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:go",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gq",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gr",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gu",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gv",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gw",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gx",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gy",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:gz",
+  "verdict": "pass",
+  "reason": "Exact; gloss starts with stray 'Is' (cosmetic)."
+ },
+ {
+  "unit": "item:h0",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h2",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h3",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h5",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h6",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h7",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h8",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:h9",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ha",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hc",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "fail",
+  "reason": "Wrong option 'abort': its dominant adult meaning (ending a pregnancy) is a sensitive topic parents will object to in an 8-15 app, whatever sense is intended. Replace with a neutral filler (e.g. halt)."
+ },
+ {
+  "unit": "item:he",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hf",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hh",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hj",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "fail",
+  "reason": "Gloss for 'instrument' is the general 'device that requires skill for proper use' sense, not the musical-instrument sense the item uses - the same gloss was hidden for piano, harpsichord and oboe. Hide it."
+ },
+ {
+  "unit": "item:hn",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hp",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hs",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hv",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hw",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:hy",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:i1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:i4",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:i6",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:i7",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ia",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ib",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:id",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:if",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ig",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ih",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ir",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:is",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:it",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:iu",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:iv",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:iw",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:iy",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:iz",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j0",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j2",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j3",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j4",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j5",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j6",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j7",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j8",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:j9",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ja",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jc",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jd",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:je",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jh",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jj",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jl",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jn",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jo",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jp",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jq",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jr",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:js",
+  "verdict": "fail",
+  "reason": "'extremity' is secondary-school vocabulary at level 4, and the everyday sense a child meets is hands and feet ('cold extremities') or the far end, not 'arm or leg'; the gloss 'an external body part that projects from the body' would fit a nose. limb = extremity is too loose and too hard for age ~11."
+ },
+ {
+  "unit": "item:jt",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "fail",
+  "reason": "commendation = citation only through a narrow award sense of both words; to a level-5 child 'citation' means a quote/reference or a traffic ticket, and 'commendation' means praise. Confusing for a careful 10-12-year-old."
+ },
+ {
+  "unit": "item:jv",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:jy",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:k1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:k2",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:k3",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:k4",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:k6",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:k8",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ka",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kc",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kd",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ke",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kg",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ki",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kj",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kk",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kl",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:km",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ko",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kp",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "fail",
+  "reason": "Gloss for 'devotion' is garbled: 'Strong attachment zeal enthusiasm' (missing punctuation reads as a noun pile). Fix to 'Strong attachment; zeal; enthusiasm' or hide."
+ },
+ {
+  "unit": "item:ks",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kt",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ku",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kv",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kx",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:kz",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:l2",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:l3",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:l5",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:l8",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:l9",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:la",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lc",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ld",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:le",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lg",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lh",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lj",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lk",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ll",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lm",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ln",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lp",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lq",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lr",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ls",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lu",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lv",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lx",
+  "verdict": "pass",
+  "reason": "Exact; gloss starts with stray 'Is' (cosmetic)."
+ },
+ {
+  "unit": "item:ly",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:lz",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:m0",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:m3",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:m4",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "fail",
+  "reason": "Wrong option 'blister' is also a raised bump on the skin, so a careful child can defend bump = blister as readily as bump = swelling (both only fit the injury sense of bump). Replace 'blister'."
+ },
+ {
+  "unit": "item:m7",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:m9",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ma",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mc",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:me",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "fail",
+  "reason": "'elicit' (and evoke) are secondary-school/SAT vocabulary, too advanced for level 4 (age ~11); the child cannot check the answer against anything they know."
+ },
+ {
+  "unit": "item:mg",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mh",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mi",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mj",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mk",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ml",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mm",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mo",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mq",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mr",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ms",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mt",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mu",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mw",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:mx",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:my",
+  "verdict": "pass",
+  "reason": "Sound; gloss starts with stray 'Is' (cosmetic)."
+ },
+ {
+  "unit": "item:n1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:n3",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:n4",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:n6",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:n7",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:n9",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:na",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nc",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nd",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ne",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ng",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nh",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ni",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nj",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nk",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nm",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nn",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:no",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:np",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nr",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nt",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nv",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nx",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:nz",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:o1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:o2",
+  "verdict": "fail",
+  "reason": "platter -> tray is not the same meaning: a platter is a large serving plate/dish, a tray is a flat carrier with a rim - related objects, not synonyms (WordNet puts them in different synsets)."
+ },
+ {
+  "unit": "item:o4",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:o7",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:o8",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:od",
+  "verdict": "fail",
+  "reason": "Gloss for 'disdain' is garbled and circular: 'A feeling of contempt for something regarded as unworthy of or beneath one scorn' ('beneath one scorn' is broken, and it defines the answer with the given word). Fix or hide."
+ },
+ {
+  "unit": "item:oe",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:of",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:oh",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:oi",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ok",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ol",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:om",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:on",
+  "verdict": "fail",
+  "reason": "Gloss for 'inheritance' is the wrong sense: 'Hereditary succession to a title or an office or property' is the act of succeeding, but legacy = inheritance means the property passed on ('that which is inherited'). Hide or swap to that sense."
+ },
+ {
+  "unit": "item:op",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:oq",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:os",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ot",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ou",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ov",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ow",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ox",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:oy",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:oz",
+  "verdict": "fail",
+  "reason": "range -> scope matches only in an abstract 'extent' sense that is too advanced for level 2 (age ~9), who knows range as mountain/colour range and scope from telescope; 'width' (breadth/span) is arguable for range. Gloss also ends in a stray colon."
+ },
+ {
+  "unit": "item:p0",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:p1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:p2",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:p5",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:p7",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pb",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pe",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pg",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ph",
+  "verdict": "fail",
+  "reason": "Gloss for 'spice' is the 'aromatic substances ... used as a preservative' sense; nutmeg is a spice used for flavouring, so the gloss teaches a misleading definition. Use the flavouring sense or hide."
+ },
+ {
+  "unit": "item:pi",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pk",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pl",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pm",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pn",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pp",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pq",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pr",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:ps",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pt",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pu",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:pw",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:px",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:py",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:q0",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:q1",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ },
+ {
+  "unit": "item:q2",
+  "verdict": "pass",
+  "reason": "Link exact; options clean."
+ }
+]

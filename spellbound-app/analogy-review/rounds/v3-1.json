@@ -1,0 +1,1736 @@
+[
+ {
+  "unit": "item:0",
+  "verdict": "fail",
+  "reason": "Agree with both fails. 'friday', 'december', 'easter' are proper nouns shown lowercase (not allowed as filler) and 'feast' (feast day) is a defensible synonym of holiday; dropping all four leaves no wrong options.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a sister is a kind of sibling, not the same meaning; no true synonym offered.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3",
+  "verdict": "fail",
+  "reason": "Agree with both fails: sitting = posing only in the portrait sense; a child reads sitting as being seated and 'rest' is tempting.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5",
+  "verdict": "fail",
+  "reason": "Agree with both fails: to children 'diner' is a restaurant; the 'one who dines' sense is obscure at L2, and eater is broader.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6",
+  "verdict": "fix",
+  "reason": "Gadget/device is a standard near-synonym pair children use interchangeably, so r1's 'broader' objection does not sink it. Both rounds rightly flag 'invention' (a gadget is an invention; the gloss even says 'invented'). Drop it; laptop/smart/mall are not synonyms of gadget.",
+  "drop": [
+   "invention"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7",
+  "verdict": "fail",
+  "reason": "Agree with both fails: tavern/bar are drinking-establishment words (gloss says 'licensed to sell alcoholic drinks') and 'spit' is a crude option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8",
+  "verdict": "fix",
+  "reason": "Shipment/freight is a sound synonym pair. Both rounds agree 'package' reads as the same thing as a shipment to a child; drop it. Remaining inventory/receipt/premium are clearly wrong.",
+  "drop": [
+   "package"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:10",
+  "verdict": "fix",
+  "reason": "Pair is right. Both rounds note 'adult' is a defensible opposite of young (young animal vs adult); drop it. innocent/timid/tame are not opposites.",
+  "drop": [
+   "adult"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:12",
+  "verdict": "fix",
+  "reason": "Relation cruel/kind is exactly right and r2 passed it; r1 is correct that the gloss shows kind the noun ('a category of things'). Hide the gloss. 'kindness' is a noun, not the opposite of the adjective cruel.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:13",
+  "verdict": "fix",
+  "reason": "give/take is right (r2 pass); gloss is the noun 'take' (income or profit), wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:15",
+  "verdict": "fix",
+  "reason": "buy/sell is right (r2 pass); gloss is the noun 'sell' (activity of persuading), wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:16",
+  "verdict": "fix",
+  "reason": "short/long is right (r2 pass); gloss is the verb 'long' (desire strongly), wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:18",
+  "verdict": "fix",
+  "reason": "night/day is right. Gloss is the 24-hour 'day', which contains the night, so hide it (r1). Also 'november' and 'december' are proper nouns shown lowercase as filler; drop them, leaving winter/lit.",
+  "drop": [
+   "november",
+   "december"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:21",
+  "verdict": "fix",
+  "reason": "wheat is a kind of grain. r1 is right that 'corn' is the British word for cereal grain (wheat is a kind of corn) and that the gloss shows a grain of sand. Drop corn, hide gloss; harvest/bean/coconut remain wrong.",
+  "drop": [
+   "corn"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:27",
+  "verdict": "fix",
+  "reason": "diamond is a kind of gem. r1 is right: a baseball diamond is a kind of field, and the gloss ('art highly prized') is the wrong sense. Drop field, hide gloss; emerald/ruby are co-members, not categories.",
+  "drop": [
+   "field"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:30",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail: the link is 'Who does it' and a chef is exactly someone who cooks; it need not be the -er form. chef is the only person among broth/stew/heat/bread, so it is the one defensible answer. Gloss correct.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:33",
+  "verdict": "fix",
+  "reason": "teach/teacher is exact. r1 is right that a mentor is also one who teaches; drop it. instruction/follower/composer are not people who teach.",
+  "drop": [
+   "mentor"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:39",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail (its own note says 'acceptable'): a pilot is exactly the one who flies an aircraft; the link does not require a morphological agent form. prey/wing/skater/hunter do not fly as an occupation; pilot is the one answer.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:42",
+  "verdict": "fix",
+  "reason": "artificial/natural is right (r2 pass); gloss is the noun 'a natural' (someone certain to succeed), wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:43",
+  "verdict": "fix",
+  "reason": "Both rounds agree 'decrease' is also an opposite of expand; drop it. widen/grow/increase are not opposites. shrink gloss correct.",
+  "drop": [
+   "decrease"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:44",
+  "verdict": "fix",
+  "reason": "shut/open is right (r2 pass); gloss is the noun 'the open' (unobstructed space), wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:45",
+  "verdict": "fix",
+  "reason": "temporary/permanent is right (r2 pass); gloss describes a hair perm, wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:46",
+  "verdict": "fix",
+  "reason": "refuse/accept is right. Both rounds agree 'comply' is a defensible opposite of refuse; drop it. Gloss 'consider or hold as true' is the belief sense, not agreeing/receiving; hide.",
+  "drop": [
+   "comply"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:47",
+  "verdict": "fix",
+  "reason": "accept/refuse is right (r2 pass). r1 is right that the gloss shows refuse = rubbish, a different word in sound and sense; hide. comply/justify/receive/bread are not opposites of accept.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:48",
+  "verdict": "fix",
+  "reason": "donation/gift is sound. Both rounds agree 'charity' can mean a donation; drop it. nonprofit/tuition/broker remain wrong.",
+  "drop": [
+   "charity"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:49",
+  "verdict": "pass",
+  "reason": "Disagree with r1's hyponym fail: shore and beach are listed synonyms in standard dictionaries and used interchangeably by children ('down to the shore'); the bridge asks 'about the same', which holds. creek/bay/lagoon are not synonyms of shore. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:53",
+  "verdict": "fix",
+  "reason": "trunk/elephant is right. Both rounds agree a cedar also has a trunk; drop it. stalk and stump do not have a trunk as a part (a stump is what is left of one).",
+  "drop": [
+   "cedar"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:55",
+  "verdict": "fix",
+  "reason": "sole/shoe is right (r2 pass). r1 is right to object to 'bottom': the sole IS the bottom of a shoe, which muddles the part-whole question, and it is a giggle word. Drop it; thumb/elbow remain.",
+  "drop": [
+   "bottom"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:56",
+  "verdict": "fix",
+  "reason": "verse/poem is right. Both rounds agree 'poetry' is a defensible whole; drop it. sung/composer/accent remain wrong.",
+  "drop": [
+   "poetry"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:57",
+  "verdict": "fix",
+  "reason": "minute/hour is right (r2 pass). r1 is right that a minute is also part of a week; drop it. The number words thirty/forty/twenty are not wholes.",
+  "drop": [
+   "week"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:62",
+  "verdict": "fix",
+  "reason": "ring/gold is the intended material. Both rounds agree 'metal' is equally true; drop it. call/screw/golden are not materials a ring is made from.",
+  "drop": [
+   "metal"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:64",
+  "verdict": "fix",
+  "reason": "scissors/cut is right (r2 pass). r1: scissors can shred, and the gloss is 'a share of the profits'. Drop shred, hide gloss; sew/magnify/bore remain wrong.",
+  "drop": [
+   "shred"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:68",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'bore' at L3 reads as 'be dull' and its gloss confirms that sense ('a person who evokes boredom'); 'dig' is also arguable. Too confusing to rescue.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:69",
+  "verdict": "fix",
+  "reason": "thermometer/measure is right (r2 pass); gloss is the noun 'a measure' (a manoeuvre toward a goal), wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:72",
+  "verdict": "fix",
+  "reason": "A sieve is used to strain (straining pasta is familiar by age 12), so r1's obscurity point is weak; r2 passed. The physics-deformation gloss is the wrong sense; hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:73",
+  "verdict": "fix",
+  "reason": "tendency/inclination is sound. Both rounds agree 'disposition' is also a synonym; drop it. tolerance/acceptance/skepticism remain wrong.",
+  "drop": [
+   "disposition"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:75",
+  "verdict": "fix",
+  "reason": "devastation/ruin is sound. Both rounds agree 'calamity' is defensibly close; drop it. emptiness/mishap remain clearly wrong.",
+  "drop": [
+   "calamity"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:76",
+  "verdict": "fail",
+  "reason": "Agree with both fails: an alibi is a narrow legal kind of excuse (being elsewhere at a crime), not the same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:77",
+  "verdict": "fix",
+  "reason": "malice/spite is sound. Both rounds agree animosity (and r1 adds resentment) are thesaurus synonyms of malice; drop both. acceptance/leniency remain.",
+  "drop": [
+   "resentment",
+   "animosity"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:79",
+  "verdict": "fix",
+  "reason": "Children call a quilt a blanket and dictionaries list them as synonyms, so r1's hyponym objection does not sink it at 'about the same'. Both rounds object to the odd distractors 'cravat' and 'canvases'; drop them, leaving wallpaper/woodwork.",
+  "drop": [
+   "cravat",
+   "canvases"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:80",
+  "verdict": "fix",
+  "reason": "hatred/animosity is sound. Both rounds agree 'hate' is also a synonym and 'dickens' is a minced oath (and a lowercased surname); drop both. adoration/acceptance remain.",
+  "drop": [
+   "hate",
+   "dickens"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:87",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail: the link is word families and patience is the only member of patient's family among the options; reading 'patient' as a noun does not make nurse/clinic/kindness/safety family members. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:92",
+  "verdict": "pass",
+  "reason": "Disagree with r2's fail: the link is 'Word families', not 'full of'; the A:B pair is drawn from the same link, and meaningless is exactly in meaning's family and the only family member offered. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:93",
+  "verdict": "fail",
+  "reason": "Agree with r1: a latch fastens a door but does not lock it ('latched but not locked' is the everyday distinction), so latch/lock is not the same meaning. Doubtful, so it does not ship.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:94",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'boring' to a child means dull; drilling = boring is a confusing sense, and bunker/weld are obscure.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:96",
+  "verdict": "fail",
+  "reason": "Agree with both fails: pregnancy/gestation/fetus is a reproductive topic, and 'gestation' is obscure at L4.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:97",
+  "verdict": "fail",
+  "reason": "Agree with r1: a mirror is one kind of reflector and a bike reflector is not a mirror; the words are not interchangeable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:98",
+  "verdict": "fix",
+  "reason": "Statue/sculpture are listed synonyms and children use them interchangeably for a carved figure. Both rounds flag 'monument' as defensible; drop it. The gloss 'a three-dimensional work of plastic art' will be read as art made of plastic, so hide it. gild/marble/facade remain wrong.",
+  "drop": [
+   "monument"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:99",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'smack' is heroin slang and a hit, and 'boring' reads as dull to a child.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:100",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: 'levy' is too formal and obscure for L2 (age 9), and 'payment' is arguably close to tax.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:101",
+  "verdict": "fail",
+  "reason": "Agree with both fails: the gloss is the adjective 'striking' (impressive); 'hit' is a family member. Dropping hit leaves only puck and flick, and flick is itself a light hit, so it is not rescuable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:102",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'deceased' is formal and adult for L2 and the option set is death-themed (coffin, memorial, death).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "pass",
+  "reason": "Disagree with r1's hyponym fail: dictionaries define pouch as a small bag and children use the words interchangeably, so 'about the same' holds. towel/bin/express/laundry are not synonyms. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:105",
+  "verdict": "fix",
+  "reason": "workman/laborer is sound (r2 pass). r1 is right that 'menial' as a noun means a servant and is demeaning; also 'cooper' is itself a kind of workman. Drop both; conveyor/wagon remain.",
+  "drop": [
+   "menial",
+   "cooper"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:107",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'sho' is a very obscure Japanese mouth organ that reads as a typo of 'shoe', making footwear look right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:110",
+  "verdict": "fail",
+  "reason": "Agree with both fails: cheat and chess do not mean the same; the pair is broken.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:112",
+  "verdict": "fail",
+  "reason": "Agree with both fails: andromeda as a shrub genus is obscure; children know it as a galaxy.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:113",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a steppe is grassland, not a kind of tree; broken pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:115",
+  "verdict": "fix",
+  "reason": "flora/vegetation is sound. Both rounds agree lowercase 'aboriginal' is an identity term used as filler; drop it. fauna/annual remain wrong.",
+  "drop": [
+   "aboriginal"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:117",
+  "verdict": "fail",
+  "reason": "Agree with both fails: vegetation is plants collectively, not a kind of plant, and the gloss is the factory sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:121",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a smudge is not a kind of insect; broken pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:124",
+  "verdict": "fix",
+  "reason": "Lather is soap foam and the two are used interchangeably, so r1's hyponym point does not sink it (r2 passed). Neither round noticed 'slag', which is a common British insult for a woman; it fails as a word even in its innocent sense. Drop it; bubbly/sawdust/grime remain.",
+  "drop": [
+   "slag"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:125",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a cleat is not a kind of metal, and buckle/padlock/clutch are co-members; broken.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:128",
+  "verdict": "fix",
+  "reason": "difficulty/trouble is sound (r2 pass). r1 is right that 'disability' beside difficulty/trouble implies disability = trouble (stigmatising) and 'distress' is arguable; drop both. exhaustion/spite remain.",
+  "drop": [
+   "disability",
+   "distress"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:129",
+  "verdict": "fail",
+  "reason": "Agree with both fails: rain is a kind of precipitation, not the same meaning (snow is precipitation too).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:130",
+  "verdict": "fail",
+  "reason": "Agree with both fails: statehouse is US-specific and obscure, and 'abattoir' (slaughterhouse) is an unsuitable option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:131",
+  "verdict": "fail",
+  "reason": "Agree with both fails: astrantia and every distractor are obscure botanical genera; gloss is the factory sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:134",
+  "verdict": "fail",
+  "reason": "Agree with both fails: hiss = boo only in the heckling sense, and 'smack' is drug slang.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:135",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: arrow = pointer only in the sign/cursor sense; the main sense (projectile) makes 'bullet' look right, and after dropping it only intercept and 'stab' (a weapon word) remain.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:136",
+  "verdict": "fail",
+  "reason": "Agree with both fails: brush = undergrowth is a sense most L4 children do not know, and 'hedge' is tempting.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:140",
+  "verdict": "pass",
+  "reason": "Disagree with r1's hyponym fail: beach and shore are standard dictionary synonyms that children use interchangeably; 'about the same' holds. lagoon/pool/creek are not synonyms. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:144",
+  "verdict": "pass",
+  "reason": "Disagree with r2: the horse-tack distractors target girth's strap sense, but none of bridle/halter/jumper/saddle means girth in any sense, so circumference is the only defensible answer; girth is fair at L6. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:146",
+  "verdict": "fail",
+  "reason": "Agree with both fails: pustule/boil/papule are gross medical terms, a pustule is not a boil, and 'papule' is arguable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:147",
+  "verdict": "fail",
+  "reason": "Agree with both fails: structural does not mean organizational.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:149",
+  "verdict": "fix",
+  "reason": "approve/endorse is sound. Both rounds agree 'assent' is also a synonym; drop it. The gloss 'Be behind' reads as physical position to a child; hide it. repaid/repeal/amend remain wrong.",
+  "drop": [
+   "assent"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:150",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a pelt is an animal skin, not a kind of coat garment; 'fell' is an archaic synonym.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:151",
+  "verdict": "fix",
+  "reason": "A purse is a kind of container (r2 pass). r1 is right that in British English a purse is a small wallet; drop it. The gloss trails into 'a large metal boxlike object of standardized…' (a shipping container), which misleads; hide it. pocket/grocery/receipt remain wrong.",
+  "drop": [
+   "wallet"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:152",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a picnic is not a cookout (picnic food need not be cooked).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:154",
+  "verdict": "fail",
+  "reason": "Agree with both fails: accused is not the same as suspect, and 'murder' is a violent option at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:157",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: a crypt is an underground vault and not every tomb is one; 'monument' is arguable and the set is heavily death-themed. Doubtful.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:158",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: a garland (a string of flowers, a mala to most of this audience) is not a wreath (a ring, with funeral associations); 'turban' as filler beside it is also poor.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:159",
+  "verdict": "fix",
+  "reason": "trader/merchant is sound. Both rounds agree lowercase 'arab' beside trader/bazaar is an ethnic stereotype; drop it. bazaar/export/pelt remain wrong.",
+  "drop": [
+   "arab"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:160",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'ideology' is arguable, 'conviction' at L2 also means a criminal conviction, and capitalism/feminism are political filler.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "fix",
+  "reason": "handcuff/manacle is sound at L7. Both rounds agree 'fetter' is also a synonym; drop it. deterrent/impediment/pillory are not synonyms of handcuff.",
+  "drop": [
+   "fetter"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:162",
+  "verdict": "fail",
+  "reason": "Agree with both fails: soaring (rising high) is not gliding, and 'climax' has a sexual double meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:163",
+  "verdict": "fix",
+  "reason": "begin/finish is right (r2 pass). Gloss is the noun 'a finish' (surface texture), wrong sense per r1; hide. 'september' is a proper noun shown lowercase as filler; drop it. arrive/early/day remain wrong.",
+  "drop": [
+   "september"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:164",
+  "verdict": "pass",
+  "reason": "Disagree with r1: 'bottom' is the ordinary, polite everyday word (bottom of the page); it is not a swear word or a body insult, which is what the rule bars. bottom/underside is exact and ledge/dive/mantle/buoy are wrong. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:165",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'dementia' and 'madness' as filler stigmatise mental illness. Dropping them leaves perception and 'animus' (Latin for mind), which is arguable, so it cannot be rescued.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:166",
+  "verdict": "fix",
+  "reason": "manacle/shackle is exact (r1 pass). r2 is right that 'garter' has a lingerie association; drop it. sling/barrage remain wrong.",
+  "drop": [
+   "garter"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:168",
+  "verdict": "fail",
+  "reason": "Agree with r1: the plural 'cacti' as 'a kind of plant' gives an ungrammatical bridge in a spelling app, and the gloss is the factory sense; dropping options cannot fix c.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:172",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'a national' as a noun meaning citizen is obscure for L1 (age 8).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:175",
+  "verdict": "fix",
+  "reason": "stipend/allowance is sound at L6. Both rounds agree 'salary' is a near-synonym of stipend; drop it. 'allow' is only a family member, and tuition/shareholder are wrong.",
+  "drop": [
+   "salary"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "fix",
+  "reason": "Swamp is the everyday word children use for a wetland, so 'about the same' holds (r2 pass). r1 is right that 'nile' is a lowercase proper noun; also 'estuary' is itself a wetland type a child could defend. Drop both; habitat/creek remain.",
+  "drop": [
+   "nile",
+   "estuary"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:177",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a caterpillar is one kind of larva (a maggot is a larva too); not the same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:178",
+  "verdict": "pass",
+  "reason": "Disagree with r1: in everyday usage bookshelf and bookcase name the same piece of furniture, and the gloss is the dictionary's for bookshelf. workspace/alcove/wallpaper/workbench are not synonyms. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:180",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'buttock' is a giggle body word, and 'extremity' (a hand or foot) is not quite appendage (a limb) and reads as 'extreme' to a child.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:181",
+  "verdict": "fail",
+  "reason": "Agree with both fails: cholesterol is not a kind of animal; broken pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:183",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'rustic' as a noun is obscure and demeaning at L2, and 'peasant' is used as an insult.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:185",
+  "verdict": "fix",
+  "reason": "accumulation/buildup is sound. Both rounds agree 'urine' is toilet-giggle filler; drop it. melanin/breakdown/albumin remain wrong.",
+  "drop": [
+   "urine"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:186",
+  "verdict": "fix",
+  "reason": "courteous/polite is exact. Both rounds agree 'considerate' (and r1 adds 'kindly') are synonyms; drop both. frolicsome/boorish remain wrong.",
+  "drop": [
+   "considerate",
+   "kindly"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:187",
+  "verdict": "fix",
+  "reason": "undertaking/project is sound (r2 pass). r1 is right that 'initiative' (a new plan) is arguable; drop it. diversion/advancement remain.",
+  "drop": [
+   "initiative"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a",
+  "verdict": "fail",
+  "reason": "Agree with both fails: juice is a kind of extract, and resin and latex are plant extracts too.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: 'patron' at L2 mainly means supporter or sponsor and is advanced for age 9.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:g",
+  "verdict": "fix",
+  "reason": "Hiking is walking and children use the words for the same activity ('go for a hike/walk'), so 'about the same' holds. Both rounds flag 'trek' as a synonym of hike; drop it. trail/scout/driveway remain wrong.",
+  "drop": [
+   "trek"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:h",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a network is not a grid.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:i",
+  "verdict": "fix",
+  "reason": "road/street is a standard L1 synonym pair (r2 pass). r1 is right that 'path' is arguable; drop it. traffic/driver/transit remain wrong.",
+  "drop": [
+   "path"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:j",
+  "verdict": "fix",
+  "reason": "trip/journey is sound (r2 pass). r1 is right that a child equates a vacation with a trip; drop it. bus/drove/backpack remain.",
+  "drop": [
+   "vacation"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:k",
+  "verdict": "pass",
+  "reason": "Disagree with r1's hyponym fail: grin/smile is a classic synonym pair children treat as the same. wink/frown/agony are not synonyms. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:m",
+  "verdict": "pass",
+  "reason": "Disagree with r1's hyponym fail: blanket/cover is a listed synonym ('pull the covers up') and the gloss is the right sense. lawn/sweater/wool/picnic are not synonyms. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:n",
+  "verdict": "fix",
+  "reason": "trader/dealer is sound. Both rounds agree lowercase 'arab' beside trader/bazaar is an ethnic stereotype; drop it. bazaar/export/import remain wrong.",
+  "drop": [
+   "arab"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:o",
+  "verdict": "fix",
+  "reason": "evidence/proof are listed synonyms and children treat them the same (r2 pass). r1 is right that 'testimony' is a kind of evidence; 'witness' in 'bear witness' also means evidence. Drop both; validity/defendant remain.",
+  "drop": [
+   "testimony",
+   "witness"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:q",
+  "verdict": "pass",
+  "reason": "Disagree with r1: a mill (paper mill, cotton mill, flour mill) is a factory, including in the sense a child knows. sack/shovel/annual/lumber are not synonyms. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:r",
+  "verdict": "fix",
+  "reason": "playing/performing holds in the music/drama sense the gloss names, and hockey/soccer are things you play but not synonyms of playing, so performing is the one answer (r2 pass). r1 is right that 'poker' is a gambling game; drop it.",
+  "drop": [
+   "poker"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:s",
+  "verdict": "pass",
+  "reason": "Disagree with r1: gadget is a standard synonym of device and the gloss is right. generator/plug/clip/wireless are not synonyms of device. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:u",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'extent' is a synonym of amount and 'gross' is arguable; dropping them leaves only one wrong option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:w",
+  "verdict": "fix",
+  "reason": "cent = penny holds in the US and the UK penny is likewise one hundredth (r2 pass). r1 is right that the gloss ('a fractional monetary unit of ireland and the united kingdom') shows the UK unit, lowercases two country names, and contradicts the pair; hide it.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:x",
+  "verdict": "fix",
+  "reason": "tutor/instructor is sound (r2 pass). r1 is right that 'mentor' is also a synonym of tutor; drop it. seminar/tuition/nonprofit remain.",
+  "drop": [
+   "mentor"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:y",
+  "verdict": "pass",
+  "reason": "Disagree with r1: for children 'performing' on a stage means acting, and the gloss names that sense. solo/stag/audition are not synonyms (stag is an ordinary animal word). r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1d",
+  "verdict": "fix",
+  "reason": "bottom/top is exact (r2 pass). 'bottom' is an ordinary word, but 'behind' as a noun is slang for buttocks, as r1 says; drop it. rim/dive/sink remain wrong.",
+  "drop": [
+   "behind"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1k",
+  "verdict": "fix",
+  "reason": "sink/float is right. Both rounds agree 'ascend' is also an opposite of sink; drop it. leak/shrink/wet remain wrong.",
+  "drop": [
+   "ascend"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1m",
+  "verdict": "fix",
+  "reason": "love/hate is right. Both rounds agree 'hatred' is also an opposite of love (noun); drop it. anger/rich/lend remain wrong.",
+  "drop": [
+   "hatred"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1n",
+  "verdict": "fix",
+  "reason": "big/small is right (r2 pass). r1 is right: 'mini' means small and is a defensible opposite, and the gloss is 'the small of the back'. Drop mini, hide gloss.",
+  "drop": [
+   "mini"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:1q",
+  "verdict": "fix",
+  "reason": "heavy/light is right (r2 pass); gloss is light as radiation, wrong sense per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:1w",
+  "verdict": "fix",
+  "reason": "calm/stormy is right (r2 pass). r1 is right that 'storm' is the noun opposite of calm; drop it. confident/awake/quiet remain wrong.",
+  "drop": [
+   "storm"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:1z",
+  "verdict": "fix",
+  "reason": "timid/brave is right (r2 pass). r1 is right that 'reckless' is arguably an opposite of timid; drop it. envy/tame/cruel remain wrong.",
+  "drop": [
+   "reckless"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2c",
+  "verdict": "fail",
+  "reason": "Agree with r1: 'pink' is defensible (rose is a shade of pink) and 'june' is a lowercase proper noun; dropping both leaves no wrong options.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2e",
+  "verdict": "fix",
+  "reason": "kitchen is a kind of room. Both rounds agree 'mom' beside kitchen plays to a gender stereotype; drop it. mop/towel remain (two).",
+  "drop": [
+   "mom"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2g",
+  "verdict": "fix",
+  "reason": "A boot is a type of shoe in standard dictionaries (Cambridge: 'a type of shoe that covers the whole foot and the lower part of the leg'), and r2 called it acceptable. r1's real point is that the shown gloss says shoes stop below the ankle, contradicting the pair; hide it. sweater/nap/kick/sock are not categories of boot.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:2m",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'young' is not a kind of animal; broken pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2o",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a pocket is part of a garment, not a kind of one.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2s",
+  "verdict": "fail",
+  "reason": "Agree with r1: a scoop is arguably a kind of spoon and 'spit' is crude; dropping both leaves only one wrong option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2v",
+  "verdict": "fix",
+  "reason": "hog is a kind of animal. Both rounds agree a hog is a kind of pig, a second valid category; drop it. pork/ham/gravy are not categories.",
+  "drop": [
+   "pig"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2w",
+  "verdict": "fail",
+  "reason": "Agree with both fails: coral to an 8-9 year old is the sea creature; 'coral is a kind of colour' is a secondary sense and ambiguous at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2x",
+  "verdict": "fail",
+  "reason": "Agree with both fails: baking is not a kind of cake; broken pair.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:2z",
+  "verdict": "fail",
+  "reason": "Agree with both fails: laundry is clothes collectively, not a kind of garment.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3o",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'judge' is already the agent noun; referee is a loose match.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3u",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'guard' is already the agent noun, and defender/escort also guard.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:3w",
+  "verdict": "fix",
+  "reason": "climb/climber is exact (r2 pass); gloss is the climbing-plant sense, wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:4a",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: curly and wavy are contrasted categories in everyday talk (curly vs wavy hair), not the same meaning.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4b",
+  "verdict": "fix",
+  "reason": "commitment/dedication is sound (r2 pass). r1 is right that 'loyalty' matches the gloss ('wholehearted fidelity'); drop it. betrayal/mandatory/retirement remain wrong.",
+  "drop": [
+   "loyalty"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4c",
+  "verdict": "pass",
+  "reason": "Disagree with r2's 'weak synonym': a collection is a group of things gathered together and the two are listed synonyms; the gloss is the right sense. catalog/relic/artwork are not synonyms. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4e",
+  "verdict": "pass",
+  "reason": "Disagree with r1's hyponym fail: meadow and field are listed synonyms and interchangeable for children. dusk/bog/creek are wrong. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4f",
+  "verdict": "fix",
+  "reason": "note/message is sound. Both rounds agree 'comment' is also a sense of note; drop it. paragraph/musical remain wrong.",
+  "drop": [
+   "comment"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4g",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: 'departed' at L2 reads as 'left' (the train departed); it is a euphemism, and the options are a death set (coffin, memorial, death).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4i",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'plant' in the factory sense is too adult at L2; a child reads plant as greenery.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4j",
+  "verdict": "fix",
+  "reason": "ginger is a kind of plant (r2 pass); gloss is the factory sense, wrong per r1. Hide. curry/garlic/soy/basil are co-members or foods, not categories.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:4k",
+  "verdict": "fix",
+  "reason": "curry is a kind of dish (r2 pass); gloss is dishware, wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:4n",
+  "verdict": "pass",
+  "reason": "Disagree with r2: rocket's salad-leaf sense has no foothold among the options, and jet/helicopter are co-members (vehicles), not categories of rocket. vehicle is the one answer. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4o",
+  "verdict": "pass",
+  "reason": "Disagree with r2: 'grey' is a correct spelling in every locale (standard in UK/India, accepted in US); British/American normalisation is a product decision. grey is a kind of colour; brown/tan/colorful/dark are not categories. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4p",
+  "verdict": "pass",
+  "reason": "Disagree with r2: the parallel level of the A:B pair is not the criterion; 'donkey is a kind of animal' is exactly true, and hen/raven/tiger are co-members, not categories. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4q",
+  "verdict": "fix",
+  "reason": "toe/foot is right. Both rounds agree 'feet' is the plural trap; also 'hind' (a female deer, or hind leg) has toes. Drop both; thumb/elbow remain.",
+  "drop": [
+   "feet",
+   "hind"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4r",
+  "verdict": "fix",
+  "reason": "hoof/horse is right (r2 pass). r1 is right that 'hind' (a female deer, or a hind leg) has hooves; drop it. paw/toe remain wrong.",
+  "drop": [
+   "hind"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4t",
+  "verdict": "fix",
+  "reason": "collar/shirt is right. Both rounds note some sweaters have collars; drop it. sleeve/hem remain (parts, not wholes).",
+  "drop": [
+   "sweater"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4u",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a clam has a shell too (and a pod is a pea's shell), and the gloss is the turtleneck sense; dropping both leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:4w",
+  "verdict": "fix",
+  "reason": "mane/lion is right. Both rounds agree a pony has a mane; drop it. The gloss writes 'africa and india' in lowercase, a spelling error in a spelling app; hide it. paddock/moorland/trot remain wrong.",
+  "drop": [
+   "pony"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:4y",
+  "verdict": "fix",
+  "reason": "pupil/eye is right. r1 is right that the pupil sits in the iris, so 'iris' is defensible; drop it. r2's point that 'student' is a fair other-sense trap is right; colon/student remain.",
+  "drop": [
+   "iris"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5a",
+  "verdict": "fail",
+  "reason": "Agree with both fails: cask/keg/brewer are beer words; dropping them leaves one option (and bottles are often plastic).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5b",
+  "verdict": "fix",
+  "reason": "pottery/clay is right (r2 pass). r1 is right that 'made of porcelain' is everyday usage; drop it. shard/artisan/bronze remain wrong.",
+  "drop": [
+   "porcelain"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5c",
+  "verdict": "fix",
+  "reason": "chair/wood is right. Both rounds agree wicker chairs are common; drop it. gym/wooden/dresser remain wrong.",
+  "drop": [
+   "wicker"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5g",
+  "verdict": "fix",
+  "reason": "omelet/egg is right. Both rounds agree 'ass' is a common swear word even in its donkey sense; drop it. Also drop 'tofu' (tofu/eggless omelets are common in vegetarian households in this audience). The gloss is the biological reproductive-body sense, not the food; hide it. rosemary/taco remain.",
+  "drop": [
+   "ass",
+   "tofu"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:5j",
+  "verdict": "fix",
+  "reason": "statue/marble is right. Both rounds agree statues are also carved from granite; drop it. monument/sculptor/figure are not materials.",
+  "drop": [
+   "granite"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5k",
+  "verdict": "fix",
+  "reason": "basket/wicker is right. Both rounds note 'cider' is alcoholic in UK/Indian usage; drop it. bale/sack/oat remain.",
+  "drop": [
+   "cider"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5l",
+  "verdict": "fix",
+  "reason": "butter is made from cream (r2 pass); gloss is 'the best people in a group', wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:5n",
+  "verdict": "fail",
+  "reason": "Agree with both fails: the body-part distractors push the fingernail sense (not iron), and modern nails are steel; the pair is shaky.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5s",
+  "verdict": "fix",
+  "reason": "blanket/wool is right. Both rounds agree felt blankets exist; drop it. lawn/sweater/cover are not materials.",
+  "drop": [
+   "felt"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5u",
+  "verdict": "fix",
+  "reason": "coin/metal is right. Both rounds agree gold coins exist; drop it. penny/dollar/glass remain wrong.",
+  "drop": [
+   "gold"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5w",
+  "verdict": "fix",
+  "reason": "table/wood is right. Both rounds agree glass tables are common; drop it. dinner/grid/wooden remain.",
+  "drop": [
+   "glass"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:5x",
+  "verdict": "pass",
+  "reason": "Disagree with r2: paper is made from wood pulp, which is wood; 'a step removed' does not make it false. sheet/ink/daily/wooden are not what paper is made from. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6c",
+  "verdict": "fix",
+  "reason": "grater/shred is right (r2 pass); gloss is the noun 'a shred' (tiny amount), wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6f",
+  "verdict": "fix",
+  "reason": "stove/cook is right. Both rounds note a stove boils (and bakes); drop both. cool/shred remain wrong.",
+  "drop": [
+   "boil",
+   "bake"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6g",
+  "verdict": "fix",
+  "reason": "freezer/freeze is right. Both rounds note 'cool' is near; drop it. wake/shred/bake remain wrong.",
+  "drop": [
+   "cool"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6h",
+  "verdict": "fix",
+  "reason": "telescope/observe is right. Both rounds agree 'magnify' is equally valid; telescopes are also used to photograph the sky. Drop both. The gloss ('discover or determine the existence of') is not the watching sense; hide it. light/sweep remain.",
+  "drop": [
+   "magnify",
+   "photograph"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6i",
+  "verdict": "fix",
+  "reason": "oar/row is right (r2 pass). r1 is right that the gloss is the noun 'a row' (a line) and that 'sweep' is a rowing term; drop sweep, hide gloss.",
+  "drop": [
+   "sweep"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6j",
+  "verdict": "fix",
+  "reason": "glue/stick is right (r2 pass); gloss is the noun 'a stick' of wood, wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6k",
+  "verdict": "fix",
+  "reason": "whisk/beat is right (r2 pass); gloss is a policeman's beat, wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6l",
+  "verdict": "fix",
+  "reason": "shovel/dig is right (r2 pass); gloss is an archaeological dig, wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6m",
+  "verdict": "fix",
+  "reason": "broom/sweep is right (r2 pass); gloss is 'a wide scope', wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6n",
+  "verdict": "fix",
+  "reason": "alarm/wake is right. Both rounds agree an alarm also signals; drop it. Gloss is 'the consequences of an event' (in the wake of); hide it. freeze/unlock/strain remain.",
+  "drop": [
+   "signal"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6p",
+  "verdict": "fix",
+  "reason": "spoon/stir is right (r2 pass). r1 is right that a wooden spoon is used to cook; drop it. bake/shred/boil remain wrong.",
+  "drop": [
+   "cook"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:6r",
+  "verdict": "fix",
+  "reason": "ruler/measure is right (r2 pass); gloss is the noun 'a measure' (manoeuvre), wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6v",
+  "verdict": "fix",
+  "reason": "hammer/pound is right. Both rounds agree 'beat' is equally valid; drop it. Gloss is the weight unit; hide it. bore/sweep/sew remain.",
+  "drop": [
+   "beat"
+  ],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6w",
+  "verdict": "fix",
+  "reason": "net/catch is right (r2 pass); gloss is 'a catch' (hidden drawback), wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:6y",
+  "verdict": "fix",
+  "reason": "saw/cut is right (r2 pass); gloss is 'a share of the profits', wrong per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "pass",
+  "reason": "Disagree with r2: 'probable' (likely) is a distinct idea from possible, so it is a fair near-miss rather than a second answer; feasible is fine at L4 (age 11). r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7c",
+  "verdict": "fix",
+  "reason": "choice/pick holds ('take your pick'). Both rounds agree 'option' and 'preference' are also synonyms (r2 blind-picked option); drop both. outlook/favour remain.",
+  "drop": [
+   "option",
+   "preference"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7d",
+  "verdict": "fail",
+  "reason": "Agree with both fails: supplement = appendix only in the book sense; a child knows a vitamin supplement and the appendix organ.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7f",
+  "verdict": "fix",
+  "reason": "filling/stuffing is sound in the food and cushion senses (r2 pass). r1 is right about 'cider' (alcoholic in UK/India); drop it. hum/savory/pastry remain.",
+  "drop": [
+   "cider"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7g",
+  "verdict": "pass",
+  "reason": "Disagree with r1: merchant is a listed synonym of seller and the gloss is right. buyer/discount/commodity/premium are not synonyms. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7i",
+  "verdict": "fix",
+  "reason": "blend/mixture is exact. Both rounds agree lowercase 'korean' is a nationality used as filler; drop it. genre/mute/clash remain.",
+  "drop": [
+   "korean"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7j",
+  "verdict": "fail",
+  "reason": "Agree with both fails: phlegm and sputum are gross body-fluid words and 'harassment' is adult; dropping them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7k",
+  "verdict": "fix",
+  "reason": "intimidation/bullying is sound and familiar at L4. Both rounds agree 'harassment' is also a synonym; drop it. compulsion/subversion remain.",
+  "drop": [
+   "harassment"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7l",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: a carving is one kind of sculpture (clay and bronze sculptures are not carvings), and the gloss itself says so.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7n",
+  "verdict": "fix",
+  "reason": "seawater/saltwater is used interchangeably and r2 passed. r1 is right that 'saline' (salt water) is defensible; drop it. evaporation/beaker/reservoir remain.",
+  "drop": [
+   "saline"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7o",
+  "verdict": "fail",
+  "reason": "Agree with both fails: scarce (in short supply) and sparse (thinly scattered) are only near-synonyms; a careful child would not equate them.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7q",
+  "verdict": "fix",
+  "reason": "animosity/hostility is sound. Both rounds agree 'malice' and 'resentment' are also synonyms; drop both. indignation/leniency remain.",
+  "drop": [
+   "malice",
+   "resentment"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7r",
+  "verdict": "fix",
+  "reason": "feather/plume is a dictionary synonym pair (r2 pass). r1 is right that the gloss ('anything that resembles a feather') is the smoke-plume sense; hide it. crest/peacock/stork/stripe are not synonyms.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:7s",
+  "verdict": "fail",
+  "reason": "Agree with r1: children are explicitly taught revising and editing as different steps of the writing process; the gloss calls revising a kind of editing.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7t",
+  "verdict": "fail",
+  "reason": "Agree with both fails: grumbling means complaining; only the stomach sense matches rumbling, and 'nag'/'rant' fit better.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7u",
+  "verdict": "fail",
+  "reason": "Agree with both fails: a cauldron is a very large pot, not a plain synonym, and 'pot' is also drug slang.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7v",
+  "verdict": "fail",
+  "reason": "Agree with both fails: arithmetic is a branch of maths, as geometry is.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7w",
+  "verdict": "fix",
+  "reason": "pursuit/chase is sound with the gloss shown. Both rounds agree 'endeavor' and 'hobby' fit pursuit's other sense; drop both. ambition/liberation remain.",
+  "drop": [
+   "endeavor",
+   "hobby"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:7x",
+  "verdict": "fail",
+  "reason": "Agree with both fails: dominate and prevail are not the same meaning, and 'overrun' is as defensible.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8a",
+  "verdict": "pass",
+  "reason": "Disagree with r2: the link is word families; juvenile is a synonym-adjective but not in child's family, so it is not a second answer. childish is the only family member and its gloss is right. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8c",
+  "verdict": "fix",
+  "reason": "arrive/arrival is exact. Both rounds agree 'monday' and 'tuesday' are proper nouns shown lowercase; drop them. noon/leave remain.",
+  "drop": [
+   "monday",
+   "tuesday"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8h",
+  "verdict": "fix",
+  "reason": "spiny is the only member of spine's family. Both rounds note the anatomy distractors frame spine as the backbone; 'vertebral' is the adjective for that sense and a child could defend it. Drop it; caudal/alveolar/pectoral remain.",
+  "drop": [
+   "vertebral"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8j",
+  "verdict": "pass",
+  "reason": "Disagree with r2: the link is word families, not 'pleasant-tasting'; tasteful is in taste's family and is the only family member offered, and the gloss shows its real sense. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:8m",
+  "verdict": "pass",
+  "reason": "Disagree with both fails: the link named is 'Word families' and the A:B pair is drawn from that link, so the contract is the shared root, not verb-to-act. bakery is exactly in bake's family and the only family member among oatmeal/dough/roast/bun; the gloss is right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9a",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: 'systemic' is adult vocabulary at L4, and the child-natural adjective of system is 'systematic'.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9e",
+  "verdict": "fix",
+  "reason": "hill/hilly is exact (r2 pass). r1 is right that 'andean' is a proper adjective shown lowercase; drop it. grassy/steeper/snowy remain.",
+  "drop": [
+   "andean"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9h",
+  "verdict": "fix",
+  "reason": "kettle/boil is right (r2 pass); gloss is the pus-filled sore, wrong sense and gross per r1. Hide.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:9j",
+  "verdict": "fix",
+  "reason": "microscope/magnify is right. Both rounds agree 'observe' is equally valid; drop it. strain/light/freeze remain.",
+  "drop": [
+   "observe"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9k",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'bleacher' as a person is obscure (children know bleachers as seats), and oleoresin/turpentine are obscure.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9n",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'sioux', 'siberia', 'nebraska' are lowercase proper nouns, one a people's name; dropping them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "pass",
+  "reason": "Disagree with r1: a perfumer is exactly the person who makes perfume (the same shape as ranch/rancher), the gloss says so, and perfumer is the only person among fragrance/mastic/beeswax/linseed. r2 passed.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9s",
+  "verdict": "fail",
+  "reason": "Agree with r1 over r2: to almost everyone a transmitter is a device, and then modem/telegraph also transmit; 'morse' is a lowercase proper noun.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9t",
+  "verdict": "fix",
+  "reason": "ranch/rancher is exact (r2 pass). r1 is right that 'farmhand' is also a person who works a ranch; drop it. mow/estate/bunk remain.",
+  "drop": [
+   "farmhand"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9v",
+  "verdict": "fix",
+  "reason": "compose/composer is exact (r2 pass). r1 is right that 'punk' is a common insult; drop it. elegy/lyric/solo remain.",
+  "drop": [
+   "punk"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9x",
+  "verdict": "fix",
+  "reason": "rescue/rescuer is exact (r2 pass). r1 is right that a firefighter also rescues and 'hostage' is heavy; drop both. shipwreck/salvation remain.",
+  "drop": [
+   "firefighter",
+   "hostage"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:9z",
+  "verdict": "fail",
+  "reason": "Agree with both fails: 'felon' and 'accomplice' are also people who do wrong, and 'murder' is violent; dropping them leaves one option.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:a1",
+  "verdict": "pass",
+  "reason": "Disagree with r2: the link is word families; 'permit' is a synonym but not in allow's family. allowance is exactly in the family and the gloss shows its own sense. r1 passed.",
+  "drop": [],
+  "gloss": "keep"
+ }
+]

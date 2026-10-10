@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:mk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ml",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mm",
+  "verdict": "fail",
+  "reason": "adj->noun; strict noun of humane is humaneness, humanity is close enough"
+ },
+ {
+  "unit": "item:mn",
+  "verdict": "fail",
+  "reason": "second defensible: revelation · synonym; revelation is also a listed synonym of discovery"
+ },
+ {
+  "unit": "item:mo",
+  "verdict": "fail",
+  "reason": "second defensible: forcefulness · synonym; forcefulness fits the assertive sense of aggression"
+ },
+ {
+  "unit": "item:mp",
+  "verdict": "fail",
+  "reason": "second defensible: scrub · is-a broken: brushing is an action, not a tool; no option is cleanly its category"
+ },
+ {
+  "unit": "item:mq",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mr",
+  "verdict": "fail",
+  "reason": "category; skillet/broiler are siblings"
+ },
+ {
+  "unit": "item:ms",
+  "verdict": "fail",
+  "reason": "synonym; lily is a kind of flower"
+ },
+ {
+  "unit": "item:mt",
+  "verdict": "fail",
+  "reason": "synonym; poetic is an adjective"
+ },
+ {
+  "unit": "item:mu",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mv",
+  "verdict": "fail",
+  "reason": "second defensible: bureaucratic · official is noun or adjective; bureaucratic fits the adjective reading the quick:fast stem suggests"
+ },
+ {
+  "unit": "item:mw",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:mx",
+  "verdict": "fail",
+  "reason": "blind pick “ruthless”, intended “vicious” · second defensible: vicious · synonym; vicious is an equally standard synonym of cruel"
+ },
+ {
+  "unit": "item:my",
+  "verdict": "fail",
+  "reason": "second defensible: vile, immoral · synonym; several options are listed synonyms of shameful"
+ },
+ {
+  "unit": "item:mz",
+  "verdict": "fail",
+  "reason": "synonym; mustard/parsley/ginger are kinds of seasoning"
+ },
+ {
+  "unit": "item:n0",
+  "verdict": "fail",
+  "reason": "second defensible: graphic · synonym; graphic also means visual"
+ },
+ {
+  "unit": "item:n1",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:n2",
+  "verdict": "fail",
+  "reason": "second defensible: hypothesis, axiom · several options are synonyms of assumption; hypotheses is a plural distractor"
+ },
+ {
+  "unit": "item:n3",
+  "verdict": "fail",
+  "reason": "synonym; desultory is obscure and does not mean unhurried"
+ },
+ {
+  "unit": "item:n4",
+  "verdict": "fail",
+  "reason": "synonym; others are kinds of creature"
+ },
+ {
+  "unit": "item:n5",
+  "verdict": "fail",
+  "reason": "cape is a headland, not truly a peninsula; arabian/balkan are lowercased proper adjectives"
+ },
+ {
+  "unit": "item:n6",
+  "verdict": "fail",
+  "reason": "second defensible: array · synonym; array also means an impressive display"
+ },
+ {
+  "unit": "item:n7",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:n8",
+  "verdict": "fail",
+  "reason": "second defensible: somersault · tumbling ~ acrobatics; somersault also defensible"
+ },
+ {
+  "unit": "item:n9",
+  "verdict": "fail",
+  "reason": "second defensible: unrealistic · synonym; unrealistic is a weaker but defensible synonym"
+ },
+ {
+  "unit": "item:na",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nc",
+  "verdict": "fail",
+  "reason": "category; till is a kind of drawer (reverse direction)"
+ },
+ {
+  "unit": "item:nd",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ne",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nf",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ng",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nh",
+  "verdict": "fail",
+  "reason": "second defensible: cavalier · synonym; cavalier also means horseman"
+ },
+ {
+  "unit": "item:ni",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nj",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:nk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nl",
+  "verdict": "fail",
+  "reason": "blind pick “fastener”, intended “brooch” · second defensible: brooch · unsafe: knob · pin is a kind of fastener, and also means a brooch; knob is British vulgar slang"
+ },
+ {
+  "unit": "item:nm",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nn",
+  "verdict": "fail",
+  "reason": "synonym (noun sense of equestrian)"
+ },
+ {
+  "unit": "item:no",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:np",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:nq",
+  "verdict": "fail",
+  "reason": "synonym; reproductive-biology cluster (pregnant, puberty) may be sensitive for younger children"
+ },
+ {
+  "unit": "item:nr",
+  "verdict": "fail",
+  "reason": "unsafe: bartender · synonym; bartender is an alcohol-service job"
+ },
+ {
+  "unit": "item:ns",
+  "verdict": "fail",
+  "reason": "loose: mollusk is a kind of shellfish, not a synonym"
+ },
+ {
+  "unit": "item:nt",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:nu",
+  "verdict": "fail",
+  "reason": "synonym; flounce is obscure for 8-15"
+ },
+ {
+  "unit": "item:nv",
+  "verdict": "fail",
+  "reason": "second defensible: velvety · synonym; velvety is also listed for fuzzy"
+ },
+ {
+  "unit": "item:nw",
+  "verdict": "fail",
+  "reason": "variant spellings of a lichen dye; far too obscure for 8-15 (aal too)"
+ },
+ {
+  "unit": "item:nx",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ny",
+  "verdict": "fail",
+  "reason": "unsafe: sucker · loose synonym (cocoon vs chrysalis differ technically); sucker is a playground insult; anopheles obscure"
+ },
+ {
+  "unit": "item:nz",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:o0",
+  "verdict": "fail",
+  "reason": "second defensible: clog · sabot is a wooden shoe and also a kind of clog; sabot obscure"
+ },
+ {
+  "unit": "item:o1",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:o2",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:o3",
+  "verdict": "fail",
+  "reason": "acacia is usually a tree; tree not offered"
+ },
+ {
+  "unit": "item:o4",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:o5",
+  "verdict": "fail",
+  "reason": "second defensible: sweetener · flavoring has no exact synonym here; spice and sweetener are both kinds of flavoring"
+ },
+ {
+  "unit": "item:o6",
+  "verdict": "fail",
+  "reason": "synonym; defective is an adjective"
+ },
+ {
+  "unit": "item:o7",
+  "verdict": "fail",
+  "reason": "second defensible: swindler · synonym; swindler is also listed for rogue; murder is a grim distractor"
+ },
+ {
+  "unit": "item:o8",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:o9",
+  "verdict": "fail",
+  "reason": "loose synonym"
+ },
+ {
+  "unit": "item:oa",
+  "verdict": "fail",
+  "reason": "unsafe: thong · synonym; thong has an underwear meaning"
+ },
+ {
+  "unit": "item:ob",
+  "verdict": "fail",
+  "reason": "unsafe: hell, damnation · synonym; hell/damnation are mild swear words and religious terms"
+ },
+ {
+  "unit": "item:oc",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:od",
+  "verdict": "fail",
+  "reason": "second defensible: derision · synonym; derision is also listed for contempt"
+ },
+ {
+  "unit": "item:oe",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:of",
+  "verdict": "fail",
+  "reason": "loose synonym"
+ },
+ {
+  "unit": "item:og",
+  "verdict": "fail",
+  "reason": "category; arnica and the sibling genera are obscure"
+ },
+ {
+  "unit": "item:oh",
+  "verdict": "fail",
+  "reason": "second defensible: supervision · synonym; under the guidance of = under the supervision of"
+ },
+ {
+  "unit": "item:oi",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:oj",
+  "verdict": "fail",
+  "reason": "blind pick “recoil”, intended “psychiatrist” · second defensible: psychiatrist · shrink back = recoil; shrink is also slang for psychiatrist"
+ },
+ {
+  "unit": "item:ok",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ol",
+  "verdict": "fail",
+  "reason": "synonym; racism/atheism are loaded distractors for a spelling drill"
+ },
+ {
+  "unit": "item:om",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:on",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:oo",
+  "verdict": "fail",
+  "reason": "synonym (chute is short for parachute)"
+ },
+ {
+  "unit": "item:op",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:oq",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:or",
+  "verdict": "fail",
+  "reason": "blind pick “sled”, intended “metal” · is-a broken: a ski is not a kind of sled; no option is its category"
+ },
+ {
+  "unit": "item:os",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ot",
+  "verdict": "fail",
+  "reason": "noun->adj pattern fits poorly; black is already an adjective"
+ },
+ {
+  "unit": "item:ou",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ov",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ow",
+  "verdict": "fail",
+  "reason": "second defensible: reproach · synonym; reproach is also listed for condemnation"
+ },
+ {
+  "unit": "item:ox",
+  "verdict": "fail",
+  "reason": "unsafe: screw, knob · synonym; screw and knob have vulgar slang senses"
+ },
+ {
+  "unit": "item:oy",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:oz",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:p0",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:p1",
+  "verdict": "fail",
+  "reason": "noun->adj"
+ },
+ {
+  "unit": "item:p2",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:p3",
+  "verdict": "fail",
+  "reason": "second defensible: crop · hay is dried grass, and is also a crop"
+ },
+ {
+  "unit": "item:p4",
+  "verdict": "fail",
+  "reason": "loose synonym (legislator better)"
+ },
+ {
+  "unit": "item:p5",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:p6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:p7",
+  "verdict": "fail",
+  "reason": "second defensible: unacceptable · synonym; unacceptable also defensible"
+ },
+ {
+  "unit": "item:p8",
+  "verdict": "fail",
+  "reason": "loose: sugar is a kind of sweetener"
+ },
+ {
+  "unit": "item:p9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:pa",
+  "verdict": "fail",
+  "reason": "second defensible: establishment · synonym; establishment is a listed (dated) synonym of household"
+ },
+ {
+  "unit": "item:pb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:pc",
+  "verdict": "fail",
+  "reason": "blind pick “emulsifier”, intended “sweet” · glycerin is not really an emulsifier; chemistry too obscure for 8-15"
+ },
+ {
+  "unit": "item:pd",
+  "verdict": "fail",
+  "reason": "synonym; distractors are obscure crystallography terms"
+ },
+ {
+  "unit": "item:pe",
+  "verdict": "fail",
+  "reason": "synonym; \"sho\" is an obscure distractor"
+ },
+ {
+  "unit": "item:pf",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:pg",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ph",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:pi",
+  "verdict": "fail",
+  "reason": "second defensible: champion · synonym; champion also means defender of a cause"
+ },
+ {
+  "unit": "item:pj",
+  "verdict": "fail",
+  "reason": "category; Latin genus names far too obscure for 8-15"
+ },
+ {
+  "unit": "item:pk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:pl",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:pm",
+  "verdict": "fail",
+  "reason": "noun->adj"
+ },
+ {
+  "unit": "item:pn",
+  "verdict": "fail",
+  "reason": "unsafe: bondage · synonym; bondage has a sexual meaning"
+ },
+ {
+  "unit": "item:po",
+  "verdict": "fail",
+  "reason": "synonym; latex is a kind of sap"
+ },
+ {
+  "unit": "item:pp",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:pq",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:pr",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ps",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:pt",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:pu",
+  "verdict": "fail",
+  "reason": "second defensible: facile · synonym; facile also means easy"
+ },
+ {
+  "unit": "item:pv",
+  "verdict": "fail",
+  "reason": "loose synonym"
+ },
+ {
+  "unit": "item:pw",
+  "verdict": "fail",
+  "reason": "second defensible: incorrect · synonym; faulty reasoning = incorrect reasoning"
+ },
+ {
+  "unit": "item:px",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:py",
+  "verdict": "fail",
+  "reason": "noun->adj"
+ },
+ {
+  "unit": "item:pz",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:q0",
+  "verdict": "fail",
+  "reason": "second defensible: chasm · synonym; chasm is a deep fissure, weakly defensible"
+ },
+ {
+  "unit": "item:q1",
+  "verdict": "fail",
+  "reason": "part-whole"
+ },
+ {
+  "unit": "item:q2",
+  "verdict": "fail",
+  "reason": "second defensible: cavalier · synonym; cavalier also means horseman"
+ },
+ {
+  "unit": "item:q3",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:q4",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:q5",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:q6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:q7",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:q8",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:q9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qa",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qc",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qd",
+  "verdict": "fail",
+  "reason": "second defensible: muck · synonym; muck is also listed for grime"
+ },
+ {
+  "unit": "item:qe",
+  "verdict": "fail",
+  "reason": "category (culinary)"
+ },
+ {
+  "unit": "item:qf",
+  "verdict": "fail",
+  "reason": "unsafe: scum · category; scum is a common insult"
+ },
+ {
+  "unit": "item:qg",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qh",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:qi",
+  "verdict": "fail",
+  "reason": "synonym; flaccid carries an adult connotation"
+ },
+ {
+  "unit": "item:qj",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:qk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ql",
+  "verdict": "fail",
+  "reason": "second defensible: ecstasy, rapture, jubilation · unsafe: ecstasy · four options are standard synonyms of euphoria; ecstasy is also a drug name"
+ },
+ {
+  "unit": "item:qm",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qn",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qo",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qp",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:qq",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qr",
+  "verdict": "fail",
+  "reason": "blind pick “evergreen”, intended “shrub” · loose: most but not all conifers are evergreen"
+ },
+ {
+  "unit": "item:qs",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qt",
+  "verdict": "fail",
+  "reason": "loose: cement is an ingredient of concrete"
+ },
+ {
+  "unit": "item:qu",
+  "verdict": "fail",
+  "reason": "synonym; medical vocabulary"
+ },
+ {
+  "unit": "item:qv",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qw",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qx",
+  "verdict": "fail",
+  "reason": "loose: a novelist is a kind of author"
+ },
+ {
+  "unit": "item:qy",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:qz",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:r0",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:r1",
+  "verdict": "fail",
+  "reason": "second defensible: congestion · clog the shoe = sabot; clog the blockage ~ congestion"
+ },
+ {
+  "unit": "item:r2",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:r3",
+  "verdict": "fail",
+  "reason": "blind pick “dicot”, intended “tree” · category; malvaceae/araceae/ranunculus far too obscure for 8-15"
+ },
+ {
+  "unit": "item:r4",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:r5",
+  "verdict": "fail",
+  "reason": "blind pick “lagoon”, intended “reservoir” · second defensible: reservoir · no true synonym; lagoon and reservoir are both listed for lake"
+ },
+ {
+  "unit": "item:r6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:r7",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:r8",
+  "verdict": "fail",
+  "reason": "second defensible: trimming · synonym; trimming is also listed for ornament"
+ },
+ {
+  "unit": "item:r9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ra",
+  "verdict": "fail",
+  "reason": "unsafe: aperitif · synonym; aperitif is an alcoholic drink"
+ },
+ {
+  "unit": "item:rb",
+  "verdict": "fail",
+  "reason": "unsafe: bantu · synonym; bantu was used as an offensive label under apartheid; slavic/bantu lowercased"
+ },
+ {
+  "unit": "item:rc",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:rd",
+  "verdict": "fail",
+  "reason": "second defensible: outstanding, incredible · three options are standard synonyms of extraordinary"
+ },
+ {
+  "unit": "item:re",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rf",
+  "verdict": "fail",
+  "reason": "second defensible: bundle · category; a parcel is also a bundle"
+ },
+ {
+  "unit": "item:rg",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rh",
+  "verdict": "fail",
+  "reason": "loose synonym"
+ },
+ {
+  "unit": "item:ri",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rj",
+  "verdict": "fail",
+  "reason": "loose: airplane is a kind of aircraft"
+ },
+ {
+  "unit": "item:rk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rl",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rm",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rn",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:ro",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rp",
+  "verdict": "fail",
+  "reason": "second defensible: print · synonym; a print is a copy"
+ },
+ {
+  "unit": "item:rq",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:rr",
+  "verdict": "fail",
+  "reason": "noun->adj"
+ },
+ {
+  "unit": "item:rs",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rt",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ru",
+  "verdict": "fail",
+  "reason": "loose synonym; wager is a gambling word"
+ },
+ {
+  "unit": "item:rv",
+  "verdict": "fail",
+  "reason": "synonym; woodworking terms obscure for 8-15"
+ },
+ {
+  "unit": "item:rw",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rx",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ry",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:rz",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:s0",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:s1",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:s2",
+  "verdict": "fail",
+  "reason": "loose: arithmetic is a branch of math"
+ },
+ {
+  "unit": "item:s3",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:s4",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:s5",
+  "verdict": "fail",
+  "reason": "second defensible: endorsement · synonym; endorsement fits the approval sense of confirmation"
+ },
+ {
+  "unit": "item:s6",
+  "verdict": "fail",
+  "reason": "noun->adj"
+ },
+ {
+  "unit": "item:s7",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:s8",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:s9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sa",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sc",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sd",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:se",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sf",
+  "verdict": "fail",
+  "reason": "second defensible: peculiarity · synonym; peculiarity is also listed for trait"
+ },
+ {
+  "unit": "item:sg",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:sh",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:si",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:sj",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sk",
+  "verdict": "fail",
+  "reason": "second defensible: sheen · synonym; sheen is equally listed for gleam"
+ },
+ {
+  "unit": "item:sl",
+  "verdict": "fail",
+  "reason": "unsafe: thong · category; thong has an underwear meaning"
+ },
+ {
+  "unit": "item:sm",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sn",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:so",
+  "verdict": "fail",
+  "reason": "second defensible: notification · synonym; notification is also a synonym of announcement"
+ },
+ {
+  "unit": "item:sp",
+  "verdict": "fail",
+  "reason": "second defensible: blabber, gabble, palaver · every option is a synonym of prattle"
+ },
+ {
+  "unit": "item:sq",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sr",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ss",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:st",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:su",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sv",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sw",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sx",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sy",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:sz",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:t0",
+  "verdict": "fail",
+  "reason": "blind pick “tranquility”, intended “silence” · second defensible: silence · synonym; silence is equally a synonym of stillness"
+ },
+ {
+  "unit": "item:t1",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:t2",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:t3",
+  "verdict": "fail",
+  "reason": "part-whole"
+ },
+ {
+  "unit": "item:t4",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:t5",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:t6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:t7",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:t8",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:t9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ta",
+  "verdict": "fail",
+  "reason": "second defensible: cloudy · synonym; cloudy is also listed for hazy"
+ },
+ {
+  "unit": "item:tb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tc",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:td",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:te",
+  "verdict": "fail",
+  "reason": "second defensible: contention · synonym; contention is also a synonym of disagreement"
+ },
+ {
+  "unit": "item:tf",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tg",
+  "verdict": "fail",
+  "reason": "no true synonym; pebble is a small stone"
+ },
+ {
+  "unit": "item:th",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ti",
+  "verdict": "fail",
+  "reason": "synonym; welsh/irish lowercased"
+ },
+ {
+  "unit": "item:tj",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tl",
+  "verdict": "fail",
+  "reason": "category; aalii/baptisia far too obscure for 8-15"
+ },
+ {
+  "unit": "item:tm",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tn",
+  "verdict": "fail",
+  "reason": "second defensible: decent, reasonable, sufficient · four options are standard synonyms of acceptable"
+ },
+ {
+  "unit": "item:to",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:tp",
+  "verdict": "fail",
+  "reason": "synonym; \"lena\" is an odd distractor"
+ },
+ {
+  "unit": "item:tq",
+  "verdict": "fail",
+  "reason": "loose: pine is a kind of conifer"
+ },
+ {
+  "unit": "item:tr",
+  "verdict": "fail",
+  "reason": "loose: aircraft is broader than airplane"
+ },
+ {
+  "unit": "item:ts",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tt",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:tu",
+  "verdict": "fail",
+  "reason": "second defensible: hoax · unsafe: sucker · the answer itself is a playground insult; dupe (verb) = hoax also fits"
+ },
+ {
+  "unit": "item:tv",
+  "verdict": "fail",
+  "reason": "blind pick “realization”, intended “knowledge” · second defensible: knowledge · synonym; knowledge is also listed for awareness"
+ },
+ {
+  "unit": "item:tw",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tx",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ty",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:tz",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:u0",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:u1",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:u2",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:u3",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:u4",
+  "verdict": "fail",
+  "reason": "second defensible: hypothesis, axiom · several options are synonyms of assumption"
+ },
+ {
+  "unit": "item:u5",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:u6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:u7",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:u8",
+  "verdict": "fail",
+  "reason": "pomegranate is usually thought of as a fruit; fruit not offered"
+ },
+ {
+  "unit": "item:u9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ua",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ub",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:uc",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ud",
+  "verdict": "fail",
+  "reason": "second defensible: muck · synonym; mire also means mud/muck"
+ },
+ {
+  "unit": "item:ue",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:uf",
+  "verdict": "fail",
+  "reason": "second defensible: defile · synonym; defile is also listed for pollute"
+ },
+ {
+  "unit": "item:ug",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:uh",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ui",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:uj",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:uk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ul",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:um",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:un",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:uo",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:up",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:uq",
+  "verdict": "fail",
+  "reason": "synonym; abuse is a heavy distractor for young children"
+ },
+ {
+  "unit": "item:ur",
+  "verdict": "fail",
+  "reason": "blind pick “inhabitant”, intended “aborigine” · second defensible: aborigine · unsafe: aborigine · synonym; aborigine is also a dictionary synonym of native but is a dated/offensive term"
+ },
+ {
+  "unit": "item:us",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ut",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:uu",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:uv",
+  "verdict": "fail",
+  "reason": "synonym"
+ }
+]

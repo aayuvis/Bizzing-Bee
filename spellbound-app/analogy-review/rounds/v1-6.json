@@ -1,0 +1,1147 @@
+[
+ {
+  "unit": "item:14m",
+  "verdict": "fail",
+  "reason": "Wrong option 'assent' (to agree to/approve formally) is a defensible near-synonym of 'endorse'; two answers fit."
+ },
+ {
+  "unit": "item:14n",
+  "verdict": "fail",
+  "reason": "Wrong option 'oversight' (supervision) is a defensible synonym of 'administration'/management; 'administration' is also hard for L2 (age 9)."
+ },
+ {
+  "unit": "item:14o",
+  "verdict": "pass",
+  "reason": "trader is the clear synonym; broker is an agent, not an owner of goods"
+ },
+ {
+  "unit": "item:14p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14q",
+  "verdict": "fail",
+  "reason": "'passerine' is a technical ornithology term, too obscure even at L8; 'jerboa' also obscure."
+ },
+ {
+  "unit": "item:14r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14s",
+  "verdict": "fail",
+  "reason": "Distractors 'easter' and 'passover' are faith festivals written in lowercase (a spelling app must not show them uncapitalised), and in the liturgical sense both ARE feasts, so the item is confusing; using religious holidays as throwaway distractors is also poor."
+ },
+ {
+  "unit": "item:14t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14u",
+  "verdict": "fail",
+  "reason": "'orpiment' (an arsenic sulphide mineral) is far too obscure for L7 (age 13); 'arsenate' also obscure."
+ },
+ {
+  "unit": "item:14v",
+  "verdict": "fail",
+  "reason": "'occident' is archaic/rare and loaded (Orient/Occident) for L6; distractors 'caucasus', 'volga', 'polynesian' are proper nouns shown in lowercase, one an ethnic term."
+ },
+ {
+  "unit": "item:14w",
+  "verdict": "fail",
+  "reason": "Wrong option 'video' is defensible: 'rent/watch a video' commonly means a movie; two answers fit at L1."
+ },
+ {
+  "unit": "item:14x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:14y",
+  "verdict": "fail",
+  "reason": "Wrong option 'daredevil' (adj., daring/bold) is listed as a synonym of brave in common thesauruses; a careful child could defend it."
+ },
+ {
+  "unit": "item:14z",
+  "verdict": "fail",
+  "reason": "Sensitive set: distractors 'caste' and 'ethnic' (caste is a reviewed-only topic in the family's rules); 'nationality' also has an ethnic-group sense, so it is not exactly 'citizenship' and 'ancestry'/'ethnic' become arguable."
+ },
+ {
+  "unit": "item:15a",
+  "verdict": "fail",
+  "reason": "Link wrong: soap is a KIND of cleanser (d is broader), not the same meaning."
+ },
+ {
+  "unit": "item:15b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15c",
+  "verdict": "fail",
+  "reason": "'buffoon' is an insult word (gloss: 'a rude or vulgar fool'); also wrong option 'comedian' is a defensible synonym of clown."
+ },
+ {
+  "unit": "item:15d",
+  "verdict": "fail",
+  "reason": "Link inexact: an oblong is a kind of rectangle (non-square) or just an elongated shape, not the same as 'rectangle'; distractors 'malayan', 'peruvian' are nationality adjectives in lowercase, 'umbel' obscure."
+ },
+ {
+  "unit": "item:15e",
+  "verdict": "fail",
+  "reason": "Link wrong: a glossary is a list of terms with meanings; a vocabulary is the words a person or language uses. Not synonyms."
+ },
+ {
+  "unit": "item:15f",
+  "verdict": "fail",
+  "reason": "'chunky' and 'pasty' are both common body descriptors used as teasing (fat / pale-faced); 'lump' is also a family form that muddies the item."
+ },
+ {
+  "unit": "item:15g",
+  "verdict": "fail",
+  "reason": "'cabochon' is too obscure for L7; the gloss shown is the wrong sense of 'gem' ('art highly prized...')."
+ },
+ {
+  "unit": "item:15h",
+  "verdict": "fail",
+  "reason": "Wrong option 'stab' is a defensible sense of 'thrust' (thrust a sword), and it is a violent word for L2."
+ },
+ {
+  "unit": "item:15i",
+  "verdict": "fail",
+  "reason": "Wrong option 'lena' is a proper name (river/person) in lowercase, meaningless to a child and confusing in a spelling app."
+ },
+ {
+  "unit": "item:15j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15k",
+  "verdict": "fail",
+  "reason": "Wrong option 'suspicion' is a standard synonym of 'doubt' ('I have my doubts about him'); two answers fit."
+ },
+ {
+  "unit": "item:15l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15m",
+  "verdict": "fail",
+  "reason": "Wrong option 'native' is defensible (the gloss itself says 'or who was born there'); 'nebraska', 'turkic' are proper nouns in lowercase."
+ },
+ {
+  "unit": "item:15n",
+  "verdict": "fail",
+  "reason": "Wrong option 'brazilian' is a nationality adjective in lowercase and also has an adult grooming sense; 'medal' is close to 'prize'."
+ },
+ {
+  "unit": "item:15o",
+  "verdict": "fail",
+  "reason": "Link inexact: steppe and prairie are two different regional grasslands (both KINDS of grassland), not the same meaning."
+ },
+ {
+  "unit": "item:15p",
+  "verdict": "fail",
+  "reason": "Link wrong: irony is not satire; satire is a form that often uses irony. The gloss ('witty language used to convey insults') is sarcasm's."
+ },
+ {
+  "unit": "item:15q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15s",
+  "verdict": "fail",
+  "reason": "Link inexact: a catalog is a kind of list (a book of items for sale), narrower than 'list'; 'dictionary' and 'receipt' are equally kinds of lists, so the item is muddled at L2."
+ },
+ {
+  "unit": "item:15t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15u",
+  "verdict": "fail",
+  "reason": "Wrong option 'handicap' is a dated, stigmatising disability term; unsafe for the set."
+ },
+ {
+  "unit": "item:15v",
+  "verdict": "fail",
+  "reason": "Link wrong: 'monarch' is broader than 'king' (a queen or empress is also a monarch) - d is the category, not a synonym."
+ },
+ {
+  "unit": "item:15w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:15z",
+  "verdict": "fail",
+  "reason": "Link inexact: an inn is a kind of (small) hotel - the gloss itself says so - and in British use an inn is a pub (alcohol)."
+ },
+ {
+  "unit": "item:16a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16b",
+  "verdict": "fail",
+  "reason": "Link inexact: a donation is a narrower kind of gift (to a cause); the true synonym is 'present'."
+ },
+ {
+  "unit": "item:16c",
+  "verdict": "fail",
+  "reason": "Link inexact: 'municipality' is a broader administrative term (any self-governing city or town), not the same as 'town'; 'moscow' is a proper noun in lowercase."
+ },
+ {
+  "unit": "item:16d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16e",
+  "verdict": "fail",
+  "reason": "Link inexact: robbery is a narrower kind of theft (by threat or violence - the gloss says so); 'fraud' is also close."
+ },
+ {
+  "unit": "item:16f",
+  "verdict": "fail",
+  "reason": "'floret' is a small flower that is PART of a flower head (or of broccoli) - 'Kind of' is not clearly right; gloss shown is the wrong sense of 'flower'; obscure."
+ },
+ {
+  "unit": "item:16g",
+  "verdict": "pass",
+  "reason": "bag/sack are everyday synonyms; acceptable at L1"
+ },
+ {
+  "unit": "item:16h",
+  "verdict": "fail",
+  "reason": "Wrong option 'antipathy' (strong aversion) is a defensible synonym of disgust (Collins lists it); two answers fit."
+ },
+ {
+  "unit": "item:16i",
+  "verdict": "fail",
+  "reason": "Wrong option 'proficiency' is listed as a synonym of aptitude in common thesauruses; 'competence' also arguable."
+ },
+ {
+  "unit": "item:16j",
+  "verdict": "fail",
+  "reason": "Wrong option 'mime' (to imitate; a performer who imitates) is a defensible answer for 'imitator'."
+ },
+ {
+  "unit": "item:16k",
+  "verdict": "fail",
+  "reason": "Wrong option 'perverse' shares its root and common association with 'pervert' (sexual double meaning); 'scruple' is also uncommon for age 13."
+ },
+ {
+  "unit": "item:16l",
+  "verdict": "fail",
+  "reason": "Wrong option 'nick' (a small cut or scratch) is a defensible synonym of 'scratch'."
+ },
+ {
+  "unit": "item:16m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16o",
+  "verdict": "fail",
+  "reason": "Wrong option 'pub' is an alcohol venue word - fails the no-alcohol rule."
+ },
+ {
+  "unit": "item:16p",
+  "verdict": "pass",
+  "reason": "ok; trash is a deliberate homograph trap but not a family form"
+ },
+ {
+  "unit": "item:16q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16r",
+  "verdict": "fail",
+  "reason": "Link wrong and a second answer: a flipper is a swim-fin (or an animal's limb), not a kind of shoe; wrong option 'fin' is exactly what a flipper is."
+ },
+ {
+  "unit": "item:16s",
+  "verdict": "fail",
+  "reason": "Wrong option 'sensor' is a defensible category (radar is a kind of sensor); 'instrument' also reads as musical instrument to children given the violin stem."
+ },
+ {
+  "unit": "item:16t",
+  "verdict": "fail",
+  "reason": "Faith content: 'Christ' is a title (Messiah) whose application to Jesus is a Christian belief, not a word synonym; presenting it as 'same meaning' asserts a faith claim, distractors include 'mortal', and the proper nouns are in lowercase."
+ },
+ {
+  "unit": "item:16u",
+  "verdict": "fail",
+  "reason": "Wrong options 'investigation' and 'evaluation' are both defensible synonyms of 'examination'."
+ },
+ {
+  "unit": "item:16v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:16x",
+  "verdict": "fail",
+  "reason": "Link inexact: a quarry is one kind of mine/excavation (open pit for stone); 'mine' is broader."
+ },
+ {
+  "unit": "item:16y",
+  "verdict": "fail",
+  "reason": "Wrong option 'ligne' is not an English word to a child and looks like a misspelling of 'line' in a spelling app; 'abscissa', 'iamb' are obscure."
+ },
+ {
+  "unit": "item:16z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17b",
+  "verdict": "fail",
+  "reason": "Wrong option 'mire' (mud, muck) is a standard synonym of 'muck'; two answers fit."
+ },
+ {
+  "unit": "item:17c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17e",
+  "verdict": "fail",
+  "reason": "Link inexact: a spa is a narrower kind of resort (health resort - the gloss says so)."
+ },
+ {
+  "unit": "item:17f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17g",
+  "verdict": "fail",
+  "reason": "Link inexact: scheduling is a narrower kind of planning (fixing times), not the same meaning."
+ },
+ {
+  "unit": "item:17h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17i",
+  "verdict": "fail",
+  "reason": "Link wrong for a child: a sip is a tiny taste, a swallow is a gulp (and a bird); not the same. Wrong option 'cider' can be alcoholic."
+ },
+ {
+  "unit": "item:17j",
+  "verdict": "fail",
+  "reason": "Wrong option 'stimulus' is a listed synonym of 'impulse' (impetus, push); two answers fit."
+ },
+ {
+  "unit": "item:17k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17l",
+  "verdict": "fail",
+  "reason": "Wrong option 'adjourn' (put off to a later time) is a defensible synonym of 'postpone'."
+ },
+ {
+  "unit": "item:17m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17n",
+  "verdict": "fail",
+  "reason": "Wrong option 'smooth' is a defensible opposite of 'sharp' for an 8-year-old (a sharp stone vs a smooth stone; sharp vs smooth taste/edges)."
+ },
+ {
+  "unit": "item:17o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17s",
+  "verdict": "fail",
+  "reason": "Wrong option 'invoke' (to petition, call on for help) is a listed synonym of 'entreat'; the gloss 'call upon in supplication' fits it too."
+ },
+ {
+  "unit": "item:17t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17u",
+  "verdict": "fail",
+  "reason": "Wrong options 'affirm' and 'decree' are both defensible synonyms of 'declare'."
+ },
+ {
+  "unit": "item:17v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17w",
+  "verdict": "fail",
+  "reason": "Wrong option 'torrent' (a sudden rush of water) is a defensible synonym of 'surge'/'gush'."
+ },
+ {
+  "unit": "item:17x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:17z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:5",
+  "verdict": "fail",
+  "reason": "'mad' means angry only in informal American use; in British and Indian English it means 'crazy', a stigmatising mental-health word, so for much of the audience angry/mad is not a synonym pair."
+ },
+ {
+  "unit": "stem:same:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:same:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:opposite:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:kind:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:part:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:made:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:use:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:who:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:family:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "stem:degree:9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:same:trap",
+  "verdict": "fail",
+  "reason": "'a breeze is not cool' is a false-sounding claim (breezes are often cool); it should say a breeze does not MEAN cool."
+ },
+ {
+  "unit": "lesson:opposite:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:opposite:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:kind:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:part:spot",
+  "verdict": "fail",
+  "reason": "The test 'could you find the first thing on or in the second?' is a location test and admits non-parts (a cup on a table, a fish in a pond); it teaches the wrong link."
+ },
+ {
+  "unit": "lesson:part:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:made:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:bridge",
+  "verdict": "fail",
+  "reason": "With the stem pair scissors/cut it renders 'scissors is used to cut' - ungrammatical in a spelling app; needs is/are agreement or a singular stem."
+ },
+ {
+  "unit": "lesson:use:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:use:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:who:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:family:trap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:title",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:idea",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:bridge",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:spot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "lesson:degree:trap",
+  "verdict": "fail",
+  "reason": "Inaccurate: chilly is colder than cool, so it is not 'the SAME strength'; 'the far end' has no stated scale, so the example confuses."
+ },
+ {
+  "unit": "card:shiva",
+  "verdict": "fail",
+  "reason": "Closing line 'Every family honours him in its own way - ask yours how they do' claims every family honours Shiva and presumes the reader's family does; should be e.g. 'Families who honour him each do it in their own way - if yours does, ask them.' Rest is respectful and accurate."
+ },
+ {
+  "unit": "card:zeus",
+  "verdict": "pass",
+  "reason": "accurate, respectful"
+ }
+]

@@ -1,0 +1,1489 @@
+[
+ {
+  "unit": "item:ak",
+  "verdict": "pass",
+  "reason": "Agree with both passes. dialect -> dialectal is the adjective of the same family; vernacular and linguistic are related in meaning but not forms of 'dialect', fluent is unrelated. Dialectal is transparent (dialect + -al), acceptable at L6. Gloss gives the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:al",
+  "verdict": "pass",
+  "reason": "Agree. deduction -> deductive is the only form of the word among the options; circumstantial/obligatory/permissible are other adjectives. Gloss right. Fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ao",
+  "verdict": "pass",
+  "reason": "Agree. construct -> constructive is the family adjective; interwoven/pictorial/watertight are unrelated. Gloss covers the everyday 'helps improve' sense. Fine at L5.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ap",
+  "verdict": "pass",
+  "reason": "Agree. transgress -> transgression (verb to action noun); obedience/subversion/repeal/redress are other nouns, none from 'transgress'. Word means wrongdoing, suitable; gloss right; fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:aq",
+  "verdict": "pass",
+  "reason": "Agree. flavor -> flavorful is the only form of 'flavor'; tangy/fruity/pungent/sweeter are flavour adjectives from other roots. 'fruity' is used here in its ordinary taste sense and is not a common insult. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ar",
+  "verdict": "pass",
+  "reason": "Agree. restless -> restlessness (quality noun); loneliness is a -ness noun but from 'lonely', not 'restless', so it is a fair trap, not a second answer. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:as",
+  "verdict": "pass",
+  "reason": "Agree. specialize -> specialization; technical/terminology/professional/jargon are related in topic only. Gloss right; fine at L5.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:at",
+  "verdict": "pass",
+  "reason": "Agree. humor -> humorous; expressive/imaginative/pensive/nostalgic are other adjectives. Gloss right. Easy for L6 but not obscure.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:au",
+  "verdict": "pass",
+  "reason": "Agree. prominent -> prominence (state noun); stature is a near-synonym from a different root, which is the intended trap. Gloss gives the 'widely known' sense, which is right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:av",
+  "verdict": "pass",
+  "reason": "Agree. oxidize -> oxidation (process noun); alkali/hydroxide/nitrate/phosphorus are chemistry words but not forms of 'oxidize'. Gloss right; fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:aw",
+  "verdict": "pass",
+  "reason": "Agree. feather -> feathery; downy is close in meaning but comes from 'down', not 'feather', so it is a trap rather than a second answer. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ay",
+  "verdict": "pass",
+  "reason": "Agree. rhetoric -> rhetorical; stylistic/allegorical/introductory/thematic are other adjectives. Gloss right; fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b2",
+  "verdict": "pass",
+  "reason": "Agree. A downpour is heavy rain, a stronger drizzle; sprinkle is weaker, cornbread/skillet/spoonful unrelated. Gloss 'A heavy rain' is right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:b3",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. hot -> scorching is right and none of humid/breezy/spicy/cooler is a stronger 'hot' (spicy is a different sense, not a stronger one). But the gloss 'Make very hot and dry' defines the verb 'scorch', not the adjective 'scorching' (very hot). Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:b5",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. surprised -> astonished is right; terrified/exhausted/thrilled/fascinated are strong forms of other feelings. But 'Affect with wonder' is the definition of the verb 'astonish', not of 'astonished' (filled with wonder). Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:b7",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on one option. happy -> ecstatic is right, but 'joyful' is defensible as a stronger 'happy' too: the classroom 'shades of meaning' scale runs happy -> joyful -> ecstatic, so a child who picks joyful has a case. Drop it; hopeless, sad and unhappy remain. Gloss right.",
+  "drop": [
+   "joyful"
+  ],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bb",
+  "verdict": "pass",
+  "reason": "Agree. quiet -> silent; 'silence' is the same idea with the wrong job, loud the opposite, restless/frantic unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bd",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. scared -> terrified is right and no other option is a stronger 'scared'. But 'Fill with terror' defines the verb 'terrify', not the adjective 'terrified'. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:be",
+  "verdict": "pass",
+  "reason": "Agree. speak -> shout (speak very loudly); spoke is the past-tense trap, hate/ecstatic/fascinated unrelated. Gloss 'A loud utterance' is the noun 'shout', a true definition of the same word in the same meaning, so it does not mislead.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bf",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. wet -> soaked is right; mud/asphalt/muddy/scrub are not a stronger 'wet'. But the gloss 'Submerge in a liquid' is the verb 'soak' and suggests dunking, not 'thoroughly wet', which is the point of the pair. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:bg",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. angry -> furious is right; resentful/sullen/irascible/gruff are kinds of bad temper, not a stronger anger. But the gloss 'Marked by extreme and violent energy' is the 'a furious battle' sense, not the 'extremely angry' sense the pair uses. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:bh",
+  "verdict": "pass",
+  "reason": "Agree. good -> excellent; the other options are strong forms of feelings, not of 'good'. Gloss 'Very good' right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bi",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. pleased -> delighted is right; fascinated/exhausted/terrified/astonished are strong forms of other states. But 'Give pleasure to or be pleasing to' defines the verb 'delight' (what something does to you), not 'delighted' (very pleased). Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:bj",
+  "verdict": "pass",
+  "reason": "Agree. hill -> mountain is size turned up; rise is a small hill (weaker), gale/lake/river unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bk",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. hungry -> starving is right; grumpy/devour/miserable/gulp are not a stronger 'hungry'. But the gloss 'The act of depriving of food or subjecting to famine' is the act of starving someone else, not the sense 'very hungry' the pair uses. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:bl",
+  "verdict": "pass",
+  "reason": "Agree. annoyed -> angry; terrified/astonished/thrilled/fascinated are other feelings. Gloss right. Fine at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bm",
+  "verdict": "pass",
+  "reason": "Agree. dirty -> filthy; greasy is a kind of dirty, not a stronger one; scorching/downpour/soaked belong to other scales. 'filthy' is used in its plain 'very dirty' sense and is not a swear word. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bn",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. tired -> exhausted is right and no other option is a stronger 'tired'. But 'Wear out completely' defines the verb 'exhaust', not the adjective 'exhausted' (very tired). Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:bo",
+  "verdict": "pass",
+  "reason": "Agree. pretty -> beautiful; 'beauty' is the same idea with the wrong job, excellent is a stronger 'good', not a stronger 'pretty'. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bt",
+  "verdict": "pass",
+  "reason": "Agree. small -> tiny; large/big/huge are the other direction, soaked unrelated. Gloss right; L1 fine.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bv",
+  "verdict": "pass",
+  "reason": "Agree. selfish <-> generous; greedy is a near-twin of selfish (trap), generosity the wrong job, unacceptable/trustworthy are not opposites of selfish. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bw",
+  "verdict": "pass",
+  "reason": "Agree. courage <-> cowardice; boldness/bravery/audacity are near-twins (trap), mercy unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bx",
+  "verdict": "pass",
+  "reason": "Agree. praise <-> criticize; commend/acclaim/appreciate/salute are all near-twins of praise. Gloss 'Find fault with' right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:by",
+  "verdict": "pass",
+  "reason": "Agree. criticize <-> praise; condemn/detract/dismiss lean the same way as criticize, ambition is unrelated. Gloss is the noun 'praise' but is a true definition of the same word in the same meaning, so it does not mislead.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:bz",
+  "verdict": "pass",
+  "reason": "Agree. generous <-> selfish is the only opposite offered; lavish/bountiful are near-twins, conciliatory/decent are not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c0",
+  "verdict": "pass",
+  "reason": "Agree. cowardice <-> courage; timidity/timid/cautious lean toward cowardice, selfish unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c1",
+  "verdict": "pass",
+  "reason": "Agree. compatible <-> incompatible; dissimilar is the opposite of 'similar', not of compatible; applicable/consistent/adaptable lean the same way. Gloss right; fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c2",
+  "verdict": "pass",
+  "reason": "Agree. impatience <-> patience; exasperation/indignation/provocation/harshness are all on the impatience side. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c3",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. colorful <-> colorless is right and vibrant/silken/bright/lacy are not opposites. But the gloss 'Lacking in variety and interest' is the figurative (dull) sense; the pair is about colour, as the distractors show. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:c5",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. thoughtless <-> thoughtful is right; careless/negligent are near-twins of thoughtless, immoral/cowardly are not opposites. But the gloss 'Having intellectual depth' is the 'a thoughtful essay' sense; the opposite of thoughtless is the considerate, careful sense. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:c7",
+  "verdict": "pass",
+  "reason": "Agree. polite <-> impolite; considerate/genteel/decent lean the same way as polite, ridiculous unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:c9",
+  "verdict": "pass",
+  "reason": "Agree. patience <-> impatience; perseverance/prudence/tolerance lean the same way, mentor unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ca",
+  "verdict": "pass",
+  "reason": "Agree. thoughtful <-> thoughtless; considerate/profound/reverent lean the same way, preachy is not its opposite and is not faith-mocking. Gloss 'Showing lack of careful thought' is the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cb",
+  "verdict": "pass",
+  "reason": "Agree. reasonable <-> unreasonable; believable/sufficient/sensible/constructive lean the same way. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cc",
+  "verdict": "pass",
+  "reason": "Agree. colorless <-> colorful; odorless/soluble/volatile are other properties, 'color' is the wrong job. Gloss 'Having striking color' is the literal sense the pair uses.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cd",
+  "verdict": "pass",
+  "reason": "Agree. available <-> unavailable; reliable/convenient/affordable are not opposites, flyer unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ce",
+  "verdict": "pass",
+  "reason": "Agree. prove <-> disprove; validate/attest/verify/convince lean the same way as prove. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cf",
+  "verdict": "pass",
+  "reason": "Agree. safe <-> dangerous; 'danger' is the wrong job, sure/convenient/available not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cg",
+  "verdict": "pass",
+  "reason": "Agree. stale <-> fresh; musty is a near-twin of stale, 'freshness' the wrong job, frothy/fizzy unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ch",
+  "verdict": "pass",
+  "reason": "Agree. exclude <-> include; oust/forbidden/withdrawn lean toward exclude, gotten unrelated. Gloss 'Have as a part' is a true sense that opposes 'exclude' (the price includes/excludes tax).",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cj",
+  "verdict": "pass",
+  "reason": "Agree. include <-> exclude; comprise is a near-twin of include, kit/highlight/restock unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cm",
+  "verdict": "pass",
+  "reason": "Agree. plentiful <-> scarce; surplus/abundant/affluent/limitless all lean toward plentiful. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:co",
+  "verdict": "pass",
+  "reason": "Agree. irrational <-> rational; delusion/elation/skepticism/indignation are nouns, none an opposite. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cs",
+  "verdict": "pass",
+  "reason": "Agree. meaningful <-> meaningless; significant is a near-twin, contradictory/factual/definitive not opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cu",
+  "verdict": "pass",
+  "reason": "Agree. powerful <-> powerless; potent/mighty/forceful are near-twins, heaviest unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cv",
+  "verdict": "pass",
+  "reason": "Agree. A wrench is a kind of tool; twist/flex/torque relate to the verb 'wrench' but none is its group, stoppage unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cw",
+  "verdict": "pass",
+  "reason": "Agree. A snake is a kind of reptile; scorpion/canine/kangaroo/anteater are not its group. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cx",
+  "verdict": "pass",
+  "reason": "Agree. Lemonade is a kind of drink; drizzle/popcorn/muffin/salsa are not. Gloss 'A single serving of a beverage' is close enough to the beverage sense that it does not mislead.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:cy",
+  "verdict": "pass",
+  "reason": "Agree. A frog is a kind of amphibian; kangaroo/grasshopper/shrew are other animals, naturalist a person. 'shrew' is used as the animal and is not a common insult today. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:d5",
+  "verdict": "pass",
+  "reason": "Agree. Heartwood is a kind of wood; 'wooden' is the wrong job, rind/hazel/sorrel are not its group. The compound is transparent enough for L6. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:da",
+  "verdict": "pass",
+  "reason": "Agree. A windstorm is a kind of storm; 'stormy' is the wrong job, smog/hydrant/trickle unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dg",
+  "verdict": "pass",
+  "reason": "Agree. A mullet is a kind of fish, a common food fish (Indian coastal cooking included); leek/broil/sorghum/mutton are not its group. The haircut sense is not an insult or vulgar. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dk",
+  "verdict": "pass",
+  "reason": "Agree. An airship is a kind of aircraft; barge/motorboat are watercraft, diesel/conduit unrelated. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dl",
+  "verdict": "pass",
+  "reason": "Agree. A termite is a kind of insect; slug is another creature, burrow/larvae are not its group. Three wrong options is enough. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dp",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. A chime is a percussion instrument (tuned bells), and clang/jingle/ding are sounds while 'instrumental' is the wrong job, so the answer is unique. But the gloss 'A device that requires skill for proper use' is the tool sense of 'instrument', not the musical sense the pair uses. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:dq",
+  "verdict": "pass",
+  "reason": "Agree. A hummingbird is a kind of bird; parakeet is another member of the group (trap), daisy/thistle/flit are not its group. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:ds",
+  "verdict": "pass",
+  "reason": "Agree. A cicada is a kind of insect; locust is another member (trap), lark/partridge birds, rustle a sound. Gloss right; fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:dz",
+  "verdict": "pass",
+  "reason": "Agree. A grouse is a kind of bird; every wrong option is a mammal. Gloss right; fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e0",
+  "verdict": "pass",
+  "reason": "Agree. An alligator is a kind of reptile; raccoon/mink are mammals, feline a group it is not in, tusk a part. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e3",
+  "verdict": "pass",
+  "reason": "Agree. formula -> formulaic; alpha/replaceable/analytic/beta are not forms of 'formula'. Gloss right; fine at L6.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e4",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. The link is sound: response -> responsive, and 'responsiveness' is a same-family word with the wrong job (exactly the trap the lesson describes), reflex/adverse/impulsive unrelated. But the gloss 'Containing or using responses' is the narrow liturgical sense (a 'responsive reading'), not the everyday meaning a child will meet ('quick to react'). Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:e5",
+  "verdict": "pass",
+  "reason": "Agree. annoy -> annoyance; bother/upset are synonyms from other roots and blunder/muddle unrelated, so annoyance is the one family form. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:e7",
+  "verdict": "pass",
+  "reason": "Agree. resource -> resourceful; nonprofit/sustainable/inefficient/affluent are not forms of 'resource'. Gloss 'Having inner resources' is the right (clever, able to cope) sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14p",
+  "verdict": "pass",
+  "reason": "Agree. memorable ~ unforgettable; forgettable is the opposite, delightful/mediocre/cheesy are not twins. Gloss right. Easy for L7, not obscure.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:14t",
+  "verdict": "pass",
+  "reason": "Agree. A lizard is a kind of reptile; kangaroo/anteater/lemur/hedgehog are mammals. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15b",
+  "verdict": "pass",
+  "reason": "Agree. A plow is a kind of tool (a farm implement); tractor/wagon pull or carry, shear is another tool, lumber a material; none is its group. Gloss right; fine at L2.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15j",
+  "verdict": "pass",
+  "reason": "Agree. welcome ~ greeting (a welcome is a greeting on arrival); invite/lobby/graduation/inn are not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15l",
+  "verdict": "pass",
+  "reason": "Agree. frenzied ~ frantic; ecstatic/patriotic/exuberant are not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15t",
+  "verdict": "pass",
+  "reason": "Agree. unity ~ oneness; cooperation/federation are related but not the same meaning, segregation/discord are opposites. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15w",
+  "verdict": "pass",
+  "reason": "Agree. investigation ~ inquiry; observation/hypothesis/prosecution are steps or neighbours, not twins. Gloss 'A search for knowledge' is the right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15x",
+  "verdict": "pass",
+  "reason": "Agree. sediment -> sedimentary; geological/volcanic/glacial are rock-related adjectives from other roots. Gloss right; fine at L4.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:15y",
+  "verdict": "pass",
+  "reason": "Agree. each ~ every; single/six/dozen are not twins. Gloss right; L1 fine.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16a",
+  "verdict": "pass",
+  "reason": "Agree. beginner ~ novice; shortcut/worksheet/grader/solver are not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16d",
+  "verdict": "pass",
+  "reason": "Agree. help ~ assistance; tutor/mentor are people who help, cope is not a twin. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16g",
+  "verdict": "pass",
+  "reason": "Agree with both passes (round 1 noted bag/sack are everyday synonyms at L1). pocket/towel/express/bin are not twins. Gloss gives a bag sense of 'sack', the right one.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16m",
+  "verdict": "pass",
+  "reason": "Agree. goal ~ objective; initiative/advancement/endeavor/teamwork are not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16q",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. jealous ~ envious is a sound everyday pair, and mad/regretful/cynical/fearful are not twins. But the gloss 'Showing extreme cupidity' defines envy as greed (cupidity = greed for money or possessions) and uses a word no child knows; it drops the 'wanting what someone else has' sense. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:16v",
+  "verdict": "pass",
+  "reason": "Agree. accusation ~ allegation; assertion is a plain claim, not an accusation; perjury/prosecution/defendant are courtroom neighbours. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16w",
+  "verdict": "pass",
+  "reason": "Agree. crypt ~ vault (an underground burial chamber); tombstone/glyph/cache/covert are not twins. Burial vocabulary of this kind is ordinary in children's books, not gore. Gloss right sense.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:16z",
+  "verdict": "pass",
+  "reason": "Agree. poultry ~ fowl (domestic birds kept for eggs and meat); pantry/omelet/dairy are kitchen neighbours, auk is a wild seabird and not poultry. Gloss 'A chicken' is narrow but is the dictionary's first sense of fowl and points the right way.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17a",
+  "verdict": "pass",
+  "reason": "Agree. A robe is a kind of garment; gown/bonnet/frock/shawl are other members of the same group (trap), not the group. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17c",
+  "verdict": "pass",
+  "reason": "Agree. destruction ~ ruin; harm is lesser damage, corruption/violence are not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17d",
+  "verdict": "pass",
+  "reason": "Agree. A raccoon is a kind of animal; boar/hound/geese/pheasant are other members, not the group. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17f",
+  "verdict": "pass",
+  "reason": "Agree. globular ~ spherical; 'sphere' is the wrong job, blackish/pulpy/leathery are other shapes or textures. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17h",
+  "verdict": "pass",
+  "reason": "Agree. enforce -> enforcement; violation/sanction/oversight/mandatory are related in topic, none a form of 'enforce'. Gloss right; fine at L3.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17k",
+  "verdict": "pass",
+  "reason": "Agree. adornment ~ decoration; drapery/bodice/apparel/pleat are clothing words, not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17o",
+  "verdict": "pass",
+  "reason": "Agree. pacify ~ placate; reproach/retaliate are near opposites, discontent unrelated. Gloss is the 'win round, make favourable' sense, which is right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17p",
+  "verdict": "pass",
+  "reason": "Agree. nozzle ~ spout; hose is what a nozzle sits on, burner/flue/cam are not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17q",
+  "verdict": "pass",
+  "reason": "Agree. An amphibian is a kind of animal; kangaroo is a member, cetacean/marsupial are sibling groups that do not contain amphibians. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17r",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. omission ~ deletion is a sound pair (leaving something out), and insertion is the opposite, parentheses/contradictory/spoof unrelated. But the gloss 'Any process whereby sounds or words are left out of spoken words or phrases' is the technical speech-sound sense, not the everyday 'something left out/removed' sense a child will apply. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:17t",
+  "verdict": "fix",
+  "reason": "Overturning the double pass on the gloss only. booth ~ stall (a market stall) is right, and van/bazaar/inn/discount are not twins. But the gloss 'A division of a stable or barn accommodating one animal' is the horse-stall sense, the wrong one for booth. Hide the gloss.",
+  "drop": [],
+  "gloss": "hide"
+ },
+ {
+  "unit": "item:17v",
+  "verdict": "pass",
+  "reason": "Agree. heavenly ~ celestial; earthly is the opposite, immortal/eternal describe lasting, not 'of the heavens'. Gloss right; respectful.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17x",
+  "verdict": "pass",
+  "reason": "Agree. terror ~ panic (overwhelming fear); cruelty/fury/agony/anger are other strong states, not twins. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "item:17z",
+  "verdict": "pass",
+  "reason": "Agree. animal ~ creature; wolf/toad are members, mammal is a narrower group, so none is a twin. Gloss right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:0",
+  "verdict": "pass",
+  "reason": "Agree with both passes: big and large are everyday synonyms. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:1",
+  "verdict": "pass",
+  "reason": "Agree with both passes: quick and fast are everyday synonyms. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: begin and start are everyday synonyms. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:3",
+  "verdict": "pass",
+  "reason": "Agree with both passes: shout and yell are everyday synonyms. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:4",
+  "verdict": "pass",
+  "reason": "Agree with both passes: gift and present (noun) are everyday synonyms. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:6",
+  "verdict": "pass",
+  "reason": "Agree with both passes: choose and pick are everyday synonyms. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:7",
+  "verdict": "pass",
+  "reason": "Agree with both passes: close and shut are everyday synonyms. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:same:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: simple and easy are near-synonyms (a simple task is an easy task); fine as a worked example. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:0",
+  "verdict": "pass",
+  "reason": "Agree with both passes: hot/cold are opposite ends of temperature. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:1",
+  "verdict": "pass",
+  "reason": "Agree with both passes: full/empty are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: early/late are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:3",
+  "verdict": "pass",
+  "reason": "Agree with both passes: wet/dry are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:4",
+  "verdict": "pass",
+  "reason": "Agree with both passes: strong/weak are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:5",
+  "verdict": "pass",
+  "reason": "Agree with both passes: open/shut are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:7",
+  "verdict": "pass",
+  "reason": "Agree with both passes: push/pull are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:8",
+  "verdict": "pass",
+  "reason": "Agree with both passes: arrive/leave are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:opposite:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: ancient/modern are opposites. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:0",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a robin is a kind of bird. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a rose is a kind of flower. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:3",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a carrot is a kind of vegetable. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:4",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a salmon is a kind of fish. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:5",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a hammer is a kind of tool. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:6",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a violin is a kind of instrument. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:7",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a truck is a kind of vehicle. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:8",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a circle is a kind of shape. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:kind:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: an ant is a kind of insect. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:0",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a petal is part of a flower. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:1",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a page is part of a book. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a finger is part of a hand. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:3",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a wing is part of a bird. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:4",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a roof is part of a house. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:5",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a fin is part of a fish. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:7",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a sleeve is part of a shirt. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:8",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a yolk is part of an egg. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:part:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a string is part of a guitar. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:1",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a window is made from glass. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a table is typically made from wood; the classic worked example, true as a generic statement. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:3",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a candle is made from wax. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:4",
+  "verdict": "pass",
+  "reason": "Agree with both passes: bread is made from flour. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:5",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a tire is made from rubber. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:6",
+  "verdict": "pass",
+  "reason": "Agree with both passes: cheese is made from milk. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:7",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a brick is made from clay. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:8",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a snowman is made from snow. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:made:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a boot is typically made from leather; true as a generic statement and a standard example. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:0",
+  "verdict": "pass",
+  "reason": "Agree with both passes: scissors are used to cut. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:1",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a pen is used to write. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a broom is used to sweep. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:3",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a shovel is used to dig. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:4",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a key is used to unlock. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:5",
+  "verdict": "pass",
+  "reason": "Agree with both passes: an oven is used to bake. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:6",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a needle is used to sew. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:7",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a ladder is used to climb. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:8",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a scale is used to weigh. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:use:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: a towel is used to dry. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:0",
+  "verdict": "pass",
+  "reason": "Agree with both passes: decide -> decision, verb to action noun. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:1",
+  "verdict": "pass",
+  "reason": "Agree with both passes: brave -> bravery, adjective to quality noun. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: danger -> dangerous, noun to adjective. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:3",
+  "verdict": "pass",
+  "reason": "Agree with both passes: explain -> explanation, verb to action noun. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:5",
+  "verdict": "pass",
+  "reason": "Agree with both passes: joy -> joyful, noun to adjective. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:6",
+  "verdict": "pass",
+  "reason": "Agree with both passes: move -> movement, verb to action noun. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:8",
+  "verdict": "pass",
+  "reason": "Agree with both passes: music -> musical, noun to adjective. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:family:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: enjoy -> enjoyment, verb to action noun. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:0",
+  "verdict": "pass",
+  "reason": "Agree with both passes: hot is warm turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:1",
+  "verdict": "pass",
+  "reason": "Agree with both passes: exhausted is tired turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:2",
+  "verdict": "pass",
+  "reason": "Agree with both passes: furious is angry turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:4",
+  "verdict": "pass",
+  "reason": "Agree with both passes: freezing is cold turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:5",
+  "verdict": "pass",
+  "reason": "Agree with both passes: miserable is sad turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:6",
+  "verdict": "pass",
+  "reason": "Agree with both passes: filthy is dirty turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:7",
+  "verdict": "pass",
+  "reason": "Agree with both passes: soaked is wet turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:8",
+  "verdict": "pass",
+  "reason": "Agree with both passes: ecstatic is happy turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "stem:degree:9",
+  "verdict": "pass",
+  "reason": "Agree with both passes: tiny is small turned up. Plain, safe words; the link is exactly what the example claims.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:same:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear, accurate title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:same:idea",
+  "verdict": "pass",
+  "reason": "Agree. 'Near twins ... almost the same' is honest about synonyms not being identical; examples correct.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:same:bridge",
+  "verdict": "pass",
+  "reason": "Agree. 'means about the same as' matches the hedged idea text.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:opposite:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:opposite:idea",
+  "verdict": "pass",
+  "reason": "Agree. Accurate picture of opposites as two ends of one scale; hot/cold example right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:opposite:bridge",
+  "verdict": "pass",
+  "reason": "Agree. Correct template.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:opposite:spot",
+  "verdict": "pass",
+  "reason": "Agree. Good test; full/empty example right.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:opposite:trap",
+  "verdict": "pass",
+  "reason": "Agree. Glad is a near-synonym of happy, so it is the right example of the near-twin trap.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:kind:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:kind:idea",
+  "verdict": "pass",
+  "reason": "Agree. Robin/bird and oak/tree are correct member-group examples.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:kind:bridge",
+  "verdict": "pass",
+  "reason": "Agree. Correct template.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:kind:spot",
+  "verdict": "pass",
+  "reason": "Agree. Simple, workable test.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:kind:trap",
+  "verdict": "pass",
+  "reason": "Agree. Sibling trap and direction warning are both accurate and clear.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:part:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:part:idea",
+  "verdict": "pass",
+  "reason": "Agree. Petal/flower and page/book are correct part-whole examples.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:part:trap",
+  "verdict": "pass",
+  "reason": "Agree. In everyday speech a flower has a stem, so 'stem is a part too, not the whole' is a fair example of the sibling-part trap.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:made:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:made:idea",
+  "verdict": "pass",
+  "reason": "Agree with both passes, addressing round 1's note: 'A sweater is made from wool' is a generic statement (the classic analogy example), read as 'typically', the same way the made-from stems treat table/wood and boot/leather. Not inaccurate; wording clear.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:made:bridge",
+  "verdict": "pass",
+  "reason": "Agree. Correct template.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:made:spot",
+  "verdict": "pass",
+  "reason": "Agree. 'What would you need to make it? Bread needs flour.' is accurate and usable.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:made:trap",
+  "verdict": "pass",
+  "reason": "Agree. Butter goes with bread but is not what bread is made from; clear distinction.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:use:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:use:idea",
+  "verdict": "pass",
+  "reason": "Agree. Scissors cut, a pen writes, a broom sweeps: accurate.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:use:spot",
+  "verdict": "pass",
+  "reason": "Agree. Workable test; shovel/dig correct.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:who:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:who:idea",
+  "verdict": "pass",
+  "reason": "Agree. Baker and sailor examples are correct.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:who:bridge",
+  "verdict": "pass",
+  "reason": "Agree with both passes. The wording '{B} is a person who {As}.' is correct English provided {As} is the third-person form; round 1's note (teach -> teaches, not 'teachs') is an engine check on the template filler, not a fault in the wording judged here.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:who:spot",
+  "verdict": "pass",
+  "reason": "Agree. Painter example correct.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:who:trap",
+  "verdict": "pass",
+  "reason": "Agree. Bread is what a baker makes, not who bakes: accurate and clear.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:family:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:family:idea",
+  "verdict": "pass",
+  "reason": "Agree. decide/decision, brave/bravery, danger/dangerous are correct and the 'same idea, new job' framing is clear.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:family:bridge",
+  "verdict": "pass",
+  "reason": "Agree. Matches the idea text.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:family:trap",
+  "verdict": "pass",
+  "reason": "Agree. kindly shares the idea of kind/kindness but does a different job (adverb), which is exactly the wrong-job trap; 'same meaning' is used loosely for 'same idea' and does not mislead.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:degree:title",
+  "verdict": "pass",
+  "reason": "Agree. Clear title.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "lesson:degree:idea",
+  "verdict": "fix",
+  "reason": "Overturning the double pass, taking up round 2's note. The text says pairs are 'the same feeling or size, turned up' and then gives warm/hot/scorching, which is temperature, neither a feeling nor a size; the items in this link also turn up weather, loudness, wetness and quality. The opening claim is inaccurate as written. Generalise it and keep the examples.",
+  "drop": [],
+  "gloss": "keep",
+  "fix_text": "Some pairs are the same idea, turned up. Warm turned up is hot. Hot turned up is scorching."
+ },
+ {
+  "unit": "lesson:degree:spot",
+  "verdict": "pass",
+  "reason": "Agree. 'The same thing, only more so' is accurate; tired/exhausted correct.",
+  "drop": [],
+  "gloss": "keep"
+ },
+ {
+  "unit": "card:zeus",
+  "verdict": "pass",
+  "reason": "Agree with both passes. Accurate: Zeus as king of the gods and god of sky and thunder, great temples (Olympia, Athens), and the ancient Olympic Games as a festival in his honour at Olympia. No invented numbers or dates ('thousands of years' is safe for a tradition attested since Homer). Respectful and from the inside, no joke or power stat, and 'stories' is used rather than 'myth' meaning false. Round 2's note on past tense: the card makes a true statement about ancient Greece and does not deny present-day Hellenic worship, so it is not inaccurate.",
+  "drop": [],
+  "gloss": "keep"
+ }
+]

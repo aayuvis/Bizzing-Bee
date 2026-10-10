@@ -1,0 +1,2986 @@
+[
+ {
+  "unit": "item:q4",
+  "kind": "item",
+  "analogy": "simple is to easy as collaboration is to …",
+  "options": [
+   "cooperation",
+   "nonprofit",
+   "diplomacy",
+   "participation",
+   "elective"
+  ]
+ },
+ {
+  "unit": "item:q5",
+  "kind": "item",
+  "analogy": "gift is to present as speck is to …",
+  "options": [
+   "fleck",
+   "orb",
+   "glint",
+   "glimmer"
+  ]
+ },
+ {
+  "unit": "item:q7",
+  "kind": "item",
+  "analogy": "salmon is to fish as cup is to …",
+  "options": [
+   "container",
+   "spoon",
+   "scoop",
+   "bowl",
+   "goblet"
+  ]
+ },
+ {
+  "unit": "item:q8",
+  "kind": "item",
+  "analogy": "shout is to yell as proclaim is to …",
+  "options": [
+   "invoke",
+   "condemn",
+   "accuse",
+   "declare"
+  ]
+ },
+ {
+  "unit": "item:q9",
+  "kind": "item",
+  "analogy": "big is to large as plane is to …",
+  "options": [
+   "perimeter",
+   "airship",
+   "airplane",
+   "meridian"
+  ]
+ },
+ {
+  "unit": "item:qa",
+  "kind": "item",
+  "analogy": "big is to large as expand is to …",
+  "options": [
+   "enlarge",
+   "shrink",
+   "deform",
+   "lengthen"
+  ]
+ },
+ {
+  "unit": "item:qc",
+  "kind": "item",
+  "analogy": "close is to shut as excuse is to …",
+  "options": [
+   "dishonesty",
+   "justification",
+   "credibility",
+   "perjury"
+  ]
+ },
+ {
+  "unit": "item:qd",
+  "kind": "item",
+  "analogy": "simple is to easy as grime is to …",
+  "options": [
+   "silt",
+   "soot",
+   "filth"
+  ]
+ },
+ {
+  "unit": "item:qg",
+  "kind": "item",
+  "analogy": "begin is to start as timetable is to …",
+  "options": [
+   "checklist",
+   "miscalculation",
+   "shutdown",
+   "schedule",
+   "derailment"
+  ]
+ },
+ {
+  "unit": "item:qh",
+  "kind": "item",
+  "analogy": "push is to pull as asleep is to …",
+  "options": [
+   "happy",
+   "calm",
+   "sad",
+   "laugh",
+   "awake"
+  ]
+ },
+ {
+  "unit": "item:qi",
+  "kind": "item",
+  "analogy": "big is to large as stringy is to …",
+  "options": [
+   "fibrous",
+   "rubbery",
+   "pulpy"
+  ]
+ },
+ {
+  "unit": "item:qj",
+  "kind": "item",
+  "analogy": "hammer is to tool as chicory is to …",
+  "options": [
+   "coriander",
+   "quince",
+   "plant",
+   "apricot"
+  ]
+ },
+ {
+  "unit": "item:qk",
+  "kind": "item",
+  "analogy": "close is to shut as trainee is to …",
+  "options": [
+   "enrollment",
+   "registrar",
+   "apprentice",
+   "chairman",
+   "visa"
+  ]
+ },
+ {
+  "unit": "item:qm",
+  "kind": "item",
+  "analogy": "gift is to present as fibrous is to …",
+  "options": [
+   "vascular",
+   "stringy",
+   "connective"
+  ]
+ },
+ {
+  "unit": "item:qo",
+  "kind": "item",
+  "analogy": "begin is to start as hairstyle is to …",
+  "options": [
+   "beret",
+   "blouse",
+   "coiffure",
+   "bodice",
+   "pinafore"
+  ]
+ },
+ {
+  "unit": "item:qp",
+  "kind": "item",
+  "analogy": "dark is to darkness as just is to …",
+  "options": [
+   "end",
+   "letter",
+   "extra",
+   "justice",
+   "plus"
+  ]
+ },
+ {
+  "unit": "item:qq",
+  "kind": "item",
+  "analogy": "big is to large as unable is to …",
+  "options": [
+   "able",
+   "impossible",
+   "capable",
+   "viable",
+   "incapable"
+  ]
+ },
+ {
+  "unit": "item:qs",
+  "kind": "item",
+  "analogy": "close is to shut as igniter is to …",
+  "options": [
+   "combustion",
+   "lighter",
+   "charcoal",
+   "refrigerant"
+  ]
+ },
+ {
+  "unit": "item:qv",
+  "kind": "item",
+  "analogy": "choose is to pick as twig is to …",
+  "options": [
+   "willow",
+   "sprig",
+   "birch",
+   "dandelion",
+   "spruce"
+  ]
+ },
+ {
+  "unit": "item:qw",
+  "kind": "item",
+  "analogy": "begin is to start as dusk is to …",
+  "options": [
+   "cornfield",
+   "bayou",
+   "rustle",
+   "nightfall",
+   "roost"
+  ]
+ },
+ {
+  "unit": "item:qz",
+  "kind": "item",
+  "analogy": "oak is to tree as giraffe is to …",
+  "options": [
+   "animal",
+   "zebra",
+   "feline",
+   "ostrich",
+   "antelope"
+  ]
+ },
+ {
+  "unit": "item:r0",
+  "kind": "item",
+  "analogy": "big is to large as harden is to …",
+  "options": [
+   "leach",
+   "thicken",
+   "solidify"
+  ]
+ },
+ {
+  "unit": "item:r4",
+  "kind": "item",
+  "analogy": "gift is to present as exhibition is to …",
+  "options": [
+   "scenery",
+   "artwork",
+   "show",
+   "gallery",
+   "auction"
+  ]
+ },
+ {
+  "unit": "item:r6",
+  "kind": "item",
+  "analogy": "begin is to start as beg is to …",
+  "options": [
+   "entreat",
+   "grumble",
+   "bully",
+   "shun",
+   "beggar"
+  ]
+ },
+ {
+  "unit": "item:r7",
+  "kind": "item",
+  "analogy": "choose is to pick as dusk is to …",
+  "options": [
+   "lagoon",
+   "meadow",
+   "dawn",
+   "twilight"
+  ]
+ },
+ {
+  "unit": "item:r8",
+  "kind": "item",
+  "analogy": "big is to large as ornament is to …",
+  "options": [
+   "garland",
+   "drapery",
+   "embroidery",
+   "adornment"
+  ]
+ },
+ {
+  "unit": "item:r9",
+  "kind": "item",
+  "analogy": "shout is to yell as penalize is to …",
+  "options": [
+   "punishment",
+   "disqualify",
+   "punish"
+  ]
+ },
+ {
+  "unit": "item:ra",
+  "kind": "item",
+  "analogy": "shout is to yell as food is to …",
+  "options": [
+   "pickle",
+   "sustenance",
+   "vegetarian",
+   "calorie"
+  ]
+ },
+ {
+  "unit": "item:rb",
+  "kind": "item",
+  "analogy": "close is to shut as ancestry is to …",
+  "options": [
+   "lineage",
+   "kinship",
+   "nationality"
+  ]
+ },
+ {
+  "unit": "item:rc",
+  "kind": "item",
+  "analogy": "explain is to explanation as compile is to …",
+  "options": [
+   "glossary",
+   "compilation",
+   "cipher",
+   "reprint",
+   "dictionary"
+  ]
+ },
+ {
+  "unit": "item:re",
+  "kind": "item",
+  "analogy": "simple is to easy as guardian is to …",
+  "options": [
+   "widow",
+   "wife",
+   "protector",
+   "traitor",
+   "captivity"
+  ]
+ },
+ {
+  "unit": "item:rg",
+  "kind": "item",
+  "analogy": "choose is to pick as engine is to …",
+  "options": [
+   "computer",
+   "aircraft",
+   "fuel",
+   "ignition",
+   "motor"
+  ]
+ },
+ {
+  "unit": "item:ri",
+  "kind": "item",
+  "analogy": "shout is to yell as fashionable is to …",
+  "options": [
+   "gaudy",
+   "trendy",
+   "tasteful",
+   "genteel",
+   "courtly"
+  ]
+ },
+ {
+  "unit": "item:rk",
+  "kind": "item",
+  "analogy": "quick is to fast as harvest is to …",
+  "options": [
+   "crop",
+   "corn",
+   "wheat",
+   "sow"
+  ]
+ },
+ {
+  "unit": "item:rl",
+  "kind": "item",
+  "analogy": "gift is to present as meat is to …",
+  "options": [
+   "fry",
+   "lamb",
+   "flesh",
+   "bacon"
+  ]
+ },
+ {
+  "unit": "item:rm",
+  "kind": "item",
+  "analogy": "simple is to easy as expense is to …",
+  "options": [
+   "cost",
+   "tuition",
+   "mortgage",
+   "pension",
+   "donation"
+  ]
+ },
+ {
+  "unit": "item:rn",
+  "kind": "item",
+  "analogy": "move is to movement as agree is to …",
+  "options": [
+   "arrival",
+   "argument",
+   "decision",
+   "agreement",
+   "refusal"
+  ]
+ },
+ {
+  "unit": "item:rp",
+  "kind": "item",
+  "analogy": "big is to large as copy is to …",
+  "options": [
+   "imitator",
+   "dictation",
+   "duplicate",
+   "edition"
+  ]
+ },
+ {
+  "unit": "item:rq",
+  "kind": "item",
+  "analogy": "truck is to vehicle as oat is to …",
+  "options": [
+   "coconut",
+   "grain",
+   "beet",
+   "nutmeg",
+   "simmer"
+  ]
+ },
+ {
+  "unit": "item:rr",
+  "kind": "item",
+  "analogy": "danger is to dangerous as asymmetry is to …",
+  "options": [
+   "dimensional",
+   "geometrical",
+   "asymmetrical"
+  ]
+ },
+ {
+  "unit": "item:rs",
+  "kind": "item",
+  "analogy": "quick is to fast as lack is to …",
+  "options": [
+   "quality",
+   "modesty",
+   "simplicity",
+   "tact",
+   "shortage"
+  ]
+ },
+ {
+  "unit": "item:rt",
+  "kind": "item",
+  "analogy": "gift is to present as commerce is to …",
+  "options": [
+   "consumer",
+   "outlet",
+   "trade",
+   "enterprise",
+   "tariff"
+  ]
+ },
+ {
+  "unit": "item:rw",
+  "kind": "item",
+  "analogy": "choose is to pick as master is to …",
+  "options": [
+   "apprentice",
+   "academy",
+   "virtuoso",
+   "craftsmanship",
+   "laureate"
+  ]
+ },
+ {
+  "unit": "item:ry",
+  "kind": "item",
+  "analogy": "shout is to yell as cookout is to …",
+  "options": [
+   "bread",
+   "brunch",
+   "muffin",
+   "barbecue",
+   "cornbread"
+  ]
+ },
+ {
+  "unit": "item:rz",
+  "kind": "item",
+  "analogy": "close is to shut as privacy is to …",
+  "options": [
+   "seclusion",
+   "reserve",
+   "snug",
+   "homestead",
+   "occupant"
+  ]
+ },
+ {
+  "unit": "item:s1",
+  "kind": "item",
+  "analogy": "close is to shut as rubble is to …",
+  "options": [
+   "landfill",
+   "landslide",
+   "hydrant",
+   "shipwreck",
+   "debris"
+  ]
+ },
+ {
+  "unit": "item:s3",
+  "kind": "item",
+  "analogy": "brave is to bravery as dark is to …",
+  "options": [
+   "twilight",
+   "darkness",
+   "gray",
+   "shadow",
+   "streak"
+  ]
+ },
+ {
+  "unit": "item:s5",
+  "kind": "item",
+  "analogy": "begin is to start as confirmation is to …",
+  "options": [
+   "referral",
+   "verification",
+   "precedent"
+  ]
+ },
+ {
+  "unit": "item:s6",
+  "kind": "item",
+  "analogy": "danger is to dangerous as algebra is to …",
+  "options": [
+   "decimal",
+   "computational",
+   "arithmetic",
+   "algebraic",
+   "determinant"
+  ]
+ },
+ {
+  "unit": "item:s7",
+  "kind": "item",
+  "analogy": "gift is to present as capable is to …",
+  "options": [
+   "ability",
+   "unable",
+   "able",
+   "worthy"
+  ]
+ },
+ {
+  "unit": "item:s8",
+  "kind": "item",
+  "analogy": "quick is to fast as motor is to …",
+  "options": [
+   "vehicle",
+   "engine",
+   "mover",
+   "computer",
+   "pedal"
+  ]
+ },
+ {
+  "unit": "item:s9",
+  "kind": "item",
+  "analogy": "close is to shut as counterfeit is to …",
+  "options": [
+   "copyright",
+   "libel",
+   "forgery",
+   "shoddy",
+   "reprint"
+  ]
+ },
+ {
+  "unit": "item:sc",
+  "kind": "item",
+  "analogy": "big is to large as manure is to …",
+  "options": [
+   "dung",
+   "hay",
+   "leach",
+   "rye",
+   "soybean"
+  ]
+ },
+ {
+  "unit": "item:sd",
+  "kind": "item",
+  "analogy": "truck is to vehicle as sandal is to …",
+  "options": [
+   "sleeve",
+   "sash",
+   "shawl",
+   "shoe"
+  ]
+ },
+ {
+  "unit": "item:se",
+  "kind": "item",
+  "analogy": "begin is to start as guess is to …",
+  "options": [
+   "probable",
+   "solver",
+   "refutation",
+   "supposition"
+  ]
+ },
+ {
+  "unit": "item:sg",
+  "kind": "item",
+  "analogy": "decide is to decision as create is to …",
+  "options": [
+   "creation",
+   "choice",
+   "description",
+   "producer",
+   "imagination"
+  ]
+ },
+ {
+  "unit": "item:sh",
+  "kind": "item",
+  "analogy": "quick is to fast as leftover is to …",
+  "options": [
+   "yogurt",
+   "remainder",
+   "crumb",
+   "compost"
+  ]
+ },
+ {
+  "unit": "item:si",
+  "kind": "item",
+  "analogy": "ant is to insect as sycamore is to …",
+  "options": [
+   "tree",
+   "hazel",
+   "briar"
+  ]
+ },
+ {
+  "unit": "item:sj",
+  "kind": "item",
+  "analogy": "shout is to yell as surroundings is to …",
+  "options": [
+   "comprehension",
+   "threshold",
+   "outlook",
+   "environment",
+   "spontaneity"
+  ]
+ },
+ {
+  "unit": "item:sl",
+  "kind": "item",
+  "analogy": "ant is to insect as legging is to …",
+  "options": [
+   "sling",
+   "footwear",
+   "garment",
+   "overcoat"
+  ]
+ },
+ {
+  "unit": "item:sm",
+  "kind": "item",
+  "analogy": "begin is to start as eagerness is to …",
+  "options": [
+   "patience",
+   "antipathy",
+   "enthusiasm",
+   "awkwardness",
+   "acceptance"
+  ]
+ },
+ {
+  "unit": "item:sn",
+  "kind": "item",
+  "analogy": "simple is to easy as meaning is to …",
+  "options": [
+   "significant",
+   "singular",
+   "pronoun",
+   "tense",
+   "significance"
+  ]
+ },
+ {
+  "unit": "item:so",
+  "kind": "item",
+  "analogy": "gift is to present as announcement is to …",
+  "options": [
+   "presenter",
+   "declaration",
+   "subscriber",
+   "reporter"
+  ]
+ },
+ {
+  "unit": "item:sr",
+  "kind": "item",
+  "analogy": "shout is to yell as money is to …",
+  "options": [
+   "currency",
+   "investment",
+   "dollar",
+   "pay",
+   "cage"
+  ]
+ },
+ {
+  "unit": "item:ss",
+  "kind": "item",
+  "analogy": "big is to large as contradict is to …",
+  "options": [
+   "deny",
+   "testify",
+   "alibi",
+   "assert"
+  ]
+ },
+ {
+  "unit": "item:st",
+  "kind": "item",
+  "analogy": "choose is to pick as headland is to …",
+  "options": [
+   "crag",
+   "lagoon",
+   "cape",
+   "cove",
+   "dune"
+  ]
+ },
+ {
+  "unit": "item:su",
+  "kind": "item",
+  "analogy": "begin is to start as dinner is to …",
+  "options": [
+   "diner",
+   "food",
+   "supper",
+   "guest",
+   "bread"
+  ]
+ },
+ {
+  "unit": "item:sv",
+  "kind": "item",
+  "analogy": "simple is to easy as advice is to …",
+  "options": [
+   "guidance",
+   "consultation",
+   "perk",
+   "mentor",
+   "favour"
+  ]
+ },
+ {
+  "unit": "item:sx",
+  "kind": "item",
+  "analogy": "quick is to fast as praise is to …",
+  "options": [
+   "dedication",
+   "reviewer",
+   "acclaim"
+  ]
+ },
+ {
+  "unit": "item:sy",
+  "kind": "item",
+  "analogy": "close is to shut as allocate is to …",
+  "options": [
+   "repaid",
+   "reassign",
+   "deduct",
+   "assign",
+   "assignment"
+  ]
+ },
+ {
+  "unit": "item:t2",
+  "kind": "item",
+  "analogy": "big is to large as brooch is to …",
+  "options": [
+   "pendant",
+   "pin",
+   "emerald",
+   "necklace",
+   "sequin"
+  ]
+ },
+ {
+  "unit": "item:t5",
+  "kind": "item",
+  "analogy": "choose is to pick as unsafe is to …",
+  "options": [
+   "dangerous",
+   "unfit",
+   "makeshift",
+   "convenient",
+   "danger"
+  ]
+ },
+ {
+  "unit": "item:t6",
+  "kind": "item",
+  "analogy": "gift is to present as plea is to …",
+  "options": [
+   "redemption",
+   "appeal",
+   "eviction",
+   "redress",
+   "forgiveness"
+  ]
+ },
+ {
+  "unit": "item:t8",
+  "kind": "item",
+  "analogy": "close is to shut as selection is to …",
+  "options": [
+   "reprint",
+   "choice",
+   "preview",
+   "font",
+   "dissertation"
+  ]
+ },
+ {
+  "unit": "item:t9",
+  "kind": "item",
+  "analogy": "quick is to fast as try is to …",
+  "options": [
+   "want",
+   "dare",
+   "attempt",
+   "question"
+  ]
+ },
+ {
+  "unit": "item:tb",
+  "kind": "item",
+  "analogy": "big is to large as cyclist is to …",
+  "options": [
+   "motorbike",
+   "cruise",
+   "walker",
+   "bicyclist",
+   "pothole"
+  ]
+ },
+ {
+  "unit": "item:tc",
+  "kind": "item",
+  "analogy": "strong is to weak as old is to …",
+  "options": [
+   "ancient",
+   "guilty",
+   "brave",
+   "cowardice",
+   "new"
+  ]
+ },
+ {
+  "unit": "item:te",
+  "kind": "item",
+  "analogy": "choose is to pick as disagreement is to …",
+  "options": [
+   "consensus",
+   "reconciliation",
+   "dispute",
+   "mediation"
+  ]
+ },
+ {
+  "unit": "item:th",
+  "kind": "item",
+  "analogy": "close is to shut as habit is to …",
+  "options": [
+   "outlook",
+   "routine",
+   "needy",
+   "upbringing",
+   "attitude"
+  ]
+ },
+ {
+  "unit": "item:to",
+  "kind": "item",
+  "analogy": "truck is to vehicle as otter is to …",
+  "options": [
+   "elk",
+   "mammal",
+   "trout",
+   "wildcat"
+  ]
+ },
+ {
+  "unit": "item:tp",
+  "kind": "item",
+  "analogy": "close is to shut as maze is to …",
+  "options": [
+   "spaceship",
+   "subway",
+   "labyrinth"
+  ]
+ },
+ {
+  "unit": "item:ts",
+  "kind": "item",
+  "analogy": "shout is to yell as woodworking is to …",
+  "options": [
+   "workshop",
+   "hone",
+   "carpentry",
+   "metalwork",
+   "engraver"
+  ]
+ },
+ {
+  "unit": "item:tt",
+  "kind": "item",
+  "analogy": "dark is to darkness as safe is to …",
+  "options": [
+   "safety",
+   "freedom",
+   "vault",
+   "bravery",
+   "patience"
+  ]
+ },
+ {
+  "unit": "item:tx",
+  "kind": "item",
+  "analogy": "close is to shut as agile is to …",
+  "options": [
+   "nimble",
+   "nocturnal",
+   "stocky",
+   "arboreal",
+   "predatory"
+  ]
+ },
+ {
+  "unit": "item:ty",
+  "kind": "item",
+  "analogy": "quick is to fast as blizzard is to …",
+  "options": [
+   "torrent",
+   "snowstorm",
+   "thunderstorm",
+   "rescuer",
+   "shiver"
+  ]
+ },
+ {
+  "unit": "item:u0",
+  "kind": "item",
+  "analogy": "hammer is to tool as guitar is to …",
+  "options": [
+   "instrumental",
+   "fret",
+   "instrument",
+   "keyboard"
+  ]
+ },
+ {
+  "unit": "item:u1",
+  "kind": "item",
+  "analogy": "violin is to instrument as whetstone is to …",
+  "options": [
+   "nick",
+   "stony",
+   "stone",
+   "workbench",
+   "swab"
+  ]
+ },
+ {
+  "unit": "item:u3",
+  "kind": "item",
+  "analogy": "begin is to start as insufficient is to …",
+  "options": [
+   "surplus",
+   "substantial",
+   "inadequate",
+   "adequate",
+   "sufficient"
+  ]
+ },
+ {
+  "unit": "item:u5",
+  "kind": "item",
+  "analogy": "big is to large as lose is to …",
+  "options": [
+   "diminish",
+   "win",
+   "misplace",
+   "lost",
+   "retain"
+  ]
+ },
+ {
+  "unit": "item:u6",
+  "kind": "item",
+  "analogy": "quick is to fast as pig is to …",
+  "options": [
+   "plump",
+   "hog",
+   "hen",
+   "beaver",
+   "pigeon"
+  ]
+ },
+ {
+  "unit": "item:u7",
+  "kind": "item",
+  "analogy": "ant is to insect as triangle is to …",
+  "options": [
+   "shape",
+   "vertex",
+   "geometry",
+   "hexagon",
+   "conic"
+  ]
+ },
+ {
+  "unit": "item:u9",
+  "kind": "item",
+  "analogy": "gift is to present as surplus is to …",
+  "options": [
+   "excess",
+   "investment",
+   "export",
+   "revenue",
+   "premium"
+  ]
+ },
+ {
+  "unit": "item:ua",
+  "kind": "item",
+  "analogy": "gift is to present as exhaustion is to …",
+  "options": [
+   "dizziness",
+   "laziness",
+   "boredom",
+   "fatigue",
+   "fortitude"
+  ]
+ },
+ {
+  "unit": "item:ub",
+  "kind": "item",
+  "analogy": "choose is to pick as equal is to …",
+  "options": [
+   "liter",
+   "equivalent",
+   "newton",
+   "metric"
+  ]
+ },
+ {
+  "unit": "item:uc",
+  "kind": "item",
+  "analogy": "begin is to start as bellow is to …",
+  "options": [
+   "roar",
+   "husky",
+   "creak",
+   "whistle",
+   "clang"
+  ]
+ },
+ {
+  "unit": "item:ud",
+  "kind": "item",
+  "analogy": "shout is to yell as mire is to …",
+  "options": [
+   "grime",
+   "bog",
+   "trample",
+   "rubble"
+  ]
+ },
+ {
+  "unit": "item:ue",
+  "kind": "item",
+  "analogy": "big is to large as reasonable is to …",
+  "options": [
+   "unfair",
+   "sensible",
+   "truthful",
+   "sufficient",
+   "trustworthy"
+  ]
+ },
+ {
+  "unit": "item:uf",
+  "kind": "item",
+  "analogy": "quick is to fast as pollute is to …",
+  "options": [
+   "contaminate",
+   "percolate",
+   "grime",
+   "overburden"
+  ]
+ },
+ {
+  "unit": "item:ug",
+  "kind": "item",
+  "analogy": "close is to shut as revising is to …",
+  "options": [
+   "compilation",
+   "specification",
+   "documentation",
+   "rewriting",
+   "evaluation"
+  ]
+ },
+ {
+  "unit": "item:uh",
+  "kind": "item",
+  "analogy": "simple is to easy as trap is to …",
+  "options": [
+   "zipper",
+   "escape",
+   "snare",
+   "pry",
+   "bunker"
+  ]
+ },
+ {
+  "unit": "item:ui",
+  "kind": "item",
+  "analogy": "gift is to present as sorrow is to …",
+  "options": [
+   "anger",
+   "fury",
+   "sadness",
+   "joy"
+  ]
+ },
+ {
+  "unit": "item:uj",
+  "kind": "item",
+  "analogy": "choose is to pick as batsman is to …",
+  "options": [
+   "shortstop",
+   "batter",
+   "quarterback",
+   "acrobat",
+   "athlete"
+  ]
+ },
+ {
+  "unit": "item:uk",
+  "kind": "item",
+  "analogy": "begin is to start as systematic is to …",
+  "options": [
+   "method",
+   "conceptual",
+   "methodical",
+   "sociological",
+   "computational"
+  ]
+ },
+ {
+  "unit": "item:un",
+  "kind": "item",
+  "analogy": "oak is to tree as hare is to …",
+  "options": [
+   "weasel",
+   "wildcat",
+   "mammal",
+   "hound",
+   "tiger"
+  ]
+ },
+ {
+  "unit": "item:uo",
+  "kind": "item",
+  "analogy": "close is to shut as mutter is to …",
+  "options": [
+   "grin",
+   "mumble",
+   "smirk",
+   "shrug",
+   "wink"
+  ]
+ },
+ {
+  "unit": "item:up",
+  "kind": "item",
+  "analogy": "full is to empty as float is to …",
+  "options": [
+   "sink",
+   "cloudy",
+   "shallow",
+   "stormy",
+   "ascend"
+  ]
+ },
+ {
+  "unit": "item:uq",
+  "kind": "item",
+  "analogy": "gift is to present as rejection is to …",
+  "options": [
+   "involvement",
+   "refusal",
+   "conviction"
+  ]
+ },
+ {
+  "unit": "item:ut",
+  "kind": "item",
+  "analogy": "shout is to yell as crease is to …",
+  "options": [
+   "thumbnail",
+   "fray",
+   "matt",
+   "wrinkle",
+   "sandpaper"
+  ]
+ },
+ {
+  "unit": "item:uu",
+  "kind": "item",
+  "analogy": "begin is to start as select is to …",
+  "options": [
+   "choose",
+   "chosen",
+   "qualify",
+   "choice",
+   "evaluate"
+  ]
+ },
+ {
+  "unit": "item:uv",
+  "kind": "item",
+  "analogy": "quick is to fast as tracking is to …",
+  "options": [
+   "identification",
+   "conservation",
+   "fingerprint",
+   "trailing",
+   "pinpoint"
+  ]
+ },
+ {
+  "unit": "item:ux",
+  "kind": "item",
+  "analogy": "carrot is to vegetable as pie is to …",
+  "options": [
+   "burger",
+   "seafood",
+   "dish",
+   "bacon",
+   "steak"
+  ]
+ },
+ {
+  "unit": "item:uz",
+  "kind": "item",
+  "analogy": "choose is to pick as weight is to …",
+  "options": [
+   "kilogram",
+   "heaviness",
+   "frail",
+   "volume",
+   "viscosity"
+  ]
+ },
+ {
+  "unit": "item:v0",
+  "kind": "item",
+  "analogy": "gift is to present as boggy is to …",
+  "options": [
+   "sandy",
+   "mossy",
+   "grassy",
+   "upland",
+   "marshy"
+  ]
+ },
+ {
+  "unit": "item:v1",
+  "kind": "item",
+  "analogy": "wet is to dry as finish is to …",
+  "options": [
+   "winter",
+   "hard",
+   "close",
+   "begin",
+   "smooth"
+  ]
+ },
+ {
+  "unit": "item:v3",
+  "kind": "item",
+  "analogy": "full is to empty as top is to …",
+  "options": [
+   "bottom",
+   "apex",
+   "head",
+   "ascend",
+   "taper"
+  ]
+ },
+ {
+  "unit": "item:v4",
+  "kind": "item",
+  "analogy": "big is to large as global is to …",
+  "options": [
+   "economic",
+   "national",
+   "worldwide"
+  ]
+ },
+ {
+  "unit": "item:v5",
+  "kind": "item",
+  "analogy": "music is to musical as courage is to …",
+  "options": [
+   "unwavering",
+   "heroic",
+   "courageous"
+  ]
+ },
+ {
+  "unit": "item:v6",
+  "kind": "item",
+  "analogy": "circle is to shape as bagpipe is to …",
+  "options": [
+   "instrumental",
+   "drummer",
+   "flamenco",
+   "instrument",
+   "polka"
+  ]
+ },
+ {
+  "unit": "item:v7",
+  "kind": "item",
+  "analogy": "quick is to fast as flexible is to …",
+  "options": [
+   "thinner",
+   "stiff",
+   "adapt",
+   "rigid",
+   "adaptable"
+  ]
+ },
+ {
+  "unit": "item:vb",
+  "kind": "item",
+  "analogy": "begin is to start as customize is to …",
+  "options": [
+   "personalize",
+   "covet",
+   "optimize",
+   "optimise",
+   "recalculate"
+  ]
+ },
+ {
+  "unit": "item:vc",
+  "kind": "item",
+  "analogy": "choose is to pick as fissure is to …",
+  "options": [
+   "cavern",
+   "crevice",
+   "magma"
+  ]
+ },
+ {
+  "unit": "item:vd",
+  "kind": "item",
+  "analogy": "big is to large as pamphlet is to …",
+  "options": [
+   "allusion",
+   "advisory",
+   "brochure",
+   "presenter",
+   "journalist"
+  ]
+ },
+ {
+  "unit": "item:ve",
+  "kind": "item",
+  "analogy": "shout is to yell as trailing is to …",
+  "options": [
+   "heather",
+   "moorland",
+   "holly",
+   "daisy",
+   "tracking"
+  ]
+ },
+ {
+  "unit": "item:vf",
+  "kind": "item",
+  "analogy": "rose is to flower as cuckoo is to …",
+  "options": [
+   "thrush",
+   "bird",
+   "kangaroo",
+   "ferret"
+  ]
+ },
+ {
+  "unit": "item:vh",
+  "kind": "item",
+  "analogy": "gift is to present as lane is to …",
+  "options": [
+   "pedestrian",
+   "sidewalk",
+   "alley",
+   "cruise",
+   "bike"
+  ]
+ },
+ {
+  "unit": "item:vi",
+  "kind": "item",
+  "analogy": "sleeve is to shirt as keyboard is to …",
+  "options": [
+   "tape",
+   "fret",
+   "computer"
+  ]
+ },
+ {
+  "unit": "item:vj",
+  "kind": "item",
+  "analogy": "begin is to start as reduction is to …",
+  "options": [
+   "elimination",
+   "decrease",
+   "minimum",
+   "reversal"
+  ]
+ },
+ {
+  "unit": "item:vk",
+  "kind": "item",
+  "analogy": "choose is to pick as diary is to …",
+  "options": [
+   "reminder",
+   "journal",
+   "biography",
+   "revelation",
+   "caption"
+  ]
+ },
+ {
+  "unit": "item:vl",
+  "kind": "item",
+  "analogy": "big is to large as receptacle is to …",
+  "options": [
+   "storage",
+   "container",
+   "cupboard",
+   "occupant"
+  ]
+ },
+ {
+  "unit": "item:vm",
+  "kind": "item",
+  "analogy": "shout is to yell as unaware is to …",
+  "options": [
+   "hopeless",
+   "pessimistic",
+   "oblivious",
+   "smarter"
+  ]
+ },
+ {
+  "unit": "item:vn",
+  "kind": "item",
+  "analogy": "close is to shut as aqua is to …",
+  "options": [
+   "sluice",
+   "cyan",
+   "amber",
+   "littoral"
+  ]
+ },
+ {
+  "unit": "item:vo",
+  "kind": "item",
+  "analogy": "quick is to fast as downpour is to …",
+  "options": [
+   "rainstorm",
+   "snowfall",
+   "blizzard",
+   "trample",
+   "snowstorm"
+  ]
+ },
+ {
+  "unit": "item:vq",
+  "kind": "item",
+  "analogy": "simple is to easy as foundation is to …",
+  "options": [
+   "exterior",
+   "groundwork",
+   "concrete"
+  ]
+ },
+ {
+  "unit": "item:vw",
+  "kind": "item",
+  "analogy": "quick is to fast as constriction is to …",
+  "options": [
+   "dilation",
+   "narrowing",
+   "coronary"
+  ]
+ },
+ {
+  "unit": "item:vx",
+  "kind": "item",
+  "analogy": "gift is to present as gruel is to …",
+  "options": [
+   "porridge",
+   "marinade",
+   "omelet",
+   "barbecue",
+   "coriander"
+  ]
+ },
+ {
+  "unit": "item:vy",
+  "kind": "item",
+  "analogy": "simple is to easy as amaze is to …",
+  "options": [
+   "astonish",
+   "wept",
+   "gasp"
+  ]
+ },
+ {
+  "unit": "item:w0",
+  "kind": "item",
+  "analogy": "choose is to pick as medley is to …",
+  "options": [
+   "potpourri",
+   "haricot",
+   "turnover"
+  ]
+ },
+ {
+  "unit": "item:w2",
+  "kind": "item",
+  "analogy": "simple is to easy as inclination is to …",
+  "options": [
+   "absurdity",
+   "tendency",
+   "reconciliation",
+   "acceptance"
+  ]
+ },
+ {
+  "unit": "item:w3",
+  "kind": "item",
+  "analogy": "gift is to present as fluttering is to …",
+  "options": [
+   "cheetah",
+   "mane",
+   "seagull",
+   "flapping"
+  ]
+ },
+ {
+  "unit": "item:w4",
+  "kind": "item",
+  "analogy": "quick is to fast as cast is to …",
+  "options": [
+   "backdrop",
+   "shadow",
+   "spotlight",
+   "troupe",
+   "hex"
+  ]
+ },
+ {
+  "unit": "item:w5",
+  "kind": "item",
+  "analogy": "close is to shut as mother is to …",
+  "options": [
+   "baby",
+   "sister",
+   "husband",
+   "mom",
+   "father"
+  ]
+ },
+ {
+  "unit": "item:w6",
+  "kind": "item",
+  "analogy": "shout is to yell as winner is to …",
+  "options": [
+   "champion",
+   "hockey",
+   "tennis",
+   "golfer"
+  ]
+ },
+ {
+  "unit": "item:w7",
+  "kind": "item",
+  "analogy": "big is to large as skill is to …",
+  "options": [
+   "profession",
+   "discipline",
+   "adept",
+   "expertise"
+  ]
+ },
+ {
+  "unit": "item:w9",
+  "kind": "item",
+  "analogy": "brave is to bravery as wide is to …",
+  "options": [
+   "width",
+   "darkness",
+   "depth",
+   "length",
+   "pride"
+  ]
+ },
+ {
+  "unit": "item:wa",
+  "kind": "item",
+  "analogy": "begin is to start as vine is to …",
+  "options": [
+   "shrub",
+   "climber",
+   "annual",
+   "bush",
+   "fern"
+  ]
+ },
+ {
+  "unit": "item:wb",
+  "kind": "item",
+  "analogy": "simple is to easy as factory is to …",
+  "options": [
+   "shipment",
+   "mill",
+   "annual",
+   "worker"
+  ]
+ },
+ {
+  "unit": "item:wc",
+  "kind": "item",
+  "analogy": "gift is to present as telephone is to …",
+  "options": [
+   "wireless",
+   "transmission",
+   "phone",
+   "receiver",
+   "user"
+  ]
+ },
+ {
+  "unit": "item:wd",
+  "kind": "item",
+  "analogy": "open is to shut as harmless is to …",
+  "options": [
+   "benign",
+   "fatal",
+   "harmful",
+   "unlikely"
+  ]
+ },
+ {
+  "unit": "item:we",
+  "kind": "item",
+  "analogy": "close is to shut as disruption is to …",
+  "options": [
+   "disturbance",
+   "depletion",
+   "impediment"
+  ]
+ },
+ {
+  "unit": "item:wg",
+  "kind": "item",
+  "analogy": "big is to large as righteous is to …",
+  "options": [
+   "diabolical",
+   "stoic",
+   "sinful",
+   "idealistic",
+   "virtuous"
+  ]
+ },
+ {
+  "unit": "item:wh",
+  "kind": "item",
+  "analogy": "choose is to pick as street is to …",
+  "options": [
+   "town",
+   "road",
+   "park",
+   "downtown"
+  ]
+ },
+ {
+  "unit": "item:wi",
+  "kind": "item",
+  "analogy": "move is to movement as certify is to …",
+  "options": [
+   "applicant",
+   "confirmation",
+   "publisher",
+   "subscription",
+   "certification"
+  ]
+ },
+ {
+  "unit": "item:wj",
+  "kind": "item",
+  "analogy": "simple is to easy as engrave is to …",
+  "options": [
+   "etch",
+   "stencil",
+   "inlay",
+   "brooch"
+  ]
+ },
+ {
+  "unit": "item:wk",
+  "kind": "item",
+  "analogy": "gift is to present as accessible is to …",
+  "options": [
+   "available",
+   "virtual",
+   "impersonal"
+  ]
+ },
+ {
+  "unit": "item:wm",
+  "kind": "item",
+  "analogy": "close is to shut as billow is to …",
+  "options": [
+   "ripple",
+   "skyrocket",
+   "trickle",
+   "swell",
+   "ember"
+  ]
+ },
+ {
+  "unit": "item:wq",
+  "kind": "item",
+  "analogy": "begin is to start as screech is to …",
+  "options": [
+   "squeal",
+   "growl",
+   "hoot",
+   "honk"
+  ]
+ },
+ {
+  "unit": "item:wr",
+  "kind": "item",
+  "analogy": "simple is to easy as stomach is to …",
+  "options": [
+   "digestion",
+   "lung",
+   "belly",
+   "ulcer",
+   "bladder"
+  ]
+ },
+ {
+  "unit": "item:ws",
+  "kind": "item",
+  "analogy": "gift is to present as motorist is to …",
+  "options": [
+   "streetcar",
+   "driver",
+   "taxicab",
+   "scooter"
+  ]
+ },
+ {
+  "unit": "item:wt",
+  "kind": "item",
+  "analogy": "quick is to fast as puzzle is to …",
+  "options": [
+   "clue",
+   "theorem",
+   "riddle",
+   "combo",
+   "solver"
+  ]
+ },
+ {
+  "unit": "item:ww",
+  "kind": "item",
+  "analogy": "big is to large as repay is to …",
+  "options": [
+   "mortgage",
+   "resent",
+   "reimburse",
+   "expend"
+  ]
+ },
+ {
+  "unit": "item:wx",
+  "kind": "item",
+  "analogy": "choose is to pick as minstrel is to …",
+  "options": [
+   "duet",
+   "columnist",
+   "tango",
+   "bard"
+  ]
+ },
+ {
+  "unit": "item:wy",
+  "kind": "item",
+  "analogy": "brave is to bravery as capable is to …",
+  "options": [
+   "worthy",
+   "state",
+   "render",
+   "capability"
+  ]
+ },
+ {
+  "unit": "item:x0",
+  "kind": "item",
+  "analogy": "explain is to explanation as move is to …",
+  "options": [
+   "decision",
+   "imagination",
+   "halt",
+   "movement",
+   "arrival"
+  ]
+ },
+ {
+  "unit": "item:x3",
+  "kind": "item",
+  "analogy": "simple is to easy as estimate is to …",
+  "options": [
+   "probability",
+   "guess",
+   "percentage",
+   "average"
+  ]
+ },
+ {
+  "unit": "item:x4",
+  "kind": "item",
+  "analogy": "close is to shut as gritty is to …",
+  "options": [
+   "briny",
+   "soapy",
+   "crumbly",
+   "grainy",
+   "chunky"
+  ]
+ },
+ {
+  "unit": "item:x5",
+  "kind": "item",
+  "analogy": "open is to shut as tight is to …",
+  "options": [
+   "narrow",
+   "expand",
+   "loose",
+   "fast",
+   "pull"
+  ]
+ },
+ {
+  "unit": "item:x6",
+  "kind": "item",
+  "analogy": "big is to large as leaping is to …",
+  "options": [
+   "trot",
+   "twirl",
+   "jumping",
+   "swoop",
+   "dove"
+  ]
+ },
+ {
+  "unit": "item:x7",
+  "kind": "item",
+  "analogy": "circle is to shape as xylophone is to …",
+  "options": [
+   "instrument",
+   "fret",
+   "strum",
+   "mouthpiece",
+   "instrumental"
+  ]
+ },
+ {
+  "unit": "item:x8",
+  "kind": "item",
+  "analogy": "begin is to start as victory is to …",
+  "options": [
+   "bravery",
+   "won",
+   "betrayal",
+   "defeat",
+   "triumph"
+  ]
+ },
+ {
+  "unit": "item:x9",
+  "kind": "item",
+  "analogy": "robin is to bird as butterfly is to …",
+  "options": [
+   "daisy",
+   "peacock",
+   "insect",
+   "eagle",
+   "orb"
+  ]
+ },
+ {
+  "unit": "item:xc",
+  "kind": "item",
+  "analogy": "simple is to easy as cache is to …",
+  "options": [
+   "hoard",
+   "retrieval",
+   "encryption"
+  ]
+ },
+ {
+  "unit": "item:xd",
+  "kind": "item",
+  "analogy": "close is to shut as price is to …",
+  "options": [
+   "cost",
+   "investment",
+   "premium",
+   "salary",
+   "buyer"
+  ]
+ },
+ {
+  "unit": "item:xe",
+  "kind": "item",
+  "analogy": "quick is to fast as gorge is to …",
+  "options": [
+   "rowboat",
+   "ravine",
+   "trough",
+   "lagoon",
+   "trickle"
+  ]
+ },
+ {
+  "unit": "item:xf",
+  "kind": "item",
+  "analogy": "big is to large as amuse is to …",
+  "options": [
+   "jest",
+   "entertain",
+   "hoax",
+   "parody"
+  ]
+ },
+ {
+  "unit": "item:xg",
+  "kind": "item",
+  "analogy": "shout is to yell as fleck is to …",
+  "options": [
+   "topaz",
+   "amethyst",
+   "speck"
+  ]
+ },
+ {
+  "unit": "item:xk",
+  "kind": "item",
+  "analogy": "simple is to easy as cooling is to …",
+  "options": [
+   "evaporation",
+   "chilling",
+   "freeze",
+   "vapour",
+   "condensation"
+  ]
+ },
+ {
+  "unit": "item:xm",
+  "kind": "item",
+  "analogy": "quick is to fast as answer is to …",
+  "options": [
+   "apology",
+   "guess",
+   "verdict",
+   "response",
+   "refusal"
+  ]
+ },
+ {
+  "unit": "item:xn",
+  "kind": "item",
+  "analogy": "big is to large as underside is to …",
+  "options": [
+   "thorax",
+   "forewing",
+   "pincer",
+   "operculum",
+   "bottom"
+  ]
+ },
+ {
+  "unit": "item:xo",
+  "kind": "item",
+  "analogy": "shout is to yell as derision is to …",
+  "options": [
+   "mockery",
+   "jealousy",
+   "indignation"
+  ]
+ },
+ {
+  "unit": "item:xp",
+  "kind": "item",
+  "analogy": "begin is to start as pupil is to …",
+  "options": [
+   "iris",
+   "colon",
+   "eye",
+   "student"
+  ]
+ },
+ {
+  "unit": "item:xq",
+  "kind": "item",
+  "analogy": "choose is to pick as debris is to …",
+  "options": [
+   "hydrant",
+   "rainwater",
+   "smog",
+   "rubble",
+   "silt"
+  ]
+ },
+ {
+  "unit": "item:xr",
+  "kind": "item",
+  "analogy": "gift is to present as conservation is to …",
+  "options": [
+   "preservation",
+   "habitat",
+   "cleanup",
+   "wetland",
+   "tourism"
+  ]
+ },
+ {
+  "unit": "item:xt",
+  "kind": "item",
+  "analogy": "close is to shut as hairdo is to …",
+  "options": [
+   "cabochon",
+   "tutu",
+   "coiffure",
+   "lacework",
+   "frizz"
+  ]
+ },
+ {
+  "unit": "item:xx",
+  "kind": "item",
+  "analogy": "begin is to start as stumble is to …",
+  "options": [
+   "jog",
+   "wink",
+   "stagger",
+   "wow",
+   "flop"
+  ]
+ },
+ {
+  "unit": "item:xy",
+  "kind": "item",
+  "analogy": "choose is to pick as deter is to …",
+  "options": [
+   "fend",
+   "discourage",
+   "entrap"
+  ]
+ },
+ {
+  "unit": "item:xz",
+  "kind": "item",
+  "analogy": "gift is to present as posture is to …",
+  "options": [
+   "upright",
+   "stature",
+   "flexibility",
+   "stance",
+   "stoop"
+  ]
+ },
+ {
+  "unit": "item:y1",
+  "kind": "item",
+  "analogy": "big is to large as uncovering is to …",
+  "options": [
+   "eyewitness",
+   "forgery",
+   "vandal",
+   "revealing",
+   "legacy"
+  ]
+ },
+ {
+  "unit": "item:y2",
+  "kind": "item",
+  "analogy": "dark is to darkness as false is to …",
+  "options": [
+   "flaw",
+   "falsehood",
+   "true",
+   "fake"
+  ]
+ },
+ {
+  "unit": "item:y4",
+  "kind": "item",
+  "analogy": "simple is to easy as affection is to …",
+  "options": [
+   "admiration",
+   "gratitude",
+   "fondness",
+   "goodwill",
+   "compassion"
+  ]
+ },
+ {
+  "unit": "item:y6",
+  "kind": "item",
+  "analogy": "truck is to vehicle as sardine is to …",
+  "options": [
+   "fish",
+   "squid",
+   "lobster",
+   "saltwater",
+   "abalone"
+  ]
+ },
+ {
+  "unit": "item:y7",
+  "kind": "item",
+  "analogy": "begin is to start as increase is to …",
+  "options": [
+   "insulin",
+   "efficiency",
+   "gain",
+   "reduction"
+  ]
+ },
+ {
+  "unit": "item:y8",
+  "kind": "item",
+  "analogy": "shout is to yell as build is to …",
+  "options": [
+   "prop",
+   "physique",
+   "foundation",
+   "prototype",
+   "framework"
+  ]
+ },
+ {
+  "unit": "item:y9",
+  "kind": "item",
+  "analogy": "music is to musical as youth is to …",
+  "options": [
+   "beloved",
+   "maiden",
+   "juvenile",
+   "adolescent",
+   "youthful"
+  ]
+ },
+ {
+  "unit": "item:ya",
+  "kind": "item",
+  "analogy": "big is to large as luggage is to …",
+  "options": [
+   "fare",
+   "van",
+   "baggage",
+   "freight",
+   "wallet"
+  ]
+ },
+ {
+  "unit": "item:yd",
+  "kind": "item",
+  "analogy": "simple is to easy as basement is to …",
+  "options": [
+   "hydrant",
+   "bathroom",
+   "cellar",
+   "bathtub",
+   "attic"
+  ]
+ },
+ {
+  "unit": "item:ye",
+  "kind": "item",
+  "analogy": "gift is to present as revulsion is to …",
+  "options": [
+   "disgust",
+   "acceptance",
+   "harassment",
+   "indignation",
+   "exasperation"
+  ]
+ },
+ {
+  "unit": "item:yf",
+  "kind": "item",
+  "analogy": "choose is to pick as disbelief is to …",
+  "options": [
+   "anticipation",
+   "wrath",
+   "jealousy",
+   "skepticism",
+   "doom"
+  ]
+ },
+ {
+  "unit": "item:yh",
+  "kind": "item",
+  "analogy": "shout is to yell as grieve is to …",
+  "options": [
+   "comforted",
+   "solace",
+   "repent",
+   "cherish",
+   "mourn"
+  ]
+ },
+ {
+  "unit": "item:yj",
+  "kind": "item",
+  "analogy": "quick is to fast as series is to …",
+  "options": [
+   "booklet",
+   "narration",
+   "trio",
+   "sequence",
+   "motif"
+  ]
+ },
+ {
+  "unit": "item:yk",
+  "kind": "item",
+  "analogy": "close is to shut as attribute is to …",
+  "options": [
+   "masculinity",
+   "masculine",
+   "notion",
+   "goodness",
+   "trait"
+  ]
+ },
+ {
+  "unit": "item:yl",
+  "kind": "item",
+  "analogy": "simple is to easy as fluffy is to …",
+  "options": [
+   "downy",
+   "curly",
+   "lacy",
+   "velvety",
+   "down"
+  ]
+ },
+ {
+  "unit": "item:yn",
+  "kind": "item",
+  "analogy": "choose is to pick as knowledge is to …",
+  "options": [
+   "ethic",
+   "aptitude",
+   "mystic",
+   "awareness",
+   "metaphysics"
+  ]
+ },
+ {
+  "unit": "item:yo",
+  "kind": "item",
+  "analogy": "begin is to start as belligerence is to …",
+  "options": [
+   "snub",
+   "aggression",
+   "abhorrence",
+   "malice",
+   "retaliation"
+  ]
+ },
+ {
+  "unit": "item:yp",
+  "kind": "item",
+  "analogy": "ant is to insect as fox is to …",
+  "options": [
+   "rabbit",
+   "deer",
+   "leopard",
+   "mammal",
+   "hound"
+  ]
+ },
+ {
+  "unit": "item:yq",
+  "kind": "item",
+  "analogy": "big is to large as appraisal is to …",
+  "options": [
+   "depreciation",
+   "assessment",
+   "salary",
+   "shareholder",
+   "sufficiency"
+  ]
+ },
+ {
+  "unit": "item:yr",
+  "kind": "item",
+  "analogy": "quick is to fast as speculation is to …",
+  "options": [
+   "conjecture",
+   "skepticism",
+   "paradox"
+  ]
+ },
+ {
+  "unit": "item:ys",
+  "kind": "item",
+  "analogy": "close is to shut as reliable is to …",
+  "options": [
+   "available",
+   "clearer",
+   "dependable",
+   "fastest"
+  ]
+ },
+ {
+  "unit": "item:yu",
+  "kind": "item",
+  "analogy": "gift is to present as paradise is to …",
+  "options": [
+   "heaven",
+   "fairy",
+   "heavenly",
+   "robin",
+   "swan"
+  ]
+ },
+ {
+  "unit": "item:yw",
+  "kind": "item",
+  "analogy": "begin is to start as droop is to …",
+  "options": [
+   "lob",
+   "maroon",
+   "tuft",
+   "sag"
+  ]
+ },
+ {
+  "unit": "item:yx",
+  "kind": "item",
+  "analogy": "shout is to yell as excellence is to …",
+  "options": [
+   "sophistication",
+   "prestige",
+   "utmost",
+   "estimation",
+   "superiority"
+  ]
+ },
+ {
+  "unit": "item:yy",
+  "kind": "item",
+  "analogy": "big is to large as hole is to …",
+  "options": [
+   "screw",
+   "opening",
+   "peg",
+   "dent"
+  ]
+ },
+ {
+  "unit": "item:z0",
+  "kind": "item",
+  "analogy": "joy is to joyful as astrology is to …",
+  "options": [
+   "theological",
+   "humanistic",
+   "astrological",
+   "sociological"
+  ]
+ },
+ {
+  "unit": "item:z1",
+  "kind": "item",
+  "analogy": "wet is to dry as smooth is to …",
+  "options": [
+   "crisp",
+   "rough",
+   "cloudy",
+   "thick",
+   "soft"
+  ]
+ },
+ {
+  "unit": "item:z2",
+  "kind": "item",
+  "analogy": "close is to shut as board is to …",
+  "options": [
+   "skate",
+   "roller",
+   "fulcrum",
+   "bulletin",
+   "committee"
+  ]
+ },
+ {
+  "unit": "item:z3",
+  "kind": "item",
+  "analogy": "quick is to fast as creative is to …",
+  "options": [
+   "renewable",
+   "contemporary",
+   "imaginative",
+   "speculative"
+  ]
+ },
+ {
+  "unit": "item:z4",
+  "kind": "item",
+  "analogy": "gift is to present as caustic is to …",
+  "options": [
+   "lather",
+   "wetness",
+   "vapour",
+   "corrosive"
+  ]
+ },
+ {
+  "unit": "item:z5",
+  "kind": "item",
+  "analogy": "simple is to easy as hobby is to …",
+  "options": [
+   "enthusiast",
+   "debut",
+   "showcase",
+   "weekend",
+   "pastime"
+  ]
+ },
+ {
+  "unit": "item:z6",
+  "kind": "item",
+  "analogy": "begin is to start as string is to …",
+  "options": [
+   "percussion",
+   "pluck",
+   "twine",
+   "fret",
+   "lute"
+  ]
+ },
+ {
+  "unit": "item:z7",
+  "kind": "item",
+  "analogy": "choose is to pick as bias is to …",
+  "options": [
+   "conviction",
+   "dissent",
+   "prejudice",
+   "volition",
+   "persuasion"
+  ]
+ },
+ {
+  "unit": "item:z8",
+  "kind": "item",
+  "analogy": "begin is to start as effortless is to …",
+  "options": [
+   "dizzy",
+   "flawless",
+   "breathless",
+   "incredible",
+   "easy"
+  ]
+ },
+ {
+  "unit": "item:z9",
+  "kind": "item",
+  "analogy": "shout is to yell as rewriting is to …",
+  "options": [
+   "revising",
+   "clarification",
+   "compilation",
+   "signer",
+   "reprint"
+  ]
+ },
+ {
+  "unit": "item:za",
+  "kind": "item",
+  "analogy": "shout is to yell as unsuitable is to …",
+  "options": [
+   "satisfactory",
+   "negligent",
+   "appropriate",
+   "inappropriate"
+  ]
+ },
+ {
+  "unit": "item:zb",
+  "kind": "item",
+  "analogy": "close is to shut as incorporation is to …",
+  "options": [
+   "inclusion",
+   "issuer",
+   "substitution",
+   "signer"
+  ]
+ },
+ {
+  "unit": "item:zc",
+  "kind": "item",
+  "analogy": "quick is to fast as parachute is to …",
+  "options": [
+   "chute",
+   "tow",
+   "foremast",
+   "helicopter",
+   "glider"
+  ]
+ },
+ {
+  "unit": "item:zd",
+  "kind": "item",
+  "analogy": "gift is to present as crumble is to …",
+  "options": [
+   "shatter",
+   "uproot",
+   "demolish",
+   "disintegrate"
+  ]
+ },
+ {
+  "unit": "item:zf",
+  "kind": "item",
+  "analogy": "begin is to start as cart is to …",
+  "options": [
+   "truck",
+   "sack",
+   "van",
+   "wagon"
+  ]
+ },
+ {
+  "unit": "item:zg",
+  "kind": "item",
+  "analogy": "choose is to pick as ecological is to …",
+  "options": [
+   "environmental",
+   "geographical",
+   "evolutionary",
+   "geographic"
+  ]
+ },
+ {
+  "unit": "item:zh",
+  "kind": "item",
+  "analogy": "big is to large as celebration is to …",
+  "options": [
+   "supper",
+   "graduation",
+   "festival"
+  ]
+ },
+ {
+  "unit": "item:zi",
+  "kind": "item",
+  "analogy": "shout is to yell as bard is to …",
+  "options": [
+   "epic",
+   "maiden",
+   "minstrel",
+   "ballad"
+  ]
+ },
+ {
+  "unit": "item:zj",
+  "kind": "item",
+  "analogy": "open is to shut as ancient is to …",
+  "options": [
+   "love",
+   "old",
+   "elder",
+   "modern",
+   "answer"
+  ]
+ },
+ {
+  "unit": "item:zl",
+  "kind": "item",
+  "analogy": "gift is to present as authenticity is to …",
+  "options": [
+   "genuineness",
+   "confirmation",
+   "correctness",
+   "signer",
+   "genuine"
+  ]
+ },
+ {
+  "unit": "item:zm",
+  "kind": "item",
+  "analogy": "simple is to easy as assistant is to …",
+  "options": [
+   "executive",
+   "boss",
+   "senior",
+   "helper"
+  ]
+ },
+ {
+  "unit": "item:zo",
+  "kind": "item",
+  "analogy": "hammer is to tool as purple is to …",
+  "options": [
+   "colorful",
+   "color",
+   "pink",
+   "violet"
+  ]
+ },
+ {
+  "unit": "item:zp",
+  "kind": "item",
+  "analogy": "big is to large as circumference is to …",
+  "options": [
+   "girth",
+   "longitude",
+   "median",
+   "vertices",
+   "vertex"
+  ]
+ },
+ {
+  "unit": "item:zq",
+  "kind": "item",
+  "analogy": "shout is to yell as equestrian is to …",
+  "options": [
+   "rider",
+   "racer",
+   "handler",
+   "judo",
+   "rocker"
+  ]
+ },
+ {
+  "unit": "item:zs",
+  "kind": "item",
+  "analogy": "quick is to fast as routine is to …",
+  "options": [
+   "recital",
+   "rehearsal",
+   "overtime",
+   "habit"
+  ]
+ },
+ {
+  "unit": "item:zv",
+  "kind": "item",
+  "analogy": "danger is to dangerous as cranium is to …",
+  "options": [
+   "parietal",
+   "frontal",
+   "pelvic",
+   "cranial",
+   "vertebral"
+  ]
+ },
+ {
+  "unit": "item:zw",
+  "kind": "item",
+  "analogy": "choose is to pick as reporter is to …",
+  "options": [
+   "email",
+   "bard",
+   "journalist",
+   "investigator"
+  ]
+ },
+ {
+  "unit": "item:zx",
+  "kind": "item",
+  "analogy": "big is to large as stiffness is to …",
+  "options": [
+   "flexibility",
+   "rigidity",
+   "eyesight",
+   "spasm",
+   "elasticity"
+  ]
+ },
+ {
+  "unit": "item:zy",
+  "kind": "item",
+  "analogy": "joy is to joyful as sun is to …",
+  "options": [
+   "magical",
+   "golden",
+   "rainy",
+   "natural",
+   "sunny"
+  ]
+ },
+ {
+  "unit": "item:zz",
+  "kind": "item",
+  "analogy": "close is to shut as canyon is to …",
+  "options": [
+   "crag",
+   "cove",
+   "boulder",
+   "gorge",
+   "headland"
+  ]
+ },
+ {
+  "unit": "item:10a",
+  "kind": "item",
+  "analogy": "hammer is to tool as tuba is to …",
+  "options": [
+   "instrument",
+   "drummer",
+   "clapper",
+   "cymbal",
+   "instrumental"
+  ]
+ },
+ {
+  "unit": "item:10c",
+  "kind": "item",
+  "analogy": "decide is to decision as enroll is to …",
+  "options": [
+   "enrollment",
+   "learner",
+   "join",
+   "certification",
+   "academy"
+  ]
+ },
+ {
+  "unit": "item:10d",
+  "kind": "item",
+  "analogy": "choose is to pick as superiority is to …",
+  "options": [
+   "humility",
+   "excellence",
+   "excel",
+   "patriotism"
+  ]
+ },
+ {
+  "unit": "item:10e",
+  "kind": "item",
+  "analogy": "begin is to start as vaporization is to …",
+  "options": [
+   "wetness",
+   "decomposition",
+   "precipitate",
+   "drier",
+   "evaporation"
+  ]
+ },
+ {
+  "unit": "item:10g",
+  "kind": "item",
+  "analogy": "carrot is to vegetable as mackerel is to …",
+  "options": [
+   "auk",
+   "fish",
+   "crayfish",
+   "baboon"
+  ]
+ },
+ {
+  "unit": "item:10i",
+  "kind": "item",
+  "analogy": "close is to shut as limitation is to …",
+  "options": [
+   "dependency",
+   "oversight",
+   "constraint"
+  ]
+ },
+ {
+  "unit": "item:10k",
+  "kind": "item",
+  "analogy": "big is to large as inside is to …",
+  "options": [
+   "there",
+   "interior",
+   "find",
+   "spot",
+   "word"
+  ]
+ },
+ {
+  "unit": "item:10n",
+  "kind": "item",
+  "analogy": "simple is to easy as perfume is to …",
+  "options": [
+   "linseed",
+   "beeswax",
+   "mastic",
+   "balsam",
+   "fragrance"
+  ]
+ },
+ {
+  "unit": "item:10o",
+  "kind": "item",
+  "analogy": "gift is to present as narrowing is to …",
+  "options": [
+   "mesentery",
+   "colon",
+   "navel",
+   "jugular",
+   "constriction"
+  ]
+ },
+ {
+  "unit": "item:10q",
+  "kind": "item",
+  "analogy": "close is to shut as insect is to …",
+  "options": [
+   "worm",
+   "spider",
+   "toad",
+   "bug"
+  ]
+ },
+ {
+  "unit": "item:10r",
+  "kind": "item",
+  "analogy": "oak is to tree as livestock is to …",
+  "options": [
+   "crop",
+   "sheep",
+   "animal",
+   "hay",
+   "domestic"
+  ]
+ },
+ {
+  "unit": "item:10s",
+  "kind": "item",
+  "analogy": "big is to large as doubt is to …",
+  "options": [
+   "conviction",
+   "skepticism",
+   "certainty",
+   "contradiction"
+  ]
+ },
+ {
+  "unit": "item:10t",
+  "kind": "item",
+  "analogy": "choose is to pick as flip is to …",
+  "options": [
+   "upside",
+   "posit",
+   "vert",
+   "somersault"
+  ]
+ },
+ {
+  "unit": "item:10u",
+  "kind": "item",
+  "analogy": "begin is to start as gulp is to …",
+  "options": [
+   "swallow",
+   "lifeguard",
+   "hydrant",
+   "fridge",
+   "wiggle"
+  ]
+ },
+ {
+  "unit": "item:10v",
+  "kind": "item",
+  "analogy": "push is to pull as blunt is to …",
+  "options": [
+   "cowardice",
+   "sharp",
+   "timid",
+   "tame"
+  ]
+ },
+ {
+  "unit": "item:10w",
+  "kind": "item",
+  "analogy": "gift is to present as champion is to …",
+  "options": [
+   "winner",
+   "boxer",
+   "triumph"
+  ]
+ },
+ {
+  "unit": "item:10x",
+  "kind": "item",
+  "analogy": "quick is to fast as improper is to …",
+  "options": [
+   "untrue",
+   "negligent",
+   "inconvenient",
+   "inappropriate"
+  ]
+ },
+ {
+  "unit": "item:10y",
+  "kind": "item",
+  "analogy": "brave is to bravery as useful is to …",
+  "options": [
+   "retrieval",
+   "formulation",
+   "necessary",
+   "usefulness",
+   "avail"
+  ]
+ },
+ {
+  "unit": "item:11a",
+  "kind": "item",
+  "analogy": "shout is to yell as sneaky is to …",
+  "options": [
+   "extra",
+   "silent",
+   "underhanded"
+  ]
+ }
+]

@@ -1,0 +1,57 @@
+[
+ {
+  "unit": "item:30",
+  "verdict": "pass",
+  "reason": "note: verb -> person who does it. 'cook' is already its own doer noun, so chef (a professional cook) is a looser fit than the -or/-er pattern in invent:inventor. Still the only defensible option; broth/bread/stew are things cooked, heat is a means."
+ },
+ {
+  "unit": "item:33",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. composer/follower are doers of other verbs; instruction is a related noun, not the person."
+ },
+ {
+  "unit": "item:39",
+  "verdict": "pass",
+  "reason": "note: verb -> person who does it. The strict -er form (flier/flyer) is not offered; pilot (one who flies an aircraft) is the doer by meaning, not by suffix, so the pattern shifts slightly from sail:sailor. Others: skater/hunter doers of other verbs, wing a part, prey not a doer."
+ },
+ {
+  "unit": "item:3h",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. sculptor/builder/visitor/skater are doers of other verbs."
+ },
+ {
+  "unit": "item:3j",
+  "verdict": "pass",
+  "reason": "note: verb -> -or doer. translator/rescuer/reporter/pilot are doers of other verbs; pilot is nearer 'drive' than 'direct'."
+ },
+ {
+  "unit": "item:3w",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. steep/ladder are associates of climb, skier a doer of another verb; 'annual' is an unrelated filler."
+ },
+ {
+  "unit": "item:3y",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. crawl/dip/dive are kinds of swimming (actions, not people); pro is a person but not the doer of swim."
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. 'perfume' is mainly a noun to a child; as a verb it means 'to scent', and a perfumer is a maker of perfumes rather than one who perfumes, so the A:B link fits loosely. fragrance is a synonym, not a doer. linseed and mastic are obscure for 8-15 (distractors only)."
+ },
+ {
+  "unit": "item:9t",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. 'ranch' is mainly a noun; the verb sense (to run a ranch) is less familiar to children but valid. estate/bunk are associates, mow another verb."
+ },
+ {
+  "unit": "item:9v",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. solo/elegy/lyric are things composed, not the person. elegy may be unfamiliar to younger children (distractor only)."
+ },
+ {
+  "unit": "item:9x",
+  "verdict": "pass",
+  "reason": "note: verb -> -er doer. shipwreck is a situation needing rescue; salvation is an abstract noun of being saved, not the person."
+ }
+]

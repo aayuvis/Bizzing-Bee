@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:4i",
+  "verdict": "fail",
+  "reason": "'plant' here is the factory sense (a mill is an industrial plant); most children read plant as vegetation, so the link is obscure"
+ },
+ {
+  "unit": "item:4j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4n",
+  "verdict": "fail",
+  "reason": "rocket is also a salad leaf (arugula), but vehicle is clearly intended"
+ },
+ {
+  "unit": "item:4o",
+  "verdict": "fail",
+  "reason": "mixes British 'grey' with American 'color'"
+ },
+ {
+  "unit": "item:4p",
+  "verdict": "fail",
+  "reason": "level mismatch: fish is a class, animal a kingdom ('mammal' would be the parallel)"
+ },
+ {
+  "unit": "item:4q",
+  "verdict": "fail",
+  "reason": "'feet' is the plural trap"
+ },
+ {
+  "unit": "item:4r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4t",
+  "verdict": "fail",
+  "reason": "some sweaters have collars, but shirt is clearly best"
+ },
+ {
+  "unit": "item:4u",
+  "verdict": "fail",
+  "reason": "second defensible: clam · a shell is part of both a turtle and a clam; two valid wholes"
+ },
+ {
+  "unit": "item:4v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4w",
+  "verdict": "fail",
+  "reason": "second defensible: pony · ponies have manes too; two valid wholes"
+ },
+ {
+  "unit": "item:4x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:4y",
+  "verdict": "fail",
+  "reason": "'student' is the other-sense trap for pupil (fair distractor)"
+ },
+ {
+  "unit": "item:4z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5a",
+  "verdict": "fail",
+  "reason": "unsafe: brewer, keg · brewer and keg (and cask) are beer/alcohol words as distractors"
+ },
+ {
+  "unit": "item:5b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5c",
+  "verdict": "fail",
+  "reason": "second defensible: wicker · wicker chairs are common; 'wicker' is equally a material a chair is made of"
+ },
+ {
+  "unit": "item:5d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5g",
+  "verdict": "fail",
+  "reason": "unsafe: ass · 'ass' is a common swear word even in its donkey sense"
+ },
+ {
+  "unit": "item:5h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5j",
+  "verdict": "fail",
+  "reason": "second defensible: granite · statues are also carved from granite; two valid materials"
+ },
+ {
+  "unit": "item:5k",
+  "verdict": "fail",
+  "reason": "cider can be alcoholic (UK); minor"
+ },
+ {
+  "unit": "item:5l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5n",
+  "verdict": "fail",
+  "reason": "nail read as fingernail fits the distractors thumb/claw/scalp; modern nails are steel, but iron works"
+ },
+ {
+  "unit": "item:5o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5s",
+  "verdict": "fail",
+  "reason": "second defensible: felt · felt blankets exist; felt is also a valid blanket material"
+ },
+ {
+  "unit": "item:5t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5u",
+  "verdict": "fail",
+  "reason": "second defensible: gold · gold coins are common; gold is a valid material too"
+ },
+ {
+  "unit": "item:5v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5w",
+  "verdict": "fail",
+  "reason": "second defensible: glass · glass tables are common; glass is a valid material too"
+ },
+ {
+  "unit": "item:5x",
+  "verdict": "fail",
+  "reason": "paper from wood (pulp) is fine but a step removed"
+ },
+ {
+  "unit": "item:5y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:5z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6f",
+  "verdict": "fail",
+  "reason": "'boil' is also something a stove does, but cook is the general function"
+ },
+ {
+  "unit": "item:6g",
+  "verdict": "fail",
+  "reason": "'cool' is near, but freeze is clearly best"
+ },
+ {
+  "unit": "item:6h",
+  "verdict": "fail",
+  "reason": "blind pick “magnify”, intended “observe” · second defensible: observe · a telescope both magnifies and is used to observe; two valid functions"
+ },
+ {
+  "unit": "item:6i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6j",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6n",
+  "verdict": "fail",
+  "reason": "second defensible: signal · an alarm wakes (clock) and signals (fire alarm); both valid"
+ },
+ {
+  "unit": "item:6o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6v",
+  "verdict": "fail",
+  "reason": "second defensible: beat · you beat metal with a hammer; beat is a near-synonym of pound here"
+ },
+ {
+  "unit": "item:6w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:6z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "fail",
+  "reason": "'probable' is a near-miss; feasible is advanced for 8-10"
+ },
+ {
+  "unit": "item:7b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7c",
+  "verdict": "fail",
+  "reason": "blind pick “option”, intended “pick” · second defensible: pick, preference · 'pick' (take your pick) and 'preference' are also synonyms of choice"
+ },
+ {
+  "unit": "item:7d",
+  "verdict": "fail",
+  "reason": "second defensible: boost · supplement=appendix only in the book sense; as a verb supplement~boost; appendix also reads as the organ"
+ },
+ {
+  "unit": "item:7e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7i",
+  "verdict": "fail",
+  "reason": "'korean' (lowercase nationality) is an odd distractor"
+ },
+ {
+  "unit": "item:7j",
+  "verdict": "fail",
+  "reason": "phlegm/sputum are gross-out distractors; not unsafe but unpleasant"
+ },
+ {
+  "unit": "item:7k",
+  "verdict": "fail",
+  "reason": "second defensible: harassment · harassment is also a standard synonym of intimidation"
+ },
+ {
+  "unit": "item:7l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7o",
+  "verdict": "fail",
+  "reason": "scarce/sparse are only near-synonyms; all other options are antonyms, so it is solvable"
+ },
+ {
+  "unit": "item:7p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7q",
+  "verdict": "fail",
+  "reason": "second defensible: malice, resentment · malice and resentment are also listed synonyms of animosity; three valid answers"
+ },
+ {
+  "unit": "item:7r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7t",
+  "verdict": "fail",
+  "reason": "grumbling=rumbling only in the stomach/thunder sense; in the complaining sense rant/nag are near; confusing"
+ },
+ {
+  "unit": "item:7u",
+  "verdict": "fail",
+  "reason": "cauldron is a big pot, not a plain synonym; 'pot' also drug slang (not flagged, kitchen context clear)"
+ },
+ {
+  "unit": "item:7v",
+  "verdict": "fail",
+  "reason": "arithmetic is a branch of maths, as geometry is; weak synonym link"
+ },
+ {
+  "unit": "item:7w",
+  "verdict": "fail",
+  "reason": "second defensible: endeavor, hobby · pursuit also means an activity (leisure pursuits = hobbies; pursuit = endeavor)"
+ },
+ {
+  "unit": "item:7x",
+  "verdict": "fail",
+  "reason": "second defensible: overrun · no clean synonym; overrun is as defensible as prevail (weeds dominate/overrun)"
+ },
+ {
+  "unit": "item:7y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:7z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8a",
+  "verdict": "fail",
+  "reason": "second defensible: juvenile · juvenile is also an adjective for child; childish carries a negative sense"
+ },
+ {
+  "unit": "item:8b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8c",
+  "verdict": "fail",
+  "reason": "lowercase 'monday', 'tuesday'"
+ },
+ {
+  "unit": "item:8d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8h",
+  "verdict": "fail",
+  "reason": "spine as backbone suggests 'vertebral' (spinal not offered); spiny is the morphological answer; distractors obscure (alveolar, caudal)"
+ },
+ {
+  "unit": "item:8i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8j",
+  "verdict": "fail",
+  "reason": "tasteful means good aesthetic taste, not flavour; 'tasty' would be the parallel"
+ },
+ {
+  "unit": "item:8k",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8m",
+  "verdict": "fail",
+  "reason": "explanation is the act; bakery is a place — link not parallel (baking would be)"
+ },
+ {
+  "unit": "item:8n",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:8z",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9a",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9b",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9c",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9d",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9e",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9f",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9g",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9h",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9i",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9j",
+  "verdict": "fail",
+  "reason": "second defensible: observe · a microscope both magnifies and is used to observe; two valid functions"
+ },
+ {
+  "unit": "item:9k",
+  "verdict": "fail",
+  "reason": "'bleacher' as one who bleaches is obscure (kids know bleachers = seats); distractors obscure (oleoresin, turpentine)"
+ },
+ {
+  "unit": "item:9l",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9m",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9n",
+  "verdict": "fail",
+  "reason": "'sioux' (lowercase, a people's name, an exonym some reject) used as a distractor; also siberia, nebraska lowercase"
+ },
+ {
+  "unit": "item:9o",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9q",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9r",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9s",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9t",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9u",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9v",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9w",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9x",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9y",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:9z",
+  "verdict": "fail",
+  "reason": "crime-heavy set (felon, accomplice, murder); 'murder' as a distractor is heavy for 8-year-olds"
+ },
+ {
+  "unit": "item:a0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a1",
+  "verdict": "fail",
+  "reason": "allowance now mostly means pocket money; 'permit' is the semantic noun of allow"
+ },
+ {
+  "unit": "item:a2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a4",
+  "verdict": "fail",
+  "reason": "unsafe: bondage · bondage has a strong sexual sense alongside slavery"
+ },
+ {
+  "unit": "item:a5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:a8",
+  "verdict": "fail",
+  "reason": "medical distractors (thyroid, fibrosis) obscure"
+ },
+ {
+  "unit": "item:a9",
+  "verdict": "fail",
+  "reason": "'stylish' would be the natural adjective; stylistic is fine morphologically"
+ },
+ {
+  "unit": "item:aa",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ab",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ac",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ad",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "fail",
+  "reason": "unsafe: arousal · arousal has a common sexual sense"
+ },
+ {
+  "unit": "item:af",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ag",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ah",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ai",
+  "verdict": "fail",
+  "reason": "observe->observation would be parallel; observance means keeping a rule/religious custom; astrologer/horoscope distractors"
+ },
+ {
+  "unit": "item:aj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ak",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:al",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:am",
+  "verdict": "fail",
+  "reason": "unsafe: arouse, arousal · stem and answer both carry a common sexual sense; replace"
+ },
+ {
+  "unit": "item:an",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ao",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ap",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:aq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ar",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:as",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:at",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:au",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:av",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:aw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ax",
+  "verdict": "fail",
+  "reason": "reproductive-biology distractors (ovarian, asexual) are out of place for 8-15"
+ },
+ {
+  "unit": "item:ay",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:az",
+  "verdict": "fail",
+  "reason": "blind pick “smelly”, intended “odorless” · link is semantic not morphological ('odorous' not offered); 'odorless' is a morphological trap with the opposite meaning"
+ },
+ {
+  "unit": "item:b0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:b8",
+  "verdict": "fail",
+  "reason": "unsafe: frigid · frigid also carries a sexual-insult sense (low priority)"
+ },
+ {
+  "unit": "item:b9",
+  "verdict": "fail",
+  "reason": "second defensible: evil · evil is also an extreme of bad (moral sense)"
+ },
+ {
+  "unit": "item:ba",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bc",
+  "verdict": "fail",
+  "reason": "second defensible: terrified · worried and scared are close; terrified is defensible as the extreme"
+ },
+ {
+  "unit": "item:bd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:be",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bp",
+  "verdict": "fail",
+  "reason": "unsafe: frigid · frigid distractor has a sexual-insult sense (low priority)"
+ },
+ {
+  "unit": "item:bq",
+  "verdict": "fail",
+  "reason": "unsafe: frigid · frigid distractor has a sexual-insult sense (low priority)"
+ },
+ {
+  "unit": "item:br",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bs",
+  "verdict": "fail",
+  "reason": "unsafe: frigid · frigid distractor has a sexual-insult sense (low priority)"
+ },
+ {
+  "unit": "item:bt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "fail",
+  "reason": "unsafe: frigid · frigid distractor has a sexual-insult sense (low priority)"
+ },
+ {
+  "unit": "item:bv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:by",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:bz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c6",
+  "verdict": "fail",
+  "reason": "tasteless has two senses (no flavour / poor taste); only tasteful offered as antonym"
+ },
+ {
+  "unit": "item:c7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:c8",
+  "verdict": "fail",
+  "reason": "second defensible: gaudy · gaudy is a semantic antonym of tasteful; 'womanly' as a distractor beside tasteful/genteel reads as a gender stereotype"
+ },
+ {
+  "unit": "item:c9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ca",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ce",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cf",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ch",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ci",
+  "verdict": "fail",
+  "reason": "second defensible: harmless · harmless is also a direct antonym of dangerous"
+ },
+ {
+  "unit": "item:cj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ck",
+  "verdict": "fail",
+  "reason": "surplus/limitless are near-misses"
+ },
+ {
+  "unit": "item:cl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:co",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cq",
+  "verdict": "fail",
+  "reason": "shameful and shameless are NOT opposites (both describe bad conduct); the item teaches a false antonym"
+ },
+ {
+  "unit": "item:cr",
+  "verdict": "fail",
+  "reason": "shameless and shameful are NOT opposites; the item teaches a false antonym"
+ },
+ {
+  "unit": "item:cs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ct",
+  "verdict": "fail",
+  "reason": "'equity' is a near-miss; capitalism/ethnicity distractors beside inequality read as political"
+ },
+ {
+  "unit": "item:cu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:cz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d0",
+  "verdict": "fail",
+  "reason": "unsafe: screw · lathe is obscure for kids; 'screw' has a mild vulgar slang sense (low priority)"
+ },
+ {
+  "unit": "item:d1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d2",
+  "verdict": "fail",
+  "reason": "'asiatic' is dated and offensive when applied to people (fine in zoology)"
+ },
+ {
+  "unit": "item:d3",
+  "verdict": "fail",
+  "reason": "dolomite obscure; it is also a mineral"
+ },
+ {
+  "unit": "item:d4",
+  "verdict": "fail",
+  "reason": "BROKEN: a scape is a flower stalk, not a kind of flower; very obscure; distractors are landforms (landscape sense)"
+ },
+ {
+  "unit": "item:d5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d6",
+  "verdict": "fail",
+  "reason": "pupa is a life stage, not a kind of insect; nematode/bivalve obscure"
+ },
+ {
+  "unit": "item:d7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:d8",
+  "verdict": "fail",
+  "reason": "second defensible: fibre · jute is equally well known as a fibre; two valid categories"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:da",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:db",
+  "verdict": "fail",
+  "reason": "clove is a spice (dried flower bud); 'flower' is a stretch and garlic-clove sense confuses"
+ },
+ {
+  "unit": "item:dc",
+  "verdict": "fail",
+  "reason": "unsafe: noose · horseshoe is made of metal, not a kind of metal (link mismatch); noose has hanging/self-harm association"
+ },
+ {
+  "unit": "item:dd",
+  "verdict": "fail",
+  "reason": "second defensible: barnyard · BROKEN: no option is a category a cornfield belongs to; plant and barnyard are equally (in)defensible"
+ },
+ {
+  "unit": "item:de",
+  "verdict": "fail",
+  "reason": "specie (coin money) is very obscure and looks like a misspelling of species; distractors bait that reading"
+ },
+ {
+  "unit": "item:df",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dh",
+  "verdict": "fail",
+  "reason": "blind pick “starter”, intended “drink” · starter is a synonym of appetizer, not its category; link broken"
+ },
+ {
+  "unit": "item:di",
+  "verdict": "fail",
+  "reason": "quince is better known as a fruit"
+ },
+ {
+  "unit": "item:dj",
+  "verdict": "fail",
+  "reason": "second defensible: parasite · a flea is also a parasite; two valid categories"
+ },
+ {
+  "unit": "item:dk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:do",
+  "verdict": "fail",
+  "reason": "chestnut is better a nut/tree; 'wood' is a stretch"
+ },
+ {
+  "unit": "item:dp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dr",
+  "verdict": "fail",
+  "reason": "gemstones are mostly minerals, so 'rock' is loose; beryl is a reverse (kind of gemstone)"
+ },
+ {
+  "unit": "item:ds",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dt",
+  "verdict": "fail",
+  "reason": "'minstrel' carries US blackface-show history"
+ },
+ {
+  "unit": "item:du",
+  "verdict": "fail",
+  "reason": "'minstrel' carries US blackface-show history"
+ },
+ {
+  "unit": "item:dv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dw",
+  "verdict": "fail",
+  "reason": "second defensible: gull · a seagull is a gull; gull is also a valid category"
+ },
+ {
+  "unit": "item:dx",
+  "verdict": "fail",
+  "reason": "second defensible: lens · a magnifier is a lens; lens is equally defensible"
+ },
+ {
+  "unit": "item:dy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:dz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e1",
+  "verdict": "fail",
+  "reason": "anemone is a flower (ideal answer 'flower' absent); sea-anemone sense with 'reef' distractor confuses"
+ },
+ {
+  "unit": "item:e2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:e7",
+  "verdict": "pass",
+  "reason": ""
+ }
+]

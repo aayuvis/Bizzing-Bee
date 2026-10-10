@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:e8",
+  "verdict": "fail",
+  "reason": "adj->noun of quality; only noun form offered"
+ },
+ {
+  "unit": "item:e9",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ea",
+  "verdict": "fail",
+  "reason": "antonym; 'feminism' and 'supremacy' are politically loaded distractors for 8-15"
+ },
+ {
+  "unit": "item:eb",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ec",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ed",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ee",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ef",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:eg",
+  "verdict": "fail",
+  "reason": "second defensible: wholesome · synonym; 'wholesome' (beneficial to health) is a weak but defensible synonym"
+ },
+ {
+  "unit": "item:eh",
+  "verdict": "fail",
+  "reason": "synonym, but descriptive~illustrative is loose"
+ },
+ {
+  "unit": "item:ei",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ek",
+  "verdict": "fail",
+  "reason": "synonym (high-pitched cry); others are animal calls"
+ },
+ {
+  "unit": "item:el",
+  "verdict": "fail",
+  "reason": "synonym; obsequious is advanced but fine for a spelling app"
+ },
+ {
+  "unit": "item:em",
+  "verdict": "fail",
+  "reason": "second defensible: monstrous · synonym; 'monstrous' can also mean hideous/ugly"
+ },
+ {
+  "unit": "item:en",
+  "verdict": "fail",
+  "reason": "synonym is loose: an aviary is a large enclosure, not a birdhouse; 'abattoir' (slaughterhouse) is a grim distractor"
+ },
+ {
+  "unit": "item:eo",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ep",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:eq",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:er",
+  "verdict": "fail",
+  "reason": "synonym; 'belch' is a mildly crude distractor"
+ },
+ {
+  "unit": "item:es",
+  "verdict": "fail",
+  "reason": "second defensible: oblong · synonym; 'oblong' is often used for elongated oval shapes"
+ },
+ {
+  "unit": "item:et",
+  "verdict": "fail",
+  "reason": "synonym, loose"
+ },
+ {
+  "unit": "item:eu",
+  "verdict": "fail",
+  "reason": "synonym (pinafore is a kind of apron)"
+ },
+ {
+  "unit": "item:ev",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ew",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ex",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ey",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ez",
+  "verdict": "fail",
+  "reason": "synonym; 'cardamon' is a variant spelling of cardamom - avoid in a spelling app"
+ },
+ {
+  "unit": "item:f0",
+  "verdict": "fail",
+  "reason": "second defensible: trickery, sleight · cunning as a noun = slyness, trickery, sleight (craftiness); three defensible"
+ },
+ {
+  "unit": "item:f1",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f2",
+  "verdict": "fail",
+  "reason": "second defensible: considerate · attentive = careful (paying attention) OR considerate (attentive to others); both senses common"
+ },
+ {
+  "unit": "item:f3",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f4",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f5",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:f7",
+  "verdict": "fail",
+  "reason": "second defensible: stall, bakery · no true synonym of shop; boutique, stall and bakery are all kinds of shop"
+ },
+ {
+  "unit": "item:f8",
+  "verdict": "fail",
+  "reason": "unsafe: teat · synonym; 'teat' (nipple of an udder) is giggle-prone body word for this age"
+ },
+ {
+  "unit": "item:f9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fa",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fc",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fd",
+  "verdict": "fail",
+  "reason": "unsafe: neurotic · synonym; 'neurotic' is a stigmatising mental-health label"
+ },
+ {
+  "unit": "item:fe",
+  "verdict": "fail",
+  "reason": "second defensible: antagonistic, militant · combative = argumentative = antagonistic = militant; three defensible synonyms"
+ },
+ {
+  "unit": "item:ff",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:fg",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fh",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fi",
+  "verdict": "fail",
+  "reason": "antonym; 'effortful' is a rare word"
+ },
+ {
+  "unit": "item:fj",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fk",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fl",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fm",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fn",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fo",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fp",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fq",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fr",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fs",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ft",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fu",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fv",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fw",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fx",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:fz",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g0",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g1",
+  "verdict": "fail",
+  "reason": "second defensible: stormy · opposite of sunny: cloudy, but stormy is also defensible"
+ },
+ {
+  "unit": "item:g2",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g3",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g4",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g5",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g6",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g8",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:g9",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ga",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:gb",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:gc",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:gd",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:ge",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:gf",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:gg",
+  "verdict": "fail",
+  "reason": "noun->adjective; obscure"
+ },
+ {
+  "unit": "item:gh",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:gi",
+  "verdict": "fail",
+  "reason": "unsafe: absinthe · adj->noun; 'absinthe' is an alcoholic spirit"
+ },
+ {
+  "unit": "item:gj",
+  "verdict": "fail",
+  "reason": "adj->noun; distractors (neoplasm, cyst, fibrosis) frame 'benign' as tumour vocabulary - grim and obscure"
+ },
+ {
+  "unit": "item:gk",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:gl",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:gm",
+  "verdict": "fail",
+  "reason": "noun->adjective; obscure"
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:go",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:gp",
+  "verdict": "fail",
+  "reason": "verb->noun; 'abettal' is very rare (abetment is usual)"
+ },
+ {
+  "unit": "item:gq",
+  "verdict": "fail",
+  "reason": "noun->adjective; obscure"
+ },
+ {
+  "unit": "item:gr",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:gs",
+  "verdict": "fail",
+  "reason": "noun->adjective; obscure"
+ },
+ {
+  "unit": "item:gt",
+  "verdict": "fail",
+  "reason": "noun->adjective; 'enteron' very obscure"
+ },
+ {
+  "unit": "item:gu",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:gv",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:gw",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:gx",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:gy",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:gz",
+  "verdict": "fail",
+  "reason": "noun->adjective; 'eleusinian' is a proper adjective shown lowercase"
+ },
+ {
+  "unit": "item:h0",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:h1",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:h2",
+  "verdict": "fail",
+  "reason": "noun->adjective; 'purulent' (pus-filled) is a gross distractor"
+ },
+ {
+  "unit": "item:h3",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:h4",
+  "verdict": "fail",
+  "reason": "noun->adjective; very obscure"
+ },
+ {
+  "unit": "item:h5",
+  "verdict": "fail",
+  "reason": "noun->adjective; 'effortful' is rare"
+ },
+ {
+  "unit": "item:h6",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:h7",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:h8",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:h9",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:ha",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:hb",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:hc",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "fail",
+  "reason": "verb->noun (continuation is more common)"
+ },
+ {
+  "unit": "item:he",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:hf",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:hg",
+  "verdict": "fail",
+  "reason": "blind pick “melon”, intended “vine” · category"
+ },
+ {
+  "unit": "item:hh",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hi",
+  "verdict": "fail",
+  "reason": "category; carcajou is very obscure and 'wolverine' (its synonym) is a trap most children will pick; 'cracidae' is a taxon shown lowercase"
+ },
+ {
+  "unit": "item:hj",
+  "verdict": "fail",
+  "reason": "second defensible: sulfide · category; pyrite is iron sulfide, so 'sulfide' is also a true category"
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hl",
+  "verdict": "fail",
+  "reason": "category; amboyna is very obscure"
+ },
+ {
+  "unit": "item:hm",
+  "verdict": "fail",
+  "reason": "category is weak: magnesia is magnesium oxide (a compound; the mineral is periclase)"
+ },
+ {
+  "unit": "item:hn",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:ho",
+  "verdict": "fail",
+  "reason": "category; 'friedcake' (doughnut) is obscure"
+ },
+ {
+  "unit": "item:hp",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hq",
+  "verdict": "fail",
+  "reason": "unsafe: pansy · category; 'pansy' is also a homophobic insult; aquilegia obscure"
+ },
+ {
+  "unit": "item:hr",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hs",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:ht",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hu",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hv",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hw",
+  "verdict": "fail",
+  "reason": "second defensible: twill · category; gabardine is a twill weave, so 'twill' is also a true category"
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hy",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:hz",
+  "verdict": "fail",
+  "reason": "blind pick “bonfire”, intended “wood” · category is weak (a pyre is a funeral fire); 'empyrean' obscure"
+ },
+ {
+  "unit": "item:i0",
+  "verdict": "fail",
+  "reason": "blind pick “—”, intended “sweet” · BROKEN: no option is a category of iodoform (an antiseptic compound); flavone, fluor, spinel, sweet, carotene all fail"
+ },
+ {
+  "unit": "item:i1",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:i2",
+  "verdict": "fail",
+  "reason": "blind pick “melon”, intended “vine” · category; 'cantaloup' is a variant spelling - avoid in a spelling app"
+ },
+ {
+  "unit": "item:i3",
+  "verdict": "fail",
+  "reason": "category is weak: cassia is mostly a tree genus (and a spice)"
+ },
+ {
+  "unit": "item:i4",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:i5",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:i6",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:i7",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:i8",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:i9",
+  "verdict": "fail",
+  "reason": "category; 'liliaceae' is a taxon shown lowercase"
+ },
+ {
+  "unit": "item:ia",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:ib",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:ic",
+  "verdict": "fail",
+  "reason": "BROKEN link: a rhizome is a part of a plant (an underground stem), not a kind of plant; 'corm' is a sibling"
+ },
+ {
+  "unit": "item:id",
+  "verdict": "fail",
+  "reason": "category; 'overall' is near-synonym, may confuse"
+ },
+ {
+  "unit": "item:ie",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:if",
+  "verdict": "fail",
+  "reason": "unsafe: buttock · category; 'buttock' is a giggle-prone body word"
+ },
+ {
+  "unit": "item:ig",
+  "verdict": "fail",
+  "reason": "unsafe: obesity · synonym; 'obesity' beside 'excess' is body-stigmatising"
+ },
+ {
+  "unit": "item:ih",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ii",
+  "verdict": "fail",
+  "reason": "blind pick “ornamentation”, intended “exaggeration” · second defensible: exaggeration · synonym; embellishment of a story = exaggeration, also a true synonym"
+ },
+ {
+  "unit": "item:ij",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ik",
+  "verdict": "fail",
+  "reason": "hypernym rather than synonym (fluorescence is a kind of luminescence)"
+ },
+ {
+  "unit": "item:il",
+  "verdict": "fail",
+  "reason": "near-synonym (hypernym/hyponym pair)"
+ },
+ {
+  "unit": "item:im",
+  "verdict": "fail",
+  "reason": "synonym; 'lyon' is a proper noun shown lowercase"
+ },
+ {
+  "unit": "item:in",
+  "verdict": "fail",
+  "reason": "blind pick “subkingdom”, intended “animal” · second defensible: animal · Metazoa is a subkingdom, and metazoa are animals - both defensible; very obscure"
+ },
+ {
+  "unit": "item:io",
+  "verdict": "fail",
+  "reason": "category; 'gramma' (a grass) is very obscure and reads as slang for grandma"
+ },
+ {
+  "unit": "item:ip",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:iq",
+  "verdict": "fail",
+  "reason": "link weak: a thallus is a plant body (part), not a kind of plant"
+ },
+ {
+  "unit": "item:ir",
+  "verdict": "fail",
+  "reason": "second defensible: turnip · category; rutabaga is a kind of turnip (swede/yellow turnip), so 'turnip' also fits"
+ },
+ {
+  "unit": "item:is",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:it",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:iu",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:iv",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:iw",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:ix",
+  "verdict": "fail",
+  "reason": "verb->noun; distractors 'whiteness, complexion, melanin' put skin colour next to 'discolor' - colourism risk for this audience"
+ },
+ {
+  "unit": "item:iy",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:iz",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:j0",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:j1",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:j2",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:j3",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:j4",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:j5",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:j6",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:j7",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:j8",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:j9",
+  "verdict": "fail",
+  "reason": "second defensible: fright · dread = apprehension or fright; both synonyms"
+ },
+ {
+  "unit": "item:ja",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:jb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jc",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jd",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:je",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jf",
+  "verdict": "fail",
+  "reason": "same word, US/UK spelling - confusing in a spelling app"
+ },
+ {
+  "unit": "item:jg",
+  "verdict": "fail",
+  "reason": "synonym, loose"
+ },
+ {
+  "unit": "item:jh",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ji",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jj",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jl",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:jm",
+  "verdict": "fail",
+  "reason": "synonym (noun)"
+ },
+ {
+  "unit": "item:jn",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:jo",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jp",
+  "verdict": "fail",
+  "reason": "synonym; 'murder' is a violent distractor"
+ },
+ {
+  "unit": "item:jq",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jr",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:js",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jt",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "fail",
+  "reason": "synonym, but the 'commendation' sense of citation is unfamiliar to children"
+ },
+ {
+  "unit": "item:jv",
+  "verdict": "fail",
+  "reason": "unsafe: posterior · synonym; 'posterior' is a euphemism for bottom - double meaning"
+ },
+ {
+  "unit": "item:jw",
+  "verdict": "fail",
+  "reason": "near-synonym (smog is polluted haze)"
+ },
+ {
+  "unit": "item:jx",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:jy",
+  "verdict": "fail",
+  "reason": "verb->noun"
+ },
+ {
+  "unit": "item:jz",
+  "verdict": "fail",
+  "reason": "synonym (of thunder), loose"
+ },
+ {
+  "unit": "item:k0",
+  "verdict": "fail",
+  "reason": "synonym only in the 'motorbike' sense; most children read 'bike' as bicycle"
+ },
+ {
+  "unit": "item:k1",
+  "verdict": "fail",
+  "reason": "second defensible: correctness · exactness = precision, also correctness"
+ },
+ {
+  "unit": "item:k2",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:k3",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:k4",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:k5",
+  "verdict": "fail",
+  "reason": "synonym; tavern/bar/mug is a pub-and-alcohol theme for 8-15"
+ },
+ {
+  "unit": "item:k6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:k7",
+  "verdict": "fail",
+  "reason": "unsafe: dickens · synonym (a romantic = an idealist); 'dickens' is a mild oath ('what the dickens') and a proper name shown lowercase"
+ },
+ {
+  "unit": "item:k8",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:k9",
+  "verdict": "fail",
+  "reason": "category; noun sense of limber (gun carriage) is very obscure, children know it as 'flexible'"
+ },
+ {
+  "unit": "item:ka",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kc",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:kd",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ke",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kf",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kg",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kh",
+  "verdict": "fail",
+  "reason": "blind pick “vapor”, intended “cloud” · category"
+ },
+ {
+  "unit": "item:ki",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kj",
+  "verdict": "fail",
+  "reason": "second defensible: ashamed · sorry = apologetic, also ashamed"
+ },
+ {
+  "unit": "item:kk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kl",
+  "verdict": "fail",
+  "reason": "noun->adjective"
+ },
+ {
+  "unit": "item:km",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kn",
+  "verdict": "fail",
+  "reason": "second defensible: acquisition · purchasing = shopping (act of buying) = acquisition; both defensible"
+ },
+ {
+  "unit": "item:ko",
+  "verdict": "fail",
+  "reason": "second defensible: bulk · size = magnitude, also bulk"
+ },
+ {
+  "unit": "item:kp",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:kq",
+  "verdict": "fail",
+  "reason": "synonym; 'abel', 'alaskan', 'sahara' are proper nouns shown lowercase"
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ks",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:kt",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:ku",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:kv",
+  "verdict": "fail",
+  "reason": "category; 'cricket' and 'racket' invite the cricket-bat sense - ambiguous for an Indian audience"
+ },
+ {
+  "unit": "item:kw",
+  "verdict": "fail",
+  "reason": "blind pick “—”, intended “metal” · BROKEN: no option is a category of kettle (a pot); cauldron, skillet, broiler are siblings, metal is its material"
+ },
+ {
+  "unit": "item:kx",
+  "verdict": "fail",
+  "reason": "category ('vegetable' absent; plant is broader)"
+ },
+ {
+  "unit": "item:ky",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:kz",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:l0",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:l1",
+  "verdict": "fail",
+  "reason": "unsafe: penetrate · synonym; 'penetrate' carries a sexual double meaning - risky as the answer for 8-15"
+ },
+ {
+  "unit": "item:l2",
+  "verdict": "fail",
+  "reason": "synonym; 'levant' is a proper noun shown lowercase"
+ },
+ {
+  "unit": "item:l3",
+  "verdict": "fail",
+  "reason": "second defensible: conjecture · supposition = assumption = conjecture; both equal"
+ },
+ {
+  "unit": "item:l4",
+  "verdict": "fail",
+  "reason": "near-synonym (chauffeur is a kind of driver)"
+ },
+ {
+  "unit": "item:l5",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:l6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:l7",
+  "verdict": "fail",
+  "reason": "hypernym rather than synonym"
+ },
+ {
+  "unit": "item:l8",
+  "verdict": "fail",
+  "reason": "synonym, loose"
+ },
+ {
+  "unit": "item:l9",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:la",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lc",
+  "verdict": "fail",
+  "reason": "synonym; 'troy' proper noun shown lowercase"
+ },
+ {
+  "unit": "item:ld",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:le",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:lf",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:lg",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lh",
+  "verdict": "fail",
+  "reason": "antonym"
+ },
+ {
+  "unit": "item:li",
+  "verdict": "fail",
+  "reason": "weak: a defendant is not a suspect (the accused); no true synonym offered"
+ },
+ {
+  "unit": "item:lj",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lk",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ll",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lm",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ln",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lo",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lp",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:lq",
+  "verdict": "fail",
+  "reason": "second defensible: resentment, malice · animosity = hatred = resentment = malice; three defensible"
+ },
+ {
+  "unit": "item:lr",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ls",
+  "verdict": "fail",
+  "reason": "category"
+ },
+ {
+  "unit": "item:lt",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lu",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lv",
+  "verdict": "fail",
+  "reason": "unsafe: lingerie · category; 'lingerie' is sexualised underwear vocabulary"
+ },
+ {
+  "unit": "item:lw",
+  "verdict": "fail",
+  "reason": "category, though seaweed is technically algae"
+ },
+ {
+  "unit": "item:lx",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:ly",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:lz",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m0",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m1",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m2",
+  "verdict": "fail",
+  "reason": "link weak: ornis is the bird-life of a region, not a kind of bird; extremely obscure"
+ },
+ {
+  "unit": "item:m3",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m4",
+  "verdict": "fail",
+  "reason": "adj->noun"
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m6",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m7",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:m8",
+  "verdict": "fail",
+  "reason": "synonym, loose; 'easter' is a festival shown lowercase"
+ },
+ {
+  "unit": "item:m9",
+  "verdict": "fail",
+  "reason": "unsafe: tramp · category; 'tramp' is also a slang insult (for a woman / homeless person)"
+ },
+ {
+  "unit": "item:ma",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mb",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mc",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:md",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:me",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mg",
+  "verdict": "fail",
+  "reason": "second defensible: mansion · hall = corridor (hallway) or a large country house (mansion); both senses real"
+ },
+ {
+  "unit": "item:mh",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mi",
+  "verdict": "fail",
+  "reason": "synonym"
+ },
+ {
+  "unit": "item:mj",
+  "verdict": "fail",
+  "reason": "synonym"
+ }
+]

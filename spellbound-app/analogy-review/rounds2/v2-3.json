@@ -1,0 +1,1302 @@
+[
+ {
+  "unit": "item:q4",
+  "verdict": "pass",
+  "reason": "note: synonym pair; clear"
+ },
+ {
+  "unit": "item:q5",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:q7",
+  "verdict": "pass",
+  "reason": "note: item:category; cup is a container"
+ },
+ {
+  "unit": "item:q8",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:q9",
+  "verdict": "pass",
+  "reason": "note: synonym; plane has a geometry sense, distractors play on it but answer clear"
+ },
+ {
+  "unit": "item:qa",
+  "verdict": "pass",
+  "reason": "note: synonym; lengthen is only one way of expanding, not equal"
+ },
+ {
+  "unit": "item:qc",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qd",
+  "verdict": "fail",
+  "reason": "second defensible: soot · synonym; soot is listed as a grime synonym in some thesauri (a kind of dirt), weak second"
+ },
+ {
+  "unit": "item:qg",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qh",
+  "verdict": "pass",
+  "reason": "note: opposite; clear"
+ },
+ {
+  "unit": "item:qi",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qj",
+  "verdict": "pass",
+  "reason": "note: item:category; chicory may be unfamiliar to young children"
+ },
+ {
+  "unit": "item:qk",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qm",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qo",
+  "verdict": "pass",
+  "reason": "note: synonym; coiffure is an advanced word, distractors are clothes"
+ },
+ {
+  "unit": "item:qp",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; just likely read as the adverb by younger children, justness would be the stricter form"
+ },
+ {
+  "unit": "item:qq",
+  "verdict": "pass",
+  "reason": "note: synonym; impossible is not the same sense"
+ },
+ {
+  "unit": "item:qs",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qv",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qw",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:qz",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:r0",
+  "verdict": "pass",
+  "reason": "note: synonym; thicken is not harden"
+ },
+ {
+  "unit": "item:r4",
+  "verdict": "pass",
+  "reason": "note: synonym; gallery is the place, not the event"
+ },
+ {
+  "unit": "item:r6",
+  "verdict": "pass",
+  "reason": "note: synonym; beggar is a noun form, mildly stigmatising distractor"
+ },
+ {
+  "unit": "item:r7",
+  "verdict": "pass",
+  "reason": "note: synonym; dawn is the opposite end of day"
+ },
+ {
+  "unit": "item:r8",
+  "verdict": "pass",
+  "reason": "note: synonym; garland is a kind of ornament"
+ },
+ {
+  "unit": "item:r9",
+  "verdict": "pass",
+  "reason": "note: synonym; punishment is the noun"
+ },
+ {
+  "unit": "item:ra",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rb",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rc",
+  "verdict": "pass",
+  "reason": "note: verb to noun; clear"
+ },
+ {
+  "unit": "item:re",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rg",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ri",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rk",
+  "verdict": "pass",
+  "reason": "note: synonym (noun sense); clear"
+ },
+ {
+  "unit": "item:rl",
+  "verdict": "pass",
+  "reason": "note: synonym; flesh for meat is acceptable, lamb/bacon are kinds"
+ },
+ {
+  "unit": "item:rm",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rn",
+  "verdict": "pass",
+  "reason": "note: verb to noun; clear"
+ },
+ {
+  "unit": "item:rp",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rq",
+  "verdict": "pass",
+  "reason": "note: item:category; simmer is an odd distractor"
+ },
+ {
+  "unit": "item:rr",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; clear"
+ },
+ {
+  "unit": "item:rs",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rt",
+  "verdict": "pass",
+  "reason": "note: synonym; enterprise is related but not a synonym"
+ },
+ {
+  "unit": "item:rw",
+  "verdict": "pass",
+  "reason": "note: synonym of master as noun; a child may read master as a verb (stem is verb pair) and find no verb answer"
+ },
+ {
+  "unit": "item:ry",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:rz",
+  "verdict": "pass",
+  "reason": "note: synonym; reserve (reticence) is not privacy"
+ },
+ {
+  "unit": "item:s1",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:s3",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; clear"
+ },
+ {
+  "unit": "item:s5",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:s6",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; clear"
+ },
+ {
+  "unit": "item:s7",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:s8",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:s9",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sc",
+  "verdict": "pass",
+  "reason": "note: synonym; dung and manure are farmyard words, not crude"
+ },
+ {
+  "unit": "item:sd",
+  "verdict": "pass",
+  "reason": "note: item:category; footwear would be the truer category but shoe is acceptable"
+ },
+ {
+  "unit": "item:se",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sg",
+  "verdict": "pass",
+  "reason": "note: verb to noun; clear"
+ },
+ {
+  "unit": "item:sh",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:si",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:sj",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sl",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:sm",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sn",
+  "verdict": "pass",
+  "reason": "note: synonym; significant is the adjective"
+ },
+ {
+  "unit": "item:so",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sr",
+  "verdict": "pass",
+  "reason": "note: synonym; dollar is a kind of currency, not a synonym"
+ },
+ {
+  "unit": "item:ss",
+  "verdict": "pass",
+  "reason": "note: synonym; acceptable"
+ },
+ {
+  "unit": "item:st",
+  "verdict": "pass",
+  "reason": "note: synonym; headland is an advanced word"
+ },
+ {
+  "unit": "item:su",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sv",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sx",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:sy",
+  "verdict": "pass",
+  "reason": "note: synonym; reassign means assign again"
+ },
+ {
+  "unit": "item:t2",
+  "verdict": "pass",
+  "reason": "note: synonym; acceptable (pin = brooch)"
+ },
+ {
+  "unit": "item:t5",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:t6",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:t8",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:t9",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:tb",
+  "verdict": "pass",
+  "reason": "note: synonym; nearly the same word, very easy"
+ },
+ {
+  "unit": "item:tc",
+  "verdict": "pass",
+  "reason": "note: opposite; ancient is a synonym distractor"
+ },
+ {
+  "unit": "item:te",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:th",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:to",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:tp",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ts",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:tt",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; clear"
+ },
+ {
+  "unit": "item:tx",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ty",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:u0",
+  "verdict": "pass",
+  "reason": "note: item:category; instrumental is the adjective"
+ },
+ {
+  "unit": "item:u1",
+  "verdict": "pass",
+  "reason": "note: item:category; weak link (a whetstone is better described as a sharpening tool); whetstone obscure; stony is a near-miss form"
+ },
+ {
+  "unit": "item:u3",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:u5",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:u6",
+  "verdict": "fail",
+  "reason": "unsafe: beaver · synonym; beaver has a common vulgar slang double meaning; pig/hog are also common insults and plump sits beside them as a distractor (body-shaming read possible)"
+ },
+ {
+  "unit": "item:u7",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:u9",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ua",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ub",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:uc",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ud",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ue",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:uf",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ug",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:uh",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ui",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:uj",
+  "verdict": "pass",
+  "reason": "note: synonym; batsman is a cricket term, fine for Indian audience"
+ },
+ {
+  "unit": "item:uk",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:un",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:uo",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:up",
+  "verdict": "pass",
+  "reason": "note: opposite; clear"
+ },
+ {
+  "unit": "item:uq",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ut",
+  "verdict": "pass",
+  "reason": "note: synonym; matt is an unusual spelling (matte)"
+ },
+ {
+  "unit": "item:uu",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:uv",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ux",
+  "verdict": "pass",
+  "reason": "note: item:category; pie as a dish is a weak category link"
+ },
+ {
+  "unit": "item:uz",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:v0",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:v1",
+  "verdict": "pass",
+  "reason": "note: opposite; close is a synonym distractor"
+ },
+ {
+  "unit": "item:v3",
+  "verdict": "pass",
+  "reason": "note: opposite; clear"
+ },
+ {
+  "unit": "item:v4",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:v5",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; heroic is related but not derived from courage"
+ },
+ {
+  "unit": "item:v6",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:v7",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vb",
+  "verdict": "pass",
+  "reason": "note: synonym; optimize and optimise both offered as distractors, odd but harmless"
+ },
+ {
+  "unit": "item:vc",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vd",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ve",
+  "verdict": "pass",
+  "reason": "note: synonym; trailing also has a plant sense (heather etc.) but answer clear"
+ },
+ {
+  "unit": "item:vf",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:vh",
+  "verdict": "pass",
+  "reason": "note: synonym; acceptable"
+ },
+ {
+  "unit": "item:vi",
+  "verdict": "pass",
+  "reason": "note: part to whole; clear"
+ },
+ {
+  "unit": "item:vj",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vk",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vl",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vm",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vn",
+  "verdict": "pass",
+  "reason": "note: synonym (colour); aqua/cyan equivalence is technical, aqua also means water; may confuse"
+ },
+ {
+  "unit": "item:vo",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vq",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vw",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vx",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:vy",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:w0",
+  "verdict": "pass",
+  "reason": "note: synonym; potpourri and haricot are obscure for 8-15"
+ },
+ {
+  "unit": "item:w2",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:w3",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:w4",
+  "verdict": "pass",
+  "reason": "note: synonym of cast (actors); cast is multi-sense (throw, plaster cast, cast a spell/hex), confusing"
+ },
+ {
+  "unit": "item:w5",
+  "verdict": "pass",
+  "reason": "note: synonym; mom is US form, UK/Indian families say mum"
+ },
+ {
+  "unit": "item:w6",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:w7",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:w9",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; clear"
+ },
+ {
+  "unit": "item:wa",
+  "verdict": "pass",
+  "reason": "note: synonym (botanical); acceptable"
+ },
+ {
+  "unit": "item:wb",
+  "verdict": "pass",
+  "reason": "note: synonym; mill is a kind of factory, acceptable"
+ },
+ {
+  "unit": "item:wc",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wd",
+  "verdict": "pass",
+  "reason": "note: opposite; fatal is stronger, not the direct antonym"
+ },
+ {
+  "unit": "item:we",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wg",
+  "verdict": "pass",
+  "reason": "note: synonym; sinful/diabolical are moral-religious distractors, neutral use"
+ },
+ {
+  "unit": "item:wh",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wi",
+  "verdict": "pass",
+  "reason": "note: verb to noun; clear"
+ },
+ {
+  "unit": "item:wj",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wk",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wm",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wq",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wr",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ws",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wt",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ww",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wx",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:wy",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; clear"
+ },
+ {
+  "unit": "item:x0",
+  "verdict": "pass",
+  "reason": "note: verb to noun; clear"
+ },
+ {
+  "unit": "item:x3",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:x4",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:x5",
+  "verdict": "pass",
+  "reason": "note: opposite; clear"
+ },
+ {
+  "unit": "item:x6",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:x7",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:x8",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:x9",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:xc",
+  "verdict": "pass",
+  "reason": "note: synonym; cache is an advanced word"
+ },
+ {
+  "unit": "item:xd",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xe",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xf",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xg",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xk",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xm",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xn",
+  "verdict": "pass",
+  "reason": "note: synonym; distractors (thorax, forewing, pincer, operculum) are obscure"
+ },
+ {
+  "unit": "item:xo",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xp",
+  "verdict": "pass",
+  "reason": "note: synonym; iris/eye play on the other sense of pupil, answer clear"
+ },
+ {
+  "unit": "item:xq",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xr",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xt",
+  "verdict": "pass",
+  "reason": "note: synonym; coiffure is advanced"
+ },
+ {
+  "unit": "item:xx",
+  "verdict": "pass",
+  "reason": "note: synonym; acceptable (stumble/stagger near-synonyms)"
+ },
+ {
+  "unit": "item:xy",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:xz",
+  "verdict": "pass",
+  "reason": "note: synonym; stature may tempt (different meaning)"
+ },
+ {
+  "unit": "item:y1",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:y2",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; clear"
+ },
+ {
+  "unit": "item:y4",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:y6",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:y7",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:y8",
+  "verdict": "pass",
+  "reason": "note: synonym (noun sense of build); children read build as a verb first, confusing"
+ },
+ {
+  "unit": "item:y9",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; juvenile/adolescent mean young but are not derived from youth"
+ },
+ {
+  "unit": "item:ya",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yd",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ye",
+  "verdict": "pass",
+  "reason": "note: synonym; harassment is a heavy distractor for this age"
+ },
+ {
+  "unit": "item:yf",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yh",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yj",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yk",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yl",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yn",
+  "verdict": "pass",
+  "reason": "note: synonym; acceptable"
+ },
+ {
+  "unit": "item:yo",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yp",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:yq",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yr",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:ys",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yu",
+  "verdict": "pass",
+  "reason": "note: synonym; fairy carries a dated slur sense but is ordinary children's vocabulary"
+ },
+ {
+  "unit": "item:yw",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:yx",
+  "verdict": "pass",
+  "reason": "note: synonym; weak (superiority suggests ranking/arrogance rather than excellence)"
+ },
+ {
+  "unit": "item:yy",
+  "verdict": "fail",
+  "reason": "unsafe: screw · synonym; screw has a common crude slang sense, and sits beside hole and peg"
+ },
+ {
+  "unit": "item:z0",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; clear"
+ },
+ {
+  "unit": "item:z1",
+  "verdict": "pass",
+  "reason": "note: opposite; clear"
+ },
+ {
+  "unit": "item:z2",
+  "verdict": "pass",
+  "reason": "note: synonym (governing board); board is multi-sense (plank, embark), confusing"
+ },
+ {
+  "unit": "item:z3",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:z4",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:z5",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:z6",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:z7",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:z8",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:z9",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:za",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zb",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zc",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zd",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zf",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zg",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zh",
+  "verdict": "pass",
+  "reason": "note: synonym; acceptable"
+ },
+ {
+  "unit": "item:zi",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zj",
+  "verdict": "pass",
+  "reason": "note: opposite; clear"
+ },
+ {
+  "unit": "item:zl",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zm",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zo",
+  "verdict": "pass",
+  "reason": "note: item:category; violet is a synonym distractor, may tempt"
+ },
+ {
+  "unit": "item:zp",
+  "verdict": "pass",
+  "reason": "note: synonym; loose (girth is a body/trunk measurement), perimeter would be truer"
+ },
+ {
+  "unit": "item:zq",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zs",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zv",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; clear"
+ },
+ {
+  "unit": "item:zw",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zx",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:zy",
+  "verdict": "pass",
+  "reason": "note: noun to adjective; clear"
+ },
+ {
+  "unit": "item:zz",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10a",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:10c",
+  "verdict": "pass",
+  "reason": "note: verb to noun; clear"
+ },
+ {
+  "unit": "item:10d",
+  "verdict": "pass",
+  "reason": "note: synonym; weak (superiority implies ranking above others)"
+ },
+ {
+  "unit": "item:10e",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10g",
+  "verdict": "pass",
+  "reason": "note: item:category; clear"
+ },
+ {
+  "unit": "item:10i",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10k",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10n",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10o",
+  "verdict": "pass",
+  "reason": "note: synonym; distractors are obscure anatomy (mesentery, jugular)"
+ },
+ {
+  "unit": "item:10q",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10r",
+  "verdict": "pass",
+  "reason": "note: item:category; livestock is a collective noun, not a single kind of animal; weak link"
+ },
+ {
+  "unit": "item:10s",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10t",
+  "verdict": "pass",
+  "reason": "note: synonym; acceptable; vert/posit are odd distractors"
+ },
+ {
+  "unit": "item:10u",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10v",
+  "verdict": "pass",
+  "reason": "note: opposite; clear"
+ },
+ {
+  "unit": "item:10w",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10x",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ },
+ {
+  "unit": "item:10y",
+  "verdict": "pass",
+  "reason": "note: adjective to noun; clear"
+ },
+ {
+  "unit": "item:11a",
+  "verdict": "pass",
+  "reason": "note: synonym; clear"
+ }
+]

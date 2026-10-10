@@ -1,0 +1,1502 @@
+[
+ {
+  "unit": "item:mk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ml",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mn",
+  "verdict": "fail",
+  "reason": "'breakthrough' is a narrower word (an important discovery), not a synonym of 'discovery'; wrong option 'revelation' is also a defensible synonym."
+ },
+ {
+  "unit": "item:mo",
+  "verdict": "fail",
+  "reason": "Wrong options 'forcefulness' and 'boldness' are listed thesaurus senses of 'aggression' (assertive drive), so they are defensible answers."
+ },
+ {
+  "unit": "item:mp",
+  "verdict": "fail",
+  "reason": "Link false: 'brushing' is an action, not a kind of tool (a brush is a tool)."
+ },
+ {
+  "unit": "item:mq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ms",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mv",
+  "verdict": "fail",
+  "reason": "'bureaucrat' is a kind of official (an official of a bureaucracy), narrower and negatively coloured, not the same meaning; 'notary' is also a kind of official."
+ },
+ {
+  "unit": "item:mw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:mx",
+  "verdict": "fail",
+  "reason": "Wrong option 'ruthless' is also a synonym of 'cruel'."
+ },
+ {
+  "unit": "item:my",
+  "verdict": "fail",
+  "reason": "Wrong option 'vile' is a defensible synonym of 'shameful' (despicable, base)."
+ },
+ {
+  "unit": "item:mz",
+  "verdict": "fail",
+  "reason": "'spice' is a kind of seasoning (salt and herbs are seasonings too), not the same meaning; gloss is spice's definition. 'mustard'/'ginger' are also seasonings."
+ },
+ {
+  "unit": "item:n0",
+  "verdict": "fail",
+  "reason": "'optical' is about light/optics, not a clean synonym of 'visual'; 'graphic' is also a defensible synonym; 'optical' is hard for level 2."
+ },
+ {
+  "unit": "item:n1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:n2",
+  "verdict": "fail",
+  "reason": "Wrong options 'hypothesis' and 'axiom' are defensible synonyms of 'assumption'; plural 'hypotheses' beside 'hypothesis' is a confusing distractor."
+ },
+ {
+  "unit": "item:n3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:n4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:n5",
+  "verdict": "fail",
+  "reason": "A cape is a headland/point of land, not the same as a peninsula; distractors 'balkan', 'arabian' (names of peninsulas) and 'canada' are proper nouns written in lowercase in a spelling app."
+ },
+ {
+  "unit": "item:n6",
+  "verdict": "fail",
+  "reason": "Wrong option 'array' is a standard synonym of 'display' (a dazzling array/display)."
+ },
+ {
+  "unit": "item:n7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:n8",
+  "verdict": "fail",
+  "reason": "Link false: tumbling is a kind of acrobatics (broader word), not the same meaning; 'somersault' is a tumbling move, adding confusion."
+ },
+ {
+  "unit": "item:n9",
+  "verdict": "fail",
+  "reason": "Wrong option 'unrealistic' is a defensible synonym of 'improbable'."
+ },
+ {
+  "unit": "item:na",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ne",
+  "verdict": "fail",
+  "reason": "Wrong option 'shop' is defensible (a stall is a small open-fronted shop); gloss shows the restaurant-booth sense, not a market stall."
+ },
+ {
+  "unit": "item:nf",
+  "verdict": "fail",
+  "reason": "'ugly'/'unattractive' are appearance judgements commonly used as body insults among children."
+ },
+ {
+  "unit": "item:ng",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nh",
+  "verdict": "fail",
+  "reason": "Wrong option 'cavalier' literally means a horseman (mounted soldier/rider), so it is a defensible answer."
+ },
+ {
+  "unit": "item:ni",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nl",
+  "verdict": "fail",
+  "reason": "'brooch' matches only one sense of 'pin'; wrong option 'fastener' is a more natural synonym of 'pin'."
+ },
+ {
+  "unit": "item:nm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:no",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:np",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nq",
+  "verdict": "fail",
+  "reason": "'gestation' is too obscure/adult for level 4; pregnancy/puberty vocabulary is unsuitable distractor material for this age band."
+ },
+ {
+  "unit": "item:nr",
+  "verdict": "fail",
+  "reason": "Wrong option 'bartender' is an alcohol-related word."
+ },
+ {
+  "unit": "item:ns",
+  "verdict": "fail",
+  "reason": "Link false: shellfish include crabs and shrimp (not mollusks) and many mollusks (slugs, octopus) are not shellfish; gloss even describes crustaceans. 'snail' is a mollusk."
+ },
+ {
+  "unit": "item:nt",
+  "verdict": "fail",
+  "reason": "Pair is a good opposite, but the gloss for 'full' shows the full-moon sense ('the time when the moon is fully illuminated'), which confuses the item; fix gloss."
+ },
+ {
+  "unit": "item:nu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:nv",
+  "verdict": "fail",
+  "reason": "Wrong option 'velvety' is a defensible synonym of 'fuzzy'/'downy' (soft, fine-haired); 'fuzzy' also commonly means blurry."
+ },
+ {
+  "unit": "item:nw",
+  "verdict": "fail",
+  "reason": "'archil'/'orchil' (lichen dye) and distractor 'aal' are far too obscure for any child."
+ },
+ {
+  "unit": "item:nx",
+  "verdict": "fail",
+  "reason": "'fitness' in its common sense means physical health; a 10-year-old will not read it as 'suitability'. Confusing."
+ },
+ {
+  "unit": "item:ny",
+  "verdict": "fail",
+  "reason": "Link false: a cocoon is the silk case (moths); a chrysalis is a butterfly pupa, not the same thing. Distractor 'anopheles' is obscure; 'sucker' is an insult."
+ },
+ {
+  "unit": "item:nz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:o0",
+  "verdict": "fail",
+  "reason": "'sabot' too obscure for level 5, and wrong option 'clog' is defensible: a sabot is a wooden clog."
+ },
+ {
+  "unit": "item:o1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:o2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:o3",
+  "verdict": "fail",
+  "reason": "Acacias are mostly trees; 'shrub' is not the clear category. Doubtful."
+ },
+ {
+  "unit": "item:o4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:o5",
+  "verdict": "fail",
+  "reason": "'spice' is a kind of flavoring, not the same meaning; 'sweetener' is also a flavoring."
+ },
+ {
+  "unit": "item:o6",
+  "verdict": "fail",
+  "reason": "'abnormality'/'defect' with body distractors (eyesight, retinal, pituitary) frames bodies as defective - stigmatising for disability; also abnormality is not exactly 'defect'."
+ },
+ {
+  "unit": "item:o7",
+  "verdict": "fail",
+  "reason": "Distractor 'murder' is a violent-crime word unsuitable here; 'swindler' is a defensible near-synonym of 'rogue'."
+ },
+ {
+  "unit": "item:o8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:o9",
+  "verdict": "fail",
+  "reason": "An essay is not the same as an article (a school essay is not an article); weak synonym at level 1."
+ },
+ {
+  "unit": "item:oa",
+  "verdict": "fail",
+  "reason": "Distractor 'thong' has an underwear double meaning; 'pinion' (bind/shackle) is also a defensible synonym."
+ },
+ {
+  "unit": "item:ob",
+  "verdict": "fail",
+  "reason": "Distractors 'hell' and 'damnation' are swear words and faith terms; 'cruelty' is also near-synonym of evil."
+ },
+ {
+  "unit": "item:oc",
+  "verdict": "fail",
+  "reason": "'grant' is not the same as 'allowance' (a child's allowance is pocket money); weak, confusing synonym."
+ },
+ {
+  "unit": "item:od",
+  "verdict": "fail",
+  "reason": "Wrong option 'derision' is a defensible synonym of 'contempt' (scorn)."
+ },
+ {
+  "unit": "item:oe",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:of",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:og",
+  "verdict": "fail",
+  "reason": "'arnica' and every distractor (buckthorn, capparis, artemisia) are too obscure; arnica is better called a plant/herb."
+ },
+ {
+  "unit": "item:oh",
+  "verdict": "fail",
+  "reason": "Wrong options 'supervision' and 'assistance' are defensible synonyms of 'guidance'."
+ },
+ {
+  "unit": "item:oi",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:oj",
+  "verdict": "fail",
+  "reason": "'shrink' as slang for psychiatrist is mocking/stigmatising about mental health care."
+ },
+ {
+  "unit": "item:ok",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ol",
+  "verdict": "fail",
+  "reason": "Distractors 'racism' and 'atheism' are sensitive (race, faith) and out of place in a child's synonym item."
+ },
+ {
+  "unit": "item:om",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:on",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:oo",
+  "verdict": "fail",
+  "reason": "'chute' primarily means a slide/channel; 'chute' for parachute is informal clipping - confusing for a child."
+ },
+ {
+  "unit": "item:op",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:oq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:or",
+  "verdict": "fail",
+  "reason": "Link false: a ski is not a kind of metal."
+ },
+ {
+  "unit": "item:os",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ot",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ou",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ov",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ow",
+  "verdict": "fail",
+  "reason": "Wrong option 'reproach' is a defensible synonym of 'condemnation'/'censure'."
+ },
+ {
+  "unit": "item:ox",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:oy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:oz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:p0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:p1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:p2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:p3",
+  "verdict": "fail",
+  "reason": "Hay is dried grass (made from grass), not a kind of grass; 'crop' is also a defensible category for hay."
+ },
+ {
+  "unit": "item:p4",
+  "verdict": "fail",
+  "reason": "'politician' is broader than 'lawmaker' (legislator); not the same meaning."
+ },
+ {
+  "unit": "item:p5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:p6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:p7",
+  "verdict": "fail",
+  "reason": "Wrong option 'unacceptable' is a defensible synonym of 'inappropriate'."
+ },
+ {
+  "unit": "item:p8",
+  "verdict": "fail",
+  "reason": "Link false: sugar is a kind of sweetener (narrower), not the same meaning."
+ },
+ {
+  "unit": "item:p9",
+  "verdict": "fail",
+  "reason": "Juice is not the same as an extract; weak synonym at level 2."
+ },
+ {
+  "unit": "item:pa",
+  "verdict": "fail",
+  "reason": "A household need not be a family (can be unrelated people); 'establishment' is a dictionary synonym of household. Doubtful."
+ },
+ {
+  "unit": "item:pb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pc",
+  "verdict": "fail",
+  "reason": "Link false: 'sweet' is a taste adjective, not a category glycerin is a kind of."
+ },
+ {
+  "unit": "item:pd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pe",
+  "verdict": "fail",
+  "reason": "Distractor 'sho' is not a recognisable word for a child; 'respirator' is a kind of mask; 'disguise' matches only one sense of 'mask'."
+ },
+ {
+  "unit": "item:pf",
+  "verdict": "fail",
+  "reason": "Link false: a chair is a kind of seat (narrower), not the same meaning."
+ },
+ {
+  "unit": "item:pg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ph",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pi",
+  "verdict": "fail",
+  "reason": "Wrong option 'champion' also means defender ('a champion of the poor')."
+ },
+ {
+  "unit": "item:pj",
+  "verdict": "fail",
+  "reason": "'corylus' (Latin genus) and distractors vitis, calamus, agathis are far too obscure."
+ },
+ {
+  "unit": "item:pk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pn",
+  "verdict": "fail",
+  "reason": "Distractor 'bondage' has a sexual connotation; 'confinement' is also a defensible synonym of 'constraint'."
+ },
+ {
+  "unit": "item:po",
+  "verdict": "fail",
+  "reason": "Sap is not the same as juice; 'latex' is a kind of plant sap and so defensible; 'sap' is also an insult."
+ },
+ {
+  "unit": "item:pp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ps",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pu",
+  "verdict": "fail",
+  "reason": "Wrong option 'facile' means easy, so it is a defensible answer."
+ },
+ {
+  "unit": "item:pv",
+  "verdict": "fail",
+  "reason": "A franchise is not the same as a dealership (franchise also means right to vote); adult business vocabulary (mortgage, broker) at level 5."
+ },
+ {
+  "unit": "item:pw",
+  "verdict": "fail",
+  "reason": "Wrong option 'incorrect' is a defensible synonym of 'faulty' (faulty reasoning)."
+ },
+ {
+  "unit": "item:px",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:py",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:pz",
+  "verdict": "fail",
+  "reason": "'vulnerability' is not a clean synonym of 'exposure'; 'vulnerable' (same family as answer) adds confusion."
+ },
+ {
+  "unit": "item:q0",
+  "verdict": "fail",
+  "reason": "Wrong option 'chasm' is a defensible synonym of 'fissure' (a deep fissure)."
+ },
+ {
+  "unit": "item:q1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q2",
+  "verdict": "fail",
+  "reason": "Wrong option 'cavalier' literally means horseman, so it is a defensible answer."
+ },
+ {
+  "unit": "item:q3",
+  "verdict": "fail",
+  "reason": "'fowl' usually means poultry (a kind of bird); 'bird' is the broader word. Doubtful as same meaning."
+ },
+ {
+  "unit": "item:q4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:q8",
+  "verdict": "fail",
+  "reason": "Wrong option 'affirm' is a thesaurus synonym of 'proclaim'/'declare'."
+ },
+ {
+  "unit": "item:q9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qa",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qb",
+  "verdict": "fail",
+  "reason": "The answer word 'wrong' (as a noun) is confusing in a quiz context; a 10-year-old will misread it."
+ },
+ {
+  "unit": "item:qc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qd",
+  "verdict": "fail",
+  "reason": "Wrong option 'muck' is a synonym of 'grime'/'filth'; 'crock' has a crude idiom."
+ },
+ {
+  "unit": "item:qe",
+  "verdict": "fail",
+  "reason": "Contested: a tomato is botanically a fruit (a well-known kids' fact); ambiguous for a careful child."
+ },
+ {
+  "unit": "item:qf",
+  "verdict": "fail",
+  "reason": "Magma is molten rock, not a solid rock; 'a kind of rock' is doubtful for a child. Distractor 'scum' is unpleasant."
+ },
+ {
+  "unit": "item:qg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qi",
+  "verdict": "fail",
+  "reason": "Distractors 'flaccid' (sexual snigger word) and 'pasty' (body insult) unsuitable."
+ },
+ {
+  "unit": "item:qj",
+  "verdict": "fail",
+  "reason": "Wrong option 'endive' is defensible (chicory and endive are the same/related plant); gloss shows plant = factory sense."
+ },
+ {
+  "unit": "item:qk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ql",
+  "verdict": "fail",
+  "reason": "Wrong options 'jubilation', 'ecstasy' and 'rapture' are all synonyms of euphoria; 'ecstasy' is also a drug name."
+ },
+ {
+  "unit": "item:qm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qn",
+  "verdict": "fail",
+  "reason": "A crane is a machine that uses a hoist; 'hoist' is not the same meaning. Also 'crane' (bird) ambiguity with 'roost'."
+ },
+ {
+  "unit": "item:qo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qp",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qq",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qr",
+  "verdict": "fail",
+  "reason": "Conifers are mostly trees, not shrubs; 'evergreen' is also a defensible category."
+ },
+ {
+  "unit": "item:qs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qt",
+  "verdict": "fail",
+  "reason": "Link false: concrete is not cement (cement is an ingredient of concrete); a common misconception."
+ },
+ {
+  "unit": "item:qu",
+  "verdict": "fail",
+  "reason": "'hemorrhage' is profuse (stronger) bleeding, and the medical/gore vocabulary (coronary, transfusion) is unsuitable."
+ },
+ {
+  "unit": "item:qv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:qx",
+  "verdict": "fail",
+  "reason": "Link false: a novelist is a kind of author, not the same meaning."
+ },
+ {
+  "unit": "item:qy",
+  "verdict": "fail",
+  "reason": "Earthenware is a kind of pottery (narrower), not the same meaning."
+ },
+ {
+  "unit": "item:qz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r1",
+  "verdict": "fail",
+  "reason": "'sabot' is too obscure for level 5; 'clog' primarily means block, so confusing."
+ },
+ {
+  "unit": "item:r2",
+  "verdict": "fail",
+  "reason": "Soap and detergent are different cleaning agents (detergent is synthetic); weak synonym."
+ },
+ {
+  "unit": "item:r3",
+  "verdict": "fail",
+  "reason": "'malvaceae' (botanical family, and mostly not trees) and distractors dicot, araceae, ranunculus are far too obscure; link wrong."
+ },
+ {
+  "unit": "item:r4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r5",
+  "verdict": "fail",
+  "reason": "A reservoir is a kind of (often artificial) lake, not the same; 'lagoon' is equally defensible."
+ },
+ {
+  "unit": "item:r6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:r8",
+  "verdict": "fail",
+  "reason": "Wrong option 'trimming' is a thesaurus synonym of 'ornament'/'adornment'."
+ },
+ {
+  "unit": "item:r9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ra",
+  "verdict": "fail",
+  "reason": "Distractor 'aperitif' is an alcoholic drink."
+ },
+ {
+  "unit": "item:rb",
+  "verdict": "fail",
+  "reason": "Distractors 'bantu' and 'slavic' are ethnic/language-group names (lowercased; 'bantu' is a slur in South Africa)."
+ },
+ {
+  "unit": "item:rc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rd",
+  "verdict": "fail",
+  "reason": "Wrong options 'outstanding' and 'incredible' are both synonyms of 'extraordinary'."
+ },
+ {
+  "unit": "item:re",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rf",
+  "verdict": "fail",
+  "reason": "A parcel is a package, not a container; wrong option 'bundle' is a defensible category."
+ },
+ {
+  "unit": "item:rg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rh",
+  "verdict": "fail",
+  "reason": "Gluttony is greed for food (narrower) and a religious 'deadly sin' term; not the same meaning."
+ },
+ {
+  "unit": "item:ri",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rj",
+  "verdict": "fail",
+  "reason": "Link false: an airplane is a kind of aircraft, not the same meaning."
+ },
+ {
+  "unit": "item:rk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rl",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ro",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rp",
+  "verdict": "fail",
+  "reason": "Wrong option 'print' is a thesaurus synonym of 'copy' (a print of a photo)."
+ },
+ {
+  "unit": "item:rq",
+  "verdict": "fail",
+  "reason": "Pair is fine, but the gloss for 'grain' shows the particle sense ('a small granular particle'), not cereal grain; confusing."
+ },
+ {
+  "unit": "item:rr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rs",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ru",
+  "verdict": "fail",
+  "reason": "A participant is not the same as a member; distractor 'wager' is a gambling word."
+ },
+ {
+  "unit": "item:rv",
+  "verdict": "fail",
+  "reason": "'bevel'/'chamfer' and distractors rabbet, mortice are too obscure; 'miter' is a kind of bevel."
+ },
+ {
+  "unit": "item:rw",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ry",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:rz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s2",
+  "verdict": "fail",
+  "reason": "Link false: arithmetic is one branch of maths, not the same meaning."
+ },
+ {
+  "unit": "item:s3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s4",
+  "verdict": "fail",
+  "reason": "Distractors 'canadian', 'scotland' are proper nouns lowercased in a spelling app; 'alp' (high mountain pasture) is near highland."
+ },
+ {
+  "unit": "item:s5",
+  "verdict": "fail",
+  "reason": "Wrong option 'endorsement' is a thesaurus synonym of 'confirmation' (approval, ratification)."
+ },
+ {
+  "unit": "item:s6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:s9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sa",
+  "verdict": "fail",
+  "reason": "A latch is not a lock (a latch fastens without locking); weak synonym."
+ },
+ {
+  "unit": "item:sb",
+  "verdict": "fail",
+  "reason": "A campfire is not a bonfire (bonfire is a large celebratory/signal fire, per the gloss)."
+ },
+ {
+  "unit": "item:sc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sd",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:se",
+  "verdict": "fail",
+  "reason": "Wrong option 'posit' means to suppose/guess, a defensible answer."
+ },
+ {
+  "unit": "item:sf",
+  "verdict": "fail",
+  "reason": "Wrong option 'peculiarity' is a synonym of 'trait'; 'masculinity'/'masculine' gender distractors are out of place."
+ },
+ {
+  "unit": "item:sg",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:si",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sk",
+  "verdict": "fail",
+  "reason": "Wrong option 'sheen' is a defensible synonym of 'gleam'; gloss shows the merriment sense of sparkle."
+ },
+ {
+  "unit": "item:sl",
+  "verdict": "fail",
+  "reason": "Distractor 'thong' has an underwear double meaning."
+ },
+ {
+  "unit": "item:sm",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sn",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:so",
+  "verdict": "fail",
+  "reason": "Wrong option 'notification' is a defensible synonym of 'announcement'."
+ },
+ {
+  "unit": "item:sp",
+  "verdict": "fail",
+  "reason": "Wrong options 'palaver', 'gabble' and 'blabber' are all synonyms of 'prattle'."
+ },
+ {
+  "unit": "item:sq",
+  "verdict": "fail",
+  "reason": "Citizenship and nationality are not exactly the same (sensitive for diaspora families); gloss shows the 'people of common origin' sense."
+ },
+ {
+  "unit": "item:sr",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ss",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:st",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:su",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sv",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sw",
+  "verdict": "fail",
+  "reason": "A plateau is a kind of highland (flat elevated land); 'highland' is broader."
+ },
+ {
+  "unit": "item:sx",
+  "verdict": "fail",
+  "reason": "Wrong option 'salute' (to praise/honour publicly) is a defensible synonym of 'praise'."
+ },
+ {
+  "unit": "item:sy",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:sz",
+  "verdict": "fail",
+  "reason": "Wrong option 'ravine' is a defensible near-synonym of 'chasm'/'abyss'."
+ },
+ {
+  "unit": "item:t0",
+  "verdict": "fail",
+  "reason": "Wrong option 'tranquility' is a defensible synonym of 'stillness'; stillness (no movement) is not exactly silence."
+ },
+ {
+  "unit": "item:t1",
+  "verdict": "fail",
+  "reason": "A grotto is a small cave, a cavern a large one; not the same meaning."
+ },
+ {
+  "unit": "item:t2",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t3",
+  "verdict": "fail",
+  "reason": "Wrong option 'violet' is defensible: a petal is part of a violet."
+ },
+ {
+  "unit": "item:t4",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t7",
+  "verdict": "fail",
+  "reason": "Lava is molten rock to a child; 'lava is a kind of rock' is doubtful/confusing."
+ },
+ {
+  "unit": "item:t8",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:t9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ta",
+  "verdict": "fail",
+  "reason": "Wrong option 'cloudy' is a defensible synonym of 'hazy'; 'dreamy' also (hazy memory)."
+ },
+ {
+  "unit": "item:tb",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:td",
+  "verdict": "fail",
+  "reason": "A shelf is a flat board; a rack is a framework - not the same meaning."
+ },
+ {
+  "unit": "item:te",
+  "verdict": "fail",
+  "reason": "Wrong option 'contention' is a synonym of 'dispute'/'disagreement'."
+ },
+ {
+  "unit": "item:tf",
+  "verdict": "fail",
+  "reason": "Distractor 'june' is a month name in lowercase - wrong spelling in a spelling app."
+ },
+ {
+  "unit": "item:tg",
+  "verdict": "fail",
+  "reason": "A pebble is a small stone (narrower), not the same meaning."
+ },
+ {
+  "unit": "item:th",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ti",
+  "verdict": "fail",
+  "reason": "Distractors 'irish', 'welsh' are nationality proper nouns lowercased; 'welsh' is also a slur verb."
+ },
+ {
+  "unit": "item:tj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tk",
+  "verdict": "fail",
+  "reason": "A chime is a set of tuned bells (per gloss), not a bell; not the same meaning."
+ },
+ {
+  "unit": "item:tl",
+  "verdict": "fail",
+  "reason": "'aalii' and distractor 'baptisia' far too obscure; 'cactuses' a nonstandard plural distractor."
+ },
+ {
+  "unit": "item:tm",
+  "verdict": "fail",
+  "reason": "'straighten' and 'align' are not the same (align = put in line); doubtful."
+ },
+ {
+  "unit": "item:tn",
+  "verdict": "fail",
+  "reason": "Wrong options 'decent', 'sufficient' and 'reasonable' are all defensible synonyms of 'acceptable'."
+ },
+ {
+  "unit": "item:to",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tp",
+  "verdict": "fail",
+  "reason": "Distractor 'lena' is not a recognisable common word (a river / a name)."
+ },
+ {
+  "unit": "item:tq",
+  "verdict": "fail",
+  "reason": "Link false: a pine is a kind of conifer, not the same meaning."
+ },
+ {
+  "unit": "item:tr",
+  "verdict": "fail",
+  "reason": "Link false: an airplane is a kind of aircraft, not the same meaning."
+ },
+ {
+  "unit": "item:ts",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tt",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tu",
+  "verdict": "fail",
+  "reason": "'sucker' is an insult with a crude double meaning; 'dupe' as a person is also an insult."
+ },
+ {
+  "unit": "item:tv",
+  "verdict": "fail",
+  "reason": "Awareness is not the same as knowledge; 'realization' and 'cognition' are equally defensible."
+ },
+ {
+  "unit": "item:tw",
+  "verdict": "fail",
+  "reason": "A suspect is not the same as the accused; crime vocabulary at level 2."
+ },
+ {
+  "unit": "item:tx",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ty",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:tz",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u0",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u1",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u2",
+  "verdict": "fail",
+  "reason": "A clock is a kind of timepiece (watches are too); 'timepiece' is broader."
+ },
+ {
+  "unit": "item:u3",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u4",
+  "verdict": "fail",
+  "reason": "Wrong option 'hypothesis' is a defensible synonym of 'assumption'/'supposition'; 'hypotheses' plural duplicate confusing."
+ },
+ {
+  "unit": "item:u5",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u6",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u7",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:u8",
+  "verdict": "fail",
+  "reason": "A pomegranate is a fruit (and the plant is often a shrub); 'tree' is not the clear category."
+ },
+ {
+  "unit": "item:u9",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ua",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ub",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uc",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ud",
+  "verdict": "fail",
+  "reason": "Wrong option 'muck' is a defensible synonym of 'mire' (mud)."
+ },
+ {
+  "unit": "item:ue",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uf",
+  "verdict": "fail",
+  "reason": "Wrong option 'defile' is a synonym of 'pollute' (and has a sexual connotation)."
+ },
+ {
+  "unit": "item:ug",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uh",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ui",
+  "verdict": "fail",
+  "reason": "Wrong option 'agony' (anguish) is a defensible near-synonym of 'sorrow'."
+ },
+ {
+  "unit": "item:uj",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uk",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:ul",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:um",
+  "verdict": "fail",
+  "reason": "'propriety' is too advanced for level 4 (age 11)."
+ },
+ {
+  "unit": "item:un",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uo",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:up",
+  "verdict": "fail",
+  "reason": "Pair is a good opposite, but the gloss for 'sink' is the plumbing-fixture noun, which contradicts the verb sense; confusing."
+ },
+ {
+  "unit": "item:uq",
+  "verdict": "fail",
+  "reason": "Distractor 'abuse' is a sensitive word with no place in a level-2 synonym item."
+ },
+ {
+  "unit": "item:ur",
+  "verdict": "fail",
+  "reason": "'aborigine' is an outdated/offensive term; distractors 'turkic', 'malay' are lowercased ethnic names."
+ },
+ {
+  "unit": "item:us",
+  "verdict": "fail",
+  "reason": "A skyline is the outline of buildings against the sky, not the horizon."
+ },
+ {
+  "unit": "item:ut",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uu",
+  "verdict": "pass",
+  "reason": ""
+ },
+ {
+  "unit": "item:uv",
+  "verdict": "pass",
+  "reason": ""
+ }
+]
