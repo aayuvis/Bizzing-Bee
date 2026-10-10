@@ -3333,6 +3333,10 @@ const app = {
   openAnalogies:(sub)=>{ clearGTimer(); state.game=null; const parts=String(sub||'').split('/').filter(Boolean), late=!window.SB_ANL;
     if(late) app.setNav('analogy');
     lazyNeed('analogy', ()=>{ if(late && state.nav!=='analogy') return; try{ if(window.SB_ANL) SB_ANL.openRoute(parts); }catch(e){} }); },
+  /* the Library's Link Finder (owner, 10 Oct 2026), the same lazy group; #/links, #/links/<word> */
+  openAnlTool:(w)=>{ clearGTimer(); state.game=null; const late=!window.SB_ANL; const word=(typeof w==='string'&&/^[a-z][a-z\- ]*$/i.test(w))?w:null;
+    if(late) app.setNav('anltool');
+    lazyNeed('analogy', ()=>{ if(late && state.nav!=='anltool') return; try{ if(window.SB_ANL) SB_ANL.openTool(word); }catch(e){} }); },
   openAnlBee:()=>{ clearGTimer(); state.game=null; const late=!window.SB_ANL;
     if(late) app.setNav('anlbee');
     lazyNeed('analogy', ()=>{ if(late && state.nav!=='anlbee') return; try{ if(window.SB_ANL) SB_ANL.openBee(); }catch(e){} }); },
@@ -6047,6 +6051,10 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
     ${pageHead('The Library','everything the Atlas teaches')}
     ${libShelf()}
+    <button class="lib-anlband" data-act="openAnlTool" aria-label="Open the Link Finder">
+      <span class="lib-anlic">${navIcon('analogy',26,true)}</span>
+      <span class="lib-anltx"><b>Link Finder</b><span>Type any word and see how it links to others: twins, opposites, parts, word families. Then build an analogy from it.</span></span>
+      <span class="lib-anlgo">Open ${iconSVG('arrow',16,2.4)}</span></button>
     <div class="lib-grid">${tiles}</div>
   </div>`; }
 
@@ -6777,6 +6785,7 @@ function viewApp(){
   else if(S.nav==='daily') content=viewDaily();
   else if(S.nav==='dailybuzz') content=viewDailyBuzz();
   else if(S.nav==='analogy') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.view():(lazyNeed('analogy',()=>{ if(state.nav==='analogy') render(); }), hiveLoader('opening the Analogy Atlas…')));
+  else if(S.nav==='anltool') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.toolView():(lazyNeed('analogy',()=>{ if(state.nav==='anltool') render(); }), hiveLoader('opening the Link Finder…')));
   else if(S.nav==='anlbee') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.beeView():(lazyNeed('analogy',()=>{ if(state.nav==='anlbee') render(); }), hiveLoader('opening the bee…')));
   else if(S.nav==='forge') content=viewForge();
   else if(S.nav==='gym') content=viewGym();

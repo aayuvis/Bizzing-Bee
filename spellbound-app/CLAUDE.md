@@ -1084,6 +1084,16 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   agents from level 5. **`reviewed:false`** — the seeds and the lessons were written by Claude and are a DRAFT; the owner put the
   tab live before a person read them. `tests/analogy-data.cjs` (node, data gate) holds every word to the library and the
   strike lists, one answer per item, and level checks to items no stop uses.
+- **Learn is step by step** (owner, 10 Oct 2026: "the UI is primitive and it's not step by step learning"): `lessonView` is
+  an eight-step walk — the idea → say the link → name one yourself → how to spot it → the trap → build an analogy a part
+  at a time → try one → ready — drawn as word tiles joined by a drawn link (`pairHTML`), never monospace `A : B :: C : D`.
+  The asking steps hold Next until done; a wrong pick says why and lets the child on (nothing scored or paid). → / ← /
+  Enter / 1–3, and every control is a button. Options come from the lesson's own stems by hash (`nameOpts`, `tryOpts`).
+- **Link Finder** (owner, 10 Oct: "analogy tool in the library … a full page stretch thin banner under the book series"):
+  `.lib-anlband` under `libShelf()` in the Library opens nav `anltool`, `#/links`, `#/links/<word>`, `#/links/link/<lesson>`
+  (`app.openAnlTool`, same lazy group). Type a word → its links grouped by kind, each pair as tiles with its sentence; tap
+  the other word to walk on; "Make an analogy from this link" builds one (stem from the lesson's bank, wrong answers from
+  other pairs of the same link, all by hash). Browse the nine links when nothing is typed. Nothing scored or paid.
 - **Wrong answers are recipes, never chance**: `a` an associate of C from Bee's word map, `o:<rel>` tied to C another way, `s`
   the right kind of answer for another pair, `f` the answer's word family. A miss HOLDS and says which, in plain words.
 - **Never the answer in plain sight**: no definition on screen while a question is open; the bridge step words every option the
