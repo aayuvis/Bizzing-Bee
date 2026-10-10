@@ -12604,7 +12604,11 @@ function typedDone(){ const S=state; const g=S.game; let title,big,sub;
     <div style="display:flex;gap:10px;justify-content:center">${backPill('exitGame','Arcade',null)}<button data-act="gReplay" style="padding:13px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Play again →</button></div>
   </div>`; }
 function mcGame(){ const S=state; const g=S.game; const q=g.qs[g.i]; const mono=q.kind==='spell';
-  const statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.qs.length} · ✓ ${g.right} <span class="sb-mob-hide" style="opacity:.7">· keys 1–4 pick · R repeat</span></div>`;
+  /* the key hint is chrome, and chrome must not say the word being asked ("which word means to do or say
+     something again?" over "R repeat") — a hint that holds the target drops itself for that question */
+  const keyHint='keys 1–4 pick · R repeat', tgt=String(q.word||q.answer||'').toLowerCase();
+  const hintOk=!tgt||!keyHint.toLowerCase().split(/[^a-z]+/).includes(tgt);
+  const statusBar=`<div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)">${gameName(g.type)} · ${g.i+1}/${g.qs.length} · ✓ ${g.right} ${hintOk?`<span class="sb-mob-hide" style="opacity:.7">· ${keyHint}</span>`:''}</div>`;
   const choices=q.choices.map((ch,idx)=>{ let bg='var(--surface2)',col='var(--text)',bd='var(--line)';
     if(g.picked!=null){ if(ch===q.answer){ bg='color-mix(in srgb,#1f9d57 20%,var(--bg2))'; col='var(--text)'; bd='#1f9d57'; } else if(idx===g.picked){ bg='color-mix(in srgb,var(--bad) 18%,var(--bg2))'; bd='var(--bad)'; } }
     return `<button data-act="gPick" data-arg="${idx}" ${g.picked!=null?'disabled':''} style="text-align:${mono?'center':'left'};padding:15px 17px;border-radius:14px;background:${bg};border:2px solid ${bd};color:${col};font-family:${mono?'var(--mono)':'var(--display)'};font-weight:800;font-size:15px;${mono?'letter-spacing:.04em;':''}">${esc(ch)}</button>`; }).join('');
