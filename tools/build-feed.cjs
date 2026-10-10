@@ -18,7 +18,7 @@
    word stories.
 
    Kinds, and the one field each shows:
-     place      the region's road: its stop count, first and last stop          trail-data.js acts
+     place      the region's road: its stop count, first and last stop          trail-road.js place() (lap 1)
      lesson     a chapter's idea (`concept`), and each teaching card           concepts-data.js
      quiz       the stop's own concept questions (idea, family member, hook)   trail-data.js units[].qs
      word       a chapter word's meaning and respelling, as the chapter has it concepts-data.js words[]
@@ -53,10 +53,16 @@
    next one, and the level-free cards), ranks, and then fetches only the body chunks its twenty
    cards live in. Nothing is on the first screen. tests/feed-screen.cjs holds that.
 
+   Dropped, never edited (10 Oct 2026, the 4.5 brief): a card on the stigma list (tools/stigma.cjs) and a root
+   question whose answer's stem sits in its prompt (tools/root-leak.cjs). A place card's count is the board's
+   (trail-road.js), never units.length.
+
    Run: node tools/build-feed.cjs        (then node tests/feed-content.cjs) */
 'use strict';
 const fs = require('fs'), path = require('path');
 const { load, APP, regionName } = require('./feed-corpus.cjs');
+const STIGMA = require('./stigma.cjs');                 // the stigma list (kid-safe.js), node's one door to it
+const { leak: rootLeak } = require('./root-leak.cjs');  // a root question whose answer's stem is in its prompt
 const C = load();
 /* A CARD IS NEVER CUT FROM A RAW GLOSS (audit v4, V3: "is an outfit…", "(ethics)… in the basis",
    "comfy`"). words-patch.js's SB_GLOSS_OK is the test — the same one the word of the hour uses —
@@ -96,10 +102,14 @@ C.ACTS.forEach((a, ai) => {
   const L = ai + 1, lv = LEVELS[ai], units = a.units.map((id) => C.UNITS[id]).filter(Boolean);
   const put = (it) => { it.level = L; return add(it); };
 
-  /* place — the region's road, in its own stop titles */
-  const firstT = units[0].title, lastT = units[units.length - 1].title;
-  put({ id: 'pl-' + a.id, kind: 'place', src: 'act:' + a.id, route: '#/atlas/honey/' + a.id, cta: 'Open ' + lv.name,
-    title: a.title, body: units.length + ' stops on this road, from “' + firstT + '” to “' + lastT + '”.' });
+  /* place — the region's road as its own board counts it (the 4.5 brief, P0.14): trail-road.js's place(),
+     the function trail.js builds the board from — stops AND checkpoints, on the first walk (lap 1). It used
+     to say `units.length`, every lap's units at once: the Meadow board said 13 where the card said 11, the
+     Big Stage 2 where it said 15. A child on a later lap gets the same function's words for their lap
+     (bee-feed.js re-cuts the card); tests/feed-content.cjs holds the card to the board for all nine. */
+  const road = C.ROAD.place(C.TRAIL, a.id, 1);
+  if (road) put({ id: 'pl-' + a.id, kind: 'place', src: 'act:' + a.id, route: '#/atlas/honey/' + a.id, cta: 'Open ' + lv.name,
+    title: a.title, body: road.body });
 
   units.forEach((u) => {
     const ch = C.chapterOf(u); if (!ch) return;
@@ -138,6 +148,7 @@ C.ACTS.forEach((a, ai) => {
     const opts = q.c.slice(0, 4);
     if (new Set(opts).size !== opts.length) return;
     if (q.th !== 'wbreak' && q.q.toLowerCase().includes(String(opts[0]).toLowerCase())) return;   // a question that gives its answer away
+    if (rootLeak(q)) return;                                                                      // …or its stem, inside a root's Latin or Greek form
     if (q.th === 'wmeaning' && !opts.every((o) => GLOSS_OK(o))) return;                          // an option that is a raw gloss
     put({ id: 'pq-' + q.id, kind: 'play', bands: q.lv >= 4 ? from('11-13') : undefined, topics: ['word:' + w], key: 'word:' + w,
       src: 'trivia:' + q.id, route: '#/word/' + w, cta: 'Open “' + w + '”', title: q.th === 'wmeaning' ? 'What does it mean?' : q.th === 'wroots' ? 'Which word?' : 'Break it down',
@@ -178,11 +189,17 @@ Object.keys(ANL.items).forEach((id) => {
   const it = ANL.items[id], [rel, lv, c, d] = it, L = anlLesson[rel]; if (!L) return;
   const wrong = it.slice(4).map((x) => String(x).split('|')[0]).slice(0, 3); if (!wrong.length) return;
   const opts = [d].concat(wrong); if (new Set(opts).size !== opts.length) return;
+  /* the Atlas asks an item only when every word on it passes kidSafe for the child (analogy.js itemOK, the 4.5
+     brief P0.7) — so does the feed: a word no game may serve (murder, a stigmatising gloss) drops the card, and
+     one held back under eleven (absinthe) lifts it to the 11–13 band */
+  const kidWhy = (age) => opts.concat(c).map((x) => STIGMA.K.why({ w: x, d: ANL.gloss[x] || (C.WORD[x] || {}).d || '' }, age)).find(Boolean);
+  if (kidWhy(99)) return;
+  const under11 = !!kidWhy(8);
   const pool = anlStem(L, rel, opts.concat(c), d); if (!pool.length) return;
   const st = pool[fnv('feed|' + id) % pool.length], q = anlQ(st[0], st[1], c), title = 'Analogy · ' + L.title;
   if ((q + ' ' + title).toLowerCase().includes(d.toLowerCase())) return;                           // the question gives its answer away
   const g = ANL.gloss[d], after = g && GLOSS_OK(g, d) && !g.toLowerCase().includes(d.toLowerCase()) ? d + ': ' + g : '';
-  add({ id: 'aq-' + id, kind: 'analogy', level: lv, bands: lv >= 7 ? from('11-13') : lv >= 5 ? from('8-10') : undefined, topics: ['anl:' + L.id],
+  add({ id: 'aq-' + id, kind: 'analogy', level: lv, bands: lv >= 7 || under11 ? from('11-13') : lv >= 5 ? from('8-10') : undefined, topics: ['anl:' + L.id],
     src: 'anl:' + id, route: '#/analogies', cta: 'Open the Analogy Atlas', title, play: { q, opts, after } });
 });
 ANL.lessons.forEach((L) => [['idea', 'Analogies · '], ['spot', 'Spot it · '], ['trap', 'The trap · ']].forEach(([f, pre]) => {
@@ -252,7 +269,13 @@ const INSULT = new Set(['idiot', 'idiots', 'idiotic', 'moron', 'morons', 'moroni
   'mongolism', 'negroid', 'midget', 'midgets', 'hottentot', 'hottentots']);
 const rude = (it) => [it.title, it.body, it.source].concat(it.play ? [it.play.q, it.play.after].concat(it.play.opts) : [])
   .some((x) => (String(x || '').toLowerCase().match(/[a-z]+(?:-[a-z]+)*/g) || []).some((t) => INSULT.has(t)));
+/* …nor any card whose words hurt someone for a disability, their mental health, their ethnicity or their body
+   (the 4.5 brief, P0.11–P0.13: "the tragic spectacle of cripples" was a usage card). The list is kid-safe.js's,
+   read through tools/stigma.cjs; a card is DROPPED, never edited — its source is fixed at rest by
+   tools/stigma-fix.cjs, and tests/stigma.cjs holds the finished cards to the same list. */
+let stigmaDropped = 0;
 for (let i = items.length - 1; i >= 0; i--) if (rude(items[i])) items.splice(i, 1);
+  else if (STIGMA.hit(STIGMA.cardText(items[i]))) { items.splice(i, 1); stigmaDropped++; }
 const nd = nearDup(items);
 const kept = items.filter((_, i) => !nd.drop.has(i));
 
@@ -289,9 +312,9 @@ fs.writeFileSync(path.join(DIR, 'feed-meta.js'), head + 'window.SB_FEED_META = '
 const byKind = {}, byLevel = {}; let agnostic = 0;
 kept.forEach((it) => { byKind[it.kind] = (byKind[it.kind] || 0) + 1; if (it.level == null) agnostic++; else byLevel[it.level] = (byLevel[it.level] || 0) + 1; });
 fs.writeFileSync(path.join(__dirname, 'feed-manifest.json'), JSON.stringify({ total: kept.length, agnostic, byKind,
-  byLevel: LEVELS.map((l) => [l.n, l.name, byLevel[l.n] || 0]), nearDuplicatesDropped: nd.pairs.length, nearDuplicateExamples: nd.pairs.slice(0, 12),
+  byLevel: LEVELS.map((l) => [l.n, l.name, byLevel[l.n] || 0]), stigmaDropped, nearDuplicatesDropped: nd.pairs.length, nearDuplicateExamples: nd.pairs.slice(0, 12),
   libraryWordsHeldBackPerLevel: LEVELS.map((l) => [l.n, Math.max(0, spotAvail[l.n] - SPOT_WORDS)]) }, null, 1) + '\n');
-console.log('feed: ' + kept.length + ' cards (' + nd.pairs.length + ' near-duplicates dropped) — ' + Object.keys(byKind).map((k) => k + ' ' + byKind[k]).join(' · '));
+console.log('feed: ' + kept.length + ' cards (' + nd.pairs.length + ' near-duplicates, ' + stigmaDropped + ' on the stigma list dropped) — ' + Object.keys(byKind).map((k) => k + ' ' + byKind[k]).join(' · '));
 console.log('  by level: ' + LEVELS.map((l) => l.n + ' ' + l.name + ' ' + (byLevel[l.n] || 0)).join(' · ') + ' · no level ' + agnostic);
 console.log('  files: ' + Object.keys(files.index).length + ' indexes, ' + Object.keys(files.body).length + ' body chunks in feed/');
 void textOf;

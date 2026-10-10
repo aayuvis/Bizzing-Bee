@@ -35,7 +35,7 @@ the Play tab.
 | Key | Card | Door | Status | Out (what it came in for) |
 |---|---|---|---|---|
 | `mockbee` | Mock Spelling Bee (with Family Bee night) — a half banner since 9 Oct 2026 | Compete | kept | — (Family Bee night is a mode, in for the Spelling Duel) |
-| `mockAnalogy` | Mock Analogy Bee — the other half banner (`analogy.js`, `#/anlbee`) | Compete | added (owner, 9 Oct 2026) | — (an owner addition: the count went from 10 to 11) |
+| `mockAnalogy` | Mock Analogy Bee — the other half banner (`analogy.js`, `#/anlbee`) | Compete | added (owner, 9 Oct 2026) | — (an owner addition: the count went from 10 to 11). The 4.5 brief (P0.27) asked to enter it against Hive Mind; the owner chose on 10 Oct to leave Hive Mind as it is and keep this as an owner exception. Behind tester mode until the analogy review's three rounds pass and the owner releases it |
 | `gym` | Spelling Gym (name from `SB_HUB_NAMES`) | Train | in | `beat`, `magic`, `wordquiz` (its spelling rounds) |
 | `lore` | Word Lore (name from `SB_HUB_NAMES`) | Train | in | `trivia` (word themes), `wordquiz` (meaning, origin and idiom rounds), `bizz` |
 | `hive` | Hive Mind (name from `SB_HUB_NAMES`) | Train | in | `trivia` (general themes) |
@@ -44,7 +44,7 @@ the Play tab.
 | `typeBlaster` | Type Blaster (Spell Scene merged in) | Play | kept | — |
 | `honeycombRun` | Honeycomb Run | Play | kept | — |
 | `wordForge` | Word Forge (hidden until `SB_FORGE.signedOff`; the testing unlock shows it) | Play | in | `spellScene` |
-| `dailyBuzz` | Daily Buzz — back 5 Oct 2026, as it was (`daily-buzz.js`, `#/buzz`; no level chip) | Play | in | `unscrambleStars` (its slot, held for Sound Paths until the owner gave it to Daily Buzz) |
+| `dailyBuzz` | Daily Buzz — back 5 Oct 2026, as it was (`daily-buzz.js`, `#/buzz`; no level chip) | Play | in | `unscrambleStars` (its slot, held for Sound Paths until the owner gave it to Daily Buzz). The 4.5 brief (P0.26) asked to merge it into Daily Bee; the owner chose on 10 Oct to keep both |
 
 Not in the registry: **Sound Paths** (`soundPaths`, Play). Its reserved slot (Unscramble Stars') went to Daily Buzz
 on 5 Oct 2026, so when its alignment data is ready it comes in only by naming a card that goes out.
