@@ -17,6 +17,11 @@
         the Arcade and the trivia hub — the hub's figure does not move as shards land;
      5. Home's stop count is the Atlas's: the badge and the strip name the same stop, and on
         all three tiers every region's count on Home equals its pin on the Atlas.
+     (road to 4.5, P0.21-P0.23) the opening page types NO count: the Mock Bee field, the Atlas's
+     regions, the Grand Prix's power-ups, the avatar tiers and their prices, every plan figure
+     (words, worlds, the world price, the book series, "save N months") and the FAQ's prices are
+     each held to the file or the engine that decides them; and the crawler copy in index.html
+     (the table, the FAQ and its JSON-LD) says, word for word, what the rendered page says.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/one-count.cjs */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -40,10 +45,21 @@ const ctx = {}; ctx.window = ctx; vm.createContext(ctx);
   .forEach(f => vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx));
 const fileN = { conceptsFree: ctx.SB_CONCEPTS.chapters.length, conceptsAdv: ctx.SB_ADV_CONCEPTS.chapters.length,
   scripps: ctx.SB_SCRIPPS.length, journeys: ctx.SB_LESSONS.lessons.length, techniques: ctx.SB_ADV_TIPS.length };
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'trail-data.js'), 'utf8'), ctx);
+fileN.regions = ctx.SB_TRAIL.honey.acts.length;
+/* mockbee.js and saga2.js are lazy and never loaded on the opening page: read their tables as text */
+const mbSrc = fs.readFileSync(path.join(ROOT, 'mockbee.js'), 'utf8'), bands = (mbSrc.match(/const BANDS = \{[\s\S]*?\n  \};/) || [''])[0];
+fileN.mbRivals = Math.max(0, ...[...bands.matchAll(/rivals: (\d+)/g)].map(m => +m[1]));
+ok([...bands.matchAll(/rivals: (\d+),[^\n]*ids: \[([^\]]*)\]/g)].every(m => +m[1] === m[2].split(',').length) && fileN.mbRivals > 0, 'mockbee.js: every band seats as many rivals as it says');
+const pw = (fs.readFileSync(path.join(ROOT, 'saga2.js'), 'utf8').match(/const PWSVG=\{([\s\S]*?)\n\s*const /) || ['', ''])[1];
+fileN.gpPowers = [...pw.matchAll(/^\s*(\w+):'<svg/mg)].length;
 for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's own count — ${FACTS[k]} vs ${fileN[k]}`);
 ['avatars', 'engines', 'evoForms', 'trivia', 'triviaThemes', 'packs'].forEach(k =>
   ok(!(k in FACTS), `SB_FACTS no longer types "${k}" (the page holds that data; SB_COUNT counts it)`));
-[/1,200 lines/, /2,350 phrases/, /2,000 phrases/, /none for sale/i, /Not one of them for/, /fmtN\(all\.length\)\+' from famous/]
+[/1,200 lines/, /2,350 phrases/, /2,000 phrases/, /none for sale/i, /Not one of them for/, /fmtN\(all\.length\)\+' from famous/,
+ /eleven spellers/, /ten rivals/, /'Nine painted regions/, /six power-ups/, /19 volumes and 4 companions'/, /Four worlds · 5 avatar packs/,
+ /save 2 months/, /'500 words to practise'/, /sbFmt\(10000\)/, /sbFmt\(40000\)/, /\$9\.99 a month/, /Hats\. Everything else/, /Spelling Duel — pass the device/,
+ /2 worlds & Level-Up to Level 5/]
   .forEach(re => ok(!re.test(src), `nothing in app3.js types ${re}`));
 
 (async () => {
@@ -77,6 +93,35 @@ for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's ow
      and the collectibles section says what is true — four tiers, fixed coin prices, no chance */
   ok(!/pack drops?|open a pack|drop odds|golden reveal/i.test(t), 'the opening page sells no pack drops (packs and odds are gone)');
   ok(/Common, Rare, Epic and Legendary/.test(t) && /Nothing is drawn at random/.test(t), 'it names the four rarity tiers and says nothing is random');
+  /* (P0.21) the counts it used to type, and the rule it states, each read from what decides it */
+  const E = await lp.evaluate(() => ({ T: Object.fromEntries(Object.entries(BZ_AVATARS.TIERS).map(([k, v]) => [k, v.price])), tiers: Object.keys(BZ_AVATARS.TIERS).length,
+    free: BZ_AVATARS.FREE_WORLDS, price: BZ_AVATARS.WORLD_PRICE, worlds: THEMES.length,
+    plans: Object.fromEntries(['free', 'beginner', 'regional'].map(id => [id, { w: SB_TIERS[id].ent.words, mo: SB_TIERS[id].priceMo, yr: SB_TIERS[id].priceYr }])),
+    books: SB_SHELF.filter(b => !b.co).length, comps: SB_SHELF.filter(b => b.co).length }));
+  same('landing — Mock Bee spellers ("up to N spellers")', all(/up to (\w+) spellers/g, t).map(asNum), FACTS.mbRivals + 1);
+  same('landing — Mock Bee rivals ("up to N rivals")', all(/up to (\w+) rivals/g, t).map(asNum), FACTS.mbRivals);
+  same('landing — Atlas regions ("N painted regions")', all(/(\w+) painted regions/g, t).map(asNum), FACTS.regions);
+  same('landing — Grand Prix power-ups', all(/with (\w+) power-ups/g, t).map(asNum), FACTS.gpPowers);
+  same('landing — avatar tiers ("N tiers")', all(/(\w+) tiers, no luck/g, t).map(asNum), E.tiers);
+  const tp = t.match(/a Rare is (\d+) coins and an Epic (\d+); a Legendary is (\d+)/) || [];
+  ok(+tp[1] === E.T.rare && +tp[2] === E.T.epic && +tp[3] === E.T.legendary && E.T.common === 0 && /Commons are free/.test(t),
+    `the tier prices are the engine's — Rare ${tp[1]}/${E.T.rare}, Epic ${tp[2]}/${E.T.epic}, Legendary ${tp[3]}/${E.T.legendary}, Commons free`);
+  const pw = [E.plans.free.w, E.plans.beginner.w, E.plans.regional.w];
+  const planW = all(/([\d,]+) words(?= to practise| — the full graded|, Concepts|\n| and the basic)/g, t).map(num);
+  ok(planW.length >= 6 && planW.every(n => pw.includes(n)) && pw.every(n => planW.includes(n)), `every plan's word figure is its SB_TIERS words — [${planW.join(', ')}] vs [${pw.join(', ')}]`);
+  const fw = t.match(/Worlds 1–(\d+) · the others for (\d+) earned coins each/) || [];
+  ok(+fw[1] === E.free && +fw[2] === E.price, `the free plan's worlds are the engine's rule — "${fw[0] || 'NOT FOUND'}" (free ${E.free}, ${E.price} coins)`);
+  same('landing — a paid plan opens every world ("All N worlds")', all(/All (\d+) worlds and their avatars/g, t).map(num), E.worlds);
+  const bk = t.match(/The book series — (\d+) volumes and (\d+) companions/) || [];
+  ok(+bk[1] === E.books && +bk[2] === E.comps, `the book series is the shelf's — "${bk[0] || 'NOT FOUND'}" (${E.books} + ${E.comps})`);
+  const save = Math.min(...['beginner', 'regional'].map(id => Math.floor((E.plans[id].mo * 12 - E.plans[id].yr) / E.plans[id].mo + 1e-9)));
+  same('landing — "save N months" on the yearly switch', all(/save (\d+) months/g, t).map(num), save);
+  const faqFree = t.match(/Is Bizzing Bee free\?\s*([^\n]+)/) || ['', ''];
+  const want = [E.plans.free.w, E.plans.beginner.mo, E.plans.beginner.yr, E.plans.beginner.w, E.plans.regional.mo, E.plans.regional.yr].map(v => v >= 1000 ? v.toLocaleString('en-US') : String(v));
+  const gotF = (faqFree[1].match(/\$?[\d,.]+(?= words| a month| a year)/g) || []).map(x => x.replace('$', ''));
+  ok(JSON.stringify(gotF) === JSON.stringify(want) && new RegExp('Worlds 1–' + E.free + ' are free.*' + E.price + ' coins your child earns').test(faqFree[1]),
+    `the FAQ's plan answer quotes SB_TIERS and the world rule — [${gotF.join(', ')}] vs [${want.join(', ')}]`);
+  ok(!/Spelling Duel|Hats\.|eleven spellers|ten rivals/.test(t), 'nothing on the page sells a game that left (Spelling Duel), hats, or an eleven-speller bee');
   /* the two word claims, each one number: the library, and the part of it with a recorded voice */
   same('landing — the library ("over N words and serious bee preparation", the add-on, the table)',
     all(/(?:over|Over) ([\d,]+) words and serious bee/g, t).concat(all(/library of over ([\d,]+) words/g, t), all(/Over ([\d,]+) · [\d,]+ graded/g, t)).map(num), C.library);
@@ -84,6 +129,11 @@ for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's ow
     all(/(?:over|Over) ([\d,]+) words (?:recorded in a real|in one real recorded|are recorded in a real)/g, t).map(num), C.voiced);
   ok(land.shown.length === land.live.length && land.shown.every(n => land.live.includes(n)),
     `the games it shows are the arcade's own — [${land.shown.join(', ')}] vs [${land.live.join(', ')}]`);
+  /* the rendered FAQ and comparison table, to hold the crawler copy to them word for word (§3) */
+  const liveCopy = await lp.evaluate(() => ({
+    faq: [...document.querySelectorAll('section h3')].filter(h => h.nextElementSibling && h.nextElementSibling.tagName === 'P' && /\?$/.test(h.textContent.trim()))
+      .map(h => [h.textContent, h.nextElementSibling.textContent]),
+    table: [...document.querySelectorAll('section table tbody tr')].map(r => [...r.children].map(c => c.textContent)) }));
   await lp.close();
 
   /* ---- 3. the static mirror for crawlers says the same ---- */
@@ -92,6 +142,18 @@ for (const k in fileN) ok(FACTS[k] === fileN[k], `SB_FACTS.${k} is its file's ow
   same('index.html mirror — trivia questions', all(/(\d[\d,]*) trivia questions/gi, html).map(num), TRIV);
   same('index.html mirror — the recorded voice', all(/Over ([\d,]+) words (?:spoken aloud|are recorded in a real|in one real recorded)/g, html).map(num), C.voiced);
   same('index.html mirror — the library', all(/library of over ([\d,]+) words/g, html).concat(all(/Over ([\d,]+) · [\d,]+ graded/g, html)).map(num), C.library);
+  /* (P0.21) word for word: every FAQ answer (the visible copy AND the JSON-LD) and every row of the
+     table is the rendered page's own sentence, so no figure can be typed into the mirror alone */
+  const norm = x => String(x).replace(/<[^>]+>/g, '').replace(/&rsquo;|&#8217;|’/g, "'").replace(/&ldquo;|&rdquo;|[“”]/g, '"').replace(/&amp;/g, '&')
+    .replace(/&ndash;/g, '–').replace(/&mdash;/g, '—').replace(/&nbsp;/g, ' ').replace(/&trade;/g, '™').replace(/\s+/g, ' ').trim();
+  const mFaq = [...html.matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>\s*<dd[^>]*>([\s\S]*?)<\/dd>/g)].map(m => [norm(m[1]), norm(m[2])]);
+  let ld = []; for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) { try { const j = JSON.parse(m[1]); [].concat(j['@graph'] || j).forEach(o => { if (o && o['@type'] === 'FAQPage') ld = o.mainEntity.map(q => [norm(q.name), norm(q.acceptedAnswer.text)]); }); } catch (e) {} }
+  const mRows = [...html.matchAll(/<tr><th scope="row"[^>]*>([\s\S]*?)<\/th><td[^>]*>([\s\S]*?)<\/td><td[^>]*>([\s\S]*?)<\/td><\/tr>/g)].map(m => [norm(m[1]), norm(m[2]), norm(m[3])]);
+  const lFaq = liveCopy.faq.map(([q, a]) => [norm(q), norm(a)]), lRows = liveCopy.table.map(r => r.map(norm));
+  const diff = (A, B) => A.length !== B.length ? `— ${A.length} vs ${B.length} entries` : (A.map((x, i) => JSON.stringify(x) === JSON.stringify(B[i]) ? null : `— "${x[0]}": ${x.slice(1).join(' | ').slice(0, 160)} ≠ ${B[i].slice(1).join(' | ').slice(0, 160)}`).find(Boolean) || '');
+  ok(lFaq.length >= 10 && !diff(mFaq, lFaq), `index.html mirror — every FAQ answer is the rendered page's, word for word ${diff(mFaq, lFaq)}`);
+  ok(!diff(ld, lFaq), `index.html JSON-LD — every FAQ answer is the rendered page's, word for word ${diff(ld, lFaq)}`);
+  ok(lRows.length >= 8 && !diff(mRows, lRows), `index.html mirror — every row of the comparison table is the rendered page's ${diff(mRows, lRows)}`);
 
   /* ---- 4. in the app ---- */
   const pg = await b.newPage({ viewport: { width: 1280, height: 900 } });

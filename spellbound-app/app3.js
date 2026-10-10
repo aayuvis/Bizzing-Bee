@@ -2557,7 +2557,7 @@ const app = {
   wohPractise:(word)=>{ set({wordCard:null}); try{ app.reviseOne(word); }catch(e){ flash('Could not open practice'); } },
   // ===== Subscription tiers (PIN-gated from Settings) =====
   openTiers:()=>set({showTiers:true}),   // render()'s plan guard asks for the PIN
-  closeTiers:()=>set({showTiers:false, tierUpsell:null}),
+  closeTiers:()=>set({showTiers:false, showPaywall:false, tierUpsell:null}),
   chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tick':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },
   buyAddon:(k)=>{ const c=active(); if(!window.SB_ADDONS||!SB_ADDONS[k]) return;
     if(!SB_ADDONS[k].built){ flash(SB_ADDONS[k].name+' is coming soon — you’ll be first to know'); return; }
@@ -4214,6 +4214,13 @@ const SB_FACTS = {
   conceptsFree: 122, conceptsAdv: 43,
   vocab26: 997,         // NSF Vocabulary 2026
   ipa: 805, homophones: 1452,
+  /* (road to 4.5, P0.21) three more the opening page used to TYPE — the Mock Bee's field, the
+     Atlas's painted regions and the Grand Prix's power-ups — held to their files by
+     tests/one-count.cjs §1. The first was false: no Mock Bee field has seated eleven since the
+     games rebuild (4, 6 or 8 rivals by age band). */
+  regions: 9,           // SB_TRAIL.honey.acts — the Word Atlas's painted regions (trail-data.js)
+  mbRivals: 8,          // mockbee.js BANDS — rivals in the largest field (ages 11–15); it grows with age
+  gpPowers: 6,          // saga2.js PWSVG — the Bee Grand Prix's power-ups
 };
 const sbFmt = n => n.toLocaleString('en-US');
 /* "over 125,000", not "128,079" — a round FLOOR stays true as the library grows
@@ -4256,7 +4263,34 @@ const SB_COUNT = {
   /* the 130k library and its clips are never loaded to count them — see SB_FACTS */
   library: () => SB_FACTS.library,
   voiced: () => SB_FACTS.voiced,
+  regions: () => ((((window.SB_TRAIL || {}).honey || {}).acts || []).length || SB_FACTS.regions),
+  mbRivals: () => SB_FACTS.mbRivals,
+  mbSpellers: () => SB_FACTS.mbRivals + 1,          /* the rivals and the child */
+  gpPowers: () => SB_FACTS.gpPowers,
+  /* the book series as the Library's shelf holds it: numbered volumes, then the companions */
+  books: () => SB_SHELF.filter(b => !b.co).length,
+  companions: () => SB_SHELF.filter(b => b.co).length,
+  /* the plans and the avatar engine are the only places these are decided (pricing.js, BZ_AVATARS) */
+  graded: () => { try { return SB_TIERS.regional.ent.words; } catch (e) { return 0; } },
+  tiers: () => { try { return Object.keys(BZ_AVATARS.TIERS).length; } catch (e) { return 0; } },
+  freeWorlds: () => { try { return BZ_AVATARS.FREE_WORLDS; } catch (e) { return 0; } },
+  worldPrice: () => { try { return BZ_AVATARS.WORLD_PRICE; } catch (e) { return 0; } },
+  /* the opening page's own "Can you spell it?" round (LAND_WORDS), which the sample review counts */
+  landN: () => LAND_WORDS.length, landHalf: () => Math.floor(LAND_WORDS.length / 2), landAlmost: () => LAND_WORDS.length - 1,
 };
+/* The rule a parent is told, in one place, from the engine's own constants — never typed:
+   worlds 1–FREE_WORLDS free; the rest with the family plan or WORLD_PRICE coins the child
+   EARNED; avatars free (Common) or a fixed coin price per tier, a Legendary after its milestone.
+   `n` is null until worlds4.js has registered all eight (see SB_COUNT.worlds). */
+function sbRule() { try { const T = BZ_AVATARS.TIERS; const p = k => (T[k] || {}).price;
+    return { free: BZ_AVATARS.FREE_WORLDS, world: BZ_AVATARS.WORLD_PRICE, n: SB_COUNT.worlds(),
+      names: Object.keys(T).map(k => T[k].label), rare: p('rare'), epic: p('epic'), legendary: p('legendary') }; } catch (e) { return null; } }
+/* "Worlds 1–2 are free; worlds 3–8 come with the family plan, or one at a time for 240 coins your child earns." */
+function worldRuleTxt(lead) { const r = sbRule(); if (!r) return '';
+  const rest = r.n ? `worlds ${r.free + 1}–${r.n}` : 'the rest';
+  return `${lead || 'Worlds'} 1–${r.free} are free; ${rest} come with the family plan, or one at a time for ${r.world} coins your child earns by learning.`; }
+/* "Common, Rare, Epic and Legendary" */
+function tierNames() { const r = sbRule(); if (!r) return ''; const a = r.names; return a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : (a[0] || ''); }
 /* How a count is PRINTED, so a floor reads the same everywhere: '' while a lazy one is on its
    way (say the sentence without a number), "over 31,000" for trivia, the exact figure else. */
 const SB_FLOOR = { trivia: 1, library: 1, voiced: 1 };
@@ -4294,7 +4328,7 @@ function viewLanding() {
        it: not "sound clever", but be understood at the moment it matters. ---- */
   const risk = [
     ['bolt', 'Works with no internet', 'On a plane, in a tunnel, in the car. The words live on the device.'],
-    ['users', 'No account needed to start', 'Set up a speller on this device in five taps — no email, no password. Your child never signs in to anything and never talks to anyone.'],
+    ['users', 'No account needed to start', 'Set up a speller on this device with a name and an age range — no email, no password. Your child never signs in to anything and never talks to anyone.'],
     ['close', 'No ads, no chat, no leaderboard', 'Nobody can reach your child inside this app. There is no one to reach.'],
     ['spark', 'Nothing can be bought through', 'Coins are earned by learning and buy looks. Every locked thing names the learning that opens it.'],
   ].map(([ic, t, b]) => `<div style="display:flex;gap:12px;align-items:flex-start">
@@ -4323,11 +4357,11 @@ function viewLanding() {
               const ids=['bizzy','pandasensei','lunastar','pixelpal','ember','papercrane','joystick','shadowninja'];
               const pick=ids.map(i=>A.find(a=>a.id===i)).filter(Boolean);
               const use=pick.length>=6?pick:A.slice(0,8);
-              av=use.slice(0,8).map(a=>`<span title="${escA(a.name)}" style="width:46px;height:46px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex-shrink:0"><span style="width:82%;height:82%;display:block">${SB_AVATAR(a.id,40)}</span></span>`).join('');
+              av=use.slice(0,8).map(a=>`<span title="${escA(a.name)}" style="width:46px;height:46px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex-shrink:0"><span class="sb-onb-avart" style="width:82%;height:82%">${SB_AVATAR(a.id,40)}</span></span>`).join('');
             }catch(e){}
             return av ? `<div style="margin-top:22px">
               <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px">${av}</div>
-              <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${countTxt('avatars')} characters to collect — free, or priced in coins your child earns by learning. Coins are never sold.</div></div>` : ''; })()}
+              <div style="font-size:12.5px;font-weight:700;color:var(--muted)">${countTxt('avatars')} characters to collect — Commons free, the rest bought with coins your child earns by learning. Coins are never sold.</div></div>` : ''; })()}
         </div>
         ${landTry()}
       </div>
@@ -4341,7 +4375,7 @@ function viewLanding() {
      decides in about two seconds and they decide on pictures. The numbers still matter to
      the parent, so they stay, compressed into one strip beneath the art. */
   const games = [
-    ['game-beeGrandPrix',   'Bee Grand Prix',   'A racer with six power-ups — each one unlocked by spelling.'],
+    ['game-beeGrandPrix',   'Bee Grand Prix',   'A racer with {gpPowers:word} power-ups — each one unlocked by spelling.'],
     ['game-honeycombRun',   'Honeycomb Run',    'A maze through the hive. Spell a word to open every gate.'],
     ['game-typeBlaster',    'Type Blaster',     'A typing shooter. The words are your ammunition.'],
     ['game-keepFlying',     'Keep Flying',      'Fly, bank every honey pot, then home through the gates.'],
@@ -4357,7 +4391,7 @@ function viewLanding() {
       </span>
       <span style="padding:12px 13px 14px">
         <b style="display:block;font-family:var(--display);font-weight:800;font-size:15.5px;margin-bottom:4px">${esc(name)}</b>
-        <span style="font-size:12.5px;line-height:1.45;color:var(--muted)">${esc(hook)}</span></span>
+        <span style="font-size:12.5px;line-height:1.45;color:var(--muted)">${esc(factFill(hook))}</span></span>
     </figure>`).join('');
 
   const statStrip = [
@@ -4378,7 +4412,7 @@ function viewLanding() {
        <div style="font-family:var(--ui);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">The one rule under every game</div>
        <div style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.16;margin-bottom:12px">Spelling is the cheat&nbsp;code.</div>
        <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0 0 12px">It opens the gate, fires the power-up, feeds the snake, lights the next tile. There is no pay-to-win and no tapping past it — the only way forward is to spell the word, said aloud first in a real recorded voice. So the practice happens because your child wants the next thing, not because you asked.</p>
-       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">And it all points somewhere: a full Scripps-format <b style="color:var(--text)">Mock Spelling Bee</b> — eleven spellers, preliminaries to finals — the stage they are quietly training for.</p>
+       <p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:40em;margin:0">And it all points somewhere: a full Scripps-format <b style="color:var(--text)">Mock Spelling Bee</b> — up to ${countWord('mbSpellers').toLowerCase()} spellers, preliminaries to finals — the stage they are quietly training for.</p>
        <div style="font-family:var(--display);font-weight:800;font-size:clamp(19px,2.8vw,26px);color:var(--accent);margin-top:16px">They think they&rsquo;re playing. They&rsquo;re practising for the bee.</div>
      </div>
      ${facts}`,
@@ -4389,14 +4423,14 @@ function viewLanding() {
   const rows = [
     ['&ldquo;Spelling opens the gate. I have to get it right to keep&nbsp;going.&rdquo;',
      'Spelling reframed from test to power. In every game the word is the key — the child is unlocking the next thing, not being examined by it. That is the whole difference between a chore and a game.'],
-    ['&ldquo;My bee is at Forager. Two more and she&rsquo;s Queen.&rdquo;',
+    [`&ldquo;My bee is at Forager. ${(W => W[RANK_NAMES.length - 1 - RANK_NAMES.indexOf('Forager')] || 'A few')(['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'])} more and she&rsquo;s Queen.&rdquo;`,
      'Progress that measures effort and can never be lost. That is the answer to the plateau — the exact moment most families quit.'],
     ['&ldquo;It says the word properly.&rdquo;',
      `${countCap('voiced')} words recorded in a real neural voice, not device text-to-speech — which mispronounces exactly the French-origin borrowings that decide bees. A child can only spell what they actually heard.`],
     ['&ldquo;It won&rsquo;t tell me. It literally beeps it out.&rdquo;',
      'When the app reads a word inside a sentence it splices the audio and plays a beep over the target, so the example can never leak the spelling. It is engineered so it cannot be cheated.'],
     ['&ldquo;Beat your dad.&rdquo;',
-     'Spelling Duel — pass the device, same ten words, two spellers. No accounts, no internet, no strangers. The only head-to-head in the product happens on a sofa.'],
+     'Family Bee night — the mock bee, played round the sofa: pass the device to whoever is called. No accounts, no internet, no strangers. The only head-to-head in the product happens on a sofa.'],
     ['&ldquo;It works on the plane.&rdquo;',
      'Offline, no login for the child, nothing harvested, nothing to police. Screen time that does not need supervising.'],
   ].map(([kid, parent]) => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;padding:20px 0;border-top:1px solid var(--line)">
@@ -4439,14 +4473,16 @@ function viewLanding() {
    filled at render time from SB_COUNT ({key:Cap} for "Over 125,000" at a sentence's start) — these tables are built while app3 is still parsing,
    before the arcade list below exists. The static mirror in index.html carries the same
    words, and tests/one-count.cjs holds the two to the same figures. */
-function factFill(s) { return String(s).replace(/\{(\w+)(?::(Word|word|Cap))?\}/g, (m, k, w) => w === 'Cap' ? countCap(k) : w ? (w === 'word' ? countWord(k).toLowerCase() : countWord(k)) : countTxt(k)); }
+function planTok(id, f) { const t = (window.SB_TIERS || {})[id]; if (!t) return '';
+  return f === 'words' ? sbFmt(t.ent.words) : f === 'mo' ? '$' + t.priceMo : f === 'yr' ? '$' + t.priceYr : ''; }
+function factFill(s) { return String(s).replace(/\{(free|beginner|regional)\.(words|mo|yr)\}/g, (m, id, f) => planTok(id, f)).replace(/\{(\w+)(?::(Word|word|Cap))?\}/g, (m, k, w) => w === 'Cap' ? countCap(k) : w ? (w === 'word' ? countWord(k).toLowerCase() : countWord(k)) : countTxt(k)); }
 const SB_COMPARE = [
   /* Short enough to scan, not read. The first version was three columns of full
      sentences — nobody compares anything by reading nine sentences, and the whole
      value of a table is that the eye can run down it. The detail that was in the
      prose now lives in the FAQ, where somebody who wants it will go looking. */
   ['Hearing the word',       'Robotic device text-to-speech',   '{voiced:Cap} words in one real recorded voice'],
-  ['Words available',        'A few hundred to ~4,000',         '{library:Cap} · 40,000 graded by difficulty'],
+  ['Words available',        'A few hundred to ~4,000',         '{library:Cap} · {graded} graded by difficulty'],
   ['Different games',        'One or two, re-skinned',          '{games:Word} distinct games, trivia and a mock bee'],
   ['Bee practice',           'Word lists to memorise',          'Full Scripps-format mock bee'],
   ['Roots and origins',      'Rarely covered',                  '{journeys} journeys · {conceptsFree} chapters'],
@@ -4454,11 +4490,11 @@ const SB_COMPARE = [
   ['Without internet',       'Needs a connection',              'Works fully offline'],
   ['Who signs in',           'Usually the child',               'The parent. Never the child.'],
   ['Ads, chat, leaderboards','Common',                          'None'],
-  ['What money buys',        'Shortcuts and power-ups',         'Hats. Everything else is earned.'],
+  ['What money buys',        'Shortcuts and power-ups',         'A plan, bought by a grown-up. Coins are earned, never sold.'],
 ];
 const SB_FAQ = [
   ['What is Bizzing Bee?', 'A spelling bee practice app for children aged 8 to 15. It speaks every word aloud in a recorded voice, the way a pronouncer does at a real bee, and wraps the practice in {games:word} word games plus a full mock bee so children keep coming back.'],
-  ['Is Bizzing Bee free?', 'Yes. The free plan gives you 500 words and the basic games, with no card required and no expiry. Beginner Bee is $9.99 a month or $99 a year for 10,000 words, and Regional Speller at $19.99 a month or $199 a year unlocks the full graded library and the book series. Monthly plans can be cancelled at any time.'],
+  ['Is Bizzing Bee free?', 'Yes. The free plan gives you {free.words} words and the basic games, with no card required and no expiry. Beginner Bee is {beginner.mo} a month or {beginner.yr} a year for {beginner.words} words, and Regional Speller at {regional.mo} a month or {regional.yr} a year unlocks the full graded library and the book series. Worlds 1\u2013{freeWorlds} are free on every plan; the others come with a paid plan, or one at a time for {worldPrice} coins your child earns by learning. Monthly plans can be cancelled at any time.'],
   ['Does my child hear the words spoken aloud?', "Yes. {voiced:Cap} words are recorded in a real neural voice rather than read by the device's built-in text-to-speech, which mispronounces exactly the French and Latin borrowings that decide bees. A child can only spell a word they actually heard correctly."],
   ['How does it help prepare for the Scripps National Spelling Bee?', 'It practises the way the bee is actually run: the word spoken aloud, the definition, the language of origin and a sentence, then you spell it. It carries the Scripps and North South Foundation study tiers, all {scripps} national winning words from 1925 to 2026, and a Mock Spelling Bee that follows the real format of preliminaries, quarterfinals, semifinals and finals.'],
   ['Does it teach Greek and Latin roots?', 'Yes. {journeys} Word Journeys lessons and {conceptsFree} concept chapters cover roots, prefixes, suffixes and language families, so an unfamiliar word can be reasoned out rather than memorised. Recognising word patterns is the single technique bee coaches recommend most.'],
@@ -4483,10 +4519,10 @@ const SB_FAQ = [
    suppresses the build banner and the first-run tour so a screenshot shows the product
    rather than the scaffolding around it. */
 const SB_SHOTS = [
-  ['mockbee', 'A real bee, eleven spellers',
-   'Preliminaries, quarterfinals, semifinals, finals — the Scripps format, with ten rivals who each have their own nerve, speciality and tell. Your child draws a number and waits their turn like everybody else.'],
+  ['mockbee', 'A real bee, up to {mbSpellers:word} spellers',
+   'Preliminaries, quarterfinals, semifinals, finals — the Scripps format, with up to {mbRivals:word} rivals who each have their own nerve, speciality and tell — the field grows with your child\u2019s age. Your child draws a number and waits their turn like everybody else.'],
   ['atlas', 'The whole journey, mapped',
-   'Nine painted regions, from the Meadow to the Big Stage. Every stop teaches something and every one is a place, not a progress bar.'],
+   '{regions:Word} painted regions, from the Meadow to the Big Stage. Every stop teaches something and every one is a place, not a progress bar.'],
   ['card', 'Every word, spoken properly',
    'The word said aloud in a real recorded voice, its meaning, a sentence, the language it came from, and a hint for the letter that catches people out.'],
 ];
@@ -4501,7 +4537,7 @@ function landShots(){ try{ const imgs=document.querySelectorAll('img[data-lsrc]'
     const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); show(e.target); } }),{rootMargin:'600px 0px'});
     imgs.forEach(i=>io.observe(i)); }catch(e){} }
 function landShowcase(){
-  const rows = SB_SHOTS.map(([f, t, b], i) => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(20px,4vw,44px);align-items:center;margin-bottom:clamp(28px,5vw,56px)">
+  const rows = SB_SHOTS.map(([f, t, b]) => [f, factFill(t), factFill(b)]).map(([f, t, b], i) => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(20px,4vw,44px);align-items:center;margin-bottom:clamp(28px,5vw,56px)">
       <div style="${i % 2 ? 'order:2' : ''}">
         <h3 style="font-family:var(--display);font-weight:800;font-size:clamp(21px,3.2vw,30px);line-height:1.15;margin:0 0 10px">${esc(t)}</h3>
         <p style="font-size:15px;line-height:1.6;color:var(--muted);margin:0;max-width:32em">${esc(b)}</p></div>
@@ -4525,7 +4561,7 @@ function landCollect(){
       strip = picks.slice(0,24).map(a=>`<span title="${escA(a.name)}"
         style="width:clamp(52px,7.4vw,76px);aspect-ratio:1;border-radius:18px;background:var(--bg2);
         border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex-shrink:0">
-        <span style="width:80%;height:80%;display:block">${SB_AVATAR(a.id, 68)}</span></span>`).join('');
+        <span class="sb-onb-avart" style="width:80%;height:80%">${SB_AVATAR(a.id, 68)}</span></span>`).join('');
     }
   }catch(e){}
   if(!strip) return '';                       // avatars not in yet — say nothing rather than a hole
@@ -4539,7 +4575,7 @@ function landCollect(){
           ['Coins buy looks, never words', 'Bizzing coins are earned by learning and buy an avatar, a world or a frame at its printed price — chapters open on the Atlas. There is no way to pay your way past a word you cannot spell — and game artifacts are won by playing, not bought.'],
           /* (audit v4) this card sold "pack drops" — packs, odds and drops are gone (FIX-BEE v2). What is
              true now: four rarity tiers, a fixed price for each, a milestone before a Legendary, no chance */
-          ['Four tiers, no luck in any of them', 'Common, Rare, Epic and Legendary. Commons are free; the rest have a fixed price in coins, and a Legendary first asks for the learning milestone it names. Nothing is drawn at random.']]
+          (r => [`${countWord('tiers')} tiers, no luck in any of them`, r ? `${tierNames()}. Commons are free. In a world that is open, a Rare is ${r.rare} coins and an Epic ${r.epic}; a Legendary is ${r.legendary}, once your child reaches the learning milestone it names. Coins come only from learning. Nothing is drawn at random.` : 'Nothing is drawn at random.'])(sbRule())]
         .map(([t,b])=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px">
           <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:7px">${t}</div>
           <div style="font-size:13px;line-height:1.5;color:var(--muted)">${b}</div></div>`).join('')}
@@ -4646,6 +4682,17 @@ function landTry() {
 /* ---- The plans. Read from SB_TIERS so the page cannot quote a price the app
        does not charge, and the Advanced Pack is shown as what it is: an add-on
        that sits on top of any tier and cannot be bought with coins. ---- */
+/* A plan's blurb carries {words} (pricing.js) — the plan's own word count, filled here. */
+function tierBlurb(t) { return factFill(String(t.blurb || '').replace(/\{words\}/g, sbFmt((t.ent || {}).words || 0))); }
+/* Which worlds a plan opens, asked of the family engine itself (BZ_AVATARS.worldOpen). */
+function sbWorldsFor(id) { const n = SB_COUNT.worlds() || 0, plan = id === 'free' ? 'free' : 'family';
+  try { if (plan === 'family' && BZ_AVATARS.worldOpen(99, { plan })) return { all: true, n };
+    let open = 0; while (open < 99 && BZ_AVATARS.worldOpen(open + 1, { plan })) open++; return { all: false, open, n }; }
+  catch (e) { return { all: plan === 'family', open: 0, n }; } }
+/* "save N months": the WHOLE months a year saves over twelve monthly payments, on the paid plan
+   that saves the least — so the claim stays true of every plan on the page. */
+function sbYearSaves() { try { return Math.min(...['beginner', 'regional'].map(id => { const t = SB_TIERS[id];
+    return Math.floor((t.priceMo * 12 - t.priceYr) / t.priceMo + 1e-9); })); } catch (e) { return 0; } }
 function landPlansSection() {
   const T = window.SB_TIERS || {};
   const yearly = state.landYearly !== false;
@@ -4657,18 +4704,25 @@ function landPlansSection() {
                : '$' + t.priceMo + '<span style="font-size:14px;font-weight:700;color:var(--muted)">/month</span>';
     const sub = id === 'free' ? 'No card, no expiry'
       : yearly ? 'about $' + (t.priceYr / 12).toFixed(2) + ' a month, billed yearly' : 'billed monthly · cancel anytime';
+    /* (road to 4.5, P0.21/P0.23) every figure here is read — words from SB_TIERS, worlds from the
+       family engine (BZ_AVATARS: a paid plan is the family plan, and it opens every world with its
+       avatars), games and books from SB_COUNT. The beginner row's old four-worlds-and-five-packs was true of an older
+       plan and false of the engine the app actually runs. */
+    const W = sbWorldsFor(id), R = sbRule();
+    const worldRow = W.all ? (W.n ? `All ${W.n} worlds and their avatars` : 'Every world and its avatars')
+      : `Worlds 1–${W.open}${R ? ` · the others for ${R.world} earned coins each` : ''}`;
     const rows = {
-      free: ['500 words to practise', 'The basic games', 'Two worlds', 'Progress reports'],
-      beginner: [sbFmt(10000) + ' words', 'Concepts and Word Lists', 'The revision pile', 'Four worlds · 5 avatar packs'],
-      regional: [sbFmt(40000) + ' words — the full graded library', 'The full arcade: ' + countTxt('games') + ' games, trivia and the mock bee',
-                 'The book series — 19 volumes and 4 companions', 'Every world, avatar pack and game',
+      free: [sbFmt(t.ent.words) + ' words to practise', 'The basic games', worldRow, 'Progress reports'],
+      beginner: [sbFmt(t.ent.words) + ' words', 'Concepts and Word Lists', 'The revision pile', worldRow],
+      regional: [sbFmt(t.ent.words) + ' words — the full graded library', 'The full arcade: ' + countTxt('games') + ' games, trivia and the mock bee',
+                 `The book series — ${countTxt('books')} volumes and ${countTxt('companions')} companions`, worldRow + ', and every game',
                  'All the Supercharge training tools'],
     }[id].map(r => `<li style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-bottom:9px">
         <span style="color:var(--accent);flex-shrink:0;margin-top:1px">${iconSVG('check', 15)}</span><span>${r}</span></li>`).join('');
     return `<div style="background:var(--bg2);border:${best ? '2px solid var(--accent)' : '1px solid var(--line)'};border-radius:20px;padding:24px;position:relative;display:flex;flex-direction:column">
       ${best ? `<div style="position:absolute;top:-11px;left:24px;padding:4px 12px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase">Most families</div>` : ''}
       <div style="font-family:var(--display);font-weight:800;font-size:18px;margin-bottom:4px">${esc(t.name)}</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px;min-height:2.9em">${esc(t.blurb)}</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:14px;min-height:2.9em">${esc(tierBlurb(t))}</div>
       <div style="font-family:var(--display);font-weight:800;font-size:34px;line-height:1;font-variant-numeric:tabular-nums">${price}</div>
       <div style="font-size:12px;color:var(--muted);font-weight:700;margin:5px 0 16px">${sub}</div>
       <ul style="list-style:none;padding:0;margin:0 0 18px;flex:1">${rows}</ul>
@@ -4697,7 +4751,7 @@ function landPlansSection() {
         <h2 style="font-family:var(--display);font-weight:800;font-size:clamp(26px,4.4vw,42px);line-height:1.08;letter-spacing:-.02em;margin:0 0 12px">Start free. Move up when they ask you&nbsp;to.</h2>
         <p style="font-size:15.5px;line-height:1.6;color:var(--muted);max-width:34em;margin:0 auto 20px">Every plan is one account for the whole family — add a profile for each child. Cancel whenever you like; the free plan never expires.</p>
         <div style="display:inline-flex;padding:4px;border-radius:999px;background:var(--surface2);gap:2px">
-          <button data-act="landBill" data-arg="year" style="${tog(yearly)}">Yearly · save 2 months</button>
+          <button data-act="landBill" data-arg="year" style="${tog(yearly)}">Yearly${sbYearSaves() > 0 ? ' · save ' + sbYearSaves() + ' months' : ''}</button>
           <button data-act="landBill" data-arg="month" style="${tog(!yearly)}">Monthly</button></div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,258px),1fr));gap:16px">${cards}</div>
@@ -4744,11 +4798,11 @@ const SB_TESTIMONIALS = [
    'Parent of a 9-year-old', 'placeholder'],
   ['He came back from the regional bee and told me the pronouncer sounded like the app. That is the whole thing, isn\u2019t it.',
    'Parent of an 11-year-old', 'placeholder'],
-  ['I tried the eight words on the front page and got four. My daughter got seven. I have never been so pleased to lose at anything.',
+  ['I tried the {landN:word} words on the front page and got {landHalf:word}. My daughter got {landAlmost:word}. I have never been so pleased to lose at anything.',
    'Parent of a 12-year-old', 'placeholder'],
 ];
 function landTestimonials(){
-  const cards = SB_TESTIMONIALS.map(([q, who]) => `<figure style="margin:0;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px">
+  const cards = SB_TESTIMONIALS.map(([q, who]) => [factFill(q), who]).map(([q, who]) => `<figure style="margin:0;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px">
       <span style="color:var(--accent);opacity:.5;font-family:var(--display);font-weight:800;font-size:34px;line-height:.7">&ldquo;</span>
       <blockquote style="margin:0;font-size:15px;line-height:1.6;flex:1">${esc(q)}</blockquote>
       <figcaption style="font-size:12.5px;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:8px">
@@ -10203,12 +10257,19 @@ function certDraw(x, c, withAv){ return new Promise(res=>{ const W=1600,H=1130; 
   Promise.all(imgs).then(()=>res(cv)); }); }
 function viewParent(){
   const S=state;
-  const sub=S.premium
-    ? {ic:'crown',title:'Premium',body:'4 worlds, half the concepts & uncapped levels. The rest opens as they learn.',btn:'Manage',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
-    : {ic:'spark',title:'Free plan',body:'2 worlds & Level-Up to Level 5. More opens as they learn, or go Premium.',btn:'Upgrade',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
+  /* THE PLAN CARD SAYS TODAY'S RULE (road to 4.5, P0.23), read from the family engine (sbRule, BZ_AVATARS):
+     worlds 1–2 free; the rest with the family plan or one at a time for coins the child EARNED. It said
+     two worlds and "Level-Up to Level 5 … or go Premium" — a ladder that no longer opens anything — while the
+     Shop sold worlds 3–8 for coins, and its button opened the old Premium page with prices the plans do
+     not charge. It opens the plan sheet (SB_TIERS) now. Guard: tests/trust-v2.cjs §7. */
+  const fam=familyPlan(), R=sbRule()||{}; let tierName=''; try{ tierName=SB_ENT.isPaid()?SB_ENT.tier().name:''; }catch(e){}
+  const avLine=R.rare?` Avatars: Commons are free; Rares ${R.rare} coins, Epics ${R.epic}, a Legendary ${R.legendary} after its learning milestone — always coins earned by learning, never money.`:'';
+  const sub=fam
+    ? {ic:'crown',title:(tierName?tierName+' · ':'')+'family plan',body:`Every world is open${R.n?' — all '+R.n:''}, with its avatar packs.`+avLine,btn:'Manage plan',btnStyle:'padding:10px 16px;border-radius:10px;background:var(--surface2);color:var(--text);font-weight:800;font-size:13px',cardStyle:'background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--bg2)),var(--bg2));border:1px solid var(--accent);border-radius:20px;padding:20px;box-shadow:var(--glow)'}
+    : {ic:'spark',title:'Free plan',body:worldRuleTxt()+avLine,btn:'See the plans',btnStyle:'padding:10px 18px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;box-shadow:var(--edge)',cardStyle:'background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--sh-rest)'};
   const kids=(S.children.length?S.children:[demo()]).map((k,i)=>`<div style="background:var(--bg2);border:1px solid ${i===S.activeIdx?'var(--accent)':'var(--line)'};border-radius:14px;padding:18px">
       <div style="display:flex;align-items:center;gap:13px;margin-bottom:16px"><div style="width:60px;height:60px;border-radius:16px;background:var(--surface2);display:grid;place-items:center">${avatarSVG(k.avatar,44)}</div>
-        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Age ${k.age} · ${THEME_LABEL[k.theme]||'Bizzing Bee'}</div></div>
+        <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${esc(k.name)}</div><div style="font-size:12px;color:var(--muted);font-weight:600">Ages ${ageBandOf(k).n} · ${THEME_LABEL[k.theme]||'Bizzing Bee'}</div></div>
         <button data-act="selectChild" data-arg="${i}" style="padding:7px 13px;border-radius:10px;font-weight:800;font-size:12px;${i===S.activeIdx?'background:var(--chip);color:var(--accent)':'background:var(--surface2);color:var(--text)'}">${i===S.activeIdx?'Active':'Switch'}</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
@@ -10236,8 +10297,8 @@ function viewParent(){
     ${pageHead('Parent dashboard','',`Track ${esc(active().name||'your speller')}, manage spellers and print a weekly report.`,parentBtns)}
     ${oneThing}
     <div style="${sub.cardStyle}"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG(sub.ic,26)}</div>
-      <div style="min-width:0;flex:1"><div style="font-family:var(--display);font-weight:800;font-size:17px">${sub.title}</div><div style="font-size:13px;color:var(--muted)">${sub.body}</div></div>
-      <button data-act="goPaywall" style="${sub.btnStyle}">${sub.btn}</button></div></div>
+      <div style="min-width:0;flex:1 1 220px"><div style="font-family:var(--display);font-weight:800;font-size:17px">${sub.title}</div><div style="font-size:13px;color:var(--muted)">${sub.body}</div></div>
+      <button data-act="openTiers" style="${sub.btnStyle}">${sub.btn}</button></div></div>
     <div style="font-family:var(--display);font-weight:800;font-size:15px;margin:20px 2px 12px">Spellers</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">${kids}</div>
     <div style="margin-top:18px">${reportCardHTML(active())}${parentAnalytics()}</div>
@@ -12449,24 +12510,11 @@ function overlays(){
         ${viewSettings()}
       </div></div>`;
   }
-  if(S.showPaywall){
-    const perks=['4 worlds unlocked (2 more than free)','Spelling Basics free + half of all 121 concepts unlocked','Every stage of every list, past Stage 5','Premium word lists + full library','More worlds and chapters open as your speller learns — never with coins']
-      .map(p=>`<div style="display:flex;align-items:center;gap:11px;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0">✓</span>${p}</div>`).join('');
-    const planStyle=(on)=>'flex:1;text-align:left;border-radius:14px;padding:14px;cursor:pointer;background:var(--surface2);border:2px solid '+(on?'var(--accent)':'transparent');
-    h+=`<div data-act="closePaywall" style="position:fixed;inset:0;z-index:60;background:rgba(10,8,20,.55);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px">
-      <div data-act="noop" style="width:100%;max-width:460px;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(24px,5vw,34px);box-shadow:var(--glow);animation:sb-pop .35s ease both;max-height:92dvh;overflow:auto">
-        <div style="display:flex;justify-content:center;margin-bottom:8px"><div style="width:70px;height:78px">${mascotSVG('love')}</div></div>
-        <h2 style="font-family:var(--display);font-weight:800;font-size:24px;text-align:center;margin:0 0 4px">Go Premium</h2>
-        <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 20px">Unlock 4 worlds, half the concepts, and uncapped levels.</p>
-        <div style="display:grid;gap:9px;margin-bottom:20px">${perks}</div>
-        <div style="display:flex;gap:10px;margin-bottom:16px">
-          <button data-act="pickPlan" data-arg="year" style="${planStyle(S.plan==='year')}"><div style="font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.04em">BEST VALUE · SAVE 38%</div><div style="font-family:var(--display);font-weight:800;font-size:20px">$59<span style="font-size:13px;color:var(--muted)">/yr</span></div><div style="font-size:12px;color:var(--muted)">$4.92 / month</div></button>
-          <button data-act="pickPlan" data-arg="month" style="${planStyle(S.plan==='month')}"><div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.04em">MONTHLY</div><div style="font-family:var(--display);font-weight:800;font-size:20px">$7.99<span style="font-size:13px;color:var(--muted)">/mo</span></div><div style="font-size:12px;color:var(--muted)">billed monthly</div></button>
-        </div>
-        <button data-act="upgrade" style="width:100%;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Start 7-day free trial</button>
-        <div style="text-align:center;margin-top:12px"><button data-act="closePaywall" style="color:var(--muted);font-size:13px;font-weight:600">Maybe later</button></div>
-      </div></div>`;
-  }
+  /* (road to 4.5, P0.23) THE OLD "GO PREMIUM" PAGE IS GONE. It sold "$59/yr", "4 worlds" and "never with
+     coins" — none of which any plan does (SB_TIERS is the only place a price is decided, and worlds open
+     with the family plan or for earned coins). A locked list or an old link that asks for it gets the ONE
+     plan sheet, behind the same guard above; closing it clears both flags (closeTiers). */
+  if(S.showPaywall && !S.showTiers) h+=viewTiersSheet();
   if(S.fullLoading) h+=`<div style="position:fixed;inset:0;z-index:65;background:rgba(10,8,20,.5);backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px">
       <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:28px 30px;text-align:center;box-shadow:var(--glow);max-width:340px">
         <div style="width:64px;height:72px;margin:0 auto 12px;animation:sb-float 2.5s ease-in-out infinite">${mascotSVG('happy')}</div>
@@ -12695,9 +12743,11 @@ function viewTrivTrain(){ const S=state; const c=active(); const t=S.tt; const t
   </div>`; }
 // ===== Subscription tier sheet (pricing) =====
 function tierEntRows(t){ const e=t.ent; const yes='✓', no='—';
-  const wc=e.words>=40000?'All 40,000 words':(fmtN(e.words)+' words');
-  const worlds=e.worlds==='all'?'All worlds':(e.worlds+' worlds');
-  const packs=e.avatarPacks==='all'?'All avatar packs':(e.avatarPacks?e.avatarPacks+' avatar packs':'Free avatars only');
+  const wc=(e.words>=SB_COUNT.graded()?'All ':'')+fmtN(e.words)+' words';
+  /* worlds and their avatar packs are the family engine's rule (sbWorldsFor), not the old plan shape */
+  const W=sbWorldsFor(t.id), R=sbRule();
+  const worlds=W.all?('Every world'+(W.n?' — all '+W.n:'')):('Worlds 1–'+W.open+(R?' (more for '+R.world+' earned coins each)':''));
+  const packs=W.all?'Every avatar pack':'The avatar packs of open worlds';
   const rows=[wc, (e.lists?yes:no)+' Word lists', (e.concepts?yes:no)+' Concepts', (e.trainTools?yes:no)+' Train tools (idioms, typing, vocab, quotes)', (e.games==='all'?'All games':'Basic games'), worlds, packs, (e.startCoins?('🪙 '+fmtN(e.startCoins)+' start coins'):'')];
   return rows.filter(Boolean).map(r=>`<div style="font-size:12.5px;color:var(--text);padding:3px 0;line-height:1.4">${r.charAt(0)==='—'?'<span style="color:var(--muted)">'+esc(r)+'</span>':esc(r)}</div>`).join(''); }
 function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId():'free'); const up=S.tierUpsell;
@@ -12710,7 +12760,7 @@ function viewTiersSheet(){ const S=state; const cur=(window.SB_ENT?SB_ENT.tierId
       ${isCur?`<span style="position:absolute;top:-11px;left:15px;background:${accent};color:#fff;font-weight:800;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px">Your plan</span>`:''}
       <div style="font-family:var(--display);font-weight:800;font-size:17px">${t.badge} ${esc(t.name)}</div>
       <div style="font-weight:800;font-size:14px;color:${accent};margin:2px 0 3px">${price}</div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-bottom:10px">${esc(t.blurb)}</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-bottom:10px">${esc(tierBlurb(t))}</div>
       <div style="border-top:1px solid var(--line);padding-top:9px;margin-bottom:12px">${tierEntRows(t)}</div>
       <div style="margin-top:auto">${isCur?`<div style="text-align:center;font-weight:800;font-size:13px;color:${accent};padding:10px">Current ✓</div>`:`<button data-act="chooseTier" data-arg="${id}" style="width:100%;padding:11px;border-radius:11px;background:${accent};color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge)">${id==='free'?'Switch to Free':'Choose '+esc(t.name)}</button>`}</div>
     </div>`; };
@@ -13026,8 +13076,12 @@ function render(){
      not a sentence worth ranking for. A visitor sees it; a crawler describes the
      product. Dismissible for the session only — it comes back on the next visit,
      because it stops being true only when we say so, not when someone clicks an X. */
-  /* Only on the landing page: a child's screens (setup and the app) never carry it (FIX-BEE v2, Q7). */
-  const devBanner = (state.devBannerOff || state.screen==='app' || state.screen==='onboarding') ? '' : `<div style="position:relative;z-index:60;
+  /* Only on the landing page: a child's screens (setup and the app) never carry it (FIX-BEE v2, Q7).
+     And OFF on the public landing at launch (road to 4.5, P0.22): a visitor deciding whether to trust
+     the app with their child is not shown a "still being built" strip. Testing mode (state.devUnlock,
+     behind the grown-up PIN) keeps it, so a tester still sees that the build is not final.
+     Guard: tests/trust-v2.cjs §2. */
+  const devBanner = (!state.devUnlock || state.devBannerOff || state.screen==='app' || state.screen==='onboarding') ? '' : `<div style="position:relative;z-index:60;
     background:linear-gradient(90deg,#F0B429,#E09612);color:#3A2A00;
     font-family:var(--ui,system-ui);font-weight:800;font-size:12.5px;line-height:1.4;
     padding:8px clamp(12px,3vw,20px);display:flex;align-items:center;gap:10px;justify-content:center;text-align:center">

@@ -3,13 +3,16 @@
    1. Settings asks for the PIN where it matters: the child's four sections open freely, and the
       fifth (Grown-ups) is ONE row until the PIN is passed — the plan, "Manage plan" and the
       Advanced Pack never draw on a child's screen. The pass ends when the sheet closes.
-   2. No developer furniture on a child's screen: no "BUG?" tab, no "still being built" banner.
+   2. No developer furniture on a child's screen: no "BUG?" tab, no "still being built" banner — and
+      (road to 4.5, P0.22) none on the public landing either; testing mode keeps the banner.
    3. Magic Squares promises only what it pays (a claimed square = a finished round).
    4. The mastery coin fires on mastery EVIDENCE (a Stage mastered on two separate days), never on
       an XP stage-up.
    5. Esc closes the Settings sheet and the ☰ drawer, and Tab stays inside them.
    6. Spell Scene's result counts the word the round was lost on and never offers a map the
       arcade does not have.
+   15. (P0.23/P0.24) the Parent Zone's plan card states today's world and avatar rule from the engine
+      and opens the plan sheet; the speller card shows the age band ("Ages 8–10"), never "Age 9".
    Each was proved by breaking it: put the old line back and the matching assertion fails.
    Run: node tests/trust-v2.cjs                                                              */
 const { chromium } = require('playwright');
@@ -36,8 +39,15 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
       return { bug: !!document.querySelector('.sb-bug-tab'), banner: /still being built/i.test(document.body.textContent) }; }, nav);
     ok(!r.bug && !r.banner, `${nav}: no "BUG?" tab and no beta banner on the child's screen`);
   }
-  const land = await pg.evaluate(() => { state.screen = 'landing'; render(); const t = /still being built/i.test(document.body.textContent); state.screen = 'app'; state.nav = 'home'; render(); return t; });
-  ok(land, 'the "still being built" notice stays on the landing page, which is for grown-ups');
+  /* (road to 4.5, P0.22) the banner is OFF on the public landing at launch — a parent deciding
+     whether to trust the app is not shown "still being built". Testing mode keeps it, so a
+     tester still knows the build is not final. (It used to assert the banner stayed on the
+     landing; the owner's launch decision reversed that.) */
+  const land = await pg.evaluate(() => { const was = state.devUnlock;
+    const at = d => { state.devUnlock = d; state.devBannerOff = false; state.screen = 'landing'; render(); return /still being built/i.test(document.body.textContent); };
+    const pub = at(false), test = at(true); state.devUnlock = was; state.screen = 'app'; state.nav = 'home'; render(); return { pub, test }; });
+  ok(!land.pub, 'the public landing carries no "still being built" banner at launch');
+  ok(land.test, 'testing mode (a grown-up behind the PIN) still sees the "still being built" banner on the landing');
 
   /* ---- 1. Settings: four sections for the child, the fifth behind the PIN ---- */
   let s = await pg.evaluate(async () => { app.setNav('settings'); await new Promise(r => setTimeout(r, 150));
@@ -220,6 +230,38 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     const chips = [...host.querySelectorAll('#sg-card .sg-wchip')]; out = { n: chips.length, no: chips.filter(c => c.classList.contains('no')).length, txt: (host.querySelector('#sg-card') || {}).textContent || '' };
     host.remove(); return out; });
   ok(ss.n >= 1 && ss.no >= 1, `a lost Type Blaster round logs the word it was lost on, so "N of N spelled" can never sit over a lost round (${ss.no} of ${ss.n} chips marked missed)`);
+
+  /* ---- 15. (road to 4.5, P0.23 / P0.24) the Parent Zone's plan card says TODAY'S rule, and a child is
+     an age BAND there, never an age. The card said "2 worlds & Level-Up to Level 5 … or go Premium" (a
+     ladder that opens nothing now) while the Shop sold worlds for coins, and its button opened the old
+     Premium page with prices no plan charges. Now: worlds 1–FREE_WORLDS free, the rest with the family
+     plan or WORLD_PRICE earned coins — the engine's own numbers — and the button opens the plan sheet. ---- */
+  const pz = await pg.evaluate(async () => { const W = ms => new Promise(r => setTimeout(r, ms));
+    const c = active(); const was = { tier: c.tier, prem: state.premium, dev: state.devUnlock };
+    state.devUnlock = false; state.premium = false; SB_ENT.setTier(c, 'free'); state.pinDlg = null;
+    app.setNav('parent'); await W(150); if (state.pinDlg) { for (const k of '2468') app.pinKey(k); await W(300); }
+    const card = () => { const b = document.querySelector('.sb-content [data-act="openTiers"]'); const box = b && b.closest('div[style*="border-radius:20px"]');
+      return { t: box ? box.textContent.replace(/\s+/g, ' ') : '', btn: !!b, old: !!document.querySelector('.sb-content [data-act="goPaywall"]') }; };
+    const free = card();
+    SB_ENT.setTier(c, 'regional'); render(); await W(150); const paid = card();
+    const page = (document.querySelector('.sb-content') || document.body).textContent;
+    SB_ENT.setTier(c, was.tier || 'free'); state.premium = was.prem; state.devUnlock = was.dev; app.setNav('home'); await W(100);
+    return { nav: state.nav, free, paid, ages: page.match(/Ages? \d[\d–-]*/g) || [], band: ageBandOf(c).n,
+      R: { free: BZ_AVATARS.FREE_WORLDS, price: BZ_AVATARS.WORLD_PRICE, n: THEMES.length, rare: BZ_AVATARS.TIERS.rare.price } }; });
+  const rule = `Worlds 1–${pz.R.free} are free; worlds ${pz.R.free + 1}–${pz.R.n} come with the family plan, or one at a time for ${pz.R.price} coins your child earns by learning.`;
+  ok(pz.free.t.includes(rule) && pz.free.t.includes(`Rares ${pz.R.rare} coins`) && !/Level-Up|Premium|\b2 worlds\b/.test(pz.free.t),
+    `the free plan card states today's rule from the engine — "${pz.free.t.slice(0, 200)}"`);
+  ok(/family plan/.test(pz.paid.t) && pz.paid.t.includes(`all ${pz.R.n}`) && !/\b4 worlds\b|half the concepts|Premium/.test(pz.paid.t),
+    `a paid plan's card says every world opens with the family plan — "${pz.paid.t.slice(0, 160)}"`);
+  ok(pz.free.btn && pz.paid.btn && !pz.free.old && !pz.paid.old, 'the card opens the plan sheet (SB_TIERS), not the old Premium page');
+  ok(pz.ages.length >= 1 && pz.ages.every(a => a === 'Ages ' + pz.band), `the speller card shows the age BAND, never an age — ${JSON.stringify(pz.ages)} (band ${pz.band})`);
+  /* …and the old "Go Premium" page ($59/yr, 4 worlds, a 7-day trial no plan offers) is gone: whatever still
+     asks for the paywall (a locked list, goPaywall) gets the one plan sheet, and closing it closes it */
+  const pw2 = await pg.evaluate(async () => { const W = ms => new Promise(r => setTimeout(r, ms));
+    state.pinDlg = null; state._planOk = false; app.goPaywall(); await W(100); if (state.pinDlg) { for (const k of '2468') app.pinKey(k); await W(250); }
+    const t = document.body.textContent; const r = { sheet: /Choose your plan/.test(t), old: /Go Premium|\$59|7-day free trial/.test(t) };
+    app.closeTiers(); await W(100); r.closed = !state.showPaywall && !state.showTiers && !/Choose your plan/.test(document.body.textContent); return r; });
+  ok(pw2.sheet && !pw2.old && pw2.closed, `the paywall is the one plan sheet now — no "$59", no "Go Premium" — and closing it closes it (${JSON.stringify(pw2)})`);
 
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
