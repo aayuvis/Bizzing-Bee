@@ -1,0 +1,1247 @@
+[
+ {
+  "unit": "item:6",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:8",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:10",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:12",
+  "verdict": "pass",
+  "reason": "note: opposite; 'kindness' is a noun, not a match"
+ },
+ {
+  "unit": "item:13",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:14",
+  "verdict": "pass",
+  "reason": "note: opposite; 'invisible' would be cleaner but hidden is fine"
+ },
+ {
+  "unit": "item:15",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:16",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:18",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:21",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:27",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:42",
+  "verdict": "pass",
+  "reason": "note: opposite; 'nature' is a noun"
+ },
+ {
+  "unit": "item:43",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:44",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:45",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:46",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:47",
+  "verdict": "pass",
+  "reason": "note: opposite; 'bread' is an odd distractor"
+ },
+ {
+  "unit": "item:48",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:49",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:50",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:53",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:55",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:56",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:57",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:59",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:62",
+  "verdict": "pass",
+  "reason": "note: made from; 'golden' is an adjective, not a material"
+ },
+ {
+  "unit": "item:63",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:64",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:69",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:72",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:73",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:75",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:77",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:79",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:80",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:82",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:87",
+  "verdict": "pass",
+  "reason": "note: adjective:noun"
+ },
+ {
+  "unit": "item:92",
+  "verdict": "pass",
+  "reason": "note: FLAWED: joyful = full of joy, so the parallel is 'meaningful', which is not offered; 'meaningless' reverses the sense (it parallels 'joyless'). Only derived form of 'meaning' on offer."
+ },
+ {
+  "unit": "item:98",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:105",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:115",
+  "verdict": "pass",
+  "reason": "note: synonym; fauna is a trap, not a synonym"
+ },
+ {
+  "unit": "item:119",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:124",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:128",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:137",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:138",
+  "verdict": "pass",
+  "reason": "note: synonym; distractor 'lurid' carries sensational/gory connotations, judged acceptable"
+ },
+ {
+  "unit": "item:139",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:140",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:144",
+  "verdict": "pass",
+  "reason": "note: synonym; 'girth' is uncommon for 8-15 and the horse-tack distractors play on its other sense"
+ },
+ {
+  "unit": "item:149",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:151",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:159",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "pass",
+  "reason": "note: synonym; manacle/pillory are obscure for younger players"
+ },
+ {
+  "unit": "item:163",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:164",
+  "verdict": "pass",
+  "reason": "note: synonym; 'bottom' has a mild body sense but is not a swear word or insult"
+ },
+ {
+  "unit": "item:166",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:175",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "pass",
+  "reason": "note: synonym (swamp is a kind of wetland; close enough)"
+ },
+ {
+  "unit": "item:178",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:185",
+  "verdict": "pass",
+  "reason": "note: synonym; albumin/melanin are obscure distractors"
+ },
+ {
+  "unit": "item:186",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:187",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:g",
+  "verdict": "pass",
+  "reason": "note: synonym (loose)"
+ },
+ {
+  "unit": "item:i",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:j",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:k",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:m",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:n",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:o",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:q",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:r",
+  "verdict": "pass",
+  "reason": "note: synonym (loose)"
+ },
+ {
+  "unit": "item:s",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:w",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:x",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:y",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:1d",
+  "verdict": "pass",
+  "reason": "note: opposite; 'bottom' has a mild body sense, not a swear or insult"
+ },
+ {
+  "unit": "item:1k",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:1m",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:1n",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:1q",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:1w",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:1z",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:2e",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:2g",
+  "verdict": "pass",
+  "reason": "note: member:category (a boot is footwear; 'shoe' is a loose category)"
+ },
+ {
+  "unit": "item:2v",
+  "verdict": "pass",
+  "reason": "note: member:category; pork/ham are its meat, not its category"
+ },
+ {
+  "unit": "item:4b",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:4c",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:4e",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:4f",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:4j",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:4k",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:4n",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:4o",
+  "verdict": "pass",
+  "reason": "note: member:category; mixes UK 'grey' with US 'color'"
+ },
+ {
+  "unit": "item:4p",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:4q",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:4r",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:4t",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:4w",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:4x",
+  "verdict": "pass",
+  "reason": "note: part:whole"
+ },
+ {
+  "unit": "item:4y",
+  "verdict": "pass",
+  "reason": "note: part:whole; 'student' is a deliberate trap on pupil's other sense"
+ },
+ {
+  "unit": "item:5b",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5c",
+  "verdict": "pass",
+  "reason": "note: made of; 'wooden' is an adjective"
+ },
+ {
+  "unit": "item:5g",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5h",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5j",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5k",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5l",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5m",
+  "verdict": "pass",
+  "reason": "note: made from"
+ },
+ {
+  "unit": "item:5r",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5s",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5u",
+  "verdict": "pass",
+  "reason": "note: made of"
+ },
+ {
+  "unit": "item:5w",
+  "verdict": "pass",
+  "reason": "note: made of; 'wooden' is an adjective"
+ },
+ {
+  "unit": "item:5x",
+  "verdict": "pass",
+  "reason": "note: made from (wood pulp)"
+ },
+ {
+  "unit": "item:6c",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6d",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6f",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6g",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6h",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6i",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6j",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6k",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6l",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6m",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6n",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6p",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6r",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6v",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6w",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6y",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:6z",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "pass",
+  "reason": "note: synonym; 'probable' is close but means more than possible"
+ },
+ {
+  "unit": "item:7b",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7c",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7f",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7g",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7i",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7k",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7n",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7p",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7q",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7r",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7w",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:7z",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:8a",
+  "verdict": "pass",
+  "reason": "note: noun:derived adjective; 'childish' is mildly pejorative, 'juvenile' is not derived"
+ },
+ {
+  "unit": "item:8c",
+  "verdict": "pass",
+  "reason": "note: verb:noun"
+ },
+ {
+  "unit": "item:8g",
+  "verdict": "pass",
+  "reason": "note: verb:noun"
+ },
+ {
+  "unit": "item:8h",
+  "verdict": "pass",
+  "reason": "note: noun:adjective (full of spines); distractors pectoral/alveolar/caudal very obscure"
+ },
+ {
+  "unit": "item:8j",
+  "verdict": "pass",
+  "reason": "note: noun:derived adjective; weak: 'tasty' is the flavour sense, tasteful is aesthetic"
+ },
+ {
+  "unit": "item:8m",
+  "verdict": "pass",
+  "reason": "note: weak: explanation is the act of explaining, but bakery is a place, not the act ('baking' is the parallel and is not offered)"
+ },
+ {
+  "unit": "item:8v",
+  "verdict": "pass",
+  "reason": "note: verb:noun"
+ },
+ {
+  "unit": "item:9e",
+  "verdict": "pass",
+  "reason": "note: noun:adjective"
+ },
+ {
+  "unit": "item:9h",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:9i",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:9j",
+  "verdict": "pass",
+  "reason": "note: tool:function"
+ },
+ {
+  "unit": "item:a1",
+  "verdict": "pass",
+  "reason": "note: verb:noun; 'allowance' mostly means pocket money to a child, so the link is muddy"
+ },
+ {
+  "unit": "item:a4",
+  "verdict": "pass",
+  "reason": "note: verb:noun"
+ },
+ {
+  "unit": "item:a7",
+  "verdict": "pass",
+  "reason": "note: verb:noun"
+ },
+ {
+  "unit": "item:a8",
+  "verdict": "pass",
+  "reason": "note: adjective:noun"
+ },
+ {
+  "unit": "item:a9",
+  "verdict": "pass",
+  "reason": "note: noun:derived adjective; weak: joyful = full of joy, so 'stylish' is the parallel; 'stylistic' means relating to style, and chic/fashionable tempt on meaning"
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "pass",
+  "reason": "note: adjective:noun"
+ },
+ {
+  "unit": "item:ax",
+  "verdict": "pass",
+  "reason": "note: noun:adjective; obscure for 8-15 (metamorphic is mostly a rock word)"
+ },
+ {
+  "unit": "item:b0",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:b3",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:b5",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:b7",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bc",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bd",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bf",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bg",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bi",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bk",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bn",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bp",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bq",
+  "verdict": "pass",
+  "reason": "note: degree (size)"
+ },
+ {
+  "unit": "item:br",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:bs",
+  "verdict": "pass",
+  "reason": "note: degree (size)"
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "pass",
+  "reason": "note: degree"
+ },
+ {
+  "unit": "item:c3",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:c4",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:c5",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:c6",
+  "verdict": "pass",
+  "reason": "note: opposite (aesthetic sense); 'tasteless' also means bland, which muddies it"
+ },
+ {
+  "unit": "item:c8",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:ci",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:ck",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:cl",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:cp",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:d1",
+  "verdict": "pass",
+  "reason": "note: member:category; taro is unfamiliar to many 8-15"
+ },
+ {
+  "unit": "item:d2",
+  "verdict": "pass",
+  "reason": "note: member:category; civet is obscure"
+ },
+ {
+  "unit": "item:d7",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "pass",
+  "reason": "note: member:category; zither is obscure"
+ },
+ {
+  "unit": "item:di",
+  "verdict": "pass",
+  "reason": "note: member:category; weak: quince is known as a fruit, and 'fruit' is not offered; quince is obscure"
+ },
+ {
+  "unit": "item:dj",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:dm",
+  "verdict": "pass",
+  "reason": "note: member:category; 'capsicum' is the UK/Indian/Aus word for pepper"
+ },
+ {
+  "unit": "item:dn",
+  "verdict": "pass",
+  "reason": "note: member:category; caraway is obscure"
+ },
+ {
+  "unit": "item:dp",
+  "verdict": "pass",
+  "reason": "note: member:category; weak: 'chime' is usually a sound (like ding/jingle/clang); 'chimes' is the instrument"
+ },
+ {
+  "unit": "item:dt",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:du",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:dw",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:dx",
+  "verdict": "pass",
+  "reason": "note: member:category"
+ },
+ {
+  "unit": "item:e4",
+  "verdict": "pass",
+  "reason": "note: noun:adjective"
+ },
+ {
+  "unit": "item:e6",
+  "verdict": "pass",
+  "reason": "note: verb:noun"
+ },
+ {
+  "unit": "item:e8",
+  "verdict": "pass",
+  "reason": "note: adjective:noun"
+ },
+ {
+  "unit": "item:e9",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:eb",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:ec",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:ed",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:ee",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:ef",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:eg",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ei",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ek",
+  "verdict": "pass",
+  "reason": "note: synonym (loose)"
+ },
+ {
+  "unit": "item:el",
+  "verdict": "pass",
+  "reason": "note: synonym; obsequious is advanced vocabulary"
+ },
+ {
+  "unit": "item:eo",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ep",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:er",
+  "verdict": "pass",
+  "reason": "note: synonym; distractor 'belch' is mildly crude but judged OK"
+ },
+ {
+  "unit": "item:es",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ev",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ew",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ey",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:f1",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:f2",
+  "verdict": "pass",
+  "reason": "note: synonym (loose)"
+ },
+ {
+  "unit": "item:f3",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:f5",
+  "verdict": "pass",
+  "reason": "note: synonym (loose)"
+ },
+ {
+  "unit": "item:f6",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:fa",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:fc",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:fd",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:ff",
+  "verdict": "pass",
+  "reason": "note: synonym"
+ },
+ {
+  "unit": "item:fg",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fh",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fi",
+  "verdict": "pass",
+  "reason": "note: opposite; 'effortful' is a rare word"
+ },
+ {
+  "unit": "item:fj",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fk",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fl",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fm",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fn",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fo",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fp",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fq",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fr",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fs",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:ft",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fu",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fv",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ },
+ {
+  "unit": "item:fw",
+  "verdict": "pass",
+  "reason": "note: opposite"
+ }
+]

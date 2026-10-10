@@ -1,0 +1,1302 @@
+[
+ {
+  "unit": "item:6",
+  "verdict": "pass",
+  "reason": "near-synonyms in everyday use; no rival option"
+ },
+ {
+  "unit": "item:8",
+  "verdict": "fail",
+  "reason": "Gloss shown for 'freight' is ungrammatical: 'Is goods or cargo transported for pay' ('is goods'); broken English displayed in a spelling app (same defect class as the hidden cringe gloss). Pair shipment/freight and options are fine - fix or hide the gloss."
+ },
+ {
+  "unit": "item:10",
+  "verdict": "pass",
+  "reason": "exact opposites; options not opposites"
+ },
+ {
+  "unit": "item:12",
+  "verdict": "pass",
+  "reason": "exact opposites; 'kindness' wrong form"
+ },
+ {
+  "unit": "item:13",
+  "verdict": "pass",
+  "reason": "exact opposites; lend/gave not opposites"
+ },
+ {
+  "unit": "item:14",
+  "verdict": "pass",
+  "reason": "visible/hidden opposites; no rival"
+ },
+ {
+  "unit": "item:15",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:16",
+  "verdict": "pass",
+  "reason": "exact opposites; 'tall' not offered"
+ },
+ {
+  "unit": "item:18",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:21",
+  "verdict": "pass",
+  "reason": "wheat is a kind of grain; no rival category"
+ },
+ {
+  "unit": "item:27",
+  "verdict": "pass",
+  "reason": "diamond is a kind of gem; emerald/ruby co-members"
+ },
+ {
+  "unit": "item:30",
+  "verdict": "pass",
+  "reason": "chef is a person who cooks; only person offered"
+ },
+ {
+  "unit": "item:33",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:39",
+  "verdict": "pass",
+  "reason": "pilot is one who flies; only fit"
+ },
+ {
+  "unit": "item:42",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:43",
+  "verdict": "pass",
+  "reason": "opposites; widen/grow/increase are synonyms"
+ },
+ {
+  "unit": "item:44",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:45",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:46",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:47",
+  "verdict": "pass",
+  "reason": "exact opposites; receive/comply not opposites"
+ },
+ {
+  "unit": "item:48",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:49",
+  "verdict": "pass",
+  "reason": "interchangeable in everyday use"
+ },
+ {
+  "unit": "item:50",
+  "verdict": "pass",
+  "reason": "lens part of camera; no rival whole"
+ },
+ {
+  "unit": "item:53",
+  "verdict": "pass",
+  "reason": "trunk part of elephant; no rival whole"
+ },
+ {
+  "unit": "item:55",
+  "verdict": "pass",
+  "reason": "sole part of shoe; thumb/elbow not wholes"
+ },
+ {
+  "unit": "item:56",
+  "verdict": "pass",
+  "reason": "verse part of poem; no rival whole"
+ },
+ {
+  "unit": "item:57",
+  "verdict": "pass",
+  "reason": "minute part of hour; numbers not wholes"
+ },
+ {
+  "unit": "item:59",
+  "verdict": "pass",
+  "reason": "wheel part of bicycle; easy for L5 but sound"
+ },
+ {
+  "unit": "item:62",
+  "verdict": "pass",
+  "reason": "ring made from gold; 'golden' is adjective, not material"
+ },
+ {
+  "unit": "item:63",
+  "verdict": "pass",
+  "reason": "pen used to write"
+ },
+ {
+  "unit": "item:64",
+  "verdict": "pass",
+  "reason": "scissors used to cut"
+ },
+ {
+  "unit": "item:69",
+  "verdict": "pass",
+  "reason": "thermometer used to measure"
+ },
+ {
+  "unit": "item:72",
+  "verdict": "pass",
+  "reason": "sieve used to strain; 'cook' too general to compete"
+ },
+ {
+  "unit": "item:73",
+  "verdict": "pass",
+  "reason": "sound synonyms at L4"
+ },
+ {
+  "unit": "item:75",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:77",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:79",
+  "verdict": "pass",
+  "reason": "listed synonyms; a quilt is called a blanket"
+ },
+ {
+  "unit": "item:80",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:82",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:87",
+  "verdict": "pass",
+  "reason": "patience is the only family member offered"
+ },
+ {
+  "unit": "item:92",
+  "verdict": "fail",
+  "reason": "Link misstated: the bridge says '{A} becomes {B}: the same idea with a new job', but '-less' reverses the idea (meaningless = WITHOUT meaning). As a 'relating' pair it is not parallel to hill:hilly / child:childish (having/like); the parallel form would be 'meaningful'."
+ },
+ {
+  "unit": "item:98",
+  "verdict": "pass",
+  "reason": "interchangeable in everyday use; marble is a material"
+ },
+ {
+  "unit": "item:103",
+  "verdict": "fail",
+  "reason": "Same meaning fails: c 'bag' is the broad word and d 'pouch' is a narrower kind (a pouch is a small bag), so 'bag means about the same as pouch' is untrue in most uses (school bag, shopping bag). 'A kind of' describes the pair better."
+ },
+ {
+  "unit": "item:105",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:115",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:119",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:124",
+  "verdict": "pass",
+  "reason": "used interchangeably; bubbly is an adjective"
+ },
+ {
+  "unit": "item:128",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:137",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:138",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:139",
+  "verdict": "pass",
+  "reason": "sound synonyms for a child"
+ },
+ {
+  "unit": "item:140",
+  "verdict": "pass",
+  "reason": "interchangeable in everyday use"
+ },
+ {
+  "unit": "item:144",
+  "verdict": "pass",
+  "reason": "exact synonyms; tack words do not mean girth"
+ },
+ {
+  "unit": "item:149",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:151",
+  "verdict": "pass",
+  "reason": "purse is a kind of container; no rival category"
+ },
+ {
+  "unit": "item:159",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:161",
+  "verdict": "fail",
+  "reason": "Gloss shown for 'manacle' is garbled: 'A shackle for the hand handcuffs' - a broken run-on displayed to a child. Pair handcuff/manacle and options are fine; fix or hide the gloss."
+ },
+ {
+  "unit": "item:163",
+  "verdict": "pass",
+  "reason": "opposites; arrive/early/day are not"
+ },
+ {
+  "unit": "item:164",
+  "verdict": "pass",
+  "reason": "exact synonyms; 'bottom' is the ordinary word"
+ },
+ {
+  "unit": "item:166",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:175",
+  "verdict": "pass",
+  "reason": "sound synonyms; 'allow' is only family"
+ },
+ {
+  "unit": "item:176",
+  "verdict": "fail",
+  "reason": "Same meaning fails: a swamp is one TYPE of wetland (alongside marsh, bog, fen, estuary - estuary was already dropped for exactly this reason), so d is a narrower word than c. 'Swamp is a kind of wetland' is what children are taught in science."
+ },
+ {
+  "unit": "item:178",
+  "verdict": "pass",
+  "reason": "same furniture in everyday use"
+ },
+ {
+  "unit": "item:185",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:186",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:187",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:g",
+  "verdict": "pass",
+  "reason": "hiking is walking; acceptable 'about the same'"
+ },
+ {
+  "unit": "item:i",
+  "verdict": "pass",
+  "reason": "standard synonym pair"
+ },
+ {
+  "unit": "item:j",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:k",
+  "verdict": "pass",
+  "reason": "classic synonym pair"
+ },
+ {
+  "unit": "item:m",
+  "verdict": "pass",
+  "reason": "listed synonym, right sense"
+ },
+ {
+  "unit": "item:n",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:o",
+  "verdict": "pass",
+  "reason": "listed synonyms"
+ },
+ {
+  "unit": "item:q",
+  "verdict": "pass",
+  "reason": "a mill is a factory"
+ },
+ {
+  "unit": "item:r",
+  "verdict": "pass",
+  "reason": "drama/music sense named by gloss; hockey/soccer not synonyms"
+ },
+ {
+  "unit": "item:s",
+  "verdict": "pass",
+  "reason": "standard synonyms"
+ },
+ {
+  "unit": "item:w",
+  "verdict": "pass",
+  "reason": "cent = penny (hundredth); no rival"
+ },
+ {
+  "unit": "item:x",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:y",
+  "verdict": "fail",
+  "reason": "Wrong option 'stag' is unsafe in this context: beside 'performing/solo/audition' its link is 'stag show / stag night' (men-only, often sexual entertainment), a double-meaning word for 8-15. Drop 'stag'; the performing/acting pair itself is acceptable."
+ },
+ {
+  "unit": "item:1d",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:1k",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:1m",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:1n",
+  "verdict": "pass",
+  "reason": "exact opposites; huge/largest synonyms"
+ },
+ {
+  "unit": "item:1q",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:1w",
+  "verdict": "pass",
+  "reason": "opposites in weather sense; no rival"
+ },
+ {
+  "unit": "item:1z",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:2e",
+  "verdict": "pass",
+  "reason": "kitchen is a kind of room"
+ },
+ {
+  "unit": "item:2g",
+  "verdict": "pass",
+  "reason": "boot is a type of shoe (dictionary)"
+ },
+ {
+  "unit": "item:2v",
+  "verdict": "pass",
+  "reason": "hog is a kind of animal; food words not categories"
+ },
+ {
+  "unit": "item:3h",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:3j",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:3w",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:3y",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:4b",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:4c",
+  "verdict": "pass",
+  "reason": "listed synonyms"
+ },
+ {
+  "unit": "item:4e",
+  "verdict": "pass",
+  "reason": "listed synonyms"
+ },
+ {
+  "unit": "item:4f",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:4j",
+  "verdict": "pass",
+  "reason": "ginger is a kind of plant; options co-members"
+ },
+ {
+  "unit": "item:4k",
+  "verdict": "pass",
+  "reason": "curry is a kind of dish"
+ },
+ {
+  "unit": "item:4n",
+  "verdict": "pass",
+  "reason": "rocket is a kind of vehicle; jet/helicopter co-members"
+ },
+ {
+  "unit": "item:4o",
+  "verdict": "pass",
+  "reason": "grey is a kind of colour"
+ },
+ {
+  "unit": "item:4p",
+  "verdict": "pass",
+  "reason": "donkey is a kind of animal"
+ },
+ {
+  "unit": "item:4q",
+  "verdict": "pass",
+  "reason": "toe part of foot"
+ },
+ {
+  "unit": "item:4r",
+  "verdict": "pass",
+  "reason": "hoof part of horse"
+ },
+ {
+  "unit": "item:4t",
+  "verdict": "pass",
+  "reason": "collar part of shirt"
+ },
+ {
+  "unit": "item:4w",
+  "verdict": "pass",
+  "reason": "mane part of lion; horse not offered"
+ },
+ {
+  "unit": "item:4x",
+  "verdict": "pass",
+  "reason": "chapter part of book"
+ },
+ {
+  "unit": "item:4y",
+  "verdict": "pass",
+  "reason": "pupil part of eye"
+ },
+ {
+  "unit": "item:5b",
+  "verdict": "pass",
+  "reason": "pottery made from clay"
+ },
+ {
+  "unit": "item:5c",
+  "verdict": "pass",
+  "reason": "chair made from wood"
+ },
+ {
+  "unit": "item:5g",
+  "verdict": "pass",
+  "reason": "omelet made from egg"
+ },
+ {
+  "unit": "item:5h",
+  "verdict": "pass",
+  "reason": "tire made from rubber"
+ },
+ {
+  "unit": "item:5j",
+  "verdict": "pass",
+  "reason": "statue made from marble; options not materials"
+ },
+ {
+  "unit": "item:5k",
+  "verdict": "pass",
+  "reason": "basket made from wicker"
+ },
+ {
+  "unit": "item:5l",
+  "verdict": "pass",
+  "reason": "butter made from cream"
+ },
+ {
+  "unit": "item:5m",
+  "verdict": "pass",
+  "reason": "popcorn made from corn"
+ },
+ {
+  "unit": "item:5r",
+  "verdict": "pass",
+  "reason": "cake made from flour"
+ },
+ {
+  "unit": "item:5s",
+  "verdict": "pass",
+  "reason": "blanket made from wool"
+ },
+ {
+  "unit": "item:5u",
+  "verdict": "pass",
+  "reason": "coin made from metal"
+ },
+ {
+  "unit": "item:5w",
+  "verdict": "pass",
+  "reason": "table made from wood"
+ },
+ {
+  "unit": "item:5x",
+  "verdict": "pass",
+  "reason": "paper made from wood pulp"
+ },
+ {
+  "unit": "item:6c",
+  "verdict": "pass",
+  "reason": "grater used to shred"
+ },
+ {
+  "unit": "item:6d",
+  "verdict": "pass",
+  "reason": "magnet used to attract"
+ },
+ {
+  "unit": "item:6f",
+  "verdict": "pass",
+  "reason": "stove used to cook"
+ },
+ {
+  "unit": "item:6g",
+  "verdict": "pass",
+  "reason": "freezer used to freeze; gloss accurate"
+ },
+ {
+  "unit": "item:6h",
+  "verdict": "pass",
+  "reason": "telescope used to observe"
+ },
+ {
+  "unit": "item:6i",
+  "verdict": "pass",
+  "reason": "oar used to row"
+ },
+ {
+  "unit": "item:6j",
+  "verdict": "pass",
+  "reason": "glue used to stick"
+ },
+ {
+  "unit": "item:6k",
+  "verdict": "pass",
+  "reason": "whisk used to beat"
+ },
+ {
+  "unit": "item:6l",
+  "verdict": "pass",
+  "reason": "shovel used to dig"
+ },
+ {
+  "unit": "item:6m",
+  "verdict": "pass",
+  "reason": "broom used to sweep"
+ },
+ {
+  "unit": "item:6n",
+  "verdict": "pass",
+  "reason": "alarm used to wake"
+ },
+ {
+  "unit": "item:6p",
+  "verdict": "pass",
+  "reason": "spoon used to stir"
+ },
+ {
+  "unit": "item:6r",
+  "verdict": "pass",
+  "reason": "ruler used to measure"
+ },
+ {
+  "unit": "item:6v",
+  "verdict": "pass",
+  "reason": "hammer used to pound"
+ },
+ {
+  "unit": "item:6w",
+  "verdict": "pass",
+  "reason": "net used to catch"
+ },
+ {
+  "unit": "item:6y",
+  "verdict": "pass",
+  "reason": "saw used to cut"
+ },
+ {
+  "unit": "item:6z",
+  "verdict": "pass",
+  "reason": "scale used to weigh"
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "pass",
+  "reason": "sound synonyms; probable is a near-miss"
+ },
+ {
+  "unit": "item:7b",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:7c",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:7f",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:7g",
+  "verdict": "pass",
+  "reason": "listed synonym"
+ },
+ {
+  "unit": "item:7i",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:7k",
+  "verdict": "pass",
+  "reason": "listed synonyms"
+ },
+ {
+  "unit": "item:7n",
+  "verdict": "pass",
+  "reason": "used interchangeably"
+ },
+ {
+  "unit": "item:7p",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:7q",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:7r",
+  "verdict": "pass",
+  "reason": "dictionary synonym pair"
+ },
+ {
+  "unit": "item:7w",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:7z",
+  "verdict": "pass",
+  "reason": "sound synonyms; options are hyponyms"
+ },
+ {
+  "unit": "item:8a",
+  "verdict": "pass",
+  "reason": "childish only family member"
+ },
+ {
+  "unit": "item:8c",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:8g",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:8h",
+  "verdict": "fail",
+  "reason": "Confusing at L4: the anatomy distractors (caudal, alveolar, pectoral) frame 'spine' as the backbone, whose adjective is 'spinal', while 'spiny' belongs to the thorn/prickle sense. The circular gloss 'Having spines' lets a child learn spiny = 'having a backbone'."
+ },
+ {
+  "unit": "item:8j",
+  "verdict": "pass",
+  "reason": "tasteful only family member"
+ },
+ {
+  "unit": "item:8m",
+  "verdict": "pass",
+  "reason": "bakery only family member"
+ },
+ {
+  "unit": "item:8v",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:9e",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:9h",
+  "verdict": "pass",
+  "reason": "kettle used to boil"
+ },
+ {
+  "unit": "item:9i",
+  "verdict": "pass",
+  "reason": "pump used to inflate"
+ },
+ {
+  "unit": "item:9j",
+  "verdict": "pass",
+  "reason": "microscope used to magnify"
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "pass",
+  "reason": "perfumer makes perfume; only person"
+ },
+ {
+  "unit": "item:9t",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:9v",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:9x",
+  "verdict": "pass",
+  "reason": "exact agent noun"
+ },
+ {
+  "unit": "item:a1",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:a4",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:a7",
+  "verdict": "fail",
+  "reason": "c 'annul' / d 'annulment' are legal/adult vocabulary (chiefly the annulment of a marriage or a law) and too obscure for L5 (age 12); distractors revoke/repeal are of the same register."
+ },
+ {
+  "unit": "item:a8",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:a9",
+  "verdict": "pass",
+  "reason": "stylistic only family member"
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "fail",
+  "reason": "Gloss shown for the NOUN 'responsiveness' is 'Responsive to stimulation' - an adjective phrase. In a lesson whose whole point is the word taking a new job (adjective -> noun), the gloss makes the answer read as still an adjective; confusing."
+ },
+ {
+  "unit": "item:ax",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:b0",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:b3",
+  "verdict": "pass",
+  "reason": "true stronger pair; spicy is other sense"
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "fail",
+  "reason": "Gloss shown for 'miserable' is broken English: 'Is very unhappy uneasy or uncomfortable' (leading 'Is', missing commas) - same defect class as the hidden cringe gloss. Pair and options are fine; fix or hide the gloss."
+ },
+ {
+  "unit": "item:b5",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "fail",
+  "reason": "Gloss shown for 'gale' makes a wrong factual claim: 'A strong wind moving 45-90 knots'. A gale (Beaufort 7-9/10) is roughly 28-55 knots; 64+ knots is hurricane force, so '45-90 knots' is false. Pair breeze/gale is fine; fix or hide the gloss."
+ },
+ {
+  "unit": "item:b7",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bc",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bd",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bf",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bg",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bi",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bk",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bn",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bp",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bq",
+  "verdict": "pass",
+  "reason": "size scale pond<lake; no rival"
+ },
+ {
+  "unit": "item:br",
+  "verdict": "pass",
+  "reason": "true stronger pair"
+ },
+ {
+  "unit": "item:bs",
+  "verdict": "pass",
+  "reason": "size scale stream<river; lake does not flow"
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "fail",
+  "reason": "Gloss shown for 'hot' is only a usage note, 'Used of physical heat', and gives no meaning - the same defect for which picturesque's 'Used of locations' gloss was hidden. Pair warm/hot is fine; hide or replace the gloss."
+ },
+ {
+  "unit": "item:c3",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:c4",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:c5",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:c6",
+  "verdict": "pass",
+  "reason": "opposite in the 'good taste' sense the gloss shows"
+ },
+ {
+  "unit": "item:c8",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:ci",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:ck",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:cl",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:cp",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:d1",
+  "verdict": "pass",
+  "reason": "taro is a kind of plant"
+ },
+ {
+  "unit": "item:d2",
+  "verdict": "pass",
+  "reason": "civet is a kind of mammal"
+ },
+ {
+  "unit": "item:d7",
+  "verdict": "pass",
+  "reason": "cello is a kind of instrument"
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "fail",
+  "reason": "Gloss shown for 'instrument' is the tool sense ('A device that requires skill for proper use'), not the musical-instrument sense a zither belongs to; this identical gloss was hidden on cello (d7) and chime (dp) for that reason. Fix or hide."
+ },
+ {
+  "unit": "item:di",
+  "verdict": "pass",
+  "reason": "quince is a kind of tree"
+ },
+ {
+  "unit": "item:dj",
+  "verdict": "pass",
+  "reason": "flea is a kind of insect"
+ },
+ {
+  "unit": "item:dm",
+  "verdict": "pass",
+  "reason": "capsicum is a kind of plant"
+ },
+ {
+  "unit": "item:dn",
+  "verdict": "pass",
+  "reason": "caraway is a kind of plant"
+ },
+ {
+  "unit": "item:dp",
+  "verdict": "pass",
+  "reason": "chimes are a percussion instrument; options are sounds"
+ },
+ {
+  "unit": "item:dt",
+  "verdict": "pass",
+  "reason": "flamenco is a kind of dance"
+ },
+ {
+  "unit": "item:du",
+  "verdict": "pass",
+  "reason": "rumba is a kind of dance"
+ },
+ {
+  "unit": "item:dw",
+  "verdict": "pass",
+  "reason": "seagull is a kind of bird"
+ },
+ {
+  "unit": "item:dx",
+  "verdict": "pass",
+  "reason": "magnifier is a (scientific) instrument"
+ },
+ {
+  "unit": "item:e4",
+  "verdict": "pass",
+  "reason": "responsive is the adjective; responsiveness keeps noun job"
+ },
+ {
+  "unit": "item:e6",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:e8",
+  "verdict": "pass",
+  "reason": "exact family pair"
+ },
+ {
+  "unit": "item:e9",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:eb",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:ec",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:ed",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:ee",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:ef",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:eg",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:ei",
+  "verdict": "pass",
+  "reason": "interchangeable"
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "fail",
+  "reason": "Gloss shown for 'jealous' is broken English: 'Is feeling resentment against someone because of success' (leading 'Is', 'because of success' - whose?), same defect class as the hidden cringe gloss. Pair envious/jealous is fine; fix or hide the gloss."
+ },
+ {
+  "unit": "item:ek",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:el",
+  "verdict": "pass",
+  "reason": "exact synonyms at L9"
+ },
+ {
+  "unit": "item:eo",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:ep",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:er",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:es",
+  "verdict": "pass",
+  "reason": "standard synonyms"
+ },
+ {
+  "unit": "item:ev",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:ew",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:ey",
+  "verdict": "pass",
+  "reason": "standard synonyms"
+ },
+ {
+  "unit": "item:f1",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:f2",
+  "verdict": "pass",
+  "reason": "heedful sense matches; acceptable"
+ },
+ {
+  "unit": "item:f3",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:f5",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:f6",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:fa",
+  "verdict": "pass",
+  "reason": "exact synonyms"
+ },
+ {
+  "unit": "item:fc",
+  "verdict": "pass",
+  "reason": "standard synonyms"
+ },
+ {
+  "unit": "item:fd",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:ff",
+  "verdict": "pass",
+  "reason": "sound synonyms"
+ },
+ {
+  "unit": "item:fg",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fh",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fi",
+  "verdict": "pass",
+  "reason": "transparent morphological opposite"
+ },
+ {
+  "unit": "item:fj",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fk",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fl",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fm",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fn",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fo",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fp",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fq",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fr",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fs",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:ft",
+  "verdict": "pass",
+  "reason": "standard opposites"
+ },
+ {
+  "unit": "item:fu",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fv",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ },
+ {
+  "unit": "item:fw",
+  "verdict": "pass",
+  "reason": "exact opposites"
+ }
+]
