@@ -581,8 +581,13 @@
     return {k:'letters',label:'Letter by letter',line:'Look at the marked letters, then say the word slowly, one beat at a time, and spell each beat.',rule:''};
   }
 
-  let _missUp=0;
-  Object.defineProperty(SGUI,'held',{get(){ return _missUp>0; }, configurable:true});
+  /* SGUI.held is "a miss card is UP" — counted from the cards still on the page. It was a bare counter, so a card
+     taken away with its game (Back, or arcadeClose, while the card was up) never counted down: every SGUI.clock in
+     the app stayed still from then on — Word Lore's sixty seconds never ended — and the card's key trap went on
+     swallowing keys app-wide. A card no longer on the page holds nothing and lets its keys go (road to 4.5, P1.20:
+     the bot harness found it, a Honeycomb round left open before Word Lore's clock). Guard: tests/engine-kit.cjs. */
+  const _missOpen=new Set();
+  Object.defineProperty(SGUI,'held',{get(){ _missOpen.forEach(m=>{ if(!m.wrap.isConnected) m.gone(); }); return _missOpen.size>0; }, configurable:true});
   const SPK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" stroke="none"/><path d="M15.6 9a4.2 4.2 0 0 1 0 6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>';
   const BULB='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.4.3.6.75.6 1.25h4c0-.5.2-.95.6-1.25A4.4 4.4 0 0 0 8 1.6z" fill="currentColor" opacity=".9"/><path d="M6.4 12.6h3.2M6.9 14.2h2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   const TICK='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3 8.6l3.2 3L13 4.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -600,12 +605,14 @@
     const wrap=document.createElement('div'); wrap.className='sg-misswrap'+(fixed?' fixed':'');
     wrap.innerHTML='<div class="sg-misscard sb-miss" role="dialog" aria-modal="true" aria-labelledby="sg-miss-h">'+inner+
       '<button class="sg-rbtn go sg-miss-go" type="button">Continue <span class="sg-kbd" aria-hidden="true">Enter</span></button></div>';
-    host.appendChild(wrap); _missUp++;
+    host.appendChild(wrap);
     const t0=performance.now(); let closed=false;
-    function close(){ if(closed) return; closed=true; _missUp=Math.max(0,_missUp-1);
+    const ent={ wrap, gone(){ if(closed) return; closed=true; _missOpen.delete(ent); removeEventListener('keydown',onKey,true); } };
+    _missOpen.add(ent);
+    function close(){ if(closed) return; closed=true; _missOpen.delete(ent);
       removeEventListener('keydown',onKey,true); try{ wrap.remove(); }catch(e){}
       try{ if(o.onContinue) o.onContinue(); }catch(e){} }
-    function onKey(e){ if(closed) return;
+    function onKey(e){ if(closed) return; if(!wrap.isConnected){ ent.gone(); return; }   // taken away with its game: not a card any more
       if(e.key==='Tab') return;                                   // focus may still move inside the card
       e.stopPropagation();
       if(e.key==='Enter'||e.key===' '&&e.target&&e.target.closest&&e.target.closest('.sg-misscard')){
@@ -2218,6 +2225,13 @@
   function gpPowerFor(place,field,behindLap){ if(place>=field && behindLap>0.25) return 'honey';
     return GP_TABLE[Math.min(GP_TABLE.length,Math.max(1,place|0))-1]; }
   const GP_COMBO=3;                  // three Clean in a row: a free Turbo (standard strength)
+  /* THE STARS ARE WON BY WORDS AS WELL AS PLACE (road to 4.5, P1.21, rubric G4 — "learning IS the mechanic").
+     A race used to give stars by place alone, so a child who spelled 0 of 6 box words and drove well took the
+     flag with three. Now a race's stars are the LOWER of what the place earns (1st 3 · 2nd 2 · 3rd 1) and what
+     the words earn: every box word right (90%+) 3, 60%+ 2, 30%+ 1, below that — or no box met — none. So 0/6
+     (and 1/6) can never earn a star, at any place; 6/6 in 2nd is two. tests/gp-rules.cjs runs it from here. */
+  function gpStars(place,right,met){ const ps=place===1?3:place===2?2:place===3?1:0;
+    const p=met>0?right/met:0, ws=p>=0.9?3:p>=0.6?2:p>=0.3?1:0; return Math.min(ps,ws); }
   /* THE CAST IS THE MOCK BEE'S (mockbee.js BOTS) — one hall of rivals across both flagships.
      A rival never wears the child's own face: `alt` stands in, exactly as faceOf() does there.
      pw is how often they turn a box into a power-up (deterministic: every 1/pw boxes, never a
@@ -3359,7 +3373,7 @@
       if(pos>=TOTAL){ over=true; return finish(); }
       if(gate) spellGate();
     }
-    /* THE FINISH (§2.6). Stars by place. Score = place points + driving points (clean bends,
+    /* THE FINISH (§2.6). Stars by place AND words (gpStars: the lower of the two — 0/6 earns none). Score = place points + driving points (clean bends,
        drift mini-turbos) + 50 for each box word right. Coins only for words: one per box word
        right as it was spelled (payG), and the contest coin only for a podium with 70% or more
        of the box words right — never for finishing. The card prints the coins the LEDGER moved
@@ -3369,7 +3383,7 @@
     function finish(){ unbind(); try{ loop&&loop.stop(); }catch(e){}
       try{ updateHud(); }catch(e){}
       const place=1+rivals.filter(r=>r.fin).length;
-      const win=place===1, stars=place===1?3:place===2?2:place===3?1:0;
+      const win=place===1, stars=gpStars(place,right,met);   // place AND words: 0/6 earns no star at any place (P1.21)
       const placePts=Math.max(0,6-place)*250, wordPts=50*right, score=placePts+drivePts+wordPts;
       const pct=met?right/met:0;
       const podium=place<=3&&met>0&&pct>=0.7;   // the contest coin: a podium with 70% of the box words right — never for finishing

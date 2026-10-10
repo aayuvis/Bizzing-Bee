@@ -104,6 +104,16 @@ const KINDS = [
   ok(await pg.evaluate(() => !!document.querySelector('#kit-host .sg-misscard')), 'the trivia card waits for Continue too');
   await pg.keyboard.press('Enter');
   ok(await until(pg, () => !document.querySelector('#kit-host .sg-misscard') && window.__cont === 1), 'Enter continues the trivia card');
+  /* a card taken away WITH its game (Back, arcadeClose) while it is up: it holds nothing any more — no clock stays still,
+     no key is swallowed (road to 4.5, P1.20: a Honeycomb round left with its card up froze Word Lore's clock for good).
+     Proved by breaking: SGUI.held put back as the bare counter → this check fails. */
+  const gone = await pg.evaluate(async () => { const h = document.createElement('div'); document.body.appendChild(h);
+    SGUI.miss(h, { w: 'army' }, 'armey', {}); const up = SGUI.held; h.remove();
+    const ck = SGUI.clock(5, {}); const l0 = ck.left(); await new Promise((r) => setTimeout(r, 600)); const l1 = ck.left(); ck.stop();
+    const inp = document.createElement('input'); document.body.appendChild(inp); inp.focus(); let got = false; inp.addEventListener('keydown', () => { got = true; });
+    inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'q', bubbles: true })); inp.remove();
+    return { up, held: SGUI.held, ran: l0 - l1, got }; });
+  ok(gone.up && !gone.held && gone.ran > 0.3 && gone.got, `a card removed with its game holds nothing: SGUI.held ${gone.held}, a clock runs (${gone.ran.toFixed(2)} s in 0.6 s), keys reach the page (${gone.got})`);
   await pg.evaluate(() => { window.__lp.stop(); });
 
   /* ---- T4: real time at 4× CPU throttle, on a stage (where every timed round runs) ---- */

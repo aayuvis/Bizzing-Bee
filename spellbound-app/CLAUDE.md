@@ -1296,6 +1296,74 @@ Brief rows P1.1–P1.6 and P1.11. Owner decision: **the band model lives INSIDE 
   the wiring; prints the distribution per game. Proved by breaking (seven breaks, recorded in its header).
   `tests/next-words.cjs` now holds the door to the BAND window (not the y-window).
 
+## Road to 4.5, P1 — Today, miss tips, skill gates (10 Oct 2026)
+Brief rows P1.16–P1.21 (the rubric's F1, B4, B9, E5, W2, G4). The rules a later session must keep:
+- **Today's ten** (P1.16, `today.js`, lazy group `today` = today.js + sents + coachRules; nav `today`, route `#/today`, opener
+  `app.openToday`): ONE session a day, TEN words, about five minutes, the words DUE first — `homeDueWords(c)` (a word missed on
+  an earlier day, or a slipped `c.mast` record whose gap is over: the same "due" as My Feed's `dueOf` and Home's mistakes deck)
+  drawn through `nextWords(c, n, {purpose:'review', filter: due})`, then the child's level through `nextWords(…, {purpose:'drill',
+  level:'medium'})` (band ±1; agent A's band model plugs in behind the door). **Every word through nextWords** — word-door holds it.
+  One typed try a word: right = `logBand` + `markMastered` + `clearMiss` + `gainXp` + ONE `addCoins('answer')`; wrong = `addMiss`
+  and the shared miss panel HOLDS until Next. **Nothing is paid for finishing** (no stop/contest). The day lives on the child as
+  `c.today {d, ws, i, res, coins, done, st, typed}` — built once a day, resumed at its word (Home says "Carry on"), and it ENDS on
+  a finish card listing the words right and the words to practise; `logActivity('today', …)` writes the parent log and the good
+  day. While a word is asked: the meaning is `maskTxt`-masked, the sentence only spoken, the header search off (`drillLive`,
+  family-shell `inDrill`). Keys Enter / 1 hear / 2 slowly / 3 sentence; every one is also a button. 'today' counts as practise time.
+- **Home's today ribbon** (P1.17, app3 `homeToday`, CSS in index.html `.sb-today`/`.sb-td-*`): one line — the ring (opens the Coach),
+  Today's ten (Start / Carry on / See it, from `c.today`), My Feed (from `c.feed.day`/`paid`; gone when the feed is off). It is
+  **row 2's THIRD child** drawn first (`order:-1`, both columns) so the shell's `.sb-home-r2 > :nth-child(1|2)` and home-here's
+  second-card selector still find the two journey cards; on a phone it sits under Continue (`order:2`). Outlines only:
+  **Continue stays the one filled button**, and Continue stays above the fold at 390×844.
+- **The first-day card** (P1.18, same slot, `firstDay(c)`: `kid.fr` is today, or a record with no set-up day and nothing on it)
+  has ONE button, **Start → `goNext`** — exactly where Continue goes — so day one has one way in. The ribbon and Today's ten start on
+  day two (a new child can still open `#/today`). If you change this, keep ONE Start and keep it outlined.
+- **The miss tip names the mistake, not the word** (P1.19, `SB_MISS_ERR(typed, word, {hom, isWord})` in **coach-rules.js** — lazy,
+  idle-loaded, so the first screen pays nothing): an edit-distance read of the attempt names its TYPE — final-e, no-final-e,
+  drop-e / keep-e (+suffix), y-i / keep-y, whole-ly, ful, silent (a pattern table of silent letters), dbl-miss / dbl-extra /
+  dbl-shift / dbl-suffix / dbl-prefix (doubles by collapse, not alignment), the look-alike endings (-able/-ible, -ance/-ence, -tion/
+  -sion/-cian, -er/-or/-ar, -ary/-ery, -ous, -le/-el/-al, -cede/-ceed), ph, ch-k, y-i-sound, soft-c/-g, ck, tch, dge, wh, ture, one
+  sound spelled another way, vowel / vowel-team / vowel-miss / vowel-extra, swap, ieei, hom, and one letter missing/extra/changed —
+  each with a tip built from the child's own letters. **A rule that names a stem ("hope + ing") asks `isWord` first**; the endings
+  need a stem of 3+ letters (giant is not gi + ant). No rule → null, and missWhy's concept-family tip speaks (also until the
+  rulebook lands; the panel redraws when it does). The panel carries `data-err` (the type) beside `data-why` (the family, now the
+  type's family when one matched). Guard: **`tests/miss-tips.cjs`** (node, data gate: a 65-row table — 43 of them misspellings the
+  library itself records in `m` — and every one of the ~49,000 recorded misspellings: ≥85% named (90.3% today), Greek only on
+  ph/ch/y, ie/ei only on ie/ei, doubles only on doubles, final-e only on an e-word, no "undefined", deterministic) and
+  answer-feedback (the practice card's comitee → dbl-miss). Never add a tip that is true of the word but not of the mistake.
+- **Quiz clocks count FIRST-TRY rights only** (P1.20 — Word Lore's and Hive Mind's clock in lore.js, the Analogies' clock in
+  analogy.js): a miss costs 2 s, holds, and the question COMES BACK three questions on, options turned (`againQ` / one `~` a
+  return), and again while it is still missed — **three returns at most**; a comeback is practice — not asked, not right, never
+  paid — and says "Back again — practice, it does not score". The finish says "N right first try". Returning only ONCE bounded
+  a guesser at a seventh of a perfect minute and measured ~12% at 3 s a question — too near the 15% gate to hold; three returns
+  put a uniform guesser at ~8% (probe: 1.4–1.6 first-try rights a minute against a perfect 18). Do not cut the returns back.
+- **The skill gate is measured per game** (`tests/games-bots.mjs` T2b): the random bot's SCORE as a share of the perfect bot's,
+  printed for every game in a summary table, and held to **≤ 15%** for every typed game and every quiz clock (drivers declare
+  `clock`, `pace` — game seconds a bot spends per question, taken off the game's own clock so the round ends on ITS clock — and
+  `randomRounds`). New driver `tests/bots/anl-clock.mjs` (opens the gated tab as a tester). Measured 10 Oct at pace 3 s, the random
+  bot over 8 minutes, page seeded (`games-bots.mjs clock`), the P0 clocks → these: Analogies 16.0% → 8.3%, Hive Mind 14.6% →
+  6.9%, Word Lore 16.7% → 10.4% (the full harness: 8.3%, 11.1%, 9.0%; every T1/T2/T2b green).
+  **Fixed rounds of four options** (Meanings, Roots, Idioms, Hive Classic, Squares) stay held to CHANCE by T2 — 25% of perfect is
+  what four options are; getting them under 15% needs a scoring decision (formula scoring, more options or a two-step item) that
+  is the owner's, not a test's. Squares is first-try already: one pick a cell, a missed cell (`st` 2) can never be picked again,
+  and every cell has four options (probed: 216 cells). A 5/9 on one board is luck, not a leak: at chance it happens 4.9% of
+  the time. **The harness seeds the PAGE's Math.random as well as the bots** (boards, question order and option order are
+  presentation draws), so the same build is the same run and a red T2 is reproducible, not a coin toss. The clocks' random bot
+  plays EIGHT minutes (one minute is ~7 guesses; its share of a perfect minute swings ±6 points, eight average it to ±2); the
+  fixed rounds keep the one round T1/T2 were written for. Never move a ceiling; if a gate is luck-bound, grow the sample on
+  principle and say why. Note T1's "6 of 10 pays" is itself beatable by luck 2% of the time per round — a product rule, not
+  the harness's to change.
+- **`SGUI.held` counts the miss cards still ON THE PAGE** (saga2.js `_missOpen`), not a bare counter: a card taken away with its
+  game (Back, `arcadeClose`) while it was up used to hold every `SGUI.clock` in the app still for good — Word Lore's clock never
+  ended — and its key trap swallowed keys app-wide. The full bot harness found it (a Honeycomb round left with its card up, then
+  Word Lore's clock ran 160 questions). Guard: `tests/engine-kit.cjs` (a card removed with its host holds nothing).
+- **Grand Prix stars are won by words as well as place** (P1.21, `gpStars(place, right, met)` in saga2.js's rules block): the
+  LOWER of the place's stars (1st 3 · 2nd 2 · 3rd 1) and the words' (90%+ 3 · 60%+ 2 · 30%+ 1); **0/6 (and 1/6, or no box met)
+  earns no star at any place**. Guards: `gp-rules.cjs` GP7 (the table, run from the real block) and `gp-race.cjs` GP7 live (20
+  races with every box missed: 0 stars and 0 drawn on the card even on the podium; every word Clean: the place decides).
+- **First load did not grow**: the ribbon and card are drawn in code (no picture, no new boot file); today.js and the classifier
+  are lazy; the dead `streamers()`, `atlasWorld()`, `journeyArtSVG()` and `conceptBigCard()` and the unused `.sb-home-tiles` rule
+  were deleted to pay for them (app3+index+boot-lazy+family-shell minified-gzip: −342 B against the P0 build).
+
 ## Owner sweep fixes (3 Oct 2026) — fourteen bugs, each with its guard
 
 - **Miss panel**: no toast shows while a visible `.sb-miss` is on screen (`_toastVsMiss`, after

@@ -721,10 +721,8 @@
     .sb-fam-brand>div{width:26px!important}
     .sb-fam-day>svg{display:none}
   }
-  /* Home, row 2: the next Atlas stop beside the four "Keep going" tiles. One column
-     on a phone, then the stop card and a 2x2 tile block side by side. */
+  /* Home, row 2: "You are here" and the second journey card — one column on a phone */
   .sb-home-r2{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;align-items:start}
-  .sb-home-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
   /* TWO journey cards again (owner, 10 Oct 2026 — the road to 4.5, P0.2): "You are here" and the second card
      (homeSecondCard: the mistakes deck when due, else the Analogy Atlas, or the Spelling Gym while analogies are
      gated) side by side from 900px — Bee's row the family's shell REF measures (547px each at 1280) — one height */
@@ -745,6 +743,19 @@
   /* an OUTLINED pill, never filled: Continue is the one filled button on Home */
   .sb-home-second .s2-go{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:9px 15px;
     border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);font-weight:800;font-size:13.5px;color:var(--ink,var(--text))}
+  /* Today, one line (P1.17/P1.18, app3 homeToday): row 2's third child, drawn first; under Continue on a phone. Outlines only. */
+  .sb-today{grid-column:1/-1;order:-1;display:flex;align-items:stretch;gap:6px;padding:5px;border:1px solid var(--line);border-radius:14px;background:var(--paper,var(--bg2));box-shadow:var(--sh-rest);color:var(--ink,var(--text))}
+  .sb-td-b{display:flex;align-items:center;gap:7px;min-height:44px;min-width:0;padding:0 10px;border:0;border-radius:10px;background:none;color:inherit;font-size:13.5px;text-align:left;white-space:nowrap}
+  .sb-td-b:hover{background:var(--surface2)}.sb-td-b b{font-weight:800}.sb-td-b i{font-style:normal;font-weight:700;color:var(--muted)}.sb-td-b b i{color:inherit;font-weight:800}
+  .sb-td-main{flex:1;justify-content:space-between;border:1px solid var(--line)}
+  .sb-td-go{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:var(--r-md,10px);border:1.5px solid var(--accent);font-weight:800}
+  .sb-first{align-items:center;gap:14px;padding:12px 14px}
+  .sb-first-ic{flex:none;width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--chip);color:var(--accent)}
+  .sb-first-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;font-size:13.5px;line-height:1.45}
+  .sb-first-b b{font-family:var(--display);font-size:17px;line-height:1.2}
+  .sb-first-go{flex:none;border:1.5px solid var(--accent);font-weight:800;padding:0 16px}
+  @media (max-width:639px){ .sb-home .sb-today{order:2} .sb-td-b{padding:0 8px;font-size:13px} .sb-td-b i,.sb-td-ar{display:none}
+    .sb-first{flex-wrap:wrap} .sb-first-ic{width:44px;height:44px} .sb-first-b{flex-basis:calc(100% - 60px)} .sb-first-go{width:100%;justify-content:center} }
   /* ONE Continue, above the fold on a phone (FIX-BEE B1, family standard §2). The home keeps
      its look and its source order; below 640px the two rows dissolve (display:contents) into
      one column and Continue is moved up to sit straight under the greeting — at 390x844 it

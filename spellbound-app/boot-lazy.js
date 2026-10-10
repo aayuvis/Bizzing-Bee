@@ -141,7 +141,9 @@
     placeData: 'placement-data.js',
     placeUI: 'placement.js',
     objectives: 'objectives.js',
-    gradeMap: 'grade-map-data.js'
+    gradeMap: 'grade-map-data.js',
+    /* Today's ten (road to 4.5, P1.16): the daily session Home's ribbon opens — fetched at its door (app.openToday) only */
+    todayUI: 'today.js'
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -175,7 +177,8 @@
     buzz: ['dailyBuzz'],
     analogy: ['anlData', 'anlUI', 'wordband'],   // saga2: the engine kit (SGUI.stage, SGUI.keys)
     placement: ['placeData', 'placeUI'],
-    curriculum: ['trail', 'concepts', 'objectives', 'gradeMap']
+    curriculum: ['trail', 'concepts', 'objectives', 'gradeMap'],
+    today: ['todayUI', 'sents', 'coachRules', 'wordband']   // the sentences it reads aloud, and the rulebook the miss panel's tip comes from
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
