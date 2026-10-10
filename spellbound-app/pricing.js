@@ -25,26 +25,33 @@
    save just over two months. Change one side of a pair and check the other.
 
    Assumptions flagged for confirmation: Beginner keeps 'basic' games (spec unspecified);
-   Free = 2 worlds / 0 avatar packs (carried from the old free plan). */
+   Free = 2 worlds / 0 avatar packs (carried from the old free plan).
+
+   WORLDS ARE THE FAMILY ENGINE'S NOW (FIX-BEE v2): worlds 1–2 are free and a paid plan — the
+   family plan — opens every world with its avatars (BZ_AVATARS.worldOpen, plan 'family'); a free
+   child can open one at a time for 240 earned coins. `worlds`/`avatarPacks` below are the old
+   plan shape and nothing on a screen reads them for a count. A blurb names its own word count as
+   {words} — app3's tierBlurb() fills it from `ent.words` — so a price page can never disagree
+   with the plan it describes (road to 4.5, P0.21). */
 (function () {
   var TIERS = {
     free: {
       id: 'free', name: 'Free', order: 0, priceMo: 0, priceYr: 0, badge: '🐝',
-      blurb: 'A real taste — 500 words and the basic games.',
+      blurb: 'A real taste — {words} words and the basic games.',
       ent: { words: 500, lists: false, concepts: false, journeys: false, revise: false,
              trainTools: false, games: 'basic', worlds: 2, avatarPacks: 0, saga: false,
              books: false, startCoins: 0 }
     },
     beginner: {
       id: 'beginner', name: 'Beginner Bee', order: 1, priceMo: 9.99, priceYr: 99, badge: '🐝✨',
-      blurb: '10,000 words, Concepts, Lists and four worlds to explore.',
+      blurb: '{words} words, Concepts, Lists and every world to explore.',
       ent: { words: 10000, lists: true, concepts: true, journeys: false, revise: true,
              trainTools: false, games: 'basic', worlds: 4, avatarPacks: 5, saga: false,
              books: false, startCoins: 0 }
     },
     regional: {
       id: 'regional', name: 'Regional Speller', order: 2, priceMo: 19.99, priceYr: 199, badge: '👑',
-      blurb: 'Everything unlocked — all 40k words, worlds, avatars, games, Supercharge, the Saga and the book series.',
+      blurb: 'Everything unlocked — all {words} words, every world, avatar and game, Supercharge and the book series.',
       ent: { words: 40000, lists: true, concepts: true, journeys: true, revise: true,
              trainTools: true, games: 'all', worlds: 'all', avatarPacks: 'all', saga: true,
              books: true, startCoins: 0 }

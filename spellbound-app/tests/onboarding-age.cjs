@@ -82,6 +82,11 @@ const { chromium } = require('playwright');
   if(rs.opts.join()!==['5-7','8-10','11-13','14-18'].join() || rs.label!=='Age range') errs.push('the restore sheet does not offer the four age ranges — '+JSON.stringify(rs.opts)+' '+rs.label);
   if(!/age range were never uploaded/.test(rs.txt)) errs.push('the restore sheet says "'+rs.txt+'", not "name and age range"');
   if(!rs.added || rs.band!=='11-13' || rs.age!==12 || rs.name!=='Rhea') errs.push('a restored child should be Rhea, band 11-13, age midpoint 12 — got '+JSON.stringify(rs));
+  /* (road to 4.5, P0.24) the grown-ups' speller cards print each child's age RANGE ("Ages 14–18"),
+     never the midpoint stored for the old readers ("Age 16"). Read from the Parent Zone's own render. */
+  const pz=await pg.evaluate(()=>{ const t=viewParent().replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+    return { ages:t.match(/Ages? \d[\d–-]*/g)||[], want:state.children.map(c=>'Ages '+ageBandOf(c).n) }; });
+  if(!pz.want.length || pz.ages.length!==pz.want.length || pz.ages.some((a,i)=>a!==pz.want[i])) errs.push('the Parent Zone prints '+JSON.stringify(pz.ages)+', want the age ranges '+JSON.stringify(pz.want));
   await b.close();
   console.log(errs.length?'FAIL\n'+errs.join('\n'):'PASS — onboarding asks for a display name and an age range, and stores both');
   process.exit(errs.length?1:0);

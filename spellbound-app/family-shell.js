@@ -378,13 +378,47 @@
   }
 
   /* ------------------------------------------------------------------ 3. THE HIVE */
-  var _stopAct = null;
+  /* A ONE-MINUTE DRILL IS RECORDED (road to 4.5, P0.32/P0.33). The drop-in writes WHOLE minutes on
+     a 15 s tick, so a child who drilled for a minute and closed the tab left up to 59 s in its
+     closure and nothing in bizzing.activity — the audit read 0 minutes after a one-minute drill.
+     The drop-in is the family's and is not edited (family-dropins.cjs), so Bee keeps a SHADOW of its
+     count — the same five events, the same tick, the same rules (2-minute idle, the 3-tick gap) — and
+     when the page is hidden (visibilitychange) or left (pagehide) it: stops the drop-in's tracker,
+     so its leftover can never be written twice; writes the leftover ROUNDED to the nearest minute
+     (30 s or more is one) as one line in the drop-in's own shape {a,d,t,m,who}; and starts a fresh
+     tracker at the child's next real input — coming back to a tab is not a touch. ?demo writes
+     nothing. Guard: tests/hive-minutes.cjs. */
+  var ACT_IDLE = 120000, ACT_TICK = 15000, ACT_EV = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
+  var _seg = null;
   function childName() { try { return (state.children && state.children.length) ? (active().name || null) : null; } catch (e) { return null; } }
+  function segTick(g) { var now = Date.now(), dt = now - g.lastTick; g.lastTick = now;
+    if (document.visibilityState !== 'visible' || now - g.lastInput > ACT_IDLE || dt > ACT_TICK * 3) return;
+    g.ms += dt; if (g.ms >= 60000) g.ms -= 60000; }            /* …and the drop-in wrote that minute itself */
   function startActivity() {
-    if (DEMO || _stopAct || !window.BZ_ACTIVITY) return;
+    if (DEMO || _seg || !window.BZ_ACTIVITY) return;
     if (!(state.children && state.children.length)) return;
-    _stopAct = BZ_ACTIVITY.trackActivity('bee', childName);
+    var now = Date.now(), g = { ms: 0, lastTick: now, lastInput: now };
+    g.stop = BZ_ACTIVITY.trackActivity('bee', childName);
+    g.timer = setInterval(function () { segTick(g); }, ACT_TICK);
+    _seg = g;
   }
+  function flushActivity() {
+    var g = _seg; if (!g) return 0; _seg = null;
+    try { g.stop(); } catch (e) {} clearInterval(g.timer);
+    var now = Date.now(), dt = now - g.lastTick;
+    var ms = g.ms + (now - g.lastInput <= ACT_IDLE && dt <= ACT_TICK * 3 ? dt : 0), m = Math.round(ms / 60000);
+    if (DEMO || m < 1) return 0;
+    try { var o = SB_STORE.getJSON('activity', null); if (!o || !Array.isArray(o.s)) o = { v: 1, s: [] };
+      var st = new Date(now - ms), who = String(childName() || '').trim(), line = { a: 'bee', d: ymd(new Date(now)), t: st.getHours() * 60 + st.getMinutes(), m: m };
+      if (who) line.who = who;
+      o.s.push(line); o.s = o.s.slice(-4000); SB_STORE.setJSON('activity', o); } catch (e) {}
+    return m;
+  }
+  try {
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') flushActivity(); });
+    window.addEventListener('pagehide', flushActivity);
+    ACT_EV.forEach(function (e) { window.addEventListener(e, function () { try { if (_seg) _seg.lastInput = Date.now(); else if (document.visibilityState === 'visible') startActivity(); } catch (x) {} }, { passive: true, capture: true }); });
+  } catch (e) {}
   function milestone(ev, label) {
     if (DEMO || !window.BZ_ACTIVITY) return;
     try { BZ_ACTIVITY.trackMilestone('bee', childName(), ev, label); } catch (e) {}

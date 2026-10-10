@@ -15,7 +15,10 @@
      6. Test coins and ?demo never write the family wallet; a plan grants no coins;
      7. no call site anywhere passes an amount;
      8. (audit v4 K9) the wallet history is one line per sitting — "+13 · from 13 right answers" —
-        while purchases and the one-off migration stay lines of their own.
+        while purchases and the one-off migration stay lines of their own;
+     9. (road to 4.5, P0.31) …and one line per SESSION, named by it: "+13 from 13 right answers ·
+        Spelling Gym · Word Doctor"; two sessions in one sitting are two lines. Proved by breaking:
+        the sitting-only grouping put back folds both sessions into "+18 from 18 right answers".
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/wallet-coins.cjs                  */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
@@ -153,6 +156,33 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     ok(/^−120 bought /.test(h.rows[3]) && h.rows[4] === '+3 from 3 right answers' && /^\+250 Bee coins moved/.test(h.rows[5]) && h.rows.length === 6,
       'a purchase stands alone, an earlier sitting is its own line, and the move into the family wallet is never folded (' + h.rows.slice(3).join(' | ') + ')');
     ok(h.shop === h.rows.length && h.raw === 20, `the Shop's history reads the same ${h.shop} lines, and the ledger itself is untouched (${h.raw} entries)`);
+    await ctx.close();
+  }
+
+  /* ---- 9. (road to 4.5, P0.31) one line per SESSION. Consecutive coins of one kind from one Bee session
+     fold into one line named by that session — "+13 from 13 right answers · Spelling Gym · Word Doctor".
+     Two sessions back to back (six minutes apart, one sitting) stay two lines, and a finished round in
+     the middle of a session keeps the runs either side of it apart. The session is Bee's own log
+     (c.activity, written when a session ends); the ledger is BZ_WALLET's and is only read. ---- */
+  {
+    const now = Date.now(), M = 60000, L = [{ a: 'bee', t: now - 300 * M, n: 250, why: 'migrated' }];      // moved in long ago (so no new move)
+    for (let i = 0; i < 13; i++) L.push({ a: 'bee', t: now - 40 * M + i * 20000, n: 1, why: 'answer' });   // the Gym: 13 right in four minutes
+    for (let i = 0; i < 2; i++) L.push({ a: 'bee', t: now - 30 * M + i * 20000, n: 1, why: 'answer' });    // the warm-up: 2 right…
+    L.push({ a: 'bee', t: now - 29 * M, n: 5, why: 'stop' });                                              // …a finished round…
+    for (let i = 0; i < 3; i++) L.push({ a: 'bee', t: now - 28 * M + i * 20000, n: 1, why: 'answer' });    // …3 more right
+    const activity = [{ kind: 'buzz', label: '10-Word Warm-Up', ts: now - 26 * M, done: 10, right: 5, coins: 10, misses: [] },
+      { kind: 'gym', label: 'Spelling Gym · Word Doctor', ts: now - 35 * M, done: 13, right: 13, coins: 13, misses: [] }];
+    const coins = L.reduce((a, x) => a + x.n, 0);
+    const ctx = await b.newContext({ viewport: { width: 1000, height: 900 } });
+    await ctx.addInitScript(([s, w]) => { try { if (!localStorage.getItem('t_ses')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0');
+      localStorage.setItem('bizzing.wallet', JSON.stringify(w)); localStorage.setItem('t_ses', '1'); } } catch (e) {} },
+      [Object.assign({}, seed, { children: [Object.assign({}, seed.children[0], { walletWho: 'ahana', coins, activity })] }), { v: 1, kids: { ahana: { coins, ledger: L } } }]);
+    const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+    await pg.goto('file://' + APP + '/index.html'); await pg.waitForTimeout(2500);
+    const rows = await pg.evaluate(async () => { state.walletOpen = true; render(); await new Promise(r => setTimeout(r, 200));
+      return [...document.querySelectorAll('.bz-sheet .bz-ledger li')].map(li => (li.querySelector('b').textContent + ' ' + li.querySelector('.bz-ledger-w').textContent).replace(/\s+/g, ' ').trim()); });
+    const want = ['+3 from 3 right answers · 10-Word Warm-Up', '+5 finished a round · 10-Word Warm-Up', '+2 from 2 right answers · 10-Word Warm-Up', '+13 from 13 right answers · Spelling Gym · Word Doctor', '+250 Bee coins moved into the family wallet'];
+    ok(JSON.stringify(rows) === JSON.stringify(want), 'the wallet sheet folds a session\'s right answers into one line named by the session, and keeps two sessions and a round between runs apart:\n         ' + rows.join(' | '));
     await ctx.close();
   }
 

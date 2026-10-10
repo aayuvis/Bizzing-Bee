@@ -1,7 +1,12 @@
 /* bizzing-activity.js — CLASSIC-SCRIPT PORT of the Bizzing family drop-in.
 
    Ported from aayuvis/Bizzing_Schedule, integration/bizzing-activity.js at commit d42455e
-   (branch claude/amazing-knuth-4aemgz). The original is an ES module, and
+   (branch claude/amazing-knuth-4aemgz). Current upstream, as vendored byte for byte in
+   tests/lib/family/bizzing-activity.js and matched against Bizzing_Schedule/integration by the
+   family v5 audit (10 Oct 2026):
+     sha256 d1f85d4ae0522732ea515d300adb851fddb038535216d7419e27e43f96528c33
+   (tests/family-dropins.cjs fails if the vendored file stops hashing to this; re-vendor, re-port
+   and re-cite together). The original is an ES module, and
    <script type="module"> does not load over file://, which is how Bizzing Bee runs — so the
    two exports are hung on window.BZ_ACTIVITY instead. The logic and every constant are the
    original's, unchanged; only `export` and the optional-catch bindings differ. If the drop-in
