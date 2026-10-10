@@ -8284,12 +8284,12 @@ function conceptBigCard(ch, allChs){
   const ci=allChs.indexOf(ch); const st=conceptStat(ch); const locked=!isConceptUnlocked(ci);
   const _L=locked?conceptLock(ci):null;
   const tag=locked?lockChip(_L.kind,_L.text):`<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;background:${st.bg};color:${st.fg}">${st.done?'✓ Mastered':(st.label+(st.total?(' · '+st.m+'/'+st.total):''))}</span>`;
-  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${_L.kind==='learn'?'🧭 Take me there':'Ask a grown-up'}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
+  const cta=locked?`<button data-act="buyConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:15px">${_L.kind==='learn'?'🧭 Take me there':'For grown-ups'}</button>`:`<button data-act="openConcept" data-arg="${ci}" style="padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Open &amp; study · ${st.total} words →</button>`;
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,28px);box-shadow:var(--glow)">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px"><span style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700">${esc(catGroup(ch.category))}</span><span style="${diffStyleFor(ch.difficulty)}">${(diffMap[ch.difficulty]||diffMap.medium)[0]}</span></div>
     <div style="font-family:var(--display);font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.12;margin-bottom:4px;display:flex;align-items:center;gap:9px">${locked?`<span style="color:var(--muted);display:inline-flex">${iconSVG('lock',22,2.2)}</span>`:''}${esc(conceptShort(ch.title))}</div>
     <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:13px">${esc(conceptRoots(ch.title))}</div>
-    <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?(_L.kind==='learn'?'This chapter opens on the Atlas, at the stop that teaches it — walk there and its pattern, worked examples and word list are yours.':'This chapter comes with the plan. Ask a grown-up about it.'):esc(ch.concept||'')}</div>
+    <div style="font-size:15px;color:var(--text);line-height:1.6;margin-bottom:18px">${locked?(_L.kind==='learn'?'This chapter opens on the Atlas, at the stop that teaches it — walk there and its pattern, worked examples and word list are yours.':'This chapter comes with the family plan.'):esc(ch.concept||'')}</div>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">${tag}${cta}</div>
   </div>`;
 }
@@ -11332,7 +11332,7 @@ function coachSetup(){
         <span style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:color-mix(in srgb,#5B3FA6 13%,transparent);color:#5B3FA6;display:grid;place-items:center;opacity:.8">${(window.SB_ICON_ART&&SB_ICON_ART.ultraJourney)?SB_ICON_ART('ultraJourney',{size:22}):''}</span>
         <span style="min-width:0;flex:1"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)">Ultra Champions Journey</span>
         <span style="display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:1px">Hardest-first through the library of ${countTxt('library')} words · Advanced Pack</span></span>
-        <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} Ask a grown-up</span></button>`;
+        <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:11px;white-space:nowrap">${iconSVG('lock',12)||''} Family plan</span></button>`;
       // unlocked: the advanced journey leads. locked: it sits under the standard one.
       return on ? (ultra+journeyBanner) : (journeyBanner+locked); })()}
     <div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px">
@@ -12614,7 +12614,7 @@ function overlays(){
   if((S.showTiers||S.showPaywall) && !S._planOk){
     if(S._pinPass) S._planOk=true;
     else { const t=!!S.showTiers, pw=!!S.showPaywall; S.showTiers=false; S.showPaywall=false;
-      if(!S.pinDlg) S.pinDlg={ label:((S.tierUpsell&&S.tierUpsell.label)?S.tierUpsell.label.replace(/^./,ch=>ch.toUpperCase())+' — ask a grown-up':'Plans — grown-ups only'), typed:'', make:!pinSet(), first:null,
+      if(!S.pinDlg) S.pinDlg={ label:((S.tierUpsell&&S.tierUpsell.label)?S.tierUpsell.label.replace(/^./,ch=>ch.toUpperCase())+' — grown-ups only':'Plans — grown-ups only'), typed:'', make:!pinSet(), first:null,
         next:()=>{ state._planOk=true; state.showTiers=t; state.showPaywall=pw; render(); } }; } }
   if(!S.showTiers && !S.showPaywall) S._planOk=false;
   if(S.qWord) h+=viewQuotesWordPop();
