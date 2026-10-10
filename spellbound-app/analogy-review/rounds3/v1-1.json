@@ -1,0 +1,357 @@
+[
+ {
+  "unit": "item:8",
+  "verdict": "pass",
+  "reason": "shipment = freight (goods carried); inventory/receipt/premium do not compete."
+ },
+ {
+  "unit": "item:103",
+  "verdict": "fail",
+  "reason": "Link (a): 'pouch' is a narrower word for 'bag'. Dictionaries define a pouch as 'a small bag', so d is a kind of c, which is the 'A kind of' link, not 'Same meaning'. The shown gloss ('a sack or satchel of moderate size') also does not describe a pouch."
+ },
+ {
+  "unit": "item:161",
+  "verdict": "pass",
+  "reason": "handcuff = manacle (one WordNet synset); deterrent/impediment/pillory do not compete; fine at L7."
+ },
+ {
+  "unit": "item:176",
+  "verdict": "fail",
+  "reason": "Link (a): a swamp is one TYPE of wetland (wetlands include marshes, bogs, fens and swamps; WordNet puts swamp under wetland). d is a narrower word, so 'Same meaning' is false and the pair teaches the 'A kind of' link under the wrong name."
+ },
+ {
+  "unit": "item:185",
+  "verdict": "pass",
+  "reason": "accumulation = buildup; melanin/breakdown do not compete."
+ },
+ {
+  "unit": "item:y",
+  "verdict": "fail",
+  "reason": "Link (a): acting is one kind of performing. Singing, dancing, playing music and doing magic are all performing but not acting, so d is narrower than c. A careful child can see 'you can perform a song without acting', so 'Same meaning' is not exactly true."
+ },
+ {
+  "unit": "item:7a",
+  "verdict": "pass",
+  "reason": "possible = feasible; probable is a fair near-miss rather than a second answer."
+ },
+ {
+  "unit": "item:9p",
+  "verdict": "pass",
+  "reason": "A perfumer makes perfume (MW also gives 'one that perfumes'). It is the only person on offer."
+ },
+ {
+  "unit": "item:ae",
+  "verdict": "pass",
+  "reason": "Exact noun form; stimuli/stimulus/activation share no root."
+ },
+ {
+  "unit": "item:b4",
+  "verdict": "pass",
+  "reason": "miserable is a stronger sad; ecstatic/patriotic/nostalgic are not."
+ },
+ {
+  "unit": "item:b6",
+  "verdict": "pass",
+  "reason": "A gale is a stronger breeze; the false-number gloss is hidden."
+ },
+ {
+  "unit": "item:bu",
+  "verdict": "pass",
+  "reason": "hot is a stronger warm; cold/gulp/downpour are not."
+ },
+ {
+  "unit": "item:d9",
+  "verdict": "pass",
+  "reason": "A zither is a kind of instrument; fret is a part, saxophone a sibling, and instrumental an adjective."
+ },
+ {
+  "unit": "item:e8",
+  "verdict": "pass",
+  "reason": "Exact family pair, and the praise-sense gloss is hidden."
+ },
+ {
+  "unit": "item:ej",
+  "verdict": "pass",
+  "reason": "envious = jealous in ordinary use; no option competes."
+ },
+ {
+  "unit": "item:es",
+  "verdict": "pass",
+  "reason": "oval = ellipse (one WordNet synset); round/lob do not compete. Note: the shown gloss stops mid-sentence ('cutting completely…'). Shorten it or hide it."
+ },
+ {
+  "unit": "item:fy",
+  "verdict": "pass",
+  "reason": "loud is the opposite of quiet; silent/calm are synonyms and humble is unrelated."
+ },
+ {
+  "unit": "item:g7",
+  "verdict": "pass",
+  "reason": "entrance is the opposite of exit; no option competes."
+ },
+ {
+  "unit": "item:gn",
+  "verdict": "pass",
+  "reason": "gelatin -> gelatinous is exact; no option shares the root."
+ },
+ {
+  "unit": "item:hd",
+  "verdict": "pass",
+  "reason": "continuance is a real noun of continue; no option shares the root."
+ },
+ {
+  "unit": "item:hk",
+  "verdict": "pass",
+  "reason": "A synthesizer is a musical instrument; no option is its category."
+ },
+ {
+  "unit": "item:hx",
+  "verdict": "pass",
+  "reason": "Marinara is a sauce; no option is its category."
+ },
+ {
+  "unit": "item:js",
+  "verdict": "fail",
+  "reason": "Link (a) and level (d): in everyday and British use, 'extremities' means the hands and feet (Oxford, Cambridge), which are only the ends of the limbs. The 'limb' sense is medical register ('upper/lower extremities'). To an 11-year-old, extremity means 'the farthest point' or 'an extreme'. So only a technical sense matches, and even that is narrower in common use. Too weak and too adult for L4."
+ },
+ {
+  "unit": "item:ju",
+  "verdict": "pass",
+  "reason": "The award sense of citation (Cambridge's first sense: a formal statement praising bravery) matches commendation, and the gloss teaches it. condemnation is an opposite and the rest are unrelated."
+ },
+ {
+  "unit": "item:kr",
+  "verdict": "pass",
+  "reason": "loyalty = devotion; no option competes."
+ },
+ {
+  "unit": "item:m5",
+  "verdict": "pass",
+  "reason": "A bump (on the head) is a swelling; shin/sag/eyelash do not compete."
+ },
+ {
+  "unit": "item:mf",
+  "verdict": "fail",
+  "reason": "Level (d) and loose fit: 'elicit' (and 'evoke') are secondary-school academic words, too advanced for L4 (about age 11). They also overlap only in the 'call forth a response' sense: you evoke a memory or an image, but you elicit an answer or information ('the smell elicited memories' is odd). Move it to L7 or above, or cut it."
+ },
+ {
+  "unit": "item:o2",
+  "verdict": "fail",
+  "reason": "Link (a): a platter is a large serving plate or dish, while a tray is a flat board with a rim for carrying things (Cambridge). They are related tableware, not the same thing. A cafeteria tray is not a platter, and the gloss shown is tray's 'receptacle' sense, not a dish."
+ },
+ {
+  "unit": "item:od",
+  "verdict": "pass",
+  "reason": "contempt = disdain; insult/affront are acts, not the feeling, and acceptance is unrelated."
+ },
+ {
+  "unit": "item:on",
+  "verdict": "pass",
+  "reason": "legacy = inheritance; the options are people."
+ },
+ {
+  "unit": "item:p0",
+  "verdict": "pass",
+  "reason": "A racehorse is a kind of horse; rodeo/equestrian/handler are not its category."
+ },
+ {
+  "unit": "item:ph",
+  "verdict": "pass",
+  "reason": "Nutmeg is a spice; the options are other foods, not categories."
+ },
+ {
+  "unit": "item:r6",
+  "verdict": "pass",
+  "reason": "beg = entreat; entreat is formal, not archaic, at L5; bully/grumble/shun do not compete."
+ },
+ {
+  "unit": "item:u6",
+  "verdict": "pass",
+  "reason": "pig = hog (one WordNet synset), used in the farm-animal sense; hen/pigeon do not compete."
+ },
+ {
+  "unit": "item:ua",
+  "verdict": "pass",
+  "reason": "exhaustion = fatigue; no option competes."
+ },
+ {
+  "unit": "item:ut",
+  "verdict": "pass",
+  "reason": "crease = wrinkle; no option competes."
+ },
+ {
+  "unit": "item:vb",
+  "verdict": "pass",
+  "reason": "customize = personalize; no option competes."
+ },
+ {
+  "unit": "item:vn",
+  "verdict": "fail",
+  "reason": "Link (a) and (d): aqua and cyan are two different colour names, not one word's synonyms. Aqua is a light blue-green, and WordNet files it with turquoise/aquamarine. Cyan is a separate synset, 'a primary subtractive color for light', and that technical printer-ink gloss is what the child is shown. Aqua's other sense (water) also pulls the other way. A careful child cannot be sure these 'mean the same'."
+ },
+ {
+  "unit": "item:vx",
+  "verdict": "fail",
+  "reason": "Link (a): gruel is defined as 'a THIN porridge' (WordNet puts it under porridge; Oxford: thin liquid food of oatmeal), so porridge is the broader word and gruel a kind of it. That is the 'A kind of' link, not 'Same meaning'."
+ },
+ {
+  "unit": "item:w4",
+  "verdict": "pass",
+  "reason": "cast (the actors) = troupe (a group of performers); hex/shadow/spotlight/backdrop play on other senses of cast and are not groups."
+ },
+ {
+  "unit": "item:wa",
+  "verdict": "pass",
+  "reason": "vine = climber (a climbing plant), and the gloss pins the plant sense; the options are not climbers."
+ },
+ {
+  "unit": "item:wb",
+  "verdict": "pass",
+  "reason": "factory = mill (one WordNet synset: steel mill, paper mill); no option competes."
+ },
+ {
+  "unit": "item:wi",
+  "verdict": "pass",
+  "reason": "certify -> certification is the verb-to-noun form; the options have other roots."
+ },
+ {
+  "unit": "item:wx",
+  "verdict": "pass",
+  "reason": "minstrel = bard (travelling singer-poets, given as each other's synonyms); tango/duet/columnist do not compete."
+ },
+ {
+  "unit": "item:yy",
+  "verdict": "pass",
+  "reason": "hole = opening; peg fills a hole and a dent is a hollow, not an opening."
+ },
+ {
+  "unit": "item:z2",
+  "verdict": "pass",
+  "reason": "board = committee in the governing-group sense the gloss shows; the plank-sense traps are not groups."
+ },
+ {
+  "unit": "item:zh",
+  "verdict": "fail",
+  "reason": "Link (a): a festival is one kind of celebration, a special, organised, often religious or cultural one (Oxford: 'a day or period of celebration'). A birthday party or a win is a celebration but not a festival, so d is narrower than c, and 'Same meaning' teaches the 'A kind of' link under the wrong name. It also leaves 'graduation', another occasion that is celebrated, nearer than a clean distractor should be."
+ },
+ {
+  "unit": "item:zi",
+  "verdict": "pass",
+  "reason": "bard = minstrel; maiden/epic/ballad are not people of that kind."
+ },
+ {
+  "unit": "item:zp",
+  "verdict": "pass",
+  "reason": "circumference = girth (the distance around, as of a tree); the body-sense gloss is hidden and no option competes."
+ },
+ {
+  "unit": "item:10t",
+  "verdict": "pass",
+  "reason": "flip = somersault (MW: a somersault, especially in the air); upside/posit do not compete."
+ },
+ {
+  "unit": "item:13s",
+  "verdict": "pass",
+  "reason": "significance = meaning (the significance of a symbol); prestige is not, and meaningful/notable are adjectives."
+ },
+ {
+  "unit": "item:15i",
+  "verdict": "pass",
+  "reason": "bookshelf = bookcase in everyday use; alcove/workspace/attic are places."
+ },
+ {
+  "unit": "item:17n",
+  "verdict": "pass",
+  "reason": "blunt is the opposite of sharp; sour and strong are not opposites."
+ },
+ {
+  "unit": "stem:who:0",
+  "verdict": "pass",
+  "reason": "A baker is the one who bakes. Word families also fits but is not a better description."
+ },
+ {
+  "unit": "stem:who:1",
+  "verdict": "pass",
+  "reason": "A teacher is the one who teaches."
+ },
+ {
+  "unit": "stem:who:2",
+  "verdict": "pass",
+  "reason": "A sailor is the one who sails."
+ },
+ {
+  "unit": "stem:who:3",
+  "verdict": "pass",
+  "reason": "A painter is the one who paints."
+ },
+ {
+  "unit": "stem:who:4",
+  "verdict": "pass",
+  "reason": "A farmer is the one who farms."
+ },
+ {
+  "unit": "stem:who:5",
+  "verdict": "pass",
+  "reason": "A singer is the one who sings."
+ },
+ {
+  "unit": "stem:who:6",
+  "verdict": "pass",
+  "reason": "An actor is the one who acts."
+ },
+ {
+  "unit": "stem:who:7",
+  "verdict": "pass",
+  "reason": "A driver is the one who drives."
+ },
+ {
+  "unit": "stem:who:8",
+  "verdict": "pass",
+  "reason": "A swimmer is the one who swims."
+ },
+ {
+  "unit": "stem:who:9",
+  "verdict": "pass",
+  "reason": "An inventor is the one who invents."
+ },
+ {
+  "unit": "stem:who:n0",
+  "verdict": "fail",
+  "reason": "Another link describes this pair better. 'cook' is just as commonly a NOUN, the person who cooks, so cook : chef reads most naturally as two people-words: Same meaning (thesauri give chef = cook), or a chef is a kind of cook (a professional one). As the A:B example it teaches 'synonym' and would steer a child to the synonym distractor (e.g. 'fragrance' in item:9p, perfume -> perfumer). Use a pair whose first word is only a verb."
+ },
+ {
+  "unit": "stem:who:n1",
+  "verdict": "pass",
+  "reason": "A pilot is the person who flies the aircraft; pilot reads first as a person-noun."
+ },
+ {
+  "unit": "stem:who:n2",
+  "verdict": "pass",
+  "reason": "A doctor is a person who heals (makes sick people well); common, kid-safe words."
+ },
+ {
+  "unit": "stem:who:n3",
+  "verdict": "pass",
+  "reason": "A thief is a person who steals; story-common and kid-safe."
+ },
+ {
+  "unit": "stem:who:n4",
+  "verdict": "pass",
+  "reason": "A tutor is a person who teaches. Minor: tutor is also a verb, but the person reading dominates."
+ },
+ {
+  "unit": "stem:who:n5",
+  "verdict": "pass",
+  "reason": "A mechanic is a person who repairs machines."
+ },
+ {
+  "unit": "stem:who:n6",
+  "verdict": "pass",
+  "reason": "A waiter is a person who serves food at tables."
+ },
+ {
+  "unit": "stem:who:n7",
+  "verdict": "pass",
+  "reason": "A lifeguard is a person who rescues swimmers in danger (Cambridge: 'save them if they are in danger')."
+ }
+]
