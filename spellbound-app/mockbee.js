@@ -63,7 +63,7 @@
     { id: 'panda', alt: 'neko', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, voc: 0.62, vtell: 'steady here too', spec: null, pace: 1400,
       note: 'Unshakeable. The lights do nothing to her.', vary: .07,
       tell: 'breathes out, then spells' },
-    { id: 'comet', alt: 'rocket', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not define at gunpoint', spec: null, pace: 700,
+    { id: 'comet', alt: 'rocket', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not tell you the meaning of', spec: null, pace: 700,
       note: 'Fastest here in round one. Watch him late on.', vary: .16,
       tell: 'rocks on his heels' },
     { id: 'astro', alt: 'saturn', lvl: .44, name: 'Mira', age: 12, skill: .70, nerve: .66, voc: 0.79, vtell: 'Greek gives her the meaning before the spelling', spec: /greek/i, pace: 1250,
