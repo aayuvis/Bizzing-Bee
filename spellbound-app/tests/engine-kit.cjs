@@ -14,6 +14,8 @@
      - T4: at 4× CPU throttle, under a heavy game frame, a 6-second clock ends after 6 s of
        real time (± 3%), and the
        loop's simulated time keeps pace with real time (± 3%);
+     - a frame slower than 100ms is simulated in full (up to the 0.25 s clip) and leaves no
+       backlog to fast-forward through later (hand-cranked frames, so load cannot blur it);
      - hold(true) stops the steps; the clock patches its element's textContent in place and
        never re-renders the app while it runs.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/engine-kit.cjs                    */
@@ -127,11 +129,11 @@ const KINDS = [
   }));
   ok(Math.abs(clk.t - 6) <= 0.18, `a 6 s clock at 4× throttle ends after ${clk.t.toFixed(3)} s of real time (± 3%)`);
   ok(clk.ticks.join() === '6,5,4,3,2,1,0' && clk.same && clk.text === '0' && clk.renders === 0, `the clock patches its own element in place (${clk.ticks.join(',')}) and never re-renders the app (${clk.renders})`);
-  /* the loop is the spec's: at most 12 steps (0.1 s) a frame, so it is held to real time on
-     frames under 100ms: the same 60ms of work a frame, and what the accumulator owes counts */
+  /* the loop runs every step a frame's own time needs, up to the 0.25 s clip (10 Oct 2026; it was
+     "at most 12 steps (0.1 s) a frame", which fell behind on frames over 100ms — see saga2.js): the
+     same 60ms of work a frame, and what the accumulator owes (less than one step) counts */
   const sim = await pg.evaluate(() => new Promise(res => { window.__ms = 60; let s = 0; const t0 = performance.now();
-    /* simulated time = the steps run + what the accumulator still owes (render's alpha / 120):
-       a frame over 100ms defers steps to the next frames, it never drops them */
+    /* simulated time = the steps run + what the accumulator still owes (render's alpha / 120) */
     /* the spec clips a single hitch at 0.25 s on purpose (a stall is not play): `due` is real
        time with that clip applied, measured beside the loop, so a loaded machine's stalls are
        neither blamed on the loop nor hidden by it */
@@ -141,6 +143,22 @@ const KINDS = [
     const lp = sgLoop(dt => { s += dt; }, a => { const now = document.timeline.currentTime, d = (now - prev) / 1000; prev = now; due += Math.min(0.25, d); if (d > 0.25) clipped++;
       const real = (now - t0) / 1000; if (real >= 2) { lp.stop(); res({ s: s + a / 120, real, due, clipped }); } }); }));
   ok(Math.abs(sim.s - sim.due) / sim.due <= 0.03, `sgLoop's simulated time keeps pace with real time at 4× throttle (${sim.s.toFixed(3)} s simulated, ${sim.due.toFixed(3)} s due, ${sim.real.toFixed(3)} s on the clock, ${sim.clipped} hitch${sim.clipped === 1 ? '' : 'es'} over 0.25 s)`);
+  /* (10 Oct 2026, P0.18 "gp-play (clock)") A SLOW FRAME IS RUN IN FULL, AND NOTHING IS OWED AFTER IT. At most 12
+     steps a frame meant a frame over 100ms ran behind the wall clock, and the backlog was paid back up to 6× fast
+     once frames recovered — the kart lurched. Driven here by a hand-cranked frame clock (requestAnimationFrame
+     stood in for), so the machine's load cannot enter into it: twenty frames of 50, 150, 240 and 400ms each
+     simulate their own time up to the 0.25 s clip (± one step), and the 16ms frame after them runs ~16ms. */
+  const crank = await pg.evaluate(() => { const RAF = window.requestAnimationFrame, CAF = window.cancelAnimationFrame, out = {};
+    try { let cb = null; window.requestAnimationFrame = f => { cb = f; return 1; }; window.cancelAnimationFrame = () => {};
+      for (const ms of [50, 150, 240, 400]) { let s = 0; const t0 = performance.now(); const lp = sgLoop(dt => { s += dt; }, () => {});
+        for (let k = 1; k <= 20; k++) cb(t0 + k * ms);
+        const due = 20 * Math.min(0.25, ms / 1000), before = s; cb(t0 + 20 * ms + 16);
+        out[ms] = { s: +s.toFixed(4), due: +due.toFixed(4), next: +(s - before).toFixed(4) }; lp.stop(); }
+    } finally { window.requestAnimationFrame = RAF; window.cancelAnimationFrame = CAF; }
+    return out; });
+  const lag = Object.entries(crank).filter(([, r]) => Math.abs(r.s - r.due) > 1 / 120 + 1e-6 || r.next > 0.016 + 1 / 120 + 1e-6);
+  ok(!lag.length, 'frames of 50–400ms are each simulated in full up to the 0.25 s clip, and the next 16ms frame runs 16ms — no backlog fast-forwarded '
+    + Object.entries(crank).map(([ms, r]) => ms + 'ms: ' + r.s + '/' + r.due + ' s, next ' + r.next).join(' · '));
   await pg.evaluate(() => { window.__stopLoad = true; });
   ok(clk.ft >= 60, `the throttled frames were really slow while the clock ran (median ${clk.ft.toFixed(0)}ms) — it was tested under load`);
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });

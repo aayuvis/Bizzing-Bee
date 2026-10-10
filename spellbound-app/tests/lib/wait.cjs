@@ -19,12 +19,17 @@
    A test that runs a long sequence inside one page.evaluate defines the same `until` there as
    a local `U(fn, ms)`; a function cannot be handed into the page as a closure.
 
-   RACE TIME. beeGrandPrix advances its world by dt = min(50ms, time since the last frame)
-   per animation frame (saga2.js, `function frame(ts)`), so on a loaded machine a frame that
-   took 120ms moves the race 50ms: 300ms of WALL time can be 120ms of race. A test that
-   holds a key for 300ms and then reads the kart is reading the scheduler. raceTime counts
-   frames the way the engine does — the same timestamps, the same clamp — and resolves when
-   the race itself has moved on `secs`. RACE_DT_MAX must follow the engine's clamp.        */
+   RACE TIME. A test that holds a key for 300ms of WALL time and then reads the kart is reading
+   the scheduler: on a loaded machine the race and the wall clock part company. raceTime waits
+   on the race's OWN clock — window._race.state().raceT, the seconds the engine has simulated —
+   and resolves when the race itself has moved on `secs`. Only a page without the debug handle
+   falls back to counting frames, clamped at RACE_DT_MAX the way the engine's loop clamps them.
+   10 Oct 2026 (P0.18, "gp-handling" red in the full suite): this used to ALWAYS count frames at
+   a 50ms clamp, left over from the race's old `frame(ts)` loop. The race had moved to the engine
+   kit's sgLoop (up to 0.1 s a frame then, 0.25 s now), so on frames over 50ms the race ran ahead
+   of the count — "0.7 s of race" was up to twice that, the kart reached the next bend, and "out of
+   a bend and onto a straight, the kart holds its line" failed with "(left the straight!)". It
+   fails that way under an 8× CPU throttle with the frame count, and passes reading raceT.      */
 'use strict';
 async function until(pg, fn, arg, ms) {
   return pg.waitForFunction(fn, arg === undefined ? null : arg, { timeout: ms || 15000, polling: 50 }).then(() => true, () => false);
@@ -41,9 +46,13 @@ async function frames(pg, n) {
 }
 const STILL = '*,*::before,*::after{transition:none!important;animation:none!important}';
 async function still(pg) { await pg.addStyleTag({ content: STILL }); }
-const RACE_DT_MAX = 0.05;
+const RACE_DT_MAX = 0.25;   // sgLoop's clip: a frame counts at most 0.25 s (saga2.js)
 async function raceTime(pg, secs) {
-  return pg.evaluate(([secs, cap]) => new Promise(r => { let acc = 0, last = null;
+  return pg.evaluate(([secs, cap]) => new Promise(r => {
+    const clock = () => { try { const R = window._race; const t = R && R.state ? +R.state().raceT : NaN; return isFinite(t) ? t : NaN; } catch (e) { return NaN; } };
+    const t0 = clock();
+    if (!isNaN(t0)) { const f = () => { const t = clock(); if (isNaN(t) || t - t0 >= secs) r(isNaN(t) ? secs : t - t0); else requestAnimationFrame(f); }; requestAnimationFrame(f); return; }
+    let acc = 0, last = null;
     const f = ts => { if (last != null) acc += Math.min(cap, (ts - last) / 1000); last = ts; if (acc >= secs) r(acc); else requestAnimationFrame(f); };
     requestAnimationFrame(f); }), [secs, RACE_DT_MAX]);
 }
