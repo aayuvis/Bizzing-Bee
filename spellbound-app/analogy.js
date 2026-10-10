@@ -153,6 +153,18 @@
     const G = A0.gloss || {};
     return (okMemo[id] = itemWords(it).every((w) => { try { return !!W.kidSafe({ w, d: G[w] || '' }, c); } catch (e) { return true; } })); }
   const safeIds = (ids) => (ids || []).filter(itemOK);
+  /* THE WORD BANDS (the 4.5 brief, P1.2): the two analogy GAMES — Against the Clock (at Auto: up to the child's
+     band) and the Mock Analogy Bee (at its own level: Easy is band 1) — ask only items whose every word (C, the
+     answer, each wrong answer) is inside the child's window: SB_BAND.most(words) ≤ the window's top. The stops and
+     level checks are the tab's course, like the Atlas's own stop lists, and are not banded. A window too narrow to
+     hold eight items keeps the lowest-band items there are, never the higher ones first. */
+  function itemBand(id) { const A0 = D(), it = A0 && A0.items[id]; return it && W.SB_BAND ? SB_BAND.most(itemWords(it)) : 1; }
+  function bandIds(ids, level) {
+    if (!W.SB_BAND || typeof SB_BAND.win !== 'function') return ids;
+    const hi = SB_BAND.win(kid(), level || 'auto', 0).hi, inb = ids.filter((id) => itemBand(id) <= hi);
+    if (inb.length >= 8) return inb;
+    return ids.slice().sort((a, b) => itemBand(a) - itemBand(b)).slice(0, Math.max(8, inb.length));
+  }
 
   /* ------------------------------------------------------------------ rounds */
   const PER = { practice: 8, check: 8, level: 10 };
@@ -220,7 +232,7 @@
     const lvHi = r.lv[1]; const pool = []; const A0 = D();
     regions().forEach((rg) => { if (rg.lv[0] <= lvHi) { rg.stops.forEach((st) => pool.push(...st.items)); } });
     (A0.games || []).forEach((id) => { const it = A0.items[id]; if (it && it[1] <= lvHi + 1) pool.push(id); });
-    const safe = safeIds(pool); const seed = day() + '|clock|' + (rec().n++); const ord = perm(seed, safe.length).map((i) => safe[i]);
+    const safe = bandIds(safeIds(pool), 'auto'); const seed = day() + '|clock|' + (rec().n++); const ord = perm(seed, safe.length).map((i) => safe[i]);
     s.run = { kind: 'clock', ids: ord, seed, i: 0, right: 0, asked: 0, paid: 0, e0: (W.earnedSoFar ? earnedSoFar() : 0), log: [], n: ord.length, opts: 4, phase: 'pick', left: CLOCK_MS, reg: r.id };
     s.v = 'run'; prep(s.run); store(); render(); runClock(s.run); }
   function clockAdd(ms) { const g = S().run; if (g) g.left = Math.max(0, g.left + ms); }
@@ -567,7 +579,7 @@
   const LVL_LO = { easy: 1, medium: 3, hard: 5, champ: 7 };
   function beeLevel() { let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {}
     if (LVL_LO[L]) return LVL_LO[L]; const h = here(); return h ? h.r.lv[0] : 1; }
-  function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); return safeIds([...ids]); }
+  function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {} return bandIds(safeIds([...ids]), L); }
   const B = () => state.anlBee;
   function openBee() { stopClock(); state.anlBee = { phase: 'lobby' }; state.nav = 'anlbee'; state.screen = 'app'; state.game = null; try { render(); } catch (e) {} }
   /* the seven seats: [face, name, chance, rival id] from Mock Bee's cast, for the child on screen ([] until mockbee.js is in) */
@@ -906,7 +918,7 @@
 
   /* ------------------------------------------------------------------ the door */
   const API = { open, openRoute, view, beeView, openBee, stop, route, act, beeAct, beeBest, toolView, openTool, toolRoute, toolAct, here: () => { const h = here(); return h ? { region: h.r.id, name: h.r.name } : null; },
-    _question: question, _bridge: bridgeQ, _linkLine: linkLine, _safeIds: safeIds };
+    _question: question, _bridge: bridgeQ, _linkLine: linkLine, _safeIds: safeIds, _bandIds: bandIds, _beePool: beePool, _itemBand: itemBand };
   W.SB_ANL = API;
   try { Object.assign(app, { anl: (a) => act(a), anlBee: (a) => beeAct(a), anlTool: (a) => toolAct(a), anlToolType: (v) => toolType(v), anlToolKey: (e) => toolKey(e) }); } catch (e) {}
   try { if (state.nav === 'analogy' || state.nav === 'anlbee' || state.nav === 'anltool') render(); } catch (e) {}
