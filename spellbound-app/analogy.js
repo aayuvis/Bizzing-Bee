@@ -187,7 +187,8 @@
     g.q = question(raw.slice(again), g.opts, g.seed + '|' + g.i + (again ? '|again' : '')); if (g.q && again) g.q.again = again; g.picked = null; g.bpick = null;
     if (g.phase === 'bridge') g.bq = bridgeQ(g.q, g.seed + '|' + g.i); }
   /* pay only above chance: nothing until a round holds 6 right, then every right (the clock: 60% and 15 asked) */
-  function owed(g) { if (g.kind === 'clock') { const acc = g.asked ? g.right / g.asked : 0; if (acc < 0.6) return 0; return (g.phase === 'done' ? g.right >= 6 : g.asked >= 15) ? g.right : 0; }
+  /* the clock's 60% is of every answer given, comebacks included (as Word Lore's): a guesser cannot reach it on a few lucky first tries */
+  function owed(g) { if (g.kind === 'clock') { const tries = g.asked + (g.log || []).filter((x) => x && x.again).length, acc = tries ? g.right / tries : 0; if (acc < 0.6) return 0; return (g.phase === 'done' ? g.right >= 6 : g.asked >= 15) ? g.right : 0; }
     return g.right >= 6 ? g.right : 0; }
   function settle(g) { let k = owed(g) - g.paid; while (k-- > 0) { g.paid++; try { payG(g); } catch (e) {} } }
   function pickBridge(i) { const g = (S().run); if (!g || g.phase !== 'bridge' || g.bpick != null) return; g.bpick = +i;
