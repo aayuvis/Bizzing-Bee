@@ -1,0 +1,318 @@
+[
+ {
+  "path": "cast.ash.tell",
+  "verdict": "pass",
+  "reason": "'Spell as a pair, one letter each' is now self-consistent. Merriam-Webster gives 'in unison' as 'together, at the same time', so the old wording contradicted 'one letter each' (cycle-2 fix 3). The script and validate.cjs check 10 still read BEE-CIRCUIT.md §4.2 and §8.1 through ownerQuestions[id=twins-tell]. The brief itself still says 'in unison' until the owner amends it.",
+  "sources": ["https://www.merriam-webster.com/dictionary/unison", "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.2 (line 179), §8.1 (line 556)", "file:spellbound-app/tools/circuit/validate.cjs check 10 (FAIL 0)"],
+  "method": "search"
+ },
+ {
+  "path": "cast.aria.tell",
+  "verdict": "pass",
+  "reason": "As cast.ash.tell.",
+  "sources": ["https://www.merriam-webster.com/dictionary/unison"],
+  "method": "search"
+ },
+ {
+  "path": "rounds[0].pieces.above",
+  "verdict": "pass",
+  "reason": "The only teaching claim is the round's technique: wait for the whole word, then say it back. It matches the round's lesson, concepts-data chapter 0 ('Champions never blurt letters'; 'Saying it back checks your ears'). 'My nan's rule' is Nova's own character rule, kept from the brief (§6 Round I).",
+  "sources": ["file:spellbound-app/concepts-data.js chapter 0 'The Champion's Routine — say, spell, say' (cards 'The Core', 'Why say it first?')", "file:spellbound-app/circuit/script.json rounds[0].technique"],
+  "method": "app data"
+ },
+ {
+  "path": "rounds[1].pieces.prog",
+  "verdict": "pass",
+  "reason": "No factual claim. It is a host's joke, and the parrot plant stays consistent with cases[0].taps[1] and reveal[0].",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "rounds[1].pieces.drama",
+  "verdict": "pass",
+  "reason": "App fact checked. A Mock Bee turn is 30 s (TURN_MS = 30000) and each Pronouncer's Chair request costs 3 s (Q_COST = 3000). The chair holds six requests, and a word shows only those it has answers for. Asking every one costs at most 18 s, so 'spells it perfectly with seconds left on the clock' is possible on the real clock and is forced by build[id=scripted-outcomes] round 2.",
+  "sources": ["file:spellbound-app/mockbee.js:45 (TURN_MS, Q_COST)", "file:spellbound-app/mockbee.js:794-829 (CHAIR, chairKeys)"],
+  "method": "app data"
+ },
+ {
+  "path": "rounds[4].pieces.below",
+  "verdict": "pass",
+  "reason": "'Prefix, root, suffix: never skip one' is the round's technique (rounds[4].technique; lesson 'dict / dic (say / speak)', a root-family chapter). 'I have a weakness now. French.' holds because the forced word, reconnaissance, is French: M-W gives 'French, literally recognition, from Middle French reconoissance'. The library also tags it French.",
+  "sources": ["https://www.merriam-webster.com/dictionary/reconnaissance", "https://www.etymonline.com/word/reconnoiter", "file:spellbound-app/words-data*.js reconnaissance o:'French'", "file:spellbound-app/circuit/script.json build[id=scripted-outcomes] round 5"],
+  "method": "search"
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 8, applied. Merriam-Webster's learner's entry reads 'not easily upset : unusually calm in difficult situations', so 'calm; not easily upset or flustered' matches. Wiktionary agrees ('hard to fluster'). M-W dates the word to 1954, from un- + flap (a state of excitement) + -able. The library's origin 'Latin' is wrong, but it is not on screen here; it is recorded in ownerQuestions[id=app-data-outside-script].",
+  "sources": ["https://www.merriam-webster.com/simple/unflappable", "https://www.merriam-webster.com/dictionary/unflappability", "https://en.wiktionary.org/wiki/unflappable"],
+  "method": "search"
+ },
+ {
+  "path": "rounds[5].pieces.above",
+  "verdict": "pass",
+  "reason": "'Écoute' is the tu imperative of écouter (Wiktionnaire's conjugation table), so 'Écoute la fin' correctly means 'Listen to the end'. 'French hides its letters at the end' is the round's lesson: concepts-data chapter 54 says 'French words in English frequently carry silent final consonants — -t, -s, -x, -p, -d'.",
+  "sources": ["https://fr.wiktionary.org/wiki/Conjugaison:fran%C3%A7ais/%C3%A9couter", "https://en.wiktionary.org/wiki/%C3%A9couter", "file:spellbound-app/concepts-data.js chapter 54 'French Silent Letters'"],
+  "method": "search"
+ },
+ {
+  "path": "rounds[6].pieces.above",
+  "verdict": "pass",
+  "reason": "No factual claim beyond the round's technique (rounds[6].technique: 'breathe out, ask everything'), here given as Suki's habit. It matches her Mock Bee tell, 'breathes out, then spells' (mockbee.js BOTS).",
+  "sources": ["file:spellbound-app/mockbee.js BOTS panda (tell)", "file:spellbound-app/circuit/script.json rounds[6].technique"],
+  "method": "app data"
+ },
+ {
+  "path": "rounds[7].pieces.inv",
+  "verdict": "pass",
+  "reason": "'Fastest in round one' matches Dax's Mock Bee entry: note 'Fastest here in round one. Watch him late on.', pace 700, the second-fastest after Pip's 620. Dax (comet) is seated at the Finish Arch in every band (build hall-fields, which validate.cjs check 9 checks against mockbee BANDS).",
+  "sources": ["file:spellbound-app/mockbee.js:66-67 (BOTS comet)", "file:spellbound-app/circuit/script.json build[id=hall-fields].fields[*][8]"],
+  "method": "app data"
+ },
+ {
+  "path": "rounds[7].pieces.above",
+  "verdict": "pass",
+  "reason": "No factual claim. The apologies match the wrongs shown on screen: fake tips (r2, r4), Theo (c1), the bell (c2) and Suki (c4).",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "rounds[8].pieces.laugh",
+  "verdict": "pass",
+  "reason": "No factual claim. It is consistent with Pip's thunder fear (rounds[3].pieces.drama, cases[1].reveal[1]).",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "rounds[8].pieces.above",
+  "verdict": "pass",
+  "reason": "No external claim. 'I stopped asking the year I won' is consistent with her tell, 'does not ask for anything' (mockbee BOTS goldlegend). The violet pen follows rounds[2].pieces.suspense.",
+  "sources": ["file:spellbound-app/mockbee.js BOTS goldlegend"],
+  "method": "app data"
+ },
+ {
+  "path": "rounds[8].pieces.below",
+  "verdict": "pass",
+  "reason": "No external claim. It is as rounds[8].pieces.above; the pencil detail is from BEE-CIRCUIT.md §5C.",
+  "sources": ["file:spellbound-app/circuit/BEE-CIRCUIT.md §5C"],
+  "method": "app data"
+ },
+ {
+  "path": "rounds[8].pieces.v",
+  "verdict": "pass",
+  "reason": "No factual claim.",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "rounds[8].pieces.dax",
+  "verdict": "pass",
+  "reason": "'Could I have the definition, please?' is a real Pronouncer's Chair request (mockbee CHAIR 'def'). Theo's 1,977 continues the season's tally: 212 (r2), 640 (r3), 1,204 (turn), 1,977, the sequence in BEE-CIRCUIT.md §5E.",
+  "sources": ["file:spellbound-app/mockbee.js:799 (CHAIR)", "file:spellbound-app/circuit/BEE-CIRCUIT.md §5E"],
+  "method": "app data"
+ },
+ {
+  "path": "cases[0].lateLine",
+  "verdict": "pass",
+  "reason": "No external claim. It agrees with the case's own setting ('the Grand Archive, at night') and Round II's V. note ('Tonight the list will lie').",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "cases[0].taps[0]",
+  "verdict": "pass",
+  "reason": "No factual claim. It quotes rounds[1].pieces.prog word for word.",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "cases[1].lateLine",
+  "verdict": "pass",
+  "reason": "No external claim. It agrees with rounds[3].pieces.suspense ('That night … the Committee bell vanishes').",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "cases[1].puzzle.items[8].clue",
+  "verdict": "pass",
+  "reason": "This matches the dictionary sense. Wikipedia: 'a portable or hand-held, usually cone-shaped, acoustic horn used to amplify a person's voice … in a given direction'; the library: 'a cone-shaped acoustic device held to the mouth to intensify and direct the human voice'. It does not contain the answer or another item's answer (validate.cjs check 2). No other Greek-built word fits the clue, so it is unique.",
+  "sources": ["https://en.wikipedia.org/wiki/Megaphone", "https://www.merriam-webster.com/dictionary/megaphone", "file:spellbound-app/words-data*.js megaphone d"],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[8].word",
+  "verdict": "pass",
+  "reason": "In the served library: megaphone, o 'Greek', y 6. The rule 'ph' holds. M-W gives first known use 1878. Etymonline gives Greek megas 'great' + phōnē, 1878, 'perhaps coined by Edison'. Wiktionary: mega- + -phone. It is built from Greek parts, as the case brief says.",
+  "sources": ["https://www.etymonline.com/word/megaphone", "https://www.merriam-webster.com/dictionary/megaphone", "https://en.wiktionary.org/wiki/megaphone", "file:spellbound-app/words-data*.js (SB_DATA.nsf: megaphone o:'Greek', y:6)", "file:spellbound-app/forge-data.js:98 (megaphone: mega + phone, Greek, src etymonline)"],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[8].greek",
+  "verdict": "pass",
+  "reason": "'megas (great)' matches Etymonline. 'phone (sound)': Etymonline glosses phōnē, and the combining form -phone, as 'sound, voice', so 'sound' is right, and it matches the gloss on xylophone and symphony in the same trail. The case's authored greek field is what it prints (build[id=case-origins-authored]); the library's o is also 'Greek', so there is no conflict.",
+  "sources": ["https://www.etymonline.com/word/megaphone", "https://www.etymonline.com/word/-phone", "https://www.merriam-webster.com/dictionary/phone"],
+  "method": "search"
+ },
+ {
+  "path": "cases[2].lateLine",
+  "verdict": "pass",
+  "reason": "No external claim. It agrees with rounds[4].pieces.drama (he walks out) and the case's daytime clock ('by sundown').",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "cases[2].reveal[2]",
+  "verdict": "pass",
+  "reason": "No external claim. 'She told the Pronouncer the minute he left' agrees with the safeLine ('at once') and suspects[2].secret ('the same minute'). Amendment 2: Hazel told the Committee.",
+  "sources": ["file:spellbound-app/circuit/AMENDMENTS.md 2"],
+  "method": "app data"
+ },
+ {
+  "path": "cases[3].lateLine",
+  "verdict": "pass",
+  "reason": "No external claim. It agrees with rounds[6].pieces.suspense ('By evening the rumour is everywhere').",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "cases[3].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "M-W: triskaidekaphobia is 'New Latin, from Greek treiskaideka thirteen (from treis three + kai and + deka ten) + New Latin -phobia'. Etymonline: Greek treiskaideka, 1908. Every element is Greek in origin, so 'built from Greek' holds, and kai is the Greek 'and'. The library's origin 'English' agrees, for an English/New Latin coinage from Greek parts (ownerQuestions[id=app-data-outside-script] item 4).",
+  "sources": ["https://www.merriam-webster.com/dictionary/triskaidekaphobia", "https://www.etymonline.com/word/triskaidekaphobia", "https://en.wiktionary.org/wiki/triskaidekaphobia", "file:spellbound-app/words-data*.js triskaidekaphobia o:'English'"],
+  "method": "search"
+ },
+ {
+  "path": "cases[4].lateLine",
+  "verdict": "pass",
+  "reason": "No external claim. It agrees with the case's place ('the night before the final').",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "cases[4].puzzle.brief",
+  "verdict": "pass",
+  "reason": "There are ten items from four people (goldlegend, pronouncer, dash, duchess). The three wrong items are confidant (-ant/-ent), reliible (-able/-ible) and importence (-ance/-ence), so each named ending pair is used. M-W: a confidant is 'one to whom secrets are entrusted' and confident means 'full of conviction', so Vesper's slip is a real -ant/-ent pair. Each wrong-ending statement is untrue in the story (she is nervous; Dash left the door open; the key matters), so 'is untrue' is accurate, and it no longer overstates Vesper as lying. The correct spellings are all in the library.",
+  "sources": ["https://www.merriam-webster.com/dictionary/confidant", "https://www.merriam-webster.com/dictionary/confident", "file:spellbound-app/words-data*.js (absence, accessible, confident, assurance, responsible, relevant, reliable, importance, valuable, comfortable)"],
+  "method": "search"
+ },
+ {
+  "path": "teamNight.beats.ravenmere",
+  "verdict": "pass",
+  "reason": "Each tell matches the cast and roster: Sloane 'never asks a question twice', the twins 'as a pair, one letter each', Arjun 'names the origin before the pronouncer finishes', Mei 'writes every word in the air'. 'One letter each' is now consistent, with no 'in unison' (M-W). The brief's §8.1 still says 'in unison, a letter each' (ownerQuestions[id=twins-tell]).",
+  "sources": ["https://www.merriam-webster.com/dictionary/unison", "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.2, §8.1"],
+  "method": "search"
+ },
+ {
+  "path": "teamNight.beats.callRules",
+  "verdict": "pass",
+  "reason": "'The first language I name is the call: French, from Latin, is a French word' matches how dictionary etymologies order a chain, immediate donor first. M-W ballet: 'French, from Italian balletto … from Late Latin ballare'. It also matches build[id=team-night] and teamNight.rules[4]. The other two rules (a call may be changed; one second try) are rules of the fiction, not facts.",
+  "sources": ["https://www.merriam-webster.com/dictionary/ballet", "https://www.etymonline.com/word/ballet"],
+  "method": "search"
+ },
+ {
+  "path": "teamNight.beats.levellingMiss",
+  "verdict": "pass",
+  "reason": "No factual claim.",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "teamNight.beats.sting",
+  "verdict": "pass",
+  "reason": "No factual claim.",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "teamNight.beats.stingAfter",
+  "verdict": "pass",
+  "reason": "No factual claim.",
+  "sources": [],
+  "method": "none"
+ },
+ {
+  "path": "teamNight.ravenmereRoster[1].tell",
+  "verdict": "pass",
+  "reason": "As cast.ash.tell.",
+  "sources": ["https://www.merriam-webster.com/dictionary/unison"],
+  "method": "search"
+ },
+ {
+  "path": "teamNight.ravenmereRoster[2].tell",
+  "verdict": "pass",
+  "reason": "As cast.aria.tell.",
+  "sources": ["https://www.merriam-webster.com/dictionary/unison"],
+  "method": "search"
+ },
+ {
+  "path": "hivePost.beeFileIntro",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 12, applied. Today's Mock Bee files missed words only on a tap: the recap's one button, 'Add missed words to revision', calls mbAddMissed ('the words missed go on the revision pile, marked as the child's own filing'). So 'One tap puts your missed words on your revision pile' is true of the app. The vocabulary differs slightly: Mock Bee's confirmation reads 'On your revision list'. That is not an error, but the build may want one word. BEE-CIRCUIT.md §9 still says missed words 'are added', which is listed for the owner in ownerQuestions[id=app-data-outside-script].",
+  "sources": ["file:spellbound-app/mockbee.js:1388-1396 (mbAddMissed)", "file:spellbound-app/mockbee.js:1860 (the recap button)", "file:spellbound-app/circuit/BEE-CIRCUIT.md §9"],
+  "method": "app data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.vow",
+  "verdict": "fix",
+  "reason": "It names the family's scored patterns, but one of them never puts a word in this family on its own. In app3 trickAnal, vow adds 4 for ie/ei, 9 for ough/augh and 5 for a three-vowel run, and a family wins only with a score strictly above 4. So ie/ei alone (4) never makes a word 'vow'. Run over the served library (53,511 words): 338 words are vow. Every one has ough/augh (114) or a three-vowel run (224); none is there for ie/ei alone. receive, believe, friend and weird all class 'plain'. So 'You mix up vowel teams: ie or ei…' tells a child whose vow misses were thought or caught that they mix up ie and ei, which their bee file does not show. That breaks the slots rule that a fill matches the bee file. (Side effect for the owner: the classic ie/ei misses class 'plain' and are not ranked, so they never produce any weak spot.) ough/augh as a vowel spelling: English orthography lists augh for /ɔː/ (caught, taught).",
+  "sources": ["file:spellbound-app/app3.js:210-239 (trickAnal: vow +4 ie|ei, +9 ough|augh, +5 [aeiou]{3}; cls needs > 4)", "file:spellbound-app/words-data.js + words-data-2.js (trickAnal run over SB_DATA.nsf: 338 vow, 0 by ie/ei alone)", "https://en.wikipedia.org/wiki/English_orthography", "https://en.wikipedia.org/wiki/I_before_E_except_after_C"],
+  "method": "app data",
+  "fix_text": "You mix up vowel teams, like ough or augh, or three vowels in a row."
+ },
+ {
+  "path": "slotLines.weak.byRound.2",
+  "verdict": "pass",
+  "reason": "This is advice, not a diagnosis: the round's technique (rounds[1].technique; lesson 'Ask the Right Questions — be a word detective', concepts-data chapter 10). 'No weak spot yet' is true by construction: it prints only when no named family is ranked (build[id=slots] fallback).",
+  "sources": ["file:spellbound-app/concepts-data.js chapter 10", "file:spellbound-app/circuit/script.json build[id=slots].slots.weak.fallback"],
+  "method": "app data"
+ },
+ {
+  "path": "slotLines.weak.byRound.5",
+  "verdict": "pass",
+  "reason": "This is advice: the round's technique (rounds[4].technique: 'Prefix, root, suffix. Never skip one.'). 'No weak spot yet' is true by construction, as above.",
+  "sources": ["file:spellbound-app/circuit/script.json rounds[4].technique, build[id=slots]"],
+  "method": "app data"
+ },
+ {
+  "path": "visitors[0].card",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 1, applied. Each claim is checked. (1) Hesiod's Theogony has Atlas 'uphold the wide heaven' (Theoi), and he is a Titan, son of Iapetus. (2) Later tellings made him a king of Mauretania 'skilled in philosophy, mathematics, and astronomy' (Wikipedia, Atlas (mythology)), which fits 'wise king … who studied the stars'. (3) Mercator chose the title in that king's honour; his preface sets 'this man Atlas, so notable for his erudition, humaneness, and wisdom' as his model (Wikipedia, Mercator). (4) Mercator died in Duisburg on 2 December 1594 (Britannica). The Library of Congress says the work was 'left unfinished … edited and published by his son, Rumold Mercator, in 1595'. 'It came out in 1595, the year after he died' is right; parts had appeared from 1585, but not under the name Atlas. (5) Wikipedia (Atlas): from the mid-17th century the word meant simply a collection of maps; M-W: 'a bound collection of maps'. M-W's 'Did you know' gives the other account, a picture of Atlas on the title page. The card does not assert that account, so nothing on it is false. The eponyms file still asserts it (owner question).",
+  "sources": ["https://www.theoi.com/Text/HesiodTheogony.html", "https://www.theoi.com/Titan/TitanAtlas.html", "https://en.wikipedia.org/wiki/Atlas_(mythology)", "https://en.wikipedia.org/wiki/Gerardus_Mercator", "https://www.britannica.com/biography/Gerardus-Mercator", "https://www.loc.gov/item/map55000728/", "https://en.wikipedia.org/?title=Atlas", "https://www.merriam-webster.com/dictionary/atlas", "https://www.britannica.com/topic/atlas-maps"],
+  "method": "search"
+ },
+ {
+  "path": "build[id=case-origins-authored]",
+  "verdict": "pass",
+  "reason": "libraryNonGreek is correct. The served library gives hyphen 'English', chorus 'Latin', cylinder 'Latin', and megaphone 'Greek', so the megaphone swap adds no conflict; phantom 'French' is as the rule says. validate.cjs check 18 recomputes this. Every choicesExclude entry is an earlier source or alternative donor that a dictionary gives. safari: Arabic (M-W and Etymonline: Swahili, from Arabic safar). cafe: Italian (Etymonline: from Italian caffè), Turkish (M-W: from Turkish kahve) and Arabic (Etymonline coffee, Wiktionary: qahwa). ballet: Italian and Latin (M-W: from Italian balletto … Late Latin ballare), Greek (Etymonline: ballizein). piano: French (Etymonline: 'French piano (18c.), Italian piano') and Latin (M-W: planus). catamaran: Hindi and Malayalam (Etymonline: 'from Hindi or Malayalam, from Tamil'). Each item's answer (Swahili, French, French, Italian, Tamil) stays offered. Still unopened: M-W's own catamaran entry. A search restricted to merriam-webster.com returned only its thesaurus and sentence pages, so the 'home language follows M-W' note cannot be confirmed for catamaran. It is kept in ownerQuestions[id=accuracy-reverify]. Either way, Hindi and Malayalam stay out.",
+  "sources": ["file:spellbound-app/words-data*.js (hyphen, chorus, cylinder, megaphone, phantom: o)", "https://www.etymonline.com/word/safari", "https://en.wiktionary.org/wiki/safari", "https://www.merriam-webster.com/dictionary/caf%C3%A9", "https://www.etymonline.com/word/cafe", "https://www.etymonline.com/word/coffee", "https://en.wiktionary.org/wiki/caf%C3%A9", "https://www.merriam-webster.com/dictionary/ballet", "https://www.etymonline.com/word/ballet", "https://www.merriam-webster.com/dictionary/piano", "https://www.etymonline.com/word/piano", "https://www.etymonline.com/word/catamaran", "https://en.wiktionary.org/wiki/catamaran"],
+  "method": "search"
+ },
+ {
+  "path": "build[id=scripted-outcomes]",
+  "verdict": "pass",
+  "reason": "App facts checked. In Round VII the library gives triskaidekaphobia the origin 'English'. Suki's five requests are the six chair requests minus 'Say it again' (mockbee CHAIR). In Round IX, 'Mock Bee's bots never ask' holds: only the human's mbAsk pushes turnAsks, and botTurn makes no request. Round II's every-request-with-time-left fits the 30 s turn at 3 s a request.",
+  "sources": ["file:spellbound-app/mockbee.js:45, :794-840, :1046 (botTurn)", "file:spellbound-app/words-data*.js triskaidekaphobia"],
+  "method": "app data"
+ },
+ {
+  "path": "build[id=case2-spelling-engine]",
+  "verdict": "pass",
+  "reason": "gym.js MODES: warmup is 'Ten words. No clock. Hints on hand.' (n 10, hints true), and the card shows the definition (gym.js:557-561). That matches 'a definition, a typed spelling, ten words, no clock, hints on hand'.",
+  "sources": ["file:spellbound-app/gym.js:39, :557-576"],
+  "method": "app data"
+ },
+ {
+  "path": "build[id=hall-fields], build[id=slots], build[id=no-placing], build[id=team-night], build[id=case-scenes], build[id=signoff-upright], build[id=story-order]",
+  "verdict": "pass",
+  "reason": "Their factual content is app data, and it checks: hall-fields equals mockbee BANDS plus headliners plus alsoSeated (validate.cjs check 9), the slot sources name real fields (g.mine asks in record(), trickAnal cls), and Team Night's caller grading follows the dictionary chain order. The vow note in the slots row above applies to slotLines, not to this build text.",
+  "sources": ["file:spellbound-app/mockbee.js:97-99 (BANDS)", "file:spellbound-app/tools/circuit/validate.cjs (FAIL 0)"],
+  "method": "app data"
+ },
+ {
+  "path": "ownerQuestions (changed this cycle)",
+  "verdict": "pass",
+  "reason": "Each factual claim checks. twins-tell: M-W 'in unison' = 'together, at the same time'; §4.2 and §8.1 still say 'in unison'. app-data-outside-script: (1) the library gives unflappable 'Latin', while M-W dates it 1954 from un- + flap + -able. (2) eponyms-master.json's 'Atlas' story still says 'Mercator put a picture of Atlas holding up the world on the front of his collection of maps in 1595', and its 'Atlas Vertebra' story repeats the picture account. (3) BEE-CIRCUIT.md §10 still lists 'tantalise'. (4) The library gives triskaidekaphobia 'English'. accuracy-reverify stays open: WebFetch failed again this cycle (getaddrinfo ENOTFOUND on etymonline.com and merriam-webster.com; curl through the proxy gets 'CONNECT tunnel failed, response 403'). This is the third cycle checked by domain-restricted search, not by opening pages.",
+  "sources": ["https://www.merriam-webster.com/dictionary/unison", "https://www.merriam-webster.com/simple/unflappable", "file:spellbound-app/eponyms/eponyms-master.json (Atlas, Atlas Vertebra)", "file:spellbound-app/circuit/BEE-CIRCUIT.md:604", "file:spellbound-app/words-data*.js"],
+  "method": "search"
+ }
+]

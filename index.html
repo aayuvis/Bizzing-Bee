@@ -367,10 +367,10 @@
   }, 1200); });
 }catch(e){} })();
 </script>
-<link rel="stylesheet" href="fonts/fonts.css?v=20261010c">
-<link rel="stylesheet" href="tokens.css?v=20261010c">
-<link rel="stylesheet" href="worlds4.css?v=20261010c">
-<link rel="stylesheet" href="bizzing-avatars.css?v=20261010c">
+<link rel="stylesheet" href="fonts/fonts.css?v=20261010d">
+<link rel="stylesheet" href="tokens.css?v=20261010d">
+<link rel="stylesheet" href="worlds4.css?v=20261010d">
+<link rel="stylesheet" href="bizzing-avatars.css?v=20261010d">
 
 <style>
   *{box-sizing:border-box}
@@ -721,10 +721,8 @@
     .sb-fam-brand>div{width:26px!important}
     .sb-fam-day>svg{display:none}
   }
-  /* Home, row 2: the next Atlas stop beside the four "Keep going" tiles. One column
-     on a phone, then the stop card and a 2x2 tile block side by side. */
+  /* Home, row 2: "You are here" and the second journey card — one column on a phone */
   .sb-home-r2{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;align-items:start}
-  .sb-home-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
   /* TWO journey cards again (owner, 10 Oct 2026 — the road to 4.5, P0.2): "You are here" and the second card
      (homeSecondCard: the mistakes deck when due, else the Analogy Atlas, or the Spelling Gym while analogies are
      gated) side by side from 900px — Bee's row the family's shell REF measures (547px each at 1280) — one height */
@@ -745,6 +743,19 @@
   /* an OUTLINED pill, never filled: Continue is the one filled button on Home */
   .sb-home-second .s2-go{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:9px 15px;
     border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);font-weight:800;font-size:13.5px;color:var(--ink,var(--text))}
+  /* Today, one line (P1.17/P1.18, app3 homeToday): row 2's third child, drawn first; under Continue on a phone. Outlines only. */
+  .sb-today{grid-column:1/-1;order:-1;display:flex;align-items:stretch;gap:6px;padding:5px;border:1px solid var(--line);border-radius:14px;background:var(--paper,var(--bg2));box-shadow:var(--sh-rest);color:var(--ink,var(--text))}
+  .sb-td-b{display:flex;align-items:center;gap:7px;min-height:44px;min-width:0;padding:0 10px;border:0;border-radius:10px;background:none;color:inherit;font-size:13.5px;text-align:left;white-space:nowrap}
+  .sb-td-b:hover{background:var(--surface2)}.sb-td-b b{font-weight:800}.sb-td-b i{font-style:normal;font-weight:700;color:var(--muted)}.sb-td-b b i{color:inherit;font-weight:800}
+  .sb-td-main{flex:1;justify-content:space-between;border:1px solid var(--line)}
+  .sb-td-go{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:var(--r-md,10px);border:1.5px solid var(--accent);font-weight:800}
+  .sb-first{align-items:center;gap:14px;padding:12px 14px}
+  .sb-first-ic{flex:none;width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--chip);color:var(--accent)}
+  .sb-first-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;font-size:13.5px;line-height:1.45}
+  .sb-first-b b{font-family:var(--display);font-size:17px;line-height:1.2}
+  .sb-first-go{flex:none;border:1.5px solid var(--accent);font-weight:800;padding:0 16px}
+  @media (max-width:639px){ .sb-home .sb-today{order:2} .sb-td-b{padding:0 8px;font-size:13px} .sb-td-b i,.sb-td-ar{display:none}
+    .sb-first{flex-wrap:wrap} .sb-first-ic{width:44px;height:44px} .sb-first-b{flex-basis:calc(100% - 60px)} .sb-first-go{width:100%;justify-content:center} }
   /* ONE Continue, above the fold on a phone (FIX-BEE B1, family standard §2). The home keeps
      its look and its source order; below 640px the two rows dissolve (display:contents) into
      one column and Continue is moved up to sit straight under the greeting — at 390x844 it
@@ -3008,8 +3019,8 @@
 .sb-onb-art{width:clamp(104px,28vw,132px);aspect-ratio:1;margin:0 auto clamp(6px,1.8vw,12px);line-height:0}
 .sb-onb-art>svg,.sb-onb-art>img{width:100%;height:100%;display:block}
 </style>
-  <link rel="stylesheet" href="saga2.css?v=20261010c">
-  <link rel="stylesheet" href="a11y.css?v=20261010c">
+  <link rel="stylesheet" href="saga2.css?v=20261010d">
+  <link rel="stylesheet" href="a11y.css?v=20261010d">
 </head>
 <body>
 <script>
@@ -3481,10 +3492,10 @@
 </div>
 <!-- store.js is the storage seam and must be the FIRST deferred script: files that read storage
      while they load (auth.js, worlds4.js, telemetry.js) find it in place. -->
-<script defer src="store.js?v=20261010c"></script>
-<script defer src="icons.js?v=20261010c"></script>
-<script defer src="icons-art.js?v=20261010c"></script>
-<script defer src="cover-art.js?v=20261010c"></script>
+<script defer src="store.js?v=20261010d"></script>
+<script defer src="icons.js?v=20261010d"></script>
+<script defer src="icons-art.js?v=20261010d"></script>
+<script defer src="cover-art.js?v=20261010d"></script>
 <script>/* Deferred scripts run after parsing, so this call has to wait for them —
    inline script runs at parse time and would find SB_ICON_MOTION undefined. The old
    try/catch would have swallowed that silently and simply left icon motion off. */
@@ -3537,47 +3548,48 @@ document.addEventListener('DOMContentLoaded',function(){try{SB_ICON_MOTION()}cat
 </script>
 <!-- Backend config + the real-accounts adapter. Both are inert until sb-config.js
      carries a project URL and anon key, so shipping them changes nothing yet. -->
-<script defer src="sb-config.js?v=20261010c"></script>
-<script defer src="voice-cdn.js?v=20261010c"></script>
-<script>window.SB_ASSET_V="?v=20261010c";</script>
+<script defer src="sb-config.js?v=20261010d"></script>
+<script defer src="voice-cdn.js?v=20261010d"></script>
+<script>window.SB_ASSET_V="?v=20261010d";</script>
 <!-- boot-lazy: everything the first screen does not need arrives after paint.
      Registry + idle order live in boot-lazy.js; call SB_LAZY.need(...) before
      opening a feature whose data is deferred. -->
-<script defer src="boot-lazy.js?v=20261010c"></script>
-<script defer src="words-data.js?v=20261010c"></script>
-<script defer src="words-extra.js?v=20261010c"></script>
-<script defer src="words-patch.js?v=20261010c"></script>
-<script defer src="kid-safe.js?v=20261010c"></script>
-<script defer src="themes-data.js?v=20261010c"></script>
-<script defer src="quotes.js?v=20261010c"></script>
-<script defer src="trivia-icons.js?v=20261010c"></script>
-<script defer src="trivia-data.js?v=20261010c"></script>
-<script defer src="tips-data.js?v=20261010c"></script>
-<script defer src="voice-manifest.js?v=20261010c"></script>
-<script defer src="voice-adv-manifest.js?v=20261010c"></script>
-<script defer src="voice-review.js?v=20261010c"></script>
-<script defer src="app.js?v=20261010c"></script>
-<script defer src="avatar-png.js?v=20261010c"></script>
-<script defer src="game-art.js?v=20261010c"></script>
-<script defer src="avatars.js?v=20261010c"></script>
-<script defer src="avatar-greetings.js?v=20261010c"></script>
-<script defer src="avatar-cards.js?v=20261010c"></script>
-<script defer src="app2.js?v=20261010c"></script>
-<script defer src="pricing.js?v=20261010c"></script>
-<script defer src="auth.js?v=20261010c"></script>
-<script defer src="supabase-auth.js?v=20261010c"></script>
-<script defer src="telemetry.js?v=20261010c"></script>
-<script defer src="bizzing-wallet.js?v=20261010c"></script>
-<script defer src="bizzing-avatars.js?v=20261010c"></script>
-<script defer src="bizzing-activity.js?v=20261010c"></script>
-<script defer src="family-shell.js?v=20261010c"></script>
-<script defer src="app3.js?v=20261010c"></script>
-<script defer src="worlds4.js?v=20261010c"></script>
+<script defer src="boot-lazy.js?v=20261010d"></script>
+<script defer src="words-data.js?v=20261010d"></script>
+<script defer src="words-extra.js?v=20261010d"></script>
+<script defer src="words-patch.js?v=20261010d"></script>
+<script defer src="kid-safe.js?v=20261010d"></script>
+<script defer src="wordband.js?v=20261010d"></script>
+<script defer src="themes-data.js?v=20261010d"></script>
+<script defer src="quotes.js?v=20261010d"></script>
+<script defer src="trivia-icons.js?v=20261010d"></script>
+<script defer src="trivia-data.js?v=20261010d"></script>
+<script defer src="tips-data.js?v=20261010d"></script>
+<script defer src="voice-manifest.js?v=20261010d"></script>
+<script defer src="voice-adv-manifest.js?v=20261010d"></script>
+<script defer src="voice-review.js?v=20261010d"></script>
+<script defer src="app.js?v=20261010d"></script>
+<script defer src="avatar-png.js?v=20261010d"></script>
+<script defer src="game-art.js?v=20261010d"></script>
+<script defer src="avatars.js?v=20261010d"></script>
+<script defer src="avatar-greetings.js?v=20261010d"></script>
+<script defer src="avatar-cards.js?v=20261010d"></script>
+<script defer src="app2.js?v=20261010d"></script>
+<script defer src="pricing.js?v=20261010d"></script>
+<script defer src="auth.js?v=20261010d"></script>
+<script defer src="supabase-auth.js?v=20261010d"></script>
+<script defer src="telemetry.js?v=20261010d"></script>
+<script defer src="bizzing-wallet.js?v=20261010d"></script>
+<script defer src="bizzing-avatars.js?v=20261010d"></script>
+<script defer src="bizzing-activity.js?v=20261010d"></script>
+<script defer src="family-shell.js?v=20261010d"></script>
+<script defer src="app3.js?v=20261010d"></script>
+<script defer src="worlds4.js?v=20261010d"></script>
   <!-- saga-art/*.js, saga-art-dom.js and saga2.js (the arcade engines, ~110KB gzipped) are
        NOT boot scripts any more: boot-lazy.js loads them, in order, at the door of a game. -->
-<script defer src="trivia.js?v=20261010c"></script>
-<script defer src="advanced.js?v=20261010c"></script>
-<script defer src="trail-road.js?v=20261010c"></script>
-<script defer src="trail.js?v=20261010c"></script>
+<script defer src="trivia.js?v=20261010d"></script>
+<script defer src="advanced.js?v=20261010d"></script>
+<script defer src="trail-road.js?v=20261010d"></script>
+<script defer src="trail.js?v=20261010d"></script>
 </body>
 </html>

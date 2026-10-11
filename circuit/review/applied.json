@@ -1,0 +1,940 @@
+[
+  {
+    "lens": "r1-safety",
+    "path": "rounds[3].pieces.below",
+    "action": "merged",
+    "note": "One line for all three lenses: no exclamation and no presumed word (r1), phantom's Greek root, 'all the way back' (r2), and {missed} from the bee file in place of a claimed miss (r3). The rule is stated and 'Greek words travel with their luggage' kept."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "rounds[4].pieces.pip",
+    "action": "merged",
+    "newPath": [
+      "rounds[4].pieces.pip",
+      "rounds[4].pieces.pipWord"
+    ],
+    "note": "The loyal coda is kept word for word. The word is unflappable ('nobody can flip him like a flapjack'), because imperturbable is not in the library (r2; decision)."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "cases[1].reveal[3]",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "cases[2].safeLine",
+    "action": "applied",
+    "newPath": [
+      "cases[2].safeLine",
+      "cases[2].suspects[2].secret"
+    ],
+    "note": "fix_text as given (decision: Kwame tells Hazel himself; Hazel tells the Pronouncer at once). cases[2].suspects[2].secret and cast.hazel.role brought into line."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "cases[2].reveal[2]",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "cases[3].reveal[5]",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "cases[4].puzzle.items[2]",
+    "action": "applied",
+    "newPath": "cases[4].puzzle.items[2].why",
+    "note": "The why field only, as given."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "cases[4].reveal[2]",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "teamNight.beats.drama.8-10",
+    "action": "merged",
+    "note": "'Sloane raises an eyebrow' (r1) in r3's line where Dax takes the call himself."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "teamNight.beats.drama.11-15",
+    "action": "merged",
+    "note": "'Sloane raises an eyebrow' (r1) in r3's line where Dax takes the call himself."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "teamNight.beats.stingAfter",
+    "action": "applied",
+    "note": "fix_text as given (decision)."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "accusation.closingLetter",
+    "action": "applied",
+    "note": "fix_text as given, with 'a Circuit tradition even then' (decision). 60 words."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "visitors[5].card",
+    "action": "merged",
+    "note": "Opens 'To the ancient Greeks, Tantalus was…' (r1) and spells tantalize (r2)."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "cases[2].impossible",
+    "action": "build",
+    "newPath": "build[id=case-scenes]",
+    "note": "Passed on condition that the safeLine shows first: now a build test."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "r1-safety.md owner item 3 (Ravenmere make-up)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=ravenmere-names]",
+    "note": "Recorded for the owner."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "r1-safety.md owner item 5 (Dax's Suspect Board why)",
+    "action": "applied",
+    "newPath": [
+      "suspectBoard.portraits[3].why",
+      "ownerQuestions[id=suspect-board-dax]"
+    ],
+    "note": "'He's the villain' rewritten now ('Everyone's first guess. He's set on beating you, and V. knows things.') and listed for the owner."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "r1-safety.md owner item 5 (Mock Bee faces)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=mockbee-faces]",
+    "note": "Checked: Suki wears Panda Sensei / Lucky Neko (Dojo pack) on the one East Asian name; Kwame wears Samurai / Shadow Ninja (Dojo). Listed for the owner."
+  },
+  {
+    "lens": "r1-safety",
+    "path": "r1-safety.md owner item 2 (the second hand, Season 2)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=second-hand]",
+    "note": "stingAfter applied; the Season 2 condition recorded in teamNight.season2Seeds[1] and listed for the owner."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "rounds[2].lesson",
+    "action": "applied",
+    "newPath": [
+      "rounds[2].lesson",
+      "rounds[2].lessonGi",
+      "rounds[2].pieces.above",
+      "rounds[2].pieces.below"
+    ],
+    "note": "Decision: 'trans- / per- (across / through)' exactly as concepts-data.js titles it (lessonGi 31, Forum u36). Rafi's word is transfer (trans- across + fer carry) in both letters, which name the lesson."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "rounds[3].pieces.below",
+    "action": "merged",
+    "note": "See r1-safety rounds[3].pieces.below."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "rounds[4].pieces.pipWord.word",
+    "action": "merged",
+    "newPath": "rounds[4].pieces.pipWord",
+    "note": "Decision: replaced, not added: unflappable (in the library, y8, same meaning). misuse rewritten to fit the new word; real unchanged."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "rounds[5].technique",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.brief",
+    "action": "merged",
+    "note": "r2's 'built from Greek parts' and 'oe for oi' with r3's 'and a few more' (xylophone's x and onomatopoeia's oe)."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[3].puzzle.brief",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "visitors[0].card",
+    "action": "applied",
+    "note": "fix_text as given; two of lens 2's sources added to the card's sources."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "visitors[5].word",
+    "action": "applied",
+    "note": "tantalize (decision)."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "visitors[5].card",
+    "action": "merged",
+    "note": "See r1-safety visitors[5].card."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "visitors[6].card",
+    "action": "applied",
+    "note": "fix_text as given; Britannica source added."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "visitors[12].card",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "visitors[19].card",
+    "action": "applied",
+    "note": "fix_text as given; Britannica source added."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "visitors[20].sources[0].ref",
+    "action": "applied",
+    "note": "fix_text as given (cited by month)."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cast.ash.tell",
+    "action": "applied",
+    "note": "Decision: 'spell in unison, one letter each', as §4.2; validate.cjs now checks it."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cast.aria.tell",
+    "action": "applied",
+    "newPath": [
+      "cast.aria.tell",
+      "teamNight.ravenmereRoster[1].tell",
+      "teamNight.ravenmereRoster[2].tell",
+      "teamNight.beats.ravenmere"
+    ],
+    "note": "As cast.ash.tell; ravenmereRoster[1–2].tell and the Ravenmere beat match."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[2].puzzle.note",
+    "action": "applied",
+    "newPath": "cases[2].puzzle.card",
+    "note": "Decision: the on-screen key renamed card (authorNotes hide note fields); recorded in changes and authorNotes."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[2].puzzle.items[6].word",
+    "action": "applied",
+    "newPath": [
+      "cases[2].puzzle.items[6].word",
+      "cases[2].puzzle.card"
+    ],
+    "note": "Decision: cafe, the library's spelling (also in the card)."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[4].puzzle.items[6].correct",
+    "action": "applied",
+    "newPath": [
+      "cases[4].puzzle.items[6].statement",
+      "cases[4].puzzle.items[6].word",
+      "cases[4].puzzle.items[6].correct"
+    ],
+    "note": "Decision: dependable is not in the library; reliable (y3, same meaning) with the misprint reliible."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[4].puzzle.items[6].statement",
+    "action": "applied",
+    "note": "As cases[4].puzzle.items[6].correct."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[4].puzzle.items[6].word",
+    "action": "applied",
+    "note": "As cases[4].puzzle.items[6].correct."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[5].word",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "Library origin disagrees with the Greek trail; decision: the case shows the authored origin, the library is not edited."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[5].greek",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "Library origin disagrees with the Greek trail; decision: the case shows the authored origin, the library is not edited."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[6].word",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "Library origin disagrees with the Greek trail; decision: the case shows the authored origin, the library is not edited."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[6].greek",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "Library origin disagrees with the Greek trail; decision: the case shows the authored origin, the library is not edited."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[3].word",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[3]",
+    "note": "The item was replaced (r3: printed earlier in the season), which retires this conflict; the new word's origin is authored too (build[id=case-origins-authored])."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[3].greek",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[3]",
+    "note": "The item was replaced (r3: printed earlier in the season), which retires this conflict; the new word's origin is authored too (build[id=case-origins-authored])."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[8].word",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[8]",
+    "note": "The item was replaced (r3: printed earlier in the season), which retires this conflict; the new word's origin is authored too (build[id=case-origins-authored])."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[8].greek",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[8]",
+    "note": "The item was replaced (r3: printed earlier in the season), which retires this conflict; the new word's origin is authored too (build[id=case-origins-authored])."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[9].word",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[9]",
+    "note": "The item was replaced (r3: printed earlier in the season), which retires this conflict; the new word's origin is authored too (build[id=case-origins-authored])."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[1].puzzle.items[9].greek",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[9]",
+    "note": "The item was replaced (r3: printed earlier in the season), which retires this conflict; the new word's origin is authored too (build[id=case-origins-authored])."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "cases[2].puzzle.brief",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "Risk noted (ultimate vs direct donor): the Ask Ines hint and the choices give the direct donor."
+  },
+  {
+    "lens": "r2-accuracy",
+    "path": "r2-accuracy.md owner item 6 (re-verify against live pages)",
+    "action": "owner",
+    "newPath": "ownerQuestions[id=accuracy-reverify]",
+    "note": "Listed with the four new Case 2 items."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "suspectBoard.portraits[0].why",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "suspectBoard.portraits[2].why",
+    "action": "applied",
+    "note": "fix_text as given; clearedBy (author) updated to the Round VII card."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "suspectBoard.portraits[4].why",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[0].pieces.dax",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[0].pieces.cliff",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[1].pieces.drama",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[1].pieces.laugh",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[1].pieces.above",
+    "action": "applied",
+    "note": "Adapted per decision: 'Questions you asked this round: {asked}' from the chair's log; 'eleven' dropped (the chair holds six)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[1].pieces.below",
+    "action": "applied",
+    "note": "Adapted per decision: opens with 'Questions you asked this round: {asked}'; the rest as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[1].pieces.v",
+    "action": "applied",
+    "newPath": [
+      "rounds[1].pieces.v",
+      "slotLines.weak"
+    ],
+    "note": "fix_text as given; {weak} declared in build[id=slots], its clauses in slotLines.weak (Round II's default: 'You guess instead of asking.')."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[2].pieces.above",
+    "action": "merged",
+    "note": "With r2's lesson switch: transfer, not circumference; 'Your best word this round: {spelled}' from the bee file (decision)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[3].pieces.inv",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[3].pieces.drama",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[3].pieces.laugh",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[3].pieces.above",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[3].pieces.below",
+    "action": "merged",
+    "note": "See r1-safety rounds[3].pieces.below. 'physics' from r3's text left out: it would print a Case 2 answer in the mail just before the case."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[3].pieces.v",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[4].pieces.inv",
+    "action": "applied",
+    "note": "Adapted per decision: 'One speller on this Circuit' ('here' is false in the 6–7 band); 'The bell is back, and the round starts on time' (naming Pip, unseated at 11–15, would break the same rule)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[4].pieces.v",
+    "action": "applied",
+    "note": "fix_text as given; Round V's {weak} default is 'You skip the suffix.'"
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[5].pieces.laugh",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[5].pieces.suspense",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[5].pieces.below",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[5].pieces.cliff",
+    "action": "applied",
+    "note": "fix_text as given; cases[3].planted (author) updated to match."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[6].pieces.below",
+    "action": "applied",
+    "note": "Adapted per decision: 'You'll spell {missed} next time.' (fallback 'the hard one') in place of 'The hard one got you'."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[7].pieces.inv",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[8].pieces.suspense",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "turn.kwame",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "turn.apologies[0].reply",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "turn.apologies[2].text",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[0].reveal[0]",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].clock",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].escalation",
+    "action": "applied",
+    "note": "fix_text as given; cases[1].planted (author) names it."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].puzzle.brief",
+    "action": "merged",
+    "note": "See r2-accuracy cases[1].puzzle.brief."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].puzzle.items[3]",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[3]",
+    "note": "xylophone with r3's clue plus 'its name means wood sound': the library's marimba has the same definition, so the clue alone had two answers."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].puzzle.items[6]",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[6].clue",
+    "note": "Adapted: chorus stays; r3's clue ('the part of a song that comes back after every verse') is also refrain, so the clue is 'in an ancient Greek play, the group who sang and danced between the scenes'."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].puzzle.items[8]",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[8]",
+    "note": "microphone; the clue says 'the small thing on a stand' because megaphone is Greek-built and fits r3's clue too."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].puzzle.items[9]",
+    "action": "applied",
+    "newPath": "cases[1].puzzle.items[9]",
+    "note": "cylinder, with r3's clue."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].reveal[2]",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].lastChill",
+    "action": "applied",
+    "note": "fix_text as given (decision: V.'s 'ring twice' line)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[2].puzzle.note",
+    "action": "applied",
+    "newPath": "cases[2].puzzle.card",
+    "note": "fix_text with cafe, under the renamed on-screen key card (decision)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[3].clue.text",
+    "action": "applied",
+    "newPath": [
+      "cases[3].clue.text",
+      "rounds[6].pieces.clue2"
+    ],
+    "note": "fix_text as given, and the same card now rides Round VII's mail as clue2 (decision); Case 4 repeats it."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[4].clock",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[4].impossible",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[4].escalation",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "teamNight.beats.idea",
+    "action": "applied",
+    "note": "fix_text with 'and spells none himself' kept (captainSpells false). 58 words."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "teamNight.beats.drama.8-10",
+    "action": "merged",
+    "note": "See r1-safety teamNight.beats.drama.8-10. The scripted word is Greek-first (build[id=team-night])."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "teamNight.beats.drama.11-15",
+    "action": "merged",
+    "note": "See r1-safety teamNight.beats.drama.11-15. The scripted word is French-first (build[id=team-night])."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "teamNight.beats.levelling",
+    "action": "applied",
+    "newPath": [
+      "teamNight.beats.levellingMiss",
+      "teamNight.beats.callRules"
+    ],
+    "note": "The right-answer line is kept; the miss line is new (levellingMiss, 'Breathe out. Second try.'). The second-try rule is planted before the match in the new callRules beat, not stated at the moment it is used."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "teamNight.beats.daxPostcard",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "teamNight.beats.sting",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "accusation.lookAgainBy.vesper",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "hivePost.diary[1]",
+    "action": "applied",
+    "note": "The neutral line r3 offered."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "hivePost.diary[3]",
+    "action": "applied",
+    "note": "The neutral line r3 offered."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "hivePost.diary[4]",
+    "action": "applied",
+    "note": "The neutral line r3 offered."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "hivePost.diary[7]",
+    "action": "applied",
+    "note": "The neutral line r3 offered."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "hivePost.diary[9]",
+    "action": "applied",
+    "note": "The neutral line r3 offered."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "hivePost.beeFileIntro",
+    "action": "applied",
+    "note": "fix_text as given."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "season/CLEARINGS ON EVERY PATH",
+    "action": "applied",
+    "newPath": [
+      "rounds[6].pieces.clue2",
+      "build[id=clue-cards-ride-mail]"
+    ],
+    "note": "Ratchet's clearing card rides Round VII's mail (clue2), built on that round's misprinted programme (decision)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "season/SCRIPTED HALL OUTCOMES",
+    "action": "build",
+    "newPath": [
+      "build[id=scripted-outcomes]",
+      "build[id=hall-fields]",
+      "ownerQuestions[id=round9-unseated-lines]"
+    ],
+    "note": "Per round and band: forced outcomes, fields with Vesper's chair empty in Rounds I–VIII, headliners and alsoSeated always seated, Round IX mic lines only where seated (decision; consequence listed for the owner), no co-champions in Round IX."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "season/STORY ORDER",
+    "action": "build",
+    "newPath": "build[id=story-order]",
+    "note": "A hall opens only after the previous hall's mail is delivered (decision)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "season/CASE SECRETS AND SCENE TAPS",
+    "action": "applied",
+    "newPath": [
+      "cases[0].taps",
+      "cases[1].taps",
+      "cases[2].taps",
+      "cases[3].taps",
+      "cases[4].taps",
+      "build[id=case-scenes]"
+    ],
+    "note": "Each case now writes step 2: three taps, one the earlier plant; secrets surface only in the reveal; Case 3's safeLine first."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "season/PUZZLES, one answer each",
+    "action": "applied",
+    "newPath": [
+      "cases[1].puzzle",
+      "build[id=case2-spelling-engine]",
+      "build[id=case-origins-authored]"
+    ],
+    "note": "Case 2 fixed (items 3, 6, 8, 9; brief); its engine needs to be a spelling engine, recorded as a build requirement, the choice left to the case-runner build. Case 3's choice rule recorded."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "season/TEAM NIGHT CALLER RULE",
+    "action": "applied",
+    "newPath": [
+      "teamNight.beats.callRules",
+      "build[id=team-night]"
+    ],
+    "note": "Grade on the first language named, said once on screen (callRules); drama words Greek-first at 8–10, French-first at 11–15 (decision)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "season/V.'S NOTES AND THE CHILD'S WEAKNESS",
+    "action": "applied",
+    "newPath": [
+      "slotLines.weak",
+      "build[id=slots]"
+    ],
+    "note": "{weak} in both V. notes, {asked}, {missed}, {spelled} in the rival letters, all declared with sources in build[id=slots]; slotLines.weak holds one clause per bee-file error family plus each round's authored default (decision)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[0].pieces.drama",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "Depends on the hall forcing this outcome."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[2].pieces.drama",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "Depends on the hall forcing this outcome."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[4].pieces.drama",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "Depends on the hall forcing this outcome."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[5].pieces.drama",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "Depends on the hall forcing this outcome."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[6].pieces.drama",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "Depends on the hall forcing this outcome."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[7].pieces.drama",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "Depends on the hall forcing this outcome."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[8].pieces.drama",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "Depends on the hall forcing this outcome."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[8].pieces.below",
+    "action": "build",
+    "newPath": "build[id=scripted-outcomes]",
+    "note": "'I won' needs Vesper to outlast every other rival when she finishes above the child."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[0].pieces.suspense",
+    "action": "build",
+    "newPath": "build[id=hall-fields]",
+    "note": "Needs Vesper out of the 11–15 field until Round IX."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[8].pieces.inv",
+    "action": "build",
+    "newPath": "build[id=hall-fields]",
+    "note": "Round IX seats the band's field plus Vesper; mic lines only where seated (decision)."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[8].pieces.laugh",
+    "action": "build",
+    "newPath": "build[id=hall-fields]",
+    "note": "Delivered only where Pip is seated (6–7, 8–10), per decision."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[8].pieces.dax",
+    "action": "build",
+    "newPath": "build[id=hall-fields]",
+    "note": "Delivered only where Dax and Theo are seated (11–15), per decision; owner question raised."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[5].pieces.v",
+    "action": "build",
+    "newPath": "build[id=story-order]",
+    "note": "Owner decision (b) holds only in story order."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[6].pieces.inv",
+    "action": "build",
+    "newPath": "build[id=story-order]",
+    "note": "Holds only if Round VI's mail arrives first."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "rounds[3].pieces.clue.text",
+    "action": "build",
+    "newPath": "build[id=slots]",
+    "note": "True once V.'s notes name the weak spot from the bee file ({weak})."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[1].suspects[2].secret",
+    "action": "build",
+    "newPath": "build[id=case-scenes]",
+    "note": "Dax's motive surfaces in the reveal; the facts to accuse him (heel-marks) are in the escalation."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[4].suspects[3].secret",
+    "action": "build",
+    "newPath": "build[id=case-scenes]",
+    "note": "Dash's secret is the answer: it surfaces only in the reveal, after Dax finds the key."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[2].puzzle.items[0]",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "The choices never offer this item's earlier source language."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[2].puzzle.items[6]",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "The choices never offer this item's earlier source language."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "cases[2].puzzle.items[7]",
+    "action": "build",
+    "newPath": "build[id=case-origins-authored]",
+    "note": "The choices never offer this item's earlier source language."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "teamNight.callerCategories[1].call",
+    "action": "build",
+    "newPath": "build[id=team-night]",
+    "note": "Graded on the first language named."
+  },
+  {
+    "lens": "r3-fairplay",
+    "path": "signoffs.inv",
+    "action": "build",
+    "newPath": "build[id=signoff-upright]",
+    "note": "The signoff must be drawn upright."
+  }
+]

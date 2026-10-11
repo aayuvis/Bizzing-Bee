@@ -1,0 +1,1345 @@
+[
+ {
+  "path": "cast.ash.tell",
+  "verdict": "fix",
+  "reason": "Matches BEE-CIRCUIT.md §4.2 verbatim, and validate.cjs test 11 passes (the owner's cycle-1 decision). The wording itself contradicts itself: Merriam-Webster gives 'in unison' as 'together, at the same time', so two spellers cannot spell in unison and also take one letter each. In a spelling app this teaches the word wrongly. Fix needs §4.2 (and §8.1's beat) changed in the same commit; validate.cjs reads §4.2, so it stays green.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/unison",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.2, §8.1",
+   "file:spellbound-app/tools/circuit/validate.cjs (FAIL 0, run 10 Oct 2026)"
+  ],
+  "method": "search",
+  "fix_text": "spell as a pair, one letter each"
+ },
+ {
+  "path": "cast.aria.tell",
+  "verdict": "fix",
+  "reason": "Matches BEE-CIRCUIT.md §4.2 verbatim, and validate.cjs test 11 passes (the owner's cycle-1 decision). The wording itself contradicts itself: Merriam-Webster gives 'in unison' as 'together, at the same time', so two spellers cannot spell in unison and also take one letter each. In a spelling app this teaches the word wrongly. Fix needs §4.2 (and §8.1's beat) changed in the same commit; validate.cjs reads §4.2, so it stays green.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/unison",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.2, §8.1",
+   "file:spellbound-app/tools/circuit/validate.cjs (FAIL 0, run 10 Oct 2026)"
+  ],
+  "method": "search",
+  "fix_text": "spell as a pair, one letter each"
+ },
+ {
+  "path": "rounds[0].pieces.dax",
+  "verdict": "pass",
+  "reason": "Dax's 'fastest in round one' matches mockbee BOTS comet note ('Fastest here in round one. Watch him late on.') and §4.1's speciality. The Meadow is Round I's act (trail-data act 1). The Sprints are Act VIII, Dax's home hall (rounds[7].pieces.dax). 'The far end of the Circuit' is loose (the Sprints are the eighth of nine acts) but not false as a postcard boast.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)",
+   "file:spellbound-app/trail-data.js + trail.js (acts, legName)",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.1"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[0].pieces.cliff",
+  "verdict": "pass",
+  "reason": "The Finish Arch is leg 4 of Act VIII (trail.js legName for sprints; trail-data act 8 'The Subject Sprints'), so 'the eighth hall on the Circuit' is right.",
+  "sources": [
+   "file:spellbound-app/trail-data.js + trail.js (acts, legName)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[1].pieces.drama",
+  "verdict": "pass",
+  "reason": "The Pronouncer's Chair holds six requests (mockbee CHAIR: Definition, Part of speech, Origin, Sentence, Say it again, Alternate pronunciation). Each costs 3 s of a 30 s turn (Q_COST, TURN_MS), so all six on one word leave 12 s; 'a second left' is a scripted outcome (build[id=scripted-outcomes]), not an app default. No outside fact.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)",
+   "file:spellbound-app/circuit/script.json build[id=scripted-outcomes]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[1].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Part of speech is a Chair request (mockbee CHAIR), and mockbee blocks a repeat on the same word, which the line respects (\"that one is a noun too\", across words). \"Eleventh time today\" is the Pronouncer's quip, not a hall-log count.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[1].pieces.above",
+  "verdict": "pass",
+  "reason": "'Every one the chair holds' = mockbee CHAIR's six. 'They have to answer' matches the Scripps suggested rules: the speller may ask the pronouncer to say the word again, define it, use it in a sentence, give the part of speech, the language(s) of origin and alternate pronunciations, and the pronouncer answers from the list. {asked} is declared in build[id=slots] (sum of g.mine[].asks.length; record() keeps asks, mockbee.js:905).",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)",
+   "https://spellingbee.com/sites/default/files/inline-files/2026_Suggested_Rules_for_Spelling_Bees_FINAL.pdf",
+   "https://spellingbee.com/rules"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "rounds[1].pieces.below",
+  "verdict": "pass",
+  "reason": "The five named requests are the Scripps list minus 'say it again' (2026 suggested rules) and mockbee's CHAIR minus 'Say it again'. 'They have to answer' holds under those rules.",
+  "sources": [
+   "https://spellingbee.com/sites/default/files/inline-files/2026_Suggested_Rules_for_Spelling_Bees_FINAL.pdf",
+   "https://spellingbee.com/rules",
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "rounds[1].pieces.v",
+  "verdict": "pass",
+  "reason": "{weak} is declared in build[id=slots]; its clauses are rows under slotLines. The rest is V.'s prediction of Case 1. No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[2].lesson",
+  "verdict": "pass",
+  "reason": "Exact title match: concepts-data.js chapter 31 is 'trans- / per- (across / through)' (lessonGi 31, validate.cjs checks it), and its trail unit u36 is in Act III, The Roman Forum (trail-data). This retires cycle-1 fix 1 (the old lesson sat in Act V).",
+  "sources": [
+   "file:spellbound-app/concepts-data.js (SB_CONCEPTS.chapters)",
+   "file:spellbound-app/trail-data.js + trail.js (acts, legName)",
+   "file:spellbound-app/tools/circuit/validate.cjs (FAIL 0, run 10 Oct 2026)"
+  ],
+  "method": "app-data",
+  "cycle1Fix": 1
+ },
+ {
+  "path": "rounds[2].pieces.above",
+  "verdict": "pass",
+  "reason": "Etymonline and M-W: transfer is from Latin transferre, trans- 'across' + ferre 'to carry'. Etymonline gives per- as 'through' (also 'thoroughly'). concepts-data ch. 31 says the same (trans- = across; per- = through). 'transfer' is in the library (o Latin, y1). 'Draw the next word small on your palm' is Rafi's mockbee tell. {spelled} is declared in build[id=slots] (app3 spellDiff exists).",
+  "sources": [
+   "https://www.etymonline.com/word/transfer",
+   "https://www.merriam-webster.com/dictionary/transfer",
+   "https://www.etymonline.com/word/per-",
+   "https://www.etymonline.com/word/trans-",
+   "file:spellbound-app/concepts-data.js (SB_CONCEPTS.chapters)",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)",
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)"
+  ],
+  "method": "search",
+  "cycle1Fix": 1
+ },
+ {
+  "path": "rounds[2].pieces.below",
+  "verdict": "pass",
+  "reason": "Etymonline and M-W: transfer is from Latin transferre, trans- 'across' + ferre 'to carry'. Etymonline gives per- as 'through' (also 'thoroughly'). concepts-data ch. 31 says the same (trans- = across; per- = through). 'transfer' is in the library (o Latin, y1). 'Draw the next word small on your palm' is Rafi's mockbee tell.",
+  "sources": [
+   "https://www.etymonline.com/word/transfer",
+   "https://www.merriam-webster.com/dictionary/transfer",
+   "https://www.etymonline.com/word/per-",
+   "https://www.etymonline.com/word/trans-",
+   "file:spellbound-app/concepts-data.js (SB_CONCEPTS.chapters)",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "search",
+  "cycle1Fix": 1
+ },
+ {
+  "path": "rounds[3].pieces.inv",
+  "verdict": "pass",
+  "reason": "Mira's tell 'asks for the language of origin every time' (mockbee BOTS) is what 'asks every word where it was born' paraphrases. Chair one and Vesper's empty chair match build[id=hall-fields] (Round IV: Mira 1; invNamedUnseated 4: goldlegend).",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)",
+   "file:spellbound-app/circuit/script.json build[id=hall-fields]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[3].pieces.drama",
+  "verdict": "pass",
+  "reason": "Mira asks the origin (her tell) and hears 'Greek' (scripted, a Greek-first word). Pip's fear of thunder is fiction. No outside fact.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[3].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction. (The origin of 'the' is not stated.)",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[3].pieces.above",
+  "verdict": "pass",
+  "reason": "'Greek words travel with their luggage: ph, ch, y': φ→ph, χ→ch and υ→y are the traditional Latin transliterations of Greek (Wikipedia, Romanization of Greek; Latin phonology and orthography).",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Romanization_of_Greek",
+   "https://en.wikipedia.org/wiki/Latin_phonology_and_orthography"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "rounds[3].pieces.below",
+  "verdict": "pass",
+  "reason": "Etymonline: phantom came into English c.1300 as fantum/fantosme from Old French, from Latin phantasma, from Greek phantasma, and 'the ph- was restored in English late 16c.' M-W: the ph- is a restoration from the Greek source. 'Goes back to Greek phantasma, and English put the ph back' is right, and 'all the way back' fixes the library problem (the library gives phantom 'French'). This is cycle-1 fix 2, applied and re-verified.",
+  "sources": [
+   "https://www.etymonline.com/word/phantom",
+   "https://www.merriam-webster.com/dictionary/phantom",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "search",
+  "cycle1Fix": 2
+ },
+ {
+  "path": "rounds[3].pieces.v",
+  "verdict": "pass",
+  "reason": "Metaphor ('words keep their passports'); no checkable claim.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[4].pieces.inv",
+  "verdict": "pass",
+  "reason": "Kwame's two clean seasons are fiction (cast role). 'The bell is back, and the round starts on time' matches cases[1].reveal[3]. 'First warning' matches cases[1].reveal[4] (the Pronouncer, who signs for the Committee). Seated beside Kwame matches build[id=hall-fields].",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[4].pieces.v",
+  "verdict": "pass",
+  "reason": "{weak} declared in build[id=slots]. 'Parts first, then the whole' matches Round V's technique. No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[4].pieces.pip",
+  "verdict": "pass",
+  "reason": "Pip's misuse is deliberate (the flapjack joke), and the real meaning is a tap away in pipWord.real. 'Flapjack' = pancake in M-W's sense, which is the sense the flip joke needs. (UK children know a flapjack as an oat bar, but the joke still reads.) See pipWord.real for the meaning's wording.",
+  "sources": [
+   "https://www.merriam-webster.com/simple/unflappable",
+   "https://www.etymonline.com/word/unflappable"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.word",
+  "verdict": "pass",
+  "reason": "unflappable is in the served library (y8, adjective), so Pip's tap has an entry to open. This retires cycle-1 fix 3. Library note for the owner: the library gives its origin as 'Latin', but Etymonline says it is English, un- + flap + -able, first used 1957 (M-W: 1954). The tap shows the meaning, not the origin, so the script is unaffected.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)",
+   "https://www.etymonline.com/word/unflappable",
+   "https://www.merriam-webster.com/wordplay/kempt-couth-ruly-gruntled/flappable"
+  ],
+  "method": "app-data",
+  "cycle1Fix": 3
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.misuse",
+  "verdict": "pass",
+  "reason": "A deliberate misuse; 'flip him like a flapjack' plays on 'flap'. M-W ties unflappable to flap, 'a state of excitement or agitation', so the misuse is clearly wrong and the real meaning corrects it.",
+  "sources": [
+   "https://www.merriam-webster.com/wordplay/kempt-couth-ruly-gruntled/flappable",
+   "https://www.merriam-webster.com/simple/unflappable"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.real",
+  "verdict": "fix",
+  "reason": "Not in the changed list, but the word changed under it (applied.json: 'real unchanged'). The meaning was written for imperturbable. For unflappable, M-W says 'marked by assurance and self-control' and its learner's entry 'not easily upset: unusually calm in difficult situations'. 'Impossible to upset' overstates it, and Kwame cracks in this very round.",
+  "sources": [
+   "https://www.merriam-webster.com/simple/unflappable",
+   "https://www.merriam-webster.com/thesaurus/unflappable",
+   "https://www.etymonline.com/word/unflappable"
+  ],
+  "method": "search",
+  "fix_text": "calm; not easily upset or flustered",
+  "related": true
+ },
+ {
+  "path": "rounds[5].technique",
+  "verdict": "pass",
+  "reason": "Wikipedia (English orthography): English generally keeps the spellings of loanwords now, but French imports before about 1400 were respelled (battle, button), and some loans are transliterated or respelled. 'Often' makes the rule true, and Case 3's yogurt, samovar, hummus and catamaran no longer contradict it. 'Letters it hides, often at the end' fits Round VI's lesson (French Silent Letters, ch. 54). This is cycle-1 fix 4, applied and re-verified.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/English_orthography",
+   "https://en.wikipedia.org/wiki/Loanword",
+   "file:spellbound-app/concepts-data.js (SB_CONCEPTS.chapters)"
+  ],
+  "method": "search",
+  "cycle1Fix": 4
+ },
+ {
+  "path": "rounds[5].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Salty's tell ('applauds everything; every programme is damp', cast) is fiction. No outside fact.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[5].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[5].pieces.below",
+  "verdict": "pass",
+  "reason": "'Écoute la fin' is correct French: écoute is the second-person singular imperative of écouter (Wiktionary, Wiktionnaire), so it means 'Listen to the end.' Ballet's t is silent: M-W gives ba-ˈlā and ˈba-ˌlā; Cambridge gives /ˈbæl.eɪ/ and /bælˈeɪ/.",
+  "sources": [
+   "https://en.wiktionary.org/wiki/%C3%A9coute",
+   "https://fr.wiktionary.org/wiki/Conjugaison:fran%C3%A7ais/%C3%A9couter",
+   "https://www.merriam-webster.com/dictionary/ballet",
+   "https://dictionary.cambridge.org/dictionary/english/ballet"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "rounds[5].pieces.cliff",
+  "verdict": "pass",
+  "reason": "The Junkyard's leg-4 venue is the Trickster's Gate (trail.js), so 'the Junkyard gate' is right. Seventh and eighth are one place apart.",
+  "sources": [
+   "file:spellbound-app/trail-data.js + trail.js (acts, legName)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[6].pieces.below",
+  "verdict": "pass",
+  "reason": "'Breathe out first. Out, not in.' is Suki's mockbee tell ('breathes out, then spells'). {missed} declared in build[id=slots] (fallback 'the hard one').",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[6].pieces.clue2.text",
+  "verdict": "pass",
+  "reason": "'borowed' and 'evenchually' match Ratchet's Round VII programme. Checked 'V.'s notes have never had a single misprint' against every V. note in the script: all 19 V. notes (nine round notes, the Round VIII cliff, five in turn.notes, three case notes, the sting) are spelled correctly. Each word was checked against the library; the few flagged were inflections or contractions (gets, heard, whom, aren't). British 'rumour' is consistent with the script's spelling).",
+  "sources": [
+   "file:spellbound-app/circuit/script.json",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "rounds[7].pieces.inv",
+  "verdict": "pass",
+  "reason": "The formal warning is read in Case 4 (cases[3].reveal[5]), which follows Round VII, so a Round VIII invitation can report it. No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "rounds[8].pieces.suspense",
+  "verdict": "pass",
+  "reason": "Matches build[id=scripted-outcomes] round 9 (no co-champions; the championship word decides it). No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json build[id=scripted-outcomes]"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "turn.kwame",
+  "verdict": "pass",
+  "reason": "Quotes Dax's corridor line in rounds[4].pieces.dax word for word ('Two seasons, gone in one word'). No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "turn.apologies[0].reply",
+  "verdict": "pass",
+  "reason": "Question 640 is Theo's question in rounds[2].pieces.dax; 1,204 is in his tally (cast role: 212, 640, 1,204, 1,977). Internally consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "turn.apologies[2].text",
+  "verdict": "pass",
+  "reason": "The dock at the Far Shore is Case 3's lastChill; 'not my problem' is Dax's Case 3 secret. The Far Shore is the Strait's venue (trail.js). Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json",
+   "file:spellbound-app/trail-data.js + trail.js (acts, legName)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[0].taps[0]",
+  "verdict": "pass",
+  "reason": "Repeats Sage's Round II programme word for word. No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[0].taps[1]",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[0].taps[2]",
+  "verdict": "pass",
+  "reason": "Theo is the definitions speller (mockbee vtell 'asks for the definition every time'). No outside fact.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[0].reveal[0]",
+  "verdict": "pass",
+  "reason": "'A parrot can only say what it hears': parrots are vocal learners that imitate sounds they hear (Britannica, parrot; African gray parrot). So letters nobody pronounces would not reach the type. It holds as story logic, and the silent letters themselves were verified in cycle 1.",
+  "sources": [
+   "https://www.britannica.com/animal/parrot",
+   "https://www.britannica.com/animal/African-gray-parrot"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].clock",
+  "verdict": "pass",
+  "reason": "Round V is held at the Root Throne (trail.js roots legName; rounds[4].venue). No outside fact.",
+  "sources": [
+   "file:spellbound-app/trail-data.js + trail.js (acts, legName)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[1].taps[0]",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[1].taps[1]",
+  "verdict": "pass",
+  "reason": "Repeats Bolt's Round IV programme word for word.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[1].taps[2]",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[1].escalation",
+  "verdict": "pass",
+  "reason": "'Rocked back and forth' is Dax's mockbee tell ('rocks on his heels'). No outside fact.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[1].puzzle.brief",
+  "verdict": "pass",
+  "reason": "Every answer is built from Greek elements: acrophobia from akros + -phobia (coined in Italian in 1887 by Andrea Verga; M-W: borrowed from Italian acrofobia), onomatopoeia (onoma + poiein), chronology, xylophone (xylon + phōnē), symphony, hyphen, chorus (khoros), physics, microphone (mikros + phōnē), cylinder (kylindros). ph, ch and y are the Latin transliterations of φ, χ and υ. Classical Latin rendered οι as oe (Wikipedia, Romanization of Greek), so 'oe for oi' is right. 'A few more' covers xylophone's x said as z (Wikipedia, X: word-initial x is usually /z/, as in xylophone). This is cycle-1 fix 5, merged and re-verified.",
+  "sources": [
+   "https://www.etymonline.com/word/acrophobia",
+   "https://www.merriam-webster.com/dictionary/acrophobia",
+   "https://www.etymonline.com/word/onomatopoeia",
+   "https://en.wikipedia.org/wiki/Romanization_of_Greek",
+   "https://en.wikipedia.org/wiki/Latin_phonology_and_orthography",
+   "https://en.wikipedia.org/wiki/X",
+   "https://www.etymonline.com/word/xylophone",
+   "https://www.etymonline.com/word/microphone",
+   "https://www.etymonline.com/word/cylinder",
+   "https://www.etymonline.com/word/chorus"
+  ],
+  "method": "search",
+  "cycle1Fix": 5
+ },
+ {
+  "path": "cases[1].puzzle.items[3].clue",
+  "verdict": "pass",
+  "reason": "Britannica and the library: a percussion instrument of tuned wooden bars struck with small mallets or hammers. Etymonline dates xylophone to 1866, from Greek xylon 'wood' + phōnē 'sound', so 'its name means wood sound' is right. The added gloss also rules out marimba, which has the same library definition.",
+  "sources": [
+   "https://www.etymonline.com/word/xylophone",
+   "https://www.merriam-webster.com/dictionary/xylophone",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[3].word",
+  "verdict": "pass",
+  "reason": "xylophone is in the library (o Greek, y7), so this item has no origin conflict.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)",
+   "https://www.etymonline.com/word/xylophone"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[1].puzzle.items[3].greek",
+  "verdict": "pass",
+  "reason": "Etymonline: Greek xylon 'wood' + phōnē 'sound'. M-W glosses phōnē as 'voice, sound'.",
+  "sources": [
+   "https://www.etymonline.com/word/xylophone",
+   "https://www.merriam-webster.com/dictionary/xylophone"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[3].rule",
+  "verdict": "pass",
+  "reason": "x for z: Wikipedia (X) says word-initial x is usually /z/ (xylophone). y for upsilon and ph for phi are the Latin transliterations (Romanization of Greek).",
+  "sources": [
+   "https://en.wikipedia.org/wiki/X",
+   "https://en.wikipedia.org/wiki/Romanization_of_Greek"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[6].clue",
+  "verdict": "pass",
+  "reason": "Britannica: a Greek tragedy's chorus enters with the parodos, and its stasima are choral odes between the episodes, sung and danced (strophe and antistrophe, performed while moving). 'Sang and danced between the scenes' simplifies this, since the chorus also had an entrance and an exit song, but it is not false. Etymonline: the Latin chorus also meant 'the chorus of a tragedy'.",
+  "sources": [
+   "https://www.britannica.com/art/parodos",
+   "https://www.britannica.com/art/strophe",
+   "https://www.etymonline.com/word/chorus"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[8].clue",
+  "verdict": "pass",
+  "reason": "Accurate description of a microphone on a stand, and the clue excludes megaphone (held to the mouth). M-W: an instrument that turns sound waves into an electric current, usually to transmit, record or amplify sound.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/microphone"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[8].word",
+  "verdict": "pass",
+  "reason": "microphone is in the library (o Greek, y5); no origin conflict.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[1].puzzle.items[8].greek",
+  "verdict": "pass",
+  "reason": "Etymonline: from Greek mikros 'small' + phōnē 'sound'. It was first coined in the 1680s (Narcissus Marsh, M-W) for an ear trumpet; the electrical sense dates from 1878. The parts are as stated.",
+  "sources": [
+   "https://www.etymonline.com/word/microphone",
+   "https://www.merriam-webster.com/dictionary/microphone"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[8].rule",
+  "verdict": "pass",
+  "reason": "ph renders φ (phōnē). Correct.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Romanization_of_Greek"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[9].clue",
+  "verdict": "pass",
+  "reason": "A can is a cylinder, and the library defines cylinder as 'a solid bounded by a cylindrical surface and two parallel planes'.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[1].puzzle.items[9].word",
+  "verdict": "pass",
+  "reason": "cylinder is in the library, but the library's origin is 'Latin', so the case must show the authored origin. build[id=case-origins-authored] names cylinder and does this.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)",
+   "file:spellbound-app/circuit/script.json build[id=case-origins-authored]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[1].puzzle.items[9].greek",
+  "verdict": "pass",
+  "reason": "Etymonline: Latin cylindrus 'roller, cylinder', from Greek kylindros 'a cylinder, roller, roll', from kylindein 'to roll'. Wiktionary gives the same senses for κύλινδρος. 'A roller' is right.",
+  "sources": [
+   "https://www.etymonline.com/word/cylinder",
+   "https://www.merriam-webster.com/dictionary/cylinder",
+   "https://en.wiktionary.org/wiki/%CE%BA%CF%8D%CE%BB%CE%B9%CE%BD%CE%B4%CF%81%CE%BF%CF%82"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].puzzle.items[9].rule",
+  "verdict": "pass",
+  "reason": "y renders υ (kylindros). Correct. The c is Latin's k→c, which the rule doesn't need to name.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Romanization_of_Greek"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[1].reveal[2]",
+  "verdict": "pass",
+  "reason": "Dax's mockbee tell ('rocks on his heels'). No outside fact.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[1].reveal[3]",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[1].lastChill",
+  "verdict": "pass",
+  "reason": "Two keyholders matches Round V's clue (the Committee's ring and the runner's lanyard), and the broken lock matches reveal[0]. Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[2].safeLine",
+  "verdict": "pass",
+  "reason": "Matches cases[2].suspects[2].secret, reveal[2] and cast.hazel.role. No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[2].taps[0]",
+  "verdict": "pass",
+  "reason": "Quotes the Round V letter (rounds[4].pieces.above/below: 'I'm going to the Far Shore to fix…'). Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[2].taps[1]",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[2].taps[2]",
+  "verdict": "pass",
+  "reason": "Hazel's tell is 'rolls into a ball under pressure' (cast). No outside fact.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[2].suspects[2].secret",
+  "verdict": "pass",
+  "reason": "Consistent with safeLine and reveal[2]. No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[2].puzzle.card",
+  "verdict": "pass",
+  "reason": "All eight are in the library under these spellings, and the library's origin agrees with each home language. Direct donors re-checked: safari Swahili (Etymonline and M-W: Swahili, from Arabic). yogurt Turkish (M-W, Etymonline). samovar Russian, samo- 'self' + varit' 'boil' (M-W, Wiktionary). hummus Arabic ḥummuṣ (M-W, Etymonline). piano Italian, short for pianoforte (M-W). catamaran Tamil kaṭṭumaram (OED, Collins, Wiktionary). cafe French (M-W café; Etymonline). ballet French, from Italian balletto (M-W, Etymonline). M-W lists 'cafe' as a variant of café, so the spelling is correct English. S-T-R-A-I-T holds. Two risks: Etymonline gives catamaran's immediate source as 'Hindi or Malayalam', and piano's as 'French piano, Italian piano'. M-W's catamaran entry could not be retrieved, so the homeLanguageNote's 'Merriam-Webster' claim for catamaran is unverified. Both risks are handled in the answer choices (build row).",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/safaried",
+   "https://www.etymonline.com/word/safari",
+   "https://www.merriam-webster.com/dictionary/yogurt",
+   "https://www.etymonline.com/word/yogurt",
+   "https://www.merriam-webster.com/dictionary/samovar",
+   "https://en.wiktionary.org/wiki/samovar",
+   "https://www.merriam-webster.com/dictionary/hummus",
+   "https://www.etymonline.com/word/hummus",
+   "https://www.merriam-webster.com/dictionary/piano",
+   "https://www.etymonline.com/word/pianoforte",
+   "https://www.oed.com/dictionary/catamaran_n",
+   "https://www.collinsdictionary.com/dictionary/english/catamaran",
+   "https://en.wiktionary.org/wiki/catamaran",
+   "https://www.etymonline.com/word/catamaran",
+   "https://www.merriam-webster.com/dictionary/caf%C3%A9",
+   "https://www.merriam-webster.com/dictionary/ballet",
+   "https://www.etymonline.com/word/ballet",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[2].puzzle.items[6].word",
+  "verdict": "pass",
+  "reason": "cafe is the library's spelling (o French, y2); M-W lists cafe as a variant of café, first used 1802, from French. Correct.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)",
+   "https://www.merriam-webster.com/dictionary/caf%C3%A9"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[2].reveal[2]",
+  "verdict": "pass",
+  "reason": "Consistent with safeLine and the secret. No outside fact.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[3].taps[0]",
+  "verdict": "pass",
+  "reason": "Repeats Ratchet's Round VII programme ('borowed', 'evenchually').",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[3].taps[1]",
+  "verdict": "pass",
+  "reason": "Repeats Round VI's cliff (Suki seventh, Dax eighth).",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[3].taps[2]",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[3].puzzle.brief",
+  "verdict": "pass",
+  "reason": "M-W: triskaidekaphobia is New Latin, from Greek treiskaideka 'thirteen' (treis 'three' + kai 'and' + deka 'ten') + -phobia, first known use c.1909. Etymonline dates it 1908, and M-W's Word of the Day ties 1908 to Isador Coriat's book. 'Fear of the number thirteen' is right. 'Built properly', not 'is real', so the false rule is gone. This is cycle-1 fix 6, applied and re-verified.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/triskaidekaphobia",
+   "https://www.etymonline.com/word/triskaidekaphobia",
+   "https://www.merriam-webster.com/word-of-the-day/triskaidekaphobia-2019-10-13"
+  ],
+  "method": "search",
+  "cycle1Fix": 6
+ },
+ {
+  "path": "cases[3].reveal[5]",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[3].clue.text",
+  "verdict": "pass",
+  "reason": "Same text as rounds[6].pieces.clue2.text; the claim about V.'s notes is verified there (no misprint in any V. note).",
+  "sources": [
+   "file:spellbound-app/circuit/script.json",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[4].clock",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction. The times run 5:00 (impossible), 6:15 (escalation), 7:00 (clock), so the timeline holds.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[4].impossible",
+  "verdict": "pass",
+  "reason": "'The only key' refers to the main dressing-room door; the answer comes through the side door (suspects[3].secret, reveal[0]), so the narration is not contradicted.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[4].taps[0]",
+  "verdict": "pass",
+  "reason": "Same as impossible, the main door. Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[4].taps[1]",
+  "verdict": "pass",
+  "reason": "Plants the hosts' spare keys (Round VIII plant). Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[4].taps[2]",
+  "verdict": "pass",
+  "reason": "Duchess's tell is 'sits on high shelves' (cast). Consistent.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[4].escalation",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "cases[4].puzzle.items[2].why",
+  "verdict": "pass",
+  "reason": "M-W: a confidant is 'one to whom secrets are entrusted; especially: intimate' (a close friend); confident is the adjective, sure of oneself. 'A trusted friend' is right. It is her only wrong ending of three statements (absence, accessible, confidant).",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/confidant",
+   "https://www.merriam-webster.com/dictionary/confident"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "cases[4].puzzle.items[6].statement",
+  "verdict": "pass",
+  "reason": "'reliible' puts -ible where reliable takes -able, so the error fits the brief's -able/-ible check.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[4].puzzle.items[6].word",
+  "verdict": "pass",
+  "reason": "A deliberate misprint, not a word: it is in no library entry.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[4].puzzle.items[6].correct",
+  "verdict": "pass",
+  "reason": "reliable is in the library (y3, 'worthy of reliance or trust'). dependable was not, so the swap fixes the cycle-1 note.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "cases[4].reveal[2]",
+  "verdict": "pass",
+  "reason": "Matches items[2] (Vesper's one wrong line) and items[6–7] (Dash's two). Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "teamNight.beats.idea",
+  "verdict": "pass",
+  "reason": "Matches roster (captain comet, captainSpells false; lecternNote: the tiebreaker may go to anyone on the roster) and callerCategories (Steady beat: any word whose language nobody at the lectern owns). 'Each word goes to the speller who knows its language' simplifies the two non-language calls, but it is not false.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "teamNight.beats.ravenmere",
+  "verdict": "fix",
+  "reason": "The other facts match §4.2 and §8.1: Sloane never asks twice, Arjun names the origin first, Mei writes in the air. But 'spell in unison, a letter each' has the same contradiction as the cast tell: M-W gives 'in unison' as 'together, at the same time'.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/unison",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.2, §8.1"
+  ],
+  "method": "search",
+  "fix_text": "Ravenmere arrive in navy blazers and silver pins. Sloane, at the door: 'Circuit kids learn on a map. How sweet.' She never asks a question twice. The Lindqvist twins spell as a pair, a letter each. Arjun names the origin before the Pronouncer finishes. Mei writes every word in the air. Flawless, and certain."
+ },
+ {
+  "path": "teamNight.beats.callRules",
+  "verdict": "pass",
+  "reason": "The first language named is the direct donor, the same convention as Case 3. 'French, from Latin' is how dictionaries such as M-W give a chain, e.g. ballet 'borrowed from French … itself borrowed from Italian'. Consistent with rules[4] and build[id=team-night], and it says on screen how calls are graded.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/ballet",
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "search"
+ },
+ {
+  "path": "teamNight.beats.drama.8-10",
+  "verdict": "pass",
+  "reason": "Rafi (Latin) and Mira (Greek) are both at the 8–10 lectern (roster.lectern 8-10: koi, beaker, astro, panda; callerCategories). Under callRules, a Greek-first word makes Dax's Latin call wrong. Rafi's palm is his tell. Note: this differs from §8.1, where Dax calls Greek to Mira and the word is French; that change was the cycle-1 decision.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json",
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §8.1"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "teamNight.beats.drama.11-15",
+  "verdict": "pass",
+  "reason": "Kwame (Latin and Greek) and Ines (French) are both at the 11–15 lectern (melody, samurai, scopey, goldlegend). Under callRules, a French-first word makes Dax's Latin call wrong. Kwame's hands behind his back are his tell.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json",
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "teamNight.beats.levellingMiss",
+  "verdict": "pass",
+  "reason": "The second try is planted in callRules and rules[5]. 'Breathe out' is Suki's technique.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "teamNight.beats.daxPostcard",
+  "verdict": "pass",
+  "reason": "Echoes Round I's 'ask anyone' and Dax's captaincy. No outside fact.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "teamNight.beats.sting",
+  "verdict": "pass",
+  "reason": "Vale is the runner (cast) and 'left-handed', and the second hand is 'small and careful, in pencil' (season2Seeds[1]). Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "teamNight.beats.stingAfter",
+  "verdict": "pass",
+  "reason": "Story line; no factual claim beyond the season's own fiction.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "teamNight.ravenmereRoster[1].tell",
+  "verdict": "fix",
+  "reason": "Matches BEE-CIRCUIT.md §4.2 verbatim, and validate.cjs test 11 passes (the owner's cycle-1 decision). The wording itself contradicts itself: Merriam-Webster gives 'in unison' as 'together, at the same time', so two spellers cannot spell in unison and also take one letter each. In a spelling app this teaches the word wrongly. Fix needs §4.2 (and §8.1's beat) changed in the same commit; validate.cjs reads §4.2, so it stays green.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/unison",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.2",
+   "file:spellbound-app/tools/circuit/validate.cjs (FAIL 0, run 10 Oct 2026)"
+  ],
+  "method": "search",
+  "fix_text": "spell as a pair, one letter each"
+ },
+ {
+  "path": "teamNight.ravenmereRoster[2].tell",
+  "verdict": "fix",
+  "reason": "Matches BEE-CIRCUIT.md §4.2 verbatim, and validate.cjs test 11 passes (the owner's cycle-1 decision). The wording itself contradicts itself: Merriam-Webster gives 'in unison' as 'together, at the same time', so two spellers cannot spell in unison and also take one letter each. In a spelling app this teaches the word wrongly. Fix needs §4.2 (and §8.1's beat) changed in the same commit; validate.cjs reads §4.2, so it stays green.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/unison",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §4.2",
+   "file:spellbound-app/tools/circuit/validate.cjs (FAIL 0, run 10 Oct 2026)"
+  ],
+  "method": "search",
+  "fix_text": "spell as a pair, one letter each"
+ },
+ {
+  "path": "accusation.lookAgainBy.vesper",
+  "verdict": "pass",
+  "reason": "The night the list lied, the slanting left-hand fix was the runner's (rounds[2].pieces.clue.text). The violet pen was Vesper's gift (rounds[8].pieces.above/below: 'The violet pen was mine. Keep it.'), and the accusation opens after Round IX's mail. Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "accusation.closingLetter",
+  "verdict": "pass",
+  "reason": "Matches cast.vale (newest speller eight seasons ago, aged 8, placed last; now 16), rounds[1].pieces.suspense, and 'a Committee tradition'. Dax's V. notes are in turn.notes. Consistent.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "no claim"
+ },
+ {
+  "path": "hivePost.diary[1]",
+  "verdict": "pass",
+  "reason": "A level-up line that echoes Theo's tally. No claim about the child's play.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "hivePost.diary[3]",
+  "verdict": "pass",
+  "reason": "A level-up line that echoes Nova's tell (says the word twice). No claim about the child's play.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "hivePost.diary[4]",
+  "verdict": "pass",
+  "reason": "A level-up line that echoes Rafi's tell (palm). No claim about the child's play.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "hivePost.diary[7]",
+  "verdict": "pass",
+  "reason": "A level-up line that echoes Mira's tell (origin). No claim about the child's play.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "hivePost.diary[9]",
+  "verdict": "pass",
+  "reason": "A level-up line that echoes The Pronouncer's 'Say it back for me' and Round I's routine. No claim about the child's play.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "hivePost.beeFileIntro",
+  "verdict": "fix",
+  "reason": "§9 says missed words 'are added to the revision pile'. But today's Mock Bee recap does not add them on its own: mockbee.js mbAddMissed runs from a button ('Add missed words to revision', :1860), and the code calls it 'the child's own filing' (:1388). No build entry makes the Circuit's bee file auto-add, so 'Missed words go to your revision pile' would be false on today's code. Either add a build rule (auto-add per §9) or say what the button does.",
+  "sources": [
+   "file:spellbound-app/mockbee.js:1388-1396, :1860",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §9"
+  ],
+  "method": "app-data",
+  "fix_text": "The bee file: the Pronouncer's scouting report, for you and anyone you show it to. Every word you spelled in this round, the one that beat you, why it did, and the technique that would have caught it. One tap puts your missed words on your revision pile."
+ },
+ {
+  "path": "slotLines.weak.byFamily.noask",
+  "verdict": "pass",
+  "reason": "'noask' = a missed word with no Chair request (build[id=slots]). The clause is right.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.silent",
+  "verdict": "pass",
+  "reason": "app3 'silent' = initial pn/ps/pt/mn/gn/kn/wr/rh/x, final mb/mn/gn, gh, -stle/-sten/-ften (TRICK_LABELS 'Silent letters'). The clause is right.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.fr",
+  "verdict": "pass",
+  "reason": "app3 'fr' = eau/oux/oir/ille/-esque/-que/-gue/-ette and -et said 'ay' (TRICK_LABELS 'French patterns'), mostly endings. The clause is fair.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.gk",
+  "verdict": "pass",
+  "reason": "app3 'gk' = ph/rrh/chn/y between consonants, ch said k, ae/oe (TRICK_LABELS 'Greek patterns'). The clause is right.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.end",
+  "verdict": "pass",
+  "reason": "app3 'end' = -able/-ible, -ance/-ence/-ant/-ent, -ary/-ery/-ory, -cede/-ceed/-sede, -eous/-ious (TRICK_LABELS 'Sound-alike ending'). The clause is right.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.dbl",
+  "verdict": "pass",
+  "reason": "app3 'dbl' = doubled consonants (TRICK_LABELS 'Double letters'). The clause is right.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.vow",
+  "verdict": "fix",
+  "reason": "app3 'vow' is ie/ei order, ough/augh and three-vowel runs (TRICK_LABELS 'Tricky vowels'), not unstressed or schwa vowels. So 'the quiet vowels' misnames the error: a child who missed receive, thought or beautiful is told about quiet vowels.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data",
+  "fix_text": "You mix up vowel teams like ie and ei."
+ },
+ {
+  "path": "slotLines.weak.byFamily.hom",
+  "verdict": "pass",
+  "reason": "app3 'hom' = the word is in a homonym group (TRICK_LABELS 'Sound-alike word'). The clause is right.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byFamily.epon",
+  "verdict": "pass",
+  "reason": "app3 'epon' = tagged 'eponyms' (TRICK_LABELS 'Named after someone'). The tag includes gods and mythic figures; 'people' is close enough.",
+  "sources": [
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)",
+   "file:spellbound-app/circuit/script.json build[id=slots]"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "slotLines.weak.byRound.2",
+  "verdict": "fix",
+  "reason": "A fallback, printed only when the bee file shows no miss, or only 'plain' misses (build[id=slots]). It says, as a fact about the child, something the record does not show. That breaks build[id=no-placing] ('no line claims … a miss the hall log does not hold') and makes Round IV's card ('V. always knows your weak spot') untrue for that child. Saying it as advice keeps V.'s voice and is true of every child.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json build[id=slots], build[id=no-placing], rounds[3].pieces.clue"
+  ],
+  "method": "app-data",
+  "fix_text": "Ask. Don't guess."
+ },
+ {
+  "path": "slotLines.weak.byRound.5",
+  "verdict": "fix",
+  "reason": "A fallback, printed only when the bee file shows no miss, or only 'plain' misses (build[id=slots]). It says, as a fact about the child, something the record does not show. That breaks build[id=no-placing] ('no line claims … a miss the hall log does not hold') and makes Round IV's card ('V. always knows your weak spot') untrue for that child. Saying it as advice keeps V.'s voice and is true of every child.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json build[id=slots], build[id=no-placing], rounds[3].pieces.clue"
+  ],
+  "method": "app-data",
+  "fix_text": "Never skip the suffix."
+ },
+ {
+  "path": "visitors[0].card",
+  "verdict": "fix",
+  "reason": "Cycle-1 fix 7 is right about the king: Mercator's Praefatio in Atlantem names Atlas, a mythical king of Mauretania, a philosopher, mathematician and astronomer credited with the first globe (Wikipedia, Gerardus Mercator and Atlas (mythology); Crouch). Re-checking it found a new error: 'In 1595 Gerardus Mercator named his book' cannot be right, because Mercator died on 2 December 1594 in Duisburg (Britannica, Wikipedia). His son Rumold published the Atlas in 1595, after his death (LoC catalogue: 'left unfinished by the author … edited and published by his son, Rumold Mercator, in 1595'). Mercator chose the name; the book came out after he died. Wikipedia (Atlas): the word came to mean a collection of maps by the mid-17th century, which 'came to mean' covers. App-data note: eponyms-master.json's atlas story still says 'Mercator put a picture of Atlas holding up the world on the front … in 1595'. That is the claim cycle 1 corrected, so keep it off the Visitors' Book.",
+  "sources": [
+   "https://www.britannica.com/biography/Gerardus-Mercator",
+   "https://en.wikipedia.org/wiki/Gerardus_Mercator",
+   "https://www.loc.gov/item/map55000728/",
+   "https://en.wikipedia.org/wiki/Rumold_Mercator",
+   "https://en.wikipedia.org/wiki/Atlas_(mythology)",
+   "https://crouchrarebooks.com/product/atlas/the-first-atlas/",
+   "https://en.wikipedia.org/wiki/Atlas",
+   "file:spellbound-app/eponyms/eponyms-master.json"
+  ],
+  "method": "search",
+  "fix_text": "To the ancient Greeks, Atlas was a Titan who held up the sky. Later tellings made him a wise king of Mauretania who studied the stars. Gerardus Mercator named his book of maps Atlas in that king's honour. It came out in 1595, the year after he died, and the word came to mean any book of maps.",
+  "cycle1Fix": 7
+ },
+ {
+  "path": "visitors[5].word",
+  "verdict": "pass",
+  "reason": "tantalize is in the served library (y7, tagged eponyms) and in eponyms-master.json (e 'Tantalize'); 'tantalise' is in neither. So the §10 stop match can now find it. Note: BEE-CIRCUIT.md §10 still lists 'Tantalus → tantalise'; bring the brief into line. This is cycle-1 fix 8.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)",
+   "file:spellbound-app/eponyms/eponyms-master.json",
+   "https://www.etymonline.com/word/tantalize",
+   "file:spellbound-app/circuit/BEE-CIRCUIT.md §10"
+  ],
+  "method": "app-data",
+  "cycle1Fix": 8
+ },
+ {
+  "path": "visitors[5].card",
+  "verdict": "pass",
+  "reason": "Odyssey 11: the water was 'swallowed up and vanished away' whenever he stooped to drink (Theoi/Murray). Britannica: fruit hung above him 'that the wind kept out of reach'. Britannica: Tantalus was king of Sipylus in Lydia (or of Phrygia), so 'a king' is right. M-W: tantalize means 'to tease or torment by … presenting something desirable to the view but continually keeping it out of reach', from Tantalus (also Etymonline). Framed as what the ancient Greeks told. This is cycle-1 fix 9, applied.",
+  "sources": [
+   "https://www.theoi.com/Text/HomerOdyssey11.html",
+   "https://www.britannica.com/topic/Tantalus",
+   "https://www.merriam-webster.com/dictionary/tantalizes",
+   "https://www.etymonline.com/word/tantalize",
+   "https://www.merriam-webster.com/wordplay/words-from-the-odyssey"
+  ],
+  "method": "search",
+  "cycle1Fix": 9
+ },
+ {
+  "path": "visitors[6].card",
+  "verdict": "pass",
+  "reason": "Britannica and Theoi: Hypnos, the Greek god (personified spirit) of sleep. Etymonline: Braid coined neuro-hypnotism (1842) and hypnotism (1843) from Greek hypnos 'sleep'. Wikipedia: the hypn- terms were coined around 1820 by d'Hénin de Cuvillers and popularised by Braid; 'made the word popular' fits both. Braid was a Scottish surgeon, and Neurypnology (1843) called it 'nervous sleep'; he later conceded the term misled (Wikipedia). Britannica: hypnosis resembles sleep 'only superficially', so 'It isn't' is right. 'Hypnosis followed': Etymonline dates hypnosis to 1850 (coined as an alternative to hypnotism), M-W to 1876, both after hypnotism. This is cycle-1 fix 10, applied.",
+  "sources": [
+   "https://www.britannica.com/topic/Hypnos",
+   "https://www.theoi.com/Daimon/Hypnos.html",
+   "https://www.etymonline.com/word/hypnotism",
+   "https://www.etymonline.com/word/hypnosis",
+   "https://www.merriam-webster.com/dictionary/hypnosis",
+   "https://www.britannica.com/science/hypnosis",
+   "https://en.wikipedia.org/wiki/James_Braid_(surgeon)"
+  ],
+  "method": "search",
+  "cycle1Fix": 10
+ },
+ {
+  "path": "visitors[12].card",
+  "verdict": "pass",
+  "reason": "Britannica: Vulcan, Roman god of fire and metalworking (the forge). Etymonline: English volcano (1610s) from Italian vulcano 'burning mountain', from Latin Vulcanus. M-W: Italian vulcano from Spanish volcán, ultimately from Latin Volcanus; M-W's volcan entry routes the Spanish through Portuguese volcão. Either way the Italian and Spanish words come from his name, and the card does not pick a route. This is cycle-1 fix 11, applied.",
+  "sources": [
+   "https://www.britannica.com/topic/Vulcan",
+   "https://www.etymonline.com/word/volcano",
+   "https://www.merriam-webster.com/dictionary/volcanoes",
+   "https://www.merriam-webster.com/dictionary/volcan"
+  ],
+  "method": "search",
+  "cycle1Fix": 11
+ },
+ {
+  "path": "visitors[19].card",
+  "verdict": "pass",
+  "reason": "Britannica: Frigg, Odin's wife; the Prose Edda ranks her highest of the Asynjur (Britannica Asynjur). Etymonline: 'queen of heaven'. M-W: Old English frīgedæg, from Frīg + dæg, a translation of Latin dies Veneris. Etymonline: Freya corresponds more closely to Venus. Wikipedia: whether Frigg and Freyja share a common origin is still debated. Every clause checks. This is cycle-1 fix 12, applied.",
+  "sources": [
+   "https://www.britannica.com/topic/Frigg-Norse-mythology",
+   "https://kids.britannica.com/students/article/Asynjur/309971",
+   "https://www.etymonline.com/word/Frigg",
+   "https://www.etymonline.com/word/Friday",
+   "https://www.merriam-webster.com/dictionary/Friday",
+   "https://en.wikipedia.org/wiki/Frigg_and_Freyja_common_origin_hypothesis"
+  ],
+  "method": "search",
+  "cycle1Fix": 12
+ },
+ {
+  "path": "visitors[20].sources[0].ref",
+  "verdict": "pass",
+  "reason": "Author-facing citation, re-checked. Word Histories prints the Cocoa Tree passage under 14 November 1762 from the 1841 edition, and Grammarphobia gives the OED citation as 14 Nov 1762. The Oxford Companion to Food (via ckbk) and PBS give 24 November. The ref now gives both. This is cycle-1 fix 13, applied.",
+  "sources": [
+   "https://wordhistories.net/2017/03/23/sandwich/",
+   "https://grammarphobia.com/blog/2013/11/sandwich.html",
+   "https://app.ckbk.com/reference/food77337c19s001e066"
+  ],
+  "method": "search",
+  "cycle1Fix": 13,
+  "related": true
+ },
+ {
+  "path": "build[id=case-origins-authored]",
+  "verdict": "fix",
+  "reason": "Library facts check: hyphen 'English', chorus 'Latin', echo 'Latin', psychology 'French', rhythm 'Latin', phantom 'French' and cylinder 'Latin' are all non-Greek in SB_DATA. Two corrections. (1) Case 2 no longer contains echo, psychology or rhythm. Its non-Greek-in-library items are now three (hyphen, chorus, cylinder), so the test's 'five items read non-Greek' is stale. (2) The Case 3 list of earlier sources to keep out of the choices is incomplete. cafe: M-W says café is from French, from Turkish kahve, and coffee is Italian/Turkish from Arabic qahwa (Etymonline coffee: Arabic qahwah), so Arabic is an earlier source. Arabic is also one of the case's own answers (hummus), so it will be on screen. ballet: Italian balletto, from ballare, Latin ballare (M-W), and Etymonline adds Greek ballizein. piano: M-W says Italian, short for pianoforte, from Latin planus, and Etymonline gives 'French piano (18c.), Italian piano' as its source; French is the case's answer for two words. catamaran: Etymonline gives 'from Hindi or Malayalam, from Tamil', while OED, Collins and Wiktionary give Tamil.",
+  "sources": [
+   "https://www.merriam-webster.com/dictionary/caf%C3%A9",
+   "https://www.etymonline.com/word/coffee",
+   "https://www.merriam-webster.com/dictionary/coffees?pronunciation=&lang=en_us&dir=h&file=hector01",
+   "https://www.merriam-webster.com/dictionary/ballet",
+   "https://www.etymonline.com/word/ballet",
+   "https://www.merriam-webster.com/dictionary/piano",
+   "https://www.etymonline.com/word/pianoforte",
+   "https://www.etymonline.com/word/catamaran",
+   "https://www.oed.com/dictionary/catamaran_n",
+   "https://www.collinsdictionary.com/dictionary/english/catamaran",
+   "https://en.wiktionary.org/wiki/catamaran",
+   "https://www.etymonline.com/word/safari",
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)"
+  ],
+  "method": "search",
+  "fix_text": "The cases show the AUTHORED origin, never the library's o field: Case 2's hints and reveal print each item's greek field (the library gives three of its items, hyphen, chorus and cylinder, a non-Greek origin, as it does phantom, and is not edited for this); Case 4 prints its authored parts; Mira's Ask hint on a case reads the case's field. Case 3 grades the direct donor (the language English borrowed each word from); the answer choices for an item never offer that item's earlier source or a donor another dictionary gives instead (safari: no Arabic; cafe: no Italian, Turkish or Arabic; ballet: no Italian, Latin or Greek; piano: no French or Latin; catamaran: no Hindi or Malayalam), and the Ask Ines hint gives the direct donor. TEST: Open every Case 2 item's origin hint and reveal: the text equals the item's greek field, and 'Latin', 'French' or 'English' never appears as its origin. Case 3: no item's choices include a language listed above for it. Proved by breaking: point the hint at the library's o and three items (hyphen, chorus, cylinder) read non-Greek."
+ },
+ {
+  "path": "build[id=team-night]",
+  "verdict": "pass",
+  "reason": "Consistent with callRules, rules[4] and both drama beats. Rafi/Mira are at the 8–10 lectern and Kwame/Ines at 11–15 (roster.lectern), and every grading claim matches the on-screen rule.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "build[id=slots]",
+  "verdict": "pass",
+  "reason": "Code claims check. mockbee record() pushes {w, ok, typed, kind, asks} to g.mine for the profile child only (mockbee.js:905–908), so sum(asks.length) and 'ok false' are readable. app3 trickAnal(w).cls returns one of epon, silent, fr, gk, end, dbl, vow, hom or plain (app3.js:210–235), and spellDiff exists (app3.js). The family list is right.",
+  "sources": [
+   "file:spellbound-app/mockbee.js:905-908",
+   "file:spellbound-app/app3.js (trickAnal, TRICK_LABELS, spellDiff)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "build[id=hall-fields]",
+  "verdict": "pass",
+  "reason": "'The band's mockbee field' matches BANDS (6–7 pixel, koi, beaker, panda; 8–10 + comet, astro; 11–15 beaker … goldlegend). Every per-round list is that field plus the round's headliners and alsoSeated, with goldlegend removed from 11–15 in Rounds I–VIII. Checked all 27 lists.",
+  "sources": [
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)",
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "build[id=scripted-outcomes]",
+  "verdict": "pass",
+  "reason": "reconnaissance has a double s (one-s miss possible) and is French in the library (o French, y7), which fits Kwame's French weakness. Round one forgives in mockbee ('Round one takes nobody', mockbee.js:210). The Chair has six requests. Facts check; the outcomes themselves are build requirements.",
+  "sources": [
+   "file:spellbound-app/words-data.js + words-data-2.js (SB_DATA.nsf, 53,511 words)",
+   "file:spellbound-app/mockbee.js (BOTS, BANDS, CHAIR)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "build[id=case2-spelling-engine]",
+  "verdict": "pass",
+  "reason": "The Spelling Gym's Warm-up exists ('Ten words. No clock. Hints on hand.', gym.js:39). Word Lore Origins' promise is 'Name its language, then spell it.' (lore.js:33). So Origins does have a spelling stage, but it opens on a language pick graded on the library's o, which is the conflict this entry avoids. The claim holds.",
+  "sources": [
+   "file:spellbound-app/gym.js:39",
+   "file:spellbound-app/lore.js:33,198"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "build[id=clue-cards-ride-mail]",
+  "verdict": "pass",
+  "reason": "validate.cjs runs clean (FAIL 0) on the current script, and rounds[6].pieces.clue2 exists with Ratchet's card.",
+  "sources": [
+   "file:spellbound-app/tools/circuit/validate.cjs (FAIL 0, run 10 Oct 2026)"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "build[id=no-placing]",
+  "verdict": "pass",
+  "reason": "The rule is sound. Two slot fallbacks break it; see the slotLines.weak.byRound fixes.",
+  "sources": [
+   "file:spellbound-app/circuit/script.json"
+  ],
+  "method": "app-data"
+ },
+ {
+  "path": "build[id=story-order]",
+  "verdict": "pass",
+  "reason": "Build requirement about order, rendering or drawing; no factual claim to source.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "build[id=case-scenes]",
+  "verdict": "pass",
+  "reason": "Build requirement about order, rendering or drawing; no factual claim to source.",
+  "sources": [],
+  "method": "no claim"
+ },
+ {
+  "path": "build[id=signoff-upright]",
+  "verdict": "pass",
+  "reason": "Build requirement about order, rendering or drawing; no factual claim to source.",
+  "sources": [],
+  "method": "no claim"
+ }
+]

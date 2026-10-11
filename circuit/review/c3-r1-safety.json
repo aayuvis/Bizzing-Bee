@@ -1,0 +1,223 @@
+[
+ {
+  "path": "cast.ash.tell",
+  "verdict": "pass",
+  "reason": "'Spell as a pair, one letter each' describes how the twins play. It says nothing about twins as a type and mocks nobody."
+ },
+ {
+  "path": "cast.aria.tell",
+  "verdict": "pass",
+  "reason": "The same neutral tell as Ash's."
+ },
+ {
+  "path": "rounds[0].pieces.above",
+  "verdict": "pass",
+  "reason": "Nova (9) congratulates the child and passes on her nan's rule. 'Now wait for the whole word, every time' is advice and does not hint that the child failed. Warm. 'My nan's rule' assumes nothing about the child's family; it is Nova's own family."
+ },
+ {
+  "path": "rounds[1].pieces.prog",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 5, applied word for word. The joke is now about who runs the press, not how a person learned English. Nobody's accent, language or schooling is the joke. cases[0].taps[0] quotes the line exactly."
+ },
+ {
+  "path": "rounds[1].pieces.drama",
+  "verdict": "pass",
+  "reason": "'With seconds left on the clock' changes timing only. The sleeping speller is unnamed and is not mocked, and Theo's method is shown as winning."
+ },
+ {
+  "path": "rounds[4].pieces.below",
+  "verdict": "pass",
+  "reason": "Kwame writes to a child who went out before him: 'you'll have me next time' is encouragement, and 'have me' (beat me) is a sports idiom, not a violent one. A 14-year-old naming his own weakness right after cracking in public models owning a miss without shame. 'I'm going to the Far Shore to fix it' plants Case 3, and Case 3's safeLine covers it (adults know)."
+ },
+ {
+  "path": "rounds[4].pieces.pipWord.real",
+  "verdict": "pass",
+  "reason": "A neutral meaning, 'calm; not easily upset or flustered'. Pip's loyal coda still reads kindly in the round where Kwame is upset, and the softer 'not easily' no longer sets an impossible standard for Kwame."
+ },
+ {
+  "path": "rounds[5].pieces.above",
+  "verdict": "pass",
+  "reason": "Rival advice, reworded so the letter no longer reports what the child did. Gracious in defeat ('You beat me today') and ends on a technique. The French is correct and lends Ines respect, not colour."
+ },
+ {
+  "path": "rounds[6].pieces.above",
+  "verdict": "pass",
+  "reason": "Suki shares her calming habit, breathing out first. That is safe for a child to copy: a breathing cue, not a dare or a stunt. 'You beat me today, so now you know my trick' reads as a gift to the winner. It is warm, with no edge."
+ },
+ {
+  "path": "rounds[7].pieces.inv",
+  "verdict": "pass",
+  "reason": "Weighed. The Committee's formal-warning sentence now follows Dax's name, so a reader can link the two. That is not a new exposure. Case 4 read the warning aloud at the gate, and rounds[7].pieces.dax in the same mail says 'Under observation, he doesn't whisper a single tip.' L4 requires the wrong to have a visible consequence. 'Fastest in round one' is Dax's own speciality, in the same 'Seated: name, what they do' form every invitation uses (Pip 'starts before the word is finished', Suki 'whom the lights do nothing to'). It is not an adult's dig at a child. The warning itself stays general, never 'Dax was warned for…', which keeps the Committee's discretion."
+ },
+ {
+  "path": "rounds[7].pieces.above",
+  "verdict": "pass",
+  "reason": "The best of the five reworded letters. Dax names what he is learning ('Fast isn't everything; I'm learning that') and apologises by name. The reform is earned on screen (L4), and nothing reports what the child did."
+ },
+ {
+  "path": "rounds[8].pieces.laugh",
+  "verdict": "pass",
+  "reason": "Pip laughs at himself about his own fear of thunder (Round IV). Nobody on screen laughs at him, and the fear is treated as ordinary. The blackout is a light-suspense beat in a full hall with the Pronouncer present, so the fear stays well inside a light mystery."
+ },
+ {
+  "path": "rounds[8].pieces.above",
+  "verdict": "pass",
+  "reason": "Vesper (15) admits asking felt weak and that the Circuit showed her otherwise, which models asking for help. 'Annoying. Then useful' is affectionate, and the pen is a gift."
+ },
+ {
+  "path": "rounds[8].pieces.below",
+  "verdict": "pass",
+  "reason": "This is the child's losing letter. Vesper credits asking for her win and gives away the pen. 'You were writing in pencil; it was painful to watch' is teasing about a pencil, not about the miss or the child's worth, and the gift that follows takes the sting out. It is from the brief (§5C). Nobody is shamed for going out."
+ },
+ {
+  "path": "rounds[8].pieces.v",
+  "verdict": "pass",
+  "reason": "Advice plus the riddle. It asks nothing secret of the child and is not addressed in a private register. V.'s notes are a Committee tradition the adults approve (amendment 1)."
+ },
+ {
+  "path": "rounds[8].pieces.dax",
+  "verdict": "pass",
+  "reason": "Dax asks for help for the first time, in public. Theo's reply ('Your first. I'm on 1,977.') is friendly ribbing between teammates-to-be, not a put-down. The question earns the reform on screen (L4)."
+ },
+ {
+  "path": "cases[0].lateLine",
+  "verdict": "pass",
+  "reason": "A dated title for a late case. 'Lied' describes the misprinted list, as Round II's V. note already does. Nothing frightening."
+ },
+ {
+  "path": "cases[0].taps[0]",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 5, applied. It matches rounds[1].pieces.prog word for word, so the tap quotes it truly. The parrot is still at the press, with the perch and the feather. Nobody's English is the joke."
+ },
+ {
+  "path": "cases[1].lateLine",
+  "verdict": "pass",
+  "reason": "A dated title for a late case. A missing bell is a light mystery."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].clue",
+  "verdict": "pass",
+  "reason": "A plain definition. Shouting through a cone in a field is ordinary play and not unsafe to copy."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].word",
+  "verdict": "pass",
+  "reason": "megaphone: a kid-safe word."
+ },
+ {
+  "path": "cases[1].puzzle.items[8].greek",
+  "verdict": "pass",
+  "reason": "An etymology line with no safety content."
+ },
+ {
+  "path": "cases[2].lateLine",
+  "verdict": "pass",
+  "reason": "Weighed. 'Walked out' about a 14-year-old could alarm a child on its own. It shows only when Case 3 is opened after Round VI's mail, and Round VI's invitation has already said 'Kwame, who has come back', so the child knows he is safe. Condition: after the lateLine, the safeLine stays the first line of the case itself, before the empty room (amendment 2; see the build:case-scenes row)."
+ },
+ {
+  "path": "cases[2].reveal[2]",
+  "verdict": "pass",
+  "reason": "This keeps my cycle-1 point that the adults knew all along, and makes it truer: the team had been told he was safe, but not where he was. Hazel told a grown-up at once, which is the behaviour a child should copy. The only secret kept from the team is where Kwame went, and Kwame himself chose to keep it."
+ },
+ {
+  "path": "cases[3].lateLine",
+  "verdict": "pass",
+  "reason": "A dated title. 'The rumour broke' names the wrong without naming a child."
+ },
+ {
+  "path": "cases[3].suspects[1].secret",
+  "verdict": "pass",
+  "reason": "A kind secret: Mira is unsure of one small part and hides it. build[id=case-scenes] now renders it in the reveal. Condition: the reveal should state it as ordinary uncertainty (as the line itself does), never as Mira being caught out. The reveal's 'Every part is Greek, and every part means what it should' already does this."
+ },
+ {
+  "path": "cases[4].lateLine",
+  "verdict": "pass",
+  "reason": "A dated title. Nothing frightening."
+ },
+ {
+  "path": "cases[4].puzzle.brief",
+  "verdict": "pass",
+  "reason": "'Is untrue' replaces 'is a lie', the residue named in c2-r1-safety.md. It now matches the why on Vesper's line, where her one untrue statement is about her own nerves and is forgiven. Nobody, adult or child, is called a liar in the puzzle's frame."
+ },
+ {
+  "path": "teamNight.beats.ravenmere",
+  "verdict": "pass",
+  "reason": "Ravenmere condescends without cruelty. Sloane's 'How sweet' is answered on screen when the Circuit wins and she has to learn how to lose ('So is losing, apparently'). No nationality or class is played for colour. Arjun's and Mei's beats are skill only, and the camp's unkind line is Sloane's alone (ownerQuestions[id=ravenmere-names], where my cycle-2 view is recorded)."
+ },
+ {
+  "path": "teamNight.beats.callRules",
+  "verdict": "pass",
+  "reason": "Rules, said openly by the Pronouncer to everyone. No safety content."
+ },
+ {
+  "path": "teamNight.beats.levellingMiss",
+  "verdict": "pass",
+  "reason": "Better than cycle 2. The reformed captain steadies the child after a miss with 'Ask anything you need', and the line no longer says what the child did. 'This time it ends right' is true even when the escalating help shows the answer, so nobody is shamed for the slip."
+ },
+ {
+  "path": "teamNight.beats.sting",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 3, applied word for word: 'while the Committee clears the Grand Marquee'. Grown-ups are in the room, the child is never alone at night with an adult, and the Pronouncer and Vale are beside the child when the note arrives. A note in an unknown hand is a light mystery, and it arrives held together with stingAfter's reassurance (build[id=story-order].holds). validate.cjs check 21 keeps the Committee in the line."
+ },
+ {
+  "path": "teamNight.beats.stingAfter",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 4, applied word for word. It points the child to any trusted grown-up, not one man, says 'in the open', and assumes no family shape. It does not use 'ask a grown-up' (T3). validate.cjs check 21 holds it."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[1].tell",
+  "verdict": "pass",
+  "reason": "The same as cast.ash.tell."
+ },
+ {
+  "path": "teamNight.ravenmereRoster[2].tell",
+  "verdict": "pass",
+  "reason": "The same as cast.aria.tell."
+ },
+ {
+  "path": "hivePost.beeFileIntro",
+  "verdict": "pass",
+  "reason": "'If one beat you' no longer assumes a miss, so a child who won is not handed a defeat. 'For you and anyone you show it to' keeps the report open to the child's grown-ups. 'One tap' is a choice the child makes, never a forced filing."
+ },
+ {
+  "path": "slotLines.weak.byFamily.vow",
+  "verdict": "pass",
+  "reason": "It names a habit, never a trait, and it prints only when the child's misses fall in that family, so it is never untrue. Read in both carriers it is brisk, not cruel. Round II: 'You mix up vowel teams: ie or ei, ough or augh, and three vowels in a row. Tonight the list will lie to you. Read it twice. — V.' Round V: 'Parts first, then the whole. You mix up vowel teams: … And when a strong one breaks, the loud one gets louder. Watch. — V.' Both are well under 60 words."
+ },
+ {
+  "path": "slotLines.weak.byRound.2",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 1, merged and improved: 'No weak spot yet. Still, ask before you spell.' A child who asked on every miss, or has no miss, is no longer told off. 'Still' keeps it advice, never a rebuke. Rendered: 'No weak spot yet. Still, ask before you spell. Tonight the list will lie to you. Read it twice. — V.' It is kind for every child who can receive it."
+ },
+ {
+  "path": "slotLines.weak.byRound.5",
+  "verdict": "pass",
+  "reason": "This is my cycle-2 fix 2, word for word. Rendered: 'Parts first, then the whole. No weak spot yet. Never skip the suffix. And when a strong one breaks, the loud one gets louder. Watch. — V.' It is kind and true."
+ },
+ {
+  "path": "visitors[0].card",
+  "verdict": "pass",
+  "reason": "A classical figure framed historically (amendment 4): 'To the ancient Greeks…'. It has no comedy, no speaking role, and never uses 'myth' to mean 'false'. Mercator's death is stated plainly as a date, with nothing grim. Atlas is not a deity of living faith (D9)."
+ },
+ {
+  "path": "build:story-order",
+  "verdict": "pass",
+  "reason": "The hold keeps sting and stingAfter together, so the note in an unknown hand never arrives without the Pronouncer's 'any grown-up you trust'. Condition: they arrive as one delivery, with stingAfter immediately after sting, never split across two mails."
+ },
+ {
+  "path": "build:case-scenes",
+  "verdict": "fix",
+  "reason": "The cycle-1 safety condition ('Case 3's safeLine … is its first rendered line') now conflicts with build[id=story-order]: a case opened late 'opens with its lateLine'. A builder who meets both tests on a late Case 3 must break one. The easy way to make them pass is to move or drop the safeLine, which is the line amendment 2 depends on. The fix keeps the safety intent and makes the two rules agree. A late Case 3 is safe to open with 'The day Kwame walked out.', because Round VI's invitation has already said he came back.",
+  "fix_text": "In rule and test, replace 'Case 3's safeLine states it first, before the empty room' / 'Case 3's safeLine, which is its first rendered line' with: 'Case 3's safeLine is the first line of the case after its lateLine (when a late case shows one), and always before the impossible and the taps.' Add to the test: open Case 3 late and on time; in both, the safeLine renders before the impossible."
+ },
+ {
+  "path": "build:no-placing, build:slots, build:scripted-outcomes, build:team-night, build:signoff-upright, build:hall-fields",
+  "verdict": "pass",
+  "reason": "These are the build changes made this cycle, read for safety. The slots no longer rank plain misses, and {weak} fallbacks are advice, so no child is rebuked for asking. No line may report what the child did. The second try's help comes from teammates and then the answer, so nobody is left on a miss. The sting note is small upright pencil, unlike V.'s hand. Round IX shows a visible audience in every band, so the blackout is never a near-empty hall. None of these adds a safety risk."
+ },
+ {
+  "path": "ownerQuestions (changed this cycle)",
+  "verdict": "pass",
+  "reason": "My cycle-2 views are recorded accurately on ravenmere-names, suspect-board-dax, mockbee-faces and second-hand. That includes the new condition that a resolution never asks the child to keep notes from their own grown-ups. twins-tell, app-data-outside-script, accuracy-reverify and the resolved round9-unseated-lines carry no safety question. Still open for the owner: re-facing Suki in Mock Bee (mockbee-faces), and holding Season 2 to both second-hand conditions."
+ }
+]
