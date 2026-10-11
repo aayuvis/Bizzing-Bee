@@ -352,7 +352,10 @@
     if (g.mode === 'ladder') return g.rung >= 4 ? g.rung : 0;
     /* the clock has no fixed length, so a lucky early run must not count: while it runs, coins wait for 15
        answers at 60%; when time is up, 6 right at 60% is enough (a slow reader is not a guesser) */
-    if (g.mode === 'clock') { const acc = g.asked ? g.right / g.asked : 0; if (acc < 0.6) return 0;
+    /* the 60% is of EVERY answer given, comebacks included: only a first try can be right, but a comeback is still
+       an answer, so a guesser who spends the minute on comebacks cannot reach 60% on a handful of lucky first tries
+       (10 Oct 2026: games-bots T1 — the random bot took 6 coins from 6 lucky first tries among 107 answers) */
+    if (g.mode === 'clock') { const tries = g.asked + (g.log || []).filter((x) => x && x.again).length, acc = tries ? g.right / tries : 0; if (acc < 0.6) return 0;
       return (g.phase === 'done' ? g.right >= 6 : g.asked >= 15) ? g.right : 0; }
     return g.right >= 6 ? g.right : 0; }
   function settle(g) { let k = owed(g) - g.paid; while (k-- > 0) { g.paid++; try { payG(g); } catch (e) {} } }
