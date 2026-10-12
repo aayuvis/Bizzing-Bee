@@ -5,15 +5,16 @@ exactly what this batch moved, and sets out the plan for the rest: app3.js split
 taken off the first screen. The next step can work straight from it. The ratchet that holds the gains is
 `tests/first-load.cjs`. The app3 numbers come from `node tools/app3-split-map.cjs`, a read-only analysis.
 
-## Outcome (10 Oct 2026): steps 1 and 2 landed; step 3 next
+## Outcome (10 Oct 2026): done — 369 KB of JavaScript on both first screens
 
-The steps below land in order, each committed on its own (CLAUDE.md "Road to 4.5, P1 — the boot word tier is lazy" and
-"Road to 4.5, P1 — the app3 split" carry the rules); `tests/first-load.cjs` ratchets after each.
+The three steps below landed in order, each committed on its own (CLAUDE.md "Road to 4.5, P1 — the boot word tier is
+lazy" and "Road to 4.5, P1 — the app3 split" carry the rules). `tests/first-load.cjs` now holds **400 KB as a hard line
+for both screens** beside its ratchet.
 
-| | before | step 1 | step 2 |
-|---|---:|---:|---:|
-| new visitor, JS gz / total | 905 / 1184 | 554 / 833 | 411 / 691 |
-| returning speller, JS gz / total | 980 / 1276 | 629 / 909 | 487 / 782 |
+| | before | step 1 | step 2 | step 3 |
+|---|---:|---:|---:|---:|
+| new visitor, JS gz / total | 905 / 1184 | 554 / 833 | 411 / 691 | **369** / 649 |
+| returning speller, JS gz / total | 980 / 1276 | 629 / 909 | 487 / 782 | **369** / 665 |
 
 **Where the code disagreed with this plan, and what was done instead:**
 - *Step 1, "words1 fetched at DOMContentLoaded on Home (like FIRST)".* That is inside the measured window (everything
@@ -34,12 +35,22 @@ The steps below land in order, each committed on its own (CLAUDE.md "Road to 4.5
   it); it is pinned off. `words-data.js` keeps its `window.SB_DATA={…}` form — boot-lazy makes SB_DATA one object that
   an assignment merges into — because five tools rewrite that file in that form.
 - *Step 2, "unreached (audit before moving)".* A node nothing reaches stays in app3.js, and so does everything it names
-  (iterated) — otherwise app3 would name a lazy file's code. Shared came to 8 KB, not 23.
+  (iterated) — otherwise app3 would name a lazy file's code. Shared came to ~11 KB gz. app3.js went 307 → 165 KB gz
+  (minified); the seven lazy files are ~157 KB gz between them.
 - *Step 2, the pop-ups.* overlays() reaches its lazy pop-ups through `scrDraw(group, () => viewX())` behind their flags
   (two moved their flag check out to the call site); a bare function argument would be read before the file exists.
 - *Step 2, not in the plan:* an engine whose host view moved to a lazy file must not land before it. gym.js's `open()`
   starts a round as soon as its group is in and its keys reach only DOM on the page, so the `gym` group carries
   `scrShared` + `scrGames` (spelling-gym T3 caught a lost Enter; screens-lazy §3 holds it).
+- *Not in the plan, found by the suite:* more doors fetch more files at once after the split, and a door of a dozen
+  scripts froze Chromium mid-frame one run in four (its script-streaming parse starved a three-worker pool). boot-lazy
+  now keeps at most two scripts in flight, in order (`addScript`).
+- *Step 3, "keep FIRST, on the idle queue".* `trail` was already on the idle queue; FIRST is deleted, and boot-lazy gives
+  every first screen one render at DOMContentLoaded (Home used to get it from FIRST — worlds4's late worlds need it).
+- *Step 3, "the Home half … into a small boot file".* The frontier arithmetic is ONE copy, `SB_TRAIL_FRONT(T)` in
+  trail-home.js, which trail.js builds its helpers from; `SB_TRAIL_STOPS` moved with NEXT and HERE (avatar milestones on
+  Home read it). The Library, the Word Gym and the report card carry `trail` + `trailCode` in their groups. The road is
+  generated (`trail-home-data.js`, 5 KB gz, by `tools/build-trail-home.cjs`), never cut by hand; trail-home.js is ~2 KB gz.
 
 ## How it is measured
 

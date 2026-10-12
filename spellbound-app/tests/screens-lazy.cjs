@@ -12,13 +12,15 @@
         opens on the first tap; so does the word of the hour's card (app3-library.js). AN ENGINE NEVER OPENS AHEAD OF
         ITS SCREEN: the Spelling Gym's mode called from a cold page, its screen file held back on the wire, is "ready"
         only once its card is on the screen, and Enter starts it (gym.js keys go to its DOM only while that is on the
-        page — spelling-gym T3 caught a lost Enter when the engine landed first).
+        page — spelling-gym T3 caught a lost Enter when the engine landed first). AT MOST TWO SCRIPTS IN FLIGHT: a door
+        asking for a dozen files gets them two at a time (all at once froze the page — hash-nav §6, one run in four).
      4. file:// — the same doors open under file:// (the Library tab, the Word Gym, the report card's PIN).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/screens-lazy.cjs
    PROVED by breaking (each put in, watched to fail, taken out): viewApp's guard switched off (2: every nav threw
    "viewX is not defined", every address missed); vocab left out of SCR_NAV (1: #/vocab); a stub that loads its file
    but never runs the action (1: the Theme Journey never opened); the wallet sheet drawn without scrDraw (1: a page
-   error); the `gym` group without scrShared + scrGames (1: "ready" with no card on the screen, Enter lost).        */
+   error); the `gym` group without scrShared + scrGames (1: "ready" with no card on the screen, Enter lost);
+   boot-lazy's cap lifted to 99 (1: 13 of 17 scripts in flight at once).                                           */
 'use strict';
 const { chromium } = require('playwright');
 const path = require('path');
@@ -114,6 +116,18 @@ const HH = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, chil
     await pg.keyboard.press('Enter');
     const started = await until(pg, () => SB_GYM.peek().phase === 'answer', null, 5000);
     ok(seen.ready && seen.card && started, `an engine never opens ahead of its screen: a Spelling Gym mode from a cold page, its screen file slow, is "ready" only with its card on the screen, and Enter starts it (${JSON.stringify(seen)}, started ${started})`);
+    await ctx.close();
+  }
+  {
+    /* TWO SCRIPTS IN FLIGHT, NEVER MORE (boot-lazy addScript): a door that asks for a dozen files — the drill's card and
+       audio groups and the Word Gym's screen file — gets them two at a time, in order. With all of them streaming at
+       once Chromium's parse workers starved each other and the page froze mid-frame (hash-nav §6, one run in four). */
+    const { ctx, pg } = await cold(srv.url + 'index.html');
+    const live = new Set(); let max = 0, total = 0;
+    pg.on('request', (r) => { if (r.resourceType() === 'script') { live.add(r); total++; max = Math.max(max, live.size); } });
+    const end = (r) => live.delete(r); pg.on('requestfinished', end); pg.on('requestfailed', end);
+    const order = await pg.evaluate(() => new Promise((res) => SB_LAZY.need(['card', 'audio', 'scrGym'], () => res(['words1', 'sents', 'words2', 'scrShared', 'scrGym'].map((n) => SB_LAZY.state(n))))));
+    ok(total >= 8 && max <= 2 && order.every((x) => x === 'done'), `a door that asks for ${total} scripts at once gets them at most two in flight (most seen: ${max}), and every one lands`);
     await ctx.close();
   }
 

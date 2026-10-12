@@ -702,11 +702,9 @@ function homeGreetCands(c){ c=c||active(); const out=[]; const nm=(c&&c.name)||'
 let _greetVisit=null;   /* one pick per visit to Home — a re-render keeps it */
 function homeGreet(c){ c=c||active(); const C=homeGreetCands(c); const key=(c&&c.name||'')+'|'+state.nav;
   if(_greetVisit&&_greetVisit.key===key&&C.some(x=>x.k===_greetVisit.k)) return C.find(x=>x.k===_greetVisit.k).t;
-  /* PICK FROM ALL THE EVIDENCE, OR WAIT (audit v4 B5). The next stop is known only once trail-data.js
-     lands, which is after Home's first paint — so a visit's one pick, made at that paint, chose from
-     what boot had. On a quiet day that was the buddy's line alone, and the same hello came back every
-     visit. Until the trail is in (loaded or failed), the bubble holds its place instead (null). */
-  try{ if(window.SB_LAZY&&!SB_LAZY.ready('trail')) return null; }catch(e){}
+  /* PICK FROM ALL THE EVIDENCE (audit v4 B5). The next stop used to be known only once trail-data.js landed, after Home's
+     first paint, so the bubble held its place until then (null) rather than pick from what boot had. Since P1.13 step 3
+     the road is a boot script (trail-home-data.js) and SB_TRAIL_NEXT answers at first paint: the pick is made then. */
   /* the rotation is a DEVICE note (sb_greet: {name:[n,k]}), not part of the child's record — a hello
      must never change what a backup holds */
   let G={}; try{ G=JSON.parse(SB_STORE.get('greet')||'{}')||{}; }catch(e){}
@@ -1972,7 +1970,7 @@ function wohPool(b){ const src=(window.SB_DATA&&SB_DATA.nsf)||[];
   _wohPool=out.length?out:src.filter(e=>e&&e.w&&e.d&&e.p&&e.w.length>=7&&wohFit(e)); return _wohPool; }
 /* the band the hour is picked for: the child's (SB_BAND.child), once the Atlas is on the page — its region sets
    a floor, and a band read before it landed could change under the child's eyes */
-function wohBandNow(){ try{ if(window.SB_BAND&&window.SB_TRAIL) return SB_BAND.child(active()).band; }catch(e){} return 0; }
+function wohBandNow(){ try{ if(window.SB_BAND&&(window.SB_TRAIL||window.SB_TRAIL_HOME)) return SB_BAND.child(active()).band; }catch(e){} return 0; }   /* the road (trail-home-data.js) is a boot script since P1.13 step 3: the floor is known at first paint */
 function wordOfHour(){
   const hr=Math.floor(Date.now()/3600000); // hours since epoch — changes every hour
   if(window.SB_BAND){ const b=wohBandNow(); if(!b) return null;
@@ -3630,6 +3628,11 @@ const SCR_ACTS = {
   scrTools: 'dbgSaga vtExport vtTab vtBad vtPlay vtOk evoExport evoSelect evoClearTile evoNote evoRate'
 };
 for (const g in SCR_ACTS) for (const k of SCR_ACTS[g].split(' ')) if (!(k in app)) app[k] = scrStub(g, k);
+/* THE WORD ATLAS'S ACTIONS (P1.13 step 3): trail.js is lazy (boot-lazy `atlas`, with its curriculum) and registers these
+   on app when it lands (app2.x = …); until then each is a stub that asks for the group and runs. A new trail.js action
+   is added here too. */
+const TRAIL_ACTS = 'openTrail trailUnit trailChk trailNextFrom trailPick trailShut openUltra trailTrain trailBack trailAct trailHere trailToMap trailLesson trailWords trailWordNav trailPractice atlasNext trailQuiz tqPick tqSpell tqSay tqNext tqRevise tqInput ultraAct ultraPick ultraSteps ultraTrain uqType uqKey uqSay uqClose uqGo uqNext uDuel uGate uWisp atlasAdvDoor mwWander mwPoke mwHero mwLmk kitPick kitTile kitReset trailTre treClose treGame treLore treTrivAns villType villKey villSay villFlee villGo atlasMusic';
+for (const k of TRAIL_ACTS.split(' ')) if (!(k in app)) app[k] = scrStub('atlas', k);
 
 /* ===================================================================== */
 /*  View — builds the HTML for the current state                          */
@@ -3847,7 +3850,7 @@ const SB_COUNT = {
   /* the 130k library and its clips are never loaded to count them — see SB_FACTS */
   library: () => SB_FACTS.library,
   voiced: () => SB_FACTS.voiced,
-  regions: () => ((((window.SB_TRAIL || {}).honey || {}).acts || []).length || SB_FACTS.regions),
+  regions: () => ((((window.SB_TRAIL || window.SB_TRAIL_HOME || {}).honey || {}).acts || []).length || SB_FACTS.regions),
   mbRivals: () => SB_FACTS.mbRivals,
   mbSpellers: () => SB_FACTS.mbRivals + 1,          /* the rivals and the child */
   gpPowers: () => SB_FACTS.gpPowers,
@@ -5155,7 +5158,7 @@ function viewApp(){
   else if(S.nav==='trivtrain') content=viewTrivTrain();
   else if(S.nav==='ipatrain') content=viewIpaTrain();
   else if(S.nav==='firstword') content=viewFirstWord();
-  else if(S.nav==='trail'&&window.TRAIL) content=TRAIL.view();
+  else if(S.nav==='trail') content=(window.TRAIL?TRAIL.view():(lazyNeed('atlas',()=>{ if(state.nav==='trail') render(); }), hiveLoader('opening the Word Atlas…')));   /* trail.js is lazy (P1.13 step 3) */
   else if(S.nav==='typing') content=viewTyping();
   else if(S.nav==='builder') content=viewBuilder();
   else if(S.nav==='leveltest') content=viewLevelTest();
@@ -5320,7 +5323,7 @@ function viewApp(){
 /* The drawer's subtitles read the real data rather than a number typed in 2026:
    the Atlas reports where the speller actually is, and Concepts reports how many
    chapters the merged library holds for this account. */
-function atlasSub(c){ try{ const T=window.SB_TRAIL; if(!T) return 'the guided journey';
+function atlasSub(c){ try{ const T=window.SB_TRAIL||window.SB_TRAIL_HOME; if(!T) return 'the guided journey';
     const tr=c.trail||{}; const n=Object.keys(tr.done||{}).length; const total=(T.honey.units||[]).length;
     // "stop 4 of 102" is the same mountain as the tier bar. Where you are is the useful
     // half; how far the whole road runs is not something a speller needs at a glance.

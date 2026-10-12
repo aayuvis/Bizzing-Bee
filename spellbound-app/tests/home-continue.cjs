@@ -165,7 +165,9 @@ function landing() {
     if (how === 'link') { await pg.goto(URL + '#/continue'); }
     else {
       await pg.goto(URL);
-      await pg.waitForFunction(() => !!document.querySelector('.sb-content [data-act="goNext"]') && !!(window.SB_TRAIL && SB_TRAIL.honey), null, { timeout: 8000 });
+      /* the card is Home's first paint since P1.13 step 3 (it reads the road, trail-home-data.js): asked the moment it
+         appears, the Atlas (curriculum and code) has not even been asked for — the earliest "at once" there is */
+      await pg.waitForFunction(() => !!document.querySelector('.sb-content [data-act="goNext"]'), null, { timeout: 8000 });
       early = await pg.evaluate(() => !SB_LAZY.ready('atlas'));
       if (how === 'home') await pg.click('.sb-content [data-act="goNext"]'); else await pg.evaluate(() => app.drawer('next'));
     }
@@ -206,7 +208,7 @@ function landing() {
   }
 
   /* ---- and nobody else reads the frontier for a call to action ---- */
-  const files = fs.readdirSync(ROOT).filter(f => /\.js$/.test(f) && f !== 'trail.js');   // trail.js owns it
+  const files = fs.readdirSync(ROOT).filter(f => /\.js$/.test(f) && f !== 'trail.js' && f !== 'trail-home.js');   // the Atlas owns it (trail-home.js since P1.13 step 3)
   const stray = []; let shellReads = 0;
   for (const f of files) {
     const src = fs.readFileSync(path.join(ROOT, f), 'utf8');

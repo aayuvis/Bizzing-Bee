@@ -191,9 +191,14 @@ ok(!bad.length, `every src resolves and every card's words are its source's (${I
   const off = rows.filter((r) => !r.ok);
   ok(rows.filter((r) => r.said != null).length === C.ACTS.length && !off.length, 'every region\'s place card says its board\'s count (stops + checkpoints, lap 1), and the shared function agrees with the board\'s rule on every lap: ' +
     rows.filter((r) => r.said != null).map((r) => r.act + ' ' + r.said).join(' · ') + (off.length ? ' — OFF: ' + JSON.stringify(off) : ''));
-  const trail = fs.readFileSync(path.join(APP, 'trail.js'), 'utf8');
-  ok(/function seq\(c\) \{ return window\.SB_TRAIL_ROAD\.nodes\(T\(\), course\(\), lapOf\(c\)\); \}/.test(trail) && /src="trail-road\.js\?v=[^"]+"><\/script>\s*<script defer src="trail\.js/.test(fs.readFileSync(path.join(APP, 'index.html'), 'utf8')),
-    'the board is built from the same function: trail.js seq() is SB_TRAIL_ROAD.nodes, and trail-road.js loads just before trail.js');
+  /* since P1.13 step 3 the road's arithmetic, seq() included, is ONE copy in trail-home.js (SB_TRAIL_FRONT, a boot
+     script Home reads); trail.js is lazy and takes its seq from it, so the board and Home share the one function */
+  const trail = fs.readFileSync(path.join(APP, 'trail.js'), 'utf8'), home = fs.readFileSync(path.join(APP, 'trail-home.js'), 'utf8');
+  const tags = [...fs.readFileSync(path.join(APP, 'index.html'), 'utf8').matchAll(/<script[^>]*\ssrc="([^"?]+)/g)].map((m) => m[1]);
+  ok(/function seq\(c\) \{ return window\.SB_TRAIL_ROAD\.nodes\(T\(\), course\(\), lapOf\(c\)\); \}/.test(home)
+    && /const \{[^}]*\bseq\b[^}]*\} = window\.SB_TRAIL_FRONT\(T\)/.test(trail) && !/function seq\(/.test(trail)
+    && tags.includes('trail-road.js') && tags.indexOf('trail-road.js') < tags.indexOf('trail-home.js') && !tags.includes('trail.js'),
+    'the board is built from the same function: seq() is SB_TRAIL_ROAD.nodes, in trail-home.js, which trail.js builds its own from — and trail-road.js loads before trail-home.js (trail.js comes later, lazy)');
   ok(!/units\.length \+ ' stops/.test(fs.readFileSync(path.join(APP, 'tools', 'build-feed.cjs'), 'utf8')), 'and the feed builder no longer types a count from units.length');
 }
 /* the quotation library's own namespace — a src or kind naming it; the library WORDS quote, quota and quotient are not it */
@@ -284,4 +289,6 @@ process.exit(fails ? 1 : 0);
    · the place card put back on units.length                → "says its board's count" fails (all nine regions) and the
                                                              cards fail to resolve
    · trail.js seq() given its own loop back                 → "built from the same function" fails
-   · the root-leak drop taken out of the build and the bank → "every src resolves" fails on the root questions */
+   · the root-leak drop taken out of the build and the bank → "every src resolves" fails on the root questions
+   (P1.13 step 3: seq() lives in trail-home.js, which trail.js builds its own from)
+   · a seq() of its own put back in trail.js                → "built from the same function" fails */

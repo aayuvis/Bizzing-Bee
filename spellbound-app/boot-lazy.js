@@ -80,6 +80,9 @@
     lore: 'words-lore.js',              // etymology + memory hint, merged onto SB_DATA
     concepts: 'concepts-data.js',       // the 121-chapter course
     trail: 'trail-data.js',             // Word Atlas curriculum
+    /* the Word Atlas's code (P1.13 step 3): lazy with its curriculum. Home reads the road from trail-home.js (a boot
+       script, over trail-home-data.js); the map, a stop, a quiz, the concept locks and the drill's report come here. */
+    trailCode: 'trail.js',
     southasia: 'southasia-data.js',     // the Grand Trunk Road chapters (Expedition IV)
     sounds: 'sounds-data.js',           // homophones, alt pronunciations, diacritics, IPA
     pron: 'word-pron.js',
@@ -218,7 +221,7 @@
     /* advConcepts too: the map draws the Advanced Rounds (locked or not), and a stop
        whose chapter is an `ai` ref resolves through SB_ADV_CONCEPTS — without it chOf()
        is undefined and setsOf() throws. The idle queue used to hide that. */
-    atlas: ['words1', 'trail', 'concepts', 'cscript', 'southasia', 'advConcepts', 'objectives', 'adv'],   // adv: the Ultra road reads ADV.pool()
+    atlas: ['words1', 'trail', 'trailCode', 'concepts', 'cscript', 'southasia', 'advConcepts', 'objectives', 'adv'],   // adv: the Ultra road reads ADV.pool()
     quotes: ['words1', 'quotes'],
     figurative: ['words1', 'fig'],
     audio: ['voiceWords', 'voiceFrench'],
@@ -243,7 +246,7 @@
     buzz: ['dailyBuzz'],
     analogy: ['words1', 'anlData', 'anlUI', 'wordband'],   // saga2: the engine kit (SGUI.stage, SGUI.keys)
     placement: ['words1', 'placeData', 'placeUI'],
-    curriculum: ['words1', 'trail', 'concepts', 'objectives', 'gradeMap'],
+    curriculum: ['words1', 'trail', 'trailCode', 'concepts', 'objectives', 'gradeMap'],
     today: ['words1', 'todayUI', 'sents', 'coachRules', 'wordband'],   // the sentences it reads aloud, and the rulebook the miss panel's tip comes from
     voicetest: ['voiceLists'],
     advCode: ['adv'],   // the Advanced Pack's code alone: its doors behave as they did when it was a boot script
@@ -251,9 +254,11 @@
     beeTrivia: ['words1', 'stv', 'ttIcons'],
     /* the app3 split's screens: each with the code it shares and the word tier its screens read (Me reads no word) */
     scrShared: ['words1', 'scrShared'],
-    scrLib: ['words1', 'scrShared', 'scrLib'],
-    scrGym: ['words1', 'scrShared', 'scrGym'],
-    scrGrown: ['words1', 'scrShared', 'scrGrown'],
+    /* the Library (a concept's lock is its Atlas stop: SB_TRAIL_OPEN / TAUGHT), the Word Gym (a drill reports to its stop:
+       SB_TRAIL_BEST / WHERE / SETS / PRACTICED) and the report card read the Atlas's code and curriculum (P1.13 step 3) */
+    scrLib: ['words1', 'scrShared', 'scrLib', 'trail', 'trailCode'],
+    scrGym: ['words1', 'scrShared', 'scrGym', 'trail', 'trailCode'],
+    scrGrown: ['words1', 'scrShared', 'scrGrown', 'trail', 'trailCode'],
     scrGames: ['words1', 'scrShared', 'scrGames'],
     scrMe: ['scrShared', 'scrMe'],
     scrTools: ['words1', 'scrShared', 'scrTools']
@@ -263,9 +268,9 @@
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
   /* words2 and the boot sentences land on the boot tier's records (in order, by word), so the tier comes first */
-  var DEPS = { words2: ['words1'], sents: ['words1'], scrLib: ['scrShared'], scrGym: ['scrShared'], scrGrown: ['scrShared'], scrGames: ['scrShared'], scrMe: ['scrShared'], scrTools: ['scrShared'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'] };
+  var DEPS = { words2: ['words1'], sents: ['words1'], trailCode: ['trail'], scrLib: ['scrShared'], scrGym: ['scrShared'], scrGrown: ['scrShared'], scrGames: ['scrShared'], scrMe: ['scrShared'], scrTools: ['scrShared'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'] };
 
-  var IDLE = ['words1', 'scrShared', 'scrGym', 'scrLib', 'scrGames', 'scrMe', 'scrGrown', 'scrTools', 'sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
+  var IDLE = ['words1', 'trail', 'trailCode', 'scrShared', 'scrGym', 'scrLib', 'scrGames', 'scrMe', 'scrGrown', 'scrTools', 'sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
     'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'adv', 'ttIcons', 'sync'];
 
@@ -348,6 +353,23 @@
     }
     inject(name, src);
   }
+  /* AT MOST TWO SCRIPTS IN FLIGHT (road to 4.5, P1.13). A door can ask for a dozen files at once (the drill's `card` +
+     `audio` groups are nine, the Word Gym's screen file two more), and Chromium parses every big script on its worker
+     pool while it streams in. On a four-core machine that pool has three workers: with three or more big scripts
+     streaming, every worker sat in a parse waiting on a decode task no worker was free to run, and the page froze for
+     good mid-frame (traced: three `v8.parseOnBackground` that never ended, the main thread stuck behind them —
+     hash-nav §6 hung one run in four). Two in flight always leaves a worker free. The rest wait their turn, in order,
+     so a bundle still runs in its order (async=false keeps insertion order, and the queue keeps that). A file that
+     neither loads nor fails within SLOT_MS gives its slot up, so one stalled request can never wedge the queue. */
+  var MAX_INFLIGHT = 2, SLOT_MS = 20000, inflight = 0, waiting = [];
+  function addScript(s) {
+    if (inflight >= MAX_INFLIGHT) { waiting.push(s); return; }
+    inflight++;
+    var freed = false;
+    s._free = function () { if (freed) return; freed = true; clearTimeout(t); inflight--; var n = waiting.shift(); if (n) addScript(n); };
+    var t = setTimeout(s._free, SLOT_MS);
+    document.head.appendChild(s);
+  }
   /* A REG entry is a file or a BUNDLE (an array): a bundle's files are inserted async=false, so they download together
      and run in their order, and the entry lands once, when the last has run. */
   function inject(name, file) {
@@ -371,12 +393,13 @@
       var s = document.createElement('script');
       s.src = src + V();
       s.async = files.length < 2;
-      s.onload = function () { ran++; if (--left === 0) landed(); };
+      s.onload = function () { if (s._free) s._free(); ran++; if (--left === 0) landed(); };
       s.onerror = function () {
+        if (s._free) s._free();
         try { console.warn('boot-lazy: could not load ' + src); } catch (e) {}
         if (--left === 0) landed();
       };
-      document.head.appendChild(s);
+      addScript(s);
     });
   }
 
@@ -424,15 +447,18 @@
      It used to start the moment the page had loaded and pull every file in IDLE — about
      34MB, ~10MB on the wire — whether or not the child ever opened a screen that reads
      them. That was most of the audit's "29MB first load on a phone". Now:
-       · FIRST is fetched after load: the little a first screen shows that is not in the
-         boot scripts (the Atlas frontier behind Home's "Next on your journey").
-       · the rest waits until the child DOES something — a tap, a key, a scroll. A screen
+       · nothing is fetched on its own before the child DOES something — a tap, a key, a scroll (the
+         Atlas data that used to come first, FIRST, is not needed by a first screen since P1.13 step 3:
+         see below). A screen
          that needs a file before then asks for it at its door with need(), as they all
          already do (setNav, startTrain, openCoach, the reader, the Atlas…).
        · on a data-saver connection (Save-Data / navigator.connection.saveData) the queue
          never runs on its own at all: files arrive only when a screen asks for them.
      need() is unaffected — it loads what it is asked for, immediately, either way. */
-  var FIRST = ['trail'];
+  /* FIRST is gone (road to 4.5, P1.13 step 3). It fetched trail-data.js for Home's "You are here" (at DOMContentLoaded on
+     Home, after `load` elsewhere): Home reads the ROAD now — trail-home.js over trail-home-data.js, boot scripts — so
+     the curriculum and the Atlas's code wait for the first tap like the rest of the queue (`trail`, `trailCode` first
+     after the word tier), and every door that reads them asks (`atlas`, the screens' groups). */
   var saveData = false;
   try { saveData = !!(navigator.connection && navigator.connection.saveData); } catch (e) {}
   var ARM = ['pointerdown', 'keydown', 'touchstart', 'wheel'];
@@ -441,11 +467,8 @@
     start();
   }
   function afterLoad() {
-    /* The opening page (a new visitor) shows no Atlas, so FIRST waits for the first tap there like the rest of the
-       queue (P1.13: 76 KB gz off a new visitor's first load). Every screen past it that reads the Atlas asks at its
-       door (setup's first lesson and placement go through lazyNeed('atlas'), Continue through goNext). */
-    var landing = false; try { landing = !!document.querySelector('#root .sb-lnav'); } catch (e) {}
-    if (!landing) idle(function () { FIRST.forEach(function (n) { load(n); }); }, { timeout: 1500 });
+    /* Every screen that reads the Atlas asks at its door (setup's first lesson and placement go through
+       lazyNeed('atlas'), Continue through goNext, the Library / Word Gym / report card through their groups). */
     if (saveData) return;
     ARM.forEach(function (ev) { window.addEventListener(ev, onFirstAct, { capture: true, passive: true }); });
   }
@@ -466,17 +489,12 @@
      re-renders). For screens that are useful before the whole library is in. */
   var KICKS = { openBuilder: ['themes', 'lists'], openFinder: ['words', 'library'], openTraps: 'card' };
   document.addEventListener('DOMContentLoaded', function () {
-    /* A RETURNING SPELLER'S HOME NEEDS THE ATLAS FRONTIER NOW (audit v4 B6). Home holds "Next on your
-       journey" until trail-data.js lands, and after `load` + an idle slice that was seconds after the
-       words were up. Every deferred script has run by this event (app3's first render included), so
-       the boot JS is in: if Home is what that render drew, ask for FIRST now. (Not app3's `state` —
-       inside this file that name is the loader's own.) A new visitor still waits for `load`. */
-    try { if (document.querySelector('#root .sb-home-r2')) FIRST.forEach(function (n) { load(n); }); } catch (e) {}
     /* worlds4.js runs after app3's first render (a later deferred script), so the eight worlds it registers — and the
        landing's "80 evolution forms across eight worlds", "All 8 worlds" — reach the screen on the NEXT render. Home
-       gets one when the Atlas data lands; the opening page asks for no data any more (FIRST waits for a tap there,
-       P1.13), so it is given that render here. (tests/one-count.cjs caught the landing keeping its fallback copy.) */
-    try { if (document.querySelector('#root .sb-lnav')) softRender(); } catch (e) {}
+       used to get one when the Atlas data landed at this event (FIRST); since P1.13 the first screens ask for no data
+       at all (Home reads the road from trail-home.js), so every first screen is given that render here.
+       (tests/one-count.cjs caught the landing keeping its fallback copy the first time.) */
+    try { softRender(); } catch (e) {}
     try {
       if (typeof app === 'undefined') return;
       Object.keys(DOORS).forEach(function (k) {
