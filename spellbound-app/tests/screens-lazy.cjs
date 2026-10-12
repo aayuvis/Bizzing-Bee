@@ -12,16 +12,17 @@
         opens on the first tap; so does the word of the hour's card (app3-library.js). AN ENGINE NEVER OPENS AHEAD OF
         ITS SCREEN: the Spelling Gym's mode called from a cold page, its screen file held back on the wire, is "ready"
         only once its card is on the screen, and Enter starts it (gym.js keys go to its DOM only while that is on the
-        page — spelling-gym T3 caught a lost Enter when the engine landed first). AT MOST TWO SCRIPTS IN FLIGHT: a door
-        asking for a dozen files gets them two at a time, never two of the big data at once, the rest first — so a
-        screen's code never waits behind the word shards (all at once froze the page — hash-nav §6, one run in four).
+        page — spelling-gym T3 caught a lost Enter when the engine landed first). ONE BIG FILE AT A TIME: a door asking
+        for a dozen files streams the big data one file at a time and the rest as before — so a screen's code never waits
+        behind the word shards (all at once froze the page — hash-nav §6, one run in four).
      4. file:// — the same doors open under file:// (the Library tab, the Word Gym, the report card's PIN).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/screens-lazy.cjs
    PROVED by breaking (each put in, watched to fail, taken out): viewApp's guard switched off (2: every nav threw
    "viewX is not defined", every address missed); vocab left out of SCR_NAV (1: #/vocab); a stub that loads its file
    but never runs the action (1: the Theme Journey never opened); the wallet sheet drawn without scrDraw (1: a page
    error); the `gym` group without scrShared + scrGames (1: "ready" with no card on the screen, Enter lost);
-   boot-lazy's cap lifted to 99 (1: 6 of 17 scripts in flight at once; 13 before the door/kick/idle order); every file counted as big data (1: the Word
+   boot-lazy's big-data cap lifted to 99 (2: five big files streaming at once, and the Word Gym's code then landed
+   after the etymology); every file counted as big data (1: the Word
    Gym's code landed after the second word shard).                                                                 */
 'use strict';
 const { chromium } = require('playwright');
@@ -121,17 +122,19 @@ const HH = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, chil
     await ctx.close();
   }
   {
-    /* TWO SCRIPTS IN FLIGHT, NEVER MORE (boot-lazy addScript): a door that asks for a dozen files — the drill's card and
-       audio groups and the Word Gym's screen file — gets them two at a time, never two of the big data at once, and the
-       rest ahead of it. With all of them streaming at once Chromium's parse workers starved each other and the page
-       froze mid-frame (hash-nav §6, one run in four). */
+    /* ONE BIG FILE AT A TIME (boot-lazy HEAVY_MAX): a door that asks for a dozen files — the drill's card and audio
+       groups and the Word Gym's screen file — streams the big data one file at a time, the rest as it comes. With all of
+       it streaming at once Chromium's parse workers starved each other and the page froze mid-frame (hash-nav §6, one
+       run in four). */
     const { ctx, pg } = await cold(srv.url + 'index.html');
-    const live = new Set(); let max = 0, total = 0;
-    pg.on('request', (r) => { if (r.resourceType() === 'script') { live.add(r); total++; max = Math.max(max, live.size); } });
+    /* the big data, by file: the word shards, etymology, senses, synonyms, the voice index (boot-lazy HEAVY) */
+    const BIG = /\/(words-data(-2|-s)?|words-lore|word-alternates|word-synonyms|voice-words|quotes-lib|figurative-data|lessons-data|adv-concepts-data|concepts-data)\.js/;
+    const live = new Set(); let max = 0, total = 0, big = 0;
+    pg.on('request', (r) => { if (r.resourceType() === 'script') { total++; if (BIG.test(r.url())) { live.add(r); big++; max = Math.max(max, live.size); } } });
     const end = (r) => live.delete(r); pg.on('requestfinished', end); pg.on('requestfailed', end);
     const got = await pg.evaluate(() => new Promise((res) => { const seen = []; addEventListener('sb-lazy', (e) => seen.push(e.detail));
       SB_LAZY.need(['card', 'audio', 'scrGym'], () => res({ seen, done: ['words1', 'sents', 'words2', 'scrShared', 'scrGym'].every((n) => SB_LAZY.state(n) === 'done') })); }));
-    ok(total >= 8 && max <= 2 && got.done, `a door that asks for ${total} scripts at once gets them at most two in flight (most seen: ${max}), and every one lands`);
+    ok(total >= 8 && big >= 5 && max <= 1 && got.done, `a door that asks for ${total} scripts at once (${big} of them big data) streams the big data one file at a time (most seen at once: ${max}), and every one lands`);
     /* the lanes: the screen's own code streams beside the big data, never behind it */
     const at = (n) => got.seen.indexOf(n);
     ok(at('scrGym') >= 0 && at('words2') >= 0 && at('scrGym') < at('words2') && at('scrGym') < at('lore'),

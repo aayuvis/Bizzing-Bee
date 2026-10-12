@@ -361,22 +361,22 @@
     }
     inject(name, src, lvl);
   }
-  /* AT MOST TWO SCRIPTS IN FLIGHT, AND NEVER TWO BIG ONES (road to 4.5, P1.13). A door can ask for a dozen files at
-     once (the drill's `card` + `audio` groups are nine, the Word Gym's screen file two more), and Chromium parses each
-     script on its worker pool WHILE it streams in — a parse that runs out of bytes holds its worker until the next chunk
-     arrives. On a four-core machine the pool has three workers: with three or more scripts streaming, every worker sat
-     in a parse waiting on a decode task no worker was free to run, and the page froze for good mid-frame (traced: three
-     `v8.parseOnBackground` that never ended, the main thread stuck behind them — hash-nav §6 hung one run in four).
-     So at most MAX_INFLIGHT scripts stream at once, and a worker is always free. Of those, at most HEAVY_MAX are the
-     big data (HEAVY: the word shards, etymology, senses, synonyms, the voice index…), so a slot is always open for the
-     rest — a screen's own code, a library chunk the Finder is waiting for — and when a slot frees, the next of those
-     goes first: a screen never waits behind 14 MB of words. Then the ORDER: what a door waits on, then what a kick
+  /* ONE BIG FILE IN FLIGHT AT A TIME (road to 4.5, P1.13). A door can ask for a dozen files at once (the drill's `card`
+     + `audio` groups are nine, six of them megabytes of words), and Chromium parses each script on its worker pool WHILE
+     it streams in — a parse that runs out of bytes holds its worker until the next chunk arrives. On a four-core machine
+     the pool has three workers: with three big scripts streaming at once every worker sat in a parse waiting on a decode
+     task no worker was free to run, and the page froze for good mid-frame (traced: three `v8.parseOnBackground` that
+     never ended, the main thread stuck behind them — hash-nav §6 hung one run in four). So the big data (HEAVY: the word
+     shards, etymology, senses, synonyms, the voice index…) streams one file at a time (HEAVY_MAX); everything else —
+     a screen's own code, a library chunk the Finder is waiting for — streams as it always did, and never waits behind
+     14 MB of words. (A first cut also held everything else to two in flight; it froze nothing more and made every lazy
+     screen slower, and the suite's timing tests said so.) Then the ORDER: what a door waits on, then what a kick
      started (KICKS: data a screen draws without — its big files also wait for the child to pause, QUIET_MS), then the
      idle queue; a kick's and the idle queue's files never take the last slot, and a door asking for one of theirs moves
      it up (promote). Each queue keeps its order (a bundle is one entry, so one queue, and async=false keeps insertion
      order). No timer frees a slot: a stalled request ends in load or error, and a third stream is exactly what froze. */
   var HEAVY = { words1: 1, sents: 1, words2: 1, lore: 1, concepts: 1, alts: 1, syn: 1, quotes: 1, fig: 1, lessons: 1, advConcepts: 1, voiceWords: 1 };
-  var MAX_INFLIGHT = 2, HEAVY_MAX = 1, QUIET_MS = 450, inflight = 0, heavyIn = 0;
+  var MAX_INFLIGHT = 99, HEAVY_MAX = 1, QUIET_MS = 450, inflight = 0, heavyIn = 0;
   /* the queues, each in its order: everything light a door or a kick asked for; a door's big data; a kick's big data;
      the idle queue's light and big files */
   var qL = [], qH = [], qKickH = [], qIdleL = [], qIdleH = [], queued = {}, asked = {};

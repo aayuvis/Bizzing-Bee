@@ -256,22 +256,23 @@ split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
   `scrGames`: gym.js's `open()` starts a round as soon as its group is in, and its keys reach only DOM on the page, so a
   mode "ready" on no screen lost its first Enter (spelling-gym T3 caught it; screens-lazy §3 holds it with the screen
   file slowed on the wire). An engine whose host view is in a lazy file carries that file's group the same way.
-- **boot-lazy keeps at most TWO scripts in flight, at most ONE of them big data** (`addScript`, `MAX_INFLIGHT`,
-  `HEAVY_MAX`, the `HEAVY` names: the word shards, etymology, senses, synonyms, the voice index…), and when a slot frees
-  the rest go first — a screen's code, a library chunk the Finder waits for — so a screen never waits behind 14 MB of
-  words. The order (`nextScript`): what a DOOR waits on, then what a KICK started (data a screen draws without — its
-  big files wait for a pause in the child's typing AND for the screen to SETTLE, `QUIET_MS` after a door's last file
-  landed — a Finder lookup lands a chunk, and a 14 MB shard landing mid-lookup is a word that takes seconds to show),
-  then the IDLE queue, which waits for the same pause (every landing redraws the app, and resuming at once put a redraw
-  on top of the screen that had just appeared: mockbee-stage's lobby); kick and idle files never take the last slot,
-  and a door asking for one of theirs promotes it. daily-bee's reload block runs in a persistent profile (P0.18's cure). Each queue keeps its order. `need(what, cb, lvl)`
-  takes the level; KICKS and the header search's focus pass `KICK`. The Word Finder's guard group is `scrFinder`
-  (its code, no word tier): it draws at once and the words arrive while it is open (dictionary's phone timing). A door can ask for a dozen files at once (the drill: `card` + `audio` + the Word
-  Gym's screen file); all at once, Chromium's script-streaming parse — a parse short of bytes holds its worker until
+- **boot-lazy streams the big data ONE FILE AT A TIME** (`HEAVY_MAX`, the `HEAVY` names: the word shards, etymology,
+  senses, synonyms, the voice index…); everything else — a screen's code, a library chunk — streams as it always did,
+  so a screen never waits behind 14 MB of words. A door can ask for a dozen files at once (the drill: `card` + `audio`,
+  six of them megabytes); all at once, Chromium's script-streaming parse — a parse short of bytes holds its worker until
   the next chunk — starved its three-worker pool on a four-core machine and the page froze mid-frame for good: traced
-  (three `v8.parseOnBackground` that never ended, the main thread stuck behind them); hash-nav §6 hung one run in
-  four, 0 in 14 after. Never raise it to "load faster"; no timer frees a slot, because a third stream is exactly what
-  froze. Guard: screens-lazy §3 (a dozen-file door: at most two in flight, the Word Gym's code before the second shard).
+  (three `v8.parseOnBackground` that never ended, the main thread stuck behind them); hash-nav §6 hung one run in four.
+  Never raise it to "load faster". The order of the big files (`nextScript`): what a DOOR waits on, then what a KICK
+  started (data a screen draws without), then the IDLE queue; a kick's big files and the idle queue wait for a pause in
+  the child's input and for the screen to SETTLE (`QUIET_MS` after a door's last file landed — a 14 MB shard landing
+  mid-lookup is a Finder word that takes seconds; every landing redraws the app, and the idle queue resuming at once
+  put a redraw on top of the screen that had just appeared: mockbee-stage's lobby). A door asking for a kick's or the
+  idle queue's file promotes it; `need(what, cb, lvl)` takes the level, and KICKS and the header search's focus pass
+  `KICK`. A first cut also held everything else to two in flight; it froze nothing more and made every lazy screen
+  slower — the suite's timing tests said so, one different one each run. The Word Finder's guard group is `scrFinder`
+  (its code, no word tier): it draws at once and the words arrive while it is open. daily-bee's reload block runs in a
+  persistent profile (P0.18's cure). Guard: screens-lazy §3 (a dozen-file door streams its big data one at a time, and
+  the Word Gym's code lands before the second word shard).
 - **Rules a later session keeps:**
   - Everything stays a deferred/injected CLASSIC script: no modules, no bundler, `"use strict"` first in every lazy file,
     and `app` stays app3.js's top-level const (lazy files `Object.assign(app, …)`). The source stays readable — deploy

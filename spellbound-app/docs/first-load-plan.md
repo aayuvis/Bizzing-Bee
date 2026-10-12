@@ -44,9 +44,9 @@ for both screens** beside its ratchet.
   `scrShared` + `scrGames` (spelling-gym T3 caught a lost Enter; screens-lazy §3 holds it).
 - *Not in the plan, found by the suite:* more doors fetch more files at once after the split, and a door of a dozen
   scripts froze Chromium mid-frame one run in four (its script-streaming parse starved a three-worker pool). boot-lazy
-  now keeps at most two scripts in flight, at most one of them big data, the rest first, in the order door → kick →
-  idle (`addScript`) — so a screen's code never waits behind the word shards — and the Word Finder draws without the
-  word tier (`scrFinder`), so a lookup is not a wait for 1.5 MB of words (dictionary's phone timing). The road's scripts sit before app3.js, so its first render knows the next stop.
+  now streams the big data one file at a time, in the order door → kick → idle (`addScript`), the rest as before — so
+  a screen's code never waits behind the word shards — and the Word Finder draws without the word tier (`scrFinder`),
+  so a lookup is not a wait for 1.5 MB of words (dictionary's phone timing). The road's scripts sit before app3.js, so its first render knows the next stop.
 - *Step 3, "keep FIRST, on the idle queue".* `trail` was already on the idle queue; FIRST is deleted, and boot-lazy gives
   every first screen one render at DOMContentLoaded (Home used to get it from FIRST — worlds4's late worlds need it).
 - *Step 3, "the Home half … into a small boot file".* The frontier arithmetic is ONE copy, `SB_TRAIL_FRONT(T)` in
