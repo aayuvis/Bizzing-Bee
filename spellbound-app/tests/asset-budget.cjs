@@ -83,7 +83,7 @@ ok(named.length >= 24 && !missing.length, `every app-art path in shipped code, a
 /* ---- 4. lazy below the fold ---- */
 /* Each entry: a file and a snippet of the <img> tag, and why it must load at once. */
 const ABOVE = [
-  ['app3.js', 'app-art/spines/', 'the Library shelf is the top of its screen (loading="eager" on purpose: CLAUDE.md, "A WHOLE FOLDER OF SHIPPED ART CAN VANISH")'],
+  ['app3-library.js', 'app-art/spines/', 'the Library shelf (app3-library.js since the P1.13 split) is the top of its screen (loading="eager" on purpose: CLAUDE.md, "A WHOLE FOLDER OF SHIPPED ART CAN VANISH")'],
   ['app3.js', "atlas-map.webp'}", 'Home\'s "You are here" card is above the fold on every width (home-first-paint preloads it)'],
   ['analogy.js', 'ART[id].img', 'the region map IS the Analogy Atlas screen'],
   ['trail.js', 'sb-vill-moth', 'the moth is drawn only when it appears, in view'],

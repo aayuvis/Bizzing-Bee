@@ -15,6 +15,10 @@
                              frame's callbacks, one to know its pixels are on the canvas)
      still(pg)               the page holds still for measuring: transitions and animations
                              off, so a colour or a box read is the final one, never mid-fade
+     quietRender(pg, ms)     the app has not redrawn for `ms` (300): a lazy file that lands redraws the
+                             whole app (boot-lazy softRender, 140 ms after it lands), so a screen read
+                             the moment its own files are in can be read mid-redraw — a plate not yet
+                             repainted reads as white (road to 4.5, P1.13: mockbee-stage, one-row)
      raceTime(pg, secs)      the Grand Prix has simulated `secs` of RACE time — see below
    A test that runs a long sequence inside one page.evaluate defines the same `until` there as
    a local `U(fn, ms)`; a function cannot be handed into the page as a closure.
@@ -46,6 +50,12 @@ async function frames(pg, n) {
 }
 const STILL = '*,*::before,*::after{transition:none!important;animation:none!important}';
 async function still(pg) { await pg.addStyleTag({ content: STILL }); }
+async function quietRender(pg, ms) {
+  return pg.evaluate((ms) => new Promise((res) => { const r0 = window.render; if (typeof r0 !== 'function') return res(false);
+    let last = performance.now(); const t0 = last;
+    window.render = function () { last = performance.now(); return r0.apply(this, arguments); };
+    const k = () => { const now = performance.now(); if (now - last >= ms || now - t0 > 8000) { window.render = r0; res(now - last >= ms); } else setTimeout(k, 40); }; k(); }), ms || 300);
+}
 const RACE_DT_MAX = 0.25;   // sgLoop's clip: a frame counts at most 0.25 s (saga2.js)
 async function raceTime(pg, secs) {
   return pg.evaluate(([secs, cap]) => new Promise(r => {
@@ -56,4 +66,4 @@ async function raceTime(pg, secs) {
     const f = ts => { if (last != null) acc += Math.min(cap, (ts - last) / 1000); last = ts; if (acc >= secs) r(acc); else requestAnimationFrame(f); };
     requestAnimationFrame(f); }), [secs, RACE_DT_MAX]);
 }
-module.exports = { until, booted, lazy, frames, still, STILL, raceTime, RACE_DT_MAX };
+module.exports = { until, booted, lazy, frames, still, quietRender, STILL, raceTime, RACE_DT_MAX };

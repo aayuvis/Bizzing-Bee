@@ -75,7 +75,8 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     await pg.goto(BASE + (o.q || '')); await ready(pg);
     return { ctx, pg };
   }
-  /* booted, and the Atlas frontier in hand (trail-data.js, the idle queue's FIRST file): the
+  /* booted, and the Atlas frontier in hand (the road, trail-home.js — a boot script since P1.13 step 3; it was
+     trail-data.js, boot-lazy's FIRST file): the
      feed's level IS the child's Atlas region, so a feed drawn before it lands is drawn for
      nobody in particular — the old 2.6s pause stood for exactly this */
   const ready = async pg => { await booted(pg); await until(pg, () => { try { return SB_SHELL.nextStep().ready; } catch (e) { return false; } }, null, 30000); };

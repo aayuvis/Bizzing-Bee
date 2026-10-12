@@ -228,7 +228,8 @@ ok(DS.pick(cur, tail, 0, { level: 'easy' }).length === 0 && DS.pick(cur, tail, 0
   ok(a > 0 && b > a, 'app3.js holds the word of the hour between `const _pinned` and the quote of the hour');
   const H = { console, Math, Object, Set, Array, String, RegExp, JSON }; H.window = H; vm.createContext(H);
   Object.assign(H, { CORE_STRIKE, CORE_CUT, SB_DATA: { nsf: C.DATA }, SB_GLOSS_OK: PW.SB_GLOSS_OK, SB_WORDS_HELD: PW.SB_WORDS_HELD || [],
-    SB_TRAIL: PW.SB_TRAIL, SB_TRAIL_ROAD: PW.SB_TRAIL_ROAD, active: () => cur, SB_UNSAFE_RE, SB_CORE_STRIKE: CORE_STRIKE });
+    SB_TRAIL: PW.SB_TRAIL, SB_TRAIL_ROAD: PW.SB_TRAIL_ROAD, active: () => cur, SB_UNSAFE_RE, SB_CORE_STRIKE: CORE_STRIKE,
+    wordsIn: () => true });   /* the boot word tier is in (it is lazy since P1.13 step 1 — §6c below draws before it) */
   vm.runInContext(read('kid-safe.js'), H, { filename: 'kid-safe.js' });
   vm.runInContext(AGE + ';this.ageBandOf=ageBandOf;', H);
   withBand(H);
@@ -250,6 +251,19 @@ ok(DS.pick(cur, tail, 0, { level: 'easy' }).length === 0 && DS.pick(cur, tail, 0
   vm.runInContext(read('wordband.js'), H2); vm.runInContext(app3.slice(a, b) + ';this.__woh=wordOfHour;', H2);
   const pre = []; for (const band of [1, 2, 3, 4]) { cur = KIDS[band]; for (let h = 0; h < 200; h++) { T = (700000 + h) * 3600000; const e = H2.__woh(); if (e && S.of(e) > band) pre.push(band + ':' + e.w); } }
   ok(!pre.length, 'and before wordband-data.js lands, by each record\'s own ceiling — still never above the band (200 hours a band)' + some(pre));
+  /* 6c. before the BOOT WORD TIER lands (P1.13 step 1: words-data.js is lazy), Home draws from the generated seed
+     (curriculum-data.js) — still the child's band, never above it, never one of the six */
+  const H3 = Object.assign({}, H); vm.createContext(H3); H3.window = H3; H3.wordsIn = () => false;
+  vm.runInContext('this.SB_WORDBAND=null;', H3); vm.runInContext(read('wordband.js'), H3);
+  vm.runInContext(read('curriculum-data.js'), H3, { filename: 'curriculum-data.js' });
+  vm.runInContext(app3.slice(a, b) + ';this.__woh=wordOfHour;this.__pool=wohPool;', H3);
+  const seedBad = [], seedRows = [];
+  for (const band of [1, 2, 3, 4]) { cur = KIDS[band]; let n = 0;
+    for (let h = 0; h < 1000; h++) { T = (900000 + h) * 3600000; const e = H3.__woh(); if (!e) continue; n++;
+      if (!e._seed || S.of(e.w) > band || SIX.includes(e.w)) seedBad.push(band + ':' + e.w); }
+    if (n < 1000) seedBad.push('band ' + band + ': ' + n + ' hours');
+    seedRows.push('band ' + band + ' (seed ' + H3.__pool(band).length + ')'); }
+  ok(!seedBad.length, 'and before the boot word tier lands, from the generated seed: 1,000 hours a band, never above the band: ' + seedRows.join(' · ') + some(seedBad));
 }
 
 /* ================================================================ 7. My Feed */

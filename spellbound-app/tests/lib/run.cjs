@@ -68,10 +68,10 @@ const SKIP = {
    source, and a full browser run of the minified tree on 2 Oct 2026 showed every one of
    these failing ONLY on its source-text lines. */
 const SOURCE_TEXT = {
-  'loading-state.cjs': 'viewTrivTrain asserted from app3.js text',
+  'loading-state.cjs': 'viewTrivTrain asserted from app3\'s text (app3-library.js since the P1.13 split)',
   'living-advanced.cjs': 'art keys read from trail.js text', 'living-atlas.cjs': 'art keys read from trail.js text',
   'living-cast.cjs': 'cast table read from trail.js text', 'living-meadow.cjs': 'comments read from trail.js',
-  'reader.cjs': 'art paths read from reader.js text', 'ux-826.cjs': 'timings read from app3.js text',
+  'reader.cjs': 'art paths read from reader.js text', 'ux-826.cjs': 'timings read from app3\'s text (app3-shared.js since the P1.13 split)',
   'result-screen.cjs': "engines' toString must contain SGUI.result (a renamed local in minified code)",
   'telemetry.cjs': 'drives backend.html, which is never deployed',
   'deploy-gate.cjs': 'drives deploy-*.sh and tests/lib/run.cjs, which never ship in a deploy tree',

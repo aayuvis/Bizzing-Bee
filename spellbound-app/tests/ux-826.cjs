@@ -12,7 +12,7 @@ const fs = require('fs');
 let fails = 0;
 const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b) fails++; };
 (async () => {
-  const src = fs.readFileSync(SRC + '/app3.js', 'utf8');
+  const src = require('./lib/app3-src.cjs').all(SRC);   /* app3's code wherever the P1.13 split put it */
   const mp = src.slice(src.indexOf('const missPause='), src.indexOf('const missPause=') + 400);
   ok(/missPause\(last\?gFinishBuzz:null/.test(src) && /g\.fbGo=/.test(mp) && !/setTimeout/.test(mp), 'Daily Buzz holds a miss on screen until Next (no timer)');
   ok(/missPause\(chLast\?gFinishChamp:null/.test(src), 'a Challenge miss stops to show the word');
@@ -44,6 +44,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     app.exitTrain && app.exitTrain(); await W(200);
 
     // ---- quick practice row: three tiles, honest labels ----
+    /* the Word Gym's code is a lazy file since the app3 split (P1.13 step 2): set straight into state, its screen
+       draws once its group is in, so wait for that the way a door would */
+    await Promise.race([new Promise(res => SB_LAZY.need('scrGym', res)), W(60000)]);
     state.nav = 'coach'; state.coachMode = null; state.luTab = 'revise'; render(); await W(200);
     /* 4 Oct 2026 (games spec §4.2): the first tile is "Warm-up" and opens the Spelling Gym's Warm-up
        (#/gym/warmup); it was "Daily Buzz", the old 10-word warm-up */

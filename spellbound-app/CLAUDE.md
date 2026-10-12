@@ -173,7 +173,7 @@ rejected); the grade map is US grade / UK year / CBSE class with a source on eve
   carry the word's first five letters, no homophone / two-pronunciation / marked spelling, no stop that teaches
   homophones, homonyms or accent marks, no meaning naming a faith, kid-safe at age 9, no two words sharing six letters.
   `tests/placement.cjs` rebuilds and compares — change the corpus or the trail → re-run the tool.
-- **THE START LINE** (`trail.js` `startIdx`/`reachIn`/`reach`): `c.trail.start = {u, act, pick, rec, n, ok, at}`. It
+- **THE START LINE** (`startIdx`/`reachIn`/`reach` — in trail-home.js's `SB_TRAIL_FRONT` since P1.13 step 3; trail.js builds its own from it): `c.trail.start = {u, act, pick, rec, n, ok, at}`. It
   moves only where the walk BEGINS (Tier 1, Honey course). `reach` = first unwalked node at/after the start — EVERY lock
   reads it (trailUnit/trailChk, SB_TRAIL_OPEN, the act board, the list view, the overview pins); `frontier` = where
   Continue goes (reach, or, once the road from the start is walked to its end, the first unwalked stop behind it). With
@@ -220,6 +220,168 @@ rejected); the grade map is US grade / UK year / CBSE class with a source on eve
   start it names); first-run — the world needing a tap again (11 taps), the 11+ first word printed.
 - `tests/pin-mandatory.cjs`'s known pre-existing failure ("a second boot migrates nothing and keeps the same record")
   passed on this batch's runs, so it is intermittent; this batch did not touch it — it is not fixed, only not seen.
+
+## Road to 4.5, P1 — the app3 split (P1.13 steps 2–3, 10 Oct 2026) — READ FIRST; it overrides the sections below
+The P1 exit gate's last item: **first-load JS ≤ 400 KB gzip — met, and a hard limit now** (`tests/first-load.cjs`: new
+visitor and returning speller **370 KB** each, from 905 / 980 at the start of the day; the table is below). Step 1 (the
+boot word tier) is the section below; the plan, and where the code corrected it, is `docs/first-load-plan.md`. Step 2
+split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
+- **WHICH FILE HOLDS WHICH SCREEN.** `app3.js` keeps what the first screens and the shell draw (render, viewApp's chain,
+  Home, the landing, onboarding, Settings, the drawer, the top bar, the Word Atlas's doors), the core of the action table,
+  every name another file reads by bare name, and everything those reach. Each screen's own code is a lazy classic
+  script, moved VERBATIM:
+
+  | file (boot-lazy name) | screens (navs) and pop-ups |
+  |---|---|
+  | `app3-library.js` (`scrLib`) | explore, builder, vocab, journeys, themes, concepts (the list), figurative, ipatrain, typing, quotes, trivtrain, finder; the word card, quote-word, set-deck, full-list and trivia-list pop-ups |
+  | `app3-gym.js` (`scrGym`) | coach, quest, train (the drill), levelup, revisions, traps, coachdesk, leveltest, beeband, firstword |
+  | `app3-grownups.js` (`scrGrown`) | progress / parent (the report card), the plan, the cloud and account sheets |
+  | `app3-games.js` (`scrGames`) | games (and sq / trivia), daily, dailybuzz, forge, gym (the hall's shell) |
+  | `app3-me.js` (`scrMe`) | collection, shop, evolution, help, the wallet sheet — reads no word, so its group carries no `words1` |
+  | `app3-tools.js` (`scrTools`) | debug, voicetest, evofeedback |
+  | `app3-shared.js` (`scrShared`) | what two or more of those share; runs first (DEPS) |
+  | `trail.js` (`trailCode`, in the `atlas` group) | the Word Atlas itself (step 3); Home reads the road from `trail-home.js` |
+
+- **THE THREE DOORS — the only ways app3.js reaches a lazy file's code** (a name in a lazy file does not exist until the
+  file has run, so anywhere else is a ReferenceError):
+  1. **viewApp's guard** above the dispatch chain: `SCR_NAV[S.nav]` (nav → group) or, for a word screen, `words1`; until
+     the group is in, the hive loader and `lazyNeed(group, render)`. Then the chain's branch names the view.
+  2. **`scrDraw(group, () => viewX())`** for a pop-up in `overlays()`, behind its flag (`if(S.walletOpen) …`). **Always
+     an arrow**: a bare `viewX` argument is read before scrDraw can hold it.
+  3. **The stubs**: every lazy action is named in `SCR_ACTS` (app3.js, one line per file); `scrStub(group, name)` stands
+     in on `app` until the file's own `Object.assign(app, {…})` replaces it — a call (data-act, a key, a route, a search
+     place, another file) loads the group and runs with the same arguments. `TRAIL_ACTS` does the same for trail.js's
+     actions (group `atlas`); a new trail.js action is named there too.
+- **An engine never lands before the screen that hosts it.** The Spelling Gym's group (`gym`) carries `scrShared` +
+  `scrGames`: gym.js's `open()` starts a round as soon as its group is in, and its keys reach only DOM on the page, so a
+  mode "ready" on no screen lost its first Enter (spelling-gym T3 caught it; screens-lazy §3 holds it with the screen
+  file slowed on the wire). An engine whose host view is in a lazy file carries that file's group the same way.
+- **boot-lazy streams the big data ONE FILE AT A TIME** (`HEAVY_MAX`, the `HEAVY` names: the word shards, etymology,
+  senses, synonyms, the voice index…); everything else — a screen's code, a library chunk — streams as it always did,
+  so a screen never waits behind 14 MB of words. A door can ask for a dozen files at once (the drill: `card` + `audio`,
+  six of them megabytes); all at once, Chromium's script-streaming parse — a parse short of bytes holds its worker until
+  the next chunk — starved its three-worker pool on a four-core machine and the page froze mid-frame for good: traced
+  (three `v8.parseOnBackground` that never ended, the main thread stuck behind them); hash-nav §6 hung one run in four.
+  Never raise it to "load faster". The order of the big files (`nextScript`): what a DOOR waits on, then what a KICK
+  started (data a screen draws without), then the IDLE queue; a kick's big files and the idle queue wait for a pause in
+  the child's input and for the screen to SETTLE (`QUIET_MS` after a door's last file landed — a 14 MB shard landing
+  mid-lookup is a Finder word that takes seconds; every landing redraws the app, and the idle queue resuming at once
+  put a redraw on top of the screen that had just appeared: mockbee-stage's lobby). A door asking for a kick's or the
+  idle queue's file promotes it; `need(what, cb, lvl)` takes the level, and KICKS and the header search's focus pass
+  `KICK`. A first cut also held everything else to two in flight; it froze nothing more and made every lazy screen
+  slower — the suite's timing tests said so, one different one each run. The Word Finder's guard group is `scrFinder`
+  (its code, no word tier): it draws at once and the words arrive while it is open. daily-bee's reload block runs in a
+  persistent profile (P0.18's cure). Guard: screens-lazy §3 (a dozen-file door streams its big data one at a time, and
+  the Word Gym's code lands before the second word shard).
+- **Rules a later session keeps:**
+  - Everything stays a deferred/injected CLASSIC script: no modules, no bundler, `"use strict"` first in every lazy file,
+    and `app` stays app3.js's top-level const (lazy files `Object.assign(app, …)`). The source stays readable — deploy
+    minifies a copy. **Never snapshot a deferred global into a const.**
+  - **A screen file names only app3.js's names, app3-shared.js's and its own; app3-shared.js only app3.js's.** No other
+    shipped file (root scripts, saga-art/, index.html's inline scripts) names a lazy file's code. No top-level name is
+    declared in two app3 files. Home's own buttons are app3's — a door on a first screen is never a stub.
+  - A lazy screen group carries `words1` and `scrShared`; the Library, the Word Gym and the report card also carry `trail`
+    + `trailCode` (a concept's lock and a drill's report are the Atlas's). Every lazy file is on the idle queue, right after the word tier,
+    so the next screen is usually in before the tap, and offline after the first visit (sw.js caches what is fetched).
+  - **To add a screen:** write its view, helpers and actions in the file of its family (or a new `app3-<x>.js`: REG, a
+    GROUP with `words1` + `scrShared` + itself, DEPS on `scrShared`, IDLE, and its group in `SCR_GROUP`); add its nav to
+    `SCR_NAV`; put its actions in that file's `Object.assign(app, {…})` AND name them in that file's `SCR_ACTS` line; a
+    pop-up goes in `overlays()` as `if(S.flag) h+=scrDraw('<grp>',()=>viewX());`. A first screen's code stays in
+    app3.js. **To move code back into app3.js** (a first screen or another file needs it): move it verbatim, take it out
+    of the lazy file and out of `SCR_ACTS`.
+  - **Tests**: one that calls a lazy file's function inside `page.evaluate`, or sets `state.nav` straight to a lazy
+    screen, first waits for its group (`SB_LAZY.need('scrGrown', …)`) — `backup-restore`, `trust-v2`, `pin-mandatory`,
+    `question-leaks`, `ux-826`, `atlas-stars`, `set-deck`, `live-prompts`, `wallet-coins` do; `word-gym`'s settle and
+    `back-pill` wait for the hive loader to go. A fixed sleep after a door is not enough any more: the screen's code
+    may still be on its way. One that reads app3's code AS
+    TEXT reads `tests/lib/app3-src.cjs` (`all`, `files`, `body`, `fileOf`): `data-lint`, `gym-source`, `coach-rules`,
+    `word-bank`, `library-chunks` (its anchor now ends at `function finderResults(`), `loading-state`, `no-random`,
+    `one-count`, `trust-v2`, `ux-826`, `home-continue`; `word-door`'s allow-list names the readers under their new
+    files; `asset-budget`'s eager-image list names `app3-library.js` for the shelf.
+- **THE MOVER WAS ONE-TIME, THE GUARDS ARE NOT.** The split was computed from app3's syntax tree (the core = the first
+  screens + the shell + every action a painted thing names + every name another file reads + everything a node nothing
+  reaches names, iterated; a screen's file = what only its screens reach; shared = 2+ files). `tools/app3-split-map.cjs`
+  still measures app3.js (the core now). Guards: **`tests/app3-split.cjs`** (@check, node: the files, one home per name,
+  the three doors, each file's reach, no other file reaching in, the stub table both ways) and **`tests/screens-lazy.cjs`**
+  (browser: every lazy nav from a cold page, every lazy address, a stub call, the wallet and word-card pop-ups, the gym's
+  host, file://).
+- **Step 3 — Home's Atlas card without the Atlas.** `trail-home.js` (boot) holds `SB_TRAIL_FRONT(T)` — the road's
+  arithmetic (lap, walked maps, `seq`, `passedNode`, the start line, `reachIn` / `reach` / `frontier`), ONE copy, over a
+  curriculum getter — plus `SB_ATLAS_PINS`, `SB_TRAIL_NEXT`, `SB_TRAIL_HERE`, `SB_TRAIL_STOPS`. They read
+  `SB_TRAIL || SB_TRAIL_HOME`: `trail-home-data.js` (boot, ~5 KB gz) is the ROAD cut from trail-data.js by
+  `node tools/build-trail-home.cjs` — **never edited by hand; rerun the tool whenever trail-data.js changes**. The road's
+  three scripts come BEFORE app3.js in index.html, so app3's very first render knows the next stop (the hello picks
+  from it — trust-v2's quiet child). `trail.js`
+  destructures its helpers from `SB_TRAIL_FRONT` over the full curriculum and is lazy (`trailCode`, DEPS `trail`).
+  **Change the frontier in trail-home.js, and only there.** **FIRST is gone** — nothing is fetched before the first tap;
+  boot-lazy renders every first screen once at DOMContentLoaded (worlds4's late worlds). wordband.js's region,
+  `wohBandNow`, the drawer's `atlasSub` and `SB_COUNT.regions` read the road too, so the hello, the word of the hour and
+  the card all draw at first paint. Guard: **`tests/trail-home.cjs`** (@check, node: generated; the three readings equal
+  from the road and from the whole curriculum for 322 children; no second copy in trail.js; wiring), with home-here,
+  placement-step, home-continue and home-first-paint in the browser (the card at first paint, no Atlas file asked for).
+  `feed-content`'s "built from the same function" check reads seq() from trail-home.js now.
+- **Measured** (`tests/first-load.cjs`, minified + gzip as deploy ships; JS = what the server sent):
+
+  | | start of day | step 1 (word tier) | step 2 (app3 split) | step 3 (Atlas) |
+  |---|---:|---:|---:|---:|
+  | new visitor JS / total (KB) | 905 / 1184 | 554 / 833 | 411 / 691 | **370** / 650 |
+  | returning speller JS / total (KB) | 980 / 1276 | 629 / 909 | 487 / 782 | **370** / 666 |
+
+  app3.js went 307 → 165 KB gz (core + stubs); the seven lazy app3 files are ~157 KB gz between them; trail.js (48) and
+  trail-data.js (76) left both first screens for trail-home.js + its data (~7). The ceilings are those plus ~2%, and
+  **400 KB of JS is a hard line for both screens** whatever the ratchet says — never raise it; take something off a first
+  screen instead (the levers left are in `docs/first-load-plan.md`).
+
+## Road to 4.5, P1 — the boot word tier is lazy (P1.13 step 1, 10 Oct 2026) — READ FIRST; it overrides the sections below
+The plan is `docs/first-load-plan.md` step 1. `words-data.js` + `words-extra.js` + `words-patch.js` (~368 KB gz) are no
+longer boot scripts. The rules a later session keeps:
+- **THE CURRICULUM IS GENERATED DATA.** `node tools/build-curriculum.cjs` runs app3's OWN algorithms
+  (`buildDefaultStages`, `buildJourneySorted`, `wohBandPool`, pulled out of the source by `tools/app3-closure.cjs`) over
+  the boot tier, loaded as the page loads it, and writes:
+  - `curriculum-data.js` (a BOOT script, ~17 KB gz): `SB_CURRICULUM.stages` (the 20 default stages as words) and
+    `.woh` (the word of the hour's seed: every k-th word of each band's pool, ≤160 a band, with the respelling and the
+    meaning as far as the tile's `trunc(d,84)` reads);
+  - `curriculum-ladder.js` (lazy, in the `words1` bundle): `SB_CURRICULUM.ladder`, the Journey order.
+  Never edit either; change the words or the algorithm and re-run. `tests/curriculum.cjs` (@check, node) rebuilds,
+  compares, and runs app3's runtime `defaultStages()` / `journeySorted()` / `journeyStages()` against the algorithms —
+  the same record OBJECTS.
+- **What the data froze, measured on the build before** (a returning speller's first render, probe in the session):
+  the 20 stages and the 7,571-word ladder are byte-identical to it; Home's every card is identical except the word of
+  the hour (the seed is thinned, so the hour's word differs); 103 of 105 lists are identical for a child on the default
+  list, the journey, or a theme. The two that differ were TIMING-DEPENDENT before and are now each list's steady state:
+  - the default stages of a child NOT on the default list (built from 41,000 words if the first call came after the
+    second shard) — now always the boot tier's;
+  - the Journey of a child NOT on the journey (the Scripps winners sprinkled in if `scripps-data.js` had landed first) —
+    now never sprinkled, which is what every child ON the journey has always climbed (`_journeyStages` was memoised at
+    their first render, before the lazy Scripps file). **Sprinkling is an owner's call, made as data — never by timing.**
+  - **Boot-tier records carry no homophone bonus** (`trickSeal`, run when `words1` lands): every returning first render
+    scored them before `sounds-data.js` landed, and every list order a child saw was built on that. Keep it, or
+    regenerate and say what changed.
+- **`words1` is a BUNDLE** (boot-lazy REG value is an array: the three files then the ladder, inserted `async=false`,
+  one `sb-lazy` when the last has run). It is first on the idle queue (the first tap starts it) and in every group a word
+  is read through; `words2` and `sents` DEPEND on it (they land on its records, in order). **`window.SB_DATA` is ONE
+  object** created by boot-lazy: an assignment to it merges (`words-data.js` and every tool that rewrites it keep their
+  `window.SB_DATA={…}` form), and app.js's `const SB_DATA` is that object.
+- **Nothing that starts a drill or shows a meaning runs before the tier:** `tapAct` (app3) holds a tap in the app
+  until `words1` lands (the hive loader covers the screen; one tap; `WORDLESS` are the shell's own controls and Home;
+  `setNav('parent')` goes straight to the PIN); typing never waits; `applyRoute` holds an address the same way
+  (`ROUTE_WORDLESS`), and the tester PIN waits for a held address; `onbNext` holds the end of setup; viewApp's
+  `NAV_WORDLESS` guard draws the hive loader for a word screen reached any other way. On `words1` app3's listener scores
+  the tier (`trickSeal`) and drops EVERY pool built without it. Before it, `defaultStages()` / `journeySorted()` are
+  thin `{w}` records from the data and are never memoised; `wordsIn()` is the one question.
+- **Home reads no word record.** viewHome's fourteen dead locals that counted the active list (and made every boot record
+  a first-paint read) are deleted; the woh tile draws the seed (`wohSeed`, pinned by `settled`), and `openWordCard`
+  opens the full record. `?demo`'s sample words come from `SB_CURRICULUM.stages`.
+- **Offline**: a device that was never tapped online has no words offline; the first tap's idle queue fetches the tier
+  and the worker keeps it (`offline-pwa` asks for it as that tap would).
+- **Tests**: `tests/curriculum.cjs` (node), `tests/words-lazy.cjs` (browser: Home without the tier and when it lands, the
+  live curriculum on the page's records, the seal with `SB_HOM` landed first, a tap and an address before the tier,
+  setup's first word, file://). A test that calls into the corpus right after boot asks for `words1` first (or uses a
+  group that carries it). `word-band` §6c draws the hour from the seed; `word-door` allows `trickSeal`.
+- **Proved by breaking:** curriculum — a hand edit in the data (3 fail), the homophone bonus on the tier (3), the Scripps
+  sprinkle back (1), the thin ladder memoised (2), `words-data.js` back in index.html (1); words-lazy — the seed unused
+  (3), the seed's respelling dropped (1), no tap gate (1), the tier unsealed (1), the seal with `SB_HOM` in hand (1), the
+  bundle async / out of order (3), setup not waiting (1: the first word was "bee").
 
 ## Road to 4.5, P1 — load weight (10 Oct 2026) — READ FIRST; it overrides the sections below
 Brief rows P1.12 (the dictionary), P1.14 (asset weight) and P1.13 outside app3.js (first-load JS). app3.js was NOT split
@@ -310,11 +472,12 @@ reads the boot word shard at first paint, the files app3 splits into and in what
     - `advanced.js` (groups `advanced`, `atlas`, `gym`, `coach`, `lists`, idle; doors `openAdvanced`, `advJump`,
       `advGo`, `advConcept`, `arcAdvDict` — they wait for the code alone, group `advCode`).
   - **The opening page fetches no Atlas data.** FIRST waits for the first tap there, so a new visitor saves 75.5 KB.
+    (P1.13 step 3: FIRST is gone and NEITHER first screen fetches the Atlas — the app3 split section above.)
     boot-lazy gives the landing one `softRender` at DOMContentLoaded. worlds4.js registers its worlds after app3's
     first paint, and `one-count` caught the landing keeping its fallback copy without that render.
   - **A test that calls `ADV` or `STV` waits first:** `SB_LAZY.need('advanced'|'beeTrivia')`. `living-advanced`,
     `mastery-evidence`, `question-leaks` and `dictionary` do.
-  - **Still on the first screen, and why** (the plan's steps):
+  - **Still on the first screen, and why** (the plan's steps — all three gone since P1.13 steps 1–3, sections above):
     - `words-data.js` (353 KB gz): `defaultStages`, `journeySorted`, `wohPool` and `trickAnal` read every boot
       record at Home's first render, so the curriculum must become generated data before the shard can go lazy;
     - app3.js (307 KB);
@@ -921,7 +1084,8 @@ and concepts (content is never bought with coins); the boot-budget figures (see 
 - `app` is a top-level `const` (global lexical scope, **not** `window.app`) — extension
   scripts like trail.js must reference the bare identifier.
 - **`window.SB_TRAIL_NEXT()`** is the one public reading of the frontier: `{title, sub,
-  act, world, done, total, lap, allDone, go, arg}`, or `null` until trail-data.js lands.
+  act, world, done, total, lap, allDone, go, arg}`, or `null` until trail-data.js lands (since P1.13 step 3 it lives
+  in trail-home.js and answers at first paint from the road, trail-home-data.js).
   Home's "Next on your journey" card and the Atlas tile both quote it, so the stop count
   is the tier's count (`seq()` filters by lap) and never disagrees between cards. Home
   renders an invitation while it is null; boot-lazy's softRender fills it in.
@@ -1227,14 +1391,15 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
 - **Home's first screen**: the pictures it showed are remembered in device key `homeArt` and
   preloaded by a second read-only IIFE in the parse-time script; boot-lazy fetches `trail` at
   DOMContentLoaded when Home was drawn (inside boot-lazy `state` is the loader's own). The hello waits
-  for `SB_LAZY.ready('trail')`. Guard `home-first-paint.cjs` (throttled, not @check).
+  for `SB_LAZY.ready('trail')`. Guard `home-first-paint.cjs` (throttled, not @check). (Since P1.13 step 3 neither:
+  Home reads the road from trail-home.js at first paint and fetches no Atlas file — the app3 split section above.)
 - **Phone**: 44px minimum targets (`a11y.css` §6; exempt and stated in `tests/touch-targets.cjs`:
   the family top bar, Daily Buzz keys, Atlas medallions, inline links). `mobile-layout`'s overflow
   check compares against the REQUESTED width (an overflowing page widens its own innerWidth).
 - **Announcements**: one polite `#sb-live` on `<body>`; mark a prompt with `data-live-prompt`
   (`tests/live-prompts.cjs`). A region inside `#root` is rebuilt every render and never announced.
 - **Home's journey card is "You are here"** (owner: "HOME screen should take to world atlas and show
-  kids where they are"): `homeHereCard` (app3) on `SB_TRAIL_HERE(crs)` (trail.js) — the World Atlas
+  kids where they are"): `homeHereCard` (app3) on `SB_TRAIL_HERE(crs)` (trail-home.js since P1.13 step 3; it was trail.js) — the World Atlas
   overview painting (`atlas-map.jpg`, 113 KB, chosen over the 0.6–1 MB region panoramas for the
   first-load budget) cropped round the child's region, their avatar on its pin, walked regions
   starred, "Stop n of N" from `SB_TRAIL_NEXT().stop/.stops` (stops + checkpoints, the board's own

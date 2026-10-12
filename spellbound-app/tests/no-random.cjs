@@ -20,7 +20,8 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
 const APP = path.resolve(__dirname, '..');
 
 /* ---- the source: no draw, no odds, no pack, no coin price on content ---- */
-const app3 = fs.readFileSync(path.join(APP, 'app3.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');   // comments may remember the old ways
+/* app3's code: app3.js and the lazy files the P1.13 split moved its screens into (tests/lib/app3-src.cjs) */
+const app3 = require('./lib/app3-src.cjs').all(APP).replace(/\/\*[\s\S]*?\*\//g, '');   // comments may remember the old ways
 const gone = [/PACK_WEIGHTS/, /\bpackOdds\b/, /\boddsPanel\b/, /Drop odds/i, /drop chance/i, /Open pack/i, /packRollOverlay/,
   /\bsellDupes\b/, /\bsellAvatar\b/, /spendCoins\(\s*COST\./, /Unlock this (world|concept) for/];
 const left = gone.filter(rx => rx.test(app3)).map(String);

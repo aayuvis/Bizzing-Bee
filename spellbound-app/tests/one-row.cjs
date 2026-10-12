@@ -103,6 +103,8 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
        the corners of the 44px square centred on it, the way tests/touch-targets.cjs measures a thumb. */
     await p3.evaluate(() => app.openLore('ladder'));
     await p3.waitForFunction(() => state.qz && state.qz.mode === 'ladder' && state.qz.phase === 'play' && document.querySelector('.sg-st-hud, .qz-hud'), null, { timeout: 30000 }).catch(() => {});
+    /* the bar as it stays: no lazy file's redraw (boot-lazy softRender) under the measurement (road to 4.5, P1.13) */
+    await require('./lib/wait.cjs').quietRender(p3);
     const rb = await p3.evaluate(() => { const bar = document.querySelector('.sg-st-hud, .qz-hud'); if (!bar) return { none: true };
       const lines = el => { const rng = document.createRange(); rng.selectNodeContents(el);
         return new Set([...rng.getClientRects()].filter(r => r.height > 1 && r.width > 1).map(r => Math.round(r.top))).size; };

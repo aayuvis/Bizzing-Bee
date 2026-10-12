@@ -27,8 +27,9 @@ const pools = { 'served corpus (words-data + -2)': ctx.SB_DATA.nsf, 'library (wo
 for (const [name, arr] of Object.entries(pools)) {
   const self = arr.filter(w => w && w.m != null && norm(w.m) === norm(w.w));
   ok(arr.length > 1000 && self.length === 0, `${name}: no word is "often misspelled" as itself — ${self.length} of ${arr.length}` + (self.length ? ' e.g. ' + self.slice(0, 5).map(w => w.w).join(', ') : '')); }
-const app3 = fs.readFileSync(path.join(ROOT, 'app3.js'), 'utf8');
-const shows = (app3.match(/Often misspelled “/g) || []).length, guarded = (app3.match(/\$\{realMiss\(w\)\?[^]*?Often misspelled “/g) || []).length;
+/* app3's code, file by file (the P1.13 split moved the word card's line to app3-gym.js — tests/lib/app3-src.cjs) */
+const A3 = require('./lib/app3-src.cjs').files(ROOT);
+const shows = A3.reduce((t, [, s]) => t + (s.match(/Often misspelled “/g) || []).length, 0), guarded = A3.reduce((t, [, s]) => t + (s.match(/\$\{realMiss\(w\)\?[^]*?Often misspelled “/g) || []).length, 0);
 ok(shows >= 2 && shows === guarded, `every "Often misspelled" line on screen goes through realMiss() (${guarded} of ${shows})`);
 
 /* ---- 1b. NAMES ARE NOT SPELLING WORDS (FIX-BEE v2 Fix-first: "remove proper nouns from the

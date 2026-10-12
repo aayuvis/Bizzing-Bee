@@ -15,6 +15,10 @@
    ============================================================ */
 (function () {
   const T = () => window.SB_TRAIL;
+  /* THE ROAD'S ARITHMETIC IS ONE COPY (road to 4.5, P1.13 step 3): trail-home.js (a boot script) holds it, over a
+     curriculum getter, so Home's card can read the road before this file lands; the Atlas builds its own over the
+     whole curriculum. Change the frontier there, never here. */
+  const { tr, course, courseOfId, unitsOf, actsOf, lapOf, doneMap, chkMap, PGATE, seq, passedNode, startIdx, reachIn, reach, frontier } = window.SB_TRAIL_FRONT(T);
   const GUIDE = { meadow: 'honeypot', library: 'waggle', forum: 'bumble', elements: 'star', engine: 'drone', strait: 'nectar', junkyard: 'propolis', vibe: 'jester', stage: 'diva', warfield: 'queenhive', greysea: 'blossom', grandtrunk: 'cobra' };
   const ACCENT = { meadow: ['#FFC23D', '#C8791B'], library: ['#6C4FE0', '#4A3AA0'], forum: ['#E06A3C', '#A8431F'], elements: ['#2E8FB8', '#1C6486'], engine: ['#C08A3E', '#8A5B00'], strait: ['#3E63D6', '#26409A'], junkyard: ['#F0A93C', '#B4711A'], vibe: ['#B14FC4', '#7A2F8C'], stage: ['#E8458C', '#A82563'], warfield: ['#D6353F', '#8E1D26'], greysea: ['#7E8AA0', '#4C566B'], grandtrunk: ['#E0A33C', '#93551A'] };
 
@@ -55,11 +59,8 @@
   const scrim = () => `<span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.42) 0%,rgba(14,9,32,.05) 34%,rgba(14,9,32,.22) 62%,var(--bg2) 100%)"></span>`;
 
   /* ---- state helpers ---- */
-  const tr = c => c.trail || (c.trail = { lap: 1, done: {}, chk: {}, seen: {}, elap: 1, edone: {}, echk: {} });
   /* Both courses live on ONE map now; the active course follows the unit being
      worked (x-prefixed ids are Advanced Rounds), set by the unit/checkpoint actions. */
-  const course = () => state.trailCourse === 'exp' ? 'exp' : 'honey';
-  const courseOfId = id => (String(id || '')[0] === 'x') ? 'exp' : 'honey';
   const advOn = () => { try { return !!(window.ADV && ADV.active && ADV.active()); } catch (e) { return false; } };
   /* Settings → Unlock everything is meant to open the whole app for testing. The Atlas
      gates on the frontier rather than on entitlement, so it needs to honour it too. */
@@ -75,8 +76,6 @@
      current view identity against the last one it drew: same key, no animation. */
   let _vk = '', _fresh = true, _popK = '';
   const RISE = d => _fresh ? ('animation:sb-rise ' + (d || '.35s') + ' ease both;') : '';
-  const unitsOf = tab => tab === 'exp' ? T().expedition.units : T().honey.units;
-  const actsOf = tab => tab === 'exp' ? T().expedition.expeds : T().honey.acts;
   const unit = id => unitsOf(course()).find(u => u.id === id);
   /* Three sources, one shape. `sa` is the Grand Trunk Road: its chapters live in
      their own file because they are the book's, not the advanced course's, and
@@ -85,9 +84,6 @@
   const chOf = u => u.neu ? u.chapter
     : u.sa != null ? ((window.SB_SOUTHASIA || [])[u.sa] || EMPTY_CH)
     : (u.ai != null ? (window.SB_ADV_CONCEPTS.chapters[u.ai]) : (window.SB_CONCEPTS.chapters[u.gi]));
-  const lapOf = c => course() === 'exp' ? tr(c).elap : tr(c).lap;
-  const doneMap = c => course() === 'exp' ? tr(c).edone : tr(c).done;
-  const chkMap = c => course() === 'exp' ? tr(c).echk : tr(c).chk;
   const gate = () => course() === 'exp' ? (T().rules.expeditionGate || .9) : (T().rules.gate || .8);
   /* ---- stars: the stop always tells you how you are doing and what to do next ----
      Play-tested as "I completed all the words but I am not told what I need to do to
@@ -103,7 +99,6 @@
      quiz %}. Old saves carry only the quiz % in doneMap — starsOf reads both, so a
      stop passed last month keeps its quiz stars and its unlock. */
   const QSTAR = () => course() === 'exp' ? 95 : 90;
-  const PGATE = 70;                       // practice % that opens the next stop
   const stKey = (u, lap) => u.id + ':' + lap;
   /* A STOP FINISHED pays the standard's 'stop' once per stop per lap, whichever door finished
      it — Practice at PGATE or the quiz. Both used to be able to fire for one stop. */
@@ -191,43 +186,16 @@
     } catch (e) {}
   };
   function availableIn(u, lap) { if (course() === 'exp') return lap === 1 || !!(doneMap(active())[u.id] || {})[lap - 1] === false ? lap === 1 : true; return (u.laps || [u.lap || 1]).includes(lap); }
-  /* ordered nodes for the current lap: units + checkpoint markers every 4th. The road is trail-road.js's
-     (SB_TRAIL_ROAD.nodes) — the ONE count the board, Home's "Stop n of N" and My Feed's place cards all
-     read (the 4.5 brief, P0.14), so no two of them can disagree about how long a region is. */
-  function seq(c) { return window.SB_TRAIL_ROAD.nodes(T(), course(), lapOf(c)); }
-  /* a UNIT opens the road behind it at Practice >= PGATE (or a legacy quiz pass);
-     a CHECKPOINT is still its quiz — the every-4th-stop consolidation stays a quiz */
-  const passedNode = (c, node) => node.kind === 'unit'
-    ? (!!(doneMap(c)[node.u.id] || {})[lapOf(c)] || (((tr(c).st || {})[node.u.id + ':' + lapOf(c)] || {}).p || 0) >= PGATE)
-    : !!chkMap(c)[lapOf(c) + ':' + node.id];
-  /* THE START LINE (road to 4.5, P1.7 — owner, 10 Oct 2026: placement "only chooses where Continue starts").
-     A child placed in onboarding carries `tr(c).start = {u, act, pick, rec, n, ok, at}`: the entry stop of
-     the region they chose. It never changes the route, the stops, their order or the rule that opens them —
-     a stop still opens when the one before it is walked — it moves only where the walk BEGINS, on Tier 1 of
-     the Honey course. Nothing before the start line is marked walked (no evidence is invented); those stops
-     stay open behind the child, and the lap still needs every stop walked (seq().every(passed) below).
-       reach(c)    — the furthest open node: the first one not walked at or after the start line.
-                     Every lock reads this. With no start line it IS the old frontier, so nothing changes
-                     for a child who was never placed.
-       frontier(c) — where Continue goes: reach, or — once the road from the start line is walked to its end
-                     — the first stop still unwalked behind it.
-     Guard: tests/placement-step.cjs (the route and the open rule unchanged, the earlier stops open and not
-     walked, Continue at the chosen stop) and tests/placement.cjs. */
-  function startIdx(c, s) {
-    if (course() !== 'honey' || lapOf(c) !== 1) return 0;
-    const st = tr(c).start; if (!st || !st.u) return 0;
-    const i = s.findIndex(n => n.kind === 'unit' && n.u.id === st.u); return i > 0 ? i : 0;
-  }
-  function reachIn(c, s) { for (let i = startIdx(c, s); i < s.length; i++) if (!passedNode(c, s[i])) return i; return s.length; }
-  function reach(c) { return reachIn(c, seq(c)); }
-  function frontier(c) { const s = seq(c); const e = reachIn(c, s); if (e < s.length) return e;
-    for (let i = 0; i < s.length; i++) if (!passedNode(c, s[i])) return i; return s.length; }
+  /* seq, passedNode, the start line (startIdx), reachIn / reach / frontier: trail-home.js's SB_TRAIL_FRONT, above */
 
   /* ---- word pools ---- */
+  /* built once, as before — but never before the boot word tier is in (boot-lazy `words1`, lazy since P1.13 step 1):
+     an index built from an empty shard would have stayed empty for the visit */
   let _idx = null;
-  function widx() { if (_idx) return _idx; _idx = new Map();
-    for (const w of ((window.SB_DATA && SB_DATA.nsf) || [])) if (w && w.w) _idx.set(nkey(w.w), w);
-    return _idx; }
+  function widx() { if (_idx) return _idx; const m = new Map();
+    for (const w of ((window.SB_DATA && SB_DATA.nsf) || [])) if (w && w.w) m.set(nkey(w.w), w);
+    let ready = true; try { ready = !window.SB_LAZY || SB_LAZY.ready('words1'); } catch (e) {}
+    if (ready) _idx = m; return m; }
   function needMap(cb) { if (window.SB_TRAIL_MAP) { cb(); return; }
     if (needMap._p) { needMap._q.push(cb); return; }
     needMap._p = true; needMap._q = [cb];
@@ -382,79 +350,8 @@
     return shuffle(items).slice(0, 12);
   }
 
-  /* The Home screen shows the next stop on the Atlas, so the frontier has to be
-     readable from outside this file. Everything is derived here rather than
-     re-implemented in app3 — the lap filter in seq() is the only truth about
-     which stop comes next. Returns null until trail-data.js lands. */
-  window.SB_TRAIL_NEXT = function () {
-    try {
-      const c = active(); if (!c || !T()) return null;
-      const s = seq(c); if (!s.length) return null;
-      const i = frontier(c), atEnd = i >= s.length;
-      const node = s[atEnd ? s.length - 1 : i];
-      const act = (actsOf(course()) || []).find(a => a.id === node.act) || {};
-      const raw = node.kind === 'unit' ? String(node.u.title || '') : 'Checkpoint';
-      const cut = raw.indexOf(' — ');
-      /* where the stop sits in its OWN region, counted the way the region's board counts it
-         ("Stop 3 of 13": this tier's stops AND its checkpoints) — Home quotes these */
-      const inAct = s.map((n, k) => k).filter(k => s[k].act === node.act);
-      /* `done` counts the stops WALKED before this one: a placed child's start line skips stops it never
-         marks walked, so the index alone would report them cleared (the report card prints this number) */
-      let skipped = 0; for (let k = 0; k < Math.min(i, s.length); k++) if (!passedNode(c, s[k])) skipped++;
-      return {
-        kind: node.kind,
-        title: cut > 0 ? raw.slice(0, cut) : raw,
-        sub: node.kind === 'chk' ? 'mixed quiz — no new words' : (cut > 0 ? raw.slice(cut + 3) : ''),
-        act: act.title || '', world: act.world || 'meadow',
-        done: Math.min(i, s.length) - skipped, total: s.length, lap: lapOf(c), allDone: atEnd,
-        go: node.kind === 'unit' ? 'trailUnit' : 'trailChk',
-        arg: node.kind === 'unit' ? node.u.id : (course() + '|' + node.id),
-        crs: course(), actId: node.act, node: atEnd ? null : i,
-        stop: inAct.indexOf(atEnd ? s.length - 1 : i) + 1, stops: inAct.length,
-        stopsDone: inAct.filter(k => passedNode(c, s[k])).length,
-      };
-    } catch (e) { return null; }
-  };
-  /* HOME'S "YOU ARE HERE" (owner, 4 Oct 2026: "HOME screen should take to world atlas and show
-     kids where they are"). The World Atlas the overview draws — its painting, its region
-     medallions, its road — and where this child stands on it, read from the same pins, frontier
-     and stop records atlasBoard uses, so the card on Home is a window onto the Atlas and never a
-     second map that could disagree with it. `stops` is the child's region as its own board counts
-     it (this tier's stops and checkpoints): 2 passed, 1 the frontier, 0 ahead. Display only —
-     where Continue GOES is SB_NEXT_STEP's (family-shell). Before trail-data.js lands it still
-     answers, for a speller with nothing walked: the first region, nothing passed. */
-  window.SB_TRAIL_HERE = function (crs) {
-    try {
-      crs = crs === 'exp' ? 'exp' : 'honey';
-      const P = ATLAS_PINS[crs] || [], img = crs === 'exp' ? 'atlas-adv.webp' : 'atlas-map.webp';
-      const c = active();
-      if (!c || !T()) return { img, crs, ready: false, here: 0, stops: [],
-        pins: P.map(([id, x, y], i) => ({ id, x, y, st: i ? 'ahead' : 'here' })) };
-      const prev = state.trailCourse; state.trailCourse = crs;
-      try {
-        const s = seq(c), fr = frontier(c), rc = reachIn(c, s);
-        let here = -1, stops = [];
-        const pins = P.map(([id, x, y], i) => {
-          const ns = s.map((n, k) => ({ n, k })).filter(z => z.n.act === id);
-          const dn = ns.filter(z => passedNode(c, z.n)).length, at = ns.some(z => z.k === fr);
-          if (at) { here = i; stops = ns.map(z => passedNode(c, z.n) ? 2 : z.k === fr ? 1 : 0); }
-          return { id, x, y, st: ns.length && dn >= ns.length ? 'done' : at ? 'here' : (dn || ns.some(z => z.k <= rc)) ? 'part' : 'ahead' };   /* behind a start line: reached */
-        });
-        /* every stop of the tier walked: the child stands at the end of the road */
-        if (here < 0) { here = Math.max(0, pins.length - 1);
-          const last = pins[here] && s.filter(n => n.act === pins[here].id); stops = (last || []).map(() => 2); }
-        return { img, crs, ready: true, here, stops, pins };
-      } finally { state.trailCourse = prev; }
-    } catch (e) { return null; }
-  };
 
-  /* STOPS FINISHED, every course and lap, counted once per stop — the evidence behind the
-     Atlas medals and some avatar milestones (FIX-BEE I3/I4). A stop is finished the way the
-     map itself decides it: a quiz pass on any lap, or Practice at PGATE. */
-  window.SB_TRAIL_STOPS = function (c) { try { c = c || active(); const t = tr(c); const ids = new Set();
-      [t.done || {}, t.edone || {}].forEach(m => Object.keys(m).forEach(id => { if (Object.keys(m[id] || {}).length) ids.add(id); }));
-      Object.keys(t.st || {}).forEach(k => { if (((t.st[k] || {}).p || 0) >= PGATE) ids.add(k.split(':')[0]); });
-      return ids.size; } catch (e) { return 0; } };
+  /* SB_TRAIL_NEXT, SB_TRAIL_HERE and SB_TRAIL_STOPS live in trail-home.js (P1.13 step 3): Home reads them before this file lands */
   /* Has the child REACHED the stop that teaches this concept? A concept chapter opens on the
      Atlas (FIX-BEE C4: content is never bought with coins) — passed on any lap, or standing at
      or behind the frontier of its own course. Testing mode reaches everything. */
@@ -1095,29 +992,8 @@
      (app-art/atlas-map.webp and atlas-adv.webp, generated by
      voice/pipeline/atlas-art.py). They are hand-placed against what the painter
      actually drew — if the art is ever regenerated, these have to be re-measured. */
-  const ATLAS_PINS = {
-    honey: [
-      ['meadow',   12.5, 70],   // the flower meadow, bottom-left
-      ['library',  39,   70],   // the bookshelf canyon
-      ['forum',    17,   34],   // the marble forum
-      ['storm',    35,   19],   // the crystal storm
-      ['roots',    53,   43],   // the engine room, centre
-      ['strait',   70,   66],   // the lighthouse strait
-      ['junkyard', 85,   53],   // the junkyard
-      ['sprints',  62,   14],   // the paper mountains
-      ['stage',    85,   13],   // the theatre in the cliff
-    ],
-    exp: [
-      ['proving',  18, 72],     // the lantern-lit proving ground
-      ['greysea',  27, 41],     // the fog sea and its red buoy
-      ['liars',    54, 46],     // the junkyard, centre
-      ['grandtrunk', 70, 37],   // ON the road east of the junkyard - it IS the road,
-                                //  and it is the only spot whose chip clears all three
-                                //  neighbours' chips (liars, farflung, factory)
-      ['farflung', 64, 15],     // the far shore
-      ['factory',  83, 18],     // the word factory
-    ],
-  };
+  /* the overview's hand-measured pins live in trail-home.js (a boot script: Home's card draws them) */
+  const ATLAS_PINS = window.SB_ATLAS_PINS;
   const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
 
   /* One region on the map: a medallion on the art, its name on a glass chip under

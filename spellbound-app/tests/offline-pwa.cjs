@@ -78,6 +78,15 @@ const pngSize = f => { const b = fs.readFileSync(f); return b.slice(1, 4).toStri
   ok(st.core === 'bee-core-' + stamp, `its cache is named for the ?v= stamp (${st.core}, stamp ${stamp})`);
   ok(st.has && st.app3 && st.n > 20, `the warm-up put what the page had already fetched into it (${st.n} entries, the page and app3.js among them)`);
   ok(!(st.keys || []).includes('bee-core-STALE'), 'a stale stamp\'s cache is deleted when the new worker activates');
+  /* THE CHILD'S FIRST TAP (road to 4.5, P1.13): the boot word tier is no longer a boot script — boot-lazy's idle queue,
+     which the first tap starts, fetches it first (the words1 bundle), and the worker keeps it as it arrives. A device
+     that has never been tapped online has no words offline; one that has, has them. Asked for here as that queue would. */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('words1', r)));
+  const t1 = Date.now(); let tier = false;
+  while (Date.now() - t1 < 15000) { tier = await pg.evaluate(async () => { const k = (await caches.keys()).find(x => /^bee-core-/.test(x) && x !== 'bee-core-STALE');
+      const ks = k ? (await (await caches.open(k)).keys()).map(r => r.url) : []; return ['words-data.js', 'words-extra.js', 'words-patch.js', 'curriculum-ladder.js'].every(f => ks.some(u => u.indexOf('/' + f) >= 0)); });
+    if (tier) break; await pg.waitForTimeout(300); }
+  ok(tier, 'the boot word tier fetched at the first tap is kept by the worker (words-data, words-extra, words-patch, the ladder)');
   // let the deferred idle work settle, then cut the network both ways
   await pg.waitForTimeout(1500);
   await ctx.setOffline(true); await srv.close();
@@ -86,10 +95,15 @@ const pngSize = f => { const b = fs.readFileSync(f); return b.slice(1, 4).toStri
   await pg.reload({ waitUntil: 'load' }).catch(e => errs.push('reload: ' + e.message));
   await pg.waitForTimeout(3500);
   const home = await pg.evaluate(() => ({ screen: typeof state !== 'undefined' && state.screen, nav: typeof state !== 'undefined' && state.nav,
-    named: /Ahana/.test(document.body.innerText), nav5: document.querySelectorAll('[data-act="setNav"]').length, words: (window.SB_DATA && SB_DATA.nsf || []).length }))
+    named: /Ahana/.test(document.body.innerText), nav5: document.querySelectorAll('[data-act="setNav"]').length }))
     .catch(e => ({ err: e.message }));
+  /* the tier is not a boot script: asked for (as the first tap would), it comes from the cache */
+  home.words = await pg.evaluate(() => new Promise(r => { const t = setTimeout(() => r(-1), 10000); SB_LAZY.need('words1', () => { clearTimeout(t); r((window.SB_DATA && SB_DATA.nsf || []).length); }); })).catch(() => -2);
   ok(home.screen === 'app' && home.nav === 'home' && home.named, `offline, a reload boots to Home with the speller's name on it (${JSON.stringify(home)})`);
-  ok(home.nav5 >= 5 && home.words > 100, 'and the app is all there — the nav and the boot word shard loaded from the cache');
+  ok(home.nav5 >= 5 && home.words > 100, `and the app is all there — the nav, and the boot word tier from the cache when asked (${home.words} words)`);
+  /* the returning speller's tab closes first: still open, it saves its household back (the tier landing above re-renders
+     it), and a "visitor with no profile on this device" would then find one */
+  await pg.close();
   const p2 = await ctx.newPage(); p2.on('pageerror', e => errs.push(e.message));
   await p2.addInitScript(() => { try { localStorage.removeItem('sb_saas_v2'); localStorage.setItem('sb_t_seeded', '1'); } catch (e) {} });
   await p2.goto('http://127.0.0.1:' + srv.port + '/index.html').catch(e => errs.push('fresh: ' + e.message));

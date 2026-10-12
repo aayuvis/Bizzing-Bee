@@ -122,6 +122,8 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
   ok(pinRec.test(fileHh.pin || '') && !/"pin":"1234"/.test(text) && await pg.evaluate(p => SB_STORE.pinCheck('1234', p) && !SB_STORE.pinCheck('4321', p), fileHh.pin),
     'the backup file holds the PIN as its salted hash, not the four digits — and the restored household still opens with 1234');
   /* byte-exact: restore writes back precisely what the file holds, key for key */
+  /* eraseHousehold is the Parent Zone's (app3-grownups.js since the P1.13 split): its code arrives at that door */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('scrGrown', r)));
   const exact = await pg.evaluate((b) => { bkHalt(); eraseHousehold(); restoreHousehold(b);
     const bad = Object.keys(b.keys).filter(k => localStorage.getItem(k) !== b.keys[k]);
     const extra = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^sb_/.test(k) && !(k in b.keys)) extra.push(k); }

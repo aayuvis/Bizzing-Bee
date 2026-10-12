@@ -34,7 +34,8 @@ const CORE = 126454;   // SB_FULL as it ships, before the shard
    not here and nothing may say it. Claiming it without shipping it is the
    failure, and it fails loudly below. */
 const SHARD = SRC + '/words-hard.js';
-const app3pre = fs.readFileSync(SRC + '/app3.js', 'utf8');
+/* app3's code: app3.js and the lazy files the P1.13 split moved its screens into (tests/lib/app3-src.cjs) */
+const app3pre = require('./lib/app3-src.cjs').all(SRC);
 const claims130 = /130,000-word library|find any of 130,000 words/.test(app3pre);
 if (!fs.existsSync(SHARD)) {
   ok(!claims130, 'no surface claims 130,000 words while the championship shard is unbuilt');
@@ -413,7 +414,7 @@ ok(live.size >= 125000,
   'the FILTERED library still clears its claimed floor — ' + live.size + ' words reach a child');
 
 // ---- the merge is idempotent and cache-aware ----
-const app3 = fs.readFileSync(SRC + '/app3.js', 'utf8');
+const app3 = app3pre;
 ok(/function mergeHard\(\)/.test(app3), 'fullWords() merges the shard through mergeHard()');
 ok(/if\(window\.SB_FULL\._hard\) return;/.test(app3), 'and merging twice is a no-op');
 const adv = fs.readFileSync(SRC + '/advanced.js', 'utf8');

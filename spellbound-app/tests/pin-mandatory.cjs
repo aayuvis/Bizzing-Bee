@@ -23,6 +23,9 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(2800);
   await pg.evaluate(() => { state.screen = 'app'; state.nav = 'home'; render(); });
+  /* the paywall's opener and the plan sheet live in app3's lazy files since the P1.13 split (app3-gym.js, app3-grownups.js):
+     their code arrives at its door, which this test reaches by calling straight in — so it asks for it first */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need(['scrGym', 'scrGrown'], r)));
 
   const look = () => pg.evaluate(() => ({ tiers: !!state.showTiers, pay: !!state.showPaywall, dlg: state.pinDlg && { make: !!state.pinDlg.make, first: !!state.pinDlg.first, label: state.pinDlg.label },
     closer: !!document.querySelector('[data-act="closeTiers"],[data-act="closePaywall"]'), pin: state.parentPin }));

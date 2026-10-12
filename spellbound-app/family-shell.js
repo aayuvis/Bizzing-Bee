@@ -247,10 +247,11 @@
     } catch (e) {}
   }
   /* Map a route back onto the openers the UI itself uses — the same gates apply. */
-  function applyRoute(r) {
+  var ROUTE_WORDLESS = ['home', 'settings', 'continue', 'hive', 'shop', ''];
+  function applyRoute(r, held) {
     var p = String(r || '').split('/'), head = p[0];
     var kids = !!(state.children && state.children.length);
-    dropLayers();
+    if (!held) dropLayers();   /* a route held for the word tier dropped them when it arrived; a PIN opened since stays */
     if (head === 'welcome' || head === 'signin' || head === 'setup') {
       if (state.screen === 'onboarding' && head === 'setup') { var st = Math.max(0, Math.min(state.onbStep | 0, (+p[1]) | 0)); set({ onbStep: st }); return; }
       if (state.screen === 'auth' && head === 'welcome') { set({ screen: 'landing' }); return; }
@@ -258,6 +259,11 @@
       app.setNav('home'); return;
     }
     if (!kids) { set({ screen: 'landing', nav: 'home' }); return; }
+    /* AN ADDRESS THAT OPENS WORDS WAITS FOR THEM (road to 4.5, P1.13 step 1): the boot word tier is lazy, and an address
+       goes through the same opener a tap does, so it is held the way a tap is (app3 wordsHold — the hive loader, then
+       the opener). Home, Settings, the Hive, the shop and #/continue (goNext waits on the atlas group) need none. */
+    if (ROUTE_WORDLESS.indexOf(head) < 0 && typeof wordsIn === 'function' && !wordsIn() && typeof wordsHold === 'function') {
+      wordsHold(function () { applyRoute(r, true); }); return; }
     if (state.screen !== 'app') state.screen = 'app';
     if (head !== 'settings' && state.settingsOpen) { state.settingsOpen = false; state._setOpened = false; }
     if (head === 'continue') { goNext(); return; }
@@ -390,6 +396,8 @@
     } catch (e) {}
   }
   function askTester() {
+    /* the address first, then the PIN over it: an address held for the word tier (wordsHold) lands before the dialog opens */
+    if (state.wordsWait) { setTimeout(askTester, 120); return; }
     var t = R.tester; R.tester = null; if (!t) return;
     dropTesterQuery();
     if (!t.on) { if (state.tester && app.testerSet) app.testerSet(false); return; }
@@ -588,8 +596,11 @@
   function sampleHousehold() {
     var now = Date.now(), day = 864e5;
     var words = [];
-    try { var nsf = (window.SB_DATA && SB_DATA.nsf) || [];
-      for (var i = 0; i < nsf.length && words.length < 140; i++) { var w = nsf[i] && nsf[i].w; if (w && /^[a-z]{3,9}$/.test(w)) words.push(w); } } catch (e) {}
+    /* the sample's easy words are the default stages' (SB_CURRICULUM, a boot file): the boot word tier itself is lazy
+       since P1.13 step 1, so at this file's run nothing is in SB_DATA yet */
+    try { var stg = (window.SB_CURRICULUM && SB_CURRICULUM.stages) || [];
+      for (var s = 0; s < stg.length && words.length < 140; s++) for (var i = 0; i < stg[s].length && words.length < 140; i++) {
+        var w = stg[s][i]; if (w && /^[a-z]{3,9}$/.test(w) && words.indexOf(w) < 0) words.push(w); } } catch (e) {}
     var lu = {}; words.forEach(function (w) { lu[w] = true; });
     var days = []; [20, 19, 17, 16, 14, 12, 11, 9, 7, 6, 4, 2, 1].forEach(function (n) { days.push(ymd(new Date(now - n * day))); });
     var done = {}, st = {}, sc = [93, 88, 90, 84, 91, 86, 89];
