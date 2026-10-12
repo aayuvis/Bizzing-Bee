@@ -1491,7 +1491,7 @@
         "gk": "You spell Greek the way it sounds.",
         "end": "You guess the ending.",
         "dbl": "You lose count of double letters.",
-        "vow": "You mix up vowel teams: ie or ei, ough or augh, and three vowels in a row.",
+        "vow": "You mix up vowel teams, like ough or augh, or three vowels in a row.",
         "hom": "You spell the sound, not the meaning.",
         "epon": "Words named after people catch you out."
       },
@@ -3281,6 +3281,25 @@
       "review": [
         "c2-r3-fairplay.md: What validate.cjs could add"
       ]
+    },
+    {
+      "cycle": 3,
+      "lens": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "what": "Cycle 3: the vow clause names ough/augh and three-vowel runs only (ie/ei never puts a word in that family on its own — app3 trickAnal); case-scenes: Case 3's safeLine first after its lateLine; no-placing: Round I placed against Nova, no shared title with a headliner in Rounds I–VIII (the headliner's forced last-word miss), scripted-outcomes 'stand at the cap' means with the child out; new build entry bee-file-button.",
+      "why": [
+        "c3-r2-accuracy:slotLines.weak.byFamily.vow",
+        "c3-r1-safety:build:case-scenes",
+        "c3-r3-fairplay:build:case-scenes",
+        "c3-r3-fairplay:build:no-placing",
+        "c3-r3-fairplay:hivePost.beeFileIntro",
+        "c3-r3-fairplay:rounds[0].pieces.above",
+        "c3-r3-fairplay:rounds[5].pieces.above",
+        "c3-r3-fairplay:rounds[6].pieces.above"
+      ]
     }
   ],
   "build": [
@@ -3566,7 +3585,7 @@
     },
     {
       "id": "scripted-outcomes",
-      "rule": "Each hall forces the rival outcomes its lines state, on every seed and in every band (the rivals named are seated in every band by hall-fields). The hall runner plays a per-round script: the forced word, the forced miss, who survives, who is seated. Everything not listed is Mock Bee as it plays today.",
+      "rule": "Each hall forces the rival outcomes its lines state, on every seed and in every band (the rivals named are seated in every band by hall-fields). The hall runner plays a per-round script: the forced word, the forced miss, who survives, who is seated. Everything not listed is Mock Bee as it plays today. Where a round lets the headliner 'stand at the cap', it means with the child already out; with the child standing, the no-placing shared-cap rule applies.",
       "why": [
         "r3-fairplay:season/SCRIPTED HALL OUTCOMES",
         "r3-fairplay:rounds[0].pieces.drama (pass, depends)",
@@ -3771,7 +3790,7 @@
     },
     {
       "id": "no-placing",
-      "rule": "Every result line works whether the child wins or goes out first. Above and below letters are chosen by the child's place against the headliner only; a child still standing at the cap counts as above (Round IX settles a shared cap with the championship word, see scripted-outcomes). Nothing else in a round depends on placing, except rounds[8].pieces.suspense, which states both branches. No line claims a count, a word, a miss or an action (asked, waited, breathed out, went slow) the hall log does not hold; slots fill the ones it does. A result letter may give advice or speak of the whole Circuit, never report what the child did.",
+      "rule": "Every result line works whether the child wins or goes out first. Above and below letters are chosen by the child's place against the headliner only; a child still standing at the cap counts as above (Round IX settles a shared cap with the championship word, see scripted-outcomes). Nothing else in a round depends on placing, except rounds[8].pieces.suspense, which states both branches. No line claims a count, a word, a miss or an action (asked, waited, breathed out, went slow) the hall log does not hold; slots fill the ones it does. A result letter may give advice or speak of the whole Circuit, never report what the child did. Round I's letters are Nova's, so the child is placed against Nova, not Pip. In Rounds I–VIII a hall never ends in a title shared with the headliner: if time would be called with the child and the headliner both standing, the headliner takes one more word before the cap and misses it, so an above letter's \"You beat me\" is true of the hall log. Round IX settles a shared cap with the championship word. A result letter never reports what the child did in the hall; the slots fill what the log holds.",
       "why": [
         "r3-fairplay:season/SCRIPTED HALL OUTCOMES",
         "r3-fairplay:season/V.'S NOTES AND THE CHILD'S WEAKNESS",
@@ -3787,7 +3806,7 @@
         "c2-r3-fairplay:hivePost.beeFileIntro",
         "r3 extension: rounds[8].pieces.v, .above, .below; rounds[0].pieces.above, rounds[4].pieces.below, rounds[5].pieces.above, rounds[6].pieces.above, rounds[7].pieces.above"
       ],
-      "test": "Play every hall with a bot that wins and a bot that goes out first, in each band: every delivered line is checked against the hall log (no claimed count, word, miss or action the log lacks), and the season still reaches the Team Night coda. Proved by breaking: put 'You asked three questions' back and the first-out bot's log contradicts it. A bot that asks nothing all season reads no line that says it asked. validate.cjs fails on a line that says the child asked, waited, breathed out or went slow without a slot to fill it."
+      "test": "Play every hall with a bot that wins and a bot that goes out first, in each band: every delivered line is checked against the hall log (no claimed count, word, miss or action the log lacks), and the season still reaches the Team Night coda. Proved by breaking: put 'You asked three questions' back and the first-out bot's log contradicts it. A bot that asks nothing all season reads no line that says it asked. validate.cjs fails on a line that says the child asked, waited, breathed out or went slow without a slot to fill it. Add: in Rounds I, VI and VII, a bot that survives to the cap beside the headliner gets the above letter only after the headliner's forced last-word miss is in the log; Round I's letter compares with Nova."
     },
     {
       "id": "case-origins-authored",
@@ -3848,7 +3867,7 @@
     },
     {
       "id": "case-scenes",
-      "rule": "Each case runs the format's seven steps. Step 2 shows the case's three taps (cases[].taps) after the cold open and before the puzzle; one of them repeats the clue planted earlier. Each suspect card shows the suspect's name and, where the cast gives one, their tell (cast.*.tell), so Case 2's heel-marks point at Dax in every band, 6–7 included, where he is not seated before the case. The facts a child needs to accuse go in the taps, the escalation or the suspect cards. A suspect's secret is never shown before the reveal, and the reveal shows every suspects[].secret its lines do not already state (Dax's 'Not my problem' in Case 3; Mira's doubt about kai and Suki's hidden stakes in Case 4). The one deliberate exception is Hazel's: Case 3's safeLine states it first, before the empty room (amendment 2), and no build moves it to pass this rule. A case never offers a hint button for a rival missing from it: no 'Ask Kwame' in Case 3.",
+      "rule": "Each case runs the format's seven steps. Step 2 shows the case's three taps (cases[].taps) after the cold open and before the puzzle; one of them repeats the clue planted earlier. Each suspect card shows the suspect's name and, where the cast gives one, their tell (cast.*.tell), so Case 2's heel-marks point at Dax in every band, 6–7 included, where he is not seated before the case. The facts a child needs to accuse go in the taps, the escalation or the suspect cards. A suspect's secret is never shown before the reveal, and the reveal shows every suspects[].secret its lines do not already state (Dax's 'Not my problem' in Case 3; Mira's doubt about kai and Suki's hidden stakes in Case 4). The one deliberate exception is Hazel's: Case 3's safeLine states it first, before the empty room (amendment 2), and no build moves it to pass this rule. A case never offers a hint button for a rival missing from it: no 'Ask Kwame' in Case 3. Case 3's safeLine is the first line of the case after its lateLine (a late open shows the lateLine first), and always before the impossible and the taps.",
       "why": [
         "r3-fairplay:season/CASE SECRETS AND SCENE TAPS",
         "r3-fairplay:cases[1].escalation",
@@ -3859,7 +3878,7 @@
         "c2-r3-fairplay:build:case-scenes",
         "c2-r3-fairplay:cases[1].escalation"
       ],
-      "test": "Every case renders three taps before its puzzle; every suspect card with a cast tell shows it; no suspect secret renders before the reveal except Case 3's safeLine, which is its first rendered line; every secret has rendered by the end of the reveal; Case 3 offers no Ask Kwame. In the 6–7 band, Case 2's Dax card reads 'rocks on his heels' before the puzzle, and Case 3's reveal renders 'Not my problem'. Proved by breaking: render secrets in the scene and Case 5's answer shows before Dax finds it; move the safeLine after the impossible and the order test fails; hide the tells and the 6–7 Dax card is blank."
+      "test": "Every case renders three taps before its puzzle; every suspect card with a cast tell shows it; no suspect secret renders before the reveal except Case 3's safeLine, which renders first after the lateLine (when a late open shows one) and always before the impossible; every secret has rendered by the end of the reveal; Case 3 offers no Ask Kwame. In the 6–7 band, Case 2's Dax card reads 'rocks on his heels' before the puzzle, and Case 3's reveal renders 'Not my problem'. Proved by breaking: render secrets in the scene and Case 5's answer shows before Dax finds it; move the safeLine after the impossible and the order test fails; hide the tells and the 6–7 Dax card is blank. Open Case 3 on time and late: the safeLine renders before the impossible in both, and the late open renders the lateLine first."
     },
     {
       "id": "team-night",
@@ -3894,6 +3913,14 @@
         "c2-r3-fairplay:build:signoff-upright"
       ],
       "test": "Screenshot every invitation and every letter: the signoff stands upright, and only V. notes and the runner's correction slant left; Vesper's letters are violet and do not slant left; the sting's pencil note is upright. Proved by breaking: draw the signoff in the V. hand and the look-again's claim is false on screen."
+    },
+    {
+      "id": "bee-file-button",
+      "rule": "The bee file carries one button, \"Add missed words to revision\", the same action as Mock Bee's recap (mbAddMissed, the child's own filing). It shows only when the hall had a miss; after the tap, or if the recap's tap already filed them, it reads \"On your revision pile\". One word throughout: the revision pile.",
+      "why": [
+        "c3-r3-fairplay:hivePost.beeFileIntro"
+      ],
+      "test": "Open a bee file with a miss: one tap files every missed word once, and a second tap files nothing; open one with no miss: no button. Open one after the recap's tap: it reads 'On your revision pile'."
     }
   ],
   "ownerQuestions": [
