@@ -74,6 +74,8 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
 
   /* ---- 2. a real round: Bee's 10-word warm-up, every word typed right ---- */
   const before = (await wallet()).kids.ahana.coins; const n0 = (await wallet()).kids.ahana.ledger.length;
+  /* gSubmit and the round's screen are app3-shared.js / app3-games.js (lazy since the app3 split, P1.13 step 2) */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('scrGames', r)));
   const round = await pg.evaluate(async () => {
     state.screen = 'app'; app.playGame('buzz'); const g = state.game; if (!g || !g.list) return { err: 'no game' };
     const n = g.list.length;

@@ -5,6 +5,9 @@
    ===================================================================== */
 
 /* ---------------- data (from words-data.js / concepts-data.js) ------- */
+/* boot-lazy.js creates window.SB_DATA before this file runs and keeps it ONE object for the whole visit: the boot word
+   tier (words-data.js, lazy since road to 4.5 P1.13) and the second shard land their records in its nsf array, and an
+   assignment to window.SB_DATA merges into it. So this const holds the live object, not a snapshot of an empty one. */
 const SB_DATA = (typeof window !== 'undefined' && window.SB_DATA) || { nsf:[], champions:[], nationalRound:[] };
 /* No snapshot of SB_CONCEPTS here: concepts-data.js is deferred by boot-lazy, so
    the real course can land after this file has run. boot-lazy stubs the global to

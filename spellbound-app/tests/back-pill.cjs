@@ -28,6 +28,9 @@ const root = require('path').resolve(__dirname, '..');
       const [act, name, arg] = sc.length===3 ? [sc[0],sc[2],sc[1]] : [sc[0],sc[1],undefined];
       try { await pg.evaluate(([a,g]) => app[a] && app[a](g), [act, arg]); } catch(e){}
       await pg.waitForTimeout(700);
+      /* a screen whose code is a lazy file (the app3 split, P1.13 step 2) shows the hive loader until it lands: the
+         screen itself is what is measured, so wait for it, not for a time */
+      await pg.waitForFunction(() => !document.querySelector('#root .sb-hive'), null, { timeout: 30000 }).catch(() => {});
       const r = await pg.evaluate(() => {
         const p = document.querySelector('.sb-phead');
         const pills = [...document.querySelectorAll('button[aria-label^="Back to"]')];
@@ -71,6 +74,7 @@ const root = require('path').resolve(__dirname, '..');
     state.devUnlock=true; });   // these hubs sit behind plan gates; the back pill is what is under test
   for (const [act, name] of [['openTyping','typing'],['openQuotes','quotes'],['openTraps','traps'],['openBuilder','builder']]) {
     await pg2.evaluate(a => app[a] && app[a](), act); await pg2.waitForTimeout(600);
+    await pg2.waitForFunction(() => !document.querySelector('#root .sb-hive'), null, { timeout: 30000 }).catch(() => {});   /* the screen, not its loader */
     const r = await pg2.evaluate(() => { const p = document.querySelector('.sb-phead-l button');
       return p ? { label: p.textContent.trim(), act: p.dataset.act, arg: p.dataset.arg } : null; });
     if (!r) { errs.push(name + ': no back pill'); continue; }

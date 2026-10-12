@@ -50,7 +50,8 @@ const look = (pg) => pg.evaluate(() => {
     h2: (document.querySelector('.sb-content .sb-phead h2') || {}).textContent || '',
     big: [...document.querySelectorAll('.sb-content span,.sb-content h2')].filter(s => !s.children.length && parseFloat(getComputedStyle(s).fontSize) >= 18).map(s => s.textContent.trim()) };
 });
-const settle = (pg, nav) => W.until(pg, (n) => (Array.isArray(n) ? n.includes(state.nav) : state.nav === n) && !!document.querySelector('.sb-content'), nav, 30000).then(() => W.frames(pg, 2));
+/* the screen itself, not its hive loader: the Word Gym's code is a lazy file since the app3 split (P1.13 step 2) */
+const settle = (pg, nav) => W.until(pg, (n) => (Array.isArray(n) ? n.includes(state.nav) : state.nav === n) && !!document.querySelector('.sb-content') && !document.querySelector('#root .sb-hive'), nav, 30000).then(() => W.frames(pg, 2));
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });

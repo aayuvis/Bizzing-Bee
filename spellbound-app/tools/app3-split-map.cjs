@@ -13,7 +13,10 @@
    shell code, viewHome, viewLanding, viewOnboarding — plus every top-level name ANOTHER shipped file reads by bare
    name (family-shell.js, trail.js, gym.js… call into app3 directly, so those must stay where a bare name can see
    them, or move behind a stub). A SCREEN's own weight is what only it reaches; SHARED is what two or more
-   non-core screens reach. Run: node tools/app3-split-map.cjs [--json out.json]                                    */
+   non-core screens reach. Run: node tools/app3-split-map.cjs [--json out.json]
+   SINCE THE SPLIT (P1.13 step 2, 10 Oct 2026) app3.js IS the core: the screens' code lives in app3-*.js (CLAUDE.md "Road
+   to 4.5, P1 — the app3 split"), so this measures what is left in the first load's app3 — and a screen that shows up
+   here as movable is a candidate for its family's lazy file. tests/app3-split.cjs holds the split's rules.          */
 'use strict';
 const fs = require('fs'), path = require('path'), zlib = require('zlib');
 const APP = path.resolve(__dirname, '..');

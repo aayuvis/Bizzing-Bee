@@ -165,7 +165,9 @@ function landing() {
     if (how === 'link') { await pg.goto(URL + '#/continue'); }
     else {
       await pg.goto(URL);
-      await pg.waitForFunction(() => !!document.querySelector('.sb-content [data-act="goNext"]') && !!(window.SB_TRAIL && SB_TRAIL.honey), null, { timeout: 8000 });
+      /* the card is Home's first paint since P1.13 step 3 (it reads the road, trail-home-data.js): asked the moment it
+         appears, the Atlas (curriculum and code) has not even been asked for — the earliest "at once" there is */
+      await pg.waitForFunction(() => !!document.querySelector('.sb-content [data-act="goNext"]'), null, { timeout: 8000 });
       early = await pg.evaluate(() => !SB_LAZY.ready('atlas'));
       if (how === 'home') await pg.click('.sb-content [data-act="goNext"]'); else await pg.evaluate(() => app.drawer('next'));
     }
@@ -206,7 +208,7 @@ function landing() {
   }
 
   /* ---- and nobody else reads the frontier for a call to action ---- */
-  const files = fs.readdirSync(ROOT).filter(f => /\.js$/.test(f) && f !== 'trail.js');   // trail.js owns it
+  const files = fs.readdirSync(ROOT).filter(f => /\.js$/.test(f) && f !== 'trail.js' && f !== 'trail-home.js');   // the Atlas owns it (trail-home.js since P1.13 step 3)
   const stray = []; let shellReads = 0;
   for (const f of files) {
     const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
@@ -214,8 +216,9 @@ function landing() {
     const allowed = [];
     const span = (start) => { const i = src.indexOf(start); if (i < 0) return; const j = src.indexOf('\nfunction ', i + 1); allowed.push([i, j < 0 ? src.length : j]); };
     if (f === 'family-shell.js') span('function trailNext(');
-    if (f === 'app3.js') span('function viewProgress(');
-    if (f === 'app3.js') span('function reportCard(');   // the grown-ups' report card (batch C) displays the Atlas position too
+    /* app3's code is split by screen (P1.13): the Progress page lives in app3-grownups.js, the report card in app3.js */
+    if (/^app3(-[a-z0-9-]+)?\.js$/.test(f)) span('function viewProgress(');
+    if (/^app3(-[a-z0-9-]+)?\.js$/.test(f)) span('function reportCard(');   // the grown-ups' report card (batch C) displays the Atlas position too
     let i = -1;
     while ((i = src.indexOf('SB_TRAIL_NEXT(', i + 1)) >= 0) {
       if (allowed.some(([a2, b2]) => i > a2 && i < b2)) { if (f === 'family-shell.js') shellReads++; continue; }

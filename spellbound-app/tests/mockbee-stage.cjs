@@ -21,7 +21,7 @@
    Every wait is on state (lib/wait.cjs). Run: NODE_PATH=/opt/node22/lib/node_modules node tests/mockbee-stage.cjs */
 const { chromium } = require('playwright');
 const path = require('path');
-const { booted, until, frames } = require('./lib/wait.cjs');
+const { booted, until, frames, quietRender } = require('./lib/wait.cjs');
 const SC = require('./lib/stage-check.cjs');
 const ROOT = path.resolve(__dirname, '..');
 let fails = 0;
@@ -46,7 +46,8 @@ const seed = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0,
        lands after the lobby's first paint re-renders it under the measurement — "pure white 7.3%" / Take the stage off
        the screen, 1 run in 2 on the release tree), then two frames */
     const lobby = await until(pg, () => state.nav === 'mockbee' && state.mb && state.mb.view === 'lobby' && !!document.querySelector('.sb-stage .mb-mode') && (!SB_LAZY.ready || SB_LAZY.ready('mockbee')));
-    if (lobby) { await frames(pg, 2); const lg = await SC.geometry(pg); const lp = await SC.pixels(pg); SC.report(ok, tag + ' lobby', lg, lp, { play: true }); }
+    /* …and the redraw its last file brings (boot-lazy softRender, 140 ms after a landing) has been and gone */
+    if (lobby) { await quietRender(pg); await frames(pg, 2); const lg = await SC.geometry(pg); const lp = await SC.pixels(pg); SC.report(ok, tag + ' lobby', lg, lp, { play: true }); }
     const backTxt = await pg.evaluate(() => (document.querySelector('.mb-st-hud .mb-back, .mb-back') || {}).innerText || '');
     if (lobby) await pg.click('.mb-back');
     const back = lobby && await until(pg, () => state.nav === 'games' && /#\/play/.test(location.hash));

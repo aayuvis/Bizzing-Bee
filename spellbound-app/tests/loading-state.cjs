@@ -45,7 +45,8 @@ const root = require('path').resolve(__dirname, '..');
      module-scope function reading a lazily-loaded bank — so this one is asserted from the
      SOURCE, the way tests/arcade-geometry.js does. It used to render a page head with an
      empty body, which is the blank flash that was reported. */
-  const src = require('fs').readFileSync(require('path').resolve(__dirname, '..', 'app3.js'), 'utf8');
+  /* viewTrivTrain lives in app3-library.js since the P1.13 split: read app3's code wherever it is (tests/lib/app3-src.cjs) */
+  const src = require('./lib/app3-src.cjs').all(require('path').resolve(__dirname, '..'));
   if (!/if\(!ths\.length\) return[\s\S]{0,220}hiveLoader\(/.test(src))
     errs.push('viewTrivTrain still renders an empty body while its bank loads');
   else console.log('  trivtrain   hive loader (source-asserted: its bank cannot be stubbed from outside)');

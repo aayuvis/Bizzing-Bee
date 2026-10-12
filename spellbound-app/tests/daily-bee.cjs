@@ -35,10 +35,17 @@ const SC = require('./lib/stage-check.cjs');
 async function open(b, o) {
   o = o || {};
   const vp = o.vp || { width: 1180, height: 900 }, phone = vp.width < 500;
-  const ctx = await b.newContext({ viewport: vp, isMobile: phone, hasTouch: phone, reducedMotion: 'reduce' });
+  /* o.persist: a PERSISTENT profile, for a block that reloads and reads storage back (road to 4.5, P0.18's cure, as
+     pin-mandatory, hive-minutes and trust-v2 have it): an off-the-record context keeps localStorage in memory, and a
+     reload there sometimes starts on EMPTY storage — the solver's coin came back as -1 in a full-suite run */
+  const opts = { viewport: vp, isMobile: phone, hasTouch: phone, reducedMotion: 'reduce' };
+  const ctx = o.persist
+    ? await chromium.launchPersistentContext(require('fs').mkdtempSync(path.join(require('os').tmpdir(), 'sb-dbee-profile-')),
+        Object.assign({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' }, opts))
+    : await b.newContext(opts);
   const kid = Object.assign({}, KID, o.kid || {});
   await ctx.addInitScript(([k, mode]) => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode, pin: '1234', activeIdx: 0, children: [k] })); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, [kid, o.mode || 'light']);
-  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  const pg = (o.persist && ctx.pages()[0]) || await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   if (o.time) await pg.clock.setFixedTime(o.time);
   await pg.goto(URL + (o.hash || '')); await W.booted(pg);
   return { ctx, pg, errs };
@@ -151,7 +158,7 @@ function crafted(w) {
 
   /* ---- DB3: a random guesser earns 0 over 30 simulated days; a solver earns 1 a day, once ---- */
   if (part('db3')) {
-    const { ctx, pg, errs: e1 } = await open(b, { vp: { width: 390, height: 844 }, time: DAY0 }); errs.push(...e1);
+    const { ctx, pg, errs: e1 } = await open(b, { vp: { width: 390, height: 844 }, time: DAY0, persist: true }); errs.push(...e1);
     /* SB_LEVEL.after is recorded (the real one when the foundations have landed, else a stub) */
     await pg.evaluate(() => { window._lv = []; if (!window.SB_LEVEL) window.SB_LEVEL = { get: () => 'auto', set() {}, chip: () => '', after: () => ({ level: 'auto', dropped: false }) };
       const real = SB_LEVEL.after; SB_LEVEL.after = function (k, p) { window._lv.push([k, p]); return real.apply(this, arguments); }; });

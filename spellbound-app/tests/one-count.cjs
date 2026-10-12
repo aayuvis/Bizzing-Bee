@@ -37,7 +37,8 @@ const same = (label, got, want) => ok(got.length > 0 && got.every(v => v === wan
   `${label}: ${got.length ? [...new Set(got)].join(' / ') : 'NOT FOUND'} — one count, ${want}`);
 
 /* ---- 1. SB_FACTS holds only what the opening page cannot count, and holds it right ---- */
-const src = fs.readFileSync(path.join(ROOT, 'app3.js'), 'utf8');
+/* app3's code, wherever the P1.13 split put it (tests/lib/app3-src.cjs) */
+const src = require('./lib/app3-src.cjs').all(ROOT);
 const fm = src.match(/const SB_FACTS = (\{[\s\S]*?\n\});/);
 const FACTS = fm ? vm.runInNewContext('(' + fm[1] + ')') : {};
 const ctx = {}; ctx.window = ctx; vm.createContext(ctx);

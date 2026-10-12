@@ -77,7 +77,7 @@
   }
   /* the Word Atlas region the child is in (1–9), on the road as the board counts it; 0 before the trail lands */
   function region(c) {
-    var T = W.SB_TRAIL, R = W.SB_TRAIL_ROAD; if (!T || !T.honey || !T.honey.acts || !R) return 0;
+    var T = W.SB_TRAIL || W.SB_TRAIL_HOME, R = W.SB_TRAIL_ROAD; if (!T || !T.honey || !T.honey.acts || !R) return 0;   /* the road: a boot script since P1.13 step 3 */
     var tr = (c && c.trail) || {}, done = tr.done || {}, acts = T.honey.acts.map(function (a) { return a.id; });
     if ((tr.lap || 1) > 1) return acts.length;   /* a later lap: the whole road has been walked once */
     var ns = R.nodes(T, 'honey', 1);
@@ -91,7 +91,7 @@
   }
   function child(c) {
     if (!c) { try { c = active(); } catch (e) { c = null; } }
-    var age = AGE_BAND(ageLo(c)), r = region(c), D = data(), T = W.SB_TRAIL;
+    var age = AGE_BAND(ageLo(c)), r = region(c), D = data(), T = W.SB_TRAIL || W.SB_TRAIL_HOME;
     var id = r && T ? (T.honey.acts[r - 1] || {}).id : '', floor = (D && D.atlas && id && +D.atlas[id]) || 0;
     var ac = accuracy(c), step = ac.acc == null ? 0 : ac.acc >= K.UP ? 1 : ac.acc < K.DOWN ? -1 : 0;
     var band = Math.max(1, Math.min(4, Math.max(age, floor) + step));

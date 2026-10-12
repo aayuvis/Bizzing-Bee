@@ -11,11 +11,16 @@
      2. next visit, index.html's parse-time peek preloads exactly those, so they are fetched
         alongside the scripts and are on screen when the words first paint;
      3. Home's first-screen pictures are not loading="lazy" (a lazy image above the fold waits);
-     4. trail-data.js is asked for at DOMContentLoaded when Home is what the first render drew,
-        not after `load`;
+     4. the "You are here" card needs no Atlas file at all (road to 4.5, P1.13 step 3): it reads the ROAD from
+        trail-home-data.js / trail-home.js, boot scripts, so neither trail-data.js nor trail.js is fetched before a tap
+        (until P1.13 trail-data.js was asked for at DOMContentLoaded when Home was what the first render drew);
      5. a new visitor (no household) and ?demo preload nothing — the first-load budget is untouched.
    Measured over tests/lib/serve.cjs (gzip, minified like a deploy) with Chrome's network throttle,
    the HTTP cache cleared between visits (the device's storage kept).
+   Proved by breaking (P1.13 step 3, each put back after): FIRST restored — trail-data.js loaded at DOMContentLoaded
+   (1: check 4 names trail-data.js; read from resource timing it passed, the fetch still in flight — so it watches
+   request starts now); SB_TRAIL_HOME not read by trail-home.js, i.e. the card waiting for the Atlas again (3: the
+   card never painted, so neither did its pictures, and Home noted no plates).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/home-first-paint.cjs                  */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -46,17 +51,23 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
       if (!M.text || !M.card) requestAnimationFrame(tick); }; requestAnimationFrame(tick); }, KID);
   const visit = async () => {
     const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+    /* every request as it STARTS (a resource-timing entry appears only once the response is in — on this slow line an
+       Atlas fetch begun at DOMContentLoaded would still be in flight, and missed) */
+    const asked = []; pg.on('request', q => asked.push(q.url().replace(/^.*\//, '').replace(/\?.*/, '')));
     const cdp = await ctx.newCDPSession(pg); await cdp.send('Network.enable'); await cdp.send('Network.clearBrowserCache');
     await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 150, downloadThroughput: 1.6 * 1024 * 1024 / 8, uploadThroughput: 750 * 1024 / 8 });
     await pg.goto(srv.url + 'index.html', { waitUntil: 'commit' });
     await pg.waitForFunction(() => window._fp && window._fp.text && !document.querySelector('#root .sb-home-r2 .sb-hold'), null, { timeout: 45000, polling: 200 }).catch(() => {});
     await pg.waitForTimeout(600);
+    /* past `load`, and a second more: anything a first screen asks for on its own has been asked for by then */
+    await pg.waitForFunction(() => document.readyState === 'complete', null, { timeout: 45000 }).catch(() => {}); await pg.waitForTimeout(1000);
     const r = await pg.evaluate(() => { const nav = performance.getEntriesByType('navigation')[0]; const R = performance.getEntriesByType('resource');
       const at = re => { const e = R.find(x => re.test(x.name)); return e ? { start: Math.round(e.startTime), end: Math.round(e.responseEnd) } : null; };
-      return { fp: window._fp, dcl: Math.round(nav.domContentLoadedEventStart), load: Math.round(nav.loadEventStart), app3: at(/\/app3\.js/), trail: at(/\/trail-data\.js/),
+      return { fp: window._fp, dcl: Math.round(nav.domContentLoadedEventStart), load: Math.round(nav.loadEventStart), app3: at(/\/app3\.js/), trail: at(/\/trail-data\.js/), trailJs: at(/\/trail\.js/),
         hint: SB_STORE.getJSON('homeArt', null), links: [...document.querySelectorAll('link[rel="preload"][as="image"]')].map(l => l.getAttribute('href')),
         lazy: [...document.querySelectorAll('#root .sb-home-greet img, #root .sb-home-r2 img')].filter(i => i.getBoundingClientRect().top < innerHeight && i.loading === 'lazy').map(i => i.getAttribute('src')),
         imgs: Object.fromEntries(R.filter(x => /\/(avatars|app-art)\//.test(x.name)).map(x => [x.name.replace(/^.*?\/(avatars|app-art)\//, '$1/').replace(/\?.*/, ''), Math.round(x.startTime)])) }; });
+    r.atlas = asked.filter(u => u === 'trail.js' || u === 'trail-data.js');
     await pg.close(); return r;
   };
 
@@ -66,7 +77,7 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   ok(Array.isArray(v1.hint) && v1.hint.length >= 3 && v1.hint.every(u => /^(avatars|app-art)\/[a-z0-9/._-]+\.(png|webp|jpe?g)$/i.test(u)) && v1.hint.includes('avatars/panda.webp'),
     'Home notes the pictures on its first screen — the avatar and the journey plates (' + JSON.stringify(v1.hint) + ')');
   ok(!v1.lazy.length, 'none of Home\'s first-screen pictures is loading="lazy"' + (v1.lazy.length ? ' — ' + v1.lazy.join(', ') : ''));
-  ok(v1.trail && v1.trail.start <= v1.dcl + 300 && v1.trail.start < v1.load, `"Next on your journey" asks for trail-data.js at DOMContentLoaded, not after load (asked ${v1.trail && v1.trail.start}ms; DCL ${v1.dcl}, load ${v1.load})`);
+  ok(!v1.atlas.length && !v1.trail && !v1.trailJs && v1.fp.card, `the "You are here" card paints from the road at first paint — neither trail-data.js nor trail.js is asked for, through load and a second after (${v1.atlas.length ? 'asked: ' + v1.atlas.join(', ') : 'not asked'})`);
 
   /* ---- visit 2: the note is preloaded with the scripts ---- */
   const v2 = await visit();
