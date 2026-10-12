@@ -381,10 +381,10 @@
      the idle queue's light and big files */
   var qL = [], qH = [], qKickH = [], qIdleL = [], qIdleH = [], queued = {}, asked = {};
   var lastBusy = 0, lastDoor = 0, quietTimer = 0;
-  /* a child at work: a key, a tap, a letter typed. Kicked big data waits for a pause (QUIET_MS) — it lands with a long
-     run of script and a redraw, and in the middle of typing that is a word that takes seconds to show (the Finder).
-     The idle queue also waits for the screen to SETTLE: QUIET_MS after the last file a door or a kick asked for has
-     landed. Every landing redraws the app, and the idle queue resuming the moment a door's last file was in put a
+  /* a child at work: a key, a tap, a letter typed. Kicked big data and the idle queue wait for a pause (QUIET_MS) and
+     for the screen to SETTLE (QUIET_MS after the last file a door or a kick asked for has landed) — big data lands with
+     a long run of script and a redraw, and in the middle of a lookup that is a word that takes seconds to show (the
+     Finder, whose every lookup lands a chunk). Every landing redraws the app, and the idle queue resuming the moment a door's last file was in put a
      redraw right on top of the screen that had just appeared (mockbee-stage measured a lobby mid-redraw). */
   ['keydown', 'input', 'pointerdown'].forEach(function (t) {
     try { document.addEventListener(t, function () { lastBusy = Date.now(); }, true); } catch (e) {}
@@ -402,7 +402,7 @@
     /* what follows never takes the last slot: whatever a door asks for next — a screen's code, the Finder's library
        chunk — starts at once, never behind data nobody is waiting on */
     if (inflight >= MAX_INFLIGHT - 1) return null;
-    if (qKickH.length) return (heavyIn < HEAVY_MAX && quiet()) ? qKickH.shift() : null;
+    if (qKickH.length) return (heavyIn < HEAVY_MAX && quiet(true)) ? qKickH.shift() : null;
     if ((qIdleL.length || qIdleH.length) && !quiet(true)) return null;
     if (qIdleL.length) return qIdleL.shift();
     if (qIdleH.length && heavyIn < HEAVY_MAX) return qIdleH.shift();

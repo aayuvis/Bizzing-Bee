@@ -260,10 +260,11 @@ split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
   `HEAVY_MAX`, the `HEAVY` names: the word shards, etymology, senses, synonyms, the voice index…), and when a slot frees
   the rest go first — a screen's code, a library chunk the Finder waits for — so a screen never waits behind 14 MB of
   words. The order (`nextScript`): what a DOOR waits on, then what a KICK started (data a screen draws without — its
-  big files also wait for a pause in the child's typing, `QUIET_MS`), then the IDLE queue, which also waits for the
-  screen to SETTLE (`QUIET_MS` after a door's last file landed — every landing redraws the app, and resuming at once put
-  a redraw on top of the screen that had just appeared: mockbee-stage's lobby); kick and idle files never take the last
-  slot, and a door asking for one of theirs promotes it. Each queue keeps its order. `need(what, cb, lvl)`
+  big files wait for a pause in the child's typing AND for the screen to SETTLE, `QUIET_MS` after a door's last file
+  landed — a Finder lookup lands a chunk, and a 14 MB shard landing mid-lookup is a word that takes seconds to show),
+  then the IDLE queue, which waits for the same pause (every landing redraws the app, and resuming at once put a redraw
+  on top of the screen that had just appeared: mockbee-stage's lobby); kick and idle files never take the last slot,
+  and a door asking for one of theirs promotes it. daily-bee's reload block runs in a persistent profile (P0.18's cure). Each queue keeps its order. `need(what, cb, lvl)`
   takes the level; KICKS and the header search's focus pass `KICK`. The Word Finder's guard group is `scrFinder`
   (its code, no word tier): it draws at once and the words arrive while it is open (dictionary's phone timing). A door can ask for a dozen files at once (the drill: `card` + `audio` + the Word
   Gym's screen file); all at once, Chromium's script-streaming parse — a parse short of bytes holds its worker until
