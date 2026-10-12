@@ -34,6 +34,9 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
         trail: { lap: 1, done: {}, chk: {}, seen: {}, elap: 1, edone: {}, echk: {} } }];
       state.activeIdx = 0; state.screen = 'app';
       await new Promise(res => SB_LAZY.need('atlas', res));
+      /* the drill is the Word Gym's code and the deck its pop-up, the Library's (app3-gym.js, app3-library.js — lazy
+         since the app3 split, P1.13 step 2): have them in hand the way their doors would */
+      await new Promise(res => SB_LAZY.need(['scrGym', 'scrLib'], res));
       await new Promise(res => setTimeout(res, 500));
       const o = {}, uid = SB_TRAIL_NEXT().arg;
 

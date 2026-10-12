@@ -63,6 +63,9 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   ok(/^Question 2 of /.test(q2), `and the next question is said afresh ("${q2.slice(0, 40)}")`);
 
   /* 4 */
+  /* the classic games' screen and their controls are app3-games.js / app3-shared.js (lazy since the app3 split, P1.13
+     step 2): have them in hand before the game starts, the way the Play tab's door would */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('scrGames', r)));
   await pg.evaluate(() => { app.exitGame(); app.playGame('buzz'); }); await pg.waitForTimeout(700);
   const ty = await pg.evaluate(() => ({ said: (document.getElementById('sb-live') || {}).textContent || '', w: state.game && state.game.list && state.game.list[state.game.i].w }));
   ok(/^Word 1\. Listen and type\.$/.test(ty.said) && ty.w && !new RegExp('\\b' + ty.w + '\\b', 'i').test(ty.said), `a typed game says which word and what to do, never the word ("${ty.said}")`);

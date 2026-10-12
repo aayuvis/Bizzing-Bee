@@ -257,6 +257,9 @@
     /* the Library (a concept's lock is its Atlas stop: SB_TRAIL_OPEN / TAUGHT), the Word Gym (a drill reports to its stop:
        SB_TRAIL_BEST / WHERE / SETS / PRACTICED) and the report card read the Atlas's code and curriculum (P1.13 step 3) */
     scrLib: ['words1', 'scrShared', 'scrLib', 'trail', 'trailCode'],
+    /* the Word Finder draws without the word tier (its KICK brings the words while it is open, and every library word
+       comes from the lettered chunks): a child can type the moment its code is in (tests/dictionary.cjs times it) */
+    scrFinder: ['scrShared', 'scrLib'],
     scrGym: ['words1', 'scrShared', 'scrGym', 'trail', 'trailCode'],
     scrGrown: ['words1', 'scrShared', 'scrGrown', 'trail', 'trailCode'],
     scrGames: ['words1', 'scrShared', 'scrGames'],
@@ -338,42 +341,103 @@
     }, RENDER_WINDOW);
   }
 
-  function load(name, cb) {
+  /* lvl: who asked — DOOR (0, a screen or an action waiting on it), KICK (1, a door starting data its screen draws
+     without, KICKS below), IDLE (2, the idle queue). It decides only the ORDER files stream in (below). */
+  var DOOR = 0, KICK = 1, IDLE_LVL = 2;
+  function load(name, cb, lvl) {
+    lvl = lvl || DOOR;
     if (state[name] === 'done') { if (cb) cb(); return; }
     (waiters[name] = waiters[name] || []).push(cb || null);
-    if (state[name] === 'loading') return;
+    if (state[name] === 'loading') { promote(name, lvl); return; }
     var src = REG[name];
     if (!src) { state[name] = 'done'; flush(name); return; }
     state[name] = 'loading';
+    asked[name] = lvl;
     var deps = (DEPS[name] || []).filter(function (d) { return state[d] !== 'done'; });
     if (deps.length) {
       var left = deps.length;
-      deps.forEach(function (d) { load(d, function () { if (--left === 0) inject(name, src); }); });
+      deps.forEach(function (d) { load(d, function () { if (--left === 0) inject(name, src, asked[name]); }, lvl); });
       return;
     }
-    inject(name, src);
+    inject(name, src, lvl);
   }
-  /* AT MOST TWO SCRIPTS IN FLIGHT (road to 4.5, P1.13). A door can ask for a dozen files at once (the drill's `card` +
-     `audio` groups are nine, the Word Gym's screen file two more), and Chromium parses every big script on its worker
-     pool while it streams in. On a four-core machine that pool has three workers: with three or more big scripts
-     streaming, every worker sat in a parse waiting on a decode task no worker was free to run, and the page froze for
-     good mid-frame (traced: three `v8.parseOnBackground` that never ended, the main thread stuck behind them —
-     hash-nav §6 hung one run in four). Two in flight always leaves a worker free. The rest wait their turn, in order,
-     so a bundle still runs in its order (async=false keeps insertion order, and the queue keeps that). A file that
-     neither loads nor fails within SLOT_MS gives its slot up, so one stalled request can never wedge the queue. */
-  var MAX_INFLIGHT = 2, SLOT_MS = 20000, inflight = 0, waiting = [];
-  function addScript(s) {
-    if (inflight >= MAX_INFLIGHT) { waiting.push(s); return; }
-    inflight++;
+  /* AT MOST TWO SCRIPTS IN FLIGHT, AND NEVER TWO BIG ONES (road to 4.5, P1.13). A door can ask for a dozen files at
+     once (the drill's `card` + `audio` groups are nine, the Word Gym's screen file two more), and Chromium parses each
+     script on its worker pool WHILE it streams in — a parse that runs out of bytes holds its worker until the next chunk
+     arrives. On a four-core machine the pool has three workers: with three or more scripts streaming, every worker sat
+     in a parse waiting on a decode task no worker was free to run, and the page froze for good mid-frame (traced: three
+     `v8.parseOnBackground` that never ended, the main thread stuck behind them — hash-nav §6 hung one run in four).
+     So at most MAX_INFLIGHT scripts stream at once, and a worker is always free. Of those, at most HEAVY_MAX are the
+     big data (HEAVY: the word shards, etymology, senses, synonyms, the voice index…), so a slot is always open for the
+     rest — a screen's own code, a library chunk the Finder is waiting for — and when a slot frees, the next of those
+     goes first: a screen never waits behind 14 MB of words. Then the ORDER: what a door waits on, then what a kick
+     started (KICKS: data a screen draws without — its big files also wait for the child to pause, QUIET_MS), then the
+     idle queue; a kick's and the idle queue's files never take the last slot, and a door asking for one of theirs moves
+     it up (promote). Each queue keeps its order (a bundle is one entry, so one queue, and async=false keeps insertion
+     order). No timer frees a slot: a stalled request ends in load or error, and a third stream is exactly what froze. */
+  var HEAVY = { words1: 1, sents: 1, words2: 1, lore: 1, concepts: 1, alts: 1, syn: 1, quotes: 1, fig: 1, lessons: 1, advConcepts: 1, voiceWords: 1 };
+  var MAX_INFLIGHT = 2, HEAVY_MAX = 1, QUIET_MS = 450, inflight = 0, heavyIn = 0;
+  /* the queues, each in its order: everything light a door or a kick asked for; a door's big data; a kick's big data;
+     the idle queue's light and big files */
+  var qL = [], qH = [], qKickH = [], qIdleL = [], qIdleH = [], queued = {}, asked = {};
+  var lastBusy = 0, quietTimer = 0;
+  /* a child at work: a key, a tap, a letter typed. Kicked big data waits for a pause (QUIET_MS) — it lands with a long
+     run of script and a redraw, and in the middle of typing that is a word that takes seconds to show (the Finder) */
+  ['keydown', 'input', 'pointerdown'].forEach(function (t) {
+    try { document.addEventListener(t, function () { lastBusy = Date.now(); }, true); } catch (e) {}
+  });
+  function isHeavy(name) { return !!HEAVY[name]; }
+  function quiet() {
+    var wait = lastBusy + QUIET_MS - Date.now();
+    if (wait <= 0) return true;
+    if (!quietTimer) quietTimer = setTimeout(function () { quietTimer = 0; startScripts(); }, wait + 10);
+    return false;
+  }
+  function nextScript() {
+    if (qL.length) return qL.shift();
+    if (qH.length) return heavyIn < HEAVY_MAX ? qH.shift() : null;   // a door's big file waits: so does everything after it
+    /* what follows never takes the last slot: whatever a door asks for next — a screen's code, the Finder's library
+       chunk — starts at once, never behind data nobody is waiting on */
+    if (inflight >= MAX_INFLIGHT - 1) return null;
+    if (qKickH.length) return (heavyIn < HEAVY_MAX && quiet()) ? qKickH.shift() : null;
+    if (qIdleL.length) return qIdleL.shift();
+    if (qIdleH.length && heavyIn < HEAVY_MAX && quiet()) return qIdleH.shift();
+    return null;
+  }
+  function startScripts() {
+    while (inflight < MAX_INFLIGHT) { var s = nextScript(); if (!s) return; startScript(s); }
+  }
+  function startScript(s) {
+    inflight++; if (s._heavy) heavyIn++;
+    var list = queued[s._name] || [], i = list.indexOf(s); if (i >= 0) list.splice(i, 1);
     var freed = false;
-    s._free = function () { if (freed) return; freed = true; clearTimeout(t); inflight--; var n = waiting.shift(); if (n) addScript(n); };
-    var t = setTimeout(s._free, SLOT_MS);
+    s._free = function () { if (freed) return; freed = true; inflight--; if (s._heavy) heavyIn--; startScripts(); };
     document.head.appendChild(s);
+  }
+  function queueOf(s) { return s._lvl === IDLE_LVL ? (s._heavy ? qIdleH : qIdleL) : s._heavy ? (s._lvl === KICK ? qKickH : qH) : qL; }
+  function addScript(s, name, heavy, lvl) {
+    s._name = name; s._heavy = heavy; s._lvl = lvl;
+    (queued[name] = queued[name] || []).push(s);
+    queueOf(s).push(s);
+    startScripts();
+  }
+  /* a door (or a kick) asks for what a kick or the idle queue already has in hand: its files — and what they wait on —
+     move up to the asker's place in the order */
+  function promote(name, lvl) {
+    if (!(lvl < (asked[name] == null ? 9 : asked[name]))) return;
+    asked[name] = lvl;
+    (queued[name] || []).forEach(function (s) {
+      if (!(lvl < s._lvl)) return;
+      var q = queueOf(s), i = q.indexOf(s); if (i < 0) return;
+      q.splice(i, 1); s._lvl = lvl; queueOf(s).push(s);
+    });
+    (DEPS[name] || []).forEach(function (d) { if (state[d] === 'loading') promote(d, lvl); });
+    startScripts();
   }
   /* A REG entry is a file or a BUNDLE (an array): a bundle's files are inserted async=false, so they download together
      and run in their order, and the entry lands once, when the last has run. */
-  function inject(name, file) {
-    var files = [].concat(file), left = files.length, ran = 0;
+  function inject(name, file, lvl) {
+    var files = [].concat(file), left = files.length, ran = 0, heavy = isHeavy(name);
     var landed = function () {
       state[name] = 'done';
       if (!ran) {
@@ -399,7 +463,7 @@
         try { console.warn('boot-lazy: could not load ' + src); } catch (e) {}
         if (--left === 0) landed();
       };
-      addScript(s);
+      addScript(s, name, heavy, lvl);
     });
   }
 
@@ -409,7 +473,7 @@
   }
 
   /* need(nameOrGroupOrArray, cb) — cb fires once everything asked for is in. */
-  function need(what, cb) {
+  function need(what, cb, lvl) {
     var names = [];
     [].concat(what).forEach(function (k) {
       names = names.concat(GROUP[k] || [k]);
@@ -418,7 +482,7 @@
     var left = names.length;
     if (!left) { if (cb) cb(); return; }
     names.forEach(function (n) {
-      load(n, function () { if (--left === 0 && cb) cb(); });
+      load(n, function () { if (--left === 0 && cb) cb(); }, lvl);
     });
   }
 
@@ -434,7 +498,7 @@
   function pump() {
     if (qi >= IDLE.length) return;
     var name = IDLE[qi++];
-    load(name, pump);
+    load(name, pump, IDLE_LVL);
   }
   var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 220); };
   var started = false;
@@ -508,7 +572,7 @@
       });
       Object.keys(KICKS).forEach(function (k) {
         var f = app[k]; if (typeof f !== 'function' || f._door) return;
-        var g = function () { need(KICKS[k]); return f.apply(this, arguments); };
+        var g = function () { need(KICKS[k], null, KICK); return f.apply(this, arguments); };
         g._door = true; app[k] = g;
       });
     } catch (e) {}
@@ -518,7 +582,7 @@
      word shard: ask for it the moment the box is focused, not when the first suggestion
      would already have been drawn from the boot tier alone. */
   document.addEventListener('focusin', function (e) {
-    try { if (e.target && e.target.closest && e.target.closest('.sb-hsearch')) need(['words', 'library']); } catch (err) {}
+    try { if (e.target && e.target.closest && e.target.closest('.sb-hsearch')) need(['words', 'library'], null, KICK); } catch (err) {}
   }, true);
 
   window.SB_LAZY = { need: need, ready: ready, reg: REG, group: GROUP, start: start,

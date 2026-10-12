@@ -223,7 +223,7 @@ rejected); the grade map is US grade / UK year / CBSE class with a source on eve
 
 ## Road to 4.5, P1 — the app3 split (P1.13 steps 2–3, 10 Oct 2026) — READ FIRST; it overrides the sections below
 The P1 exit gate's last item: **first-load JS ≤ 400 KB gzip — met, and a hard limit now** (`tests/first-load.cjs`: new
-visitor and returning speller **369 KB** each, from 905 / 980 at the start of the day; the table is below). Step 1 (the
+visitor and returning speller **370 KB** each, from 905 / 980 at the start of the day; the table is below). Step 1 (the
 boot word tier) is the section below; the plan, and where the code corrected it, is `docs/first-load-plan.md`. Step 2
 split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
 - **WHICH FILE HOLDS WHICH SCREEN.** `app3.js` keeps what the first screens and the shell draw (render, viewApp's chain,
@@ -256,12 +256,19 @@ split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
   `scrGames`: gym.js's `open()` starts a round as soon as its group is in, and its keys reach only DOM on the page, so a
   mode "ready" on no screen lost its first Enter (spelling-gym T3 caught it; screens-lazy §3 holds it with the screen
   file slowed on the wire). An engine whose host view is in a lazy file carries that file's group the same way.
-- **boot-lazy keeps at most TWO scripts in flight** (`addScript`, `MAX_INFLIGHT`; the rest queue in order, and a file
-  that neither loads nor fails in 20 s gives its slot up). A door can ask for a dozen files (the drill: `card` + `audio`
-  + the Word Gym's screen file); all at once, Chromium's script-streaming parse starved its three-worker pool on a
-  four-core machine and the page froze mid-frame for good — traced (three `v8.parseOnBackground` that never ended, the
-  main thread stuck behind them), hash-nav §6 hung one run in four, 0 in 14 after. Never raise it to "load faster".
-  Guard: screens-lazy §3 (a dozen-file door, at most two in flight).
+- **boot-lazy keeps at most TWO scripts in flight, at most ONE of them big data** (`addScript`, `MAX_INFLIGHT`,
+  `HEAVY_MAX`, the `HEAVY` names: the word shards, etymology, senses, synonyms, the voice index…), and when a slot frees
+  the rest go first — a screen's code, a library chunk the Finder waits for — so a screen never waits behind 14 MB of
+  words. The order (`nextScript`): what a DOOR waits on, then what a KICK started (data a screen draws without — its
+  big files also wait for a pause in the child's typing, `QUIET_MS`), then the IDLE queue; kick and idle files never
+  take the last slot, and a door asking for one of theirs promotes it. Each queue keeps its order. `need(what, cb, lvl)`
+  takes the level; KICKS and the header search's focus pass `KICK`. The Word Finder's guard group is `scrFinder`
+  (its code, no word tier): it draws at once and the words arrive while it is open (dictionary's phone timing). A door can ask for a dozen files at once (the drill: `card` + `audio` + the Word
+  Gym's screen file); all at once, Chromium's script-streaming parse — a parse short of bytes holds its worker until
+  the next chunk — starved its three-worker pool on a four-core machine and the page froze mid-frame for good: traced
+  (three `v8.parseOnBackground` that never ended, the main thread stuck behind them); hash-nav §6 hung one run in
+  four, 0 in 14 after. Never raise it to "load faster"; no timer frees a slot, because a third stream is exactly what
+  froze. Guard: screens-lazy §3 (a dozen-file door: at most two in flight, the Word Gym's code before the second shard).
 - **Rules a later session keeps:**
   - Everything stays a deferred/injected CLASSIC script: no modules, no bundler, `"use strict"` first in every lazy file,
     and `app` stays app3.js's top-level const (lazy files `Object.assign(app, …)`). The source stays readable — deploy
@@ -280,7 +287,9 @@ split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
     of the lazy file and out of `SCR_ACTS`.
   - **Tests**: one that calls a lazy file's function inside `page.evaluate`, or sets `state.nav` straight to a lazy
     screen, first waits for its group (`SB_LAZY.need('scrGrown', …)`) — `backup-restore`, `trust-v2`, `pin-mandatory`,
-    `question-leaks`, `ux-826` do; `word-gym`'s settle waits for the hive loader to go. One that reads app3's code AS
+    `question-leaks`, `ux-826`, `atlas-stars`, `set-deck`, `live-prompts`, `wallet-coins` do; `word-gym`'s settle and
+    `back-pill` wait for the hive loader to go. A fixed sleep after a door is not enough any more: the screen's code
+    may still be on its way. One that reads app3's code AS
     TEXT reads `tests/lib/app3-src.cjs` (`all`, `files`, `body`, `fileOf`): `data-lint`, `gym-source`, `coach-rules`,
     `word-bank`, `library-chunks` (its anchor now ends at `function finderResults(`), `loading-state`, `no-random`,
     `one-count`, `trust-v2`, `ux-826`, `home-continue`; `word-door`'s allow-list names the readers under their new
@@ -296,7 +305,9 @@ split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
   arithmetic (lap, walked maps, `seq`, `passedNode`, the start line, `reachIn` / `reach` / `frontier`), ONE copy, over a
   curriculum getter — plus `SB_ATLAS_PINS`, `SB_TRAIL_NEXT`, `SB_TRAIL_HERE`, `SB_TRAIL_STOPS`. They read
   `SB_TRAIL || SB_TRAIL_HOME`: `trail-home-data.js` (boot, ~5 KB gz) is the ROAD cut from trail-data.js by
-  `node tools/build-trail-home.cjs` — **never edited by hand; rerun the tool whenever trail-data.js changes**. `trail.js`
+  `node tools/build-trail-home.cjs` — **never edited by hand; rerun the tool whenever trail-data.js changes**. The road's
+  three scripts come BEFORE app3.js in index.html, so app3's very first render knows the next stop (the hello picks
+  from it — trust-v2's quiet child). `trail.js`
   destructures its helpers from `SB_TRAIL_FRONT` over the full curriculum and is lazy (`trailCode`, DEPS `trail`).
   **Change the frontier in trail-home.js, and only there.** **FIRST is gone** — nothing is fetched before the first tap;
   boot-lazy renders every first screen once at DOMContentLoaded (worlds4's late worlds). wordband.js's region,
@@ -309,8 +320,8 @@ split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
 
   | | start of day | step 1 (word tier) | step 2 (app3 split) | step 3 (Atlas) |
   |---|---:|---:|---:|---:|
-  | new visitor JS / total (KB) | 905 / 1184 | 554 / 833 | 411 / 691 | **369** / 649 |
-  | returning speller JS / total (KB) | 980 / 1276 | 629 / 909 | 487 / 782 | **369** / 665 |
+  | new visitor JS / total (KB) | 905 / 1184 | 554 / 833 | 411 / 691 | **370** / 650 |
+  | returning speller JS / total (KB) | 980 / 1276 | 629 / 909 | 487 / 782 | **370** / 666 |
 
   app3.js went 307 → 165 KB gz (core + stubs); the seven lazy app3 files are ~157 KB gz between them; trail.js (48) and
   trail-data.js (76) left both first screens for trail-home.js + its data (~7). The ceilings are those plus ~2%, and

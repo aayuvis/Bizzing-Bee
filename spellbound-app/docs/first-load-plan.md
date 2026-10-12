@@ -5,7 +5,7 @@ exactly what this batch moved, and sets out the plan for the rest: app3.js split
 taken off the first screen. The next step can work straight from it. The ratchet that holds the gains is
 `tests/first-load.cjs`. The app3 numbers come from `node tools/app3-split-map.cjs`, a read-only analysis.
 
-## Outcome (10 Oct 2026): done — 369 KB of JavaScript on both first screens
+## Outcome (10 Oct 2026): done — 370 KB of JavaScript on both first screens
 
 The three steps below landed in order, each committed on its own (CLAUDE.md "Road to 4.5, P1 — the boot word tier is
 lazy" and "Road to 4.5, P1 — the app3 split" carry the rules). `tests/first-load.cjs` now holds **400 KB as a hard line
@@ -13,8 +13,8 @@ for both screens** beside its ratchet.
 
 | | before | step 1 | step 2 | step 3 |
 |---|---:|---:|---:|---:|
-| new visitor, JS gz / total | 905 / 1184 | 554 / 833 | 411 / 691 | **369** / 649 |
-| returning speller, JS gz / total | 980 / 1276 | 629 / 909 | 487 / 782 | **369** / 665 |
+| new visitor, JS gz / total | 905 / 1184 | 554 / 833 | 411 / 691 | **370** / 650 |
+| returning speller, JS gz / total | 980 / 1276 | 629 / 909 | 487 / 782 | **370** / 666 |
 
 **Where the code disagreed with this plan, and what was done instead:**
 - *Step 1, "words1 fetched at DOMContentLoaded on Home (like FIRST)".* That is inside the measured window (everything
@@ -44,7 +44,9 @@ for both screens** beside its ratchet.
   `scrShared` + `scrGames` (spelling-gym T3 caught a lost Enter; screens-lazy §3 holds it).
 - *Not in the plan, found by the suite:* more doors fetch more files at once after the split, and a door of a dozen
   scripts froze Chromium mid-frame one run in four (its script-streaming parse starved a three-worker pool). boot-lazy
-  now keeps at most two scripts in flight, in order (`addScript`).
+  now keeps at most two scripts in flight, at most one of them big data, the rest first, in the order door → kick →
+  idle (`addScript`) — so a screen's code never waits behind the word shards — and the Word Finder draws without the
+  word tier (`scrFinder`), so a lookup is not a wait for 1.5 MB of words (dictionary's phone timing). The road's scripts sit before app3.js, so its first render knows the next stop.
 - *Step 3, "keep FIRST, on the idle queue".* `trail` was already on the idle queue; FIRST is deleted, and boot-lazy gives
   every first screen one render at DOMContentLoaded (Home used to get it from FIRST — worlds4's late worlds need it).
 - *Step 3, "the Home half … into a small boot file".* The frontier arithmetic is ONE copy, `SB_TRAIL_FRONT(T)` in
