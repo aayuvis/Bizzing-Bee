@@ -380,15 +380,18 @@
   /* the queues, each in its order: everything light a door or a kick asked for; a door's big data; a kick's big data;
      the idle queue's light and big files */
   var qL = [], qH = [], qKickH = [], qIdleL = [], qIdleH = [], queued = {}, asked = {};
-  var lastBusy = 0, quietTimer = 0;
+  var lastBusy = 0, lastDoor = 0, quietTimer = 0;
   /* a child at work: a key, a tap, a letter typed. Kicked big data waits for a pause (QUIET_MS) — it lands with a long
-     run of script and a redraw, and in the middle of typing that is a word that takes seconds to show (the Finder) */
+     run of script and a redraw, and in the middle of typing that is a word that takes seconds to show (the Finder).
+     The idle queue also waits for the screen to SETTLE: QUIET_MS after the last file a door or a kick asked for has
+     landed. Every landing redraws the app, and the idle queue resuming the moment a door's last file was in put a
+     redraw right on top of the screen that had just appeared (mockbee-stage measured a lobby mid-redraw). */
   ['keydown', 'input', 'pointerdown'].forEach(function (t) {
     try { document.addEventListener(t, function () { lastBusy = Date.now(); }, true); } catch (e) {}
   });
   function isHeavy(name) { return !!HEAVY[name]; }
-  function quiet() {
-    var wait = lastBusy + QUIET_MS - Date.now();
+  function quiet(settle) {
+    var wait = Math.max(lastBusy, settle ? lastDoor : 0) + QUIET_MS - Date.now();
     if (wait <= 0) return true;
     if (!quietTimer) quietTimer = setTimeout(function () { quietTimer = 0; startScripts(); }, wait + 10);
     return false;
@@ -400,8 +403,9 @@
        chunk — starts at once, never behind data nobody is waiting on */
     if (inflight >= MAX_INFLIGHT - 1) return null;
     if (qKickH.length) return (heavyIn < HEAVY_MAX && quiet()) ? qKickH.shift() : null;
+    if ((qIdleL.length || qIdleH.length) && !quiet(true)) return null;
     if (qIdleL.length) return qIdleL.shift();
-    if (qIdleH.length && heavyIn < HEAVY_MAX && quiet()) return qIdleH.shift();
+    if (qIdleH.length && heavyIn < HEAVY_MAX) return qIdleH.shift();
     return null;
   }
   function startScripts() {
@@ -411,7 +415,7 @@
     inflight++; if (s._heavy) heavyIn++;
     var list = queued[s._name] || [], i = list.indexOf(s); if (i >= 0) list.splice(i, 1);
     var freed = false;
-    s._free = function () { if (freed) return; freed = true; inflight--; if (s._heavy) heavyIn--; startScripts(); };
+    s._free = function () { if (freed) return; freed = true; inflight--; if (s._heavy) heavyIn--; if (s._lvl !== IDLE_LVL) lastDoor = Date.now(); startScripts(); };
     document.head.appendChild(s);
   }
   function queueOf(s) { return s._lvl === IDLE_LVL ? (s._heavy ? qIdleH : qIdleL) : s._heavy ? (s._lvl === KICK ? qKickH : qH) : qL; }
