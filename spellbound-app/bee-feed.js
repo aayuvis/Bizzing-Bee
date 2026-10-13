@@ -204,9 +204,34 @@
     var p = SB_TRAIL_ROAD.place(SB_TRAIL, String(it.src || '').replace(/^act:/, ''), lap);
     return p ? Object.assign({}, it, { body: p.body }) : it;
   }
+  /* ART FOR ITS KIND (road to 4.5, P3.3 / P3.4 — the audit's "My Feed text-only"). Every card wears a painted band
+     through the family card's own `art` slot (BZ_FEED.feedCard draws <img class="bzf-art" loading="lazy" alt="">; the
+     engine is unchanged): a PLACE card its region's own map, a LESSON or a stop's QUIZ the painted banner of the region
+     its stop is in (the strip the Atlas shows over that region), and everything else the plate of its kind —
+     app-art/feed/<plate>.webp, 720x240, cut from the app's own paintings by tools/art/p3-gen.py and repainted in place
+     when the bespoke plates are made. A card that already names art keeps it. tests/p3-art.cjs holds every kind the
+     build cuts to a plate that ships, and every region to its map and banner. */
+  var KIND_ART = { word: 'word', spotlight: 'word', usage: 'usage', hook: 'hook', origin: 'origin', play: 'quiz', quiz: 'quiz',
+    sounds: 'sounds', saying: 'saying', fun: 'fun', analogy: 'analogy', story: 'story', character: 'story', game: 'game',
+    lesson: 'lesson', place: 'lesson' };
+  function road() { return window.SB_TRAIL || window.SB_TRAIL_HOME || null; }
+  function actOf(id) { var T = road(), a = T && T.honey && T.honey.acts; if (!a) return null; for (var i = 0; i < a.length; i++) if (a[i].id === id) return a[i]; return null; }
+  function stopAct(it) {
+    var T = road(), U = T && T.honey && T.honey.units; if (!U) return null;
+    var st = (it.topics || []).filter(function (t) { return /^stop:/.test(t); })[0]; if (!st) return null;
+    var id = st.slice(5); for (var i = 0; i < U.length; i++) if (U[i].id === id) return actOf(U[i].act);
+    return null;
+  }
+  function artFor(it) {
+    if (it.art) return it.art;
+    if (it.kind === 'place') { var a = actOf(String(it.src || '').replace(/^act:/, '')); if (a) return 'app-art/map-' + a.id + '.webp'; }
+    if (it.kind === 'lesson' || it.kind === 'quiz') { var s = stopAct(it); if (s && s.world) return 'app-art/w-' + s.world + '-r2.webp'; }
+    return 'app-art/feed/' + (KIND_ART[it.kind] || 'word') + '.webp';
+  }
   function card(x) {
     var it = bodyOf(x.id); if (!it) return '';
     it = lapCut(it);
+    it = Object.assign({}, it, { art: artFor(it) });
     if ((it.kind === 'analogy' || ANL_ROUTE.test(it.route || '')) && !anlOk()) return '';   // a session kept from before the gate closed
     var h = BZ_FEED.feedCard(it, x, play[x.id] || {});
     /* the recorded clip (voice-cdn streams it on a hosted build) — played only on a tap, beside the card's own button */
@@ -284,5 +309,5 @@
   });
 
   window.SB_FEED = { view: view, levelOf: levelOf, levelName: levelName, session: session, dueOf: dueOf, signals: signals, answer: answer,
-    groupsFor: groupsFor, lapCut: lapCut, pool: pool, wordBand: wordBand, bandWin: bandWin, _play: play, reset: function () { for (var k in play) delete play[k]; } };
+    groupsFor: groupsFor, lapCut: lapCut, pool: pool, artFor: artFor, KIND_ART: KIND_ART, wordBand: wordBand, bandWin: bandWin, _play: play, reset: function () { for (var k in play) delete play[k]; } };
 })();

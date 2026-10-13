@@ -88,6 +88,84 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
 - UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
   headings free of emoji.
 
+## Road to 4.5, P3 — art and the first session (13 Oct 2026) — READ FIRST; it overrides the sections below
+Brief rows P3.3/P3.4 (My Feed art by kind, the Shop's world tiles), P3.5 (Journey covers), P3.9 (a medal per group),
+P3.22 (Home: the journey plate preloaded, tip and quote illustrated), P3.23 (onboarding's painted worlds, Bizzy waves),
+P3.24 (the first word's sound and bee). The rules a later session keeps:
+- **ART SLOTS — ONE MANIFEST, CUT TODAY, PAINTED LATER IN PLACE.** `tools/art/p3-prompts.json` lists every slot: its path,
+  its pixel size (the size it is DRAWN at — "Shipped art is sized to how it is drawn"), the reused painting it is cut from
+  (`fallback`: a source in app-art/ and a box in fractions, an optional `tone` lift) and, where a bespoke painting would
+  beat the cut, a `prompt`. `python3 tools/art/p3-gen.py --cut <ids|--all>` writes the cuts (no network) — what ships
+  now, so the app is complete before any painting exists. `GKEY=… python3 tools/art/p3-gen.py --paint <ids|--all>`
+  paints RAW PNGs (to `ART_RAW`, default `<tmp>/sb-p3-raw`), then `python3 tools/art/p3-gen.py --webp <ids|--all>`
+  replaces the cut AT THE SAME PATH AND SIZE — no code changes. The key is read ONLY from the `GKEY` environment variable,
+  at call time, and sent only as the `x-goog-api-key` header; there is no key-file fallback, and nothing prints it. Every
+  prompt is wrapped in the manifest's `style` + `never` (no text, letters, words, numbers, labels, signage or writing on
+  any object; no people, faces or hands; no logos or brand marks). The ELEVEN slots with a prompt (the paintings the
+  generator makes): `app-art/feed/{word,usage,hook,origin,quiz,sounds,saying,story,lesson}.webp` (720×240) and
+  `app-art/home/{tip,quote}.webp` (128×128). Cut-only (the reused painting IS the art): `feed/{fun,analogy,game}` and
+  the eight `app-art/wt/<world>.webp` (480×240, each world's own sgw-* play-field, lifted a stop). After painting, run
+  `node tests/p3-art.cjs` and `node tests/asset-budget.cjs`, look at the feed, and lower the asset ratchet to what shipped.
+- **MY FEED WEARS ITS KIND** (bee-feed.js `KIND_ART` / `artFor`, through the family card's own `art` slot — bizzing-feed.js
+  and .css stay byte-identical): a `place` card its region's map (`map-<act>.webp`), a `lesson` or a stop's `quiz` the
+  banner of its stop's region (`w-<world>-r2.webp`, the road from trail-home-data.js), every other kind its plate
+  (`feed/<plate>.webp`; spotlight shares word's, character story's, play quiz's). Worn as a **3:1 band** (bee-feed.css
+  overrides only the family's 3:2 aspect: twenty 3:2 pictures made a picture feed). A new feed kind needs a KIND_ART entry
+  and a plate slot — `p3-art.cjs` names every kind the build cuts.
+- **THE WORLDS ARE PAINTED** (`WORLD_PLATE` + `worldPlateImg(id, eager)`, app3): the Shop's Worlds tab, the Collection's
+  world cards (`worldHeroCard`), Settings → Look's thumbnails and onboarding's world step draw `app-art/wt/<id>.webp`
+  over the world's gradient bed. On a painted tile the drawn motif (`WORLD_HERO.art`) and the dot layer (`WORLD_FX`)
+  step aside — the painting is the place. Each surface keeps its own lock look (the Collection's locked band is still
+  `grayscale(1)` — `hive-nav` holds it — but over a painting, not a flat block). Onboarding's two plates load eager, the
+  first free world stays preselected (`aria-pressed`). A world added to THEMES needs a plate slot (`p3-art.cjs` fails).
+- **JOURNEY COVERS ARE TEN PAINTINGS** (app3-library.js `UNIT_ART` / `unitCoverArt`): each chapter wears a world banner of
+  its era (meadow, Forum, elements, war camp, strait, clockwork at night, the night stacks, the gauges, the Grand Trunk
+  Road, the stage), the hero word set over it in white with a shadow; a locked tale is the same painting at
+  `saturate(.45) brightness(.86)`, never the old `grayscale(.75)` grey block. The Library's "Word journeys" shelf cover
+  wears the strait.
+- **A MEDAL PER GROUP** (`MEDAL_GROUP`, `medalSVG(b, size, won, i, n)`, drawn in code, in **app3-me.js** with the shelf
+  that shows it — the "Badge earned!" celebration in app3 draws it through `scrDraw('scrMe', () => medalSVG(b, 96))`,
+  so none of it is first-load JS): Atlas compass · Traps shield ·
+  Word mastery honeycomb cell · Word difficulty rosette with tails · Levels wings · Collection beaded cameo · Mock Spelling
+  Bee laurel · Learning diamond plaque · Explorer globe pendant · Typing keycap · Trivia speech bubble · Vocabulary
+  bookmark. The group gives shape, colour and ribbon; the badge's `ic` emblem sits in the field; its PLACE in the group
+  gives the rim's metal (bronze → silver → gold → platinum). "Kept from before" keeps the old round medallion
+  (`badgeArtSVG`). The emblems `grid`, `coin` and `pencil` were missing (three medals drew a star) and are drawn now. A new
+  medal group needs a MEDAL_GROUP entry with a shape of its own (`p3-art.cjs`).
+- **HOME** (P3.22): with no `sb_home_art` note yet (a speller whose Home was never drawn on this device — the audit's
+  desk-dusk first paint), the parse-time preload still asks for `app-art/atlas-map.webp`, the journey plate the first
+  screen always shows; the "You are here" image carries `fetchpriority="high"`. The tip and quote cards carry a 56px
+  painted vignette (`homeVign`) drawn `data-lsrc` and shown by `landShots('60px 0px')` (the landing's loader, now with a
+  margin argument; `_lsrcSeen` keeps a shown picture's src across redraws) — both cards sit below a phone's first screen,
+  so the first-load image bytes do not move. The tip card's tiny mascot gave its place to the painting.
+- **BIZZY WAVES** (P3.23, `bizzyWave()`): step 1 of setup draws the vector mascot (the Bizzy Home's hello draws) with a
+  raised right arm, `.sb-wave-arm` → `sb-wave` three swings (index.html, beside `.sb-onb-art`); the device's reduced motion
+  and Calm (`data-motion="off"`) leave it raised and still.
+- **THE FIRST WORD EVER** (P3.24, `firstWordDue(c)` / `firstWordFx(c)`, app3): the first word a child ever spells right gets
+  sfx `'first'` (app2, in place of `'correct'`) and a two-second bee flight on a `body > .sb-fw-fly` layer (outside #root,
+  so no render restarts it). ONCE per child — `c.fwFx` is set and saved as it fires; due only when nothing right is on
+  record (`rankXp` 0 and no `c.mast` with `ok`), read BEFORE the answer is recorded (app.check reads it above
+  `markMastered`). Two doors: the A8 first word (`fwCheck`) and the drill's right answer (a child who skipped the first
+  word, or was placed). No coin: the word's own `answer` coin is unchanged. Reduced motion keeps the sound, no flight.
+- **The asset ratchet went DOWN**: the five hive splash plates the drawn SVG comb replaced (hive-comb-wall, hive-cell,
+  hive-honey-top/-bot, hive-bee-sit — 437 KB WebP + 220 KB SVG, referenced by nothing; worlds-splash holds them cut) were
+  deleted to pay for the 22 cuts (337 KB). app-art/ measured 18.58 MB raster / 21.83 MB; `asset-budget` is now 18.9 /
+  22.2 MB, which leaves ~300 KB for the eleven paintings. Lower it again once they land.
+- **First load**: JS 371 KB gzip on both first screens (+1.6 KB: app3 +1.3, app2 +0.05, index.html +0.25 — the
+  wave, the first-word flight and the world plate; the medal art moved to app3-me.js to keep 2.3 KB off), images
+  unchanged at 83 / 99 KB (the vignettes are never fetched on a phone's first screen; the no-note preload is the same
+  atlas-map.webp Home already drew). Ceilings untouched: 377 KB JS, the 400 KB hard line, 90 / 105 KB images.
+- **Tests**: `tests/p3-art.cjs` (@check, node: slots at their sizes, the never clause, the key rule, every one of the
+  build's ~28,400 cards through the real `artFor`, every world, ten covers, twelve medal shapes, Home's vignettes and
+  preload), `tests/p3-art-screens.cjs` (browser, light + dusk at 390: the feed's bands load at 3:1, the Shop's and the
+  Collection's eight painted worlds, 100 painted covers none grey, every medal on its own group's shelf with the metal
+  climbing, Home's vignettes not fetched on the first screen and there when scrolled to), `tests/p3-first-session.cjs`
+  (browser: the wave and both reduced motions, the painted world step, the first word's sound/flight/one coin/no replay,
+  calm, the drill door and a child with words on record), and `home-first-paint` gained the no-note preload check.
+  **Proved by breaking** — 11 + 6 + 6 + 1 breaks (home-first-paint's: without the no-note preload the map was NOT on
+  screen when the card painted), each in a scratch root of symlinks with ONE file replaced (the tree was
+  never touched), every one watched to fail; each test's header lists them.
+
 ## The road to 4.5 — P0: tabs, shell, the analogy gate (10 Oct 2026) — READ FIRST; it overrides the sections below
 Brief: the family v5 audit's "road to 4.5" (owner decisions final, 10 Oct 2026). What this batch changed, and the rules:
 - **Six tabs, Word Gym under Word Atlas** (owner: "Home · Word Atlas · Analogies · Library · Play · My Feed. Word Gym

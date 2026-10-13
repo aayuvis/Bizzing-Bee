@@ -172,7 +172,7 @@ function iconTile(name, col, opts){ opts=opts||{}; const size=opts.size||46; con
     <span aria-hidden="true" style="position:absolute;top:${size*0.09}px;left:${size*0.16}px;right:${size*0.16}px;height:${size*0.4}px;border-radius:999px;background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,0));pointer-events:none"></span>
     <span style="position:relative;display:grid;place-items:center;filter:drop-shadow(0 1px 1px rgba(0,0,0,.28))">${ico}</span>
   </span>`; }
-function sfx(kind){ try{ if(typeof state!=='undefined' && state.sound===false) return; try{ if(window.SB_VOL) SB_VOL.duck(kind==='win'||kind==='level'||kind==='lose'?900:350); }catch(e){}
+function sfx(kind){ try{ if(typeof state!=='undefined' && state.sound===false) return; try{ if(window.SB_VOL) SB_VOL.duck(kind==='win'||kind==='level'||kind==='lose'||kind==='first'?900:350); }catch(e){}
   if(kind==='correct'){ _tone(660,0,0.12,'sine'); _tone(880,0.09,0.16,'sine'); }
   else if(kind==='coin'){ _tone(988,0,0.07,'square',0.11); _tone(1319,0.06,0.12,'square',0.11); }
   else if(kind==='wrong'){ _tone(196,0,0.22,'sawtooth',0.11); }
@@ -180,6 +180,7 @@ function sfx(kind){ try{ if(typeof state!=='undefined' && state.sound===false) r
   else if(kind==='win'){ [523,659,784,1047,1319].forEach((f,i)=>_tone(f,i*0.09,0.26,'triangle',0.16)); }
   else if(kind==='lose'){ [392,330,262].forEach((f,i)=>_tone(f,i*0.13,0.28,'sawtooth',0.12)); }
   else if(kind==='tick'){ _tone(523,0,0.05,'square',0.09); }
+  else if(kind==='first'){ [523,659,784,1047,1319].forEach((f,i)=>_tone(f,i*0.06,0.16,'triangle',0.13)); _tone(1568,0.32,0.42,'sine',0.11); _tone(220,0.02,0.3,'sawtooth',0.03); }   /* the first word ever (P3.24): a bright run up and a ring, a whisper of buzz under it */
 }catch(e){} }
 // a clear two-tone "boop" that stands in for a hidden word when reading a sentence aloud
 // (plays regardless of the SFX setting — it is part of the spoken question, not a game effect)
