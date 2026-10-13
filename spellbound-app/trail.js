@@ -72,7 +72,7 @@
     '⭐': ['star', '#E8A81C'], '🔥': ['flame', '#E8642A'], '🌫️': ['cloud', '#7A8794'], '❓': ['question', '#7C5CFF'], '⛵': ['sail', '#2F6FB0'], '🌊': ['wave', '#2F7FD0'],
     '🏳️': ['flag', '#5A6270'], '🐝': ['comb', '#C8791B'], '📖': ['book', '#6C4FE0'], '💚': ['heart', '#2E9E5B'], '🟢': ['heart', '#2E9E5B'] };
   const burstG = (ch, s) => { const b = BURST[ch] || ['spark', '#E8A81C']; const inner = BURST_G[b[0]] || CACHE_G[b[0]] || CACHE_G.spark;
-    return `<span style="display:block;color:${b[1]};filter:drop-shadow(0 1px 1px rgba(40,24,4,.45))">${lineG(inner, s || 16)}</span>`; };
+    return `<span data-glyph="${b[0]}" style="display:block;color:${b[1]};filter:drop-shadow(0 1px 1px rgba(40,24,4,.45))">${lineG(inner, s || 16)}</span>`; };
   /* the orchestra pit's notes on the air, drawn (they were ♪ ♫ ♩ ♬ — glyphs half the phone fonts lack) */
   const NOTE_G = ['<ellipse cx="9" cy="17.5" rx="3.6" ry="2.7" transform="rotate(-20 9 17.5)"/><rect x="11.3" y="4" width="1.7" height="13.6" rx=".8"/><path d="M13 4c2.6 1.4 5.4 2.6 4.6 6.6-.5-2.6-2.6-3.2-4.6-3.6z"/>',
     '<ellipse cx="6.6" cy="18" rx="3.2" ry="2.4" transform="rotate(-20 6.6 18)"/><ellipse cx="16.6" cy="16" rx="3.2" ry="2.4" transform="rotate(-20 16.6 16)"/><rect x="8.6" y="6" width="1.6" height="12.4" rx=".8"/><rect x="18.6" y="4" width="1.6" height="12.4" rx=".8"/><path d="M8.6 6l11.6-2v2.6L8.6 8.6z"/>',
