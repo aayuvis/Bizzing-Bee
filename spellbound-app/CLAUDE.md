@@ -1740,6 +1740,18 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   The probe runs the context's init scripts: one that seeds on what it does not find in a NEW tab (feed-screen keys on
   sessionStorage) must skip `storage-probe.html`, and reloadSettled THROWS if the page hears the probe write storage
   (proved: feed-screen without its skip → "wrote storage 3×"). `reload-profiles` reads `reloadSettled(x)` as a reload of x.
+- **THE RELOAD SEAL — an erase or a restore can never be undone by its own reload** (store.js, 13 Oct; found by P3's full
+  run 5, backup-restore: an erase, the app's reload, and the OLD household on screen — its first save would have written it
+  back over the erase, a COPPA deletion quietly undone). `bkHaltAndReload` calls `SB_STORE.sealReload()`: it writes a
+  one-time seal (`bkSeal` = `sb_bk_seal`) LAST and reloads with `?bk=<seal>`. `sealCheck` runs first thing in store.js: a
+  document that arrives with `?bk=` and cannot see that seal is reading older storage — it HOLDS (`rset`/`rdel` refuse, so
+  nothing stale is saved; `SB_STORE.held()`) and reloads again to the address as it ARRIVED, `?bkt=` counting, backing off
+  40 ms × try, at most `SEAL_TRIES` (12); one that sees it (or runs out) deletes it and strips both from the address before
+  any other script reads it. `?demo` reloads plainly. Guard: **`tests/reload-seal.cjs`** (browser: a stale arrival holds,
+  writes nothing, retries and leaves the household and route as they were; a sealed arrival is one document; the real
+  Erase reloads through `?bk=` and lands clean). Proved by breaking: no hold → 1 fails; `rset` ignoring HOLD → 1 fails
+  (and showed the stale page saving `sb_saas_v2` four times — the bug was real); the seal kept → 2 fail; erase reloading
+  plainly → 1 fails. Any new flow that writes storage and then reloads goes through `sealReload()`, never `location.reload()`.
 
 ## Road to 4.5, P0 — landing and parent truth, child data, wallet, Hive minutes (10 Oct 2026)
 - **The opening page types no count** (P0.21/P0.22). Beyond the Audit v4 set, SB_COUNT now also reads

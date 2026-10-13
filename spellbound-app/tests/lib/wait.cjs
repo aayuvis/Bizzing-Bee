@@ -106,7 +106,8 @@ async function reloadSettled(page, opts) {
     new Promise((r) => setTimeout(r, 3000))]);
   const n = await page.evaluate(() => { window.__probeWrites = 0; addEventListener('storage', () => { window.__probeWrites++; }); return localStorage.length; }).catch(() => 0);
   const want = () => page.evaluate((D) => (0, eval)(D)(), '(' + DIGEST + ')').catch(() => '');
-  const ok = n ? await storageSettled(page.context(), n, 8000, page.url(), want) : true;
+  /* no shortcut for an empty page: a page that has just removed every key must wait for the removals too (the digest) */
+  const ok = await storageSettled(page.context(), n, 8000, page.url(), want);
   /* the probe is a page of the test's context, so the context's init scripts run in it too. One that seeds on what it
      does not find (feed-screen's keys on sessionStorage, which a new tab never has) would write over the very storage
      being kept — the page hears that as a 'storage' event from another document, and the reload stops here, loudly. */

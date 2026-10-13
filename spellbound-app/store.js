@@ -30,6 +30,7 @@
     homeArt: 'sb_home_art',   /* the pictures Home's first screen showed last time: index.html's parse-time peek preloads them (audit v4 B6) */
     tmLog: 'sb_tm_log', tmArm: 'sb_tm_on', accounts: 'sb_accounts_v1', session: 'sb_session_v1',
     cloudSession: 'sb_session_v2', syncMeta: 'sb_sync_v1',
+    bkSeal: 'sb_bk_seal',     /* one-time: written LAST by an erase or restore, read and deleted by the reload it starts (the reload seal, below) */
     wallet: 'bizzing.wallet', activity: 'bizzing.activity'
   };
   var FAMILY = { wallet: 1, activity: 1 };
@@ -222,8 +223,9 @@
   function name(n) { if (!Object.prototype.hasOwnProperty.call(KEYS, n)) throw new Error('SB_STORE: unregistered key "' + n + '"'); return KEYS[n]; }
   function ls() { try { return window.localStorage; } catch (e) { return null; } }
   function rget(k) { try { var s = ls(); return s ? s.getItem(k) : null; } catch (e) { return null; } }
-  function rset(k, v) { try { var s = ls(); if (!s) return false; s.setItem(k, String(v)); return true; } catch (e) { return false; } }
-  function rdel(k) { try { var s = ls(); if (s) s.removeItem(k); } catch (e) {} }
+  var HOLD = false;   /* the reload seal: a document looking at storage older than the address it was given writes nothing */
+  function rset(k, v) { if (HOLD) return false; try { var s = ls(); if (!s) return false; s.setItem(k, String(v)); return true; } catch (e) { return false; } }
+  function rdel(k) { if (HOLD) return; try { var s = ls(); if (s) s.removeItem(k); } catch (e) {} }
   /* a real key the raw door may touch: one we registered, or any of Bee's own sb_ keys (backup and
      erase must reach keys an older build left behind) */
   function mine(k) { return typeof k === 'string' && (Object.prototype.hasOwnProperty.call(REAL, k) || /^sb_/.test(k)); }
@@ -234,6 +236,39 @@
     if (v > SCHEMA) { READ_ONLY = true; return b; }
     while (v < SCHEMA) { b = STEPS[v - 1](b) || b; v++; b.sv = v; ran.push('v' + (v - 1) + '_to_v' + v); }
     return b;
+  }
+
+  /* ---------------------------------------------------------------- the reload seal (13 Oct 2026)
+     Erase and restore write storage and then reload. Chromium hands a page's writes to the browser process
+     asynchronously, and under load the reloaded document has started on storage as it was BEFORE them — P3's
+     full run: an erase, the reload, and the old household back on screen, whose first save would have written
+     it over the erase. So the reload carries its intent: sealReload() writes a one-time seal LAST (one page's
+     writes reach the browser in order, so a document that sees the seal sees everything written before it) and
+     reloads with ?bk=<seal>. A document that arrives with ?bk= and cannot see that seal is looking at older
+     storage: it HOLDS (every write through this seam is refused, so the stale household cannot be saved back)
+     and reloads again, a little later each time, at most SEAL_TRIES times, the count riding the address
+     (?bkt=). A document that sees the seal — or runs out of tries — deletes it and takes both out of the address
+     before any other script reads it. ?demo keeps its storage in memory, so a demo reloads plainly. */
+  var SEAL_TRIES = 12;
+  function addr(q, h) { var qs = q.toString(); return location.pathname + (qs ? '?' + qs : '') + (h == null ? location.hash : h); }
+  (function sealCheck() {
+    var q, h; try { h = location.hash; q = new URLSearchParams(location.search); } catch (e) { return; }   /* h: the address as it ARRIVED — a held page's own routing may move it; no address (a test's sandbox) → nothing to check */
+    var want = q.get('bk'); if (!want) return;
+    var tries = +q.get('bkt') || 0;
+    if (rget(KEYS.bkSeal) !== want && tries < SEAL_TRIES) {
+      HOLD = true; q.set('bkt', String(tries + 1));
+      try { setTimeout(function () { location.replace(addr(q, h)); }, 40 * (tries + 1)); } catch (e) {}
+      return; }
+    rdel(KEYS.bkSeal); q.delete('bk'); q.delete('bkt');
+    try { history.replaceState(history.state, '', addr(q)); } catch (e) {}
+  })();
+  function sealReload() {
+    var q; try { q = new URLSearchParams(location.search); } catch (e) { q = null; }
+    if (!q || q.has('demo')) { location.reload(); return; }
+    var n = Date.now().toString(36) + '-' + Math.floor(((window.performance && performance.now()) || 0) * 1000).toString(36);
+    if (!rset(KEYS.bkSeal, n)) { location.reload(); return; }
+    q.set('bk', n); q.delete('bkt');
+    location.replace(addr(q));
   }
 
   window.SB_STORE = {
@@ -258,6 +293,8 @@
       return rset(KEYS.household, JSON.stringify(b)); },
     pinMake: pinMake, pinCheck: pinCheck, isPinRec: isPinRec, sha256: sha256hex,
     readOnly: function () { return READ_ONLY; },
+    held: function () { return HOLD; },
+    sealReload: sealReload,
     migrated: function () { return ran.slice(); },
     migrate: migrate,
     /* by REAL key — backup, restore and erase only. Bee's own keys and the family keys, nothing else. */
