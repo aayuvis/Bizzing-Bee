@@ -89,3 +89,4 @@ A hub records its modes here as it ships; a new mode names the weaker mode it re
 | Spelling Gym | Word Doctor | Memory Match (add-on) |
 | Spelling Gym | Level Challenge | Beat the Buzzer's Stage Challenge |
 | Mock Spelling Bee | Family Bee night | Spelling Duel |
+| Word Lore | Build a Word (13 Oct 2026, road to 4.5 P3.16) | — an owner row, not a swap: the 4.5 brief (P3.16, owner-final) asks for "drag-to-build morphemes … offered in Spelling Gym or Word Lore as a mode" and names no mode to retire. It is shown only where Word Forge is (its table signed off, or tester mode), so no child sees an eighth Word Lore tile today. **Owner: name the weaker Word Lore mode it replaces, or confirm the exception, before signing off the forge table.** |

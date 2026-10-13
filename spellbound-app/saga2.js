@@ -612,8 +612,11 @@
     const fixed=(host===document.body);
     try{ if(!fixed && getComputedStyle(host).position==='static') host.style.position='relative'; }catch(e){}
     const wrap=document.createElement('div'); wrap.className='sg-misswrap'+(fixed?' fixed':'');
-    wrap.innerHTML='<div class="sg-misscard sb-miss" role="dialog" aria-modal="true" aria-labelledby="sg-miss-h">'+inner+
+    /* P3.14: the card arrives with one calm shake (off under Reduce motion) — once: the class goes when it has played, so
+       a game that puts the card back after a redraw does not shake it again */
+    wrap.innerHTML='<div class="sg-misscard sb-miss sg-fx-shake" role="dialog" aria-modal="true" aria-labelledby="sg-miss-h">'+inner+
       '<button class="sg-rbtn go sg-miss-go" type="button">Continue <span class="sg-kbd" aria-hidden="true">Enter</span></button></div>';
+    try{ const mc=wrap.firstChild; mc.addEventListener('animationend',()=>mc.classList.remove('sg-fx-shake'),{once:true}); setTimeout(()=>mc.classList.remove('sg-fx-shake'),700); }catch(e){}
     host.appendChild(wrap);
     const t0=performance.now(); let closed=false;
     const key=(!fixed&&host.getAttribute)?host.getAttribute('data-sb-stage'):null;
@@ -743,6 +746,50 @@
     new MutationObserver(kick).observe(root,{childList:true});
     addEventListener('resize',kick); kick();
   }catch(e){} })();
+
+  /* ---- 4b. STINGS (road to 4.5, P3.15). A short phrase on a right answer and a longer one when a round is done,
+     composed in code (WebAudio, like music.js and sfx()) — one per game, in its own key, timbre and figure, so Word
+     Lore's right answer is not Hive Mind's. The rules it keeps:
+       · ONE volume: SB_VOL.fx(), the scale every effect plays at — 0 or muted is silence;
+       · DUCKED: the music dips under it (SB_VOL.duck), as it does under every word;
+       · OFF in Calm mode and when sound effects are off (state.sound===false) — it returns false and the caller plays
+         the plain tone (sfx 'correct'/'win'), which Calm keeps soft;
+       · NEVER FOR A RUN: the same notes for the first right answer and the tenth. It reads no history at all — no
+         climbing pitch, no "on fire" (FIX-BEE removed streaks; lore-hubs fails on "in a row").
+     SGUI.sting(game, kind) → true when it played; SGUI.stingNotes(game, kind) → [[Hz, at s, dur s]…] without playing.
+     Guard: tests/game-juice.cjs. */
+  const STING={
+    lore:   {root:523.25, wave:'triangle', right:[[0,0,.1],[4,.07,.1],[7,.14,.2]],          done:[[0,0,.14],[4,.1,.14],[7,.2,.14],[12,.3,.42],[7,.3,.42]]},
+    hive:   {root:587.33, wave:'sine',     right:[[0,0,.1],[7,.08,.1],[12,.16,.22]],         done:[[12,0,.14],[7,.1,.14],[9,.2,.14],[12,.3,.18],[16,.42,.46],[12,.42,.46]]},
+    analogy:{root:659.25, wave:'triangle', right:[[0,0,.09],[7,.07,.09],[2,.17,.09],[9,.24,.2]], done:[[0,0,.12],[7,.09,.12],[2,.2,.12],[9,.29,.12],[12,.4,.46],[7,.4,.46]]},
+    anlbee: {root:440,    wave:'square',   right:[[0,0,.08],[12,.08,.2]],                     done:[[0,0,.14],[5,.12,.14],[9,.24,.14],[12,.36,.5],[5,.36,.5]]},
+    gym:    {root:698.46, wave:'triangle', right:[[0,0,.07],[4,.06,.07],[7,.12,.07],[12,.18,.18]], done:[[0,0,.12],[7,.1,.12],[12,.2,.12],[16,.3,.44],[12,.3,.44]]},
+    daily:  {root:392,    wave:'sine',     right:[[0,0,.12],[2,.09,.12],[4,.18,.24]],         done:[[0,0,.16],[4,.14,.16],[7,.28,.16],[11,.42,.16],[12,.56,.5]]},
+    forge:  {root:349.23, wave:'sawtooth', right:[[0,0,.06],[0,.09,.06],[7,.18,.24]],         done:[[0,0,.14],[7,.14,.14],[12,.28,.5],[7,.28,.5]]},
+    build:  {root:493.88, wave:'triangle', right:[[0,0,.09],[5,.08,.09],[9,.16,.22]],         done:[[0,0,.12],[5,.1,.12],[9,.2,.12],[12,.32,.46],[9,.32,.46]]} };
+  function stingOn(){ try{ const S=(typeof state!=='undefined')?state:null; if(S&&(S.sound===false||S.calmMode)) return false;
+      if(W().SB_CALM) return false; if(W().SB_VOL&&SB_VOL.fx()<=0) return false; return true; }catch(e){ return false; } }
+  SGUI.stingNotes=function(game,kind){ const S=STING[game], fig=S&&S[kind]; if(!fig) return null;
+    return fig.map(([st,at,dur])=>[+(S.root*Math.pow(2,st/12)).toFixed(2),at,dur]); };
+  SGUI.sting=function(game,kind){ try{
+    if(!stingOn()) return false; const notes=SGUI.stingNotes(game,kind); if(!notes) return false;
+    const ac=(typeof audioCtx==='function')?audioCtx():null; if(!ac) return false;
+    const v=W().SB_VOL?SB_VOL.fx():1; if(v<=0) return false;
+    try{ if(W().SB_VOL) SB_VOL.duck(kind==='done'?1100:450); }catch(e){}
+    const wave=STING[game].wave, t0=ac.currentTime+0.01, bus=ac.createGain();
+    bus.gain.value=(wave==='square'||wave==='sawtooth'?0.07:0.15)*v; bus.connect(ac.destination);
+    notes.forEach(([f,at,dur])=>{ const o=ac.createOscillator(), e=ac.createGain(); o.type=wave; o.frequency.value=f;
+      e.gain.setValueAtTime(0.0001,t0+at); e.gain.exponentialRampToValueAtTime(1,t0+at+0.012); e.gain.exponentialRampToValueAtTime(0.0001,t0+at+dur);
+      o.connect(e); e.connect(bus); o.start(t0+at); o.stop(t0+at+dur+0.03); });
+    SGUI._stung=(SGUI._stung||[]).concat([{game,kind,notes,t:Date.now()}]).slice(-24);
+    return true; }catch(e){ return false; } };
+  /* the two calls a game makes (P3.14/P3.15): ding on an answer — the game's sting when right (the plain tone when stings
+     are off), the plain miss tone when wrong; fanfare when a round ends — the sting for a good round, the plain level
+     tone otherwise. SGUI.fresh(at, ms) is the one rule for the juice CLASSES: a card flips in, a right answer pops and a
+     miss shakes only while its moment is fresh, so a later render draws the control still (never a replay). */
+  SGUI.ding=function(game,ok){ try{ if(ok){ if(!SGUI.sting(game,'right')) sfx('correct'); } else sfx('wrong'); }catch(e){} };
+  SGUI.fanfare=function(game,good){ try{ if(good){ if(!SGUI.sting(game,'done')) sfx('win'); } else sfx('level'); }catch(e){} };
+  SGUI.fresh=function(at,ms){ return !!at&&(Date.now()-at)<(ms||650); };
 
   /* ---- 5. ONE HUB SCREEN (§4.0). A painted plate; the HUD mirrored — good days this week on
      the left (never a streak), the hub's name in the centre, coins earned today on the right;
@@ -882,7 +929,7 @@
       hud:{ left:'<span class="arcx-stat hc-lives" id="hc-lives" aria-label="Lives"></span>',
             center:'<span class="arcx-hc"><span class="arcx-title">Honeycomb Run</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="hc-time"></span><span class="arcx-prog" id="hc-gates"></span></span>',
             right:'<span class="arcx-stat hc-score"><b id="hc-score">0</b><i>honey</i></span>' },
-      play:'<div class="hc-wrap" id="hc-wrap"><canvas id="sg-cv"></canvas><div class="hc-cardhost" id="hc-cardhost"></div></div>',
+      play:'<div class="hc-wrap" id="hc-wrap"><canvas id="sg-cv" role="img" aria-label="The maze: your bee in the honeycomb, moths on patrol and a flower to reach. Move with the arrow keys or the arrow buttons. Reach the flower and a word opens to spell; four words open the gates to the hive."></canvas><div class="hc-cardhost" id="hc-cardhost"></div></div>',
       controls:'<div class="hc-ctl" id="hc-ctl">'+dpad+'</div><div class="hc-keys" id="hc-keys"></div>' })+'<div id="sg-card"></div>';
     const wrap=host.querySelector('#hc-wrap');
     let COLS=DIM[0], ROWS=DIM[1];
@@ -2409,7 +2456,8 @@
         '<span class="sg-rh-lap" id="sg-lap">Lap 1/'+CFG.laps+'</span>'+
         '<div class="sg-posbar" id="sg-pb"><i class="sg-pb-road"></i><b class="sg-pb-flag">'+GP_FLAG()+'</b></div>'+
         '<span class="sg-rh-spd" id="sg-spd"></span></div></div>'+
-      '<div class="sg-race3d"><canvas id="sg-cv"></canvas>'+
+      /* P3.12: the race is drawn on a canvas, so the canvas says what is on it and how to play it */
+      '<div class="sg-race3d"><canvas id="sg-cv" role="img" aria-label="The race: your kart on the road with '+CFG.rivals+' rivals, '+CFG.laps+' laps. Steer with the left and right arrow keys or the Steer buttons, brake with the down arrow or the Brake button. Drive through an item box and a word opens to spell."></canvas>'+
       '<button class="sg-hold" id="sg-hold" aria-label="Use power-up"><span class="sg-hold-empty">?</span></button>'+
       '<div class="sg-steer"><button class="sg-sbtn" data-s="-1" aria-label="Steer left">'+SGUI.chev(-1)+'</button>'+
       '<div class="sg-steer-r"><button class="sg-sbtn sg-brake" id="sg-brk" aria-label="Brake">'+GP_BRAKE()+'</button>'+
@@ -4269,7 +4317,7 @@
       hud:{ left:'<span class="arcx-stat tb-shields" id="tb-sh" aria-label="Shields">'+shieldPips()+'</span>',
             center:'<span class="arcx-hc"><span class="arcx-title">Type Blaster</span><span class="arcx-lvl">'+esc(LVL)+'</span><span class="arcx-prog" id="tb-prog">0/'+N+'</span></span>',
             right:'<span class="arcx-stat tb-score"><b id="tb-score">0</b><i id="tb-combo"></i></span>' },
-      play:'<div class="tb-wrap"><div class="tb-scene" id="tb-scene">'+
+      play:'<div class="tb-wrap"><div class="tb-scene" id="tb-scene" role="group" aria-label="The grey world: glitches fall toward your cannon, each carrying a word. Tap a glitch or its Hear button to hear its word, then type the whole word on the keys and press Enter to blast it and paint the world back.">'+
           '<div class="tb-grey'+(filtered?' tb-filter':'')+'" id="tb-grey" style="background-image:url(\''+greyUrl+'\')"></div>'+
           regs.map((r,k)=>'<div class="tb-reg" data-r="'+k+'" style="clip-path:polygon('+r.poly+');background-image:url(\''+colUrl+'\')"></div>').join('')+
           '<div class="tb-clue"><span class="tb-mean" id="tb-mean"></span></div>'+

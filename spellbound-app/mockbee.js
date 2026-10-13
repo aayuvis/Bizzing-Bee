@@ -1583,7 +1583,7 @@
       return `<div class="mb-mic me">
         <span class="mb-mic-face">${face(who, 64)}</span>
         <div class="mb-mic-in"><span class="mb-mic-name">${esc(nameOf(who))} · number ${who ? who.n : g.myN}</span>
-          ${g.phase === 'pass' ? `<div class="mb-truth">Your turn is next — take the device.</div>` : `<div class="mb-truth">Listen, ask, then spell it.</div>`}</div>
+          ${g.phase === 'pass' ? `<div class="mb-truth" data-live-prompt="${escA(nameOf(who) + ', your turn is next. Take the device.')}">Your turn is next — take the device.</div>` : `<div class="mb-truth" data-live-prompt="${escA('Your turn, ' + nameOf(who) + '. Listen, then spell the word.')}">Listen, ask, then spell it.</div>`}</div>
         ${meNow ? clockHTML(g) : ''}</div>`;
     }
     if (g.phase === 'meDone') {
@@ -1592,7 +1592,7 @@
         <span class="mb-mic-face">${face(who, 64)}</span>
         <div class="mb-mic-in"><span class="mb-mic-name">${esc(nameOf(who))}</span>
           <div class="mb-letters">${esc((g.meTry || '—').toUpperCase().split('').join(' '))}</div>
-          <div class="mb-truth">${g.meOk ? 'Correct' : (g.timeUp && !g.meTry ? 'Time ran out. ' : '') + 'The word was <b>' + esc(w.w || '') + '</b>'}</div>
+          <div class="mb-truth" data-live-prompt="${escA(g.meOk ? 'Correct.' : (g.timeUp && !g.meTry ? 'Time ran out. ' : 'Not this time. ') + 'The word was ' + (w.w || '') + '.')}">${g.meOk ? 'Correct' : (g.timeUp && !g.meTry ? 'Time ran out. ' : '') + 'The word was <b>' + esc(w.w || '') + '</b>'}</div>
           ${!g.meOk && g.hold && !kitMiss() && window.missFeedbackHTML ? `<div class="mb-why">${missFeedbackHTML(w, g.meTry || '')}</div>` : ''}</div></div>`;
     }
     if (g.phase === 'vme' || g.phase === 'vmeDone') return vocMeUI();
@@ -1611,7 +1611,7 @@
     if (g.phase === 'outChoice') {
       return `<div class="mb-mic out-card"><div class="mb-mic-in" style="align-items:center;text-align:center">
         <span class="mb-mic-name">You finish ${ordinal(alive().length + 1)} of ${g.field.length} — so far.</span>
-        <div class="mb-truth">The others are still standing. Finish the bee now, or watch the rest at double speed.</div></div></div>`;
+        <div class="mb-truth" data-live-prompt>The others are still standing. Finish the bee now, or watch the rest at double speed.</div></div></div>`;
     }
     if (!s || isHuman(s)) return `<div class="mb-mic idle"><div class="mb-mic-in"><span class="mb-mic-name">${g.phase === 'roundIn' ? 'The hall settles…' : '…'}</span></div></div>`;
     const lp = g.lastPractice;
@@ -1769,7 +1769,7 @@
       <div class="mb-mic-in">
         <span class="mb-mic-name">${esc(g.name)} · number ${g.myN}</span>
         <div class="mb-vword">${esc(q.w.w)} <button data-act="mbSay" class="mb-hear mb-vhear">${iconSVG('volume', 15)} Hear it</button></div>
-        <div class="mb-vq">What does it mean?</div>
+        <div class="mb-vq" data-live-prompt="${escA(done ? (g.meOk ? 'Correct.' : 'Not this time. The green one is what it means.') : 'Your turn. What does ' + q.w.w + ' mean? Pick A, B, C or D.')}">What does it mean?</div>
         <div class="mb-vopts">${q.choices.map((c, i) => {
           const chosen = done && g.vPick === c, right = done && c === q.answer;
           return `<button class="mb-vopt${right ? ' right' : chosen ? ' wrong' : ''}" ${done ? '' : `data-act="mbVocPick" data-arg="${i}"`}>
@@ -1845,7 +1845,7 @@
     const chip = m => `<span class="mb-wchip ${m.ok ? 'ok' : 'no'}">${esc(m.w)}</span>`;
     const play = `<div class="mb-result${g.meWon ? ' won' : ''}">
         <span class="mb-result-face">${champ ? face(g.meWon ? g.field.find(isProfile) : champ, 92) : ''}</span>
-        <h2>${head}</h2><p>${sub}</p>
+        <h2 data-live-prompt>${head}</h2><p>${sub}</p>
         ${g.mode === 'family' ? `<div class="mb-boltboard fam">${g.places.map((r, i) => `<div class="mb-brow${isProfile(r.s) ? ' me' : ''}"><span class="mb-brank">${ordinal(r.place)}</span><span class="mb-bname">${esc(nameOf(r.s))}</span></div>`).join('')}</div>` : ''}
         <div class="mb-recap">
           <div class="mb-rc-h">${right.length} of ${g.mine.length} spelt right</div>

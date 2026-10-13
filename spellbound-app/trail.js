@@ -21,6 +21,93 @@
   const { tr, course, courseOfId, unitsOf, actsOf, lapOf, doneMap, chkMap, PGATE, seq, passedNode, startIdx, reachIn, reach, frontier } = window.SB_TRAIL_FRONT(T);
   const GUIDE = { meadow: 'honeypot', library: 'waggle', forum: 'bumble', elements: 'star', engine: 'drone', strait: 'nectar', junkyard: 'propolis', vibe: 'jester', stage: 'diva', warfield: 'queenhive', greysea: 'blossom', grandtrunk: 'cobra' };
   const ACCENT = { meadow: ['#FFC23D', '#C8791B'], library: ['#6C4FE0', '#4A3AA0'], forum: ['#E06A3C', '#A8431F'], elements: ['#2E8FB8', '#1C6486'], engine: ['#C08A3E', '#8A5B00'], strait: ['#3E63D6', '#26409A'], junkyard: ['#F0A93C', '#B4711A'], vibe: ['#B14FC4', '#7A2F8C'], stage: ['#E8458C', '#A82563'], warfield: ['#D6353F', '#8E1D26'], greysea: ['#7E8AA0', '#4C566B'], grandtrunk: ['#E0A33C', '#93551A'] };
+  /* ---- THE BOARD'S MARKS ARE DRAWN, NEVER EMOJI (road to 4.5, P3.7; the audit's N4: "emoji persist in region
+     boards (🌸⛩️🎭)"). An emoji is a different picture in every font — a tofu box on some Android phones — and it sits
+     on a painting a child taps. The Hidden Pass, the rival's duel, the word-wisp, the bloom stop, each region's
+     wanderer and each cache are drawn here once, on the 24 grid (the marks, filled, for paintings) or as line glyphs in
+     iconSVG's grammar (the caches, which sit on their gold token). tests/hud-emoji.cjs scans every board for emoji. */
+  const svgM = (inner, s, vb) => `<svg viewBox="${vb || '0 0 24 24'}" width="${s}" height="${s}" aria-hidden="true" focusable="false" style="display:block;overflow:visible">${inner}</svg>`;
+  const lineG = (inner, s) => svgM(`<g fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${inner}</g>`, s);
+  const MARK = {
+    /* the Hidden Pass: two posts under a curved lintel and a tie-beam */
+    gate: (s) => svgM('<g stroke="#4A160E" stroke-width="1.3" stroke-linejoin="round"><path d="M2.4 4.6Q12 7.6 21.6 4.6l-.5 3Q12 9.9 2.9 7.6z" fill="#E2502F"/>' +
+      '<rect x="4.6" y="10" width="14.8" height="2.2" rx=".6" fill="#E2502F"/><rect x="6.3" y="8.2" width="2.7" height="13.3" rx=".7" fill="#C93C1F"/><rect x="15" y="8.2" width="2.7" height="13.3" rx=".7" fill="#C93C1F"/></g>', s),
+    /* a rival waits: two quills crossed — a duel of spellings */
+    duel: (s) => svgM('<g stroke="#3B2508" stroke-width="1.1" stroke-linejoin="round"><path d="M5 19.5 7.6 16.9C9 11.5 13.4 6.4 20 3.4 18.6 10 13.4 14.6 7.6 16.9" fill="#FFF4D8"/>' +
+      '<path d="M19 19.5 16.4 16.9C15 11.5 10.6 6.4 4 3.4 5.4 10 10.6 14.6 16.4 16.9" fill="#D9ECFF"/></g><path d="M4.2 20.3 6 18.5M19.8 20.3 18 18.5" stroke="#3B2508" stroke-width="1.8" stroke-linecap="round"/>', s),
+    /* a word-wisp: a four-point light with a drifting spark */
+    wisp: (s) => svgM('<path d="M11 2.5 12.9 9.1 19.5 11 12.9 12.9 11 19.5 9.1 12.9 2.5 11 9.1 9.1z" fill="#FFE680" stroke="#B07A00" stroke-width="1.1" stroke-linejoin="round"/><circle cx="19" cy="19" r="2" fill="#FFF3B0" stroke="#B07A00" stroke-width=".9"/>', s),
+    /* today's bloom stop: five petals and a honey centre */
+    bloom: (s) => svgM([0, 1, 2, 3, 4].map((k) => { const a = (k * 72 - 90) * Math.PI / 180;
+      return `<circle cx="${(12 + 5.1 * Math.cos(a)).toFixed(2)}" cy="${(12 + 5.1 * Math.sin(a)).toFixed(2)}" r="4.4" fill="#FF9EC6" stroke="#B83A74" stroke-width="1"/>`; }).join('') +
+      '<circle cx="12" cy="12" r="3.1" fill="#FFD34D" stroke="#A86A00" stroke-width="1"/>', s) };
+  /* the caches' line glyphs, by name (each region names its own in TRE_KIT) */
+  const CACHE_G = {
+    comb: '<path d="M12 3.2 19.6 7.6v8.8L12 20.8 4.4 16.4V7.6z"/><path d="M12 8.4 15.2 10.3v3.4L12 15.6 8.8 13.7v-3.4z"/>',
+    bookmark: '<path d="M7 3.5h10v17l-5-3.7-5 3.7z"/><path d="M10 7.5h4"/>',
+    amphora: '<path d="M9.4 3.5h5.2M10.2 3.5v2.4C7.4 7.2 6 9.7 6 12.9c0 3.5 2.4 6.4 6 7.6 3.6-1.2 6-4.1 6-7.6 0-3.2-1.4-5.7-4.2-7V3.5"/><path d="M8.2 7.4c-2 .2-2.5 2.6-1.1 3.7M15.8 7.4c2 .2 2.5 2.6 1.1 3.7"/>',
+    bolt: '<path d="M13 2.5 6.5 13.2H11l-1 8.3L17.5 10H12.8z"/>',
+    seed: '<path d="M5.5 10.2c0-3.2 2.9-5.4 6.5-5.4s6.5 2.2 6.5 5.4z"/><path d="M7 10.2c0 4.8 2.3 8.3 5 9.8 2.7-1.5 5-5 5-9.8"/><path d="M12 4.8V2.8"/>',
+    anchor: '<circle cx="12" cy="5" r="2"/><path d="M12 7v13.5M8.6 10.3h6.8"/><path d="M4.8 13.6c.4 4 3.4 6.9 7.2 6.9s6.8-2.9 7.2-6.9"/><path d="M3.4 15.2 4.8 13.6l1.7 1.3M20.6 15.2l-1.4-1.6-1.7 1.3"/>',
+    gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.2v2.4M12 19.4v2.4M21.8 12h-2.4M4.6 12H2.2M18.9 5.1l-1.7 1.7M6.8 17.2l-1.7 1.7M18.9 18.9l-1.7-1.7M6.8 6.8 5.1 5.1"/>',
+    spark: '<path d="M12 3l1.8 5.6L19.5 10l-5.7 1.4L12 17l-1.8-5.6L4.5 10l5.7-1.4z"/>',
+    star: '<path d="M12 3.2l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/>',
+    pouch: '<path d="M8.2 8.2h7.6l2.6 4.4c1.7 3.1-.6 7.6-6.4 7.6s-8.1-4.5-6.4-7.6z"/><path d="M9 8.2 7.4 5M15 8.2 16.6 5M9.6 8.2h4.8"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.8v2.2M12 19v2.2M2.8 12H5M19 12h2.2M5.5 5.5l1.6 1.6M16.9 16.9l1.6 1.6M18.5 5.5l-1.6 1.6M7.1 16.9l-1.6 1.6"/>',
+    flower: '<circle cx="12" cy="12" r="2.4"/><path d="M12 9.6c-2.6-1.4-2.6-5.6 0-6.2 2.6.6 2.6 4.8 0 6.2zM14.3 11.3c1-2.8 5.1-3.9 6.2-1.6-.8 2.5-4.7 3.3-6.2 1.6zM13.4 14.2c2.9.3 4.3 4.3 2.4 5.9-2.5-.3-3.7-4-2.4-5.9zM10.6 14.2c-2.9.3-4.3 4.3-2.4 5.9 2.5-.3 3.7-4 2.4-5.9zM9.7 11.3c-1-2.8-5.1-3.9-6.2-1.6.8 2.5 4.7 3.3 6.2 1.6z"/>',
+    found: '<path d="M5 12.5l4.4 4.4L19 7.2"/>' };
+  const cacheG = (name, s) => lineG(CACHE_G[name] || CACHE_G.spark, s || 16);
+  /* the sparks a poke or a hero sheds are the country's own things, drawn (they were 🍃 💧 ⚙️ … flying off the board) */
+  const BURST_G = {
+    page: '<path d="M7 3.5h7l4 4v13H7z"/><path d="M14 3.5v4h4M9.5 12h6M9.5 15.5h6"/>', leaf: '<path d="M5 19C5 10 10 5 19 5c0 9-5 14-14 14z"/><path d="M5 19 13 11"/>',
+    drop: '<path d="M12 3.5c3.6 4.6 5.6 7.8 5.6 10.6a5.6 5.6 0 0 1-11.2 0c0-2.8 2-6 5.6-10.6z"/>', mushroom: '<path d="M4.5 12.5C4.5 7.8 7.8 4.5 12 4.5s7.5 3.3 7.5 8z"/><path d="M10 12.5v6.5h4v-6.5"/>',
+    shell: '<path d="M12 20c-4.4 0-7.5-3-7.5-7 0-4.6 3.6-8.5 7.5-8.5s7.5 3.9 7.5 8.5c0 4-3.1 7-7.5 7z"/><path d="M12 20V7M8.5 18.5 10 8.5M15.5 18.5 14 8.5"/>',
+    flame: '<path d="M12 3c.6 2.6 2.6 3.9 2.6 6.2A2.6 2.6 0 0 1 9.4 9.4c0-.4 0-.7.1-1C8 9.6 7 11.4 7 13.2a5 5 0 0 0 10 0C17 9.6 14.5 6.6 12 3z"/>',
+    cloud: '<path d="M7 18.5h10a4 4 0 0 0 .4-8A5.5 5.5 0 0 0 6.9 11 3.8 3.8 0 0 0 7 18.5z"/>', question: '<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.6M12 16.8v.2"/>',
+    sail: '<path d="M11 3.5v13.5H4.5z"/><path d="M13 6.5 19 17h-6z"/><path d="M3.5 19.5h17"/>', wave: '<path d="M2.5 14c2.4 0 2.4-2.5 4.8-2.5S9.7 14 12 14s2.4-2.5 4.8-2.5S19.2 14 21.5 14M2.5 18.5c2.4 0 2.4-2.5 4.8-2.5s2.4 2.5 4.7 2.5 2.4-2.5 4.8-2.5 2.4 2.5 4.7 2.5"/>',
+    flag: '<path d="M5.5 21V4"/><path d="M5.5 4.5h11.5l-2.3 4 2.3 4H5.5"/>', book: '<path d="M5 4.5h11a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5H5z"/><path d="M5 4.5v14"/>',
+    heart: '<path d="M12 20s-7.5-4.6-7.5-10.1A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.7C19.5 15.4 12 20 12 20z"/>' };
+  const BURST = { '🌸': ['flower', '#E0559A'], '✨': ['spark', '#E8A81C'], '📄': ['page', '#8A6A3A'], '🍃': ['leaf', '#3E9A4A'], '💧': ['drop', '#2F7FD0'],
+    '⚡': ['bolt', '#E8A81C'], '🍄': ['mushroom', '#D2402F'], '🐚': ['shell', '#D97A9A'], '⚙️': ['gear', '#6A7280'], '🎉': ['spark', '#D2409A'], '🎊': ['spark', '#7C5CFF'],
+    '⭐': ['star', '#E8A81C'], '🔥': ['flame', '#E8642A'], '🌫️': ['cloud', '#7A8794'], '❓': ['question', '#7C5CFF'], '⛵': ['sail', '#2F6FB0'], '🌊': ['wave', '#2F7FD0'],
+    '🏳️': ['flag', '#5A6270'], '🐝': ['comb', '#C8791B'], '📖': ['book', '#6C4FE0'], '💚': ['heart', '#2E9E5B'], '🟢': ['heart', '#2E9E5B'] };
+  const burstG = (ch, s) => { const b = BURST[ch] || ['spark', '#E8A81C']; const inner = BURST_G[b[0]] || CACHE_G[b[0]] || CACHE_G.spark;
+    return `<span style="display:block;color:${b[1]};filter:drop-shadow(0 1px 1px rgba(40,24,4,.45))">${lineG(inner, s || 16)}</span>`; };
+  /* the orchestra pit's notes on the air, drawn (they were ♪ ♫ ♩ ♬ — glyphs half the phone fonts lack) */
+  const NOTE_G = ['<ellipse cx="9" cy="17.5" rx="3.6" ry="2.7" transform="rotate(-20 9 17.5)"/><rect x="11.3" y="4" width="1.7" height="13.6" rx=".8"/><path d="M13 4c2.6 1.4 5.4 2.6 4.6 6.6-.5-2.6-2.6-3.2-4.6-3.6z"/>',
+    '<ellipse cx="6.6" cy="18" rx="3.2" ry="2.4" transform="rotate(-20 6.6 18)"/><ellipse cx="16.6" cy="16" rx="3.2" ry="2.4" transform="rotate(-20 16.6 16)"/><rect x="8.6" y="6" width="1.6" height="12.4" rx=".8"/><rect x="18.6" y="4" width="1.6" height="12.4" rx=".8"/><path d="M8.6 6l11.6-2v2.6L8.6 8.6z"/>',
+    '<ellipse cx="9.4" cy="17.5" rx="3.6" ry="2.7" transform="rotate(-20 9.4 17.5)"/><rect x="11.7" y="3.6" width="1.7" height="14" rx=".8"/>',
+    '<ellipse cx="6.6" cy="18" rx="3.2" ry="2.4" transform="rotate(-20 6.6 18)"/><ellipse cx="16.6" cy="16" rx="3.2" ry="2.4" transform="rotate(-20 16.6 16)"/><rect x="8.6" y="6" width="1.6" height="12.4" rx=".8"/><rect x="18.6" y="4" width="1.6" height="12.4" rx=".8"/><path d="M8.6 6l11.6-2v2.2L8.6 8.2zM8.6 9.6l11.6-2v2.2L8.6 11.8z"/>'];
+  const noteG = (i, s) => svgM(`<g fill="currentColor">${NOTE_G[i % NOTE_G.length]}</g>`, s || 17);
+  const inIc = (n, s) => '<span style="display:inline-flex;vertical-align:-2px;margin-right:4px">' + iconSVG(n, s || 13) + '</span>';
+  const noEmo = (t) => String(t == null ? '' : t).replace(/\s*(?:\p{Extended_Pictographic}️?(?:‍\p{Extended_Pictographic}️?)*)/gu, '').trim();
+  /* EACH REGION'S WANDERER IS DRAWN: a head on the 40 grid, fur and features per creature, so Barnaby is a bear on
+     every phone (it was 🐻 — a different bear on every platform, and a box on some) */
+  function crit(kind, s) {
+    const E = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r || 1.8}" fill="#24170D"/><circle cx="${x + .6}" cy="${y - .6}" r=".55" fill="#FFF"/>`;
+    const O = 'stroke="#3A2614" stroke-width="1.2" stroke-linejoin="round"';
+    const head = (fur, r) => `<circle cx="20" cy="22" r="${r || 12}" fill="${fur}" ${O}/>`;
+    const D = {
+      bear: () => `<circle cx="10.5" cy="12.5" r="4.8" fill="#8B5A2B" ${O}/><circle cx="29.5" cy="12.5" r="4.8" fill="#8B5A2B" ${O}/><circle cx="10.5" cy="12.5" r="2.3" fill="#D79A62"/><circle cx="29.5" cy="12.5" r="2.3" fill="#D79A62"/>${head('#8B5A2B')}<ellipse cx="20" cy="27" rx="6" ry="4.6" fill="#E6B884"/><ellipse cx="20" cy="25.2" rx="2.3" ry="1.6" fill="#24170D"/>${E(15.3, 19.6)}${E(24.7, 19.6)}`,
+      owl: () => `<path d="M9 8.5 13.5 14.5 8.5 15.5z" fill="#8A5B30" ${O}/><path d="M31 8.5 26.5 14.5 31.5 15.5z" fill="#8A5B30" ${O}/><ellipse cx="20" cy="23" rx="12" ry="13" fill="#9A6A3C" ${O}/><circle cx="14.6" cy="20.5" r="5.2" fill="#F3E2C0"/><circle cx="25.4" cy="20.5" r="5.2" fill="#F3E2C0"/>${E(14.6, 20.5, 2.4)}${E(25.4, 20.5, 2.4)}<path d="M18.4 24.2h3.2L20 28z" fill="#E8A81C" stroke="#7A4E00" stroke-width=".8"/><path d="M15 31q2.5 1.6 5 0 2.5 1.6 5 0" fill="none" stroke="#6A4520" stroke-width="1"/>`,
+      tortoise: () => `<ellipse cx="33" cy="22.5" rx="4.6" ry="4" fill="#A8C878" ${O}/><path d="M8 28.5l-2.5 4M30 28.5l2.5 4M12 30l-1 3.5M26 30l1 3.5" stroke="#7A9A50" stroke-width="2.6" stroke-linecap="round"/><path d="M6.5 27Q7 13 20 12.5 33 13 33.5 27z" fill="#5E8F3A" ${O}/><path d="M13 27l2.4-8.4h9.2L27 27M20 12.6v6M15.4 18.6h9.2" fill="none" stroke="#3D6624" stroke-width="1.2"/><circle cx="34.4" cy="21.4" r="1" fill="#24170D"/>`,
+      ram: () => `<circle cx="9.5" cy="18" r="6" fill="none" stroke="#A0784A" stroke-width="3"/><circle cx="30.5" cy="18" r="6" fill="none" stroke="#A0784A" stroke-width="3"/><ellipse cx="20" cy="23.5" rx="8" ry="10" fill="#F2E6CF" ${O}/><circle cx="15.5" cy="13.5" r="3" fill="#FBF5E8" ${O}/><circle cx="20" cy="12.2" r="3.2" fill="#FBF5E8" ${O}/><circle cx="24.5" cy="13.5" r="3" fill="#FBF5E8" ${O}/>${E(16.6, 21)}${E(23.4, 21)}<ellipse cx="20" cy="29" rx="3.6" ry="2.4" fill="#E2C9A6"/><path d="M18.6 28.6h2.8" stroke="#6A4520" stroke-width="1"/>`,
+      hedgehog: () => `<path d="M5 29C4 19 9 11 19 10.5c3-1.6 4.4.6 5 1.5 1.6-.6 3.6.4 3.8 2.2 2-.2 3 1.8 2.6 3.4L31 29z" fill="#7A5536" ${O}/><path d="M8 15l-2-2M11 12l-1-3M15 10.5 14.5 7.5M19 10l.6-3M23 11l2-2.6" stroke="#5A3A20" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="28" cy="25.5" rx="7.5" ry="6" fill="#E8CFA6" ${O}/><circle cx="35.4" cy="25.5" r="1.5" fill="#24170D"/>${E(27, 23.4, 1.4)}`,
+      seal: () => `${head('#8E9AA6')}<ellipse cx="17.3" cy="27" rx="3.3" ry="2.6" fill="#D5DCE3"/><ellipse cx="22.7" cy="27" rx="3.3" ry="2.6" fill="#D5DCE3"/><ellipse cx="20" cy="24.6" rx="1.8" ry="1.3" fill="#24170D"/>${E(15.2, 20, 2.1)}${E(24.8, 20, 2.1)}<path d="M13 27l-4.5-1M13 28.6l-4.6 1.2M27 27l4.5-1M27 28.6l4.6 1.2" stroke="#4A525A" stroke-width=".9" stroke-linecap="round"/>`,
+      raccoon: () => `<path d="M9.5 15 8 6.5l7.2 5z" fill="#8C939A" ${O}/><path d="M30.5 15 32 6.5l-7.2 5z" fill="#8C939A" ${O}/>${head('#9AA0A6')}<path d="M8.6 20.5q5.7-4.6 11.4-.6 5.7-4 11.4.6-1.6 4.4-6 4-3.4-.2-5.4-2.2-2 2-5.4 2.2-4.4.4-6-4z" fill="#3A3A44"/>${E(14.6, 21, 1.6)}${E(25.4, 21, 1.6)}<ellipse cx="20" cy="28" rx="5" ry="3.6" fill="#EEF0F2"/><ellipse cx="20" cy="26.4" rx="1.8" ry="1.3" fill="#24170D"/>`,
+      hare: () => `<ellipse cx="15" cy="9" rx="3.4" ry="8.4" fill="#C9A37A" ${O}/><ellipse cx="25" cy="9" rx="3.4" ry="8.4" fill="#C9A37A" ${O}/><ellipse cx="15" cy="9.5" rx="1.6" ry="6" fill="#F2B8C2"/><ellipse cx="25" cy="9.5" rx="1.6" ry="6" fill="#F2B8C2"/>${head('#C9A37A', 11)}<ellipse cx="20" cy="27.4" rx="4.6" ry="3.4" fill="#F4E6D2"/><path d="M18.6 25.6h2.8l-1.4 1.6z" fill="#E07A8C"/>${E(15.6, 21)}${E(24.4, 21)}`,
+      cat: (dark) => `<path d="M9 16 9.8 6.6l7.4 6.2z" fill="${dark ? '#2E2A33' : '#E8913A'}" ${O}/><path d="M31 16 30.2 6.6l-7.4 6.2z" fill="${dark ? '#2E2A33' : '#E8913A'}" ${O}/>${head(dark ? '#2E2A33' : '#E8913A')}<path d="M18.6 25.4h2.8L20 27z" fill="#F2A0B0"/>${dark ? '<circle cx="15.3" cy="21" r="2.1" fill="#F2C94C"/><circle cx="24.7" cy="21" r="2.1" fill="#F2C94C"/><rect x="14.9" y="19.4" width=".9" height="3.2" rx=".4" fill="#24170D"/><rect x="24.3" y="19.4" width=".9" height="3.2" rx=".4" fill="#24170D"/>' : E(15.3, 21) + E(24.7, 21)}<path d="M13 26.5l-5-.8M13 28l-5 .9M27 26.5l5-.8M27 28l5 .9" stroke="${dark ? '#B9B2C4' : '#7A4A1E'}" stroke-width=".9" stroke-linecap="round"/>`,
+      horse: () => `<path d="M14.5 9.5 13.4 4.5l3.8 3.8M25.5 9.5l1.1-5-3.8 3.8" fill="#8A5A34" ${O}/><path d="M20 7.6c5.6 0 8.6 4.6 8.6 11.6 0 5.8-2.2 12.6-8.6 12.6s-8.6-6.8-8.6-12.6C11.4 12.2 14.4 7.6 20 7.6z" fill="#8A5A34" ${O}/><path d="M20 7.4c-2 2.6-1.8 6-1 9 1.4-2.6 2.4-5.6 1-9z" fill="#3E2614"/><ellipse cx="20" cy="28.5" rx="6.4" ry="4.2" fill="#B68456"/><circle cx="17.6" cy="29" r="1" fill="#24170D"/><circle cx="22.4" cy="29" r="1" fill="#24170D"/>${E(15.2, 17.6)}${E(24.8, 17.6)}`,
+      heron: () => `<path d="M16 34c-1-8 4-11 4-17" fill="none" stroke="#D9DEE5" stroke-width="5" stroke-linecap="round"/><path d="M16 34c-1-8 4-11 4-17" fill="none" stroke="#7A8794" stroke-width="1.1"/><circle cx="20.5" cy="13" r="6" fill="#EEF2F6" ${O}/><path d="M25.8 12.4 37 14l-11 2.4z" fill="#E8B23A" stroke="#7A5200" stroke-width=".9" stroke-linejoin="round"/><path d="M15 10.4 9.5 8.8" stroke="#3A4450" stroke-width="1.6" stroke-linecap="round"/>${E(22, 11.6, 1.5)}`,
+      rat: () => `<circle cx="13" cy="13.5" r="5" fill="#9A9AA2" ${O}/><circle cx="13" cy="13.5" r="2.6" fill="#F2B8C2"/><path d="M8.5 24c0-6.4 4.6-10 10.4-10 4.8 0 8.2 3 12.6 8.4 1 1.2.6 2.4-.8 2.8-4 1.2-8 2.4-12.6 2.4C12.6 27.6 8.5 27 8.5 24z" fill="#A8A8B0" ${O}/><circle cx="31.6" cy="23.6" r="1.4" fill="#E07A8C"/>${E(21.6, 19.6, 1.6)}<path d="M29 25.5l4.4 2M29 24.5l4.8.4" stroke="#55555E" stroke-width=".8" stroke-linecap="round"/>`,
+      elephant: () => `<ellipse cx="8.5" cy="20" rx="6.4" ry="8.6" fill="#8F98A4" ${O}/><ellipse cx="31.5" cy="20" rx="6.4" ry="8.6" fill="#8F98A4" ${O}/>${head('#A3ACB8', 11)}<path d="M17.6 25c0 4.4 1 7.6-1.6 9.6-1.4 1-3 .2-2.8-1.2" fill="none" stroke="#3A2614" stroke-width="5.6" stroke-linecap="round"/><path d="M17.6 25c0 4.4 1 7.6-1.6 9.6-1.4 1-3 .2-2.8-1.2" fill="none" stroke="#A3ACB8" stroke-width="3.4" stroke-linecap="round"/><path d="M23 27.6l3 2.2" stroke="#FFF8E8" stroke-width="2" stroke-linecap="round"/>${E(15.2, 19.4)}${E(24.8, 19.4)}`,
+      dolphin: () => `<path d="M4.5 27C8 15 20 9.4 31.5 13.5l4.2-2.2-1.2 4.4c1.6 1.6 1 3.6-.8 3.8-7.6-3-15.4 1.4-21.4 9.4z" fill="#4A90C8" ${O}/><path d="M17 12.6l1.6-5.2 3.6 4.6z" fill="#3A78AE" ${O}/><path d="M9 25.6c5-4.6 11-7.2 19-6.2" fill="none" stroke="#BFE0F4" stroke-width="2.4" stroke-linecap="round"/><path d="M4.5 27 2 31.5l5.5-1.8" fill="#3A78AE" ${O}/>${E(27.6, 15, 1.3)}`,
+      bird: () => `<circle cx="19" cy="21" r="11" fill="#6FA8DC" ${O}/><path d="M11 22c3 5.6 9.4 6 12.4 1.6-4.6.6-8.6-.4-12.4-1.6z" fill="#3E78B4" ${O}/><path d="M29.4 18.4 35.6 20.4l-6 2z" fill="#F0A030" stroke="#7A4A00" stroke-width=".9" stroke-linejoin="round"/><path d="M15 32.2v3M21 32.2v3" stroke="#7A4A00" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="12.4" r="1.6" fill="#B8C4CE"/>${E(23.6, 17.6)}`,
+      lizard: () => `<path d="M6 30c3-2 5.6-3 9-3.4 4.4-.6 7.6-3.2 9.6-7.4 1.6-3.4 4.4-6.2 8.4-6 2.4.1 3.6 1.6 2.6 3.2-1 1.8-3.2 1.6-4.6 3-2.2 2.2-3 6.8-7.6 9.8-4 2.6-10.6 3-17.4.8z" fill="#E8642A" ${O}/><path d="M14 27.6l-2.4 4.4M22 25.4l1.4 4.6M26 19l3.4-2.4" stroke="#B8441A" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="27" r="1.1" fill="#FFD34D"/><circle cx="25.2" cy="22" r="1.1" fill="#FFD34D"/>${E(32.4, 14.6, 1.3)}`,
+      bat: () => `<path d="M20 15c-4-6-11-6.4-17-3 2.4 1.4 2.4 4 1.6 6.4 2-1.4 4.6-1 5.6.8 1-1.6 3.6-1.8 5-.4 1-1.2 2.6-1.6 4.8-.8zM20 15c4-6 11-6.4 17-3-2.4 1.4-2.4 4-1.6 6.4-2-1.4-4.6-1-5.6.8-1-1.6-3.6-1.8-5-.4-1-1.2-2.6-1.6-4.8-.8z" fill="#4A3D5E" ${O}/><path d="M16.6 13.6 16.2 9l2.6 3.2M23.4 13.6 23.8 9l-2.6 3.2" fill="#3A2F4A" ${O}/><ellipse cx="20" cy="19" rx="4.6" ry="6.4" fill="#3A2F4A" ${O}/><circle cx="18.3" cy="17" r="1.1" fill="#F2C94C"/><circle cx="21.7" cy="17" r="1.1" fill="#F2C94C"/>`,
+      dove: () => `<path d="M7 23.6c4.4-4.4 10.6-4.6 15-1.6l9.6-6.4c-1.4 5.6-4.6 10.6-10.4 11.8-4.6 1-9.8-.8-14.2-3.8z" fill="#F4F6F8" ${O}/><path d="M17 21.6C15 15.4 17.2 9.6 23.4 6.2c.6 6-1.8 11.2-6.4 15.4z" fill="#FFFFFF" ${O}/><circle cx="9.8" cy="21" r="3.6" fill="#F4F6F8" ${O}/><path d="M6.4 20.4 3.4 21.6l3.2.8" fill="#E8A040" stroke="#7A4A00" stroke-width=".8"/><path d="M27.6 24.6c1.8.4 3.6 0 5-1" stroke="#5E8F3A" stroke-width="1.6" stroke-linecap="round" fill="none"/>${E(9.4, 20.2, 1.1)}` };
+    const k = String(kind || 'bear'); const draw = k === 'blackcat' ? D.cat(true) : (D[k] || D.bear)();
+    return svgM(draw, s || 34, '0 0 40 40'); }
 
   /* ---- compact world strips (drawn scenery for act banners) ---- */
   function strip(world, W, H) {
@@ -141,7 +228,9 @@
     if (!st.s[4]) return { act: 'trailPractice', cta: 'Train', txt: `Take every set to ${PGATE}% for the fifth star — set ${nx} is the gap` };
     return null;
   }
-  const starHTML = (n, size) => `<span style="font-size:${size || 13}px;letter-spacing:2px;color:#E8A81C;white-space:nowrap">${'★'.repeat(n)}<span style="opacity:.32">${'★'.repeat(5 - n)}</span></span>`;
+  /* a stop's stars are drawn (P3.7), the earned ones gold and the rest faint, with the count said in words */
+  const starHTML = (n, size) => { const s = (size || 13) + 1, st = (on) => `<span style="display:inline-block;opacity:${on ? 1 : .32}">${svgM('<path d="M12 2.6l2.9 6 6.5.9-4.7 4.5 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.7-4.5 6.5-.9z" fill="currentColor"/>', s)}</span>`;
+    return `<span role="img" aria-label="${n} of 5 stars" style="display:inline-flex;gap:2px;vertical-align:-2px;color:#E8A81C;white-space:nowrap">${[0, 1, 2, 3, 4].map((k) => st(k < n)).join('')}</span>`; };
   /* Practice reports back through here (app3's exitTrain calls it): best % sticks,
      and crossing the practice gate is announced, because that IS the unlock. */
   /* the recorded best for a stop, for app3's session summary — the banner there must
@@ -853,10 +942,10 @@
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">${gsvg}
         <div style="position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:11px 14px;font-size:13.5px;line-height:1.5;box-shadow:var(--sh-rest)">${esc(String(ch.concept || '').split(/(?<=[.!?])\s/).slice(0, 2).join(' '))}</div></div>
       <div style="display:grid;gap:10px">
-        ${stepCard(1, 'Learn the idea', 'The full chapter — cards, method' + (u.gi >= 0 ? ', narration' : '') + ' · ⭐', 'trailLesson', stars.l, 'Open')}
-        ${stepCard(2, 'Meet the words', 'Flip through to the last card · ⭐', 'trailWords', stars.w, 'Browse')}
-        ${stepCard(3, 'Practice', stars.p > 0 ? `Best ${stars.p}% · ${PGATE}%+ opens the next stop · ⭐` : `${PGATE}%+ opens the next stop · ⭐`, 'trailPractice', stars.s[0], 'Train')}
-        ${stepCard(4, 'The Quiz', `Pass at ${Math.round(gate() * 100)}% ⭐ · ace at ${QSTAR()}% ⭐${stars.q ? ` · best ${stars.q}%` : ''}`, 'trailQuiz', stars.s[3], stars.s[3] ? 'Again' : 'Go!')}
+        ${stepCard(1, 'Learn the idea', 'The full chapter — cards, method' + (u.gi >= 0 ? ', narration' : '') + ' · ★', 'trailLesson', stars.l, 'Open')}
+        ${stepCard(2, 'Meet the words', 'Flip through to the last card · ★', 'trailWords', stars.w, 'Browse')}
+        ${stepCard(3, 'Practice', stars.p > 0 ? `Best ${stars.p}% · ${PGATE}%+ opens the next stop · ★` : `${PGATE}%+ opens the next stop · ★`, 'trailPractice', stars.s[0], 'Train')}
+        ${stepCard(4, 'The Quiz', `Pass at ${Math.round(gate() * 100)}% ★ · ace at ${QSTAR()}% ★${stars.q ? ` · best ${stars.q}%` : ''}`, 'trailQuiz', stars.s[3], stars.s[3] ? 'Again' : 'Go!')}
       </div>
       ${(() => {
         /* THE SETS, ON THE CARD. The stop's words in rounds of the act's size —
@@ -885,15 +974,15 @@
              move on, chase the stars, or drill a fresh set of this stop's words */
           `<div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
             <button data-act="trailNextFrom" data-arg="${escA(u.id)}" style="flex:1.2;min-width:150px;padding:13px 16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;box-shadow:var(--edge)">Next stop →</button>
-            ${next ? `<button data-act="${next.act}" style="flex:1;min-width:130px;padding:13px 16px;border-radius:14px;background:color-mix(in srgb,var(--treasure,#FFD24D) 30%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 60%,var(--line));font-weight:800;font-size:14px">★ Gain stars</button>` : ''}
+            ${next ? `<button data-act="${next.act}" style="flex:1;min-width:130px;padding:13px 16px;border-radius:14px;background:color-mix(in srgb,var(--treasure,#FFD24D) 30%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 60%,var(--line));font-weight:800;font-size:14px">${inIc('star', 14)}Gain stars</button>` : ''}
             <button data-act="trailPractice" style="flex:1;min-width:150px;padding:13px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Practice more words</button>
           </div>
           ${next
-            ? `<p style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:9px;text-align:center">👉 ${esc(next.txt)}</p>`
-            : `<p style="font-size:13px;font-weight:800;color:var(--good);margin-top:9px;text-align:center">★★★★★ — this stop is completely yours.</p>`}`
+            ? `<p style="font-size:12.5px;color:var(--muted);font-weight:700;margin-top:9px;text-align:center"><span style="display:inline-block;vertical-align:-3px">${iconSVG('arrow', 14)}</span> ${esc(next.txt)}</p>`
+            : `<p style="font-size:13px;font-weight:800;color:var(--good);margin-top:9px;text-align:center">${starHTML(5, 13)} — this stop is completely yours.</p>`}`
         : (next
           ? `<button data-act="${next.act}" style="display:flex;width:100%;align-items:center;gap:11px;margin-top:12px;padding:13px 16px;border-radius:14px;background:color-mix(in srgb,var(--treasure,#FFD24D) 26%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 55%,var(--line));text-align:left">
-              <span style="font-size:17px">👉</span>
+              <span style="display:inline-grid;color:var(--treasure-deep,#8A5B00)">${iconSVG('arrow', 18)}</span>
               <span style="flex:1;font-size:13px;font-weight:700;line-height:1.4">${esc(next.txt)}</span>
               <span style="flex-shrink:0;padding:8px 15px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:12.5px">${esc(next.cta)}</span></button>`
           : '')}
@@ -917,7 +1006,7 @@
       return `<div style="${RISE()}max-width:420px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:26px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <span style="width:84px;height:84px;display:inline-block"><img src="app-art/${h.img}.svg" alt="" style="width:100%;height:100%;object-fit:contain"></span>
-          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(h.name) + ' is delighted!' + (q2.heroPaid ? ' · +' + q2.heroPaid + ' 🪙' : '') : 'Almost — try again!'}</h2>
+          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(h.name) + ' is delighted!' + (q2.heroPaid ? ' · +' + q2.heroPaid + ' coins' : '') : 'Almost — try again!'}</h2>
           <p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.pass ? (q2.heroPaid ? 'First win of the day.' : 'Already thanked you today — but always happy to play.') : 'The word got away. The ' + esc(h.name.replace(/^the /, '')) + ' will wait.'}</p>
           <div style="display:flex;gap:9px;justify-content:center">
           ${!q2.pass ? `<button data-act="mwHero" data-arg="${q2.hero}" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">Once more!</button>` : ''}
@@ -930,7 +1019,7 @@
       return `<div style="${RISE()}max-width:420px;margin:0 auto;text-align:center">
         <div style="background:var(--bg2);border-radius:20px;padding:26px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <span style="width:64px;height:70px;display:inline-block">${lmArt(lm)}</span>
-          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(lm.name) + ' says thanks' + (q2.lmPaid ? ' · +' + q2.lmPaid + ' 🪙' : '') : 'The words wriggled away'}</h2>
+          <h2 style="font-family:var(--display);font-size:20px;margin:8px 0 4px">${q2.pass ? esc(lm.name) + ' says thanks' + (q2.lmPaid ? ' · +' + q2.lmPaid + ' coins' : '') : 'The words wriggled away'}</h2>
           <p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.pass ? 'Come back tomorrow — there will be more.' : 'No harm done (' + pct + '%). The road is right there.'}</p>
           <button data-act="trailBack" style="padding:12px 22px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px">Back to the road →</button>
         </div></div>`;
@@ -941,7 +1030,7 @@
         <div style="background:var(--bg2);border-radius:20px;padding:28px;box-shadow:0 0 0 1px var(--line),var(--glow)">
           <div style="width:92px;height:92px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(${q2.pass ? 'var(--good)' : 'var(--bad)'} ${pct}%,var(--surface2) 0)"><div style="width:72px;height:72px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:21px">${pct}%</div></div>
           ${q2.lapUp ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">TIER ${lapOf(c)} UNLOCKED</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">The whole route returns — tougher words, same ideas. That is how it sticks.</p>`
-          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared${q2.paid ? ' · +' + q2.paid + ' 🪙' : ''}${q2.bloom ? ' · 🌸 the bloom stop' : ''}${q2.chest ? ' · 🎁 the dared road' : ''}</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.chest ? 'You took the dark mushroom knoll first — the chest at the reunion is yours.' : q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
+          : q2.pass ? `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">Stop cleared${q2.paid ? ' · +' + q2.paid + ' coins' : ''}${q2.bloom ? ' · the bloom stop' : ''}${q2.chest ? ' · the dared road' : ''}</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">${q2.chest ? 'You took the dark mushroom knoll first — the chest at the reunion is yours.' : q2.revising ? 'Revenge complete.' : 'The idea is yours. The route rolls on.'}</p>`
           : `<h2 style="font-family:var(--display);font-size:21px;margin-bottom:6px">${pct}% — so close</h2><p style="font-size:13px;color:var(--muted);margin-bottom:14px">You need ${Math.round(gate() * 100)}%. Win back the ${q2.missed.length} you missed, then take it again.</p>`}
           <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
             ${!q2.pass && q2.missed.length ? `<button data-act="tqRevise" style="padding:12px 20px;border-radius:12px;background:var(--treasure);color:#3a2c00;font-weight:800;font-size:13.5px">⚑ Revise the missed ones</button>` : ''}
@@ -974,7 +1063,7 @@
         <div style="flex:1;height:8px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;background:var(--accent);width:${Math.round(q2.i / q2.items.length * 100)}%"></div></div>
         <span style="font-size:12px;font-weight:800;color:var(--muted)">${q2.i + 1}/${q2.items.length}</span></div>
       <div style="background:var(--bg2);border-radius:18px;padding:clamp(16px,4vw,24px);box-shadow:0 0 0 1px var(--line),var(--glow)">
-        <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px">${it.ty === 'kit' ? (it.kit === 'butterfly' ? '🦋 Butterfly catch' : it.kit === 'comb' ? '🍯 Comb builder' : '🌸 Petal trail') : it.ty === 'spell' ? '🔊 Spell it' : it.ty === 'mean' ? '📖 Meaning' : '💡 Concept'}${state.trailChk ? ' · checkpoint' : ''}${q2.sideName ? ' · ' + esc(q2.sideName) : ''}</div>
+        <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px">${it.ty === 'kit' ? (it.kit === 'butterfly' ? inIc('spark') + 'Butterfly catch' : it.kit === 'comb' ? inIc('hive') + 'Comb builder' : inIc('sprout') + 'Petal trail') : it.ty === 'spell' ? inIc('volume') + 'Spell it' : it.ty === 'mean' ? inIc('book') + 'Meaning' : inIc('bulb') + 'Concept'}${state.trailChk ? ' · checkpoint' : ''}${q2.sideName ? ' · ' + esc(q2.sideName) : ''}</div>
         ${q2.heroLine ? `<p style="font-size:13.5px;font-weight:700;color:var(--text);margin:0 0 12px;line-height:1.5">${esc(q2.heroLine)}</p>` : ''}
         ${body}
         ${picked != null && !q2.right && it.ty !== 'spell' && it.ty !== 'kit' ? `<p class="tq-miss" style="margin:12px 0 0;font-size:13.5px;font-weight:700;color:var(--text);text-align:center">Not this time — the one in green is right. Read it, then tap Next.</p>` : ''}
@@ -1019,7 +1108,7 @@
       <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
         box-shadow:${cur ? `0 0 0 5px color-mix(in srgb,${a} 26%,transparent),0 6px 16px rgba(10,6,26,.5)` : '0 4px 12px rgba(10,6,26,.45)'};
         border:2px solid rgba(255,255,255,${locked ? '.42' : '.78'})">
-        ${av || `<span style="font-family:var(--display);font-weight:800;font-size:${cur ? 15 : 13}px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">${done ? '★' : ROMAN[idx] || (idx + 1)}</span>`}
+        ${av || `<span style="font-family:var(--display);font-weight:800;font-size:${cur ? 15 : 13}px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">${done ? '<span style="display:grid;place-items:center">' + iconSVG('star', cur ? 16 : 14, 2.6) + '</span>' : ROMAN[idx] || (idx + 1)}</span>`}
       </span>
       <span class="atlas-chip" style="${cur ? `border-color:color-mix(in srgb,${a} 60%,transparent)` : ''}">
         <b>${esc(label)}</b><i>${sub}</i></span>
@@ -1077,7 +1166,7 @@
         sub: st.total ? st.done + '/' + st.total + ' stops' : 'ahead',
         bg: state2 === 'done' ? 'linear-gradient(160deg,#FFD24D,#C8791B)' : state2 === 'cur' ? `linear-gradient(160deg,${a},${d})` : '#3A3352',
         ink: state2 === 'done' ? '#3B2A00' : '#fff',
-        badge: av || (state2 === 'done' ? '★' : ROMAN[i] || (i + 1)) });
+        badge: av || (state2 === 'done' ? iconSVG('star', 14, 2.6) : ROMAN[i] || (i + 1)) });
       return atlasPin(c, act, i, x, y, st, state2, crs);
     }).join('');
     /* a locked continent sits under its own lock panel, so it gets no key to tap */
@@ -1115,21 +1204,21 @@
         : isDone ? 'linear-gradient(160deg,#FFD24D,#C8791B)'
         : cur ? 'linear-gradient(160deg,#FFE49B,#E8A81C)' : 'rgba(18,14,40,.58)';
       const size = cur ? 52 : 44;
-      const sub = !on ? '' : emb ? '<i>🏅 fully mapped</i>'
+      const sub = !on ? '' : emb ? '<i>fully mapped</i>'
         : isDone ? '<i>all four cleared</i>'
         : open ? `<i>${dnI}/4 stops${byPass ? ' · by the Hidden Pass' : ''}</i>`
-        : '<i>🔒 3 stops behind it — or its Hidden Pass</i>';
+        : '<i>3 stops behind it — or its Hidden Pass</i>';
       keyRows.push({ act: 'ultraAct', arg: String(i), cls: cur ? 'cur' : isDone ? 'done' : open ? '' : 'locked', cur,
-        name: label, sub: sub.replace(/<\/?i>/g, ''), badge: emb ? '🏅' : isDone ? '✓' : (i + 1),
+        name: label, sub: sub.replace(/<\/?i>/g, ''), badge: emb ? iconSVG('medal', 15) : isDone ? '✓' : (i + 1),
         bg: emb || isDone || cur ? ring : '#2A2440', ink: cur || isDone || emb ? '#3B2A00' : '#FFF6DE' });
       return `<button data-act="${on ? 'ultraAct' : 'openAdvanced'}" data-arg="${i}" class="atlas-pin${open || !on ? '' : ' locked'}"
           style="left:${x}%;top:${y}%;--pz:${cur ? 3 : 2}" title="${escA(label)}" aria-label="${escA((i + 1) + ' ' + label + (sub ? ', ' + sub.replace(/<\/?i>/g, '') : ''))}">
         <span class="atlas-dot" style="width:${size}px;height:${size}px;background:${ring};
           border:2px solid rgba(255,246,222,${cur || isDone ? '.9' : '.42'});color:${cur || isDone ? '#3B2A00' : 'rgba(255,246,222,.85)'};
-          font-family:var(--display);font-weight:800;font-size:${cur ? 17 : 15}px;box-shadow:0 4px 12px rgba(6,4,18,.5)">${emb ? '🏅' : isDone ? '✓' : (i + 1)}</span>
+          font-family:var(--display);font-weight:800;font-size:${cur ? 17 : 15}px;box-shadow:0 4px 12px rgba(6,4,18,.5)">${emb ? '<span style="display:grid;place-items:center">' + iconSVG('medal', cur ? 19 : 17) + '</span>' : isDone ? '✓' : (i + 1)}</span>
         <span class="atlas-chip"><b>${esc(label)}</b>${sub}</span></button>`;
     }).join('');
-    const line = 'Five landmarks, each hiding secrets. Clear 3 of 4 stops to move on — or find the Hidden Pass ⛩️ and skip ahead.';
+    const line = 'Five landmarks, each hiding secrets. Clear 3 of 4 stops to move on — or find the Hidden Pass and skip ahead.';
     /* the caption takes its own line-height: the board's is 0 (for the image), and a
        caption that wrapped drew both its lines on one baseline */
     return `<div class="atlas-wrap aw-ultra"><div class="atlas-board">
@@ -1361,19 +1450,19 @@
     if (u.emb[key]) return { fog: '', cells: '', marks: '' };
     const lim = edge == null ? 100 : edge;
     const f = u.finds[key] || {};
-    const mk = (act, x, y, g, tt) => `<button data-act="${act}" class="sb-lift atlas-secret" style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);z-index:3;font-size:26px;line-height:1;background:none;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="${tt}">${g}</button>`;
+    const mk = (act, x, y, g, tt) => `<button data-act="${act}" class="sb-lift atlas-secret" style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);z-index:3;min-width:44px;min-height:44px;display:grid;place-items:center;line-height:1;background:none;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="${tt}" aria-label="${tt}">${g}</button>`;
     const marks = uSpots(c, key).map(s => {
       if (s.x > lim) return '';
-      if (s.k === 'wisp') return f.wisp ? '' : mk('uWisp', s.x, s.y, '💫', 'A word-wisp!');
-      if (s.k === 'duel') return f.duel ? '' : mk('uDuel', s.x, s.y, '🎭', 'A rival waits…');
-      return f.gate ? `<span style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:3;font-size:26px;opacity:.75;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="The pass stands open">⛩️</span>` : mk('uGate', s.x, s.y, '⛩️', 'The Hidden Pass');
+      if (s.k === 'wisp') return f.wisp ? '' : mk('uWisp', s.x, s.y, MARK.wisp(30), 'A word-wisp!');
+      if (s.k === 'duel') return f.duel ? '' : mk('uDuel', s.x, s.y, MARK.duel(30), 'A rival waits…');
+      return f.gate ? `<span style="position:absolute;left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%);z-index:3;opacity:.75;filter:drop-shadow(0 2px 6px rgba(6,4,18,.6))" title="The pass stands open">${MARK.gate(30)}</span>` : mk('uGate', s.x, s.y, MARK.gate(30), 'The Hidden Pass');
     }).join('');
     return { fog: '', cells: '', marks };
   }
   function uQuestCard() {
     const q = state.uq; if (!q) return '';
     const input = `<input data-inp="uqType" data-key="uqKey" data-fkey="uqType" value="${escA(q.typed || '')}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="spell it…" style="width:100%;max-width:300px;display:block;margin:0 auto 12px;padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:17px;font-weight:800;text-align:center;letter-spacing:.08em;outline:none">`;
-    const hear = `<button data-act="uqSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">🔊 Hear the word</button>`;
+    const hear = `<button data-act="uqSay" style="display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:13.5px;box-shadow:var(--edge);margin-bottom:12px">${iconSVG('volume', 17)} Hear the word</button>`;
     const frame = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(14,10,26,.62)">
       <div style="box-sizing:border-box;width:min(440px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:sb-rise .3s ease both">${inner}</div></div>`;
     if (q.kind === 'duel') {
@@ -1401,12 +1490,12 @@
         ${next('Back to the map')}`);
     }
     // gate
-    return frame(`<div style="font-size:40px">⛩️</div>
+    return frame(`<div style="display:grid;place-items:center">${MARK.gate(44)}</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 3px">The Hidden Pass</h3>
       <p style="font-size:13px;color:var(--muted);margin:0 0 8px;line-height:1.5">Three words, spelled in an unbroken chain, and the gate swings open — <b>on the Ultra road it unlocks the next landmark early; elsewhere it unveils the whole map</b>.</p>
       <div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px">${q.words.map((_, ix) => `<span style="width:12px;height:12px;border-radius:50%;background:${ix < q.i ? 'var(--good)' : 'var(--surface2)'};border:1px solid var(--line)"></span>`).join('')}</div>
       ${hear}${input}
-      <div style="display:flex;gap:9px;justify-content:center"><button data-act="uqGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">⛓️ Forge the chain</button>
+      <div style="display:flex;gap:9px;justify-content:center"><button data-act="uqGo" style="padding:13px 22px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge);display:inline-flex;align-items:center;gap:7px">${iconSVG('link', 17)} Forge the chain</button>
       <button data-act="uqClose" style="padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13.5px">Step back</button></div>`);
   }
 
@@ -1429,7 +1518,7 @@
         ${body2}</button>`; }).join('');
     const wd = mwWander(c, edge), wdr = LV.wander || MW.wander;
     if (!wd.done) H += `<button class="mw-wander" data-act="mwWander" style="left:${wd.x.toFixed(1)}%;top:${wd.y.toFixed(1)}%"
-      title="${escA(wdr.name + ' has a word for you')}">${wdr.g}<span class="mw-lm-n">${esc(livShort(wdr.name))}</span></button>`;
+      title="${escA(wdr.name + ' has a word for you')}" aria-label="${escA(wdr.name + ' has a word for you')}">${crit(wdr.g, 34)}<span class="mw-lm-n">${esc(livShort(wdr.name))}</span></button>`;
     if (edge < 99) { /* the sign teases what the bend hides: the rest of this
       country if most of it is still unseen, else the next one */
       const remaining = LV.legEdge[rv] - edge;
@@ -1500,7 +1589,7 @@
       H += `<span class="mw-conf" style="left:${x.toFixed(1)}%;--cc:${CONF[i % 6]};--pw:${(6 + i % 5)}s;--pd:${((i * 1.3) % 9).toFixed(1)}s"></span>`);
     const NOTES = ['♪', '♫', '♩', '♬'];
     if (AMB.notes) spread(8, 'nt', [46, 78]).forEach(([x, y], i) =>
-      H += `<span class="mw-note" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(9 + i % 5)}s;--gl:${((i * 2.1) % 11).toFixed(1)}s">${NOTES[i % 4]}</span>`);
+      H += `<span class="mw-note" style="left:${x.toFixed(1)}%;top:${y}%;--gd:${(9 + i % 5)}s;--gl:${((i * 2.1) % 11).toFixed(1)}s">${noteG(i, 17)}</span>`);
     (AMB.pennants || []).forEach((pn, i) => { if (pn[0] > edge) return;
       H += `<span class="mw-pennant" style="left:${pn[0]}%;top:${pn[1]}%;--cc:${pn[2] || '#E06A3C'};--gd:${(2.2 + (i % 5) * 0.4).toFixed(1)}s;--gl:${(i * 0.3).toFixed(1)}s"></span>`; });
     if (AMB.stars) spread(14, 'sr', [6, 40]).forEach(([x, y], i) =>
@@ -1761,7 +1850,7 @@
     legName: ['the Meadow Gate', 'the Lollipop Grove', 'the Mushroom Hollow', 'the Hive Gates'],
     pair: [7, 8],                       // the half-blind fork: both open together
     pairPos: { 7: { y: -15, tag: 'the dark mushroom knoll' }, 8: { y: 13, tag: 'the petal bridge' } },
-    wander: { g: '🐻', name: 'Barnaby' },
+    wander: { g: 'bear', name: 'Barnaby' },
     /* a landmark is ANCHORED (anch:1) when the painter already put it in the
        plate — the hotspot + glint + label ride the PAINTED feature, no sprite
        duplicate. Sprites are only for features the painting does not have. */
@@ -1813,35 +1902,35 @@
     meadow: MW,
     library: { img: 'map-library-pano.webp', aspect: 6.815, d: RD_B, t: [[5, 12], [48, 14], [94, 82]],
       legEdge: LEGS4, legName: ['the Front Steps', 'the Reading Halls', 'the Ink Gardens', 'the Grand Archive'],
-      wander: { g: '🦉', name: 'Sage the Owl' },
+      wander: { g: 'owl', name: 'Sage the Owl' },
       lms: [{ x: 40, y: 64, leg: 1, name: 'the Card Catalogue', kit: 'comb', g: '🗂️', art: 'lv-lm-library' }],
       pokes: PK_B, amb: { pages: 1, glow: 1, wisps: 1, beams: [[47, 16], [78, 12]] },
       heroes: [{ x: 30, y: 55, w: 120, img: 'lv-hero-library', anim: 'sway2', burst: '📖', name: 'the wobbling book stack',
         kit: 'comb', line: 'The owl drops a word in pieces — shelve it back together!' }] },
     forum: { img: 'map-forum-pano.webp', aspect: 6.815, d: RD_C, t: [[4, 10], [52, 12], [93, 80]],
       legEdge: LEGS4, legName: ['the Forum Gates', 'the Market', 'the Aqueduct', 'the Colosseum'],
-      wander: { g: '🐢', name: 'Tullia the Tortoise' },
+      wander: { g: 'tortoise', name: 'Tullia the Tortoise' },
       lms: [{ x: 63, y: 62, leg: 2, name: 'the Oracle Fountain', kit: 'petal', g: '⛲', art: 'lv-lm-forum' }],
       pokes: PK_A, amb: { leaves: 1, birds: 1, seeds: 1, pennants: [[24, 36, '#C8341F'], [58, 30, '#E0A33C'], [86, 26, '#8E1D26']] },
       heroes: [{ x: 16, y: 52, w: 130, img: 'lv-hero-forum', anim: 'sway', burst: '🍃', name: 'the laurel tree',
         kit: 'petal', line: 'The laurel rustles a word — step its stones and spell it!' }] },
     storm: { img: 'map-storm-pano.webp', aspect: 6.815, d: RD_B, t: [[6, 12], [45, 10], [94, 78]],
       legEdge: LEGS4, legName: ['the Windward Path', 'the Windward Cliffs', 'the Thunder Fields', 'the Eye of the Storm'],
-      wander: { g: '🐏', name: 'Bolt the Ram' },
+      wander: { g: 'ram', name: 'Bolt the Ram' },
       lms: [{ x: 40, y: 42, leg: 1, name: 'the Lightning Rod', kit: 'butterfly', g: '⚡', art: 'lv-lm-storm' }],
       pokes: PK_B, amb: { rain: 1, bolts: 1, wisps: 1, glow: 1 },
       heroes: [{ x: 22, y: 50, w: 140, img: 'lv-hero-storm', anim: 'sway', burst: '⚡', name: 'the storm pine',
         kit: 'butterfly', line: 'The pine crackles a word — only one orb spells it true!' }] },
     roots: { img: 'map-roots-pano.webp', aspect: 6.815, d: RD_C, t: [[5, 14], [49, 12], [92, 80]],
       legEdge: LEGS4, legName: ['the Overgrowth', 'the Root Halls', 'the Seed Vaults', 'the Root Throne'],
-      wander: { g: '🦔', name: 'Hazel the Hedgehog' },
+      wander: { g: 'hedgehog', name: 'Hazel the Hedgehog' },
       lms: [{ x: 63, y: 60, leg: 2, name: 'the Seed Vault', kit: 'comb', g: '🌰', art: 'lv-lm-roots' }],
       pokes: PK_A, amb: { glow: 1, leaves: 1, wisps: 1, steam: 1 },
       heroes: [{ x: 28, y: 58, w: 130, img: 'lv-hero-roots', anim: 'breathe', burst: '✨', name: 'the great stump',
         kit: 'comb', line: 'The stump hums a word through its rings — grow it back!' }] },
     strait: { img: 'map-strait-pano.webp', aspect: 6.815, d: RD_B, t: [[5, 10], [50, 12], [94, 80]],
       legEdge: LEGS4, legName: ['the Shore Road', 'the Harbour', 'the Buoy Line', 'the Far Shore'],
-      wander: { g: '🦭', name: 'Salty the Seal' },
+      wander: { g: 'seal', name: 'Salty the Seal' },
       lms: [{ x: 40, y: 70, leg: 1, name: 'the Message Buoy', kit: 'butterfly', g: '🛟', art: 'lv-lm-strait' }],
       pokes: PK_B, amb: { birds: 1, beams: [[64, 22]], water: [[30, 66], [35, 74], [41, 60], [52, 70], [60, 64], [66, 72], [80, 68]] },
       /* the painter already put a lighthouse on the buoy line — the hero is
@@ -1850,21 +1939,21 @@
         kit: 'butterfly', line: 'The lighthouse signals a word — net the buoy that spells it!' }] },
     junkyard: { img: 'map-junkyard-pano.webp', aspect: 6.815, d: RD_C, t: [[4, 12], [47, 10], [93, 82]],
       legEdge: LEGS4, legName: ['the Rust Road', 'Scrap Row', 'the Contraption Fields', 'the Trickster’s Gate'],
-      wander: { g: '🦝', name: 'Ratchet the Raccoon' },
+      wander: { g: 'raccoon', name: 'Ratchet the Raccoon' },
       lms: [{ x: 63, y: 66, leg: 2, name: 'the Tinker Bench', kit: 'comb', g: '🔧', art: 'lv-lm-junkyard' }],
       pokes: PK_A, amb: { steam: 1, sparks: 1, spins: [[18, 40], [44, 34], [67, 44], [88, 36]], seeds: 1 },
       heroes: [{ x: 30, y: 50, w: 110, img: 'lv-hero-junkyard', anim: 'sway2', burst: '⚙️', name: 'the teetering scrap tower',
         kit: 'comb', line: 'The tower rattles a word apart — bolt it back together!' }] },
     sprints: { img: 'map-sprints-pano.webp', aspect: 6.815, d: RD_B, t: [[5, 12], [46, 14], [92, 80]],
       legEdge: LEGS4, legName: ['the Starting Line', 'the Warm-Up Track', 'the Stadium Bend', 'the Finish Arch'],
-      wander: { g: '🐇', name: 'Dash the Hare' },
+      wander: { g: 'hare', name: 'Dash the Hare' },
       lms: [{ x: 40, y: 62, leg: 1, name: 'the Water Station', kit: 'petal', g: '🥤', art: 'lv-lm-sprints' }],
       pokes: PK_B, amb: { conf: 1, birds: 1, pennants: [[16, 30, '#3E63D6'], [42, 26, '#E8458C'], [70, 24, '#FFD24D'], [92, 28, '#2E8FB8']] },
       heroes: [{ x: 88, y: 52, w: 110, img: 'lv-hero-sprints', anim: 'flutter', burst: '🎉', name: 'the finish flags',
         kit: 'petal', line: 'The flags wave a word — hop the hurdles and spell it!' }] },
     stage: { img: 'map-stage-pano.webp', aspect: 6.815, d: RD_C, t: [[5, 10], [51, 12], [93, 78]],
       legEdge: LEGS4, legName: ['the Stage Door', 'the Prop Loft', 'the Orchestra Pit', 'the Grand Marquee'],
-      wander: { g: '🐈', name: 'Duchess the Cat' },
+      wander: { g: 'cat', name: 'Duchess the Cat' },
       lms: [{ x: 40, y: 68, leg: 1, name: 'the Costume Trunk', kit: 'comb', g: '🎭', art: 'lv-lm-stage' }],
       pokes: PK_A, amb: { notes: 1, conf: 1, beams: [[30, 18], [62, 14], [88, 20]], glow: 1 },
       heroes: [{ x: 30, y: 52, w: 120, img: 'lv-hero-stage', anim: 'breathe', burst: '⭐', name: 'the velvet curtain',
@@ -1877,42 +1966,42 @@
        WHOLE journey instead of crowded onto one screen. */
     proving: { img: 'map-proving-pano.webp', aspect: 6.815, d: RD_B, t: [[11, 26], [49, 72], [90, 30]],
       legEdge: LEGS4, legName: ['the Muster Field', 'the Tilt Yard', 'the Trial Runs', 'the Champion’s Ring'],
-      wander: { g: '🐎', name: 'Pennant the Courser' },
+      wander: { g: 'horse', name: 'Pennant the Courser' },
       lms: [{ x: 40, y: 62, leg: 1, name: 'the Weapon Rack', kit: 'comb', g: '🛡️', art: 'lv-lm-proving' }],
       pokes: PK_C, amb: { sparks: 1, steam: 1, pennants: [[20, 34, '#D6353F'], [52, 28, '#8E1D26'], [84, 32, '#C8791B']] },
       heroes: [{ x: 22, y: 48, w: 120, img: 'lv-hero-proving', anim: 'flutter', burst: '🏳️', name: 'the champion’s banner',
         kit: 'petal', line: 'The banner snaps out a word — march the pegs and spell it!' }] },
     greysea: { img: 'map-greysea-pano.webp', aspect: 6.815, d: RD_C, t: [[9, 70], [52, 24], [92, 66]],
       legEdge: LEGS4, legName: ['the Grey Shallows', 'the Fog Bank', 'the Wreck Reach', 'the Lighthouse'],
-      wander: { g: '🦢', name: 'Pale the Heron' },
+      wander: { g: 'heron', name: 'Pale the Heron' },
       lms: [{ x: 63, y: 60, leg: 2, name: 'the Wreck Bell', kit: 'butterfly', g: '🔔', art: 'lv-lm-greysea' }],
       pokes: PK_B, amb: { rain: 1, wisps: 1, birds: 1, beams: [[40, 24]], water: [[30, 66], [36, 74], [44, 62], [56, 70], [64, 60], [72, 72], [84, 64]] },
       heroes: [{ x: 33, y: 58, w: 100, img: 'lv-hero-greysea', anim: 'sway2', burst: '🌫️', name: 'the lantern buoy',
         kit: 'butterfly', line: 'The buoy tolls a word into the fog — ring the true one!' }] },
     liars: { img: 'map-liars-pano.webp', aspect: 6.815, d: RD_B, t: [[12, 30], [47, 74], [91, 34]],
       legEdge: LEGS4, legName: ['the Gate of Lies', 'the Scrap Mounds', 'the Crooked Signposts', 'the Liars’ Court'],
-      wander: { g: '🐀', name: 'Fable the Rat' },
+      wander: { g: 'rat', name: 'Fable the Rat' },
       lms: [{ x: 40, y: 66, leg: 1, name: 'the Rusted Scale', kit: 'butterfly', g: '⚖️', art: 'lv-lm-liars' }],
       pokes: PK_A, amb: { wisps: 1, spins: [[27, 38], [61, 42]], seeds: 1, steam: 1 },
       heroes: [{ x: 62, y: 50, w: 115, img: 'lv-hero-liars', anim: 'sway', burst: '❓', name: 'the crooked signpost',
         kit: 'butterfly', line: 'Three boards, three spellings, one honest post — pick it!' }] },
     grandtrunk: { img: 'map-grandtrunk-pano.webp', aspect: 6.815, d: RD_C, t: [[10, 24], [50, 70], [93, 28]],
       legEdge: LEGS4, legName: ['the First Milestone', 'the Banyan Avenue', 'the Caravanserai', 'the Great Gate'],
-      wander: { g: '🐘', name: 'Mira the Elephant' },
+      wander: { g: 'elephant', name: 'Mira the Elephant' },
       lms: [{ x: 63, y: 64, leg: 2, name: 'the Milestone Pillar', kit: 'comb', g: '🪧', art: 'lv-lm-grandtrunk' }],
       pokes: PK_C, amb: { leaves: 1, birds: 1, seeds: 1, pennants: [[22, 32, '#E0A33C'], [56, 28, '#C8341F'], [88, 30, '#93551A']] },
       heroes: [{ x: 34, y: 52, w: 150, img: 'lv-hero-grandtrunk', anim: 'sway', burst: '🍃', name: 'the great banyan',
         kit: 'petal', line: 'The banyan drops a word root by root — walk it back up!' }] },
     farflung: { img: 'map-farflung-pano.webp', aspect: 6.815, d: RD_B, t: [[8, 68], [51, 26], [94, 70]],
       legEdge: LEGS4, legName: ['the Home Shore', 'the Harbour Wall', 'the Open Water', 'the Far Shore'],
-      wander: { g: '🐬', name: 'Tide the Dolphin' },
+      wander: { g: 'dolphin', name: 'Tide the Dolphin' },
       lms: [{ x: 40, y: 70, leg: 1, name: 'the Crab-Pot Stack', kit: 'petal', g: '🦀', art: 'lv-lm-farflung' }],
       pokes: PK_B, amb: { birds: 1, glow: 1, wisps: 1, water: [[28, 68], [34, 76], [42, 64], [55, 72], [63, 66], [70, 74], [82, 68]] },
       heroes: [{ x: 30, y: 46, w: 140, img: 'lv-hero-farflung', anim: 'sway2', burst: '⛵', name: 'the tall ship',
         kit: 'comb', line: 'The ship signals a word in flags — read it plank by plank!' }] },
     factory: { img: 'map-factory-pano.webp', aspect: 6.815, d: RD_C, t: [[11, 28], [48, 72], [90, 32]],
       legEdge: LEGS4, legName: ['the Loading Yard', 'the Gear Floor', 'the Foundry', 'the Word Press'],
-      wander: { g: '🐦', name: 'Rivet the Tin Bird' },
+      wander: { g: 'bird', name: 'Rivet the Tin Bird' },
       lms: [{ x: 63, y: 62, leg: 2, name: 'the Tile Press', kit: 'comb', g: '🗜️', art: 'lv-lm-factory' }],
       pokes: PK_A, amb: { steam: 1, sparks: 1, spins: [[20, 42], [46, 36], [72, 44], [92, 38]], pages: 1 },
       heroes: [{ x: 32, y: 50, w: 115, img: 'lv-hero-factory', anim: 'breathe', burst: '⚙️', name: 'the great gear',
@@ -1924,35 +2013,35 @@
        three caches AND its three seeded secrets across the panorama. */
     uproving: { img: 'map-uproving-pano.webp', aspect: 6.815, d: RD_B, t: [[12, 28], [50, 72], [89, 30]], ultra: 1,
       legEdge: LEGS4, legName: ['the Standing Stones', 'the Torch Rings', 'the Weight Yard', 'the Champion’s Circle'],
-      wander: { g: '🦉', name: 'the Watcher' },
+      wander: { g: 'owl', name: 'the Watcher' },
       lms: [{ x: 63, y: 60, leg: 2, name: 'the Whetstone Wheel', kit: 'comb', g: '🪨', art: 'lv-lm-uproving' }],
       pokes: PK_C, amb: { sparks: 1, steam: 1, glow: 1, pennants: [[24, 30, '#D6353F'], [64, 26, '#C8791B']] },
       heroes: [{ x: 30, y: 50, w: 95, img: 'lv-hero-uproving', anim: 'breathe', burst: '🔥', name: 'the great torch',
         kit: 'comb', line: 'The torch throws a word in sparks — forge it whole again!' }] },
     ulibrary: { img: 'map-ulibrary-pano.webp', aspect: 6.815, d: RD_C, t: [[10, 26], [49, 74], [92, 30]], ultra: 1,
       legEdge: LEGS4, legName: ['the Black Steps', 'the Stacks', 'the Forbidden Shelves', 'the Tower Summit'],
-      wander: { g: '🐈‍⬛', name: 'the Marginalia Cat' },
+      wander: { g: 'blackcat', name: 'the Marginalia Cat' },
       lms: [{ x: 40, y: 64, leg: 1, name: 'the Iron Book Cart', kit: 'comb', g: '📚', art: 'lv-lm-ulibrary' }],
       pokes: PK_B, amb: { pages: 1, glow: 1, wisps: 1, beams: [[38, 16], [74, 14]] },
       heroes: [{ x: 62, y: 46, w: 125, img: 'lv-hero-ulibrary', anim: 'sway2', burst: '📄', name: 'the page storm',
         kit: 'butterfly', line: 'Three pages turn in the updraught — only one is spelled true!' }] },
     ucrucible: { img: 'map-ucrucible-pano.webp', aspect: 6.815, d: RD_B, t: [[11, 70], [51, 26], [90, 68]], ultra: 1,
       legEdge: LEGS4, legName: ['the Cooling Channels', 'the Slag Fields', 'the Molten Basin', 'the Crucible Heart'],
-      wander: { g: '🦎', name: 'the Ember Salamander' },
+      wander: { g: 'lizard', name: 'the Ember Salamander' },
       lms: [{ x: 63, y: 62, leg: 2, name: 'the Mould Rack', kit: 'comb', g: '🧱', art: 'lv-lm-ucrucible' }],
       pokes: PK_A, amb: { sparks: 1, steam: 1, glow: 1, spins: [[30, 40], [70, 42]] },
       heroes: [{ x: 32, y: 52, w: 110, img: 'lv-hero-ucrucible', anim: 'breathe', burst: '✨', name: 'the golden crucible',
         kit: 'petal', line: 'The gold runs a word letter by letter — pour it in order!' }] },
     uobservatory: { img: 'map-uobservatory-pano.webp', aspect: 6.815, d: RD_C, t: [[9, 28], [48, 70], [93, 32]], ultra: 1,
       legEdge: LEGS4, legName: ['the Cliff Path', 'the Orrery Terrace', 'the Great Telescope', 'the Star Dome'],
-      wander: { g: '🦇', name: 'the Night Cartographer' },
+      wander: { g: 'bat', name: 'the Night Cartographer' },
       lms: [{ x: 63, y: 58, leg: 2, name: 'the Great Telescope', kit: 'butterfly', g: '🔭', art: 'lv-lm-uobservatory' }],
       pokes: PK_C, amb: { stars: 1, glow: 1, wisps: 1, beams: [[52, 22]] },
       heroes: [{ x: 34, y: 50, w: 115, img: 'lv-hero-uobservatory', anim: 'sway2', burst: '⭐', name: 'the brass orrery',
         kit: 'petal', line: 'The orrery turns a word ring by ring — set the stars in order!' }] },
     uchampionship: { img: 'map-uchampionship-pano.webp', aspect: 6.815, d: RD_B, t: [[12, 26], [50, 72], [91, 28]], ultra: 1,
       legEdge: LEGS4, legName: ['the Approach', 'the Tunnel', 'the Floodlit Tiers', 'the Grand Lectern'],
-      wander: { g: '🕊️', name: 'the Laurel Dove' },
+      wander: { g: 'dove', name: 'the Laurel Dove' },
       lms: [{ x: 40, y: 66, leg: 1, name: 'the Spotlit Lectern', kit: 'spell', g: '🎤', art: 'lv-lm-uchampionship' }],
       pokes: PK_B, amb: { conf: 1, notes: 1, beams: [[34, 18], [72, 16]], pennants: [[18, 28, '#FFD24D'], [88, 26, '#E8458C']] },
       heroes: [{ x: 88, y: 48, w: 120, img: 'lv-hero-uchampionship', anim: 'flutter', burst: '🎊', name: 'the laurel arch',
@@ -2144,7 +2233,7 @@
       if (w) say(w.w);
       p.wd = mwDay(); save();   /* a word heard is not a word spelled — no coin */
       const wn = lvCfg().wander || MW.wander;
-      flash(wn.g + ' ' + wn.name + ': “' + (w ? w.w + '! A fine word. ' : '') + 'Thank you for listening.”'); render();
+      flash(wn.name + ': “' + (w ? w.w + '! A fine word. ' : '') + 'Thank you for listening.”'); render();
     } catch (e) {} }); };
   /* what a poke SHEDS in each country, and what its daily prize is called —
      a petal shower in the meadow, a shower of sparks in the junkyard. Poking
@@ -2183,7 +2272,7 @@
     el.classList.remove('boing'); void el.offsetWidth; el.classList.add('boing');
     const burst = document.createElement('span'); burst.className = 'mw-burst';
     for (let k = 0; k < 6; k++) { const s2 = document.createElement('span');
-      s2.textContent = sk.g[k % sk.g.length]; s2.style.setProperty('--ba', (k * 60) + 'deg');
+      s2.innerHTML = burstG(sk.g[k % sk.g.length], 16); s2.style.setProperty('--ba', (k * 60) + 'deg');
       s2.style.setProperty('--bd2', (0.5 + (k % 3) * 0.14) + 's'); burst.appendChild(s2); }
     el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 900);
     try { sfx('tick'); } catch (_) {}
@@ -2209,7 +2298,7 @@
     if (el) { el.classList.remove('stir'); void el.offsetWidth; el.classList.add('stir');
       const burst = document.createElement('span'); burst.className = 'mw-burst';
       for (let k = 0; k < 8; k++) { const s2 = document.createElement('span');
-        s2.textContent = h.burst === '🟢' ? (k % 2 ? '✨' : '💚') : (k % 3 === 2 ? '✨' : h.burst);
+        s2.innerHTML = burstG(h.burst === '🟢' ? (k % 2 ? '✨' : '💚') : (k % 3 === 2 ? '✨' : h.burst), 16);
         s2.style.setProperty('--ba', (k * 45) + 'deg');
         s2.style.setProperty('--bd2', (0.55 + (k % 4) * 0.13) + 's'); burst.appendChild(s2); }
       el.appendChild(burst); setTimeout(() => { try { burst.remove(); } catch (_) {} }, 1100); }
@@ -2369,40 +2458,42 @@
     const KS = kitSkin(it);
     if (it.kit === 'butterfly') {
       const S = KS.fly;
+      /* off the meadow the catch is the country's own token — drawn, a tinted orb, never the act's emoji (P3.7) */
+      const tint = (ACCENT[it.a] || ['#9A7CFF', '#5B3FC0']);
       const face = i => KS.glyph
-        ? `<span style="display:grid;place-items:center;width:76px;height:56px;font-size:40px">${KS.glyph}</span>`
+        ? `<span style="display:grid;place-items:center;width:76px;height:56px"><span style="display:block;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.95) 0 11%,${tint[0]} 13% 58%,${tint[1]} 100%);box-shadow:inset 0 -4px 8px rgba(0,0,0,.22),0 3px 8px rgba(40,24,4,.3)"></span></span>`
         : `<span style="width:76px;height:56px;display:block">${BFLY(BFLY_COLS[i % 3])}</span>`;
-      return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">${S[0]}</p>
+      return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">${noEmo(S[0])}</p>
         <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))}</p>
         <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;padding:6px 0 2px">
         ${it.opts.map((o, i) => { const st = picked == null ? '' : i === it.ans ? 'outline:3px solid var(--good);outline-offset:3px;border-radius:14px' : +picked === i ? 'opacity:.4;filter:grayscale(.6)' : 'opacity:.55';
           return `<button data-act="kitPick" data-arg="${i}" ${picked != null ? 'disabled' : ''} class="kit-fly" style="--kd:${(i * 0.7).toFixed(1)}s;${st}">
             ${face(i)}
             <span style="display:block;font-weight:800;font-size:15px;letter-spacing:.04em;margin-top:2px">${esc(o.c)}</span></button>`; }).join('')}</div>
-        ${picked != null ? (q2.right ? `<p style="margin-top:8px;font-weight:800;color:var(--good)">${S[1]}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '', { head: esc(S[2]) + ' — here is the word, letter by letter' })}</div>`) : ''}</div>`;
+        ${picked != null ? (q2.right ? `<p style="margin-top:8px;font-weight:800;color:var(--good)">${noEmo(S[1])}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '', { head: esc(noEmo(S[2])) + ' — here is the word, letter by letter' })}</div>`) : ''}</div>`;
     }
     const buf = state.kitBuf || [];
     if (it.kit === 'comb') {
       const S = KS.comb;
       const cells = it.ch.map((_, i) => { const j = buf[i];
         return `<span class="kit-cell${j != null ? ' full' : ''}">${j != null ? esc(it.tiles[j].t) : ''}</span>`; }).join('');
-      return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">${S[0]}</p>
-        <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))} <button data-act="tqSay" style="font-weight:800;color:var(--accent)">🔊 hear it</button></p>
+      return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">${noEmo(S[0])}</p>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))} <button data-act="tqSay" aria-label="Hear it" style="display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 12px;border-radius:999px;font-weight:800;color:var(--accent);vertical-align:middle">${iconSVG('volume', 15)} hear it</button></p>
         <div style="display:flex;justify-content:center;gap:6px;margin-bottom:14px">${cells}</div>
         <div style="display:flex;justify-content:center;gap:9px;flex-wrap:wrap">
         ${it.tiles.map((t2, k) => `<button data-act="kitTile" data-arg="${k}" ${picked != null || buf.includes(k) ? 'disabled' : ''} class="kit-tile${buf.includes(k) ? ' used' : ''}">${esc(t2.t)}</button>`).join('')}</div>
-        ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="font-size:12px;font-weight:800;color:var(--muted)">↺ start over</button></div>` : ''}
-        ${picked != null ? (q2.right ? `<p style="margin-top:10px;font-weight:800;color:var(--good)">${S[1]}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '')}</div>`) : ''}</div>`;
+        ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 14px;border-radius:999px;font-size:12px;font-weight:800;color:var(--muted)">${iconSVG('retry', 14)} start over</button></div>` : ''}
+        ${picked != null ? (q2.right ? `<p style="margin-top:10px;font-weight:800;color:var(--good)">${noEmo(S[1])}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '')}</div>`) : ''}</div>`;
     }
     const S = KS.petal;
     const done2 = buf.map(j => it.pool[j].L).join('');
-    return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">${S[0]}</p>
-      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))} <button data-act="tqSay" style="font-weight:800;color:var(--accent)">🔊 hear it</button></p>
+    return `<div style="text-align:center"><p style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px">${noEmo(S[0])}</p>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px">${esc(maskTxt((it.d || '').slice(0, 110), it.w))} <button data-act="tqSay" aria-label="Hear it" style="display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 12px;border-radius:999px;font-weight:800;color:var(--accent);vertical-align:middle">${iconSVG('volume', 15)} hear it</button></p>
       <div style="min-height:30px;font-weight:800;font-size:19px;letter-spacing:.14em;margin-bottom:10px">${esc(done2)}<span style="opacity:.3">${'·'.repeat(Math.max(0, it.w.length - done2.length))}</span></div>
       <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
       ${it.pool.map((p, k) => `<button data-act="kitTile" data-arg="${k}" ${picked != null || buf.includes(k) ? 'disabled' : ''} class="kit-petal${buf.includes(k) ? ' used' : ''}" style="--kd:${((k * 37) % 10) / 6}s">${esc(p.L)}</button>`).join('')}</div>
-      ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="font-size:12px;font-weight:800;color:var(--muted)">↺ start over</button></div>` : ''}
-      ${picked != null ? (q2.right ? `<p style="margin-top:10px;font-weight:800;color:var(--good)">${S[1]}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '', { head: esc(S[2]) + ' — here is the word, letter by letter' })}</div>`) : ''}</div>`;
+      ${buf.length && picked == null ? `<div style="margin-top:10px"><button data-act="kitReset" style="display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 14px;border-radius:999px;font-size:12px;font-weight:800;color:var(--muted)">${iconSVG('retry', 14)} start over</button></div>` : ''}
+      ${picked != null ? (q2.right ? `<p style="margin-top:10px;font-weight:800;color:var(--good)">${noEmo(S[1])}</p>` : `<div style="margin-top:10px">${missFeedbackHTML(it.w, q2.tryTyped || '', { head: esc(noEmo(S[2])) + ' — here is the word, letter by letter' })}</div>`) : ''}</div>`;
   }
 
   /* ---- hidden caches ----
@@ -2439,7 +2530,7 @@
     /* The message names WHAT you found and where you are, not "cache found" — the whole
        point of nine painted regions is that they are different places. */
     const k = treKit(act);
-    flash(k.g + ' ' + k.n[0].toUpperCase() + k.n.slice(1) + ' — ' + k.l);
+    flash(k.n[0].toUpperCase() + k.n.slice(1) + ' — ' + k.l);
     const kinds = ['game', 'lore', 'trivia'];
     const kind = kinds[i % kinds.length];   /* which cache holds what is fixed, never a roll */
     const g = { kind, act, game: TRE_GAME[act] || 'honeycombRun' };
@@ -2470,7 +2561,8 @@
     else render(); };
   app2.treTrivAns = i => { const g = state.treG; if (!g || !g.q || g.q.picked != null) return;
     g.q.picked = +i;
-    if (g.q.opts[+i] && g.q.opts[+i].ok) { addCoins('answer'); try { sfx('win'); burstConfetti(50); } catch (e) {} }
+    /* the card says what the wallet got (it used to promise "+10 coins" for an `answer` coin of 1) */
+    if (g.q.opts[+i] && g.q.opts[+i].ok) { g.q.paid = addCoins('answer') || 0; try { sfx('win'); burstConfetti(50); } catch (e) {} }
     else { try { sfx('wrong'); } catch (e) {} }
     render(); };
   function treGiftCard() {
@@ -2482,24 +2574,24 @@
     const shell = inner => `<div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:rgba(20,12,30,.5)" data-act="treClose">
       <div data-act="popKeep" style="box-sizing:border-box;width:min(430px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);animation:sb-rise .3s ease both">
         ${inner}
-        <button data-act="treClose" style="position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:8px;background:var(--surface2);color:var(--muted);font-weight:800">✕</button>
+        <button data-act="treClose" aria-label="Close" style="position:absolute;top:6px;right:6px;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);color:var(--muted);font-weight:800">${iconSVG('close', 18)}</button>
       </div></div>`;
-    if (g.kind === 'game') return shell(`<div style="font-size:40px">🗝️</div>
+    if (g.kind === 'game') return shell(`<div style="display:grid;place-items:center;color:var(--treasure-deep,#8A5B00)">${cacheG(treKit(g.act).g, 40)}</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 4px">The chest hides a game!</h3>
       <p style="font-size:13px;color:var(--muted);margin:0 0 14px">A round of <b>${esc(GAME_NAME[g.game] || 'the arcade')}</b> — this region's own game.</p>
-      <button data-act="treGame" style="padding:13px 22px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">🕹️ Play it →</button>
+      <button data-act="treGame" style="padding:13px 22px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge);display:inline-flex;align-items:center;gap:7px">${iconSVG('joystick', 17)} Play it →</button>
       <button data-act="treClose" style="margin-left:8px;padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Later</button>`);
-    if (g.kind === 'lore') return shell(`<div style="font-size:40px">📜</div>
+    if (g.kind === 'lore') return shell(`<div style="display:grid;place-items:center;color:var(--treasure-deep,#8A5B00)">${cacheG(treKit(g.act).g, 40)}</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 4px">An old page from the Library!</h3>
       <p style="font-size:13px;color:var(--muted);margin:0 0 14px">It tells the story this region teaches — read it where it lives.</p>
-      <button data-act="treLore" style="padding:13px 22px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge)">📖 Read the chapter →</button>
+      <button data-act="treLore" style="padding:13px 22px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14.5px;box-shadow:var(--edge);display:inline-flex;align-items:center;gap:7px">${iconSVG('book', 17)} Read the chapter →</button>
       <button data-act="treClose" style="margin-left:8px;padding:13px 18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:14px">Later</button>`);
     // trivia
-    if (!g.q) return shell(`<div style="font-size:40px">❓</div>
+    if (!g.q) return shell(`<div style="display:grid;place-items:center;color:var(--accent)">${iconSVG('help', 40)}</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:19px;margin:8px 0 4px">The chest holds a riddle…</h3>
       <p style="font-size:13px;color:var(--muted)">unrolling the scroll…</p>`);
     const done = g.q.picked != null;
-    return shell(`<div style="font-size:40px">❓</div>
+    return shell(`<div style="display:grid;place-items:center;color:var(--accent)">${iconSVG('help', 40)}</div>
       <h3 style="font-family:var(--display);font-weight:800;font-size:17px;margin:8px 0 12px;line-height:1.35">${esc(g.q.q)}</h3>
       <div style="display:grid;gap:8px">${g.q.opts.map((o, ix) => {
         const st = !done ? 'background:var(--surface2);border:1px solid var(--line)'
@@ -2507,7 +2599,7 @@
           : ix === g.q.picked ? 'background:var(--bad);color:#fff' : 'background:var(--surface2);border:1px solid var(--line);opacity:.6';
         return `<button data-act="treTrivAns" data-arg="${ix}" ${done ? 'disabled' : ''} style="padding:11px 14px;border-radius:12px;font-weight:700;font-size:13.5px;text-align:left;${st}">${esc(o.c)}</button>`;
       }).join('')}</div>
-      ${done ? `<p style="font-size:12.5px;color:var(--muted);margin:12px 0 0;line-height:1.5">${g.q.opts[g.q.picked].ok ? '🎉 +10 coins! ' : ''}${esc(g.q.f)}</p>
+      ${done ? `<p style="font-size:12.5px;color:var(--muted);margin:12px 0 0;line-height:1.5">${g.q.opts[g.q.picked].ok ? (g.q.paid ? 'Right! +' + g.q.paid + ' coin' + (g.q.paid === 1 ? '' : 's') + '. ' : 'Right! ') : ''}${esc(g.q.f)}</p>
         <button data-act="treClose" style="margin-top:12px;padding:12px 20px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:14px">Back to the map</button>` : ''}`);
   }
 
@@ -2635,7 +2727,7 @@
   } catch (e) { flash('Music is still tuning up — one moment'); } render(); };
   function musicPill() {
     let on = false; try { on = !!(window.SB_W4_MUSIC && SB_W4_MUSIC.on()); } catch (e) {}
-    return `<button data-act="atlasMusic" title="World music" aria-label="World music ${on ? 'off' : 'on'}" style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:${on ? 'var(--accent)' : 'var(--surface2)'};border:1px solid ${on ? 'var(--accent)' : 'var(--line)'};font-size:15px">${on ? '🎵' : '🔇'}</button>`;
+    return `<button data-act="atlasMusic" title="World music" aria-label="World music ${on ? 'off' : 'on'}" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:${on ? '#fff' : 'var(--text)'};background:${on ? 'var(--accent)' : 'var(--surface2)'};border:1px solid ${on ? 'var(--accent)' : 'var(--line)'};font-size:15px">${iconSVG(on ? 'music' : 'mute', 20)}</button>`;
   }
 
   /* One cache marker: a shut chest you cannot reach yet reads as a faint
@@ -2649,22 +2741,22 @@
      A region with no entry falls back to the chest: a wrong object is worse than a plain
      one. Keys are act ids (see ACT_MAP). */
   const TRE_KIT = {
-    meadow:   { g:'✿', n:'a wild honeycomb',      l:'Tucked in the clover — still warm.' },
-    library:  { g:'❦', n:'a pressed bookmark',    l:'Someone left their place in a very old book.' },
-    forum:    { g:'⚱', n:'a buried amphora',      l:'Roman clay, Roman coins — sealed since the Forum stood.' },
-    storm:    { g:'⚡', n:'a bottled charge',      l:'Caught mid-strike and corked. It still hums.' },
-    roots:    { g:'❉', n:'a seed vault',          l:'Every word here grew from something older.' },
-    strait:   { g:'⚓', n:'a message in a bottle', l:'Carried across on the current, sealed with wax.' },
-    junkyard: { g:'⚙', n:'a tinker\'s tin',       l:'Odds, ends and a handful of coins nobody missed.' },
-    sprints:  { g:'✦', n:'a runner\'s cache',      l:'Left at the trackside for whoever gets here next.' },
-    stage:    { g:'★', n:'a dressing-room box',   l:'Left behind after the last curtain call.' },
-    greysea:  { g:'⚓', n:'a salvage crate',       l:'Hauled up from the grey water.' },
-    liars:    { g:'❋', n:'a conjurer\'s purse',    l:'It was empty a moment ago. Probably.' },
-    farflung: { g:'☼', n:'a traveller\'s pouch',   l:'Coins from four countries and none of them here.' },
-    factory:  { g:'⚙', n:'a spare-parts drawer',  l:'Stamped, sorted and forgotten.' },
-    proving:  { g:'✦', n:'an examiner\'s tin',     l:'Left for whoever passes this way.' },
+    meadow:   { g:'comb', n:'a wild honeycomb',      l:'Tucked in the clover — still warm.' },
+    library:  { g:'bookmark', n:'a pressed bookmark',    l:'Someone left their place in a very old book.' },
+    forum:    { g:'amphora', n:'a buried amphora',      l:'Roman clay, Roman coins — sealed since the Forum stood.' },
+    storm:    { g:'bolt', n:'a bottled charge',      l:'Caught mid-strike and corked. It still hums.' },
+    roots:    { g:'seed', n:'a seed vault',          l:'Every word here grew from something older.' },
+    strait:   { g:'anchor', n:'a message in a bottle', l:'Carried across on the current, sealed with wax.' },
+    junkyard: { g:'gear', n:'a tinker\'s tin',       l:'Odds, ends and a handful of coins nobody missed.' },
+    sprints:  { g:'spark', n:'a runner\'s cache',      l:'Left at the trackside for whoever gets here next.' },
+    stage:    { g:'star', n:'a dressing-room box',   l:'Left behind after the last curtain call.' },
+    greysea:  { g:'anchor', n:'a salvage crate',       l:'Hauled up from the grey water.' },
+    liars:    { g:'pouch', n:'a conjurer\'s purse',    l:'It was empty a moment ago. Probably.' },
+    farflung: { g:'sun', n:'a traveller\'s pouch',   l:'Coins from four countries and none of them here.' },
+    factory:  { g:'gear', n:'a spare-parts drawer',  l:'Stamped, sorted and forgotten.' },
+    proving:  { g:'spark', n:'an examiner\'s tin',     l:'Left for whoever passes this way.' },
   };
-  const treKit = (actId) => TRE_KIT[String(actId||'').replace(/^map-/,'')] || { g:'✦', n:'a cache', l:'Someone left this for whoever came next.' };
+  const treKit = (actId) => TRE_KIT[String(actId||'').replace(/^map-/,'')] || { g:'spark', n:'a cache', l:'Someone left this for whoever came next.' };
   function treMark(c, actId, i, x, y, cleared, n) {
     const open = treGot(c, actId, i), ready = cleared >= treGate(n, i);
     const kit = treKit(actId);
@@ -2672,7 +2764,7 @@
     return `<button class="atlas-tre ${open ? 'got' : 'ready'}" data-act="${open ? '' : 'trailTre'}" data-arg="${escA(actId + ':' + i)}"
       style="left:${x}%;top:${y}%" title="${open ? kit.n[0].toUpperCase() + kit.n.slice(1) + ' — found' : 'You spot ' + kit.n + '. Tap to open it'}"
       aria-label="${open ? 'Already found: ' + kit.n : 'Open ' + kit.n}">
-      <span>${open ? '⌣' : kit.g}</span></button>`;
+      <span data-glyph="${open ? 'found' : escA(kit.g)}" style="display:grid;place-items:center">${cacheG(open ? 'found' : kit.g, 15)}</span></button>`;
   }
   /* If the board grew past its container, centre the stop the card is showing. */
   function panTo(sel, pts) {
@@ -2813,7 +2905,7 @@
       /* the child's OWN avatar walks the Living Meadow; other acts keep the guide */
       const rider = kind === 'now' && window.SB_AVATAR
         ? `<span class="atlas-rider">${SB_AVATAR(isMW ? (c.avatar || 'bizzy') : guide, 34, { dark: true })}</span>` : '';
-      const bloom = isMW && i === bloomI ? '<span class="mw-bloom" title="Today’s bloom stop">🌸</span>' : '';
+      const bloom = isMW && i === bloomI ? `<span class="mw-bloom" title="Today’s bloom stop">${MARK.bloom(20)}</span>` : '';
       const spur = isMW && LV.pairPos && LV.pairPos[i] && kind !== 'done' ? `<span class="mw-spurtag">${esc(LV.pairPos[i].tag)}</span>` : '';
       return `<button class="atlas-stop${kind === 'now' ? ' now' : ''}${on ? ' on' : ''}${node.kind === 'chk' ? ' chk' : ''}"
           data-act="trailPick" data-arg="${nodes[i].i}" style="left:${p.x.toFixed(2)}%;top:${p.y.toFixed(2)}%;--pz:${on ? 5 : kind === 'now' ? 4 : 3}"
@@ -2878,7 +2970,7 @@
             <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap">Stop ${sel + 1} of ${n}${node.kind === 'chk' ? ' · checkpoint' + (score ? ' · ' + score + '%' : '') : ''}${uStars ? ' ' + starHTML(uStars.n, 12) : ''}</div>
             <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.15;margin-top:3px">${esc(title)}</div>
             ${sub ? `<div style="font-size:13px;color:var(--muted);line-height:1.45;margin-top:4px">${esc(sub)}</div>` : ''}
-            ${uNext ? `<div style="font-size:12.5px;font-weight:700;line-height:1.45;margin-top:6px;color:var(--text)">👉 ${esc(uNext.txt)}</div>`
+            ${uNext ? `<div style="font-size:12.5px;font-weight:700;line-height:1.45;margin-top:6px;color:var(--text)"><span style="display:inline-block;vertical-align:-3px">${iconSVG('arrow', 14)}</span> ${esc(uNext.txt)}</div>`
               : (uStars && uStars.n >= 5) ? `<div style="font-size:12.5px;font-weight:800;margin-top:6px;color:var(--good)">Completely yours — five stars.</div>` : ''}
           </div>
         </div>
@@ -2886,7 +2978,7 @@
           ${locked
             ? `<span style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--surface2);color:var(--muted);font-weight:800;font-size:14px">${iconSVG('lock', 15)} Clear the earlier stops first</span>`
             : `${(u && uStars && uStars.s[0]) ? `<button data-act="trailNextFrom" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);background:var(--action,var(--accent));color:var(--action-ink,#fff);font-weight:800;font-size:14px;box-shadow:var(--edge)">Next stop →</button>` : ''}
-              <button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);${(u && uStars && uStars.s[0]) ? 'background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text))' : 'background:var(--action,var(--accent));color:var(--action-ink,#fff);box-shadow:var(--edge)'};font-weight:800;font-size:14px">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${node.kind === 'chk' ? (score ? 'Walk it again' : 'Take the checkpoint') : (uStars && uStars.n >= 5 ? 'Walk it again' : uStars && uStars.n > 0 ? '★ Gain stars' : 'Learn this stop')}</button>`}
+              <button data-act="${goAct}" data-arg="${escA(goArg)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--r-md,10px);${(u && uStars && uStars.s[0]) ? 'background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text))' : 'background:var(--action,var(--accent));color:var(--action-ink,#fff);box-shadow:var(--edge)'};font-weight:800;font-size:14px">${iconSVG(node.kind === 'chk' ? 'target' : 'steps', 15)} ${node.kind === 'chk' ? (score ? 'Walk it again' : 'Take the checkpoint') : (uStars && uStars.n >= 5 ? 'Walk it again' : uStars && uStars.n > 0 ? inIc('star', 14) + 'Gain stars' : 'Learn this stop')}</button>`}
           ${(!locked && u) ? `<button data-act="trailTrain" data-arg="${escA(u.id)}" style="display:inline-flex;align-items:center;gap:7px;padding:11px 16px;border-radius:var(--r-md,10px);background:var(--paper,var(--bg2));border:1px solid var(--line);color:var(--ink,var(--text));font-weight:800;font-size:13.5px">${iconSVG('pencil', 15)} Train these words</button>` : ''}
         </div>
       </div></div>`;

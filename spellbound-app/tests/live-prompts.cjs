@@ -12,6 +12,16 @@
      5. the Ladder (Word Lore, was Bizzillionaire) says its question; the daily game says its message and its "N letters, please."
         (REWRITTEN 4 Oct 2026: Daily Bee replaced Daily Buzz — games spec §5.2. Its prompt names the
         length of the day's word, never the word, and it loads lazily, so the check waits on its board.)
+     6. (road to 4.5, P3.12) Word Forge, which draws into its own host between renders, hands its count and what to do to
+        the one region — never the word — and a render of the app does not say it a second time;
+     7. (P3.12) the Mock Spelling Bee says whose turn it is and what to do — "Your turn, <name>. Listen, then spell the
+        word." — never the word;
+     8. (P3.12) a canvas game carries an accessible description of play: the Grand Prix's and Honeycomb Run's canvases are
+        images with a label that says what is on them and how to play (keys AND buttons); Type Blaster's field, drawn in
+        the page, is a labelled group.
+   Proved by breaking (13 Oct 2026, all four at once, then put back): the forge's count line without its prompt, 'forge'
+   out of render's live condition, the bee's turn line without its prompt, the race canvas without its role and label —
+   4 fail (6's prompt, 6's "not a second time", 7, 8 for the Grand Prix), nothing else.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/live-prompts.cjs                     */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -83,6 +93,49 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   const d2 = await said();
   ok(dn > 0 && d1 === dn + ' letters. Listen, then type your first try.' && d2 === dn + ' letters, please.' && dw && !new RegExp('\\b' + dw + '\\b', 'i').test(d1 + ' ' + d2),
     `Daily Bee says its message, and its "${dn} letters, please." — never the word (${d1} / ${d2})`);
+  /* 6 — P3.12: Word Forge draws into its own host between renders; its count and what to do reach the one region, never
+     the word, and a full render of the app does not say it a second time */
+  await pg.evaluate(() => { state.tester = true; app.openForge(); });
+  await pg.waitForFunction(() => window.SB_FORGE_UI && state.nav === 'forge' && !!document.querySelector('#fg-host .fg-count, #fg-host .fg-howto'), null, { timeout: 60000 }).catch(() => {});
+  await pg.evaluate(() => { SB_FORGE_UI.start('medium'); SB_FORGE_UI.begin(); });
+  await pg.waitForFunction(() => SB_FORGE_UI.state().phase === 'forge' && /Word 1 of/.test((document.getElementById('sb-live') || {}).textContent || ''), null, { timeout: 8000 }).catch(() => {});
+  const fg = await pg.evaluate(() => ({ said: (document.getElementById('sb-live') || {}).textContent || '', w: (SB_FORGE_UI.cur() || {}).w || '' }));
+  ok(/Word 1 of \d+\. Listen, then build the word from its parts/.test(fg.said) && fg.w && !new RegExp('\\b' + fg.w + '\\b', 'i').test(fg.said),
+    `Word Forge says which word and what to do, never the word ("${fg.said.slice(0, 90)}")`);
+  await pg.evaluate(() => { document.getElementById('sb-live').textContent = ''; render(); }); await pg.waitForTimeout(300);
+  await pg.evaluate(() => render()); await pg.waitForTimeout(300);   // twice: the forge re-mounts on every render
+  const fgAgain = await said();
+  ok(fgAgain === '', `a render of the app does not say the forge's prompt a second time ("${fgAgain.slice(0, 50)}")`);
+  await pg.evaluate(() => { state.tester = false; app.openGames(); }); await pg.waitForTimeout(300);
+
+  /* 7 — P3.12: the Mock Spelling Bee says whose turn it is and what to do — never the word on the child's turn */
+  await pg.evaluate(() => app.mbOpen());
+  await pg.waitForFunction(() => state.nav === 'mockbee' && state.mb && state.mb.view === 'lobby', null, { timeout: 60000 }).catch(() => {});
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need(['sents', 'sounds', 'coachRules'], r)));
+  await pg.evaluate(() => app.mbStart());
+  await pg.waitForFunction(() => state.mb && state.mb.phase === 'call', null, { timeout: 30000 }).catch(() => {});
+  await pg.evaluate(() => { const m = state.mb; m.turn = m.roster.findIndex(s => s.kind === 'me'); });
+  await pg.waitForFunction(() => state.mb && state.mb.phase === 'me', null, { timeout: 30000 }).catch(() => {});
+  await pg.waitForTimeout(300);
+  const mbs = await pg.evaluate(() => ({ said: (document.getElementById('sb-live') || {}).textContent || '', w: (state.mb && state.mb.word && state.mb.word.w) || '' }));
+  ok(/^Your turn, Ahana\. Listen, then spell the word\.$/.test(mbs.said) && mbs.w && !new RegExp('\\b' + mbs.w + '\\b', 'i').test(mbs.said),
+    `the Mock Spelling Bee says whose turn it is and what to do, never the word ("${mbs.said}")`);
+  await pg.evaluate(() => { try { app.mbQuit ? app.mbQuit() : null; } catch (e) {} app.openGames(); }); await pg.waitForTimeout(300);
+
+  /* 8 — P3.12: a canvas game carries an accessible description of play: the canvas is an image with a label that says what
+     is on it and how to play it (keys AND buttons); Type Blaster's field, which is drawn in the page, is labelled the same way */
+  const cv = [];
+  for (const k of ['beeGrandPrix', 'honeycombRun', 'typeBlaster']) {
+    await pg.evaluate(g => { try { arcadeClose(); } catch (e) {} app.arcadePlay(g, { fromMenu: true }); }, k);
+    await pg.waitForFunction(() => !!document.querySelector('#arc-host canvas, #arc-host #tb-scene'), null, { timeout: 15000 }).catch(() => {});
+    await pg.waitForTimeout(400);
+    const r = await pg.evaluate(() => [...document.querySelectorAll('#arc-host canvas, #arc-host #tb-scene')].map(e => ({ tag: e.tagName.toLowerCase(), role: e.getAttribute('role') || '', label: e.getAttribute('aria-label') || '' })));
+    cv.push(k + ': ' + JSON.stringify(r));
+    ok(r.length && r.every(x => (x.tag === 'canvas' ? x.role === 'img' : !!x.role) && x.label.length >= 40 && /(arrow|key|type)/i.test(x.label) && /(button|tap)/i.test(x.label)),
+      `${k}: its play area says what is on it and how to play it, keys and buttons (${JSON.stringify(r).slice(0, 160)})`);
+  }
+  await pg.evaluate(() => { try { arcadeClose(); } catch (e) {} }); await pg.waitForTimeout(200);
+
   const tiny = await pg.evaluate(() => [...document.querySelectorAll('.sb-sr')].every(e => { const r = e.getBoundingClientRect(); return r.width <= 1 && r.height <= 1; }));
   ok(tiny, 'every spoken-only line is visually hidden');
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

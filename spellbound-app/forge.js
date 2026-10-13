@@ -42,6 +42,10 @@
   function em(t) { return esc(t).replace(/\*([^*]+)\*/g, '<b>$1</b>'); }
   function fst(c) { c = c || kid() || {}; var f = c.forge = c.forge || {}; f.seen = f.seen || {}; f.codex = f.codex || {}; f.mastered = f.mastered || {}; f.met = f.met || {}; return f; }
   function snd(k) { try { if (typeof sfx === 'function') sfx(k); } catch (e) {} }
+  /* P3.15: the forge's own sting on a right word and when the round ends (SGUI.ding / SGUI.fanfare; the plain tones when
+     stings are off) — the same for every right word, never for a run */
+  function ding(ok) { if (window.SGUI && SGUI.ding) SGUI.ding('forge', ok); else snd(ok ? 'correct' : 'wrong'); }
+  function fanfare(good) { if (window.SGUI && SGUI.fanfare) SGUI.fanfare('forge', good); else snd(good ? 'win' : 'level'); }
   function persist() { try { if (typeof save === 'function') save(); } catch (e) {} }
   function sayW(w) { try { if (typeof say === 'function') say(w); } catch (e) {} }
   function mask(d, w) { try { return typeof maskTxt === 'function' ? maskTxt(d, w) : d; } catch (e) { return d; } }
@@ -140,7 +144,7 @@
     var res = C.grade(r, G.slots);
     if (res.ok) {
       G.firstForge = G.tries === 1 && !G.hinted;
-      G.phase = 'fused'; G.fx = 'fuse'; snd('correct'); draw();
+      G.phase = 'fused'; G.fx = 'fuse'; ding(true); draw();
       setTimeout(function () { if (!G || cur() !== r || G.phase !== 'fused') return;
         if (G.lv === 'hard') { G.phase = 'type'; G.fx = null; G.typed = ''; draw(); focusType(); return; }
         resolve(G.firstForge, true);
@@ -179,7 +183,7 @@
     var r = cur(), t = (G.typed || '').trim().toLowerCase(); if (!t) return;
     if (t === r.w) {
       record(r);
-      if (G.lv === 'champ') { G.phase = 'mark'; G.cuts = {}; G.caret = 1; G.msg = { kind: 'info', text: 'Right! Now mark where the parts join — tap between letters (or ← → and Space), then Check.' }; snd('correct'); draw(); return; }
+      if (G.lv === 'champ') { G.phase = 'mark'; G.cuts = {}; G.caret = 1; G.msg = { kind: 'info', text: 'Right! Now mark where the parts join — tap between letters (or ← → and Space), then Check.' }; ding(true); draw(); return; }
       resolve(G.firstForge, true);
       return;
     }
@@ -231,7 +235,7 @@
     var owed = CORE().roundPay(G.lv, G.right, G.words.length);
     for (var k = 0; k < owed; k++) { try { if (typeof payG === 'function') G.paid += payG(G) || 0; } catch (e) {} }
     G.after = after(pct);
-    G.phase = 'result'; persist(); snd(pct >= 0.5 ? 'win' : 'level'); draw();
+    G.phase = 'result'; G.doneAt = Date.now(); persist(); fanfare(pct >= 0.5); draw();
   }
 
   /* ------------------------------------------------------------------ the Codex (mastery) */
@@ -306,7 +310,7 @@
     var showWord = fused && G.lv !== 'hard' || (G.phase === 'done');
     var j = C.join(r.parts, r.kinds);
     var slots = G.phase === 'type' || G.phase === 'mark' || G.phase === 'markwrong' ? '' : '<div class="fg-slots n' + r.parts.length + (fused ? ' fused' : '') + '">' + G.slots.map(function (s, k) { return slotHTML(G.phase === 'done' ? { s: r.parts[k], m: r.partMeanings[k], k: r.kinds[k] } : s, k, r); }).join('') + '</div>';
-    var beat = (fused || G.phase === 'done') ? '<div class="fg-fuse" aria-live="polite">' +
+    var beat = (fused || G.phase === 'done') ? '<div class="fg-fuse" data-live-prompt>' +
       (showWord ? '<div class="fg-word">' + esc(r.w) + '</div>' : '') +
       '<div class="fg-combine">' + esc(r.partMeanings.join(' + ')) + (showWord ? ' = <b>' + esc(r.w) + '</b>' : '') + '</div>' +
       (j.changes.length ? '<div class="fg-change">' + j.changes.map(function (c) { return esc(C.changeNote(c)); }).join(' · ') + '</div>' : '') + '</div>' : '';
@@ -329,9 +333,9 @@
     return '<div class="fg-mark" role="group" aria-label="Mark the parts">' + out + '</div>' + right;
   }
   function msgHTML() {
-    if (!G || !G.msg) return '<div class="fg-msg" aria-live="polite"></div>';
+    if (!G || !G.msg) return '<div class="fg-msg"></div>';
     var m = G.msg;
-    return '<div class="fg-msg ' + m.kind + '" aria-live="polite">' + (m.list ? m.list.map(function (t) { return '<div class="fg-why">' + em(t) + '</div>'; }).join('') : em(m.text)) + '</div>';
+    return '<div class="fg-msg ' + m.kind + '" data-live-prompt>' + (m.list ? m.list.map(function (t) { return '<div class="fg-why">' + em(t) + '</div>'; }).join('') : em(m.text)) + '</div>';
   }
   function playHTML() {
     if (!G || G.phase === 'empty') return '<div class="fg-card"><div class="fg-h">The forge is cold</div><p>No words are ready for this level yet.</p></div>';
@@ -347,7 +351,7 @@
       var res = window.SGUI && SGUI.result ? SGUI.result({ title: pct >= 0.5 ? 'Well forged' : 'Keep the fire going', sub: (G.after && G.after.dropped ? 'Let\'s warm up on ' + LVN[G.after.level] + '. You can move back up any time.' : (G.lv === 'easy' ? 'Easy is practice — coins start at Medium.' : G.lv === 'medium' && pct < 0.5 ? 'Forge half the words first time to earn the round\'s coins.' : '')), stars: pct >= 0.875 ? 3 : pct >= 0.6 ? 2 : pct >= 0.4 ? 1 : 0, score: G.right, scoreLabel: 'of ' + G.words.length + ' forged first time', words: G.log, contLabel: 'Done' }) :
         '<div class="fg-card"><div class="fg-h">' + G.right + ' of ' + G.words.length + ' forged first time</div><div class="fg-row"><button id="sg-again" class="fg-btn">Play again</button><button id="sg-cont" class="fg-btn go">Done</button></div></div>';
       var mast = (G.newMastery || []).length ? '<div class="fg-mastery">Root mastered: ' + G.newMastery.map(esc).join(', ') + '</div>' : '';
-      return '<div class="fg-result">' + res + mast + '<div class="fg-row"><button type="button" class="fg-btn" data-fg="codex">Codex</button></div></div>';
+      return '<div class="fg-result' + (G.doneAt && Date.now() - G.doneAt < 900 ? ' sg-fx-done' : '') + '" data-live-prompt="' + esc((pct >= 0.5 ? 'Well forged' : 'Keep the fire going') + '. ' + G.right + ' of ' + G.words.length + ' forged first time.') + '">' + res + mast + '<div class="fg-row"><button type="button" class="fg-btn" data-fg="codex">Codex</button></div></div>';
     }
     var r = cur();
     var body = '';
@@ -360,7 +364,12 @@
       '<div class="fg-miss-parts">' + r.parts.map(function (p, k) { return '<span class="fg-mp ' + r.kinds[k] + '"><b>' + esc(p) + '</b><i>' + esc(r.partMeanings[k]) + '</i></span>'; }).join('<em>+</em>') + '</div>' +
       '<div class="fg-why">' + em(G.missNote || '') + '</div><div class="fg-row"><button type="button" class="fg-btn go" data-fg="cont">Continue</button></div></div>' : '';
     var inAnvil = G.phase === 'forge' && G.msg;
-    return '<div class="fg-count">Word ' + (G.i + 1) + ' of ' + G.words.length + ' · ' + LVN[G.lv] + '</div>' + body + (inAnvil ? '' : msgHTML()) + rack + miss;
+    /* P3.12: what to do now goes to the one live region (#sb-live) with the count — never the word; the meaning line
+       beside it is masked and says itself (data-live-prompt) */
+    var task = G.phase === 'type' ? (G.lv === 'hard' ? 'Now spell it from memory.' : 'Spell the word you hear.')
+      : G.phase === 'mark' ? 'Mark where the parts join, then check the parts.'
+      : G.phase === 'forge' ? (G.lv === 'champ' ? 'Spell the word you hear.' : G.lv === 'hard' ? 'The root is on the anvil. Choose the front and the end, then Forge.' : 'Listen, then build the word from its parts: drag them onto the anvil, or press their numbers, then Forge.') : '';
+    return '<div class="fg-count"' + (task ? ' data-live-prompt="' + esc('Word ' + (G.i + 1) + ' of ' + G.words.length + '. ' + task) + '"' : '') + '>Word ' + (G.i + 1) + ' of ' + G.words.length + ' · ' + LVN[G.lv] + '</div>' + body + (inAnvil ? '' : msgHTML()) + rack + miss;
   }
   function controlsHTML() {
     var p = G && G.phase;
@@ -416,6 +425,8 @@
       if (wasType || G.phase === 'type') focusType();
     }
     size();
+    /* P3.12: the forge draws into its own host between renders, so it hands its prompt to the one live region itself */
+    try { if (window.SB_LIVE && SB_LIVE.scan) SB_LIVE.scan(host); } catch (e) {}
   }
   function drawType() { var inp = host && host.querySelector('#fg-type'); if (inp) inp.value = G.typed; else draw(); }
   function focusType() { setTimeout(function () { var i = host && host.querySelector('#fg-type'); if (i) { try { i.focus({ preventScroll: true }); var n = i.value.length; i.setSelectionRange(n, n); } catch (e) {} } }, 30); }

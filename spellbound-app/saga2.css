@@ -653,6 +653,26 @@ body:has(>.arc-play) .w4-bg,body:has(>.bz-play) .w4-bg{display:none}   /* its ow
 @media (prefers-reduced-motion:reduce){ .sb-stage,.sb-stage *{animation:none!important;transition:none!important} }
 :root[data-motion="off"] .sb-stage,:root[data-motion="off"] .sb-stage *{animation:none!important;transition:none!important}
 .sg-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* JUICE (road to 4.5, P3.14): ONE answer at a time — a question card turns in, a right pick pops, a miss gives one
+   calm shake, a finished round lifts in. Never a run: no meter, no count, nothing that grows with answers in a row.
+   A game puts a class on only in the render straight after the moment (so a redraw never replays it), and both
+   Reduce motion settings take every one of them away (the .sb-stage rules above, and these for off-stage hosts). */
+@keyframes sg-fx-in{from{opacity:.2;transform:perspective(900px) rotateX(-16deg) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes sg-fx-pop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes sg-fx-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}45%{transform:translateX(4px)}70%{transform:translateX(-2px)}}
+@keyframes sg-fx-done{0%{transform:scale(.94);opacity:.3}65%{transform:scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.sg-fx-in{animation:sg-fx-in .34s cubic-bezier(.2,.8,.2,1) both;transform-origin:50% 0}
+.sg-fx-pop{animation:sg-fx-pop .36s ease-out both}
+.sg-fx-shake{animation:sg-fx-shake .4s ease-in-out both}
+.sg-fx-done{animation:sg-fx-done .5s cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion:reduce){.sg-fx-in,.sg-fx-pop,.sg-fx-shake,.sg-fx-done{animation:none!important}}
+:root[data-motion="off"] .sg-fx-in,:root[data-motion="off"] .sg-fx-pop,:root[data-motion="off"] .sg-fx-shake,:root[data-motion="off"] .sg-fx-done{animation:none!important}
+/* P3.8: a screen the child asked for fades in (app3 _screenTop). Opacity only — a transform here would become the
+   containing block of the kit's fixed stage and move it */
+@keyframes sb-enter{from{opacity:.5}to{opacity:1}}
+.sb-content.sb-enter{animation:sb-enter .16s ease-out}
+@media (prefers-reduced-motion:reduce){.sb-content.sb-enter{animation:none!important}}
+:root[data-motion="off"] .sb-content.sb-enter{animation:none!important}
 
 /* THE HUB: a symmetric grid of mode tiles — three across, two on a phone, a short row centred */
 .sg-hub .sg-st-play{place-items:stretch}
