@@ -995,9 +995,9 @@ function shelfCover(name, meta, blurb, act, arg, badge){
   const f=CONCEPT_FAM[name]||CONCEPT_FAM.Advanced;
   const locked=!!badge;
   return `<button class="sb-cover-card" data-act="${locked&&!/plan/.test(badge)?'openAdvanced':act}" ${arg?`data-arg="${escA(arg)}"`:''} style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
-    <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;${famCoverBG(name)}">
+    <div style="position:relative;height:94px;display:flex;align-items:center;justify-content:center;padding:12px 14px;overflow:hidden;${famCoverBG(name)}">${act==='openJourneys'?unitCoverArt(5):''}
       <span style="position:absolute;top:9px;left:11px;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.28);color:#fff">Also here</span>
-      <span style="font-family:var(--display);font-weight:800;font-size:23px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);text-align:center;line-height:1.05">${esc(name)}</span>
+      <span style="position:relative;font-family:var(--display);font-weight:800;font-size:23px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.45);text-align:center;line-height:1.05">${esc(name)}</span>
       ${badge?`<span style="position:absolute;bottom:9px;right:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:rgba(10,6,26,.5);color:#fff;font-weight:800;font-size:11px">${iconSVG('lock',12,2.2)} ${esc(badge)}</span>`:''}
     </div>
     <div style="padding:13px 15px 14px;display:flex;flex-direction:column;flex:1">
@@ -1644,6 +1644,17 @@ const UNIT_PAL=[
   {c:'#E8458C',c2:'#CC2E72',tex:'dots'},    // 9 World Vocabulary
   {c:'#C8901B',c2:'#A8760E',tex:'rings'} ];
 const unitPal=(n)=>UNIT_PAL[((n||1)-1)%UNIT_PAL.length]||UNIT_PAL[0];
+/* THE JOURNEY COVERS ARE PAINTED (road to 4.5, P3.5 — the audit's "Journeys cards grey blocks": a new child's shelf is
+   nearly all locked tales, and a locked cover was the chapter's textured gradient at grayscale(.75)). Each of the ten
+   chapters wears a painting of its era from the app's own world banners (app-art/w-<world>-r<2|3>.webp, the strips the
+   Word Atlas and the printed books share, 880x244 — wider than any cover draws), the hero word set over it in type; a
+   locked tale is the same painting, quieter, with its plan lock under it. Ten chapters, ten different paintings
+   (tests/p3-art.cjs). Chapter → painting: the dawn meadow, the Forum, the elements, the war camp, the strait, the
+   clockwork at night, the night stacks' thread, the gauges, the Grand Trunk Road, the stage. */
+const UNIT_ART=['meadow-r2','forum-r2','elements-r2','warfield-r2','strait-r2','engine-r3','library-r3','engine-r2','grandtrunk-r2','stage-r2'];
+const unitArt=(n)=>UNIT_ART[((n||1)-1)%UNIT_ART.length];
+function unitCoverArt(n, lk){ return `<img src="app-art/w-${unitArt(n)}.webp" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;${lk?'filter:saturate(.45) brightness(.86)':''}">
+    <span aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,9,32,.30) 0%,rgba(14,9,32,.12) 45%,rgba(14,9,32,.46) 100%)"></span>`; }
 function unitCoverBG(n){ const f=unitPal(n); const t=CONCEPT_TEX[f.tex]||CONCEPT_TEX.stripes;
   return `background-color:${f.c};background-image:${t[0]},linear-gradient(135deg,${f.c},${f.c2});background-size:${t[1]},100% 100%;background-position:center`; }
 const titleCase=(w)=> (w||'').charAt(0).toUpperCase()+(w||'').slice(1).toLowerCase();
@@ -1654,11 +1665,11 @@ function lessonCoverCard(L){
   const dn=lessonComplete(L); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''}; const f=unitPal(L.unit);
   const dc=DIFF_DOT[L.diff]||DIFF_DOT.medium; const hero=lessonHero(L); const nW=(L.words||[]).filter(x=>x&&x.w).length;
   const lk=!journeyOpen(L.n);   /* a tale not earned yet and not on the plan: a quiet plan lock, never a price */
-  const uname=capWords(u.title); const _dk=state.mode==='dusk'; const cover=`<div style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;padding:14px;overflow:hidden;${unitCoverBG(L.unit)}${lk?';filter:grayscale(.75);opacity:.78':''}">${SB_BACKDROP(state.theme,{dark:_dk})}
-    <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${_dk?'rgba(255,255,255,.14)':'rgba(255,255,255,.92)'};color:${_dk?'#fff':'#241E33'}">${esc(L.id)}</span>
+  const uname=capWords(u.title); const _dk=state.mode==='dusk'; const cover=`<div class="sb-jcover" data-unit-art="${unitArt(L.unit)}" style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;padding:14px;overflow:hidden;background:${f.c2}">${unitCoverArt(L.unit,lk)}
+    <span style="position:absolute;top:10px;left:12px;font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:${_dk?'rgba(20,12,40,.72)':'rgba(255,255,255,.92)'};color:${_dk?'#fff':'#241E33'}">${esc(L.id)}</span>
     <span style="position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
     ${dn?'<span style="position:absolute;bottom:9px;right:10px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
-    <div class="sb-theme-art" style="position:relative;text-align:center;animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:${_dk?'var(--action,#6C4FE0)':'#FFFFFF'};line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px">${esc(hero)}</div></div>
+    <div class="sb-theme-art" style="position:relative;text-align:center;animation-delay:${(L.n%9)*0.22}s"><div style="font-family:var(--display);color:#FFFFFF;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${heroFont(hero)}px;text-shadow:0 2px 10px rgba(10,6,24,.75),0 0 2px rgba(10,6,24,.6)">${esc(hero)}</div></div>
   </div>`;
   return `<button class="sb-cover-card" data-act="openLesson" data-arg="${L.n}" style="text-align:left;background:var(--bg2);border:0;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line),var(--sh-rest);display:flex;flex-direction:column">
     ${cover}
@@ -1673,11 +1684,11 @@ function lessonCoverCard(L){
 function lessonBigCard(L){ const dn=lessonComplete(L); const u=lessonUnits().find(x=>x.n===L.unit)||{title:''}; const f=unitPal(L.unit);
   const dc=DIFF_DOT[L.diff]||DIFF_DOT.medium; const hero=lessonHero(L); const nW=(L.words||[]).filter(x=>x&&x.w).length;
   return `<div style="background:var(--bg2);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--glow)">
-    <div style="position:relative;height:150px;display:flex;align-items:center;justify-content:center;padding:18px;${unitCoverBG(L.unit)}">
+    <div class="sb-jcover" data-unit-art="${unitArt(L.unit)}" style="position:relative;height:150px;display:flex;align-items:center;justify-content:center;padding:18px;overflow:hidden;background:${f.c2}">${unitCoverArt(L.unit,!journeyOpen(L.n))}
       <span style="position:absolute;top:14px;left:15px;font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.85)">${esc(L.id)} · Chapter ${L.unit}</span>
       <span style="position:absolute;top:15px;right:15px;width:11px;height:11px;border-radius:50%;background:${dc};box-shadow:0 0 0 3px rgba(255,255,255,.28)"></span>
       ${dn?'<span style="position:absolute;bottom:13px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.94);color:#1fa377;display:grid;place-items:center;font-weight:900;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.2)">✓</span>':''}
-      <div style="text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.18)"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${Math.min(48,heroFont(hero)+8)}px">${esc(hero)}</div></div>
+      <div style="position:relative;text-align:center;text-shadow:0 2px 10px rgba(10,6,24,.75),0 0 2px rgba(10,6,24,.6)"><div style="font-family:var(--display);color:#fff;line-height:1;letter-spacing:-.01em;font-style:italic;font-weight:700;font-size:${Math.min(48,heroFont(hero)+8)}px">${esc(hero)}</div></div>
     </div>
     <div style="padding:clamp(18px,4vw,24px)">
       <div style="font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:700;font-size:12px;color:${f.c};margin-bottom:6px">Chapter ${L.unit} · ${esc(capWords(u.title))}</div>

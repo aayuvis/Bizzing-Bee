@@ -21,6 +21,9 @@
    (1: check 4 names trail-data.js; read from resource timing it passed, the fetch still in flight — so it watches
    request starts now); SB_TRAIL_HOME not read by trail-home.js, i.e. the card waiting for the Atlas again (3: the
    card never painted, so neither did its pictures, and Home noted no plates).
+   P3.22 (13 Oct 2026): with NO note yet, the parse-time peek still preloads app-art/atlas-map.webp, the journey plate
+   the first screen always shows. Proved by breaking: that line taken out of index.html → 1 fails, and the failure says
+   why it matters — at the card's first paint the map was NOT there ("-app-art/atlas-map.webp").
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/home-first-paint.cjs                  */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -77,6 +80,11 @@ const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 's
   ok(Array.isArray(v1.hint) && v1.hint.length >= 3 && v1.hint.every(u => /^(avatars|app-art)\/[a-z0-9/._-]+\.(png|webp|jpe?g)$/i.test(u)) && v1.hint.includes('avatars/panda.webp'),
     'Home notes the pictures on its first screen — the avatar and the journey plates (' + JSON.stringify(v1.hint) + ')');
   ok(!v1.lazy.length, 'none of Home\'s first-screen pictures is loading="lazy"' + (v1.lazy.length ? ' — ' + v1.lazy.join(', ') : ''));
+  /* P3.22 (road to 4.5, "preload the journey plates the first screen shows"): a speller with no note yet — the audit's
+     desk-dusk first paint — still has the journey plate asked for at parse time, and it is on screen when the card is */
+  const map1 = (v1.fp.card || []).find((s) => /atlas-(map|adv)\.webp$/.test(s));
+  ok(v1.links.length === 1 && v1.links[0] === 'app-art/atlas-map.webp' && map1 && map1[0] === '+',
+    `with no note yet, the journey plate is preloaded with the scripts and is there when the card paints (${v1.links.join(', ') || 'nothing preloaded'}; ${map1 || 'no map'})`);
   ok(!v1.atlas.length && !v1.trail && !v1.trailJs && v1.fp.card, `the "You are here" card paints from the road at first paint — neither trail-data.js nor trail.js is asked for, through load and a second after (${v1.atlas.length ? 'asked: ' + v1.atlas.join(', ') : 'not asked'})`);
 
   /* ---- visit 2: the note is preloaded with the scripts ---- */

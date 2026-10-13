@@ -11,6 +11,10 @@
    head began at x=248 and the cards at x=336). tests/feed-screen.cjs measures it. */
 .sb-feedpage .bz-card { background: var(--paper, var(--bg2)); border: 1px solid var(--line); border-radius: var(--r-xl, 20px); box-shadow: var(--sh-rest); }
 .sb-feedpage .bz-btn { text-decoration: none; }
+/* THE KIND'S PAINTING (road to 4.5, P3.3/P3.4): the family card's own art slot, worn here as a 3:1 BAND, not the family
+   default 3:2 — twenty 3:2 pictures made a picture feed with words under it, and a spelling feed is words with a
+   picture over them (560 × 187 on a desk, 358 × 119 on a phone). The plates are cut at 720 × 240 to match. */
+.sb-feedpage .bzf-art { aspect-ratio: 3 / 1; object-position: center 45%; }
 .sb-feedpage .bz-btn.out { background: transparent; color: var(--text); }
 .sb-feedpage .bzf-opt.ok, .sb-feedpage .bzf-opt.no { color: var(--text); }
 .sb-feedpage .bzf-opt:disabled { cursor: default; opacity: 1; }

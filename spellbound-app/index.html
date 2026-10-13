@@ -3017,7 +3017,11 @@
 .sb-onb-hero{width:clamp(118px,33vw,158px);aspect-ratio:1;margin:0 auto;line-height:0}
 .sb-onb-hero>svg,.sb-onb-hero>img{width:100%;height:100%;display:block}
 .sb-onb-art{width:clamp(104px,28vw,132px);aspect-ratio:1;margin:0 auto clamp(6px,1.8vw,12px);line-height:0}
-.sb-onb-art>svg,.sb-onb-art>img{width:100%;height:100%;display:block}
+.sb-onb-art>svg,.sb-onb-art>img,.sb-onb-wave,.sb-onb-wave>svg{width:100%;height:100%;display:block}
+.sb-wave-arm{transform-box:view-box;transform-origin:204px 152px;animation:sb-wave 1.1s ease-in-out .35s 3}
+@keyframes sb-wave{0%,100%{transform:rotate(0)}25%{transform:rotate(-26deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-20deg)}}
+@media (prefers-reduced-motion:reduce){.sb-wave-arm{animation:none}}
+:root[data-motion="off"] .sb-wave-arm{animation:none}
 </style>
   <link rel="stylesheet" href="saga2.css?v=20261012a">
   <link rel="stylesheet" href="a11y.css?v=20261012a">
@@ -3056,6 +3060,9 @@
   var st={}; try{ st=JSON.parse(localStorage.getItem('sb_saas_v2')||'{}')||{}; }catch(e){}
   if(!st.children || !st.children.length) return;
   var art=[]; try{ art=JSON.parse(localStorage.getItem('sb_home_art')||'[]')||[]; }catch(e){}
+  /* no note yet (a speller whose Home was never drawn on this device — the audit's desk-dusk first paint, P3.22): the
+     journey plate Home's first screen always shows, the Atlas painting under "You are here", asked for now all the same */
+  if(!art.length) art=['app-art/atlas-map.webp'];
   for(var i=0;i<art.length && i<5;i++){ var u=String(art[i]||'');
     if(!/^(avatars|app-art)\/[a-z0-9\/._-]+\.(png|webp)$/i.test(u)) continue;   /* app-art is WebP since P1.14: a note naming an old .jpg is skipped, not preloaded */
     var l=document.createElement('link'); l.rel='preload'; l.as='image'; l.href=u; l.setAttribute('fetchpriority','high'); l.setAttribute('data-home-art','');

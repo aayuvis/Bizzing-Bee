@@ -2865,6 +2865,7 @@ const app = {
     // remember this word's outcome for the end-of-list summary (latest attempt wins)
     { const rk=nkey(target); state.sessionCorrect=(state.sessionCorrect||[]).filter(x=>nkey(x.w)!==rk); state.sessionWrong=(state.sessionWrong||[]).filter(x=>nkey(x.w)!==rk); (ans===target?state.sessionCorrect:state.sessionWrong).push(cw); }
     if(ans===target){
+      const _fw=firstWordDue(active());   /* read BEFORE this answer is recorded (P3.24) */
       markMastered(target);
       try{ const k2=(state.sessionListKey&&state.sessionListKey[0]!=='_')?state.sessionListKey:activeListKey(); const c3=active(); const i3=listStageIdx(c3,k2);
         if(stageComplete(c3,k2) && i3<listStages(k2).length-1 && !(k2==='journey' && i3+1>=CHAMP_LEVELS && !state.premium)){
@@ -2879,7 +2880,7 @@ const app = {
         } }catch(e){}
       const streakRight=(state._run||0)+1; const mood=streakRight>=3?'love':'excited';
       state._run=streakRight; state.sessionRight+=1; state.sessionDone+=1;
-      sfx('correct'); addCoins('answer'); gainXp(); clearMiss(target);
+      if(!(_fw&&firstWordFx(active()))) sfx('correct'); addCoins('answer'); gainXp(); clearMiss(target);   /* P3.24: the first word ever has its own sound and bee */
       /* a little burst every fifth right word — never a count of them (no run counts: games spec §4.3, no streaks) */
       if(streakRight>0 && streakRight%5===0){ burstConfetti(50); }
       state.status='correct'; state.mood=state.toast?'wow':mood; render();
@@ -4114,10 +4115,11 @@ const SB_SHOTS = [
    paid for screenshots far below the fold, and when the one-line phone header (FIX2 #4) lifted
    the page ~40px two more crossed that margin: the landing's first screen went 1274 → 1488 KB
    (tests/first-load.cjs). The <img>s carry data-lsrc and this hands them their src 600px ahead. */
-function landShots(){ try{ const imgs=document.querySelectorAll('img[data-lsrc]'); if(!imgs.length) return;
-    const show=i=>{ i.src=i.getAttribute('data-lsrc'); i.removeAttribute('data-lsrc'); };
+const _lsrcSeen=new Set();   /* a picture shown once is drawn with its src on the next render (no blink on a redraw) */
+function landShots(margin){ try{ const imgs=document.querySelectorAll('img[data-lsrc]'); if(!imgs.length) return;
+    const show=i=>{ const u=i.getAttribute('data-lsrc'); i.src=u; i.removeAttribute('data-lsrc'); _lsrcSeen.add(u); };
     if(!('IntersectionObserver' in window)){ imgs.forEach(show); return; }
-    const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); show(e.target); } }),{rootMargin:'600px 0px'});
+    const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); show(e.target); } }),{rootMargin:margin||'600px 0px'});
     imgs.forEach(i=>io.observe(i)); }catch(e){} }
 function landShowcase(){
   const rows = SB_SHOTS.map(([f, t, b]) => [f, factFill(t), factFill(b)]).map(([f, t, b], i) => `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(20px,4vw,44px);align-items:center;margin-bottom:clamp(28px,5vw,56px)">
@@ -4437,6 +4439,34 @@ function viewAuth(){
   </div>`;
 }
 
+/* BIZZY WAVES on the first step of setup (road to 4.5, P3.23 — "No motion"): the drawn mascot, the same Bizzy Home's
+   hello draws, with its right arm lifted in a hello that swings three times (`sb-wave`, index.html) and rests raised.
+   The device's reduced motion and Settings → Calm (data-motion="off") show the hello raised and still. */
+function bizzyWave(){ return mascotSVG('happy').replace(/<ellipse cx="208" cy="196"[^>]*\/>/, ()=>
+  '<g class="sb-wave-arm"><ellipse cx="222" cy="122" rx="13" ry="25" fill="#FFC23D" transform="rotate(32 222 122)"/><ellipse cx="231" cy="103" rx="9" ry="8" fill="#FFD86E"/></g>'); }
+/* THE FIRST WORD EVER (road to 4.5, P3.24 — rubric A8, the first session's "aha"): the first word a child ever spells
+   right gets a sound of its own (sfx 'first', instead of the plain right-answer chime) and a two-second bee — Bizzy
+   swoops up across the screen, loops once and flies off, leaving honey sparks. ONCE per child (`c.fwFx`, kept: a redraw,
+   a reload or a second word never replays it), never for a child with a right answer already on record, and never a
+   coin — the word's own 'answer' coin is the only one, unchanged. Reduced motion (the device's, or Settings → Calm)
+   keeps the sound and shows no flight. Drawn on <body>, outside #root, so no render can restart it. Two doors call it:
+   the A8 first word (fwCheck) and the Atlas drill's right answer (a child who skipped the first word, or was placed).
+   Guard: tests/p3-first-session.cjs. */
+function firstWordDue(c){ try{ return !!c && !c.fwFx && rankXp(c)===0 && !Object.keys(c.mast||{}).some(k=>((c.mast[k]||{}).ok|0)>0); }catch(e){ return false; } }
+function firstWordFx(c){ try{ c=c||active(); if(!c||c.fwFx) return false; c.fwFx=Date.now(); try{ save(); }catch(e){}
+  sfx('first');
+  const calm=!!state.a11yMotion||!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if(calm) return true;
+  const L=document.createElement('div'); L.className='sb-fw-fly'; L.setAttribute('aria-hidden','true');
+  L.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:95;overflow:hidden';
+  const sp=[[22,60,.25],[38,34,.5],[54,30,.75],[62,42,.95],[54,48,1.1],[46,38,1.25],[70,22,1.5],[84,12,1.7]].map(([x,y,d])=>
+    `<i style="position:absolute;left:${x}vw;top:${y}vh;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#FFF6C2,#FFC23D 55%,rgba(255,194,61,0) 72%);opacity:0;animation:sb-fwsp .7s ease-out ${d}s both"></i>`).join('');
+  L.innerHTML=`<style>@keyframes sb-fwfly{0%{transform:translate(-14vw,72vh) scale(.6) rotate(-14deg)}28%{transform:translate(28vw,30vh) scale(1) rotate(8deg)}46%{transform:translate(54vw,22vh) scale(1.12) rotate(-4deg)}58%{transform:translate(60vw,38vh) scale(1.12) rotate(10deg)}70%{transform:translate(46vw,34vh) scale(1.08) rotate(-8deg)}100%{transform:translate(112vw,-18vh) scale(.7) rotate(16deg)}}
+    @keyframes sb-fwbob{from{transform:translateY(-3px)}to{transform:translateY(3px)}}
+    @keyframes sb-fwsp{0%{opacity:0;transform:scale(.3)}35%{opacity:1;transform:scale(1.3)}100%{opacity:0;transform:scale(.6) translateY(10px)}}</style>
+    ${sp}<div class="sb-fw-bee" style="position:absolute;left:0;top:0;width:76px;height:86px;animation:sb-fwfly 2s cubic-bezier(.45,.05,.4,1) both"><div style="width:100%;height:100%;animation:sb-fwbob .14s ease-in-out infinite alternate">${mascotSVG('excited')}</div></div>`;
+  document.body.appendChild(L); setTimeout(()=>{ try{ L.remove(); }catch(e){} }, 2300);
+  return true; }catch(e){ return false; } }
 function viewOnboarding(){
   const S=state;
   /* ONE DECISION PER SCREEN — the shape Bizzing Finance uses, and the reason it works:
@@ -4461,7 +4491,7 @@ function viewOnboarding(){
        the kind of edit that loses it. */
     card=shell("What shall we call you?","Just a first name or a nickname — whatever your speller answers to.",
       `<input data-inp="onDraftName" data-fkey="draftName" value="${escA(S.draft.name)}" placeholder="e.g. Ahana, or Fox" style="width:100%;padding:15px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:17px;font-weight:700;outline:none">
-      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">This name and the age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p>`, avatarSVG('bizzy',320));
+      <p style="margin:18px 0 0;font-size:12px;color:var(--muted);font-weight:650;text-align:center;line-height:1.5">This name and the age range stay on this device — nothing is sent anywhere, and we never ask for a real name or an exact age.<br><a href="privacy.html" style="color:var(--muted);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px">Privacy &amp; Parents' Notice</a></p>`, `<span class="sb-onb-wave">${bizzyWave()}</span>`);
 
   } else if(k==='age'){
     const cur=bandForAge(S.draft.age).k;
@@ -4490,7 +4520,7 @@ function viewOnboarding(){
 
   } else if(k==='world'){
     const worldCards=ONB_THEMES.map(id=>THEMES.find(t=>t.id===id)).filter(Boolean)
-      .map(t=>worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld')).join('');
+      .map(t=>worldHeroCard(t, t.id===S.draft.theme, false, 'onbWorld', true)).join('');
     card=shell("Choose a world","A world is the look of the app and a character that grows as your speller levels up. Two to start with — the rest unlock later. You can switch any time.",
       `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">${worldCards}</div>`);
 
@@ -4550,6 +4580,12 @@ function loreCount(c){ c=c||active(); try{ return Object.values(c.lists||{}).red
 /* ONE rule for whether a Word Journeys lesson opens: the plan that carries journeys, testing's
    unlock, or a tale the child has earned. The screen itself is never locked (openJourneys). */
 function journeyOpen(n){ if(state.devUnlock) return true; try{ if(window.SB_ENT && SB_ENT.has('journeys')) return true; }catch(e){} return +n<=loreCount(); }
+/* HOME'S TWO READING CARDS CARRY A SMALL PAINTING (road to 4.5, P3.22 — rubric B6, "quote/tip cards flat"): a 56px
+   vignette cut from the Library's own paintings (app-art/home/tip.webp, the hive's honey lamps; quote.webp, the books
+   taking flight; 128x128 — tools/art/p3-gen.py, repainted in place when the bespoke vignettes are made). Drawn data-lsrc
+   and shown only as it nears the screen (landShots, 60px): both cards sit below a phone's first screen, so the
+   first-load image ratchet pays nothing for them. Once shown, a redraw keeps its src (no blink). */
+function homeVign(src){ return `<span class="sb-vign" aria-hidden="true" style="flex-shrink:0;width:56px;height:56px;border-radius:14px;overflow:hidden;align-self:center;background:color-mix(in srgb,var(--treasure,#F0B429) 24%,var(--surface2,#f3eee3))"><img ${_lsrcSeen.has(src)?'src':'data-lsrc'}="${src}" alt="" width="56" height="56" loading="lazy" decoding="async" style="display:block;width:100%;height:100%;object-fit:cover"></span>`; }
 // Tip of the day — pithy, rotating daily, banded to the speller's proven Bee Band:
 // Bands 1–2 draw only from the Spelling Bee Basics concepts + gentle habit tips;
 // 3–5 widen to easy/medium concepts and practice tips; 6+ open the full library + lore.
@@ -4582,12 +4618,12 @@ function tipOfDay(kid,asCard){ const pool=[]; let band=2; try{ band=beeBand(acti
   const canFwd=step<MAXFWD;
   const fwd=`<button data-act="nextTip" ${canFwd?'':'disabled'} title="${canFwd?'Next tip ('+(MAXFWD-step)+' left today)':'That\u2019s all 10 tips for today \u2014 back tomorrow!'}" aria-label="Next tip" style="flex-shrink:0;align-self:center;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px;box-shadow:var(--edge);border:0;${canFwd?'background:var(--treasure,#F0B429);color:#5a3d00;cursor:pointer':'background:var(--surface2);color:var(--muted);opacity:.55'}">\u2192</button>`;
   // Card form for the home grid: same content and same forward nav, sized to sit beside the other tiles.
-  if(asCard) return `<div class="sb-card" style="display:flex;align-items:center;gap:11px;min-height:128px;padding:14px;border-left:4px solid var(--treasure,#F0B429)">
+  if(asCard) return `<div class="sb-card sb-home-tip" style="display:flex;align-items:center;gap:12px;min-height:128px;padding:14px;border-left:4px solid var(--treasure,#F0B429)">
+    ${homeVign('app-art/home/tip.webp')}
     <span style="min-width:0;flex:1">
       <span style="display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00);margin-bottom:4px">Today\u2019s bee tip${step>0?`<span style="letter-spacing:0;text-transform:none;font-weight:700;color:var(--muted)">\u00b7 ${step+1}/${MAXFWD+1}</span>`:''}</span>
       <span class="sb-tiptext" style="display:block;font-size:13.5px;line-height:1.5">${esc(trunc(t,132))}</span>
     </span>
-    <span aria-hidden="true" style="flex-shrink:0;width:36px;height:42px;align-self:flex-end">${mascotSVG('happy')}</span>
     ${fwd}
   </div>`;
   return `<div style="position:relative;display:flex;align-items:center;gap:12px;background:var(--paper,var(--bg2));border:1px solid var(--line);border-left:4px solid var(--treasure,#F0B429);border-radius:14px;padding:14px 16px;margin-bottom:14px">
@@ -4685,17 +4721,26 @@ const WORLD_FX={
   race:'<span class="wh-fx scroll" style="--c:#FFD9CF"></span>',
   dino:'<span class="wh-fx drift" style="--c:#D9E8B0"></span>',
 };
-function worldHeroCard(t, on, locked, act){ const H=WORLD_HERO[t.id]||WORLD_HERO.spellbound; const ev=EVO[t.id]||EVO.spellbound;
+/* THE WORLDS ARE PAINTED (road to 4.5, P3.3 / P3.23 — "Shop worlds gradients", "world tiles are flat gradients with
+   dots"): every world's tile wears its OWN play-field painting (the sgw-* plate its games already run on), cut to the
+   tile's 2:1 band by tools/art/p3-gen.py --cut into app-art/wt/<id>.webp at 480x240 — the size it is drawn. The Shop's
+   Worlds tab, the Collection's world cards, Settings → Look and onboarding's world step all draw it; the world's gradient
+   stays under it as the bed, its drawn motif and dot layer step aside (the painting is the place), and a locked world
+   keeps each surface's own greying over a painting that still shows its place — never a flat block. Guard:
+   tests/p3-art.cjs (every world has its plate; a painted tile on all three surfaces). */
+const WORLD_PLATE={ spellbound:1, aurora:1, anime:1, science:1, avatar:1, godly:1, race:1, dino:1 };
+function worldPlateImg(id, eager){ return WORLD_PLATE[id]?`<img class="wh-plate" src="app-art/wt/${id}.webp" alt="" loading="${eager?'eager':'lazy'}" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`:''; }
+function worldHeroCard(t, on, locked, act, eager){ const H=WORLD_HERO[t.id]||WORLD_HERO.spellbound; const ev=EVO[t.id]||EVO.spellbound; const pl=worldPlateImg(t.id, eager);
   const badge=on?'<span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.94);color:#241E33;font-weight:800;font-size:12px;font-family:var(--ui,var(--body))">Active ✓</span>'
     :'';
   /* The price used to sit as a badge over the artwork, where it competed with the world's
      own title. It reads better as a line under the tile, beside what the world is. */
   /* A locked world names the Level that opens it — a learning lock, never a price (FIX-BEE C4). */
   const priceRow=locked?`<span style="display:block;margin-top:9px">${lockChip('plan',worldLockText(t.id))}</span>`:'';
-  return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}" style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
-    <div class="wh-band" style="position:relative;height:118px;${H.bg};${locked?'filter:grayscale(1) brightness(.96);opacity:.75':''}">
-      ${locked?'':(WORLD_FX[t.id]||'')}${H.art}${badge}
-      <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,7,26,0) 42%,rgba(10,7,26,.42) 100%);pointer-events:none"></span>
+  return `<button data-act="${act||'pickTheme'}" data-arg="${t.id}"${act==='onbWorld'?` aria-pressed="${on?'true':'false'}"`:''} style="position:relative;text-align:left;border-radius:20px;overflow:hidden;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:${on?'0 0 0 2px '+t.c1+',var(--sh-raised)':'var(--sh-rest)'};${locked?'opacity:.94':''}">
+    <div class="wh-band${pl?' wh-painted':''}" style="position:relative;height:118px;${H.bg};${locked?(pl?'filter:grayscale(1) brightness(1.02)':'filter:grayscale(1) brightness(.96);opacity:.75'):''}">
+      ${pl}${locked||pl?'':(WORLD_FX[t.id]||'')}${pl?'':H.art}${badge}
+      <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,7,26,0) ${pl?'30%':'42%'},rgba(10,7,26,${pl?'.62':'.42'}) 100%);pointer-events:none"></span>
       <div style="position:absolute;left:16px;bottom:10px;right:12px">
         <div style="font-family:${H.face};font-weight:800;font-size:26px;line-height:1;color:${H.ink};text-shadow:0 1px 6px rgba(0,0,0,.35)">${t.label}</div>
         <div style="font-family:var(--ui,var(--body));font-weight:650;font-size:12px;letter-spacing:.08em;color:${H.ink};opacity:.85;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${H.tag}</div>
@@ -5216,7 +5261,7 @@ function viewApp(){
     if(cb.kind==='badge'){ const b=cb.badge||{};
       return shell(`
         ${celeAvatar('Nice one!')}
-        <div style="width:96px;height:96px;margin:-2px auto 8px">${badgeArtSVG(b.ic||'star', 96)}</div>
+        <div style="width:96px;height:96px;margin:-2px auto 8px">${scrDraw('scrMe',()=>medalSVG(b, 96))}</div>
         <div style="font-family:var(--ui);font-weight:650;font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Badge earned!</div>
         <div style="font-family:var(--display);font-weight:800;font-size:34px;line-height:1.05;margin:6px 0 6px">${esc(b.name||'New badge')}</div>
         <div style="font-size:15px;color:var(--muted);font-weight:500">${esc(b.desc||'')}${cb.more>0?(' · <b>+'+cb.more+' more badge'+(cb.more>1?'s':'')+'!</b>'):''}</div>
@@ -5413,7 +5458,7 @@ function homeHereCard(c,nx){
   return `<button class="sb-lift sb-home-next sb-here" data-act="goNext" aria-label="${escA(aria)}">
     <span class="sb-here-map" aria-hidden="true">
       <span class="sb-here-board" style="--x:${(+at.x).toFixed(2)};--y:${(+at.y).toFixed(2)}">
-        <img src="app-art/${H&&H.img||'atlas-map.webp'}" alt="" decoding="async">
+        <img src="app-art/${H&&H.img||'atlas-map.webp'}" alt="" decoding="async" fetchpriority="high">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="sb-here-road">
           ${road?`<path d="${road}" class="sb-here-ghost" vector-effect="non-scaling-stroke"/>`:''}
           ${hi>0?`<path d="${walked}" class="sb-here-walk" vector-effect="non-scaling-stroke"/>`:''}</svg>
@@ -5538,7 +5583,7 @@ function viewHome(){
          purple paper at 1.5:1 (P0.20). a11y-axe loads the quotes before it reads Home, so it sees this card. */
       const qoh=(typeof quoteOfHour==='function')?quoteOfHour():null;
       const qohTile=qoh?`<button data-act="openQuoteHour" data-arg="${qoh.i}" title="Tap to open Quotes &amp; poems" class="sb-card" style="width:100%;display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,color-mix(in srgb,#C8791B 15%,var(--paper,var(--bg2))),var(--paper,var(--bg2)) 62%);border-color:color-mix(in srgb,#C8791B 38%,var(--line));border-radius:var(--r-lg,16px);padding:14px 16px;cursor:pointer;text-align:left;min-height:132px">
-        <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#C8791B;color:#fff;flex-shrink:0;font-size:20px">${iconSVG('quote',20)}</span>
+        ${homeVign('app-art/home/quote.webp')}
         <span style="min-width:0;flex:1">
           <span class="sb-cn sb-qoh-k" style="display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--treasure-deep,#8A5B00)">Quote of the hour</span>
           <span style="display:block;font:italic 650 13.5px/1.42 var(--body,serif);color:var(--ink,var(--text));margin:3px 0 4px">“${trunc(qoh.q.q,132)}”</span>
@@ -6874,7 +6919,7 @@ function viewSettings(){
   const modePref=S.modePref||S.mode||'light';
   const worldThumbs=THEMES.map((t,i)=>{ const un=isThemeUnlocked(t.id); const on=t.id===S.theme; const H=(typeof WORLD_HERO!=='undefined'&&WORLD_HERO[t.id])||{};
     return `<button data-act="${un?'pickTheme':'setOpenShopWorld'}" data-arg="${t.id}" class="bz-wthumb${on?' on':''}${un?'':' locked'}" aria-pressed="${on?'true':'false'}" aria-label="${escA(t.label+(un?(on?' — on':''):' — '+worldLockText(t.id)))}">
-        <span class="bz-wthumb-art" style="${H.bg||''}"></span><span class="bz-wthumb-l">${esc(t.label)}</span>${un?'':`<span class="bz-wthumb-lock">${iconSVG('lock',11,2.4)} ${esc(worldLockText(t.id,true))}</span>`}</button>`; }).join('');
+        <span class="bz-wthumb-art" style="position:relative;overflow:hidden;${H.bg||''}">${worldPlateImg(t.id)}</span><span class="bz-wthumb-l">${esc(t.label)}</span>${un?'':`<span class="bz-wthumb-lock">${iconSVG('lock',11,2.4)} ${esc(worldLockText(t.id,true))}</span>`}</button>`; }).join('');
   const look=`<div class="bz-row bz-row-col"><span class="bz-row-l">World</span><span class="bz-row-s">Each world repaints the app and brings its own cast and music.</span><div class="bz-wgrid">${worldThumbs}</div></div>`
     + seg('Light or dark','setModePref',[['light','Light'],['white','White'],['dusk','Dark'],['auto','Match device']],modePref)
     + seg('Text size','setTextSize',[['small','S'],['normal','M'],['large','L']],S.textSize||'normal')
@@ -7988,7 +8033,7 @@ function render(){
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
   if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='today'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby'))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
-  if(state.screen==='landing') landShots();
+  if(state.screen==='landing') landShots(); else if(state.screen==='app'&&state.nav==='home') landShots('60px 0px');   /* Home's tip and quote pictures wait until they are nearly on screen (P3.22: the first-load image ratchet) */
   /* First real paint — take the loading screen down. Called on every render; the
      injector guards against running twice, and its own 6s ceiling covers the case
      where a render never arrives at all. */
