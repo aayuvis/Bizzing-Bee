@@ -17,6 +17,12 @@ function fmtAgo(ts){ if(!ts) return ''; const s=Math.max(0,Math.floor((now()-ts)
   if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); return d+'d ago'; }
 // Buddy empty states — the bee lives in every empty moment (spec §8)
 function beeEmpty(mood,text){ return `<div style="display:flex;align-items:center;gap:14px;padding:10px 4px"><div style="width:56px;height:62px;flex-shrink:0;opacity:.95">${mascotSVG(mood)}</div><p style="margin:0;font-size:15px;color:var(--muted);line-height:1.5">${text}</p></div>`; }
+/* YOUR CARD (road to 4.5, P3.17): the child's avatar in the frame they wear, their name on their plate, the background
+   they chose behind it, and their one level — the Shop's Extras tab (so a look is seen before and after it is bought)
+   and the top of My page. Every look comes through shopWorn (app3.js), so only what the child OWNS ever shows. */
+function meCardHTML(c){ c=c||active();
+  return `<div class="bz-mecard"><span class="bz-mecard-av${cardBg(c)}" aria-hidden="true">${framed(avatarSVG(c.avatar||'bizzy',72),c,80)}</span>
+    <span class="bz-mecard-t"><span class="sb-cs">Your card</span><b class="bz-mecard-n">${plated(esc(c.name||'Speller'),c)}</b><span class="bz-mecard-l">${esc(oneLevel(c).label)}</span></span></div>`; }
 const VOC_SET  = 50;
 function vocLevel(deck,c){ const v=vocProg(c); return (v&&v.lv[deck])||0; }
 function vocWordsByKeys(keys){ const db=wordDB();

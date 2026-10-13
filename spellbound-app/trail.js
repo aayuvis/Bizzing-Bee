@@ -448,7 +448,7 @@
     const nx = i >= 0 ? s[i + 1] : null;
     if (!nx) { flash('That was the last stop of this tier — the route returns tougher!'); app2.trailBack(); return; }
     if (nx.kind === 'unit') app2.trailUnit(nx.u.id); else app2.trailChk(course() + '|' + nx.id); };
-  app2.trailPick = i => set({ trailStop: +i });
+  app2.trailPick = i => { _azOwed = true; set({ trailStop: +i }); };   /* zoomed, a picked stop is brought into the window with its card (P3.28) */
   /* tapping the open map (not a pin, not the card) folds the stop card away —
      the painting is the point; the card returns on the next pin tap */
   app2.trailShut = () => { if (state.trailStop === -9) return; set({ trailStop: -9 }); };
@@ -1571,9 +1571,12 @@
     const popNew = _popK !== ('u:' + slug + ':' + sel); if (popNew) _popK = 'u:' + slug + ':' + sel;
     if (popNew || _fresh) panTo(sel, pts);   // never yank a hand-scrolled board on a background render
     if (isMW) mwClamp(edge, (popNew || _fresh) ? (pts[sel] || pts[0]).x : null);
+    if (azKey() !== _azKey) { _azKey = azKey(); _az = 1; _azH = 0; }   /* a landmark opens as drawn (P3.28) */
+    if (popNew) _azOwed = true; setTimeout(() => azLaid(azAfter), 0);   /* a zoomed window is restored after a render (once the board is laid out), a picked stop brought into it */
     return `<div style="${RISE()}max-width:900px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <button data-act="trailToMap" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
+        ${azBar()}
         <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px">
           ${musicPill()}<span style="font-size:12px;font-weight:800;color:var(--muted)">Ultra Champions</span>${ring(dn, stops.length, dn === stops.length ? 'var(--good)' : '#FFD24D', 34)}</span>
       </div>
@@ -1629,6 +1632,7 @@
     const x = expOk ? actSections(c, 'exp') : null;
     const advBoard = expOk ? atlasBoard(c, 'exp') : '';
     state.trailCourse = 'honey';
+    _azKey = null;   /* back on the overview: the next region opens as drawn (P3.28) */
     /* the Word Atlas's sub-nav, Atlas | Gym (owner, 10 Oct 2026: the Word Gym is its second sub-page — app3 atlasSubNav) */
     return `<div style="${RISE()}max-width:980px;margin:0 auto">
       ${typeof atlasSubNav === 'function' ? atlasSubNav('atlas') : ''}
@@ -2015,11 +2019,98 @@
      is only trusted once the panorama has real layout: a not-yet-loaded image
      reports a tiny width, and clamping against THAT dragged every scroll back
      to the far left (the "snaps to level 1" bug). */
-  let _mwMax = Infinity, _mwScroll = null;
+  let _mwMax = Infinity, _mwScroll = null, _mwEdge = 100;
+  /* ZOOM ON A REGION BOARD (road to 4.5, P3.28 — rubric D6). Pinch (two fingers), Ctrl + the wheel (a trackpad's
+     pinch), the − / + buttons above the board, or the − / + / 0 keys. The factor is _az, 1 (the board as drawn) to
+     AZ_MAX, kept while the child stays in the region and back to 1 in the next. Only the painting and its road scale
+     (the board's --az): every pin, the stop card and the road sign keep their size, so a marker's 44px hit area
+     (index.html .act-board .atlas-sd::after) holds at every zoom, and popFit keeps fitting the card into the window,
+     which is measured, never assumed. The point under the fingers (or the window's middle) stays put while it grows.
+     The camera clamp (the reveal law) is re-measured at the new width — zooming never shows a stop beyond the earned
+     edge. Guard: tests/atlas-layout.cjs §8. */
+  const AZ_MAX = 2.5, AZ_STEP = 1.25;
+  let _az = 1, _azH = 0, _azKey = null, _azTop = 0, _azOwed = false;
+  /* after a render: a zoomed window goes back where it was, and a stop just picked is brought into it with room for its
+     card (zoomed, the board is taller than the window, so the stop can be out of sight above or below) */
+  function azAfter() { try { const pan = document.getElementById('sb-pan'); if (!pan) return;
+    if (!pan.classList.contains('zoomed')) { pan._camOk = true; return; }   /* mwClamp has put the camera back by now */
+    pan.scrollTop = _azTop; if (_mwScroll != null) pan.scrollLeft = Math.min(_mwScroll, _mwMax); pan._camOk = true;
+    const p = pan.querySelector('.atlas-pop'); if (!_azOwed || !p) return; _azOwed = false;
+    const ch = pan.clientHeight, h = p.offsetHeight, y = p.offsetTop, below = p.classList.contains('below');
+    const want = below ? y - 60 : y - h - 70;   /* the stop and its card, wholly in the window */
+    if (y - h - 70 < pan.scrollTop || y + 30 > pan.scrollTop + ch || (below && y + 24 + h > pan.scrollTop + ch)) pan.scrollTop = Math.max(0, Math.min(want, pan.scrollHeight - ch));
+    const cw = pan.clientWidth, x = p.offsetLeft; if (x < pan.scrollLeft + 24 || x > pan.scrollLeft + cw - 24) pan.scrollLeft = Math.max(0, Math.min(_mwMax, x - cw / 2));
+    _azTop = pan.scrollTop; _mwScroll = pan.scrollLeft; } catch (_) {} }
+  /* a re-rendered board has no width until its painting is laid out (a fresh <img>, even one from the cache, can be a
+     beat behind), and a camera put back before then is clamped to 0 — and, read back, LOST: the render that ends a pinch
+     put the point under the fingers back at the board's left edge. So a zoomed camera is put back once the board is laid
+     out, as mwClamp's homing waits for its painting. A zoomed board is never narrower than its window. */
+  function azLaid(fn, n) { try { const pan = document.getElementById('sb-pan'), bd = pan && pan.firstElementChild, img = bd && bd.querySelector('img');
+    if (img && !img.complete) { const go = () => { img.removeEventListener('load', go); img.removeEventListener('error', go); azLaid(fn, n); };
+      img.addEventListener('load', go); img.addEventListener('error', go); return; }
+    if (bd && bd.offsetWidth < pan.clientWidth && (n || 0) < 60) { requestAnimationFrame(() => azLaid(fn, (n || 0) + 1)); return; }
+    fn(); } catch (_) {} }
+  function azKey() { return (state.trailView || '') + '|' + (state.trailAct || '') + '|' + (state.ultraAct != null ? state.ultraAct : ''); }
+  function azClamp(z) { return Math.max(1, Math.min(AZ_MAX, Math.round(z * 1000) / 1000)); }
+  /* grow the board around (cx, cy) — window px — without a render: the live step a pinch takes every move */
+  function azLive(z, cx, cy) { const pan = document.getElementById('sb-pan'), bd = pan && pan.firstElementChild; if (!bd) return;
+    z = azClamp(z); const k = z / (_az || 1);
+    if (_az <= 1.001 && z > 1.001) { _azH = pan.clientHeight; pan.classList.add('zoomed'); pan.style.height = _azH + 'px'; }
+    /* the camera this step starts from. A render in the middle of a pinch (a lazy file landing) puts down a new board at
+       0,0, and its camera is put back a timer — or the painting's load — later: until then the camera is the one KEPT
+       (_mwScroll, _azTop), never the new board's 0. `_camOk` marks a board whose camera is real (azAfter, azStep, here). */
+    const kept = !pan._camOk && bd.classList.contains('mw-board');
+    const sl = kept && _mwScroll != null ? _mwScroll : pan.scrollLeft, st = kept && pan.classList.contains('zoomed') ? _azTop : pan.scrollTop;
+    const r = pan.getBoundingClientRect(), ox = cx == null ? pan.clientWidth / 2 : cx - r.left, oy = cy == null ? pan.clientHeight / 2 : cy - r.top;
+    _az = z; bd.style.setProperty('--az', z.toFixed(3));
+    if (z <= 1.001) { pan.classList.remove('zoomed'); pan.style.height = ''; }
+    /* the board is the painting × --az both ways, so the point under the fingers stays put by ARITHMETIC — nothing is
+       measured off a board that may not be laid out yet (one with no width would turn every camera into 0) */
+    const cw = pan.clientWidth, laid = bd.offsetWidth >= cw;
+    if (_mwMax !== Infinity) _mwMax = laid ? Math.max(0, bd.offsetWidth * (_mwEdge / 100) - cw) : Math.max(0, (_mwMax + cw) * k - cw);
+    const L = Math.max(0, Math.min(_mwMax, (sl + ox) * k - ox)), T = Math.max(0, (st + oy) * k - oy);
+    pan.scrollLeft = L; pan.scrollTop = T;
+    if (laid) { _mwScroll = pan.scrollLeft; _azTop = pan.scrollTop; pan._camOk = true; } else { _mwScroll = L; _azTop = T; }
+    popFitSoon(); }
+  /* a step (buttons, keys): the live step, then a render so the buttons say where the zoom stands */
+  function azStep(z) { azLive(z);   /* azLive keeps the camera it meant (_mwScroll, _azTop), never a read-back from a board still drawing */
+    render(); setTimeout(() => azLaid(() => { try { const p = document.getElementById('sb-pan'); if (p) { if (_mwScroll != null) p.scrollLeft = Math.min(_mwScroll, _mwMax); if (p.classList.contains('zoomed')) p.scrollTop = _azTop; p._camOk = true; } popFitSoon(); } catch (_) {} }), 0); }
+  app2.atlasZoom = (d) => { if (!document.getElementById('sb-pan')) return; azStep(d === 'in' ? _az * AZ_STEP : d === 'out' ? _az / AZ_STEP : 1); };
+  function azBar() { const pct = Math.round(_az * 100);
+    return `<span class="act-zoom" role="group" aria-label="Zoom the map">
+      <button data-act="atlasZoom" data-arg="out" aria-label="Zoom out" title="Zoom out (−)"${_az <= 1.001 ? ' disabled' : ''}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5.5 12h13"/></svg></button>
+      <span class="act-zoom-n" aria-live="polite">${pct}%</span>
+      <button data-act="atlasZoom" data-arg="in" aria-label="Zoom in" title="Zoom in (+)"${_az >= AZ_MAX - 0.001 ? ' disabled' : ''}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5.5 12h13M12 5.5v13"/></svg></button></span>`; }
+  /* keys: + (or =) in, − out, 0 back to the whole board — on a region board, never while typing or with a card open over it */
+  window.addEventListener('keydown', e => { try {
+    if (state.nav !== 'trail' || !document.getElementById('sb-pan') || state.pinDlg || state.settingsOpen || state.villain || state.tq) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return; const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const k = e.key; if (k === '+' || k === '=') { e.preventDefault(); app2.atlasZoom('in'); } else if (k === '-' || k === '_' || k === '\u2212') { e.preventDefault(); app2.atlasZoom('out'); } else if (k === '0' && _az > 1.001) { e.preventDefault(); app2.atlasZoom('fit'); }
+  } catch (_) {} });
+  /* two fingers on the board pinch it; the page itself is never zoomed from here (touch-action on .act-pan). The rest of
+     the gesture is listened for ON THE NODE the fingers came down on: a touch keeps going to that node even after a
+     render replaces it (a lazy file landing mid-pinch re-renders the app), and a node out of the page no longer
+     bubbles to the document — a listener there went deaf halfway through a pinch. */
+  let _pinch = null;
+  const tdist = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  function pinchMove(e) { try { if (!_pinch || e.touches.length !== 2) return; e.preventDefault();
+    const a = e.touches[0], b = e.touches[1]; azLive(_pinch.z * tdist(a, b) / _pinch.d, (a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2); } catch (_) {} }
+  function pinchEnd(e) { try { if (!_pinch || e.touches.length >= 2) return; const t = _pinch.t; _pinch = null;
+    t.removeEventListener('touchmove', pinchMove); t.removeEventListener('touchend', pinchEnd); t.removeEventListener('touchcancel', pinchEnd); azStep(_az); } catch (_) {} }
+  document.addEventListener('touchstart', e => { try { if (e.touches.length !== 2 || _pinch) return; const pan = e.target.closest && e.target.closest('#sb-pan'); if (!pan) return;
+    const t = e.target; _pinch = { d: tdist(e.touches[0], e.touches[1]) || 1, z: _az, t };
+    t.addEventListener('touchmove', pinchMove, { passive: false }); t.addEventListener('touchend', pinchEnd); t.addEventListener('touchcancel', pinchEnd); } catch (_) {} }, { passive: true });
+  /* a trackpad's pinch arrives as Ctrl + the wheel */
+  document.addEventListener('wheel', e => { try { if (!e.ctrlKey) return; const pan = e.target.closest && e.target.closest('#sb-pan'); if (!pan) return;
+    e.preventDefault(); azLive(_az * Math.exp(-e.deltaY / 300), e.clientX, e.clientY); clearTimeout(azLive.t); azLive.t = setTimeout(() => azStep(_az), 160); } catch (_) {} }, { passive: false });
   document.addEventListener('scroll', e => { try {
     const el = e.target; if (!el || el.id !== 'sb-pan') return;
+    /* a board not laid out yet (its painting still coming in after a render) has no width, so a camera set on it is
+       clamped to ~0 — and that scroll is not the camera: reading it back here lost the kept one mid-pinch (P3.28) */
+    const bd0 = el.firstElementChild; if (bd0 && bd0.offsetWidth < el.clientWidth) return;
     if (_mwMax !== Infinity && el.scrollLeft > _mwMax) el.scrollLeft = _mwMax;
     _mwScroll = el.scrollLeft;   // the camera position SURVIVES re-renders
+    if (el.classList.contains('zoomed')) _azTop = el.scrollTop;   // …and, zoomed, so does its height (P3.28)
     popFitSoon();
   } catch (_) {} }, true);
   /* THE STOP CARD STAYS ON SCREEN. Which side of its pin the callout opens on is decided
@@ -2086,7 +2177,7 @@
      lazy file arriving, a toast), the new render's clamp passes no home and the old image the
      ask was waiting on is gone. The ask is kept until a clamp with real layout pays it. */
   let _mwHome = null;
-  function mwClamp(edge, homeX) { if (homeX != null) _mwHome = homeX; setTimeout(() => { try {
+  function mwClamp(edge, homeX) { if (homeX != null) _mwHome = homeX; _mwEdge = edge; setTimeout(() => { try {
     const el = document.getElementById('sb-pan'); if (!el) { _mwMax = Infinity; return; }
     const bd = el.firstElementChild, img = bd && bd.querySelector('img');
     const apply = () => { try {
@@ -2735,7 +2826,10 @@
        than the floor so nothing moves. */
     const minW = Math.max(1, pts.length) * 42;
     const pano = opts && opts.pano;
-    return `<div class="act-pan" id="sb-pan"><div class="atlas-board act-board${pano ? ' mw-board' : ''}" data-act="trailShut" style="${pano ? '' : `min-width:min(${minW}px,190vw)`}">
+    /* THE ZOOM (P3.28) rides the board as --az: the painting and its road grow, the pins, the stop card and the sign do
+       not (they are px, the board is %). Zoomed, the window keeps its height and pans both ways. */
+    const zm = _az > 1.001 && _azH;
+    return `<div class="act-pan${zm ? ' zoomed' : ''}" id="sb-pan" style="${zm ? `height:${_azH}px` : ''}"><div class="atlas-board act-board${pano ? ' mw-board' : ''}" data-act="trailShut" style="--az:${_az.toFixed(3)};${pano ? '' : `--aw:min(${minW}px,190vw)`}">
       <img src="app-art/${pano ? pano.img : slug + '.webp'}" alt="" loading="lazy" decoding="async">
       ${ambLayer(slug)}${pano && pano.extra || ''}
       ${/* The advanced half reads darker on sight. That used to be a near-black wash,
@@ -2790,6 +2884,7 @@
        keys off the country the CHILD stands in — never the window's margin,
        which can peek over a plate boundary without anyone arriving there. */
     const edge = isMW ? mwEdge(c, pts, nodes, fr) : 100;
+    if (azKey() !== _azKey) { _azKey = azKey(); _az = 1; _azH = 0; }   /* a region opens as drawn (P3.28) */
     let frIdx = isMW ? nodes.findIndex(x => x.i === fr) : 0;
     if (frIdx < 0) frIdx = nodes.length - 1;
     const rv = isMW ? mwLegOfX((pts[frIdx] || { x: 0 }).x) : 3;
@@ -2869,7 +2964,8 @@
        stands clear of it, so a child sent here by Continue sees themselves on the road */
     const _rider = st(sel) === 'now' && !!window.SB_AVATAR;
     const _ax = _side === 'l' ? '24px' : _side === 'r' ? 'calc(100% - 24px)' : '50%';
-    setTimeout(() => { if (!shut) popFit(); signFit(); }, 0);   // after panTo/mwClamp have moved the camera
+    if (popNew) _azOwed = true;
+    setTimeout(() => { azLaid(azAfter); if (!shut) popFit(); signFit(); }, 0);   // after panTo/mwClamp have moved the camera (and a zoomed window is restored once the board is laid out)
     const stopPop = shut ? '' : `<div class="atlas-pop${_below ? ' below' : ''}${_rider ? ' rider' : ''}" data-act="popKeep" data-side="${_side}" style="left:${_P.x.toFixed(2)}%;top:${_P.y.toFixed(2)}%;--tx:${_tx};--ty:${_ty};--ax:${_ax};${(popNew || _fresh) ? '' : 'animation:none;'}">
       <div class="atlas-pop-in">
         <div style="display:flex;align-items:flex-start;gap:13px">
@@ -2893,7 +2989,8 @@
 
     return `<div style="${RISE()}max-width:980px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <button data-act="trailBack" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted)">← The map</button>
+        <button data-act="trailBack" style="display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap">← The map</button>
+        ${azBar()}
         <span style="margin-left:auto;display:inline-flex;align-items:center;gap:9px">
           ${musicPill()}
           <span style="font-size:12px;font-weight:800;color:var(--muted)">Tier ${lapOf(c)}</span>

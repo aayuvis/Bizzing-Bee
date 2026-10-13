@@ -42,7 +42,8 @@ const ALLOW = {
     trickSeal: 'scores the boot word tier the moment it lands (P1.13 step 1) — a score on each record, never a word served' },
   /* the P1.13 split moved these readers, verbatim and with the same reasons, into app3's lazy files */
   'app3-library.js': { themeStat: 'Theme Journeys', viewThemeDetail: 'Theme Journeys (themeDefs gates minBand)', ipaPool: 'the Sound Alphabet trainer',
-    b2Idx: 'the List Builder’s index', viewFinder: 'the Word Finder', fullLooking: 'search says a lookup is still on its way (P1.12)' },
+    b2Idx: 'the List Builder’s index', viewFinder: 'the Word Finder', fullLooking: 'search says a lookup is still on its way (P1.12)',
+    quoteWordIx: 'the Quotes tool looks up a quote’s own word in the boot tier, for its origin (P3.21) — a lookup, never a word served to spell' },
   'app3-shared.js': { vocDeckWords: 'the Vocabulary section’s decks', selectList: 'choosing a study list' },
   'boot-lazy.js': { '(top level)': 'registers the 130k library’s chunk index as a lazy file — a path, not a read (P1.12)' },
   'library.js': { reg: 'the 130k library’s chunk reader names a chunk file for boot-lazy (P1.12)' },

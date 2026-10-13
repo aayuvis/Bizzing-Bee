@@ -14,6 +14,9 @@
       coming back to a solved day (without a reload) pays nothing more and shows it solved
    5. its old record (sb_daily) comes back with it: a child's solved / played counts show on the end card
    6. it shares a page with Daily Bee: open one, then the other, and each draws its own board
+   7. (road to 4.5, P3.6) in the shell it wears the family's art direction: a purple-and-honey stage, Fraunces on the
+      board and keys, honey on the empty tiles. Proved by breaking: the message's .dz-host rule taken out (no Fraunces) →
+      fails.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/daily-buzz.cjs                          */
 'use strict';
 const { chromium } = require('playwright');
@@ -85,6 +88,13 @@ async function loseAndLearn(pg, tap) {
     await pg.click(CARD); await board(pg);
     let L = await look();
     ok(L.h === '#/buzz' && L.nav === 'dailybuzz' && L.board && L.bar && L.tabbar && L.play && L.head, 'its card opens it at #/buzz, inside the shell (top bar, tab bar, Play marked, the page head) (' + JSON.stringify(L) + ')');
+    /* P3.6 (road to 4.5, rubric N2): in the shell's art direction — a purple-and-honey stage, Fraunces on the board and
+       its keys, honey on the empty tiles — not the old cream sheet; still its own card and its own game */
+    const art = await pg.evaluate(() => { const h = document.querySelector('#dz-host'), c = h.querySelector('.dz-cell'), m = h.querySelector('.dz-msg'), k = h.querySelector('.dz-k');
+      const hs = getComputedStyle(h), cs = getComputedStyle(c);
+      return { stage: /gradient/.test(hs.backgroundImage), font: /Fraunces/i.test(getComputedStyle(m).fontFamily) && /Fraunces/i.test(getComputedStyle(k).fontFamily) && /Fraunces/i.test(cs.fontFamily),
+        tile: cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && cs.backgroundColor !== 'transparent', bg: hs.backgroundImage.slice(0, 60) }; });
+    ok(art.stage && art.font && art.tile, `the board wears the shell's art direction: a purple-and-honey stage, Fraunces, honey tiles (${JSON.stringify(art)})`);
     await pg.click('#root .sb-phead [data-act="openGames"]');
     await W.until(pg, () => location.hash === '#/play' && !document.querySelector('#dz-host'), null, 10000);
     L = await look(); ok(L.h === '#/play' && !L.board, `Back returns to #/play and leaves nothing of it on screen (${L.h})`);

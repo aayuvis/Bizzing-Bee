@@ -539,6 +539,60 @@
   .bz-frame-sunset{background:linear-gradient(135deg,#FF9A3D,#E8458C)}
   .bz-frame-royal{background:conic-gradient(#5A37D6,#B14FC4,#5A37D6);box-shadow:0 0 0 2px #F0B429}
   .bz-frame-rainbow{background:conic-gradient(#E8458C,#FF9A3D,#FFD23F,#39D98A,#36D1FF,#7C5CFF,#E8458C)}
+  /* P3.17 looks: a plate carries its own ink (contrast in every look), a background sits behind the AVATAR only — never behind text */
+  .bz-plate{display:inline-block;max-width:100%;padding:1px 12px 2px;border-radius:9px;line-height:1.3;overflow-wrap:anywhere;box-sizing:border-box}
+  .bz-plate-card{background:#FFF8E6;color:#3A2A06;border:1.5px solid #F0B429;box-shadow:inset 0 -2px 0 rgba(200,121,27,.22)}
+  .bz-plate-ribbon{background:linear-gradient(180deg,#6C4FE0,#5235C4);color:#fff;border-radius:3px;padding:1px 18px 2px;clip-path:polygon(0 0,100% 0,calc(100% - 9px) 50%,100% 100%,0 100%,9px 50%)}
+  .bz-plate-comb{color:#3A2600;background:radial-gradient(circle,rgba(255,255,255,.4) 1.6px,transparent 2.2px) 0 0/9px 8px,linear-gradient(180deg,#FFD86E,#E9A825);border:1.5px solid #C8791B}
+  .bz-plate-gilt{background:linear-gradient(135deg,#2B1B5E,#4A2D96);color:#FFD86E;border:1.5px solid #F0B429;text-shadow:0 1px 0 rgba(0,0,0,.45)}
+  .bz-bg{border-radius:18px}
+  .bz-bg-meadow{background:radial-gradient(90% 46% at 22% 104%,#6DBE45,transparent 70%),radial-gradient(90% 44% at 86% 108%,#4F9E5A,transparent 72%),linear-gradient(180deg,#BFE6FF,#EAF7FF 56%,#A8DB7E 57%,#7CC657)!important}
+  .bz-bg-dusk{background:linear-gradient(180deg,#2E2470,#7C5CFF 48%,#E8458C 80%,#FF9A3D)!important}
+  .bz-bg-hive{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='42'%3E%3Cpath d='M12 0l12 7v14l-12 7L0 21V7zM12 28l12 7v14M12 28L0 35v14' fill='none' stroke='%23B8780F' stroke-opacity='.55' stroke-width='1.6'/%3E%3C/svg%3E") 0 0/24px 42px,linear-gradient(160deg,#FFDF85,#E9A825)!important}
+  .bz-bg-stars{background:radial-gradient(1.4px 1.4px at 18% 26%,#fff,transparent),radial-gradient(1.2px 1.2px at 64% 18%,#fff,transparent),radial-gradient(1.6px 1.6px at 82% 52%,#FFF3C4,transparent),radial-gradient(1.1px 1.1px at 34% 70%,#fff,transparent),radial-gradient(1.3px 1.3px at 52% 44%,#DCE6FF,transparent),radial-gradient(1px 1px at 12% 84%,#fff,transparent),radial-gradient(1.2px 1.2px at 90% 86%,#fff,transparent),linear-gradient(180deg,#0E1640,#2A2A78)!important}
+  .bz-bg-aurora{background:radial-gradient(70% 50% at 30% 20%,rgba(57,217,138,.75),transparent 70%),radial-gradient(60% 50% at 75% 35%,rgba(124,92,255,.7),transparent 70%),linear-gradient(180deg,#0B2030,#13324A)!important}
+  .bz-look-name{min-height:64px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:18px}
+  .bz-look-bg{width:64px;height:64px;display:grid;place-items:center}
+  .bz-look-bg>svg,.bz-look-bg>img{width:46px;height:46px}
+  .bz-look-sw{height:64px;display:grid;place-items:center}
+  .bz-looksec{margin:0 0 18px}.bz-looksec-p{margin:-4px 0 10px}
+  .bz-mecard{display:flex;align-items:center;gap:14px;padding:14px;margin:0 0 16px;border-radius:20px;background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:var(--sh-rest)}
+  .bz-mecard-av{flex:none;width:100px;height:100px;border-radius:18px;display:grid;place-items:center;background:var(--surface2)}
+  .bz-mecard-t{min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .bz-mecard-n{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.2;color:var(--text)}
+  .bz-mecard-l{font-size:13px;font-weight:700;color:var(--muted)}
+  /* P3.21 a quote shown through one of its words, and that word's origin */
+  .q-word{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:3px;margin:34px auto 4px;padding:10px 14px 12px;max-width:440px;border-radius:14px;background:rgba(255,255,255,.62);border:1px solid #EBD79A;text-align:center}
+  .q-word-k{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A5B00}
+  .q-word-w{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.15;color:#2A2410;background:none;border:0;padding:2px 6px;min-height:44px;text-decoration:underline;text-decoration-color:rgba(200,150,30,.55);text-underline-offset:5px}
+  .q-word-o{font-size:13px;line-height:1.45;color:#5A4A20;font-weight:600}
+  .q-word-o b{color:#2A2410}
+  /* P3.31 an origin's source dictionary, where the data names one */
+  .sb-etym-src{margin:6px 0 10px;font-size:12px;line-height:1.45;color:var(--muted);font-weight:600;text-align:left;overflow-wrap:anywhere}
+  .sb-etym-src b{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text);margin-right:4px}
+  .sb-etym-src span{font-family:var(--mono,monospace);font-size:11px}
+  /* P3.30 kudos: a quiet chip on Home, the card on My page, the sender in the Parent Zone */
+  .sb-kudos-chip{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:5px 11px;border-radius:999px;border:0;background:var(--chip);color:var(--accent);font-weight:800;font-size:13px}
+  .sb-kudos h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-family:var(--display);font-weight:800;font-size:16px}
+  .sb-kudos-list{list-style:none;margin:0 0 4px;padding:0;display:flex;flex-direction:column;gap:6px}
+  .sb-kudos-list li{display:flex;align-items:baseline;gap:8px;padding:9px 11px;border-radius:12px;background:var(--surface2);font-size:14px;line-height:1.4}
+  .sb-kudos-list li>svg{flex:none;color:#D6457A;align-self:center}
+  .sb-kudos-list li>span{flex:1;min-width:0}
+  .sb-kudos-list li>i{flex:none;font-style:normal;font-size:12px;color:var(--muted);font-weight:700}
+  .sb-kudos-send{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .sb-kudos-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .sb-kudos-b{min-height:44px;padding:8px 13px;border-radius:12px;border:1px solid var(--line);background:var(--paper,var(--bg2));color:var(--text);font-weight:700;font-size:13.5px;text-align:left}
+  .sb-kudos-b:hover{border-color:var(--accent)}
+  /* P3.29 the tab-root head: title left, chips beside it, actions right, no back pill (app3 tabHead) */
+  .sb-thead{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:0 0 12px;min-height:44px}
+  .sb-thead-t{display:flex;align-items:center;gap:9px;margin:0;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;color:var(--text);min-width:0}
+  .sb-thead-ic{flex:none;display:inline-flex;align-items:center;line-height:0}
+  .sb-thead-m{font-size:12.5px;font-weight:700;color:var(--muted)}
+  .sb-thead-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .sb-thead-r{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .sb-thead-s{margin:-4px 0 14px;color:var(--muted);font-size:13px;max-width:52em}
+  .bz-looksec .bz-frames{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  @media(max-width:480px){.bz-tab{font-size:13px;gap:5px;padding:0 4px;white-space:nowrap}.bz-tab svg{display:none!important}.bz-looksec .bz-fcard{padding:12px 8px}}
   .bz-hist{margin-top:18px}
   .bz-hist h3,.bz-sub{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-family:'Fraunces',var(--display);font-weight:800;font-size:16px}
   .bz-ledger{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column}
@@ -571,7 +625,8 @@
   .bz-dr-av>svg,.bz-dr-av>img{width:44px;height:44px}
   .bz-dr-who{min-width:0;flex:1;display:flex;flex-direction:column}
   .bz-dr-who b{font-family:'Fraunces',var(--display);font-weight:800;font-size:17px;line-height:1.15}
-  .bz-dr-who span{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);font-weight:700}
+  .bz-dr-who>span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--muted);font-weight:700}
+  .bz-dr-av.bz-bg{width:54px;height:54px;border-radius:14px}
   .bz-dr-mute,.bz-dr-x{width:44px;height:44px;flex:none;border-radius:12px;background:var(--surface2);border:1px solid var(--line);color:var(--text);display:grid;place-items:center}
   .bz-dr-mute[aria-pressed="true"]{background:var(--action,var(--accent));color:var(--action-ink,#fff);border-color:var(--action,var(--accent))}
   .bz-dr-nav{display:flex;flex-direction:column;gap:1px}
@@ -684,7 +739,9 @@
     background:transparent;border:0;color:var(--text);font-weight:800;font-size:15px;cursor:pointer}
   .sb-fam-row.on{background:var(--chip)}
   .sb-fam-rowav{width:34px;height:34px;flex-shrink:0;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--surface2);line-height:0}
-  .sb-fam-rown{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sb-fam-rown{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+  .sb-fam-rownm,.sb-fam-rowl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sb-fam-rowl{font-size:12px;font-weight:700;color:var(--muted)}
   .sb-fam-rown i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;
     border-radius:999px;background:var(--treasure-tint,#FFF3D6);color:var(--treasure-deep,#8A5B00);margin-left:4px}
   .sb-fam-tick{color:var(--accent);font-weight:900}
@@ -1362,47 +1419,12 @@
   /* a phone held sideways is ~390px tall: Start stays on screen while the choices scroll under it
      (games spec §2.8, "Landscape: Start above the fold") */
   @media (orientation:landscape) and (max-height:560px){ .arcm-go{position:sticky;bottom:6px;z-index:2;margin-top:14px} }
-  /* Who Wants to Be a Bizzillionaire — money-ladder quiz overlay. */
-  .bz-play{position:fixed;inset:0;z-index:120;background:radial-gradient(120% 90% at 50% 0%,#173a5c,#0c1f38 60%,#081627);color:#fff;display:flex;flex-direction:column;overflow:auto}
+  /* Bizzillionaire's money-ladder overlay CSS (.bz-play … .bz-rsub) is deleted (road to 4.5, P3.6): the game left in the
+     games rebuild (it is Word Lore's Ladder), nothing has drawn a .bz-play since, and its navy broke the art direction. */
   /* The Vocabulary card's four buttons (Back · Hear it · + meaning · Next) needed ~425px and made
      #/vocab 391px wide on a 390px phone (audit v4 §4). On a phone they wrap into two full rows. */
   .voc-nav>button{white-space:nowrap;justify-content:center;min-height:44px}
   @media (max-width:520px){ .voc-nav{flex-wrap:wrap} .voc-nav>button{flex:1 1 auto} }
-  .bz-top{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:12px 16px}
-  .bz-back{color:#fff;font-weight:800;font-size:14px;background:rgba(255,255,255,.14);border:0;border-radius:9px;padding:8px 13px;cursor:pointer}
-  .bz-title{font-family:var(--display);font-weight:800;font-size:17px}
-  .bz-body{flex:1;display:grid;grid-template-columns:1fr 200px;gap:18px;padding:6px 18px 24px;max-width:940px;margin:0 auto;width:100%;align-items:start}
-  .bz-stage{min-width:0}
-  .bz-q{font-family:var(--display);font-weight:800;font-size:clamp(19px,3.2vw,26px);line-height:1.25;text-align:center;margin:14px 0 18px;min-height:2.2em}
-  .bz-hint{background:rgba(255,214,102,.16);border:1px solid rgba(255,214,102,.4);color:#FFE9B0;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.45;margin-bottom:14px}
-  .bz-answers{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .bz-ans{display:flex;align-items:center;gap:10px;text-align:left;padding:14px 16px;border-radius:13px;background:rgba(9,22,40,.72);border:2px solid #2E6C9E;color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:.14s;min-height:56px}
-  .bz-ans:hover{background:rgba(23,58,92,.9);border-color:#48A0D8}
-  .bz-ans.hidden{visibility:hidden;pointer-events:none}
-  .bz-ans.picked{background:#C8901B;border-color:#FFD24D;color:#241503}
-  .bz-ans.right{background:#1E7D45;border-color:#4FD98A;color:#fff;animation:bz-pulse .5s ease}
-  .bz-ans.wrong{background:#B33028;border-color:#FF7A6E;color:#fff}
-  @keyframes bz-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-  .bz-al{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);font-family:var(--display);font-weight:800;font-size:13px}
-  .bz-at{min-width:0}
-  .bz-lifelines{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
-  .bz-ll{padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);color:#fff;font-weight:800;font-size:13px;cursor:pointer}
-  .bz-ll:hover{background:rgba(255,255,255,.22)}
-  .bz-ll.used{opacity:.32;text-decoration:line-through;cursor:default}
-  .bz-ladder{background:rgba(6,16,30,.5);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:2px}
-  .bz-rung{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 11px;border-radius:8px;font-weight:800;font-size:12.5px;color:#9FB6CE}
-  .bz-rung .bz-rn{opacity:.7;font-variant-numeric:tabular-nums}
-  .bz-rung .bz-rv{font-variant-numeric:tabular-nums}
-  .bz-rung.safe{color:#FFE9B0}
-  .bz-rung.passed{color:#5FD98F}
-  .bz-rung.on{background:#C8901B;color:#241503;box-shadow:0 2px 10px rgba(200,144,27,.5)}
-  .bz-load{text-align:center;padding:60px 0;font-size:16px;color:#BFD4EA}
-  .bz-result{text-align:center;padding:30px 10px}
-  .bz-rh{font-family:var(--display);font-weight:800;font-size:22px;margin-top:8px}
-  .bz-rmoney{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,46px);color:#FFD24D;margin:2px 0}
-  .bz-rsub{font-size:14px;color:#BFD4EA}
-  @media(max-width:720px){ .bz-body{grid-template-columns:1fr} .bz-answers{grid-template-columns:1fr}
-    .bz-ladder{flex-direction:row;flex-wrap:wrap;order:-1} .bz-rung{flex:1 1 auto;flex-direction:column;gap:0;padding:5px 8px} }
   /* ---- The Word Atlas map: pins on painted art ---- */
   /* The painting is scenery; the journey is the subject. The route and its stops are
      drawn OVER the art (the SVG at z-index 2, the pins above that), so taking the
@@ -2036,7 +2058,7 @@
      unrolls. The board is as wide as the painting; the scroll clamp does the
      revealing — nothing on screen is ever veiled. ── */
   .mw-board{width:max-content;max-width:none}
-  .mw-board>img{width:auto;height:min(60vh,470px);min-height:330px}
+  .mw-board>img{width:auto;height:calc(min(60vh,470px) * var(--az,1));min-height:calc(330px * var(--az,1))}
   .mw-lm{position:absolute;z-index:4;transform:translate(-50%,-50%);width:56px;text-align:center;
     background:none;border:0;padding:0;cursor:pointer;transition:transform .15s}
   .mw-lm:hover{transform:translate(-50%,-50%) scale(1.1)}
@@ -2355,6 +2377,17 @@
   .act-pan::-webkit-scrollbar{height:6px}
   .act-pan::-webkit-scrollbar-thumb{background:rgba(120,100,180,.4);border-radius:99px}
   .act-board{border-radius:22px;box-shadow:none}
+  /* P3.28 zoom: the painting grows (--az), the pins keep their size; zoomed, the window keeps its height and pans both ways */
+  .act-pan{touch-action:pan-x pan-y}
+  .act-pan.zoomed{overflow:auto}
+  .act-board:not(.mw-board){width:calc(100% * var(--az,1));min-width:calc(var(--aw,0px) * var(--az,1))}
+  .act-board .atlas-sd{position:relative}
+  .act-board .atlas-sd::after{content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);border-radius:50%}
+  .act-zoom{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:999px;background:var(--surface2);border:1px solid var(--line)}
+  .act-zoom button{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--text);display:grid;place-items:center}
+  .act-zoom button:disabled{opacity:.35}
+  .act-zoom-n{min-width:40px;text-align:center;font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+  @media (max-width:480px){ .act-zoom-n{display:none} .act-zoom{gap:0} }
   .atlas-stop{position:absolute;transform:translate(-50%,-50%);z-index:var(--pz,3);background:none;padding:0;cursor:pointer;
     transition:transform .16s ease;line-height:0}
   .atlas-stop:hover,.atlas-stop:focus-visible{transform:translate(-50%,-50%) scale(1.12);z-index:7}

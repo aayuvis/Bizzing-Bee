@@ -23,6 +23,13 @@
       advLine → the line check and the "words only" check fail (2).
    4. The road sign at a region's earned edge is never cut by a phone's window (audit v4 §4).
    5. A region's board says what it teaches (audit v4 D2), read from its own stops.
+   8. A region board ZOOMS (road to 4.5, P3.28): two fingers on a phone, the − / + buttons, the + / − / 0 keys and a
+      trackpad's pinch (Ctrl + the wheel) grow the painting around the point under them; the window keeps its height and
+      the page is never zoomed; the markers keep their size and a 44px hit area; the stop card still fits the window; the
+      window never passes the earned edge; a region opens as drawn. Proved by breaking (13 Oct 2026): the hit area's
+      ::after hidden → the 44px check fails; the camera clamp measured against a doubly-zoomed width → the earned-edge
+      check fails; the point under the fingers not kept → "stays put" fails (its tolerance was 3% and let that through
+      — it is 0.5% now, the gesture holding to 0.0%).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/atlas-layout.cjs */
 const { chromium } = require('playwright');
 const SRC = process.env.SRC || __dirname + '/..';
@@ -237,6 +244,133 @@ const atlas = (pg, mode, dev) => pg.evaluate(async ([mode, dev]) => {
     ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0] : ''));
     await pg.close();
   }
+  /* ---------- 8. a region board zooms (road to 4.5, P3.28): a pinch, the − / + buttons, the keys ---------- */
+  {
+    const settle = async (pg) => pg.evaluate(async () => { const raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      const t0 = performance.now(); while (performance.now() - t0 < 15000) { const i = document.querySelector('#sb-pan img'); if (i && i.complete && i.naturalWidth > 0) break; await raf(); } await raf(); await raf(); });
+    const Z = (pg) => pg.evaluate(() => { const pan = document.getElementById('sb-pan'), bd = pan && pan.firstElementChild, img = bd && bd.querySelector('img');
+      const sds = [...document.querySelectorAll('#sb-pan .atlas-stop .atlas-sd')].map(e => Math.round(e.getBoundingClientRect().width));
+      return { w: img ? Math.round(img.getBoundingClientRect().width) : 0, h: pan ? Math.round(pan.getBoundingClientRect().height) : 0, sd: sds.join(','),
+        pct: ((document.querySelector('.act-zoom-n') || {}).textContent || '').trim(), scale: (window.visualViewport || { scale: 1 }).scale }; });
+    const fracAt = (pg, x) => pg.evaluate(([x]) => { const pan = document.getElementById('sb-pan'); const r = pan.getBoundingClientRect(); return (pan.scrollLeft + x - r.left) / pan.firstElementChild.offsetWidth; }, [x]);
+    /* a phone: two fingers */
+    { const { pg, errs } = await boot(b, 390, 844);
+      await pg.evaluate(() => { state.devUnlock = false; app.trailToMap(); app.trailAct('honey|meadow'); }); await settle(pg);
+      const z0 = await Z(pg);
+      const box = await pg.evaluate(() => { const r = document.getElementById('sb-pan').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      const frac0 = await fracAt(pg, box.x);
+      const cdp = await pg.context().newCDPSession(pg);
+      const touch = (type, d) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x: box.x - d, y: box.y, id: 1 }, { x: box.x + d, y: box.y, id: 2 }] });
+      await touch('touchStart', 30); for (let d = 34; d <= 60; d += 4) { await touch('touchMove', d); await pg.waitForTimeout(16); } await touch('touchEnd', 0);
+      await pg.waitForTimeout(400); await settle(pg);
+      const z1 = await Z(pg), frac1 = await fracAt(pg, box.x);
+      const ratio = z1.w / z0.w;
+      ok(ratio > 1.8 && ratio < 2.1 && Math.abs(z1.h - z0.h) <= 2 && z1.scale === 1 && /^(19|20)\d%$/.test(z1.pct),
+        `390px: a pinch (fingers 60 → 120px apart) grows the painting ${ratio.toFixed(2)}× (${z0.w} → ${z1.w}px, the bar says ${z1.pct}), the window keeps its height (${z0.h} → ${z1.h}) and the page itself is not zoomed (${z1.scale})`);
+      ok(Math.abs(frac1 - frac0) < 0.005, `390px: the point between the fingers stays put (${(frac0 * 100).toFixed(1)}% → ${(frac1 * 100).toFixed(1)}% of the board)`);
+      ok(z1.sd === z0.sd && z0.sd.length > 0, `390px: the stop markers keep their size while the painting grows (${z0.sd})`);
+      /* every marker's hit area is 44px: probes 20px out from a marker's centre land on that marker, never on the bare board */
+      const hits = await pg.evaluate(async () => { const out = { n: 0, bare: [] }; const pan = document.getElementById('sb-pan');
+        app.trailShut(); await new Promise(r => setTimeout(r, 60));   /* no card over the road while it is probed */
+        /* zoomed, the road runs past the window both ways: bring each stop into view (as a child pans to it), then probe it */
+        for (const st0 of [...document.querySelectorAll('#sb-pan .atlas-stop')]) { const arg = st0.dataset.arg;
+          const p2 = document.getElementById('sb-pan'), st = p2.querySelector('.atlas-stop[data-arg="' + arg + '"]'); if (!st) continue;
+          p2.scrollTop = Math.max(0, st.offsetTop - p2.clientHeight / 2); p2.scrollLeft = Math.max(0, st.offsetLeft - p2.clientWidth / 2);
+          await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+          const w = p2.getBoundingClientRect(), r = st.querySelector('.atlas-sd').getBoundingClientRect(); const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+          if (cx < w.left + 24 || cx > w.right - 24 || cy < w.top + 24 || cy > w.bottom - 24) continue; out.n++;
+          for (const [dx, dy] of [[20, 0], [-20, 0], [0, 20], [0, -20]]) { const e = document.elementFromPoint(cx + dx, cy + dy);
+            if (e && (e.classList.contains('act-board') || e.tagName === 'IMG' || (e.closest && e.closest('svg') && !e.closest('.atlas-stop')))) out.bare.push(arg + '@' + dx + ',' + dy); } }
+        return out; });
+      ok(hits.n >= 2 && !hits.bare.length, `390px zoomed: every marker in view answers a tap 20px from its centre — a 44px target (${hits.n} markers${hits.bare.length ? '; bare board at ' + hits.bare.slice(0, 4).join(' ') : ''})`);
+      /* the stop card still fits the window, zoomed */
+      const pop = await pg.evaluate(async () => { const raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        const args = [...document.querySelectorAll('.atlas-stop')].map(e => +e.dataset.arg); const out = [];
+        for (const a of [args[0], args[Math.floor(args.length / 2)], args[args.length - 1]]) {
+          /* the window first turned AWAY from the stop (zoomed, the board is twice the window's height): the pick must bring
+             the stop and its card into view (trail.js azAfter, _azOwed) — panTo only ever moves the camera sideways */
+          const pn = document.getElementById('sb-pan'), sp = pn && pn.querySelector('.atlas-stop[data-arg="' + a + '"]');
+          if (sp) { pn.scrollTop = sp.offsetTop > pn.scrollHeight / 2 ? 0 : pn.scrollHeight; pn.dispatchEvent(new Event('scroll')); await raf(); }
+          app.trailPick(a);
+          /* wait on the state, not a sleep (a lazy file landing re-renders the board, and its painting can be a beat behind):
+             the board laid out, the camera brought to the stop, the card still for two frames running */
+          let prev = '', same = 0;
+          for (let i = 0; i < 90 && same < 2; i++) { await raf(); const p0 = document.querySelector('.atlas-pop'), pn = document.getElementById('sb-pan'), b0 = pn && pn.firstElementChild;
+            const r0 = p0 && b0 && b0.offsetWidth >= pn.clientWidth ? p0.getBoundingClientRect() : null;
+            const k = r0 ? [Math.round(r0.left), Math.round(r0.top), Math.round(pn.scrollLeft), Math.round(pn.scrollTop)].join() : '';
+            if (k && k === prev) same++; else same = 0; prev = k; }
+          await new Promise(r => setTimeout(r, 120)); await raf();
+          const p = document.querySelector('.atlas-pop'), pan = document.getElementById('sb-pan'); if (!p) { out.push('no card'); continue; }
+          const pr = p.getBoundingClientRect(), wr = pan.getBoundingClientRect(); const L = Math.max(0, wr.left), R = Math.min(innerWidth, wr.right);
+          if (pr.left < L - 1 || pr.right > R + 1 || pr.top < wr.top - 1 || pr.bottom > wr.bottom + 1) out.push(a + ': ' + Math.round(pr.left) + '–' + Math.round(pr.right) + ' / ' + Math.round(pr.top) + '–' + Math.round(pr.bottom) + ' in ' + Math.round(L) + '–' + Math.round(R) + ' / ' + Math.round(wr.top) + '–' + Math.round(wr.bottom)); }
+        return { out, z: (document.querySelector('.act-zoom-n') || {}).textContent }; });
+      ok(!pop.out.length, `390px zoomed (${pop.z}): the stop card stays inside the window for the first, middle and last stops${pop.out.length ? ' — ' + pop.out.join(' | ') : ''}`);
+      /* the reveal law holds zoomed: the window never passes the earned edge */
+      const rv = await pg.evaluate(async () => { const raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        let pan = document.getElementById('sb-pan'); pan.scrollLeft = 1e6; pan.dispatchEvent(new Event('scroll')); await new Promise(r => setTimeout(r, 80));
+        /* a lazy file landing in that wait re-renders the board (it once measured a detached one: NaN%): measure the board
+           on the page, once it is laid out and its camera is back */
+        for (let i = 0; i < 60; i++) { pan = document.getElementById('sb-pan'); const b0 = pan && pan.firstElementChild; if (b0 && b0.offsetWidth > pan.clientWidth && pan.scrollLeft > 0) break; await raf(); }
+        /* the sign hangs 1.2% short of the earned edge (trail.js livLayer): the edge is its left + 1.2 */
+        const bd = pan.firstElementChild, sg = pan.querySelector('.mw-sign'); return { right: (pan.scrollLeft + pan.clientWidth) / bd.offsetWidth, edge: sg ? (parseFloat(sg.style.left) + 1.2) / 100 : null }; });
+      /* and it REACHES the edge: a window that stayed short (a camera lost on a render) is not the reveal law holding */
+      ok(rv.edge != null && rv.right <= rv.edge + 0.005 && rv.right >= rv.edge - 0.02, `390px zoomed: panning to the far right stops at the earned edge (${(rv.right * 100).toFixed(1)}% of the board, edge ${rv.edge != null ? (rv.edge * 100).toFixed(1) : '—'}%)`);
+      /* the − button, by a tap; a region opens as drawn */
+      await pg.tap('.act-zoom [data-arg="out"]'); await pg.waitForTimeout(300); const z2 = await Z(pg);
+      await pg.evaluate(() => { app.trailToMap(); app.trailAct('honey|meadow'); }); await settle(pg); const z3 = await Z(pg);
+      ok(z2.w < z1.w && z2.w > z0.w && z3.w === z0.w && z3.pct === '100%', `390px: a tap on − steps it back (${z1.w} → ${z2.w}px), and the region opens as drawn next time (${z3.w}px, ${z3.pct})`);
+      const btn = await pg.evaluate(() => [...document.querySelectorAll('.act-zoom button')].map(e => { const r = e.getBoundingClientRect(); return Math.round(Math.min(r.width, r.height)) + ':' + e.getAttribute('aria-label'); }));
+      ok(btn.length === 2 && btn.every(x => +x.split(':')[0] >= 44 && /Zoom (in|out)/.test(x)), `390px: the − and + buttons are 44px and named (${btn.join(', ')})`);
+      /* the same pinch when the render that ENDS it draws the board before its painting is laid out — a fresh <img> can be
+         a beat behind, from the cache too, and under load it was: the camera put back on a board with no width was clamped
+         to 0, read back as the camera, and the window landed on the board's left edge (5.6% → 2.9%, one full-suite run in
+         three). The painting is held back for that one render here, so every run is the slow machine. Proved by breaking:
+         trail.js azStep/azAfter putting the camera back at once (before azLaid) → fails, 5.6% → 2.9%. */
+      const box2 = await pg.evaluate(() => { const r = document.getElementById('sb-pan').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      const g0 = await fracAt(pg, box2.x);
+      const touch2 = (type, d) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x: box2.x - d, y: box2.y, id: 1 }, { x: box2.x + d, y: box2.y, id: 2 }] });
+      await touch2('touchStart', 30); for (let d = 34; d <= 60; d += 4) { await touch2('touchMove', d); await pg.waitForTimeout(16); }
+      await pg.evaluate(() => { const R = window.__R = window.render; window.render = function () { const out = R.apply(this, arguments);
+        const i = document.querySelector('#sb-pan img'); if (i && !window.__held) { window.__held = 1; const s = i.getAttribute('src'); i.removeAttribute('src'); setTimeout(() => i.setAttribute('src', s), 150); }
+        return out; }; });
+      await touch2('touchEnd', 0); await pg.waitForTimeout(400); await settle(pg);
+      const held = await pg.evaluate(() => { window.render = window.__R; return !!window.__held; }), g1 = await fracAt(pg, box2.x), z4 = await Z(pg);
+      ok(held && /^(19|20)\d%$/.test(z4.pct) && Math.abs(g1 - g0) < 0.005, `390px: and when the render that ends the pinch draws the board before its painting is in, the point still stays put (${(g0 * 100).toFixed(1)}% → ${(g1 * 100).toFixed(1)}%, ${z4.pct}${held ? '' : ', the painting was never held'})`);
+      /* …and when a render lands in the MIDDLE of the pinch (a lazy file arriving) and draws the board before its painting
+         is in: the moves after it must start from the camera KEPT, not from the new board's 0,0 — under load the first
+         pinch above went 5.6% → 4.0% and 5.6% → 2.9% in two runs of three. That render is forced here, its painting held
+         back, so every run meets it. Proved by breaking: trail.js azLive reading the new board's scroll (not the kept
+         camera) → fails. */
+      await pg.evaluate(() => app.atlasZoom('fit')); await pg.waitForTimeout(300); await settle(pg);
+      const h0 = await fracAt(pg, box2.x); let mv = 0;
+      await touch2('touchStart', 30);
+      for (let d = 34; d <= 60; d += 4) { await touch2('touchMove', d);
+        if (++mv === 3) await pg.evaluate(() => { window.__held = 0; const R = window.render;
+          window.render = function () { const out = R.apply(this, arguments); const i = document.querySelector('#sb-pan img');
+            if (i && !window.__held) { window.__held = 1; const s = i.getAttribute('src'); i.removeAttribute('src'); setTimeout(() => i.setAttribute('src', s), 150); } return out; };
+          render(); window.render = R; });
+        await pg.waitForTimeout(16); }
+      await touch2('touchEnd', 0); await pg.waitForTimeout(400); await settle(pg);
+      const held2 = await pg.evaluate(() => !!window.__held), h1 = await fracAt(pg, box2.x), z5 = await Z(pg);
+      ok(held2 && /^(19|20)\d%$/.test(z5.pct) && Math.abs(h1 - h0) < 0.005, `390px: and when a render lands in the middle of the pinch, before its painting is in, the point still stays put (${(h0 * 100).toFixed(1)}% → ${(h1 * 100).toFixed(1)}%, ${z5.pct}${held2 ? '' : ', the painting was never held'})`);
+      ok(!errs.length, '390px zoom: no page errors' + (errs.length ? ': ' + errs[0] : ''));
+      await pg.close(); }
+    /* a desktop: the keys and a trackpad's pinch */
+    { const { pg, errs } = await boot(b, 1280, 900);
+      await pg.evaluate(() => { state.devUnlock = false; app.trailToMap(); app.trailAct('honey|forum'); }); await settle(pg);
+      const a0 = await Z(pg); await pg.keyboard.press('+'); await pg.waitForTimeout(200); await pg.keyboard.press('='); await pg.waitForTimeout(250);
+      const a1 = await Z(pg); await pg.keyboard.press('-'); await pg.waitForTimeout(250); const a2 = await Z(pg);
+      await pg.keyboard.press('0'); await pg.waitForTimeout(250); const a3 = await Z(pg);
+      ok(a1.pct === '156%' && Math.abs(a1.w / a0.w - 1.5625) < 0.03 && a2.pct === '125%' && a3.pct === '100%' && a3.w === a0.w,
+        `1280px: + and = zoom in (${a1.pct}, ${a0.w} → ${a1.w}px), − steps out (${a2.pct}), 0 shows the whole board (${a3.pct})`);
+      const r = await pg.evaluate(() => { const b = document.getElementById('sb-pan').getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+      await pg.mouse.move(r.x, r.y); await pg.keyboard.down('Control'); await pg.mouse.wheel(0, -240); await pg.keyboard.up('Control'); await pg.waitForTimeout(500);
+      const a4 = await Z(pg);
+      ok(a4.w > a0.w * 1.5 && a4.scale === 1, `1280px: a trackpad's pinch (Ctrl + the wheel) zooms the board, not the page (${a0.w} → ${a4.w}px)`);
+      ok(!errs.length, '1280px zoom: no page errors' + (errs.length ? ': ' + errs[0] : ''));
+      await pg.close(); }
+  }
+
   await b.close();
   console.log(fails ? `\n${fails} FAILED\n` : '\nall good\n');
   process.exit(fails ? 1 : 0);

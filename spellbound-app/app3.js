@@ -248,7 +248,9 @@ function trickAnal(w){ if(w._tk) return w._tk;
    lazy file had landed, so each one carried a score with NO homophone bonus (SB_HOM is in sounds-data.js, lazy) for
    the rest of the visit — the score every list, ladder and cluster order a returning speller saw was built on. Home no
    longer touches the records, so when `words1` lands they are scored here, the same way, before anything reads them. */
-function trickSeal(recs){ recs=recs||(window.SB_DATA&&SB_DATA.nsf)||[]; const h=_homIdx; _homIdx=Object.create(null);
+function trickSeal(recs){ recs=recs||(window.SB_DATA&&SB_DATA.nsf)||[];
+  if(!window.SB_TIER1_N) window.SB_TIER1_N=recs.length;   /* the boot tier's size, kept: a reader that must not change when words2 appends (the Quotes tool's words, P3.21) cuts here */
+  const h=_homIdx; _homIdx=Object.create(null);
   try{ for(const w of recs) if(w&&w.w&&!w._tk) trickRaw(w,true); }finally{ _homIdx=h; } }
 function trickRaw(w,keep){
   const s=String(w.w||'').toLowerCase(), p=String(w.p||'');
@@ -464,6 +466,31 @@ function oneLevel(c){ c=c||active(); const r=rankOf(c); const lp=levelFromXp(r.x
     label:'Level '+r.level+' · '+rankName(r.form) }; }
 window.SB_ONE_LEVEL = oneLevel;
 function rankArt(i,size){ try{ return evEmb('spellbound',Math.max(0,Math.min(9,i|0))).replace('width="54" height="58"','width="100%" height="100%"'); }catch(e){ return ''; } }
+/* WHERE A WORD'S ORIGIN WAS CHECKED (road to 4.5, P3.31 — rubric Z1, sources on factual content). Of the app's
+   etymology, only Word Forge's table names a source dictionary: each row cites the entry it was checked against
+   (forge-data.js `src.entry`) and the table names the dictionary (`sources.etymology`). So an etymology card names a
+   source ONLY for those words, with the facts that row took from it (its origin language and donor form) — read from
+   that data, never typed here. Every other word's card names none, because its data names none (the library's own
+   lines are written for this app — LICENSES-THIRD-PARTY.md). The table is lazy (`forgeData`, on the idle queue): until
+   it lands a card names nothing and asks for it. Shown on the word card, the set deck and My Feed's origin cards.
+   Guard: tests/etym-source.cjs. */
+function etymSource(w){ const F=window.SB_FORGE;
+  if(!F||!F.rows){ try{ if(window.SB_LAZY&&!etymSource.asked){ etymSource.asked=1; SB_LAZY.need('forgeData',()=>{ try{ render(); }catch(e){} }); } }catch(e){} return null; }
+  if(!F._srcIx){ const ix={}; F.rows.forEach(r=>{ if(r&&r.w&&r.src&&r.src.entry) ix[nkey(r.w)]=r; }); F._srcIx=ix; }
+  const r=F._srcIx[nkey(w||'')], name=String((F.sources||{}).etymology||'').split(' — ')[0].trim();
+  return r&&name?{ name, entry:String(r.src.entry), from:[r.origin,r.etym].filter(Boolean).join(' ') }:null; }
+function etymSrcHTML(w){ const s=etymSource(w); if(!s) return '';
+  return `<div class="sb-etym-src" data-etym-src><b>Source</b> ${esc(s.name)}${s.from?' · '+esc(s.from):''} <span>${esc(s.entry.replace(/^https?:\/\/(www\.)?/,''))}</span></div>`; }
+/* KUDOS (road to 4.5, P3.30 — family and social). A sibling, or a grown-up behind the PIN, sends a child ONE of these
+   fixed kind lines. Nothing is typed, so no child writes free text and a kudos can never say anything but these (the
+   family's child-data rule). Kept on the child who receives it as {f: the sender's first name, or '' for a grown-up,
+   m: the line's index, t} — the newest twelve; never uploaded (supabase-sync's PROGRESS_KEYS allow-list does not
+   carry it). A child sends each sibling at most one a day. Home shows a quiet chip while one is unseen; My page holds
+   them (app3-grownups.js kudosCard), the Parent Zone sends them. Guard: tests/kudos.cjs. */
+const KUDOS=['Great spelling today!','You worked really hard.','Proud of you for not giving up.','That was a tricky word. Well done!','Keep going, you are doing great.','Thanks for practising with me.'];
+function kudosNew(c){ const s=(c&&c.kudosSeen)||0; return ((c&&c.kudos)||[]).filter(k=>k&&k.t>s&&KUDOS[k.m]); }
+function kudosChip(c){ const n=kudosNew(c); if(!n.length) return ''; const k=n[n.length-1];
+  return `<button data-act="openKudos" class="sb-kudos-chip">${iconSVG('heart',13,2.4)} ${esc(k.f||'A grown-up')} sent you kudos</button>`; }
 const milestone = () => { const c=active(); let m=c.milestone; if((!m||!m.date) && state.coachDate) m={label:(m&&m.label)||'the bee', date:state.coachDate};
   if(!m||!m.date) return null; const d=Math.ceil((new Date(m.date+'T00:00:00') - new Date())/86400000);
   return d>=0?{ days:d, label:m.label||'the bee', date:m.date }:null; };
@@ -1855,9 +1882,9 @@ const LIB_DOORS=[['Concepts','setNav','concepts'],['Theme Journeys','setNav','th
   ['Idioms & Similes','setNav','figurative'],['Bizzing Trivia','openTrivTrain',''],['The Sound Alphabet','openIpaTrain',''],
   ['Typing Trainer','openTyping',''],['Quotes & Poems','openQuotes','']];   // the Library's tiles, act for act (viewExplore)
 const placeKey=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
-let _placeIdx=null;
+let _placeIdx=null, _medalNames=null;
 function placeIndex(){ if(_placeIdx) return _placeIdx;
-  const P=[], seen=new Set(); const add=(kind,t,go)=>{ const k=placeKey(t); if(!k||seen.has(k)) return; seen.add(k); P.push({kind,t,k,go,rank:P.length}); };
+  const P=[], seen=new Set(); const add=(kind,t,go,sec)=>{ const k=placeKey(t); if(!k||seen.has(k)) return; seen.add(k); P.push({kind,t,k,go,rank:P.length,sec:!!sec}); };
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.acts||[]).forEach(a=>add('Word Atlas region',String(a.title||'').replace(/^Act [IVXLC]+\s*·\s*/,''),'r|honey|'+a.id)); } }catch(e){}
   LIB_DOORS.forEach(([t,a,g])=>add('Library',t,'a|'+a+'|'+g));
@@ -1866,14 +1893,23 @@ function placeIndex(){ if(_placeIdx) return _placeIdx;
   try{ const T=window.SB_TRAIL;
     if(T&&T.honey){ (T.honey.units||[]).forEach(u=>{ const raw=String(u.title||''); const cut=raw.indexOf(' — '); add('Word Atlas stop',cut>0?raw.slice(0,cut):raw,'u|'+u.id); }); } }catch(e){}
   try{ const ch=((window.SB_CONCEPTS||{}).chapters||[]).concat(((window.SB_ADV_CONCEPTS||{}).chapters||[]));   // state.conceptData's order — the route's index
-    ch.forEach((x,i)=>{ if(x&&x.title) add('Concept chapter',x.title,'c|'+i); }); }catch(e){}
+    ch.forEach((x,i)=>{ if(x&&x.title) add('Concept chapter',x.title,'c|'+i); });
+    /* WHAT IS INSIDE A CHAPTER, AND THE MEDALS (road to 4.5, P3.27). A chapter's cards are its contents ("Find the
+       beats", "Two faces of c"); a heading three or more chapters share ("The Root", "The Core") names no one place and
+       is left out. A row opens its CHAPTER through the chapter's own route, so its lock holds; a medal opens the Medals
+       shelf through the drawer's row. Both are SECOND to every place above (sec): a search that found a place still
+       finds it first, and these fill the rows a place did not. */
+    const many={}; ch.forEach(x=>((x&&x.cards)||[]).forEach(k=>{ const q=placeKey(k&&k.title); if(q) many[q]=(many[q]||0)+1; }));
+    ch.forEach((x,i)=>{ if(!x||!x.title) return; const short=String(x.title).split(' — ')[0];
+      (x.cards||[]).forEach(k=>{ if(k&&k.title&&many[placeKey(k.title)]<=2) add('In the chapter '+short,k.title,'c|'+i,1); }); }); }catch(e){}
+  try{ (_medalNames||(_medalNames=badgeDefs().map(b=>String(b.name||'')).filter(Boolean))).forEach(n=>add('Medal',n,'a|drawer|medals',1)); }catch(e){}
   if(window.SB_TRAIL) _placeIdx=P;   // keep rebuilding until the Atlas is in
   return P; }
 try{ window.addEventListener('sb-lazy',e=>{ if(/^(trail|concepts|advConcepts)$/.test(e&&e.detail)) _placeIdx=null; }); }catch(e){}
 function suggestPlaces(q, n){ q=placeKey(q); n=n||3; if(q.length<3) return [];
   const out=[];
   for(const p of placeIndex()){ const i=(' '+p.k).indexOf(' '+q); if(i<0) continue;
-    out.push({place:p.go, w:p.t, d:p.kind, s:(p.k===q?0:(i===0?1:2))*1e4+p.rank}); }
+    out.push({place:p.go, w:p.t, d:p.kind, s:(p.sec?3e4:0)+(p.k===q?0:(i===0?1:2))*1e4+p.rank}); }
   return out.sort((a,b)=>a.s-b.s).slice(0,n); }
 /* The bar's list: an exact word first, then up to three places, then the other words — seven rows. */
 function headerSuggest(q){ const pl=suggestPlaces(q,3); const ws=suggestWords(q,7-pl.length);
@@ -2951,6 +2987,8 @@ const app = {
     state.sessionWords=words; state.sessionLabel=conceptShort(ch.title); state.gi=0; state.conceptSel=null; app.startTrain(); },
   // drawer
   openDrawer:()=>set({drawerOpen:true}), closeDrawer:()=>set({drawerOpen:false}),
+  /* Home's kudos chip: My page, where the kudos are (P3.30) */
+  openKudos:()=>{ state.progTab='me'; app.setNav('progress'); },
   drawer:(key)=>{ state.drawerOpen=false; const F={ mypage:()=>{ state.progTab='me'; app.setNav('progress'); }, medals:()=>{ state.collTab='badges'; app.openCollection(); }, help:()=>set({nav:'help', screen:'app', conceptSel:null}), evolution:()=>app.openEvo(), home:()=>app.setNav('home'), next:()=>app.goNext(), levelup:()=>app.startLevelUp(), games:()=>app.openGames(), concepts:()=>app.setNav('concepts'),
     trail:()=>app.openTrail&&app.openTrail(), revisions:()=>app.openRevisions(), ipatrain:()=>app.openIpaTrain(),
       coach:()=>app.openCoach(), journeys:()=>app.openJourneys(), study:()=>app.coachStudy(), written:()=>app.startWritten(), oral:()=>app.startOral(),
@@ -3130,8 +3168,8 @@ const app = {
      so the buy button now sits on the thing itself. openShop survives only as a
      redirect, so old entry points (deep links, the drawer) land somewhere sensible
      instead of a blank screen. */
-  /* THE SHOP (FIX-BEE v2): Avatars · Worlds · Extras, then the wallet history. From ☰ and the coin chip. */
-  openShop:(tab)=>{ state.walletOpen=false; state.drawerOpen=false; state.shopTab=({avatars:1,worlds:1,extras:1})[tab]?tab:(state.shopTab||'avatars'); set({nav:'shop', screen:'app', conceptSel:null}); },
+  /* THE SHOP (FIX-BEE v2): Avatars · Worlds · Extras · Grand Prix, then the wallet history. From ☰ and the coin chip. */
+  openShop:(tab)=>{ state.walletOpen=false; state.drawerOpen=false; state.shopTab=({avatars:1,worlds:1,extras:1,race:1})[tab]?tab:(state.shopTab||'avatars'); set({nav:'shop', screen:'app', conceptSel:null}); },
 
   openWallet:()=>{ state.drawerOpen=false; try{ walletSync(active()); }catch(e){} set({walletOpen:true}); },
   closeWallet:()=>set({walletOpen:false}),
@@ -3618,10 +3656,10 @@ const SCR_ACTS = {
     'practiceRevisions revTab reviseHistoryAgain reviseComplete',
   scrShared: 'openChallenge selectList exitGame gSubmit gKey gReveal gSaySlow gMissGo vocSelectList vocDeck wqStart ' +
     'ttChapter reviseOne',
-  scrMe: 'printAvCards collTab buyFrame wearFrame buyWorld shopTab',
+  scrMe: 'printAvCards collTab buyFrame wearFrame buyWorld shopTab buyItem wearItem',
   scrGames: 'gReplay beatStart magicBoard magicPick magicSubmit magicNext magicKey magicHear magicNew magicCell ' +
     'duelEnter duelKey duelType duelSay duelP2 duelBegin duelName playCard arcadeMenu',
-  scrGrown: 'ttChapterFrom ttList metricPick progHeatPick progHeat bkAskErase bkDownload bkEraseGo certPng cloudPush ' +
+  scrGrown: 'kudosSend kudosGrown ttChapterFrom ttList metricPick progHeatPick progHeat bkAskErase bkDownload bkEraseGo certPng cloudPush ' +
     'cloudNeed cloudRestore openCloud clearReports copyReports parentLogToggle reviseMisses moreTips ' +
     'printReport askDelSpeller delSpeller progTab buyAddon closeTiers chooseTier doSignIn doSignUp authPw ' +
     'authEmail authName closeAuth cloudAgree cloudAdd cloudOff closeCloud',
@@ -3631,7 +3669,7 @@ for (const g in SCR_ACTS) for (const k of SCR_ACTS[g].split(' ')) if (!(k in app
 /* THE WORD ATLAS'S ACTIONS (P1.13 step 3): trail.js is lazy (boot-lazy `atlas`, with its curriculum) and registers these
    on app when it lands (app2.x = …); until then each is a stub that asks for the group and runs. A new trail.js action
    is added here too. */
-const TRAIL_ACTS = 'openTrail trailUnit trailChk trailNextFrom trailPick trailShut openUltra trailTrain trailBack trailAct trailHere trailToMap trailLesson trailWords trailWordNav trailPractice atlasNext trailQuiz tqPick tqSpell tqSay tqNext tqRevise tqInput ultraAct ultraPick ultraSteps ultraTrain uqType uqKey uqSay uqClose uqGo uqNext uDuel uGate uWisp atlasAdvDoor mwWander mwPoke mwHero mwLmk kitPick kitTile kitReset trailTre treClose treGame treLore treTrivAns villType villKey villSay villFlee villGo atlasMusic';
+const TRAIL_ACTS = 'openTrail trailUnit trailChk trailNextFrom trailPick trailShut openUltra trailTrain trailBack trailAct trailHere trailToMap trailLesson trailWords trailWordNav trailPractice atlasNext trailQuiz tqPick tqSpell tqSay tqNext tqRevise tqInput ultraAct ultraPick ultraSteps ultraTrain uqType uqKey uqSay uqClose uqGo uqNext uDuel uGate uWisp atlasAdvDoor mwWander mwPoke mwHero mwLmk kitPick kitTile kitReset trailTre treClose treGame treLore treTrivAns villType villKey villSay villFlee villGo atlasMusic atlasZoom';
 for (const k of TRAIL_ACTS.split(' ')) if (!(k in app)) app[k] = scrStub('atlas', k);
 
 /* ===================================================================== */
@@ -5181,7 +5219,7 @@ function viewApp(){
   else if(S.nav==='today') content=(window.SB_TODAY?SB_TODAY.view():(lazyNeed('today',()=>{ if(state.nav==='today') render(); }), hiveLoader('getting today’s ten ready…')));
   else if(S.nav==='forge') content=viewForge();
   else if(S.nav==='gym') content=viewGym();
-  else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${pageHead('My Feed','','',null,'goHome','Home',null,navIcon('feed',20,true))}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${pageHead('My Feed','','Picked for you from across the app — about twenty, and then it ends.',null,'goHome','Home',null,navIcon('feed',20,true))}${hiveLoader('opening your feed…')}</div>`);
+  else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${tabHead('My Feed',{icon:navIcon('feed',20,true)})}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${tabHead('My Feed',{icon:navIcon('feed',20,true),sub:'Picked for you from across the app — about twenty, and then it ends.'})}${hiveLoader('opening your feed…')}</div>`);
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():(lazyNeed('mockbee',()=>{ if(state.nav==='mockbee') render(); }), hiveLoader('opening the bee…')));
   else if(S.nav==='sq') content=viewGames();          /* Spelling Quest retired */
   else if(S.nav==='trivia') content=(window.STV?STV.view():viewGames());
@@ -5276,7 +5314,7 @@ function viewApp(){
              suggestion tapped goes straight to that word's card. */
           const _drill=drillLive(); const _q=_drill?'':(state.hq||''); const _sug=_drill?[]:headerSuggest(_q); const _sel=state.hqSel==null?-1:state.hqSel;   // FIX-BEE D8: no search while a word is being tested
           const _rows=_sug.map((r,i)=>`<button data-act="${r.place?'hqPlace':'hqPick'}" data-arg="${escA(r.place||r.w)}" class="sb-hsug-row${r.place?' sb-hsug-place':''}${i===_sel?' on':''}" role="option" aria-selected="${i===_sel?'true':'false'}">
-              <span class="sb-hsug-w">${esc(r.w)}</span>${r.d?`<span class="sb-hsug-d">${esc(trunc(r.d,64))}</span>`:''}</button>`).join('');
+              <span class="sb-hsug-w">${esc(r.w)}</span>${r.d?`<span class="sb-hsug-d">${trunc(r.d,64)}</span>`:''}</button>`).join('');
           return `<div class="sb-hsearch">
             <span class="sb-hsearch-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 21 21"/></svg></span>
             <input data-inp="hqType" data-key="hqKey" data-fkey="hq" value="${escA(_q)}" role="combobox" aria-expanded="${_sug.length?'true':'false'}" aria-autocomplete="list" aria-label="Search words, games and places" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${_drill?'Search waits until you answer':'Search any word…'}"${_drill?' disabled aria-disabled="true" title="Search pauses while a word is being tested — it could give the spelling away."':''}>
@@ -5339,7 +5377,6 @@ function conceptDrawerSub(){ try{ const n=(state.conceptData||[]).length; const 
 function viewDrawer(){
   if(!state.drawerOpen) return '';
   const c=active(); ensureLists(c);
-  const evoD=EVO[state.theme]||EVO.spellbound; const fiD=formIdx(heroLevel(c));
   const row=(act,arg,ic,label,sub,on)=>`<button data-act="${act}"${arg!=null?` data-arg="${escA(String(arg))}"`:''} class="bz-dr-row${on?' on':''}"${on?' aria-current="page"':''}>
       <span class="bz-dr-ic" aria-hidden="true">${iconSVG(ic,19,2.2)}</span>
       <span class="bz-dr-t"><span class="bz-dr-l">${label}</span>${sub?`<span class="bz-dr-s">${sub}</span>`:''}</span></button>`;
@@ -5349,14 +5386,14 @@ function viewDrawer(){
   return `<div data-act="closeDrawer" class="bz-dr-scrim"></div>
     <aside data-act="noop" data-trap="drawer" role="dialog" aria-modal="true" aria-label="Menu" class="bz-drawer">
       <div class="bz-dr-head">
-        <span class="bz-dr-av" aria-hidden="true">${framed(avatarSVG(c.avatar||'bizzy',44),c,48)}</span>
-        <span class="bz-dr-who"><b>${esc(c.name||'Speller')}</b><span>${esc(rankName(fiD))} · ${coinIc(12)} ${fmtN(c.coins||0)}</span></span>
+        <span class="bz-dr-av${cardBg(c)}" aria-hidden="true">${framed(avatarSVG(c.avatar||'bizzy',44),c,48)}</span>
+        <span class="bz-dr-who"><b>${plated(esc(c.name||'Speller'),c)}</b><span>${esc(oneLevel(c).label)}</span></span>
         <button data-act="muteAll" class="bz-dr-mute" aria-pressed="${muted?'true':'false'}" aria-label="${muted?'Sound is off — turn it on':'Mute all sound'}" title="${muted?'Sound off':'Mute'}">${iconSVG(muted?'mute':'volume',19,2.2)}</button>
         <button data-act="closeDrawer" class="bz-dr-x" aria-label="Close menu">${iconSVG('close',18,2.4)}</button>
       </div>
       <nav class="bz-dr-nav" aria-label="Menu">
         ${row('drawer','mypage','user','My page','your level, your week and every word met',N==='progress')}
-        ${row('openShop','avatars','shop','Shop','avatars, worlds and frames · '+fmtN(c.coins||0)+' coins',N==='shop')}
+        ${row('openShop','avatars','shop','Shop','avatars, worlds and looks · '+fmtN(c.coins||0)+' coins',N==='shop')}
         ${row('drawer','collection','star','Collection',SB_AVATARS.list.filter(a=>avOwned(c,a.id)).length+'/'+SB_AVATARS.list.length+' avatars',N==='collection'&&state.collTab!=='badges')}
         ${row('drawer','medals','medal','Medals','what you have done, and what is next',N==='collection'&&state.collTab==='badges')}
         ${sep('Bizzing Bee')}
@@ -5462,7 +5499,7 @@ function homeSecondCard(c){
   const K={
     deck:{act:'openRevisions', grad:'linear-gradient(135deg,#F0B429,#C8791B)', art:`<span class="s2-ic">${iconSVG('retry',34,2.2)}</span>`,
       kick:'Your mistakes deck', title:due.length+' word'+(due.length===1?'':'s')+' ready to revise',
-      sub:'Missed on an earlier day, and the gap is over. Spell them again and they stick.', go:'Revise',
+      sub:'Missed on an earlier day: spell them again and they stick.', go:'Revise',
       chips:due.slice(0,4)},
     analogy:{act:'openAnalogies', grad:'linear-gradient(150deg,#1E6B45,#163A5A)', art:`<span class="s2-ic">${navIcon('analogy',38,true)}</span>`,
       kick:'The Analogy Atlas', title:'Find the link', sub:'Twins, opposites, parts and word families — one link at a time.', go:'Open'},
@@ -5560,12 +5597,15 @@ function viewHome(){
              avSrc switches to the full-size .webp above 96px, so the bigger draw is also a
              sharper source rather than an upscale of the 192px thumb. */
           const art=hasCard?String(avatarSVG(c.avatar,141)||'').replace('loading="lazy"','loading="eager"'):mascotSVG(S.mood);   /* first screen: never lazy (audit v4 B6) */
-          const inner=`<div style="width:144px;height:150px;flex-shrink:0;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${art}</div>`;
+          /* the looks the child bought (P3.17): the frame round the buddy, the background behind it (never behind text) */
+          const bg=cardBg(c), fart=framed(art,c,140);
+          const inner0=`<div style="width:144px;height:150px;flex-shrink:0;animation:sb-bee-bob 3.4s ease-in-out infinite;display:grid;place-items:center;position:relative">${fart}</div>`;
+          const inner=bg?`<div class="sb-greet-bg${bg}" style="width:150px;height:156px;flex-shrink:0;display:grid;place-items:center">${inner0}</div>`:inner0;
           return deckN?`<button data-act="openAvDeck" data-arg="${escA(c.avatar||'')}" title="Flip through your avatar cards — ${deckN} owned" aria-label="Your avatar cards" style="flex-shrink:0;background:none;border:0;padding:0;cursor:pointer">${inner}</button>`
                       :`<div style="position:relative;flex-shrink:0">${inner}</div>`; })()}
         <div style="min-width:0;flex:1">
           <div class="sb-cs">${greeting}</div>
-          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px;color:var(--text)">${esc(c.name)}</div>
+          <div style="font-family:var(--display);font-weight:800;font-size:21px;line-height:1.1;margin-bottom:6px;color:var(--text)">${plated(esc(c.name),c)}</div>
           ${(()=>{ /* Your buddy says hello, whoever your buddy is — Bizzy included. The
               line comes from SB_AV_GREETINGS, with the avatar card as a second source. */
             const line=homeGreet(c);
@@ -5573,7 +5613,7 @@ function viewHome(){
             return `<div class="sb-home-greet" style="position:relative;background:var(--surface2,#f3eee3);border-radius:12px;border-bottom-left-radius:4px;padding:8px 11px;font:italic 600 12.5px/1.4 var(--body,sans-serif);color:var(--ink,var(--text))">“${trunc(line,104)}”</div>`;
           })()}
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
-            ${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${trunc(ms.label,18)}</button>`:''; })()}
+            ${kudosChip(c)}${(()=>{ const ms=milestone(); return (ms&&ms.days>=0)?`<button data-act="setNav" data-arg="progress" style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-pill,999px);background:var(--chip);color:var(--accent);font-weight:800;font-size:13px">🐝 ${ms.days} days to ${trunc(ms.label,18)}</button>`:''; })()}
           </div>
         </div>
       </div>
@@ -6087,18 +6127,82 @@ function badgeDefs(){ const c=active(); const bb=beeBand(c); const jl=listStageI
      engine's own words for its path ("Free for everyone", "120 coins · 40 more to go",
      "First: master 300 words", "Opens with its world").
    • Worlds — worlds 1–2 open to all; 3–8 for 240 coins each (or with the family plan).
-   • Extras — avatar frames, the first cosmetic line: a ring worn around your avatar wherever it shows.
+   • Extras — the looks of your own card: a frame round your avatar, a plate behind your name, a background.
+   • Grand Prix — your kart's paint and the trail behind it (road to 4.5, P3.19/P3.20).
    The coin chip opens the wallet sheet: the balance, the last 30 lines in words (sibling apps
-   marked), and one line on what coins are for. Guards: tests/avatars-engine.cjs (prices, buying) and tests/nav-hive-band.cjs (the wallet sheet). */
-const FRAMES=[
-  { id:'honey',   name:'Honey ring',     price:40,  about:'A warm gold ring, like the edge of a honeycomb.' },
-  { id:'leaf',    name:'Meadow leaves',  price:60,  about:'A green ring with a sprig at the top.' },
-  { id:'comet',   name:'Comet trail',    price:80,  about:'A blue ring with a streak of starlight.' },
-  { id:'sunset',  name:'Sunset',         price:100, about:'Orange to pink, like the Race Zone at dusk.' },
-  { id:'royal',   name:'Royal purple',   price:150, about:'A deep purple ring with a gold rim.' },
-  { id:'rainbow', name:'Rainbow',        price:200, about:'Every colour of the worlds, all the way round.' } ];
+   marked), and one line on what coins are for. Guards: tests/avatars-engine.cjs (prices, buying) and tests/nav-hive-band.cjs (the wallet sheet).
+   THE ONE PRICE TABLE (road to 4.5, P3.17–P3.20; owner: no hats or props — the sinks are frames, name plates,
+   backgrounds and kart/trail skins). Everything coins buy besides an avatar or a world is a row here, and every
+   row is a LOOK of a kind in SHOP_KINDS — nothing here, and no other spend, unlocks a word, a game, a mode or a
+   level. A row with `ms` is never sold (it opens with its learning milestone); a row priced 0 is everyone's.
+   The Grand Prix garage (saga2.js) reads these rows through window.SB_SHOP and prints no price (T3: no price on a
+   child's screen outside the Shop); the race reads a paint and a trail only to draw them. Ownership keeps the
+   stores it had (c.frames/c.frame; c.gpGar.own.paint|trail and .paint|.trail); plates and backgrounds live in
+   c.cos = {plate:{id:t}, bg:{id:t}, on:{plate, bg}}. Guard: tests/shop-economy.cjs. */
+const SHOP_KINDS=['frame','plate','bg','kart','trail'];
+const SHOP_ITEMS=[
+  {k:'frame',id:'honey',name:'Honey ring',price:40,about:'A warm gold ring, like the edge of a honeycomb.'},
+  {k:'frame',id:'leaf',name:'Meadow leaves',price:60,about:'A green ring with a sprig at the top.'},
+  {k:'frame',id:'comet',name:'Comet trail',price:80,about:'A blue ring with a streak of starlight.'},
+  {k:'frame',id:'sunset',name:'Sunset',price:100,about:'Orange to pink, like the Race Zone at dusk.'},
+  {k:'frame',id:'royal',name:'Royal purple',price:150,about:'A deep purple ring with a gold rim.'},
+  {k:'frame',id:'rainbow',name:'Rainbow',price:200,about:'Every colour of the worlds, all the way round.'},
+  {k:'plate',id:'card',name:'Paper card',price:20,about:'Your name on a cream card with a honey edge.'},
+  {k:'plate',id:'ribbon',name:'Purple ribbon',price:30,about:'Your name on a purple ribbon.'},
+  {k:'plate',id:'comb',name:'Honeycomb',price:45,about:'Your name on a strip of golden honeycomb.'},
+  {k:'plate',id:'gilt',name:'Gold leaf',price:90,about:'Your name in gold on deep purple.'},
+  {k:'bg',id:'meadow',name:'Meadow morning',price:25,about:'Soft green hills behind your card.'},
+  {k:'bg',id:'dusk',name:'Lavender dusk',price:35,about:'A purple evening sky behind your card.'},
+  {k:'bg',id:'hive',name:'Hive wall',price:50,about:'Honeycomb from edge to edge.'},
+  {k:'bg',id:'stars',name:'Night sky',price:60,about:'A deep blue sky with small stars.'},
+  {k:'bg',id:'aurora',name:'Aurora',price:120,about:'Green and violet light, like the far north.'},
+  {k:'kart',id:'factory',name:'Factory finish',price:0,col:null},
+  {k:'kart',id:'honey',name:'Honey gold',price:40,col:'#F0B429'},
+  {k:'kart',id:'cherry',name:'Cherry',price:40,col:'#EC5C67'},
+  {k:'kart',id:'ocean',name:'Ocean',price:60,col:'#3B93D6'},
+  {k:'kart',id:'mint',name:'Mint',price:60,col:'#2FB98A'},
+  {k:'kart',id:'grape',name:'Grape',price:80,col:'#8B63D6'},
+  {k:'kart',id:'midnight',name:'Midnight',price:80,col:'#2E3566'},
+  {k:'trail',id:'dust',name:'Road dust',price:0,col:'225,225,232'},
+  {k:'trail',id:'sky',name:'Sky puffs',price:60,col:'150,205,255'},
+  {k:'trail',id:'peach',name:'Peach puffs',price:60,col:'255,190,150'},
+  {k:'trail',id:'violet',name:'Violet haze',price:90,col:'190,160,255'},
+  {k:'trail',id:'gold',name:'Golden comet',col:'255,214,90',ms:{k:'clean',n:25,txt:'Spell 25 box words Clean'}},
+  {k:'trail',id:'beeline',name:'Bee line',col:'255,236,140',ms:{k:'right',n:50,txt:'Spell 50 box words right'}},
+  {k:'trail',id:'rainbow',name:'Rainbow',col:'rainbow',ms:{k:'cups',n:1,txt:'Finish a whole Cup'}} ];
+const SHOP_BY=Object.fromEntries(SHOP_ITEMS.map(x=>[x.k+':'+x.id,x]));
+const FRAMES=SHOP_ITEMS.filter(x=>x.k==='frame');
 const FRAME_BY=Object.fromEntries(FRAMES.map(f=>[f.id,f]));
 function frameOwned(c,id){ c=c||active(); return !!((c.frames||{})[id]); }
+const SHOP_GAR={kart:'paint',trail:'trail'};   /* the Grand Prix garage's own names for the two race kinds */
+function shopGar(c){ return c.gpGar||(c.gpGar={own:{paint:['factory'],trail:['dust']},paint:'factory',trail:'dust'}); }
+function shopOwns(c,it){ if(!c||!it) return false;
+  if(it.ms) return ((c.gpStat||{})[it.ms.k]||0)>=it.ms.n;
+  if(!it.price) return true;
+  if(it.k==='frame') return frameOwned(c,it.id);
+  if(SHOP_GAR[it.k]) return ((((c.gpGar||{}).own||{})[SHOP_GAR[it.k]])||[]).indexOf(it.id)>=0;
+  return !!(((c.cos||{})[it.k]||{})[it.id]); }
+/* what the child wears of a kind — only ever a row they own */
+function shopWorn(c,k){ if(!c) return null;
+  const id=k==='frame'?c.frame:SHOP_GAR[k]?((c.gpGar||{})[SHOP_GAR[k]]||(k==='kart'?'factory':'dust')):((c.cos||{}).on||{})[k];
+  const it=id&&SHOP_BY[k+':'+id]; return it&&shopOwns(c,it)?it:null; }
+function shopWear(c,it){ if(!c||!it||!shopOwns(c,it)) return false;
+  if(it.k==='frame') c.frame=it.id; else if(SHOP_GAR[it.k]) shopGar(c)[SHOP_GAR[it.k]]=it.id;
+  else ((c.cos=c.cos||{}).on=c.cos.on||{})[it.k]=it.id; return true; }
+/* THE ONE BUY: the printed price, once, through `spend` (spendCoins → the family wallet). A milestone row or a free
+   row is never sold and an owned row is never charged again. It writes ONLY the look it bought, and wears it. */
+function shopBuy(c,key,spend){ const it=SHOP_BY[key];
+  if(!c||!it||it.ms||!(it.price>0)) return {ok:false,why:'none'};
+  if(shopOwns(c,it)) return {ok:false,why:'owned',it};
+  if(!spend(it.price,key)) return {ok:false,why:'short',it};
+  if(it.k==='frame') (c.frames=c.frames||{})[it.id]=Date.now();
+  else if(SHOP_GAR[it.k]){ const o=shopGar(c).own, g=SHOP_GAR[it.k]; (o[g]=o[g]||[]).push(it.id); }
+  else ((c.cos=c.cos||{})[it.k]=c.cos[it.k]||{})[it.id]=Date.now();
+  shopWear(c,it); return {ok:true,it}; }
+window.SB_SHOP={ items:SHOP_ITEMS, by:SHOP_BY, owns:shopOwns, worn:shopWorn };
+/* a child's name on the plate they wear, and their card's background — classes only, the look is CSS (index.html) */
+function plated(html,c){ const p=shopWorn(c,'plate'); return p?`<span class="bz-plate bz-plate-${p.id}">${html}</span>`:html; }
+function cardBg(c){ const b=shopWorn(c,'bg'); return b?' bz-bg bz-bg-'+b.id:''; }
 /* Wrap any avatar drawing in the child's worn frame. The ring is pure CSS (.bz-frame-<id>). */
 function framed(html,c,size){ c=c||active(); const f=c&&c.frame&&FRAME_BY[c.frame]&&frameOwned(c,c.frame)?c.frame:null;
   return f?`<span class="bz-frame bz-frame-${f}" style="--fs:${size||40}px">${html}</span>`:html; }
@@ -6304,6 +6408,14 @@ try{ window.SB_BACK=backPill; }catch(e){}
    1fr on both flanks is what centres the title against the page rather than against
    whatever is left over — a flex row with margin-auto drifts as the right side changes.
    Below 620px it stacks (.sb-phead in index.html) so the title never gets crushed. */
+/* THE TAB-ROOT HEAD (road to 4.5, P3.29 — the family's U6). A TAB's own first screen — the Library, Play, My Feed — and
+   the Shop name themselves TITLE-LEFT, as the Word Atlas does: the title with its icon, any sub-nav chips beside it,
+   the screen's actions at the right, an optional line under it — and NO back pill: a tab root has no parent to go back
+   to (the tab bar is the way about; Back still works, through the hash). pageHead, pill and centred title, stays for
+   every screen BELOW a tab, whose pill names that parent. Guard: tests/back-pill.cjs (no pill on a root, the title at
+   the content's left edge), tests/feed-screen.cjs. */
+function tabHead(title, o){ o=o||{};
+  return `<div class="sb-thead"><h2 class="sb-thead-t">${o.icon?`<span class="sb-thead-ic">${o.icon}</span>`:''}<span>${title}</span></h2>${o.meta?`<span class="sb-thead-m">${o.meta}</span>`:''}${o.chips?`<span class="sb-thead-chips">${o.chips}</span>`:''}${o.right?`<span class="sb-thead-r">${o.right}</span>`:''}</div>${o.sub?`<p class="sb-thead-s">${o.sub}</p>`:''}`; }
 function pageHead(title, meta, sub, right, backAct, backLabel, backArg, icon){
   /* The default back is not always Home. Everything in the Library family — Typing, Quotes,
      Vocabulary, Idioms, Trivia Training, the Sound Alphabet, Themes, Concepts, the Builder,

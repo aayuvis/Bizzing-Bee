@@ -123,15 +123,17 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
       page.querySelectorAll('h3,.bzf-body,.bzf-src,.bzf-roman,.bzf-q,.bzf-opt,.bzf-after').forEach(x => x.remove());
       const L = e => e ? Math.round(e.getBoundingClientRect().left) : -1;
       const subEl = [...document.querySelectorAll('.sb-feedpage *')].find(e => e.children.length === 0 && /^Picked for you/.test(e.textContent.trim()));
-      return { head: !!document.querySelector('.sb-feedpage .sb-phead h2'), n: cards.length,
-        lx: { head: L(document.querySelector('.sb-feedpage .sb-phead')), sub: L(subEl), list: L(list), card: L(cards[0]) }, endLast: !!list && list.lastElementChild.classList.contains('bzf-end'),
+      /* a TAB ROOT's head (road to 4.5, P3.29): title-left, no back pill (app3 tabHead). Proved by breaking: the feed's
+         old pageHead put back → this check and the one-line check fail (4, phone and desktop) */
+      return { head: !!document.querySelector('.sb-feedpage .sb-thead h2') && !document.querySelector('.sb-feedpage button[aria-label^="Back to"]'), n: cards.length,
+        lx: { head: L(document.querySelector('.sb-feedpage .sb-thead')), sub: L(subEl), list: L(list), card: L(cards[0]) }, endLast: !!list && list.lastElementChild.classList.contains('bzf-end'),
         cont: (document.querySelector('.bzf-end a') || {}).getAttribute ? document.querySelector('.bzf-end a').getAttribute('href') : '',
         why: cards.filter(c => (c.querySelector('.bzf-why') || {}).textContent).length, text: page.textContent + ' ' + document.querySelector('.sb-header-sticky').textContent,
         snd: window.__snd, wide: document.documentElement.scrollWidth - innerWidth, nav: state.nav, hash: location.hash,
         lit: [...document.querySelectorAll('nav.sb-tabbar button[aria-current="page"]')].map(x => x.textContent.trim()) };
     });
     const where = phone ? 'phone' : 'desktop';
-    ok(r.head && r.n >= 12 && r.n <= 20, `${where}: the page head and ${r.n} cards (about twenty)`);
+    ok(r.head && r.n >= 12 && r.n <= 20, `${where}: the tab-root head (title-left, no back pill) and ${r.n} cards (about twenty)`);
     ok(r.endLast && r.cont === '#/continue', `${where}: the feed ends with the finished card, pointing at Continue (${r.cont})`);
     ok(r.why === r.n, `${where}: every card says why it is there`);
     /* ONE COLUMN (audit v4: at 1280 the head and subtitle began at x=248 and the cards at x=336) */

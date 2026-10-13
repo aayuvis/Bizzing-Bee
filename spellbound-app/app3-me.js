@@ -16,7 +16,7 @@ function viewHelp(){ const q=(h,b)=>`<details class="sb-card bz-help"><summary>$
   return `<div style="max-width:720px;margin:0 auto">${pageHead('Help','','',null,'goHome','Home',null,iconSVG('help',20,2.2))}
     ${q('What is Continue?','The big button on Home. It always takes you to the next stop on your journey across the Word Atlas — the exact place you left off.')}
     ${q('How do I earn Bizzing coins?','A right answer pays 1, a finished round 5, a contest 10, and a Stage you have mastered 20 — up to 100 a day in Bizzing Bee. Coins never come from time, logins or luck. The same wallet works in every Bizzing app.')}
-    ${q('What can coins buy?','Avatars, worlds and frames in the Shop, each at a fixed price that is printed on it. Coins never buy lessons, stops or games, and they are never real money.')}
+    ${q('What can coins buy?','Looks, in the Shop: avatars, worlds, frames, name plates, backgrounds, and paint and trails for your Grand Prix kart, each at a fixed price that is printed on it. Coins never buy words, lessons, stops, games or levels, and they are never real money.')}
     ${q('What are worlds?','A world repaints the whole app and brings its own music and avatar packs. Bizzing Bee and Galaxy are open to everyone; the other six open for 240 coins each, or with the family plan.')}
     ${q('What do Common, Rare, Epic and Legendary mean?','Commons are free for everyone. Rares cost 120 coins and Epics 250 once their world is open. A Legendary costs 500 and first asks you to reach a learning milestone, which its card names.')}
     ${q('When is a word mastered?','When you spell it right on two different days. A word comes back for a check later, and if it slips it is simply practised again.')}
@@ -40,7 +40,8 @@ function ledgerWords(x,c){ c=c||active(); const why=String(x.why||'');
   else if(why==='migrated') what='Bee coins moved into the family wallet';
   else if(/^avatar:/.test(why)){ const a=(window.SB_AVATARS&&SB_AVATARS.byId[why.slice(7)])||null; what='bought '+(a?a.name:'an avatar'); }
   else if(/^world:/.test(why)){ const w=THEMES[(+why.slice(6))-1]; what='opened the world '+(w?w.label:why.slice(6)); }
-  else if(/^frame:/.test(why)){ const f=FRAME_BY[why.slice(6)]; what='bought the '+(f?f.name:'frame')+' frame'; }
+  else if(SHOP_BY[why]) what='bought '+lookLabel(SHOP_BY[why]);   /* a row of the one price table: frame:, plate:, bg:, kart:, trail: */
+  else if(/^frame:/.test(why)) what='bought a frame';
   else if(/^refund:/.test(why)) what='money back for something withdrawn';
   else what=why.replace(/[:_-]/g,' ');
   /* name the round it came from, when Bee's own log has it (the session closes just after it pays) */
@@ -75,7 +76,7 @@ function walletRowsHTML(c,n){ const L=walletGroups(c,n);
   if(!L.length) return `<p class="bz-empty"><span class="bz-empty-m">${mascotSVG('think')}</span>No coins yet. Every right answer pays one — they land here.</p>`;
   return `<ol class="bz-ledger">${L.map(x=>{ const plus=x.n>0; const app=SHOP_APP_LABEL[x.a]||x.a;
     return `<li${x.k>1?` data-k="${x.k}"`:''}><b class="${plus?'in':'out'}">${plus?'+':'−'}${Math.abs(x.n)}</b><span class="bz-ledger-w">${esc(walletRowWords(x,c))}</span><span class="bz-ledger-a${x.a==='bee'?'':' sib'}" title="${escA(app)}">${x.a==='bee'?iconSVG('hive',12,2.4):iconSVG('globe',12,2.4)} ${esc(app)}</span><span class="bz-ledger-t">${esc(fmtAgo(x.t))}</span></li>`; }).join('')}</ol>`; }
-const WALLET_FOR='Bizzing coins come from learning — right answers, finished rounds, contests and mastery — in every Bizzing app. They buy avatars, worlds and frames at fixed prices. Never lessons, and never real money.';
+const WALLET_FOR='Bizzing coins come from learning — right answers, finished rounds, contests and mastery — in every Bizzing app. They buy looks at fixed prices: avatars, worlds, frames, name plates, backgrounds and Grand Prix paint. Never words, lessons, games or levels, and never real money.';
 function viewWalletSheet(){ if(!state.walletOpen) return ''; const c=active();
   return `<div class="bz-sheet-ov" data-act="closeWallet"><div class="bz-sheet" data-act="noop" data-trap="wallet" role="dialog" aria-modal="true" aria-label="Your Bizzing coins">
     <div class="bz-sheet-h"><h2>${iconSVG('coin',20,2.2)} Your Bizzing coins</h2><button data-act="closeWallet" class="bz-x" aria-label="Close">${iconSVG('close',18,2.4)}</button></div>
@@ -114,19 +115,49 @@ function worldsShopHTML(c){ c=c||active();
       <div class="bz-wcard-b"><span class="bz-row-s">${esc(WORLD_ABOUT[t.id]||'')}</span>${packs?`<span class="bz-row-s"><b>Avatars:</b> ${esc(packs)}</span>`:''}
         ${un?(t.id===state.theme?`<span class="bz-av-on">${iconSVG('check',12,2.6)} Your world now</span>`:`<button data-act="pickTheme" data-arg="${t.id}" class="bz-btn">Use this world</button>`)
           :(n<=2?'':`<button data-act="buyWorld" data-arg="${t.id}" class="bz-btn buy">${coinIc(13)} ${WORLD_PRICE_COINS} coins</button><span class="bz-row-s">or with the family plan</span>`)}</div></div>`; }).join('')}</div>`; }
-function extrasShopHTML(c){ c=c||active(); const prev=avatarSVG(c.avatar||'bizzy',64);
-  return `<p class="bz-row-s" style="margin:0 0 12px">A frame is a ring worn around your avatar — at the top of the screen, on Home and on your card. Buy it once, wear it in every world.</p>
-    <div class="bz-frames">${FRAMES.map(f=>{ const own=frameOwned(c,f.id); const on=own&&c.frame===f.id;
-      return `<div class="bz-fcard" data-frame="${f.id}"><span class="bz-frame bz-frame-${f.id}" style="--fs:64px">${prev}</span><b>${esc(f.name)}</b><span class="bz-row-s">${esc(f.about)}</span>
-        ${on?`<button data-act="wearFrame" data-arg="" class="bz-btn">${iconSVG('check',12,2.6)} Wearing — take off</button>`:own?`<button data-act="wearFrame" data-arg="${f.id}" class="bz-btn">Wear</button>`
-          :`<button data-act="buyFrame" data-arg="${f.id}" class="bz-btn buy">${coinIc(13)} ${f.price} coins</button>`}</div>`; }).join('')}</div>`; }
+/* THE LOOKS (road to 4.5, P3.17–P3.20; owner: frames, name plates, backgrounds and Grand Prix kart/trail skins — no hats
+   or props). Every card is a row of SHOP_ITEMS (app3.js, the one price table) drawn as it will look on THIS child: their
+   own avatar in the frame, their own name on the plate, their own card on the background, a kart in the paint, puffs in
+   the trail. Bought through shopBuy → spendCoins (the family wallet) at the printed price, worn at once, worn again or
+   taken off here. A milestone trail shows its milestone (a learning lock), never a price. Extras = your card;
+   Grand Prix = your kart. */
+const SHOP_SEC={ frame:['Frames','A ring round your avatar: at the top of the screen, on Home and on your card.'],
+  plate:['Name plates','Your name sits on it: on Home, in the menu and on your card.'],
+  bg:['Backgrounds','Behind your card: on Home, in the menu and here.'],
+  kart:['Kart paint','Your Grand Prix kart wears it in every race. Paint is a look: every kart drives the same.'],
+  trail:['Trails','The puffs behind your kart in every race.'] };
+function lookLabel(it,cap){ const n=it.name;
+  const t=it.k==='frame'?'the '+n+' frame':it.k==='plate'?'the '+n+' name plate':it.k==='bg'?'the '+n+' background':it.k==='kart'?n+' kart paint':'the '+n+' trail';
+  return cap?t.charAt(0).toUpperCase()+t.slice(1):t; }
+function kartSwatch(col){ const b=col||'#C9C3D6';
+  return `<svg class="bz-look-kart" viewBox="0 0 64 40" width="64" height="40" aria-hidden="true"><path d="M8 26c0-6 4-11 10-12l6-6h16l6 6c6 1 10 6 10 12v3H8z" fill="${b}" stroke="rgba(20,12,4,.45)" stroke-width="1.4"/><path d="M26 10h12l4 5H22z" fill="rgba(255,255,255,.55)"/><rect x="5" y="25" width="54" height="4" rx="2" fill="rgba(20,12,4,.35)"/><circle cx="17" cy="31" r="6" fill="#262230"/><circle cx="47" cy="31" r="6" fill="#262230"/><circle cx="17" cy="31" r="2.2" fill="#9A93A8"/><circle cx="47" cy="31" r="2.2" fill="#9A93A8"/></svg>`; }
+function trailSwatch(col){ const f=col==='rainbow'?['#F66','#FD5','#6D6','#6CF','#C8F']:[0,1,2,3,4].map(()=>'rgb('+col+')');
+  return `<svg class="bz-look-trail" viewBox="0 0 64 40" width="64" height="40" aria-hidden="true">${f.map((c,i)=>`<circle cx="${8+i*11}" cy="${22+(i%2?-4:3)}" r="${(5+i*1.4).toFixed(1)}" fill="${c}" opacity="${(.55+i*.09).toFixed(2)}"/>`).join('')}</svg>`; }
+function lookPrev(it,c){ const av=c.avatar||'bizzy';
+  if(it.k==='frame') return `<span class="bz-frame bz-frame-${it.id}" style="--fs:64px">${avatarSVG(av,64)}</span>`;
+  if(it.k==='plate') return `<span class="bz-look-name"><span class="bz-plate bz-plate-${it.id}">${esc(c.name||'Speller')}</span></span>`;
+  if(it.k==='bg') return `<span class="bz-look-bg bz-bg bz-bg-${it.id}">${avatarSVG(av,44)}</span>`;
+  return `<span class="bz-look-sw">${it.k==='kart'?kartSwatch(it.col):trailSwatch(it.col)}</span>`; }
+function lookCard(it,c){ const own=shopOwns(c,it), w=shopWorn(c,it.k), on=own&&!!w&&w.id===it.id, key=it.k+':'+it.id, fr=it.k==='frame', race=!!SHOP_GAR[it.k];
+  let act;
+  if(on) act=race?`<span class="bz-av-on">${iconSVG('check',12,2.6)} In your races</span>`
+    :`<button data-act="${fr?'wearFrame':'wearItem'}" data-arg="${fr?'':it.k+':'}" class="bz-btn">${iconSVG('check',12,2.6)} Wearing — take off</button>`;
+  else if(own) act=`<button data-act="${fr?'wearFrame':'wearItem'}" data-arg="${fr?it.id:key}" class="bz-btn">${race?'Race in it':'Wear'}</button>`;
+  else if(it.ms) act=lockChip('learn',it.ms.txt);
+  else act=`<button data-act="${fr?'buyFrame':'buyItem'}" data-arg="${fr?it.id:key}" class="bz-btn buy">${coinIc(13)} ${it.price} coins</button>`;
+  return `<div class="bz-fcard" data-look="${key}"${fr?` data-frame="${it.id}"`:''}>${lookPrev(it,c)}<b>${esc(it.name)}</b><span class="bz-row-s">${esc(it.about||'')}</span>${act}</div>`; }
+function lookSecs(c,kinds){ return kinds.map(k=>`<section class="bz-looksec" data-kind="${k}"><h3 class="bz-sub">${esc(SHOP_SEC[k][0])}</h3><p class="bz-row-s bz-looksec-p">${esc(SHOP_SEC[k][1])}</p>
+    <div class="bz-frames">${SHOP_ITEMS.filter(x=>x.k===k).map(it=>lookCard(it,c)).join('')}</div></section>`).join(''); }
+function extrasShopHTML(c){ c=c||active(); return meCardHTML(c)+lookSecs(c,['frame','plate','bg']); }
+function raceShopHTML(c){ c=c||active();
+  return `<p class="bz-row-s" style="margin:0 0 12px">For your Grand Prix kart. The garage in the race's start menu switches between the ones you own.</p>${lookSecs(c,['kart','trail'])}`; }
 function viewShop(){ const c=active(); const tab=state.shopTab||'avatars';
   const T=(k,ic,l)=>`<button role="tab" aria-selected="${tab===k?'true':'false'}" data-act="shopTab" data-arg="${k}" class="bz-tab${tab===k?' on':''}">${iconSVG(ic,16,2.2)} ${l}</button>`;
-  const body=tab==='worlds'?worldsShopHTML(c):tab==='extras'?extrasShopHTML(c):avPacksHTML(c);
+  const body=tab==='worlds'?worldsShopHTML(c):tab==='extras'?extrasShopHTML(c):tab==='race'?raceShopHTML(c):avPacksHTML(c);
   return `<div class="bz-shop">
-    ${pageHead('Shop','','',`<button data-act="openWallet" class="bz-coin" aria-label="${escA(fmtN(c.coins||0)+' Bizzing coins — where they came from')}">${coinIc(16)} ${fmtN(c.coins||0)}</button>`,'goHome','Home',null,iconSVG('shop',20,2.2))}
+    ${tabHead('Shop',{icon:iconSVG('shop',20,2.2),right:`<button data-act="openWallet" class="bz-coin" aria-label="${escA(fmtN(c.coins||0)+' Bizzing coins — where they came from')}">${coinIc(16)} ${fmtN(c.coins||0)}</button>`})}
     <p class="bz-for" style="margin:0 0 12px">${WALLET_FOR}</p>
-    <div class="bz-tabs" role="tablist" aria-label="Shop">${T('avatars','user','Avatars')}${T('worlds','globe','Worlds')}${T('extras','frame','Extras')}</div>
+    <div class="bz-tabs" role="tablist" aria-label="Shop">${T('avatars','user','Avatars')}${T('worlds','globe','Worlds')}${T('extras','frame','Extras')}${T('race','flag','Grand Prix')}</div>
     <div role="tabpanel">${body}</div>
     <section class="sb-card bz-hist"><h3>${iconSVG('history',17,2.2)} Where your coins came from</h3>${walletRowsHTML(c,30)}</section>
   </div>`; }
@@ -283,13 +314,21 @@ function printAvCardsDoc(){ const c=active(); const owned=SB_AVATARS.list.filter
 Object.assign(app, {
   printAvCards:()=>{ try{ const w=window.open('','_blank'); if(!w){ flash('Pop-up blocked — allow pop-ups to print'); return; }
     w.document.write(printAvCardsDoc()); w.document.close(); setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },420); }catch(e){ flash('Could not open the print view'); } },
-  shopTab:(t)=>set({shopTab:({avatars:1,worlds:1,extras:1})[t]?t:'avatars'}),
-  buyFrame:(id)=>{ const c=active(); const f=FRAME_BY[id]; if(!f||frameOwned(c,id)) return;
-    const bal=c.coins|0; if(bal<f.price){ flash(f.name+' is '+f.price+' Bizzing coins — '+(f.price-bal)+' more to go.'); return; }
-    if(!window.confirm('Buy the '+f.name+' frame for '+f.price+' Bizzing coins? The price is fixed.')) return;
-    if(!spendCoins(f.price,'frame:'+id)){ flash('That did not go through — nothing was spent.'); return; }
-    c.frames=c.frames||{}; c.frames[id]=Date.now(); c.frame=id; save(); sfx('win'); flash('The '+f.name+' frame is yours — you are wearing it now.'); render(); },
+  shopTab:(t)=>set({shopTab:({avatars:1,worlds:1,extras:1,race:1})[t]?t:'avatars'}),
+  /* one buy for every look (SHOP_ITEMS): the printed price, once, through the family wallet (shopBuy → spendCoins) */
+  buyItem:(key)=>{ const c=active(); const it=SHOP_BY[key]; if(!it||it.ms||!(it.price>0)||shopOwns(c,it)) return;
+    const bal=c.coins|0; if(bal<it.price){ flash(lookLabel(it,true)+' is '+it.price+' Bizzing coins — '+(it.price-bal)+' more to go.'); return; }
+    if(!window.confirm('Buy '+lookLabel(it)+' for '+it.price+' Bizzing coins? The price is fixed.')) return;
+    const r=shopBuy(c,key,spendCoins);
+    if(!r.ok){ flash('That did not go through — nothing was spent.'); return; }
+    save(); sfx('win'); flash(lookLabel(it,true)+' is yours — '+(SHOP_GAR[it.k]?'your kart wears it in the next race.':'you are wearing it now.')); render(); },
+  buyFrame:(id)=>app.buyItem('frame:'+id),
   wearFrame:(id)=>{ const c=active(); if(id&&!frameOwned(c,id)) return; c.frame=id||null; save(); sfx('correct'); render(); },
+  /* "plate:" / "bg:" takes it off; a row you own goes on (a race kind switches the garage's choice) */
+  wearItem:(key)=>{ const c=active(); const k=String(key||'').split(':')[0], it=SHOP_BY[key];
+    if(!it){ if(k==='plate'||k==='bg'){ if(c.cos&&c.cos.on) delete c.cos.on[k]; } else return; }
+    else if(!shopWear(c,it)) return;
+    save(); sfx('correct'); render(); },
   collTab:(t)=>set({collTab:t}),
   /* A world for 240 Bizzing coins (BZ_AVATARS.buyWorld). It opens the world AND its packs. */
   buyWorld:(id)=>{ const c=active(); const n=worldNum(id); if(!n){ return; } if(isThemeUnlocked(id)){ app.pickTheme(id); return; }

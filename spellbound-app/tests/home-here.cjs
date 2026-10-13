@@ -21,6 +21,8 @@
      · the second journey card beside it: the Spelling Gym while nothing is due (and analogies are gated), the
        MISTAKES DECK once a word missed on an earlier day is due — naming that word and not one missed today — and a
        tap opens Your Revisions.
+   Added 13 Oct 2026 (road to 4.5, P3.25): each journey card's copy is one sentence. Proved by breaking: the deck's old
+     two-sentence line put back → fails.
      Proved by breaking (10 Oct 2026): the chip fed weekProgress().stops instead of .words → the "one this week" check
      fails; homeDueWords counting today's misses → the deck check fails (2 words, "rhythm" named).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/home-here.cjs                         */
@@ -118,7 +120,8 @@ async function atlas(pg) {
     const H = await pg.evaluate(async () => { const Wt = ms => new Promise(r => setTimeout(r, ms));
       const c = active(); c.mast = {}; c.missed = []; save(); app.setNav('home'); await Wt(300);
       const chip = () => { const e = document.querySelector('.sb-content .sb-here .sb-home-mast'); return e ? { t: e.textContent.trim(), n: +e.getAttribute('data-week-mastered'), inStrip: !!e.closest('.sb-home-where') } : null; };
-      const second = () => { const e = document.querySelector('.sb-content .sb-home-r2 > :nth-child(2)'); return e ? { kind: e.getAttribute('data-kind'), act: e.getAttribute('data-act'), text: e.innerText.replace(/\s+/g, ' ') } : null; };
+      const second = () => { const e = document.querySelector('.sb-content .sb-home-r2 > :nth-child(2)'); return e ? { kind: e.getAttribute('data-kind'), act: e.getAttribute('data-act'), text: e.innerText.replace(/\s+/g, ' '),
+        sub: ((e.querySelector('.s2-sub') || {}).textContent || '').trim(), here: ((document.querySelector('.sb-content .sb-here .sb-here-body') || {}).innerText || '').replace(/\s+/g, ' ') } : null; };
       const zero = chip(), s0 = second();
       const now = Date.now(), today = mastDay();
       c.mast = { necessary: { b: 2, d: today, due: today + 3, ok: 2, n: 2, mt: now }, separate: { b: 2, d: today - 30, due: today + 3, ok: 2, n: 2, mt: now - 40 * 864e5 },
@@ -133,6 +136,11 @@ async function atlas(pg) {
     ok(H.zero && H.zero.inStrip && H.zero.n === 0 && H.zero.t === '0 words mastered this week', `${vp.n}: beside Continue, a "mastered this week" chip that says nought honestly ("${H.zero && H.zero.t}")`);
     ok(H.one && H.one.n === 1 && H.one.t === '1 word mastered this week', `${vp.n}: a word mastered this week on evidence counts; one mastered 40 days ago and a carried-over mark do not ("${H.one && H.one.t}")`);
     ok(RELEASED ? (H.s0 && H.s0.kind === 'analogy') : (H.s0 && H.s0.kind === 'gym' && H.s0.act === 'openGym'), `${vp.n}: with nothing due the second journey card is ${RELEASED ? 'the Analogy Atlas (released)' : 'the Spelling Gym (analogies gated)'} (${H.s0 && H.s0.kind})`);
+    /* P3.25 (road to 4.5, B1): each journey card's copy is ONE sentence — the second card's line, whichever card it is,
+       and the "You are here" card's words (a kicker, the region, the stop: no sentence ends inside them) */
+    const sentences = (t) => (String(t || '').match(/[.!?](?=\s|$)/g) || []).length;
+    ok(H.s0 && H.s1 && H.s0.sub && H.s1.sub && sentences(H.s0.sub) <= 1 && sentences(H.s1.sub) <= 1 && sentences(H.s0.here) === 0,
+      `${vp.n}: the journey cards' copy is one sentence ("${H.s0 && H.s0.sub}" · "${H.s1 && H.s1.sub}"; here: "${H.s0 && H.s0.here.slice(0, 60)}")`);
     ok(H.s1 && H.s1.kind === 'deck' && H.s1.act === 'openRevisions' && /1 word ready to revise/.test(H.s1.text) && /necessary/.test(H.s1.text) && !/rhythm/.test(H.s1.text) && H.went === 'revisions',
       `${vp.n}: a word missed on an earlier day turns it into the mistakes deck — that word, not today's miss — and a tap opens Your Revisions (${H.s1 && H.s1.text.slice(0, 70)} → ${H.went})`);
     await ctx.close();

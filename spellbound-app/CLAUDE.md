@@ -58,7 +58,8 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
   milestone). **Free children buy avatars with coins** (`app.buyAvatar` → `BZ_AVATARS.buy`).
 - **Worlds 1–2 are free; 3+ come with the family plan or 240 coins** (`app.buyWorld`); the old
   Level ladder for worlds is gone — store step **v7→v8** keeps any world already reached.
-- **There IS a Shop again** (nav `shop`, route `#/shop/<tab>`): Avatars · Worlds · Extras (frames),
+- **There IS a Shop again** (nav `shop`, route `#/shop/<tab>`): Avatars · Worlds · Extras (frames — since 13 Oct also
+  name plates and backgrounds, and a Grand Prix tab: "Road to 4.5, P3" above),
   plus wallet history. This reverses "There is no Store": the family standard asks for one place
   coins are spent. The coin chip opens the wallet sheet; its history comes from `BZ_WALLET.ledger`.
 - **Avatar cards show the child's own evidence** (`c.avEv`, bumped in `addCoins`) — the OVR score
@@ -87,6 +88,148 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
   saved from the Parent Zone only (`certList`/`certCard`/`app.certPng`).
 - UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
   headings free of emoji.
+
+## Road to 4.5, P3 — shell, economy, search (13 Oct 2026) — READ FIRST; it overrides the sections below
+Brief rows P3.6, P3.17–P3.21, P3.25–P3.31, under the owner's final calls (which override the brief): **no hats or props on
+avatars** — the coin sinks are card frames, name plates, backgrounds and Grand Prix kart/trail skins, never a word, a game,
+a mode or a level; **Hive Mind stays as it is**; **Daily Buzz stays its own card**; no streaks or run counts. The rules a
+later session keeps:
+- **THE ONE PRICE TABLE** (P3.17–P3.20; app3.js `SHOP_KINDS` / `SHOP_ITEMS`, beside `FRAMES`, which is now a filter of it).
+  Everything coins buy besides an avatar or a world is a row there, and every row is a LOOK of one of five kinds — frame,
+  plate, bg, kart, trail — with only a look's fields (`k id name price about col ms`). A row with `ms` is never sold (it
+  opens with its learning milestone — the three Grand Prix trails); a row priced 0 is everyone's. **Add a look as a row,
+  never a price anywhere else**: `tests/shop-economy.cjs` (@check, node) fails on a numeric `price:` outside the table in
+  app3*.js / saga2.js / family-shell.js, on a row with any other field or kind, on fewer than five rows a week-one child
+  can buy at 20–60 coins (15 today, across all five kinds), on a buy that debits anything but its printed price exactly
+  once (one ledger line, `-price`, why = `kind:id`), and on a buy that writes anything but the look. It also SCANS every
+  shipped script for a coin spend (`spendCoins(`, `shopBuy(`, a wallet `.spend(`) and fails on one it does not know — a
+  new spend path must be named there with its reason. **The one buy** is `shopBuy(c, key, spendCoins)`; `shopOwns` /
+  `shopWorn` / `shopWear` read and write the stores the looks always had (`c.frames`/`c.frame`; `c.gpGar.own.paint|trail`
+  and `.paint|.trail`, the garage's own names) and the new `c.cos = {plate:{id:t}, bg:{id:t}, on:{plate, bg}}`. **Nothing a
+  child does not own is ever drawn on them** — every reader goes through `shopWorn`.
+- **The Shop** (app3-me.js): Avatars · Worlds · **Extras** (Your card on top — `meCardHTML`, app3-shared.js — then Frames,
+  Name plates, Backgrounds) · **Grand Prix** (`#/shop/race`: Kart paint, Trails). Each card is drawn as it will look on THIS
+  child (their avatar in the frame, their name on the plate, a kart swatch in the paint). Frames keep `buyFrame` /
+  `wearFrame` (avatars-engine reads them); the rest are `buyItem` / `wearItem` (`"plate:"` takes one off). The ledger names a
+  purchase in words (`lookLabel`). WALLET_FOR and Help say what coins buy: looks, never words, lessons, games or levels.
+- **Where a look shows**: the frame round the avatar in the top bar, the ☰ head, **Home's hello card** (it was promised
+  there and never drawn) and Your card; the plate behind the name on Home, in the ☰ head and on Your card (`plated`); the
+  background BEHIND THE AVATAR ONLY, never behind text (`cardBg` — so no look can fail contrast); kart paint and the trail
+  in the Grand Prix. **Your card** also heads My page. Guard: `tests/shop-looks.cjs` (browser: bought by tap and by key,
+  shown on Home, the ☰ head and My page, taken off everywhere, never shown unowned, no price on those screens).
+- **THE GARAGE PRINTS NO PRICE** (T3 — one place coins are spent). saga2.js's `GP_PAINTS` / `GP_TRAILS` are read from
+  `window.SB_SHOP` (the same rows); `gpOwns` asks `SB_SHOP.owns`. The garage switches between what the child owns, says
+  "In the Shop" on the rest, and its one button ("More paint and trails in the Shop") closes the race's menu and opens
+  `#/shop/race`. A paint and a trail are LOOKS: the race reads them only to draw (`PAINT`, `TRAILC`). gp-play's §2.7
+  garage check was rewritten for it (the Shop sells Honey gold at its printed 40, through the family wallet, once; the
+  garage shows it in use; the next race wears it) and gained two: the garage prints no price, and **skins never change
+  handling** — the same race, bot and seed in factory paint + road dust and in Honey gold + Sky puffs finish identically.
+- **QUOTES ARE WORD-ORIGIN QUOTES** (P3.21). The Quotes tool leads each quote with ONE of its own words and that word's
+  origin, both from the library (`quoteWord`, app3-library.js): the quote's own highlighted `hard` word when the library
+  holds it with an origin, else its longest 5+-letter word the library holds with an origin; the origin is the record's
+  own `o`, plus its etymology line `r` once words-lore lands. 4,948 of 5,189 quotes have one (95%); the rest show without
+  the panel. The index is cut from the BOOT tier only (`SB_TIER1_N`, recorded by `trickSeal` when words1 lands), so the
+  second shard never changes a quote's word. **The quotes' attributions are still unsourced** — `UNSOURCED_MAX` (data-lint)
+  is untouched at 5,189 and nothing was sourced from memory; the counts the Library tile, the page and Progress print are
+  unchanged (one-count). Guard: `tests/quote-words.cjs` (@check, node). word-door's allow-list names `quoteWordIx`.
+- **DAILY BUZZ IN THE SHELL'S ART DIRECTION** (P3.6): the host is a purple-and-honey stage (app3-games.js `viewDailyBuzz`)
+  and the board's shell rules live in daily-buzz.js's CSS, scoped to `.dz-host` (Fraunces on the message, tiles and keys;
+  honey on the empty tiles; fixed tile colours — white on green 4.6:1, ink on honey, white on slate 5.5:1 — that read the
+  same in every look). The game, its rules, ids and sizes are the 4 Oct game's; it is still its own card. Guard: daily-buzz
+  §7. **Bizzillionaire's screen does not survive**: nothing has drawn a `.bz-play` since the games rebuild; its 41 lines
+  of navy overlay CSS in index.html were dead and are deleted (the `.bz-play` selectors left in app3/family-shell/music
+  only ask whether one is up, and none ever is).
+- **HOME'S JOURNEY CARDS SAY ONE SENTENCE** (P3.25): the second card's line (the mistakes deck's was two) and the "You are
+  here" card's words. Guard: home-here (the journey cards' copy is one sentence).
+- **THE SWITCHER SHOWS EACH CHILD'S LEVEL** (P3.26): family-shell `kidMenu` rows carry `SB_ONE_LEVEL(k).label` for THAT child
+  (`.sb-fam-rowl`). Guard: family-topbar. The menu's head said a bee form from `heroLevel` (the per-list evolution
+  ladder), so a child read "Larva" in the menu and "Level 8 · Grub" on Home; it says `oneLevel(c).label` now, and its
+  coin count went (the Shop row and the header chip both carry it). Guard: one-level.
+- **SEARCH FINDS WHAT IS INSIDE A CHAPTER, AND THE MEDALS** (P3.27): `placeIndex` adds each concept chapter's card headings
+  (a heading three or more chapters share — "The Root", "The Core" — names no place and is left out) as "In the chapter …",
+  opening the chapter through its route (`c|i`, so its lock holds), and every medal name, opening the Medals shelf through
+  the ☰ row's opener (`a|drawer|medals`). Both are SECOND to every place (`sec`): a search that found a place still finds
+  it first. 733 headings + 80 medals; the place half still costs ~0.1 ms a keystroke. Guard: header-places.
+- **A REGION BOARD ZOOMS** (P3.28, trail.js `_az`, `azLive` / `azStep` / `azBar`, action `atlasZoom` in `TRAIL_ACTS`): two
+  fingers (listened for on the node they came down on — a render mid-pinch replaces the board, and a detached node no
+  longer bubbles to the document), Ctrl + the wheel (a trackpad's pinch), the − / + buttons beside "← The map", and the
+  + / = / − / 0 keys. 1× to 2.5×, ×1.25 a step, around the point under the fingers; a region opens as drawn. Only the
+  painting and its road scale (`--az` on the board): pins, the stop card and the sign keep their size, every marker has a
+  44 px hit area (`.act-board .atlas-sd::after`), the zoomed window keeps its height and pans both ways (`.act-pan.zoomed`,
+  `touch-action: pan-x pan-y` so the page is never pinch-zoomed from the board), a picked stop is brought into the window
+  with its card (`azAfter`, `_azOwed`), and the camera clamp is re-measured at the new width (the reveal law holds).
+  **A camera is never read back from a board that is not laid out.** A re-rendered panorama has no width until its
+  `<img>` is laid out — a beat behind even from the cache, more under load — and any camera set on it is clamped to ~0.
+  Read back, that 0 became the camera three ways, each seen in a run: the render that ends a pinch (`azStep` read it),
+  a render landing mid-pinch (the next move started from the new board's 0,0), and the scroll event the clamp fires (the
+  handler copied it into `_mwScroll`). So: `azLive` steps by ARITHMETIC (`(cam + o) × z/z0 − o`; the board is the painting ×
+  `--az` both ways) from the KEPT camera (`_mwScroll`, `_azTop`) until the board's camera is real (`pan._camOk`, set by
+  `azAfter`, `azStep` and `azLive` on a laid board); `azAfter` and `azStep` put the camera back only once the board is laid
+  out (`azLaid`); the scroll handler ignores a board narrower than its window. Guard: atlas-layout §8 (three pinches).
+- **ONE TAB-ROOT HEAD** (P3.29, app3 `tabHead`): the Library, Play, My Feed and the Shop name themselves title-LEFT with any
+  chips beside the title and their actions right — the Word Atlas's pattern — and carry NO back pill (there is no parent
+  to go back to; the hash still handles Back). `pageHead` (pill hard left, title centred) stays for every screen below a
+  tab. Guards: back-pill (Play left its pill list; a tab-root block holds all four), feed-screen.
+- **KUDOS** (P3.30; app3 `KUDOS`, `kudosChip`; app3-grownups `kudosCard`, `kudosParent`, actions `kudosSend` /
+  `kudosGrown`). A sibling, or a grown-up from the Parent Zone (after the PIN — the action refuses anywhere else), sends a
+  child one of six FIXED kind lines; nothing is typed, so no child writes free text. Kept on the receiver as
+  `{f: sender's first name or '' for a grown-up, m: index, t}`, the newest twelve; never uploaded (PROGRESS_KEYS does not
+  carry it). One a day from each sibling; never to yourself. The receiver's Home shows ONE quiet chip (an outline) while
+  one is unseen; My page holds them and marks them seen. Guard: `tests/kudos.cjs` (browser).
+- **AN ORIGIN NAMES ITS SOURCE DICTIONARY — ONLY WHERE THE DATA NAMES ONE** (P3.31; app3 `etymSource` / `etymSrcHTML`). Only
+  Word Forge's table names a dictionary (forge-data.js: each row's `src.entry`, the table's `sources.etymology`), so the
+  word card, the set deck and My Feed's origin cards name "Douglas Harper, Online Etymology Dictionary", the row's origin
+  and donor form, and its entry — for those 149 words only, read from the data; every other origin names nothing. The
+  table is lazy (`forgeData`): until it lands nothing is named. Guard: `tests/etym-source.cjs` (@check, node).
+- **First load**: JS 372 KB gz (from 370; the table, the tab head, kudos' chip and the source line are core because a
+  first screen or a root script reads them); total 653 / 669 KB — the dead Bizzillionaire CSS paid for the new CSS.
+- **Proved by breaking** (each fault put in, the test watched to fail, the file restored byte for byte — harness
+  `brk.py` in the session scratchpad):
+  - **shop-economy** (node): a row given an `unlock` field → fails ("no row carries anything but a look's fields"); a
+    sixth kind `word` → fails; the buy debiting twice → fails (80 for a 40 frame); the buy writing a concept unlock →
+    fails ("wrote more than the look"); every 20–60 row repriced at 70 → 2 fail (0 looks, 0 kinds); a new
+    `spendCoins(5,'hint')` in app3-gym.js → fails (the spend scan names the line); the garage authoring a `price:40` paint
+    → fails ("one table").
+  - **etym-source** (node): a fallback dictionary typed in → 3 fail (7,486 library words suddenly "sourced"); the name
+    typed instead of read from the table → fails; the feed's insertion taken out → fails — and FIRST it did not: the
+    wiring check only asked that `etymSrcHTML(lw[1])` was called, so it was strengthened to require the line reach the
+    card (`h.replace(… src + …)`); the word card dropping the line → fails.
+  - **quote-words** (node): the index cut from the whole corpus (not the boot tier) → "the second shard does not change
+    it" fails; the hard word passed over → fails (296 quotes); the origin printed from a typed map → fails (4,948).
+    The determinism check first cleared only one of its two caches and so could not fail; both are cleared now.
+  - **shop-looks**: `plated()` ignoring what is worn → 6 fail; `cardBg()` drawing a background the child does not own →
+    2 fail.
+  - **gp-play**: the garage selling again → "prints no price" fails (9 buy buttons); a painted kart pulling 5% harder →
+    "skins never change handling" fails (56.03 s vs 56.7 s).
+  - **home-here**: the deck's old two-sentence line → 2 fail. **back-pill**: Play's old `pageHead` → fails.
+    **feed-screen**: the feed's old head → 4 fail. **family-topbar**: every row reading the active child's level →
+    fails. **one-level**: the menu's head reading `heroLevel`'s form again → fails ("Ahana Larva").
+    **daily-buzz**: the message's `.dz-host` rule taken out → fails (no Fraunces).
+  - **kudos**: a text box on the card → 2 fail; the once-a-day rule taken out → 4 fail; `kudosGrown` without its Parent
+    Zone check → 4 fail.
+  - **header-places**: the contents taken out of the index → fails; a medal opening Home → 2 fail; the contents ranked
+    with the places → 2 fail — after a first version of that check ("meadow" keeps The Meadow first) passed with the
+    fault in, because no heading or medal matches "meadow"; the check now FINDS a query a heading outmatches ("closed").
+  - **atlas-layout §8**: the 44px `::after` hidden → fails; the clamp measured against a doubly-zoomed width → fails;
+    the point under the fingers not kept → fails — after the first run let it through at a 3% tolerance (5.6% → 2.9%
+    of a board that starts at its left edge); 0.5% now, the gesture holds to 0.0%. The first version of the clamp
+    break (azLive not re-measuring) could not fail: every step ends in a render, and mwClamp measures the zoomed width.
+    **Then the final runs caught a real fault in the zoom**, twice: "stays put" failed with the very numbers of the
+    break (5.6% → 2.9%) on the fixed code, and in reruns 5.6% → 4.0% — a camera read back from a board whose painting
+    was not laid out (above). It passed before only by timing. Two more pinches now FORCE the slow machine — the render
+    that ends a pinch, and a render in the middle of one, each with its painting held back — and each break was watched
+    to fail: `azLaid` putting the camera back at once → 2 fail; `azLive` reading the new board's scroll → the mid-pinch
+    check fails (5.8% → 3.4%); the scroll handler's guard taken out → the same; no focal step at all → all three fail.
+    Two §8 checks had raced a lazy file's re-render with a fixed sleep (the earned-edge check once measured a DETACHED
+    board: NaN%); both now wait on the state — the board laid out, its camera back, the card still. The earned-edge check
+    now also asks that the window REACHES the edge (a camera lost on a render passed it before): the clamp made to stop
+    10% short → fails (24.8% vs 27.5%). The zoomed stop-card check could not fail without the owed scroll (panTo moves
+    the camera sideways, and the three stops sat in view): the window is now turned away from each stop before it is
+    picked, and `azAfter` without its owed scroll → fails (all three cards below the window).
+  - **mobile-layout caught a real fault on its first run**: deleting the Bizzillionaire CSS took the Vocabulary card's
+    `.voc-nav` wrap rule with it (it sat inside that block), and #/vocab went 391 px wide on a 390 phone. Restored.
+  - **The header search double-escaped its descriptions** (`esc(trunc(…))`, and `trunc` escapes): a chapter named
+    "Vowels & Magic E" showed "&amp;". Fixed while proving the ranking check.
 
 ## The road to 4.5 — P0: tabs, shell, the analogy gate (10 Oct 2026) — READ FIRST; it overrides the sections below
 Brief: the family v5 audit's "road to 4.5" (owner decisions final, 10 Oct 2026). What this batch changed, and the rules:
