@@ -1740,6 +1740,15 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   The probe runs the context's init scripts: one that seeds on what it does not find in a NEW tab (feed-screen keys on
   sessionStorage) must skip `storage-probe.html`, and reloadSettled THROWS if the page hears the probe write storage
   (proved: feed-screen without its skip → "wrote storage 3×"). `reload-profiles` reads `reloadSettled(x)` as a reload of x.
+  **The cause, measured (13 Oct, after P3 runs 6–7 failed trust-v2's hello):** in this headless Chromium about one boot
+  in eight of a FRESH profile ends with the page's storage LINK BROKEN — the setup script's writes reach the browser,
+  then every write the app makes (from its first save at ~200 ms on, even one made seconds later) stays in that
+  renderer and never reaches the browser; a second page never sees it, a same-process reload does. 6 of 30 boots cold,
+  3 of 30 on a pre-warmed profile, 0 of 60 on a bare page, so something in the app's boot triggers it (no storage-ish
+  API in boot explains it — open). `reloadSettled` returning false is that state. **A reload test that must not be
+  fooled by it treats `reloadSettled() === false` as "this attempt proves nothing" and starts again in a fresh profile**
+  (trust-v2's hello walk: three attempts, the checks judge the last, the output says so; proved — a hello picker that
+  always repeats fails on attempt 1). Never retry on an app check failing with the link confirmed.
 - **THE RELOAD SEAL — an erase or a restore can never be undone by its own reload** (store.js, 13 Oct; found by P3's full
   run 5, backup-restore: an erase, the app's reload, and the OLD household on screen — its first save would have written it
   back over the erase, a COPPA deletion quietly undone). `bkHaltAndReload` calls `SB_STORE.sealReload()`: it writes a

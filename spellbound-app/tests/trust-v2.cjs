@@ -134,21 +134,33 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
      back, the greet record is gone, and the same hello repeats (failed twice in combined runs, 0 of 3 alone).
      pin-mandatory measured it (off-the-record 3 of 48 reloads empty, on-disk 0 of 72). Each visit also says
      what storage it started on, so a lost store can never again read as the app repeating itself. */
-  {
+  /* 13 Oct 2026 (P3 full runs 6 and 7): in this headless Chromium about one boot in eight of a FRESH profile ends with the
+     page's storage link broken — every write after load stays in that renderer and never reaches the browser (a second
+     page never sees it, not even one written seconds later; measured 6 of 30 cold, 3 of 30 on a pre-warmed profile, 0 on
+     a bare page). A reload that lands in another process then starts on old storage and the hello repeats — the browser,
+     not the app. So the walk trusts a reload only when reloadSettled CONFIRMED the browser holds what the page left; an
+     attempt with a broken link is discarded and the walk starts again in a fresh profile, three attempts at most, and
+     the checks below always judge the last one (said in the output). The app's checks are not loosened by a hair. */
+  let visits = [], attempt = 0, broken = 0;
+  for (attempt = 1; attempt <= 3; attempt++) {
     const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-hello-profile-'));
     const c2 = await chromium.launchPersistentContext(dir, { viewport: { width: 1100, height: 900 },
       executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
     await c2.addInitScript(s => { try { window.__startKeys = localStorage.length; if (!localStorage.getItem('sb_t_q')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_q', '1'); localStorage.setItem('sb_splash', '0'); } } catch (e) {} },
       Object.assign({}, seed, { pin: '2468', children: [Object.assign({}, seed.children[0], { name: 'Quiet', missed: [] })] }));
     const p2 = c2.pages()[0] || await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
-    const visits = [];
+    visits = []; let linked = true;
     await p2.goto('file://' + SRC + '/index.html');
     for (let i = 0; i < 5; i++) {
       const up = await p2.waitForFunction(() => typeof state !== 'undefined' && document.querySelector('.sb-home-greet:not(.sb-card)') && !document.querySelector('.sb-greet-hold'), null, { timeout: 45000 }).then(() => true, () => false);
       visits.push(up ? await p2.evaluate(() => ({ k: (JSON.parse(SB_STORE.get('greet') || '{}').Quiet || [])[1], t: (document.querySelector('.sb-home-greet:not(.sb-card)') || {}).textContent || '', keys: window.__startKeys })) : { k: 'never-drawn', t: '' });
-      await require('./lib/wait.cjs').reloadSettled(p2);
+      if (!(await require('./lib/wait.cjs').reloadSettled(p2))) linked = false;
     }
     await c2.close(); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
+    if (linked) break;
+    broken++; console.log(`  note attempt ${attempt}: the browser never held what the page wrote before a reload (a broken storage link) — ${attempt < 3 ? 'starting again in a fresh profile' : 'judging this attempt anyway'}`);
+  }
+  {
     ok(visits.slice(1).every(v => v.keys > 0), 'every reloaded visit starts on the storage the last one left (keys at start: ' + visits.map(v => v.keys).join(', ') + ')');
     ok(visits.every(v => v.k && v.t) && visits.every((v, i) => !i || v.k !== visits[i - 1].k) && visits.some(v => v.k === 'next'),
       'a quiet child\'s hello changes on every visit (a reload), and the next stop is one of them: ' + visits.map(v => v.k).join(' → '));
