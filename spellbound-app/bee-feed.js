@@ -236,11 +236,16 @@
     var h = BZ_FEED.feedCard(it, x, play[x.id] || {});
     /* the recorded clip (voice-cdn streams it on a hosted build) — played only on a tap, beside the card's own button */
     if (it.clip) h = h.replace('<div class="bzf-row"><a ', '<div class="bzf-row">' + hearBtn(it) + '<a ');
+    /* an ORIGIN card names its source dictionary where the data names one (road to 4.5, P3.31 — app3 etymSrcHTML:
+       Word Forge's cited rows only; any other origin card names none) */
+    var lw = /^lore:([^:]+):/.exec(String(it.src || ''));
+    if (lw && typeof etymSrcHTML === 'function') { var src = etymSrcHTML(lw[1]); if (src) h = h.replace('<div class="bzf-row">', src + '<div class="bzf-row">'); }
     return h;
   }
   function view() {
-    var head = pageHead('My Feed', '', 'Picked for you from across the app — about twenty, and then it ends.', null, 'goHome', 'Home', null,
-      typeof navIcon === 'function' ? navIcon('feed', 20, true) : '');
+    /* a tab root: title-left, no back pill (road to 4.5, P3.29 — app3 tabHead) */
+    var head = tabHead('My Feed', { sub: 'Picked for you from across the app — about twenty, and then it ends.',
+      icon: typeof navIcon === 'function' ? navIcon('feed', 20, true) : '' });
     if (!on()) return '<div class="sb-feedpage">' + head + '<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>';
     var wait = '<div class="sb-feedpage">' + head + hiveLoader('opening your feed…') + '</div>';
     if (!D() || !window.BZ_FEED) return wait;

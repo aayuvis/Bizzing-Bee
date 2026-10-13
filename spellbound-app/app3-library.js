@@ -32,7 +32,7 @@ function viewWordCardPop(){ const w=state.wordCard; if(!w) return '';
       <div style="font-family:var(--display);font-weight:800;${hwStyle(w.w,30)};margin-bottom:${respell?'3px':'6px'}">${esc(w.w)}</div>
       ${respell}${syl}
       <button data-act="wordCardSay" data-arg="${escA(w.w)}" style="margin-top:4px;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-weight:800;font-size:12px;color:var(--muted)">${iconSVG('volume',14)} Say it</button>
-      ${chips}
+      ${chips}${etymSrcHTML(w.w)}
       <div style="font-size:15px;color:var(--text);line-height:1.5;font-weight:500;text-align:left">${esc(w.d||'')}</div>
       ${sent}
       <div style="display:flex;gap:8px;margin-top:18px">
@@ -81,7 +81,7 @@ function setDeckCard(w,i,open){
       ${w.d?`<div style="font-size:14px;color:var(--text);line-height:1.5;margin-top:11px">${esc(w.d)}</div>`:''}
       ${w.s?`<div style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-top:9px"><b style="color:var(--text)">Sentence.</b> ${esc(w.s)}</div>`:''}
       ${(w.r||w.h)?`<div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text);line-height:1.5;margin-top:10px;background:var(--chip);border-radius:10px;padding:8px 11px"><span style="color:var(--accent);margin-top:1px;flex-shrink:0">${iconSVG('bulb',14)}</span><span>${esc(w.r||w.h)}</span></div>`:''}
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">${p?chip('/ '+esc(p)+' /',1):''}${ipa?chip(esc(ipa),1):''}${ps?chip(esc(ps)):''}${o?chip(esc(o)+' origin'):''}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">${p?chip('/ '+esc(p)+' /',1):''}${ipa?chip(esc(ipa),1):''}${ps?chip(esc(ps)):''}${o?chip(esc(o)+' origin'):''}</div>${etymSrcHTML(w.w)}
       <button data-act="deckGo" data-arg="${i}" style="margin-top:13px;width:100%;padding:10px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--accent);font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:7px">${iconSVG('arrow',15)} Go to this card</button>
     </div>`:''}
   </div>`; }
@@ -592,9 +592,31 @@ function quoteCatLabel(k){ return QUOTE_CAT_LABEL[k]||(String(k||'').charAt(0).t
 function quoteCatChip(k){ return (QUOTE_CAT_IC[k]?iconSVG(QUOTE_CAT_IC[k],14,2.3)+' ':'')+esc(quoteCatLabel(k)); }
 function quoteCats(){ const all=(window.SB_QUOTES||[]); const seen={}; const ord=Object.keys(QUOTE_CAT_LABEL);
   all.forEach(x=>{ if(x.c) seen[x.c]=1; }); const inData=ord.filter(k=>seen[k]); Object.keys(seen).forEach(k=>{ if(inData.indexOf(k)<0) inData.push(k); }); return inData; }
+/* WORDS IN QUOTES (road to 4.5, P3.21 — rubric H6: the Quotes tool earns its place in a spelling app). Each quote leads
+   with ONE notable word in it and that word's origin, both from the library: the quote's own highlighted word (its
+   `hard` list, written for children) when the library holds it with an origin, else the longest word of five letters or
+   more in the quote that the library holds with an origin. The origin is the library record's own `o` (its language)
+   and, once words-lore.js has landed, its etymology line (`r`) — nothing typed here. The quotes' attributions carry no
+   printed source (tests/data-lint.cjs UNSOURCED_MAX holds that count, and it only falls); nothing here adds or invents
+   one. A quote whose words the library has no origin for shows without the panel. The index is cut from the BOOT word
+   tier (SB_TIER1_N records), so a quote's word never changes under a child when the second shard lands, and it is the
+   same on every device. Guard: tests/quote-words.cjs. */
+let _qWordIx=null, _qWordOf=new WeakMap();
+function quoteWordIx(){ if(_qWordIx) return _qWordIx; if(!wordsIn()||!window.SB_DATA||!SB_DATA.nsf) return null;
+  const n=window.SB_TIER1_N||SB_DATA.nsf.length, m=new Map();
+  for(let i=0;i<n&&i<SB_DATA.nsf.length;i++){ const r=SB_DATA.nsf[i]; if(r&&r.w&&r.o&&!m.has(nkey(r.w))) m.set(nkey(r.w),r); }
+  return (_qWordIx=m); }
+function quoteWord(x){ if(!x) return null; if(_qWordOf.has(x)) return _qWordOf.get(x); const m=quoteWordIx(); if(!m) return null;
+  let r=null;
+  for(const h of (x.hard||[])){ const w=typeof h==='string'?h:(h&&h.w); r=w?m.get(nkey(w))||null:null; if(r) break; }
+  if(!r){ const seen=new Set();
+    for(const w of String(x.q||'').match(/[A-Za-z]{5,}/g)||[]){ const k=nkey(w); if(seen.has(k)) continue; seen.add(k); const c=m.get(k);
+      if(c&&(!r||c.w.length>r.w.length||(c.w.length===r.w.length&&c.w<r.w))) r=c; } }
+  _qWordOf.set(x,r); return r; }
 // render a quote's text, highlighting its "hard" words as tappable chips that open a word card.
 function renderQuoteHTML(x){ let html=esc(x.q).replace(/\n/g,'<br>');
-  const hard=x.hard||[]; const map={}; state._qHard=map;
+  const qw=quoteWord(x); const hard=(x.hard||[]).concat(qw&&!(x.hard||[]).some(h=>nkey(typeof h==='string'?h:h&&h.w)===nkey(qw.w))?[{w:qw.w,d:qw.d||''}]:[]);
+  const map={}; state._qHard=map;
   hard.forEach(h=>{ const w=(typeof h==='string')?h:h.w; const d=(typeof h==='string')?'':(h.d||''); if(!w) return; const key=w.toLowerCase(); map[key]={w:w,d:d};
     // wrap the first whole-word match (case-insensitive) that isn't already inside a chip
     const re=new RegExp('(^|[^A-Za-z<])('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')(?![A-Za-z])','i');
@@ -630,6 +652,12 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
   const qlen=(x.q||'').length; const isLong=/\n/.test(x.q||'')||qlen>240;
   const qsize=isLong?(qlen>600?'15px':'17px'):(qlen>170?'22px':qlen>110?'26px':qlen>60?'31px':'36px');
   const qHTML=renderQuoteHTML(x); const meaning=x.m||x.meaning||'';
+  /* the word this quote is shown through, and where it comes from (P3.21) — the etymology line arrives with words-lore */
+  const qw=quoteWord(x); if(qw&&!qw.r&&!state._qLoreAsked){ state._qLoreAsked=1; lazyNeed('lore',()=>{ try{ if(state.nav==='quotes') render(); }catch(e){} }); }
+  const qwLore=qw?(qw.r||((window.SB_LORE&&SB_LORE[nkey(qw.w)])||[])[0]||''):'';
+  const qwPanel=qw?`<div class="q-word" data-qword="${escA(qw.w)}"><span class="q-word-k">A word from this quote</span>
+      <button data-act="qWord" data-arg="${escA(nkey(qw.w))}" class="q-word-w">${esc(qw.w)}</button>
+      <span class="q-word-o"><b>${esc(qw.o)}</b>${qwLore?' · '+esc(qwLore):''}</span></div>`:'';
   const body = total? `
     <div data-swipe="quotes" class="q-parchment" style="position:relative;max-width:640px;margin:0 auto;overflow:hidden;padding:clamp(26px,5vw,40px) clamp(22px,5vw,38px);${isLong?'':'text-align:center;min-height:min(52vh,400px);display:flex;flex-direction:column;justify-content:center'}">
       <div style="position:absolute;top:12px;left:16px;font-family:var(--display);font-size:64px;line-height:1;color:rgba(200,150,30,.26);pointer-events:none">“</div>
@@ -638,6 +666,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
         ${meaning?`<button data-act="qMeaning" title="What does it mean?" aria-label="Meaning" style="width:38px;height:38px;border-radius:50%;background:${S.qMeaningOpen?'#F0B429':'#fff'};color:${S.qMeaningOpen?'#5a3d00':'#B67B00'};border:1px solid ${S.qMeaningOpen?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">💡</button>`:''}
         <button data-act="qFav" title="Save to favorites" aria-label="Favorite" style="width:38px;height:38px;border-radius:50%;background:${isFav?'#FF4D8D':'#fff'};color:${isFav?'#fff':'#C4453C'};border:1px solid ${isFav?'transparent':'#EBD79A'};display:grid;place-items:center;font-size:18px;box-shadow:var(--edge)">${iconSVG('heart',18,2.4)}</button>
       </div>
+      ${qwPanel}
       <div style="position:relative;z-index:1;margin-top:10px;${isLong?'max-height:min(52vh,440px);overflow:auto;text-align:left':''}">
         <div style="font-family:${isLong?'var(--ui)':'var(--display)'};font-weight:${isLong?'500':'800'};font-size:${qsize};line-height:${isLong?'1.7':'1.28'};color:#2A2410;overflow-wrap:anywhere;white-space:pre-line">${qHTML}</div>
         <div style="margin-top:18px;font-family:var(--ui);font-weight:800;font-size:16px;color:#8A5B00">— ${esc(x.a)}</div>
@@ -659,7 +688,7 @@ function viewQuotes(){ const c=active(); const S=state; const all=(window.SB_QUO
     <div style="text-align:center;font-size:11.5px;color:var(--muted);margin-top:9px">Swipe or use ← → keys · tap ❤ to keep your favorites</div>`
    : beeEmpty('sleepy','No quotes here yet — try another category or your favorites.');
   return `<div style="animation:sb-rise .35s ease both;max-width:760px;margin:0 auto">
-    ${pageHead('Quotes',countTxt('quotes')+' from famous people')}
+    ${pageHead('Quotes',countTxt('quotes')+' from famous people','A word from each quote, and where that word comes from.')}
     ${chips}
     ${body}
   </div>`; }
@@ -763,11 +792,11 @@ function viewExplore(){ const c=active(); ensureLists(c); const S=state;
     tile({act:'openTyping',img:'lib-typing',kick:'Speed',title:'Typing Trainer',
       blurb:'Touch-type, then race the sixty-second test.',c:'#2A63D6',ic:'pencil',cta:'Practise'}),
     tile({act:'openQuotes',img:'lib-quotes',kick:'Voices',title:'Quotes & Poems',
-      blurb:(qTxt?qTxt+' lines':'Lines')+' worth knowing by heart.',
+      blurb:(qTxt?qTxt+' lines':'Lines')+', each with a word and where it comes from.',
       c:'#8A5B00',ic:'quote',cta:'Read'}),
   ].join('');
   return `<div style="animation:sb-rise .35s ease both;max-width:1020px;margin:0 auto">
-    ${pageHead('The Library','everything the Atlas teaches')}
+    ${tabHead('The Library',{icon:navIcon('library',22,true),meta:'everything the Atlas teaches'})}
     ${libShelf()}
     ${/* the Link Finder reads the analogy items: behind the analogy gate (anlOpen) until they are released */
       anlOpen()?`<button class="lib-anlband" data-act="openAnlTool" aria-label="Open the Link Finder">
@@ -1619,7 +1648,7 @@ function viewFinder(){ const S=state; const c=active(); const q=S.finderQ||'';
         <span style="display:flex;align-items:center;gap:8px;width:100%"><span style="font-family:var(--display);font-weight:800;font-size:15px">${esc(r.w)}</span>${state.luMastered[nkey(r.w)]?'<span style="color:var(--good);font-weight:800;font-size:11px">✓ mastered</span>':''}<span style="margin-left:auto;color:var(--accent)">${iconSVG('book',15)}</span></span>
         ${r.d?`<span style="font-size:12px;color:var(--muted);line-height:1.4">${esc(trunc(r.d,110))}</span>`:''}</button>`).join('');
     body = q.trim().length<2
-      ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="font-size:34px;margin-bottom:8px">🔎</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
+      ? `<div class="sb-card" style="text-align:center;padding:34px 20px"><div style="display:flex;justify-content:center;margin-bottom:8px;color:var(--muted)">${iconSVG('search',34)}</div><div class="sb-ct">Type at least two letters</div><div class="sb-cs" style="margin-top:4px">Search the whole library — every word opens its learn card with meaning, sentence and pronunciation.</div></div>`
       : (rs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px">${cells}</div>`
         :(fullLooking(q)?`<div class="sb-card" style="text-align:center;padding:30px 20px" data-finder-looking><div class="sb-ct">Looking “${esc(q)}” up in the whole library…</div></div>`
         :`<div class="sb-card" style="text-align:center;padding:30px 20px"><div class="sb-ct">No matches for “${esc(q)}”</div><div class="sb-cs" style="margin-top:4px">${window.SB_FULL?'Try a different spelling.':'Try a different spelling — or load the whole library below to find it inside longer words.'}</div><div style="margin-top:12px">${loadBtn}</div></div>`));

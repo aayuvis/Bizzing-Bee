@@ -13,15 +13,18 @@
            a phone's canvas is capped at DPR 1.5; puffs never exceed 120
      §2.7  a best lap is kept per track + difficulty and races as a see-through ghost next time;
            the Cup is four races in one sitting, each track's words from its family, standings
-           at the end; the garage sells paint at a printed price through the family wallet,
-           a milestone trail opens with its milestone, and the race wears what you chose
+           at the end; the SHOP sells paint at a printed price through the family wallet (P3.19 —
+           the garage prints no price and its one button opens the Shop), a milestone trail opens
+           with its milestone, the race wears what you chose, and a skin never changes handling
 
    Proved by breaking (4 Oct 2026), each put back and the file cmp'd: a miss that resumes at once →
    GP8; the brake 14px off centre → GP10; the old frame-clamped loop → GP7; drawDist never
    adapting → §2.9; DPR uncapped on a phone → §2.9; no 'grandprix' slug → GP13; the ghost never
    saved → §2.7; the Cup ignoring its families → §2.7 (this check first read the family from the
    race's own state, which the fault blanked too — it reads the Cup's table now); the garage
-   handing paint over without the wallet → §2.7.
+   handing paint over without the wallet → §2.7. And (13 Oct 2026, P3.19): the garage selling again → "prints no
+   price" fails (9 buy buttons); a painted kart pulling 5% harder → "skins never change handling" fails (56.03 s vs
+   56.7 s).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/gp-play.cjs                        */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -186,24 +189,59 @@ const CHROME = process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-
       `§2.7: the Cup is four races in one sitting — ${races.map(r => r.scene + ' (' + r.origin + ': ' + r.fam.filter(o => window_re(r.origin).test(o)).length + '/' + r.fam.length + ')').join(', ')}`);
     ok(/Next race: Sunset Canyon/.test(races[0].label || '') && cup.st1 === cup.st0 + 1 && cup.tab === 5 && cup.seen[cup.seen.length - 1] === 'done',
       `the Cup leads on ("${races[0].label}"), ends on the standings (${cup.tab} rows), counts a finished Cup (${cup.st0} → ${cup.st1})`);
-    /* the garage: a printed price, the family wallet, a milestone trail */
+    /* THE GARAGE AND THE SHOP (road to 4.5, P3.19/P3.20 — supersedes "the garage sells paint"): coins are spent in ONE
+       place, the Shop. Paint is bought there, in its Grand Prix tab, at its printed price through the family wallet;
+       the garage prints no price — it says where a paint is, switches between the ones you own, and its one button
+       opens the Shop; a milestone trail opens with its milestone; the next race wears what you chose. */
     const gar = await pg.evaluate(async () => { const c = active(), W0 = BZ_WALLET.balance('Ahana');
-      arcadeMenu('beeGrandPrix'); await new Promise(r => setTimeout(r, 300));
-      document.querySelector('#arcm-gar').click(); await new Promise(r => setTimeout(r, 100));
-      const g = document.querySelector('.gp-gar'); const buy = g && g.querySelector('[data-gp-buy="paint|honey"]');
-      const price = buy && +(buy.textContent.match(/(\d+)\s*coins/) || [])[1];
+      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+      const wait = async (f) => { for (let i = 0; i < 200; i++) { try { if (f()) return true; } catch (e) {} await sleep(100); } return false; };
+      arcadeMenu('beeGrandPrix'); await sleep(300);
+      document.querySelector('#arcm-gar').click(); await sleep(100);
+      const g = document.querySelector('.gp-gar'); const garTxt = g ? g.innerText : '';
+      const honeyRow = g && [...g.querySelectorAll('.gp-gar-row')].find(r => /Honey gold/.test(r.textContent));
+      const inShop = !!(honeyRow && /In the Shop/.test(honeyRow.textContent) && !honeyRow.querySelector('button'));
+      const garBuy = g ? g.querySelectorAll('[data-gp-buy]').length : -1;
       const goldLocked = !!(g && [...g.querySelectorAll('.gp-gar-row')].find(r => /Golden comet/.test(r.textContent) && r.querySelector('.gp-gar-ms')));
-      buy && buy.click(); await new Promise(r => setTimeout(r, 50));
-      const W1 = BZ_WALLET.balance('Ahana'), owned = (c.gpGar.own.paint || []).includes('honey'), using = c.gpGar.paint;
       const gold = c.gpStat.clean >= 25 ? !!document.querySelector('.gp-gar [data-gp-use="trail|gold"]') : null;
+      /* the garage's one door to the Shop: it leaves the race's menu for the Shop's Grand Prix tab */
+      g.querySelector('[data-gp-shop]').click();
+      const shopOk = await wait(() => state.nav === 'shop' && state.shopTab === 'race' && document.querySelector('[data-act="buyItem"][data-arg="kart:honey"]'));
+      const menuGone = !document.querySelector('.arc-menu,.arc-play,.gp-gar');
+      const btn = document.querySelector('[data-act="buyItem"][data-arg="kart:honey"]');
+      const price = btn && +(btn.textContent.match(/(\d+)\s*coins/) || [])[1];
+      window.confirm = () => true; btn && btn.click(); await sleep(150);
+      const W1 = BZ_WALLET.balance('Ahana'), owned = (c.gpGar.own.paint || []).includes('honey'), using = c.gpGar.paint;
+      const led = BZ_WALLET.ledger('Ahana').filter(x => x.why === 'kart:honey');
+      const again = document.querySelector('[data-act="buyItem"][data-arg="kart:honey"]'); again && again.click(); await sleep(100);
+      const W2 = BZ_WALLET.balance('Ahana');
+      /* back in the race's menu, the garage shows it in use */
+      arcadeMenu('beeGrandPrix'); await sleep(300); document.querySelector('#arcm-gar').click(); await sleep(100);
+      const inUse = !!([...document.querySelectorAll('.gp-gar .gp-gar-row')].find(r => /Honey gold/.test(r.textContent) && /In use/.test(r.textContent)));
       document.querySelector('.gp-gar [data-gp-x]').click(); const gone = !document.querySelector('.gp-gar');
       arcadeClose();
       const h = document.createElement('div'); h.className = 'gpm'; h.style.cssText = 'position:fixed;inset:0'; document.body.appendChild(h);
       window.SB_SAGA_ENGINES.beeGrandPrix(h, { diff: 'medium', drive: 'medium', scene: 'meadow', autoGo: true }, () => {});
-      return { W0, W1, price, owned, using, goldLocked, gold, clean: c.gpStat.clean, gone, paint: window._race.state().paint }; });
-    ok(gar.price === 40 && gar.W0 - gar.W1 === 40 && gar.owned && gar.using === 'honey' && gar.paint === '#F0B429' && gar.gone,
-      `§2.7: the garage sells Honey gold paint at its printed ${gar.price} coins through the family wallet (${gar.W0} → ${gar.W1}), and the next race wears it (${gar.paint})`);
+      return { W0, W1, W2, price, owned, using, goldLocked, gold, clean: c.gpStat.clean, gone, inShop, garBuy, garPrice: /\d+\s*coins/i.test(garTxt), shopOk, menuGone, inUse,
+        led: led.map(x => x.n), paint: window._race.state().paint }; });
+    ok(gar.inShop && gar.garBuy === 0 && !gar.garPrice,
+      `the garage prints no price — Honey gold says "In the Shop", no buy button, no "N coins" (buttons ${gar.garBuy}, price text ${gar.garPrice})`);
+    ok(gar.shopOk && gar.menuGone, `the garage's one button opens the Shop's Grand Prix tab and closes the race's menu (${gar.shopOk}, ${gar.menuGone})`);
+    ok(gar.price === 40 && gar.W0 - gar.W1 === 40 && gar.led.join() === '-40' && gar.W2 === gar.W1 && gar.owned && gar.using === 'honey' && gar.inUse && gar.paint === '#F0B429' && gar.gone,
+      `§2.7: the Shop sells Honey gold paint at its printed ${gar.price} coins through the family wallet (${gar.W0} → ${gar.W1}, ledger ${gar.led.join()}; a second tap ${gar.W1} → ${gar.W2}), the garage shows it in use (${gar.inUse}), and the next race wears it (${gar.paint})`);
     ok(gar.gold === true, `a milestone trail opens with its milestone, not a price (Golden comet: ${gar.clean} Clean box words → ${gar.gold ? 'open' : 'still locked'})`);
+    /* A PAINT AND A TRAIL ARE LOOKS (P3.19): the same race — scene, bot, seed — run in factory paint and road dust and
+       then in Honey gold and Sky puffs finishes in the same race time, the same laps, the same place, on the same line. */
+    const same = await pg.evaluate(() => { const c = active();
+      const run = (paint, trail) => { c.gpGar.paint = paint; c.gpGar.trail = trail; SB_STORE.setJSON('gpGhost', {});
+        document.querySelectorAll('.gpm').forEach(n => n.remove()); const h = document.createElement('div'); h.className = 'gpm'; h.style.cssText = 'position:fixed;inset:0'; document.body.appendChild(h);
+        window.SB_SAGA_ENGINES.beeGrandPrix(h, { diff: 'medium', drive: 'medium', scene: 'city', autoGo: true }, () => {});
+        const R = window._race, s0 = R.state(); R.bot({ drive: 'line', seed: 5, spell: (w, p) => ({ typed: w.w, secs: p.par * 0.8 }) }); const res = R.fast(900); const s = R.state();
+        return { paint: s0.paint, trail: s0.trail, run: JSON.stringify({ best: res && res.best, t: Math.round(s.raceT * 1000), laps: s.lapTimes, place: s.place, x: Math.round(s.x * 1e4), stars: res && res.stars }) }; };
+      (c.gpGar.own.trail = c.gpGar.own.trail || []).includes('sky') || c.gpGar.own.trail.push('sky');
+      return { a: run('factory', 'dust'), b: run('honey', 'sky') }; });
+    ok(same.a.paint !== same.b.paint && same.a.trail !== same.b.trail && same.a.run === same.b.run,
+      `skins never change handling: ${same.a.paint || 'factory'}/${same.a.trail} and ${same.b.paint}/${same.b.trail} run the same race — ${same.a.run === same.b.run ? same.a.run : same.a.run + ' ≠ ' + same.b.run}`);
     await pg.close();
   }
 

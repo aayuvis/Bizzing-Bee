@@ -590,7 +590,7 @@ function sessionResults(){
                   ${opt('atlasNext',null,'arrowLeft','Back')}
                 </div></div>`;
             })()
-            : `<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--treasure,#FFD24D) 22%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 50%,var(--line));border-radius:14px;padding:12px 16px;text-align:left"><span style="font-size:16px">👉</span><span style="font-size:13px;font-weight:700;line-height:1.45">Best so far ${tb.p}% — reach ${tb.gate}% on a full round to open the next Atlas stop.${bad.length?' The misspelt words below are the gap.':''}</span></div>`;
+            : `<div style="flex:1;min-width:100%;display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--treasure,#FFD24D) 22%,var(--bg2));border:1px solid color-mix(in srgb,var(--treasure,#FFD24D) 50%,var(--line));border-radius:14px;padding:12px 16px;text-align:left"><span style="display:inline-flex;flex-shrink:0;color:var(--accent)">${iconSVG('arrow',18)}</span><span style="font-size:13px;font-weight:700;line-height:1.45">Best so far ${tb.p}% — reach ${tb.gate}% on a full round to open the next Atlas stop.${bad.length?' The misspelt words below are the gap.':''}</span></div>`;
         } }catch(e){} return ''; })()}
       ${advBtn}
       ${bad.length?`<button data-act="drillMisspelt" style="flex:1;min-width:200px;padding:14px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;font-size:15px;box-shadow:var(--edge)">Spell the ${bad.length} misspelt word${bad.length>1?'s':''} →</button>`:''}

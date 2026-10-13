@@ -11,6 +11,11 @@
        Library tile does, a concept chapter goes where its route sends it;
      · the word results are still there, and the place half costs well under a millisecond a
        keystroke (it runs on every key, on every screen).
+   Road to 4.5, P3.27 (13 Oct 2026): it also finds what is INSIDE a concept chapter (a card's heading — opening its
+   chapter through the chapter's route) and the medals (opening the Medals shelf as the drawer's row does), ranked after
+   every place. Proved by breaking (13 Oct 2026): the contents taken out of the index → the headings check fails; a medal
+   opening Home → the Medals check fails (phone and desktop); the contents ranked with the places (no `sec`) → "places
+   rank before" fails (that check FINDS its query — one a heading outmatches — after "meadow" was shown to hold nothing).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/header-places.cjs */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
@@ -22,7 +27,7 @@ const KID = (tier) => ({ name: 'T', avatar: 'bee', coins: 50, pow: {}, age: 9, a
   trail: { lap: 1, done: { u1: { 1: 90 }, u2: { 1: 88 } }, chk: {}, seen: {}, st: {}, elap: 1, edone: {}, echk: {} } });
 const SNAP = () => ({ nav: state.nav, view: state.trailView || null, act: state.trailAct || null, unit: state.trailUnit || null,
   concept: (state.conceptSel && state.conceptSel.title) || null, pin: !!state.pinDlg, tiers: !!state.showTiers,
-  arcade: !!document.querySelector('.arc-menu,.arc-play'), hq: state.hq || '' });
+  arcade: !!document.querySelector('.arc-menu,.arc-play'), hq: state.hq || '', coll: state.collTab || null });
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
@@ -116,6 +121,44 @@ const SNAP = () => ({ nav: state.nav, view: state.trailView || null, act: state.
       ok(!!hit && hit.d === 'Concept chapter', `${vp.n}: a concept chapter is found — "${cc.t}"`);
       if (hit) { await pick(rows, cc.t); const s = await pg.evaluate(SNAP);
         ok(s.nav === routeS.nav && s.concept === routeS.concept && s.pin === routeS.pin, `${vp.n}: the chapter opens where #/concepts/${cc.i} does — ${s.concept || s.nav}`); } }
+
+    /* road to 4.5, P3.27: what is INSIDE a concept chapter (a card's heading) is found, and opens the chapter where its
+       route does — its lock and all; a heading three chapters share names no place */
+    await reset('regional');
+    const inside = await pg.evaluate(() => new Promise(r => SB_LAZY.need('concepts', () => { loadConcepts(); _placeIdx = null;
+      const P = placeIndex(); const C = P.filter(p => /^In the chapter /.test(p.kind));
+      const shared = P.some(p => p.k === 'the root');
+      const p = C.filter(x => suggestPlaces(x.t, 3).some(y => y.w === x.t))[Math.floor(C.length / 4)] || C[0];
+      r({ n: C.length, shared, t: p && p.t, kind: p && p.kind, i: p ? +p.go.split('|')[1] : -1 }); })));
+    ok(inside.n > 300 && !inside.shared, `${vp.n}: ${inside.n} chapter headings are places; "The Root" (shared by many chapters) is not`);
+    await pg.evaluate(i => SB_SHELL.applyRoute('concepts/' + i), inside.i); await pg.waitForTimeout(700);
+    const inRoute = await pg.evaluate(SNAP);
+    await reset('regional');
+    { const rows = await type(inside.t); const hit = rows.find(r => r.place && r.w === inside.t);
+      ok(!!hit && hit.d === inside.kind, `${vp.n}: a chapter's contents are found — "${inside.t}" (${hit && hit.d})`);
+      if (hit) { await pick(rows, inside.t); const s = await pg.evaluate(SNAP);
+        ok(s.nav === inRoute.nav && s.concept === inRoute.concept && s.pin === inRoute.pin, `${vp.n}: it opens its chapter where #/concepts/${inside.i} does — ${s.concept || s.nav}`); } }
+    /* …and the medals: a medal's name opens the Medals shelf, as the drawer's Medals row does */
+    await reset('free');
+    const medal = await pg.evaluate(() => { _placeIdx = null; const M = placeIndex().filter(p => p.kind === 'Medal');
+      const p = M.find(x => suggestPlaces(x.t, 3).some(y => y.w === x.t)); return { n: M.length, t: p && p.t }; });
+    { const rows = await type(medal.t || 'zzz'); const hit = rows.find(r => r.place && r.w === medal.t);
+      ok(medal.n > 20 && !!hit && hit.d === 'Medal', `${vp.n}: the ${medal.n} medals are places — "${medal.t}"`);
+      if (hit) { await pick(rows, medal.t); const s = await pg.evaluate(SNAP);
+        ok(s.nav === 'collection' && s.coll === 'badges', `${vp.n}: a medal opens the Medals shelf — ${s.nav}/${s.coll}`); } }
+    /* a place still comes first. The query is FOUND, not typed: one where a chapter heading or a medal matches BETTER
+       (an exact or a word-start match) than the best place does (inside a word) — the case a single ranking would
+       hand to the content row — and the bar must still put the place on top */
+    await reset('regional');
+    const pick2 = await pg.evaluate(() => new Promise(r => SB_LAZY.need('concepts', () => { loadConcepts(); _placeIdx = null; const P = placeIndex();
+      const cls = (p, q) => { const i = (' ' + p.k).indexOf(' ' + q); return i < 0 ? 9 : p.k === q ? 0 : i === 0 ? 1 : 2; };
+      for (const s2 of P.filter(p => p.sec)) { const q = s2.k.split(' ')[0]; if (q.length < 4) continue;
+        const prim = P.filter(p => !p.sec && cls(p, q) < 9); if (!prim.length) continue;
+        if (Math.min(...P.filter(p => p.sec).map(p => cls(p, q))) < Math.min(...prim.map(p => cls(p, q)))) return r({ q, prim: prim.map(p => p.t).slice(0, 3) }); }
+      r(null); })));
+    if (pick2) { const rows = await type(pick2.q); const first = rows.find(r => r.place);
+      ok(first && first.d !== 'Medal' && !/^In the chapter /.test(first.d), `${vp.n}: places rank before contents and medals — "${pick2.q}" lists ${first && first.w} (${first && first.d}) first, though a heading or medal matches it better`); }
+    else ok(false, `${vp.n}: no query found where a heading or a medal outmatches a place — the ranking check has nothing to hold`);
 
     // Escape still closes; the place half costs nothing per keystroke
     await reset('free');

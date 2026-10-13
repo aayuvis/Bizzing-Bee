@@ -22,5 +22,5 @@
 /* contrast, measured in every world by tests/feed-screen.cjs: a world's accent and muted inks are
    tuned for its own surfaces, and on a feed card's chip a few fall under 4.5:1 — so the feed's
    buttons and its subtitle take the world's TEXT ink, which every world holds at full contrast */
-.sb-feedpage > p, .sb-feedpage .sb-phead + p { color: var(--text) !important; }
+.sb-feedpage > p, .sb-feedpage .sb-phead + p, .sb-feedpage .sb-thead + p { color: var(--text) !important; }
 .sb-feedpage .bzf-row .bz-btn { color: var(--text); }

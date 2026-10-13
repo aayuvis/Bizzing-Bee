@@ -906,6 +906,7 @@ body:has(>.arc-play) .w4-bg,body:has(>.bz-play) .w4-bg{display:none}   /* its ow
 .gp-gar-b{min-height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(0,0,0,.14);background:#fff;font:700 13px 'Hanken',sans-serif;color:#241E33}
 .gp-gar-b.buy{background:var(--honey,#F0B429);border-color:transparent}
 .gp-gar-b:disabled{opacity:.5}
+.gp-gar-go{margin-top:10px;width:100%;background:var(--honey,#F0B429);border-color:transparent}
 .gp-gar-on{font:700 12px 'Hanken',sans-serif;color:#8A5B00}
 .gp-gar-ms{font:600 12px 'Hanken',sans-serif;color:var(--muted,#6A6478);max-width:150px;text-align:right}
 [data-mode="dusk"] .gp-gar-card{--panel:#FFFFFF;--ink:#241E33;--muted:#6A6478}
