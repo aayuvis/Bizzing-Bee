@@ -48,7 +48,7 @@ const seed = (coins, themes) => ({
     });
     await pg.goto(url); await pg.waitForTimeout(3200);
     const first = await read();
-    await pg.reload(); await pg.waitForTimeout(3200);
+    await require('./lib/wait.cjs').reloadSettled(pg); await pg.waitForTimeout(3200);
     const second = await read();
     await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
     return { first, second };

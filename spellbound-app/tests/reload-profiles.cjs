@@ -195,6 +195,15 @@ function reader(name, src) {
       : { kind: 'unknown', why: 'no binding of ' + id + ' found' };
     sites.push({ line: lineOf(at), kind, recv, verdict });
   }
+  /* the suite's shared reload, wait.cjs reloadSettled(page): the page it is handed reloads */
+  for (const m of code.matchAll(/\breloadSettled\s*\(\s*([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)/g)) {
+    const recv = m[1].replace(/\s+/g, ''), at = m.index, id = pageOf(recv, at);
+    if (!id) { sites.push({ line: lineOf(at), kind: 'reload', recv, verdict: { kind: 'unknown', why: 'reloadSettled on no page' } }); continue; }
+    const b = binding(id, at);
+    const verdict = b ? (b.kind === 'param' ? classify(null, [id], 0) : classify(b.rhs, [id + ' (line ' + lineOf(b.at) + ')'], 0))
+      : { kind: 'unknown', why: 'no binding of ' + id + ' found' };
+    sites.push({ line: lineOf(at), kind: 'reload', recv, verdict });
+  }
   return sites;
 }
 

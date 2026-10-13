@@ -1733,6 +1733,13 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   away-and-back goto traced to `newContext(`/`newPage({`. Not a complete cure everywhere: family-topbar's
   reload beside six busy loops at 4x still came back empty 2 of 30 on disk (0 of 20 off the record), so a
   reload test should also say what storage the new page started on, as pin-mandatory and trust-v2 do.
+  **Every reload goes through `reloadSettled(page)`** (tests/lib/wait.cjs, 13 Oct, P3's last full run: pin-mandatory's
+  reload came back on 0 keys on disk): it first waits — 8 s at most — until a SECOND page of the profile
+  (`tests/lib/storage-probe.html`, same origin) sees every key the page holds, then reloads. It is a wait, never a witness
+  (once in six runs its probe saw only the seeded keys while the reload started on all five), so no test asserts on it.
+  The probe runs the context's init scripts: one that seeds on what it does not find in a NEW tab (feed-screen keys on
+  sessionStorage) must skip `storage-probe.html`, and reloadSettled THROWS if the page hears the probe write storage
+  (proved: feed-screen without its skip → "wrote storage 3×"). `reload-profiles` reads `reloadSettled(x)` as a reload of x.
 
 ## Road to 4.5, P0 — landing and parent truth, child data, wallet, Hive minutes (10 Oct 2026)
 - **The opening page types no count** (P0.21/P0.22). Beyond the Audit v4 set, SB_COUNT now also reads
@@ -1938,6 +1945,10 @@ Brief rows P1.16–P1.21 (the rubric's F1, B4, B9, E5, W2, G4). The rules a late
   game (Back, `arcadeClose`) while it was up used to hold every `SGUI.clock` in the app still for good — Word Lore's clock never
   ended — and its key trap swallowed keys app-wide. The full bot harness found it (a Honeycomb round left with its card up, then
   Word Lore's clock ran 160 questions). Guard: `tests/engine-kit.cjs` (a card removed with its host holds nothing).
+  **A card comes back after its stage is redrawn ONLY when the game asks** (`SGUI.miss(…, {stays:true})`, Word Forge alone,
+  13 Oct): Forge redraws its stage around an open card, so the card re-attaches to the stage with the same `data-sb-stage`.
+  Re-attaching every card made the Spelling Gym's NEXT round inherit the old round's card (spelling-gym T13 hung past 600 s).
+  Guard: engine-kit (a new round never inherits the old card; `stays` gets it back; Continue still lets go).
 - **Grand Prix stars are won by words as well as place** (P1.21, `gpStars(place, right, met)` in saga2.js's rules block): the
   LOWER of the place's stars (1st 3 · 2nd 2 · 3rd 1) and the words' (90%+ 3 · 60%+ 2 · 30%+ 1); **0/6 (and 1/6, or no box met)
   earns no star at any place**. Guards: `gp-rules.cjs` GP7 (the table, run from the real block) and `gp-race.cjs` GP7 live (20

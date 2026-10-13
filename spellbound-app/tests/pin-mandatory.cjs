@@ -124,8 +124,14 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     for (const k of '1357') await p2.evaluate(k => app.pinKey(k), k);
     const opened = await p2.evaluate(() => state.nav === 'progress' && state.progTab === 'parent' && !state.pinDlg);
     ok(opened, 'and its old PIN, 1357, still opens the parent zone');
-    const kept = await p2.evaluate(() => localStorage.length);
-    await p2.reload(); await booted(p2);
+    const keys = await p2.evaluate(() => Object.keys(localStorage)), kept = keys.length;
+    /* the browser must hold those keys before the reload (tests/lib/wait.cjs storageSettled) */
+    /* reloadSettled waits until a second page of the profile sees the keys (8 s at most) before it reloads. It is a WAIT,
+       not a witness: 1 run in 6 at --cpu 4 its probe saw only the two seeded keys for the whole 8 s while the reloaded
+       page started on all five — so its view is a note, and the check below, what the new document started on, decides. */
+    const W = require('./lib/wait.cjs'), held = await W.reloadSettled(p2);
+    if (!held) console.log(`  note the probe page saw ${JSON.stringify(W.reloadSettled.last)} of the page's ${JSON.stringify(keys)} before the reload`);
+    await booted(p2);
     const m2 = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, start: window.__startKeys }));
     ok(m2.start === kept && kept > 0, `the reloaded page starts on the storage the first boot left (${m2.start} keys of ${kept})`);
     ok(m2.ran.length === 0 && m2.disk === m.disk, 'a second boot migrates nothing and keeps the same record');

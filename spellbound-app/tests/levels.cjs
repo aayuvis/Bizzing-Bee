@@ -76,7 +76,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
   ok(r.stepped === 'medium', `tapping it steps the level (Easy → ${r.stepped})`);
   ok(r.other.join() === 'auto,auto', 'one child’s levels are not another’s');
   /* a reload: the levels are the child's, in the household */
-  await pg.reload(); await booted(pg);
+  await require('./lib/wait.cjs').reloadSettled(pg); await booted(pg);
   const after = await pg.evaluate(() => { const raw = JSON.parse(SB_STORE.get('household')); return { sv: raw.sv, levels: Object.keys(raw.children[0].levels || {}).length, sprint: SB_LEVEL.get('gym/sprint'), hist: SB_LEVEL.get('beeGrandPrix') }; });
   ok(after.levels >= 6 && after.sprint === 'hard' && after.hist === 'easy', `after a reload the levels are still the child's (${after.levels} kept in the household, sv ${after.sv}); the hand-set Hard still stands`);
   const moved = await pg.evaluate(() => SB_LEVEL.after('gym/sprint', 30).level);

@@ -123,7 +123,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     await pg.click('[data-act="fwDone"]');
     const d = await drillRight(pg);
     ok(d.sfx.includes('correct') && !d.sfx.includes('first') && !d.fly, `the next right answer, in the drill, is a plain "correct" (${d.sfx.join(', ')})`);
-    await pg.reload(); await booted(pg);
+    await require('./lib/wait.cjs').reloadSettled(pg); await booted(pg);
     await wait(400);
     const r = await pg.evaluate(() => ({ fly: !!document.querySelector('.sb-fw-fly'), fx: !!active().fwFx }));
     ok(!r.fly && r.fx, 'a reload replays nothing, and the child keeps its "first word done" (c.fwFx)');

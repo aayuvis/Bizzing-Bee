@@ -66,4 +66,55 @@ async function raceTime(pg, secs) {
     const f = ts => { if (last != null) acc += Math.min(cap, (ts - last) / 1000); last = ts; if (acc >= secs) r(acc); else requestAnimationFrame(f); };
     requestAnimationFrame(f); }), [secs, RACE_DT_MAX]);
 }
-module.exports = { until, booted, lazy, frames, still, quietRender, STILL, raceTime, RACE_DT_MAX };
+/* storageSettled(ctx, n, ms, at, want): wait until the browser holds what the page wrote, BEFORE a reload. Chromium hands a
+   page's localStorage writes to the browser process asynchronously, and a reload made before they land can start the new
+   document on storage that is EMPTY (pin-mandatory read "0 keys of 5" on disk, 13 Oct 2026) or one write short
+   (daily-bee: the solver's coin gone after the reload, the same day) — a persistent profile makes it rarer, not
+   impossible. A second page in the same context reads the browser's copy (same origin, a blank page that writes
+   nothing), so when it holds n keys — and, given `want()` (the page's own digest, re-read each time because the page may
+   still be writing), the same digest — the reload will too. Waits on state, never on a sleep. It is a wait, NOT a
+   witness: once in six pin-mandatory runs at --cpu 4 the probe saw only the keys seeded before boot for the whole 8 s
+   while the reloaded page started on every key — a test asserts what the NEW document started on, never this. */
+const DIGEST = () => { let h = 2166136261; const ks = Object.keys(localStorage).sort();
+  for (const k of ks) { const v = k + '\u0000' + localStorage.getItem(k) + '\u0001'; for (let i = 0; i < v.length; i++) { h ^= v.charCodeAt(i); h = Math.imul(h, 16777619); } }
+  return ks.length + ':' + (h >>> 0).toString(36); };
+async function storageSettled(ctx, n, ms = 8000, at, want) {
+  const probe = await ctx.newPage();
+  try {
+    /* over http the probe must share the page's origin: the served tree's own copy of this file (the test servers serve
+       spellbound-app, and a navigation is network-first in sw.js, so it is fetched, not answered with index.html) */
+    const http = at && /^https?:/.test(at);
+    await probe.goto(http ? new URL('tests/lib/storage-probe.html', at).href : 'file://' + require('path').resolve(__dirname, 'storage-probe.html'));
+    const t0 = Date.now(); let seen = [], dg = '', w = '';
+    while (Date.now() - t0 < ms) {
+      [seen, dg] = await probe.evaluate((D) => [Object.keys(localStorage), (0, eval)(D)()], '(' + DIGEST + ')');
+      w = want ? await want() : '';
+      if (seen.length >= n && (!want || dg === w)) { storageSettled.last = { seen }; return true; }
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    storageSettled.last = { seen, digest: dg, page: w };
+    return false;
+  } finally { await probe.close(); }
+}
+/* reloadSettled(page, opts): the reload every test makes — first the page goes idle (a write queued behind a busy
+   main thread is not sent yet), then the browser holds every key the page holds, with the same values (storageSettled
+   on the page's own context and origin), then page.reload(opts). Returns false (and still reloads) only if they never
+   settle, so a test that asserts its starting storage can say why. */
+async function reloadSettled(page, opts) {
+  /* capped from Node: a test on Playwright's installed clock (hive-activity) fakes requestIdleCallback and its timeout too */
+  await Promise.race([page.evaluate(() => new Promise((r) => (window.requestIdleCallback || setTimeout)(() => r(), { timeout: 3000 }))).catch(() => {}),
+    new Promise((r) => setTimeout(r, 3000))]);
+  const n = await page.evaluate(() => { window.__probeWrites = 0; addEventListener('storage', () => { window.__probeWrites++; }); return localStorage.length; }).catch(() => 0);
+  const want = () => page.evaluate((D) => (0, eval)(D)(), '(' + DIGEST + ')').catch(() => '');
+  const ok = n ? await storageSettled(page.context(), n, 8000, page.url(), want) : true;
+  /* the probe is a page of the test's context, so the context's init scripts run in it too. One that seeds on what it
+     does not find (feed-screen's keys on sessionStorage, which a new tab never has) would write over the very storage
+     being kept — the page hears that as a 'storage' event from another document, and the reload stops here, loudly. */
+  const wrote = await page.evaluate(() => window.__probeWrites || 0).catch(() => 0);
+  if (wrote) throw new Error(`reloadSettled: the context's init scripts wrote storage ${wrote}× in the probe page — make them skip storage-probe.html`);
+  reloadSettled.last = storageSettled.last;
+  await page.reload(opts);
+  return ok;
+}
+
+module.exports = { until, booted, lazy, frames, still, quietRender, storageSettled, reloadSettled, STILL, raceTime, RACE_DT_MAX };

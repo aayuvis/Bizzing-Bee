@@ -114,6 +114,21 @@ const KINDS = [
     inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'q', bubbles: true })); inp.remove();
     return { up, held: SGUI.held, ran: l0 - l1, got }; });
   ok(gone.up && !gone.held && gone.ran > 0.3 && gone.got, `a card removed with its game holds nothing: SGUI.held ${gone.held}, a clock runs (${gone.ran.toFixed(2)} s in 0.6 s), keys reach the page (${gone.got})`);
+  /* a NEW round of the same game (a new stage with the same plate key) never inherits the old round's card — only a game
+     that asks (`stays:true`, Word Forge redrawing its own stage) gets its card put back (13 Oct 2026: a Spelling Gym
+     round replaced with its card up re-attached the stale card, held the next round's clock and hung the run).
+     Proved by breaking: `stays` ignored (every card keeps its stage key and re-attaches) → this check fails. */
+  const stage = await pg.evaluate(async () => {
+    const mk = () => { const s = document.createElement('section'); s.className = 'sb-stage'; s.setAttribute('data-sb-stage', 'kit-test'); document.body.appendChild(s); return s; };
+    const tick = () => new Promise((r) => setTimeout(r, 30));
+    let s1 = mk(); SGUI.miss(s1, { w: 'army' }, 'armey', {}); s1.remove(); const s2 = mk(); await tick();
+    const plain = { held: SGUI.held, onNew: !!s2.querySelector('.sg-misscard') }; s2.remove();
+    let s3 = mk(); SGUI.miss(s3, { w: 'army' }, 'armey', { stays: true }); s3.remove(); const s4 = mk(); await tick();
+    const sticky = { held: SGUI.held, onNew: !!s4.querySelector('.sg-misscard') };
+    s4.querySelector('.sg-miss-go') && s4.querySelector('.sg-miss-go').click(); await tick(); s4.remove();
+    return { plain, sticky, after: SGUI.held }; });
+  ok(!stage.plain.held && !stage.plain.onNew && stage.sticky.held && stage.sticky.onNew && !stage.after,
+    `a new round never inherits the old round's card (held ${stage.plain.held}, on the new stage ${stage.plain.onNew}); a game that asks to keep it (stays) gets it back (${stage.sticky.onNew}) and Continue still lets go (${!stage.after})`);
   await pg.evaluate(() => { window.__lp.stop(); });
 
   /* ---- T4: real time at 4× CPU throttle, on a stage (where every timed round runs) ---- */

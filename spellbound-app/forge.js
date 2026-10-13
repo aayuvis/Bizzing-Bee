@@ -276,7 +276,7 @@
     sayW(r.w);
     var h = host && host.querySelector('.fg-play');
     try {
-      if (window.SGUI && typeof SGUI.miss === 'function' && h) { G.sguiMiss = true; SGUI.miss(h, r.w, attempt, { onContinue: cont, note: note.replace(/\*/g, '') }); return; }
+      if (window.SGUI && typeof SGUI.miss === 'function' && h) { G.sguiMiss = true; SGUI.miss(h, r.w, attempt, { onContinue: cont, note: note.replace(/\*/g, ''), stays: true });   /* Forge redraws its stage around the card */ return; }
     } catch (e) {}
     G.sguiMiss = false; G.missCont = cont; draw();
   }

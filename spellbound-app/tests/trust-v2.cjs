@@ -146,7 +146,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     for (let i = 0; i < 5; i++) {
       const up = await p2.waitForFunction(() => typeof state !== 'undefined' && document.querySelector('.sb-home-greet:not(.sb-card)') && !document.querySelector('.sb-greet-hold'), null, { timeout: 45000 }).then(() => true, () => false);
       visits.push(up ? await p2.evaluate(() => ({ k: (JSON.parse(SB_STORE.get('greet') || '{}').Quiet || [])[1], t: (document.querySelector('.sb-home-greet:not(.sb-card)') || {}).textContent || '', keys: window.__startKeys })) : { k: 'never-drawn', t: '' });
-      await p2.reload();
+      await require('./lib/wait.cjs').reloadSettled(p2);
     }
     await c2.close(); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
     ok(visits.slice(1).every(v => v.keys > 0), 'every reloaded visit starts on the storage the last one left (keys at start: ' + visits.map(v => v.keys).join(', ') + ')');

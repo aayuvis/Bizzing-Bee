@@ -189,7 +189,7 @@ function crafted(w) {
     await typeWord(pg, notIn.repeat(w.length)); await typeWord(pg, crafted(w)); await typeWord(pg, w);
     await W.until(pg, () => !!document.querySelector('#db-end .db-word'), null, 5000);
     const c1 = await pg.evaluate(() => { walletSync(active()); return active().coins || 0; });
-    await pg.reload(); await W.booted(pg); await bee(pg, 'route');
+    await W.reloadSettled(pg); await W.booted(pg); await bee(pg, 'route');
     await W.until(pg, () => !!document.querySelector('#db-end .db-word'), null, 8000);
     const c2 = await pg.evaluate(() => { walletSync(active()); return active().coins || 0; });
     ok(c1 - R.coins === 1 && c2 === c1, `a solved day pays exactly one coin (${c1 - R.coins}) and coming back to it pays nothing more (${c2 - c1})`);
