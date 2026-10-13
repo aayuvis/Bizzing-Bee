@@ -110,7 +110,7 @@ function worldsShopHTML(c){ c=c||active();
     const packs=SB_AVATARS.packs.filter(p=>p.world===n).map(p=>p.label.replace(/ Pack$/,'')).join(' · ');
     const H=(typeof WORLD_HERO!=='undefined'&&WORLD_HERO[t.id])||{};
     return `<div class="bz-wcard${un?'':' locked'}" data-world="${t.id}">
-      <div class="bz-wcard-art" style="${H.bg||''}">${un?'':`<span class="bz-wcard-lock">${iconSVG('lock',14,2.4)}<span class="sb-sr">${esc(worldLockText(t.id))}</span></span>`}<b style="font-family:${H.face||'inherit'};color:${H.ink||'#fff'}">${esc(t.label)}</b></div>
+      <div class="bz-wcard-art${WORLD_PLATE[t.id]?' painted':''}" style="${H.bg||''}">${worldPlateImg(t.id)}${WORLD_PLATE[t.id]?'<span aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,7,26,0) 34%,rgba(10,7,26,.62) 100%)"></span>':''}${un?'':`<span class="bz-wcard-lock">${iconSVG('lock',14,2.4)}<span class="sb-sr">${esc(worldLockText(t.id))}</span></span>`}<b style="position:relative;font-family:${H.face||'inherit'};color:${H.ink||'#fff'}">${esc(t.label)}</b></div>
       <div class="bz-wcard-b"><span class="bz-row-s">${esc(WORLD_ABOUT[t.id]||'')}</span>${packs?`<span class="bz-row-s"><b>Avatars:</b> ${esc(packs)}</span>`:''}
         ${un?(t.id===state.theme?`<span class="bz-av-on">${iconSVG('check',12,2.6)} Your world now</span>`:`<button data-act="pickTheme" data-arg="${t.id}" class="bz-btn">Use this world</button>`)
           :(n<=2?'':`<button data-act="buyWorld" data-arg="${t.id}" class="bz-btn buy">${coinIc(13)} ${WORLD_PRICE_COINS} coins</button><span class="bz-row-s">or with the family plan</span>`)}</div></div>`; }).join('')}</div>`; }
@@ -136,6 +136,65 @@ function viewShop(){ const c=active(); const tab=state.shopTab||'avatars';
    Worlds merged into the Collection's own Worlds tab, which now shows the painted hero
    cards the standalone picker used to have. There is no Store either: a thing is bought
    where it lives — a pack on the pack, a world on the world, a chapter in the Library. */
+/* The medal art lives with the shelf that shows it (P3.9): the Collection, and the "Badge earned!" celebration, which
+   draws it through scrDraw('scrMe', …) — not on the first screen (tests/first-load.cjs). */
+/* three medals named an `ic` with no emblem and all fell back to the star (P3.9) */
+Object.assign(BADGE_EMBLEM,{
+  grid:{ g:['#C9F0E6','#5FC9AE'], art:()=>`<g stroke="#0E7C6B" stroke-width="2.4">${[0,1,2].map(r=>[0,1,2].map(k=>`<rect x="${24+k*18}" y="${24+r*18}" width="15" height="15" rx="3.5" fill="${(r+k)%2?'#FFD86E':'#7FE0C6'}"/>`).join('')).join('')}</g>`},
+  coin:{ g:['#FFE8A8','#F0B429'], art:()=>`<circle cx="50" cy="50" r="27" fill="#FFD24D" stroke="#B8791A" stroke-width="3"/><circle cx="50" cy="50" r="19" fill="none" stroke="#E8A020" stroke-width="2.5"/><path d="M41 40 50 34 59 40V58L50 64 41 58Z" fill="#F0A93C" stroke="#B8791A" stroke-width="2"/><circle cx="41" cy="38" r="3" fill="#fff" opacity=".6"/>`},
+  pencil:{ g:['#FFE3C4','#FFB877'], art:()=>`<g transform="rotate(-38 50 50)"><rect x="42" y="16" width="16" height="50" rx="2" fill="#FFC83D" stroke="#B8791A" stroke-width="2.2"/><rect x="42" y="16" width="16" height="9" rx="2" fill="#FF8FA8" stroke="#B8791A" stroke-width="2.2"/><path d="M42 66H58L50 82Z" fill="#F3D7B0" stroke="#B8791A" stroke-width="2.2" stroke-linejoin="round"/><path d="M47.5 76H52.5L50 82Z" fill="#3A2A8C"/></g>`}
+});
+/* ==== MEDALS BY GROUP (road to 4.5, P3.9 — rubric L2: "round vector medallions, repeated podium/target/crown motifs") ====
+   Each of the twelve live medal groups is its OWN object, so a child can tell the Atlas from the Typing shelf at a glance
+   before reading a word: a compass for the Atlas, a shield for Traps, a honeycomb cell for Word mastery, a rosette for
+   Word difficulty, wings for Levels, a cameo for the Collection, a laurel for the Mock Spelling Bee, a diamond plaque for
+   Learning, a globe pendant for Explorer, a keycap for Typing, a speech bubble for Trivia and a bookmark for Vocabulary.
+   The group gives the SHAPE, its colour and its ribbon; the badge's own emblem (BADGE_EMBLEM by `ic`) sits in the field;
+   the medal's place in its group gives the METAL of the rim — bronze, silver, gold, then platinum for the last of four or
+   more. Drawn in code (no picture on any screen, no lettering). "Kept from before" keeps the old round medallion.
+   Guard: tests/p3-art.cjs (twelve groups, twelve shapes, every live medal drawn by its group). */
+const _MP=(n,r1,r2,a0)=>{ let p=''; for(let i=0;i<n*2;i++){ const r=i%2?r2:r1, a=(a0||-90)*Math.PI/180+i*Math.PI/n; p+=(i?'L':'M')+(50+r*Math.cos(a)).toFixed(1)+' '+(50+r*Math.sin(a)).toFixed(1); } return p+'Z'; };
+const MEDAL_GROUP={
+  'Atlas':            { s:()=>_MP(8,47,35,-90),                       c:['#5FD3B8','#0E7C6B'], rb:['#1F9D6B','#F0B429'] },
+  'Traps':            { s:()=>'M50 4 88 16C88 58 76 80 50 96 24 80 12 58 12 16Z', c:['#9DB4D8','#3D5A8C'], rb:['#D64545','#ffffff'], cy:46 },
+  'Word mastery':     { s:()=>'M50 4 89.8 27 89.8 73 50 96 10.2 73 10.2 27Z', c:['#FFD86E','#E0A020'], rb:['#6C4FE0','#B9A6FF'] },
+  'Word difficulty':  { s:()=>{ let p=''; for(let i=0;i<12;i++){ const a=(i*30-90)*Math.PI/180, b=((i+1)*30-90)*Math.PI/180; const x=(t)=>(50+40*Math.cos(t)).toFixed(1), y=(t)=>(50+40*Math.sin(t)).toFixed(1); p+=(i?'':'M'+x(a)+' '+y(a))+'A11 11 0 0 1 '+x(b)+' '+y(b); } return p+'Z'; }, c:['#FFB877','#E8662E'], rb:['#E8662E','#FFD24D'], tails:1 },
+  'Levels':           { s:()=>'M50 14a36 36 0 1 1 0 72a36 36 0 1 1 0-72ZM16 40C6 34 2 26 3 18 12 24 20 26 26 26ZM84 40C94 34 98 26 97 18 88 24 80 26 74 26ZM14 56C5 54 0 48-1 41 8 45 15 46 21 45ZM86 56C95 54 100 48 101 41 92 45 85 46 79 45Z', c:['#C9B8FF','#6C4FE0'], rb:['#6C4FE0','#36D1FF'] },
+  'Collection':       { s:()=>'M50 4C74 4 88 24 88 50 88 76 74 96 50 96 26 96 12 76 12 50 12 24 26 4 50 4Z', c:['#FFC2DA','#E8458C'], rb:['#E8458C','#FFE3EF'], beads:1 },
+  'Mock Spelling Bee':{ s:()=>'M50 10a40 40 0 1 1 0 80a40 40 0 1 1 0-80Z', c:['#FFE07A','#C8791B'], rb:['#2A63D6','#ffffff'], laurel:1 },
+  'Learning':         { s:()=>'M50 3C53 3 55 4 57 6L94 43C96 45 97 47 97 50 97 53 96 55 94 57L57 94C55 96 53 97 50 97 47 97 45 96 43 94L6 57C4 55 3 53 3 50 3 47 4 45 6 43L43 6C45 4 47 3 50 3Z', c:['#9BE3D0','#13A892'], rb:['#13A892','#FFD86E'] },
+  'Explorer':         { s:()=>'M50 12a40 40 0 1 1 0 80a40 40 0 1 1 0-80ZM44 2H56V14H44Z', c:['#A9D8F5','#2E8FB8'], rb:['#2E8FB8','#F0B429'], cy:52, globe:1 },
+  'Typing':           { s:()=>'M24 8H76C85 8 92 15 92 24V76C92 85 85 92 76 92H24C15 92 8 85 8 76V24C8 15 15 8 24 8Z', c:['#8C98AE','#3B4558'], rb:['#3B4558','#36D1FF'], key:1 },
+  'Trivia':           { s:()=>'M50 6C75 6 94 23 94 45 94 67 75 84 50 84 44 84 38 83 33 81L12 94 19 74C10 66 6 56 6 45 6 23 25 6 50 6Z', c:['#F5A3D4','#B8327E'], rb:['#B8327E','#FFD24D'], cy:45 },
+  'Vocabulary':       { s:()=>'M16 4H84V96L50 76 16 96Z', c:['#B4B8FF','#4A3FB0'], rb:['#4A3FB0','#FFC83D'], cy:42 },
+};
+const MEDAL_METAL=[['#F3C49A','#A9652C'],['#F4F6FA','#9AA3B2'],['#FFF0A8','#D99A1C'],['#E8FBFF','#7FB6D6']];   /* bronze, silver, gold, platinum */
+function medalSVG(b, size, won, i, n){ size=size||96; if(won===undefined) won=true; b=b||{};
+  const G=MEDAL_GROUP[b.g]; if(!G) return badgeArtSVG(b.ic||'star', size, won);
+  if(i==null){ try{ const L=badgeDefs().filter(x=>x.g===b.g); i=Math.max(0,L.findIndex(x=>x.id===b.id)); n=L.length; }catch(e){ i=0; n=1; } }
+  n=Math.max(1,n||1); const tier=n<2?2:Math.min(3,Math.round(i*(n>=4?3:2)/(n-1)));
+  const d='md'+(_badgeUID++), M=MEDAL_METAL[tier], gy=['#E3E7EC','#AEB6BF'];
+  const c=won?G.c:gy, m=won?M:gy, rb=won?G.rb:['#C9CED6','#E6E9EE'], cy=G.cy||50, sh=G.s();
+  const EM=BADGE_EMBLEM[b.ic]||BADGE_EMBLEM.star;
+  const ribbon=G.tails?`<path d="M36 70 28 98 38 92 44 99 50 72Z" fill="${rb[0]}"/><path d="M64 70 72 98 62 92 56 99 50 72Z" fill="${rb[1]}"/>`
+    :`<path d="M32 -6H48L54 22H38Z" fill="${rb[0]}"/><path d="M68 -6H52L46 22H62Z" fill="${rb[1]}"/>`;
+  const leaf=G.laurel?[...Array(7)].map((_,k)=>{ const a=115+k*22, r=a*Math.PI/180, x=(50+44*Math.cos(r)).toFixed(1), y=(50+44*Math.sin(r)).toFixed(1); return `<ellipse cx="${x}" cy="${y}" rx="7.5" ry="3.4" transform="rotate(${a+90} ${x} ${y})"/>`; }).join(''):'';
+  const extra=(leaf?`<g fill="${won?'#3C8455':'#B9C0C8'}">${leaf}<g transform="translate(100 0) scale(-1 1)">${leaf}</g></g>`:'')
+    +(G.beads?[...Array(20)].map((_,k)=>{ const a=k*Math.PI/10; return `<circle cx="${(50+38*Math.cos(a)).toFixed(1)}" cy="${(50+42*Math.sin(a)).toFixed(1)}" r="1.9" fill="${m[0]}"/>`; }).join(''):'')
+    +(G.globe?`<g fill="none" stroke="${m[1]}" stroke-width="1.3" opacity=".55"><ellipse cx="50" cy="52" rx="18" ry="40"/><path d="M10 52H90M16 34H84M16 70H84"/></g>`:'')
+    +(G.key?`<rect x="17" y="15" width="66" height="62" rx="12" fill="url(#${d}k)" opacity=".9"/>`:'');
+  return `<svg viewBox="-4 -8 108 112" width="${size}" height="${size}" aria-hidden="true" data-medal="${escA(b.g)}" data-metal="${['bronze','silver','gold','platinum'][tier]}" style="display:block;overflow:visible;${won?'':'filter:grayscale(.55)'}">
+    <defs><linearGradient id="${d}r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m[0]}"/><stop offset="1" stop-color="${m[1]}"/></linearGradient>
+      <radialGradient id="${d}f" cx="42%" cy="34%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></radialGradient>
+      <linearGradient id="${d}k" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity=".05"/></linearGradient></defs>
+    ${ribbon}
+    <path d="${sh}" fill="url(#${d}r)" transform="translate(0 2)" opacity=".35"/>
+    <path d="${sh}" fill="url(#${d}r)"/>
+    <path d="${sh}" fill="url(#${d}f)" transform="translate(50 50) scale(.84) translate(-50 -50)"/>
+    ${extra}
+    <g transform="translate(50 ${cy}) scale(.58) translate(-50 -50)">${EM.art(d)}</g>
+    ${won?'':`<g><circle cx="80" cy="80" r="12" fill="#fff" stroke="#B4BCC6" stroke-width="2"/><rect x="75" y="79" width="10" height="8" rx="1.5" fill="#8B95A1"/><path d="M77 79v-2a3 3 0 0 1 6 0v2" fill="none" stroke="#8B95A1" stroke-width="2"/></g>`}
+  </svg>`; }
 function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'badges';
   if(tab==='artifacts') tab='badges';   // retired tab key — artifacts merged into Badges
   const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
@@ -181,8 +240,8 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
     const groups=[...new Set(B.map(b=>b.g))];
     body=groups.map(g=>{ const list=B.filter(b=>b.g===g); const w=list.filter(b=>b.done).length;
       return `<div class="sb-card" style="margin-bottom:14px"><div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px"><span class="sb-ct" style="font-size:15px">${g}</span><span class="sb-cn">${w}/${list.length} won</span></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px">${list.map(b=>`<div style="background:var(--paper,var(--bg2));border:1.5px solid ${b.done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;${b.done?'':'opacity:.55;filter:grayscale(.6)'}">
-        <span style="width:62px;height:66px;display:grid;place-items:center">${badgeArtSVG(b.ic,58,b.done)}</span>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px">${list.map((b,i)=>`<div style="background:var(--paper,var(--bg2));border:1.5px solid ${b.done?'var(--treasure,#F0B429)':'var(--line)'};border-radius:14px;padding:13px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;${b.done?'':'opacity:.62'}">
+        <span style="width:62px;height:66px;display:grid;place-items:center">${medalSVG(b,60,b.done,i,list.length)}</span>
         <span style="font-weight:800;font-size:12.5px;line-height:1.15">${b.name}</span>
         <span class="sb-cn" style="font-size:11px">${b.desc}</span>
         <span style="font-weight:800;font-size:10.5px;color:${b.done?'var(--good)':'var(--muted)'}">${b.done?'WON ✓':'LOCKED'}</span></div>`).join('')}</div></div>`; }).join('')

@@ -1365,7 +1365,7 @@ Object.assign(app, {
   fwType:(v)=>{ if(state.fw) state.fw.typed=v; },
   fwKey:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); app.fwCheck(); } },
   fwCheck:()=>{ const f=state.fw; if(!f||f.done) return; const ok=sameSpelling(f.typed,f.w); f.tries++;
-    if(ok){ f.done=true; f.miss=false; addCoins('answer'); sfx('correct'); try{ burstConfetti(200); }catch(e){} try{ SB_SHELL.milestone&&SB_SHELL.milestone('first-word'); }catch(e){} save(); render(); return; }
+    if(ok){ f.done=true; f.miss=false; addCoins('answer'); if(!(firstWordDue(active())&&firstWordFx(active()))) sfx('correct'); try{ burstConfetti(200); }catch(e){} try{ SB_SHELL.milestone&&SB_SHELL.milestone('first-word'); }catch(e){} save(); render(); return; }
     /* a miss HOLDS: the letters and the why, and the child types it again */
     f.miss=f.typed||' '; f.typed=''; sfx('wrong'); render(); },
   fwDone:()=>{ state.fw=null; try{ app.goStep(); }catch(e){ app.setNav('home'); } },

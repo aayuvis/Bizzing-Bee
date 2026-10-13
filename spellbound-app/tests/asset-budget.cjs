@@ -29,8 +29,11 @@ let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const some = (a) => (a.length ? ' — ' + a.slice(0, 6).join(' · ') + (a.length > 6 ? ` … (${a.length})` : '') : '');
 const KB = 1024, MB = 1024 * 1024;
-/* THE RATCHET (10 Oct 2026, after the conversion): app-art/ was 31.0 MB at the commit before, 22.1 MB after. */
-const CEIL = { plate: 700 * KB, raster: 19.0 * MB, folder: 22.6 * MB };
+/* THE RATCHET (10 Oct 2026, after the conversion): app-art/ was 31.0 MB at the commit before, 22.1 MB after.
+   Lowered 13 Oct 2026 (road to 4.5, P3 art): the five hive splash plates the drawn SVG comb replaced (437 KB of WebP,
+   220 KB of SVG — worlds-splash holds them cut) went, the P3 art slots came in (22 cuts, 337 KB: tools/art/p3-gen.py),
+   18.58 / 21.83 MB measured; the ceilings keep ~300 KB for the eleven bespoke paintings that replace cuts in place. */
+const CEIL = { plate: 700 * KB, raster: 18.9 * MB, folder: 22.2 * MB };
 
 const walk = (d, out = []) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p, out); else out.push(p); } return out; };
 const files = walk(ART).map((f) => ({ rel: path.relative(ROOT, f).split(path.sep).join('/'), size: fs.statSync(f).size }));
