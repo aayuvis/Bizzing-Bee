@@ -7992,7 +7992,9 @@ function bkFamilyAdd(fam){ fam=fam||{};
 /* the page is about to reload into what is on disk: nothing may write the old household back.
    Halt FIRST — any render() on the way out (a flash, a view) can call save(). */
 function bkHalt(){ try{ window.save=function(){}; }catch(e){} try{ if(window.SB_SYNC) SB_SYNC.queue=function(){}; }catch(e){} }
-function bkHaltAndReload(){ bkHalt(); try{ setTimeout(()=>{ try{ location.reload(); }catch(e){} }, 60); }catch(e){} }
+/* the reload carries a seal (store.js): a reloaded page that cannot see it yet is reading storage from before the
+   erase or restore, holds every write and reloads again — never the old household saved back over the new one */
+function bkHaltAndReload(){ bkHalt(); try{ setTimeout(()=>{ try{ SB_STORE.sealReload(); }catch(e){ try{ location.reload(); }catch(_){} } }, 60); }catch(e){} }
 function restoreHousehold(blob){ bkKeys(false).forEach(k=>{ try{ SB_STORE.delKey(k); }catch(e){} });
   Object.keys(blob.keys).forEach(k=>{ try{ SB_STORE.setKey(k, blob.keys[k]); }catch(e){} }); bkFamilyAdd(blob.family); }
 const bkBtn=(act,label,bg,col,bd)=>`<button data-act="${act}" style="padding:10px 15px;border-radius:10px;background:${bg};color:${col};border:1px solid ${bd||'transparent'};font-weight:800;font-size:13px">${label}</button>`;
