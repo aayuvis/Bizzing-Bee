@@ -17,6 +17,7 @@
 'use strict';
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
+const { quietRender } = require('./lib/wait.cjs');
 const ROOT = path.resolve(__dirname, '..');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
@@ -42,7 +43,14 @@ const KID = (n, av) => ({ name: n, age: 9, ageBand: '8-10', avatar: av, theme: '
     await pg.evaluate(() => new Promise((r) => SB_LAZY.need(['words1', 'scrGrown'], r)));
     const open = async () => { await pg.evaluate(() => { state.progTab = 'me'; app.setNav('progress'); });
       await pg.waitForFunction(() => !!document.querySelector('[data-kudos]'), null, { timeout: 20000 }).catch(() => {}); };
-    const tap = async (sel) => { if (vp.touch) await pg.tap(sel); else { await pg.focus(sel); await pg.keyboard.press('Enter'); } await pg.waitForTimeout(250); };
+    /* desktop presses Enter on a focused button. render() rebuilds #root, so a re-render between the focus and the key (a
+       lazy file landing — late under a full run's load: run 6 and 8, "the line reads ''") takes the focus to <body> and the
+       Enter lands nowhere. Wait for rendering to go quiet first; if a re-render still took the focus, press once more, as a
+       keyboard user would, and say so. (Open: render() keeps the focus only for [data-fkey] fields — owner item.) */
+    const tap = async (sel) => { if (vp.touch) { await pg.tap(sel); await pg.waitForTimeout(250); return; }
+      for (let t = 0; t < 2; t++) { await quietRender(pg, 300); await pg.focus(sel); await pg.keyboard.press('Enter'); await pg.waitForTimeout(250);
+        const lost = await pg.evaluate((q) => document.activeElement === document.body && !!document.querySelector(q), sel).catch(() => false);
+        if (!lost) return; console.log(`  note ${vp.n}: a re-render took the focus off ${sel} before Enter — pressing again`); } };
 
     /* My page: the card, the fixed lines, no text box */
     await open();

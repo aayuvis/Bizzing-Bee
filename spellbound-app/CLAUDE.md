@@ -1749,6 +1749,16 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   fooled by it treats `reloadSettled() === false` as "this attempt proves nothing" and starts again in a fresh profile**
   (trust-v2's hello walk: three attempts, the checks judge the last, the output says so; proved — a hello picker that
   always repeats fails on attempt 1). Never retry on an app check failing with the link confirmed.
+  **And `reloadSettled` REPAIRS a broken link before it reloads** (run 8 hit it in store-seam): when the browser never
+  converges, it copies the page's storage — every key at its exact value, and removes what the page does not hold —
+  into the browser through the probe tab (whose link works), prints a `note reloadSettled: … carried` line, and still
+  returns false. Measured: 3 of 3 broken boots repaired (the browser then held exactly the page's storage). The test's
+  own storage is the truth it made; the copy only stands in for a link the browser dropped.
+- **Open (owner item, found by kudos in runs 6 and 8): `render()` keeps keyboard focus only for `[data-fkey]` fields.** A
+  re-render — a lazy file landing on Home in the first seconds — takes the focus off a button to `<body>`, so a keyboard
+  user's Enter lands nowhere and they Tab from the top again. Restoring focus to the same `[data-act][data-arg]` was NOT
+  done: in the drills Enter is also a global key, and a button keeping focus after its own click would act twice. kudos'
+  desktop press now waits for rendering to go quiet and presses once more only if a re-render visibly took the focus.
 - **THE RELOAD SEAL — an erase or a restore can never be undone by its own reload** (store.js, 13 Oct; found by P3's full
   run 5, backup-restore: an erase, the app's reload, and the OLD household on screen — its first save would have written it
   back over the erase, a COPPA deletion quietly undone). `bkHaltAndReload` calls `SB_STORE.sealReload()`: it writes a
