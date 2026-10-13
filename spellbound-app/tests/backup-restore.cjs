@@ -21,7 +21,11 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
-  const ctx = await b.newContext({ viewport: { width: 1000, height: 900 }, acceptDownloads: true });
+  /* a PERSISTENT profile (13 Oct 2026): erase and restore each reload the page and read the household back. An off-the-record
+     context can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-backup-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 900 }, acceptDownloads: true,
+    executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   /* the seed marker deliberately does NOT start with sb_ — erase removes every sb_ key */
   await ctx.addInitScript(() => { try { if (localStorage.getItem('bkt_seeded')) return; localStorage.setItem('bkt_seeded', '1');
     const kid = (name, extra) => Object.assign({ name, age: 9, ageBand: '8-10', avatar: 'fox', theme: 'spellbound', coins: 120, xp: 40,
@@ -37,7 +41,7 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
       { a: 'bee', d: '2026-10-01', t: 600, m: 12, who: 'Ahana' }, { a: 'maths', d: '2026-10-01', t: 700, m: 30, who: 'Ahana' } ] }));
     localStorage.setItem('bizzing.wallet', JSON.stringify({ v: 1, kids: { ahana: { coins: 25, ledger: [{ a: 'maths', t: 1, n: 25, why: 'stop' }] }, zed: { coins: 4, ledger: [] } } }));
   } catch (e) {} });
-  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => { errs.push(e.message); if (process.env.DBG) console.log('PAGEERR', e.stack); });
+  const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => { errs.push(e.message); if (process.env.DBG) console.log('PAGEERR', e.stack); });
   await pg.goto(URL); await booted(pg);
   const typePin = async () => { for (const k of '1234') await pg.evaluate(k => app.pinKey(k), k); };
 
@@ -164,6 +168,7 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
   ok(t.devOn && t.devOff && t.childUntouched, 'switching tester mode on and off (and pressing the old test-coins switch) leaves every child byte-identical');
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   try { fs.unlinkSync(file); fs.unlinkSync(junk); } catch (e) {}
+  await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
 })();

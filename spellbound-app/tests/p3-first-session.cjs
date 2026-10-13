@@ -36,12 +36,17 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   /* a context with no household (a first run) or a seeded one; the sound hook counts every sfx() kind */
   const open = async (o) => {
     o = o || {};
-    const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: 'block', reducedMotion: o.calm ? 'reduce' : 'no-preference' });
+    const opts = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: 'block', reducedMotion: o.calm ? 'reduce' : 'no-preference' };
+    /* o.persist: a PERSISTENT profile (13 Oct 2026) for the walk that reloads and reads c.fwFx back. An off-the-record context
+       can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+    const dir = o.persist ? fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-p3fs-profile-')) : null;
+    const ctx = dir ? await chromium.launchPersistentContext(dir, Object.assign({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find((p) => fs.existsSync(p)) }, opts))
+      : await b.newContext(opts);
     await ctx.addInitScript((seed) => { try { if (!localStorage.getItem('t_p3')) { localStorage.clear(); if (seed) localStorage.setItem('sb_saas_v2', JSON.stringify(seed)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_p3', '1'); } } catch (e) {}
       window.__sfx = []; document.addEventListener('DOMContentLoaded', () => { const o = window.sfx; if (typeof o === 'function') window.sfx = function (k) { window.__sfx.push(k); return o.apply(this, arguments); }; }); }, o.seed || null);
-    const pg = await ctx.newPage(); pg.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
+    const pg = ctx.pages()[0] || await ctx.newPage(); pg.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
     await pg.goto(srv.url + 'index.html'); await booted(pg);
-    return { ctx, pg };
+    return { ctx, pg, dir };
   };
   const toWorld = async (pg) => { await pg.click('[data-act="goSignup"]'); await until(pg, () => state.screen === 'onboarding');
     await pg.fill('[data-inp="onDraftName"]', 'Ahana');
@@ -98,7 +103,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
   /* ---- first ---- */
   {
-    const { ctx, pg } = await open();
+    const { ctx, pg, dir } = await open({ persist: true });
     ok(await toFirstWord(pg), 'setup ends on the first word');
     const c0 = await coins(pg);
     await pg.evaluate(() => { window.__sfx.length = 0; });
@@ -122,7 +127,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     await wait(400);
     const r = await pg.evaluate(() => ({ fly: !!document.querySelector('.sb-fw-fly'), fx: !!active().fwFx }));
     ok(!r.fly && r.fx, 'a reload replays nothing, and the child keeps its "first word done" (c.fwFx)');
-    await ctx.close();
+    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   }
 
   /* ---- calm ---- */

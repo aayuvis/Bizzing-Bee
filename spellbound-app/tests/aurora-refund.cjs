@@ -10,6 +10,7 @@
    that pays again. It reloads twice and checks the purse both times.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/aurora-refund.cjs            */
 const { chromium } = require('playwright');
+const fs = require('fs'), path = require('path'), os = require('os');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
@@ -28,13 +29,17 @@ const seed = (coins, themes) => ({
      empty state before the reload can read it. Guarded by a marker so the SECOND boot
      reads what the app left behind — which is the whole point of the pay-once check. */
   const boot = async (state0) => {
-    const ctx = await b.newContext({ viewport: { width: 900, height: 1000 } });
+    /* a PERSISTENT profile (13 Oct 2026): every boot here reloads and reads the purse back. An off-the-record context can start
+       a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sb-aurora-profile-'));
+    const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 900, height: 1000 },
+      executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
     await ctx.addInitScript(s => { try {
       if (!localStorage.getItem('sb_seeded')) {
         localStorage.setItem('sb_saas_v2', JSON.stringify(s));
         localStorage.setItem('sb_seeded', '1');
       } } catch (e) {} }, state0);
-    const pg = await ctx.newPage();
+    const pg = ctx.pages()[0] || await ctx.newPage();
     pg.on('pageerror', e => errs.push(e.message));
     const read = () => pg.evaluate(() => {
       const c = state.children[0] || {};
@@ -45,7 +50,7 @@ const seed = (coins, themes) => ({
     const first = await read();
     await pg.reload(); await pg.waitForTimeout(3200);
     const second = await read();
-    await ctx.close();
+    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
     return { first, second };
   };
 

@@ -12,7 +12,7 @@
        and a streak medal already earned is KEPT, never re-locked, never shown to anyone else.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/medals.cjs                         */
 const { chromium } = require('playwright');
-const path = require('path');
+const path = require('path'), fs = require('fs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const APP = path.resolve(__dirname, '..');
@@ -23,20 +23,24 @@ const kid = (over) => Object.assign({ name: 'Ahana', age: 9, ageBand: '8-10', av
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
-  const boot = async (child) => {
-    const ctx = await b.newContext({ viewport: { width: 1100, height: 950 } });
+  const boot = async (child, o) => {
+    /* o.persist: a PERSISTENT profile (13 Oct 2026) for the child that reloads and is read back. An off-the-record context
+       can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+    const dir = o && o.persist ? fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-medals-profile-')) : null;
+    const ctx = dir ? await chromium.launchPersistentContext(dir, { viewport: { width: 1100, height: 950 }, executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' })
+      : await b.newContext({ viewport: { width: 1100, height: 950 } });
     await ctx.addInitScript(s => { try { if (!localStorage.getItem('sb_md_seeded')) {
       localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_md_seeded', '1'); } } catch (e) {} },
       { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234', children: [child] });
-    const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+    const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
     await pg.goto('file://' + APP + '/index.html'); await pg.waitForTimeout(3200);
     await pg.evaluate(() => { state.screen = 'app'; app.setNav('home'); });
-    return { pg, ctx, errs };
+    return { pg, ctx, errs, dir };
   };
   const errs = [];
 
   /* ---- a fresh child: the first check seeds silently, then evidence earns, once ---- */
-  const A = await boot(kid({}));
+  const A = await boot(kid({}), { persist: true });   // A reloads
   const step = (fn) => A.pg.evaluate(fn);
   await step(() => { state.celebrate = null; checkNewBadges(); state.celebrate = null; });     // first run: silent seeding
   const before = await step(() => badgeDefs().filter(b => b.done).map(b => b.id));
@@ -92,7 +96,7 @@ const kid = (over) => Object.assign({ name: 'Ahana', age: 9, ageBand: '8-10', av
   const shelf = await A.pg.evaluate(() => document.body.innerText);
   ok(/Medals/.test(shelf) && /First Stop/.test(shelf) && /Trap Spotted/.test(shelf), 'the medal shelf shows the evidence medals with what earned them');
   ok(!/Kept from before|3-Day Buzz|Century Flame/.test(shelf), 'a child who never earned a streak medal is never shown one');
-  errs.push(...A.errs); await A.ctx.close();
+  errs.push(...A.errs); await A.ctx.close(); fs.rmSync(A.dir, { recursive: true, force: true });
 
   /* ---- a child who earned streak medals before keeps them, as earned ---- */
   const K = await boot(kid({ streak: 0, streakBest: 14, streakRewards: { 3: 1, 7: 1, 14: 1 }, badgesSeen: { streak3: 1, streak7: 1, streak14: 1 } }));
