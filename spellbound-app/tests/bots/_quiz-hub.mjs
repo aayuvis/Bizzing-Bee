@@ -17,10 +17,14 @@ export function hubDriver(hub, mode) {
      play FOUR random rounds (13 Oct 2026): one round of ten put T2's two-standard-error ceiling at 52%, so a seeded
      page whose draws P3 shifted landed lore/idioms on a 6-of-10 tail (a 2% event) and failed every run; forty answers
      put the ceiling near 39% and say something. T1 still reads the product's rule ("6 of 10 pays") per round, summed —
-     the random bot earned 0 coins in all forty answers of every fixed mode. Never a moved ceiling, a bigger sample. */
+     the random bot earned 0 coins in all forty answers of every fixed mode. Never a moved ceiling, a bigger sample.
+     The CLOCKS play SIXTEEN (13 Oct 2026): a minute's sample depends on the machine's pace, so a loaded full run drew
+     Lore's clock to 25/62 (40%) while the same build alone gave 14/49 every time — every question has four options and
+     the answer slots are spread (probed: 17/11/9/11 of 48), so it was a tail, not a leak. Sixteen rounds (~100 asked)
+     hold the ceiling near 34%: Hive 27/104, Lore 16/92, 0 coins in ~200 answers each. */
   const clock = mode === 'clock', PACE = 3;
   return { key: hub + '/' + mode, kind: typed ? 'type' : 'choice', chance: typed || mode === 'ladder' ? undefined : 0.25, level: 'easy',
-    clock, pace: clock ? PACE : undefined, randomRounds: clock ? 8 : 4,
+    clock, pace: clock ? PACE : undefined, randomRounds: clock ? 16 : 4,
     secs: clock ? 120 : mode === 'ladder' ? 30 : 45, maxSteps: clock ? 160 : 60,
     async start(pg, { level }) {
       await pg.evaluate(([h, m, l]) => { state.screen = 'app'; try { SB_LEVEL.set(h + '/' + m, l || 'easy'); } catch (e) {} (h === 'lore' ? app.openLore : app.openHive)(m); }, [hub, mode, level]);
