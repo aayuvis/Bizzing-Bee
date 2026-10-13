@@ -203,8 +203,29 @@ function ttAnalyticsCard(c){
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px">${cells}</div>
     ${chapters?`<div style="font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:7px">By chapter</div>${chapters}`:''}
   </div>`; }
+/* KUDOS (road to 4.5, P3.30): what this child has been sent, and the fixed lines they may send each sibling (one a
+   day each). The words are KUDOS's (app3.js); nothing here takes typing. */
+function kudosToday(k,from){ const d=todayKey(); return ((k&&k.kudos)||[]).some(x=>x&&x.f===from&&dayKeyOf(x.t)===d); }
+function dayKeyOf(t){ const x=new Date(t); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
+function kudosGive(k,from,m){ (k.kudos=k.kudos||[]).push({f:from,m,t:Date.now()}); if(k.kudos.length>12) k.kudos.splice(0,k.kudos.length-12); }
+function kudosOpts(act,i){ return `<div class="sb-kudos-opts">${KUDOS.map((m,j)=>`<button class="sb-kudos-b" data-act="${act}" data-arg="${i}|${j}">${esc(m)}</button>`).join('')}</div>`; }
+function kudosCard(c){ const me=state.children.indexOf(c);
+  const sibs=state.children.map((k,i)=>({k,i})).filter(x=>x.i!==me&&!x.k.sample);
+  const got=((c.kudos)||[]).filter(k=>k&&KUDOS[k.m]).sort((a,b)=>b.t-a.t).slice(0,5);   /* newest first */
+  const recv=got.length?`<ul class="sb-kudos-list">${got.map(k=>`<li>${iconSVG('heart',15,2.4)}<span><b>${esc(k.f||'A grown-up')}</b>: “${esc(KUDOS[k.m])}”</span><i>${esc(fmtAgo(k.t))}</i></li>`).join('')}</ul>`
+    :`<p class="bz-row-s" style="margin:0">Nothing yet. When someone at home sends you kudos, it lands here.</p>`;
+  const send=sibs.map(({k,i})=>`<div class="sb-kudos-send"><span class="sb-cs">Cheer on ${esc(k.name||'Speller')}</span>${kudosToday(k,c.name||'')
+    ?`<p class="bz-row-s" style="margin:6px 0 0">${iconSVG('check',12,2.6)} You sent ${esc(k.name||'them')} kudos today.</p>`:kudosOpts('kudosSend',i)}</div>`).join('');
+  return `<section class="sb-card sb-kudos" data-kudos style="margin-bottom:14px"><h3>${iconSVG('heart',17,2.4)} Kudos</h3>${recv}${send}</section>`; }
+/* the Parent Zone's sender: one fixed line to any child in the household */
+function kudosParent(){ const K=state.children.filter(k=>!k.sample); if(!K.length) return '';
+  return `<div class="sb-card sb-kudos" data-kudos-parent style="margin-bottom:16px"><h3>${iconSVG('heart',17,2.4)} Send a kind word</h3>
+    <p class="bz-row-s" style="margin:0 0 4px">It lands on their My page, with a quiet note on Home. The words are set, so nothing typed reaches a child.</p>
+    ${K.map(k=>{ const i=state.children.indexOf(k); return `<details class="sb-kudos-send"><summary class="sb-cs" style="cursor:pointer;min-height:44px;display:flex;align-items:center">To ${esc(k.name||'Speller')}<span aria-hidden="true" style="margin-left:auto;font-size:13px">▾</span></summary>${kudosOpts('kudosGrown',i)}</details>`; }).join('')}</div>`; }
 function viewProgress(){
   const c=active();
+  /* the kudos on My page are seen once it has drawn: Home's chip goes quiet (P3.30) */
+  if(kudosNew(c).length) setTimeout(()=>{ try{ if(state.nav==='progress'&&state.progTab!=='parent'){ c.kudosSeen=Date.now(); save(); } }catch(e){} },0);
   const bb=beeBand(c);
   const stats=[{v:goodDaysThisWeek(c),k:'Good days this week'}]   /* words mastered is in the rank block above */
     .map(s=>`<div style="background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px"><div style="font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent)">${s.v}</div><div style="font-size:12px;color:var(--muted);font-weight:700">${s.k}</div></div>`).join('');
@@ -261,6 +282,8 @@ function viewProgress(){
   const legend=[['var(--good)','Mastered'],['var(--bad)','Needs work'],['var(--surface2)','Not yet mastered']].map(([cc,l])=>`<span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600"><span style="width:12px;height:12px;border-radius:6px;background:${cc}"></span>${l}</span>`).join('');
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Progress','where you stand')}
+    ${meCardHTML(c)}
+    ${kudosCard(c)}
     ${rankBlock}
     ${(()=>{ /* The Word Atlas, in its own words */
       const nx=(typeof window.SB_TRAIL_NEXT==='function')?SB_TRAIL_NEXT():null;
@@ -437,6 +460,7 @@ function viewParent(){
   return `<div style="animation:sb-rise .35s ease both">
     ${pageHead('Parent dashboard','',`Track ${esc(active().name||'your speller')}, manage spellers and print a weekly report.`,parentBtns)}
     ${oneThing}
+    ${kudosParent()}
     <div style="${sub.cardStyle}"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG(sub.ic,26)}</div>
       <div style="min-width:0;flex:1 1 220px"><div style="font-family:var(--display);font-weight:800;font-size:17px">${sub.title}</div><div style="font-size:13px;color:var(--muted)">${sub.body}</div></div>
       <button data-act="openTiers" style="${sub.btnStyle}">${sub.btn}</button></div></div>
@@ -639,6 +663,14 @@ function cloudCard(){
 
 /* the actions of these screens: they replace app3's stubs (SCR_ACTS.scrGrown) */
 Object.assign(app, {
+  /* KUDOS (P3.30): a child to a sibling — one fixed line, one a day each; never to themselves */
+  kudosSend:(arg)=>{ const [i,m]=String(arg||'').split('|').map(Number), from=active(), to=state.children[i];
+    if(!to||to===from||to.sample||!KUDOS[m]||kudosToday(to,from.name||'')) return;
+    kudosGive(to,from.name||'',m); save(); sfx('correct'); flash('Kudos sent to '+(to.name||'them')+'.'); render(); },
+  /* …and a grown-up's, from the Parent Zone only (it is drawn behind the PIN) */
+  kudosGrown:(arg)=>{ if(!(state.nav==='progress'&&state.progTab==='parent')) return;
+    const [i,m]=String(arg||'').split('|').map(Number), to=state.children[i]; if(!to||!KUDOS[m]) return;
+    kudosGive(to,'',m); save(); sfx('correct'); flash('Sent to '+(to.name||'them')+'.'); render(); },
   progTab:(k)=>{ if(k==='parent'){ pinGate(()=>set({progTab:'parent'}),'Parent zone'); return; } set({progTab:'me'}); },
   closeTiers:()=>set({showTiers:false, showPaywall:false, tierUpsell:null}),
   chooseTier:(id)=>{ const c=active(); if(!window.SB_TIERS||!SB_TIERS[id]) return; SB_ENT.setTier(c,id); try{ state.premium=SB_ENT.isPaid(); }catch(e){} save(); try{ sfx(id==='free'?'tick':'win'); }catch(e){} if(id!=='free') burstConfetti(80); flash(id==='free'?'Switched to Free':('You’re on '+SB_TIERS[id].name+' 🎉')); render(); },

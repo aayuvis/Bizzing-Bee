@@ -2,6 +2,9 @@
    There were thirty-odd bespoke "← Home" links in whatever weight the screen happened to
    use; on a painted header they all but vanished. backPill (window.SB_BACK) is the only
    one now, it sits hard left, and the screen's name is centred against the page beside it.
+   A TAB ROOT has no pill (road to 4.5, P3.29, 13 Oct 2026): the Library, Play, My Feed and the Shop wear the tab-root
+   head (app3 tabHead) — title at the content's left edge, as the Word Atlas's is. Proved by breaking: Play's old
+   pageHead put back → the run fails (no tab-root head, a back pill on a tab root).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/back-pill.cjs */
 const { chromium } = require('playwright');
 const root = require('path').resolve(__dirname, '..');
@@ -21,7 +24,8 @@ const root = require('path').resolve(__dirname, '..');
     // Since FIX-BEE N2 the Atlas holds a loader until its lazy data is in; have it in hand.
     await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r)));
 
-    const screens = [['openGames','arcade'],['openCollection','hive'],['openTrail','atlas'],
+    /* Play left this list on 13 Oct 2026: it is a TAB ROOT, which wears the tab-root head and no pill (below) */
+    const screens = [['openCollection','hive'],['openTrail','atlas'],
       ['openCoachDesk','coach'],['setNav','progress','progress'],['openFinder','finder'],
       ['openTraps','traps'],['openEvo','yourbee'],['openBuilder','builder']];
     for (const sc of screens) {
@@ -62,6 +66,22 @@ const root = require('path').resolve(__dirname, '..');
           errs.push(vp.n + ' ' + name + ': title off-centre by ' + Math.abs(r.titleCentre - r.barCentre) + 'px');
       }
     }
+    /* TAB ROOTS (road to 4.5, P3.29 — the family's U6): the Library, Play, My Feed and the Shop open on the tab-root
+       head — the title at the content's left edge, as the Word Atlas's is, and NO back pill ("‹ Home" on a tab root
+       named a parent the tab has not got) */
+    for (const [act, arg, name] of [['setNav', 'explore', 'library'], ['openGames', null, 'play'], ['setNav', 'feed', 'feed'], ['openShop', 'avatars', 'shop']]) {
+      await pg.evaluate(([a, g]) => (g == null ? app[a]() : app[a](g)), [act, arg]); await pg.waitForTimeout(700);
+      await pg.waitForFunction(() => !document.querySelector('#root .sb-content .sb-hive'), null, { timeout: 30000 }).catch(() => {});
+      const r = await pg.evaluate(() => { const h = document.querySelector('.sb-content .sb-thead'), t = h && h.querySelector('.sb-thead-t');
+        const pills = [...document.querySelectorAll('.sb-content button[aria-label^="Back to"]')].filter((e) => e.offsetParent);
+        const box = h && h.parentElement.getBoundingClientRect(), tr = t && t.getBoundingClientRect();
+        return { head: !!t, title: t ? t.textContent.trim() : '', pills: pills.length, phead: !!document.querySelector('.sb-content .sb-phead'),
+          dx: tr && box ? Math.round(tr.left - box.left) : null, ow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2 }; });
+      if (!r.head) errs.push(vp.n + ' ' + name + ': no tab-root head');
+      if (r.pills || r.phead) errs.push(vp.n + ' ' + name + ': a tab root carries a back pill / the centred sub-page head (' + r.pills + ' pills)');
+      if (r.head && (r.dx == null || Math.abs(r.dx) > 2)) errs.push(vp.n + ' ' + name + ': the title is not at the content\'s left edge (' + r.dx + 'px in) — "' + r.title + '"');
+      if (r.ow) errs.push(vp.n + ' H-OVERFLOW on ' + name);
+    }
     await pg.close();
   }
   // a Library destination goes back to the LIBRARY, not to Home — play-testing flagged
@@ -87,6 +107,6 @@ const root = require('path').resolve(__dirname, '..');
   if (hive && !/Home/i.test(hive)) errs.push('My Hive back pill says "' + hive + '" — it is not a Library screen');
   await pg2.close();
   await b.close();
-  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — one back pill per screen, hard left, name centred, and Library screens go back to the Library');
+  console.log(errs.length ? 'FAIL\n' + errs.join('\n') : 'PASS — one back pill per screen below a tab, hard left, name centred; Library screens go back to the Library; tab roots wear the title-left head and no pill');
   process.exit(errs.length ? 1 : 0);
 })();

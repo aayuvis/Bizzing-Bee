@@ -2312,48 +2312,43 @@
     {scene:'bazaar', origin:'french',  label:'French words',  re:/french|anglo-norman/i} ];
   const GP_CUP_PTS=[10,8,6,4,2];
   const GP_TRACK_NAME={meadow:'Sunny Meadow',sunset:'Sunset Canyon',city:'Neon City',bazaar:'Spice Bazaar'};
-  /* THE GARAGE: printed prices, bought through the family wallet like an avatar (spendCoins);
-     three trails open with a named learning milestone instead of a price. Nothing random. */
-  const GP_PAINTS=[ {id:'factory',n:'Factory finish',col:null,price:0}, {id:'honey',n:'Honey gold',col:'#F0B429',price:40},
-    {id:'cherry',n:'Cherry',col:'#EC5C67',price:40}, {id:'ocean',n:'Ocean',col:'#3B93D6',price:60}, {id:'mint',n:'Mint',col:'#2FB98A',price:60},
-    {id:'grape',n:'Grape',col:'#8B63D6',price:80}, {id:'midnight',n:'Midnight',col:'#2E3566',price:80} ];
-  const GP_TRAILS=[ {id:'dust',n:'Road dust',col:'225,225,232',price:0}, {id:'sky',n:'Sky puffs',col:'150,205,255',price:60},
-    {id:'peach',n:'Peach puffs',col:'255,190,150',price:60}, {id:'violet',n:'Violet haze',col:'190,160,255',price:90},
-    {id:'gold',n:'Golden comet',col:'255,214,90',ms:{k:'clean',n:25,txt:'Spell 25 box words Clean'}},
-    {id:'beeline',n:'Bee line',col:'255,236,140',ms:{k:'right',n:50,txt:'Spell 50 box words right'}},
-    {id:'rainbow',n:'Rainbow',col:'rainbow',ms:{k:'cups',n:1,txt:'Finish a whole Cup'}} ];
+  /* THE GARAGE: what the child races in. The paints and trails are rows of the Shop's ONE price table (app3.js
+     SHOP_ITEMS, read here through window.SB_SHOP; road to 4.5, P3.19/P3.20): they are BOUGHT in the Shop's Grand Prix
+     tab, through the family wallet, and WORN here. The garage prints no price (T3: no price on a child's screen outside
+     the Shop) — a paint not yet owned says where it is, and one button opens the Shop. Three trails still open with a
+     named learning milestone. A paint and a trail are looks: the race reads them only to draw (PAINT, TRAILC — never
+     the physics). Nothing random. */
+  const gpShop=k=>{ try{ return window.SB_SHOP.items.filter(x=>x.k===k).map(x=>({id:x.id,n:x.name,col:x.col,price:x.price,ms:x.ms})); }catch(e){ return []; } };
+  const GP_PAINTS=gpShop('kart'), GP_TRAILS=gpShop('trail');
   const gpKid=()=>{ try{ return (typeof active==='function'&&active())||null; }catch(e){ return null; } };
   const gpGar=c=>{ c=c||gpKid()||{}; const g=c.gpGar||(c.gpGar={own:{paint:['factory'],trail:['dust']},paint:'factory',trail:'dust'}); return g; };
   const gpStat=c=>{ c=c||gpKid()||{}; return c.gpStat||(c.gpStat={right:0,clean:0,cups:0,races:0}); };
   const gpMsMet=(ms,c)=>!!ms && (gpStat(c)[ms.k]||0)>=ms.n;
-  function gpOwns(kind,id,c){ const it=(kind==='paint'?GP_PAINTS:GP_TRAILS).find(x=>x.id===id); if(!it) return false;
-    if(!it.price&&!it.ms) return true; if(it.ms) return gpMsMet(it.ms,c); return (gpGar(c).own[kind]||[]).indexOf(id)>=0; }
+  /* one rule for "is it yours": the Shop's (shopOwns) — a free row is everyone's, a milestone row opens with its milestone */
+  function gpOwns(kind,id,c){ try{ const S=window.SB_SHOP, it=S.by[(kind==='paint'?'kart':'trail')+':'+id]; return !!it&&S.owns(c||gpKid()||{},it); }catch(e){ return false; } }
   /* the garage, drawn into `host` (the arcade start menu): buttons, so Tab/Enter work as well as a tap */
   function gpGarage(host,onClose){
     const c=gpKid(); if(!c||!host) return; const G=gpGar(c);
     const el=document.createElement('div'); el.className='gp-gar'; el.setAttribute('role','dialog'); el.setAttribute('aria-label','Garage');
-    const coins=()=>{ try{ return (c.coins|0); }catch(e){ return 0; } };
     const row=(kind,it)=>{ const own=gpOwns(kind,it.id,c), on=G[kind]===it.id;
       const sw=kind==='paint'?'<i class="gp-sw" style="background:'+(it.col||'linear-gradient(135deg,#ddd,#999)')+'"></i>'
         :'<i class="gp-sw gp-sw-t" style="background:'+(it.col==='rainbow'?'linear-gradient(90deg,#f66,#fd5,#6d6,#6cf,#c8f)':'rgb('+it.col+')')+'"></i>';
       const act=on?'<span class="gp-gar-on">In use</span>'
         :own?'<button class="gp-gar-b" data-gp-use="'+kind+'|'+it.id+'">Use</button>'
         :it.ms?'<span class="gp-gar-ms">'+esc2(it.ms.txt)+'</span>'
-        :'<button class="gp-gar-b buy" data-gp-buy="'+kind+'|'+it.id+'"'+(coins()<it.price?' disabled':'')+'>Buy · '+it.price+' coins</button>';
+        :'<span class="gp-gar-ms gp-gar-shop">In the Shop</span>';
       return '<div class="gp-gar-row'+(on?' on':'')+'">'+sw+'<b>'+esc2(it.n)+'</b>'+act+'</div>'; };
-    const draw=()=>{ el.innerHTML='<div class="gp-gar-card"><div class="gp-gar-h"><b>Garage</b><span>'+coins()+' coins</span>'+
+    const draw=()=>{ el.innerHTML='<div class="gp-gar-card"><div class="gp-gar-h"><b>Garage</b>'+
       '<button class="gp-gar-x" data-gp-x="1" aria-label="Close the garage">'+SGUI.chev(-1)+'</button></div>'+
       '<div class="gp-gar-sec">Paint</div>'+GP_PAINTS.map(p=>row('paint',p)).join('')+
-      '<div class="gp-gar-sec">Trail</div>'+GP_TRAILS.map(t=>row('trail',t)).join('')+'</div>'; };
+      '<div class="gp-gar-sec">Trail</div>'+GP_TRAILS.map(t=>row('trail',t)).join('')+
+      '<button class="gp-gar-b gp-gar-go" data-gp-shop="1">More paint and trails in the Shop</button></div>'; };
     const close=()=>{ removeEventListener('keydown',kd,true); el.remove(); if(onClose) onClose(); };
     const kd=e=>{ if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); close(); } };
     el.onclick=e=>{ const x=e.target.closest('[data-gp-x]'); if(x){ close(); return; }
       const u=e.target.closest('[data-gp-use]'); if(u){ const [k,id]=u.dataset.gpUse.split('|'); if(gpOwns(k,id,c)){ G[k]=id; try{ save(); }catch(_){} draw(); } return; }
-      const b=e.target.closest('[data-gp-buy]'); if(b){ const [k,id]=b.dataset.gpBuy.split('|'); const it=(k==='paint'?GP_PAINTS:GP_TRAILS).find(x=>x.id===id);
-        if(!it||it.ms||gpOwns(k,id,c)) return;
-        let ok=false; try{ ok=typeof spendCoins==='function'&&spendCoins(it.price,'Grand Prix garage: '+it.n); }catch(_){ ok=false; }
-        if(ok){ (G.own[k]=G.own[k]||[]).push(id); G[k]=id; try{ save(); }catch(_){} } else { try{ flash('Not enough coins yet — every box word you spell right is one.'); }catch(_){} }
-        draw(); } };
+      /* the Shop is the one place coins are spent: leave the race's menu for its Grand Prix tab */
+      const sh=e.target.closest('[data-gp-shop]'); if(sh){ close(); try{ arcadeClose(); }catch(_){} try{ app.openShop('race'); }catch(_){} } };
     addEventListener('keydown',kd,true); draw(); host.appendChild(el);
     try{ const f=el.querySelector('button'); if(f) f.focus(); }catch(e){}
     return { close }; }

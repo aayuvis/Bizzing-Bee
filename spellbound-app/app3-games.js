@@ -62,12 +62,14 @@ function viewDaily(){
   return `<div id="db-host" class="db-host" role="region" aria-label="Today's Daily Bee">${window.SB_DAILY?'':hiveLoader('getting today\u2019s word ready\u2026')}</div>`;
 }
 /* DAILY BUZZ, IN THE SHELL, as it was before 4 Oct (restored 5 Oct 2026): the app's page head (back to Play) and
-   the board under it, daily-buzz.js's, mounted into #dz-host by render(). The loader stands until the lazy file lands. */
+   the board under it, daily-buzz.js's, mounted into #dz-host by render(). The loader stands until the lazy file lands.
+   Since 13 Oct (road to 4.5, P3.6) the host is drawn in the shell's art direction — a purple-and-honey stage, the
+   board's own rules in daily-buzz.js scoped to .dz-host — and it is still its own card and its own game. */
 function viewDailyBuzz(){
   let when=''; try{ when=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}); }catch(e){}
   return `<div class="sb-dailypage" style="max-width:560px;margin:0 auto">
     ${pageHead('Daily Buzz', esc(when), '', null, 'openGames', 'Play')}
-    <div id="dz-host" class="dz-host" role="region" aria-label="Today's Daily Buzz" style="background:var(--paper,var(--bg2));border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-rest)">${window.SB_DAILY_BUZZ?'':hiveLoader('getting today\u2019s word ready\u2026')}</div></div>`;
+    <div id="dz-host" class="dz-host" role="region" aria-label="Today's Daily Buzz" style="background:radial-gradient(130% 62% at 50% -8%,color-mix(in srgb,var(--accent,#6C4FE0) 20%,var(--paper,var(--bg2))),color-mix(in srgb,var(--treasure,#F0B429) 6%,var(--paper,var(--bg2))) 64%);border:1px solid color-mix(in srgb,var(--accent,#6C4FE0) 28%,var(--line));border-radius:20px;box-shadow:var(--sh-rest);overflow:hidden">${window.SB_DAILY_BUZZ?'':hiveLoader('getting today\u2019s word ready\u2026')}</div></div>`;
 }
 /* WORD FORGE, IN THE SHELL: the stage is forge.js's, mounted into #fg-host by render(). */
 function viewForge(){ return `<div id="fg-host" class="fg-host" role="region" aria-label="Word Forge"></div>`; }
@@ -235,7 +237,7 @@ function gamesHub(){ const c=active();
       <h2 class="pl-door-h">${esc(label)}</h2>
       <div class="pl-grid">${items.map(i=>card(i.x,i.span)).join('')}</div></section>`; };
   return `<div style="max-width:860px;margin:0 auto">
-    ${pageHead('Bizzy&rsquo;s Great Spelling Arcade','','',coinChip(),'goHome','Home',null,arcadeLogoSVG(34))}
+    ${tabHead('Bizzy&rsquo;s Great Spelling Arcade',{icon:arcadeLogoSVG(34),right:coinChip()})}
     ${PLAY_DOORS.map(doorHTML).join('')}
   </div>`;
 }

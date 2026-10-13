@@ -6,6 +6,8 @@
        sideways scroll; the desktop top nav and the phone tab bar are both still there;
      · ⬡ points at the Hive and hides only while a drill word is live;
      · 🔒 asks for the grown-up PIN and then opens the grown-ups area;
+     · (road to 4.5, P3.26) each row of the switcher shows THAT child's one level (oneLevel). Proved by breaking: every
+       row reading the active child's level → fails ("Level 4 · Hatchling" twice).
      · the avatar opens "Children in this household": one tap switches, no PIN, and the
        switch NEVER MIXES DATA — coins, word lists, the Atlas trail, the avatar and the
        mastered-word book stay with their own child, across switches and a reload. (The
@@ -97,6 +99,11 @@ const bar = pg => pg.evaluate(() => {
       await pg.click('[data-act="famMenu"]'); await until(pg, () => document.querySelectorAll('.sb-fam-menu [data-act="famSwitch"]').length > 0, null, 5000);
       const menu = await pg.evaluate(() => [...document.querySelectorAll('.sb-fam-menu [data-act="famSwitch"]')].map(e => e.textContent.trim()));
       ok(menu.length === 2 && /Ahana/.test(menu[0]) && /Ravi/.test(menu[1]), 'the avatar opens "Children in this household" with every child (' + menu.join(', ') + ')');
+      /* road to 4.5, P3.26: each row shows THAT child's one level (oneLevel, the label Home prints), not the active child's */
+      const lv = await pg.evaluate(() => ({ rows: [...document.querySelectorAll('.sb-fam-menu [data-act="famSwitch"] .sb-fam-rowl')].map(e => e.textContent.trim()),
+        want: state.children.map(k => SB_ONE_LEVEL(k).label) }));
+      ok(lv.rows.length === 2 && lv.want[0] !== lv.want[1] && lv.rows.join('|') === lv.want.join('|') && lv.want.every(l => /^Level \d+ · /.test(l)),
+        'the switcher shows each child\'s own level (' + lv.rows.join(' · ') + ')');
       await pg.click('.sb-fam-menu [data-act="famSwitch"][data-arg="1"]'); await until(pg, () => active().name === 'Ravi' && state.nav === 'home', null, 10000);
       const asRavi = await pg.evaluate(() => { const c = active(); return { name: c.name, pin: !!state.pinDlg, nav: state.nav, coins: c.coins, lists: JSON.stringify(c.lists), trail: JSON.stringify(c.trail),
         avatar: c.avatar, lu: Object.keys(state.luMastered).sort().join(','), theme: state.theme,

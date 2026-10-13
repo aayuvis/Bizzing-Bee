@@ -47,6 +47,12 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(home.meters === 1, 'home carries exactly one level meter (' + home.meters + ')');
   ok(home.levels.length >= 1 && home.levels.every(n => n === home.L), `every "Level N" on home and in the header is the one level (${home.levels.join(',')} — oneLevel says ${home.L})`);
   ok(!home.ladders.length, 'no second rank beside it — no band, bee form or "spelling level" shown as a level' + (home.ladders.length ? ' — ' + home.ladders.join(', ') : ''));
+  /* the drawer's head (road to 4.5, P3) named a bee form from heroLevel — the per-list evolution ladder — so a child
+     read "Larva" in the menu and "Level 8 · Grub" on Home. It says the one level now. Proved by breaking: the old
+     rankName(formIdx(heroLevel(c))) put back → fails. */
+  const dr = await pg.evaluate(() => { state.drawerOpen = true; render(); const t = (document.querySelector('.bz-drawer .bz-dr-who') || {}).innerText || '';
+    state.drawerOpen = false; render(); return { t, label: oneLevel().label }; });
+  ok(dr.t.includes(dr.label), `the menu's head says the one level (${JSON.stringify(dr.t.replace(/\s+/g, ' '))} — oneLevel says ${dr.label})`);
 
   /* ---- the level page says the band is NOT a level ---- */
   await pg.evaluate(() => app.setNav('beeband')); await pg.waitForTimeout(600);

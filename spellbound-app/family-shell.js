@@ -567,13 +567,16 @@
     return '<button data-act="famMenu" class="sb-fam-kid" aria-haspopup="menu" aria-expanded="' + (open ? 'true' : 'false') + '" aria-label="' + H((c.name || 'Speller') + ' — switch child') + '" title="Switch child">'
       + '<span class="sb-fam-kidav">' + avatarMini(c, 30) + '</span><span class="sb-fam-caret" aria-hidden="true">▾</span></button>';
   }
+  function levelOf(k) { try { return window.SB_ONE_LEVEL(k).label; } catch (e) { return ''; } }
   function kidMenu() {
     if (!menuOpen()) return '';
     var ch = state.children || [];
     var rows = ch.map(function (k, i) {
       var on = i === state.activeIdx;
       return '<button role="menuitemradio" aria-checked="' + (on ? 'true' : 'false') + '" data-act="famSwitch" data-arg="' + i + '" class="sb-fam-row' + (on ? ' on' : '') + '">'
-        + '<span class="sb-fam-rowav">' + avatarMini(k, 34) + '</span><span class="sb-fam-rown">' + H(k.name || 'Speller') + (k.sample ? ' <i>Sample</i>' : '') + '</span>'
+        + '<span class="sb-fam-rowav">' + avatarMini(k, 34) + '</span><span class="sb-fam-rown"><span class="sb-fam-rownm">' + H(k.name || 'Speller') + (k.sample ? ' <i>Sample</i>' : '') + '</span>'
+        /* each child's ONE level (road to 4.5, P3.26): oneLevel — words spelled right, the same label Home prints */
+        + '<span class="sb-fam-rowl">' + H(levelOf(k)) + '</span></span>'
         + (on ? '<span class="sb-fam-tick" aria-hidden="true">✓</span>' : '') + '</button>';
     }).join('');
     return '<div class="sb-fam-scrim" data-act="famMenuClose"></div>'

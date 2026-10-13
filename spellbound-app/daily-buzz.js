@@ -69,7 +69,22 @@
     + '@media(max-width:400px){.dz-cell{width:48px;height:48px;font-size:24px}.dz-k{height:46px}}'
     /* in the shell the top bar and the tab bar share a phone's height with the board: the whole
        keyboard stays above the tab bar on a 390x844 phone (keys stay 44px targets) */
-    + '@media(max-width:440px) and (max-height:900px){.dz-cell{width:44px;height:44px;font-size:22px}.dz-grid,.dz-row{gap:6px}.dz-k{height:44px}.dz-body{padding:6px 10px 12px}.dz-msg{font-size:13px;padding:4px 0}}';
+    + '@media(max-width:440px) and (max-height:900px){.dz-cell{width:44px;height:44px;font-size:22px}.dz-grid,.dz-row{gap:6px}.dz-k{height:44px}.dz-body{padding:6px 10px 12px}.dz-msg{font-size:13px;padding:4px 0}}'
+    /* P3.6 (road to 4.5, rubric N2): IN THE SHELL the board wears the family's art direction — purple and honey,
+       Fraunces, the shell's tokens — instead of the old cream sheet. Scoped to app3's host (.dz-host), so the game,
+       its rules, ids and sizes are the 4 Oct game's. The tile colours are fixed (white on green 4.6:1, ink on honey,
+       white on slate 5.5:1) so they read the same in every look; the empty board is honey on the paper. */
+    + '.dz-host .dz-msg{font:italic 700 15px/1.35 var(--display,"Fraunces",serif);color:var(--text,#241E33)}'
+    + '.dz-host .dz-cell{border-radius:12px;font-family:var(--display,"Fraunces",serif);color:var(--text,#241E33);'
+    + 'border-color:color-mix(in srgb,var(--treasure,#F0B429) 45%,var(--line,#D7CDB6));background:color-mix(in srgb,var(--treasure,#F0B429) 9%,var(--paper,#fff))}'
+    + '.dz-host .dz-cell:not(:empty){border-color:var(--accent,#6C4FE0)}'
+    + '.dz-host .dz-cell.hit,.dz-host .dz-k.hit{background:#2F8F57;border-color:#2F8F57;color:#fff}'
+    + '.dz-host .dz-cell.near,.dz-host .dz-k.near{background:#F0B429;border-color:#F0B429;color:#2B2117}'
+    + '.dz-host .dz-cell.miss,.dz-host .dz-k.miss{background:#6B6577;border-color:#6B6577;color:#fff}'
+    + '.dz-host .dz-k{border:1px solid var(--line,#EADFC8);font-family:var(--display,"Fraunces",serif);font-weight:800}'
+    + '.dz-host .dz-k.wide{background:color-mix(in srgb,var(--accent,#6C4FE0) 16%,var(--surface2,#EDE7D8));color:var(--accent,#6C4FE0)}'
+    + '.dz-host .dz-done h3{color:var(--text,#241E33)}.dz-host .dz-stat{background:var(--paper,#fff);border-color:color-mix(in srgb,var(--accent,#6C4FE0) 24%,var(--line,#EADFC8))}'
+    + '.dz-host .dz-stat b{color:var(--accent,#6C4FE0)}';
 
   function todayIndex() {
     var d = new Date();
