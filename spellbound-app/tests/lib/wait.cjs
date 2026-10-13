@@ -114,6 +114,23 @@ async function reloadSettled(page, opts) {
   const wrote = await page.evaluate(() => window.__probeWrites || 0).catch(() => 0);
   if (wrote) throw new Error(`reloadSettled: the context's init scripts wrote storage ${wrote}× in the probe page — make them skip storage-probe.html`);
   reloadSettled.last = storageSettled.last;
+  /* NEVER SETTLED = the broken storage link (CLAUDE.md, 13 Oct): the page's renderer holds writes the browser never got,
+     and a reload that lands in another process would start on old storage. The page's storage is the truth the test
+     made; carry it to the browser, exactly, through the probe tab (whose link works) — every key the page holds, at its
+     value, and nothing it does not — and say so. Still returns false: a test that must not trust this reload (trust-v2)
+     starts again; the rest reload onto what the page really left. */
+  if (!ok) {
+    const snap = await page.evaluate(() => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); o[k] = localStorage.getItem(k); } return o; }).catch(() => null);
+    if (snap) {
+      const at = page.url(), probe = await page.context().newPage();
+      try {
+        await probe.goto(/^https?:/.test(at) ? new URL('tests/lib/storage-probe.html', at).href : 'file://' + require('path').resolve(__dirname, 'storage-probe.html'));
+        const fixed = await probe.evaluate((s) => { let n = 0; for (const k of Object.keys(localStorage)) if (!(k in s)) { localStorage.removeItem(k); n++; }
+          for (const k in s) if (localStorage.getItem(k) !== s[k]) { localStorage.setItem(k, s[k]); n++; } return n; }, snap);
+        console.log(`  note reloadSettled: the browser never held what the page wrote (a broken storage link) — ${fixed} key(s) carried to it from the page before the reload`);
+      } finally { await probe.close(); }
+    }
+  }
   await page.reload(opts);
   return ok;
 }
