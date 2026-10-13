@@ -48,10 +48,14 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(!/c\.coins\s*=/.test(pricing), 'pricing.js never writes a child\'s coins (a plan grants content, not coins)');
 
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
-  const ctx = await b.newContext({ viewport: { width: 1000, height: 900 } });
+  /* a PERSISTENT profile (13 Oct 2026): this context reloads twice and reads the wallet back. An off-the-record context can
+     start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-wallet-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 900 },
+    executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('sb_wc_seeded')) {
     localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_wc_seeded', '1'); } } catch (e) {} }, seed);
-  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   const url = 'file://' + APP + '/index.html';
   const wallet = () => pg.evaluate(() => JSON.parse(localStorage.getItem('bizzing.wallet') || 'null'));
   const purse = () => pg.evaluate(() => state.children[0].coins);
@@ -188,6 +192,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     await ctx.close();
   }
 
+  await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   await b.close();
   ok(!errs.length, errs.length ? 'page errors: ' + errs.slice(0, 3).join(' | ') : 'no page errors');
   console.log(fails ? `\n${fails} FAILED\n` : '\nall good\n');

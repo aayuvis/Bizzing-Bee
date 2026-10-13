@@ -64,16 +64,21 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
   const errs = [];
   async function open(o) {
     o = o || {};
-    const ctx = await b.newContext({ viewport: o.phone ? { width: 390, height: 844 } : { width: 1280, height: 800 }, isMobile: !!o.phone, hasTouch: !!(o.phone || o.touch),
-      deviceScaleFactor: 1, colorScheme: o.dark ? 'dark' : 'light', serviceWorkers: 'block' });
+    const opts = { viewport: o.phone ? { width: 390, height: 844 } : { width: 1280, height: 800 }, isMobile: !!o.phone, hasTouch: !!(o.phone || o.touch),
+      deviceScaleFactor: 1, colorScheme: o.dark ? 'dark' : 'light', serviceWorkers: 'block' };
+    /* o.persist: a PERSISTENT profile (13 Oct 2026) for a block that reloads, or leaves and comes back, then reads storage. An off-the-record
+       context can start that new page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+    const dir = o.persist ? fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-feed-profile-')) : null;
+    const ctx = dir ? await chromium.launchPersistentContext(dir, Object.assign({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) }, opts))
+      : await b.newContext(opts);
     await ctx.addInitScript(([s, t]) => { try { if (!sessionStorage.getItem('t_seed')) { localStorage.clear(); localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); if (t) localStorage.setItem('sb_tester', '1'); sessionStorage.setItem('t_seed', '1'); } } catch (e) {} }, [o.seed || seedOf(), !!o.tester]);
     /* count every sound: a clip, a speech utterance, or WebAudio starting */
     await ctx.addInitScript(() => { window.__snd = 0; const A = window.Audio; window.Audio = function () { window.__snd++; return new A(...arguments); };
       try { const sp = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { window.__snd++; return sp(u); }; } catch (e) {} });
-    const pg = await ctx.newPage();
+    const pg = ctx.pages()[0] || await ctx.newPage();
     pg.on('pageerror', e => errs.push(e.message.slice(0, 200)));
     await pg.goto(BASE + (o.q || '')); await ready(pg);
-    return { ctx, pg };
+    return { ctx, pg, dir };
   }
   /* booted, and the Atlas frontier in hand (the road, trail-home.js — a boot script since P1.13 step 3; it was
      trail-data.js, boot-lazy's FIRST file): the
@@ -271,7 +276,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
 
   /* ---- reload: a new visit is a new session, and what was paid stays paid (audit v4, V4 + V5) ---- */
   {
-    const { ctx, pg } = await open({ touch: true });
+    const { ctx, pg, dir } = await open({ touch: true, persist: true });
     await openFeed(pg);
     const one = await pg.evaluate(() => { const coins = active().coins || 0, q = [...document.querySelectorAll('.bzf-card')].find(c => c.querySelector('[data-bzf="ans"]'));
       const id = q && q.getAttribute('data-id'); if (id) q.querySelector('[data-bzf="ans"][data-o="0"]').click();
@@ -293,7 +298,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     await pg.evaluate(() => app.setNav('home')); await until(pg, () => state.nav === 'home'); await openFeed(pg);
     const three = await pg.evaluate(() => active().feed.ids.map(x => x.id));
     ok(three.join() === two.ids.join(), 'and inside one visit the session holds: leave #/feed and come back, the same cards');
-    await ctx.close();
+    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   }
 
   /* ---- routes: every card's route opens the screen it names ---- */
@@ -366,7 +371,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
 
   /* ---- pin: the grown-up's switch ---- */
   {
-    const { ctx, pg } = await open();
+    const { ctx, pg, dir } = await open({ persist: true });
     await pg.evaluate(() => app.setNav('settings'));
     await until(pg, () => !!document.querySelector('#sb-set-ov'));      // the sheet is drawn: now its absence of the switch means something
     const before = await pg.evaluate(() => !!document.querySelector('#sb-set-ov [data-act="toggleFeed"]'));
@@ -393,12 +398,12 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     ok(g.cards === 0 && /switched off/.test(g.text), '#/feed says it is switched off and shows no cards');
     await pg.reload(); await ready(pg); g = await gone();
     ok(!g.tabs.some(t => /My Feed/.test(t)) && g.cards === 0, 'the choice survives a reload');
-    await ctx.close();
+    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   }
 
   /* ---- demo: a sample feed that writes nothing ---- */
   {
-    const { ctx, pg } = await open({ touch: true });
+    const { ctx, pg, dir } = await open({ touch: true, persist: true });
     /* the browser's REAL storage (the demo sandbox wraps localStorage inside the page, so the page cannot be asked) */
     const dump = async () => { const st = await ctx.storageState(); const o = {}; st.origins.forEach(x => x.localStorage.forEach(kv => { o[x.origin + ' ' + kv.name] = kv.value; })); return o; };
     /* stop the ordinary page first: since the hello waits for the Atlas (audit v4 B5) it notes the
@@ -415,7 +420,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const changed = Object.keys(Object.assign({}, before, after)).filter(k => before[k] !== after[k]);
     ok(n >= 12, `?demo shows a sample feed (${n} cards)`);
     ok(!changed.length, '?demo, a question answered in it included, leaves the household untouched' + (changed.length ? ': ' + changed.join(', ') : ''));
-    await ctx.close();
+    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   }
 
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

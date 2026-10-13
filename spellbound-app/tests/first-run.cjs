@@ -15,7 +15,7 @@
    Taps are real clicks, counted.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/first-run.cjs                        */
 const { chromium } = require('playwright');
-const path = require('path');
+const path = require('path'), fs = require('fs'), os = require('os');
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
@@ -57,8 +57,12 @@ async function walkSetup(pg, stopAtLast, band) {
   const errs = [];
 
   /* ---- 1. a stranger, on a phone, from the landing page to the first lesson ---- */
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
-  const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+  /* a PERSISTENT profile (13 Oct 2026): this walk reloads on the first day and reads the new child back. An off-the-record context
+     can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sb-firstrun-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 390, height: 844 }, hasTouch: true,
+    executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const pg = ctx.pages()[0] || await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
   await pg.goto(URL); await pg.waitForTimeout(2600);
   ok(await pg.evaluate(() => state.screen === 'landing' && !document.querySelector('#sb-splash')), 'a new device opens on the landing page, with no splash in front of it');
   await pg.click('[data-act="goSignup"]');
@@ -112,7 +116,7 @@ async function walkSetup(pg, stopAtLast, band) {
   /* the reload put the child back on the lesson they were reading (the hash); go Home to look at it */
   await pg.click('.sb-tabbar [data-act="setNav"][data-arg="home"]'); await pg.waitForTimeout(500);
   ok(await pg.evaluate(() => state.nav === 'home' && !!document.querySelector('.sb-content [data-act="goNext"]') && !document.querySelector('.sb-content [data-act="startLevelTest"],.sb-content .sb-band-call')), 'and Home carries no "Find your level" call to action');
-  await ctx.close();
+  await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
 
   /* ---- 2. a returning child the next day gets the welcome back ---- */
   const yday = ymd(new Date(Date.now() - 864e5));

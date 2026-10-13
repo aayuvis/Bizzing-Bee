@@ -1722,18 +1722,17 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   the page left 5). pin-mandatory §6 in a loop beside six busy processes: off-the-record 3/48 reloads
   empty, forced onto one renderer 2/24 (not a process swap), a persistent profile 0/72.
   `pin-mandatory` now reloads in `chromium.launchPersistentContext` and asserts the reloaded page
-  starts on the storage it left; the tests below can take the same cure. Original note:
-  **Open**: under load a reload straight after boot can lose the
-  page's fresh localStorage (the seed marker too) — store-seam / medals / hive-activity /
-  family-topbar each failed once that way and pass alone; unexplained. **daily-bee's "a solved day
-  pays one coin and coming back pays nothing" (4 Oct) is the same thing, and it is not load:** on a
-  failing run the test's own init script finds `t_seed` gone and re-seeds at ~24ms, the wallet key
-  is null, and a Storage hook saw no `clear`/`removeItem` from the app — the browser came back with
-  EMPTY storage. It failed ~half the time in the main checkout and never in a fresh worktree of the
-  same commit; any extra round-trip before `pg.reload()` (an evaluate, a console listener) made it
-  pass 6/6. A Chromium file:// reload artefact, not a coin bug. Do not "fix" it by waiting in the test
-  without first finding the mechanism. `levels.cjs` ("after a reload the levels are still the child's") did the same in
-  a 5 Oct suite run — 0 kept in the household — and passed alone, before and after that day's change.
+  starts on the storage it left. **The old "Open" note — "under load a reload straight after boot can lose
+  the page's fresh localStorage (the seed marker too)" (store-seam, medals, hive-activity, family-topbar,
+  levels, daily-bee: each failed once that way and passed alone) — was the browser handing the reloaded
+  document EMPTY storage, not the app (a Storage hook saw no clear), most often off the record.** Fixed
+  13 Oct 2026: EVERY test that reloads, or leaves a page and comes back,
+  does it in a persistent profile (a fresh temp dir, `ctx.pages()[0] || await ctx.newPage()`, closed and
+  removed at the end; a shared helper takes `persist: true` for only the block that reloads) — seventeen
+  tests — and `tests/reload-profiles.cjs` (@check, node) fails any reload, `waitForNavigation`, or
+  away-and-back goto traced to `newContext(`/`newPage({`. Not a complete cure everywhere: family-topbar's
+  reload beside six busy loops at 4x still came back empty 2 of 30 on disk (0 of 20 off the record), so a
+  reload test should also say what storage the new page started on, as pin-mandatory and trust-v2 do.
 
 ## Road to 4.5, P0 — landing and parent truth, child data, wallet, Hive minutes (10 Oct 2026)
 - **The opening page types no count** (P0.21/P0.22). Beyond the Audit v4 set, SB_COUNT now also reads

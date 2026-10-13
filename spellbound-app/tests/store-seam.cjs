@@ -35,18 +35,23 @@ ok(firstDefer === 'store.js', 'store.js is the first deferred script (' + firstD
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined) });
   const URL = 'file://' + ROOT + '/index.html';
   const errs = [];
-  const boot = async (blob, extra) => {
-    const ctx = await b.newContext({ viewport: { width: 1000, height: 800 } });
+  const boot = async (blob, extra, o) => {
+    /* o.persist: a PERSISTENT profile (13 Oct 2026) for the household that reloads and is read back. An off-the-record context
+       can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+    const dir = o && o.persist ? fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-seam-profile-')) : null;
+    const ctx = dir ? await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 800 },
+      executablePath: process.env.SB_CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined) })
+      : await b.newContext({ viewport: { width: 1000, height: 800 } });
     await ctx.addInitScript(([s, x]) => { try { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', typeof s === 'string' ? s : JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); if (x) Object.keys(x).forEach(k => localStorage.setItem(k, x[k])); localStorage.setItem('t_seed', '1'); } } catch (e) {} }, [blob, extra || null]);
-    const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
-    await pg.goto(URL); await booted(pg); return { ctx, pg };   // booted, not a 2.8s guess: on a loaded box boot ran past it
+    const pg = ctx.pages()[0] || await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+    await pg.goto(URL); await booted(pg); return { ctx, pg, dir };   // booted, not a 2.8s guess: on a loaded box boot ran past it
   };
 
   /* ---- 2. a household from before the seam: every step once, in order ---- */
   const legacy = { theme: 'origami', mode: 'light', pin: '1234', activeIdx: 0, cN: 121, lu: { cat: true, dog: true },
     children: [{ name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'bizzy', theme: 'origami', coins: 30,
       unlockedThemes: ['spellbound', 'aurora', 'origami'], beeAcc: { crown: 1 }, lists: { default: { xp: 5 } }, activeList: 'default' }] };
-  { const { ctx, pg } = await boot(legacy);
+  { const { ctx, pg, dir } = await boot(legacy, null, { persist: true });
     const r = await pg.evaluate(() => { const raw = JSON.parse(localStorage.getItem('sb_saas_v2')); const c = state.children[0];
       return { ran: SB_STORE.migrated(), sv: raw.sv, schema: SB_STORE.SCHEMA, wallet: BZ_WALLET.balance('Ahana'), themes: c.unlockedThemes, theme: c.theme, top: state.theme,
         mast: Object.keys(c.mast || {}).sort().join(','), acc: !!c.beeAcc }; });
@@ -59,7 +64,7 @@ ok(firstDefer === 'store.js', 'store.js is the first deferred script (' + firstD
     await pg.reload(); await booted(pg);
     const r2 = await pg.evaluate(() => ({ ran: SB_STORE.migrated(), wallet: BZ_WALLET.balance('Ahana') }));
     ok(r2.ran.length === 0 && r2.wallet === r.wallet, `a second boot runs nothing and pays nothing (${r2.ran.length} steps, ${r2.wallet} 🪙)`);
-    await ctx.close(); }
+    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true }); }
 
   /* ---- 3. a household from a NEWER build is never written over ---- */
   { const newer = { sv: 999, theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, futureField: { keep: 'me' },

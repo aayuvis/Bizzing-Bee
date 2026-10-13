@@ -26,9 +26,13 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined) });
-  const ctx = await b.newContext({ viewport: { width: 1000, height: 800 } });
+  /* a PERSISTENT profile (13 Oct 2026): this test reloads and reads the levels back — a 5 Oct suite run read "0 kept". An off-the-record context
+     can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-levels-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 800 },
+    executablePath: process.env.SB_CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined) });
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('t_lv')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_lv', '1'); } } catch (e) {} }, SEED);
-  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('file://' + ROOT + '/index.html');
   ok(await booted(pg), 'the app booted');
   const r = await pg.evaluate(() => { const L = SB_LEVEL, o = {};
@@ -78,6 +82,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
   const moved = await pg.evaluate(() => SB_LEVEL.after('gym/sprint', 30).level);
   ok(moved === 'medium', `and its next round's check moves it (${moved})`);
   ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
+  await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   await b.close();
   console.log(fails ? `\n${fails} FAILED` : '\nall good'); process.exit(fails ? 1 : 0);
 })();

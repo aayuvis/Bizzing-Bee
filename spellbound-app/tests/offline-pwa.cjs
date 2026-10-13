@@ -57,9 +57,13 @@ const pngSize = f => { const b = fs.readFileSync(f); return b.slice(1, 4).toStri
   /* ---- 2. first visit installs and warms the worker ---- */
   const srv = await serve(SRC);
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  /* a PERSISTENT profile (13 Oct 2026): this context reloads offline and reads the speller back. An off-the-record context can
+     start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-offline-profile-'));
+  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 390, height: 844 },
+    executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => require('fs').existsSync(p)) });
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, seed);
-  const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto(srv.url + 'index.html');
   await pg.evaluate(() => caches.open('bee-core-STALE').then(c => c.put('stale', new Response('old build'))));
   const t0 = Date.now(); let st = {};
@@ -110,7 +114,7 @@ const pngSize = f => { const b = fs.readFileSync(f); return b.slice(1, 4).toStri
   await p2.waitForTimeout(3000);
   const land = await p2.evaluate(() => ({ screen: typeof state !== 'undefined' && state.screen })).catch(e => ({ err: e.message }));
   ok(land.screen === 'landing', 'offline, a visitor with no profile on this device still gets the opening page (' + JSON.stringify(land) + ')');
-  await ctx.close();
+  await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
 
   /* ---- 4. file:// registers nothing ---- */
   const c2 = await b.newContext();

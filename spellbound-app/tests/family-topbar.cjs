@@ -16,7 +16,7 @@
      · Settings and the appearance button keep working from their new places.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/family-topbar.cjs                     */
 const { chromium } = require('playwright');
-const path = require('path');
+const path = require('path'), fs = require('fs'), os = require('os');
 const { booted, until, frames } = require('./lib/wait.cjs');
 const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
 const HIVE = 'https://aayuvis.github.io/Bizzing_Schedule/';
@@ -30,14 +30,19 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
   { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 120, lists: { journey: { xp: 30, stage: 2 } }, activeList: 'journey', trail: TR({ u1: { 1: 90 }, u2: { 1: 85 } }), mast: M2(['cat', 'dog', 'ship']) },
   { name: 'Ravi', age: 12, ageBand: '11-13', avatar: 'froggy', theme: 'aurora', coins: 7, lists: { journey: { xp: 2 } }, activeList: 'journey', trail: TR({}), mast: M2(['sun']) } ] };
 
-async function open(b, vp, errs) {
-  const ctx = await b.newContext({ viewport: vp, hasTouch: vp.width < 640 });
+async function open(b, vp, errs, o) {
+  /* o.persist: a PERSISTENT profile (13 Oct 2026) for the walk that reloads and reads each child's book back. An off-the-record
+     context can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72).
+     NOT a cure here yet: this walk's own reload, beside six busy loops at 4x, came back empty 2 of 30 on disk and 0 of 20 off the record. */
+  const dir = o && o.persist ? fs.mkdtempSync(path.join(os.tmpdir(), 'sb-topbar-profile-')) : null;
+  const ctx = dir ? await chromium.launchPersistentContext(dir, { viewport: vp, hasTouch: vp.width < 640, executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' })
+    : await b.newContext({ viewport: vp, hasTouch: vp.width < 640 });
   await ctx.addInitScript(s => { if (!localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_seed', '1'); } }, SEED);
-  const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+  const pg = ctx.pages()[0] || await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
   await pg.goto(URL); await booted(pg);
   await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r)));   // the Atlas curriculum is lazy
   await frames(pg, 2);
-  return { ctx, pg };
+  return { ctx, pg, dir };
 }
 const bar = pg => pg.evaluate(() => {
   const B = document.querySelector('.sb-fam-bar'); const br = B.getBoundingClientRect();
@@ -55,7 +60,7 @@ const bar = pg => pg.evaluate(() => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const errs = [];
   for (const vp of [{ width: 1180, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 780 }]) {
-    const { ctx, pg } = await open(b, vp, errs);
+    const { ctx, pg, dir } = await open(b, vp, errs, { persist: vp.width === 1180 });   // only the 1180 walk reloads
     const r = await bar(pg); const p = r.parts; const n = vp.width + 'px';
     const fam = [p.hive, p.brand, p.theme, p.lock, p.kid];
     const order = fam.every(Boolean) && p.hive.r <= p.brand.l + 1 && p.brand.r <= p.theme.l && p.theme.r <= p.lock.l + 1 && p.lock.r <= p.kid.l + 1
@@ -129,7 +134,7 @@ const bar = pg => pg.evaluate(() => {
       await pg.click('.sb-fam-menu [data-act="famAdd"]'); await until(pg, () => !!state.pinDlg, null, 5000);
       ok(await pg.evaluate(() => !!state.pinDlg && state.screen === 'app'), '"+ Add a child" waits behind the grown-up PIN');
     }
-    await ctx.close();
+    await ctx.close(); if (dir) fs.rmSync(dir, { recursive: true, force: true });
   }
   /* ---- a household from before the split: the shared book is COPIED to each child once, so
      nothing anyone earned is lost — and from then on the two copies never touch ---- */
