@@ -69,8 +69,8 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   ok(!!kid && kid.coins === 250 + cost, `the purse moved into the wallet 1:1, refund included — wallet ${kid && kid.coins}, expected ${250 + cost}`);
   ok(!!kid && kid.ledger.filter(x => x.why === 'migrated').length === 1, 'one "migrated" line in the ledger');
   ok(await purse() === 250 + cost, 'c.coins is the wallet\'s mirror — ' + await purse());
-  await pg.reload(); await pg.waitForTimeout(3000);
-  await pg.reload(); await pg.waitForTimeout(3000);
+  await require('./lib/wait.cjs').reloadSettled(pg); await pg.waitForTimeout(3000);
+  await require('./lib/wait.cjs').reloadSettled(pg); await pg.waitForTimeout(3000);
   w = await wallet();
   ok(w.kids.ahana.coins === 250 + cost && w.kids.ahana.ledger.filter(x => x.why === 'migrated').length === 1,
     'two more reloads pay nothing more — wallet ' + w.kids.ahana.coins);

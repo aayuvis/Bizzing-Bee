@@ -80,7 +80,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
   /* re-rendering, reloading: nothing is counted twice */
   const n0 = m.length;
   await pg.evaluate(() => { render(); app.setNav('trail'); app.setNav('home'); }); await pg.clock.runFor(800);
-  await pg.reload(); await pg.waitForTimeout(2500); await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r))); await pg.clock.runFor(800);
+  await require('./lib/wait.cjs').reloadSettled(pg); await pg.waitForTimeout(2500); await pg.evaluate(() => new Promise(r => SB_LAZY.need('atlas', r))); await pg.clock.runFor(800);
   const n1 = (await ms()).length;
   ok(n1 === n0, `renders and a reload add no milestone twice (${n0}${n1 !== n0 ? ' → ' + n1 : ''})`);
 

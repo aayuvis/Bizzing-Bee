@@ -47,7 +47,7 @@ const KID = (name, extra) => Object.assign({ name, age: 9, ageBand: '8-10', avat
   ok(mid.rec && mid.rec.u === 'u2' && mid.rec.gi === 3 && mid.rec.ws.join() === words.join(), 'the unfinished drill is kept on the child: its stop, its words in order, its card');
   /* leave for Home, and reload */
   await pg.tap('.sb-tabbar [data-act="setNav"][data-arg="home"]'); await pg.waitForTimeout(400);
-  await pg.reload(); await pg.waitForTimeout(2600);
+  await require('./lib/wait.cjs').reloadSettled(pg); await pg.waitForTimeout(2600);
   await pg.waitForFunction(() => !!document.querySelector('.sb-content [data-act="goNext"]'), null, { timeout: 10000 });
   await pg.tap('.sb-content [data-act="goNext"]');
   await pg.waitForFunction(() => state.nav === 'train' && Array.isArray(state.sessionWords), null, { timeout: 15000 }).catch(() => {});

@@ -590,7 +590,12 @@
   /* …but a card whose HOST is still on the page is not gone: a game that redraws its own stage (Word Forge does, while
      the card is up) only knocked it off, so it is put back and keeps holding (10 Oct 2026: Forge sat on its miss with
      no Continue — forge-game "Enter continues" red in the full suite). Only a host that left the page lets go. */
+  /* ONLY a game that asks for it (`stays:true` — Word Forge, which redraws its own stage around a live card) gets its
+     card put back. Every other card that leaves the page lets go, as P1.20 made it: a Spelling Gym round replaced while
+     its card was up re-attached that STALE card to the next round's stage (same plate key), held its clock for good and
+     hung the round (13 Oct 2026: spelling-gym T13 past 600s in a full run). */
   const _missAlive=m=>{ if(m.wrap.isConnected) return true;
+    if(!m.stays){ m.gone(); return false; }
     /* the host redrew in place, or the game drew a NEW stage of its own (same data-sb-stage key): the card goes back on */
     let h=(m.host&&m.host.isConnected)?m.host:null;
     if(!h&&m.key){ try{ h=[...document.querySelectorAll('.sb-stage')].find(x=>x.getAttribute('data-sb-stage')===m.key)||null; }catch(e){} }
@@ -619,11 +624,11 @@
     try{ const mc=wrap.firstChild; mc.addEventListener('animationend',()=>mc.classList.remove('sg-fx-shake'),{once:true}); setTimeout(()=>mc.classList.remove('sg-fx-shake'),700); }catch(e){}
     host.appendChild(wrap);
     const t0=performance.now(); let closed=false;
-    const key=(!fixed&&host.getAttribute)?host.getAttribute('data-sb-stage'):null;
-    const ent={ wrap, host, key, mo:null, gone(){ if(closed) return; closed=true; _missOpen.delete(ent); removeEventListener('keydown',onKey,true); try{ ent.mo&&ent.mo.disconnect(); }catch(e){} } };
+    const stays=!!(o&&o.stays), key=(stays&&!fixed&&host.getAttribute)?host.getAttribute('data-sb-stage'):null;
+    const ent={ wrap, host, key, stays, mo:null, gone(){ if(closed) return; closed=true; _missOpen.delete(ent); removeEventListener('keydown',onKey,true); try{ ent.mo&&ent.mo.disconnect(); }catch(e){} } };
     _missOpen.add(ent);
     /* put it back BEFORE the next paint when the game redraws around it (a game that redraws keeps its card on screen) */
-    try{ ent.mo=new MutationObserver(()=>{ if(!closed&&!wrap.isConnected) _missAlive(ent); }); ent.mo.observe(document.body,{childList:true,subtree:true}); }catch(e){}
+    if(stays){ try{ ent.mo=new MutationObserver(()=>{ if(!closed&&!wrap.isConnected) _missAlive(ent); }); ent.mo.observe(document.body,{childList:true,subtree:true}); }catch(e){} }
     function close(){ if(closed) return; closed=true; _missOpen.delete(ent); try{ ent.mo&&ent.mo.disconnect(); }catch(e){}
       removeEventListener('keydown',onKey,true); try{ wrap.remove(); }catch(e){}
       try{ if(o.onContinue) o.onContinue(); }catch(e){} }

@@ -124,7 +124,7 @@ const bar = pg => pg.evaluate(() => {
       const backA = await pg.evaluate(() => { const c = active(); return { name: c.name, coins: c.coins, lists: JSON.stringify(c.lists), trail: JSON.stringify(c.trail), lu: Object.keys(state.luMastered).sort().join(',') }; });
       ok(backA.name === 'Ahana' && backA.coins === before.a.coins && backA.lists === before.a.lists && backA.trail === before.a.trail && backA.lu === before.lu,
         "back on Ahana: her coins, lists, trail and mastered words are exactly as she left them — Ravi's zebra is not among them");
-      await pg.reload(); await booted(pg);
+      await require('./lib/wait.cjs').reloadSettled(pg); await booted(pg);
       const afterReload = await pg.evaluate(() => { const r = state.children[1]; return { a: active().name, alu: Object.keys(state.luMastered).sort().join(','),
         rlu: Object.keys(r.mast || {}).filter(k => r.mast[k].b >= 2).sort().join(','), rc: r.coins }; });
       ok(afterReload.a === 'Ahana' && afterReload.alu === before.lu && afterReload.rlu === 'sun,zebra' && afterReload.rc === before.r.coins + 5,

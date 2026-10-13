@@ -133,7 +133,7 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
     const extra = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^sb_/.test(k) && !(k in b.keys)) extra.push(k); }
     return { bad, extra }; }, blob);
   ok(exact.bad.length === 0 && exact.extra.length === 0, 'backup → erase → restore round-trips the household EXACTLY: every key byte-identical to the file, nothing extra' + (exact.bad.length + exact.extra.length ? ' — ' + exact.bad.concat(exact.extra).join(', ') : ''));
-  await pg.reload(); await booted(pg);
+  await require('./lib/wait.cjs').reloadSettled(pg); await booted(pg);
   ok(after.screen === 'app', 'the app opens on the restored household');
   ok(after.act && after.act.length === 2 && after.act.some(x => x.a === 'maths') && after.act.some(x => x.a === 'bee' && x.who === 'Ahana'), "Bee's activity rows come back beside Maths' rows, not over them");
   ok(!after.tm, 'and the research log, which was never in the file, stays gone');

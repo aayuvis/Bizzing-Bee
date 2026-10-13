@@ -111,7 +111,7 @@ async function walkSetup(pg, stopAtLast, band) {
   ok(kid.n === 1 && kid.fr === ymd(new Date()), 'the new child carries the day they were set up (fr = today)');
 
   /* the same day, the app is opened again: still no splash */
-  await pg.reload(); await pg.waitForTimeout(1500);
+  await require('./lib/wait.cjs').reloadSettled(pg); await pg.waitForTimeout(1500);
   ok(await pg.evaluate(() => state.screen === 'app' && !document.querySelector('#sb-splash')), 'reopened on the first day, the splash stays away');
   /* the reload put the child back on the lesson they were reading (the hash); go Home to look at it */
   await pg.click('.sb-tabbar [data-act="setNav"][data-arg="home"]'); await pg.waitForTimeout(500);

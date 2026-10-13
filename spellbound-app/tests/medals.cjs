@@ -82,7 +82,7 @@ const kid = (over) => Object.assign({ name: 'Ahana', age: 9, ageBand: '8-10', av
   ok(right.done && right.seen && right.fired, '100 words spelled right earns "Hundred Club", celebrated and recorded');
 
   // reload: nothing celebrates again
-  await A.pg.reload(); await A.pg.waitForTimeout(3000);
+  await require('./lib/wait.cjs').reloadSettled(A.pg); await A.pg.waitForTimeout(3000);
   const re = await A.pg.evaluate(() => { state.celebrate = null; checkNewBadges(); const c = state.celebrate; state.celebrate = null; return c && c.badge && c.badge.id; });
   ok(!re, 'after a reload, no medal is celebrated a second time');
 

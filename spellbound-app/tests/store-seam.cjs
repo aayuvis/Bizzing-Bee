@@ -61,7 +61,7 @@ ok(firstDefer === 'store.js', 'store.js is the first deferred script (' + firstD
     ok(r.wallet === 30 + 120 + 400 + 400 && r.themes.join() === 'spellbound' && r.theme === 'spellbound' && r.top === 'spellbound' && !r.acc,
       `the refunds that used to be ad-hoc init blocks still pay — crown 120 + origami 400 + aurora 400 + 30 = ${r.wallet} 🪙, and a removed world moves to the Hive`);
     ok(r.mast === 'cat,dog', 'the shared mastery map is carried onto the child once (' + r.mast + ')');
-    await pg.reload(); await booted(pg);
+    await require('./lib/wait.cjs').reloadSettled(pg); await booted(pg);
     const r2 = await pg.evaluate(() => ({ ran: SB_STORE.migrated(), wallet: BZ_WALLET.balance('Ahana') }));
     ok(r2.ran.length === 0 && r2.wallet === r.wallet, `a second boot runs nothing and pays nothing (${r2.ran.length} steps, ${r2.wallet} 🪙)`);
     await ctx.close(); fs.rmSync(dir, { recursive: true, force: true }); }

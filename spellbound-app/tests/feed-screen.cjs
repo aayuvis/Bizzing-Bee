@@ -71,7 +71,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const dir = o.persist ? fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-feed-profile-')) : null;
     const ctx = dir ? await chromium.launchPersistentContext(dir, Object.assign({ executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) }, opts))
       : await b.newContext(opts);
-    await ctx.addInitScript(([s, t]) => { try { if (!sessionStorage.getItem('t_seed')) { localStorage.clear(); localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); if (t) localStorage.setItem('sb_tester', '1'); sessionStorage.setItem('t_seed', '1'); } } catch (e) {} }, [o.seed || seedOf(), !!o.tester]);
+    await ctx.addInitScript(([s, t]) => { try { if (/storage-probe\.html$/.test(location.pathname)) return; /* wait.cjs reloadSettled's probe tab has no sessionStorage */ if (!sessionStorage.getItem('t_seed')) { localStorage.clear(); localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); if (t) localStorage.setItem('sb_tester', '1'); sessionStorage.setItem('t_seed', '1'); } } catch (e) {} }, [o.seed || seedOf(), !!o.tester]);
     /* count every sound: a clip, a speech utterance, or WebAudio starting */
     await ctx.addInitScript(() => { window.__snd = 0; const A = window.Audio; window.Audio = function () { window.__snd++; return new A(...arguments); };
       try { const sp = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { window.__snd++; return sp(u); }; } catch (e) {} });
@@ -287,7 +287,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     const fallback = one.whys.filter(w => /^For the /.test(w)).length;
     ok(fallback <= 3, `the reasons name the stop, the slip or the peek — "For <region>" on ${fallback} of ${one.whys.length} (was 16 of 20)`);
     ok(new Set(one.whys).size >= 8, `${new Set(one.whys).size} different reasons in one session`);
-    await pg.reload(); await ready(pg); await openFeed(pg);
+    await require('./lib/wait.cjs').reloadSettled(pg); await ready(pg); await openFeed(pg);
     const two = await pg.evaluate(() => ({ ids: active().feed.ids.map(x => x.id), paid: active().feed.paid }));
     const rep = two.ids.filter(id => one.ids.includes(id)).length;
     ok(two.ids.length >= 12 && rep === 0, `a reload the same day brings ${two.ids.length} cards, ${rep} of them seen before (was 21 of 21)`);
@@ -396,7 +396,7 @@ const seedOf = (mode, kid) => ({ theme: 'spellbound', mode: mode || 'light', pin
     let g = await gone();
     ok(!g.tabs.some(t => /My Feed/.test(t)) && !g.drawer.some(t => /^My Feed/.test(t)), 'switched off, My Feed leaves the tabs and the ☰ drawer');
     ok(g.cards === 0 && /switched off/.test(g.text), '#/feed says it is switched off and shows no cards');
-    await pg.reload(); await ready(pg); g = await gone();
+    await require('./lib/wait.cjs').reloadSettled(pg); await ready(pg); g = await gone();
     ok(!g.tabs.some(t => /My Feed/.test(t)) && g.cards === 0, 'the choice survives a reload');
     await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
   }
