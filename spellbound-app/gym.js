@@ -72,6 +72,13 @@
   const say1 = (w, rate) => { try { say(w, rate); } catch (e) {} };
   const live = t => { try { if (W.SB_LIVE && SB_LIVE.say) SB_LIVE.say([t]); } catch (e) {} };
   const sound = k => { try { sfx(k); } catch (e) {} };
+  /* THE JUICE (road to 4.5, P3.14/P3.15): the gym's own sting on a right answer and when a round ends (SGUI.ding /
+     SGUI.fanfare; the plain tones when stings are off), a card that flips in with each new word and a "right" count that
+     pops — classes put on the painted DOM once (never in the HTML, which paint() compares to skip a repaint that would
+     wipe a half-typed word), off under Reduce motion (saga2.css). NEVER FOR A RUN: the same for every right answer. */
+  const ding = ok => { if (W.SGUI && SGUI.ding) SGUI.ding('gym', ok); else sound(ok ? 'correct' : 'wrong'); };
+  const fanfare = good => { if (W.SGUI && SGUI.fanfare) SGUI.fanfare('gym', good); else sound(good ? 'win' : 'level'); };
+  function juice(sel, cls) { try { const e = EL && EL.querySelector(sel); if (e) { e.classList.remove(cls); void e.offsetWidth; e.classList.add(cls); } } catch (e) {} }
 
   /* ------------------------------------------------------------------ levels (SB_LEVEL contract) */
   function lvResolve(l) { if (LV.indexOf(l) >= 0) return l;
@@ -224,6 +231,7 @@
     if (!w) { if (!R.asked) { R.phase = 'empty'; paint(); return; } finish(); return; }
     R.cur = w; R.seen.add(K(w)); R.phase = R.mode === 'spot' ? 'tap' : 'answer';
     paint();
+    juice('.gym-card', 'sg-fx-in'); if (R.okAt && Date.now() - R.okAt < 600) juice('#gym-right', 'sg-fx-pop');
     if (R.mode !== 'spot') setTimeout(() => { if (R && R.cur === w) say1(w.w); }, 220);
     live(R.mode === 'spot' ? 'Find the word that is spelt wrong.' : ('Word ' + (R.asked + 1) + (R.m.n ? ' of ' + R.m.n : '') + '. Listen, then spell it.')); }
 
@@ -246,7 +254,7 @@
     const w = R.cur, ok = (typeof sameSpelling === 'function') ? sameSpelling(typed, w.w) : typed.toLowerCase() === K(w);
     R.asked++; R.log.push({ w: w.w, ok });
     try { logBand(w, ok); } catch (e) {}
-    if (ok) { R.right++; sound('correct'); payRight(); try { markMastered(K(w)); } catch (e) {} try { clearMiss(w.w); } catch (e) {} }
+    if (ok) { R.right++; R.okAt = Date.now(); ding(true); payRight(); try { markMastered(K(w)); } catch (e) {} try { clearMiss(w.w); } catch (e) {} }
     else { sound('wrong'); recordMiss(w, typed); }
     adapt(ok);
     if (R.mode === 'squares') return squareAnswered(ok, typed);
@@ -298,8 +306,8 @@
     R.coins = (typeof earnedSoFar === 'function' ? earnedSoFar() : 0) - R.e0;
     try { logActivity('gym', hubName() + ' · ' + R.m.title, { done: asked, right: R.right, coins: R.coins }, R.log.filter(x => !x.ok).map(x => x.w)); } catch (e) {}
     persist();
-    if (pct >= 80) { sound('win'); try { burstConfetti(90); } catch (e) {} } else sound('level');
-    paint(); }
+    fanfare(pct >= 80); if (pct >= 80) { try { burstConfetti(90); } catch (e) {} }
+    paint(); juice('.sg-endcard', 'sg-fx-done'); }
 
   /* ------------------------------------------------------------------ Level Challenge: the way up */
   function chTarget() { const cur = lvResolve(lvGet('challenge')); return LV[Math.min(LV.length - 1, LV.indexOf(cur) + 1)]; }
@@ -378,7 +386,7 @@
     if (won && !cell.done) { cell.done = true; R.claimed++;
       try { R.bonus = (R.bonus || 0) + addCoins('stop'); } catch (e) {}   // a claimed square is a finished round: 'stop', and nothing per answer
       LINES.forEach(L => { const id = L.slice(0, 3).join(''); if (!R.lineSet[id] && L.slice(0, 3).every(j => R.board[j].done)) { R.lineSet[id] = 1; R.lines++; R.celeb.push(L[3]); } });
-      if (R.celeb.length) { sound('win'); try { burstConfetti(110); } catch (e) {} } else { sound('level'); } }
+      fanfare(!!R.celeb.length); if (R.celeb.length) { try { burstConfetti(110); } catch (e) {} } }
     else sound('lose');
     R.phase = 'board'; VIEW = 'board'; R.cur = null;
     if (R.board.every(c => c.done)) { finish(); return; }
@@ -431,7 +439,7 @@
     R.phase = 'diag'; VIEW = 'play'; paint(); setTimeout(() => { if (R && R.cur === w) say1(w.w); }, 220);
     live('Patient ' + (R.pi + 1) + ' of ' + R.patients.length + '. What went wrong?'); }
   function docPick(i) { if (!R || R.phase !== 'diag') return; const o = R.opts[+i]; if (!o) return; R.dpick = o[0];
-    const right = o[0] === R.pat.k; sound(right ? 'correct' : 'wrong');
+    const right = o[0] === R.pat.k; ding(right);
     if (right) { R.phase = 'diagok'; paint(); setTimeout(() => { if (R && R.phase === 'diagok') { R.phase = 'answer'; paint(); say1(R.cur.w); } }, 1100); return; }
     /* a wrong diagnosis holds: the true type and why, until Continue */
     R.phase = 'diagno'; paint();
@@ -521,7 +529,7 @@
   function goodDays(c) { try { return goodDaysThisWeek(c); } catch (e) { return 0; } }
 
   function hudFor(extraRight) { const m = R.m;
-    const left = stat(R.mode === 'squares' ? R.claimed + '/9' : R.mode === 'doctor' ? (R.cures || 0) : R.right, R.mode === 'squares' ? 'squares' : R.mode === 'doctor' ? 'cured' : 'right');
+    const left = stat(R.mode === 'squares' ? R.claimed + '/9' : R.mode === 'doctor' ? (R.cures || 0) : R.right, R.mode === 'squares' ? 'squares' : R.mode === 'doctor' ? 'cured' : 'right', R.mode === 'squares' || R.mode === 'doctor' ? '' : 'gym-right');
     const chip = '<span class="gym-lvl static">' + LV_NAME[R.level] + '</span>' + (m.adapt && VIEW === 'play' ? '<span class="gym-tier" title="Where the next word comes from">Words: ' + LV_NAME[tierLevel()] + '</span>' : '');
     const center = '<h1 class="sg-st-title gym-title">' + E(m.title) + '</h1><div class="gym-chips">' + chip + '</div>';
     let right = extraRight;
@@ -771,7 +779,7 @@
 .gym-celeb{font-family:var(--display);font-weight:800;font-size:17px;color:var(--good)}
 .gym-quiet{font-size:13px;color:var(--muted);font-weight:700;display:inline-flex;gap:6px;align-items:center}
 .gym-sent{font-size:clamp(17px,2.6vw,21px);line-height:2;max-width:32em}
-.gym-tok{display:inline;padding:2px 5px;margin:0 1px;border-radius:7px;border:1px dashed color-mix(in srgb,var(--line) 90%,transparent);background:transparent;color:var(--text);font:inherit;min-height:34px}
+.gym-tok{display:inline-block;vertical-align:middle;padding:2px 5px;margin:1px;border-radius:7px;border:1px dashed color-mix(in srgb,var(--line) 90%,transparent);background:transparent;color:var(--text);font:inherit;line-height:1.3;min-height:42px;min-width:42px}
 .gym-tok.bad{background:color-mix(in srgb,var(--bad) 18%,transparent);border-color:var(--bad)}
 .gym-dx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
 .gym-dxmiss{text-align:left;padding:12px 14px;border-radius:14px;background:var(--surface);border:1.5px solid var(--line)}

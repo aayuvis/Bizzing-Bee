@@ -56,6 +56,7 @@
     + '.dz-k{flex:1;max-width:38px;height:50px;border:none;border-radius:8px;background:var(--surface2,#EDE7D8);color:var(--text,#241E33);'
     + 'font:700 15px var(--body,sans-serif);text-transform:uppercase;cursor:pointer;display:grid;place-items:center;transition:.1s}'
     + '.dz-k.wide{max-width:64px;font-size:12px;font-weight:800}'
+    + '.dz-keys.abc .dz-k{max-width:62px;min-width:0}'
     + '.dz-k.hit{background:#3AA55C;color:#fff}.dz-k.near{background:#E8A33D;color:#fff}.dz-k.miss{background:#8B857B;color:#fff}'
     + '.dz-k:active{transform:translateY(1px)}'
     + '.dz-done{text-align:center;padding:14px 0}'
@@ -120,14 +121,19 @@
     if (!over) wireKeys();
     else wireShare();
   }
+  /* ON A PHONE THE KEYS ARE 44px TARGETS (road to 4.5, P3.10): ten across a 390px phone left each key 29px wide, so
+     below 480px the alphabet comes in rows of seven — the engine kit's own layout (SGUI.keys KB_ABC), which Daily Bee
+     types on — with Delete and Enter closing the last row. Wider screens keep the QWERTY rows the game always had. */
   function keyboardHtml() {
-    var rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
-    var h = '<div class="dz-keys">';
+    var narrow = (window.innerWidth || 999) < 480;
+    var rows = narrow ? ['abcdefg', 'hijklmn', 'opqrstu', 'vwxyz'] : ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+    var h = '<div class="dz-keys' + (narrow ? ' abc' : '') + '">';
     rows.forEach(function (row, i) {
       h += '<div class="dz-krow">';
-      if (i === 2) h += '<button class="dz-k wide" data-k="enter">Enter</button>';
+      if (!narrow && i === 2) h += '<button class="dz-k wide" data-k="enter">Enter</button>';
       row.split('').forEach(function (ch) { h += '<button class="dz-k ' + (kbState[ch] || '') + '" data-k="' + ch + '">' + ch + '</button>'; });
-      if (i === 2) h += '<button class="dz-k wide" data-k="back">⌫</button>';
+      if (!narrow && i === 2) h += '<button class="dz-k wide" data-k="back" aria-label="Delete">⌫</button>';
+      if (narrow && i === 3) h += '<button class="dz-k" data-k="back" aria-label="Delete">⌫</button><button class="dz-k" data-k="enter" aria-label="Enter">⏎</button>';
       h += '</div>';
     });
     return h + '</div>';

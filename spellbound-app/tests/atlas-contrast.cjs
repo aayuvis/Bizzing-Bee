@@ -120,7 +120,8 @@ const root = require('path').resolve(__dirname, '..');
       await new Promise(r => setTimeout(r, 700));
       const t = [...document.querySelectorAll('.atlas-tre')];
       out[act] = { n: t.length,
-        glyphs: [...new Set(t.map(e => (e.textContent || '').trim()).filter(Boolean))],
+        /* a cache's glyph is drawn since P3.7 (no emoji): its name rides data-glyph; a text glyph still counts */
+        glyphs: [...new Set(t.map(e => { const g = e.querySelector('[data-glyph]'); return ((g && g.dataset.glyph) || e.textContent || '').trim(); }).filter(Boolean))],
         titles: [...new Set(t.map(e => e.title || '').filter(Boolean))].slice(0, 1) };
     }
     // and opening one names what it is
@@ -130,7 +131,7 @@ const root = require('path').resolve(__dirname, '..');
     if (btn) { btn.click(); await new Promise(r => setTimeout(r, 400)); out.flash = state.toast || ''; }
     return out;
   });
-  const gl = k => (kit[k] && kit[k].glyphs.filter(g => g !== '⌣')) || [];
+  const gl = k => (kit[k] && kit[k].glyphs.filter(g => g !== '⌣' && g !== 'found')) || [];
   if (!kit.meadow || !kit.meadow.n) errs.push('no caches rendered on the Meadow');
   const m = gl('meadow')[0], f = gl('forum')[0], l = gl('library')[0], st2 = gl('storm')[0];
   const seen = [m, f, l, st2].filter(Boolean);

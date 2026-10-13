@@ -7986,7 +7986,7 @@ function render(){
   if(state.nav==='forge'&&state.screen==='app'){ try{ const h=document.getElementById('fg-host'); if(h){ if(window.SB_FORGE_UI) SB_FORGE_UI.mount(h); else lazyNeed('forge', ()=>{ const h2=document.getElementById('fg-host'); if(h2&&window.SB_FORGE_UI) SB_FORGE_UI.mount(h2); }); } }catch(e){} }   /* Word Forge draws its own stage into the shell */
   if(state.nav==='gym'&&state.screen==='app'){ try{ const h=document.getElementById('gym-host'); if(h&&window.SB_GYM) SB_GYM.mount(h); }catch(e){} }   /* the Spelling Gym keeps its own DOM and is re-attached, so a render never wipes a half-typed word */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
-  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='today'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby'))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
+  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='today'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby')||state.nav==='forge'||(state.nav==='mockbee'&&state.mb&&(state.mb.view==='stage'||state.mb.view==='result')))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots();
   /* First real paint — take the loading screen down. Called on every render; the
@@ -8011,10 +8011,17 @@ function render(){
    nav, a coach mode, a Word Gym tab or a game starting does — and so does choosing a list in the dock
    (selectList / startJourney), which swaps the cards at the top of the same screen. Guard:
    tests/mobile-layout.cjs. */
-let _scrKey=null;
+/* …AND IT ARRIVES (road to 4.5, P3.8): the same key decides a page transition — the new screen's content fades in over
+   0.16 s. Opacity only (a transform would move the kit's fixed stage), and only when the child asked for the screen (a
+   tap or a key in the last 0.6 s: a lazy file landing, a route or a timer never flashes the page). Off under Reduce motion:
+   the app's setting stops every animation (data-motion="off"), saga2.css stops this one for the OS setting. Guard:
+   tests/game-juice.cjs §7. */
+let _scrKey=null, _scrIn=0;
+try{ ['pointerdown','keydown'].forEach(t=>addEventListener(t,()=>{ _scrIn=Date.now(); },true)); }catch(e){}
 function _screenTop(){ try{
   const S=state; const k=[S.screen,S.nav,S.nav==='coach'||S.nav==='levelup'?(S.coachMode||'')+'/'+(S.luTab||''):'',S.game?1:0].join('|');
-  if(_scrKey!=null&&k!==_scrKey&&(window.scrollY||0)>0) window.scrollTo(0,0);
+  if(_scrKey!=null&&k!==_scrKey){ if((window.scrollY||0)>0) window.scrollTo(0,0);
+    if(Date.now()-_scrIn<600){ const c=document.querySelector('#root .sb-content'); if(c){ c.classList.remove('sb-enter'); void c.offsetWidth; c.classList.add('sb-enter'); } } }
   _scrKey=k; }catch(e){} }
 /* HOME'S PICTURES ARRIVE WITH ITS WORDS (audit v4 B6: "avatar and journey banners blank for ~6 s").
    Home's avatar and its two painted journey plates are asked for only when Home is drawn — after

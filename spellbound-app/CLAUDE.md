@@ -88,6 +88,76 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
 - UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
   headings free of emoji.
 
+## Road to 4.5, P3 — games polish (13 Oct 2026) — READ FIRST; it overrides the sections below
+Brief rows P3.1/P3.2, P3.7, P3.8, P3.10–P3.16 (bee-chat-brief-4.5 §4). The rules a later session keeps:
+- **The Analogies games stand on the kit's painted stage** (P3.1/P3.2): every analogy GAME screen — practice (name the
+  link, then the analogy), a check, a level check, the clock's door and the clock, a round's end, the Mock Analogy Bee's
+  lobby / round / result / end — is `SGUI.stage` over `SB_PLATE('lore')` (the bee: `'hive'`), wrapped in
+  `.anl-page.anl-onstage` (analogy.js `stageAnl`; HUD: `backIn` + `stat` + `pad`, title `ttl`). The card is a kit
+  `.sg-panel` (paper grain, 84% paper — a solid paper card fails T14). **A round starts only once saga2 is in**
+  (`withKit`; `kickKit` on the map): practice drew the hive loader before the kit landed and `analogies.cjs` caught it.
+  A held miss hides the ask row (`.anl-held`) so the miss fits a phone. The Atlas MAP and the lessons are not games and
+  stay as they were. Guard: **`tests/analogy-stage.cjs`** (T14 + T15 at 1280×800 and 390×844, light and dusk, 12 screens).
+- **No emoji in a game HUD, a game control or a region board** (P3.7): the boards draw their marks (trail.js: `MARK`
+  gate/duel/wisp/bloom, `CACHE_G` per-region cache objects — `TRE_KIT[act].g` is a NAME now, `crit()` the wanderers
+  and heroes, `BURST_G` the poke bursts, `noteG` the pit's notes, `starHTML` drawn stars; `LIV[act].wander.g` is a kind
+  name). The cache glyph's identity is `[data-glyph]` (atlas-contrast reads it). Found on the way: the trivia chest
+  printed "+10 coins" for a one-coin answer — it now prints what `addCoins('answer')` paid. Guard: **`tests/hud-emoji.cjs`**
+  (the live DOM of 30 game screens and 15 boards and dialogs, phone and desktop; Extended_Pictographic minus ©®™ — note
+  Chromium counts ★ and ♪ as pictographs, Node does not; the bug tab is exempt, testing mode only). `ONLY=<regex>` filters.
+- **Every control is a 44px target at 390px** (P3.10/P3.11): `tests/touch-targets.cjs` now measures EVERY control on 19
+  screens (the tab bar and the family top bar included), and a control too near an edge to centre FAILS. Fixes: Spot
+  the Error's tokens 42px (gym.js); level chips keep their `::after` area (a11y.css §6; the Lore title no longer clips
+  it, and on a phone the chip steps aside in a Lore round like Forge's); the Mock Bee's back 44px; the top bar's ☰,
+  logo, coins, look, lock and child switcher get invisible 44px `::before` areas (a11y.css, ≤560px) while keeping the
+  boxes shell-check pins; **Daily Buzz below 480px is an ABC keyboard, rows of seven** (QWERTY's ten across cannot be
+  44px on a phone), QWERTY above. Still exempt, and why: the ⬡ Hive (pinned 4px from ☰), the search row (pinned 41px),
+  Atlas medallions (the 44px key is the same door), links in a sentence.
+- **One live region for every game prompt** (P3.12): `#sb-live` via `data-live-prompt`. Word Forge draws between renders
+  and calls `SB_LIVE.scan(host)` after its draw (its count + task, the masked meaning, its messages; its own
+  `aria-live` regions are gone); render's live condition now includes `forge` and the Mock Bee's stage/result; the Mock
+  Bee says "Your turn, <name>. Listen, then spell the word." (never the word), the pass line, the verdict, the vocab
+  question, the result. The canvas games describe play: the Grand Prix's and Honeycomb Run's canvases are `role="img"`
+  with a label naming what is on them and the keys AND buttons; Type Blaster's field is a labelled group. Guard:
+  `tests/live-prompts.cjs` §6–8.
+- **The Grand Prix plays upright on a phone** (P3.13), verified on this build with `tests/gp-landscape.cjs`, 21 of 21:
+  held upright it starts by itself (no turn card); the road is the full width and the upper 58% (390×489 of 390×844);
+  the HUD floats over the sky; all four controls sit below the road, ≥56px, each what a finger lands on; a thumb on
+  Steer Right steers and lifting lets go; the keyboard steers and brakes; the spelling card's keys sit in the thumb band
+  with the road in sight; a miss holds the race; turned sideways it is the same race re-laid (not restarted, nothing on
+  the road); turned upright again it carries on. Nothing in the race changed in P3 except the canvas's label (P3.12).
+- **JUICE: the answer and the round, never a run** (P3.14/P3.15). `SGUI.sting(game, kind)` (saga2.js §4b) plays a short
+  phrase composed in code — one per game (`lore`, `hive`, `analogy`, `anlbee`, `gym`, `daily`, `forge`, `build`), in its
+  own key and timbre — on a right answer (`'right'`) and a finished round (`'done'`); ONE volume (`SB_VOL.fx()`), ducked,
+  OFF in Calm and with sound effects off (the plain tone plays instead, or nothing), and it reads no history: the tenth
+  right answer plays the first one's notes. Games call `SGUI.ding(game, ok)` and `SGUI.fanfare(game, good)` (the plain
+  `sfx` when the kit or stings are off). The motion: a question card flips in (`sg-fx-in`), a right pick pops
+  (`sg-fx-pop`), a miss shakes once, calmly (`sg-fx-shake`; the shared miss card arrives with it), a round's end lands
+  (`sg-fx-done`) — classes drawn only while their moment is fresh (`SGUI.fresh`) or put on the DOM once (gym.js `juice`,
+  because `paint()` compares HTML to keep a half-typed word), all off under both Reduce motion settings. **No streak
+  meter, no combo, no "in a row" anywhere** (FIX-BEE; lore-hubs fails on it). Wired in Word Lore, Hive Mind, the
+  Spelling Gym, Daily Bee (its row flip/shake were already there), Word Forge and the Analogies.
+- **A screen the child asks for fades in** (P3.8): `_screenTop` (app3) adds `.sb-enter` to `.sb-content` when the screen
+  key changes within 0.6 s of a tap or key — opacity only (a transform would capture the kit's fixed stage), 0.16 s, no
+  fill mode, off under both Reduce motion settings. A route, a lazy file or a re-render never flashes the page.
+- **Build a Word** (P3.16, lore.js, mode `lore/build`): a drag-to-build item over **Word Forge's own table and rules**
+  (forge-data.js rows, forge-core `rack` / `grade` / `reason` / `join` / `roundPay`; never a second copy). Hear the word,
+  read its masked meaning, put its parts in order — DRAG a part onto a slot, TAP a part (next empty slot) or a slot (take
+  it back), or keys 1–9 / Backspace / Enter. The word is on the page nowhere until the item is answered. One try; a miss
+  holds on `SGUI.miss` (the word against what was built, forge-core's reason, the parts). Easy = the exact parts,
+  practice, never pays; otherwise the Medium rack on Forge's Medium rows (three parts or a look-alike: a random placer
+  lands ~3.6% of items) and **forge-core's `roundPay` at the round's end** — nothing new decides a coin. No mastery is
+  written (picking parts is not typing). Rows come through `nextWords(…, {purpose:'forge'})` then the least-seen by a
+  seed of the day (the forge's own `c.forge.seen`, shared). **Shown only where Word Forge is** (`SB_FORGE.signedOff` or
+  `testerOn()`; `modeOn` gates the tile AND `#/lore/build`). GAMES-LEDGER records it as an owner row — **the owner must
+  name the Word Lore mode it replaces, or confirm the exception, before signing the forge table off.** Guard:
+  **`tests/lore-build.cjs`**.
+- **New and changed guards** (each proved by breaking; how is in each header): `analogy-stage`, `hud-emoji`,
+  `game-juice`, `lore-build` (new); `touch-targets` (every control, 19 screens), `live-prompts` (§6–8), `atlas-contrast`
+  (reads `[data-glyph]`), `analogies` (its two answer-leak checks read the whole run screen, because the answers moved
+  into the stage's controls — wider, not looser). First load: app3.js gained ~0.6 KB (the fade) and saga2.css a few
+  rules; everything else is in lazy files — `first-load.cjs` still reads 370 KB of JS for both first screens.
+
 ## The road to 4.5 — P0: tabs, shell, the analogy gate (10 Oct 2026) — READ FIRST; it overrides the sections below
 Brief: the family v5 audit's "road to 4.5" (owner decisions final, 10 Oct 2026). What this batch changed, and the rules:
 - **Six tabs, Word Gym under Word Atlas** (owner: "Home · Word Atlas · Analogies · Library · Play · My Feed. Word Gym

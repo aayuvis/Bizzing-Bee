@@ -124,11 +124,13 @@ async function round(pg, rights) { const n = (await run(pg)).n;
     await pg.click('.anl-btn[data-arg="practice"]'); await W.until(pg, () => !!(state.anl.run && state.anl.run.q), null, 4000);
     let g = await run(pg);
     ok(g.phase === 'bridge' && g.bq.lines.length === 3, 'practice opens on Step 1: three ways the pair could be linked');
-    const leak = await pg.evaluate(() => { const g = state.anl.run; const t = document.querySelector('.anl-run .anl-card').innerText.toLowerCase();
+    /* road to 4.5 P3.1: the round stands on the kit's stage and its answers sit in the stage's controls, under the card —
+       so both leak checks read the WHOLE run screen (the HUD, the card and the answers), not only the card: wider, not looser */
+    const leak = await pg.evaluate(() => { const g = state.anl.run; const t = document.querySelector('.anl-run').innerText.toLowerCase();
       return t.split(/\s+/).filter(x => x.replace(/[^a-z]/g, '') === g.q.d).length; });
     ok(leak === 0, 'during Step 1 the answer word is nowhere on screen');
     await pg.keyboard.press(String(g.bq.ans + 1)); await W.until(pg, () => state.anl.run.phase === 'pick', null, 4000);
-    const leak2 = await pg.evaluate(() => { const g = state.anl.run; const t = document.querySelector('.anl-run .anl-card').innerText.toLowerCase();
+    const leak2 = await pg.evaluate(() => { const g = state.anl.run; const t = document.querySelector('.anl-run').innerText.toLowerCase();
       return t.split(/[^a-z]+/).filter(x => x === g.q.d).length; });
     ok(leak2 === 1, 'during Step 2 the answer word appears once — as one of the options, never as a clue');
     const q = (await run(pg)).q; const wrongI = (q.ans + 1) % q.opts.length;

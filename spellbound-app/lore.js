@@ -36,12 +36,15 @@
       { id: 'idioms', title: 'Idioms & Similes', ic: 'bulb', promise: () => { const n = cnt('idioms'); return (n ? n + ' sayings' : 'Sayings') + ' and similes.'; } },
       { id: 'ladder', title: 'Ladder', ic: 'steps', promise: () => 'Twelve rungs, three lifelines.' },
       { id: 'squares', title: 'Squares', ic: 'grid', promise: () => 'A 3×3 board of word themes.' },
-      { id: 'clock', title: 'Against the Clock', ic: 'timer', promise: () => 'Sixty seconds of word questions.' }],
+      { id: 'clock', title: 'Against the Clock', ic: 'timer', promise: () => 'Sixty seconds of word questions.' },
+      /* P3.16: shown only where Word Forge is (its table signed off, or tester mode) — GAMES-LEDGER, Modes */
+      { id: 'build', title: 'Build a Word', ic: 'link', promise: () => 'Hear a word, build it from its parts.', gate: () => buildOpen() }],
     hive: [
       { id: 'classic', title: 'Classic', art: 'space', promise: () => 'Ten questions, and a fact with every answer.' },
       { id: 'squares', title: 'Squares', art: 'animals', promise: () => 'Nine themes on a 3×3 board, line by line.' },
       { id: 'clock', title: 'Against the Clock', art: 'science', promise: () => 'Sixty seconds of general knowledge.' }] };
   const modeOf = (h, id) => (MODES[h] || []).find((m) => m.id === id) || null;
+  const modeOn = (h, id) => { const m = modeOf(h, id); return !!m && (!m.gate || !!m.gate()); };
   const cnt = (k) => { try { return W.countTxt ? countTxt(k) : ''; } catch (e) { return ''; } };
 
   /* Bee Trivia's word themes are Word Lore's; every other theme is general knowledge (Hive Mind). */
@@ -243,7 +246,7 @@
   const G = () => state.qz;
   function stopClock(g) { try { if (g && g.loop) { g.loop.stop(); g.loop = null; } } catch (e) {} }
   function open(h, mode) { const o = G(); if (o) { o.phase = o.phase === 'play' ? 'left' : o.phase; dropMiss(o); dropKeys(o); } stopClock(o); stopAud();
-    if (mode && !modeOf(h, mode)) mode = null;
+    if (mode && !modeOn(h, mode)) mode = null;
     state.qz = { hub: h, mode: null, phase: 'hub' };
     try { (W.SB_HUB_OPEN = W.SB_HUB_OPEN || {})[h] = h === 'lore' ? (id) => app.openLore(id) : (id) => app.openHive(id); } catch (e) {}
     if (mode) { start(h, mode); return; }
@@ -267,7 +270,8 @@
     if (m === 'idioms') { needAll([needLazy('fig')], go(() => setQs(g, figRound(h, m, 10)))); return; }
     if (m === 'ladder') { needAll([needTriv(Math.max(1, lv - 1)), needTriv(lv), needTriv(Math.min(5, lv + 1)), needLazy('sents')], go(() => buildLadder(g, lv))); return; }
     if (m === 'squares') { needAll([needTriv(lv), needLazy('fig')], go(() => buildSquares(g, lv))); return; }
-    if (m === 'clock') { needAll([needTriv(lv), needLazy('fig')], go(() => buildClock(g, lv))); return; } }
+    if (m === 'clock') { needAll([needTriv(lv), needLazy('fig')], go(() => buildClock(g, lv))); return; }
+    if (m === 'build') { if (!buildOpen()) { open(h, null); return; } needAll([needLazy('forgeCore'), needLazy('forgeData')], go(() => buildSetup(g))); return; } }
   function setQs(g, qs) { g.qs = qs; g.n = qs.length; g.phase = qs.length >= 5 ? 'play' : 'empty';
     if (g.phase === 'play') { markSeen(qs.map((q) => q.id)); g.qs.length = Math.min(10, g.qs.length); g.n = g.qs.length; } }
   function afterStart(g) { if (g.phase !== 'play') return; if (g.mode === 'clock') runClock(g); setTimeout(() => { if (G() === g) speakCur(g); }, 320); }
@@ -338,7 +342,8 @@
   function hold(g, v) { g.held = !!v; try { if (g.loop && g.loop.hold) g.loop.hold(!!v); } catch (e) {} }
 
   /* ------------------------------------------------------------------ answers */
-  function curQ(g) { if (!g || !g.qs && !g.cells) return null;
+  function curQ(g) { if (g && g.mode === 'build') return g.it ? { kind: 'build', say: g.it.r.w, prompt: '', opts: [] } : null;
+    if (!g || !g.qs && !g.cells) return null;
     if (g.mode === 'squares') return g.sel != null ? g.cells[g.sel].q : null;
     if (g.mode === 'ladder') return g.qs[g.rung];
     if (g.mode === 'clock') return g.qs[g.i % g.qs.length];
@@ -348,6 +353,7 @@
      card prints, so the card can never promise a coin the wallet did not get (T6). */
   const hivePays = () => W.SB_HIVE_PAY !== false;
   function owed(g) { if (g.hub === 'hive' && !hivePays()) return 0;
+    if (g.mode === 'build') return (g.phase === 'done' && FC()) ? FC().roundPay(g.rack, g.right, g.asked) : 0;   // Word Forge's own rule (forge-core)
     if (g.mode === 'origins') return g.spelled || 0;
     if (g.mode === 'ladder') return g.rung >= 4 ? g.rung : 0;
     /* the clock has no fixed length, so a lucky early run must not count: while it runs, coins wait for 15
@@ -367,19 +373,26 @@
      to three questions that cannot count, which holds a random player under a tenth of a perfect player's minute at any
      pace (measured: tests/games-bots.mjs T2b). Returning ONCE was not enough — it bounded a guesser at a seventh, and the
      harness measured 12% at three seconds a question, too near the 15% gate to hold it. */
+  /* THE JUICE (road to 4.5, P3.14/P3.15): the hub's own sting on a right answer (SGUI.ding; the plain tone when stings are
+     off), a calm shake on the option missed, a pop on the option got, a question card that flips in and a round's end that
+     lands — classes drawn only while their moment is fresh (SGUI.fresh), and all of it off under Reduce motion (saga2.css).
+     NEVER FOR A RUN: the same sting and the same pop for the first right answer and the tenth; nothing here reads the log. */
+  const GAME = (g) => (g && g.mode === 'build') ? 'build' : (g && g.hub === 'hive') ? 'hive' : 'lore';
+  const fresh = (at, ms) => !!at && Date.now() - at < (ms || 650);
+  function ding(g, ok) { g.fx = Date.now(); if (W.SGUI && SGUI.ding) SGUI.ding(GAME(g), ok); else { try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {} } }
   function againQ(q) { const n = q.opts.length; return Object.assign({}, q, { again: (q.again | 0) + 1, opts: q.opts.slice(1).concat(q.opts.slice(0, 1)), ans: (q.ans + n - 1) % n }); }
   function grade(g, q, i) { const ok = i === q.ans; g.picked = i;
-    if (q.again) { g.log.push({ th: q.th, ok, again: 1 }); try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {} return ok; }   // a comeback: practice, never a first try
+    if (q.again) { g.log.push({ th: q.th, ok, again: 1 }); ding(g, ok); return ok; }   // a comeback: practice, never a first try
     if (!q.two) { g.asked++; if (ok) g.right++; } else { g.two++; }
     g.log.push({ th: q.th, ok, two: !!q.two });
     try { if (q.src === 't' && W.ttBandRecord) ttBandRecord(q.lv || 3, ok); } catch (e) {}
-    try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+    ding(g, ok);
     if (ok) settle(g); return ok; }
 
   function pick(i) { const g = G(); if (!g || g.phase !== 'play') return; i = +i; const q = curQ(g); if (!q || g.picked != null || g.held) return;
     if (!(i >= 0 && i < q.opts.length) || (g.hidden && g.hidden.indexOf(i) >= 0)) return;
     if (q.kind === 'origin') { if (q.stage !== 'pick') return; q.langOk = i === q.ans; q.picked = i; q.stage = 'type'; g.typed = '';
-      try { sfx(q.langOk ? 'correct' : 'wrong'); } catch (e) {} render(); focusType(); setTimeout(() => { if (G() === g) say(q.word.w); }, 260); return; }
+      ding(g, q.langOk); render(); focusType(); setTimeout(() => { if (G() === g) say(q.word.w); }, 260); return; }
     stopAud();
     const ok = grade(g, q, i);
     if (g.mode === 'ladder') { if (ok) { g.rung++; settle(g); try { burstConfetti(30); } catch (e) {} if (g.rung >= RUNGS) { finish(g); return; } } else { g.held = true; g.missed = true; }
@@ -411,6 +424,7 @@
     advance(g); }
   function advance(g) { if (G() !== g || g.phase !== 'play') return; g.picked = null; g.held = false; g.typed = '';
     g.i++; if (g.mode !== 'clock' && g.i >= g.n) { finish(g); return; }
+    if (g.mode === 'build') buildItem(g);
     /* the clock's list runs on ahead of the child (the bank again, comebacks left out), so a comeback spliced in
        three questions on always lands where it was meant to, however long the minute runs */
     if (g.mode === 'clock' && g.i + 6 >= g.qs.length) g.qs = g.qs.concat(g.qs.filter((x) => !x.again).slice(0, 60));
@@ -430,7 +444,8 @@
     const w = q.word; const ok = typed === nkey(w.w); q.typed = typed; q.ok = ok; q.stage = 'done';
     g.asked++; if (ok) { g.right++; g.spelled = (g.spelled || 0) + 1; } g.log.push({ th: 'origins', ok });
     try { if (W.logGameWord) logGameWord(nkey(w.w)); if (W.logBand) logBand(w, ok); } catch (e) {}
-    try { if (ok) { if (W.markMastered) markMastered(nkey(w.w)); if (W.clearMiss) clearMiss(w.w); sfx('correct'); } else { if (W.addMiss) addMiss(w); sfx('wrong'); } } catch (e) {}
+    try { if (ok) { if (W.markMastered) markMastered(nkey(w.w)); if (W.clearMiss) clearMiss(w.w); } else { if (W.addMiss) addMiss(w); } } catch (e) {}
+    ding(g, ok);
     if (ok) settle(g); else g.held = true;
     render(); if (ok) after(g, 1800, () => advance(g)); }
   function focusType() { setTimeout(() => { try { const el = document.querySelector('[data-fkey="qzTyped"]'); if (el) el.focus(); } catch (e) {} }, 40); }
@@ -458,7 +473,10 @@
     try { if (LV() && LV().after && g.asked > 0) g.lvl = LV().after(lkey(h, m), Math.round(pct * 100)); } catch (e) {}
     g.coins = (W.earnedSoFar ? earnedSoFar() : g.e0 + g.paid) - g.e0;
     try { logActivity(h === 'lore' ? 'lore' : 'hive', hubName(h) + ' · ' + modeOf(h, m).title, { done: g.asked, right: g.right, coins: g.coins }, []); } catch (e) {}
-    try { if (score >= Math.max(1, of * 0.8)) { sfx('win'); burstConfetti(90); } else sfx('level'); } catch (e) {}
+    g.doneAt = Date.now();
+    const good = score >= Math.max(1, of * 0.8);
+    if (W.SGUI && SGUI.fanfare) SGUI.fanfare(GAME(g), good); else { try { sfx(good ? 'win' : 'level'); } catch (e) {} }
+    try { if (good) burstConfetti(90); } catch (e) {}
     try { save(); } catch (e) {}
     render(); }
   function leave() { const g = G(); stopClock(g); stopAud(); if (g && g.mode) { open(g.hub, null); return; } try { app.openGames(); } catch (e) { set({ nav: 'games' }); } }
@@ -480,6 +498,106 @@
     try { if (q.kind === 'origin') { if (q.stage !== 'done') say(q.word.w); return; }
       if (q.clip) { stopAud(); _aud = new Audio('voice/' + q.clip); _aud.play().catch(() => { try { say(q.say || q.prompt); } catch (e) {} }); return; }
       if (q.say) say(q.say); } catch (e) {} }
+
+  /* ------------------------------------------------------------------ BUILD A WORD (road to 4.5, P3.16)
+     A drag-to-build item over Word Forge's own cited morpheme table (forge-data.js, GENERATED — never edited here) and its
+     rules (forge-core.js: the rack, the grade and the reason a part is wrong — one rule for both games). Hear the word,
+     read what it means (masked), and put its parts in order: DRAG a part onto a slot, or TAP a part to drop it in the next
+     empty slot (tap a filled slot to take it back), or press 1–9, then Enter (Backspace takes the last part back). The word
+     is never on screen until the item is answered: the parts are the options, the slots say only front / root / end. One
+     try an item; a miss HOLDS on the shared miss card (the word letter by letter against what was built, forge-core's
+     reason, the parts). Easy is the exact parts (practice: it never pays, as Word Forge's Easy); every other level is the
+     Medium rack with look-alike parts (a random placer lands a word under 5%, WF1), paid by forge-core's roundPay at the
+     round's end — Word Forge's Medium rule, nothing new. Picking parts is not typing: no mastery is written. Shown only
+     where Word Forge is: its table signed off, or tester mode. Guard: tests/lore-build.cjs. */
+  const BUILD_N = 8;
+  const FC = () => W.SB_FORGE_CORE || null;
+  const FROWS = () => ((W.SB_FORGE && W.SB_FORGE.rows) || []).filter((r) => r && r.w && r.parts && r.parts.length >= 2 && r.d);
+  function buildOpen() { try { return !!((W.SB_FORGE && W.SB_FORGE.signedOff) || (typeof testerOn === 'function' && testerOn())); } catch (e) { return false; } }
+  const KIND_NAME = { pre: 'front', root: 'root', suf: 'end' };
+  let _bDrag = null, _bDropAt = 0;
+  function buildRack(g) { try { return LV() && LV().resolve ? LV().resolve(lkey(g.hub, g.mode)) : 'medium'; } catch (e) { return 'medium'; } }
+  /* the round: the word door first (purpose 'forge', the forge's own table), then the least-seen rows by a seed of the
+     day and the child — never Math.random; the forge's own record of rows seen is shared, so the two games take turns */
+  function buildSetup(g) { const C = FC(); g.rack = buildRack(g) === 'easy' ? 'easy' : 'medium';
+    /* Word Forge's own Medium rows (forge.js rowsFor): three parts or a look-alike, so the rack carries decoys */
+    let rows = FROWS(); if (g.rack === 'medium') { const r3 = rows.filter((r) => r.parts.length >= 3 || Object.keys(r.confusable || {}).length); if (r3.length >= BUILD_N) rows = r3; }
+    if (!C || !rows.length) { g.phase = 'empty'; return; }
+    const by = {}; rows.forEach((r) => { by[r.w] = r; }); const out = [];
+    try { if (typeof W.nextWords === 'function') (W.nextWords(active(), BUILD_N, { purpose: 'forge' }) || []).forEach((x) => { const r = x && by[x.w]; if (r && out.indexOf(r) < 0) out.push(r); }); } catch (e) {}
+    const c = active() || {}; const seen = (c.forge && c.forge.seen) || {}; const R = rec(g.hub); R.bn = (R.bn | 0) + 1;
+    const seed = C.hash((c.name || '') + '|' + (W.mastDay ? mastDay() : 0) + '|' + R.bn);
+    rows.filter((r) => out.indexOf(r) < 0).map((r) => ({ r, n: seen[r.w] || 0, h: C.hash(r.w + '|' + seed) })).sort((a, b) => a.n - b.n || a.h - b.h)
+      .forEach((x) => { if (out.length < BUILD_N) out.push(x.r); });
+    g.rows = out.slice(0, BUILD_N); g.n = g.rows.length; g.seed = seed;
+    g.phase = g.n >= 5 ? 'play' : 'empty'; if (g.phase === 'play') buildItem(g); }
+  function buildItem(g) { const C = FC(), r = g.rows[g.i]; if (!C || !r) { g.it = null; return; }
+    g.it = { r, at: Date.now(), slots: r.parts.map(() => null), rack: C.rack(r, g.rack, FROWS(), g.seed).map((t, k) => Object.assign({ id: k, used: false }, t)), done: false, ok: null };
+    g.note = ''; try { const f = (active().forge = active().forge || {}); f.seen = f.seen || {}; f.seen[r.w] = (f.seen[r.w] || 0) + 1; } catch (e) {} }
+  const bLive = (g) => { const it = g && g.it; return !!(g && g.mode === 'build' && g.phase === 'play' && it && !it.done && !g.held); };
+  function bPlace(id, slot) { const g = G(); if (!bLive(g)) return; const it = g.it;
+    const t = it.rack.find((x) => x.id === +id); if (!t || t.used) return;
+    if (slot == null || slot === '') slot = it.slots.indexOf(null); slot = +slot; if (!(slot >= 0 && slot < it.slots.length)) return;
+    const was = it.slots[slot]; if (was) { const wt = it.rack.find((x) => x.id === was.id); if (wt) wt.used = false; }
+    it.slots[slot] = { id: t.id, s: t.s, m: t.m, k: t.k }; t.used = true; g.note = ''; try { sfx('tick'); } catch (e) {} render(); }
+  function bTake(slot) { const g = G(); if (!bLive(g)) return; const it = g.it, s = it.slots[+slot]; if (!s) return;
+    const t = it.rack.find((x) => x.id === s.id); if (t) t.used = false; it.slots[+slot] = null; render(); }
+  function bBack() { const g = G(); if (!bLive(g)) return; const it = g.it; for (let k = it.slots.length - 1; k >= 0; k--) if (it.slots[k]) { bTake(k); return; } }
+  function bClear() { const g = G(); if (!bLive(g)) return; g.it.slots.forEach((s, k) => { if (s) { const t = g.it.rack.find((x) => x.id === s.id); if (t) t.used = false; g.it.slots[k] = null; } }); render(); }
+  function bCheck() { const g = G(); if (!bLive(g)) return; const it = g.it, r = it.r, C = FC();
+    if (it.slots.indexOf(null) >= 0) { g.note = 'Fill every slot first — this word has ' + r.parts.length + ' parts.'; render(); return; }
+    const res = C.grade(r, it.slots.map((x) => x && x.s)); it.done = true; it.ok = res.ok;
+    it.built = C.join(it.slots.map((x) => x.s), r.kinds).word; it.why = (res.wrong.map((x) => x.reason).filter(Boolean)[0] || '').replace(/\*/g, '');
+    g.asked++; if (res.ok) g.right++; g.log.push({ th: 'build', ok: res.ok, w: r.w });
+    ding(g, res.ok);
+    if (res.ok) { render(); after(g, 1700, () => advance(g)); return; }
+    g.held = true; render(); }
+  /* the keys: 1–9 a part (the number on its tile), Backspace the last part back, Enter checks (or moves on) */
+  function bKey(e, g) { const it = g.it; if (!it) return false;
+    if (/^[1-9]$/.test(e.key)) { const t = it.rack[+e.key - 1]; if (t && !it.done && !g.held) { e.preventDefault(); bPlace(t.id); } return true; }
+    if (e.key === 'Backspace' || e.key === 'Delete') { if (!it.done) { e.preventDefault(); bBack(); } return true; }
+    if (e.key === 'Enter') { if (!it.done && !g.held) { e.preventDefault(); bCheck(); return true; } return false; }
+    return false; }
+  /* drag a part onto a slot (mouse, pen or finger); a press that does not move is a tap and places it in the next slot */
+  function bDown(e) { const t = e.target && e.target.closest && e.target.closest('.qzb-tile'); if (!t || t.disabled || !bLive(G())) return;
+    _bDrag = { id: +t.getAttribute('data-tile'), x: e.clientX, y: e.clientY, el: null, src: t, pid: e.pointerId }; }
+  function bMove(e) { const d = _bDrag; if (!d || (d.pid != null && e.pointerId !== d.pid)) return;
+    if (!d.el && Math.abs(e.clientX - d.x) + Math.abs(e.clientY - d.y) < 8) return;
+    if (!d.el) { d.el = d.src.cloneNode(true); d.el.classList.add('qzb-ghost'); d.el.removeAttribute('data-act'); document.body.appendChild(d.el); d.src.classList.add('lift'); }
+    d.el.style.left = e.clientX + 'px'; d.el.style.top = e.clientY + 'px'; e.preventDefault();
+    document.querySelectorAll('.qzb-slot.over').forEach((x) => x.classList.remove('over'));
+    const s = slotAt(e.clientX, e.clientY); if (s) s.classList.add('over'); }
+  function slotAt(x, y) { const els = document.elementsFromPoint ? document.elementsFromPoint(x, y) : [document.elementFromPoint(x, y)];
+    for (const el of els) { const s = el && el.closest && el.closest('.qzb-slot'); if (s) return s; } return null; }
+  function bUp(e) { const d = _bDrag; if (!d || (d.pid != null && e.pointerId !== d.pid)) return; _bDrag = null;
+    if (!d.el) return;   // no movement: a tap — the click places it
+    d.el.remove(); try { d.src.classList.remove('lift'); } catch (er) {}
+    const s = slotAt(e.clientX, e.clientY); _bDropAt = 0;
+    if (s) bPlace(d.id, +s.getAttribute('data-slot')); else render();
+    _bDropAt = Date.now(); }   // the click that follows a drop is not a tap
+  if (!W._qzbDrag) { W._qzbDrag = 1; document.addEventListener('pointerdown', bDown, true); document.addEventListener('pointermove', bMove, { capture: true, passive: false });
+    document.addEventListener('pointerup', bUp, true);
+    document.addEventListener('pointercancel', () => { if (_bDrag && _bDrag.el) { _bDrag.el.remove(); try { _bDrag.src.classList.remove('lift'); } catch (e) {} } _bDrag = null; }, true); }
+  function buildCard(g) { const it = g.it, C = FC(); if (!it || !C) return ''; const r = it.r, n = r.parts.length;
+    const flip = fresh(it.at, 400) ? ' sg-fx-in' : '';
+    const slots = it.slots.map((x, k) => { const res = it.done ? (x && x.s === r.parts[k] ? ' ok' : ' no') : '';
+      return `<button class="qzb-slot${x ? ' full ' + x.k : ''}${res}" data-act="qzbSlot" data-arg="${k}" data-slot="${k}"${it.done ? ' disabled' : ''} aria-label="${escA('Slot ' + (k + 1) + ' of ' + n + ', the ' + KIND_NAME[r.kinds[k]] + (x ? ': ' + x.s + '. Tap to take it back' : ', empty'))}">` +
+        (x ? `<b>${esc(x.s)}</b><i>${esc(x.m)}</i>` : `<span class="qzb-sk">${KIND_NAME[r.kinds[k]]}</span>`) + '</button>'; }).join('<span class="qzb-plus" aria-hidden="true">+</span>');
+    const live = it.done ? (it.ok ? 'Right. ' + C.combine(r) + '.' : '') : 'Word ' + (g.i + 1) + ' of ' + g.n + '. Listen, then build the word from its parts.';
+    const got = it.done && it.ok ? `<div class="qz-ok qzb-got" role="status">${ic('check', 16)} <b>${esc(r.w)}</b> <span class="qz-okf">${esc(C.mean ? C.mean(r) : r.partMeanings.join(' + '))}</span></div>` : '';
+    return `<div class="qz-card sg-panel qzb-card${flip}" data-live-prompt="${escA(live)}">
+      <div class="qz-tag">Build a word</div>
+      <button class="qz-hear" data-act="qzHear" aria-label="Hear the word">${ic('volume', 17)} <span class="qz-hlab">Hear it</span></button>
+      <div class="qz-sub qzb-mean"><b>It means:</b> ${esc(clip(maskOf(r.d, r.w), 140))}</div>
+      <div class="qzb-slots${it.done && it.ok ? ' sg-fx-pop' : ''}" role="group" aria-label="The word's parts, in order">${slots}</div>
+      ${got}${g.note ? `<div class="qzb-note" role="status">${esc(g.note)}</div>` : ''}</div>`; }
+  function buildCtl(g) { const it = g.it; if (!it) return '';
+    if (it.done) return it.ok ? `<button class="qz-go" data-act="qzGo">Next <span class="qz-kb" aria-hidden="true">Enter</span></button>`
+      : (W.SGUI && SGUI.miss) ? '' : `<div class="qz-miss"><div class="qz-mans">${ic('close', 16)} Not this time. The word: <b>${esc(it.r.w)}</b> — ${esc(FC().order(it.r))}</div>${it.why ? `<div class="qz-fact">${esc(it.why)}</div>` : ''}<button class="qz-go" data-act="qzGo">Continue <span class="qz-kb" aria-hidden="true">Enter</span></button></div>`;
+    const tiles = it.rack.map((t, k) => `<button class="qzb-tile ${t.k}${t.used ? ' used' : ''}" data-act="qzbTile" data-arg="${t.id}" data-tile="${t.id}"${t.used ? ' disabled aria-hidden="true"' : ''} aria-label="${escA(t.s + ', ' + t.m + ' (key ' + (k + 1) + ')')}"><span class="qzb-k" aria-hidden="true">${k + 1}</span><b>${esc(t.s)}</b><i>${esc(t.m)}</i></button>`).join('');
+    const full = it.slots.indexOf(null) < 0;
+    return `<div class="qzb-ctl"><div class="qzb-rack" role="group" aria-label="Parts: drag one to a slot, or tap it">${tiles}</div>
+      <div class="qzb-acts"><button class="qz-ll" data-act="qzbClear"${it.slots.some(Boolean) ? '' : ' disabled'}>${ic('retry', 15)} Clear</button><button class="qz-go qzb-check" data-act="qzbCheck"${full ? '' : ' disabled'}>Check <span class="qz-kb" aria-hidden="true">Enter</span></button></div></div>`; }
 
   /* ------------------------------------------------------------------ views */
   const ic = (n, s) => { try { return iconSVG(n, s || 18, 2.3); } catch (e) { return ''; } };
@@ -509,7 +627,7 @@
   const title = (t, short, chipHtml) => `<h1 class="sg-st-title qz-ttl"><span class="qz-tl">${esc(t)}</span>${short ? `<span class="qz-ts">${esc(short)}</span>` : ''}${chipHtml || ''}</h1>`;
 
   function hubView(h) { const r = rec(h);
-    const modes = MODES[h].map((m) => ({ id: m.id, title: m.title, promise: m.promise(), art: art(h, m, 64), best: bestTxt(h, m.id), isNew: !r.seen[m.id], last: r.last === m.id }));
+    const modes = MODES[h].filter((m) => !m.gate || m.gate()).map((m) => ({ id: m.id, title: m.title, promise: m.promise(), art: art(h, m, 64), best: bestTxt(h, m.id), isNew: !r.seen[m.id], last: r.last === m.id }));
     const hud = { left: stat('good days this week', goodDays(), '', 'sparkle'), right: stat('coins today', coinsToday(), '', 'star') };
     try { (W.SB_HUB_OPEN = W.SB_HUB_OPEN || {})[h] = h === 'lore' ? (id) => app.openLore(id) : (id) => app.openHive(id); } catch (e) {}
     /* the shared hub screen (§4.0): its own HUD — good days on the left, coins today on the right */
@@ -537,7 +655,8 @@
       const picked = q.kind === 'origin' ? q.picked : g.picked;
       const st = done ? (i === q.ans ? ' right' : i === picked ? ' wrong' : ' dim') : '';
       const mark = done && i === q.ans ? ic('check', 16) : done && i === picked ? ic('close', 16) : '';
-      return hid ? `<span class="qz-opt gone" aria-hidden="true"></span>` : `<button class="qz-opt${st}${String(o).length > 60 ? ' long' : ''}" data-act="qzPick" data-arg="${i}"${done ? ' disabled' : ''}><span class="qz-k" aria-hidden="true">${i + 1}</span><span class="qz-ot">${esc(o)}</span>${mark ? `<span class="qz-mk">${mark}</span>` : ''}</button>`; }).join('')}</div>`; }
+      const fx = done && i === picked && fresh(g.fx) ? (i === q.ans ? ' sg-fx-pop' : ' sg-fx-shake') : '';
+      return hid ? `<span class="qz-opt gone" aria-hidden="true"></span>` : `<button class="qz-opt${st}${fx}${String(o).length > 60 ? ' long' : ''}" data-act="qzPick" data-arg="${i}"${done ? ' disabled' : ''}><span class="qz-k" aria-hidden="true">${i + 1}</span><span class="qz-ot">${esc(o)}</span>${mark ? `<span class="qz-mk">${mark}</span>` : ''}</button>`; }).join('')}</div>`; }
   /* the miss card: the question, the right answer, and why — SGUI.missQ when the kit is in */
   function missHTML(g, q) {
     if (W.SGUI && SGUI.missQ) return optsHTML(g, q);   // the kit's card covers the window; the marked answers stay under it
@@ -548,9 +667,12 @@
       <button class="qz-go" data-act="qzGo">${g.mode === 'ladder' ? 'See my climb' : 'Continue'} <span class="qz-kb" aria-hidden="true">Enter</span></button></div>`; }
   function rightHTML(q) { return `<div class="qz-ok" role="status"><span class="qz-okh">${ic('check', 16)} Right!</span>${q.fact ? ` <span class="qz-okf">${esc(clip(q.fact, 150))}</span>` : ''}</div>`; }
   const isHeld = (g, q) => g.held && g.picked != null && g.picked !== q.ans;
-  function qCard(g, q, extra) { const held = g.held && g.picked != null && g.picked !== q.ans; const right = g.picked != null && g.picked === q.ans;
+  function qCard(g, q, extra) { const qk = (g.mode === 'ladder' ? 'r' + g.rung : g.mode === 'squares' ? 's' + g.sel : 'q' + g.i) + '|' + (q.prompt || '');
+    if (g._qk !== qk) { g._qk = qk; g.qAt = Date.now(); }
+    const flip = fresh(g.qAt, 400) ? ' sg-fx-in' : '';
+    const held = g.held && g.picked != null && g.picked !== q.ans; const right = g.picked != null && g.picked === q.ans;
     const num = g.mode === 'ladder' ? 'Rung ' + (g.rung + 1) + ' of ' + RUNGS + '. ' : g.mode === 'clock' || g.mode === 'squares' ? '' : 'Question ' + (g.i + 1) + ' of ' + g.n + '. ';
-    return `<div class="qz-card sg-panel" data-live-prompt="${escA(num + (q.big ? q.prompt + '. ' + (q.sub || '') : (q.sub ? q.sub + ' ' : '') + q.prompt))}">
+    return `<div class="qz-card sg-panel${flip}" data-live-prompt="${escA(num + (q.big ? q.prompt + '. ' + (q.sub || '') : (q.sub ? q.sub + ' ' : '') + q.prompt))}">
       <div class="qz-tag">${esc(q.label || '')}</div>${q.again ? `<div class="qz-again">${ic('retry', 13)} Back again — practice, it does not score</div>` : ''}${visual(q)}
       ${q.aud || q.say ? `<button class="qz-hear" data-act="qzHear" aria-label="Hear it">${ic('volume', 17)} <span class="qz-hlab">Hear it</span></button>` : ''}
       ${q.big ? `<div class="qz-big">${esc(q.prompt)}</div><div class="qz-sub">${esc(q.sub || '')}</div>` : `${q.sub ? `<div class="qz-sub">${esc(q.sub)}</div>` : ''}<div class="qz-q">${esc(q.prompt)}</div>`}
@@ -564,6 +686,7 @@
       const line = g.lineFlash ? `<div class="qz-line" role="status">${ic('sparkle', 16)} Line ${g.lineFlash}! ${g.lineFlash === 1 ? 'Your first line.' : 'Another line.'}</div>` : '';
       return stage(h, { hud, play: `<div class="qz-board">${cells}</div>${line}`, controls: `<div class="qz-hint">Pick a square — keys 1–9 or tap</div>` }); }
     const q = curQ(g); if (!q) return stage(h, { hud, play: W.hiveLoader ? hiveLoader('…') : '' });
+    if (m === 'build') return stage(h, { hud, play: buildCard(g), controls: buildCtl(g) });
     if (q.kind === 'origin') return stage(h, { hud, play: originCard(g, q), controls: q.stage === 'pick' ? optsHTML(g, q) : q.stage === 'type' && kbd() ? '<div id="qz-keys" class="qz-keys"></div>' : '' });
     let extra = '';
     if (m === 'ladder') { const rv = g.rival && g.picked == null ? `<div class="qz-rival">${g.rival.id && W.SB_AVATAR ? `<span class="qz-rav">${SB_AVATAR(g.rival.id, 34)}</span>` : ''}<span><b>${esc(g.rival.name)}:</b> ${g.rival.sure ? 'I’m fairly sure it’s' : 'I think it might be'} <b>${g.rival.pick + 1}</b>.</span></div>` : '';
@@ -613,14 +736,14 @@
     const sub = g.mode === 'ladder' ? (g.rung >= RUNGS ? 'The whole ladder — every rung.' : g.missed ? 'The climb ends on a miss — the answer is above it now.' : 'You stopped climbing.')
       : g.mode === 'clock' ? (g.asked ? g.asked + ' new questions in 60 seconds' + (back ? ' · ' + back + ' came back for another look' : '') : 'No answers this time') : g.mode === 'squares' ? g.lines + (g.lines === 1 ? ' line' : ' lines') + ' scored' : 'right first try';
     const pay = g.coins > 0 ? `<div class="qz-pay">${ic('star', 15)} +${g.coins} coin${g.coins === 1 ? '' : 's'} into your wallet</div>`
-      : `<div class="qz-nopay">${g.hub === 'hive' && !hivePays() ? 'Just for fun — no coins in this hub.' : g.mode === 'ladder' ? 'Climb four rungs and every rung pays a coin.' : g.mode === 'clock' ? 'Six right, at least six in ten, and every right answer pays a coin.' : 'Six right and every right answer pays a coin.'}</div>`;
+      : `<div class="qz-nopay">${g.hub === 'hive' && !hivePays() ? 'Just for fun — no coins in this hub.' : g.mode === 'build' ? (g.rack === 'easy' ? 'Easy is practice — coins start at Medium.' : 'Build half the words and every word you built pays a coin.') : g.mode === 'ladder' ? 'Climb four rungs and every rung pays a coin.' : g.mode === 'clock' ? 'Six right, at least six in ten, and every right answer pays a coin.' : 'Six right and every right answer pays a coin.'}</div>`;
     const L = g.lvl || {}; const names = LVL_NAME;
     const up = L.offerUp ? (LV() && LV().upButton ? LV().upButton(lkey(g.hub, g.mode), L) : `<button class="qz-up" data-act="qzUp">Ready for ${esc(names[L.offerUp] || names[nextUp(L.level)] || 'the next level')}?</button>`) : '';
     const lvl = L.dropped ? `<div class="qz-lvl">${esc(L.line || ('Let’s warm up on ' + (names[L.level] || L.level) + '. You can move back up any time.'))}</div>`
       : up ? `<div class="qz-lvl">${up}</div>` : '';
     const best = bestTxt(g.hub, g.mode);
     return stage(g.hub, { hud: { left: backIn(g.hub) + stat('right', g.mode === 'ladder' ? g.rung : g.right, '', 'check'), center: title(m.title, SHORT[m.title], chip(g.hub, g.mode)), right: stat('best', esc(best.replace(/^Best: /, '') || '–'), '', 'trophy') + pad },
-      play: `<div class="qz-card sg-panel qz-done" data-live-prompt="${escA(big + '. ' + sub)}"><div class="qz-dh">${g.newBest ? 'A new best' : 'Round complete'}</div><div class="qz-db">${esc(big)}</div><div class="qz-sub">${esc(sub)}</div>${pay}${lvl}</div>`,
+      play: `<div class="qz-card sg-panel qz-done${fresh(g.doneAt, 900) ? ' sg-fx-done' : ''}" data-live-prompt="${escA(big + '. ' + sub)}"><div class="qz-dh">${g.newBest ? 'A new best' : 'Round complete'}</div><div class="qz-db">${esc(big)}</div><div class="qz-sub">${esc(sub)}</div>${pay}${lvl}</div>`,
       controls: `<div class="qz-btns"><button class="qz-go alt" data-act="qzBack">${ic('grid', 15)} All modes</button><button class="qz-go" data-act="qzGo">Play again <span class="qz-kb" aria-hidden="true">Enter</span></button></div>` }); }
   const ORDER = ['easy', 'medium', 'hard', 'champ'];
   function nextUp(l) { const i = ORDER.indexOf(l); return ORDER[Math.min(ORDER.length - 1, i + 1)] || 'medium'; }
@@ -657,6 +780,11 @@
         h = SGUI.missQ(document.body, { q: q.prompt, a: q.opts[q.ans], f: q.fact }, q.opts[g.picked],
           { head: g.mode === 'ladder' ? 'The climb ends here. Here is the answer.' : undefined, onContinue: () => { if (G() === g && g.missH === h) { g.missH = null; cont(); } } });
         g.missH = h; } } catch (e) {}
+    try { if (W.SGUI && SGUI.miss && !g.missH && q.kind === 'build' && g.held && g.it && g.it.done && !g.it.ok) { let h = null; const r = g.it.r;
+        h = SGUI.miss(document.body, { w: r.w }, g.it.built, { head: 'Not this time. Here is the word.',
+          note: (g.it.why ? g.it.why + ' ' : '') + 'Its parts: ' + FC().order(r) + ' (' + r.partMeanings.join(' + ') + ').',
+          onContinue: () => { if (G() === g && g.missH === h) { g.missH = null; cont(); } } });
+        g.missH = h; } } catch (e) {}
     try { if (W.SGUI && SGUI.miss && !g.missH && q.kind === 'origin' && q.stage === 'done' && !q.ok && g.held) { let h = null;
         h = SGUI.miss(document.body, q.word, q.typed, { note: 'It came into English from ' + q.lang + '.' + (q.fact ? ' ' + q.fact : ''),
           onContinue: () => { if (G() === g && g.missH === h) { g.missH = null; cont(); } } });
@@ -677,6 +805,7 @@
     const g = G(); if (!g || !g.mode) return;
     const t = e.target; const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
     if (typing) return;   // the Origins box handles its own Enter
+    if (g.mode === 'build' && g.phase === 'play' && !g.held && bKey(e, g)) return;
     if (e.key === 'Enter') { if (t && t.tagName === 'BUTTON' && !t.closest('.qz-stage')) return;
       e.preventDefault(); cont(); return; }
     if (/^[1-9]$/.test(e.key) && g.phase === 'play') { const n = +e.key - 1;
@@ -778,7 +907,7 @@
 .qz-ttl{display:inline-flex;align-items:center;gap:8px}.qz-ttl .qz-ts{display:none}
 .qz-keys{width:100%}
 .qz-pad{display:none;flex:none;width:34px;height:1px}
-@media (max-width:640px){.qz-kit .sg-st-side .sg-st-stat{min-width:106px;justify-content:space-between}.qz-kit .sg-st-side .sg-st-ic{display:none}.qz-pad{display:block}.qz-ttl:has(.qz-ts) .qz-tl{display:none}.qz-ttl .qz-ts{display:inline}}
+@media (max-width:640px){.qz-kit .sg-st-side .sg-st-stat{min-width:106px;justify-content:space-between}.qz-ttl .sb-lvchip{display:none}.qz-kit .sg-st-side .sg-st-ic{display:none}.qz-pad{display:block}.qz-ttl:has(.qz-ts) .qz-tl{display:none}.qz-ttl .qz-ts{display:inline}}
 @media (max-width:560px){.qz-opt{min-height:46px;padding:8px 11px;font-size:14px}.qz-opt.long{font-size:13px}.qz-card{padding:12px 14px}.qz-hear{margin:2px 0 6px;padding:8px 14px}
   .qz-tag{display:none}.qz-long{display:none}.qz-short{display:inline}.qz-ll{padding:8px 10px;font-size:12.5px;gap:4px}.qz-lls{flex-wrap:nowrap;gap:6px}
   .qz-ot{-webkit-line-clamp:2}.qz-opts{gap:7px}.qz-sub{margin:2px 0}.qz-hear{padding:6px 12px;font-size:13px;margin:0 0 4px}.qz-tile-go{min-height:150px}.qz-hud{padding:8px 12px}.qz-big{font-size:clamp(24px,8vw,34px)}}
@@ -788,6 +917,30 @@
 .sb-stage[data-sb-stage="lore"] .sb-lvchip,.sb-stage[data-sb-stage="hive"] .sb-lvchip{background:color-mix(in srgb,var(--paper,#fff) 86%,var(--treasure,#F0B429) 14%)}
 @media (max-width:640px){.qz-hear,.qz-up,.qz-th{min-height:44px}
   .qz-card{position:relative}.qz-card>.qz-hear:not(.big){position:absolute;top:6px;right:6px;min-width:44px;justify-content:center;padding:0 10px;margin:0}.qz-hlab{display:none}}
+/* Build a Word (P3.16): slots side by side joined by +, a rack of part tiles you can drag or tap; every control 44px+ */
+.qzb-mean{max-width:640px}
+.qzb-slots{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;margin:12px 0 4px}
+.qzb-plus{font:800 20px/1 var(--display);color:var(--muted)}
+.qzb-slot{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:88px;min-height:58px;padding:6px 12px;border-radius:14px;border:2px dashed color-mix(in srgb,var(--text) 34%,transparent);background:color-mix(in srgb,var(--surface2) 70%,transparent);color:var(--text);font-family:var(--display)}
+.qzb-slot.full{border-style:solid;border-color:var(--line);background:color-mix(in srgb,var(--surface2) 94%,transparent)}
+.qzb-slot.over{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.qzb-slot.ok{border-color:#1f9d6b;background:color-mix(in srgb,#1f9d6b 16%,var(--surface2))}.qzb-slot.no{border-color:#c4453c}
+.qzb-slot b,.qzb-tile b{font-weight:800;font-size:17px;line-height:1.15}.qzb-slot i,.qzb-tile i{font-style:normal;font-size:12px;font-weight:700;color:var(--muted);line-height:1.2}
+.qzb-sk{font-size:12.5px;font-weight:800;letter-spacing:.02em;color:var(--muted);text-transform:uppercase}
+.qzb-slot.pre{box-shadow:inset 0 -3px 0 #3a7bd5}.qzb-slot.root{box-shadow:inset 0 -3px 0 #c8791b}.qzb-slot.suf{box-shadow:inset 0 -3px 0 #8a4fd0}
+.qzb-tile.pre{box-shadow:inset 0 -3px 0 #3a7bd5,0 2px 6px rgba(40,25,10,.14)}.qzb-tile.root{box-shadow:inset 0 -3px 0 #c8791b,0 2px 6px rgba(40,25,10,.14)}.qzb-tile.suf{box-shadow:inset 0 -3px 0 #8a4fd0,0 2px 6px rgba(40,25,10,.14)}
+.qzb-ctl{display:flex;flex-direction:column;align-items:center;gap:6px;width:min(760px,100%);margin:0 auto}
+.qzb-rack{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.qzb-tile{position:relative;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:80px;min-height:56px;padding:6px 12px 6px 22px;border-radius:14px;border:2px solid var(--line);background:var(--sg-grain,none),color-mix(in srgb,var(--paper,#fff) 90%,var(--treasure,#F0B429) 10%);color:var(--text);font-family:var(--display);box-shadow:0 2px 6px rgba(40,25,10,.14);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.qzb-k{position:absolute;left:7px;top:5px;font-size:11px;font-weight:800;line-height:1;color:var(--muted)}
+.qzb-check:disabled{opacity:.5;box-shadow:none}
+.qzb-tile.used{opacity:.32;cursor:default}.qzb-tile.lift{opacity:.4}
+.qzb-ghost{position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-60%) rotate(-3deg);box-shadow:0 10px 24px rgba(0,0,0,.28)}
+.qzb-acts{display:flex;gap:10px;align-items:center;justify-content:center}.qzb-acts .qz-go{margin-top:0}
+.qzb-note{margin-top:6px;font-weight:800;font-size:13.5px;color:var(--text)}
+.qzb-got{margin-top:6px}
+@media (max-width:640px){.qzb-card .qzb-mean{padding:0 46px;margin-top:4px}}
+@media (max-width:560px){.qzb-slot{min-width:72px;min-height:52px;padding:5px 8px}.qzb-tile{min-width:68px;min-height:50px;padding:5px 8px 5px 18px}.qzb-slot b,.qzb-tile b{font-size:15.5px}.qzb-rack{gap:6px}.qzb-slots{margin:6px 0 2px}}
 @media (prefers-reduced-motion:reduce){.qz-stage *{animation:none!important;transition:none!important}}`;
     document.head.appendChild(s); }
 
@@ -802,6 +955,7 @@
   try { (W.SB_HUB_OPEN = W.SB_HUB_OPEN || {}).lore = (id) => app.openLore(id); W.SB_HUB_OPEN.hive = (id) => app.openHive(id); } catch (e) {}
   try {
     Object.assign(app, {
+      qzbTile: (a) => { if (Date.now() - _bDropAt > 300) bPlace(a); }, qzbSlot: (a) => { if (Date.now() - _bDropAt > 300) bTake(a); }, qzbCheck: () => bCheck(), qzbClear: () => bClear(),   /* a tap within 0.3 s of a drop is the drop's own click */
       qzPick: (a) => pick(a), qzGo: () => cont(), qzCell: (a) => cell(a), qzLife: (a) => life(a), qzHear: () => { const g = G(); if (g) speakCur(g); },
       qzStop: () => { const g = G(); if (g && g.mode === 'ladder' && g.phase === 'play' && g.picked == null) finish(g); },
       qzBack: () => leave(), qzTh: (a) => toggleTh(a), qzBegin: () => begin(), qzUp: () => up(),
