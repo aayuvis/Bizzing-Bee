@@ -14,10 +14,13 @@ export function hubDriver(hub, mode) {
      question (taken off the game's clock before it answers), the random bot over EIGHT minutes — one minute is about
      seven guesses, so its share of a perfect minute swings ±6 points; eight average it to about ±2 — so T2b measures
      what the clock counts (first-try rights) against what the perfect bot gets in the same minute. The fixed rounds
-     keep the one round T1 and T2 were written for (T1's "6 of 10 pays" is the product's rule, read per round). */
+     play FOUR random rounds (13 Oct 2026): one round of ten put T2's two-standard-error ceiling at 52%, so a seeded
+     page whose draws P3 shifted landed lore/idioms on a 6-of-10 tail (a 2% event) and failed every run; forty answers
+     put the ceiling near 39% and say something. T1 still reads the product's rule ("6 of 10 pays") per round, summed —
+     the random bot earned 0 coins in all forty answers of every fixed mode. Never a moved ceiling, a bigger sample. */
   const clock = mode === 'clock', PACE = 3;
   return { key: hub + '/' + mode, kind: typed ? 'type' : 'choice', chance: typed || mode === 'ladder' ? undefined : 0.25, level: 'easy',
-    clock, pace: clock ? PACE : undefined, randomRounds: clock ? 8 : 1,
+    clock, pace: clock ? PACE : undefined, randomRounds: clock ? 8 : 4,
     secs: clock ? 120 : mode === 'ladder' ? 30 : 45, maxSteps: clock ? 160 : 60,
     async start(pg, { level }) {
       await pg.evaluate(([h, m, l]) => { state.screen = 'app'; try { SB_LEVEL.set(h + '/' + m, l || 'easy'); } catch (e) {} (h === 'lore' ? app.openLore : app.openHive)(m); }, [hub, mode, level]);

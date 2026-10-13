@@ -32,7 +32,8 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     const html = document.body.innerHTML;
     out.saysPractice70 = /70% right to open the next stop/.test(html);
     out.noQuizGateLine = !/The quiz is the gate/.test(html);
-    out.showsStars = /★/.test(html);
+    /* stars are DRAWN since P3.7 (starHTML: svg, role=img, "N of 5 stars"); the step cards still say ★ in words */
+    out.showsStars = /of 5 stars"|★/.test(html);
 
     // a 2-word 100% session is NOT a pass...
     SB_TRAIL_PRACTICED(first.arg, 2, 2);
@@ -60,7 +61,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     out.quizStillOffered = /data-act="trailQuiz"/.test(document.body.innerHTML);
     out.setChips = (document.querySelectorAll('[data-act=trailPractice][data-arg]') || []).length;
     out.threeRoads = /Next stop →/.test(document.body.innerHTML)
-      && /★ Gain stars/.test(document.body.innerHTML)
+      && /<svg[^>]*>[\s\S]{0,600}?<\/svg><\/span>Gain stars/.test(document.body.innerHTML)   // the drawn star, then the words
       && /Practice more words/.test(document.body.innerHTML);
     // and "Next stop →" actually goes there
     app.trailNextFrom(first.arg);
@@ -75,7 +76,7 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     app.trailUnit(second.arg);
     await new Promise(res => setTimeout(res, 200));
     // legacy 87%: practice star (quiz pass proves the words) + quiz-pass star, not the 90% ace
-    out.legacyStars = /★★/.test(document.body.innerHTML);
+    out.legacyStars = [...document.body.innerHTML.matchAll(/aria-label="(\d) of 5 stars"/g)].some(m => +m[1] >= 2);
 
     // THE BUG THAT PROMPTED ALL THIS: finishing the last word must record BY ITSELF —
     // the child who then leaves via the nav bar (never tapping Done) was never

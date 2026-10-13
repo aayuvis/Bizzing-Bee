@@ -98,12 +98,13 @@ const CAST = {
     app.trailAct('honey|junkyard'); await new Promise(r => setTimeout(r, 900));
     app.mwPoke('1');
     const el = document.querySelector('.mw-poke[data-arg="1"]');
-    const bits = [...(el ? el.querySelectorAll('.mw-burst span') : [])].map(s => s.textContent);
+    /* the burst is DRAWN since P3.7 (no emoji in a board): each bit names its glyph in data-glyph */
+    const bits = [...(el ? el.querySelectorAll('.mw-burst [data-glyph]') : [])].map(s => s.getAttribute('data-glyph'));
     return { boing: !!(el && el.classList.contains('boing')), bits };
   });
   ok(shed.boing, 'a poked thing still boings');
-  ok(shed.bits.length && shed.bits.some(t => t === '⚙️'),
-    'and the junkyard sheds GEARS, not meadow petals (' + shed.bits.join('') + ')');
+  ok(shed.bits.length && shed.bits.some(t => t === 'gear') && !shed.bits.some(t => t === 'petal' || t === 'flower'),
+    'and the junkyard sheds GEARS, not meadow petals (' + shed.bits.join(', ') + ')');
 
   // ---- the buried trove: pays once, stays found, does not move with the date ----
   const trove = await pg.evaluate(async () => {

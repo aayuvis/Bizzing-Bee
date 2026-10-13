@@ -27,10 +27,18 @@ const gone = [/PACK_WEIGHTS/, /\bpackOdds\b/, /\boddsPanel\b/, /Drop odds/i, /dr
 const left = gone.filter(rx => rx.test(app3)).map(String);
 ok(!left.length, 'no pack draw, drop odds, selling or coin-priced content left in app3.js' + (left.length ? ' — ' + left.join(', ') : ''));
 const spendCalls = [...app3.matchAll(/\bspendCoins\(([^)]*)\)/g)].map(m => m[1]).filter(a => !/^n, why$/.test(a));
-/* FIX-BEE v2: coins buy three things, each at a FIXED printed price — an avatar (its tier's price),
-   a world (240, the family WORLD_PRICE), a frame (its own price). Nothing rolled, nothing variable. */
-const allowed = [/^f\.price,'frame:'\+id$/, /^s\.price,'avatar:'\+id$/, /^WORLD_PRICE_COINS,'world:'\+n$/];
-ok(spendCalls.length === 3 && spendCalls.every(a => allowed.some(rx => rx.test(a.trim()))), 'coins buy only an avatar, a world or a frame, each at its printed price (' + spendCalls.join(' | ') + ')');
+/* FIX-BEE v2: coins buy at a FIXED printed price — an avatar (its tier's price) and a world (240, the family
+   WORLD_PRICE) by their own calls; since P3 (13 Oct 2026, owner: the coin sinks are frames, name plates,
+   backgrounds and kart/trail skins) every other look is a SHOP_ITEMS row bought through ONE path, shopBuy, which
+   spends exactly the row's price (`spend(it.price,key)`) and is handed spendCoins by its one caller.
+   tests/shop-economy.cjs holds every row to a cosmetic kind and a fixed price. Nothing rolled, nothing variable. */
+const allowed = [/^s\.price,'avatar:'\+id$/, /^WORLD_PRICE_COINS,'world:'\+n$/];
+const shopSpend = (app3.match(/function shopBuy\([^)]*\)\{[\s\S]*?\n\}/) || [''])[0];
+const shopCalls = [...app3.matchAll(/\bshopBuy\(([^)]*)\)/g)].map(m => m[1]).filter(a => !/^c,key,spend$/.test(a.replace(/\s/g, '')));
+ok(spendCalls.length === 2 && spendCalls.every(a => allowed.some(rx => rx.test(a.trim()))) &&
+   /spend\(it\.price,key\)/.test(shopSpend) && (shopSpend.match(/spend\(/g) || []).length === 1 &&
+   shopCalls.length >= 1 && shopCalls.every(a => /,\s*spendCoins\s*$/.test(a)),
+   'coins buy only an avatar, a world or a Shop look, each at its printed price (' + spendCalls.join(' | ') + ' | shopBuy → spend(it.price,key) ×' + (shopSpend.match(/spend\(/g) || []).length + ', callers: ' + shopCalls.join(' ; ') + ')');
 ok(/const WORLD_PRICE_COINS=240\b/.test(app3), 'a world costs the family price, 240 Bizzing coins');
 
 const seed = (tier) => ({ theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0, pin: '1234',
