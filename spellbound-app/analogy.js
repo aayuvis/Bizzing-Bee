@@ -185,22 +185,23 @@
      a first try (pick() neither counts nor pays it) */
   function prep(g) { const raw = String(g.ids[g.i % g.ids.length]), again = (raw.match(/^~*/) || [''])[0].length;
     g.q = question(raw.slice(again), g.opts, g.seed + '|' + g.i + (again ? '|again' : '')); if (g.q && again) g.q.again = again; g.picked = null; g.bpick = null;
-    if (g.phase === 'bridge') g.bq = bridgeQ(g.q, g.seed + '|' + g.i); }
+    if (g.phase === 'bridge') g.bq = bridgeQ(g.q, g.seed + '|' + g.i);
+    g.qAt = Date.now(); g.fx = null; }
   /* pay only above chance: nothing until a round holds 6 right, then every right (the clock: 60% and 15 asked) */
   /* the clock's 60% is of every answer given, comebacks included (as Word Lore's): a guesser cannot reach it on a few lucky first tries */
   function owed(g) { if (g.kind === 'clock') { const tries = g.asked + (g.log || []).filter((x) => x && x.again).length, acc = tries ? g.right / tries : 0; if (acc < 0.6) return 0; return (g.phase === 'done' ? g.right >= 6 : g.asked >= 15) ? g.right : 0; }
     return g.right >= 6 ? g.right : 0; }
   function settle(g) { let k = owed(g) - g.paid; while (k-- > 0) { g.paid++; try { payG(g); } catch (e) {} } }
-  function pickBridge(i) { const g = (S().run); if (!g || g.phase !== 'bridge' || g.bpick != null) return; g.bpick = +i;
-    try { sfx(g.bpick === g.bq.ans ? 'correct' : 'wrong'); } catch (e) {}
+  function pickBridge(i) { const g = (S().run); if (!g || g.phase !== 'bridge' || g.bpick != null) return; g.bpick = +i; g.fx = { t: Date.now() };
+    ding('analogy', g.bpick === g.bq.ans);
     render(); if (g.bpick === g.bq.ans) after(g, 900, () => { g.phase = 'pick'; render(); }); }
   function pick(i) { const s = S(); const g = s.run; if (!g || g.picked != null || (g.phase !== 'pick')) return; i = +i; const q = g.q; if (!(i >= 0 && i < q.opts.length)) return;
     if (g.kind === 'clock' && g.held) return;
     /* THE CLOCK COUNTS FIRST-TRY RIGHTS ONLY (road to 4.5, P1.20; rubric W2): a comeback is neither asked nor right,
        and never pays; a miss costs 2 s and brings the item back three questions on, until it is right (three times at most) */
     const ok = i === q.ans; g.picked = i; if (!q.again) { g.asked++; if (ok) g.right++; }
-    g.log.push({ c: q.c, d: q.d, rel: q.rel, ok, w: q.opts[i], again: q.again ? 1 : 0 }); rec().seen[q.id] = Date.now();
-    try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+    g.log.push({ c: q.c, d: q.d, rel: q.rel, ok, w: q.opts[i], again: q.again ? 1 : 0 }); rec().seen[q.id] = Date.now(); g.fx = { t: Date.now() };
+    ding('analogy', ok);
     if (ok && !q.again) settle(g);
     if (g.kind === 'clock') { if (!ok) { clockAdd(-2000); g.held = true; if ((q.again | 0) < 3 && g.i + 4 < g.ids.length) g.ids.splice(g.i + 4, 0, '~'.repeat((q.again | 0) + 1) + q.id); } else after(g, 380, next); render(); return; }
     if (ok) after(g, 1500, next); render(); }
@@ -230,7 +231,8 @@
     if (g.kind === 'clock') { try { if (W.SB_BESTS) g.newBest = SB_BESTS.put('anl/clock', g.right, null) && g.right > 0; } catch (e) {} }
     g.coins = (W.earnedSoFar ? earnedSoFar() : g.e0 + g.paid) - g.e0;
     try { if (W.logActivity) logActivity('analogy', 'Analogies', { done: g.asked, right: g.right, coins: g.coins }, []); } catch (e) {}
-    try { if (g.pass || g.newBest) { sfx('win'); burstConfetti(g.masteredNow ? 120 : 70); } else sfx('level'); } catch (e) {}
+    g.doneAt = Date.now(); fanfare('analogy', g.pass || g.newBest);
+    try { if (g.pass || g.newBest) burstConfetti(g.masteredNow ? 120 : 70); } catch (e) {}
     store(); render(); }
 
   /* ------------------------------------------------------------------ the clock: real time, held while a miss is up */
@@ -354,7 +356,7 @@
   function head(title, sub, back, backLabel, icon) {
     try { return pageHead(title, '', sub || '', W.coinChip ? coinChip() : '', back || 'goHome', backLabel || 'Home', back === 'anl' ? 'map' : null, icon || ''); }
     catch (e) { return `<h1>${esc(title)}</h1>`; } }
-  function mapView() { const s = S(); const R = regions(); const reg = regionById(s.reg) || R[0]; const ri = R.indexOf(reg); const c = kid();
+  function mapView() { kickKit(); const s = S(); const R = regions(); const reg = regionById(s.reg) || R[0]; const ri = R.indexOf(reg); const c = kid();
     const tabs = R.map((r, i) => { const on = r === reg, open = regionOpen(i);
       const st = mastered(r.id) ? 'Mastered' : walked(r.id) ? 'Walked' : open ? 'Open' : 'After ' + (R[i - 1] || {}).name;
       return `<button class="anl-rtab${on ? ' on' : ''}${open ? '' : ' locked'}" data-act="anl" data-arg="region:${escA(r.id)}" aria-pressed="${on}" ${open ? '' : 'aria-disabled="true"'}>
@@ -486,48 +488,105 @@
     return `<div class="anl-page">${head('Meet the words', esc(L.title + ' · ' + hit.r.name), 'anl', hit.r.name, lic(L.id, 20))}
       <div class="anl-card"><p class="anl-note">The words you will link in this stop. Read each one and hear it; knowing a word is half of every analogy.</p><ul class="anl-words">${rows}</ul>
       <div class="anl-btns"><button class="anl-btn main" data-act="anl" data-arg="practice">${ic('pencil', 16)} Start practice</button></div></div></div>`; }
-  function clockIntro() { let best = ''; try { const b = W.SB_BESTS && SB_BESTS.get('anl/clock'); if (b) best = 'Your best: ' + b.right + ' right.'; } catch (e) {}
-    return `<div class="anl-page">${head('Against the Clock', 'Analogies', 'anl', 'Analogy Atlas', ic('timer', 20))}
-      <div class="anl-card anl-center"><p class="anl-big">Sixty seconds. Name the link, pick the word. A wrong pick costs two seconds, and the clock waits while you read why.</p>
-      <p class="anl-note">Questions come from the regions you have reached.${best ? ' ' + esc(best) : ''}</p>
-      <div class="anl-btns"><button class="anl-btn main" data-act="anl" data-arg="clockgo">${ic('timer', 16)} Start the clock</button></div></div></div>`; }
+  /* ------------------------------------------------------------------ THE GAMES STAND ON THE ENGINE KIT'S STAGE
+     (road to 4.5, P3.1/P3.2 — the audit: "the Analogies games (bee, clock, practice) are flat white cards on the
+     honeycomb"). Practice, the check, the level check, Against the Clock and the Mock Analogy Bee are drawn on
+     SGUI.stage (saga2.js): a painted plate by name through SB_PLATE (the Library's 'lore' for the Atlas's rounds and the
+     clock, the observatory's 'hive' for the bee), the paper grain on every panel, the HUD mirrored (the way back and a
+     count on the left, a count on the right, the title on the centre line) and the answers in the controls row — on a
+     phone, the thumb's bottom third. The map, Learn and Meet the words stay pages, like the Word Atlas's.
+     The kit is lazy (saga2, on the idle queue and in every game's group): a run asks for it and draws the hive loader
+     for the moment it takes. tests/analogy-stage.cjs holds the T14/T15 checks on every one of these screens. */
+  const kit = () => !!(W.SGUI && typeof SGUI.stage === 'function');
+  const PLATE = { run: 'lore', clock: 'lore', bee: 'hive' };
+  function needKit(nav) { try { if (W.SB_LAZY) SB_LAZY.need('saga2', () => { if (state.nav === nav) render(); }); } catch (e) {}
+    try { return W.hiveLoader ? hiveLoader('setting the stage…') : ''; } catch (e) { return ''; } }
+  /* a round starts only once its stage can be drawn (the engine kit's rule turned round: the screen before the round),
+     so its first question is never asked behind a loader; the map asks for the kit (a KICK) the moment it is drawn */
+  function withKit(fn) { if (kit()) { fn(); return; }
+    try { if (W.SB_LAZY) { SB_LAZY.need('saga2', () => { if (state.nav === 'analogy') fn(); }); return; } } catch (e) {} fn(); }
+  const kickKit = () => { try { if (!kit() && W.SB_LAZY) SB_LAZY.need('saga2', null, 1); } catch (e) {} };
+  /* after the draw: fit the stage to the shell (a stage drawn by render is refitted by the kit's watch too), and if a
+     tall text size pushes the why past the play area, show the why — the play area scrolls inside the stage, never the page */
+  function stageAnl(o, inRun) { setTimeout(() => { try { if (W.SGUI && SGUI.stageFit) SGUI.stageFit();
+      const r = document.querySelector('.anl-kit .sg-st-region'), m = r && r.querySelector('.anl-miss,.anl-yes');
+      if (m && r.scrollHeight > r.clientHeight + 1) r.scrollTop = r.scrollHeight; } catch (e) {} }, 0);
+    return `<div class="anl-page anl-onstage${inRun ? ' anl-run' : ''}">${SGUI.stage({ plate: o.plate, name: 'anl-' + o.plate, cls: 'anl-kit' + (o.cls ? ' ' + o.cls : ''), label: o.label || 'Analogies',
+      hud: o.hud, play: o.play, controls: o.controls || '' })}</div>`; }
+  /* a HUD stat in the kit's shape (icon · number · label; the label is read, not drawn, on a phone) */
+  const stat = (k, v, icn, id) => `<span class="sg-st-ic">${ic(icn || 'star', 16)}</span><span class="sg-st-n anl-sv${id === 'anl-time' ? ' anl-time' : ''}"${id ? ` id="${id}"` : ''}>${v}</span><span class="sg-st-t">${esc(k)}</span>`;
+  /* the way back sits in the left stat (so the HUD stays mirrored); the right stat carries an equal blank */
+  const backIn = (act, arg, label) => `<button type="button" class="anl-back" data-act="${act}"${arg ? ` data-arg="${escA(arg)}"` : ''} aria-label="${escA(label)}">${ic('arrowLeft', 18)}</button>`;
+  const pad = '<span class="anl-pad" aria-hidden="true"></span>';
+  const ttl = (t, short) => `<h1 class="sg-st-title anl-ttl"><span class="anl-tl">${esc(t)}</span>${short ? `<span class="anl-ts" aria-hidden="true">${esc(short)}</span>` : ''}</h1>`;
+  /* JUICE (P3.14): the classes are put on only in the render straight after the moment they mark, so a later
+     redraw (a lazy file landing, a resize) never plays them again. One answer is celebrated, never a run. */
+  const fresh = (t, ms) => !!t && Date.now() - t < (ms || 600);
+  const fxOpt = (g, i, ans, picked) => (picked == null || !g.fx || !fresh(g.fx.t)) ? '' : i === picked && picked === ans ? ' sg-fx-pop' : i === picked ? ' sg-fx-shake' : '';
+  /* STINGS (P3.15): the game's own right-answer and round-done stings (SGUI.sting, composed in code); in Calm, or before
+     the kit is in, the plain tone plays instead. The same sting for every right answer — never louder for a run. */
+  function ding(game, ok) { try { if (ok && W.SGUI && SGUI.sting && SGUI.sting(game, 'right')) return; sfx(ok ? 'correct' : 'wrong'); } catch (e) {} }
+  function fanfare(game, good) { try { if (good && W.SGUI && SGUI.sting && SGUI.sting(game, 'done')) return; sfx(good ? 'win' : 'level'); } catch (e) {} }
+
+  const KIND_NAME = { practice: 'Practice', check: 'Check', level: 'Level check', clock: 'Against the Clock' };
+  const KIND_SHORT = { level: 'Level', clock: 'Clock' };
   const KEYS = 'ABCDE';
-  function runView(g) { const kindName = { practice: 'Practice', check: 'Check', level: 'Level check', clock: 'Against the Clock' }[g.kind];
+  function clockIntro() { if (!kit()) return needKit('analogy');
+    let best = '–'; try { const b = W.SB_BESTS && SB_BESTS.get('anl/clock'); if (b) best = String(b.right); } catch (e) {}
+    return stageAnl({ plate: PLATE.clock, label: 'Against the Clock',
+      hud: { left: backIn('anl', 'map', 'Back to the Analogy Atlas') + stat('best', best, 'trophy'), center: ttl('Against the Clock', 'Clock'), right: stat('seconds', '60', 'timer') + pad },
+      play: `<div class="anl-card sg-panel anl-center anl-intro"><span class="anl-cic big" aria-hidden="true">${ic('timer', 30)}</span>
+        <p class="anl-big">Sixty seconds. Name the link, pick the word. A wrong pick costs two seconds, and the clock waits while you read why.</p>
+        <p class="anl-note">Questions come from the regions you have reached.</p></div>`,
+      controls: `<div class="anl-btns center"><button class="anl-btn main" data-act="anl" data-arg="clockgo">${ic('timer', 16)} Start the clock <span class="anl-kb">Enter</span></button></div>` }); }
+  function hudRun(g) {
+    const left = backIn('anl', 'leave', g.kind === 'clock' ? 'Stop the clock' : 'Leave this round') +
+      (g.kind === 'clock' ? stat('seconds left', Math.max(0, Math.ceil(g.left / 1000)) + 's', 'timer', 'anl-time') : stat('question', Math.min(g.n, g.i + 1) + '/' + g.n, 'target'));
+    return { left, center: ttl(KIND_NAME[g.kind], KIND_SHORT[g.kind]), right: stat(g.kind === 'clock' ? 'right first try' : 'right', String(g.right), 'check') + pad }; }
+  function runView(g) { if (!kit()) return needKit('analogy');
+    const kindName = KIND_NAME[g.kind];
     if (g.phase === 'done') return doneView(g, kindName);
-    const q = g.q; if (!q) return `<div class="anl-card">This round has no questions yet.</div>`;
+    const q = g.q; if (!q) return stageAnl({ plate: PLATE.run, hud: hudRun(g), play: `<div class="anl-card sg-panel">This round has no questions yet.</div>` }, true);
     const L = lesson(q.lesson);
-    const top = `<div class="anl-run-top"><button class="anl-x" data-act="anl" data-arg="leave" aria-label="Leave this round">${ic('arrowLeft', 16)} ${g.kind === 'clock' ? 'Stop' : 'Map'}</button>
-      <span class="anl-kind">${esc(kindName)}${g.kind === 'practice' ? ' · ' + esc(L.title) : ''}</span>
-      ${g.kind === 'clock' ? `<span id="anl-time" class="anl-time" aria-live="off">${Math.ceil(g.left / 1000)}s</span>` : `<span class="anl-count">${g.i + 1} of ${g.n}</span>`}<span class="anl-right">${ic('check', 13)} ${g.right}</span></div>`;
+    const tag = g.kind === 'practice' && L ? `<span class="anl-tag">${lic(L.id, 13)} ${esc(L.title)}</span>` : '';
+    const hear = `<button type="button" class="anl-hear" data-act="anl" data-arg="hear" aria-label="Hear it">${ic('volume', 17)}<span class="anl-hlab">Hear it</span></button>`;
     const stem = `<div class="anl-q" data-live-prompt="${escA(q.a + ' is to ' + q.b + ' as ' + q.c + ' is to what?')}"><span>${esc(q.a.toUpperCase())}</span><i>:</i><span>${esc(q.b.toUpperCase())}</span>${g.phase === 'bridge' ? '' : `<i>::</i><span>${esc(q.c.toUpperCase())}</span><i>:</i><span class="anl-blank">${g.picked != null ? esc(q.d.toUpperCase()) : '?'}</span>`}</div>`;
+    /* a held miss makes room for its why: the ask line steps aside (the stem already shows the answer in its blank) */
+    const held = (g.phase === 'bridge' ? g.bpick != null && g.bpick !== (g.bq || {}).ans : g.picked != null && g.picked !== q.ans);
+    const card = (ask, after) => `<div class="anl-card sg-panel anl-qcard${held ? ' anl-held' : ''}${fresh(g.qAt) ? ' sg-fx-in' : ''}">${tag}${q.again ? `<p class="anl-again">${ic('retry', 14)} Back again — practice, it does not score</p>` : ''}${stem}<div class="anl-askrow"><p class="anl-ask">${ask}</p>${hear}</div>${after}</div>`;
     if (g.phase === 'bridge') { const B = g.bq;
       const opts = B.lines.map((t, i) => { const st = g.bpick == null ? '' : i === B.ans ? ' ok' : i === g.bpick ? ' no' : ' dim';
-        return `<button class="anl-opt line${st}" data-act="anl" data-arg="bridge:${i}"${g.bpick != null ? ' disabled' : ''}><span class="anl-k">${i + 1}</span>${esc(t)}</button>`; }).join('');
-      return `<div class="anl-page anl-run">${top}<div class="anl-card">${stem}<p class="anl-ask">Step 1 · How are these two linked?</p><div class="anl-opts lines">${opts}</div>
-        ${g.bpick != null && g.bpick !== B.ans ? `<div class="anl-miss"><p><b>The link:</b> ${esc(B.lines[B.ans])}</p><button class="anl-btn main" data-act="anl" data-arg="cont">Now the analogy <span class="anl-kb">Enter</span></button></div>` : ''}</div></div>`; }
+        return `<button type="button" class="anl-opt line${st}${fxOpt(g, i, B.ans, g.bpick)}" data-act="anl" data-arg="bridge:${i}"${g.bpick != null ? ' disabled' : ''}><span class="anl-k">${i + 1}</span>${esc(t)}</button>`; }).join('');
+      const miss = g.bpick != null && g.bpick !== B.ans ? `<div class="anl-miss"><p><b>The link:</b> ${esc(B.lines[B.ans])}</p><button class="anl-btn main" data-act="anl" data-arg="cont">Now the analogy <span class="anl-kb">Enter</span></button></div>` : '';
+      return stageAnl({ plate: PLATE.run, label: kindName, hud: hudRun(g), play: card('Step 1 · How are these two linked?', miss),
+        controls: `<div class="anl-opts lines" role="group" aria-label="Ways they could be linked">${opts}</div>` }, true); }
     const opts = q.opts.map((o, i) => { const st = g.picked == null ? '' : i === q.ans ? ' ok' : i === g.picked ? ' no' : ' dim';
-      return `<button class="anl-opt${st}" data-act="anl" data-arg="pick:${i}"${g.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('');
+      return `<button type="button" class="anl-opt${st}${fxOpt(g, i, q.ans, g.picked)}" data-act="anl" data-arg="pick:${i}"${g.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('');
     let after = '';
     if (g.picked != null) { const ok = g.picked === q.ans; const line = linkLine(q.rel, q.c, q.d);
-      after = ok ? `<div class="anl-yes"><b>Yes.</b> ${esc(line)}</div>`
+      after = ok ? `<div class="anl-yes" role="status"><b>Yes.</b> ${esc(line)}</div>`
         : `<div class="anl-miss" role="status"><p><b>The answer is ${esc(q.d)}.</b> ${esc(line)}</p><p class="anl-why">${esc(tempted(q, q.opts[g.picked]))}</p><p class="anl-why">The first pair: ${esc(linkLine(q.rel, q.a, q.b))}</p>
           <button class="anl-btn main" data-act="anl" data-arg="cont">Continue <span class="anl-kb">Enter</span></button></div>`; }
-    return `<div class="anl-page anl-run">${top}<div class="anl-card">${q.again ? `<p class="anl-again">${ic('retry', 14)} Back again — practice, it does not score</p>` : ''}${stem}<p class="anl-ask">${g.kind === 'practice' ? 'Step 2 · ' : ''}Which word completes the analogy?</p>
-      <div class="anl-opts n${q.opts.length}">${opts}</div>${after}
-      <button class="anl-hear" data-act="anl" data-arg="hear">${ic('volume', 15)} Hear it</button></div></div>`; }
-  function doneView(g, kindName) { const pct = Math.round((g.pct || 0) * 100);
+    const tight = q.opts.length >= 5 && q.opts.every((o) => String(o).length <= 11) ? ' tight' : '';
+    return stageAnl({ plate: g.kind === 'clock' ? PLATE.clock : PLATE.run, label: kindName, hud: hudRun(g),
+      play: card((g.kind === 'practice' ? 'Step 2 · ' : '') + 'Which word completes the analogy?', after),
+      controls: `<div class="anl-opts n${q.opts.length}${tight}" role="group" aria-label="Answers">${opts}</div>` }, true); }
+  function doneView(g, kindName) {
     const words = g.log.map((x) => `<li class="${x.ok ? 'ok' : 'no'}">${x.ok ? ic('check', 13) : ic('close', 13)} ${esc(x.c)} → <b>${esc(x.d)}</b>${x.ok ? '' : ` <span class="anl-was">(you chose ${esc(x.w)})</span>`}${x.again ? ' <span class="anl-was">· back again, not scored</span>' : ''}</li>`).join('');
-    let head2 = kindName + ': ' + g.right + (g.kind === 'clock' ? ' right first try' : ' of ' + g.asked);
+    const big = g.kind === 'clock' ? g.right + ' right first try' : g.right + ' of ' + g.asked;
     let line = '';
     if (g.kind === 'check') line = g.pass ? 'Passed — the next stop is open.' : 'Seven of eight passes. Practise, then check again.';
     if (g.kind === 'level') line = g.masteredNow ? 'Mastered! You passed this level on two different days.' : g.walkedNow ? 'Level passed — the next region is open.' : g.pass ? 'Passed again. Pass on another day to master it.' : 'Eight of ten passes. Practise the stops, then try again.';
     if (g.kind === 'practice') line = 'Practice keeps nothing back: check when you are ready.';
     if (g.kind === 'clock') line = g.newBest ? 'A new best!' : 'Every miss you read is a link you will see next time.';
-    return `<div class="anl-page">${head(head2, esc(line), 'anl', 'Analogy Atlas', ic('star', 20))}
-      <div class="anl-card"><p class="anl-big">${esc(line)}</p>${g.coins ? `<p class="anl-note">${ic('coin', 14)} +${g.coins} coins</p>` : ''}
-        <ul class="anl-log">${words}</ul>
-        <div class="anl-btns"><button class="anl-btn" data-act="anl" data-arg="map">${ic('arrowLeft', 16)} Back to the map</button><button class="anl-btn main" data-act="anl" data-arg="cont">${ic('retry', 16)} ${g.kind === 'clock' ? 'Play again' : 'Go again'} <span class="anl-kb">Enter</span></button></div></div></div>`; }
-
+    const head2 = g.newBest ? 'A new best' : g.pass ? 'Passed' : 'Round complete';
+    return stageAnl({ plate: g.kind === 'clock' ? PLATE.clock : PLATE.run, label: kindName,
+      hud: { left: backIn('anl', 'map', 'Back to the Analogy Atlas') + stat(g.kind === 'clock' ? 'right first try' : 'right', String(g.right), 'check'), center: ttl(kindName, KIND_SHORT[g.kind]),
+        right: stat('coins', String(g.coins || 0), 'coin') + pad },
+      play: `<div class="anl-card sg-panel anl-done${fresh(g.doneAt, 900) ? ' sg-fx-done' : ''}" data-live-prompt="${escA(kindName + ': ' + big + '. ' + line)}">
+        <div class="anl-dh">${esc(head2)}</div><div class="anl-db">${esc(big)}</div><p class="anl-big">${esc(line)}</p>${g.coins ? `<p class="anl-note anl-pay">${ic('coin', 14)} +${g.coins} coins</p>` : ''}
+        <ul class="anl-log">${words}</ul></div>`,
+      controls: `<div class="anl-btns center"><button class="anl-btn" data-act="anl" data-arg="map">${ic('arrowLeft', 16)} Back to the map</button><button class="anl-btn main" data-act="anl" data-arg="cont">${ic('retry', 16)} ${g.kind === 'clock' ? 'Play again' : 'Go again'} <span class="anl-kb">Enter</span></button></div>` }, true); }
   /* ------------------------------------------------------------------ actions */
   function act(arg) { const s = S(); arg = String(arg || ''); const [k, v] = [arg.split(':')[0], arg.slice(arg.indexOf(':') + 1)];
     if (k === 'region') { const i = regions().findIndex((r) => r.id === v); if (i < 0 || !regionOpen(i)) { try { flash('Pass the level check before it to open ' + regions()[i].name); } catch (e) {} return; }
@@ -538,10 +597,10 @@
     if (k === 'learn') { if (hit && hit.s) { s.v = 'lesson'; s.ls = null; render(); try { window.scrollTo(0, 0); } catch (e) {} } return; }
     if (k === 'ls') { lessonAct(v); return; }
     if (k === 'words') { if (hit && hit.s) { s.v = 'words'; render(); try { window.scrollTo(0, 0); } catch (e) {} } return; }
-    if (k === 'practice' || k === 'check') { if (hit && hit.s) startRun(k); return; }
-    if (k === 'level') { if (hit && !hit.s) startRun('level'); return; }
+    if (k === 'practice' || k === 'check') { if (hit && hit.s) withKit(() => startRun(k)); return; }
+    if (k === 'level') { if (hit && !hit.s) withKit(() => startRun('level')); return; }
     if (k === 'clock') { s.v = 'clock'; s.run = null; render(); return; }
-    if (k === 'clockgo') { startClock(); return; }
+    if (k === 'clockgo') { withKit(startClock); return; }
     if (k === 'bridge') { pickBridge(v); return; }
     if (k === 'pick') { pick(v); return; }
     if (k === 'cont') { cont(); return; }
@@ -563,7 +622,7 @@
       if (/^[1-3]$/.test(k) && (step.k === 'name' || step.k === 'try')) { e.preventDefault(); lessonAct((step.k === 'name' ? 'name:' : 'try:') + (+k - 1)); }
       return; }
     if (k === 'Escape' && g && s.v === 'run') { e.preventDefault(); act('leave'); return; }
-    if (k === 'Enter') { if (s.v === 'run' && g && (g.phase === 'done' || g.picked != null || g.bpick != null)) { e.preventDefault(); cont(); } else if (s.v === 'clock' && !g) { e.preventDefault(); startClock(); } return; }
+    if (k === 'Enter') { if (s.v === 'run' && g && (g.phase === 'done' || g.picked != null || g.bpick != null)) { e.preventDefault(); cont(); } else if (s.v === 'clock' && !g) { e.preventDefault(); withKit(startClock); } return; }
     if (!g || s.v !== 'run') return;
     const n = /^[1-5]$/.test(k) ? +k - 1 : /^[a-eA-E]$/.test(k) ? KEYS.indexOf(k.toUpperCase()) : -1; if (n < 0) return;
     e.preventDefault(); if (g.phase === 'bridge') pickBridge(n); else pick(n); } catch (err) {} }
@@ -602,10 +661,10 @@
   function beeAsk() { const b = B(); const lv = Math.min(9, b.lo + Math.floor((b.round - 1) / 2)); const pool = beePool();
     const A0 = D(); const fits = pool.filter((id) => { const it = A0.items[id]; return it && !b.used[id] && it[1] >= lv - 1 && it[1] <= lv + 1 && it.length >= 7; });
     const P = fits.length ? fits : pool.filter((id) => !b.used[id]); const id = P[hash(b.seed + '|' + b.round) % Math.max(1, P.length)];
-    b.used[id] = 1; b.q = question(id, b.round >= 5 ? 5 : 4, b.seed + '|' + b.round); b.picked = null; b.phase = 'turn'; render(); }
+    b.used[id] = 1; b.q = question(id, b.round >= 5 ? 5 : 4, b.seed + '|' + b.round); b.picked = null; b.phase = 'turn'; b.qAt = Date.now(); b.fx = null; render(); }
   function beePick(i) { const b = B(); if (!b || b.phase !== 'turn' || b.picked != null) return; i = +i; const q = b.q; if (!q || !(i >= 0 && i < q.opts.length)) return;
-    b.picked = i; const ok = i === q.ans; b.log.push({ c: q.c, d: q.d, ok, w: q.opts[i] }); rec().seen[q.id] = Date.now();
-    try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+    b.picked = i; const ok = i === q.ans; b.log.push({ c: q.c, d: q.d, ok, w: q.opts[i] }); rec().seen[q.id] = Date.now(); b.fx = { t: Date.now() };
+    ding('anlbee', ok);
     /* the rivals' turn: each standing rival is right with a chance that falls as the rounds climb */
     b.calls = []; b.field.forEach((r) => { if (r.out) return; const p = r.sk - 0.035 * (b.round - 1); const right = (hash(b.seed + '|' + b.round + '|' + (r.rid || r.id)) % 1000) / 1000 < p; b.calls.push({ r, right }); });
     if (b.round > 1) { b.calls.forEach((x) => { if (!x.right) x.r.out = b.round; }); if (!ok) b.me.out = b.round; }
@@ -630,41 +689,54 @@
     if (podium) { try { addCoins('contest'); } catch (e) {} }
     b.coins = (W.earnedSoFar ? earnedSoFar() : b.e0) - b.e0;
     try { if (W.logActivity) logActivity('anlbee', 'Mock Analogy Bee', { done: b.log.length, right: b.log.filter((x) => x.ok).length, coins: b.coins }, []); } catch (e) {}
-    try { if (podium) { sfx('win'); burstConfetti(b.place === 1 ? 130 : 70); } else sfx('level'); } catch (e) {}
+    b.doneAt = Date.now(); fanfare('anlbee', podium);
+    try { if (podium) burstConfetti(b.place === 1 ? 130 : 70); } catch (e) {}
     store(); render(); }
+  /* THE BEE ON THE STAGE (P3.1): the lobby, every round and the finish stand on SGUI.stage over the observatory plate
+     ('hive'). The field rides the play area (in one row of small faces while a round is on, so the question and the
+     answers keep the room), the answers are the controls, and the way back to the Analogies tab sits in the HUD. */
+  const ordOf = (n) => n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th');
   function beeView() { if (!D()) return ''; css(); const b = B() || (state.anlBee = { phase: 'lobby' }); const c = kid();
+    if (!kit()) return needKit('anlbee');
     const me = c && W.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 46) : '';
     const face = (id) => { try { return W.SB_AVATAR ? SB_AVATAR(id, 46) : ''; } catch (e) { return ''; } };
-    const hd = (t, sub) => { try { return pageHead(t, '', sub || '', W.coinChip ? coinChip() : '', 'openAnalogies', 'Analogies', null, ic('trophy', 20)); } catch (e) { return '<h1>' + esc(t) + '</h1>'; } };
+    const back = backIn('openAnalogies', '', 'Back to Analogies');
+    const title = ttl('Mock Analogy Bee', 'Analogy Bee');
+    const stage = (o) => stageAnl(Object.assign({ plate: PLATE.bee, label: 'Mock Analogy Bee', cls: 'anl-beest' }, o), b.phase !== 'lobby');
     if (b.phase === 'lobby') { const seats = castFor();
       if (!seats.length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') render(); }); } catch (e) {} }
       const cast = seats.map(([id, name]) => `<li class="anl-rival">${face(id)}<span>${esc(name)}</span></li>`).join('');
-      const p = rec().bee; const ord = (n) => n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th');
-      return `<div class="anl-page">${hd('Mock Analogy Bee', 'One analogy each, round by round')}
-        <div class="anl-card anl-center"><ul class="anl-field">${cast}<li class="anl-rival me">${me}<span>You</span></li></ul>
+      const p = rec().bee;
+      return stage({ hud: { left: back + stat('spellers', String(seats.length + 1), 'users'), center: title, right: stat('best finish', p.played ? ordOf(p.best) : '–', 'trophy') + pad },
+        play: `<div class="anl-card sg-panel anl-center anl-lobby"><ul class="anl-field">${cast}<li class="anl-rival me">${me}<span>You</span></li></ul>
         <p class="anl-big">Every speller gets one analogy a round. Round one is a warm-up: nobody sits down. After that, miss the link and you sit down. The last speller standing wins.</p>
-        <p class="anl-note">The analogies climb a level every two rounds.${p.played ? ' Your best finish: ' + ord(p.best) + (p.wins ? ' · ' + p.wins + ' won' : '') + '.' : ''}</p>
-        <div class="anl-btns"><button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('trophy', 16)} Take the stage <span class="anl-kb">Enter</span></button></div>
-        <p class="anl-note">${W.SB_LEVEL && SB_LEVEL.chip ? SB_LEVEL.chip('mockAnalogy', 'Mock Analogy Bee') : ''}</p></div></div>`; }
-    const field = `<ul class="anl-field run">${b.field.map((r) => { const call = (b.calls || []).find((x) => x.r === r); const st = r.out && r.out < b.round ? ' sat' : (b.phase === 'result' && call) ? (call.right ? ' right' : (b.round > 1 ? ' sat now' : ' miss')) : '';
+        <p class="anl-note">The analogies climb a level every two rounds.${p.played && p.wins ? ' ' + p.wins + ' won so far.' : ''}</p></div>`,
+        controls: `<div class="anl-btns center">${W.SB_LEVEL && SB_LEVEL.chip ? SB_LEVEL.chip('mockAnalogy', 'Mock Analogy Bee') : ''}<button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('trophy', 16)} Take the stage <span class="anl-kb">Enter</span></button></div>` }); }
+    const standing = b.field.filter((r) => !r.out || r.out >= b.round).length + (b.me.out && b.me.out < b.round ? 0 : 1);
+    const field = `<ul class="anl-field run${b.phase === 'result' ? ' res' : ''}" aria-label="The field">${b.field.map((r) => { const call = (b.calls || []).find((x) => x.r === r); const st = r.out && r.out < b.round ? ' sat' : (b.phase === 'result' && call) ? (call.right ? ' right' : (b.round > 1 ? ' sat now' : ' miss')) : '';
       return `<li class="anl-rival${st}">${face(r.id)}<span>${esc(r.name)}</span></li>`; }).join('')}<li class="anl-rival me${b.me.out && b.me.out < b.round ? ' sat' : ''}">${me}<span>You</span></li></ul>`;
-    if (b.phase === 'done') { const ord = (n) => n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th');
+    if (b.phase === 'done') {
       const words = b.log.map((x) => `<li class="${x.ok ? 'ok' : 'no'}">${x.ok ? ic('check', 13) : ic('close', 13)} ${esc(x.c)} → <b>${esc(x.d)}</b>${x.ok ? '' : ` <span class="anl-was">(you chose ${esc(x.w)})</span>`}</li>`).join('');
-      return `<div class="anl-page">${hd(b.place === 1 ? 'Champion!' : 'You finished ' + ord(b.place), 'Mock Analogy Bee')}
-        <div class="anl-card anl-center">${field}<p class="anl-big">${b.place === 1 ? 'Last speller standing.' : b.place <= 3 ? 'On the podium.' : 'Every link you missed is one you will see coming next time.'}</p>${b.coins ? `<p class="anl-note">${ic('coin', 14)} +${b.coins} coins</p>` : ''}
-        <ul class="anl-log">${words}</ul><div class="anl-btns"><button class="anl-btn" data-act="openAnalogies">${ic('arrowLeft', 16)} Analogies</button><button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('retry', 16)} New bee <span class="anl-kb">Enter</span></button></div></div></div>`; }
+      const big = b.place === 1 ? 'Champion!' : 'You finished ' + ordOf(b.place);
+      const line = b.place === 1 ? 'Last speller standing.' : b.place <= 3 ? 'On the podium.' : 'Every link you missed is one you will see coming next time.';
+      return stage({ hud: { left: back + stat('place', ordOf(b.place), 'trophy'), center: title, right: stat('coins', String(b.coins || 0), 'coin') + pad },
+        play: `<div class="anl-card sg-panel anl-center anl-done${fresh(b.doneAt, 900) ? ' sg-fx-done' : ''}" data-live-prompt="${escA(big + ' ' + line)}">${field}<div class="anl-db">${esc(big)}</div><p class="anl-big">${esc(line)}</p>${b.coins ? `<p class="anl-note anl-pay">${ic('coin', 14)} +${b.coins} coins</p>` : ''}
+        <ul class="anl-log">${words}</ul></div>`,
+        controls: `<div class="anl-btns center"><button class="anl-btn" data-act="openAnalogies">${ic('arrowLeft', 16)} Analogies</button><button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('retry', 16)} New bee <span class="anl-kb">Enter</span></button></div>` }); }
     const q = b.q; if (!q) return '';
     const opts = q.opts.map((o, i) => { const st = b.picked == null ? '' : i === q.ans ? ' ok' : i === b.picked ? ' no' : ' dim';
-      return `<button class="anl-opt${st}" data-act="anlBee" data-arg="pick:${i}"${b.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('');
+      return `<button type="button" class="anl-opt${st}${fxOpt(b, i, q.ans, b.picked)}" data-act="anlBee" data-arg="pick:${i}"${b.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('');
     let res = '';
     if (b.phase === 'result') { const ok = b.picked === q.ans; const sat = (b.calls || []).filter((x) => !x.right && b.round > 1).map((x) => x.r.name);
-      res = `<div class="${ok ? 'anl-yes' : 'anl-miss'}"><p><b>${ok ? 'Right!' : 'The answer is ' + esc(q.d) + '.'}</b> ${esc(linkLine(q.rel, q.c, q.d))}</p>${ok ? '' : `<p class="anl-why">${esc(tempted(q, q.opts[b.picked]))}</p>`}
+      res = `<div class="${ok ? 'anl-yes' : 'anl-miss'}" role="status"><p><b>${ok ? 'Right!' : 'The answer is ' + esc(q.d) + '.'}</b> ${esc(linkLine(q.rel, q.c, q.d))}</p>${ok ? '' : `<p class="anl-why">${esc(tempted(q, q.opts[b.picked]))}</p>`}
         <p class="anl-why">${b.again ? 'Everybody missed, so nobody sits down: the round runs again.' : b.round === 1 ? 'Warm-up round: nobody sits down.' : sat.length ? esc(sat.join(', ')) + (sat.length === 1 ? ' sits' : ' sit') + ' down.' : 'Every rival got theirs.'}</p>
         <button class="anl-btn main" data-act="anlBee" data-arg="next">${b.me.out ? 'See how it ends' : 'Next round'} <span class="anl-kb">Enter</span></button></div>`; }
-    return `<div class="anl-page anl-run">${hd('Round ' + b.round, 'Mock Analogy Bee')}${field}
-      <div class="anl-card"><div class="anl-q" data-live-prompt="${escA('Round ' + b.round + '. ' + q.a + ' is to ' + q.b + ' as ' + q.c + ' is to what?')}"><span>${esc(q.a.toUpperCase())}</span><i>:</i><span>${esc(q.b.toUpperCase())}</span><i>::</i><span>${esc(q.c.toUpperCase())}</span><i>:</i><span class="anl-blank">${b.picked != null ? esc(q.d.toUpperCase()) : '?'}</span></div>
-      <p class="anl-ask">Your turn. Which word completes the analogy?</p><div class="anl-opts n${q.opts.length}">${opts}</div>${res}
-      <button class="anl-hear" data-act="anlBee" data-arg="hear">${ic('volume', 15)} Hear it</button></div></div>`; }
+    const tight = q.opts.length >= 5 && q.opts.every((o) => String(o).length <= 11) ? ' tight' : '';
+    return stage({ hud: { left: back + stat('round', String(b.round), 'flag'), center: title, right: stat('standing', String(standing), 'users') + pad },
+      play: `${field}<div class="anl-card sg-panel anl-qcard${b.phase === 'result' ? ' anl-held' : ''}${fresh(b.qAt) ? ' sg-fx-in' : ''}">
+        <div class="anl-q" data-live-prompt="${escA('Round ' + b.round + '. ' + q.a + ' is to ' + q.b + ' as ' + q.c + ' is to what?')}"><span>${esc(q.a.toUpperCase())}</span><i>:</i><span>${esc(q.b.toUpperCase())}</span><i>::</i><span>${esc(q.c.toUpperCase())}</span><i>:</i><span class="anl-blank">${b.picked != null ? esc(q.d.toUpperCase()) : '?'}</span></div>
+        <div class="anl-askrow"><p class="anl-ask">Your turn. Which word completes the analogy?</p><button type="button" class="anl-hear" data-act="anlBee" data-arg="hear" aria-label="Hear it">${ic('volume', 17)}<span class="anl-hlab">Hear it</span></button></div>${res}</div>`,
+      controls: `<div class="anl-opts n${q.opts.length}${tight}" role="group" aria-label="Answers">${opts}</div>` }); }
   function beeAct(arg) { arg = String(arg || ''); const b = B();
     if (arg === 'start') { beeStart(); return; }
     if (arg.indexOf('pick:') === 0) { beePick(arg.slice(5)); return; }
@@ -922,6 +994,53 @@
 .anl-lcard .anl-cic{grid-row:1/4;width:40px;height:40px;border-radius:12px}
 .anl-lct{font-family:var(--display);font-weight:800;font-size:16px}.anl-lcx{font-size:14px;color:var(--muted)}.anl-lcn{font-size:12px;color:var(--muted)}
 .anl-lcard:hover{border-color:var(--accent)}
+/* ON THE ENGINE KIT'S STAGE (road to 4.5, P3.1/P3.2): the plate, the grain, the HUD and the bands are the kit's
+   (saga2.css .sb-stage); these rules only seat the analogy parts on it. Panels stay translucent over the painting —
+   a solid card would be the flat white the audit saw (T14). */
+.anl-onstage{max-width:none}
+.anl-kit .sg-st-region{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:8px;overflow:auto;padding:2px}
+.anl-kit .anl-card{width:min(760px,100%);margin:0;border-radius:20px;padding:clamp(12px,2.6vw,22px);color:var(--text);position:relative;flex:none}
+.anl-kit .anl-card.sg-panel{background:var(--sg-grain),color-mix(in srgb,var(--paper,#fff) 84%,transparent)}
+.anl-kit .anl-qcard,.anl-kit .anl-done,.anl-kit .anl-intro{text-align:center}
+.anl-kit .anl-q{margin:2px 0}
+.anl-askrow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:4px}
+.anl-kit .anl-ask{margin:0}
+.anl-kit .anl-hear{margin:0;min-height:44px;min-width:44px;justify-content:center;background:color-mix(in srgb,var(--surface,#fff) 82%,transparent)}
+.anl-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:999px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-weight:800;font-size:12px;margin-bottom:6px}
+.anl-kit .anl-yes,.anl-kit .anl-miss{text-align:left;margin-top:10px}
+.anl-kit .anl-held .anl-askrow,.anl-kit .anl-held .anl-tag{display:none}
+.anl-kit .anl-held{padding-top:12px}
+.anl-kit .sg-st-ctl>.anl-opts,.anl-kit .sg-st-ctl>.anl-btns{width:min(760px,100%)}
+.anl-kit .anl-opt{background:color-mix(in srgb,var(--surface2,var(--surface,#fff)) 86%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.anl-kit .anl-opt.ok{background:color-mix(in srgb,#2E9E5B 22%,var(--surface,#fff))}.anl-kit .anl-opt.no{background:color-mix(in srgb,#D14343 18%,var(--surface,#fff))}
+.anl-kit .anl-btns{margin-top:0;align-items:center}
+.anl-kit .anl-btn:not(.main){background:color-mix(in srgb,var(--surface2,var(--surface,#fff)) 86%,transparent)}
+.anl-kit .anl-log{text-align:left;max-width:560px;margin:10px auto 0}
+.anl-kit .anl-intro .anl-cic{margin:0 auto 8px}
+.anl-dh{font-family:var(--display);font-weight:800;font-size:18px}
+.anl-db{font-family:var(--display);font-weight:900;font-size:clamp(28px,6vw,42px);color:var(--accent);line-height:1.1;margin:4px 0}
+.anl-pay{justify-content:center;font-weight:800}
+.anl-kit .anl-field{margin:0 0 8px}
+.anl-kit .anl-field.run{margin:0;padding:6px 10px;border-radius:16px;background:color-mix(in srgb,var(--paper,#fff) 76%,transparent);flex:none}
+.anl-kit .anl-field.run .anl-rival{width:54px;font-size:11px}
+.anl-kit .anl-field.run .anl-rival svg,.anl-kit .anl-field.run .anl-rival img{width:36px;height:36px}
+.anl-back{flex:none;position:relative;width:36px;height:36px;margin-right:2px;border-radius:50%;display:grid;place-items:center;background:var(--surface2,var(--surface,#fff));border:1px solid var(--line);color:var(--text)}
+.anl-back::after{content:"";position:absolute;inset:-5px}
+.anl-pad{display:none;flex:none;width:36px;height:1px}
+.anl-ttl{display:inline-flex;align-items:center;gap:8px}.anl-ttl .anl-ts{display:none}
+.anl-kit .anl-time.low{color:var(--bad,#D33)}
+@media (max-width:640px){.anl-kit .sg-st-side .sg-st-stat{width:112px;min-width:0;justify-content:space-between}.anl-kit.anl-beest .sg-st-side .sg-st-stat{width:92px}.anl-kit .sg-st-side .sg-st-ic{display:none}.anl-pad{display:block}
+  .anl-ttl:has(.anl-ts) .anl-tl{display:none}.anl-ttl .anl-ts{display:inline}.anl-hlab{display:none}.anl-kit .anl-hear{padding:0 10px}}
+@media (max-width:560px){.anl-kit .anl-opts{gap:6px}.anl-kit .anl-opt{min-height:44px;padding:6px 12px;font-size:15px}.anl-kit .anl-opt.line{font-size:14px}
+  .anl-kit .anl-opts.tight{grid-template-columns:repeat(2,minmax(0,1fr))}.anl-kit .anl-opts.tight .anl-opt:last-child{grid-column:1/-1}
+  .anl-kit .anl-q{gap:5px}.anl-kit .anl-q span{padding:5px 10px}.anl-kit .anl-big{font-size:15px}
+  .anl-kit .anl-held .anl-q{font-size:16px}.anl-kit .anl-held .anl-q span{padding:3px 8px}
+  .anl-kit .anl-miss,.anl-kit .anl-yes{padding:9px 12px;font-size:14px}.anl-kit .anl-miss .anl-why{font-size:13px}.anl-kit .anl-miss .anl-btn{min-height:44px;margin-top:4px}
+  .anl-kit .anl-field.run{flex-wrap:nowrap;gap:2px;padding:4px 6px}.anl-kit .anl-field.run .anl-rival{width:40px;font-size:10px}
+  .anl-kit .anl-field.run .anl-rival span{max-width:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .anl-kit .anl-field.run .anl-rival svg,.anl-kit .anl-field.run .anl-rival img{width:30px;height:30px}
+  .anl-kit .anl-field.run.res .anl-rival span{display:none}.anl-kit .anl-field.run.res .anl-rival svg,.anl-kit .anl-field.run.res .anl-rival img{width:28px;height:28px}
+  .anl-kit .anl-lobby .anl-rival{width:56px}.anl-kit .anl-lobby .anl-rival svg,.anl-kit .anl-lobby .anl-rival img{width:40px;height:40px}}
 `; document.head.appendChild(st); }
 
   /* ------------------------------------------------------------------ the door */

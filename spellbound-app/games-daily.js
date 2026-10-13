@@ -196,7 +196,7 @@
   }
 
   /* ------------------------------------------------------------------ screen state (between renders) */
-  var host = null, cur = '', curDay = '', curKid = null, msgT = '', flipRow = -1, shakeRow = false, keysApi = null, keyOn = false, lastIn = { k: '', t: 0, s: '' }, sizeOn = false, spoke = '';
+  var doneAt = 0, host = null, cur = '', curDay = '', curKid = null, msgT = '', flipRow = -1, shakeRow = false, keysApi = null, keyOn = false, lastIn = { k: '', t: 0, s: '' }, sizeOn = false, spoke = '';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function ico(n, sz) { try { if (typeof iconSVG === 'function') return iconSVG(n, sz || 18); } catch (e) {} return ''; }
@@ -243,7 +243,7 @@
   }
   function endHtml(D, w, n) {
     var won = !!D.won, head = won ? 'Solved in ' + D.g.length + (D.g.length === 1 ? ' try' : ' tries') + '. Today’s word:' : 'Today’s word was:';
-    var h = '<div class="db-end" id="db-end">' + boardHtml(D, n, true)
+    var h = '<div class="db-end' + (doneAt && Date.now() - doneAt < 900 ? ' sg-fx-done' : '') + '" id="db-end">' + boardHtml(D, n, true)
       + '<p class="db-endh" data-live-prompt="' + esc(head + ' ' + w.w + '.') + '">' + esc(head) + '</p>'
       + '<div class="db-word" aria-label="' + esc(w.w) + '">' + w.w.split('').map(function (ch) { return cellHtml(ch, won ? 'hit' : '', ''); }).join('') + '</div>'
       + (w.p ? '<div class="db-pron">' + esc(w.p) + '</div>' : '')
@@ -363,7 +363,9 @@
     var ks = Object.keys(D.days).sort(); if (ks.length > 60) ks.slice(0, ks.length - 60).forEach(function (k) { delete D.days[k]; });
     if (!D.lv) { D.lv = 1;
       try { if (window.SB_LEVEL && typeof SB_LEVEL.after === 'function') { var r = SB_LEVEL.after(KEY, D.won ? 1 : 0) || {}; D.lvr = { dropped: !!r.dropped, level: r.level || '', line: r.line || '', up: r.offerUp ? (typeof r.offerUp === 'string' ? r.offerUp : nextUp(r.level)) : '' }; } } catch (e) {} }
-    try { if (typeof sfx === 'function') sfx(D.won ? 'win' : 'level'); } catch (e) {}
+    /* P3.15: the Daily Bee's own sting when the day is solved (SGUI.fanfare; the plain tone when stings are off), and the end card lands (P3.14) */
+    doneAt = Date.now();
+    try { if (window.SGUI && SGUI.fanfare) SGUI.fanfare('daily', !!D.won); else if (typeof sfx === 'function') sfx(D.won ? 'win' : 'level'); } catch (e) {}
     try { if (typeof logActivity === 'function') logActivity('daily', 'Daily Bee', { done: 1, right: D.won ? 1 : 0, coins: D.coins || 0 }, []); } catch (e) {}
     try { if (typeof save === 'function') save(); } catch (e) {}
   }

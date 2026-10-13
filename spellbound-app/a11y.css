@@ -89,4 +89,21 @@ html[data-mode="dusk"] .bz-btn:not(.buy){color:var(--text)}
   .arc-lvl::after{inset:-10px -6px}
   .sb-lvchip::after{content:"";position:absolute;inset:-10px -6px}
   a[href="privacy.html"]:not(.bz-dr-row){display:inline-block;padding:13px 6px}
+  /* P3.10: a level chip in a game's title keeps its hit area (the title clipped it), and the bee's way out is 44px */
+  .sg-st-title:has(.sb-lvchip){overflow:visible}
+  .mb-back,.mb-back2{min-height:44px}
+  .sb-stage.mb-stage .sg-st-stat .mb-back{position:relative}
+  .sb-stage.mb-stage .sg-st-stat .mb-back::after{content:"";position:absolute;inset:-7px -10px}
+}
+/* P3.11, the family top bar on a phone (☰ included): the ☰, the logo, the coins, the look, the lock and the child switcher
+   keep the boxes the family's shell-check knows and gain an invisible 44px hit area each; the logo and the lock step aside
+   a few pixels so no two areas overlap. The ⬡ Hive keeps its pinned box alone — it sits 4px from the ☰ (shell-check REF). */
+@media (max-width:560px){
+  .sb-fam-bar>[data-act="openDrawer"],.sb-fam-bar>.sb-fam-brand,.sb-fam-bar>.sb-fam-day,.sb-fam-bar>.bz-coinchip,
+  .sb-fam-bar>.sb-hdr-ico:not(.sb-fam-hive),.sb-fam-bar>.sb-fam-kid{position:relative}
+  .sb-fam-bar>[data-act="openDrawer"]::before,.sb-fam-bar>.sb-hdr-ico:not(.sb-fam-hive)::before{content:"";position:absolute;inset:-4px -3.5px}
+  .sb-fam-bar>.sb-fam-brand::before{content:"";position:absolute;inset:-4px -8px}
+  .sb-fam-bar>.sb-fam-day::before,.sb-fam-bar>.bz-coinchip::before,.sb-fam-bar>.sb-fam-kid::before{content:"";position:absolute;inset:-4px 0}
+  .sb-fam-bar>.sb-fam-brand{margin-left:8px}
+  .sb-fam-bar>.sb-fam-lock{margin-left:3px}
 }
