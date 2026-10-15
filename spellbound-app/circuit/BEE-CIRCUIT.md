@@ -176,7 +176,7 @@ A boarding academy for competitive spellers. Navy blazers, silver pins, a perfec
 | Speller | Age | Tell | Speciality | Seed for Season 2 |
 |---|---|---|---|---|
 | **Sloane** (captain) | 14 | never smiles, never asks a question twice | everything; perfect record | Must lose for the first time, and doesn't know how. |
-| **The Lindqvist twins**, Ash and Aria | 12 | spell in unison, one letter each | memorised lists | Have never spelled apart. |
+| **The Lindqvist twins**, Ash and Aria | 12 | spell as a pair, one letter each | memorised lists | Have never spelled apart. |
 | **Arjun** | 13 | names the origin before the pronouncer finishes | origins of every kind | Respects the Circuit and won't say so. |
 | **Mei** | 10 | writes every word in the air first | the youngest Ravenmere speller | Secretly writes to the child after Team Night. **Is she V.'s second hand?** |
 
@@ -553,7 +553,7 @@ After three misses on an item, the answer is shown.
 | **The challenge** | The morning after the final, a navy envelope with a silver crest: *"Ravenmere Academy challenges the Bee Circuit to a Team Bee. Tonight, your hall. Do try to keep up. — Sloane, Captain."* |
 | **The captaincy** | Vesper declines: *"I've just learned to ask questions. I'm not ready to answer them."* Kwame says *"Dax."* The hall laughs, then sees he means it. Theo: *"He blamed me for the misprints."* Suki: *"He tried to get my round struck."* Dax says nothing for a long beat, then: *"Yes. And I know exactly how fast I am, and where I fall apart. That's why I shouldn't spell every word. Nobody should."* |
 | **The idea** | Dax's plan, learned from losing: **"Speed is nothing. Who takes the word is everything."** Greek words go to Mira. French goes to Ines. Latin goes to Rafi or Kwame. Old English goes to Nova. Anything nobody has ever heard goes to Suki. Anything that needs eleven questions goes to Theo. **The child takes whatever needs the steady beat.** |
-| **Ravenmere** | Sloane never asks a question twice. The Lindqvist twins spell in unison, a letter each. Arjun names the origin before the Pronouncer finishes. Mei writes each word in the air. They are flawless, and certain. |
+| **Ravenmere** | Sloane never asks a question twice. The Lindqvist twins spell as a pair, a letter each. Arjun names the origin before the Pronouncer finishes. Mei writes each word in the air. They are flawless, and certain. |
 | **The drama** | Ravenmere leads all night. In the last round Dax calls a Greek word to Mira, and it's actually from French (Arjun smirks). Mira hesitates. Dax doesn't panic, which is new for him. He breathes out, out not in, asks the Pronouncer the language of origin, and re-calls it to Ines. She spells it. |
 | **The final word** | The tiebreaker comes down to Sloane and the Circuit. Dax calls the last word to **Vesper**, the champion who never asks. Vesper asks three questions, in front of everyone. She spells it right. **The Circuit wins.** (The child spells the word before it, which levels the score. That word is always one the child's bee file shows they've mastered.) |
 | **After** | Sloane, who has never lost: *"Accuracy is manners. So is losing, apparently."* Then the last letter of the season: *"Next season. Our hall. Our list. Ravenmere does not lose twice. — Sloane"* |
@@ -586,7 +586,7 @@ After three misses on an item, the answer is shown.
 
 | Piece | What it is |
 |---|---|
-| **Bee file** (after every hall and Team Night) | The Pronouncer's scouting report. It lists the words spelled and the word that beat the child, with its spelling, why it beat them, and the technique that would have caught it (linked to its lesson). Missed words are added to the revision pile. After Team Night it also shows the child's origin-calling accuracy. **This is where the story becomes revision.** |
+| **Bee file** (after every hall and Team Night) | The Pronouncer's scouting report. It lists the words spelled and the word that beat the child, with its spelling, why it beat them, and the technique that would have caught it (linked to its lesson). One tap adds the missed words to the revision pile, as Mock Bee's button does. After Team Night it also shows the child's origin-calling accuracy. **This is where the story becomes revision.** |
 | **Guide postcards** (on region complete) | Two lines from the host, quoting three of the child's own words from that region's family. |
 | **Level-up diary** | One sentence, read aloud. |
 | **Venue stamps** | One per hall plus Team Night, showing the place earned. |
@@ -601,7 +601,7 @@ After three misses on an item, the answer is shown.
 |---|---|
 | **Rule** | A visitor stands at a stop only if a word on that stop's own list comes from them. A build script cross-references every stop's words with `eponyms.json` (word, figure, story or person, source). No match, no visitor. At most one visitor per stop. |
 | **Card** | Who they are (one line), the word they gave English, and how it got there. Read aloud. No coins, no avatar, no speaking role. They appear in the programme ("Visitors on today's route") and in the Visitors' Book. |
-| **Storm (Greek)** | Atlas → *atlas*; Hermes → *hermetic*; Iris → *iridescent*; Echo → *echo*; Pan → *panic*; Tantalus → *tantalise*; Hypnos → *hypnosis*; Psyche → *psychology*; the Titans → *titanic*. |
+| **Storm (Greek)** | Atlas → *atlas*; Hermes → *hermetic*; Iris → *iridescent*; Echo → *echo*; Pan → *panic*; Tantalus → *tantalize*; Hypnos → *hypnosis*; Psyche → *psychology*; the Titans → *titanic*. |
 | **Forum (Latin)** | Janus → *January*; Mars → *martial*; Juno → *June*; Vulcan → *volcano*; Ceres → *cereal*; Fortuna → *fortune*; Mercury → *mercurial*. |
 | **Roots** | Tiw → *Tuesday*; Woden/Odin → *Wednesday*; Thor → *Thursday*; Frigg → *Friday*. |
 | **Junkyard** (real people, each on a sourced, dated card) | The Earl of Sandwich → *sandwich*; Adolphe Sax → *saxophone*; the Earl of Cardigan → *cardigan*; Rudolf Diesel → *diesel*; Newton → *newton*; Curie → *curie*. |

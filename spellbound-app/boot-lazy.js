@@ -336,7 +336,11 @@
     pendingRender = setTimeout(function () {
       pendingRender = 0;
       requestAnimationFrame(function () {
+        /* SB_RENDER_SOFT: this redraw is a file landing, not the child's doing — render() keeps the keyboard focus on
+           the control it was on (app3, "a background redraw keeps the focus") */
+        window.SB_RENDER_SOFT = 1;
         try { if (typeof window.render === 'function') window.render(); } catch (e) {}
+        window.SB_RENDER_SOFT = 0;
       });
     }, RENDER_WINDOW);
   }

@@ -107,6 +107,10 @@ P3.24 (the first word's sound and bee). The rules a later session keeps:
   `app-art/home/{tip,quote}.webp` (128×128). Cut-only (the reused painting IS the art): `feed/{fun,analogy,game}` and
   the eight `app-art/wt/<world>.webp` (480×240, each world's own sgw-* play-field, lifted a stop). After painting, run
   `node tests/p3-art.cjs` and `node tests/asset-budget.cjs`, look at the feed, and lower the asset ratchet to what shipped.
+  **PAINTED 14 Oct 2026**: all eleven slots carry their paintings (gemini-3-pro-image, the key passed inline from the
+  owner's upload, never written down). Looked at before serving: no lettering, people or marks; home-quote's first
+  painting was two pictures in one and home-tip's had a white haze — both repainted. They came in LIGHTER than the cuts
+  (feed 319 → 286 KB, home 6.8 → 6.3 KB); the ratchet went to 18.65 / 21.9 MB.
 - **MY FEED WEARS ITS KIND** (bee-feed.js `KIND_ART` / `artFor`, through the family card's own `art` slot — bizzing-feed.js
   and .css stay byte-identical): a `place` card its region's map (`map-<act>.webp`), a `lesson` or a stop's `quiz` the
   banner of its stop's region (`w-<world>-r2.webp`, the road from trail-home-data.js), every other kind its plate
@@ -1754,11 +1758,13 @@ Gym**; the Grand Prix plays **upright** on a phone; Home's journey card is a "Yo
   into the browser through the probe tab (whose link works), prints a `note reloadSettled: … carried` line, and still
   returns false. Measured: 3 of 3 broken boots repaired (the browser then held exactly the page's storage). The test's
   own storage is the truth it made; the copy only stands in for a link the browser dropped.
-- **Open (owner item, found by kudos in runs 6 and 8): `render()` keeps keyboard focus only for `[data-fkey]` fields.** A
-  re-render — a lazy file landing on Home in the first seconds — takes the focus off a button to `<body>`, so a keyboard
-  user's Enter lands nowhere and they Tab from the top again. Restoring focus to the same `[data-act][data-arg]` was NOT
-  done: in the drills Enter is also a global key, and a button keeping focus after its own click would act twice. kudos'
-  desktop press now waits for rendering to go quiet and presses once more only if a re-render visibly took the focus.
+- **A BACKGROUND REDRAW KEEPS THE KEYBOARD FOCUS** (14 Oct; found by kudos in runs 6 and 8). `render()` rebuilds #root, so
+  a file landing (boot-lazy `softRender`) used to drop a keyboard user's focus to `<body>`. softRender now marks its redraw
+  `window.SB_RENDER_SOFT = 1`, and render() puts the focus back on the same control (the nth `[data-act]` with the same
+  `data-act` and `data-arg`, `preventScroll`). ONLY a soft redraw: a redraw the child caused is left as it was — a button
+  keeping the focus after its own click would act twice on the drills' global Enter. Guard: **`tests/focus-keep.cjs`**
+  (proved: restore removed → 2 fail; restore on every redraw → 1 fails; boot-lazy not marking → 2 fail). kudos' desktop
+  press still waits for rendering to go quiet first.
 - **THE RELOAD SEAL — an erase or a restore can never be undone by its own reload** (store.js, 13 Oct; found by P3's full
   run 5, backup-restore: an erase, the app's reload, and the OLD household on screen — its first save would have written it
   back over the erase, a COPPA deletion quietly undone). `bkHaltAndReload` calls `SB_STORE.sealReload()`: it writes a

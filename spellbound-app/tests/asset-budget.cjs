@@ -32,8 +32,10 @@ const KB = 1024, MB = 1024 * 1024;
 /* THE RATCHET (10 Oct 2026, after the conversion): app-art/ was 31.0 MB at the commit before, 22.1 MB after.
    Lowered 13 Oct 2026 (road to 4.5, P3 art): the five hive splash plates the drawn SVG comb replaced (437 KB of WebP,
    220 KB of SVG — worlds-splash holds them cut) went, the P3 art slots came in (22 cuts, 337 KB: tools/art/p3-gen.py),
-   18.58 / 21.83 MB measured; the ceilings keep ~300 KB for the eleven bespoke paintings that replace cuts in place. */
-const CEIL = { plate: 700 * KB, raster: 18.9 * MB, folder: 22.2 * MB };
+   18.58 / 21.83 MB measured; the ceilings kept ~300 KB for the eleven bespoke paintings that replace cuts in place.
+   Lowered 14 Oct 2026: the eleven paintings landed (feed plates 319 → 286 KB, Home's vignettes 6.8 → 6.3 KB — lighter
+   than the cuts they replaced), 18.59 / 21.84 MB measured; the ceilings now sit ~60 KB above what ships. */
+const CEIL = { plate: 700 * KB, raster: 18.65 * MB, folder: 21.9 * MB };
 
 const walk = (d, out = []) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p, out); else out.push(p); } return out; };
 const files = walk(ART).map((f) => ({ rel: path.relative(ROOT, f).split(path.sep).join('/'), size: fs.statSync(f).size }));

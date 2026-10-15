@@ -8102,6 +8102,14 @@ function render(){
   try{ if(state.screen==='app') advCheckUnlock(); }catch(e){}
   try{ if(state.screen==='app') focusAutoSync(); }catch(e){}
   const a=document.activeElement; const fkey=a&&a.getAttribute&&a.getAttribute('data-fkey'); let ss=null,se=null;
+  /* A BACKGROUND REDRAW KEEPS THE FOCUS (14 Oct 2026). A file landing redraws #root (boot-lazy softRender), and every
+     button in it is new — a keyboard user Tabbing on Home in the first seconds was thrown back to <body>, and their
+     Enter landed nowhere (kudos caught it twice in full runs). On such a redraw only, the focus goes back to the same
+     control: the nth element with the same data-act and data-arg. A redraw the child caused (a click, a key) is left
+     as it was: a button that kept the focus after its own click would act twice on the drills' global Enter. */
+  let _fk=null; try{ if(!fkey&&window.SB_RENDER_SOFT&&a&&a!==document.body&&a.getAttribute&&a.getAttribute('data-act')){ const R0=document.getElementById('root');
+    if(R0&&R0.contains(a)){ const act=a.getAttribute('data-act'), arg=a.getAttribute('data-arg'); const same=[...R0.querySelectorAll('[data-act]')].filter(x=>x.getAttribute('data-act')===act&&x.getAttribute('data-arg')===arg);
+      _fk={act,arg,i:same.indexOf(a)}; } } }catch(e){ _fk=null; }
   try{ if(a){ ss=a.selectionStart; se=a.selectionEnd; } }catch(e){}
   document.documentElement.setAttribute('data-theme', state.theme);
   document.documentElement.setAttribute('data-mode', state.mode);
@@ -8155,6 +8163,8 @@ function render(){
   if(_setScroll!=null){ try{ const so2=document.getElementById('sb-set-ov'); if(so2) so2.scrollTop=_setScroll; }catch(e){} }
   if(state.settingsOpen) state._setOpened=true;
   if(fkey){ const el=root.querySelector('[data-fkey="'+fkey+'"]'); if(el){ try{ el.focus(); if(ss!=null&&el.setSelectionRange) el.setSelectionRange(ss,se); }catch(e){} } }
+  if(_fk&&(!document.activeElement||document.activeElement===document.body)){ try{ const same=[...root.querySelectorAll('[data-act]')].filter(x=>x.getAttribute('data-act')===_fk.act&&x.getAttribute('data-arg')===_fk.arg);
+    const el=same[_fk.i]||(same.length===1?same[0]:null); if(el) el.focus({preventScroll:true}); }catch(e){} }
   // the evolution rail scrolls on narrow screens — park it on the speller's current stage
   try{ if(window.evoLadderSync) evoLadderSync(); }catch(e){}
   try{ if(window.SB_SHELL) SB_SHELL.afterRender(); }catch(e){}   // hash route + Hive milestones
