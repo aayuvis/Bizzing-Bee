@@ -38,7 +38,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     out.armMark = log.some(e => e.k === 'arm');
 
     // ---- the smiley pulse rides the session summary while armed ----
-    state.sessionOver = true; state.sessionWords = [{ w: 'test', d: '' }]; state.nav = 'train'; state.tmReacted = false; render(); await W(200);
+    /* the session summary is the Word Gym's screen, a lazy file (app3-gym.js, group scrGym, since the P1.13 split): wait for
+       its group, then for the pulse itself — a fixed 200 ms read the hive loader in P3's full run 11 (passed alone) */
+    await new Promise(res => SB_LAZY.need('scrGym', res));
+    state.sessionOver = true; state.sessionWords = [{ w: 'test', d: '' }]; state.nav = 'train'; state.tmReacted = false; render();
+    for (let t0 = Date.now(); Date.now() - t0 < 15000 && document.querySelectorAll('[data-act="tmReact"]').length !== 3;) await W(50);
     out.pulse = document.querySelectorAll('[data-act="tmReact"]').length === 3;
     app.tmReact('love'); await W(200);
     out.reactLogged = SB_TM.list().some(e => e.k === 'react' && e.v === 'love');
