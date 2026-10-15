@@ -213,7 +213,9 @@
     circuit: 'circuit.js',
     /* The Bee Circuit's five Surprise Stops (BEE-CIRCUIT.md §7): the case runner and its data, cut from circuit/script.json by
        tools/circuit/build-cases.cjs — one bundle, after the season's core (DEPS); never on a first screen */
-    circuitCases: ['circuit-cases-data.js', 'circuit-cases.js']
+    circuitCases: ['circuit-cases-data.js', 'circuit-cases.js'],
+    scrHw: 'app3-homework.js',     // My Homework (the child's) and the homework record every screen reads (SB_HW)
+    scrTeach: 'app3-teach.js'      // the Teacher's Corner (the grown-up's, behind the PIN)
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -274,16 +276,22 @@
     scrMe: ['scrShared', 'scrMe'],
     scrTools: ['words1', 'scrShared', 'scrTools'],
     circuit: ['circuitData', 'circuit'],
-    circuitCases: ['words1', 'saga2', 'circuitCases']   // the engine kit (SGUI) the cases play on
+    circuitCases: ['words1', 'saga2', 'circuitCases'],   // the engine kit (SGUI) the cases play on
+    /* My Homework opens Atlas stops (trailUnit) and its drill's miss panel names the mistake (coachRules); the Teacher's
+       Corner reads where each child is on the Atlas (trail, objectives), the chapters (concepts, advConcepts: an
+       Advanced Pack chapter is shown as needing the pack) and draws word lists through nextWords over the WHOLE served
+       corpus and its bands (sents, words2, wordband) — so the same choices give the same list (TEACHER-HOMEWORK.md) */
+    scrHw: ['words1', 'scrShared', 'scrHw', 'trail', 'trailCode', 'coachRules'],
+    scrTeach: ['words1', 'sents', 'words2', 'wordband', 'scrShared', 'scrHw', 'scrTeach', 'trail', 'trailCode', 'concepts', 'advConcepts', 'objectives']
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
   /* words2 and the boot sentences land on the boot tier's records (in order, by word), so the tier comes first */
-  var DEPS = { words2: ['words1'], sents: ['words1'], trailCode: ['trail'], scrLib: ['scrShared'], scrGym: ['scrShared'], scrGrown: ['scrShared'], scrGames: ['scrShared'], scrMe: ['scrShared'], scrTools: ['scrShared'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'], circuit: ['circuitData'], circuitCases: ['circuit'] };
+  var DEPS = { words2: ['words1'], sents: ['words1'], trailCode: ['trail'], scrLib: ['scrShared'], scrGym: ['scrShared'], scrGrown: ['scrShared'], scrGames: ['scrShared'], scrMe: ['scrShared'], scrTools: ['scrShared'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'], circuit: ['circuitData'], circuitCases: ['circuit'], scrHw: ['scrShared'], scrTeach: ['scrShared', 'scrHw'] };
 
-  var IDLE = ['words1', 'trail', 'trailCode', 'scrShared', 'scrGym', 'scrLib', 'scrGames', 'scrMe', 'scrGrown', 'scrTools', 'sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
+  var IDLE = ['words1', 'trail', 'trailCode', 'scrShared', 'scrGym', 'scrLib', 'scrGames', 'scrMe', 'scrGrown', 'scrTools', 'scrHw', 'scrTeach', 'sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
     'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'adv', 'ttIcons', 'circuitData', 'circuit', 'sync', 'circuitCases'];
 

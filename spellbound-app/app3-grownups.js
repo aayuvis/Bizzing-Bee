@@ -57,6 +57,20 @@ function reportCardHTML(c){ c=c||active(); let R; try{ R=reportCard(c); }catch(e
      grade-map-data.js are lazy (boot-lazy `curriculum`); the trail map's word pools come through trail.js */
   let cur='';
   try{ if(window.SB_OBJ && window.SB_GRADE_MAP) cur=SB_OBJ.reportSection(c, at&&at.act); else { lazyNeed('curriculum'); cur='<div class="sb-rc-curriculum" role="status" style="margin-top:14px;font-size:12.5px;color:var(--muted)">Loading what they can do, region by region…</div>'; } }catch(e){}
+  /* HOMEWORK (TEACHER-HOMEWORK.md): what the Teacher's Corner set this child and what is done, read from the homework
+     record — and "done" there is the main app's own record (a stop walked, a chapter read, every word of a list spelled
+     right once) — through My Homework's reading (window.SB_HW, app3-homework.js, lazy: asked for here, drawn when in) */
+  let hwSec='';
+  try{ const hasHw=!!(c.hw&&Array.isArray(c.hw.items)&&c.hw.items.length);
+    if(window.SB_HW){ const H=SB_HW.report(c);
+      const cell=(l,v,sub)=>`<div class="sb-rc-hwc" style="background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0"><div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">${l}</div><div style="font-family:var(--display);font-weight:800;font-size:17px;margin-top:2px">${v}</div>${sub?`<div style="font-size:12px;color:var(--muted)">${sub}</div>`:''}</div>`;
+      hwSec=`<div class="sb-rc-hw" data-rc-hw data-hw-assigned="${H.assigned}" data-hw-done="${H.done}" data-hw-ontime="${H.onTime}" data-hw-words="${H.wordsRight}/${H.wordsOf}" data-hw-stops="${H.stopsWalked}/${H.stops}" data-hw-chs="${H.chaptersRead}/${H.chapters}" style="margin-top:14px">
+        <div style="font-family:var(--display);font-weight:800;font-size:15px">Homework</div>
+        ${H.assigned?`<p style="margin:2px 0 10px;font-size:12.5px;color:var(--muted);line-height:1.5">Set in the Teacher's Corner. Done means done in the app itself — a stop walked, a chapter read to its last card (or its words mastered), every word of a list spelled right once.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px">${cell('Set',H.assigned,'')}${cell('Done',H.done,H.onTime+' on time')}${cell('Words right',H.wordsRight+' of '+H.wordsOf,'spelled right in homework')}${cell('Stops walked',H.stopsWalked+' of '+H.stops,'')}${cell('Chapters read',H.chaptersRead+' of '+H.chapters,'')}</div>
+        ${H.open.length?`<div style="margin-top:10px;font-size:13px;line-height:1.5"><b>Still open</b><ul style="margin:4px 0 0;padding-left:18px">${H.open.map(o=>`<li data-rc-hw-open="${o.id}">${esc(o.title)} — ${esc(o.result)} · ${o.late&&o.due?'was due '+esc(SB_HW.dateTxt(o.due)):esc(o.dueTxt.toLowerCase())}</li>`).join('')}</ul></div>`:''}`
+        :`<p style="margin:2px 0 0;font-size:12.5px;color:var(--muted)">None set yet. The Teacher's Corner sets word lists, Atlas stops and chapters.</p>`}</div>`; }
+    else if(hasHw){ lazyNeed('scrHw',()=>{ try{ render(); }catch(e){} }); hwSec='<div class="sb-rc-hw" role="status" style="margin-top:14px;font-size:12.5px;color:var(--muted)">Loading homework…</div>'; } }catch(e){}
   const famLine=m.families.length?`<div style="margin-top:8px;font-size:12.5px;line-height:1.5">${m.families.slice(0,4).map(f=>`<b>${f.n}</b> ${esc(f.label.toLowerCase())}`).join(' · ')}</div>`:'';
   const mast=box('Mastery', `${m.retained} word${m.retained===1?'':'s'} mastered`,
     `Spelled right on two different days, a day or more apart — so it stuck.${m.newThisWeek?` <b>${m.newThisWeek}</b> new this week.`:''}`+
@@ -70,6 +84,7 @@ function reportCardHTML(c){ c=c||active(); let R; try{ R=reportCard(c); }catch(e
     <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px"><div style="font-family:var(--display);font-weight:800;font-size:15px">Report card · ${esc(R.name||'your speller')}</div><span style="font-size:12px;color:var(--muted);font-weight:700">what ${esc(R.name||'they')} can now do, from evidence</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0">${time}${prog}${mast}</div>
     ${lines.length?`<div style="display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.5">${lines.join('')}</div>`:''}
+    ${hwSec}
     ${cur}
     ${/* standard §13: the grown-ups page links to the Hive's family-wide view (a link, not a request) */''}
     <a class="sb-hive-grown" href="https://aayuvis.github.io/Bizzing_Schedule/#grown" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;font-weight:800;color:var(--accent);text-decoration:none">⬡ The whole family in the Bizzing Hive →</a>
@@ -461,6 +476,10 @@ function viewParent(){
     ${pageHead('Parent dashboard','',`Track ${esc(active().name||'your speller')}, manage spellers and print a weekly report.`,parentBtns)}
     ${oneThing}
     ${kudosParent()}
+    <div class="sb-card" data-pz-teach style="margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="width:42px;height:42px;border-radius:12px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG('users',22)}</span>
+      <span style="flex:1 1 220px;min-width:0"><span style="display:block;font-family:var(--display);font-weight:800;font-size:15px">Teacher's Corner</span><span style="display:block;font-size:12.5px;color:var(--muted);line-height:1.45">Set homework for the spellers on this device — practice word lists, Atlas stops and chapters — and print the answer keys.</span></span>
+      <button data-act="openTeacher" style="min-height:44px;padding:0 16px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">Open</button></div>
     <div style="${sub.cardStyle}"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:46px;height:46px;border-radius:14px;background:var(--chip);color:var(--accent);display:grid;place-items:center;flex-shrink:0">${iconSVG(sub.ic,26)}</div>
       <div style="min-width:0;flex:1 1 220px"><div style="font-family:var(--display);font-weight:800;font-size:17px">${sub.title}</div><div style="font-size:13px;color:var(--muted)">${sub.body}</div></div>
       <button data-act="openTiers" style="${sub.btnStyle}">${sub.btn}</button></div></div>

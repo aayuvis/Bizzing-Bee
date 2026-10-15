@@ -225,8 +225,8 @@ function wordsIn(){ try{ return !window.SB_LAZY||SB_LAZY.ready('words1'); }catch
      scrStub(g, k)      app[k] until its file lands: loads the group, then runs the real action with the same arguments */
 /* the screens whose view lives in a lazy file, by nav: viewApp's guard holds each until its group is in. A new lazy
    screen adds its nav here, with its file's group. */
-const SCR_NAV = { concepts:'scrLib', levelup:'scrGym', train:'scrGym', coach:'scrGym', quest:'scrGym', explore:'scrLib', themes:'scrLib', figurative:'scrLib', vocab:'scrLib', quotes:'scrLib', trivtrain:'scrLib', ipatrain:'scrLib', firstword:'scrGym', typing:'scrLib', builder:'scrLib', leveltest:'scrGym', beeband:'scrGym', coachdesk:'scrGym', traps:'scrGym', revisions:'scrGym', evolution:'scrMe', collection:'scrMe', shop:'scrMe', help:'scrMe', finder:'scrFinder', games:'scrGames', daily:'scrGames', dailybuzz:'scrGames', forge:'scrGames', gym:'scrGames', sq:'scrGames', trivia:'scrGames', progress:'scrGrown', parent:'scrGrown', journeys:'scrLib', debug:'scrTools', voicetest:'scrTools', evofeedback:'scrTools' };
-const SCR_GROUP = { scrLib:'scrLib', scrGym:'scrGym', scrGrown:'scrGrown', scrGames:'scrGames', scrMe:'scrMe', scrTools:'scrTools' };
+const SCR_NAV = { concepts:'scrLib', levelup:'scrGym', train:'scrGym', coach:'scrGym', quest:'scrGym', explore:'scrLib', themes:'scrLib', figurative:'scrLib', vocab:'scrLib', quotes:'scrLib', trivtrain:'scrLib', ipatrain:'scrLib', firstword:'scrGym', typing:'scrLib', builder:'scrLib', leveltest:'scrGym', beeband:'scrGym', coachdesk:'scrGym', traps:'scrGym', revisions:'scrGym', evolution:'scrMe', collection:'scrMe', shop:'scrMe', help:'scrMe', finder:'scrFinder', games:'scrGames', daily:'scrGames', dailybuzz:'scrGames', forge:'scrGames', gym:'scrGames', sq:'scrGames', trivia:'scrGames', progress:'scrGrown', parent:'scrGrown', journeys:'scrLib', debug:'scrTools', voicetest:'scrTools', evofeedback:'scrTools', teacher:'scrTeach', homework:'scrHw' };
+const SCR_GROUP = { scrLib:'scrLib', scrGym:'scrGym', scrGrown:'scrGrown', scrGames:'scrGames', scrMe:'scrMe', scrTools:'scrTools', scrTeach:'scrTeach', scrHw:'scrHw' };
 function scrReady(g){ try{ return !window.SB_LAZY||SB_LAZY.ready(g); }catch(e){ return true; } }
 function scrDraw(g, fn){ if(scrReady(g)) return fn(); lazyNeed(g, ()=>render()); return ''; }
 function scrStub(g, k){ const f=function(){ const a=arguments, self=this;
@@ -658,7 +658,22 @@ function isConceptUnlocked(ci){ const ch0=(state.conceptData||SB_CONCEPTS.chapte
   if(ch0&&ch0.adv) return advModeOn();
   if(state.devUnlock) return true; const ch=ch0; if(ch && catGroup(ch.category)==='Basics') return true; try{ if(window.SB_ENT && SB_ENT.has('concepts')) return true; }catch(e){} if((active().unlockedConcepts||{})[ci]) return true; if(state.premium && ci<conceptHalf()) return true;
   try{ if(typeof window.SB_TRAIL_OPEN==='function' && SB_TRAIL_OPEN(ci)) return true; }catch(e){}   /* reached on the Atlas */
+  if(hwGrant(ci) && conceptLock(ci).kind==='learn') return true;   /* set as homework by a grown-up: a LEARNING lock opens for this child only; a plan lock never */
   return false; }
+/* A HOMEWORK GRANT (owner, 15 Oct 2026: "teacher can assign concepts beyond the lock too"). The Teacher's Corner may set
+   a chapter the child has not reached on the Atlas; the homework item carries `grant` and opens THAT chapter for THAT
+   child (the active one — a sibling stays locked). A grant removed with its homework after the child started the
+   chapter is kept in c.hw.keep: nothing is taken away. Read only here, by the concept lock (TEACHER-HOMEWORK.md). */
+function hwGrant(ci){ try{ const c=active(), h=c&&c.hw; if(!h) return false; ci=+ci; const t=((state.conceptData||[])[ci]||{}).title;
+  const hit=x=>!!x&&+x.ref===ci&&(!x.t||!t||x.t===t);
+  return (Array.isArray(h.items)&&h.items.some(x=>x&&x.kind==='concept'&&x.grant&&hit(x)))||(Array.isArray(h.keep)&&h.keep.some(hit)); }catch(e){ return false; } }
+/* A CHAPTER READ TO ITS LAST CARD is recorded on the child (c.cRead[ci] = the day): the main app had no record of a
+   chapter read, only of its words mastered (conceptStat), so My Homework's "read this chapter" is done by THIS record —
+   reached in the Library, on an Atlas stop's lesson or from homework alike. */
+function conceptReadMark(){ try{ const ch=state.conceptSel; if(!ch||state.nav!=='concepts') return;
+  const n=1+(ch.method?1:0)+((ch.cards||[]).length); if((state.conceptStep|0)<n-1) return;
+  const ci=(state.conceptData||[]).indexOf(ch), c=active(); if(ci<0||!c) return;
+  const r=c.cRead||(c.cRead={}); if(!r[ci]){ r[ci]=todayKey(); save(); } }catch(e){} }
 // Levenshtein distance (for "so close!" near-miss feedback)
 function lev(a,b){ a=a||''; b=b||''; const m=a.length,n=b.length; if(!m) return n; if(!n) return m; const d=Array.from({length:m+1},(_,i)=>[i].concat(new Array(n).fill(0)));
   for(let j=0;j<=n;j++) d[0][j]=j;
@@ -2200,7 +2215,7 @@ function realAcc(c){ c=c||active(); const at=(c.attempts||[]).slice(-120); const
    "Practice time" deliberately means words only — the clock stops in the Arcade, the saga,
    trivia and every other feature, so the number can't be inflated by playing games. */
 const TGT_DEF={app:30, prac:15};                       // minutes/day out of the box
-const PRACTICE_NAVS=['coach','train','levelup','revisions','today'];
+const PRACTICE_NAVS=['coach','train','levelup','revisions','today','homework'];
 /* A DRILL THAT CAME FROM A STOP BELONGS TO THE ATLAS, NOT TO PRACTICE.
    startTrain sets nav:'train', and both nav bars counted 'train' as the Practice
    tab — so walking a stop on the Word Atlas visibly threw the child into another
@@ -2761,6 +2776,14 @@ const app = {
   /* Today's ten (road to 4.5, P1.16): today.js is lazy (group `today`) — the screen holds a loader until it lands */
   openToday:()=>{ clearGTimer(); state.game=null; if(window.SB_TODAY){ SB_TODAY.open(); return; } set({nav:'today', screen:'app'});
     lazyNeed('today',()=>{ if(state.nav==='today'&&window.SB_TODAY) SB_TODAY.open(); }); },
+  /* MY HOMEWORK and THE TEACHER'S CORNER (TEACHER-HOMEWORK.md): the screens are lazy (app3-homework.js, app3-teach.js);
+     these two openers are core because a first-screen control opens each — the top bar's homework button, Settings →
+     Grown-ups. The Corner is behind the grown-up PIN: a pass already made on screen (the Parent Zone, Settings' open
+     Grown-ups section, the same tick's PIN) carries through; anything else asks. viewApp ends the pass on leaving. */
+  openHomework:(tab)=>{ clearGTimer(); state.game=null; state.hwTab=({concepts:1,atlas:1,words:1,history:1})[tab]?tab:null; set({nav:'homework', screen:'app', conceptSel:null}); },
+  openTeacher:()=>{ const go=()=>{ state.teachOk=true; state.settingsOpen=false; state._setOpened=false; state._setGrown=false; set({nav:'teacher', screen:'app', conceptSel:null}); };
+    if(state._pinPass||(state.nav==='progress'&&state.progTab==='parent'&&state.screen==='app')||(state.settingsOpen&&state._setGrown)){ go(); return; }
+    state.teachOk=false; pinGate(go,"Teacher's Corner — grown-ups only"); },
 
 
 
@@ -2972,18 +2995,18 @@ const app = {
     if(state.nav!=='concepts') state.conceptFrom=state.nav;
     state.conceptSel=ch; state.conceptStep=0; state.conceptWordsOpen=false; state.conceptWordIdx=0;
     state.animOn=false; state.animScene=0;
-    try{window.scrollTo(0,0);}catch(e){} set({nav:'concepts'}); },
+    try{window.scrollTo(0,0);}catch(e){} set({nav:'concepts'}); conceptReadMark(); },
   conceptBack:()=>{ clearAnimTimer(); stopNarration();
     if(state.trailReturn&&app.trailUnit){ const u=state.trailReturn; state.trailReturn=null; state.conceptSel=null; state.animOn=false; set({nav:'trail'}); app.trailUnit(u); return; }
     const from=state.conceptFrom; state.conceptFrom=null;
     if(from){ set({conceptSel:null, animOn:false, animScene:0, nav:from}); return; }
     set({conceptSel:null, animOn:false, animScene:0}); },
-  conceptStepGo:(i)=>{ clearAnimTimer(); stopNarration(); set({conceptStep:+i, animOn:false}); },
+  conceptStepGo:(i)=>{ clearAnimTimer(); stopNarration(); set({conceptStep:+i, animOn:false}); conceptReadMark(); },
   conceptPlay:()=>{ clearAnimTimer(); stopNarration(); state.animNonce=(state.animNonce||0)+1; playScene(0); },
   conceptReplay:()=>{ clearAnimTimer(); stopNarration(); state.animNonce=(state.animNonce||0)+1; playScene(0); },
   animTo:(i)=>{ clearAnimTimer(); stopNarration(); state.animNonce=(state.animNonce||0)+1; playScene(+i); },
   conceptPrev:()=>set({conceptStep:Math.max(0,state.conceptStep-1)}),
-  conceptNext:()=>set({conceptStep:state.conceptStep+1}),
+  conceptNext:()=>{ set({conceptStep:state.conceptStep+1}); conceptReadMark(); },
   conceptWordsToggle:()=>set({conceptWordsOpen:!state.conceptWordsOpen, conceptWordIdx:0}),
   practiseConcept:()=>{ const ch=state.conceptSel; if(!ch) return;
     const words=(ch.words||[]).filter(x=>x&&x.w).map(x=>({w:x.w,d:x.def||'',s:x.ex||'',p:x.say||'',o:'',r:x.hook||''}));
@@ -3667,7 +3690,9 @@ const SCR_ACTS = {
     'cloudNeed cloudRestore openCloud clearReports copyReports parentLogToggle reviseMisses moreTips ' +
     'printReport askDelSpeller delSpeller progTab buyAddon closeTiers chooseTier doSignIn doSignUp authPw ' +
     'authEmail authName closeAuth cloudAgree cloudAdd cloudOff closeCloud',
-  scrTools: 'dbgSaga vtExport vtTab vtBad vtPlay vtOk evoExport evoSelect evoClearTile evoNote evoRate'
+  scrTools: 'dbgSaga vtExport vtTab vtBad vtPlay vtOk evoExport evoSelect evoClearTile evoNote evoRate',
+  scrTeach: 'teachBack tcKid tcSrc tcLv tcTheme tcSize tcNew tcDrop tcDue tcAssignWords tcStop tcAssignStops tcFam tcCh tcAssignChs tcRemove tcPrint tcPrintGo tcPrintBack',
+  scrHw: 'hwTab hwConcept hwStop hwStudy hwDeckTog hwSpell hwType hwCheck hwNext hwHear hwSlow hwSent hwLeave'
 };
 for (const g in SCR_ACTS) for (const k of SCR_ACTS[g].split(' ')) if (!(k in app)) app[k] = scrStub(g, k);
 /* THE WORD ATLAS'S ACTIONS (P1.13 step 3): trail.js is lazy (boot-lazy `atlas`, with its curriculum) and registers these
@@ -5227,6 +5252,7 @@ function viewApp(){
     return `<button data-act="setNav" data-arg="${key}" aria-current="${on?'page':'false'}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
   }).join('');
   let content='';
+  if(S.nav!=='teacher'&&S.teachOk) S.teachOk=false;   /* the Teacher's Corner's PIN pass ends the moment its screen is left */
   /* A SCREEN WHOSE CODE IS LAZY, OR THAT READS WORDS (road to 4.5, P1.13): until its group is in — its app3 file (SCR_NAV,
      which carries the boot word tier) or the tier alone (words1) — the hive loader holds the page and the group is asked
      for; it renders when it lands. Reached by a tab, an address, a PIN pass or an opener, the same. */
@@ -5268,6 +5294,8 @@ function viewApp(){
   else if(S.nav==='anlbee') content=(window.SB_ANL&&window.SB_ANALOGY?SB_ANL.beeView():(lazyNeed('analogy',()=>{ if(state.nav==='anlbee') render(); }), hiveLoader('opening the bee…')));
   else if(S.nav==='today') content=(window.SB_TODAY?SB_TODAY.view():(lazyNeed('today',()=>{ if(state.nav==='today') render(); }), hiveLoader('getting today’s ten ready…')));
   else if(S.nav==='forge') content=viewForge();
+  else if(S.nav==='teacher') content=viewTeacher();     /* the Teacher's Corner (app3-teach.js): its view draws only after the PIN pass (state.teachOk) */
+  else if(S.nav==='homework') content=viewHomework();   /* My Homework (app3-homework.js) */
   else if(S.nav==='gym') content=viewGym();
   else if(S.nav==='feed') content=(state.feedOff?`<div class="sb-feedpage">${tabHead('My Feed',{icon:navIcon('feed',20,true)})}<div class="sb-card" style="text-align:center;padding:28px 20px"><p style="margin:0 0 14px">My Feed is switched off on this device. A grown-up can switch it back on in Settings, behind the PIN.</p><button class="bz-btn" data-act="goHome">Home</button></div></div>`:window.SB_FEED?SB_FEED.view():`<div class="sb-feedpage">${tabHead('My Feed',{icon:navIcon('feed',20,true),sub:'Picked for you from across the app — about twenty, and then it ends.'})}${hiveLoader('opening your feed…')}</div>`);
   else if(S.nav==='mockbee') content=(window.MOCKBEE?MOCKBEE.view():(lazyNeed('mockbee',()=>{ if(state.nav==='mockbee') render(); }), hiveLoader('opening the bee…')));
@@ -5359,6 +5387,7 @@ function viewApp(){
         ${SB_SHELL.hiveBtn()}
         <button data-act="openDrawer" aria-label="Menu" style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--text);flex-shrink:0">${iconSVG('menu',20)}</button>
         <button data-act="goHome" class="sb-fam-brand" title="Home" aria-label="Bizzing Bee — Home" style="display:flex;align-items:center;gap:9px;margin-right:auto;background:none;border:0;cursor:pointer"><div style="width:34px;height:38px;flex-shrink:0">${mascotSVG('happy')}</div><span class="sb-brand" style="font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;white-space:nowrap"><i style="font-style:italic">Bizzing</i><span class="sb-tm" aria-hidden="true"></span> Bee</span></button>
+        ${SB_SHELL.hwBtn()}
         ${(()=>{ /* A real search bar, not a button that goes somewhere to find one. Type
              here, suggestions drop under it, Enter opens the Finder on the query — and a
              suggestion tapped goes straight to that word's card. */
@@ -6361,6 +6390,7 @@ function drillLive(){ try{ const S=state; if(S.screen!=='app') return false;
     if(S.nav==='games' && S.game && S.game.status==='play') return true;
     if(S.nav==='gym' && window.SB_GYM && SB_GYM.live()) return true;
     if(S.nav==='today' && window.SB_TODAY && SB_TODAY.live()) return true;   /* Today's ten: a word is open */
+    if(S.nav==='homework' && window.SB_HW && SB_HW.live()) return true;   /* My Homework's word list: a word is open */
     if(S.nav==='adv' && S.adv && /^(drill|scan|mock)$/.test(S.adv.mode||'') && !S.adv.done) return true;
     if(S.nav==='leveltest' && S.lt && S.lt.placed==null) return true;
     if(S.readerQuiz && !S.readerQuiz.over) return true;
@@ -7073,6 +7103,8 @@ function viewSettings(){
         <button data-act="setNav" data-arg="parent" class="bz-btn">Open</button></div>
       <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Progress</span><span class="bz-row-s">Level, the Atlas, this week and every word met.</span></div>
         <button data-act="setNav" data-arg="progress" class="bz-btn">Open</button></div>
+      <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Teacher's Corner</span><span class="bz-row-s">Set homework for the spellers on this device: word lists, Atlas stops and chapters.</span></div>
+        <button data-act="openTeacher" class="bz-btn">Open</button></div>
       ${sw('toggleFeed','My Feed',!state.feedOff,'A short feed of cards from across the app, picked from what your child is learning. Off removes the tab and the menu row.')}
       <div class="bz-row"><div class="bz-row-t"><span class="bz-row-l">Grown-up PIN</span><span class="bz-row-s">${pinSet()?'Set. Change it any time.':'Not set yet.'}</span></div>
         <button data-act="pinSetup" class="bz-btn">${pinSet()?'Change':'Set PIN'}</button></div>
@@ -8158,7 +8190,7 @@ function render(){
   if(state.nav==='forge'&&state.screen==='app'){ try{ const h=document.getElementById('fg-host'); if(h){ if(window.SB_FORGE_UI) SB_FORGE_UI.mount(h); else lazyNeed('forge', ()=>{ const h2=document.getElementById('fg-host'); if(h2&&window.SB_FORGE_UI) SB_FORGE_UI.mount(h2); }); } }catch(e){} }   /* Word Forge draws its own stage into the shell */
   if(state.nav==='gym'&&state.screen==='app'){ try{ const h=document.getElementById('gym-host'); if(h&&window.SB_GYM) SB_GYM.mount(h); }catch(e){} }   /* the Spelling Gym keeps its own DOM and is re-attached, so a render never wipes a half-typed word */
   if(state.nav==='home'&&state.screen==='app') homeArtHint();
-  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='today'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby')||state.nav==='forge'||(state.nav==='mockbee'&&state.mb&&(state.mb.view==='stage'||state.mb.view==='result')))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
+  if(state.screen==='app'&&(state.game||state.nav==='daily'||state.nav==='today'||state.nav==='homework'||state.nav==='dailybuzz'||((state.nav==='lore'||state.nav==='hive')&&state.qz&&state.qz.mode)||(state.nav==='analogy'&&state.anl&&state.anl.run)||(state.nav==='anlbee'&&state.anlBee&&state.anlBee.phase!=='lobby')||state.nav==='forge'||(state.nav==='mockbee'&&state.mb&&(state.mb.view==='stage'||state.mb.view==='result')))) liveScan(root); else if(!document.querySelector('.arc-play,.bz-play')) _liveSaid='';
   _toastVsMiss();   // a toast never sits on the letter-by-letter miss panel
   if(state.screen==='landing') landShots(); else if(state.screen==='app'&&state.nav==='home') landShots('60px 0px');   /* Home's tip and quote pictures wait until they are nearly on screen (P3.22: the first-load image ratchet) */
   /* First real paint — take the loading screen down. Called on every render; the
@@ -8254,7 +8286,7 @@ function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn
    the tier itself before it ends setup on the first word. */
 const WORDLESS=new Set(['noop','openDrawer','closeDrawer','muteAll','openWallet','closeWallet','cycleMode','pinKey','pinCancel',
   'openSettings','closeSettings','setGrownOpen','setSwitchChild','setOpenCollection','pinSetup','devTap','devBannerHide','goHome','celebrateClose',
-  'famMenu','famMenuClose','famSwitch','famSettings','famMine','famAdd','hqClear','nextTip','openAvDeck',
+  'famMenu','famMenuClose','famSwitch','famSettings','famMine','famAdd','hqClear','nextTip','openAvDeck','openTeacher',
   'hivePost']);   /* the Hive Post reads no word record: a tap there never waits on the word tier (Bee Circuit core) */
 let _wordsHeld=null;
 function wordsHold(fn){ if(wordsIn()){ fn(); return true; }
