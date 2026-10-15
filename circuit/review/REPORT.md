@@ -67,7 +67,22 @@ tests, not lines. Lines that claimed what the app cannot know ("phantom with an 
 child's own bee file through slots (`{weak}`, `{missed}`, …), and a weak-spot line with no evidence gives advice,
 never a diagnosis. The sting that names Vale waits until after the accusation.
 
-## For you (eight questions; none blocks the build)
+## Decided (14 Oct 2026, the owner: "COMPLETE ALL open" — the recommended answer to each)
+
+1. Ravenmere's names stay for Season 1; in Season 2 neither Arjun nor Mei is the means of Ravenmere's unkindness.
+2. **Suki is re-faced**: Snowfox, alt Wisp (Enchanted pack) — `mockbee.js` BOTS, the Grand Prix cast and the script's cast
+   key (`snowfox`). Kwame's Samurai stays (lower priority).
+3. The twins "spell as a pair, one letter each"; BEE-CIRCUIT.md §4.2 and §8.1 amended.
+4. Team Night seating as written. 5. Dax seated in every band's final. 6. Dax's Suspect Board line kept.
+7. Season 2's second hand resolves to someone the adults know and approve (recorded in `season2Seeds`).
+8. App data fixed: unflappable (and unflappableness) → English in the library; the atlas story in `eponyms-master.json`
+   and three trivia facts (t29330, t30404, t13451 — whose marked answer was the false claim) now say what the Visitors'
+   Book says; BEE-CIRCUIT.md says *tantalize*, and §9 says one tap adds the missed words. triskaidekaphobia stays
+   "English" (an English coinage from Greek parts — the script agrees).
+- The accuracy re-check (opened pages, not searches) runs with the Stop Visitors review, build step 8.
+Each decision is also on its `ownerQuestions` entry in `script.json` (`decision`, `decided`, `by`).
+
+## The questions as they were asked (eight; none blocked the build)
 
 1. **Ravenmere's names.** Two of the rival team's five carry Indian and Chinese names (Arjun, Mei). Arjun's beats are
    skill only and Mei is the kindest voice. The safety lens finds it acceptable for Season 1; for Season 2 neither
