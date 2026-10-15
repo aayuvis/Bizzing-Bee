@@ -98,6 +98,8 @@ const TIMEOUT = {
   'console-clean.cjs': 900,    // three full walks (44 routes, 20 actions each); 262s in a full run, over 300 under load
   'games-bots.mjs': 1800,      // every game and hub mode x three bots (games spec §8); ran past 300s on 4 Oct 2026
   'spelling-gym.cjs': 600,     // ~190s alone; past 300s in two full runs on 13 Oct 2026 (a budget, not an assertion)
+  'circuit-cases.cjs': 900,    // the five Surprise Stops played eight ways each: 340s alone on 15 Oct 2026 (a budget, not an assertion)
+  'circuit-halls-board.cjs': 600,   // nine hall pins and a REAL walk against circuit.js: 224s in the batch-2 run (a budget)
 };
 
 /* The deploy gate. Fast, and each one guards a promise made to a parent. */

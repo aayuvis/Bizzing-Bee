@@ -113,3 +113,36 @@ Etymonline, Wiktionary, Britannica and Wikipedia, with the returned URLs cited r
 weaker than reading the page. Before launch, the facts listed in `ownerQuestions[id=accuracy-reverify]` should be
 re-checked against the opened pages (Merriam-Webster's *catamaran* entry could not be retrieved at all; the other
 sources give Tamil).
+
+## Cycle 4: opened pages (15 Oct 2026, build step 8)
+
+This cycle was the `accuracy-reverify` pass the owner scheduled. It covered cycle 1's 13 fixes and cycle 2's 12, Case 3's
+donors, Mercator, unflappable, Case 2's four items, every fact on the 26 visitor cards, and the app data fixed on 14 Oct.
+Full rows: `review/c4-accuracy-opened.md`. The sourced visitor table the build cross-references: `circuit/eponyms.json`.
+
+| facts | PASS | FIX | UNVERIFIABLE |
+|---|---|---|---|
+| 118 | 57 | 1 | 60 |
+
+- **Still no cited page could be opened.** WebFetch could not resolve any host it tried. The session's egress policy
+  refused every reference host with a 403: Etymonline, Merriam-Webster, Britannica, Wikipedia, Wiktionary, LoC, Theoi,
+  Perseus, BIPM, NIST and more. Only the package registries were open.
+- **What could be opened**, from those registries, read as data:
+  - Princeton WordNet 3.1;
+  - the Project Gutenberg text of Webster's 1913;
+  - a Wiktionary-derived etymology set;
+  - the app's own files.
+- **A PASS** means one of those sources states the fact, quoted in the row.
+- **An UNVERIFIABLE** means only search reached it. It was searched again this cycle, site by site, and is never a pass.
+  **None of the 60 turned up an error.** The catamaran entry cycles 1–2 could not retrieve now answers at search level:
+  Merriam-Webster gives Tamil (kaṭṭumaram, 1673), with no Hindi or Malayalam step.
+- **The one fix**: Echo's card credited "could only repeat the last words she heard" to Greek stories. It is Ovid's
+  telling (Britannica, Wikipedia; search-level). The card now reads "To the ancient Greeks, Echo was a mountain nymph.
+  In the Roman poet Ovid's telling, she could only repeat the last words she heard. …". Applied, with a `changes`
+  entry. validate.cjs: FAIL 0. Being a rewording, it should ride the next safety and fair-play pass.
+- **Owner, outside the script** (not changed):
+  - trivia t30404 still asks which map word "comes from a titan";
+  - `unflappableness` and `unflappability` in words-full overstate ("never flustered", "nothing at all can disturb").
+- **To close the 60**, allow the cited hosts in the environment's network settings and re-run the UNVERIFIABLE rows only.
+  The list is at the foot of `c4-accuracy-opened.md`. Until then, every cited source in `eponyms.json` is
+  `opened:false`, and `accuracy-reverify` stays open.

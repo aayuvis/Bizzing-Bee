@@ -160,6 +160,26 @@
           to.forEach(function (t) { put(ch, t[0], e.right, t[1] ? (e.done || null) : null, e.ts, e.kind === 'trivia' ? e.label : e.kind); }); });
         var cb = ch.trivia && +ch.trivia.clockBest; if (cb) { put(ch, 'lore/clock', cb, null, 0, 'trivia.clockBest'); put(ch, 'hive/clock', cb, null, 0, 'trivia.clockBest'); } });
       return b;
+    },
+    /* v11 → v12: the Bee Circuit (circuit/BEE-CIRCUIT.md §3.3) — each child keeps their own season:
+       c.circuit = {v:1, season:1, halls:{}, cases:{}, mail:[], board:{suspects:{vesper,pronouncer,ratchet,dax,vale:[]},
+       accused:null}, dax:{helped:null}, closing:null}. Made empty here for every child (circuit.js makes it for a child
+       added later); a record that is already there keeps everything valid in it, and a field of the wrong shape is
+       replaced by its empty one. Nothing else on the child is touched. */
+    function v11_to_v12(b) {
+      var obj = function (x) { return !!x && typeof x === 'object' && !Array.isArray(x); };
+      (b.children || []).forEach(function (ch) { if (!ch) return;
+        var o = obj(ch.circuit) ? ch.circuit : (ch.circuit = {});
+        if (o.v == null) o.v = 1; if (o.season == null) o.season = 1;
+        if (!obj(o.halls)) o.halls = {}; if (!obj(o.cases)) o.cases = {};
+        if (!Array.isArray(o.mail)) o.mail = [];
+        if (!obj(o.board)) o.board = {};
+        if (!obj(o.board.suspects)) o.board.suspects = {};
+        ['vesper', 'pronouncer', 'ratchet', 'dax', 'vale'].forEach(function (s) { if (!Array.isArray(o.board.suspects[s])) o.board.suspects[s] = []; });
+        if (!('accused' in o.board)) o.board.accused = null;
+        if (!obj(o.dax)) o.dax = { helped: null }; if (!('helped' in o.dax)) o.dax.helped = null;
+        if (!('closing' in o)) o.closing = null; });
+      return b;
     }
   ];
 

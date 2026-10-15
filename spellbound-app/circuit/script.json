@@ -1583,7 +1583,7 @@
       "figure": "Echo",
       "word": "echo",
       "kind": "classical-myth",
-      "card": "In Greek stories, later retold by the Roman poet Ovid, Echo was a mountain nymph who could only repeat the last words she heard. Her name is the Greek word for a sound that comes back, and English kept it: echo.",
+      "card": "To the ancient Greeks, Echo was a mountain nymph. In the Roman poet Ovid's telling, she could only repeat the last words she heard. Her name is the Greek word for a sound that comes back, and English kept it: echo.",
       "sources": [
         {
           "type": "primary",
@@ -1592,6 +1592,10 @@
         {
           "type": "dictionary",
           "ref": "Online Etymology Dictionary, 'echo'"
+        },
+        {
+          "type": "reference",
+          "ref": "Encyclopaedia Britannica, 'Echo' (Ovid, Metamorphoses III; Longus' account differs)"
         }
       ]
     },
@@ -3299,6 +3303,18 @@
         "c3-r3-fairplay:rounds[0].pieces.above",
         "c3-r3-fairplay:rounds[5].pieces.above",
         "c3-r3-fairplay:rounds[6].pieces.above"
+      ]
+    },
+    {
+      "cycle": 4,
+      "lens": [
+        "c4-accuracy"
+      ],
+      "where": "visitors[3].card, visitors[3].sources",
+      "what": "Echo: the card now says 'To the ancient Greeks, Echo was a mountain nymph. In the Roman poet Ovid's telling, she could only repeat the last words she heard.' Before, it credited the 'last words' detail to Greek stories. Britannica's 'Echo' added to the sources.",
+      "why": "Opened (Webster 1913, WordNet 3.1): Echo is a mountain nymph of Greek myth. Search-level (Britannica, Wikipedia): only repeating the last words is Hera's punishment in Ovid's Metamorphoses III; Longus' Greek account differs, and no earlier Greek source for the curse is named. Cycle 1 had flagged the attribution as optional.",
+      "review": [
+        "c4-accuracy-opened.md G04a"
       ]
     }
   ],

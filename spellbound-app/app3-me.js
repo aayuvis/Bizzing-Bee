@@ -226,11 +226,17 @@ function medalSVG(b, size, won, i, n){ size=size||96; if(won===undefined) won=tr
     <g transform="translate(50 ${cy}) scale(.58) translate(-50 -50)">${EM.art(d)}</g>
     ${won?'':`<g><circle cx="80" cy="80" r="12" fill="#fff" stroke="#B4BCC6" stroke-width="2"/><rect x="75" y="79" width="10" height="8" rx="1.5" fill="#8B95A1"/><path d="M77 79v-2a3 3 0 0 1 6 0v2" fill="none" stroke="#8B95A1" stroke-width="2"/></g>`}
   </svg>`; }
+/* THE HIVE POST (the Bee Circuit, circuit/BEE-CIRCUIT.md §3.1): the season's mail, the Suspect Board, the Visitors' Book
+   and the stamps, as the Collection's fourth tab. circuit.js (boot-lazy `circuit`) draws it and keeps its state; this
+   file only hosts it, and its one action hands each tap to SB_CIRCUIT.act. The tab's envelope is drawn, never an emoji. */
+const HIVE_POST_ICON='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.6 6.6 12 13l8.4-6.4"/></svg>';
 function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'badges';
   if(tab==='artifacts') tab='badges';   // retired tab key — artifacts merged into Badges
-  const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${iconSVG(ic,15)} ${l}</button>`;
+  const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${ic.charAt(0)==='<'?ic:iconSVG(ic,15)} ${l}</button>`;
   let body='';
-  if(tab==='avatars'){
+  if(tab==='post'){
+    body=window.SB_CIRCUIT?SB_CIRCUIT.postHTML(c):(lazyNeed('circuit',()=>render()), hiveLoader('Opening the Hive Post'));
+  } else if(tab==='avatars'){
     /* All 96 by pack, owned and locked, each with the engine's words for its path (FIX-BEE v2 J5/J7).
        A Legendary whose milestone was just reached is recorded after this paint, once, with a line. */
     setTimeout(()=>{ try{ if(state.nav==='collection') grantAvatarMilestones(); }catch(e){} },0);
@@ -286,7 +292,7 @@ function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'
     ${pageHead('Collection', '', '',
       (tab==='avatars'?`<button data-act="printAvCards" title="Print your ${avOwnedCount(c)} collected avatars as cut-out trading cards" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13px">${SB_ICON('printer',{size:15})} Print my cards</button>`:'')
       + `<span class="sb-coinchip" title="Bizzing coins — one wallet for every Bizzing app" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:linear-gradient(135deg,#FFD24D,#F0A93C);color:#5a3d00;font-weight:900;font-size:13px">${coinAmt(c.coins||0,14)}</span>`)}
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Medals · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">${tabBtn('badges','crown','Medals · '+bAll.filter(b=>b.done).length+'/'+bAll.length)}${tabBtn('avatars','spark','Avatars · '+avOwnedCount(c)+'/'+SB_AVATARS.list.length)}${tabBtn('worlds','palette','Worlds · '+THEMES.filter(t=>isThemeUnlocked(t.id)).length+'/'+THEMES.length)}${tabBtn('post',HIVE_POST_ICON,'Hive Post')}</div>
     ${body}
   </div>`; }
 /* ---- Evolution ladder as its own screen (Home shows only the compact card) ---- */
@@ -389,6 +395,8 @@ Object.assign(app, {
     else if(!shopWear(c,it)) return;
     save(); sfx('correct'); render(); },
   collTab:(t)=>set({collTab:t}),
+  /* every Hive Post control (circuit.js draws them as data-act="hivePost" data-arg="<verb>|<arg>") */
+  hivePost:(a)=>lazyNeed('circuit',()=>{ if(window.SB_CIRCUIT) SB_CIRCUIT.act(a); }),
   /* A world for 240 Bizzing coins (BZ_AVATARS.buyWorld). It opens the world AND its packs. */
   buyWorld:(id)=>{ const c=active(); const n=worldNum(id); if(!n){ return; } if(isThemeUnlocked(id)){ app.pickTheme(id); return; }
     const t=THEMES.find(x=>x.id===id)||{label:id}; const bal=(c.coins|0);
