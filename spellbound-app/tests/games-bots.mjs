@@ -84,16 +84,37 @@ if (fs.existsSync(botDir)) for (const f of fs.readdirSync(botDir).filter(f => /\
   const i = d ? DRIVERS.findIndex(x => x.key === d.key) : -1; if (i >= 0) DRIVERS.splice(i, 1); register(d); }
 
 /* ---- the bots (seeded) ---- */
-function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+/* THE RANDOM BOT IS UNIFORM (15 Oct 2026). xorshift32 started straight from a small seed (13, 114, 215 …) gives a few
+   tiny outputs first, so the "random" bot's FIRST pick was option 0 in every one of its rounds, and 64 of its first 192
+   picks were 0 (33%, not 25%). A guesser that leans on a slot is not chance: it scores above a quarter wherever a game's
+   answer leans the same way, which is noise T2 then judges. The seed is mixed first (murmur3's finaliser). */
+const mix32 = (h) => { h = h >>> 0; h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return h >>> 0; };
+function rng(seed) { let s = mix32(seed) || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
 const LET = 'abcdefghijklmnopqrstuvwxyz';
 function bot(name, seed) { const r = rng(seed);
   const rand = (rd, kind) => kind === 'choice' ? Math.floor(r() * Math.max(1, (rd.options || []).length)) : Array.from({ length: Math.max(3, (rd.target || 'xxxxx').length) }, () => LET[Math.floor(r() * 26)]).join('');
   const perf = (rd, kind) => kind === 'choice' ? rd.answer : rd.target;
-  return { name, pick(rd, kind) { if (name === 'random') return rand(rd, kind); if (name === 'perfect') return perf(rd, kind); return r() < 0.7 ? perf(rd, kind) : rand(rd, kind); } }; }
+  return { name, seed, pick(rd, kind) { if (name === 'random') return rand(rd, kind); if (name === 'perfect') return perf(rd, kind); return r() < 0.7 ? perf(rd, kind) : rand(rd, kind); } }; }
+/* THE PAGE IS RESEEDED FOR EVERY ROUND (15 Oct 2026, full run 17). Seeding the page once, at load, made the FIRST round
+   reproducible and none after it: whatever the app drew between two rounds (a confetti burst, a lazy file landing, a
+   stage's motes) moved the generator by an amount that depends on the machine's pace, so a round's questions — Word
+   Lore's clock draws its forty-eight with the page's Math.random — were a different sample every run. The same build
+   gave lore/clock 39/112 in a full run and 19/94 alone, a minute later; the 39 failed T2's two-standard-error ceiling
+   (a 1.3% tail of a sample that should not have moved). Probed: every one of 576 clock questions had four options and
+   the answer's slot was spread 133/140/147/156, so it was the sample, not a leak. Each round now starts the page's
+   generator from (the driver's key, the bot's seed), so a round is the same round whatever ran before it. */
+const keySeed = (k) => { let h = 2166136261; for (const ch of k) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+/* The app draws the decoration of a frame (motes, confetti, a stage's dust) with the same Math.random, a frame at a time,
+   so reseeding when a round STARTS is not enough on a busy machine: how many frames pass before the questions are drawn
+   depends on its pace. `window.__botReseed()` restarts the round's generator, and a driver calls it in the SAME
+   synchronous step as the call that draws its questions (the hub drivers: the opener and Start), with the files that
+   call needs already in, so no frame can come between. */
+const reseed = (pg, seed) => pg.evaluate((s0) => { window.__botReseed = () => { let s = s0 | 0; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }; window.__botReseed(); }, seed);
 
 /* ---- one round ---- */
 async function play(pg, d, b) {
   const m = await coins.mark(pg); const t0 = Date.now(); let steps = 0, last = '';
+  await reseed(pg, (keySeed(d.key) ^ Math.imul(b.seed, 2654435761)) >>> 0);
   await d.start(pg, { level: d.level || 'medium' });
   while (Date.now() - t0 < (d.secs || 20) * 1000 && steps < (d.maxSteps || 80)) {
     const rd = await d.read(pg); if (rd.done) break;
