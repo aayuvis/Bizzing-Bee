@@ -117,6 +117,16 @@ async function play(pg, d, b) {
      about one run in twenty (5 of 9 at chance happens 4.9% of the time). With the page's draws seeded, the same build is the
      same run; the samples are made big enough to mean something by `randomRounds`, never by moving the ceiling. */
   await ctx.addInitScript(() => { let s = 0x2b1f0a; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; });
+  /* THE CALENDAR IS PINNED TOO (15 Oct 2026). Seeding Math.random was not enough: the Analogies' clock draws its questions
+     from the DATE (analogy.js day()), so anl/clock's T2 moved every midnight — 21/56 against a 37% ceiling one day, under it
+     the day before, on the same build (run 11; the reasoning batch saw it on the build before its change). The page's
+     calendar now reads a fixed day chosen before measuring, 5 Jan 2026, while the clock keeps running at real speed (every
+     game times seconds): Date and Date.now are the real clock shifted by a whole number of days. Never pick the day by
+     trying days until a gate passes; if a gate fails on this day, grow its sample (randomRounds) and say why. */
+  await ctx.addInitScript((pin) => { try { const R = Date, now0 = R.now(), d0 = new R(now0);
+    const off = new R(pin[0], pin[1], pin[2]).getTime() - new R(d0.getFullYear(), d0.getMonth(), d0.getDate()).getTime();
+    function D(...a) { if (!new.target) return new R(R.now() + off).toString(); return a.length ? new R(...a) : new R(R.now() + off); }
+    D.prototype = R.prototype; D.now = () => R.now() + off; D.UTC = R.UTC; D.parse = R.parse; window.Date = D; } catch (e) {} }, [2026, 0, 5]);
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('t_bots')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_bots', '1'); } } catch (e) {} }, SEED);
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('file://' + ROOT + '/index.html'); ok(await booted(pg), 'the app booted');
