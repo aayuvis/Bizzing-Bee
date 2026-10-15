@@ -3670,7 +3670,7 @@ for (const g in SCR_ACTS) for (const k of SCR_ACTS[g].split(' ')) if (!(k in app
 /* THE WORD ATLAS'S ACTIONS (P1.13 step 3): trail.js is lazy (boot-lazy `atlas`, with its curriculum) and registers these
    on app when it lands (app2.x = …); until then each is a stub that asks for the group and runs. A new trail.js action
    is added here too. */
-const TRAIL_ACTS = 'openTrail trailUnit trailChk trailNextFrom trailPick trailShut openUltra trailTrain trailBack trailAct trailHere trailToMap trailLesson trailWords trailWordNav trailPractice atlasNext trailQuiz tqPick tqSpell tqSay tqNext tqRevise tqInput ultraAct ultraPick ultraSteps ultraTrain uqType uqKey uqSay uqClose uqGo uqNext uDuel uGate uWisp atlasAdvDoor mwWander mwPoke mwHero mwLmk kitPick kitTile kitReset trailTre treClose treGame treLore treTrivAns villType villKey villSay villFlee villGo atlasMusic atlasZoom';
+const TRAIL_ACTS = 'openTrail trailUnit trailChk trailNextFrom trailPick trailShut openUltra trailTrain trailBack trailAct trailHere trailToMap trailLesson trailWords trailWordNav trailPractice atlasNext trailQuiz tqPick tqSpell tqSay tqNext tqRevise tqInput ultraAct ultraPick ultraSteps ultraTrain uqType uqKey uqSay uqClose uqGo uqNext uDuel uGate uWisp atlasAdvDoor mwWander mwPoke mwHero mwLmk kitPick kitTile kitReset trailTre treClose treGame treLore treTrivAns villType villKey villSay villFlee villGo atlasMusic atlasZoom hallOpen teamOpen circuitOpen visitorOpen';
 for (const k of TRAIL_ACTS.split(' ')) if (!(k in app)) app[k] = scrStub('atlas', k);
 
 /* ===================================================================== */
